@@ -27,6 +27,11 @@ export class NetworkUIBrowserProxy {
   getShillNetworkProperties(guid) {}
 
   /**
+   * @return {Promise<!Array>}
+   */
+  getFirstWifiNetworkProperties() {}
+
+  /**
    * @param {string} content
    * @return {Promise<!Array>}
    */
@@ -96,6 +101,11 @@ export class NetworkUIBrowserProxyImpl {
   /** @override */
   getShillNetworkProperties(guid) {
     return sendWithPromise('getShillNetworkProperties', guid);
+  }
+
+  /** @override */
+  getFirstWifiNetworkProperties() {
+    return sendWithPromise('getFirstWifiNetworkProperties');
   }
 
   /** @override */

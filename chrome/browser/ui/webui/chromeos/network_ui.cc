@@ -66,6 +66,8 @@ namespace {
 constexpr char kAddNetwork[] = "addNetwork";
 constexpr char kDisableESimProfile[] = "disableActiveESimProfile";
 constexpr char kGetNetworkProperties[] = "getShillNetworkProperties";
+constexpr char kGetFirstWifiNetworkProperties[] =
+    "getFirstWifiNetworkProperties";
 constexpr char kGetDeviceProperties[] = "getShillDeviceProperties";
 constexpr char kGetEthernetEAP[] = "getShillEthernetEAP";
 constexpr char kOpenCellularActivationUi[] = "openCellularActivationUi";
@@ -214,6 +216,11 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
             &NetworkConfigMessageHandler::GetShillNetworkProperties,
             base::Unretained(this)));
     web_ui()->RegisterMessageCallback(
+        kGetFirstWifiNetworkProperties,
+        base::BindRepeating(
+            &NetworkConfigMessageHandler::GetFirstWifiNetworkProperties,
+            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
         kGetDeviceProperties,
         base::BindRepeating(
             &NetworkConfigMessageHandler::GetShillDeviceProperties,
@@ -272,7 +279,23 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     CHECK_EQ(2u, arg_list.size());
     std::string callback_id = arg_list[0].GetString();
     std::string guid = arg_list[1].GetString();
+    ProvideNetworkProperties(callback_id, guid);
+  }
 
+  void GetFirstWifiNetworkProperties(const base::Value::List& arg_list) {
+    std::string callback_id = arg_list[0].GetString();
+    const NetworkState* wifi_network =
+        NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
+            NetworkTypePattern::WiFi());
+    if (wifi_network) {
+      ProvideNetworkProperties(callback_id, wifi_network->guid());
+      return;
+    }
+    Respond(callback_id, base::ListValue());
+  }
+
+  void ProvideNetworkProperties(const std::string& callback_id,
+                                const std::string& guid) {
     std::string service_path;
     if (!GetServicePathFromGuid(guid, &service_path)) {
       RunErrorCallback(callback_id, guid, kGetNetworkProperties,
