@@ -11,7 +11,7 @@
     DirectSocketEnabled
 ] interface UDPSocket {
   [CallWith=ScriptState, RaisesException]
-  constructor(DOMString address, unsigned short port, optional UDPSocketOptions options = {});
+  constructor(UDPSocketOptions options);
 
   [CallWith=ScriptState] readonly attribute Promise<UDPSocketOpenInfo> opened;
   [CallWith=ScriptState] readonly attribute Promise<void> closed;
