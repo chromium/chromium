@@ -377,9 +377,11 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     return false;
   }
 
+  const uint64_t request_id = request.InspectorId();
+
   if (!UrlCanRegisterAttribution(RegisterContext::kResource,
                                  response.CurrentRequestUrl(),
-                                 /*element=*/nullptr, request.InspectorId())) {
+                                 /*element=*/nullptr, request_id)) {
     return false;
   }
 
@@ -401,8 +403,13 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     absl::optional<net::structured_headers::Dictionary> dict =
         net::structured_headers::ParseDictionary(
             StringUTF8Adaptor(header_value).AsStringPiece());
-    if (!dict)
+    if (!dict) {
+      LogAuditIssue(local_frame_->DomWindow(),
+                    AttributionReportingIssueType::kInvalidEligibleHeader,
+                    /*element=*/nullptr, request_id,
+                    /*invalid_parameter=*/header_value);
       return false;
+    }
 
     const bool allows_event_source =
         dict->contains(kAttributionEligibleEventSource);

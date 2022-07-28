@@ -154,6 +154,9 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kInvalidRegisterTriggerHeader:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           InvalidRegisterTriggerHeader;
+    case AttributionReportingIssueType::kInvalidEligibleHeader:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidEligibleHeader;
   }
 }
 
