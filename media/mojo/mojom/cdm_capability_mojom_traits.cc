@@ -25,12 +25,12 @@ bool AreUnique(const std::vector<T>& values) {
 bool StructTraits<media::mojom::VideoCodecInfoDataView, media::VideoCodecInfo>::
     Read(media::mojom::VideoCodecInfoDataView input,
          media::VideoCodecInfo* output) {
-  std::vector<media::VideoCodecProfile> video_codec_profiles;
-  if (!input.ReadVideoCodecProfiles(&video_codec_profiles)) {
+  std::vector<media::VideoCodecProfile> supported_profiles;
+  if (!input.ReadSupportedProfiles(&supported_profiles)) {
     return false;
   }
 
-  *output = media::VideoCodecInfo(std::move(video_codec_profiles),
+  *output = media::VideoCodecInfo(std::move(supported_profiles),
                                   input.supports_clear_lead());
   return true;
 }

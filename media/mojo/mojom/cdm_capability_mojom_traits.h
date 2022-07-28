@@ -18,9 +18,9 @@ namespace mojo {
 template <>
 struct StructTraits<media::mojom::VideoCodecInfoDataView,
                     media::VideoCodecInfo> {
-  static const base::flat_set<media::VideoCodecProfile>& video_codec_profiles(
+  static const base::flat_set<media::VideoCodecProfile>& supported_profiles(
       const media::VideoCodecInfo& input) {
-    return input.video_codec_profiles;
+    return input.supported_profiles;
   }
 
   static const bool& supports_clear_lead(const media::VideoCodecInfo& input) {

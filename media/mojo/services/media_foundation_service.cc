@@ -322,7 +322,7 @@ absl::optional<CdmCapability> GetCdmCapability(
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION) && BUILDFLAG(ENABLE_PLATFORM_HEVC)
       // Dolby Vision on Windows only support profile 4/5/8 now.
       if (video_codec == VideoCodec::kDolbyVision) {
-        video_codec_info.video_codec_profiles = {
+        video_codec_info.supported_profiles = {
             VideoCodecProfile::DOLBYVISION_PROFILE4,
             VideoCodecProfile::DOLBYVISION_PROFILE5,
             VideoCodecProfile::DOLBYVISION_PROFILE8};

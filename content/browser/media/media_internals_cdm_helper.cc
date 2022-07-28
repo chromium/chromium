@@ -81,7 +81,7 @@ base::Value CdmCapabilityToValue(const media::CdmCapability& cdm_capability) {
   for (const auto& [video_codec, video_codec_info] :
        cdm_capability.video_codecs) {
     auto codec_name = media::GetCodecName(video_codec);
-    auto& profiles = video_codec_info.video_codec_profiles;
+    auto& profiles = video_codec_info.supported_profiles;
     video_codec_dict->SetPath(codec_name, VideoCodecProfilesToValue(profiles));
   }
 

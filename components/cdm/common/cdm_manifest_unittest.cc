@@ -104,7 +104,7 @@ void CheckVideoCodecs(const media::CdmCapability::VideoCodecMap& actual,
 
     // As the manifest only specifies codecs and not profiles, the list of
     // profiles should be empty to indicate that all profiles are supported.
-    EXPECT_TRUE(video_codec_info.video_codec_profiles.empty());
+    EXPECT_TRUE(video_codec_info.supported_profiles.empty());
   }
 }
 

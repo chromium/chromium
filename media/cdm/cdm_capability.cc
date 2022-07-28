@@ -11,21 +11,21 @@ namespace media {
 VideoCodecInfo::VideoCodecInfo() = default;
 
 VideoCodecInfo::VideoCodecInfo(
-    base::flat_set<VideoCodecProfile> video_codec_profiles,
+    base::flat_set<VideoCodecProfile> supported_profiles,
     bool supports_clear_lead)
-    : video_codec_profiles(std::move(video_codec_profiles)),
+    : supported_profiles(std::move(supported_profiles)),
       supports_clear_lead(supports_clear_lead) {}
 
 VideoCodecInfo::VideoCodecInfo(
-    base::flat_set<VideoCodecProfile> video_codec_profiles)
-    : video_codec_profiles(std::move(video_codec_profiles)) {}
+    base::flat_set<VideoCodecProfile> supported_profiles)
+    : supported_profiles(std::move(supported_profiles)) {}
 
 VideoCodecInfo::VideoCodecInfo(const VideoCodecInfo& other) = default;
 
 VideoCodecInfo::~VideoCodecInfo() = default;
 
 bool operator==(const VideoCodecInfo& lhs, const VideoCodecInfo& rhs) {
-  return lhs.video_codec_profiles == rhs.video_codec_profiles &&
+  return lhs.supported_profiles == rhs.supported_profiles &&
          lhs.supports_clear_lead == rhs.supports_clear_lead;
 }
 

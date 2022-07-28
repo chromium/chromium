@@ -18,16 +18,16 @@ namespace media {
 
 struct MEDIA_EXPORT VideoCodecInfo {
   VideoCodecInfo();
-  VideoCodecInfo(base::flat_set<VideoCodecProfile> video_codec_profiles,
+  VideoCodecInfo(base::flat_set<VideoCodecProfile> supported_profiles,
                  bool supports_clear_lead);
-  VideoCodecInfo(base::flat_set<VideoCodecProfile> video_codec_profiles);
+  explicit VideoCodecInfo(base::flat_set<VideoCodecProfile> supported_profiles);
   VideoCodecInfo(const VideoCodecInfo& other);
   ~VideoCodecInfo();
 
   // Set of VideoCodecProfiles supported. If no profiles for a
   // particular codec are specified, then it is assumed that all
   // profiles are supported by the CDM.
-  base::flat_set<VideoCodecProfile> video_codec_profiles;
+  base::flat_set<VideoCodecProfile> supported_profiles;
 
   // We default to supports_clear_lead = true because in majority of cases,
   // the CDM does support clear lead. In a few cases, (b/231241602), we

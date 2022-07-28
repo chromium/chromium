@@ -11,7 +11,7 @@ struct VideoCodecInfo {
   // Array of VideoCodecProfiles supported. If no profiles for a
   // particular codec are specified, then it is assumed that all
   // profiles are supported by the CDM.
-  array<VideoCodecProfile> video_codec_profiles;
+  array<VideoCodecProfile> supported_profiles;
 
   // A boolean that contains info about whether the video codec
   // supports clear lead. This defaults to true except for specific

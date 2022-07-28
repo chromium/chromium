@@ -203,7 +203,7 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
         supported_codecs |= media::EME_CODEC_VP8;
         break;
       case media::VideoCodec::kVP9:
-        supported_codecs |= GetVP9Codecs(video_codec_info.video_codec_profiles);
+        supported_codecs |= GetVP9Codecs(video_codec_info.supported_profiles);
         break;
       case media::VideoCodec::kAV1:
         supported_codecs |= media::EME_CODEC_AV1;
@@ -215,8 +215,7 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
       case media::VideoCodec::kHEVC:
-        supported_codecs |=
-            GetHevcCodecs(video_codec_info.video_codec_profiles);
+        supported_codecs |= GetHevcCodecs(video_codec_info.supported_profiles);
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)

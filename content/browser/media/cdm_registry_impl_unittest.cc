@@ -309,17 +309,18 @@ TEST_F(CdmRegistryImplTest, Profiles) {
            media::CdmCapability(
                {AudioCodec::kVorbis},
                {{VideoCodec::kVP9,
-                 {{media::VP9PROFILE_PROFILE0, media::VP9PROFILE_PROFILE2}}}},
+                 media::VideoCodecInfo({media::VP9PROFILE_PROFILE0,
+                                        media::VP9PROFILE_PROFILE2})}},
                {EncryptionScheme::kCenc}, {CdmSessionType::kTemporary}));
   auto cdm_info = cdm_registry_.GetCdmInfo(
       kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
   CdmInfo& cdm = *cdm_info;
   EXPECT_VIDEO_CODECS(VideoCodec::kVP9);
   EXPECT_TRUE(base::Contains(
-      cdm.capability->video_codecs[VideoCodec::kVP9].video_codec_profiles,
+      cdm.capability->video_codecs[VideoCodec::kVP9].supported_profiles,
       media::VP9PROFILE_PROFILE0));
   EXPECT_TRUE(base::Contains(
-      cdm.capability->video_codecs[VideoCodec::kVP9].video_codec_profiles,
+      cdm.capability->video_codecs[VideoCodec::kVP9].supported_profiles,
       media::VP9PROFILE_PROFILE2));
   EXPECT_TRUE(
       cdm.capability->video_codecs[VideoCodec::kVP9].supports_clear_lead);
