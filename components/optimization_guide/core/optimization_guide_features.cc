@@ -211,7 +211,7 @@ size_t MaxHostsForRecordingSuccessfullyCovered() {
 base::TimeDelta StoredFetchedHintsFreshnessDuration() {
   return base::Days(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching,
-      "max_store_duration_for_featured_hints_in_days", 7));
+      "max_store_duration_for_featured_hints_in_days", 1));
 }
 
 std::string GetOptimizationGuideServiceAPIKey() {
@@ -296,7 +296,7 @@ int MaxServerBloomFilterByteSize() {
 base::TimeDelta GetHostHintsFetchRefreshDuration() {
   return base::Hours(GetFieldTrialParamByFeatureAsInt(
       kRemoteOptimizationGuideFetching, "hints_fetch_refresh_duration_in_hours",
-      72));
+      1));
 }
 
 base::TimeDelta GetActiveTabsFetchRefreshDuration() {

@@ -365,7 +365,8 @@ TEST_P(HintsFetcherTest, HintsFetchSuccessfulHostsRecorded) {
     EXPECT_NEAR((base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(*value)) -
                  GetMockClock()->Now())
                     .InMinutes(),
-                base::Days(7).InMinutes(), 10);
+                features::StoredFetchedHintsFreshnessDuration().InMinutes(),
+                10);
   }
 }
 
