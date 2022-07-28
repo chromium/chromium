@@ -733,4 +733,81 @@ bool StructTraits<network::mojom::SamePartyContextDataView,
   return true;
 }
 
+network::mojom::FirstPartySetsContextType EnumTraits<
+    network::mojom::FirstPartySetsContextType,
+    net::FirstPartySetsContextType>::ToMojom(net::FirstPartySetsContextType
+                                                 input) {
+  switch (input) {
+    case net::FirstPartySetsContextType::kUnknown:
+      return network::mojom::FirstPartySetsContextType::kUnknown;
+    case net::FirstPartySetsContextType::kTopFrameIgnoredMixed:
+      return network::mojom::FirstPartySetsContextType::kTopFrameIgnoredMixed;
+    case net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous:
+      return network::mojom::FirstPartySetsContextType::
+          kTopFrameIgnoredHomogeneous;
+    case net::FirstPartySetsContextType::kTopResourceMismatch:
+      return network::mojom::FirstPartySetsContextType::kTopResourceMismatch;
+    case net::FirstPartySetsContextType::kTopResourceMatchMixed:
+      return network::mojom::FirstPartySetsContextType::kTopResourceMatchMixed;
+    case net::FirstPartySetsContextType::kHomogeneous:
+      return network::mojom::FirstPartySetsContextType::kHomogeneous;
+  }
+  NOTREACHED();
+  return static_cast<network::mojom::FirstPartySetsContextType>(input);
+}
+
+bool EnumTraits<network::mojom::FirstPartySetsContextType,
+                net::FirstPartySetsContextType>::
+    FromMojom(network::mojom::FirstPartySetsContextType input,
+              net::FirstPartySetsContextType* out) {
+  switch (input) {
+    case network::mojom::FirstPartySetsContextType::kUnknown:
+      *out = net::FirstPartySetsContextType::kUnknown;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopFrameIgnoredMixed:
+      *out = net::FirstPartySetsContextType::kTopFrameIgnoredMixed;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous:
+      *out = net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopResourceMismatch:
+      *out = net::FirstPartySetsContextType::kTopResourceMismatch;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kTopResourceMatchMixed:
+      *out = net::FirstPartySetsContextType::kTopResourceMatchMixed;
+      return true;
+    case network::mojom::FirstPartySetsContextType::kHomogeneous:
+      *out = net::FirstPartySetsContextType::kHomogeneous;
+      return true;
+  }
+  return false;
+}
+
+bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
+                  net::FirstPartySetMetadata>::
+    Read(network::mojom::FirstPartySetMetadataDataView metadata,
+         net::FirstPartySetMetadata* out_metadata) {
+  net::SamePartyContext context;
+  if (!metadata.ReadContext(&context))
+    return false;
+
+  absl::optional<net::SchemefulSite> frame_owner;
+  if (!metadata.ReadFrameOwner(&frame_owner))
+    return false;
+
+  absl::optional<net::SchemefulSite> top_frame_owner;
+  if (!metadata.ReadTopFrameOwner(&top_frame_owner))
+    return false;
+
+  net::FirstPartySetsContextType context_type;
+  if (!metadata.ReadFirstPartySetsContextType(&context_type))
+    return false;
+
+  *out_metadata = net::FirstPartySetMetadata(
+      context, base::OptionalOrNullptr(frame_owner),
+      base::OptionalOrNullptr(top_frame_owner), context_type);
+
+  return true;
+}
+
 }  // namespace mojo

@@ -10,6 +10,7 @@
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom-shared.h"
@@ -575,6 +576,52 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.access_result.access_semantics,
             copied.access_result.access_semantics);
   EXPECT_EQ(original.cause, copied.cause);
+}
+
+TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetsContextType) {
+  for (auto type : {
+           net::FirstPartySetsContextType::kUnknown,
+           net::FirstPartySetsContextType::kTopFrameIgnoredMixed,
+           net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
+           net::FirstPartySetsContextType::kTopResourceMismatch,
+           net::FirstPartySetsContextType::kTopResourceMatchMixed,
+           net::FirstPartySetsContextType::kHomogeneous,
+       }) {
+    net::FirstPartySetsContextType roundtrip;
+    ASSERT_TRUE(
+        mojo::test::SerializeAndDeserialize<mojom::FirstPartySetsContextType>(
+            type, roundtrip));
+    EXPECT_EQ(type, roundtrip);
+  }
+}
+
+TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetMetadata) {
+  net::SchemefulSite frame_owner(GURL("https://frame.test"));
+  net::SchemefulSite top_frame_owner(GURL("https://top_frame.test"));
+
+  auto make_metadata = [&]() {
+    // Use non-default values to ensure serialization/deserialization works
+    // properly.
+    return net::FirstPartySetMetadata(
+        net::SamePartyContext(net::SamePartyContext::Type::kSameParty),
+        &frame_owner, &top_frame_owner,
+        net::FirstPartySetsContextType::kHomogeneous);
+  };
+
+  net::FirstPartySetMetadata original = make_metadata();
+  net::FirstPartySetMetadata round_tripped;
+
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              network::mojom::FirstPartySetMetadata>(original, round_tripped));
+
+  EXPECT_EQ(round_tripped.context(),
+            net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
+  EXPECT_EQ(round_tripped.frame_owner(), frame_owner);
+  EXPECT_EQ(round_tripped.top_frame_owner(), top_frame_owner);
+  EXPECT_EQ(round_tripped.first_party_sets_context_type(),
+            net::FirstPartySetsContextType::kHomogeneous);
+
+  EXPECT_EQ(round_tripped, make_metadata());
 }
 
 // TODO: Add tests for CookiePriority, more extensive CookieOptions ones

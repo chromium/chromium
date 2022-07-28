@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/public/cpp/cookie_manager_shared_mojom_traits.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
@@ -380,6 +381,41 @@ struct StructTraits<network::mojom::SamePartyContextDataView,
 
   static bool Read(network::mojom::SamePartyContextDataView bundle,
                    net::SamePartyContext* out);
+};
+
+template <>
+struct EnumTraits<network::mojom::FirstPartySetsContextType,
+                  net::FirstPartySetsContextType> {
+  static network::mojom::FirstPartySetsContextType ToMojom(
+      net::FirstPartySetsContextType input);
+  static bool FromMojom(network::mojom::FirstPartySetsContextType input,
+                        net::FirstPartySetsContextType* output);
+};
+
+template <>
+struct StructTraits<network::mojom::FirstPartySetMetadataDataView,
+                    net::FirstPartySetMetadata> {
+  static net::SamePartyContext context(const net::FirstPartySetMetadata& m) {
+    return m.context();
+  }
+
+  static absl::optional<net::SchemefulSite> frame_owner(
+      const net::FirstPartySetMetadata& m) {
+    return m.frame_owner();
+  }
+
+  static absl::optional<net::SchemefulSite> top_frame_owner(
+      const net::FirstPartySetMetadata& m) {
+    return m.top_frame_owner();
+  }
+
+  static net::FirstPartySetsContextType first_party_sets_context_type(
+      const net::FirstPartySetMetadata& m) {
+    return m.first_party_sets_context_type();
+  }
+
+  static bool Read(network::mojom::FirstPartySetMetadataDataView metadata,
+                   net::FirstPartySetMetadata* out);
 };
 
 }  // namespace mojo

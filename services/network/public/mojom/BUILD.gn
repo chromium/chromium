@@ -860,6 +860,11 @@ mojom("cookies_mojom") {
           mojom = "network.mojom.CookieSourceScheme"
           cpp = "::net::CookieSourceScheme"
         },
+        {
+          mojom = "network.mojom.FirstPartySetMetadata"
+          cpp = "::net::FirstPartySetMetadata"
+          move_only = true
+        },
       ]
       traits_headers =
           [ "//services/network/public/cpp/cookie_manager_mojom_traits.h" ]
