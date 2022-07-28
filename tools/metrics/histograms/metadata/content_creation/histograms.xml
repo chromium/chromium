@@ -478,7 +478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated{Requested}"
-    enum="BooleanSuccess" expires_after="2022-08-10">
+    enum="BooleanSuccess" expires_after="2023-01-27">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
