@@ -575,8 +575,9 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
   auto test_filter = GetTestFilter();
 
   for (const auto& policy : test_cases) {
-    SCOPED_TRACE(::testing::Message() << "Policy name: " << policy.first);
     for (const auto& test_case : policy.second) {
+      SCOPED_TRACE(::testing::Message()
+                   << "Policy test case name: " << test_case->name());
       if (chunk_info != nullptr) {
         const size_t policy_name_hash = base::PersistentHash(policy.first);
         const size_t chunk_index = policy_name_hash % chunk_info->num_chunks;
