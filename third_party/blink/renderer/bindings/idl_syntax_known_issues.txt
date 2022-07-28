@@ -21,13 +21,3 @@
 #     When an argument 'name' of operation 'get' in an interface 'MyInterface'
 #     violates a rule 'MyRule':
 #     MyRule MyInterface.get.name
-
-# crbug.com/1201026
-# third_party/blink/renderer/modules/indexeddb/idb_database.idl
-NonOptionalArgumentAfterOptionalOrVariadicArgument IDBDatabase.transaction
-# third_party/blink/renderer/core/frame/window.idl
-NonOptionalArgumentAfterOptionalOrVariadicArgument Window.open
-
-# TODO(canonmukai): File a bug.
-# third_party/blink/renderer/modules/canvas/htmlcanvas/canvas_context_creation_attributes_module.idl
-ExtendedAttributesApplicableToTypesForIdlType CanvasContextCreationAttributesModule
