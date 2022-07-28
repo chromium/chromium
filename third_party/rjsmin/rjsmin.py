@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # -*- coding: ascii -*-
 r"""
 =====================
