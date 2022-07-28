@@ -53,11 +53,8 @@ const char kStartupUrl1[] = "http://start1.com";
 const char kStartupUrl2[] = "http://start2.com";
 const char kStartupUrl3[] = "http://start3.com";
 
-bool ListValueContainsUrl(const base::Value* list, const GURL& url) {
-  if (!list || !list->is_list())
-    return false;
-
-  for (const base::Value& i : list->GetListDeprecated()) {
+bool ListValueContainsUrl(const base::Value::List& list, const GURL& url) {
+  for (const base::Value& i : list) {
     const std::string* url_text = i.GetIfString();
     if (url_text && url == *url_text)
       return true;
@@ -150,7 +147,7 @@ class SettingsResetPromptModelTest
     // Also make sure that the |startup_url| is now in the list of URLs in the
     // preferences.
     ASSERT_TRUE(ListValueContainsUrl(
-        prefs_->GetList(prefs::kURLsToRestoreOnStartup), startup_gurl));
+        prefs_->GetValueList(prefs::kURLsToRestoreOnStartup), startup_gurl));
   }
 
   // Returns a model with a mock config that will return negative IDs for every
