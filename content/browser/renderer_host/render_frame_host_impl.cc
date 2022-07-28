@@ -5189,8 +5189,11 @@ void RenderFrameHostImpl::RunJavaScriptDialog(
   // TODO(https://crbug.com/1262022): Have to check fenced frames explicitly
   // since they are not yet implemented with MPArch. Once the transition from
   // shadow DOM to MPArch is complete, remove the last part of the condition.
+  // TODO(crbug.com/1244137): We have to check portals explicitly as they are
+  // considered primary. Remove check after we migrate portals to MPArch.
   if (!IsActive() || !GetPage().IsPrimary() ||
-      frame_tree_node_->IsInFencedFrameTree()) {
+      frame_tree_node_->IsInFencedFrameTree() ||
+      frame_tree()->delegate()->IsPortal()) {
     std::move(ipc_response_callback).Run(/*success=*/false, std::u16string());
     return;
   }
@@ -5220,7 +5223,8 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
   // since they are not yet implemented with MPArch. Once the transition from
   // shadow DOM to MPArch is complete, remove the last part of the condition.
   if (!IsActive() || !GetPage().IsPrimary() ||
-      frame_tree_node_->IsInFencedFrameTree()) {
+      frame_tree_node_->IsInFencedFrameTree() ||
+      frame_tree()->delegate()->IsPortal()) {
     std::move(ipc_response_callback).Run(/*success=*/false);
     return;
   }
