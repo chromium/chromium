@@ -41122,6 +41122,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="User clicks on the auto-play video."/>
 </enum>
 
+<enum name="FeedbackAppPostSubmitAction">
+  <int value="0" label="kSendNewReport"/>
+  <int value="1" label="kClickDoneButton"/>
+  <int value="2" label="kOpenExploreApp"/>
+  <int value="3" label="kOpenDiagnosticsApp"/>
+  <int value="4" label="kOpenChromebookCommunity"/>
+  <int value="5" label="kCloseFeedbackApp"/>
+</enum>
+
 <!-- This must be kept current with feedback_uploader.cc's
      FeedbackReportSendingResult -->
 

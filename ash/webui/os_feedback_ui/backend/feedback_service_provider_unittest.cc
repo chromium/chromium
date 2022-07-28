@@ -6,11 +6,13 @@
 
 #include <utility>
 
+#include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/backend/os_feedback_delegate.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom-test-utils.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +25,12 @@ namespace {
 
 constexpr char kPageUrl[] = "https://www.google.com/";
 constexpr char kSignedInUserEmail[] = "test_user_email@test.com";
+constexpr char kFeedbackAppPostSubmitAction[] =
+    "Feedback.ChromeOSApp.PostSubmitAction";
 const std::vector<uint8_t> kFakePngData = {42, 22, 26, 13, 7, 16, 8, 2};
+
+using FeedbackAppPostSubmitAction =
+    ash::os_feedback_ui::mojom::FeedbackAppPostSubmitAction;
 
 }  // namespace
 
@@ -133,6 +140,20 @@ TEST_F(FeedbackServiceProviderTest, SendReportSuccess) {
   report->feedback_context = FeedbackContext::New();
   auto status = SendReportAndWait(std::move(report));
   EXPECT_EQ(status, SendReportStatus::kSuccess);
+}
+
+// Test that expected metric is triggered when RecordPostSubmitAction
+// is called.
+TEST_F(FeedbackServiceProviderTest, RecordPostSubmitAction) {
+  base::HistogramTester histogram_tester_;
+  histogram_tester_.ExpectBucketCount(
+      kFeedbackAppPostSubmitAction,
+      FeedbackAppPostSubmitAction::kClickDoneButton, 0);
+  provider_.RecordPostSubmitAction(
+      FeedbackAppPostSubmitAction::kClickDoneButton);
+  histogram_tester_.ExpectBucketCount(
+      kFeedbackAppPostSubmitAction,
+      FeedbackAppPostSubmitAction::kClickDoneButton, 1);
 }
 
 }  // namespace feedback

@@ -4,7 +4,7 @@
 
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 
-import {FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
+import {FeedbackAppPostSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -45,6 +45,9 @@ export class FakeFeedbackServiceProvider {
       /** @type {number} */
       openSystemInfoDialog: 0,
     };
+
+    /** @type {?FeedbackAppPostSubmitAction} */
+    this.postSubmitAction_ = null;
   }
 
   /**
@@ -178,5 +181,23 @@ export class FakeFeedbackServiceProvider {
    */
   openSystemInfoDialog() {
     this.callCounts_.openSystemInfoDialog++;
+  }
+
+  /**
+   * @param {!FeedbackAppPostSubmitAction} action
+   * @return {boolean}
+   */
+  isRecordPostSubmitActionCalled(action) {
+    return this.postSubmitAction_ === action;
+  }
+
+  /**
+   * @param {!FeedbackAppPostSubmitAction} action
+   * @return {void}
+   */
+  recordPostSubmitAction(action) {
+    if (this.postSubmitAction_ === null) {
+      this.postSubmitAction_ = action;
+    }
   }
 }

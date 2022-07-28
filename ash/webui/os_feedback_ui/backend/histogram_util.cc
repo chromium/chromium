@@ -11,4 +11,9 @@ void EmitFeedbackAppOpenDuration(const base::TimeDelta& time_elapsed) {
   base::UmaHistogramLongTimes100(kFeedbackAppOpenDuration, time_elapsed);
 }
 
+void EmitFeedbackAppPostSubmitAction(
+    mojom::FeedbackAppPostSubmitAction action) {
+  base::UmaHistogramEnumeration(kFeedbackAppPostSubmitAction, action);
+}
+
 }  // namespace ash::os_feedback_ui::metrics

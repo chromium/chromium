@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_HISTOGRAM_UTIL_H_
 #define ASH_WEBUI_OS_FEEDBACK_UI_BACKEND_HISTOGRAM_UTIL_H_
 
+#include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
+
 namespace base {
 class TimeDelta;
 }  // namespace base
@@ -12,8 +14,12 @@ class TimeDelta;
 namespace ash::os_feedback_ui::metrics {
 
 constexpr char kFeedbackAppOpenDuration[] = "Feedback.ChromeOSApp.OpenDuration";
+constexpr char kFeedbackAppPostSubmitAction[] =
+    "Feedback.ChromeOSApp.PostSubmitAction";
 
 void EmitFeedbackAppOpenDuration(const base::TimeDelta& time_elapsed);
+
+void EmitFeedbackAppPostSubmitAction(mojom::FeedbackAppPostSubmitAction action);
 
 }  // namespace ash::os_feedback_ui::metrics
 

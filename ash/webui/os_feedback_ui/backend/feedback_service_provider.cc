@@ -68,6 +68,11 @@ void FeedbackServiceProvider::OpenSystemInfoDialog() {
   feedback_delegate_->OpenSystemInfoDialog();
 }
 
+void FeedbackServiceProvider::RecordPostSubmitAction(
+    os_feedback_ui::mojom::FeedbackAppPostSubmitAction action) {
+  os_feedback_ui::metrics::EmitFeedbackAppPostSubmitAction(action);
+}
+
 void FeedbackServiceProvider::BindInterface(
     mojo::PendingReceiver<os_feedback_ui::mojom::FeedbackServiceProvider>
         receiver) {
