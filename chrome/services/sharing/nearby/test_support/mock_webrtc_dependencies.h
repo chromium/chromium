@@ -6,6 +6,7 @@
 #define CHROME_SERVICES_SHARING_NEARBY_TEST_SUPPORT_MOCK_WEBRTC_DEPENDENCIES_H_
 
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -16,11 +17,10 @@
 namespace sharing {
 
 // Mimics browser process and network service implementations.
-class MockWebRtcDependencies
-    : public network::mojom::P2PSocketManager,
-      public location::nearby::connections::mojom::MdnsResponderFactory,
-      public sharing::mojom::IceConfigFetcher,
-      public sharing::mojom::WebRtcSignalingMessenger {
+class MockWebRtcDependencies : public network::mojom::P2PSocketManager,
+                               public sharing::mojom::MdnsResponderFactory,
+                               public sharing::mojom::IceConfigFetcher,
+                               public sharing::mojom::WebRtcSignalingMessenger {
  public:
   MockWebRtcDependencies();
   ~MockWebRtcDependencies() override;
@@ -48,7 +48,7 @@ class MockWebRtcDependencies
                mojo::PendingReceiver<network::mojom::P2PSocket> receiver),
               (override));
 
-  // location::nearby::connections::mojom::MdnsResponderFactory overrides:
+  // sharing::mojom::MdnsResponderFactory overrides:
   MOCK_METHOD(
       void,
       CreateMdnsResponder,
@@ -81,8 +81,8 @@ class MockWebRtcDependencies
               (override));
 
   mojo::Receiver<network::mojom::P2PSocketManager> socket_manager_{this};
-  mojo::Receiver<location::nearby::connections::mojom::MdnsResponderFactory>
-      mdns_responder_factory_{this};
+  mojo::Receiver<sharing::mojom::MdnsResponderFactory> mdns_responder_factory_{
+      this};
   mojo::Receiver<sharing::mojom::IceConfigFetcher> ice_config_fetcher_{this};
   mojo::Receiver<sharing::mojom::WebRtcSignalingMessenger> messenger_{this};
 };

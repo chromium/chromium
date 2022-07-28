@@ -258,8 +258,7 @@ std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
 
   const mojo::SharedRemote<network::mojom::P2PSocketManager>& socket_manager =
       connections.socket_manager();
-  const mojo::SharedRemote<
-      location::nearby::connections::mojom::MdnsResponderFactory>&
+  const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
       mdns_responder_factory = connections.mdns_responder_factory();
   const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
       ice_config_fetcher = connections.ice_config_fetcher();

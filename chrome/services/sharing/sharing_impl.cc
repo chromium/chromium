@@ -26,7 +26,7 @@ SharingImpl::~SharingImpl() {
 }
 
 void SharingImpl::Connect(
-    NearbyConnectionsDependenciesPtr deps,
+    NearbyDependenciesPtr deps,
     mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
     mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
         decoder_receiver) {

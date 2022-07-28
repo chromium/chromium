@@ -10,6 +10,7 @@
 
 #include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "base/callback_forward.h"
@@ -52,7 +53,7 @@ class NearbyConnections : public mojom::NearbyConnections {
   // destroy this instance.
   NearbyConnections(
       mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
-      mojom::NearbyConnectionsDependenciesPtr dependencies,
+      sharing::mojom::NearbyDependenciesPtr dependencies,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       base::OnceClosure on_disconnect);
 
@@ -74,8 +75,7 @@ class NearbyConnections : public mojom::NearbyConnections {
       const {
     return socket_manager_;
   }
-  const mojo::SharedRemote<
-      location::nearby::connections::mojom::MdnsResponderFactory>&
+  const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
   mdns_responder_factory() const {
     return mdns_responder_factory_;
   }
@@ -203,7 +203,7 @@ class NearbyConnections : public mojom::NearbyConnections {
   // to sequence binding the Remote.
   mojo::SharedRemote<bluetooth::mojom::Adapter> bluetooth_adapter_;
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
-  mojo::SharedRemote<location::nearby::connections::mojom::MdnsResponderFactory>
+  mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>
       mdns_responder_factory_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>

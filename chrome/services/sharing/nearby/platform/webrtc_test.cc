@@ -106,7 +106,7 @@ class WebRtcMediumTest : public ::testing::Test {
   testing::NiceMock<sharing::MockWebRtcDependencies> mojo_impl_;
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> socket_manager_;
-  mojo::SharedRemote<location::nearby::connections::mojom::MdnsResponderFactory>
+  mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>
       mdns_responder_factory_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger> messenger_;

@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "ash/services/nearby/public/mojom/webrtc.mojom.h"
 #include "ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom.h"
 #include "base/synchronization/lock.h"
@@ -36,8 +37,7 @@ class WebRtcMedium : public api::WebRtcMedium {
   WebRtcMedium(
       const mojo::SharedRemote<network::mojom::P2PSocketManager>&
           socket_manager,
-      const mojo::SharedRemote<
-          location::nearby::connections::mojom::MdnsResponderFactory>&
+      const mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>&
           mdns_responder_factory,
       const mojo::SharedRemote<sharing::mojom::IceConfigFetcher>&
           ice_config_fetcher,
@@ -92,7 +92,7 @@ class WebRtcMedium : public api::WebRtcMedium {
       peer_connection_factory_ GUARDED_BY(peer_connection_factory_lock_);
 
   mojo::SharedRemote<network::mojom::P2PSocketManager> p2p_socket_manager_;
-  mojo::SharedRemote<location::nearby::connections::mojom::MdnsResponderFactory>
+  mojo::SharedRemote<sharing::mojom::MdnsResponderFactory>
       mdns_responder_factory_;
   mojo::SharedRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher_;
   mojo::SharedRemote<sharing::mojom::WebRtcSignalingMessenger>

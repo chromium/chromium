@@ -27,7 +27,7 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
-#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
+#include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
@@ -71,8 +71,7 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
  private:
   // mojom::Sharing:
   void Connect(
-      location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
-          deps,
+      sharing::mojom::NearbyDependenciesPtr deps,
       mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
           decoder_receiver) override {
@@ -101,15 +100,13 @@ class FakeSharingMojoService : public sharing::mojom::Sharing {
 
 class NearbyProcessManagerImplTest : public testing::Test {
  public:
-  class FakeNearbyConnectionsDependenciesProvider
-      : public NearbyConnectionsDependenciesProvider {
+  class FakeNearbyDependenciesProvider : public NearbyDependenciesProvider {
    public:
-    FakeNearbyConnectionsDependenciesProvider() = default;
-    ~FakeNearbyConnectionsDependenciesProvider() override = default;
+    FakeNearbyDependenciesProvider() = default;
+    ~FakeNearbyDependenciesProvider() override = default;
 
-    // NearbyConnectionsDependenciesProvider:
-    location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
-    GetDependencies() override {
+    // NearbyDependenciesProvider:
+    sharing::mojom::NearbyDependenciesPtr GetDependencies() override {
       fake_adapter_ = std::make_unique<bluetooth::FakeAdapter>();
       webrtc_dependencies_ =
           std::make_unique<sharing::MockWebRtcDependencies>();
@@ -136,22 +133,20 @@ class NearbyProcessManagerImplTest : public testing::Test {
                   net::IPAddress(192, 168, 86, 75), 44444)),
           tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
 
-      return location::nearby::connections::mojom::
-          NearbyConnectionsDependencies::New(
-              fake_adapter_->adapter_.BindNewPipeAndPassRemote(),
-              location::nearby::connections::mojom::WebRtcDependencies::New(
-                  webrtc_dependencies_->socket_manager_
-                      .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->mdns_responder_factory_
-                      .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->ice_config_fetcher_
-                      .BindNewPipeAndPassRemote(),
-                  webrtc_dependencies_->messenger_.BindNewPipeAndPassRemote()),
-              location::nearby::connections::mojom::WifiLanDependencies::New(
-                  std::move(cros_network_config_remote),
-                  std::move(firewall_hole_factory_remote),
-                  std::move(tcp_socket_factory_remote)),
-              location::nearby::api::LogMessage::Severity::kInfo);
+      return sharing::mojom::NearbyDependencies::New(
+          fake_adapter_->adapter_.BindNewPipeAndPassRemote(),
+          sharing::mojom::WebRtcDependencies::New(
+              webrtc_dependencies_->socket_manager_.BindNewPipeAndPassRemote(),
+              webrtc_dependencies_->mdns_responder_factory_
+                  .BindNewPipeAndPassRemote(),
+              webrtc_dependencies_->ice_config_fetcher_
+                  .BindNewPipeAndPassRemote(),
+              webrtc_dependencies_->messenger_.BindNewPipeAndPassRemote()),
+          sharing::mojom::WifiLanDependencies::New(
+              std::move(cros_network_config_remote),
+              std::move(firewall_hole_factory_remote),
+              std::move(tcp_socket_factory_remote)),
+          location::nearby::api::LogMessage::Severity::kInfo);
     }
 
     void PrepareForShutdown() override { prepare_for_shutdown_count_++; }
@@ -197,7 +192,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
     return num_process_stopped_calls_;
   }
 
-  FakeNearbyConnectionsDependenciesProvider* fake_deps_provider() {
+  FakeNearbyDependenciesProvider* fake_deps_provider() {
     return &fake_deps_provider_;
   }
 
@@ -232,7 +227,7 @@ class NearbyProcessManagerImplTest : public testing::Test {
   size_t num_process_stopped_calls_ = 0u;
 
   FakeSharingMojoService fake_sharing_mojo_service_;
-  FakeNearbyConnectionsDependenciesProvider fake_deps_provider_;
+  FakeNearbyDependenciesProvider fake_deps_provider_;
 
   std::unique_ptr<NearbyProcessManager> nearby_process_manager_;
 

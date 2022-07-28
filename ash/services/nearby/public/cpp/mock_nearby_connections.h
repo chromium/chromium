@@ -6,6 +6,7 @@
 #define ASH_SERVICES_NEARBY_PUBLIC_CPP_MOCK_NEARBY_CONNECTIONS_H_
 
 #include "ash/services/nearby/public/mojom/nearby_connections.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"

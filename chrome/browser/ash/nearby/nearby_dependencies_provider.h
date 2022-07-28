@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
-#define CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
+#ifndef CHROME_BROWSER_ASH_NEARBY_NEARBY_DEPENDENCIES_PROVIDER_H_
+#define CHROME_BROWSER_ASH_NEARBY_NEARBY_DEPENDENCIES_PROVIDER_H_
 
 #include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "base/memory/ref_counted.h"
@@ -18,30 +18,25 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-namespace bluetooth {
-namespace mojom {
+namespace bluetooth::mojom {
 class Adapter;
-}
-}  // namespace bluetooth
+}  // namespace bluetooth::mojom
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 
 class BluetoothAdapterManager;
 
-// Provides dependencies required to initialize Nearby Connections. Implemented
-// as a KeyedService because WebRTC dependencies are linked to the user's
-// identity.
-class NearbyConnectionsDependenciesProvider : public KeyedService {
+// Provides dependencies required to initialize NearbyPresence and
+// NearbyConnections. Implemented as a KeyedService because WebRTC
+// dependencies are linked to the user's identity.
+class NearbyDependenciesProvider : public KeyedService {
  public:
-  NearbyConnectionsDependenciesProvider(
-      Profile* profile,
-      signin::IdentityManager* identity_manager);
-  ~NearbyConnectionsDependenciesProvider() override;
+  NearbyDependenciesProvider(Profile* profile,
+                             signin::IdentityManager* identity_manager);
+  ~NearbyDependenciesProvider() override;
 
   // Note: Returns null during session shutdown.
-  virtual location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr
-  GetDependencies();
+  virtual sharing::mojom::NearbyDependenciesPtr GetDependencies();
 
   virtual void PrepareForShutdown();
 
@@ -52,16 +47,14 @@ class NearbyConnectionsDependenciesProvider : public KeyedService {
   void Shutdown() override;
 
   // Test-only constructor.
-  NearbyConnectionsDependenciesProvider();
+  NearbyDependenciesProvider();
 
   mojo::PendingRemote<bluetooth::mojom::Adapter>
   GetBluetoothAdapterPendingRemote();
 
-  location::nearby::connections::mojom::WebRtcDependenciesPtr
-  GetWebRtcDependencies();
+  sharing::mojom::WebRtcDependenciesPtr GetWebRtcDependencies();
 
-  location::nearby::connections::mojom::WifiLanDependenciesPtr
-  GetWifiLanDependencies();
+  sharing::mojom::WifiLanDependenciesPtr GetWifiLanDependencies();
 
   network::mojom::NetworkContext* GetNetworkContext();
 
@@ -73,7 +66,6 @@ class NearbyConnectionsDependenciesProvider : public KeyedService {
   signin::IdentityManager* identity_manager_ = nullptr;
 };
 
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
-#endif  // CHROME_BROWSER_ASH_NEARBY_NEARBY_CONNECTIONS_DEPENDENCIES_PROVIDER_H_
+#endif  // CHROME_BROWSER_ASH_NEARBY_NEARBY_DEPENDENCIES_PROVIDER_H_

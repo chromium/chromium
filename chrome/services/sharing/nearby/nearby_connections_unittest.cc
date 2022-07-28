@@ -15,6 +15,7 @@
 #include "ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -226,16 +227,16 @@ class NearbyConnectionsTest : public testing::Test {
                 net::IPAddress(192, 168, 86, 75), 44444)),
         tcp_socket_factory_remote.InitWithNewPipeAndPassReceiver());
 
-    auto webrtc_dependencies = mojom::WebRtcDependencies::New(
+    auto webrtc_dependencies = sharing::mojom::WebRtcDependencies::New(
         webrtc_dependencies_.socket_manager_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.mdns_responder_factory_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.ice_config_fetcher_.BindNewPipeAndPassRemote(),
         webrtc_dependencies_.messenger_.BindNewPipeAndPassRemote());
-    auto wifilan_dependencies =
-        mojom::WifiLanDependencies::New(std::move(cros_network_config_remote),
-                                        std::move(firewall_hole_factory_remote),
-                                        std::move(tcp_socket_factory_remote));
-    auto dependencies = mojom::NearbyConnectionsDependencies::New(
+    auto wifilan_dependencies = sharing::mojom::WifiLanDependencies::New(
+        std::move(cros_network_config_remote),
+        std::move(firewall_hole_factory_remote),
+        std::move(tcp_socket_factory_remote));
+    auto dependencies = sharing::mojom::NearbyDependencies::New(
         bluetooth_adapter_.adapter_.BindNewPipeAndPassRemote(),
         std::move(webrtc_dependencies), std::move(wifilan_dependencies),
         location::nearby::api::LogMessage::Severity::kInfo);

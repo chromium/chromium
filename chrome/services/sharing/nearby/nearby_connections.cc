@@ -94,7 +94,7 @@ NearbyConnections& NearbyConnections::GetInstance() {
 
 NearbyConnections::NearbyConnections(
     mojo::PendingReceiver<mojom::NearbyConnections> nearby_connections,
-    mojom::NearbyConnectionsDependenciesPtr dependencies,
+    sharing::mojom::NearbyDependenciesPtr dependencies,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     base::OnceClosure on_disconnect)
     : nearby_connections_(this, std::move(nearby_connections)),

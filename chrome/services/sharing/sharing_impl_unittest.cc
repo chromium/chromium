@@ -11,6 +11,7 @@
 #include "ash/services/nearby/public/cpp/fake_tcp_socket_factory.h"
 #include "ash/services/nearby/public/mojom/firewall_hole.mojom.h"
 #include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "ash/services/nearby/public/mojom/sharing.mojom.h"
 #include "ash/services/nearby/public/mojom/tcp_socket_factory.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -89,8 +90,7 @@ class SharingImplTest : public testing::Test {
           decoder_receiver,
       mojo::PendingRemote<bluetooth::mojom::Adapter> bluetooth_adapter,
       mojo::PendingRemote<network::mojom::P2PSocketManager> socket_manager,
-      mojo::PendingRemote<
-          location::nearby::connections::mojom::MdnsResponderFactory>
+      mojo::PendingRemote<sharing::mojom::MdnsResponderFactory>
           mdns_responder_factory,
       mojo::PendingRemote<sharing::mojom::IceConfigFetcher> ice_config_fetcher,
       mojo::PendingRemote<sharing::mojom::WebRtcSignalingMessenger>
@@ -101,20 +101,16 @@ class SharingImplTest : public testing::Test {
           firewall_hole_factory,
       mojo::PendingRemote<sharing::mojom::TcpSocketFactory>
           tcp_socket_factory) {
-    auto webrtc_dependencies =
-        location::nearby::connections::mojom::WebRtcDependencies::New(
-            std::move(socket_manager), std::move(mdns_responder_factory),
-            std::move(ice_config_fetcher),
-            std::move(webrtc_signaling_messenger));
-    auto wifilan_dependencies =
-        location::nearby::connections::mojom::WifiLanDependencies::New(
-            std::move(cros_network_config), std::move(firewall_hole_factory),
-            std::move(tcp_socket_factory));
-    auto dependencies =
-        location::nearby::connections::mojom::NearbyConnectionsDependencies::
-            New(std::move(bluetooth_adapter), std::move(webrtc_dependencies),
-                std::move(wifilan_dependencies),
-                location::nearby::api::LogMessage::Severity::kInfo);
+    auto webrtc_dependencies = sharing::mojom::WebRtcDependencies::New(
+        std::move(socket_manager), std::move(mdns_responder_factory),
+        std::move(ice_config_fetcher), std::move(webrtc_signaling_messenger));
+    auto wifilan_dependencies = sharing::mojom::WifiLanDependencies::New(
+        std::move(cros_network_config), std::move(firewall_hole_factory),
+        std::move(tcp_socket_factory));
+    auto dependencies = sharing::mojom::NearbyDependencies::New(
+        std::move(bluetooth_adapter), std::move(webrtc_dependencies),
+        std::move(wifilan_dependencies),
+        location::nearby::api::LogMessage::Severity::kInfo);
     base::RunLoop run_loop;
     service_->Connect(std::move(dependencies), std::move(connections_receiver),
                       std::move(decoder_receiver));

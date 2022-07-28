@@ -10,7 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
-#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider.h"
+#include "chrome/browser/ash/nearby/nearby_dependencies_provider.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/sharing_mojo_service.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,16 +36,15 @@ void OnSharingShutDownComplete(
 
 // static
 std::unique_ptr<NearbyProcessManager> NearbyProcessManagerImpl::Factory::Create(
-    NearbyConnectionsDependenciesProvider*
-        nearby_connections_dependencies_provider,
+    NearbyDependenciesProvider* nearby_dependencies_provider,
     std::unique_ptr<base::OneShotTimer> timer) {
   if (g_test_factory) {
-    return g_test_factory->BuildInstance(
-        nearby_connections_dependencies_provider, std::move(timer));
+    return g_test_factory->BuildInstance(nearby_dependencies_provider,
+                                         std::move(timer));
   }
 
   return base::WrapUnique(new NearbyProcessManagerImpl(
-      nearby_connections_dependencies_provider, std::move(timer),
+      nearby_dependencies_provider, std::move(timer),
       base::BindRepeating(&sharing::LaunchSharing)));
 }
 
@@ -85,13 +84,11 @@ NearbyProcessManagerImpl::NearbyReferenceImpl::GetNearbySharingDecoder() const {
 }
 
 NearbyProcessManagerImpl::NearbyProcessManagerImpl(
-    NearbyConnectionsDependenciesProvider*
-        nearby_connections_dependencies_provider,
+    NearbyDependenciesProvider* nearby_dependencies_provider,
     std::unique_ptr<base::OneShotTimer> timer,
     const base::RepeatingCallback<
         mojo::PendingRemote<sharing::mojom::Sharing>()>& sharing_binder)
-    : nearby_connections_dependencies_provider_(
-          nearby_connections_dependencies_provider),
+    : nearby_dependencies_provider_(nearby_dependencies_provider),
       shutdown_debounce_timer_(std::move(timer)),
       sharing_binder_(sharing_binder) {}
 
@@ -143,8 +140,8 @@ void NearbyProcessManagerImpl::Shutdown() {
 bool NearbyProcessManagerImpl::AttemptToBindToUtilityProcess() {
   DCHECK(!sharing_ && !connections_ && !decoder_);
 
-  location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr deps =
-      nearby_connections_dependencies_provider_->GetDependencies();
+  sharing::mojom::NearbyDependenciesPtr deps =
+      nearby_dependencies_provider_->GetDependencies();
 
   if (!deps)
     return false;
@@ -269,7 +266,7 @@ void NearbyProcessManagerImpl::ShutDownProcess(
   sharing->ShutDown(base::BindOnce(&OnSharingShutDownComplete,
                                    std::move(sharing_), std::move(connections_),
                                    std::move(decoder_)));
-  nearby_connections_dependencies_provider_->PrepareForShutdown();
+  nearby_dependencies_provider_->PrepareForShutdown();
 }
 
 void NearbyProcessManagerImpl::NotifyProcessStopped(

@@ -38,8 +38,7 @@ class SharingImpl : public mojom::Sharing {
   using NearbyConnectionsMojom =
       location::nearby::connections::mojom::NearbyConnections;
   using NearbyConnections = location::nearby::connections::NearbyConnections;
-  using NearbyConnectionsDependenciesPtr =
-      location::nearby::connections::mojom::NearbyConnectionsDependenciesPtr;
+  using NearbyDependenciesPtr = sharing::mojom::NearbyDependenciesPtr;
 
   SharingImpl(mojo::PendingReceiver<mojom::Sharing> receiver,
               scoped_refptr<base::SequencedTaskRunner> io_task_runner);
@@ -49,7 +48,7 @@ class SharingImpl : public mojom::Sharing {
 
   // mojom::Sharing:
   void Connect(
-      NearbyConnectionsDependenciesPtr deps,
+      NearbyDependenciesPtr deps,
       mojo::PendingReceiver<NearbyConnectionsMojom> connections_receiver,
       mojo::PendingReceiver<sharing::mojom::NearbySharingDecoder>
           decoder_receiver) override;

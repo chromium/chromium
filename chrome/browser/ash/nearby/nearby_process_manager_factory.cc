@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
 
-#include "chrome/browser/ash/nearby/nearby_connections_dependencies_provider_factory.h"
+#include "chrome/browser/ash/nearby/nearby_dependencies_provider_factory.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -56,7 +56,7 @@ NearbyProcessManagerFactory::NearbyProcessManagerFactory()
     : BrowserContextKeyedServiceFactory(
           "NearbyProcessManager",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(NearbyConnectionsDependenciesProviderFactory::GetInstance());
+  DependsOn(NearbyDependenciesProviderFactory::GetInstance());
 }
 
 NearbyProcessManagerFactory::~NearbyProcessManagerFactory() = default;
@@ -71,8 +71,7 @@ KeyedService* NearbyProcessManagerFactory::BuildServiceInstanceFor(
   if (CanBeLaunchedForProfile(profile) ||
       g_bypass_primary_user_check_for_testing) {
     return NearbyProcessManagerImpl::Factory::Create(
-               NearbyConnectionsDependenciesProviderFactory::GetForProfile(
-                   profile))
+               NearbyDependenciesProviderFactory::GetForProfile(profile))
         .release();
   }
 

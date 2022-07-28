@@ -18,7 +18,7 @@
 namespace ash {
 namespace nearby {
 
-class NearbyConnectionsDependenciesProvider;
+class NearbyDependenciesProvider;
 
 // NearbyProcessManager implementation, which is implemented as a KeyedService
 // because its dependencies are associated with the current user.
@@ -34,8 +34,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   class Factory {
    public:
     static std::unique_ptr<NearbyProcessManager> Create(
-        NearbyConnectionsDependenciesProvider*
-            nearby_connections_dependencies_provider,
+        NearbyDependenciesProvider* nearby_dependencies_provider,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
     static void SetFactoryForTesting(Factory* factory);
@@ -43,8 +42,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
    private:
     virtual std::unique_ptr<NearbyProcessManager> BuildInstance(
-        NearbyConnectionsDependenciesProvider*
-            nearby_connections_dependencies_provider,
+        NearbyDependenciesProvider* nearby_dependencies_provider,
         std::unique_ptr<base::OneShotTimer> timer) = 0;
   };
 
@@ -79,8 +77,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   };
 
   NearbyProcessManagerImpl(
-      NearbyConnectionsDependenciesProvider*
-          nearby_connections_dependencies_provider,
+      NearbyDependenciesProvider* nearby_dependencies_provider,
       std::unique_ptr<base::OneShotTimer> timer,
       const base::RepeatingCallback<
           mojo::PendingRemote<sharing::mojom::Sharing>()>& sharing_binder);
@@ -101,8 +98,7 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   void ShutDownProcess(NearbyProcessShutdownReason shutdown_reason);
   void NotifyProcessStopped(NearbyProcessShutdownReason shutdown_reason);
 
-  NearbyConnectionsDependenciesProvider*
-      nearby_connections_dependencies_provider_;
+  NearbyDependenciesProvider* nearby_dependencies_provider_;
   std::unique_ptr<base::OneShotTimer> shutdown_debounce_timer_;
   base::RepeatingCallback<mojo::PendingRemote<sharing::mojom::Sharing>()>
       sharing_binder_;
