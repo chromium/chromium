@@ -55,7 +55,7 @@ class ProcessProxy : public base::RefCountedThreadSafe<ProcessProxy> {
       const OutputCallback& callback);
 
   // Sends some data to the process.
-  bool Write(const std::string& text);
+  void Write(const std::string& text, base::OnceCallback<void(bool)> callback);
 
   // Closes the process.
   void Close();

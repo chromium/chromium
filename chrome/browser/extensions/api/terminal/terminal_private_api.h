@@ -126,6 +126,7 @@ class TerminalPrivateSendInputFunction : public ExtensionFunction {
  private:
   void SendInputOnRegistryTaskRunner(const std::string& terminal_id,
                                      const std::string& input);
+  void OnSendInput(bool success);
   void RespondOnUIThread(bool success);
 };
 

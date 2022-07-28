@@ -61,7 +61,9 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessProxyRegistry {
                    const OutputCallback& callback,
                    std::string* id);
   // Sends data to the process identified by |id|.
-  bool SendInput(const std::string& id, const std::string& data);
+  void SendInput(const std::string& id,
+                 const std::string& data,
+                 base::OnceCallback<void(bool)> callback);
   // Stops the process identified by |id|.
   bool CloseProcess(const std::string& id);
   // Reports terminal resize to process proxy.

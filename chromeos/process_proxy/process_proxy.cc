@@ -23,6 +23,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
@@ -157,11 +158,20 @@ void ProcessProxy::Close() {
   CloseFdPair(pt_pair_);
 }
 
-bool ProcessProxy::Write(const std::string& text) {
+void ProcessProxy::Write(const std::string& text,
+                         base::OnceCallback<void(bool)> callback) {
   if (!process_launched_)
-    return false;
+    return std::move(callback).Run(false);
 
-  return base::WriteFileDescriptor(pt_pair_[PT_MASTER_FD], text);
+  // Use ThreadPool for write to avoid deadlock on registry TaskRunner.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(
+          [](int fd, const std::string& text) {
+            return base::WriteFileDescriptor(fd, text);
+          },
+          pt_pair_[PT_MASTER_FD], text),
+      std::move(callback));
 }
 
 bool ProcessProxy::OnTerminalResize(int width, int height) {

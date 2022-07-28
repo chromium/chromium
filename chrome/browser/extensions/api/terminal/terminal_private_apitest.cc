@@ -70,8 +70,8 @@ class CatProcess {
 
     chromeos::ProcessProxyRegistry::GetTaskRunner()->PostTask(
         FROM_HERE, base::BindLambdaForTesting([&]() {
-          chromeos::ProcessProxyRegistry::Get()->SendInput(this->process_id_,
-                                                           data);
+          chromeos::ProcessProxyRegistry::Get()->SendInput(
+              this->process_id_, data, base::DoNothing());
         }));
 
     run_loop.Run();

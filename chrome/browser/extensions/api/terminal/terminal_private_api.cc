@@ -514,9 +514,12 @@ ExtensionFunction::ResponseAction TerminalPrivateSendInputFunction::Run() {
 void TerminalPrivateSendInputFunction::SendInputOnRegistryTaskRunner(
     const std::string& terminal_id,
     const std::string& text) {
-  bool success =
-      chromeos::ProcessProxyRegistry::Get()->SendInput(terminal_id, text);
+  chromeos::ProcessProxyRegistry::Get()->SendInput(
+      terminal_id, text,
+      base::BindOnce(&TerminalPrivateSendInputFunction::OnSendInput, this));
+}
 
+void TerminalPrivateSendInputFunction::OnSendInput(bool success) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&TerminalPrivateSendInputFunction::RespondOnUIThread, this,

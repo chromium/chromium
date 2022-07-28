@@ -111,7 +111,9 @@ class RegistryTestRunner : public TestRunner {
 
   void StartRegistryTest(ProcessProxyRegistry* registry) override {
     for (int i = 0; i < kTestLineNum; i++) {
-      EXPECT_TRUE(registry->SendInput(id_, kTestLineToSend));
+      registry->SendInput(id_, kTestLineToSend, base::BindOnce([](bool result) {
+                            EXPECT_TRUE(result);
+                          }));
     }
   }
 
@@ -173,7 +175,8 @@ class RegistryNotifiedOnProcessExitTestRunner : public TestRunner {
   }
 
   void StartRegistryTest(ProcessProxyRegistry* registry) override {
-    EXPECT_TRUE(registry->SendInput(id_, "p"));
+    registry->SendInput(
+        id_, "p", base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
   }
 
  private:
