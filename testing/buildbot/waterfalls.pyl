@@ -3400,7 +3400,7 @@
           'mac_12_arm64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_13_main',
+          'xcode_14_beta',
           'xctest',
         ],
         'test_suites': {
