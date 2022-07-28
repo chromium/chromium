@@ -8,7 +8,8 @@ import unittest
 
 import mock
 
-from core.perf_benchmark_with_profiling import PerfBenchmarkWithProfiling
+from contrib.power.perf_benchmark_with_profiling \
+    import PerfBenchmarkWithProfiling
 from telemetry.core import android_platform
 from telemetry.internal.backends import android_browser_backend_settings
 from telemetry.internal.backends.chrome import android_browser_finder
@@ -18,7 +19,6 @@ from telemetry.testing import options_for_unittests
 
 
 class PerfBenchmarkForTesting(PerfBenchmarkWithProfiling):
-
   def GetSamplingFrequencyHz(self):
     return 1234
 
@@ -27,9 +27,7 @@ class PerfBenchmarkForTesting(PerfBenchmarkWithProfiling):
 
 
 class PerfBenchmarkWithProfilingTest(unittest.TestCase):
-
   def assertEqualIgnoringWhitespace(self, actual, expected):
-
     def removeWhitespace(text):
       return re.sub(r"\s+", "", text, flags=re.UNICODE)
 
