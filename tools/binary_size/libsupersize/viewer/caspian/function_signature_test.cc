@@ -250,5 +250,21 @@ TEST(AnalyzeTest, ParseFunctionSignature) {
         "::value_word_list");
   check("", "foo::Bar<Z<Y> >::foo<bar>", "(abc)", "::var<baz>",
         "foo::Bar<>::foo<>::var<>");
+
+  // Attributes
+  sig = "std::make_unique[abi:v15000]<Foo>(Bar const*&)";
+  ret = caspian::ParseCpp(sig, &owned_strings);
+  EXPECT_EQ("std::make_unique<>", std::get<2>(ret));
+  EXPECT_EQ("std::make_unique<Foo>", std::get<1>(ret));
+  EXPECT_EQ(sig, std::get<0>(ret));
+
+  // Make sure operator[] is not considered an attribute.
+  check("", "foo::operator[]", "(abc)");
+
+  sig = "foo<char []>::operator[][abi:v1500]<Bar[99]>()";
+  ret = caspian::ParseCpp(sig, &owned_strings);
+  EXPECT_EQ("foo<>::operator[]<>", std::get<2>(ret));
+  EXPECT_EQ("foo<char []>::operator[]<Bar[99]>", std::get<1>(ret));
+  EXPECT_EQ(sig, std::get<0>(ret));
 }
 }  // namespace

@@ -173,6 +173,28 @@ size_t FindReturnValueSpace(std::string_view name, size_t paren_idx) {
   return space_idx;
 }
 
+void StripAttributes(std::string* name) {
+  // Clang attribute. E.g.: std::allocator<Foo[6]>construct[abi:100]<Bar[7]>()
+  size_t start_idx = 0;
+  while (true) {
+    start_idx = name->find('[', start_idx);
+    if (start_idx == std::string::npos || start_idx + 1 == name->length()) {
+      return;
+    }
+    char next_char = (*name)[start_idx + 1];
+    // Ignore operator[] and arrays.
+    if (next_char == ']' || (next_char >= '0' && next_char <= '9')) {
+      ++start_idx;
+      continue;
+    }
+    size_t end_idx = name->find(']', start_idx);
+    if (end_idx == std::string::npos) {
+      return;
+    }
+    name->erase(start_idx, end_idx - start_idx + 1);
+  }
+}
+
 std::string StripTemplateArgs(std::string_view name_view) {
   // TODO(jaspercb): Could pass in |owned_strings| to avoid this allocation.
   std::string name(name_view);
@@ -322,6 +344,9 @@ std::tuple<std::string_view, std::string_view, std::string_view> ParseCpp(
     size_t space_idx = FindReturnValueSpace(full_name, left_paren_idx);
     std::string name_no_params =
         std::string(Slice(full_name, space_idx + 1, left_paren_idx));
+
+    StripAttributes(&name_no_params);
+
     // Special case for top-level lambdas.
     if (EndsWith(name_no_params, "}::_FUN")) {
       // Don't use |name_no_params| in here since prior _idx will be off if
@@ -336,7 +361,8 @@ std::tuple<std::string_view, std::string_view, std::string_view> ParseCpp(
       return ParseCpp(owned_strings->back(), owned_strings);
     }
 
-    name = name_no_params + std::string(full_name.substr(right_paren_idx + 1));
+    name = std::move(name_no_params);
+    name.append(full_name.substr(right_paren_idx + 1));
     name_view = name;
     full_name = full_name.substr(space_idx + 1);
   } else {

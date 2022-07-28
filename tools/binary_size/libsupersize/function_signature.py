@@ -96,6 +96,25 @@ def _FindReturnValueSpace(name, paren_idx):
   return space_idx
 
 
+def _StripAttributes(name):
+  # Clang attribute. E.g.: std::allocator<Foo[6]>construct[abi:100]<Bar[7]>()
+  start_idx = 0
+  while True:
+    start_idx = name.find('[', start_idx, len(name) - 1)
+    if start_idx == -1:
+      break
+    next_char = name[start_idx + 1]
+    # Ignore operator[] and arrays.
+    if next_char in ']0123456789':
+      start_idx += 1
+      continue
+    end_idx = name.find(']', start_idx)
+    if end_idx == -1:
+      break
+    name = name[:start_idx] + name[end_idx + 1:]
+  return name
+
+
 def _StripTemplateArgs(name):
   last_right_idx = None
   while True:
@@ -207,6 +226,8 @@ def Parse(name):
     assert right_paren_idx > left_paren_idx
     space_idx = _FindReturnValueSpace(name, left_paren_idx)
     name_no_params = name[space_idx + 1:left_paren_idx]
+    name_no_params = _StripAttributes(name_no_params)
+
     # Special case for top-level lambdas.
     if name_no_params.endswith('}::_FUN'):
       # Don't use |name_no_params| in here since prior _idx will be off if
