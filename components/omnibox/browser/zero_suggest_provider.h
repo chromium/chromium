@@ -20,10 +20,6 @@
 class AutocompleteProviderListener;
 class PrefRegistrySimple;
 
-namespace base {
-class Value;
-}
-
 namespace network {
 class SimpleURLLoader;
 }
@@ -67,11 +63,11 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                                       const AutocompleteInput& input,
                                       bool bypass_request_eligibility_checks);
 
-  // Called on Start(), confirms whether zero-prefix suggestions are allowed in
+  // Called in Start(), confirms whether zero-prefix suggestions are allowed in
   // the given context and logs eligibility UMA metrics. `result_type_to_run`
   // must not be nullptr. It will be set to the result type that should be
   // generated for the given context.
-  // Must be called exactly once, on Start(), otherwise the meaning of the
+  // Must be called exactly once, in Start(), otherwise the meaning of the
   // the metrics being logged would change.
   // This method is static to avoid depending on the provider state.
   static bool AllowZeroPrefixSuggestions(
@@ -125,55 +121,58 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   void RecordDeletionResult(bool success) override;
 
   // Called when the non-prefetch network request has completed.
-  // `result_type` is bound to this callback and indicate the result type being
-  // received in this callback.
-  void OnURLLoadComplete(ResultType result_type,
+  // `input` and `result_type` are bound to this callback. The former is the
+  // input for which the request was made and the latter indicates the result
+  // type being received in this callback.
+  void OnURLLoadComplete(const AutocompleteInput& input,
+                         ResultType result_type,
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
   // Called when the prefetch network request has completed.
   // `input` and `result_type` are bound to this callback. The former is the
-  // input the request was made for and the latter indicates the result type
-  // being received in this callback.
+  // input for which the request was made and the latter indicates the result
+  // type being received in this callback.
   void OnPrefetchURLLoadComplete(const AutocompleteInput& input,
                                  ResultType result_type,
                                  const network::SimpleURLLoader* source,
                                  std::unique_ptr<std::string> response_body);
 
-  // Called when the remote response is received. Stores the response json in
-  // the user prefs, if successfully parsed and if applicable based on
-  // |result_type|.
+  // Called in OnURLLoadComplete() or OnPrefetchURLLoadComplete() when the
+  // remote response is received with the input for which the request was made.
   //
-  // Returns the successfully parsed response if it is eligible to be converted
-  // to |matches_| or nullptr otherwise.
-  std::unique_ptr<base::Value> StoreRemoteResponse(
-      const std::string& response_json,
-      const AutocompleteInput& input,
-      ResultType result_type,
-      bool is_prefetch);
+  // Populates |results| with the response if it can be successfully parsed for
+  // |input|; and stores the response json in the user prefs, if applicable to
+  // |result_type|. Returns true if the response can be successfully parsed.
+  static bool StoreRemoteResponse(const std::string& response_json,
+                                  const AutocompleteProviderClient* client,
+                                  const AutocompleteInput& input,
+                                  ResultType result_type,
+                                  bool is_prefetch,
+                                  SearchSuggestionParser::Results* results);
 
-  // Called on Start().
+  // Called in Start() with an input ensured to be appropriate for zero-suggest.
   //
-  // Returns the response stored in the user prefs, if applicable based on
-  // |result_type| or nullptr otherwise.
-  std::unique_ptr<base::Value> ReadStoredResponse(ResultType result_type);
+  // Returns true if the response stored in the user prefs is applicable to
+  // |result_type| and can be successfully parsed for |input|. If so, populates
+  // |results| with the stored response.
+  static bool ReadStoredResponse(const AutocompleteProviderClient* client,
+                                 const AutocompleteInput& input,
+                                 ResultType result_type,
+                                 SearchSuggestionParser::Results* results);
 
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
       const SearchSuggestionParser::NavigationResult& navigation);
 
-  // Called on Start() with the cached response (where |matches_| is empty), or
-  // when the remote response is received and is eligible to be converted to
-  // |matches_| (where |matches_| may not be empty).
+  // Called either in Start() with |results| populated from the cached response,
+  // where |matches_| are empty; or in OnURLLoadComplete() with |results|
+  // populated from the remote response, where |matches_| may not be empty.
   //
-  // If the given response can be successfully parsed, converts it to a set of
-  // AutocompleteMatches and populates |matches_| as well as its associated
-  // metadata, if applicable. Also logs how many results were received.
-  //
-  // Returns whether the response was successfully converted to |matches_|.
-  // Note that this does not imply |matches_| were populated with the response.
-  // An empty result set in the response will clear |matches_| and return true.
-  bool ConvertResponseToAutocompleteMatches(
-      std::unique_ptr<base::Value> response);
+  // Uses |results| to populate |matches_| and its associated metadata. Also
+  // logs how many results were received. Note that an empty result set will
+  // clear |matches_|.
+  void ConvertSuggestResultsToAutocompleteMatches(
+      const SearchSuggestionParser::Results& results);
 
   // The result type that is currently being retrieved and processed for
   // non-prefetch requests.

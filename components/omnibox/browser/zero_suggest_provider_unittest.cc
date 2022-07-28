@@ -593,7 +593,7 @@ TEST_F(ZeroSuggestProviderTest, StartStop) {
   EXPECT_FALSE(provider_->matches().empty());
   // Expect that network request was sent.
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
-  // Expect the provider to have notified the provider listener.
+  // Expect the provider to not have notified the provider listener yet.
   EXPECT_FALSE(provider_did_notify_);
 
   // Make sure valid input restarts the provider.
@@ -603,7 +603,7 @@ TEST_F(ZeroSuggestProviderTest, StartStop) {
   EXPECT_FALSE(provider_->matches().empty());
   // Expect that network request was sent.
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
-  // Expect the provider to have notified the provider listener.
+  // Expect the provider to not have notified the provider listener yet.
   EXPECT_FALSE(provider_did_notify_);
 
   // Make sure invalid input stops the provider.
@@ -614,7 +614,8 @@ TEST_F(ZeroSuggestProviderTest, StartStop) {
   EXPECT_TRUE(provider_->matches().empty());
   // Expect that network request was not sent.
   EXPECT_FALSE(test_loader_factory()->IsPending(suggest_url.spec()));
-  // Expect the provider to not have notified the provider listener.
+  // Expect the provider to not have notified the provider listener since the
+  // request was invalidated.
   EXPECT_FALSE(provider_did_notify_);
 
   // Make sure valid input restarts the provider.
@@ -624,7 +625,7 @@ TEST_F(ZeroSuggestProviderTest, StartStop) {
   EXPECT_FALSE(provider_->matches().empty());
   // Expect that network request was sent.
   EXPECT_TRUE(test_loader_factory()->IsPending(suggest_url.spec()));
-  // Expect the provider to not have notified the provider listener.
+  // Expect the provider to not have notified the provider listener yet.
   EXPECT_FALSE(provider_did_notify_);
 }
 
@@ -702,7 +703,8 @@ TEST_F(ZeroSuggestProviderTest,
   // has been explicitly disabled (`omit_asynchronous_matches_ == true`).
   ASSERT_FALSE(test_loader_factory()->IsPending(suggest_url.spec()));
 
-  // Expect the provider not to have notified the provider listener.
+  // Expect the provider to not have notified the provider listener since the
+  // request was not sent.
   EXPECT_FALSE(provider_did_notify_);
 }
 
@@ -741,8 +743,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResults) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(provider_->done());
 
-  // Expect the provider to have notified the provider listener.
-  EXPECT_TRUE(provider_did_notify_);
+  // Expect the provider to not have notified the provider listener when using
+  // the cached response.
+  EXPECT_FALSE(provider_did_notify_);
 
   // Expect correct histograms to have been logged.
   histogram_tester.ExpectTotalCount(
@@ -896,7 +899,8 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
         "Omnibox.ZeroSuggestProvider.NoURL.Prefetch",
         4 /*REMOTE_RESPONSE_CACHED*/, 1);
 
-    // Expect the provider not to have notified the provider listener.
+    // Expect the provider to not have notified the provider listener since the
+    // matches were not updated.
     EXPECT_FALSE(provider_did_notify_);
 
     // Expect the same empty results after the response has been handled.
@@ -954,8 +958,9 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestPrefetchThenNTPOnFocus) {
         "Omnibox.ZeroSuggestProvider.NoURL.NonPrefetch",
         4 /*REMOTE_RESPONSE_CACHED*/, 1);
 
-    // Expect the provider to have notified the provider listener.
-    EXPECT_TRUE(provider_did_notify_);
+    // Expect the provider to not have notified the provider listener since the
+    // matches were not updated.
+    EXPECT_FALSE(provider_did_notify_);
 
     // Expect the same results after the response has been handled.
     ASSERT_EQ(3U, provider_->matches().size());  // 3 results, no verbatim match
