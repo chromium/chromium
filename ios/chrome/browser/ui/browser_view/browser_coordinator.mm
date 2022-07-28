@@ -1211,7 +1211,13 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
 }
 
 - (void)showSendTabToSelfUI:(const GURL&)url title:(NSString*)title {
-  DCHECK(!_sendTabToSelfCoordinator);
+  // TODO(crbug.com/1347821): Make this DCHECK(!_sendTabToSelfCoordinator)
+  // once SendTabToSelfCoordinator is aware of sign-in being aborted.
+  if (_sendTabToSelfCoordinator) {
+    [_sendTabToSelfCoordinator stop];
+    _sendTabToSelfCoordinator = nil;
+  }
+
   _sendTabToSelfCoordinator = [[SendTabToSelfCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
