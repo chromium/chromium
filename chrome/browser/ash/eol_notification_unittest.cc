@@ -18,7 +18,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -32,7 +31,6 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
   ~EolNotificationTest() override = default;
 
   void SetUp() override {
-    DBusThreadManager::Initialize();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BrowserWithTestWindowTest::SetUp();
@@ -60,7 +58,6 @@ class EolNotificationTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
     ConciergeClient::Shutdown();
     UpdateEngineClient::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
   void DismissNotification() {

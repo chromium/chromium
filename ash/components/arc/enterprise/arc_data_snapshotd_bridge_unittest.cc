@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/arc/arc_data_snapshotd_client.h"
 #include "chromeos/ash/components/dbus/arc/fake_arc_data_snapshotd_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,14 +91,11 @@ void RunAll(ArcDataSnapshotdBridge* bridge, bool expected_result) {
 class ArcDataSnapshotdBridgeTest : public testing::Test {
  protected:
   ArcDataSnapshotdBridgeTest() {
-    chromeos::DBusThreadManager::Initialize();
-    EXPECT_TRUE(chromeos::DBusThreadManager::Get()->IsUsingFakes());
     ash::ArcDataSnapshotdClient::InitializeFake();
   }
 
   ~ArcDataSnapshotdBridgeTest() override {
     ash::ArcDataSnapshotdClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   ash::FakeArcDataSnapshotdClient* dbus_client() {

@@ -31,7 +31,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
@@ -60,7 +59,6 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
     ArcSessionManager::SetUiEnabledForTesting(false);
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     network_handler_test_helper_ =
         std::make_unique<ash::NetworkHandlerTestHelper>();
@@ -126,7 +124,6 @@ class ArcSettingsServiceTest : public BrowserWithTestWindowTest {
     ash::StatsReportingController::Shutdown();
     network_handler_test_helper_.reset();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void SetInstances() {

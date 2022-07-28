@@ -25,7 +25,6 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,7 +62,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     // Initialize objects needed by `UpdateRequiredScreen`.
     wizard_context_ = std::make_unique<WizardContext>();
     fake_view_ = std::make_unique<FakeUpdateRequiredScreenHandler>();
-    DBusThreadManager::Initialize();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
@@ -98,7 +96,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     network_portal_detector::Shutdown();
     network_handler_test_helper_.reset();
     UpdateEngineClient::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
  protected:

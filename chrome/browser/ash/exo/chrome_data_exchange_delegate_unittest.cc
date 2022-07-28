@@ -29,7 +29,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/exo/shell_surface_util.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_task_environment.h"
@@ -73,7 +72,6 @@ void CaptureUTF16(std::string* result,
 class ChromeDataExchangeDelegateTest : public testing::Test {
  public:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
     ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
@@ -123,7 +121,6 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ChunneldClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:

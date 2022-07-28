@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,15 +53,11 @@ class ArcDataRemoverTest : public testing::Test {
   ArcDataRemoverTest& operator=(const ArcDataRemoverTest&) = delete;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
     test_upstart_client_ = std::make_unique<TestUpstartClient>();
     prefs::RegisterProfilePrefs(prefs_.registry());
   }
 
-  void TearDown() override {
-    test_upstart_client_.reset();
-    chromeos::DBusThreadManager::Shutdown();
-  }
+  void TearDown() override { test_upstart_client_.reset(); }
 
   PrefService* prefs() { return &prefs_; }
 

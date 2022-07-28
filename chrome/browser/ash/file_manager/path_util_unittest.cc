@@ -48,7 +48,6 @@
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -329,8 +328,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
       AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345"));
   profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
 
-  // Initialize DBUS and running container.
-  chromeos::DBusThreadManager::Initialize();
+  // Initialize D-Bus clients.
   ash::ChunneldClient::InitializeFake();
   ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
@@ -509,7 +507,6 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   ash::SeneschalClient::Shutdown();
   ash::ConciergeClient::Shutdown();
   ash::ChunneldClient::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
 }
 
 TEST_F(FileManagerPathUtilTest, ExtractMountNameFileSystemNameFullPath) {
@@ -816,7 +813,6 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveLegacy) {
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
-  chromeos::DBusThreadManager::Initialize();
   ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
   ash::SeneschalClient::InitializeFake();
@@ -832,6 +828,10 @@ TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_MyDriveArcvm) {
                  "MyDrive/a/b/c"),
             url);
   EXPECT_TRUE(requires_sharing);
+
+  ash::SeneschalClient::Shutdown();
+  ash::ConciergeClient::Shutdown();
+  ash::CiceroneClient::Shutdown();
 }
 
 TEST_F(FileManagerPathUtilConvertUrlTest, ConvertPathToArcUrl_ShareCache) {

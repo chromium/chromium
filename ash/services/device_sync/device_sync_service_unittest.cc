@@ -55,7 +55,6 @@
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -755,7 +754,6 @@ class DeviceSyncServiceTest
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
-    DBusThreadManager::Initialize();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     base::RunLoop().RunUntilIdle();
 
@@ -887,7 +885,6 @@ class DeviceSyncServiceTest
     DeviceSyncImpl::Factory::SetCustomFactory(nullptr);
 
     network_handler_test_helper_.reset();
-    DBusThreadManager::Shutdown();
   }
 
   // Creates and initializes |device_sync_|. Done here instead of in SetUp()

@@ -37,7 +37,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -822,7 +821,6 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   constexpr char kFalse[] = "false";
   constexpr char kTrue[] = "true";
 
-  chromeos::DBusThreadManager::Initialize();
   ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
   auto upstart_client = std::make_unique<ash::FakeUpstartClient>();
@@ -860,7 +858,6 @@ TEST_F(ArcPolicyBridgeTest, DisableAppsInSnapshot) {
   upstart_client.reset();
   arc_session_manager.reset();
   ash::ConciergeClient::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
 }
 
 TEST_P(ArcPolicyBridgeAffiliatedTest, ApkCacheEnabledTest) {

@@ -28,7 +28,6 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/remove_user_delegate.h"
@@ -140,7 +139,6 @@ class UserManagerTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
-    chromeos::DBusThreadManager::Initialize();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     ResetUserManager();
@@ -162,7 +160,6 @@ class UserManagerTest : public testing::Test {
 
     base::RunLoop().RunUntilIdle();
     ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   ChromeUserManagerImpl* GetChromeUserManager() const {

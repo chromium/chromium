@@ -7,7 +7,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,7 +26,6 @@ class PumpkinInstallerTest : public testing::Test {
         ::features::kExperimentalAccessibilityDictationWithPumpkin);
     installer_ = std::make_unique<PumpkinInstaller>();
 
-    chromeos::DBusThreadManager::Initialize();
     chromeos::DlcserviceClient::InitializeFake();
     fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
         chromeos::DlcserviceClient::Get());
@@ -35,7 +33,6 @@ class PumpkinInstallerTest : public testing::Test {
 
   void TearDown() override {
     installer_.reset();
-    chromeos::DBusThreadManager::Shutdown();
     chromeos::DlcserviceClient::Shutdown();
   }
 

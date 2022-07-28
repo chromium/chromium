@@ -22,7 +22,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/arc/fake_arc_data_snapshotd_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -163,9 +162,6 @@ class FakeSnapshotSessionController : public SnapshotSessionController {
 class ArcDataSnapshotdManagerBasicTest : public testing::Test {
  protected:
   ArcDataSnapshotdManagerBasicTest() {
-    // Initialize fake D-Bus client.
-    chromeos::DBusThreadManager::Initialize();
-    EXPECT_TRUE(chromeos::DBusThreadManager::Get()->IsUsingFakes());
     ash::ArcDataSnapshotdClient::InitializeFake();
 
     fake_user_manager_ = new user_manager::FakeUserManager();
@@ -194,7 +190,6 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
 
   ~ArcDataSnapshotdManagerBasicTest() override {
     ash::ArcDataSnapshotdClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void ExpectStartDaemon(bool success,

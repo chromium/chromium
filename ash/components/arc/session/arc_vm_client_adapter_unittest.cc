@@ -52,7 +52,6 @@
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "components/user_manager/user_names.h"
@@ -351,7 +350,6 @@ class ArcVmClientAdapterTest : public testing::Test,
     logging::SetMinLogLevel(-1);
 
     // Create and set new fake clients every time to reset clients' status.
-    chromeos::DBusThreadManager::Initialize();
     test_debug_daemon_client_ = std::make_unique<TestDebugDaemonClient>();
     chromeos::DebugDaemonClient::SetInstanceForTest(
         test_debug_daemon_client_.get());
@@ -366,7 +364,6 @@ class ArcVmClientAdapterTest : public testing::Test,
     ash::ConciergeClient::Shutdown();
     chromeos::DebugDaemonClient::SetInstanceForTest(nullptr);
     test_debug_daemon_client_.reset();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void SetUp() override {

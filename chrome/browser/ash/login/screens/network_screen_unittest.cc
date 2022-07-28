@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
 #include "chrome/browser/ash/login/screens/mock_network_screen.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -37,9 +36,6 @@ class NetworkScreenUnitTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    // Initialize the thread manager.
-    DBusThreadManager::Initialize();
-
     // Configure the browser to use Hands-Off Enrollment.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
@@ -59,7 +55,6 @@ class NetworkScreenUnitTest : public testing::Test {
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
     network_screen_.reset();
-    DBusThreadManager::Shutdown();
   }
 
  protected:

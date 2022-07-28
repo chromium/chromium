@@ -22,7 +22,6 @@
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/proxy/ui_proxy_config_service.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/network_types.mojom-shared.h"
@@ -41,7 +40,6 @@ namespace {
 class VersionUpdaterTest : public testing::Test {
  public:
   VersionUpdaterTest() {
-    chromeos::DBusThreadManager::Initialize();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     cros_network_config_test_helper_ =
         std::make_unique<network_config::CrosNetworkConfigTestHelper>(false);
@@ -63,7 +61,6 @@ class VersionUpdaterTest : public testing::Test {
     network_profile_handler_.reset();
     ui_proxy_config_service_.reset();
     UpdateEngineClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:

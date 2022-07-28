@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
@@ -66,13 +65,11 @@ class EnrollmentScreenUnitTest : public testing::Test {
     TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
     chromeos::system::StatisticsProvider::SetTestProvider(
         &statistics_provider_);
-    DBusThreadManager::Initialize();
     policy::EnrollmentRequisitionManager::Initialize();
   }
 
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
-    DBusThreadManager::Shutdown();
     TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 

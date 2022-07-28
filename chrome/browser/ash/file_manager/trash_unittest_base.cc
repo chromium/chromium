@@ -16,7 +16,6 @@
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/browser/test/test_file_system_context.h"
 
@@ -62,7 +61,6 @@ void TrashBaseTest::SetUp() {
   downloads_dir_ = my_files_dir_.Append("Downloads");
   ASSERT_TRUE(base::CreateDirectory(downloads_dir_));
 
-  chromeos::DBusThreadManager::Initialize();
   ash::ChunneldClient::InitializeFake();
   ash::CiceroneClient::InitializeFake();
   ash::ConciergeClient::InitializeFake();
@@ -104,7 +102,6 @@ void TrashBaseTest::TearDown() {
   ash::ConciergeClient::Shutdown();
   ash::CiceroneClient::Shutdown();
   ash::ChunneldClient::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
 }
 
 drive::DriveIntegrationService* TrashBaseTest::CreateDriveIntegrationService(

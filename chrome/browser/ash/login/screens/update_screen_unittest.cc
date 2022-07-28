@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,7 +75,6 @@ class UpdateScreenUnitTest : public testing::Test {
     // Initialize objects needed by UpdateScreen.
     wizard_context_ = std::make_unique<WizardContext>();
     PowerManagerClient::InitializeFake();
-    DBusThreadManager::Initialize();
     fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
     network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
@@ -104,7 +102,6 @@ class UpdateScreenUnitTest : public testing::Test {
     network_handler_test_helper_.reset();
     PowerManagerClient::Shutdown();
     UpdateEngineClient::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
  protected:

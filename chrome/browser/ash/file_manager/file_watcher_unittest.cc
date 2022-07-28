@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +34,6 @@ class FileManagerFileWatcherTest : public testing::Test {
   // is actually shared with the main thread.
   FileManagerFileWatcherTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {
-    chromeos::DBusThreadManager::Initialize();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
     ash::SeneschalClient::InitializeFake();
@@ -45,7 +43,6 @@ class FileManagerFileWatcherTest : public testing::Test {
     ash::SeneschalClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }

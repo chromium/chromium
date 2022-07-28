@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
@@ -93,7 +92,6 @@ class NetworkPortalDetectorImplTest
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(user_manager));
 
-    DBusThreadManager::Initialize();
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     SetupNetworkHandler();
 
@@ -134,7 +132,6 @@ class NetworkPortalDetectorImplTest
     profile_ = nullptr;
     network_handler_test_helper_.reset();
     ConciergeClient::Shutdown();
-    DBusThreadManager::Shutdown();
     PortalDetectorStrategy::reset_fields_for_testing();
   }
 

@@ -48,7 +48,6 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/account_id/account_id.h"
@@ -193,7 +192,6 @@ class CrostiniManagerTest : public testing::Test {
         local_state_(std::make_unique<ScopedTestingLocalState>(
             TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
-    chromeos::DBusThreadManager::Initialize();
     ash::AnomalyDetectorClient::InitializeFake();
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
@@ -217,7 +215,6 @@ class CrostiniManagerTest : public testing::Test {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void SetUp() override {

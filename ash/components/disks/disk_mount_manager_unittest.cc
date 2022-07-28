@@ -21,7 +21,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/cros_disks/fake_cros_disks_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "dbus/message.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -522,11 +521,10 @@ class DiskMountManagerTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
   ~DiskMountManagerTest() override = default;
 
-  // Sets up test dbus thread manager and disks mount manager.
+  // Sets up test disks mount manager.
   // Initializes disk mount manager disks and mount points.
   // Adds a test observer to the disk mount manager.
   void SetUp() override {
-    DBusThreadManager::Initialize();
     CrosDisksClient::InitializeFake();
     fake_cros_disks_client_ =
         static_cast<FakeCrosDisksClient*>(CrosDisksClient::Get());
@@ -547,7 +545,6 @@ class DiskMountManagerTest : public testing::Test {
     DiskMountManager::Shutdown();
     PowerManagerClient::Shutdown();
     CrosDisksClient::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
  protected:

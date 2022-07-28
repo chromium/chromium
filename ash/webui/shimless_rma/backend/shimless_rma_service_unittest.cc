@@ -28,7 +28,6 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
@@ -124,7 +123,6 @@ class ShimlessRmaServiceTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kShimlessRMAOsUpdate}, {});
     PowerManagerClient::InitializeFake();
-    chromeos::DBusThreadManager::Initialize();
     // VersionUpdater depends on UpdateEngineClient.
     UpdateEngineClient::InitializeFake();
 
@@ -152,7 +150,6 @@ class ShimlessRmaServiceTest : public testing::Test {
     cros_network_config_test_helper_.reset();
     chromeos::LoginState::Shutdown();
     UpdateEngineClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     PowerManagerClient::Shutdown();
   }
 

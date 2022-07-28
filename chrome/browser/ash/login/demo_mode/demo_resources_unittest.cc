@@ -15,7 +15,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,14 +44,9 @@ class DemoResourcesTest : public testing::Test {
 
   ~DemoResourcesTest() override = default;
 
-  void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    InitializeCrosComponentManager();
-  }
+  void SetUp() override { InitializeCrosComponentManager(); }
 
   void TearDown() override {
-    chromeos::DBusThreadManager::Shutdown();
-
     cros_component_manager_ = nullptr;
     browser_process_platform_part_test_api_.ShutdownCrosComponentManager();
   }
