@@ -568,24 +568,13 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
   // Everything below requires this alignment.
   static_assert(internal::kAlignment == 16, "");
 
-#if PA_HAS_BUILTIN(__builtin_assume_aligned)
-  // Cast back to uintptr_t, because we need it for pointer arithmetic. Make
-  // sure it gets MTE-tagged, as we cast it later to a pointer and dereference.
-  uintptr_t address_tagged =
-      reinterpret_cast<uintptr_t>(__builtin_assume_aligned(
-          internal::SlotStartAddr2Ptr(slot_start), internal::kAlignment));
-#else
-  uintptr_t address_tagged =
-      reinterpret_cast<uintptr_t>(internal::SlotStartAddr2Ptr(slot_start));
-#endif
-
   // The pointer is always 16 bytes aligned, so its start address is always == 0
-  // % 16. Its distance to the next cacheline is `64 - ((address_tagged & 63) /
-  // 16) * 16`.
+  // % 16. Its distance to the next cacheline is
+  //   `64 - ((slot_start & 63) / 16) * 16`
   static_assert(
       internal::kPartitionCachelineSize == 64,
       "The computation below assumes that cache lines are 64 bytes long.");
-  int distance_to_next_cacheline_in_16_bytes = 4 - ((address_tagged >> 4) & 3);
+  int distance_to_next_cacheline_in_16_bytes = 4 - ((slot_start >> 4) & 3);
   int slot_size_remaining_in_16_bytes =
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
       // When BRP is on in the "previous slot" mode, this slot may have a BRP
@@ -601,8 +590,14 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
 
   static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
                                               0xbadbad00, 0xbadbad00};
-  // Already MTE-tagged above, so safe to dereference.
-  uint32_t* address_aligned = reinterpret_cast<uint32_t*>(address_tagged);
+  // Give a hint to the compiler in hope it'll vectorize the loop.
+#if PA_HAS_BUILTIN(__builtin_assume_aligned)
+  void* slot_start_tagged = __builtin_assume_aligned(
+      internal::SlotStartAddr2Ptr(slot_start), internal::kAlignment);
+#else
+  void* slot_start_tagged = internal::SlotStartAddr2Ptr(slot_start);
+#endif
+  uint32_t* address_aligned = static_cast<uint32_t*>(slot_start_tagged);
   for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
     // Clang will expand the memcpy to a 16-byte write (movups on x86).
     memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes));
