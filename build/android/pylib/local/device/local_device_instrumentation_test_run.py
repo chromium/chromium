@@ -265,6 +265,15 @@ class LocalDeviceInstrumentationTestRun(
 
         return install_helper_internal
 
+      def install_apex_helper(apex):
+        @instrumentation_tracing.no_tracing
+        @trace_event.traced
+        def install_helper_internal(d, apk_path=None):
+          # pylint: disable=unused-argument
+          d.InstallApex(apex)
+
+        return install_helper_internal
+
       def incremental_install_helper(apk, json_path, permissions):
 
         @trace_event.traced
@@ -273,6 +282,10 @@ class LocalDeviceInstrumentationTestRun(
           installer.Install(d, json_path, apk=apk, permissions=permissions)
 
         return incremental_install_helper_internal
+
+      steps.extend(
+          install_apex_helper(apex)
+          for apex in self._test_instance.additional_apexs)
 
       permissions = self._test_instance.test_apk.GetPermissions()
       if self._test_instance.test_apk_incremental_install_json:

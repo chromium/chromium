@@ -583,6 +583,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     super().__init__()
 
     self._additional_apks = []
+    self._additional_apexs = []
     self._forced_queryable_additional_apks = []
     self._instant_additional_apks = []
     self._apk_under_test = None
@@ -775,6 +776,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
       if x in args.instant_additional_apks:
         self._instant_additional_apks.append(apk)
 
+    self._additional_apexs = args.additional_apexs
+
   def _initializeDataDependencyAttributes(self, args, data_deps_delegate):
     self._data_deps = []
     self._data_deps_delegate = data_deps_delegate
@@ -905,6 +908,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def additional_apks(self):
     return self._additional_apks
+
+  @property
+  def additional_apexs(self):
+    return self._additional_apexs
 
   @property
   def apk_under_test(self):

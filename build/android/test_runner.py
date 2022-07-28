@@ -433,6 +433,13 @@ def AddInstrumentationTestOptions(parser):
 
   parser = parser.add_argument_group('instrumentation arguments')
 
+  parser.add_argument('--additional-apex',
+                      action='append',
+                      dest='additional_apexs',
+                      default=[],
+                      type=_RealPath,
+                      help='Additional apex that must be installed on '
+                      'the device when the tests are run')
   parser.add_argument(
       '--additional-apk',
       action='append', dest='additional_apks', default=[],
