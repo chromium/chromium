@@ -94,11 +94,6 @@ class PLATFORM_EXPORT ThreadScheduler {
   // Returns a task runner for kV8 tasks. Can be called from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() = 0;
 
-  // Returns a task runner which does not generate system wakeups on its own.
-  // This means that if a delayed task is posted to it, it will run when
-  // the delay expires AND another task runs.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() = 0;
-
   // Returns a task runner for compositor tasks. This is intended only to be
   // used by specific animation and rendering related tasks (e.g. animated GIFS)
   // and should not generally be used.

@@ -31,6 +31,11 @@ class PLATFORM_EXPORT MainThreadScheduler : public ThreadScheduler {
   // Handle should be destroyed before the renderer.
   [[nodiscard]] virtual std::unique_ptr<RendererPauseHandle>
   PauseScheduler() = 0;
+
+  // Returns a task runner which does not generate system wakeups on its own.
+  // This means that if a delayed task is posted to it, it will run when
+  // the delay expires AND another task runs.
+  virtual scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() = 0;
 };
 
 }  // namespace blink

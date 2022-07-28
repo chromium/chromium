@@ -85,12 +85,6 @@ CompositorThreadScheduler::CompositorTaskRunner() {
   return GetHelper().DefaultTaskRunner();
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadScheduler::NonWakingTaskRunner() {
-  NOTREACHED();
-  return nullptr;
-}
-
 bool CompositorThreadScheduler::CanExceedIdleDeadlineIfRequired() const {
   return false;
 }

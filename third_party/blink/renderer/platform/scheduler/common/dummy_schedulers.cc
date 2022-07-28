@@ -271,6 +271,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
     return nullptr;
   }
+  blink::MainThreadScheduler* ToMainThreadScheduler() override { return this; }
   void SetV8Isolate(v8::Isolate* isolate) override {}
 
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()

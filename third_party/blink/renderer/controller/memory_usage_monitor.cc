@@ -7,8 +7,8 @@
 #include "base/observer_list.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/process_heap.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
@@ -18,8 +18,10 @@ constexpr base::TimeDelta kPingInterval = base::Seconds(1);
 }
 
 MemoryUsageMonitor::MemoryUsageMonitor() {
-  timer_.SetTaskRunner(
-      Thread::MainThread()->Scheduler()->NonWakingTaskRunner());
+  MainThreadScheduler* scheduler =
+      Thread::MainThread()->Scheduler()->ToMainThreadScheduler();
+  DCHECK(scheduler);
+  timer_.SetTaskRunner(scheduler->NonWakingTaskRunner());
 }
 
 MemoryUsageMonitor::MemoryUsageMonitor(

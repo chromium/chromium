@@ -47,9 +47,6 @@ class MockIdleDeadlineScheduler final : public ThreadScheduler {
   scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
     return nullptr;
   }
-  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
-    return nullptr;
-  }
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override {
     return nullptr;
