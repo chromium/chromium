@@ -7068,11 +7068,11 @@ crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoratio
 # Sheriff 2022-07-28
 crbug.com/1348053 [ Mac12 ] virtual/scroll-unification/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
 # Flaky timeouts on WebKit Linux MSAN
-crbug.com/1348118 [ Linux ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Timeout Pass ]
+crbug.com/1348118 [ Linux ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Pass Timeout ]
 # Failure on all platforms was added before, see crbug.com/1306770
-crbug.com/1348118 http/tests/inspector-protocol/network/interception-download.js [ Timeout Failure Pass ]
-crbug.com/1348118 [ Linux ] virtual/first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Timeout Pass ]
+crbug.com/1348118 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass Timeout ]
+crbug.com/1348118 [ Linux ] virtual/first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Pass Timeout ]
 # See crbug.com/1310202 for Failure
-crbug.com/1348118 [ Linux ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Timeout Failure Pass ]
+crbug.com/1348118 [ Linux ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
 # See crbug.com/1344277 for Crash and Failure
-crbug.com/1348118 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Timeout Crash Failure Pass ]
+crbug.com/1348118 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Crash Failure Pass Timeout ]

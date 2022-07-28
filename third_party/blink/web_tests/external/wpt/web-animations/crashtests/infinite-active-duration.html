@@ -58,4 +58,11 @@
     { opacity: [0, 1] },
     { duration: 1, endDelay: -Number.MAX_VALUE, iterations: 1 });
   effect.getComputedTiming();
+
+  // very large iterations
+  effect = new KeyframeEffect(null,
+    { opacity: [0, 1] },
+    { duration: 1, delay: 281474976710655, iterations: 18014398509481984 });
+  effect.getComputedTiming();
+
 </script>
