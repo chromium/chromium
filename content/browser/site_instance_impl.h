@@ -410,6 +410,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   scoped_refptr<SiteInstanceImpl> GetCompatibleSandboxedSiteInstance(
       int unique_sandbox_id);
 
+  // Returns the process used by non-isolated sites in this SiteInstance's
+  // BrowsingInstance.
+  RenderProcessHost* GetDefaultProcessForBrowsingInstance();
+
  private:
   friend class BrowsingInstance;
   friend class SiteInstanceTestBrowserClient;

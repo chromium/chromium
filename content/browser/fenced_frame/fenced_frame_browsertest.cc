@@ -1121,18 +1121,39 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, EnsureSandboxFlagsEnforced) {
 }
 
 class FencedFrameWithSiteIsolationDisabledBrowserTest
-    : public FencedFrameBrowserTest {
+    : public FencedFrameBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
-  FencedFrameWithSiteIsolationDisabledBrowserTest() = default;
+  FencedFrameWithSiteIsolationDisabledBrowserTest() {
+    std::vector<base::Feature> enabled_features = {
+        GetParam() ? features::kProcessSharingWithDefaultSiteInstances
+                   : features::kProcessSharingWithStrictSiteInstances};
+    std::vector<base::Feature> disabled_features = {
+        GetParam() ? features::kProcessSharingWithStrictSiteInstances
+                   : features::kProcessSharingWithDefaultSiteInstances};
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
   ~FencedFrameWithSiteIsolationDisabledBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     FencedFrameBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableSiteIsolation);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
+INSTANTIATE_TEST_SUITE_P(All,
+                         FencedFrameWithSiteIsolationDisabledBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DefaultSiteInstances"
+                                             : "StrictSiteInstances";
+                         });
+
+IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
                        ProcessAllocationWithSiteIsolationDisabled) {
   ASSERT_TRUE(https_server()->Start());
   if (AreAllSitesIsolatedForTesting()) {
@@ -1171,7 +1192,7 @@ IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
             primary_main_frame_host()->GetProcess());
 }
 
-IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
+IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
                        ProcessAllocationWithDynamicIsolatedOrigin) {
   ASSERT_TRUE(https_server()->Start());
   if (AreAllSitesIsolatedForTesting()) {
@@ -1201,6 +1222,102 @@ IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
   // the isolated.b.test fenced frame should be in a different process.
   EXPECT_EQ(ff_rfh_1->GetProcess(), primary_main_frame_host()->GetProcess());
   EXPECT_NE(ff_rfh_2->GetProcess(), ff_rfh_1->GetProcess());
+
+  // When we navigate the second fenced frame to c.test, it should now share
+  // its process with the embedder.
+  ff_rfh_2 = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      ff_rfh_2, cross_site_fenced_frame_url);
+  EXPECT_EQ(ff_rfh_2->GetProcess(), primary_main_frame_host()->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
+                       ProcessAllocationWhenRootIsIsolated) {
+  ASSERT_TRUE(https_server()->Start());
+  if (AreAllSitesIsolatedForTesting()) {
+    LOG(ERROR) << "Site isolation should be disabled for this test.";
+    return;
+  }
+
+  const GURL isolated_url =
+      https_server()->GetURL("isolated.b.test", "/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  const GURL iframe_url = https_server()->GetURL("a.test", "/title1.html");
+
+  // Start isolating "isolated.b.test".
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      {url::Origin::Create(isolated_url)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_url));
+  RenderFrameHost* ff_rfh = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), GURL());
+  EXPECT_EQ(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
+  ff_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      ff_rfh, fenced_frame_url);
+  EXPECT_NE(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
+
+  EXPECT_TRUE(ExecJs(primary_main_frame_host(),
+                     JsReplace(kAddIframeScript, iframe_url)));
+  RenderFrameHostImpl* iframe = static_cast<RenderFrameHostImpl*>(
+      ChildFrameAt(primary_main_frame_host(), 1));
+  ASSERT_TRUE(iframe && iframe->GetParent() == primary_main_frame_host());
+  EXPECT_EQ(iframe->GetProcess(), ff_rfh->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
+                       ProcessAllocationForNestedFencedFrame) {
+  ASSERT_TRUE(https_server()->Start());
+  if (AreAllSitesIsolatedForTesting()) {
+    LOG(ERROR) << "Site isolation should be disabled for this test.";
+    return;
+  }
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  RenderFrameHost* ff_rfh = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), fenced_frame_url);
+  EXPECT_EQ(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
+  RenderFrameHost* nested_ff_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(ff_rfh, fenced_frame_url);
+  EXPECT_EQ(ff_rfh->GetProcess(), nested_ff_rfh->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_P(FencedFrameWithSiteIsolationDisabledBrowserTest,
+                       ProcessAllocationForFencedFrameInIsolatedPopup) {
+  ASSERT_TRUE(https_server()->Start());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+  const GURL popup_url =
+      https_server()->GetURL("isolated.c.test", "/title2.html");
+
+  // Start isolating "isolated.c.test".
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      {url::Origin::Create(popup_url)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(
+      ExecJs(primary_main_frame_host(), "popup = window.open('about:blank');"));
+  Shell* popup = new_shell_observer.GetShell();
+  EXPECT_TRUE(NavigateToURLFromRenderer(popup, popup_url));
+  RenderFrameHost* popup_rfh = popup->web_contents()->GetPrimaryMainFrame();
+  ASSERT_EQ(
+      primary_main_frame_host()->GetSiteInstance()->GetBrowsingInstanceId(),
+      popup_rfh->GetSiteInstance()->GetBrowsingInstanceId());
+
+  RenderFrameHost* ff_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(popup_rfh, fenced_frame_url);
+  ASSERT_EQ(ff_rfh->GetProcess(), primary_main_frame_host()->GetProcess());
 }
 
 namespace {

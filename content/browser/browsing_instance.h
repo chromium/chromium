@@ -214,6 +214,8 @@ class CONTENT_EXPORT BrowsingInstance final
     return web_exposed_isolation_info_;
   }
 
+  SiteInstanceImpl* default_site_instance() { return default_site_instance_; }
+
   // The next available browser-global BrowsingInstance ID.
   static int next_browsing_instance_id_;
 

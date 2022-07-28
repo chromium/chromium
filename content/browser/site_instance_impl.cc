@@ -1404,4 +1404,20 @@ SiteInstanceImpl::GetCompatibleSandboxedSiteInstance(int unique_sandbox_id) {
   return result;
 }
 
+RenderProcessHost* SiteInstanceImpl::GetDefaultProcessForBrowsingInstance() {
+  if (SiteInstanceImpl* default_instance =
+          browsing_instance_->default_site_instance()) {
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kProcessSharingWithDefaultSiteInstances));
+    return default_instance->HasProcess() ? default_instance->GetProcess()
+                                          : nullptr;
+  }
+  if (browsing_instance_->site_instance_group_manager().default_process()) {
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kProcessSharingWithStrictSiteInstances));
+    return browsing_instance_->site_instance_group_manager().default_process();
+  }
+  return nullptr;
+}
+
 }  // namespace content

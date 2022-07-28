@@ -74,6 +74,8 @@ class SiteInstanceGroupManager final : private RenderProcessHostObserver {
   // selecting an appropriate default process.
   void OnProcessSet(SiteInstanceImpl* site_instance);
 
+  RenderProcessHost* default_process() { return default_process_; }
+
  private:
   // RenderProcessHostObserver implementation.
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
