@@ -280,13 +280,6 @@ class EulaScreen extends EulaScreenBase {
   static get properties() {
     return {
       /**
-       * "Accept and continue" button is disabled until content is loaded.
-       */
-      acceptButtonDisabled: {
-        type: Boolean,
-      },
-
-      /**
        * If "Report anonymous usage stats" checkbox is checked.
        */
       usageStatsChecked: {
@@ -324,7 +317,6 @@ class EulaScreen extends EulaScreenBase {
   constructor() {
     super();
     this.UI_STEPS = EulaScreenState;
-    this.acceptButtonDisabled = true;
     this.usageStatsChecked = false;
     this.tpmDescription_ = '';
     this.initialized_ = false;
@@ -411,7 +403,6 @@ class EulaScreen extends EulaScreenBase {
       return;
     }
 
-    this.acceptButtonDisabled = false;
     this.setUIStep(EulaScreenState.EULA);
     this.$.eulaDialog.scrollToBottom();
   }

@@ -152,7 +152,7 @@ void RunEulaScreenChecks() {
       .CreateVisibilityWaiter(true, {"oobe-eula-md", "eulaDialog"})
       ->Wait();
   test::OobeJS().ExpectEnabledPath({"oobe-eula-md", "acceptButton"});
-  test::OobeJS().CreateFocusWaiter({"oobe-eula-md", "crosEulaFrame"})->Wait();
+  test::OobeJS().CreateFocusWaiter({"oobe-eula-md", "acceptButton"})->Wait();
 
   if (features::IsOobeRemoveShutdownButtonEnabled()) {
     EXPECT_FALSE(LoginScreenTestApi::IsShutdownButtonShown());

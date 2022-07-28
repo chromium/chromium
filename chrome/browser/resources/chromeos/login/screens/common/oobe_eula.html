@@ -112,7 +112,7 @@
       </h1>
       <div slot="content" class="flex layout vertical">
         <webview id="crosEulaFrame" allowTransparency
-            role="document" class="flex oobe-tos-webview focus-on-show"
+            role="document" class="flex oobe-tos-webview"
             aria-label$="[[i18nDynamic(locale, 'oobeEulaIframeLabel')]]"
             on-contentload="onFrameLoad_">
         </webview>
@@ -149,7 +149,7 @@
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="acceptButton" inverse on-click="eulaAccepted_"
-            disabled="[[acceptButtonDisabled]]"
+            class="focus-on-show"
             text-key="oobeEulaAcceptAndContinueButtonText">
         </oobe-text-button>
       </div>
