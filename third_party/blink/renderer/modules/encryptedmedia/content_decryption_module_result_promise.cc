@@ -156,6 +156,10 @@ bool ContentDecryptionModuleResultPromise::IsValidToFulfillPromise() {
   return GetExecutionContext() && !GetExecutionContext()->IsContextDestroyed();
 }
 
+MediaKeysConfig ContentDecryptionModuleResultPromise::GetMediaKeysConfig() {
+  return config_;
+}
+
 void ContentDecryptionModuleResultPromise::Trace(Visitor* visitor) const {
   visitor->Trace(resolver_);
   ContentDecryptionModuleResult::Trace(visitor);

@@ -10995,6 +10995,62 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Media.EME.GetStatusForPolicy">
+  <owner>frs@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Event recorded when the EME API GetStatusForPolicy promise is resovled.
+  </summary>
+  <metric name="IsAdFrame" enum="Boolean">
+    <summary>
+      Whether the frame is an ad frame. This is not set if the frame is null.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="KeySystem" enum="MediaKeySystem">
+    <summary>
+      The key system associated with the current CDM.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="MinHdcpVersion" enum="HdcpVersion">
+    <summary>
+      The minimum HDCP version requested for EME API GetStatusForPolicy.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="UseHardwareSecureCodecs" enum="Boolean">
+    <summary>
+      Whether hardware secure codecs are required for the current CDM.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Media.EME.RequestMediaKeySystemAccess">
   <owner>xhwang@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>

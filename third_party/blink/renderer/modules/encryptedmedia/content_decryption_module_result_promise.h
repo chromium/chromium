@@ -76,6 +76,9 @@ class ContentDecryptionModuleResultPromise
   // Determine if it's OK to resolve/reject this promise.
   bool IsValidToFulfillPromise();
 
+  // Returns |config_|.
+  MediaKeysConfig GetMediaKeysConfig();
+
  private:
   Member<ScriptPromiseResolver> resolver_;
   const MediaKeysConfig config_;

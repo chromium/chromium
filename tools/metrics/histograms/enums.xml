@@ -47437,6 +47437,19 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="5" label="User opened survey"/>
 </enum>
 
+<enum name="HdcpVersion">
+  <int value="0" label="HdcpVersionNone"/>
+  <int value="1" label="HdcpVersion1_0"/>
+  <int value="2" label="HdcpVersion1_1"/>
+  <int value="3" label="HdcpVersion1_2"/>
+  <int value="4" label="HdcpVersion1_3"/>
+  <int value="5" label="HdcpVersion1_4"/>
+  <int value="6" label="HdcpVersion2_0"/>
+  <int value="7" label="HdcpVersion2_1"/>
+  <int value="8" label="HdcpVersion2_2"/>
+  <int value="9" label="HdcpVersion2_3"/>
+</enum>
+
 <enum name="HdrnetError">
   <int value="0" label="No error"/>
   <int value="1" label="Initialization error"/>
