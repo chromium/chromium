@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
 FAIL createAnswer() with multiple send encodings should create simulcast answer promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'direction')"
+FAIL Using the ~rid SDP syntax in a remote offer does not control the local encodings active flag promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'direction')"
+FAIL Disabling encodings locally does not change the SDP promise_test: Unhandled rejection with value: object "TypeError: Cannot set properties of undefined (setting 'direction')"
 Harness: the test ran to completion.
 

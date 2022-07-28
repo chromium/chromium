@@ -388706,6 +388706,13 @@
        {}
       ]
      ],
+     "both-part-and-exportparts.html": [
+      "6cd945c6c0770a7c70e9a56252b646ad41a26052",
+      [
+       null,
+       {}
+      ]
+     ],
      "chaining-invalid-selector.html": [
       "cb34a7b4609cac7162b480f26f8ff4abc373191b",
       [
@@ -556393,7 +556400,7 @@
       ]
      ],
      "simulcast-answer.html": [
-      "87b18a130bbeb01461b94ee6786f17a89085dde6",
+      "06a6e796d369cfcdd27020efd0e13ed9baf7f545",
       [
        null,
        {}

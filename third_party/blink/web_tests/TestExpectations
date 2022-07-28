@@ -936,7 +936,12 @@ crbug.com/1286944 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-a
 crbug.com/1299442 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/hidpi/device-pixel-ratio.https.html [ Failure Pass ]
 crbug.com/1286944 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-constructor-error.https.html [ Failure Pass ]
 crbug.com/1286944 [ Win ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-constructor-error.https.html [ Failure Pass ]
-crbug.com/1250666 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
+crbug.com/1250666 [ Mac10.13 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
+crbug.com/1250666 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
+crbug.com/1250666 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
+crbug.com/1250666 [ Mac11-arm64 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
+crbug.com/1250666 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
+crbug.com/1250666 [ Mac12-arm64 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
 crbug.com/1250666 [ Win ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Pass Timeout ]
 crbug.com/1250666 crbug.com/1286944 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-pending-script.https.html [ Failure Pass Timeout ]
 crbug.com/1236558 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/no-op-animation.https.html [ Crash Failure Pass ]
@@ -3360,6 +3365,8 @@ crbug.com/626703 [ Win ] virtual/prerender/external/wpt/speculation-rules/preren
 crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protocol/network/disabled-cache-navigation.js [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=img&eligible [ Timeout ]
+crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-002.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-006.https.html [ Failure ]
 crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-006.https.html [ Failure ]
