@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -100,18 +99,10 @@ void LensRegionSearchInstructionsView::Init() {
 }
 
 gfx::Rect LensRegionSearchInstructionsView::GetBubbleBounds() {
-  // Adjust the anchor_rect height to provide a margin between the anchor view
-  // and the instruction view.
-  gfx::Rect anchor_rect = GetAnchorRect();
-  bool has_anchor = GetAnchorView() || anchor_rect != gfx::Rect();
-  bool anchor_minimized = anchor_widget() && anchor_widget()->IsMinimized();
-  gfx::Rect bubble_rect = GetBubbleFrameView()->GetUpdatedWindowBounds(
-      anchor_rect, arrow(), GetWidget()->client_view()->GetPreferredSize(),
-      !anchor_minimized && has_anchor);
-  // Since we should be centered and positioned above the viewport, adjust the
-  // bubble position to be within the viewport while also maintaining a margin
-  // to the top of the viewport.
-  bubble_rect.set_y(bubble_rect.y() + bubble_rect.height() +
+  gfx::Rect bubble_rect = views::BubbleDialogDelegateView::GetBubbleBounds();
+  // Since we should be centered and positioned under the toolbar, adjust the
+  // bubble position to contain a top margin to the toolbar.
+  bubble_rect.set_y(bubble_rect.y() +
                     ChromeLayoutProvider::Get()->GetDistanceMetric(
                         DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
   return bubble_rect;
