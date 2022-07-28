@@ -2258,11 +2258,7 @@ Press an assigned switch or key to remove assignment.
     Remove
   </message>
   <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_LABEL" desc="Bluetooth saved devices subpage > Remove device dialog: Label for dialog that removes the device.">
-    Remove <ph name="DEVICE">$1<ex>Beats</ex></ph> from <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>.
-    Device can still be used locally.
-  </message>
-  <message name="IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_TITLE" desc="Bluetooth saved devices subpage > Remove device dialog: Title for dialog that removes the device.">
-    Remove device
+    Remove <ph name="DEVICE">$1<ex>Beats</ex></ph> from <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>?
   </message>
   <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_CANCEL" desc="Bluetooth device details page > Forget device dialog: Label for button that cancels forgetting the device.">
     Cancel
@@ -2271,7 +2267,7 @@ Press an assigned switch or key to remove assignment.
     Forget
   </message>
   <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_LABEL" desc="Bluetooth device details page > Forget device dialog: Label for dialog that forgets the device.">
-    <ph name="DEVICE">$1<ex>Beats</ex></ph> will be removed from <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph> and unpaired with this Chromebook.
+    <ph name="DEVICE">$1<ex>Beats</ex></ph> will be removed from this Chromebook and won’t be saved to <ph name="PRIMARY_EMAIL">$2<ex>john@google.com</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_FORGET_DEVICE_DIALOG_TITLE" desc="Bluetooth device details page > Forget device dialog: Title for dialog that forgets the device.">
     Forget device
@@ -2304,7 +2300,7 @@ Press an assigned switch or key to remove assignment.
     Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>john@google.com</ex></ph>
   </message>
   <message name="IDS_BLUETOOTH_SAVED_DEVICES_REMOVE" desc="Label for remove button that removes a Saved Device.">
-    Remove
+    Remove from account
   </message>
   <message name="IDS_BLUETOOTH_NO_SAVED_DEVICES_LABEL" desc="Label in Saved Devices sub-page when account has no saved devices.">
     No Fast Pair devices saved to <ph name="PRIMARY_EMAIL">$1<ex>example@google.com</ex></ph>

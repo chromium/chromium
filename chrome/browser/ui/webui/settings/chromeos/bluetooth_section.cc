@@ -327,8 +327,6 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_CANCEL},
       {"savedDevicesDialogLabel",
        IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_LABEL},
-      {"savedDevicesDialogTitle",
-       IDS_SETTINGS_REMOVE_SAVED_DEVICE_DIALOG_TITLE},
       {"bluetoothDevicesDialogForget",
        IDS_SETTINGS_FORGET_DEVICE_DIALOG_FORGET},
       {"bluetoothDevicesDialogCancel",

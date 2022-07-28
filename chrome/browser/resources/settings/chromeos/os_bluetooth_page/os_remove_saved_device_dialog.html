@@ -11,9 +11,6 @@
 }
 </style>
 <cr-dialog id="dialog" show-on-attach>
-<div id="title" slot="title" aria-label="[[getRemoveDeviceDialogBodyText_()]]">
-    $i18n{savedDevicesDialogTitle}
-  </div>
   <div slot="body">
     [[getRemoveDeviceDialogBodyText_()]]
   </div>
@@ -23,7 +20,9 @@
       $i18n{savedDevicesDialogCancel}
     </cr-button>
     <cr-button id="remove" class="action-button"
-        on-click="onRemoveTap_">
+        on-click="onRemoveTap_"
+        aria-label="[[getRemoveDeviceDialogBodyText_()]]"
+        autofocus>
       $i18n{savedDevicesDialogRemove}
     </cr-button>
   </div>
