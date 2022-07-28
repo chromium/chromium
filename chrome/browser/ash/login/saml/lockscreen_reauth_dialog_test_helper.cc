@@ -201,7 +201,7 @@ void LockScreenReauthDialogTestHelper::SetManualPasswords(
 }
 
 void LockScreenReauthDialogTestHelper::WaitForIdpPageLoad() {
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(DialogWebContents());
   content::ExecuteScriptAsync(
       DialogWebContents(),
       R"($('main-element').authenticator_.addEventListener('authFlowChange',

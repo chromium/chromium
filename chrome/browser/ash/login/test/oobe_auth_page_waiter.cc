@@ -40,7 +40,6 @@ void OobeAuthPageWaiter::WaitUntilReady() {
 void OobeAuthPageWaiter::WaitForEvent(const std::string& event) {
   // Starts listening to message before executing the JS code that generates
   // the message below.
-  content::DOMMessageQueue message_queue;
   std::string js =
       R"((function() {
               var authenticator = $AuthenticatorId;
@@ -58,6 +57,8 @@ void OobeAuthPageWaiter::WaitForEvent(const std::string& event) {
   // the call might hang or won't execute properly.
   MaybeWaitForOobeToInitialize();
 
+  content::DOMMessageQueue message_queue(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   OobeJS().Evaluate(js);
 
   std::string message;

@@ -69,7 +69,8 @@ void ActiveDirectoryLoginMixin::SetUpOnMainThread() {
       ->signin_screen_handler()
       ->SetOfflineTimeoutForTesting(base::TimeDelta::Max());
 
-  message_queue_ = std::make_unique<content::DOMMessageQueue>();
+  message_queue_ = std::make_unique<content::DOMMessageQueue>(
+      LoginDisplayHost::default_host()->GetOobeWebContents());
   SetupActiveDirectoryJSNotifications();
 }
 
