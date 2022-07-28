@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">ID dispozitiv:</translation>
 <translation id="3677008721441257057">Ai vrut să accesezi &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Solicitarea nu a putut fi semnată</translation>
+<translation id="3678342917559046352">Extensie nevalidă: se aștepta ca valoarea să aibă una dintre următoarele forme: &lt;extension_id&gt; sau &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Deschide pagina într-o fereastră incognito nouă (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informații despre certificat</translation>
 <translation id="3701427423622901115">Resetare confirmată.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">Funcții de căutare</translation>
 <translation id="4644670975240021822">În ordine inversă, cu fața în jos</translation>
 <translation id="4646534391647090355">Accesez acum</translation>
+<translation id="4648262692072505866">Valoarea hash trebuie să fie în formatul SHA-256.</translation>
 <translation id="4652266463001779298">Nepermisă</translation>
 <translation id="4653167719759882810">Fuziuni și achiziții</translation>
 <translation id="4658638640878098064">Capsare în stânga sus</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, apasă pe Tab, apoi pe Enter pentru a căuta</translation>
 <translation id="4930153903256238152">Capacitate mare</translation>
+<translation id="4936134414789135531"><ph name="VALUE_NAME" /> inserat nu a fost găsit.</translation>
 <translation id="4936675324097895694">Finanțe</translation>
 <translation id="4940163644868678279">Modul incognito în Chrome</translation>
 <translation id="4943872375798546930">Nu există rezultate</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Tava 13</translation>
 <translation id="5216942107514965959">Accesat ultima dată azi</translation>
+<translation id="5217759126664161410">Format de protocol nevalid.</translation>
 <translation id="5222812217790122047">Adresa de e-mail este obligatorie</translation>
 <translation id="5228404122310299359">Articole pentru petreceri și vacanțe</translation>
 <translation id="5229588705416009823">Jocuri cu foarte mulți jucători</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">Anunțurile au fost blocate</translation>
 <translation id="5400836586163650660">Gri</translation>
 <translation id="540969355065856584">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; momentan, certificatul de securitate nu este valid. Cauza poate fi o configurare greșită sau interceptarea conexiunii de un atacator.</translation>
+<translation id="5412040515238827314">Format nevalid: se aștepta o listă cu modele.</translation>
 <translation id="5412236728747081950">Acest site obține interesele tale din Chrome ca să-ți afișeze anunțuri mai relevante</translation>
 <translation id="541416427766103491">Receptorul de hârtie 4</translation>
 <translation id="5421136146218899937">Șterge datele de navigare...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">Animale și animale de companie</translation>
 <translation id="5759751709240058861">Mișcă și folosește camera</translation>
 <translation id="5763042198335101085">Introdu o adresă de e-mail validă</translation>
+<translation id="5764725887548570807">Format de origine nevalid.</translation>
 <translation id="5765072501007116331">Pentru a vedea metodele de livrare și cerințele, selectează o adresă</translation>
 <translation id="57689295674415555">Numărul de card virtual nu este completat?</translation>
 <translation id="5776313857861697733">Prioritară</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">Emis către</translation>
 <translation id="610911394827799129">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">să afișeze textul și imaginile copiate în clipboard</translation>
+<translation id="6118782133429281336">Lista de origini este goală.</translation>
 <translation id="6120179357481664955">Îți amintești ID-ul UPI?</translation>
 <translation id="6124432979022149706">Conectori Chrome Enterprise</translation>
 <translation id="6127379762771434464">Elementul a fost eliminat</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Află mai multe despre modul incognito în Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Extensia de fișier este goală sau incorectă.</translation>
 <translation id="6146055958333702838">Verifică toate cablurile și repornește routerele, modemurile sau alte
     dispozitive de rețea pe care le folosești.</translation>
 <translation id="614940544461990577">Încearcă:</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64 tradus)</translation>
 <translation id="6663846344464066639">Mâini împreunate</translation>
 <translation id="6665553082534466207">Perforare triplă în dreapta</translation>
+<translation id="6668389483194953109">S-a găsit denumirea dimensiunii de hârtie „personalizată”, dar proprietatea „custom_size” este necompletată sau nevalidă.</translation>
 <translation id="6671697161687535275">Elimini sugestia pentru formular din Chromium?</translation>
 <translation id="6683717648675961851">Liste de locuri de muncă</translation>
 <translation id="6685834062052613830">Deconectează-te și finalizează configurarea</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">Butonul Distribuie fila, apasă pe Enter pentru a trimite fila prin distribuirea linkului, crearea unui cod QR, proiectare și altele</translation>
 <translation id="6698381487523150993">Creat:</translation>
 <translation id="6702919718839027939">Prezentare</translation>
+<translation id="6704458454638854812">Proprietatea „custom_size” este setată, iar numele așteptat va fi „personalizat”.</translation>
 <translation id="6709133671862442373">Știri</translation>
 <translation id="6709888928011386878">Instrumente muzicale</translation>
 <translation id="6710213216561001401">Înapoi</translation>

@@ -14,6 +14,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1052916631016577720">Scansione elementi</translation>
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1056898198331236512">Avviso</translation>
+<translation id="1058009965971887428">Invia feedback</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Sostituisci</translation>
 <translation id="1073899992769346247">Sostituisci o ricarica la batteria</translation>
@@ -469,7 +470,6 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="366222428570480733">Utente gestito <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Il tuo telefono e il dispositivo <ph name="DEVICE_NAME" /> useranno le stesse reti Wi-Fi</translation>
 <translation id="3694122362646626770">Siti web</translation>
-<translation id="3701206655856637070">Ora puoi cambiare la posizione in cui vengono salvate le acquisizioni schermo</translation>
 <translation id="3702809606464356667">Dalla visualizzazione delle finestre della scrivania corrente, premi il tasto Freccia su per mostrare le finestre di tutte le scrivanie</translation>
 <translation id="3702846122927433391">Popolazione della Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -903,6 +903,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="6182592640011875895">Apri scrivania</translation>
 <translation id="619279033188484792">Visualizza le foto, i contenuti multimediali e le notifiche recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Ricarica completamente adesso</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">Ora puoi registrarti e registrare il tuo schermo nello stesso momento</translation>
 <translation id="622484624075952240">Giù</translation>
 <translation id="6231419273573514727">Le prestazioni delle periferiche potrebbero essere limitate</translation>

@@ -1538,7 +1538,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2390347491606624519">Methu â chysylltu â'r dirprwy weinydd mewngofnodwch eto</translation>
 <translation id="2390782873446084770">Cysoni Wi-Fi</translation>
 <translation id="2391419135980381625">Ffont safonol</translation>
-<translation id="2392163307141705938">Rwyt ti wedi cyrraedd y terfyn amser a osodwyd gan dy riant ar gyfer <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Gweithredu</translation>
 <translation id="2393136602862631930">Gosodwch <ph name="APP_NAME" /> ar eich Chromebook</translation>
 <translation id="2393313392064891208">Cynnwys Telerau Google ChromeOS Flex</translation>
@@ -1664,7 +1663,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2505669838803949807">EID eich dyfais yw <ph name="EID_NUMBER" />. Gall cynrychiolydd gwasanaeth cwsmeriaid ddefnyddio'r rhif EID i'ch helpu i weithredu gwasanaeth.</translation>
 <translation id="250704661983564564">Trefniant sgriniau</translation>
 <translation id="2507253002925770350">Tynnwyd tocyn</translation>
-<translation id="2507397597949272797">Mae <ph name="NAME" /> wedi'i seibio</translation>
 <translation id="2508428939232952663">Cyfrif Google Play Store</translation>
 <translation id="2509495747794740764">Rhaid i swm y raddfa fod yn rhif rhwng 10 a 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1908,7 +1906,6 @@ Mae Voice Match yn helpu Google Assistant i adnabod llais <ph name="SUPERVISED_U
 <translation id="2743387203779672305">Copïo i'r clipfwrdd</translation>
 <translation id="2745080116229976798">Cydlynu Cymwysedig Microsoft</translation>
 <translation id="2747266560080989517">Mae cynnwys sensitif neu beryglus yn y ffeil hon. Gofynnwch i'w berchennog ei drwsio.</translation>
-<translation id="2748061034695037846">Mae <ph name="DOMAIN" /> wedi'i seibio</translation>
 <translation id="2749756011735116528">Mewngofnodi i <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Gwirio Gramadeg Gyda Sillafu</translation>
@@ -4251,7 +4248,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5033137252639132982">Ni chaniateir defnyddio synwyryddion symudiad</translation>
 <translation id="5033266061063942743">Siapau geometrig</translation>
 <translation id="5037676449506322593">Dewis pob un</translation>
-<translation id="5038022729081036555">Gallwch ei ddefnyddio am <ph name="TIME_LIMIT" /> yfory.</translation>
 <translation id="5038818366306248416">Yn flaenorol, gwnaethoch ddewis peidio â chaniatáu unrhyw estyniadau ar <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Gweld a rheoli cyfrineiriau sydd wedi'u cadw yn eich Cyfrif Google</translation>
 <translation id="5039804452771397117">Caniatáu</translation>
@@ -5051,6 +5047,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Mae'r camera neu'r meicroffon yn recordio</translation>
 <translation id="583673505367439042">Gall gwefannau ofyn am olygu ffeiliau a ffolderi ar eich dyfais</translation>
 <translation id="583756221537636748">Cyflwr</translation>
+<translation id="5840658767386246331">Chwilio gyda Google</translation>
 <translation id="5840680448799937675">Bydd ffeiliau bob amser yn cael eu rhannu all-lein</translation>
 <translation id="5841270259333717135">Ffurfweddu Ether-rwyd</translation>
 <translation id="5842497610951477805">Galluogi Bluetooth</translation>
@@ -6549,6 +6546,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7307129035224081534">Wedi seibio</translation>
 <translation id="7308643132139167865">Ieithoedd gwefannau</translation>
 <translation id="7310598146671372464">Wedi methu â mewngofnodi Nid yw'r gweinydd yn cefnogi mathau amgryptio Kerberos a nodwyd. Cysylltwch â'ch gweinyddwr.</translation>
+<translation id="7311089766378749632">Wrthi'n gofyn i ddarllen a newid <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Mae eich gweinyddwr yn ailosod eich eSIM. Gallai hyn gymryd ychydig funudau.</translation>
 <translation id="7320213904474460808">Gwneud y rhwydwaith yn ddiofyn</translation>
 <translation id="7321545336522791733">Methu â chyrraedd y gweinydd</translation>
@@ -7141,6 +7139,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7869655448736341731">Unrhyw un</translation>
 <translation id="7870730066603611552">Adolygu dewisiadau cysoni ar ôl gosod</translation>
 <translation id="7870790288828963061">Ni chafwyd unrhyw apiau Kiosk gyda fersiwn mwy diweddar. Dim byd i'w ddiweddaru. Tynnwch y ffon USB.</translation>
+<translation id="7871049986386271121">Bob Amser ar y Wefan Hon</translation>
 <translation id="7871109039747854576">Defnyddiwch y bysellau <ph name="COMMA" /> a <ph name="PERIOD" /> i dudalennu rhestr o ymgeiswyr</translation>
 <translation id="787268756490971083">Diffodd</translation>
 <translation id="7872758299142009420">Gormod o grwpiau sydd wedi'u nythu: <ph name="ERROR_LINE" /></translation>
@@ -7295,7 +7294,6 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8013993649590906847">Os nad oes gan ddelwedd ddisgrifiad defnyddiol, bydd Chrome yn ceisio darparu un ar eich cyfer. Rydym yn anfon delweddau at Google er mwyn creu disgrifiadau.</translation>
 <translation id="8014154204619229810">Mae'r rhaglen diweddaru wrthi'n rhedeg. Ail-lwythwch mewn munud i wirio eto.</translation>
 <translation id="8014206674403687691">Ni all <ph name="IDS_SHORT_PRODUCT_NAME" /> ddychwelyd i'r fersiwn a osodwyd o'r blaen. Rhowch gynnig arall ar ddefnyddio Powerwash ar eich dyfais.</translation>
-<translation id="8015163965024115122">Gwnaeth y terfyn ar apiau <ph name="IDS_SHORT_PRODUCT_NAME" /> neu <ph name="IDS_SHORT_PRODUCT_NAME" /> a osododd dy riant redeg allan.</translation>
 <translation id="8016266267177410919">Storfa dros dro</translation>
 <translation id="8017176852978888182">Cyfeiriaduron cyffredin Linux</translation>
 <translation id="8017679124341497925">Mae'r llwybr byr wedi'i newid</translation>
@@ -7740,6 +7738,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8438566539970814960">Gwneud chwiliadau a phori yn well</translation>
 <translation id="8439506636278576865">Cynnig cyfieithu tudalennau yn yr iaith hon</translation>
 <translation id="8440630305826533614">Apiau Linux</translation>
+<translation id="844063558976952706">Bob amser ar y wefan hon</translation>
 <translation id="8443795068008423036">Gwnewch yn siŵr bod eich dyfais yn gyfredol a rhowch gynnig arall arni</translation>
 <translation id="8446884382197647889">Dysgu rhagor</translation>
 <translation id="8447409163267621480">Cynnwys naill ai Ctrl neu Alt</translation>
@@ -8437,7 +8436,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Am y profiad gorau, gosodwch <ph name="DEVICE_OS" /> i'ch disg mewnol. Gallwch hefyd ei osod yn nes ymlaen o'r sgrîn mewngofnodi.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Os nad ydych yn barod i'w osod, gallwch ei redeg o USB i roi cynnig arni. Bydd hyn yn cadw eich data ac OS presennol, ond mae'n bosib y byddwch yn gweld cyfyngiadau o ran storfa a pherfformiad.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Ar agor fel tab a biniwyd</translation>
-<translation id="9122176249172999202">Mae <ph name="IDS_SHORT_PRODUCT_NAME" /> wedi'i seibio</translation>
 <translation id="9124003689441359348">Bydd cyfrineiriau sydd wedi'u cadw yn ymddangos yma</translation>
 <translation id="9126149354162942022">Lliw'r cyrchwr</translation>
 <translation id="9128317794749765148">Methu â chwblhau gosod</translation>

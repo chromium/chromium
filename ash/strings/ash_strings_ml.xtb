@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">ഇനം സ്‌കാൻ ചെയ്യുക</translation>
 <translation id="1056775291175587022">നെറ്റ്‌വർക്കില്ല</translation>
 <translation id="1056898198331236512">മുന്നറിയിപ്പ്</translation>
+<translation id="1058009965971887428">റിപ്പോർട്ട് ചെയ്തതിന്റെ ഫീഡ്ബാക്ക്</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">മാറ്റിസ്ഥാപിക്കുക</translation>
 <translation id="1073899992769346247">ബാറ്ററി മാറ്റുക അല്ലെങ്കിൽ റീചാർജ് ചെയ്യുക</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">നിങ്ങളുടെ ഫോണിനും <ph name="DEVICE_NAME" /> എന്നതിനുമിടയിൽ വെെഫെെ നെറ്റ്‌വർക്കുകൾ പങ്കിടും</translation>
 <translation id="3694122362646626770">വെബ്‌സൈറ്റുകൾ</translation>
-<translation id="3701206655856637070">സ്ക്രീൻ ക്യാപ്‌ചറുകൾ സംരക്ഷിക്കപ്പെടുന്ന ഇടം നിങ്ങൾക്ക് ഇപ്പോൾ മാറ്റാനാകും</translation>
 <translation id="3702809606464356667">നിലവിലെ ഡെസ്ക്കിൽ നിന്നുള്ള വിൻഡോകൾ കാണിക്കുന്നു, എല്ലാ ഡെസ്‌ക്കിലും നിന്നുള്ള വിൻഡോകൾ കാണിക്കാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാള കീ അമർത്തുക</translation>
 <translation id="3702846122927433391">നൈജീരിയയിലെ ജനസംഖ്യ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +652,7 @@
 <translation id="4690510401873698237">സ്‌ക്രീനിൻ്റെ ചുവടെയാണ് ഷെൽഫ്</translation>
 <translation id="4696813013609194136">രക്ഷാകർതൃ കോഡ് ഉപയോഗിച്ച് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="4702647871202761252">സ്വകാര്യതാ സ്‌ക്രീൻ ഓഫാണ്</translation>
+<translation id="470644585772471629">നിറം വിപരീതമാക്കൽ</translation>
 <translation id="4717575069099566988">നിങ്ങളുടെ USB-C കേബിൾ, USB4-നെ പിന്തുണയ്ക്കുന്നില്ല. ഉപകരണ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം.</translation>
 <translation id="4730374152663651037">പതിവായി ഉപയോഗിക്കുന്നത്</translation>
 <translation id="4731797938093519117">രക്ഷാകർതൃ ആക്‌സസ്</translation>
@@ -901,6 +902,7 @@
 <translation id="6182592640011875895">ഡെസ്ക് തുറക്കുക</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിന്റെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുക</translation>
 <translation id="619335566042889110">ഇപ്പോൾ തന്നെ പൂർണ്ണമായി ചാർജ് ചെയ്യുക</translation>
+<translation id="6193431488227440296">ഡെവ്</translation>
 <translation id="6220928844947387476">നിങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളെയും ഒപ്പം സ്ക്രീനും ഒരേസമയം റെക്കോർഡ് ചെയ്യാം</translation>
 <translation id="622484624075952240">താഴേക്കുള്ള കീ</translation>
 <translation id="6231419273573514727">പെരിഫറൽ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം</translation>

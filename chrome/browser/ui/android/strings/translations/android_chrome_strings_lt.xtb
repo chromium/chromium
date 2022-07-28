@@ -78,6 +78,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="1344653310988386453">Įtraukite nuorodą į paryškintą tekstą</translation>
 <translation id="1347468774581902829">Tvarkyti veiklą</translation>
 <translation id="1360432990279830238">Atsijungti ir išjungti sinchronizavimą?</translation>
+<translation id="1366525380420346469">Kada įjungta</translation>
 <translation id="1373696734384179344">Nepakanka atminties pasirinktam turiniui atsisiųsti.</translation>
 <translation id="1376578503827013741">Apskaičiuojama...</translation>
 <translation id="1382912999714108023">Nematote dabartinės informacijos? Susisiekite su savo banku, kad ji būtų atnaujinta.</translation>
@@ -513,6 +514,7 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="3810973564298564668">Tvarkyti</translation>
 <translation id="3819178904835489326">Ištrinta atsisiuntimų: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
 <translation id="3819183753496523827">Esate neprisijungę. Patikrinkite interneto ryšį ir bandykite dar kartą.</translation>
+<translation id="3830886834687455630">Atnaujinkite „Google Play“ paslaugas, kad patikrintumėte slaptažodžius</translation>
 <translation id="3845098929839618392">Atidaryti inkognito skirtuke</translation>
 <translation id="3856096718352044181">Patvirtinkite, kad tai yra tinkamas paslaugų teikėjas, arba vėliau bandykite dar kartą</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
@@ -733,6 +735,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5016205925109358554">Su užraitais</translation>
 <translation id="5032430150487044192">Nepavyko sukurti QR kodo</translation>
 <translation id="5039804452771397117">Leisti</translation>
+<translation id="504456571576643789">Į ką reikėtų atsižvelgti</translation>
 <translation id="5054455334322721892"><ph name="BEGIN_LINK1" />Kitos veiklos formos<ph name="END_LINK1" /> gali būti išsaugotos jūsų „Google“ paskyroje, kai esate prisijungę. Galite bet kada jas ištrinti.</translation>
 <translation id="5061533557687621530">Jei norite patikrinti orų prognozę, palieskite mikrofoną ir pasakykite „What's the weather today?“ (Koks šiandien oras?).</translation>
 <translation id="506254248375231072">Nėra skirtukų</translation>
@@ -1215,6 +1218,7 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="7641339528570811325">Valyti naršymo duomenis...</translation>
 <translation id="7646772052135772216">Slaptažodžio sinchronizavimas neveikia</translation>
 <translation id="7655900163790317559">Įjungiamas „Bluetooth“…</translation>
+<translation id="7656862631699126784">Įjungti inkognito užraktą</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7663313374500954251">Šią naršyklę tvarko: <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Pridėti paskyrą</translation>
@@ -1517,6 +1521,7 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="9159716826369098114">Atkurkite skirtukų grupę, kurioje yra tiek skirtukų: <ph name="TAB_COUNT" />, kaip naują foninę skirtukų grupę.</translation>
 <translation id="9169507124922466868">Naršymo istorija atidaryta puse aukščio</translation>
 <translation id="9187955620966010988">Reakcija pakoreguota</translation>
+<translation id="9190276265094487094">Istorija bus rodoma visuose sinchronizuojamuose įrenginiuose, todėl galėsite tęsti tai, ką darėte</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tikrinta prieš 1 minutę}one{Tikrinta prieš # minutę}few{Tikrinta prieš # minutes}many{Tikrinta prieš # minutės}other{Tikrinta prieš # minučių}}</translation>
 <translation id="9204836675896933765">Liko failų: 1</translation>
 <translation id="9205933215779845960">Nepavyko rasti šio puslapio. Patikrinkite rašybą arba pabandykite ieškoti sistemoje „<ph name="SEARCH_ENGINE" />“.</translation>

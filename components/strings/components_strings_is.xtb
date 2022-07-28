@@ -2259,6 +2259,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7238585580608191973">SHA-256 fingrafar</translation>
 <translation id="7240120331469437312">Auknefni viðfangs vottorðsins</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# samsvörun}one{# samsvörun}other{# samsvaranir}}</translation>
 <translation id="724691107663265825">Vefsvæðið framundan inniheldur spilliforrit</translation>
 <translation id="724975217298816891">Sláðu inn gildistíma og CVC-númerið fyrir <ph name="CREDIT_CARD" /> til að uppfæra kortaupplýsingar. Greiðslukortaupplýsingum verður deilt með vefsvæðinu eftir að þú hefur staðfest.</translation>
 <translation id="7251437084390964440">Netstillingar eru ekki í samræmi við ONC-staðalinn. Ef til vill verða hlutar grunnstillingarinnar ekki fluttir inn.

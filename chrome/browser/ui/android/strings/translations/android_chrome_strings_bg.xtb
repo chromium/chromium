@@ -78,6 +78,7 @@
 <translation id="1344653310988386453">Включване на връзка към откроения текст</translation>
 <translation id="1347468774581902829">Управление на активността</translation>
 <translation id="1360432990279830238">Изход и изключване на синхронизирането?</translation>
+<translation id="1366525380420346469">Когато е включено</translation>
 <translation id="1373696734384179344">Недостатъчно памет за изтегляне на избраното съдържание.</translation>
 <translation id="1376578503827013741">Изчислява се…</translation>
 <translation id="1382912999714108023">Не виждате текущите си данни? Свържете се с банката си, за да ги актуализирате.</translation>
@@ -513,6 +514,7 @@
 <translation id="3810973564298564668">Управление</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха изтрити</translation>
 <translation id="3819183753496523827">Офлайн сте. Проверете връзката си с интернет и опитайте отново.</translation>
+<translation id="3830886834687455630">Актуализирайте услугите за Google Play, за да проверите паролите си</translation>
 <translation id="3845098929839618392">Отваряне в раздел „инкогнито“</translation>
 <translation id="3856096718352044181">Моля, проверете дали този доставчик е валиден или опитайте отново по-късно</translation>
 <translation id="3858860766373142691">Име</translation>
@@ -733,6 +735,7 @@
 <translation id="5016205925109358554">Серифен</translation>
 <translation id="5032430150487044192">Не може да се създаде QR код</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
+<translation id="504456571576643789">Имайте предвид следното</translation>
 <translation id="5054455334322721892">Възможно е <ph name="BEGIN_LINK1" />други видове активност<ph name="END_LINK1" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="5061533557687621530">За да проверите времето, докоснете иконата на микрофон и кажете „What's the weather today?“</translation>
 <translation id="506254248375231072">Няма раздели</translation>
@@ -1215,6 +1218,7 @@
 <translation id="7641339528570811325">Изчистване на данните за сърфирането…</translation>
 <translation id="7646772052135772216">Синхронизирането на паролите не работи.</translation>
 <translation id="7655900163790317559">Bluetooth се включва…</translation>
+<translation id="7656862631699126784">Включване на заключването в режим „инкогнито“</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7663313374500954251">Този браузър се управлява от <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Добавяне на профил</translation>
@@ -1517,6 +1521,7 @@
 <translation id="9159716826369098114">Възстановяване на група раздели от <ph name="TAB_COUNT" /> раздела като нова група на заден план.</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="9187955620966010988">Реакцията бе коригирана</translation>
+<translation id="9190276265094487094">Историята ви ще бъде достъпна на всичките ви синхронизирани устройства, за да можете да продължавате това, което сте правили</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
 <translation id="9204836675896933765">Остава 1 файл</translation>
 <translation id="9205933215779845960">Страницата не е намерена. Проверете изписването или потърсете с <ph name="SEARCH_ENGINE" />.</translation>

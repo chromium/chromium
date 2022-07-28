@@ -1535,7 +1535,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2390347491606624519">Kan nie aan instaanbediener koppel nie; meld asseblief weer aan</translation>
 <translation id="2390782873446084770">Wi-fi-sinkronisering</translation>
 <translation id="2391419135980381625">Standaardlettertipe</translation>
-<translation id="2392163307141705938">Jy het die tydlimiet wat jou ouer vir <ph name="IDS_SHORT_PRODUCT_NAME" /> gestel het, bereik.</translation>
 <translation id="2392369802118427583">Aktiveer</translation>
 <translation id="2393136602862631930">Stel <ph name="APP_NAME" /> op jou Chromebook op</translation>
 <translation id="2393313392064891208">Inhoud van Google Chrome OS Flex se bepalings</translation>
@@ -1661,7 +1660,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2505669838803949807">Jou toestel-EID is <ph name="EID_NUMBER" />. 'n Kliëntediensverteenwoordiger kan die EID-nommer gebruik om jou te help om die diens te aktiveer.</translation>
 <translation id="250704661983564564">Vertoonrangskikking</translation>
 <translation id="2507253002925770350">Kaartjie is verwyder</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> is onderbreek</translation>
 <translation id="2508428939232952663">Google Play Winkel-rekening</translation>
 <translation id="2509495747794740764">Skaalgetal moet 'n getal tussen 10 en 200 wees.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1905,7 +1903,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2743387203779672305">Kopieer na knipbord</translation>
 <translation id="2745080116229976798">Microsoft se gekwalifiseerde ondergeskiktheid</translation>
 <translation id="2747266560080989517">Hierdie lêer het sensitiewe of gevaarlike inhoud. Vra sy eienaar om dit reg te stel.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> is onderbreek</translation>
 <translation id="2749756011735116528">Meld by <ph name="PRODUCT_NAME" /> aan</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Gaan grammatika saam met spelling na</translation>
@@ -4248,7 +4245,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5033137252639132982">Mag nie bewegingsensors gebruik nie</translation>
 <translation id="5033266061063942743">Geometriese vorms</translation>
 <translation id="5037676449506322593">Kies alles</translation>
-<translation id="5038022729081036555">Jy kan dit môre vir <ph name="TIME_LIMIT" /> gebruik.</translation>
 <translation id="5038818366306248416">Jy het vantevore gekies om nie enige uitbreidings op <ph name="ORIGIN" /> toe te laat nie</translation>
 <translation id="5039696241953571917">Bekyk en bestuur gestoorde wagwoorde in jou Google-rekening</translation>
 <translation id="5039804452771397117">Laat toe</translation>
@@ -4286,6 +4282,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5074761966806028321">Toestemming word nog benodig om die opstelling te voltooi</translation>
 <translation id="5075563999073408211">Beheer jou toestel met een of meer skakelaars. Skakelaars kan sleutelbordsleutels, speletjiebeheerderknoppies of toegewese toestelle wees.</translation>
 <translation id="5075910247684008552">Onveilige inhoud word by verstek op veilige werwe geblokkeer</translation>
+<translation id="5078490485380754244">Vergeet toestel</translation>
 <translation id="5078638979202084724">Boekmerk alle oortjies</translation>
 <translation id="5078796286268621944">Verkeerde PIN</translation>
 <translation id="5079010647467150187">Voeg ingeboude VPN by …</translation>
@@ -7288,7 +7285,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8013993649590906847">As 'n prent nie 'n nuttige beskrywing het nie, sal Chrome probeer om een vir jou te verskaf. Prente word na Google toe gestuur om beskrywings te skep.</translation>
 <translation id="8014154204619229810">Die opdateerder loop tans. Herlaai nou-nou om weer te kyk.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> kan nie na die weergawe wat voorheen geïnstalleer is, terugkeer nie. Probeer asseblief weer om jou toestel te Kragwas.</translation>
-<translation id="8015163965024115122">Die limiet op <ph name="IDS_SHORT_PRODUCT_NAME" />- of <ph name="IDS_SHORT_PRODUCT_NAME" />-programme wat jou ouer gestel het, het uitgetel.</translation>
 <translation id="8016266267177410919">Tydelike berging</translation>
 <translation id="8017176852978888182">Gedeelde gidse in Linux</translation>
 <translation id="8017679124341497925">Kortpad is gewysig</translation>
@@ -8427,7 +8423,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Installeer <ph name="DEVICE_OS" /> op jou interne skyf vir die beste ervaring. Jy kan dit ook later van die aanmeldskerm af installeer.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />As jy nie gereed is om dit te installeer nie, kan jy dit van USB af laat loop om dit te probeer. Dit sal jou bestaande bedryfstelsel en data behou, maar jy sal dalk berging- en werkverrigtingbeperkings sien.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Maak as 'n vasgespelde oortjie oop</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> is onderbreek</translation>
 <translation id="9124003689441359348">Gestoorde wagwoorde sal hier verskyn</translation>
 <translation id="9126149354162942022">Skermpyltjie se kleur</translation>
 <translation id="9128317794749765148">Kon nie opstelling voltooi nie</translation>

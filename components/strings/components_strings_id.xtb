@@ -1002,6 +1002,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3676592649209844519">ID Perangkat:</translation>
 <translation id="3677008721441257057">Maksud Anda &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Permintaan tidak dapat ditandatangani</translation>
+<translation id="3678342917559046352">Ekstensi Tidak Valid: Nilai yang diharapkan harus dalam salah satu format berikut: &lt;extension_id&gt; atau &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Buka halaman dalam jendela Samaran baru (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informasi sertifikat</translation>
 <translation id="3701427423622901115">Reset dikonfirmasi.</translation>
@@ -1341,6 +1342,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="464342062220857295">Fitur penelusuran</translation>
 <translation id="4644670975240021822">Urutan yang berkebalikan menghadap ke bawah</translation>
 <translation id="4646534391647090355">Buka Download sekarang</translation>
+<translation id="4648262692072505866">Hash harus dalam format SHA-256.</translation>
 <translation id="4652266463001779298">Tidak diizinkan</translation>
 <translation id="4653167719759882810">Merger &amp; akuisisi</translation>
 <translation id="4658638640878098064">Jepretan di kiri atas</translation>
@@ -1450,6 +1452,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menelusuri</translation>
 <translation id="4930153903256238152">Kapasitas besar</translation>
+<translation id="4936134414789135531"><ph name="VALUE_NAME" /> yang dimasukkan tidak dapat ditemukan.</translation>
 <translation id="4936675324097895694">Keuangan</translation>
 <translation id="4940163644868678279">Mode Samaran di Chrome</translation>
 <translation id="4943872375798546930">Tidak ada hasil</translation>
@@ -1567,6 +1570,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Baki 13</translation>
 <translation id="5216942107514965959">Terakhir dibuka hari ini</translation>
+<translation id="5217759126664161410">Format protokol tidak valid.</translation>
 <translation id="5222812217790122047">Email wajib diisi</translation>
 <translation id="5228404122310299359">Perlengkapan pesta &amp; liburan</translation>
 <translation id="5229588705416009823">Game MMO</translation>
@@ -1639,6 +1643,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5398772614898833570">Iklan diblokir</translation>
 <translation id="5400836586163650660">Grey</translation>
 <translation id="540969355065856584">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya saat ini tidak valid. Hal ini mungkin disebabkan oleh kesalahan konfigurasi atau ada penyerang yang mengganggu koneksi internet Anda.</translation>
+<translation id="5412040515238827314">Format tidak valid: Format harus berupa daftar pola.</translation>
 <translation id="5412236728747081950">Situs ini mendapatkan minat Anda dari Chrome untuk menampilkan iklan yang lebih relevan</translation>
 <translation id="541416427766103491">Tempat kertas 4</translation>
 <translation id="5421136146218899937">Hapus data penjelajahan...</translation>
@@ -1757,6 +1762,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5754400531489347219">Dunia satwa</translation>
 <translation id="5759751709240058861">Menggunakan &amp; menggerakkan kamera Anda</translation>
 <translation id="5763042198335101085">Masukkan alamat email yang valid</translation>
+<translation id="5764725887548570807">Format asal tidak valid.</translation>
 <translation id="5765072501007116331">Untuk melihat persyaratan dan metode pengiriman, pilih alamat</translation>
 <translation id="57689295674415555">Nomor kartu virtual tidak diisi?</translation>
 <translation id="5776313857861697733">Prioritas</translation>
@@ -1881,10 +1887,12 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6107012941649240045">Diterbitkan Untuk</translation>
 <translation id="610911394827799129">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Melihat teks dan gambar yang disalin ke papan klip</translation>
+<translation id="6118782133429281336">Daftar asal kosong.</translation>
 <translation id="6120179357481664955">Ingat ID UPI Anda?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Item dihapus</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Pelajari mode Samaran di Chrome lebih lanjut<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Ekstensi file kosong atau salah format.</translation>
 <translation id="6146055958333702838">Periksa semua kabel dan boot ulang router, modem, atau perangkat
     jaringan lain yang mungkin Anda gunakan.</translation>
 <translation id="614940544461990577">Coba:</translation>
@@ -2058,6 +2066,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="666259744093848177">(x86_64 diterjemahkan)</translation>
 <translation id="6663846344464066639">Melipat Tangan</translation>
 <translation id="6665553082534466207">Tiga lubang di kanan</translation>
+<translation id="6668389483194953109">Ditemukan nama ukuran kertas "custom", tetapi properti "custom_size" kosong atau tidak valid.</translation>
 <translation id="6671697161687535275">Hapus saran formulir dari Chromium?</translation>
 <translation id="6683717648675961851">Lowongan pekerjaan</translation>
 <translation id="6685834062052613830">Keluar dan selesaikan penyiapan</translation>
@@ -2071,6 +2080,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6696588630955820014">Tombol Bagikan tab ini, tekan Enter untuk berbagi tab ini dengan membagikan link, membuat kode QR, melakukan transmisi, dan lainnya</translation>
 <translation id="6698381487523150993">Dibuat:</translation>
 <translation id="6702919718839027939">Presentasi</translation>
+<translation id="6704458454638854812">Properti "custom_size" disetel dan nama properti harus "custom".</translation>
 <translation id="6709133671862442373">Berita</translation>
 <translation id="6709888928011386878">Alat musik</translation>
 <translation id="6710213216561001401">Sebelumnya</translation>

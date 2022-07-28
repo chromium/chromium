@@ -14,6 +14,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1052916631016577720">Sganio Eitemau</translation>
 <translation id="1056775291175587022">Dim rhwydweithiau</translation>
 <translation id="1056898198331236512">Rhybudd</translation>
+<translation id="1058009965971887428">Rhoi adborth</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Disodli</translation>
 <translation id="1073899992769346247">Disodlwch neu ailwefrwch y batri</translation>
@@ -469,7 +470,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Defnyddiwr a Reolir</translation>
 <translation id="36813544980941320">Bydd rhwydweithiau yn cael eu rhannu rhwng eich ffôn a <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Gwefannau</translation>
-<translation id="3701206655856637070">Gallwch bellach newid ble mae sgrinluniau yn cael eu cadw</translation>
 <translation id="3702809606464356667">Wrthi'n dangos ffenestri o'r ddesg bresennol, pwyswch y fysell Saeth i fyny i ddangos ffenestri o bob desg</translation>
 <translation id="3702846122927433391">Poblogaeth Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6182592640011875895">Agor desg</translation>
 <translation id="619279033188484792">Gweld lluniau, cyfryngau, a hysbysebion diweddar eich ffôn ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Gwefru'n llawn nawr</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">Gallwch bellach recordio eich hun a'ch sgrîn ar yr un pryd</translation>
 <translation id="622484624075952240">I lawr</translation>
 <translation id="6231419273573514727">Mae'n bosib y bydd perfformiad y perifferol yn gyfyngedig</translation>
@@ -1171,6 +1172,7 @@ Gosodiad newydd</translation>
 <translation id="7842569679327885685">Rhybudd: Nodwedd arbrofol</translation>
 <translation id="7846634333498149051">Bysellfwrdd</translation>
 <translation id="7848989271541991537">Symudwyd i Dudalen <ph name="PAGE_NUMBER" />, rhes <ph name="ROW_NUMBER" />, colofn <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Sweipiwch i fyny gyda thri bys i ddechrau'r Trosolwg</translation>
 <translation id="7866482334467279021">ymlaen</translation>
 <translation id="7868900307798234037">Wrthi'n datgloi gydag ôl bys</translation>

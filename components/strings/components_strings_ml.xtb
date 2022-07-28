@@ -1002,6 +1002,7 @@
 <translation id="3676592649209844519">ഉപകരണ ഐഡി:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; എന്നാണോ ഉദ്ദേശിച്ചത്?</translation>
 <translation id="3678029195006412963">അഭ്യർത്ഥന സൈൻ ചെയ്യാനായില്ല</translation>
+<translation id="3678342917559046352">വിപുലീകരണം അസാധുവാണ്: ഈ ഫോർമാറ്റുകളിൽ ഒരെണ്ണം ഉപയോഗിച്ചാണ് മൂല്യം ചേർക്കേണ്ടത് : &lt;extension_id&gt; അല്ലെങ്കിൽ &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">പുതിയ അദൃശ്യ വിൻഡോയിൽ പേജ് തുറക്കുക (കൺട്രോൾ-ഷിഫ്റ്റ്-N)</translation>
 <translation id="3681007416295224113">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3701427423622901115">റീസെറ്റ് അംഗീകരിച്ചിരിക്കുന്നു</translation>
@@ -1341,6 +1342,7 @@
 <translation id="464342062220857295">തിരയൽ ഫീച്ചറുകൾ</translation>
 <translation id="4644670975240021822">വിപരീത ക്രമത്തിൽ ഫേസ് ഡൗൺ</translation>
 <translation id="4646534391647090355">എന്നെ ഇപ്പോൾ അവിടെയെത്തിക്കൂ</translation>
+<translation id="4648262692072505866">ഹാഷിന്റെ ഫോർമാറ്റ് SHA-256 ആയിരിക്കണം.</translation>
 <translation id="4652266463001779298">അനുവദനീയമല്ല</translation>
 <translation id="4653167719759882810">ലയനങ്ങളും ഏറ്റെടുക്കലുകളും</translation>
 <translation id="4658638640878098064">മുകളിൽ ഇടതുവശത്ത് സ്‌റ്റേപ്പിൾ ചെയ്യുക</translation>
@@ -1450,6 +1452,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, തിരയാൻ 'Tab' അമർത്തുക, തുടർന്ന് 'Enter' അമർത്തുക</translation>
 <translation id="4930153903256238152">ഉയർന്ന ശേഷി</translation>
+<translation id="4936134414789135531">ചേർത്ത <ph name="VALUE_NAME" /> കണ്ടെത്താനായില്ല.</translation>
 <translation id="4936675324097895694">ധനകാര്യം</translation>
 <translation id="4940163644868678279">Chrome-ലെ അദൃശ്യ മോഡ്</translation>
 <translation id="4943872375798546930">ഫലങ്ങളൊന്നുമില്ല</translation>
@@ -1567,6 +1570,7 @@
 <translation id="5215363486134917902">ഫോളിയോ-Sp</translation>
 <translation id="521659676233207110">ട്രേ 13</translation>
 <translation id="5216942107514965959">അവസാനം സന്ദർശിച്ചത് ഇന്നാണ്</translation>
+<translation id="5217759126664161410">പ്രോട്ടോക്കോൾ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
 <translation id="5222812217790122047">ഇമെയിൽ ആവശ്യമാണ്</translation>
 <translation id="5228404122310299359">പാർട്ടി, അവധിക്കാല സാമഗ്രികൾ</translation>
 <translation id="5229588705416009823">വിപുലമായ മൾട്ടിപ്ലേയർ ഗെയിമുകൾ</translation>
@@ -1639,6 +1643,7 @@
 <translation id="5398772614898833570">പരസ്യങ്ങൾ ബ്ലോക്കുചെയ്‌തു</translation>
 <translation id="5400836586163650660">ചാരനിറം</translation>
 <translation id="540969355065856584">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; അതിന്റെ സുരക്ഷ സർട്ടിഫിക്കറ്റിന് ഇപ്പോൾ സാധുതയുള്ളതല്ല. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു ആക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
+<translation id="5412040515238827314">ഫോർമാറ്റ് അസാധുവാണ്: പാറ്റേണുകളുടെ ലിസ്റ്റ് ആണ് ചേർക്കേണ്ടത്.</translation>
 <translation id="5412236728747081950">കൂടുതൽ പ്രസക്തമായ പരസ്യങ്ങൾ കാണിക്കാൻ ഈ സൈറ്റിന് Chrome-ൽ നിന്ന് നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ ലഭിക്കുന്നു</translation>
 <translation id="541416427766103491">സ്റ്റാക്കർ 4</translation>
 <translation id="5421136146218899937">ബ്രൗസിംഗ് ഡാറ്റ മായ്‌ക്കുക...</translation>
@@ -1757,6 +1762,7 @@
 <translation id="5754400531489347219">വളർത്തുമൃഗങ്ങളും മൃഗങ്ങളും</translation>
 <translation id="5759751709240058861">ക്യാമറ ഉപയോഗിക്കുകയും ചലിപ്പിക്കുകയും ചെയ്യുക</translation>
 <translation id="5763042198335101085">ശരിയായ ഇമെയിൽ വിലാസം നൽകുക</translation>
+<translation id="5764725887548570807">ഒറിജിൻ ഫോർമാറ്റ് അസാധുവാണ്.</translation>
 <translation id="5765072501007116331">ഡെലിവറി രീതികളും ആവശ്യകതകളും കാണാൻ ഒരു വിലാസം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="57689295674415555">വെർച്വൽ കാർഡ് നമ്പർ പൂരിപ്പിച്ചിട്ടില്ലേ?</translation>
 <translation id="5776313857861697733">മുൻഗണന</translation>
@@ -1881,10 +1887,12 @@
 <translation id="6107012941649240045">ഇതിന് നല്‍‌കി</translation>
 <translation id="610911394827799129">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="6116338172782435947">ക്ലിപ്പ്‌ബോർഡിലേക്ക് പകർത്തിയിട്ടുള്ള ടെക്‌സ്റ്റും ചിത്രങ്ങളും കാണുക</translation>
+<translation id="6118782133429281336">ഒറിജിൻ ലിസ്റ്റ് ശൂന്യമാണ്.</translation>
 <translation id="6120179357481664955">നിങ്ങളുടെ UPI ഐഡി ഓർമ്മയുണ്ടോ?</translation>
 <translation id="6124432979022149706">Chrome എന്റർപ്രൈസ് കണക്റ്ററുകൾ</translation>
 <translation id="6127379762771434464">ഇനം നീക്കംചെയ്‌തു</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome-ലെ അദൃശ്യ മോഡിനെ കുറിച്ച് കൂടുതലറിയുക<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ഫയൽ എക്സ്റ്റൻഷൻ ശൂന്യമോ കേടായതോ ആണ്.</translation>
 <translation id="6146055958333702838">എല്ലാ കേബിളുകളും പരിശോധിക്കുക ഒപ്പം ഏതെങ്കിലും റൂട്ടറുകൾ, മോഡങ്ങൾ നിങ്ങൾ ഉപയോഗിക്കാനിടയുള്ള
         മറ്റ് നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ എന്നിവ റീബൂട്ട് ചെയ്യുക.</translation>
 <translation id="614940544461990577">പരീക്ഷിച്ചുനോക്കൂ:</translation>
@@ -2058,6 +2066,7 @@
 <translation id="666259744093848177">(x86_64 വിവർത്തനം ചെയ്‌തു)</translation>
 <translation id="6663846344464066639">കൂപ്പുകൈ</translation>
 <translation id="6665553082534466207">വലതുവശത്ത് മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>
+<translation id="6668389483194953109">പേപ്പർ വലുപ്പത്തിന്റെ പേര് "custom" എന്ന് കണ്ടെത്തി, എന്നാൽ "custom_size" പ്രോപ്പർട്ടി ശൂന്യമോ അസാധുവോ ആണ്.</translation>
 <translation id="6671697161687535275">Chromium-ത്തിൽ നിന്ന് ഫോം നിർദ്ദേശം നീക്കംചെയ്യണോ?</translation>
 <translation id="6683717648675961851">ജോലി സംബന്ധമായ വിവരങ്ങൾ</translation>
 <translation id="6685834062052613830">സൈൻ ഔട്ട് ചെയ്‌ത്, സജ്ജമാക്കൽ പൂർത്തിയാക്കുക</translation>
@@ -2071,6 +2080,7 @@
 <translation id="6696588630955820014">'ഈ ടാബ് പങ്കിടുക' ബട്ടൺ, ലിങ്ക് പങ്കിട്ടും QR കോഡ് സൃഷ്ടിച്ചും കാസ്റ്റ് ചെയ്തും മറ്റും ഈ ടാബ് പങ്കിടാൻ Enter അമർത്തുക</translation>
 <translation id="6698381487523150993">സൃഷ്ടിച്ചു:</translation>
 <translation id="6702919718839027939">ദൃശ്യമാക്കുക</translation>
+<translation id="6704458454638854812">"custom_size" പ്രോപ്പർട്ടി സജ്ജീകരിച്ചതിനാൽ, പേര് ചേർക്കേണ്ടത് "custom" എന്നാണ്.</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">സംഗീത ഉപകരണങ്ങൾ</translation>
 <translation id="6710213216561001401">മുമ്പത്തേത്</translation>
@@ -2258,6 +2268,7 @@
 <translation id="7238585580608191973">SHA-256 ഫിംഗര്‍പ്രിന്‍റ്</translation>
 <translation id="7240120331469437312">സര്‍‌ട്ടിഫിക്കറ്റ് വിഷയേതര നാമം</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# പൊരുത്തം}other{# പൊരുത്തങ്ങൾ}}</translation>
 <translation id="724691107663265825">സൈറ്റിൽ മാൽവെയർ അടങ്ങിയിരിക്കുന്നു</translation>
 <translation id="724975217298816891">നിങ്ങളുടെ കാർഡ് വിശദാംശങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="CREDIT_CARD" />-ന്റെ കാലാവധി തീരുന്ന തീയതിയും CVC-യും നൽകുക. സ്ഥിരീകരിച്ച് കഴിഞ്ഞാൽ, ഈ സൈറ്റുമായി കാർഡ് വിശദാംശങ്ങൾ പങ്കിടും.</translation>
 <translation id="7251437084390964440">നെറ്റ്‌വർക്ക് കോൺഫിഗറേഷൻ, ONC നിലവാരത്തിന് അനുസരിച്ചുള്ളതല്ല. കോൺഫിഗറേഷൻ ഭാഗങ്ങൾ ഇമ്പോർട്ട് ചെയ്‌തേക്കില്ല.

@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">شناسه دستگاه:</translation>
 <translation id="3677008721441257057">‏منظورتان &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; است؟</translation>
 <translation id="3678029195006412963">درخواست امضا نشد</translation>
+<translation id="3678342917559046352">‏پسوند نامعتبر است: انتظار می‌رود مقدار به‌صورت یکی از فرم‌های زیر باشد: &lt;extension_id&gt; یا &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">‏صفحه را در پنجره‌ «ناشناس» جدیدی باز کنید (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">اطلاعات گواهی</translation>
 <translation id="3701427423622901115">بازنشانی تأیید شد.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">ویژگی‌های جستجو</translation>
 <translation id="4644670975240021822">روبه‌پایین به‌ترتیب معکوس</translation>
 <translation id="4646534391647090355">اکنون من را به آنجا ببر</translation>
+<translation id="4648262692072505866">‏درهم‌سازی باید در قالب SHA-256 باشد.</translation>
 <translation id="4652266463001779298">غیرمجاز</translation>
 <translation id="4653167719759882810">ادغام و تملک</translation>
 <translation id="4658638640878098064">منگنه در بالا سمت چپ</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای جستجو کردن، ابتدا کلید Tab و سپس Enter را فشار دهید</translation>
 <translation id="4930153903256238152">ظرفیت زیاد</translation>
+<translation id="4936134414789135531"><ph name="VALUE_NAME" /> درج‌شده پیدا نشد.</translation>
 <translation id="4936675324097895694">امور مالی</translation>
 <translation id="4940163644868678279">‏«حالت ناشناس» در Chrome</translation>
 <translation id="4943872375798546930">نتیجه‌ای پیدا نشد</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">سینی ۱۳</translation>
 <translation id="5216942107514965959">آخرین بازدید: امروز</translation>
+<translation id="5217759126664161410">قالب پروتکل نامعتبر است.</translation>
 <translation id="5222812217790122047">ایمیل ضروری است</translation>
 <translation id="5228404122310299359">لوازم مهمانی و تعطیلات</translation>
 <translation id="5229588705416009823">بازی چندنفره گسترده</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">آگهی‌ها مسدود شدند</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="540969355065856584">این سرور نتوانست ثابت کند که <ph name="DOMAIN" /> است؛ در حال حاضر، گواهی امنیتی آن معتبر نیست. ممکن است این مشکل به دلیل پیکربندی نادرست یا قطع اتصال شما توسط حمله‌کننده ایجاد شده باشد.</translation>
+<translation id="5412040515238827314">قالب نامعتبر است: انتظار می‌رود فهرستی از الگوها وجود داشته باشد.</translation>
 <translation id="5412236728747081950">‏این سایت علایقتان را از Chrome می‌گیرد تا آگهی‌های مرتبط‌تری به شما نشان دهد</translation>
 <translation id="541416427766103491">پشته‌ساز ۴</translation>
 <translation id="5421136146218899937">پاک کردن داده‌های مرور...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">حیوانات خانگی و حیوانات دیگر</translation>
 <translation id="5759751709240058861">استفاده از دوربین و حرکت دادن آن</translation>
 <translation id="5763042198335101085">نشانی ایمیل معتبری وارد کنید</translation>
+<translation id="5764725887548570807">قالب مبدأ نامعتبر است.</translation>
 <translation id="5765072501007116331">برای دیدن روش‌های تحویل و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
 <translation id="57689295674415555">شماره کارت مجازی تکمیل نشود؟</translation>
 <translation id="5776313857861697733">اولویت</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">صادر شده برای</translation>
 <translation id="610911394827799129">‏ممکن است حساب Google شما اشکال دیگری از سابقه مرور در <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> داشته باشد</translation>
 <translation id="6116338172782435947">به نوشتار و تصاویر کپی‌شده در بریده‌دان دسترسی پیدا کند</translation>
+<translation id="6118782133429281336">فهرست مبدأ خالی است.</translation>
 <translation id="6120179357481664955">‏شناسه «رابط پرداخت‌های یکپارچه» (UPI) شما به‌خاطر سپرده شود؟</translation>
 <translation id="6124432979022149706">‏رابط‌های Chrome Enterprise</translation>
 <translation id="6127379762771434464">مورد برداشته شد</translation>
 <translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />درباره «حالت ناشناس» در Chrome بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">پسوند فایل خالی یا در قالب نادرست است.</translation>
 <translation id="6146055958333702838">همه کابل‌ها را بررسی کنید و همه ره‌یاب‌ها، مودم‌ها، یا دیگر دستگاه‌های
    شبکه‌ای را که ممکن است درحال استفاده از آن‌ها باشید مجدداً راه‌اندازی کنید.</translation>
 <translation id="614940544461990577">این موارد را امتحان کنید:</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">‏(x86_64 ترجمه‌شده)</translation>
 <translation id="6663846344464066639">دستان در هم قفل‌شده</translation>
 <translation id="6665553082534466207">سه سوراخ در راست</translation>
+<translation id="6668389483194953109">‏نام اندازه کاغذ «custom» پیدا شد، اما خصوصیت «custom_size» خالی یا نامعتبر است.</translation>
 <translation id="6671697161687535275">‏پیشنهاد فرم از Chromium پاک شود؟</translation>
 <translation id="6683717648675961851">فرصت‌های شغلی</translation>
 <translation id="6685834062052613830">خروج از سیستم و تکمیل راه‌اندازی</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">دکمه «هم‌رسانی این برگه»؛ برای هم‌رسانی این برگه ازطریق هم‌رسانی پیوند، ایجاد رمزینه پاسخ‌سریع، پخش محتوا، و موارد دیگر، کلید «ورود» را فشار دهید</translation>
 <translation id="6698381487523150993">ایجاد شده:</translation>
 <translation id="6702919718839027939">ارائه کردن</translation>
+<translation id="6704458454638854812">‏خصوصیت «custom_size» تنظیم شده است، انتظار می‌رود نام آن «custom» باشد.</translation>
 <translation id="6709133671862442373">اخبار</translation>
 <translation id="6709888928011386878">آلات موسیقی</translation>
 <translation id="6710213216561001401">قبلی</translation>

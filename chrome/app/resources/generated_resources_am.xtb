@@ -1529,7 +1529,6 @@
 <translation id="2390347491606624519">ከተኪ ጋር መገናኘት አልተቻለም፣ እባክዎ እንደገና ይግቡ</translation>
 <translation id="2390782873446084770">Wi-Fi ስምረት</translation>
 <translation id="2391419135980381625">መደበኛ ቅርጸ-ቁምፊ</translation>
-<translation id="2392163307141705938">የእርስዎ ወላጅ ለ<ph name="IDS_SHORT_PRODUCT_NAME" /> ያቀናበሩት የጊዜ ገደብ ላይ ድደርሰዋል።</translation>
 <translation id="2392369802118427583">አግብር</translation>
 <translation id="2393136602862631930">በእርስዎ Chromebook ላይ <ph name="APP_NAME" />ን ያቀናብሩ</translation>
 <translation id="2393313392064891208">የGoogle ChromeOS Flex ውል ይዘቶች</translation>
@@ -1655,7 +1654,6 @@
 <translation id="2505669838803949807">የእርስዎ መሣሪያ EID <ph name="EID_NUMBER" /> ነው። የደንበኛ አገልግሎት ተወካይ እርስዎ ይህን አገልግሎት እንዲያገብሩ የEID ቁጥር ሊጠቀም ይችላል።</translation>
 <translation id="250704661983564564">የማሳያ አደራደር</translation>
 <translation id="2507253002925770350">ቲኬት ተወግዷል</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> ባለበት ቆሟል</translation>
 <translation id="2508428939232952663">የGoogle Play መደብር መለያ</translation>
 <translation id="2509495747794740764">የልኬት መጠኑ በ10 እና 200 መካከል የሆነ ቁጥር መሆን አለበት።</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1899,7 +1897,6 @@
 <translation id="2743387203779672305">ወደ ቅንጥብ ሰሌዳ ገልብጥ</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">ይህ ፋይል ሚስጥራዊነት ያለው ወይም አደገኛ ይዘት አለው። ባለቤቱ እንዲያስተካክሉት ይጠይቋቸው።</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> ባለበት ቆሟል</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> ውስጥ ይግቡ</translation>
 <translation id="2749836841884031656">ሲም</translation>
 <translation id="2749881179542288782">ሰዋሰው እና ሆሄ አርም</translation>
@@ -4239,7 +4236,6 @@
 <translation id="5033137252639132982">የእንቅስቃሴ ዳሳሾችን ለመጠቀም አልተፈቀደም</translation>
 <translation id="5033266061063942743">ጆሜትሪያዊ ቅርጾች</translation>
 <translation id="5037676449506322593">ሁሉንም ምረጥ</translation>
-<translation id="5038022729081036555">ነገ ለ<ph name="TIME_LIMIT" /> ሊጠቀሙበት ይችላሉ።</translation>
 <translation id="5038818366306248416">ከዚህ ቀደም ምንም ቅጥያዎችን በ<ph name="ORIGIN" /> ላይ ላለመፍቀድ መርጠዋል</translation>
 <translation id="5039696241953571917">በእርስዎ Google መለያ ውስጥ የተቀመጡ የይለፍ ቃላትን ይመልከቱ እና ያቀናብሩ</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
@@ -4277,6 +4273,7 @@
 <translation id="5074761966806028321">ውቅረትን ለማጠናቀቅ ፈቃድ አሁንም ያስፈልጋል</translation>
 <translation id="5075563999073408211">መሣሪያዎን በአንድ ወይም በተጨማሪ መቀያየሪያዎች ይቆጣጠሩ። መቀያየሪያዎች የቁልፍ ሰሌዳ ቁልፎች፣ የመጫወቻ ንጣፍ አዝራሮች ወይም የተመደቡ መሣሪያዎች መሆን ይችላሉ።</translation>
 <translation id="5075910247684008552">ደህንነታቸው በተጠበቁ ጣቢያዎች ላይ በነባሪነት ደህንነቱ ያልተጠበቀ ይዘት ይታገዳል</translation>
+<translation id="5078490485380754244">መሣሪያን እርሳ</translation>
 <translation id="5078638979202084724">ለሁሉም ትሮች ዕልባት ያብጁ</translation>
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
 <translation id="5079010647467150187">አብሮገነብ VPN አክል...</translation>
@@ -7282,7 +7279,6 @@ nil</translation>
 <translation id="8013993649590906847">አንድ ምስል ጠቃሚ መግለጫ ከሌለው Chrome ለእርስዎ አንድ ለማቅረብ ይሞክራል። ዝርዝር መግለጫዎችን ለመፍጠር፣ ምስሎች ወደ Google ይላካሉ።</translation>
 <translation id="8014154204619229810">አዘማኙ አሁን በማሄድ ላይ ነው። እንደገና ለመፈተሽ በአንድ ደቂቃ ውስጥ ያድሱ።</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ወደ ቀዳሚው የተጫነ ስሪት ማድህር አልቻለም። እባክዎ የእርስዎን መሣሪያ እንደገና Powerwash ለማድረግ ይሞክሩ።</translation>
-<translation id="8015163965024115122">በ<ph name="IDS_SHORT_PRODUCT_NAME" /> ወይም <ph name="IDS_SHORT_PRODUCT_NAME" /> መተግበሪያዎች ላይ የእርስዎ ወላጅ ያቀናበሩት ገደብ አልቋል።</translation>
 <translation id="8016266267177410919">ጊዜያዊ ማከማቻ</translation>
 <translation id="8017176852978888182">Linuxን የተጋሩ ማውጫዎች</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8129,7 +8125,7 @@ nil</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
 <translation id="8846132060409673887">የዚህ ኮምፒውተር አምራችና ሞዴል ማንበብ</translation>
 <translation id="8846163936679269230">የኢሲም መገለጫዎችን ዳግም ያስጀምሩ</translation>
-<translation id="8846239054091760429">ሞኖ ኦዲዮ፣ አነስተኛ ድርጅት፣ የቀጥታ መግለጫ ጽሑፍ እና ተጨማሪ</translation>
+<translation id="8846239054091760429">ሞኖ ኦዲዮ፣ ጀማሪ ድርጅት፣ የቀጥታ መግለጫ ጽሑፍ እና ተጨማሪ</translation>
 <translation id="8847523528195140327">ክዳኑ ሲዘጋ ዘግተህ ውጣ</translation>
 <translation id="8847988622838149491">ዩ ኤስ ቢ</translation>
 <translation id="8849001918648564819">ተደብቋል</translation>
@@ -8422,7 +8418,6 @@ nil</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />ለምርጥ ተሞክሮ <ph name="DEVICE_OS" />ን ውስጣዊ ዲስክዎ ላይ ይጫኑ። እንዲሁም በኋላ ላይ ከመግቢያ ማያ ገጹ ላይ ሊጭኑት ይችላሉ።<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ለመጫን ዝግጁ ካልሆኑ እሱን ለመሞከር ከዩኤስቢ ማሄድ ይችላሉ። ይህ የእርስዎን ነባር ስርዓተ ክወና እና ውሂብ ያቆያል፣ ነገር ግን የማከማቻ እና የአፈጻጸም ገደቦችን ሊያዩ ይችላሉ።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">እንደተሰካ ትር ክፈት</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> ባለበት ቆሟል</translation>
 <translation id="9124003689441359348">የተቀመጡ የይለፍ ቃላትዎ እዚህ ይታያሉ</translation>
 <translation id="9126149354162942022">የጠቋሚ ቀለም</translation>
 <translation id="9128317794749765148">ቅንብርን ማጠናቀቅ አልተቻለም</translation>

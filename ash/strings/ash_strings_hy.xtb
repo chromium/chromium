@@ -469,7 +469,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
 <translation id="3694122362646626770">Վեբկայքեր</translation>
-<translation id="3701206655856637070">Այժմ դուք կարող եք ընտրել պանակ, որում կպահվեն էկրանի տեսագրումները։</translation>
 <translation id="3702809606464356667">Ցուցադրվում են պատուհաններ ընթացիկ աշխատասեղանից։ Սեղմեք վեր սլաքի ստեղնը՝ բոլոր աշխատասեղանների պատուհանները ցուցադրելու համար։</translation>
 <translation id="3702846122927433391">Նիգերիայի բնակչությունը</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +651,7 @@
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
+<translation id="470644585772471629">Գունաշրջում</translation>
 <translation id="4717575069099566988">USB-C մալուխը չի աջակցում USB4 միջերես։ Սարքի աշխատանքի արդյունավետությունը կարող է սահմանափակվել։</translation>
 <translation id="4730374152663651037">ՀԱՃԱԽ ՕԳՏԱԳՈՐԾՎՈՂ</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>

@@ -1534,7 +1534,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2390347491606624519">Ei yhteyttä välityspalvelimeen, kirjaudu sisään uudelleen</translation>
 <translation id="2390782873446084770">Wi-Fin synkronointi</translation>
 <translation id="2391419135980381625">Perusfontti</translation>
-<translation id="2392163307141705938">Vanhempasi asettama aikaraja (<ph name="IDS_SHORT_PRODUCT_NAME" />) tuli täyteen.</translation>
 <translation id="2392369802118427583">Aktivoi</translation>
 <translation id="2393136602862631930">Ota <ph name="APP_NAME" /> käyttöön Chromebookilla</translation>
 <translation id="2393313392064891208">Google ChromeOS Flexin käyttöehtojen sisältö</translation>
@@ -1660,7 +1659,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2505669838803949807">Laitteesi EID-numero on <ph name="EID_NUMBER" />. Asiakaspalvelija voi käyttää EID-numeroa auttaakseen palvelun aktivoinnissa.</translation>
 <translation id="250704661983564564">Näyttöasettelu</translation>
 <translation id="2507253002925770350">Tukipyyntö poistettu</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> on keskeytetty</translation>
 <translation id="2508428939232952663">Google Play Kauppa ‑tili</translation>
 <translation id="2509495747794740764">Asteikon on oltava numero välillä 10–200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1904,7 +1902,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2743387203779672305">Kopioi leikepöydälle</translation>
 <translation id="2745080116229976798">Microsoftin kelpaava alistaminen</translation>
 <translation id="2747266560080989517">Tämä tiedosto sisältää arkaluontoista tai vaarallista sisältöä. Pyydä sen omistajaa korjaamaan asia.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> on keskeytetty</translation>
 <translation id="2749756011735116528">Kirjaudu sisään tuotteeseen <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Tarkista kielioppi oikeinkirjoituksen yhteydessä</translation>
@@ -4244,7 +4241,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5033137252639132982">Liiketunnistimien käyttö kielletty</translation>
 <translation id="5033266061063942743">Geometriset kuviot</translation>
 <translation id="5037676449506322593">Valitse kaikki</translation>
-<translation id="5038022729081036555">Huomenna voit käyttää sovellusta <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Estit aiemmin kaikki laajennukset täällä: <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Katso ja ylläpidä Google-tilille tallennettuja salasanoja</translation>
 <translation id="5039804452771397117">Salli</translation>
@@ -4282,6 +4278,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5074761966806028321">Käyttöönoton viimeistely edellyttää lupaa</translation>
 <translation id="5075563999073408211">Ohjaa laitetta yhdellä tai useammalla kytkimellä. Kytkimet voivat olla näppäimistön näppäimiä, peliohjainpainikkeita tai erillisiä laitteita.</translation>
 <translation id="5075910247684008552">Suojaamaton sisältö estetään oletuksena suojatuilla sivustoilla</translation>
+<translation id="5078490485380754244">Unohda laite</translation>
 <translation id="5078638979202084724">Lisää kaikki välilehdet kirjanmerkkeihin</translation>
 <translation id="5078796286268621944">Väärä PIN-koodi</translation>
 <translation id="5079010647467150187">Lisää sisäänrakennettu VPN…</translation>
@@ -7279,7 +7276,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8013993649590906847">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
 <translation id="8014154204619229810">Päivitysohjelma on käynnissä. Lataa sivu hetken kuluttua uudelleen ja tarkista tilanne.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ei voi palautua aiemmin asennettuun versioon. Suorita laitteellesi Powerwash uudelleen.</translation>
-<translation id="8015163965024115122">Vanhempasi asettama raja (<ph name="IDS_SHORT_PRODUCT_NAME" /> tai <ph name="IDS_SHORT_PRODUCT_NAME" />) tuli vastaan.</translation>
 <translation id="8016266267177410919">Väliaikainen tallennustila</translation>
 <translation id="8017176852978888182">Linuxin jaetut hakemistot</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8419,7 +8415,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Asenna <ph name="DEVICE_OS" /> sisäiselle levylle, jotta saat parhaan käyttökokemuksen. Voit myös asentaa sen myöhemmin kirjautumisnäytöltä.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jos et ole valmis asentamaan, voit kokeilla sitä USB:n kautta. Tämä säilyttää nykyisen käyttöjärjestelmäsi ja datasi, mutta tallennustila ja suorituskyky voivat olla rajallisia.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Avaa kiinnitetyllä välilehdellä</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> on keskeytetty</translation>
 <translation id="9124003689441359348">Tässä näytetään tallennetut salasanasi.</translation>
 <translation id="9126149354162942022">Kohdistimen väri</translation>
 <translation id="9128317794749765148">Määritystä ei voitu suorittaa loppuun</translation>

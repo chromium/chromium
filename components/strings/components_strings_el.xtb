@@ -1004,6 +1004,7 @@
 <translation id="3676592649209844519">Αναγνωριστικό συσκευής:</translation>
 <translation id="3677008721441257057">Μήπως εννοούσατε &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;;</translation>
 <translation id="3678029195006412963">Δεν ήταν δυνατή η έγκριση του αιτήματος</translation>
+<translation id="3678342917559046352">Μη έγκυρη επέκταση: Η τιμή αναμενόταν να έχει μία από τις ακόλουθες μορφές: &lt;extension_id&gt; ή &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Ανοίξτε τη σελίδα σε ένα νέο παράθυρο ανώνυμης περιήγησης (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Πληροφορίες πιστοποιητικού</translation>
 <translation id="3701427423622901115">Έγινε επιβεβαίωση της επαναφοράς.</translation>
@@ -1344,6 +1345,7 @@
 <translation id="464342062220857295">Λειτουργίες αναζήτησης</translation>
 <translation id="4644670975240021822">Αντίστροφη σειρά με την πρόσοψη προς τα κάτω</translation>
 <translation id="4646534391647090355">Μετάβαση εκεί τώρα</translation>
+<translation id="4648262692072505866">Ο κατακερματισμός πρέπει να έχει τη μορφή SHA-256.</translation>
 <translation id="4652266463001779298">Δεν επιτρέπεται</translation>
 <translation id="4653167719759882810">Συγχωνεύσεις και εξαγορές</translation>
 <translation id="4658638640878098064">Συρραφή επάνω αριστερά</translation>
@@ -1454,6 +1456,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Πατήστε το πλήκτρο Tab και μετά το πλήκτρο Enter για αναζήτηση.</translation>
 <translation id="4930153903256238152">Μεγάλη χωρητικότητα</translation>
+<translation id="4936134414789135531">Δεν ήταν δυνατή η εύρεση της τιμής <ph name="VALUE_NAME" /> που εισάχθηκε.</translation>
 <translation id="4936675324097895694">Οικονομικά</translation>
 <translation id="4940163644868678279">Ανώνυμη περιήγηση στο Chrome</translation>
 <translation id="4943872375798546930">Δεν υπάρχουν αποτελέσματα</translation>
@@ -1571,6 +1574,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Τροφοδότης χαρτιού 13</translation>
 <translation id="5216942107514965959">Τελευταία επίσκεψη σήμερα</translation>
+<translation id="5217759126664161410">Μη έγκυρη μορφή πρωτοκόλλου.</translation>
 <translation id="5222812217790122047">Απαιτείται διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
 <translation id="5228404122310299359">Προμήθειες για γιορτές και εκδηλώσεις</translation>
 <translation id="5229588705416009823">Παιχνίδια για πολλούς παίκτες</translation>
@@ -1643,6 +1647,7 @@
 <translation id="5398772614898833570">Αποκλείστηκαν διαφημίσεις</translation>
 <translation id="5400836586163650660">Γκρι</translation>
 <translation id="540969355065856584">Αυτός ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του δεν είναι έγκυρο αυτήν τη στιγμή. Αυτό μπορεί να οφείλεται σε εσφαλμένη ρύθμιση ή σε κάποιον εισβολέα που παρεμβαίνει στη σύνδεσή σας.</translation>
+<translation id="5412040515238827314">Μη έγκυρη μορφή: Αναμενόταν μια λίστα μοτίβων.</translation>
 <translation id="5412236728747081950">Αυτός ο ιστότοπος λαμβάνει πληροφορίες για τα ενδιαφέροντά σας από το Chrome για να εμφανίσει πιο συναφείς διαφημίσεις.</translation>
 <translation id="541416427766103491">Μονάδα στοίβαξης 4</translation>
 <translation id="5421136146218899937">Διαγραφή δεδομένων περιήγησης...</translation>
@@ -1762,6 +1767,7 @@
 <translation id="5754400531489347219">Κατοικίδια και ζώα</translation>
 <translation id="5759751709240058861">Χρήση και μετακίνηση της κάμεράς σας</translation>
 <translation id="5763042198335101085">Εισαγάγετε μια έγκυρη διεύθυνση ηλεκτρονικού ταχυδρομείου</translation>
+<translation id="5764725887548570807">Μη έγκυρη μορφή προέλευσης.</translation>
 <translation id="5765072501007116331">Για να δείτε τρόπους και απαιτήσεις παράδοσης, επιλέξτε μια διεύθυνση</translation>
 <translation id="57689295674415555">Δεν συμπληρώθηκε ο αριθμός εικονικής κάρτας;</translation>
 <translation id="5776313857861697733">Προτεραιότητα</translation>
@@ -1886,10 +1892,12 @@
 <translation id="6107012941649240045">Εκδόθηκε σε</translation>
 <translation id="610911394827799129">Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Δει κείμενο και εικόνες που αντιγράψατε στο πρόχειρο</translation>
+<translation id="6118782133429281336">Η λίστα προέλευσης είναι κενή.</translation>
 <translation id="6120179357481664955">Θυμάστε το αναγνωριστικό UPI;</translation>
 <translation id="6124432979022149706">Εφαρμογές σύνδεσης Chrome για επιχειρήσεις</translation>
 <translation id="6127379762771434464">Το στοιχείο καταργήθηκε</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Μάθετε περισσότερα σχετικά με την Ανώνυμη περιήγηση στο Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Η επέκταση αρχείου είναι κενή ή έχει λανθασμένη μορφή.</translation>
 <translation id="6146055958333702838">Ελέγξτε τυχόν καλώδια και επανεκκινήστε δρομολογητές, μόντεμ ή άλλες συσκευές
     του δικτύου που ενδεχομένως χρησιμοποιείτε.</translation>
 <translation id="614940544461990577">Δοκιμάστε να κάνετε τα εξής:</translation>
@@ -2063,6 +2071,7 @@
 <translation id="666259744093848177">(x86_64 μεταφρασμένο)</translation>
 <translation id="6663846344464066639">Σταυρωμένα χέρια</translation>
 <translation id="6665553082534466207">Τριπλό τρύπημα στα δεξιά</translation>
+<translation id="6668389483194953109">Βρέθηκε το όνομα μεγέθους χαρτιού custom, αλλά η ιδιότητα custom_size είναι κενή ή μη έγκυρη.</translation>
 <translation id="6671697161687535275">Να καταργηθεί η πρόταση φόρμας από το Chromium;</translation>
 <translation id="6683717648675961851">Καταχωρίσεις θέσεων εργασίας</translation>
 <translation id="6685834062052613830">Αποσυνδεθείτε και ολοκληρώστε την εγκατάσταση</translation>
@@ -2076,6 +2085,7 @@
 <translation id="6696588630955820014">Κουμπί Κοινοποίηση αυτής της καρτέλας, πατήστε το πλήκτρο Enter για να μοιραστείτε αυτήν την καρτέλα μέσω κοινοποίησης του συνδέσμου, δημιουργίας κωδικού QR, μετάδοσης κ.ά.</translation>
 <translation id="6698381487523150993">Δημιουργήθηκε:</translation>
 <translation id="6702919718839027939">Παρουσίαση</translation>
+<translation id="6704458454638854812">Η ιδιότητα custom_size έχει οριστεί. Το αναμενόμενο όνομα είναι custom.</translation>
 <translation id="6709133671862442373">Ειδήσεις</translation>
 <translation id="6709888928011386878">Μουσικά όργανα</translation>
 <translation id="6710213216561001401">Προηγούμενο</translation>

@@ -1003,6 +1003,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3676592649209844519">Identyfikator urządzenia:</translation>
 <translation id="3677008721441257057">Czy chodziło Ci o &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Nie udało się podpisać żądania</translation>
+<translation id="3678342917559046352">Nieprawidłowe rozszerzenie: ta wartość powinna mieć 1 z tych formatów: &lt;extension_id&gt; lub &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Otwórz stronę w nowym oknie incognito (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Informacje o certyfikacie</translation>
 <translation id="3701427423622901115">Zresetowanie zostało potwierdzone.</translation>
@@ -1342,6 +1343,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="464342062220857295">Funkcje wyszukiwarki</translation>
 <translation id="4644670975240021822">Odwrotna kolejność, strona do drukowania skierowana w dół</translation>
 <translation id="4646534391647090355">Przejdź tam teraz</translation>
+<translation id="4648262692072505866">Hasz musi mieć format SHA-256.</translation>
 <translation id="4652266463001779298">Nie zezwolono</translation>
 <translation id="4653167719759882810">Fuzje i przejęcia</translation>
 <translation id="4658638640878098064">Zszywka w lewym górnym rogu</translation>
@@ -1451,6 +1453,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a następnie Enter, by wyszukać.</translation>
 <translation id="4930153903256238152">Duża pojemność</translation>
+<translation id="4936134414789135531">Nie udało się znaleźć wstawionej wartości <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Finanse</translation>
 <translation id="4940163644868678279">Tryb incognito w Chrome</translation>
 <translation id="4943872375798546930">Brak wyników</translation>
@@ -1568,6 +1571,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Taca 13</translation>
 <translation id="5216942107514965959">Ostatnio używana dzisiaj</translation>
+<translation id="5217759126664161410">Nieprawidłowy format protokołu.</translation>
 <translation id="5222812217790122047">E-mail jest wymagany</translation>
 <translation id="5228404122310299359">Akcesoria imprezowe i urlopowe</translation>
 <translation id="5229588705416009823">Gry MMO</translation>
@@ -1640,6 +1644,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5398772614898833570">Reklamy zostały zablokowane</translation>
 <translation id="5400836586163650660">Szary</translation>
 <translation id="540969355065856584">Ten serwer nie może udowodnić, że należy do domeny <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest obecnie ważny. Może to być spowodowane nieprawidłową konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
+<translation id="5412040515238827314">Nieprawidłowy format: oczekiwana jest lista wzorców.</translation>
 <translation id="5412236728747081950">Witryna korzysta z gromadzonych przez Chrome informacji o Twoich zainteresowaniach, aby wyświetlać trafniejsze reklamy</translation>
 <translation id="541416427766103491">Układarka 4</translation>
 <translation id="5421136146218899937">Wyczyść dane przeglądania...</translation>
@@ -1758,6 +1763,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="5754400531489347219">Zwierzęta</translation>
 <translation id="5759751709240058861">Używanie kamery i poruszanie nią</translation>
 <translation id="5763042198335101085">Wpisz prawidłowy adres e-mail</translation>
+<translation id="5764725887548570807">Nieprawidłowy format źródła.</translation>
 <translation id="5765072501007116331">Aby zobaczyć metody dostawy oraz wymagania, wybierz adres</translation>
 <translation id="57689295674415555">Nie uzupełniono numeru karty wirtualnej?</translation>
 <translation id="5776313857861697733">Priorytet</translation>
@@ -1882,10 +1888,12 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6107012941649240045">Wystawiony dla</translation>
 <translation id="610911394827799129">Inne rodzaje historii przeglądania mogą być nadal dostępne na Twoim koncie Google na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Mieć dostęp do tekstu i obrazów skopiowanych do schowka</translation>
+<translation id="6118782133429281336">Lista źródeł jest pusta.</translation>
 <translation id="6120179357481664955">Zapamiętać Twój identyfikator UPI?</translation>
 <translation id="6124432979022149706">Oprogramowanie sprzęgające Chrome Enterprise</translation>
 <translation id="6127379762771434464">Element został usunięty</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Dowiedz się więcej o trybie incognito w Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Rozszerzenie pliku jest puste lub ma nieprawidłowy format.</translation>
 <translation id="6146055958333702838">Sprawdź wszystkie kable i uruchom ponownie wszelkie używane routery, modemy
     i inne urządzenia sieciowe.</translation>
 <translation id="614940544461990577">Wypróbuj te rozwiązania:</translation>
@@ -2059,6 +2067,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="666259744093848177">(x86_64 przetłumaczone)</translation>
 <translation id="6663846344464066639">Złożone dłonie</translation>
 <translation id="6665553082534466207">Trzy otwory po prawej</translation>
+<translation id="6668389483194953109">Znaleziono rozmiar papieru o nazwie „custom”, ale właściwość „custom_size” jest pusta lub nieprawidłowa.</translation>
 <translation id="6671697161687535275">Usunąć tę podpowiedź do formularza z Chromium?</translation>
 <translation id="6683717648675961851">Oferty pracy</translation>
 <translation id="6685834062052613830">Wyloguj się i dokończ konfigurację</translation>
@@ -2072,6 +2081,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="6696588630955820014">Przycisk Udostępnij tę kartę; aby udostępnić tę kartę za pomocą linku, kodu QR, przesyłania lub innej opcji, naciśnij Enter</translation>
 <translation id="6698381487523150993">Utworzono:</translation>
 <translation id="6702919718839027939">Tryb prezentacji</translation>
+<translation id="6704458454638854812">Właściwość „custom_size” jest ustawiona. Oczekiwana nazwa to „custom”.</translation>
 <translation id="6709133671862442373">Wiadomości</translation>
 <translation id="6709888928011386878">Instrumenty muzyczne</translation>
 <translation id="6710213216561001401">Poprzedni</translation>

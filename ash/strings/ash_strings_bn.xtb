@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">আইটেম স্ক্যান</translation>
 <translation id="1056775291175587022">নেটওয়ার্ক নেই</translation>
 <translation id="1056898198331236512">সতর্কতা</translation>
+<translation id="1058009965971887428">প্রতিক্রিয়া জানান</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">প্রতিস্থাপন করুন</translation>
 <translation id="1073899992769346247">ব্যাটারিটি বদলান বা রিচার্জ করুন</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ম্যানেজ করা ব্যবহারকারী</translation>
 <translation id="36813544980941320">ফোন ও <ph name="DEVICE_NAME" />-এর মধ্যে ওয়াই-ফাই নেটওয়ার্ক শেয়ার করা হবে।</translation>
 <translation id="3694122362646626770">ওয়েবসাইটগুলি</translation>
-<translation id="3701206655856637070">স্ক্রিন ক্যাপচার কোথায় সেভ করা হবে, সেটি আপনি পরিবর্তন করতে পারবেন</translation>
 <translation id="3702809606464356667">বর্তমান ডেস্ক থেকে উইন্ডো দেখানো হচ্ছে, সব ডেস্ক থেকে উইন্ডো দেখাতে 'উর্ধমুখী তীরচিহ্ন' কী প্রেস করুন</translation>
 <translation id="3702846122927433391">নাইজিরিয়াতে জনপ্রিয়</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@
 <translation id="6182592640011875895">ডেস্ক খুলুন</translation>
 <translation id="619279033188484792">আপনার <ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া এবং বিজ্ঞপ্তি দেখুন</translation>
 <translation id="619335566042889110">এখন সম্পূর্ণ চার্জ করুন</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">আপনি এখন একই সময়ে নিজে এবং আপনার স্ক্রিন রেকর্ড করতে পারবেন</translation>
 <translation id="622484624075952240">নিচের</translation>
 <translation id="6231419273573514727">পেরিফেরাল পারফর্ম্যন্স সীমাবদ্ধ হতে পারে</translation>

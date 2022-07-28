@@ -1532,7 +1532,6 @@
 <translation id="2390347491606624519">اتصال به پراکسی امکان‌پذیر نیست، لطفاً دوباره به سیستم وارد شوید</translation>
 <translation id="2390782873446084770">‏همگام‌سازی Wi-Fi</translation>
 <translation id="2391419135980381625">قلم استاندارد</translation>
-<translation id="2392163307141705938">به حداکثر زمانی که ولی‌تان برای استفاده از <ph name="IDS_SHORT_PRODUCT_NAME" /> تعیین کرده است رسیده‌اید.</translation>
 <translation id="2392369802118427583">فعالسازی</translation>
 <translation id="2393136602862631930">‏راه‌اندازی <ph name="APP_NAME" /> در Chromebook</translation>
 <translation id="2393313392064891208">‏محتوای «شرایط Google ChromeOS Flex»</translation>
@@ -1658,7 +1657,6 @@
 <translation id="2505669838803949807">‏شماره EID دستگاه شما <ph name="EID_NUMBER" /> است. نماینده خدمات مشتری می‌تواند بااستفاده از شماره شناسه دستگاه سیم‌کارت داخلی (EID) به شما کمک کند سرویس را فعال کنید.</translation>
 <translation id="250704661983564564">تنظیم نمایشگر</translation>
 <translation id="2507253002925770350">بلیت برداشته شد</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> متوقف شده است</translation>
 <translation id="2508428939232952663">‏حساب فروشگاه Google Play</translation>
 <translation id="2509495747794740764">مقیاس باید عددی بین ۱۰ تا ۲۰۰ باشد.</translation>
 <translation id="2509566264613697683">۸ برابر</translation>
@@ -1902,7 +1900,6 @@
 <translation id="2743387203779672305">کپی در بریده‌دان</translation>
 <translation id="2745080116229976798">‏وابستگی مشروط Microsoft</translation>
 <translation id="2747266560080989517">این فایل محتوای حساس یا خطرناک دارد. از مالک بخواهید مشکل را برطرف کند.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> مکث شده است</translation>
 <translation id="2749756011735116528">ورود به سیستم <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">سیم‌کارت</translation>
 <translation id="2749881179542288782">بررسی گرامر با املا</translation>
@@ -2408,7 +2405,7 @@
 <translation id="3254516606912442756">تشخیص خودکار منطقه زمانی غیرفعال شده است</translation>
 <translation id="3254715652085014625">‏برنامه Chrome را در تلفن Android باز کنید و به «تنظیمات &gt; گذرواژه‌ها &gt; استفاده از تلفن به‌عنوان کلید امنیتی» بروید، و دستورالعمل‌های مربوطه را دنبال کنید.</translation>
 <translation id="3255355328033513170">همه داده‌های ذخیره‌شده توسط <ph name="SITE_GROUP_NAME" /> و سایت‌های زیرمجموعه آن حذف خواهند شد. این مورد کوکی‌ها را شامل می‌شود. از سیستم این سایت‌ها (ازجمله در برگه‌های باز) خارج خواهید شد.</translation>
-<translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> مجاز شود؟</translation>
+<translation id="3257733480216378006">به <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> اجازه داده شود؟</translation>
 <translation id="3259723213051400722">لطفاً دوباره امتحان کنید.</translation>
 <translation id="3261268979727295785">بعد از تکمیل راه‌اندازی، می‌توانید کنترل‌های والدین را برای فرزندان بزرگ‌تر اضافه کنید. می‌توانید اطلاعات را در کنترل‌های والدین در برنامه «کاوش» پیدا کنید.</translation>
 <translation id="3262986719682892278">بسیار بزرگ است</translation>
@@ -4245,7 +4242,6 @@
 <translation id="5033137252639132982">اجازه ندارد از حسگرهای حرکتی استفاده کند</translation>
 <translation id="5033266061063942743">شکل‌های هندسی</translation>
 <translation id="5037676449506322593">انتخاب همه</translation>
-<translation id="5038022729081036555">می‌توانید فردا <ph name="TIME_LIMIT" /> از آن استفاده کنید.</translation>
 <translation id="5038818366306248416">قبلاً انتخاب کرده‌اید هیچ افزونه‌ای در <ph name="ORIGIN" /> مجاز نباشد</translation>
 <translation id="5039696241953571917">‏در «حساب Google» خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
 <translation id="5039804452771397117">اجازه دادن</translation>
@@ -4283,6 +4279,7 @@
 <translation id="5074761966806028321">برای تکمیل راه‌اندازی، همچنان به اجازه نیاز دارید</translation>
 <translation id="5075563999073408211">دستگاهتان را با یک یا چند کلید کنترل کنید. از کلیدهای صفحه‌کلید، دکمه‌های پد بازی، یا دستگاه‌های اختصاصی می‌توان به‌عنوان کلید استفاده کرد.</translation>
 <translation id="5075910247684008552">محتوای ناامن به‌طور پیش‌فرض در سایت‌های ایمن مسدود می‌شود</translation>
+<translation id="5078490485380754244">فراموش کردن دستگاه</translation>
 <translation id="5078638979202084724">نشانک گذاری همه برگه‌ها</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5079010647467150187">‏افزودن VPN داخلی…</translation>
@@ -5045,6 +5042,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - دوربین یا میکروفون درحال ضبط کردن است</translation>
 <translation id="583673505367439042">سایت‌ها می‌توانند برای ویرایش فایل‌ها و پوشه‌های موجود در دستگاهتان درخواست دهند</translation>
 <translation id="583756221537636748">قاب</translation>
+<translation id="5840658767386246331">‏جستجو با Google</translation>
 <translation id="5840680448799937675">فایل‌ها همیشه درحالت آفلاین هم‌رسانی می‌شود</translation>
 <translation id="5841270259333717135">پیکربندی اترنت</translation>
 <translation id="5842497610951477805">فعال کردن بلوتوث</translation>
@@ -6537,6 +6535,7 @@
 <translation id="7307129035224081534">موقتاً متوقف شد</translation>
 <translation id="7308643132139167865">زبان‌های وب‌سایت</translation>
 <translation id="7310598146671372464">‏ورود به سیستم انجام نشد. این سرور از رمزگذاری‌های Kerberos مشخص‌شده پشتیبانی نمی‌کند. لطفاً با سرپرست سیستم تماس بگیرید.</translation>
+<translation id="7311089766378749632">درخواست خواندن و تغییر دادن <ph name="SITE_NAME" /> را ارائه داده است</translation>
 <translation id="7312210124139670355">سرپرستتان درحال بازنشاندن سیم‌کارت داخلی شما است. ممکن است چند دقیقه طول بکشد.</translation>
 <translation id="7320213904474460808">شبکه پیش‌فرض</translation>
 <translation id="7321545336522791733">سرور غیرقابل دسترسی است</translation>
@@ -6866,7 +6865,7 @@
 <translation id="7635048370253485243">سرپرستتان آن را پین کرده است</translation>
 <translation id="7636919061354591437">نصب در این دستگاه</translation>
 <translation id="7637593984496473097">فضای دیسک کافی نیست</translation>
-<translation id="7639914187072011620">‏نشانی وب هدایت SAML از سرور واکشی نشد</translation>
+<translation id="7639914187072011620">‏نشانی وب هدایتگر SAML از سرور واکشی نشد</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> شما را به‌صورت خودکار در سایت‌های واجد شرایط با گذرواژه‌هایی که ذخیره کرده‌اید ثبت ورود می‌کند.</translation>
 <translation id="7641513591566880111">نام نمایه جدید</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> اضافه شد</translation>
@@ -7128,6 +7127,7 @@
 <translation id="7869655448736341731">هر هدفی</translation>
 <translation id="7870730066603611552">مرور گزینه‌های همگام‌سازی به دنبال راه‌اندازی</translation>
 <translation id="7870790288828963061">‏برنامه‌های کیوسکی با نسخه جدیدتر پیدا نشد. موردی برای به‌روزرسانی وجود ندارد. لطفاً فلش USB را خارج کنید.</translation>
+<translation id="7871049986386271121">همیشه در این سایت</translation>
 <translation id="7871109039747854576">استفاده از کلیدهای <ph name="COMMA" /> و <ph name="PERIOD" /> برای پی‌جویی فهرست کاندیداها</translation>
 <translation id="787268756490971083">خاموش</translation>
 <translation id="7872758299142009420">گروه‌های تودرتو خیلی زیاد هستند: <ph name="ERROR_LINE" /></translation>
@@ -7282,7 +7282,6 @@
 <translation id="8013993649590906847">‏اگر تصویری توضیح مفیدی نداشته باشد، Chrome توضیحی برای شما ارائه خواهد کرد. برای ایجاد توضیحات، تصاویر به Google ارسال می‌شود.</translation>
 <translation id="8014154204619229810">در حال حاضر به‌روزرسان در حال اجراست. برای بررسی دوباره، بعد از یک دقیقه بازآوری کنید.</translation>
 <translation id="8014206674403687691">‏<ph name="IDS_SHORT_PRODUCT_NAME" /> قادر نیست به نسخه نصب شده قبلی بازگردد. لطفاً دوباره سعی کنید دستگاهتان را Powerwash کنید.</translation>
-<translation id="8015163965024115122">به حداکثر محدودیت استفاده از برنامه‌های <ph name="IDS_SHORT_PRODUCT_NAME" /> یا <ph name="IDS_SHORT_PRODUCT_NAME" /> که ولی‌تان تنظیم کرده است، رسیده‌اید.</translation>
 <translation id="8016266267177410919">فضای ذخیره‌سازی موقت</translation>
 <translation id="8017176852978888182">‏فهرست‌های راهنمای هم‌رسانی‌شده Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8423,7 +8422,6 @@
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />برای دریافت بهترین تجربه، <ph name="DEVICE_OS" /> را در دیسک داخلی دستگاه نصب کنید. بعداً هم می‌توانید آن را از صفحه ورود به سیستم نصب کنید.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />اگر آماده نصب نیستید و می‌خواهید اول آن را امتحان کنید، می‌توانید آن را از USB اجرا کنید. با این کار، سیستم‌عامل فعلی و داده‌هایتان حفظ خواهند شد اما ممکن است با محدودیت فضای ذخیره‌سازی و عملکرد مواجه شوید.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">باز کردن به‌عنوان برگه الصاق شده</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> متوقف شده است</translation>
 <translation id="9124003689441359348">گذرواژه‌های ذخیره‌شده در اینجا ظاهر خواهند شد</translation>
 <translation id="9126149354162942022">رنگ نشانگر</translation>
 <translation id="9128317794749765148">راه‌اندازی تکمیل نشد</translation>

@@ -97,6 +97,7 @@
 <translation id="3114012059975132928">వీడియో ప్లేయర్</translation>
 <translation id="3115898365077584848">సమాచారాన్ని చూపు</translation>
 <translation id="3123473560110926937">కొన్ని సైట్‌లలో బ్లాక్ చేయబడింది</translation>
+<translation id="3143754809889689516">ప్రారంభం నుండి ప్లే చేయి</translation>
 <translation id="3198916472715691905">నిల్వ చేసిన డేటా <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">వెబ్ నుండి</translation>
 <translation id="321187648315454507">మీకు నోటిఫికేషన్‌లను పంపడానికి <ph name="APP_NAME" />ని అనుమతించేందుకు, <ph name="BEGIN_LINK" />Android సెట్టింగ్‌ల<ph name="END_LINK" />లో కూడా నోటిఫికేషన్‌లను ఆన్ చేయండి.</translation>
@@ -115,6 +116,7 @@
 <translation id="3594780231884063836">వీడియోను మ్యూట్ చేయండి</translation>
 <translation id="3596414637720633074">అజ్ఞాతంలో థర్డ్-పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="3600792891314830896">ధ్వనిని ప్లే చేసే సైట్‌లను మ్యూట్ చేస్తుంది</translation>
+<translation id="3628308229821498208">సెర్చ్ సూచనలు</translation>
 <translation id="3744111561329211289">బ్యాక్‌గ్రౌండ్ సింక్</translation>
 <translation id="3763247130972274048">10సె దాటవేయడానికి వీడియోపై రెండుసార్లు ఎడమ లేదా కుడివైపు ట్యాప్ చేయండి</translation>
 <translation id="3797520601150691162">నిర్దిష్ట సైట్‌కు ముదురు రంగు రూపాన్ని వర్తింపజేయకండి</translation>
@@ -226,6 +228,7 @@
 <translation id="6196640612572343990">థర్డ్ పార్టీ కుక్కీలను బ్లాక్ చేయండి</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> ఎంపికలు</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />'ను అన్‌ఇన్‌స్టాల్ చేయాలా?</translation>
+<translation id="6262191102408817757">మీ చివరి ట్యాబ్ ఆధారంగా</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> బ్లాక్ చేయబడ్డాయి</translation>
 <translation id="6270391203985052864">నోటిఫికేషన్‌లను పంపడానికి సైట్‌లు అడుగగలవు</translation>
 <translation id="6295158916970320988">అన్ని సైట్‌లు</translation>

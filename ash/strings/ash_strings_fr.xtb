@@ -469,7 +469,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="366222428570480733">Utilisateur géré, <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront synchronisés sur votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sites Web</translation>
-<translation id="3701206655856637070">Vous pouvez maintenant modifier l'endroit où les captures d'écran sont enregistrées</translation>
 <translation id="3702809606464356667">Affichage des fenêtres du bureau actuel. Appuyez sur la flèche vers le haut pour afficher les fenêtres de tous les bureaux.</translation>
 <translation id="3702846122927433391">Population au Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +651,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4690510401873698237">Étagère en bas</translation>
 <translation id="4696813013609194136">Déverrouiller l'appareil avec le code parental</translation>
 <translation id="4702647871202761252">L'écran de confidentialité est désactivé</translation>
+<translation id="470644585772471629">Inversion des couleurs</translation>
 <translation id="4717575069099566988">Votre câble USB-C n'est pas compatible USB4. Cela peut limiter les performances de l'appareil.</translation>
 <translation id="4730374152663651037">SOUVENT UTILISÉES</translation>
 <translation id="4731797938093519117">Accès parental</translation>

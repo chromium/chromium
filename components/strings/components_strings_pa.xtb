@@ -1000,6 +1000,7 @@
 <translation id="3676592649209844519">ਡੀਵਾਈਸ ਆਈ.ਡੀ.:</translation>
 <translation id="3677008721441257057">ਕੀ ਤੁਹਾਡਾ ਮਤਲਬ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ਤੋਂ ਹੈ?</translation>
 <translation id="3678029195006412963">ਬੇਨਤੀ ਹਸਤਾਖਰਿਤ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ</translation>
+<translation id="3678342917559046352">ਅਵੈਧ ਐਕਸਟੈਂਸ਼ਨ: ਮੁੱਲ ਅੱਗੇ ਦਿੱਤੇ ਕਿਸੇ ਇੱਕ ਰੂਪ ਵਿੱਚ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ: &lt;extension_id&gt; ਜਾਂ &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">ਕਿਸੇ ਨਵੀਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋ ਵਿੱਚ ਪੰਨਾ ਖੋਲ੍ਹੋ (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="3701427423622901115">ਰੀਸੈੱਟ ਪ੍ਰਵਾਨ ਹੋਇਆ।</translation>
@@ -1339,6 +1340,7 @@
 <translation id="464342062220857295">'ਖੋਜ' ਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ</translation>
 <translation id="4644670975240021822">ਉਲਟੇ ਕ੍ਰਮ ਵਿੱਚ ਪਾਸਾ ਹੇਠਾਂ ਕੀਤੇ ਹੋਏ</translation>
 <translation id="4646534391647090355">ਮੈਨੂੰ ਹੁਣੇ ਉੱਥੇ ਲੈ ਜਾਓ</translation>
+<translation id="4648262692072505866">ਹੈਸ਼ ਦਾ ਫਾਰਮੈਟ SHA-256 ਹੋਣਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="4652266463001779298">ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4653167719759882810">ਮਰਜਰ ਅਤੇ ਪ੍ਰਾਪਤੀਆਂ</translation>
 <translation id="4658638640878098064">ਉੱਪਰ ਖੱਬੇ ਪਾਸੇ ਪਿੰਨ</translation>
@@ -1448,6 +1450,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab ਦਬਾਓ, ਫਿਰ ਖੋਜ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="4930153903256238152">ਵੱਧ ਸਮਰੱਥਾ</translation>
+<translation id="4936134414789135531">ਸ਼ਾਮਲ ਕੀਤਾ <ph name="VALUE_NAME" /> ਨਹੀਂ ਮਿਲ ਸਕਿਆ।</translation>
 <translation id="4936675324097895694">ਵਿੱਤ</translation>
 <translation id="4940163644868678279">Chrome ਵਿੱਚ ਇਨਕੋਗਨਿਟੋ ਮੋਡ</translation>
 <translation id="4943872375798546930">ਕੋਈ ਨਤੀਜੇ ਨਹੀਂ</translation>
@@ -1565,6 +1568,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">ਟ੍ਰੇਅ 13</translation>
 <translation id="5216942107514965959">ਪਿਛਲੀ ਵਾਰ ਅੱਜ ਦੇਖੀ ਗਈ</translation>
+<translation id="5217759126664161410">ਅਵੈਧ ਪ੍ਰੋਟੋਕੋਲ ਫਾਰਮੈਟ।</translation>
 <translation id="5222812217790122047">ਈਮੇਲ ਲੋੜੀਂਦੀ ਹੈ</translation>
 <translation id="5228404122310299359">ਪਾਰਟੀ ਅਤੇ ਛੁੱਟੀਆਂ ਦੇ ਜਸ਼ਨ ਲਈ ਸਮੱਗਰੀਆਂ</translation>
 <translation id="5229588705416009823">ਵਿਸ਼ਾਲ ਬਹੁ-ਖਿਡਾਰੀ ਗੇਮਾਂ</translation>
@@ -1637,6 +1641,7 @@
 <translation id="5398772614898833570">ਵਿਗਿਆਪਨ ਬਲੌਕ ਕੀਤੇ ਗਏ</translation>
 <translation id="5400836586163650660">ਸਲੇਟੀ</translation>
 <translation id="540969355065856584">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ ਇਸ ਸਮੇਂ ਵੈਧ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
+<translation id="5412040515238827314">ਅਵੈਧ ਫਾਰਮੈਟ: ਪੈਟਰਨਾਂ ਦੀ ਸੂਚੀ ਹੋਣੀ ਚਾਹੀਦੀ ਹੈ।</translation>
 <translation id="5412236728747081950">ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਢੁਕਵੇਂ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਲਈ, ਇਹ ਸਾਈਟ Chrome ਤੋਂ ਤੁਹਾਡੀਆਂ ਦਿਲਚਸਪੀਆਂ ਬਾਰੇ ਜਾਣਕਾਰੀ ਲੈਂਦੀ ਹੈ</translation>
 <translation id="541416427766103491">ਸਟੈਕਰ 4</translation>
 <translation id="5421136146218899937">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਹਟਾਓ</translation>
@@ -1755,6 +1760,7 @@
 <translation id="5754400531489347219">ਪਾਲਤੂ ਅਤੇ ਜਾਨਵਰ</translation>
 <translation id="5759751709240058861">ਆਪਣੇ ਕੈਮਰੇ ਨੂੰ ਵਰਤੋ ਅਤੇ ਹਿਲਾਓ</translation>
 <translation id="5763042198335101085">ਕੋਈ ਵੈਧ ਈਮੇਲ ਪਤਾ ਦਾਖਲ ਕਰੋ</translation>
+<translation id="5764725887548570807">ਅਵੈਧ ਮੂਲ ਫਾਰਮੈਟ।</translation>
 <translation id="5765072501007116331">ਅਦਾਇਗੀ ਵਿਧੀਆਂ ਅਤੇ ਲੋੜਾਂ ਨੂੰ ਦੇਖਣ ਲਈ, ਇੱਕ ਪਤਾ ਚੁਣੋ</translation>
 <translation id="57689295674415555">ਕੀ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਨਹੀਂ ਗਿਆ?</translation>
 <translation id="5776313857861697733">ਤਰਜੀਹ</translation>
@@ -1879,10 +1885,12 @@
 <translation id="6107012941649240045">ਨੂੰ ਜਾਰੀ ਕੀਤਾ</translation>
 <translation id="610911394827799129">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="6116338172782435947">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕੀਤੀ ਲਿਖਤ ਅਤੇ ਚਿੱਤਰਾਂ ਨੂੰ ਦੇਖੋ</translation>
+<translation id="6118782133429281336">ਮੂਲ ਸੂਚੀ ਖਾਲੀ ਹੈ।</translation>
 <translation id="6120179357481664955">ਕੀ ਤੁਹਾਨੂੰ ਆਪਣੀ UPI ਆਈਡੀ ਯਾਦ ਹੈ?</translation>
 <translation id="6124432979022149706">Chrome ਐਂਟਰਪ੍ਰਾਈਜ਼ ਕਨੈਕਟਰ</translation>
 <translation id="6127379762771434464">ਆਈਟਮ ਹਟਾਈ ਗਈ</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome ਵਿੱਚ ਇਨਕੋਗਨਿਟੋ ਮੋਡ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਖਾਲੀ ਜਾਂ ਨੁਕਸਦਾਰ ਹੈ।</translation>
 <translation id="6146055958333702838">ਸਾਰੀਆਂ ਕੇਬਲਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾਣ ਵਾਲੇ ਕੋਈ ਵੀ ਰੂਟਰਾਂ, ਮਾਡਮਾਂ ਅਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਨੂੰ ਰੀਬੂਟ ਕਰੋ।</translation>
 <translation id="614940544461990577">ਅਜ਼ਮਾਓ:</translation>
 <translation id="6150036310511284407">ਖੱਬੇ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
@@ -2055,6 +2063,7 @@
 <translation id="666259744093848177">(x86_64 ਅਨੁਵਾਦ ਕੀਤਾ ਗਿਆ)</translation>
 <translation id="6663846344464066639">ਜੋੜੇ ਹੋਏ ਹੱਥ</translation>
 <translation id="6665553082534466207">ਸੱਜੇ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
+<translation id="6668389483194953109">ਕਾਗਜ਼ ਦੇ ਆਕਾਰ ਦਾ ਨਾਮ "ਵਿਉਂਂਤਿਆ" ਮਿਲਿਆ, ਪਰ "custom_size" ਸੰਪਤੀ ਖਾਲੀ ਜਾਂ ਅਵੈਧ ਹੈ।</translation>
 <translation id="6671697161687535275">ਕੀ Chromium ਤੋਂ ਫ਼ਾਰਮ ਸੰਬੰਧੀ ਸੁਝਾਅ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="6683717648675961851">ਨੌਕਰੀ ਦੀਆਂ ਸੂਚੀਆਂ</translation>
 <translation id="6685834062052613830">ਸਾਈਨ-ਆਊਟ ਕਰੋ ਅਤੇ ਸਥਾਪਨਾ ਨੂੰ ਪੂਰਾ ਕਰੋ</translation>
@@ -2068,6 +2077,7 @@
 <translation id="6696588630955820014">'ਇਸ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ' ਬਟਨ, ਲਿੰਕ ਸਾਂਝਾ ਕਰ ਕੇ, QR ਕੋਡ ਬਣਾ ਕੇ, ਕਾਸਟ ਕਰ ਕੇ ਅਤੇ ਹੋਰ ਵਿਕਲਪਾਂ ਨਾਲ ਇਸ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="6698381487523150993">ਬਣਾਇਆ:</translation>
 <translation id="6702919718839027939">ਪੇਸ਼ਕਾਰੀ ਮੋਡ</translation>
+<translation id="6704458454638854812">ਸੰਪਤੀ "custom_size" ਨੂੰ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ, ਪਰ ਨਾਮ "ਵਿਉਂਤਿਆ" 'ਤੇ ਸੈੱਟ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="6709133671862442373">ਖਬਰਾਂ</translation>
 <translation id="6709888928011386878">ਸੰਗੀਤਮਈ ਸਾਜ਼</translation>
 <translation id="6710213216561001401">ਪਿਛਲਾ</translation>

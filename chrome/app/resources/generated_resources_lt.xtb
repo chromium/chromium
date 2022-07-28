@@ -1538,7 +1538,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2390347491606624519">Nepavyko prisijungti prie tarpinio serverio, prisijunkite dar kartą</translation>
 <translation id="2390782873446084770">„Wi-Fi“ sinchronizavimas</translation>
 <translation id="2391419135980381625">Standartinis šriftas</translation>
-<translation id="2392163307141705938">Pasiekėte laiko apribojimą, kurį vienas iš tėvų nustatė „<ph name="IDS_SHORT_PRODUCT_NAME" />“.</translation>
 <translation id="2392369802118427583">Suaktyvinti</translation>
 <translation id="2393136602862631930">Programos „<ph name="APP_NAME" />“ nustatymas „Chromebook“ įrenginyje</translation>
 <translation id="2393313392064891208">„Google ChromeOS Flex“ sąlygų turinys</translation>
@@ -1664,7 +1663,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2505669838803949807">Įrenginio EID yra <ph name="EID_NUMBER" />. Klientų aptarnavimo komandos atstovas, naudodamas EID numerį, gali padėti suaktyvinti paslaugą.</translation>
 <translation id="250704661983564564">Ekrano išdėstymas</translation>
 <translation id="2507253002925770350">Bilietas pašalintas</translation>
-<translation id="2507397597949272797">„<ph name="NAME" />“ pristabdyta</translation>
 <translation id="2508428939232952663">„Google Play“ parduotuvės paskyra</translation>
 <translation id="2509495747794740764">Mastelio verčių suma turi būti skaičius nuo 10 iki 200.</translation>
 <translation id="2509566264613697683">8 k.</translation>
@@ -1908,7 +1906,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2743387203779672305">Kopijuoti į iškarpinę</translation>
 <translation id="2745080116229976798">„Microsoft“ tinkamas pavaldumas</translation>
 <translation id="2747266560080989517">Šiame faile yra neskelbtino arba pavojingo turinio. Paprašykite savininko sutvarkyti.</translation>
-<translation id="2748061034695037846">„<ph name="DOMAIN" />“ pristabdyta</translation>
 <translation id="2749756011735116528">Prisijungti prie „<ph name="PRODUCT_NAME" />“</translation>
 <translation id="2749836841884031656">SIM kortelė</translation>
 <translation id="2749881179542288782">Tikrinti gramatiką ir rašybą</translation>
@@ -3917,6 +3914,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4689421377817139245">Sinchronizuokite šią žymę „iPhone“ įrenginyje</translation>
 <translation id="4690091457710545971">&lt;Keturi „Intel“ „Wi-Fi“ programinės aparatinės įrangos sugeneruoti failai: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Pirmieji trys yra dvejetainiai failai, kuriuose yra registro išklotinės ir kuriuos „Intel“ įvertino, kad nustatytų, ar nėra asmens ar įrenginį identifikuojančios informacijos. Paskutinis failas yra vykdymo pėdsakas iš „Intel“ programinės aparatinės įrangos. Jame išvalyta visa asmens ar įrenginį identifikuojanti informacija, bet jis per didelis, kad būtų galima čia pateikti. Šie failai sugeneruoti reaguojant į pastarąsias „Wi-Fi“ problemas, susijusias su įrenginiu, ir bus bendrinami su „Intel“, siekiant padėti pašalinti šias triktis.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> galės peržiūrėti failą „<ph name="FILENAME" />“, kol uždarysite visus šios svetainės skirtukus</translation>
+<translation id="4692342362587775867">Pranešimai iš šios svetainės gali trikdyti</translation>
 <translation id="4692623383562244444">Paieškos varikliai</translation>
 <translation id="4692736633446859167">Anksčiau pasirinkote neleisti jokių plėtinių šioje svetainėje: <ph name="SITE" />. Jei šią svetainę pridėsite čia, kiti plėtiniai taip pat galės prašyti skaityti ir keisti duomenis šioje svetainėje: <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sušis</translation>
@@ -4250,7 +4248,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5033137252639132982">Neleidžiama naudoti judesio jutiklių</translation>
 <translation id="5033266061063942743">Geometrinės figūros</translation>
 <translation id="5037676449506322593">Pasirinkti viską</translation>
-<translation id="5038022729081036555">Rytoj galėsite ją naudoti <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Anksčiau pasirinkote neleisti jokių plėtinių <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius „Google“ paskyroje</translation>
 <translation id="5039804452771397117">Leisti</translation>
@@ -4288,6 +4285,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5074761966806028321">Norint užbaigti sąranką vis tiek reikia leidimo</translation>
 <translation id="5075563999073408211">Valdykite įrenginį vienu ar keliais jungikliais. Jungikliai gali būti klaviatūros klavišai, žaidimų pulto mygtukai ar specialūs įrenginiai.</translation>
 <translation id="5075910247684008552">Nesaugus turinys blokuojamas pagal numatytuosius nustatymus saugiose svetainėse</translation>
+<translation id="5078490485380754244">Pamiršti įrenginį</translation>
 <translation id="5078638979202084724">Žymėti visus skirtukus</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
 <translation id="5079010647467150187">Pridėti įtaisytąjį VPN...</translation>
@@ -7293,7 +7291,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8013993649590906847">Jei nebus naudingo vaizdo aprašo, „Chrome“ bandys jums jį pateikti. Kad būtų galima kurti aprašus, vaizdai siunčiami į sistemą „Google“.</translation>
 <translation id="8014154204619229810">Atnaujinimo programa šiuo metu paleista. Netrukus atnaujinkite ir vėl patikrinkite.</translation>
 <translation id="8014206674403687691">Neįmanoma grąžinti ankstesnės įdiegtos „<ph name="IDS_SHORT_PRODUCT_NAME" />“ versijos. Pabandykite vykdyti funkciją „Powerwash“.</translation>
-<translation id="8015163965024115122">Pasiektas tėvų nustatytas „<ph name="IDS_SHORT_PRODUCT_NAME" />“ arba „<ph name="IDS_SHORT_PRODUCT_NAME" />“ programų apribojimas.</translation>
 <translation id="8016266267177410919">Laikina saugykla</translation>
 <translation id="8017176852978888182">„Linux“ bendrinami katalogai</translation>
 <translation id="8017335670460187064">„<ph name="LABEL" />“</translation>
@@ -8436,7 +8433,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Kad galėtumėte naudotis geriausiomis funkcijomis, įdiekite „<ph name="DEVICE_OS" />“ į vidinį diską. Taip pat galėsite ją įdiegti vėliau iš prisijungimo ekrano.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jei nesate pasiruošę įdiegti, galite ją išbandyti ir paleisti iš USB. Išlaikysite esamą OS ir duomenis, bet galite susidurti su saugyklos ir našumo apribojimais.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Atidaryti kaip susegtą skirtuką</translation>
-<translation id="9122176249172999202">„<ph name="IDS_SHORT_PRODUCT_NAME" />“ pristabdyta</translation>
 <translation id="9124003689441359348">Išsaugoti slaptažodžiai bus rodomi čia</translation>
 <translation id="9126149354162942022">Žymeklio spalva</translation>
 <translation id="9128317794749765148">Nepavyko užbaigti nustatymo proceso</translation>

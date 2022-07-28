@@ -1533,7 +1533,6 @@
 <translation id="2390347491606624519">প্ৰক্সিৰ সৈতে সংযোগ কৰিব নোৱাৰি, অনুগ্ৰহ কৰি পুনৰ ছাইন ইন কৰক</translation>
 <translation id="2390782873446084770">ৱাই-ফাই ছিংক</translation>
 <translation id="2391419135980381625">মান্য ফণ্ট</translation>
-<translation id="2392163307141705938">আপোনাৰ অভিভাৱকে <ph name="IDS_SHORT_PRODUCT_NAME" />ৰ বাবে ছেট কৰা সময়সীমাত আপুনি উপনীত হৈছে।</translation>
 <translation id="2392369802118427583">সক্ৰিয় কৰক</translation>
 <translation id="2393136602862631930">আপোনাৰ Chromebookত <ph name="APP_NAME" /> ছেট আপ কৰক</translation>
 <translation id="2393313392064891208">Google ChromeOS Flexৰ চৰ্তাৱলীৰ সমল</translation>
@@ -1659,7 +1658,6 @@
 <translation id="2505669838803949807">আপোনাৰ ডিভাইচৰ ইআইডি হৈছে <ph name="EID_NUMBER" />। কোনো গ্ৰাহক সেৱা প্ৰতিনিধিয়ে সেৱা সক্ৰিয় কৰাত আপোনাক সহায় কৰিবলৈ ইআইডি নম্বৰটো ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="250704661983564564">ডিছপ্লে’ৰ ব্যৱস্থাপনা</translation>
 <translation id="2507253002925770350">টিকেট আঁতৰোৱা হ’ল</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> পজ কৰা হৈছে</translation>
 <translation id="2508428939232952663">Google Play Store একাউণ্ট</translation>
 <translation id="2509495747794740764">স্কেলৰ মান ১০ আৰু ২০০ৰ ভিতৰৰ কোনো সংখ্যা হ’বই লাগিব।</translation>
 <translation id="2509566264613697683">৮x</translation>
@@ -1903,7 +1901,6 @@
 <translation id="2743387203779672305">ক্লিপব'ৰ্ডত প্ৰতিলিপি কৰক</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">এই ফাইলটোত সংবেদনশীল অথবা বিপজ্জনক সমল আছে। এইটোৰ গৰাকীক সমাধান কৰিবলৈ কওক।</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> পজ কৰা হৈছে</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />ত ছাইন ইন কৰক</translation>
 <translation id="2749836841884031656">ছিম</translation>
 <translation id="2749881179542288782">বানান আৰু ব্যাকৰণত থকা ভুলবোৰ চাওক</translation>
@@ -4245,7 +4242,6 @@
 <translation id="5033137252639132982">ম’শ্বন ছেন্সৰ ব্যৱহাৰ কৰাৰ অনুমতি নাই</translation>
 <translation id="5033266061063942743">জ্যামিতিক আকৃতিসমূহ</translation>
 <translation id="5037676449506322593">সকলো বাছনি কৰক</translation>
-<translation id="5038022729081036555">আপুনি এইটো কাইলৈ <ph name="TIME_LIMIT" />ৰ বাবে ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="5038818366306248416">আপুনি পূৰ্বে <ph name="ORIGIN" />ত কোনো এক্সটেনশ্বনক অনুমতি নিদিবলৈ সিদ্ধান্ত লৈছিল</translation>
 <translation id="5039696241953571917">আপোনাৰ Google একাউণ্টত ছেভ কৰি থোৱা পাছৱর্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="5039804452771397117">অনুমতি দিয়ক</translation>
@@ -7282,7 +7278,6 @@
 <translation id="8013993649590906847">যদি কোনো প্ৰতিচ্ছবিত উপযোগী বিৱৰণ নাই তেন্তে Chromeএ আপোনাক সেয়া প্ৰদান কৰিবলৈ চেষ্টা কৰিব। বিৱৰণ সৃষ্টি কৰিবলৈ প্ৰতিচ্ছবি Googleলৈ প্ৰেৰণ কৰা হয়।</translation>
 <translation id="8014154204619229810">আপডে’টাৰটো বৰ্তমান চলি আছে। পুনৰ পৰীক্ষা কৰিবলৈ এক মিনিটৰ পিছত ৰিফ্ৰেশ্ব কৰক।</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />এ পূর্বে ইনষ্টল কৰা সংস্কৰণটোলৈ নিব নোৱাৰিলে। অনুগ্ৰহ কৰি আপোনাৰ ডিভাইচ আকৌ পাৱাৰৱাশ্ব কৰিবলৈ চেষ্টা কৰক।</translation>
-<translation id="8015163965024115122">আপোনাৰ অভিভাৱকে <ph name="IDS_SHORT_PRODUCT_NAME" /> অথবা <ph name="IDS_SHORT_PRODUCT_NAME" /> এপ্‌সমূহৰ বাবে ছেট কৰা সময়সীমা শেষ হ’ল।</translation>
 <translation id="8016266267177410919">অস্থায়ী ষ্ট’ৰেজ</translation>
 <translation id="8017176852978888182">Linuxৰ শ্বেয়াৰ কৰা ডাইৰেক্টৰীসমূহ</translation>
 <translation id="8017679124341497925">শ্বৰ্টকাটত সাল-সলনি কৰা হ’ল</translation>
@@ -8421,7 +8416,6 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />শ্ৰেষ্ঠ অভিজ্ঞতা লাভ কৰিবলৈ আপোনাৰ অভ্যন্তৰীণ ডিস্কত <ph name="DEVICE_OS" /> ইনষ্টল কৰক। আপুনি লগ ইনৰ স্ক্ৰীনখনৰ পৰাও পাছত এইটো ইনষ্টল কৰিব পাৰে।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />যদি আপুনি ইনষ্টল কৰিবলৈ সাজু নহয়, তেন্তে আপুনি এইটো ব্যৱহাৰ কৰি চাবলৈ ইয়াক ইউএছবিৰ পৰা চলাব পাৰে। এইটোৱে আপোনাৰ আগৰে পৰা থকা OS আৰু ডেটা ৰাখিব, কিন্তু আপোনাৰ ষ্ট’ৰেজ আৰু কাৰ্যক্ষমতাৰ ক্ষেত্ৰত সীমাবদ্ধতা আহিব পাৰে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">পিন কৰি থোৱা টেব হিচাপে খোলক</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> পজ কৰা হৈছে</translation>
 <translation id="9124003689441359348">ছেভ কৰি থোৱা পাছৱৰ্ডসমূহ ইয়াত দেখা যাব</translation>
 <translation id="9126149354162942022">কাৰ্ছৰৰ ৰং</translation>
 <translation id="9128317794749765148">ছেট আপ সম্পূৰ্ণ কৰিব পৰা নগ’ল</translation>

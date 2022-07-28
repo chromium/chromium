@@ -1517,7 +1517,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2390347491606624519">Keine Verbindung zum Proxy möglich, bitte noch einmal anmelden</translation>
 <translation id="2390782873446084770">WLAN-Synchronisation</translation>
 <translation id="2391419135980381625">Standardschrift</translation>
-<translation id="2392163307141705938">Du hast das Zeitlimit erreicht, das deine Eltern für <ph name="IDS_SHORT_PRODUCT_NAME" /> festgelegt haben.</translation>
 <translation id="2392369802118427583">Aktivieren</translation>
 <translation id="2393136602862631930">"<ph name="APP_NAME" />" auf deinem Chromebook einrichten</translation>
 <translation id="2393313392064891208">Inhalt der Google Chrome OS Flex-Nutzungsbedingungen</translation>
@@ -1643,7 +1642,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2505669838803949807">Die EID deines Geräts lautet <ph name="EID_NUMBER" />. Ein Kundenservicemitarbeiter kann dir anhand der EID-Nummer helfen, diesen Dienst zu aktivieren.</translation>
 <translation id="250704661983564564">Displayanordnung</translation>
 <translation id="2507253002925770350">Ticket entfernt</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> pausiert</translation>
 <translation id="2508428939232952663">Google Play Store-Konto</translation>
 <translation id="2509495747794740764">Der Wert für die Skalierung muss zwischen 10 und 200 liegen.</translation>
 <translation id="2509566264613697683">8-fach</translation>
@@ -1887,7 +1885,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2743387203779672305">In Zwischenablage kopieren</translation>
 <translation id="2745080116229976798">Microsoft - Qualifizierte Unterordnung</translation>
 <translation id="2747266560080989517">Diese Datei enthält vertrauliche oder schädliche Inhalte. Bitte den Inhaber, das Problem zu beheben.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> pausiert</translation>
 <translation id="2749756011735116528">In <ph name="PRODUCT_NAME" /> anmelden</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Grammatik zusammen mit Rechtschreibung prüfen</translation>
@@ -4229,7 +4226,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5033137252639132982">Dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="5033266061063942743">Geometrische Formen</translation>
 <translation id="5037676449506322593">Alles auswählen</translation>
-<translation id="5038022729081036555">Morgen kannst du die App wieder <ph name="TIME_LIMIT" /> lang nutzen.</translation>
 <translation id="5038818366306248416">Du hast dich zuvor dafür entschieden, keine Erweiterungen auf <ph name="ORIGIN" /> zuzulassen</translation>
 <translation id="5039696241953571917">Du kannst gespeicherte Passwörter in deinem Google-Konto ansehen und verwalten</translation>
 <translation id="5039804452771397117">Zulassen</translation>
@@ -4267,6 +4263,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5074761966806028321">Zum Abschluss der Einrichtung fehlt noch eine Berechtigung</translation>
 <translation id="5075563999073408211">Du kannst dein Gerät mit einem oder mehreren Schaltern steuern. Als Schalter können Tastaturtasten, Gamepad-Tasten oder dafür bestimmte Geräte verwendet werden.</translation>
 <translation id="5075910247684008552">Unsichere Inhalte werden auf sicheren Websites standardmäßig blockiert</translation>
+<translation id="5078490485380754244">Gerät entfernen</translation>
 <translation id="5078638979202084724">Alle Tabs als Lesezeichen speichern</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5079010647467150187">Integriertes VPN hinzufügen…</translation>
@@ -7264,7 +7261,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="8014154204619229810">Der Updater wird momentan ausgeführt. Bitte versuche es in einer Minute erneut, indem du eine Aktualisierung vornimmst.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> konnte die zuvor installierte Version nicht wiederherstellen. Bitte versuche erneut, ein Powerwash für dein Gerät durchzuführen.</translation>
-<translation id="8015163965024115122">Das Limit, das deine Eltern für "<ph name="IDS_SHORT_PRODUCT_NAME" />" oder "<ph name="IDS_SHORT_PRODUCT_NAME" />" festgelegt haben, ist erreicht.</translation>
 <translation id="8016266267177410919">Temporärer Speicher</translation>
 <translation id="8017176852978888182">Freigegebene Linux-Verzeichnisse</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8404,7 +8400,6 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Für optimale Leistung solltest du <ph name="DEVICE_OS" /> auf dem internen Laufwerk installieren. Eine Installation ist aber auch später über den Anmeldebildschirm möglich.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Zum Ausprobieren kannst du es erst einmal über den USB-Stick ausführen. So behältst du dein vorhandenes Betriebssystem und deine Daten. Speicherplatz und Leistung sind jedoch möglicherweise begrenzt.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">In angepinntem Tab öffnen</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> pausiert</translation>
 <translation id="9124003689441359348">Hier werden gespeicherte Passwörter angezeigt</translation>
 <translation id="9126149354162942022">Cursorfarbe</translation>
 <translation id="9128317794749765148">Einrichtung nicht abgeschlossen</translation>

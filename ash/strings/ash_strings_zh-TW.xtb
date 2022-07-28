@@ -470,7 +470,6 @@
 <translation id="366222428570480733">受管理的使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">你的手機和「<ph name="DEVICE_NAME" />」將共用 Wi-Fi 網路</translation>
 <translation id="3694122362646626770">網站</translation>
-<translation id="3701206655856637070">現在你可以變更螢幕擷圖的儲存位置</translation>
 <translation id="3702809606464356667">現在是以目前的桌面模式查看視窗，按下向上鍵即可改以所有桌面模式查看視窗</translation>
 <translation id="3702846122927433391">奈及利亞的人口</translation>
 <translation id="3705722231355495246">-</translation>
@@ -653,6 +652,7 @@
 <translation id="4690510401873698237">在底部顯示檔案櫃</translation>
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
 <translation id="4702647871202761252">已停用隱私保護畫面</translation>
+<translation id="470644585772471629">色彩反轉</translation>
 <translation id="4717575069099566988">你的 USB-C 連接線不支援 USB4。裝置效能可能會因此受到限制。</translation>
 <translation id="4730374152663651037">常用的應用程式</translation>
 <translation id="4731797938093519117">家長存取</translation>

@@ -1003,6 +1003,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3676592649209844519">ID uređaja:</translation>
 <translation id="3677008721441257057">Da li ste mislili &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Potpisivanje zahteva nije uspelo</translation>
+<translation id="3678342917559046352">Nevažeći dodatak: Očekivano je da vrednost bude jedan od sledećih oblika: &lt;extension_id&gt; ili &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Otvorite stranicu u nocom prozoru bez arhiviranja (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informacije o sertifikatu</translation>
 <translation id="3701427423622901115">Resetovanje je potvrđeno.</translation>
@@ -1342,6 +1343,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="464342062220857295">Funkcije pretrage</translation>
 <translation id="4644670975240021822">Obrnutim redosledom sa odštampanom stranom nadole</translation>
 <translation id="4646534391647090355">Odvedi me tamo</translation>
+<translation id="4648262692072505866">Heš mora da bude u formatu SHA-256.</translation>
 <translation id="4652266463001779298">Nije dozvoljeno</translation>
 <translation id="4653167719759882810">Pripajanje i kupovina preduzeća</translation>
 <translation id="4658638640878098064">Spajanje u gornjem levom uglu</translation>
@@ -1451,6 +1453,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pretražili</translation>
 <translation id="4930153903256238152">Veliki kapacitet</translation>
+<translation id="4936134414789135531">Umetnuta vrednost <ph name="VALUE_NAME" /> nije pronađena.</translation>
 <translation id="4936675324097895694">Finansije</translation>
 <translation id="4940163644868678279">Bez arhiviranja u Chrome-u</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
@@ -1568,6 +1571,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">13. fioka</translation>
 <translation id="5216942107514965959">Poslednji posećen danas</translation>
+<translation id="5217759126664161410">Nevažeći format protokola.</translation>
 <translation id="5222812217790122047">Imejl je obavezan</translation>
 <translation id="5228404122310299359">Pribor za zabave i praznike</translation>
 <translation id="5229588705416009823">Masovne igre za više igrača</translation>
@@ -1640,6 +1644,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5398772614898833570">Oglasi su blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="540969355065856584">Ovaj server ne može da dokaže da je <ph name="DOMAIN" />; njegov bezbednosni sertifikat trenutno nije važeći. Uzrok tome je možda pogrešna konfiguracija ili napadač koji je prekinuo vezu.</translation>
+<translation id="5412040515238827314">Nevažeći format: Očekivana je lista obrazaca.</translation>
 <translation id="5412236728747081950">Ovaj sajt prima podatke o vašim interesovanjima iz Chrome-a da bi vam prikazivao relevantnije oglase</translation>
 <translation id="541416427766103491">4. pregrada za slaganje</translation>
 <translation id="5421136146218899937">Obriši podatke pregledanja...</translation>
@@ -1758,6 +1763,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5754400531489347219">Kućni ljubimci i životinje</translation>
 <translation id="5759751709240058861">koristi i pomera kameru</translation>
 <translation id="5763042198335101085">Unesite važeću imejl adresu</translation>
+<translation id="5764725887548570807">Nevažeći format porekla.</translation>
 <translation id="5765072501007116331">Da biste videli načine i zahteve za isporuku, izaberite adresu</translation>
 <translation id="57689295674415555">Broj virtuelne kartice nije unet?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
@@ -1882,10 +1888,12 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6107012941649240045">Izdato za</translation>
 <translation id="610911394827799129">Google nalog može da ima druge oblike istorije pregledanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">da vidi tekst i slike koji su kopirani u privremenu memoriju</translation>
+<translation id="6118782133429281336">Lista porekla je prazna.</translation>
 <translation id="6120179357481664955">Želite da sačuvate ID za UPI?</translation>
 <translation id="6124432979022149706">Priključci za Chrome za preduzeća</translation>
 <translation id="6127379762771434464">Uklonili ste stavku</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Saznajte više o režimu Bez arhiviranja u Chrome-u<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Ekstenzija fajla je prazna ili je u pogrešnom formatu.</translation>
 <translation id="6146055958333702838">Proverite sve kablove i restartujte sve rutere, modeme ili druge mrežne uređaje koje možda koristite.</translation>
 <translation id="614940544461990577">Pokušajte:</translation>
 <translation id="6150036310511284407">Trostruko bušenje na levoj strani</translation>
@@ -2058,6 +2066,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="666259744093848177">(x86_64 prevedeno)</translation>
 <translation id="6663846344464066639">Sklopljene šake</translation>
 <translation id="6665553082534466207">Trostruko bušenje na desnoj strani</translation>
+<translation id="6668389483194953109">Pronađen je naziv veličine papira „prilagođeno“, ali je svojstvo „custom_size“ prazno ili nevažeće.</translation>
 <translation id="6671697161687535275">Želite li da uklonite predlog iz Chromium-a?</translation>
 <translation id="6683717648675961851">Oglasi za posao</translation>
 <translation id="6685834062052613830">Odjavite se i dovršite podešavanje</translation>
@@ -2071,6 +2080,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6696588630955820014">Dugme Deli ovu karticu, pritisnite Enter da biste delili ovu karticu deljenjem linka, pravljenjem QR koda, prebacivanjem i na druge načine</translation>
 <translation id="6698381487523150993">Napravljeno:</translation>
 <translation id="6702919718839027939">Prezentacija</translation>
+<translation id="6704458454638854812">Svojstvo „custom_size“ je podešeno. Očekivani naziv je „prilagođeno“.</translation>
 <translation id="6709133671862442373">Vesti</translation>
 <translation id="6709888928011386878">Muzički instrumenti</translation>
 <translation id="6710213216561001401">Prethodno</translation>

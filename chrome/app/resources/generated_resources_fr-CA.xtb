@@ -1521,7 +1521,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2390347491606624519">Impossible de se connecter au mandataire, veuillez vous connecter de nouveau</translation>
 <translation id="2390782873446084770">Synchronisation Wi-Fi</translation>
 <translation id="2391419135980381625">Police standard</translation>
-<translation id="2392163307141705938">Tu as atteint la durée autorisée par ton parent pour <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Activer</translation>
 <translation id="2393136602862631930">Configurez l'application <ph name="APP_NAME" /> sur votre Chromebook</translation>
 <translation id="2393313392064891208">Contenu des conditions d'utilisation de Google Chrome OS Flex</translation>
@@ -1647,7 +1646,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2505669838803949807">Le numéro EID de votre appareil est <ph name="EID_NUMBER" />. Un représentant du service à la clientèle peut utiliser ce numéro EID pour vous aider à activer votre service.</translation>
 <translation id="250704661983564564">Position des écrans</translation>
 <translation id="2507253002925770350">Ticket supprimé</translation>
-<translation id="2507397597949272797">L'application <ph name="NAME" /> est interrompue</translation>
 <translation id="2508428939232952663">Compte Google Play Store</translation>
 <translation id="2509495747794740764">La valeur de l'échelle doit être comprise entre 10 et 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1892,7 +1890,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2743387203779672305">Copier dans le presse-papiers</translation>
 <translation id="2745080116229976798">Subordination qualifiée de Microsoft</translation>
 <translation id="2747266560080989517">Le contenu de ce fichier est délicat ou dangereux. Demandez à son propriétaire de résoudre ce problème.</translation>
-<translation id="2748061034695037846">Le site <ph name="DOMAIN" /> est interrompu</translation>
 <translation id="2749756011735116528">Se connecter à <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">Carte SIM</translation>
 <translation id="2749881179542288782">Vérifier la grammaire et l'orthographe</translation>
@@ -4234,7 +4231,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5033137252639132982">Non autorisés à utiliser les capteurs de mouvement</translation>
 <translation id="5033266061063942743">Formes géométriques</translation>
 <translation id="5037676449506322593">Tout sélectionner</translation>
-<translation id="5038022729081036555">Tu pourras l'utiliser à nouveau demain pendant <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Vous avez précédemment choisi de n'autoriser aucune extension sur <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Affichez et gérez les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="5039804452771397117">Autoriser</translation>
@@ -4272,6 +4268,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5074761966806028321">Une autorisation est toujours requise pour terminer la configuration</translation>
 <translation id="5075563999073408211">Contrôlez votre appareil avec un ou plusieurs commutateurs. Les commutateurs peuvent être des touches de clavier, des boutons de manette de jeu ou des appareils dédiés.</translation>
 <translation id="5075910247684008552">Le contenu non sécurisé est bloqué par défaut sur les sites sécurisés</translation>
+<translation id="5078490485380754244">Oublier l'appareil</translation>
 <translation id="5078638979202084724">Ajouter tous les onglets aux favoris</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5079010647467150187">Ajouter un RPV intégré…</translation>
@@ -5034,6 +5031,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Enregistrement de la caméra ou du micro</translation>
 <translation id="583673505367439042">Les sites peuvent demander à modifier les fichiers et les dossiers de votre appareil</translation>
 <translation id="583756221537636748">Cas</translation>
+<translation id="5840658767386246331">Rechercher avec Google</translation>
 <translation id="5840680448799937675">Les fichiers seront toujours partagés hors ligne</translation>
 <translation id="5841270259333717135">Configurer l'Ethernet</translation>
 <translation id="5842497610951477805">Activer le Bluetooth</translation>
@@ -6526,6 +6524,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7307129035224081534">Suspendue</translation>
 <translation id="7308643132139167865">Langues du site Web</translation>
 <translation id="7310598146671372464">Échec de la connexion. Le serveur ne prend pas en charge les types de chiffrement Kerberos spécifiés. Veuillez communiquer avec votre administrateur.</translation>
+<translation id="7311089766378749632">Demande à lire et à modifier <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Votre administrateur est en train de réinitialiser votre carte eSIM. Cette opération peut prendre quelques minutes.</translation>
 <translation id="7320213904474460808">Définir un réseau comme favori</translation>
 <translation id="7321545336522791733">Serveur inaccessible</translation>
@@ -7118,6 +7117,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7869655448736341731">Tout</translation>
 <translation id="7870730066603611552">Examiner les options de synchronisation après configuration</translation>
 <translation id="7870790288828963061">Aucune application de kiosque avec une version plus récente trouvée. Aucune mise à jour à effectuer. Veuillez retirer la clé USB.</translation>
+<translation id="7871049986386271121">Toujours sur ce site</translation>
 <translation id="7871109039747854576">Utiliser les touches <ph name="COMMA" /> et <ph name="PERIOD" /> pour paginer une liste de choix</translation>
 <translation id="787268756490971083">Désactivé</translation>
 <translation id="7872758299142009420">Trop de groupes imbriqués : <ph name="ERROR_LINE" /></translation>
@@ -7272,7 +7272,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8013993649590906847">Si une image n'est pas accompagnée d'une description utile, Chrome essaiera de vous en proposer une. Pour créer des descriptions, les images sont envoyées à Google.</translation>
 <translation id="8014154204619229810">L'outil de mise à jour est en cours d'exécution. Procédez à une actualisation dans une minute pour vérifier à nouveau.</translation>
 <translation id="8014206674403687691">Impossible de revenir à la version précédente de <ph name="IDS_SHORT_PRODUCT_NAME" />. Veuillez essayer de réinitialiser l'appareil avec la fonctionnalité Powerwash.</translation>
-<translation id="8015163965024115122">La limite fixée par ton parent pour les applications <ph name="IDS_SHORT_PRODUCT_NAME" /> ou <ph name="IDS_SHORT_PRODUCT_NAME" /> a expiré.</translation>
 <translation id="8016266267177410919">Stockage temporaire</translation>
 <translation id="8017176852978888182">Répertoires partagés de Linux</translation>
 <translation id="8017679124341497925">Raccourci modifié</translation>
@@ -7717,6 +7716,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8438566539970814960">Amélioration des recherches et de la navigation</translation>
 <translation id="8439506636278576865">Me proposer de traduire les pages dans cette langue</translation>
 <translation id="8440630305826533614">Applications Linux</translation>
+<translation id="844063558976952706">Toujours sur ce site</translation>
 <translation id="8443795068008423036">Veuillez vous assurer que votre appareil est à jour et réessayez</translation>
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8447409163267621480">Vous devez inclure la touche Ctrl ou Alt</translation>
@@ -8411,7 +8411,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Pour profiter d'une expérience optimale, installez <ph name="DEVICE_OS" /> sur votre disque interne. Vous pouvez également l'installer plus tard à partir de l'écran d'ouverture de session.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si vous n'êtes pas prêt à faire l'installation, vous pouvez l'exécuter à partir d'une clé USB pour l'essayer. Vous conserverez ainsi votre SE et vos données, mais vous remarquerez peut-être des limites de l'espace de stockage et des performances.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Ouvrir dans un onglet épinglé</translation>
-<translation id="9122176249172999202">L'application <ph name="IDS_SHORT_PRODUCT_NAME" /> est interrompue</translation>
 <translation id="9124003689441359348">Les mots de passe enregistrés s'afficheront ici</translation>
 <translation id="9126149354162942022">Couleur du curseur</translation>
 <translation id="9128317794749765148">Impossible de terminer la configuration</translation>

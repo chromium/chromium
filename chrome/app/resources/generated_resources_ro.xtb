@@ -1521,7 +1521,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2390347491606624519">Nu se poate conecta la proxy. Conectează-te din nou.</translation>
 <translation id="2390782873446084770">Sincronizare Wi-Fi</translation>
 <translation id="2391419135980381625">Font standard</translation>
-<translation id="2392163307141705938">Ai atins limita de timp setată de părintele tău pentru <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Activează</translation>
 <translation id="2393136602862631930">Instalează <ph name="APP_NAME" /> pe Chromebook</translation>
 <translation id="2393313392064891208">Conținutul condițiilor pentru sistemul de operare Chrome Flex</translation>
@@ -1647,7 +1646,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2505669838803949807">Numărul EID al dispozitivului este <ph name="EID_NUMBER" />. Un reprezentant al serviciului de asistență pentru clienți poate folosi acest număr EID pentru a te ajuta să activezi serviciul.</translation>
 <translation id="250704661983564564">Aranjarea pe afișaj</translation>
 <translation id="2507253002925770350">Tichetul a fost eliminat</translation>
-<translation id="2507397597949272797">Aplicația <ph name="NAME" /> este întreruptă</translation>
 <translation id="2508428939232952663">Contul Magazin Google Play</translation>
 <translation id="2509495747794740764">Valoarea redimensionării trebuie să fie un număr între 10 și 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1891,7 +1889,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2743387203779672305">Copiați în clipboard</translation>
 <translation id="2745080116229976798">Subordonare calificată Microsoft</translation>
 <translation id="2747266560080989517">Acest fișier include conținut sensibil sau periculos. Solicită-i proprietarului să îl remedieze.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> este întrerupt</translation>
 <translation id="2749756011735116528">Conectează-te la <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Verificare gramaticală și ortografică</translation>
@@ -4233,7 +4230,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5033137252639132982">Nu au permisiunea de a folosi senzorii de mișcare</translation>
 <translation id="5033266061063942743">Forme geometrice</translation>
 <translation id="5037676449506322593">Selectează tot</translation>
-<translation id="5038022729081036555">Poți folosi aplicația mâine timp de <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Anterior, ai ales să nu permiți extensii pe <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Vezi și gestionează parolele salvate în Contul Google</translation>
 <translation id="5039804452771397117">Permite</translation>
@@ -4271,6 +4267,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5074761966806028321">Este necesară permisiunea pentru a finaliza configurarea</translation>
 <translation id="5075563999073408211">Controlează dispozitivul cu ajutorul unuia sau mai multor comutatoare. Comutatoarele pot fi taste de pe tastatură, butoane de gamepad sau dispozitive dedicate.</translation>
 <translation id="5075910247684008552">Conținutul nesigur este blocat în mod prestabilit pe site-urile securizate</translation>
+<translation id="5078490485380754244">Uită dispozitivul</translation>
 <translation id="5078638979202084724">Marchează toate filele</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5079010647467150187">Adaugă un VPN încorporat…</translation>
@@ -5033,6 +5030,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – camera foto sau microfonul înregistrează</translation>
 <translation id="583673505367439042">Site-urile pot solicita permisiunea de a modifica fișiere și dosare de pe dispozitiv</translation>
 <translation id="583756221537636748">Caz</translation>
+<translation id="5840658767386246331">Caută cu Google</translation>
 <translation id="5840680448799937675">Fișierele vor fi distribuite întotdeauna offline</translation>
 <translation id="5841270259333717135">Configurează setările de Ethernet</translation>
 <translation id="5842497610951477805">Activează Bluetooth</translation>
@@ -6525,6 +6523,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7307129035224081534">Întreruptă</translation>
 <translation id="7308643132139167865">Limbi pentru site-uri</translation>
 <translation id="7310598146671372464">Conectarea nu a reușit. Serverul nu acceptă tipurile de criptare Kerberos specificate. Contactează administratorul.</translation>
+<translation id="7311089766378749632">Se solicită citirea și modificarea <ph name="SITE_NAME" />:</translation>
 <translation id="7312210124139670355">Administratorul îți resetează cardul eSIM Poate dura câteva minute.</translation>
 <translation id="7320213904474460808">Setează ca rețea prestabilită</translation>
 <translation id="7321545336522791733">Serverul nu poate fi accesat</translation>
@@ -7117,6 +7116,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7869655448736341731">Oricare</translation>
 <translation id="7870730066603611552">Examinează opțiunile de sincronizare după configurare</translation>
 <translation id="7870790288828963061">Nu s-a găsit nicio aplicație de tip chioșc cu o versiune mai recentă. Nimic de actualizat. Scoate stickul USB.</translation>
+<translation id="7871049986386271121">Întotdeauna pe acest site</translation>
 <translation id="7871109039747854576">Folosește tastele <ph name="COMMA" /> și <ph name="PERIOD" /> pentru a pagina o listă de sugestii</translation>
 <translation id="787268756490971083">Dezactivat</translation>
 <translation id="7872758299142009420">Prea multe grupuri imbricate: <ph name="ERROR_LINE" /></translation>
@@ -7270,7 +7270,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8013993649590906847">Dacă o imagine nu are o descriere utilă, Chrome va încerca să o completeze. Pentru a crea descrieri, imaginile sunt trimise la Google.</translation>
 <translation id="8014154204619229810">Momentan, rulează instrumentul pentru actualizare. Actualizează într-un minut și verifică din nou.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> nu poate reveni la versiunea instalată anterior. Încearcă să folosești din nou Powerwash pe dispozitivul tău.</translation>
-<translation id="8015163965024115122">Ai atins limita pentru aplicațiile <ph name="IDS_SHORT_PRODUCT_NAME" /> sau <ph name="IDS_SHORT_PRODUCT_NAME" /> setată de părintele tău.</translation>
 <translation id="8016266267177410919">Stocare temporară</translation>
 <translation id="8017176852978888182">Directoare comune în Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8411,7 +8410,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Pentru o experiență optimă, instalează <ph name="DEVICE_OS" /> pe discul intern. Poți să instalezi și mai târziu din ecranul de conectare.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Dacă nu ești gata de instalare, poți să rulezi serviciul de pe USB pentru a-l încerca. Astfel, vei păstra sistemul de operare și datele existente, dar pot să existe limitări ale spațiului de stocare și ale performanței.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Deschide ca filă fixată</translation>
-<translation id="9122176249172999202">Aplicația <ph name="IDS_SHORT_PRODUCT_NAME" /> este întreruptă</translation>
 <translation id="9124003689441359348">Parolele salvate vor fi afișate aici</translation>
 <translation id="9126149354162942022">Culoarea cursorului</translation>
 <translation id="9128317794749765148">Nu s-a putut finaliza configurarea</translation>

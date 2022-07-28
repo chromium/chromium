@@ -5151,6 +5151,15 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se il criterio non viene configurato non viene applicata una lunghezza massima.</translation>
 <translation id="6553143066970470539">Percentuale di luminosità dello schermo</translation>
+<translation id="6555557921186817432">Programma un riavvio automatico dopo l'applicazione di un aggiornamento del numero <ph name="PRODUCT_OS_NAME" />.
+
+      Se il criterio viene impostato su vero, viene programmato un riavvio automatico dopo l'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" /> e il riavvio è necessario per completare il processo di aggiornamento. Il riavvio è programmato immediatamente, ma può essere ritardato sul dispositivo fino a 24 ore, se questo è attualmente in uso.
+
+      Se il criterio viene impostato su falso, dopo l'applicazione di un aggiornamento di <ph name="PRODUCT_OS_NAME" /> non viene programmato il riavvio automatico. Il processo di aggiornamento viene completato al successivo riavvio del dispositivo da parte dell'utente.
+
+      Se imposti questo criterio, gli utenti non potranno modificarlo o ignorarlo.
+
+      Nota: al momento i riavvii automatici sono abilitati solo quando la schermata di accesso è in visualizzazione o è in corso una sessione di app kiosk.</translation>
 <translation id="6559057113164934677">Non consentire ad alcun sito di accedere alla fotocamera e al microfono</translation>
 <translation id="6559221564468029245">Se il criterio viene impostato su Attivato o se non viene configurato, l'utente non viene considerato inattivo durante la riproduzione di audio. In questo modo non viene raggiunto il timeout di inattività e non viene compiuta l'azione per l'inattività. Tuttavia, lo schermo viene ancora oscurato, spento e bloccato dopo i timeout configurati, nonostante l'attività audio.
 

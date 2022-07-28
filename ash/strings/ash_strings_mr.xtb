@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">आयटम स्कॅन</translation>
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
 <translation id="1056898198331236512">चेतावणी</translation>
+<translation id="1058009965971887428">फीडबॅकची तक्रार करा</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">पुनर्स्थित करा</translation>
 <translation id="1073899992769346247">बॅटरी बदला किंवा रिचार्ज करा</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
 <translation id="36813544980941320">तुमचा फोन आणि <ph name="DEVICE_NAME" /> यांच्या दरम्यान वाय-फाय नेटवर्क शेअर केली जातील</translation>
 <translation id="3694122362646626770">वेबसाइट</translation>
-<translation id="3701206655856637070">तुम्ही आता स्‍क्रीन कॅप्‍चर कुठे सेव्ह केले जातात हे बदलू शकता</translation>
 <translation id="3702809606464356667">सध्याच्या डेस्कवरील विंडो दाखवत आहे, सर्व डेस्कवरील विंडो दाखवण्यासाठी अप अ‍ॅरो की दाबा</translation>
 <translation id="3702846122927433391">नायजेरियामधील लोकसंख्या</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +652,7 @@
 <translation id="4690510401873698237">शेल्फ तळाशी आहे</translation>
 <translation id="4696813013609194136">पालक कोडने डिव्हाइस अनलॉक करा</translation>
 <translation id="4702647871202761252">गोपनीयता स्क्रीन बंद आहे</translation>
+<translation id="470644585772471629">कलर इन्व्हर्जन</translation>
 <translation id="4717575069099566988">तुमची USB-C केबल ही USB4 ला सपोर्ट करत नाही. डिव्हाइसचा परफॉर्मन्स मर्यादित असू शकतो.</translation>
 <translation id="4730374152663651037">वारंवार वापरलेले</translation>
 <translation id="4731797938093519117">पालक अ‍ॅक्सेस</translation>
@@ -901,6 +902,7 @@
 <translation id="6182592640011875895">डेस्‍क उघडा</translation>
 <translation id="619279033188484792">तुमच्या <ph name="DEVICE_TYPE" /> वर तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पहा</translation>
 <translation id="619335566042889110">आता पूर्णपणे चार्ज करा</translation>
+<translation id="6193431488227440296">डेव्हलपर</translation>
 <translation id="6220928844947387476">तुम्ही आता एकाच वेळी स्वतःला आणि तुमची स्क्रीन रेकॉर्ड करू शकता</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>

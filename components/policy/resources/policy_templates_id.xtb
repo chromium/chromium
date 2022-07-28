@@ -5195,6 +5195,15 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan tidak disetel, tidak akan ada panjang maksimum yang diterapkan.</translation>
 <translation id="6553143066970470539">Persentase kecerahan layar</translation>
+<translation id="6555557921186817432">Menjadwalkan mulai ulang otomatis setelah update <ph name="PRODUCT_OS_NAME" /> diterapkan.
+
+      Jika kebijakan ini disetel ke benar (true), mulai ulang otomatis akan dijadwalkan saat update <ph name="PRODUCT_OS_NAME" /> diterapkan dan mulai ulang akan diperlukan untuk menyelesaikan proses update. Mulai ulang akan segera dijadwalkan, tetapi mungkin tertunda hingga 24 jam jika pengguna sedang menggunakan perangkat.
+
+      Jika kebijakan ini disetel ke salah (false), tidak ada mulai ulang otomatis yang dijadwalkan setelah menerapkan update <ph name="PRODUCT_OS_NAME" />. Proses update akan diselesaikan saat berikutnya pengguna memulai ulang perangkat.
+
+      Jika kebijakan ini disetel, pengguna tidak dapat mengubah atau menggantinya.
+
+      Catatan: Saat ini, mulai ulang otomatis hanya diaktifkan ketika layar login ditampilkan atau sesi aplikasi kios sedang berlangsung.</translation>
 <translation id="6559057113164934677">Jangan izinkan situs apa pun mengakses kamera dan mikrofon</translation>
 <translation id="6559221564468029245">Jika kebijakan disetel ke Aktif atau tidak disetel, pengguna tidak akan dianggap tidak ada aktivitas saat audio diputar. Hal ini mencegah tercapainya waktu tunggu tidak ada aktivitas dan mencegah diambilnya tindakan tidak ada aktivitas. Namun, peredupan layar, penonaktifan layar, dan penguncian layar akan tetap terjadi setelah waktu tunggu yang dikonfigurasi tercapai, meski terdapat aktivitas audio.
 

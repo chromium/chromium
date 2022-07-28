@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">ერთეულის სკანირება</translation>
 <translation id="1056775291175587022">ქსელები არ არის</translation>
 <translation id="1056898198331236512">გაფრთხილება</translation>
+<translation id="1058009965971887428">გამოხმაურება</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">შეცვლა</translation>
 <translation id="1073899992769346247">გამოცვალეთ ან ხელახლა დამუხტეთ ბატარეა</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> — მართული მომხმარებელი</translation>
 <translation id="36813544980941320">თქვენს ტელეფონსა და <ph name="DEVICE_NAME" />-ს შორის Wi-Fi ქსელები გაზიარდება</translation>
 <translation id="3694122362646626770">ვებსაიტები</translation>
-<translation id="3701206655856637070">ამიერიდან შეგიძლიათ შეცვალოთ, სად შეინახოს ეკრანზე აღბეჭდილი კონტენტი</translation>
 <translation id="3702809606464356667">ნაჩვენებია ამჟამინდელი სამუშაო მაგიდის ფანჯრები, ყველა სამუშაო მაგიდის ფანჯრების გამოსაჩენად დააჭირეთ კლავიშს ზემოთ მიმართული ისრით</translation>
 <translation id="3702846122927433391">ნიგერიის მოსახლეობა</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@
 <translation id="6182592640011875895">სამუშაო მაგიდის გახსნა</translation>
 <translation id="619279033188484792">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები და შეტყობინებები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="619335566042889110">სრულად დატენა ახლავე</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">ახლა თქვენი თავის და ეკრანის ჩაწერა ერთდროულად შეგიძლიათ</translation>
 <translation id="622484624075952240">ქვემოთ</translation>
 <translation id="6231419273573514727">შესაძლოა, პერიფერიული მოწყობილობების წარმადობა შეზღუდული იყოს</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7842569679327885685">გაფრთხილება: ფუნქცია ექსპერიმენტულია</translation>
 <translation id="7846634333498149051">კლავიატურა</translation>
 <translation id="7848989271541991537">გადატანილია გვერდზე <ph name="PAGE_NUMBER" />, მწკრივზე <ph name="ROW_NUMBER" />, სვეტზე <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">მიმოხილვაზე გადასასვლელად გადაფურცლეთ ზემოთ სამი თითით</translation>
 <translation id="7866482334467279021">ჩართული</translation>
 <translation id="7868900307798234037">მიმდინარეობს თითის ანაბეჭდით განბლოკვა</translation>

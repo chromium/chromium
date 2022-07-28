@@ -14,6 +14,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1052916631016577720">Hledání položek</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1056898198331236512">Upozornění</translation>
+<translation id="1058009965971887428">Nahlásit zpětnou vazbu</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Nahradit</translation>
 <translation id="1073899992769346247">Vyměňte nebo znovu nabijte baterii</translation>
@@ -469,7 +470,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – spravovaný uživatel</translation>
 <translation id="36813544980941320">Sítě Wi-Fi se budou sdílet mezi vaším telefonem a zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Webové stránky</translation>
-<translation id="3701206655856637070">Můžete změnit, kam se ukládají záznamy obrazovky</translation>
 <translation id="3702809606464356667">Zobrazují se okna z aktuální plochy, stisknutím šipky nahoru zobrazíte okna ze všech ploch</translation>
 <translation id="3702846122927433391">Počet obyvatel Nigérie</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +652,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4690510401873698237">Polička dole</translation>
 <translation id="4696813013609194136">Odemkněte zařízení rodičovským kódem</translation>
 <translation id="4702647871202761252">Obrazovka ochrany soukromí je vypnutá</translation>
+<translation id="470644585772471629">Převrácení barev</translation>
 <translation id="4717575069099566988">Váš kabel USB-C nepodporuje rozhraní USB4. Výkon zařízení může být omezen.</translation>
 <translation id="4730374152663651037">ČASTO POUŽÍVANÉ</translation>
 <translation id="4731797938093519117">Rodičovský přístup</translation>
@@ -901,6 +902,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="6182592640011875895">Otevřít plochu</translation>
 <translation id="619279033188484792">Zobrazovat na zařízení <ph name="DEVICE_TYPE" /> nejnovější fotky, média a oznámení z telefonu</translation>
 <translation id="619335566042889110">Plně nabít</translation>
+<translation id="6193431488227440296">Pro vývojáře</translation>
 <translation id="6220928844947387476">Nyní můžete nahrávat sebe a obrazovku současně</translation>
 <translation id="622484624075952240">Dolů</translation>
 <translation id="6231419273573514727">Výkon periferního zařízení může být omezen</translation>

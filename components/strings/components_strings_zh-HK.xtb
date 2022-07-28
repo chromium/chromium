@@ -1342,7 +1342,7 @@
 <translation id="464342062220857295">搜尋功能</translation>
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
 <translation id="4646534391647090355">立即前往下載中心</translation>
-<translation id="4648262692072505866">雜湊的格式必須是 SHA-256。</translation>
+<translation id="4648262692072505866">雜湊必須為 SHA-256 格式。</translation>
 <translation id="4652266463001779298">不允許</translation>
 <translation id="4653167719759882810">合併和收購</translation>
 <translation id="4658638640878098064">釘裝 (左上方)</translation>
@@ -1452,7 +1452,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以搵</translation>
 <translation id="4930153903256238152">大容量</translation>
-<translation id="4936134414789135531">找不到插入的<ph name="VALUE_NAME" />。</translation>
+<translation id="4936134414789135531">找不到已插入的<ph name="VALUE_NAME" />。</translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4940163644868678279">Chrome 無痕模式</translation>
 <translation id="4943872375798546930">沒有結果</translation>
@@ -1643,7 +1643,7 @@
 <translation id="5398772614898833570">已封鎖廣告</translation>
 <translation id="5400836586163650660">灰色</translation>
 <translation id="540969355065856584">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證目前無效。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
-<translation id="5412040515238827314">格式無效：輸入的值必須是模式清單。</translation>
+<translation id="5412040515238827314">格式無效：輸入的值需要是模式清單。</translation>
 <translation id="5412236728747081950">此網站會從 Chrome 取得您的喜好，為您顯示更相關的廣告</translation>
 <translation id="541416427766103491">堆疊器 4</translation>
 <translation id="5421136146218899937">清除瀏覽數據…</translation>
@@ -2080,7 +2080,7 @@
 <translation id="6696588630955820014">分享呢個分頁按鈕，㩒一下 Enter 鍵就可以透過分享連結、建立 QR 碼、投放之類嘅功能分享呢個分頁</translation>
 <translation id="6698381487523150993">已建立：</translation>
 <translation id="6702919718839027939">簡報</translation>
-<translation id="6704458454638854812">屬性已設為「custom_size」，請將名稱設為「自訂」。</translation>
+<translation id="6704458454638854812">屬性已設定為「custom_size」，請將名稱設定為「自訂」。</translation>
 <translation id="6709133671862442373">新聞內容</translation>
 <translation id="6709888928011386878">樂器</translation>
 <translation id="6710213216561001401">上一個</translation>

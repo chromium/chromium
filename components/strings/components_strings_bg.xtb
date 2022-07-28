@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">Идент. № на устройството:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ли искате да отворите?</translation>
 <translation id="3678029195006412963">Заявката не можа да бъде подписана</translation>
+<translation id="3678342917559046352">Невалидно разширение: стойността се очаква да е в една от следните форми: &lt;extension_id&gt; или &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Отворете страницата в нов прозорец в режим „инкогнито“ (Ctrl-Shift-N).</translation>
 <translation id="3681007416295224113">Информация за сертификата</translation>
 <translation id="3701427423622901115">Нулирането е потвърдено.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">Функции за търсене</translation>
 <translation id="4644670975240021822">В обратен ред с отпечатаната страна надолу</translation>
 <translation id="4646534391647090355">Към изтеглянията</translation>
+<translation id="4648262692072505866">Хеш стойността трябва да е във формат SHA-256.</translation>
 <translation id="4652266463001779298">Не е разрешено</translation>
 <translation id="4653167719759882810">Сливания и придобивания</translation>
 <translation id="4658638640878098064">Телбодиране горе вляво</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да търсите</translation>
 <translation id="4930153903256238152">Голяма вместимост</translation>
+<translation id="4936134414789135531">Вмъкнатият елемент <ph name="VALUE_NAME" /> не бе намерен.</translation>
 <translation id="4936675324097895694">Финанси</translation>
 <translation id="4940163644868678279">Режим „инкогнито“ в Chrome</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Тава 13</translation>
 <translation id="5216942107514965959">Последно посещение: днес</translation>
+<translation id="5217759126664161410">Форматът на протокола е невалиден.</translation>
 <translation id="5222812217790122047">Имейл адресът е задължителен</translation>
 <translation id="5228404122310299359">Стоки за тържества и празници</translation>
 <translation id="5229588705416009823">Игри с много участници</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">Рекламите са блокирани</translation>
 <translation id="5400836586163650660">сиво</translation>
 <translation id="540969355065856584">Сървърът не можа да докаже, че е <ph name="DOMAIN" />. Понастоящем сертификатът му за сигурност не е валиден. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от извършител на атака.</translation>
+<translation id="5412040515238827314">Форматът е невалиден: очаква се списък с образци.</translation>
 <translation id="5412236728747081950">Този сайт получава информация за интересите ви от Chrome, за да ви показва по-подходящи реклами</translation>
 <translation id="541416427766103491">Стакер 4</translation>
 <translation id="5421136146218899937">Изчистване на данните за сърфирането...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">Домашни любимци и животни</translation>
 <translation id="5759751709240058861">Използване и местене на камерата ви</translation>
 <translation id="5763042198335101085">Въведете валиден имейл адрес</translation>
+<translation id="5764725887548570807">Форматът на източника е невалиден.</translation>
 <translation id="5765072501007116331">За да видите начините на бърза доставка и изискванията, изберете адрес</translation>
 <translation id="57689295674415555">Номерът на виртуалната карта не е попълнен?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">Издаден на</translation>
 <translation id="610911394827799129">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Да преглежда текста и изображенията, копирани в буферната памет</translation>
+<translation id="6118782133429281336">Списъкът с източници е празен.</translation>
 <translation id="6120179357481664955">Помните ли идентификационния си номер за UPI?</translation>
 <translation id="6124432979022149706">Конектори за Chrome Enterprise</translation>
 <translation id="6127379762771434464">Елементът бе премахнат</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Научете повече за режима „инкогнито“ в Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Файловото разширение е празно или невалидно.</translation>
 <translation id="6146055958333702838">Проверете всички кабели и рестартирайте маршрутизаторите, модемите или другите мрежови
 устройства, които може да използвате.</translation>
 <translation id="614940544461990577">Изпробвайте следното:</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(преведено от x86_64)</translation>
 <translation id="6663846344464066639">Молещи се ръце</translation>
 <translation id="6665553082534466207">Тройно перфориране отдясно</translation>
+<translation id="6668389483194953109">Намерено бе име на размер на хартията custom, но свойството custom_size е празно или невалидно.</translation>
 <translation id="6671697161687535275">Предложението за формуляри да се премахне ли от Chromium?</translation>
 <translation id="6683717648675961851">Обяви за работа</translation>
 <translation id="6685834062052613830">Излизане от профила и завършване на настройването</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">Бутон „Споделяне на този раздел“. Натиснете Enter, за да споделите този раздел чрез изпращане на връзката, създаване на QR код, предаване и др.</translation>
 <translation id="6698381487523150993">Създадено:</translation>
 <translation id="6702919718839027939">Представяне</translation>
+<translation id="6704458454638854812">Свойството custom_size е зададено, очакваното име е custom.</translation>
 <translation id="6709133671862442373">Новини</translation>
 <translation id="6709888928011386878">Музикални инструменти</translation>
 <translation id="6710213216561001401">Предишно</translation>
@@ -2259,6 +2269,7 @@
 <translation id="7238585580608191973">Пръстов отпечатък SHA-256</translation>
 <translation id="7240120331469437312">Алтернативно име на субекта на сертификата</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# съответствие}other{# съответствия}}</translation>
 <translation id="724691107663265825">На хоризонта се задава сайт със злонамерен софтуер</translation>
 <translation id="724975217298816891">Въведете датата на валидност и кода за проверка за <ph name="CREDIT_CARD" />, за да актуализирате данните за картата си. След като я потвърдите, те ще бъдат споделени с този сайт.</translation>
 <translation id="7251437084390964440">Конфигурацията на мрежата не спазва стандарта на ONC. Възможно е части от нея да не са импортирани.

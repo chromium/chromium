@@ -1518,7 +1518,6 @@
 <translation id="2390347491606624519">પ્રૉક્સીથી કનેક્ટ કરી શકાતું નથી, કૃપા કરીને ફરીથી સાઇન ઇન કરો</translation>
 <translation id="2390782873446084770">વાઇ-ફાઇ સિંક</translation>
 <translation id="2391419135980381625">માનક ફૉન્ટ</translation>
-<translation id="2392163307141705938">તમે તમારા માતાપિતાએ <ph name="IDS_SHORT_PRODUCT_NAME" /> માટે સેટ કરેલી સમયસીમા સુધી પહોંચી ગયા છો.</translation>
 <translation id="2392369802118427583">સક્રિય કરો</translation>
 <translation id="2393136602862631930">તમારી Chromebook પર <ph name="APP_NAME" /> સેટ અપ કરો</translation>
 <translation id="2393313392064891208">Google ChromeOS Flexની શરતોની વિગતો</translation>
@@ -1644,7 +1643,6 @@
 <translation id="2505669838803949807">તમારા ડિવાઇસનું EID <ph name="EID_NUMBER" /> છે. સેવા સક્રિય કરવામાં તમારી સહાય કરવા માટે, કોઈ ગ્રાહક સેવા પ્રતિનિધિ આ EID નંબરનો ઉપયોગ કરી શકે છે.</translation>
 <translation id="250704661983564564">ડિસ્પ્લેની ગોઠવણી</translation>
 <translation id="2507253002925770350">ટિકિટ કાઢી નાખી</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> થોભાવ્યું છે</translation>
 <translation id="2508428939232952663">Google Play Store એકાઉન્ટ</translation>
 <translation id="2509495747794740764">સ્કેલ પ્રમાણ, 10 અને 200 ની વચ્ચેની કોઈ સંખ્યા હોવી આવશ્યક છે.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1888,7 +1886,6 @@
 <translation id="2743387203779672305">ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">આ ફાઇલમાં સંવેદનશીલ અથવા જોખમી કન્ટેન્ટ છે. તેના માલિકને તેને સુધારવાનું કહો.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> થોભાવ્યું છે</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> પર સાઇન ઇન કરો</translation>
 <translation id="2749836841884031656">સિમ</translation>
 <translation id="2749881179542288782">જોડણી સાથે વ્યાકરણ તપાસો</translation>
@@ -4230,7 +4227,6 @@
 <translation id="5033137252639132982">મોશન સેન્સરનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="5033266061063942743">ભૌમિતિક આકાર</translation>
 <translation id="5037676449506322593">બધા પસંદ કરો</translation>
-<translation id="5038022729081036555">તમે આવતી કાલે <ph name="TIME_LIMIT" /> માટે તેનો ઉપયોગ કરી શકશો.</translation>
 <translation id="5038818366306248416">અગાઉ તમે <ph name="ORIGIN" /> પર કોઈપણ એક્સ્ટેન્શનને મંજૂરી ન આપવાનું પસંદ કર્યું હતું</translation>
 <translation id="5039696241953571917">સાચવેલા પાસવર્ડને તમારા Google એકાઉન્ટમાં જુઓ અને મેનેજ કરો</translation>
 <translation id="5039804452771397117">મંજૂરી આપો</translation>
@@ -4268,6 +4264,7 @@
 <translation id="5074761966806028321">સેટઅપ પૂર્ણ કરવા માટે હજી પણ પરવાનગી જરૂરી છે</translation>
 <translation id="5075563999073408211">એક કે વધુ સ્વિચ વડે તમારું ડિવાઇસ નિયંત્રિત કરો. કીબોર્ડની કી, ગેમપૅડના બટન અથવા વિશિષ્ટ ડિવાઇસ સ્વિચ હોઈ શકે છે.</translation>
 <translation id="5075910247684008552">સુરક્ષિત સાઇટ પર અસુરક્ષિત કન્ટેન્ટને બ્લૉક કરેલું હોય છે</translation>
+<translation id="5078490485380754244">ઉપકરણને ભૂલી જાઓ</translation>
 <translation id="5078638979202084724">બધા ટૅબ્સ બુકમાર્ક કરો</translation>
 <translation id="5078796286268621944">ખોટો PIN</translation>
 <translation id="5079010647467150187">બિલ્ટ-ઇન VPN ઉમેરો...</translation>
@@ -5031,6 +5028,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - કૅમેરા અથવા માઇક્રોફોન રેકોર્ડિંગ</translation>
 <translation id="583673505367439042">સાઇટ તમારા ડિવાઇસમાંની ફાઇલોમાં અને ફોલ્ડરોમાં ફેરફાર કરવાનું પૂછી શકે છે</translation>
 <translation id="583756221537636748">કેસ</translation>
+<translation id="5840658767386246331">Google વડે શોધો</translation>
 <translation id="5840680448799937675">ફાઇલો તો હંમેશાં ઑફલાઇન શેર કરી શકાશે જ</translation>
 <translation id="5841270259333717135">ઇથરનેટ ગોઠવો</translation>
 <translation id="5842497610951477805">બ્લૂટૂથ ચાલુ</translation>
@@ -6524,6 +6522,7 @@ USB ડિવાઇસ</translation>
 <translation id="7307129035224081534">થોભાવ્યું</translation>
 <translation id="7308643132139167865">વેબસાઇટની ભાષાઓ</translation>
 <translation id="7310598146671372464">લૉગ ઇન કરવામાં નિષ્ફળ થયા. સર્વર આપેલ Kerberos ઍન્ક્રિપ્શન પ્રકારોનું સમર્થન કરતું નથી. કૃપા કરીને તમારા વ્યવસ્થાપકનો સપર્ક કરો.</translation>
+<translation id="7311089766378749632"><ph name="SITE_NAME" />ને વાંચવાની અને તેમાં ફેરફાર કરવાની વિનંતી કરી રહ્યાં છીએ</translation>
 <translation id="7312210124139670355">તમારા ઍડમિનિસ્ટ્રેટર તમારા ઇ-સિમને રીસેટ કરી રહ્યાં છે. આમાં થોડો સમય લાગી શકે છે.</translation>
 <translation id="7320213904474460808">ડિફૉલ્ટ કરેલું નેટવર્ક</translation>
 <translation id="7321545336522791733">સર્વર પહોંચની બહાર છે</translation>
@@ -7115,6 +7114,7 @@ USB ડિવાઇસ</translation>
 <translation id="7869655448736341731">કોઈપણ</translation>
 <translation id="7870730066603611552">સેટઅપ કર્યા પછી સિંક વિકલ્પો રિવ્યૂ કરો</translation>
 <translation id="7870790288828963061">નવા વર્ઝન સાથેની કોઈ કિઓસ્ક ઍપ્લિકેશન મળી નથી. અપડેટ કરવા માટે કંઈ નથી. કૃપા કરીને USB સ્ટીક દૂર કરો.</translation>
+<translation id="7871049986386271121">આ સાઇટ પર હંમેશાં</translation>
 <translation id="7871109039747854576">ઉમેદવારોની સૂચિનું પેજ બનાવવા માટે <ph name="COMMA" /> અને <ph name="PERIOD" /> કીનો ઉપયોગ કરો</translation>
 <translation id="787268756490971083">બંધ</translation>
 <translation id="7872758299142009420">વધુ પડતા નેસ્ટ કરેલાં ગ્રૂપ છે: <ph name="ERROR_LINE" /></translation>
@@ -7264,7 +7264,6 @@ USB ડિવાઇસ</translation>
 <translation id="8013993649590906847">જો છબીમાં ઉપયોગી વર્ણન ન હોય, તો Chrome તમને વર્ણન પૂરું પાડવાનો પ્રયાસ કરશે. વર્ણન બનાવવા માટે, Googleને છબીઓ મોકલવામાં આવે છે.</translation>
 <translation id="8014154204619229810">અપડેટ કરનાર હાલમાં ચાલી રહ્યું છે. ફરીથી તપાસવા માટે થોડીવારમાં રિફ્રેશ કરો.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />, પૂર્વમાં ઇન્સ્ટૉલ કરેલ વર્ઝન પર પાછા ફરવામાં અસમર્થ છે. કૃપા કરીને તમારા ડિવાઇસને Powerwash કરવાનો ફરી પ્રયાસ કરો.</translation>
-<translation id="8015163965024115122">તમારા માતાપિતાએ<ph name="IDS_SHORT_PRODUCT_NAME" /> અથવા <ph name="IDS_SHORT_PRODUCT_NAME" /> ઍપ પર સેટ કરેલી સમયસીમા સમાપ્ત થઈ ગઈ છે.</translation>
 <translation id="8016266267177410919">અસ્થાયી સ્ટોરેજ</translation>
 <translation id="8017176852978888182">Linuxએ શેર કરેલી ડિરેક્ટરી</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8405,7 +8404,6 @@ USB ડિવાઇસ</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />શ્રેષ્ઠ અનુભવ મેળવવા માટે, <ph name="DEVICE_OS" />ને તમારી આંતરિક ડિસ્ક પર ઇન્સ્ટૉલ કરો. તમે તેને પછીથી તમારી લૉગ ઇન સ્ક્રીન પરથી પણ ઇન્સ્ટૉલ કરી શકો છો.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />જો તમે ઇન્સ્ટૉલ કરવા માટે તૈયાર ન હો, તો તમે તેને અજમાવવા માટે USBમાંથી ચલાવી શકો છો. આ તમારી હાલની OS અને ડેટાને અકબંધ રાખશે, પરંતુ તમને સ્ટોરેજ અને કાર્યપ્રદર્શન કદાચ મર્યાદિત પ્રમાણમાં જોવા મળી શકે છે.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">પિન કરેલા ટૅબ તરીકે ખોલો</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> થોભાવ્યું છે</translation>
 <translation id="9124003689441359348">સાચવેલા પાસવર્ડ અહીં દેખાશે</translation>
 <translation id="9126149354162942022">કર્સરનો રંગ</translation>
 <translation id="9128317794749765148">સેટઅપ પૂર્ણ ન થઈ શક્યું</translation>

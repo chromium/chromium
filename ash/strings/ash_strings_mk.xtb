@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
 <translation id="1364382257761975320">За да го отклучите вашиот Chromebook, користете го отпечатокот</translation>
+<translation id="1365866993922957110">Добивајте автоматски ажурирања</translation>
 <translation id="1372545819342940910">Зачувај ја работната површина за подоцна</translation>
 <translation id="1383597849754832576">Не може да се преземат датотеките за говор. Обидете се повторно подоцна.</translation>
 <translation id="1383876407941801731">Барај</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> веќе не е закачена</translation>
 <translation id="1836215606488044471">„Помошник“ (се вчитува…)</translation>
 <translation id="1838895407229022812">„Ноќното светло“ е исклучено.</translation>
+<translation id="1862380676329487333">Ажурирај и одјави се</translation>
 <translation id="1864454756846565995">USB-Ц уред (задна порта)</translation>
 <translation id="1879018240766558464">Прозорците „Инкогнито“ не се поддржани во моментов. Другите апликации ќе се зачуваат.</translation>
 <translation id="1882814835921407042">Нема мобилна мрежа</translation>
@@ -470,7 +472,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, управуван корисник</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ќе се споделуваат помеѓу вашиот телефон и <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Веб-страници</translation>
-<translation id="3701206655856637070">Сега може да промените каде се зачувуваат снимките од екранот</translation>
 <translation id="3702809606464356667">Се прикажуваат прозорци од тековната работна површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од сите работни површини</translation>
 <translation id="3702846122927433391">Население во Нигерија</translation>
 <translation id="3705722231355495246">–</translation>
@@ -563,6 +564,7 @@
 <translation id="423685346499232137">Не може да се копираат или залепат содржини во моментов</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
+<translation id="4247123849143712100">Ажурирај и исклучи</translation>
 <translation id="4250229828105606438">Слика од екран</translation>
 <translation id="425364040945105958">Нема SIM</translation>
 <translation id="4261870227682513959">Прикажи ги поставките за известувања. Известувањата се исклучени</translation>
@@ -922,6 +924,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> е управувана сесија со којашто управува <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> е поврзан</translation>
 <translation id="6351032674660237738">ПРЕДЛОЗИ ЗА АПЛИКАЦИИ</translation>
+<translation id="6359587239691116345">Преземете ги најновите функции и подобрувања на безбедноста. Ако го одбиете ажурирањево, можно е уредот да не ви функционира правилно и може да наидете на проблеми со безбедноста и изведбата.</translation>
 <translation id="6376931439017688372">Bluetooth е вклучен</translation>
 <translation id="6381109794406942707">За да го отклучите уредот, внесете го вашиот PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK е исклучено</translation>
@@ -943,6 +946,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> бара да го ажурирате вашиот <ph name="DEVICE_TYPE" /> пред крајниот рок</translation>
 <translation id="649452524636452238">PIN-код на паметна картичка</translation>
 <translation id="6495400115277918834">Започна „Слика во слика“, притиснете Alt + Shift + V за да фокусирате</translation>
+<translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Врската со камерата се изгуби, се прави обид за повторно поврзување.</translation>
 <translation id="6520517963145875092">Изберете прозорец за да сликате</translation>
@@ -1220,6 +1224,7 @@
 <translation id="8054466585765276473">пресметување време на батерија.</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
 <translation id="8083540854303889870">Зачувани за подоцна</translation>
+<translation id="8091387634532529612">Автоматски ажурирања</translation>
 <translation id="8098591350844501178">Престани со емитување на екранот на <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Вкл. за сите апл.</translation>
 <translation id="8120151603115102514">Немате заклучен екран на телефонот. За да го отклучите вашиот Chromebook, внесете лозинка.</translation>
@@ -1426,4 +1431,5 @@
 <translation id="974545358917229949">Се прикажуваат <ph name="RESULT_COUNT" /> резултати за <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Пејзаж</translation>
 <translation id="990277280839877440">Прозорецот <ph name="WINDOW_TITILE" /> е затворен.</translation>
+<translation id="996204416024568215">Преземете ги најновите функции и подобрувања на безбедноста. Ажурирањата се извршуваат во заднина.</translation>
 </translationbundle>

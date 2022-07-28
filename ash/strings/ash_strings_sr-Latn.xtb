@@ -14,6 +14,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1052916631016577720">Skeniranje stavki</translation>
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1056898198331236512">Upozorenje</translation>
+<translation id="1058009965971887428">Pošalji povratne informacije</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Zameni</translation>
 <translation id="1073899992769346247">Zamenite ili napunite bateriju</translation>
@@ -469,7 +470,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Korisnik kojim se upravlja</translation>
 <translation id="36813544980941320">WiFi mreže će se deliti između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Veb-sajtovi</translation>
-<translation id="3701206655856637070">Sada možete da promenite gde se snimci ekrana čuvaju</translation>
 <translation id="3702809606464356667">Prikazuju se prozori sa aktuelne radne površine. Pritisnite taster sa strelicom nagore da bi se prikazivali prozori sa svih radnih površina.</translation>
 <translation id="3702846122927433391">Populacija Nigerije</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6182592640011875895">Otvori radnu površinu</translation>
 <translation id="619279033188484792">Pregledajte nedavne slike, medijski sadržaj i obaveštenja telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Odmah napunite do kraja</translation>
+<translation id="6193431488227440296">Razvojna</translation>
 <translation id="6220928844947387476">Sada istovremeno možete da snimate sebe i ekran</translation>
 <translation id="622484624075952240">Nadole</translation>
 <translation id="6231419273573514727">Učinak perifernih uređaja će možda biti ograničen</translation>

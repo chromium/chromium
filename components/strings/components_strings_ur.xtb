@@ -1005,6 +1005,7 @@
 <translation id="3676592649209844519">‏آلہ کی ID:</translation>
 <translation id="3677008721441257057">‏کیا آپ کا مطلب &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; تھا؟</translation>
 <translation id="3678029195006412963">درخواست پر دستخط نہیں کیا جا سکا</translation>
+<translation id="3678342917559046352">‏غلط ایکسٹینشن: توقع ہے کہ قدر مندرجہ ذیل فارمیٹ میں سے ایک کی طرح ہو: &lt;extension_id&gt; یا &lt;extension_id&gt;;&lt;update_url&gt;۔</translation>
 <translation id="3678529606614285348">‏صفحہ کو ایک نئی پوشیدگی ونڈو میں کھولیں (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3701427423622901115">ری سیٹ کی کاروائی تسلیم کر لی گئی۔</translation>
@@ -1344,6 +1345,7 @@
 <translation id="464342062220857295">خصوصیات تلاش کریں</translation>
 <translation id="4644670975240021822">اُلٹ ترتیب میں، صفحات کا رُخ نیچے کی جانب</translation>
 <translation id="4646534391647090355">اب مجھے وہاں لے چلیں</translation>
+<translation id="4648262692072505866">‏ہیش کا فارمیٹ SHA-256 ہونا چاہیے۔</translation>
 <translation id="4652266463001779298">اجازت نہیں ہے</translation>
 <translation id="4653167719759882810">انضمام اور حصول</translation>
 <translation id="4658638640878098064">اوپر بائیں طرف سٹیپل</translation>
@@ -1453,6 +1455,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />، تلاش کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="4930153903256238152">بڑی گنجائش</translation>
+<translation id="4936134414789135531">داخل کردہ <ph name="VALUE_NAME" /> نہیں مل سکا۔</translation>
 <translation id="4936675324097895694">فائنانس</translation>
 <translation id="4940163644868678279">‏Chrome میں پوشیدگی وضع</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
@@ -1570,6 +1573,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">ٹرے 13</translation>
 <translation id="5216942107514965959">آخری بار آج ملاحظہ کیا گیا</translation>
+<translation id="5217759126664161410">پروٹوکول کا فارمیٹ غلط ہے۔</translation>
 <translation id="5222812217790122047">ای میل مطلوب ہے</translation>
 <translation id="5228404122310299359">پارٹی اور تعطیلات کی سپلائیز</translation>
 <translation id="5229588705416009823">وسیع پیمانے پر ملٹی پلیئر گیمز</translation>
@@ -1642,6 +1646,7 @@
 <translation id="5398772614898833570">اشتہارات مسدود ہیں</translation>
 <translation id="5400836586163650660">خاکستری</translation>
 <translation id="540969355065856584">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفکیٹ اس وقت درست نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
+<translation id="5412040515238827314">غلط فارمیٹ: پیٹرنز کی فہرست متوقع ہے۔</translation>
 <translation id="5412236728747081950">‏یہ سائٹ آپ کو مزید متعلقہ اشتہارات دکھانے کے لیے Chrome سے آپ کی دلچسپیاں موصول کرتی ہے</translation>
 <translation id="541416427766103491">اسٹیکر 4</translation>
 <translation id="5421136146218899937">براؤزنگ ڈیٹا صاف کریں…</translation>
@@ -1760,6 +1765,7 @@
 <translation id="5754400531489347219">پالتو جانور اور حیوانات</translation>
 <translation id="5759751709240058861">اپنا کیمرا استعمال کریں اور منتقل کریں</translation>
 <translation id="5763042198335101085">ایک درست ای میل پتہ درج کریں</translation>
+<translation id="5764725887548570807">اصل فارمیٹ غلط ہے۔</translation>
 <translation id="5765072501007116331">ڈیلیوری کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
 <translation id="57689295674415555">ورچوئل کارڈ نمبر پُر نہیں ہے؟</translation>
 <translation id="5776313857861697733">ترجیح</translation>
@@ -1884,10 +1890,12 @@
 <translation id="6107012941649240045">جاری کردہ بنام</translation>
 <translation id="610911394827799129">‏ممکن ہے کہ ‎<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں</translation>
 <translation id="6116338172782435947">کلپ بورڈ میں کاپی کیے گئے متن اور تصاویر دیکھیں</translation>
+<translation id="6118782133429281336">اصل فہرست خالی ہے۔</translation>
 <translation id="6120179357481664955">‏آپ کی UPI ID یاد رکھیں؟</translation>
 <translation id="6124432979022149706">‏Chrome Enterprise کنیکٹرز</translation>
 <translation id="6127379762771434464">آئٹم ہٹا دیا گیا</translation>
 <translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />Chrome میں پوشیدگی وضع کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">فائل ایکسٹینشن خالی یا خراب ہے۔</translation>
 <translation id="6146055958333702838">کوئی بھی کیبلز چیک کریں اور کوئی بھی
     روٹرز، موڈمز
 یا ان دیگر نیٹ ورک آلات کو ریبوٹ کریں جنہیں آپ استعمال کر سکتے ہیں۔</translation>
@@ -2062,6 +2070,7 @@
 <translation id="666259744093848177">‏(x86_64 ترجمہ کردہ)</translation>
 <translation id="6663846344464066639">فولڈ کیے ہوئے ہاتھ</translation>
 <translation id="6665553082534466207">دائیں طرف تین سوراخ</translation>
+<translation id="6668389483194953109">‏کاغذ کے سائز کا نام "حسب ضرورت" ملا، لیکن "custom_size" پراپرٹی خالی یا غلط ہے۔</translation>
 <translation id="6671697161687535275">‏Chromium سے فارم کی تجویز ہٹائیں؟</translation>
 <translation id="6683717648675961851">جاب کی فہرستیں</translation>
 <translation id="6685834062052613830">سائن آؤٹ کریں اور سیٹ اپ مکمل کریں</translation>
@@ -2075,6 +2084,7 @@
 <translation id="6696588630955820014">‏اس ٹیب کے بٹن کا اشتراک کریں، لنک کا اشتراک، QR کوڈ تخلیق، کاسٹ اور بہت کچھ کر کے اس ٹیب کا اشتراک کرنے کیلئے اینٹر دبائیں</translation>
 <translation id="6698381487523150993">بنا دی گئی:</translation>
 <translation id="6702919718839027939">پیش کریں</translation>
+<translation id="6704458454638854812">‏پراپرٹی "custom_size" پر سیٹ ہے، متوقع نام "حسب ضرورت" ہوگا۔</translation>
 <translation id="6709133671862442373">خبریں</translation>
 <translation id="6709888928011386878">موسیقی کے ساز و سامان</translation>
 <translation id="6710213216561001401">گزشتہ</translation>

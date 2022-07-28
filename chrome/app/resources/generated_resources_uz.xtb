@@ -1522,7 +1522,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2390347491606624519">Proksi-serverga ulanilmadi, hisobingizga qaytadan kiring</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Standard shrift</translation>
-<translation id="2392163307141705938">Ota-onangiz <ph name="IDS_SHORT_PRODUCT_NAME" /> uchun belgilagan foydalanish vaqti tugadi.</translation>
 <translation id="2392369802118427583">Faollashtirish</translation>
 <translation id="2393136602862631930">Chromebookda <ph name="APP_NAME" /> ilovasini sozlash</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex shartlari</translation>
@@ -1648,7 +1647,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2505669838803949807">Qurilmangiz EID raqami: <ph name="EID_NUMBER" />. Mijozlarga xizmat koʻrsatish xodimi sizga xizmatni faollashtirishda yordam berish uchun EID raqamdan foydalanishi mumkin.</translation>
 <translation id="250704661983564564">Displey joylashuv tartibi</translation>
 <translation id="2507253002925770350">Chipta olib tashlandi</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> pauza qilindi</translation>
 <translation id="2508428939232952663">Google Play Market hisobi</translation>
 <translation id="2509495747794740764">Masshtab qiymati 10 va 200 oralig‘ida bo‘lishi lozim.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1892,7 +1890,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2743387203779672305">Vaqtincha xotiraga nusxalash</translation>
 <translation id="2745080116229976798">Microsoft Malakalilarga Bo‘ysunish sertifikatlar xizmati</translation>
 <translation id="2747266560080989517">Bu faylda maxfiy yoki xavfli kontent bor. Egasidan uni tuzatishni soʻrang.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> pauza qilindi</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> hisobiga kirish</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Grammatikani imlo bilan tekshirish</translation>
@@ -3901,6 +3898,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4689421377817139245">Xatcho‘pni iPhone bilan sinxronlang</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi mikrodasturi to‘rtta fayl yaratdi: csr.lst, fh_regs.lst, radio_reg.lst va monitor.lst.sysmon. Ilk uchtasi – binar fayllar bo‘lib, reestrdagi vaqtincha axborotdan iborat bo‘ladi, Intel kompaniyasining axborotiga ko‘ra bu fayllarda shaxsiy va qurilma haqidagi ma’lumotlar saqlanmaydi. Oxirgi fayl esa Intel mikrodasturidan trassirovkani ishga tushiradi (unda ham shaxsiy va qurilma ma1lumotlari saqlanmaydi). Fayl hajmi kattaligi tufayli, biz uni to‘liq ko‘rsata olmaymiz. Bu fayllar qurilmangizdagi Wi-Fi muammolarini bartaraf etishga yordamlashish maqsadida Intel serverlariga yuboriladi.&gt;</translation>
 <translation id="4691791363716065510">Bu sayt uchun barcha varaqlarni yopmasangiz, <ph name="ORIGIN" /> <ph name="FILENAME" /> faylini koʻra oladi</translation>
+<translation id="4692342362587775867">Bu sayt bildirishnomalari xalaqit berishi mumkin</translation>
 <translation id="4692623383562244444">Qidiruv tizimlari</translation>
 <translation id="4692736633446859167">Avvalroq <ph name="SITE" /> saytidagi barcha kengaytmalarga ruxsat bermaslikni tanlagansiz. Bu saytni bu yerga qoʻshsangiz, boshqa kengaytmalar ham <ph name="SITE" /> saytidagi ma'lumotlarni oʻqish va oʻzgartirishni soʻrashi mumkin.</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -4234,7 +4232,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5033137252639132982">Harakat sensorlaridan foydalanish taqiqlangan</translation>
 <translation id="5033266061063942743">Geometrik shakllar</translation>
 <translation id="5037676449506322593">Hammasini belgilash</translation>
-<translation id="5038022729081036555">Ertaga yana <ph name="TIME_LIMIT" /> ishlata olasiz.</translation>
 <translation id="5038818366306248416">Avvalroq <ph name="ORIGIN" /> saytidagi barcha kengaytmalarga ruxsat bermaslikni tanlagansiz</translation>
 <translation id="5039696241953571917">Google hisobingizga saqlangan parollarni koʻrish va boshqarish</translation>
 <translation id="5039804452771397117">Ruxsat berish</translation>
@@ -4272,6 +4269,7 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5074761966806028321">Sozlashni yakunlash uchun ruxsat kerak</translation>
 <translation id="5075563999073408211">Qurilmani bitta yoki ikkita kalit tugma yordamida boshqaring. Kalit tugmalar klaviatura tugmalari, geympad tugmalari yoki maxsus qurilmalar boʻlishi mumkin.</translation>
 <translation id="5075910247684008552">Himoyalangan saytlarda zararli kontent avtomatik bloklanadi</translation>
+<translation id="5078490485380754244">Qurilmani unutish</translation>
 <translation id="5078638979202084724">Barcha ichki oynalarni xatcho‘plarga qo‘shish</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
 <translation id="5079010647467150187">Ichki oʻrnatilgan VPN kiritish...</translation>
@@ -7269,7 +7267,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8013993649590906847">Agar rasmga foydali tavsif berilmagan boʻlsa, Google Chrome uni sizga tavsiflaydi. Tavsif yaratish uchun rasmlar Googlega yuboriladi.</translation>
 <translation id="8014154204619229810">Yangilash vositasi ishlamoqda. Bir necha daqiqadan so‘ng qayta urinib ko‘ring.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />‘ni avval o‘rnatilgan versiyaga qaytarish imkoniyati yo‘q. Powerwash funksiyasidan foydalanib ko‘ring.</translation>
-<translation id="8015163965024115122">Ota-onangiz tomonidan belgilangan <ph name="IDS_SHORT_PRODUCT_NAME" /> yoki <ph name="IDS_SHORT_PRODUCT_NAME" /> veb ilovalardan foydalanish vaqti tugadi.</translation>
 <translation id="8016266267177410919">Vaqtinchalik saqlash jildi</translation>
 <translation id="8017176852978888182">Linux umumiy kataloglari</translation>
 <translation id="8017679124341497925">Yorliq tahrirlandi</translation>
@@ -8407,7 +8404,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Toʻliq foydalanish uchun <ph name="DEVICE_OS" /> tizimini tashqi diskka oʻrnating. Uni keyinroq kirish ekranidan oʻrnatish ham mumkin.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Oʻrnatish uchun tayyor boʻlmasangiz, uni USB orqali ishga tushirib, sinab koʻrishingiz mumkin. Mavjud operatsion tizim va maʼlumotlaringiz saqlanib qoladi, lekin xotira va unumdorlik cheklovlari oshishi mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Qadalgan ichki oyna sifatida ochish</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> pauza qilindi</translation>
 <translation id="9124003689441359348">Saqlangan parollar shu yerda turadi</translation>
 <translation id="9126149354162942022">Kursor rangi</translation>
 <translation id="9128317794749765148">Oxirigacha sozlanmadi</translation>

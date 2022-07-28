@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">Преглеждане на елементите</translation>
 <translation id="1056775291175587022">Няма мрежи</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
+<translation id="1058009965971887428">Изпращане на отзиви</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Замяна</translation>
 <translation id="1073899992769346247">Заменете или заредете батерията</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – управляван потребител</translation>
 <translation id="36813544980941320">Wi-Fi мрежите ще бъдат споделяни между телефона и устройството ви <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Уебсайтове</translation>
-<translation id="3701206655856637070">Вече можете да промените къде да се запазват заснеманията на екрана</translation>
 <translation id="3702809606464356667">Показани са прозорци от текущия работен кът. Натиснете клавиша със стрелка за нагоре, за да се покажат прозорците от всички работни кътове</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +652,7 @@
 <translation id="4690510401873698237">Лавицата е най-долу</translation>
 <translation id="4696813013609194136">Отключване на устройството с код на родител</translation>
 <translation id="4702647871202761252">Екранът за поверителност е изключен</translation>
+<translation id="470644585772471629">Инвертиране на цветовете</translation>
 <translation id="4717575069099566988">USB-C кабелът ви не поддържа USB4. Ефективността на устройството може да е ограничена.</translation>
 <translation id="4730374152663651037">ЧЕСТО ИЗПОЛЗВАНИ</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
@@ -901,6 +902,7 @@
 <translation id="6182592640011875895">Отваряне на работния кът</translation>
 <translation id="619279033188484792">Преглед на скорошните снимки, мултимедийни файлове и известия от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Пълно зареждане сега</translation>
+<translation id="6193431488227440296">За програмисти</translation>
 <translation id="6220928844947387476">Вече можете да записвате себе си и екрана си едновременно</translation>
 <translation id="622484624075952240">Клавиш за надолу</translation>
 <translation id="6231419273573514727">Ефективността на периферните устройства може да е ограничена</translation>

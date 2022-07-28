@@ -1000,6 +1000,7 @@
 <translation id="3676592649209844519">ଡିଭାଇସ୍‌ ID:</translation>
 <translation id="3677008721441257057">ଆପଣଙ୍କର କହିବା ଅର୍ଥ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;କି?</translation>
 <translation id="3678029195006412963">ଅନୁରୋଧରେ ଦସ୍ତଖତ କରାଯାଇପାରିଲା ନାହିଁ</translation>
+<translation id="3678342917559046352">ଅବୈଧ ଏକ୍ସଟେନସନ: ମୂଲ୍ୟଟି ନିମ୍ନୋକ୍ତ ପ୍ରକାରଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏ ହେବ ବୋଲି ଆଶା କରାଯାଉଛି: &lt;extension_id&gt; କିମ୍ବା &lt;extension_id&gt;;&lt;update_url&gt;।</translation>
 <translation id="3678529606614285348">ଏକ ନୂଆ ଇନ୍‌କଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">ସାର୍ଟିଫିକେଟ୍ ସୂଚନା</translation>
 <translation id="3701427423622901115">ରିସେଟ୍ ସ୍ୱୀକାର କରାଯାଇଛି।</translation>
@@ -1339,6 +1340,7 @@
 <translation id="464342062220857295">ଫିଚର୍‍ଗୁଡ଼ିକର ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="4644670975240021822">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଡାଉନ୍</translation>
 <translation id="4646534391647090355">ମୋତେ ବର୍ତ୍ତମାନ ସେଠାକୁ ନେଇଚାଲନ୍ତୁ</translation>
+<translation id="4648262692072505866">ହାସ SHA-256 ଫର୍ମାଟର ହେବା ଆବଶ୍ୟକ।</translation>
 <translation id="4652266463001779298">ଅନୁମତି ଦିଆଯାଇନାହିଁ</translation>
 <translation id="4653167719759882810">ଏକତ୍ରୀକରଣ ଏବଂ ସଂଗ୍ରହଗୁଡ଼ିକ</translation>
 <translation id="4658638640878098064">ଉପର ବାମ ପଟରେ ଷ୍ଟାପଲ୍</translation>
@@ -1449,6 +1451,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, ସନ୍ଧାନ କରିବାକୁ Tab ତାପରେ Enter ଦବାନ୍ତୁ</translation>
 <translation id="4930153903256238152">ଅଧିକ କ୍ଷମତାସମ୍ପନ୍ନ</translation>
+<translation id="4936134414789135531">ଇନସାର୍ଟ କରାଯାଇଥିବା <ph name="VALUE_NAME" /> ମିଳିଲା ନାହିଁ।</translation>
 <translation id="4936675324097895694">ଫାଇନାନ୍ସ</translation>
 <translation id="4940163644868678279">Chromeରେ ଇନକଗ୍ନିଟୋ</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
@@ -1566,6 +1569,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">ଟ୍ରେ 13</translation>
 <translation id="5216942107514965959">ଆଜି ଶେଷ ଥର ଭିଜିଟ୍ କରାଯାଇଛି</translation>
+<translation id="5217759126664161410">ଅବୈଧ ପ୍ରୋଟୋକଲ ଫର୍ମାଟ।</translation>
 <translation id="5222812217790122047">ଇମେଲ୍‌ର ଆବଶ୍ୟକତା ଅଛି</translation>
 <translation id="5228404122310299359">ପାର୍ଟି ଏବଂ ଛୁଟିଦିନ ସାମଗ୍ରୀ</translation>
 <translation id="5229588705416009823">ବୃହଦାକାର ମଲ୍ଟିପ୍ଲେୟାର ଗେମ୍ସ</translation>
@@ -1638,6 +1642,7 @@
 <translation id="5398772614898833570">ବିଜ୍ଞାପନଗୁଡ଼ିକ ଅବରୋଧ ହୋ‍ଇଛି</translation>
 <translation id="5400836586163650660">ଧୂସର</translation>
 <translation id="540969355065856584">ଏହି ସର୍ଭର୍, ଏହା <ph name="DOMAIN" /> ବୋଲି ପ୍ରମାଣିତ କରିପାରିଲା ନାହିଁ; ଏହି ସମୟରେ ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ବୈଧ ନୁହେଁ। ଏହା ହୁଏତ ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
+<translation id="5412040515238827314">ଅବୈଧ ଫର୍ମାଟ: ପାଟର୍ନଗୁଡ଼ିକର ଏକ ତାଲିକା ଆଶା କରାଯାଉଛି।</translation>
 <translation id="5412236728747081950">ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ବିଜ୍ଞାପନ ଦେଖାଇବା ପାଇଁ ଏହି ସାଇଟ Chromeରୁ ଆପଣଙ୍କର ରୁଚିଗୁଡ଼ିକ ପାଇଥାଏ</translation>
 <translation id="541416427766103491">ଷ୍ଟାକର୍ 4</translation>
 <translation id="5421136146218899937">ବ୍ରାଉଜିଂ ଡାଟା ଖାଲି କରନ୍ତୁ...</translation>
@@ -1756,6 +1761,7 @@
 <translation id="5754400531489347219">ଗୃହପାଳିତ ପଶୁପକ୍ଷୀ ଏବଂ ଜୀବଜନ୍ତୁ</translation>
 <translation id="5759751709240058861">ଆପଣଙ୍କ କ୍ୟାମେରା ବ୍ୟବହାର ଓ ମୁଭ୍ କରିବାକୁ</translation>
 <translation id="5763042198335101085">ଏକ ବୈଧ ଇମେଲ୍ ଠିକଣା ଲେଖନ୍ତୁ</translation>
+<translation id="5764725887548570807">ଅବୈଧ ମୂଳ ଫର୍ମାଟ।</translation>
 <translation id="5765072501007116331">ବିତରଣ ପଦ୍ଧତି ଓ ଆବଶ୍ୟକତା ଦେଖିବା ପାଇଁ ଗୋଟିଏ ଠିକଣା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="57689295674415555">ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ପୂରଣ କରାଯାଇନାହିଁ?</translation>
 <translation id="5776313857861697733">ପ୍ରାଥମିକତା</translation>
@@ -1880,10 +1886,12 @@
 <translation id="6107012941649240045">ଏହାଙ୍କୁ ଜାରି କରାଯାଇଛି</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />ରେ ହୁଏତ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଅନ୍ୟାନ୍ୟ ଧରଣର ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି ଥାଇପାରେ</translation>
 <translation id="6116338172782435947">କ୍ଲିପ୍‌ବୋର୍ଡକୁ କପି ହୋ‍ଇଥିବା ଟେକ୍ସଟ୍‍ ଏବଂ ଛବିଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
+<translation id="6118782133429281336">ମୂଳ ତାଲିକା ଖାଲି ଅଛି।</translation>
 <translation id="6120179357481664955">ଆପଣଙ୍କର UPI ID ମନେ ଅଛି?</translation>
 <translation id="6124432979022149706">Chrome ଏଣ୍ଟରପ୍ରାଇଜ୍ କନେକ୍ଟରଗୁଡ଼ିକ</translation>
 <translation id="6127379762771434464">ଆଇଟମକୁ କାଢ଼ି ଦିଆଯାଇଛି</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeରେ ଇନକଗ୍ନିଟୋ ମୋଡ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ଫାଇଲ ଏକ୍ସଟେନସନ ଖାଲି ଅଛି କିମ୍ବା ତ୍ରୁଟିପୂର୍ଣ୍ଣ ଅଟେ।</translation>
 <translation id="6146055958333702838">ଯେକୌଣସି କେବଲ୍‌ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଦ୍ୱାରା ବ୍ୟବହାର କରାଯାଉଥିବା ଯେକୌଣସି ରାଉଟର୍‌, ମୋଡେମ୍‍ କିମ୍ବା ଅନ୍ୟ ରାଉଟର୍‌ ରିବୁଟ୍‌ କରନ୍ତୁ।</translation>
 <translation id="614940544461990577">ଏହାକୁ ପରଖନ୍ତୁ:</translation>
 <translation id="6150036310511284407">ବାମ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
@@ -2056,6 +2064,7 @@
 <translation id="666259744093848177">(x86_64 ଅନୁବାଦ କରାଯାଇଛି)</translation>
 <translation id="6663846344464066639">ହାତ ଯୋଡ଼ି ନମସ୍କାର କରିବା</translation>
 <translation id="6665553082534466207">ଡାହାଣ ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
+<translation id="6668389483194953109">ପେପର ଆକାର ନାମ "କଷ୍ଟମ" ମିଳିଲା, କିନ୍ତୁ "custom_size" ପ୍ରପର୍ଟି ଖାଲି ଅଛି କିମ୍ବା ଅବୈଧ ଅଟେ।</translation>
 <translation id="6671697161687535275">Chromiumରୁ ପରାମର୍ଶରୁ କାଢ଼ି ଦେବେ?</translation>
 <translation id="6683717648675961851">ଚାକିରିର ତାଲିକାଗୁଡ଼ିକ</translation>
 <translation id="6685834062052613830">ସାଇନ୍‌ ଆଉଟ୍‌ କରନ୍ତୁ ଏବଂ ସେଟ୍‌ଅପ୍‌ ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
@@ -2069,6 +2078,7 @@
 <translation id="6696588630955820014">"ଏହି ଟାବକୁ ସେୟାର କରନ୍ତୁ" ବଟନ, ଲିଙ୍କ ସେୟାର କରି, ଏକ QR କୋଡ ତିଆରି କରି, କାଷ୍ଟ କରି ଏବଂ ଆହୁରି ଅନେକ ଉପାୟରେ ଏହି ଟାବକୁ ସେୟାର କରିବା ପାଇଁ Enter ଦବାନ୍ତୁ</translation>
 <translation id="6698381487523150993">ସୃଷ୍ଟିହେଲା:</translation>
 <translation id="6702919718839027939">ବର୍ତ୍ତମାନ</translation>
+<translation id="6704458454638854812">"custom_size" ପ୍ରପର୍ଟି ସେଟ ହୋଇଛି, ଆଶା କରାଯାଉଥିବା ନାମ "କଷ୍ଟମ" ହେବା ଆବଶ୍ୟକ।</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">ବାଦ୍ୟ ଯନ୍ତ୍ରଗୁଡ଼ିକ</translation>
 <translation id="6710213216561001401">ପୂର୍ବବର୍ତ୍ତୀ</translation>

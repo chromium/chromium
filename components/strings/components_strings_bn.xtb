@@ -1004,6 +1004,7 @@
 <translation id="3676592649209844519">ডিভাইস আইডি:</translation>
 <translation id="3677008721441257057">আপনি কি &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; বোঝাতে চাইছেন?</translation>
 <translation id="3678029195006412963">অনুরোধটি স্বাক্ষরিত করা যায়নি</translation>
+<translation id="3678342917559046352">ভুল এক্সটেনশন: প্রত্যাশিত মানটি নিম্নলিখিত ফর্মগুলির মধ্যে একটি হতে পারে: &lt;extension_id&gt; বা &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">নতুন ছদ্মবেশী উইন্ডোতে (Ctrl-Shift-N) করে একটি পৃষ্ঠা খুলুন</translation>
 <translation id="3681007416295224113">সার্টিফিকেট তথ্য</translation>
 <translation id="3701427423622901115">সব এক্সপেরিমেন্ট রিসেট ভ্যালুতে সেট করা হয়েছে, Chrome রিস্টার্ট করার পর এই পরিবর্তনগুলি প্রয়োগ করা হবে।</translation>
@@ -1343,6 +1344,7 @@
 <translation id="464342062220857295">সার্চের ফিচার</translation>
 <translation id="4644670975240021822">রিভার্স অর্ডার, সামনের দিক নীচে</translation>
 <translation id="4646534391647090355">আমাকে এখনই সেখানে নিয়ে চলুন</translation>
+<translation id="4648262692072505866">হ্যাশ অবশ্যই SHA-256 ফর্ম্যাটের হতে হবে।</translation>
 <translation id="4652266463001779298">অনুমতি নেই</translation>
 <translation id="4653167719759882810">সংযুক্তি ও অধিগ্রহণ</translation>
 <translation id="4658638640878098064">উপরে বাঁদিকে স্টেপল করুন</translation>
@@ -1452,6 +1454,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, সার্চ করতে ট্যাব টিপে এন্টার টিপুন</translation>
 <translation id="4930153903256238152">অধিক ক্ষমতা সম্পন্ন</translation>
+<translation id="4936134414789135531">যোগ করা <ph name="VALUE_NAME" /> পাওয়া যায়নি।</translation>
 <translation id="4936675324097895694">ফাইন্যান্স</translation>
 <translation id="4940163644868678279">Chrome-এ ছদ্মবেশী মোড</translation>
 <translation id="4943872375798546930">কোন ফলাফল নেই</translation>
@@ -1569,6 +1572,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">ট্রে ১৩</translation>
 <translation id="5216942107514965959">আজ শেষবার দেখা হয়েছে</translation>
+<translation id="5217759126664161410">প্রোটোকল ফর্ম্যাটটি সঠিক নয়।</translation>
 <translation id="5222812217790122047">ইমেল আইডি প্রয়োজন</translation>
 <translation id="5228404122310299359">পার্টি ও ছুটির দিন উদযাপন করার সাপ্লাই</translation>
 <translation id="5229588705416009823">ব্যাপকভাবে মাল্টিপ্লেয়ার গেম</translation>
@@ -1641,6 +1645,7 @@
 <translation id="5398772614898833570">বিজ্ঞাপন ব্লক করা হয়েছে</translation>
 <translation id="5400836586163650660">ধূসর</translation>
 <translation id="540969355065856584">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট এই সময়ে বৈধ নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
+<translation id="5412040515238827314">ভুল ফর্ম্যাট: প্রত্যাশিত প্যাটার্নের তালিকা।</translation>
 <translation id="5412236728747081950">এই সাইটটি আপনাকে আরও প্রাসঙ্গিক বিজ্ঞাপন দেখানোর জন্য Chrome থেকে আপনার আগ্রহগুলি নেয়।</translation>
 <translation id="541416427766103491">স্ট্যাকার ৪</translation>
 <translation id="5421136146218899937">ব্রাউজিং ডেটা সাফ করুন...</translation>
@@ -1759,6 +1764,7 @@
 <translation id="5754400531489347219">পোষ্য ও জীবজন্তু</translation>
 <translation id="5759751709240058861">আপনার ক্যামেরা ব্যবহার করুন এবং সরান</translation>
 <translation id="5763042198335101085">একটি সঠিক ইমেল আইডি লিখুন</translation>
+<translation id="5764725887548570807">অরিজিন ফর্ম্যাটটি সঠিক নয়।</translation>
 <translation id="5765072501007116331">ডেলিভারির পদ্ধতি এবং প্রয়োজনীয়তাগুলি দেখতে একটি ঠিকানা বেছে নিন</translation>
 <translation id="57689295674415555">ভার্চুয়াল কার্ডের নম্বর দেওয়া হয়নি?</translation>
 <translation id="5776313857861697733">অগ্রাধিকার</translation>
@@ -1883,10 +1889,12 @@
 <translation id="6107012941649240045">একে ইস্যু করা হয়েছিল</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />-এ আপনার Google অ্যাকাউন্টের অন্যান্য ধরনের ব্রাউজিংয়ের ইতিহাস থাকতে পারে</translation>
 <translation id="6116338172782435947">ক্লিপবোর্ডে কপি করা টেক্সট এবং ছবি দেখতে</translation>
+<translation id="6118782133429281336">অরিজিন তালিকাতে কিছু নেই।</translation>
 <translation id="6120179357481664955">আপনার UPI আইডি মনে আছে?</translation>
 <translation id="6124432979022149706">Chrome Enterprise কানেক্টর</translation>
 <translation id="6127379762771434464">আইটেম সরানো হয়েছে</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome-এ ছদ্মবেশী মোডের বিষয়ে আরও জানুন<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ফাইল এক্সটেনশনটি খালি বা ভুল ফর্ম্যাটে ছিল।</translation>
 <translation id="6146055958333702838">সব কেবল পরীক্ষা করুন এবং আপনি ব্যবহার করছেন এমন যেকোনো রাউটার, মডেম বা অন্যান্য নেটওয়ার্ক ডিভাইসগুলি আবার চালু করুন।</translation>
 <translation id="614940544461990577">এটি করে দেখুন:</translation>
 <translation id="6150036310511284407">বাঁদিকে ট্রিপল পাঞ্চ</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64-এর অনুবাদ করা হয়েছে)</translation>
 <translation id="6663846344464066639">নমস্কার</translation>
 <translation id="6665553082534466207">ডানদিকে ট্রিপল পাঞ্চ</translation>
+<translation id="6668389483194953109">পেপার সাইজের নাম "কাস্টম" হিসেবে শনাক্ত করা হয়েছে, কিন্তু "custom_size" প্রপার্টি খালি বা সঠিক নয়।</translation>
 <translation id="6671697161687535275">Chromium থেকে ফর্ম প্রস্তাবনা সরাবেন?</translation>
 <translation id="6683717648675961851">চাকরির তালিকা</translation>
 <translation id="6685834062052613830">সাইন-আউট করে সেট-আপ সম্পূর্ণ করুন</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">এই ট্যাব বোতামটি শেয়ার করুন। লিংক শেয়ার করে, QR কোড তৈরি করে, কাস্ট করে, এবং আরও অন্যান্য বিকল্পের সাহায্যে এই ট্যাবটি শেয়ার করতে Enter প্রেস করুন</translation>
 <translation id="6698381487523150993">তৈরি হয়েছে:</translation>
 <translation id="6702919718839027939">প্রেজেন্টেশন মোড</translation>
+<translation id="6704458454638854812">প্রপার্টি "custom_size" সেট আছে, নামটি "কাস্টম" হতে পারে।</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">মিউজিকাল ইন্সট্রুমেন্ট</translation>
 <translation id="6710213216561001401">আগের</translation>

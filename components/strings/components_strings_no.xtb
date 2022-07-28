@@ -1003,6 +1003,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3676592649209844519">Enhets-ID:</translation>
 <translation id="3677008721441257057">Mente du &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Forespørselen kunne ikke undertegnes</translation>
+<translation id="3678342917559046352">Ugyldig utvidelse: Forventet en verdi på en av disse formene: &lt;extension_id&gt; eller &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Åpne siden i et nytt inkognitovindu (Ctrl + Shift + N)</translation>
 <translation id="3681007416295224113">Sertifikatinformasjon</translation>
 <translation id="3701427423622901115">Tilbakestillingen er godtatt.</translation>
@@ -1342,6 +1343,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="464342062220857295">Søkefunksjoner</translation>
 <translation id="4644670975240021822">Motsatt rekkefølge – forsiden ned</translation>
 <translation id="4646534391647090355">Gå dit nå</translation>
+<translation id="4648262692072505866">Hash-verdien må være i formatet SHA-256.</translation>
 <translation id="4652266463001779298">Ikke tillatt</translation>
 <translation id="4653167719759882810">Sammenslåinger og oppkjøp</translation>
 <translation id="4658638640878098064">Stift oppe til venstre</translation>
@@ -1451,6 +1453,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å søke</translation>
 <translation id="4930153903256238152">Stor kapasitet</translation>
+<translation id="4936134414789135531">Fant ikke angitt <ph name="VALUE_NAME" />.</translation>
 <translation id="4936675324097895694">Finans</translation>
 <translation id="4940163644868678279">Inkognito i Chrome</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
@@ -1568,6 +1571,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Skuff 13</translation>
 <translation id="5216942107514965959">Sist besøkt i dag</translation>
+<translation id="5217759126664161410">Ugyldig protokollformat.</translation>
 <translation id="5222812217790122047">E-post er obligatorisk</translation>
 <translation id="5228404122310299359">Fest- og høytidsutstyr</translation>
 <translation id="5229588705416009823">MMO-spill</translation>
@@ -1640,6 +1644,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5398772614898833570">Annonser er blokkert</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="540969355065856584">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke gyldig for øyeblikket. Dette kan være forårsaket av en feilkonfigurasjon eller en angriper som lytter på tilkoblingen din.</translation>
+<translation id="5412040515238827314">Ugyldig format: Forventet en liste over mønstre.</translation>
 <translation id="5412236728747081950">Dette nettstedet mottar interessene dine fra Chrome for å kunne vise deg mer relevante annonser</translation>
 <translation id="541416427766103491">Hylle 4</translation>
 <translation id="5421136146218899937">Slett nettlesingsdata</translation>
@@ -1758,6 +1763,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5754400531489347219">Dyr og kjæledyr</translation>
 <translation id="5759751709240058861">bruke og bevege kameraet ditt</translation>
 <translation id="5763042198335101085">Angi en gyldig e-postadresse</translation>
+<translation id="5764725887548570807">Ugyldig opphavsformat.</translation>
 <translation id="5765072501007116331">For å se leveringsmetoder og -krav, velg en adresse</translation>
 <translation id="57689295674415555">Ble ikke det virtuelle kortnummeret fylt ut?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
@@ -1882,10 +1888,12 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6107012941649240045">Utstedt til</translation>
 <translation id="610911394827799129">Det kan hende Google-kontoen din har andre typer nettleserlogger på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">Se tekst og bilder som er kopiert til utklippstavlen</translation>
+<translation id="6118782133429281336">Opphavslisten er tom.</translation>
 <translation id="6120179357481664955">Husker du UPI-ID-en din?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">Elementet er fjernet</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Finn ut mer om Incognito i Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Filetternavnet er tomt eller feilformatert.</translation>
 <translation id="6146055958333702838">Sjekk alle kabler, og start rutere, modemer eller andre nettverksenheter
      du bruker, på nytt.</translation>
 <translation id="614940544461990577">Prøv dette:</translation>
@@ -2059,6 +2067,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="666259744093848177">(x86_64 oversatt)</translation>
 <translation id="6663846344464066639">Foldede hender</translation>
 <translation id="6665553082534466207">Tre hull høyre</translation>
+<translation id="6668389483194953109">Fant en papirstørrelse med navnet «custom», men «custom_size»-egenskapen er tom eller ugyldig.</translation>
 <translation id="6671697161687535275">Vil du fjerne forslaget fra Chromium?</translation>
 <translation id="6683717648675961851">Stillingsannonser</translation>
 <translation id="6685834062052613830">Logg av og fullfør konfigurasjonen</translation>
@@ -2072,6 +2081,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6696588630955820014">«Del denne fanen»-knappen – trykk på Enter for å dele denne fanen via en link, en QR-kode, casting eller annet</translation>
 <translation id="6698381487523150993">Opprettet:</translation>
 <translation id="6702919718839027939">Presenter</translation>
+<translation id="6704458454638854812">Egenskapen «custom_size» er angitt, og navnet er forventet å være «custom».</translation>
 <translation id="6709133671862442373">Nyheter</translation>
 <translation id="6709888928011386878">Musikkinstrumenter</translation>
 <translation id="6710213216561001401">Forrige</translation>

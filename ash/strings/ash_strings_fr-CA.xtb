@@ -14,6 +14,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1052916631016577720">Numériser les éléments</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1056898198331236512">Avertissement</translation>
+<translation id="1058009965971887428">Envoyer vos commentaires</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Remplacer</translation>
 <translation id="1073899992769346247">Remplacez ou rechargez la pile</translation>
@@ -469,7 +470,6 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="366222428570480733">Utilisateur géré : <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Les réseaux Wi-Fi seront partagés entre votre téléphone et votre <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sites Web</translation>
-<translation id="3701206655856637070">Vous pouvez maintenant modifier l'endroit où les captures d'écran sont enregistrées</translation>
 <translation id="3702809606464356667">Affichage des fenêtres du bureau actuel. Appuyez sur la flèche vers le haut pour afficher les fenêtres de tous les bureaux.</translation>
 <translation id="3702846122927433391">Quelle est la population du Nigéria?</translation>
 <translation id="3705722231355495246">–</translation>
@@ -902,6 +902,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6182592640011875895">Ouvrir le bureau</translation>
 <translation id="619279033188484792">Affichez les notifications, les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Recharger complètement maintenant</translation>
+<translation id="6193431488227440296">Développeur</translation>
 <translation id="6220928844947387476">Vous pouvez maintenant vous enregistrer en même temps que votre écran</translation>
 <translation id="622484624075952240">Bas</translation>
 <translation id="6231419273573514727">Les performances du périphérique peuvent être limitées</translation>
@@ -1171,6 +1172,7 @@ Nouvelle installation</translation>
 <translation id="7842569679327885685">Attention : Fonctionnalité expérimentale</translation>
 <translation id="7846634333498149051">Clavier</translation>
 <translation id="7848989271541991537">Déplacée à la page <ph name="PAGE_NUMBER" />, ligne <ph name="ROW_NUMBER" />, colonne <ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Balayez l'écran vers le haut avec trois doigts pour activer le mode Aperçu</translation>
 <translation id="7866482334467279021">activé</translation>
 <translation id="7868900307798234037">Déverrouillage avec empreinte digitale</translation>

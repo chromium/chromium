@@ -999,6 +999,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3676592649209844519">ID zařízení:</translation>
 <translation id="3677008721441257057">Měli jste na mysli &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Požadavek nebylo možné podepsat</translation>
+<translation id="3678342917559046352">Neplatné rozšíření: Očekávána hodnota v některém z těchto formátů: &lt;extension_id&gt; nebo &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Otevřete stránku v novém anonymním okně (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Informace o certifikátu</translation>
 <translation id="3701427423622901115">Resetování bylo potvrzeno.</translation>
@@ -1338,6 +1339,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="464342062220857295">Funkce vyhledávání</translation>
 <translation id="4644670975240021822">Obrácené pořadí lícem dolů</translation>
 <translation id="4646534391647090355">Zobrazit</translation>
+<translation id="4648262692072505866">Hodnota hash musí být ve formátu SHA-256.</translation>
 <translation id="4652266463001779298">Není povoleno</translation>
 <translation id="4653167719759882810">Fúze a akvizice</translation>
 <translation id="4658638640878098064">Sponka vlevo nahoře</translation>
@@ -1447,6 +1449,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, vyhledávat můžete stisknutím klávesy Tab a poté Enter</translation>
 <translation id="4930153903256238152">Velká kapacita</translation>
+<translation id="4936134414789135531">Vloženou hodnotu <ph name="VALUE_NAME" /> se nepodařilo najít.</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Anonymní režim v Chromu</translation>
 <translation id="4943872375798546930">Žádné výsledky</translation>
@@ -1564,6 +1567,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Přihrádka 13</translation>
 <translation id="5216942107514965959">Naposledy navštíveno dnes</translation>
+<translation id="5217759126664161410">Neplatný formát protokolu.</translation>
 <translation id="5222812217790122047">Je nutné zadat e-mail</translation>
 <translation id="5228404122310299359">Výrobky pro párty a dovolenou</translation>
 <translation id="5229588705416009823">MMO hry</translation>
@@ -1636,6 +1640,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5398772614898833570">Byly zablokovány reklamy</translation>
 <translation id="5400836586163650660">Šedá</translation>
 <translation id="540969355065856584">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát v tuto chvíli není platný. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
+<translation id="5412040515238827314">Neplatný formát: Očekáván seznam vzorů.</translation>
 <translation id="5412236728747081950">Tento web získává z Chromu vaše zájmy, aby vám mohl zobrazovat relevantnější reklamy</translation>
 <translation id="541416427766103491">Stohovač 4</translation>
 <translation id="5421136146218899937">Vymazat údaje o prohlížení...</translation>
@@ -1754,6 +1759,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5754400531489347219">Zvířata a domácí mazlíčci</translation>
 <translation id="5759751709240058861">Používání a natáčení kamery</translation>
 <translation id="5763042198335101085">Zadejte platnou e-mailovou adresu</translation>
+<translation id="5764725887548570807">Neplatný formát zdroje.</translation>
 <translation id="5765072501007116331">Chcete-li zobrazit způsoby doručení a požadavky, vyberte adresu</translation>
 <translation id="57689295674415555">Číslo virtuální karty není vyplněno?</translation>
 <translation id="5776313857861697733">Priorita</translation>
@@ -1878,10 +1884,12 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6107012941649240045">Vydán pro</translation>
 <translation id="610911394827799129">Na stránce <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="6116338172782435947">Přístup k textu a obrázkům zkopírovaným do schránky</translation>
+<translation id="6118782133429281336">Seznam zdrojů je prázdný.</translation>
 <translation id="6120179357481664955">Uložit vaše UPI ID?</translation>
 <translation id="6124432979022149706">Konektory Chrome Enterprise</translation>
 <translation id="6127379762771434464">Položka byla odstraněna</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Další informace o anonymním režimu v Chromu<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Přípona souboru je prázdná nebo má nesprávný formát.</translation>
 <translation id="6146055958333702838">Zkontrolujte všechny kabely a restartujte všechny směrovače, modemy a další síťová zařízení, která používáte.</translation>
 <translation id="614940544461990577">Zkuste:</translation>
 <translation id="6150036310511284407">Tři díry vlevo</translation>
@@ -2054,6 +2062,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="666259744093848177">(přeloženo z x86_64)</translation>
 <translation id="6663846344464066639">Sepjaté ruce</translation>
 <translation id="6665553082534466207">Tři díry vpravo</translation>
+<translation id="6668389483194953109">Byl nalezen název velikosti papíru „custom“, ale vlastnost „custom_size“ je prázdná nebo neplatná.</translation>
 <translation id="6671697161687535275">Odstranit návrh položky formuláře z prohlížeče Chromium?</translation>
 <translation id="6683717648675961851">Nabídky práce</translation>
 <translation id="6685834062052613830">Odhlaste se a dokončete nastavení</translation>
@@ -2067,6 +2076,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6696588630955820014">Tlačítko sdílení karty. Stisknutím klávesy Enter tuto kartu můžete sdílet pomocí odkazu, QR kódu, odesláním apod.</translation>
 <translation id="6698381487523150993">Vytvořil:</translation>
 <translation id="6702919718839027939">Prezentovat</translation>
+<translation id="6704458454638854812">Vlastnost „custom_size“ je nastavena, název by měl být „custom“.</translation>
 <translation id="6709133671862442373">Zprávy</translation>
 <translation id="6709888928011386878">Hudební nástroje</translation>
 <translation id="6710213216561001401">Předchozí</translation>

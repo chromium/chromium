@@ -999,6 +999,7 @@
 <translation id="3676592649209844519">சாதன ஐடி:</translation>
 <translation id="3677008721441257057">இதைக் குறிப்பிட்டீர்களா: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">கோரிக்கையில் கையொப்பமிட முடியவில்லை</translation>
+<translation id="3678342917559046352">தவறான நீட்டிப்பு: எதிர்பார்க்கப்படும் மதிப்பு பின்வரும் வடிவத்தில் ஒன்றாக இருக்க வேண்டும்: &lt;extension_id&gt; அல்லது &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">புதிய மறைநிலைச் சாளரத்தில் பக்கத்தைத் திறக்கவும் (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">சான்றிதழ் தகவல்</translation>
 <translation id="3701427423622901115">மீட்டமைத்தல் ஏற்கப்பட்டது.</translation>
@@ -1338,6 +1339,7 @@
 <translation id="464342062220857295">தேடல் அம்சங்கள்</translation>
 <translation id="4644670975240021822">பின்னோக்கிய வரிசையில் கீழ்நோக்கிய பாணி</translation>
 <translation id="4646534391647090355">அங்கே செல்</translation>
+<translation id="4648262692072505866">SHA-256 வடிவத்தில் ஹேஷ் இருக்க வேண்டும்.</translation>
 <translation id="4652266463001779298">அனுமதி முடக்கப்பட்டுள்ளது</translation>
 <translation id="4653167719759882810">நிறுவன ஒருங்கிணைப்புகள் &amp; கையகப்படுத்துதல்</translation>
 <translation id="4658638640878098064">ஸ்டேப்பில் டாப் லெஃப்ட்</translation>
@@ -1447,6 +1449,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, தேட Tab விசையை அழுத்திய பிறகு Enter விசையை அழுத்துங்கள்</translation>
 <translation id="4930153903256238152">அதிக கொள்ளளவு</translation>
+<translation id="4936134414789135531">சேர்க்கப்பட்ட <ph name="VALUE_NAME" /> ஐக் கண்டறிய முடியவில்லை.</translation>
 <translation id="4936675324097895694">நிதி</translation>
 <translation id="4940163644868678279">Chrome மறைநிலைப் பயன்முறை</translation>
 <translation id="4943872375798546930">முடிவுகள் இல்லை</translation>
@@ -1564,6 +1567,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">டிரே 13</translation>
 <translation id="5216942107514965959">கடைசியாகப் பார்த்தது: இன்று</translation>
+<translation id="5217759126664161410">நெறிமுறை வடிவம் தவறானது.</translation>
 <translation id="5222812217790122047">மின்னஞ்சல் தேவை</translation>
 <translation id="5228404122310299359">பார்ட்டி &amp; ஹாலிடே தயாரிப்புகள்</translation>
 <translation id="5229588705416009823">அதிகப்பேர் விளையாடும் கேம்கள்</translation>
@@ -1636,6 +1640,7 @@
 <translation id="5398772614898833570">விளம்பரங்கள் தடுக்கப்பட்டன</translation>
 <translation id="5400836586163650660">கிரே</translation>
 <translation id="540969355065856584"><ph name="DOMAIN" /> டொமைனை, சேவையகம் உறுதிப்படுத்தவில்லை; அதற்கான காரணங்கள்: இதன் பாதுகாப்புச் சான்றிதழ் தற்போது செல்லுபடியானதல்ல. இது தவறான உள்ளமைவினால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
+<translation id="5412040515238827314">தவறான வடிவம்: பேட்டர்ன்களின் பட்டியல் எதிர்பார்க்கப்படுகிறது.</translation>
 <translation id="5412236728747081950">மிகவும் தொடர்புடைய விளம்பரங்களைக் காட்டுவதற்காக Chromeமில் இருந்து உங்கள் ஆர்வங்களை இந்தத் தளம் பெறுகிறது</translation>
 <translation id="541416427766103491">ஸ்டேக்கர் 4</translation>
 <translation id="5421136146218899937">உலாவிய தரவை அழி...</translation>
@@ -1754,6 +1759,7 @@
 <translation id="5754400531489347219">செல்லப்பிராணிகள் &amp; விலங்குகள்</translation>
 <translation id="5759751709240058861">உங்கள் கேமராவைப் பயன்படுத்துவது &amp; நகர்த்துவது</translation>
 <translation id="5763042198335101085">சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்</translation>
+<translation id="5764725887548570807">ஆரிஜின் வடிவம் தவறு.</translation>
 <translation id="5765072501007116331">டெலிவரி முறைகளையும் தேவைகளையும் பார்க்க, முகவரியைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="57689295674415555">விர்ச்சுவல் கார்டு எண் நிரப்பப்படவில்லையா?</translation>
 <translation id="5776313857861697733">முன்னுரிமை</translation>
@@ -1878,10 +1884,12 @@
 <translation id="6107012941649240045">வழங்கப்பட்டது</translation>
 <translation id="610911394827799129"><ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> என்ற முகவரியில், உங்கள் Google கணக்கிற்கான பிற வகை உலாவல் வரலாறும் இருக்கக்கூடும்</translation>
 <translation id="6116338172782435947">கிளிப்போர்டுக்கு நகலெடுத்த உரையையும் படங்களையும் பார்க்க விரும்புகிறது</translation>
+<translation id="6118782133429281336">ஆரிஜின் பட்டியல் காலியாக உள்ளது.</translation>
 <translation id="6120179357481664955">உங்கள் UPI ஐடியைச் சேமிக்கவா?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">உருப்படி அகற்றப்பட்டது</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome மறைநிலைப் பயன்முறை குறித்து மேலும் அறிக<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ஃபைல் நீட்டிப்பு காலியாக உள்ளது/தவறானது.</translation>
 <translation id="6146055958333702838">கேபிள்களைச் சரிபார்த்து, நீங்கள் பயன்படுத்தக்கூடிய ரூட்டர்கள், மோடம்கள் அல்லது பிற நெட்வொர்க் சாதனங்களை மறுதொடக்கம் செய்யவும்.</translation>
 <translation id="614940544461990577">இவற்றைச் செய்து பார்க்கவும்:</translation>
 <translation id="6150036310511284407">டிரிப்பில் பஞ்ச் லெஃப்ட்</translation>
@@ -2054,6 +2062,7 @@
 <translation id="666259744093848177">(x86_64க்கு ஏற்றவாறு மாற்றியமைக்கப்பட்டது)</translation>
 <translation id="6663846344464066639">இரு கைகளால் கும்பிடும் ஈமோஜி</translation>
 <translation id="6665553082534466207">டிரிப்பில் பஞ்ச் ரைட்</translation>
+<translation id="6668389483194953109">தாள் அளவின் பெயர் "பிரத்தியேகம்" எனக் கண்டறியப்பட்டது, ஆனால் "custom_size" பண்பு காலியாக அல்லது தவறாக உள்ளது.</translation>
 <translation id="6671697161687535275">Chromium இலிருந்து படிவப் பரிந்துரையை அகற்றவா?</translation>
 <translation id="6683717648675961851">வேலை வாய்ப்புகள்</translation>
 <translation id="6685834062052613830">வெளியேறி, அமைப்பை முடிக்கவும்</translation>
@@ -2067,6 +2076,7 @@
 <translation id="6696588630955820014">இந்த உலாவிப் பக்கத்தைப் பகிர்வதற்கான பட்டன். இணைப்பைப் பகிர்தல், QR குறியீட்டை உருவாக்குதல், அலைபரப்புதல் போன்ற மேலும் பல விருப்பங்களைப் பயன்படுத்தி இந்த உலாவிப் பக்கத்தைப் பகிர, Enter பட்டனை அழுத்துங்கள்</translation>
 <translation id="6698381487523150993">உருவாக்கப்பட்டது:</translation>
 <translation id="6702919718839027939">ஸ்கிரீனைப் பகிர்</translation>
+<translation id="6704458454638854812">"custom_size" பண்பு அமைக்கப்பட்டது, "பிரத்தியேகம்" என்ற பெயர் எதிர்பார்க்கப்படுகிறது.</translation>
 <translation id="6709133671862442373">செய்திகள்</translation>
 <translation id="6709888928011386878">இசைக் கருவிகள்</translation>
 <translation id="6710213216561001401">முந்தையது</translation>

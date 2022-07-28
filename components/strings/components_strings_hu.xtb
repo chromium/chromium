@@ -1001,6 +1001,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3676592649209844519">Eszközazonosító:</translation>
 <translation id="3677008721441257057">Erre gondolt: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">A kérést nem lehetett aláírni</translation>
+<translation id="3678342917559046352">Érvénytelen bővítmény: A várt érték a következő formátumok egyike: &lt;extension_id&gt; vagy &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Oldal megnyitása új inkognitó ablakban (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Tanúsítvány adatai</translation>
 <translation id="3701427423622901115">Visszaállítás elfogadva.</translation>
@@ -1340,6 +1341,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="464342062220857295">Funkciók keresése</translation>
 <translation id="4644670975240021822">Fordított sorrend, lefelé fordítva</translation>
 <translation id="4646534391647090355">Megnézem most</translation>
+<translation id="4648262692072505866">A hashnek SHA-256 formátumúnak kell lennie.</translation>
 <translation id="4652266463001779298">Nem engedélyezett</translation>
 <translation id="4653167719759882810">Összeolvadások és felvásárlások</translation>
 <translation id="4658638640878098064">Kapocs balra fent</translation>
@@ -1449,6 +1451,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4926340098269537727"><ph name="TOTAL_MATCHCOUNT" />/<ph name="ACTIVE_MATCH" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, a kereséshez nyomja le a Tab, majd az Enter gombot</translation>
 <translation id="4930153903256238152">Nagy kapacitás</translation>
+<translation id="4936134414789135531">A beillesztett <ph name="VALUE_NAME" /> nem található.</translation>
 <translation id="4936675324097895694">Pénzügy</translation>
 <translation id="4940163644868678279">Inkognitó a Chrome-ban</translation>
 <translation id="4943872375798546930">Nincs találat</translation>
@@ -1566,6 +1569,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">13. tálca</translation>
 <translation id="5216942107514965959">Utolsó látogatás: ma</translation>
+<translation id="5217759126664161410">Érvénytelen protokollformátum.</translation>
 <translation id="5222812217790122047">Az e-mail-cím megadása kötelező</translation>
 <translation id="5228404122310299359">Bulik és nyaralások kellékei</translation>
 <translation id="5229588705416009823">Több résztvevős játékok</translation>
@@ -1638,6 +1642,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5398772614898833570">Hirdetések letiltva</translation>
 <translation id="5400836586163650660">Szürke</translation>
 <translation id="540969355065856584">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa jelenleg nem érvényes. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolatát.</translation>
+<translation id="5412040515238827314">Érvénytelen formátum: A rendszer mintalistát várt.</translation>
 <translation id="5412236728747081950">Ez a webhely lekéri az érdeklődési köreit a Chrome-tól, hogy relevánsabb hirdetéseket jelenítsen meg Önnek</translation>
 <translation id="541416427766103491">4. kötegelő</translation>
 <translation id="5421136146218899937">Böngészési adatok törlése...</translation>
@@ -1756,6 +1761,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5754400531489347219">Házi kedvencek és állatok</translation>
 <translation id="5759751709240058861">A kamera használata és mozgatása</translation>
 <translation id="5763042198335101085">Érvényes e-mail-címet adjon meg</translation>
+<translation id="5764725887548570807">Érvénytelen eredetformátum.</translation>
 <translation id="5765072501007116331">A kézbesítési módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="57689295674415555">Nincs kitöltve a virtuális kártya száma?</translation>
 <translation id="5776313857861697733">Prioritás</translation>
@@ -1880,10 +1886,12 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6107012941649240045">Tulajdonos</translation>
 <translation id="610911394827799129">Előfordulhat, hogy a böngészési előzmények más formái még megtalálhatók Google-fiókjában a <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> webhelyen</translation>
 <translation id="6116338172782435947">Megtekinteni a vágólapra másolt szövegeket és képeket</translation>
+<translation id="6118782133429281336">Az eredetlista üres.</translation>
 <translation id="6120179357481664955">Emlékszik UPI-azonosítójára?</translation>
 <translation id="6124432979022149706">Chrome Enterprise csatlakozási szoftverek</translation>
 <translation id="6127379762771434464">Elem eltávolítva</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />További információ a Chrome inkognitó módjáról<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">A fájlkiterjesztés üres vagy hibás formátumú.</translation>
 <translation id="6146055958333702838">Ellenőrizze a kábeleket, majd indítsa újra a routert, modemet vagy más
     hálózati eszközt, amelyet használ.</translation>
 <translation id="614940544461990577">Próbálja ki a következőket:</translation>
@@ -2057,6 +2065,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="666259744093848177">(x86_64 – lefordítva)</translation>
 <translation id="6663846344464066639">Összekulcsolt kéz</translation>
 <translation id="6665553082534466207">Három lyuk a jobb oldalon</translation>
+<translation id="6668389483194953109">Az észlelt papírméret neve „custom” (egyéni), de a „custom_size” tulajdonság üres vagy érvénytelen.</translation>
 <translation id="6671697161687535275">Eltávolítja az űrlapjavaslatot a Chromiumból?</translation>
 <translation id="6683717648675961851">Álláshirdetések</translation>
 <translation id="6685834062052613830">Kijelentkezés és a beállítás befejezése</translation>
@@ -2070,6 +2079,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6696588630955820014">Lap megosztása gomb. Az Enter billentyű megnyomásával megoszthatja ezt a lapot a link megosztása, QR-kód létrehozása, átküldés és egyebek révén.</translation>
 <translation id="6698381487523150993">Létrehozva:</translation>
 <translation id="6702919718839027939">Prezentáció</translation>
+<translation id="6704458454638854812">A „custom_size” tulajdonság be van állítva, a várt név pedig „custom” (egyéni).</translation>
 <translation id="6709133671862442373">Hírek</translation>
 <translation id="6709888928011386878">Hangszerek</translation>
 <translation id="6710213216561001401">Előző</translation>

@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">ડિવાઇસ ID:</translation>
 <translation id="3677008721441257057">શું તમારો અર્થ &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; હતો?</translation>
 <translation id="3678029195006412963">વિનંતી પર સહી કરી શક્યાં નથી</translation>
+<translation id="3678342917559046352">અમાન્ય એક્સ્ટેન્શન: મૂલ્ય નીચેનામાંથી કોઈ એક સ્વરૂપમાં હોવું અપેક્ષિત છે: &lt;extension_id&gt; અથવા &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">એક નવી છુપી વિંડોમાં પેજ ખોલો (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">પ્રમાણપત્ર માહિતી</translation>
 <translation id="3701427423622901115">રીસેટ કરવાનું સ્વીકાર્યું હતું.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">શોધ સુવિધાઓ</translation>
 <translation id="4644670975240021822">ઉલ્ટા ક્રમમાં નીચે તરફ</translation>
 <translation id="4646534391647090355">મને હવે ડાઉનલોડ હોમ પર લઈ જાઓ</translation>
+<translation id="4648262692072505866">હૅશનું ફૉર્મેટ SHA-256 હોવું આવશ્યક છે.</translation>
 <translation id="4652266463001779298">આ સાઇટને મંજૂરી નથી</translation>
 <translation id="4653167719759882810">વિલીનીકરણ અને અધિગ્રહણ</translation>
 <translation id="4658638640878098064">ઉપર ડાબી બાજુએ સ્ટેપલ લગાવો</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, શોધવા માટે Tab અને પછી Enter દબાવો</translation>
 <translation id="4930153903256238152">વિશાળ ક્ષમતા</translation>
+<translation id="4936134414789135531">શામેલ કરેલું <ph name="VALUE_NAME" /> શોધી શકાયું નથી.</translation>
 <translation id="4936675324097895694">નાણાકીય</translation>
 <translation id="4940163644868678279">Chromeમાં છૂપો મોડ</translation>
 <translation id="4943872375798546930">પરિણામો નથી</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">ફોલિયો-Sp</translation>
 <translation id="521659676233207110">ટ્રે 13</translation>
 <translation id="5216942107514965959">છેલ્લે આજે મુલાકાત લીધી</translation>
+<translation id="5217759126664161410">પ્રોટોકૉલની ફૉર્મેટ અમાન્ય છે.</translation>
 <translation id="5222812217790122047">ઇમેઇલ આવશ્યક છે</translation>
 <translation id="5228404122310299359">રજા અને પાર્ટીમાં વપરાતી પ્રોડક્ટ</translation>
 <translation id="5229588705416009823">એક સાથે હજારો ખેલાડીઓ દ્વારા રમાતી મલ્ટિપ્લેયર ગેમ</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">જાહેરાતો અવરોધિત કરી</translation>
 <translation id="5400836586163650660">ગ્રે</translation>
 <translation id="540969355065856584">આ સર્વર સાબિત કરી શક્યું નથી કે તે <ph name="DOMAIN" /> છે; તેનું સુરક્ષા પ્રમાણપત્ર આ સમયે માન્ય નથી. આ કોઇ ખોટી ગોઠવણીને કારણે થયું હોય અથવા કોઈ હુમલાખોર તમારા કનેક્શનને અટકાવી રહ્યો હોઇ શકે છે.</translation>
+<translation id="5412040515238827314">અમાન્ય ફૉર્મેટ: પૅટર્નની કોઈ સૂચિ અપેક્ષિત છે.</translation>
 <translation id="5412236728747081950">તમને વધુ સંબંધિત હોય તેવી જાહેરાતો બતાવી શકાય તે માટે આ સાઇટ Chromeમાંથી તમારી રુચિઓ મેળવે છે</translation>
 <translation id="541416427766103491">સ્ટૅકર 4</translation>
 <translation id="5421136146218899937">બ્રાઉઝિંગ ડેટા સાફ કરો...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">પાળેલાં પશુઓ અને પ્રાણીઓ</translation>
 <translation id="5759751709240058861">તમારા કૅમેરાનો ઉપયોગ કરો અને તેને ખસેડો</translation>
 <translation id="5763042198335101085">એક માન્ય ઇમેઇલ ઍડ્રેસ ઉમેરો</translation>
+<translation id="5764725887548570807">મૂળ ફૉર્મેટ અમાન્ય છે.</translation>
 <translation id="5765072501007116331">વિતરણ પદ્ધતિઓ અને આવશ્યકતાઓ જોવા માટે, એક સરનામું પસંદ કરો</translation>
 <translation id="57689295674415555">શું તમારો વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવ્યો નથી?</translation>
 <translation id="5776313857861697733">પ્રાધાન્યતા</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">આને રજૂ કરેલું</translation>
 <translation id="610911394827799129">તમારા Google એકાઉન્ટમાં <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> પર બ્રાઉઝિંગ ઇતિહાસના બીજા સ્વરૂપો હોય શકે છે</translation>
 <translation id="6116338172782435947">ક્લિપબોર્ડ પર કૉપિ કરેલી ટેક્સ્ટ અને છબીઓને જુઓ</translation>
+<translation id="6118782133429281336">મૂળ સૂચિ ખાલી છે.</translation>
 <translation id="6120179357481664955">તમારું UPI ID યાદ રાખીએ?</translation>
 <translation id="6124432979022149706">Chrome એન્ટરપ્રાઇઝ કનેક્ટર</translation>
 <translation id="6127379762771434464">આઇટમ દૂર કરી</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chromeમાં છૂપા મોડ વિશે વધુ જાણો<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ફાઇલનું એક્સ્ટેન્શન ખાલી અથવા દૂષિત છે.</translation>
 <translation id="6146055958333702838">કોઈપણ કેબલ્સ તપાસો અને તમે કદાચ ઉપયોગમાં લઇ રહ્યાં હોય તેવા કોઇપણ રાઉટર્સ, મૉડેમ્સ 
     અથવા અન્ય નેટવર્ક ઉપકરણોને રીબૂટ કરો.</translation>
 <translation id="614940544461990577">પ્રયાસ કરો:</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64 અનુવાદિત)</translation>
 <translation id="6663846344464066639">અદબ વાળેલા હાથ</translation>
 <translation id="6665553082534466207">જમણી બાજુએ ત્રણ કાણાં પાડો</translation>
+<translation id="6668389483194953109">કાગળના કદનું નામ "custom" તરીકે જોવા મળ્યું છે, પરંતુ પ્રોપર્ટીની "custom_size" ખાલી અથવા અમાન્ય છે.</translation>
 <translation id="6671697161687535275">Chromium માંથી ફોર્મ સૂચન દૂર કરીએ?</translation>
 <translation id="6683717648675961851">નોકરીની સૂચિઓ</translation>
 <translation id="6685834062052613830">સાઇન આઉટ કરો અને સેટઅપ પૂર્ણ કરો</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">આ ટૅબ શેર કરવા માટેનું બટન, આ લિંક શેર કરીને, કોઈ QR કોડ બનાવીને, કાસ્ટ કરીને અને વધુ વિકલ્પો વડે આ ટૅબ શેર કરવા માટે Enter કી દબાવો</translation>
 <translation id="6698381487523150993">બનાવેલા:</translation>
 <translation id="6702919718839027939">પ્રસ્તુત કરો</translation>
+<translation id="6704458454638854812">પ્રોપર્ટીની "custom_size" સેટ કરવામાં આવી છે, અપેક્ષિત નામ "કસ્ટમ" રહેશે.</translation>
 <translation id="6709133671862442373">News</translation>
 <translation id="6709888928011386878">સંગીતના વાદ્યો</translation>
 <translation id="6710213216561001401">પાછલી</translation>

@@ -1002,6 +1002,7 @@
 <translation id="3676592649209844519">Идентификатор устройства:</translation>
 <translation id="3677008721441257057">Возможно, вы хотели открыть сайт &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Не удалось подписать запрос</translation>
+<translation id="3678342917559046352">Недействительное расширение. Допускается одно из следующих значений: &lt;extension_id&gt; или &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Открыть страницу в новом окне в режиме инкогнито (Ctrl + Shift + N)</translation>
 <translation id="3681007416295224113">Данные сертификата</translation>
 <translation id="3701427423622901115">Сброс подтвержден.</translation>
@@ -1341,6 +1342,7 @@
 <translation id="464342062220857295">Функции поиска</translation>
 <translation id="4644670975240021822">В обратном порядке лицевой стороной вниз</translation>
 <translation id="4646534391647090355">Перейти сейчас</translation>
+<translation id="4648262692072505866">Хеш должен быть в формате SHA-256.</translation>
 <translation id="4652266463001779298">Запрещено</translation>
 <translation id="4653167719759882810">Слияния и приобретения</translation>
 <translation id="4658638640878098064">Скоба в левом верхнем углу</translation>
@@ -1450,6 +1452,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab и затем Ввод, чтобы выполнить поиск.</translation>
 <translation id="4930153903256238152">Большая емкость</translation>
+<translation id="4936134414789135531">Введенное значение "<ph name="VALUE_NAME" />" не найдено.</translation>
 <translation id="4936675324097895694">Финансы</translation>
 <translation id="4940163644868678279">Режим инкогнито в Chrome</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
@@ -1567,6 +1570,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Лоток 13</translation>
 <translation id="5216942107514965959">Последнее посещение: сегодня</translation>
+<translation id="5217759126664161410">Недействительный формат протокола.</translation>
 <translation id="5222812217790122047">Введите адрес электронной почты</translation>
 <translation id="5228404122310299359">Товары для праздников и вечеринок</translation>
 <translation id="5229588705416009823">Массовые многопользовательские игры</translation>
@@ -1639,6 +1643,7 @@
 <translation id="5398772614898833570">Реклама заблокирована</translation>
 <translation id="5400836586163650660">Серый</translation>
 <translation id="540969355065856584">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть недействителен в настоящее время. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
+<translation id="5412040515238827314">Недействительный формат. Необходимо указать список шаблонов.</translation>
 <translation id="5412236728747081950">Этот сайт использует информацию из Chrome о ваших интересах, чтобы показывать более подходящие рекламные объявления.</translation>
 <translation id="541416427766103491">Укладчик 4</translation>
 <translation id="5421136146218899937">Очистить историю...</translation>
@@ -1757,6 +1762,7 @@
 <translation id="5754400531489347219">Животные</translation>
 <translation id="5759751709240058861">Использование и перемещение вашей камеры.</translation>
 <translation id="5763042198335101085">Укажите действительный адрес электронной почты.</translation>
+<translation id="5764725887548570807">Недействительный формат источника.</translation>
 <translation id="5765072501007116331">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
 <translation id="57689295674415555">Номер виртуальной карты не указан?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
@@ -1881,10 +1887,12 @@
 <translation id="6107012941649240045">Кому выдан</translation>
 <translation id="610911394827799129">Информация о других ваших действиях в Интернете может также храниться на странице <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">Просмотр текста и изображений, скопированных в буфер обмена</translation>
+<translation id="6118782133429281336">Список источников пуст.</translation>
 <translation id="6120179357481664955">Запомнить идентификатор UPI?</translation>
 <translation id="6124432979022149706">Коннекторы Chrome Enterprise</translation>
 <translation id="6127379762771434464">Быстрая ссылка удалена.</translation>
 <translation id="6132161237766805930">Подробнее <ph name="BEGIN_LINK" />о режиме инкогнито в Chrome<ph name="END_LINK" />…</translation>
+<translation id="6133984428121856852">Расширение имени файла не указано или имеет неверный формат.</translation>
 <translation id="6146055958333702838">Проверьте соединение кабелей, перезагрузите маршрутизаторы, модемы и другие
     сетевые устройства.</translation>
 <translation id="614940544461990577">Попробуйте сделать следующее:</translation>
@@ -2058,6 +2066,7 @@
 <translation id="666259744093848177">(код конвертирован с языка для архитектуры x86_64)</translation>
 <translation id="6663846344464066639">Сложенные руки</translation>
 <translation id="6665553082534466207">Три отверстия справа</translation>
+<translation id="6668389483194953109">Найден размер бумаги custom, но свойство custom_size не заполнено или недействительно.</translation>
 <translation id="6671697161687535275">Удалить подсказку из Chromium?</translation>
 <translation id="6683717648675961851">Вакансии и поиск работы</translation>
 <translation id="6685834062052613830">Выйдите из аккаунта и завершите настройку</translation>
@@ -2071,6 +2080,7 @@
 <translation id="6696588630955820014">Кнопка "Поделиться вкладкой". Нажмите Ввод, чтобы поделиться этой вкладкой с помощью ссылки, QR-кода, трансляции и т. д.</translation>
 <translation id="6698381487523150993">Создано:</translation>
 <translation id="6702919718839027939">Режим презентации</translation>
+<translation id="6704458454638854812">Установлено свойство custom_size. Название должно быть "custom".</translation>
 <translation id="6709133671862442373">Новости</translation>
 <translation id="6709888928011386878">Музыкальные инструменты</translation>
 <translation id="6710213216561001401">Назад</translation>

@@ -97,6 +97,7 @@
 <translation id="3114012059975132928">โปรแกรมเล่นวิดีโอ</translation>
 <translation id="3115898365077584848">แสดงข้อมูล</translation>
 <translation id="3123473560110926937">บล็อกในบางเว็บไซต์</translation>
+<translation id="3143754809889689516">เริ่มเล่นตั้งแต่ต้น</translation>
 <translation id="3198916472715691905">ข้อมูลที่จัดเก็บมี <ph name="STORAGE_AMOUNT" /></translation>
 <translation id="3203366800380907218">จากเว็บ</translation>
 <translation id="321187648315454507">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> ส่งการแจ้งเตือนให้คุณ ให้เปิดใช้การแจ้งเตือนใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
@@ -115,6 +116,7 @@
 <translation id="3594780231884063836">ปิดเสียงวิดีโอ</translation>
 <translation id="3596414637720633074">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="3600792891314830896">ปิดเสียงเว็บไซต์ที่เล่นเสียง</translation>
+<translation id="3628308229821498208">การค้นหาที่แนะนำ</translation>
 <translation id="3744111561329211289">ซิงค์ในแบ็กกราวด์</translation>
 <translation id="3763247130972274048">แตะสองครั้งที่ด้านซ้ายหรือขวาของวิดีโอเพื่อข้ามทีละ 10 วินาที</translation>
 <translation id="3797520601150691162">ไม่ใช้ธีมมืดกับบางเว็บไซต์</translation>
@@ -226,6 +228,7 @@
 <translation id="6196640612572343990">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="6216432067784365534">ตัวเลือกสำหรับ<ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">ถอนการติดตั้ง "<ph name="APP_NAME" />" ไหม</translation>
+<translation id="6262191102408817757">อิงจากแท็บล่าสุด</translation>
 <translation id="6262279340360821358">บล็อก<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="6270391203985052864">เว็บไซต์ขออนุญาตเพื่อส่งการแจ้งเตือนได้</translation>
 <translation id="6295158916970320988">เว็บไซต์ทั้งหมด</translation>

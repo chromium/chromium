@@ -14,6 +14,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1052916631016577720">Öğe Tarama</translation>
 <translation id="1056775291175587022">Ağ yok</translation>
 <translation id="1056898198331236512">Uyarı</translation>
+<translation id="1058009965971887428">Geri bildirim gönder</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Değiştir</translation>
 <translation id="1073899992769346247">Pili değiştirin veya şarj edin</translation>
@@ -469,7 +470,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Yönetilen kullanıcı</translation>
 <translation id="36813544980941320">Kablosuz ağlar; telefonunuz ve <ph name="DEVICE_NAME" /> arasında paylaşılacak</translation>
 <translation id="3694122362646626770">Web siteleri</translation>
-<translation id="3701206655856637070">Artık ekran görüntülerinin kaydedildiği yeri değiştirebilirsiniz</translation>
 <translation id="3702809606464356667">Mevcut masadaki pencereler gösteriliyor, tüm masalardaki pencerelerin gösterilmesi için Yukarı ok tuşuna basın</translation>
 <translation id="3702846122927433391">Nijerya'nın nüfusu</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +652,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4690510401873698237">Raf, ekranın alt tarafında</translation>
 <translation id="4696813013609194136">Kilidi ebeveyn koduyla açın</translation>
 <translation id="4702647871202761252">Gizlilik ekranı kapalı</translation>
+<translation id="470644585772471629">Rengi ters çevirme</translation>
 <translation id="4717575069099566988">USB-C kablonuz USB4'ü desteklemiyor. Cihaz performansı sınırlı olabilir.</translation>
 <translation id="4730374152663651037">SIK KULLANILANLAR</translation>
 <translation id="4731797938093519117">Ebeveyn erişimi</translation>
@@ -901,6 +902,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6182592640011875895">Masayı aç</translation>
 <translation id="619279033188484792">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda görün</translation>
 <translation id="619335566042889110">Şimdi tamamen şarj et</translation>
+<translation id="6193431488227440296">Geliştirme</translation>
 <translation id="6220928844947387476">Artık aynı anda hem kendinizi hem ekranınızı kaydedebilirsiniz</translation>
 <translation id="622484624075952240">Aşağı</translation>
 <translation id="6231419273573514727">Çevre birimlerinin performansı sınırlı olabilir</translation>

@@ -1523,7 +1523,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2390347491606624519">Nije uspjelo povezivanje s proxyjem, ponovno se prijavite</translation>
 <translation id="2390782873446084770">Wi-Fi sinkronizacija</translation>
 <translation id="2391419135980381625">Standardni font</translation>
-<translation id="2392163307141705938">Dosegnuto je vremensko ograničenje koje je tvoj roditelj postavio za <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
 <translation id="2393136602862631930">Postavljanje aplikacije <ph name="APP_NAME" /> na Chromebooku</translation>
 <translation id="2393313392064891208">Sadržaj uvjeta za Google ChromeOS Flex</translation>
@@ -1649,7 +1648,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2505669838803949807">EID vašeg uređaja je <ph name="EID_NUMBER" />. Predstavnik korisničke službe može upotrijebiti EID broj kako bi vam pomogao da aktivirate uslugu.</translation>
 <translation id="250704661983564564">Raspored na zaslonu</translation>
 <translation id="2507253002925770350">Tiket uklonjen</translation>
-<translation id="2507397597949272797">Aplikacija <ph name="NAME" /> je pauzirana</translation>
 <translation id="2508428939232952663">Račun Trgovine Google Play</translation>
 <translation id="2509495747794740764">Iznos skaliranja mora biti broj od 10 do 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1893,7 +1891,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2743387203779672305">Kopiraj u međuspremnik</translation>
 <translation id="2745080116229976798">Microsoftova kvalificirana podređenost</translation>
 <translation id="2747266560080989517">Ova datoteka ima osjetljiv ili opasan sadržaj. Recite vlasniku da ispravi pogrešku.</translation>
-<translation id="2748061034695037846">Preglednik <ph name="DOMAIN" /> je pauziran</translation>
 <translation id="2749756011735116528">Prijava na uslugu <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Uz pravopis provjeri i gramatiku</translation>
@@ -4235,7 +4232,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5033137252639132982">Nije dopuštena upotreba senzora kretanja</translation>
 <translation id="5033266061063942743">Geometrijski likovi</translation>
 <translation id="5037676449506322593">Odaberi sve</translation>
-<translation id="5038022729081036555">Sutra možeš koristiti preglednik ili aplikaciju <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Ranije niste dopustili nijedno proširenje na stranici: <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Spremljene zaporke možete pregledati i upravljati njima na svojem Google računu</translation>
 <translation id="5039804452771397117">Dopusti</translation>
@@ -4273,6 +4269,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5074761966806028321">Da biste dovršili postavljanje i dalje je potrebno dopuštenje</translation>
 <translation id="5075563999073408211">Upravljajte uređajem pomoću jednog ili više prekidača. Prekidači mogu biti tipkovnice, gumbi kontrolera ili određeni uređaji.</translation>
 <translation id="5075910247684008552">Sigurne web-lokacije prema zadanim postavkama blokiraju nesiguran sadržaj</translation>
+<translation id="5078490485380754244">Zaboravi uređaj</translation>
 <translation id="5078638979202084724">Označi sve kartice</translation>
 <translation id="5078796286268621944">Netočan PIN</translation>
 <translation id="5079010647467150187">Dodavanje ugrađenog VPN-a...</translation>
@@ -7274,7 +7271,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8013993649590906847">Ako slika nema koristan opis, Chrome će ga pokušati pružiti. Da bi se izradili opisi, slike se šalju Googleu.</translation>
 <translation id="8014154204619229810">U tijeku je izvođenje alata za ažuriranje. Osvježite za minutu i provjerite ponovo.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ne može vratiti prethodno instaliranu verziju. Pokušajte ponovo pokrenuti Powerwash na svom uređaju.</translation>
-<translation id="8015163965024115122">Isteklo je ograničenje za aplikaciju <ph name="IDS_SHORT_PRODUCT_NAME" /> ili <ph name="IDS_SHORT_PRODUCT_NAME" /> koje su postavili tvoji roditelji.</translation>
 <translation id="8016266267177410919">Privremena pohrana</translation>
 <translation id="8017176852978888182">Linuxovi dijeljeni direktoriji</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8416,7 +8412,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Za najbolji doživljaj instalirajte <ph name="DEVICE_OS" /> na interni disk. Možete ga instalirati i kasnije sa zaslona za prijavu.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ako niste spremni za instaliranje, možete ga pokrenuti s USB-a da biste ga isprobali. Tako ćete zadržati postojeći OS i podatke, no pohrana i izvedba možda će biti ograničene.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Otvori kao pričvršćenu karticu</translation>
-<translation id="9122176249172999202">Preglednik <ph name="IDS_SHORT_PRODUCT_NAME" /> je pauziran</translation>
 <translation id="9124003689441359348">Ovdje će se pojaviti spremljene zaporke</translation>
 <translation id="9126149354162942022">Boja pokazivača</translation>
 <translation id="9128317794749765148">Postavljanje nije dovršeno</translation>

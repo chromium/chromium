@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">Identifiant de l'appareil :</translation>
 <translation id="3677008721441257057">Vouliez-vous dire &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">La demande n'a pas pu être signée</translation>
+<translation id="3678342917559046352">Extension non valide : la valeur devait correspondre à l'une des formes suivantes : &lt;extension_id&gt; ou &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Ouvrir la page dans une nouvelle fenêtre de navigation privée (Ctrl+Maj+N)</translation>
 <translation id="3681007416295224113">Information relative au certificat</translation>
 <translation id="3701427423622901115">Réinitialisation acceptée.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
 <translation id="4644670975240021822">Ordre inversé, face vers le bas</translation>
 <translation id="4646534391647090355">Y accéder maintenant</translation>
+<translation id="4648262692072505866">Le hachage doit être au format SHA-256.</translation>
 <translation id="4652266463001779298">Non autorisée</translation>
 <translation id="4653167719759882810">Fusions et acquisitions</translation>
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour lancer la recherche</translation>
 <translation id="4930153903256238152">Grande capacité</translation>
+<translation id="4936134414789135531">Impossible de trouver le <ph name="VALUE_NAME" /> inséré.</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Navigation privée dans Chrome</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio SP</translation>
 <translation id="521659676233207110">Bac 13</translation>
 <translation id="5216942107514965959">Dernière visite : aujourd'hui</translation>
+<translation id="5217759126664161410">Format de protocole incorrect.</translation>
 <translation id="5222812217790122047">Adresse de courriel obligatoire</translation>
 <translation id="5228404122310299359">Articles de fêtes</translation>
 <translation id="5229588705416009823">Jeux massivement multijoueurs</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">Annonces bloquées</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="540969355065856584">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas valide présentement. Cela peut être dû à une mauvaise configuration ou à l'interception de votre connexion par une personne malveillante.</translation>
+<translation id="5412040515238827314">Format incorrect : une liste de schémas était attendue.</translation>
 <translation id="5412236728747081950">Ce site récupère vos centres d'intérêt de Chrome pour vous montrer des annonces plus pertinentes</translation>
 <translation id="541416427766103491">Empileur 4</translation>
 <translation id="5421136146218899937">Effacer les données de navigation...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">Faune et animaux de compagnie</translation>
 <translation id="5759751709240058861">Utiliser et déplacer la caméra de votre appareil</translation>
 <translation id="5763042198335101085">Entrez une adresse de courriel valide</translation>
+<translation id="5764725887548570807">Format d'origine incorrect.</translation>
 <translation id="5765072501007116331">Pour voir les exigences et les modes de livraison, sélectionnez une adresse</translation>
 <translation id="57689295674415555">Numéro de carte virtuelle non rempli?</translation>
 <translation id="5776313857861697733">Priorité</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">Délivré à</translation>
 <translation id="610911394827799129">D'autres formes d'historique de navigation peuvent exister sur votre compte Google à l'adresse <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Voir le texte et les images copiés dans le presse-papiers</translation>
+<translation id="6118782133429281336">La liste d'origine est vide.</translation>
 <translation id="6120179357481664955">Se souvenir de votre identifiant UPI?</translation>
 <translation id="6124432979022149706">Connecteurs Chrome Enterprise</translation>
 <translation id="6127379762771434464">Élément supprimé</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />En savoir plus sur la navigation privée dans Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">L'extension de fichier est vide ou malformée.</translation>
 <translation id="6146055958333702838">Vérifiez les câbles et redémarrez votre routeur, votre modem
     ou tout autre périphérique réseau utilisé.</translation>
 <translation id="614940544461990577">Essayez ceci :</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64, traduction)</translation>
 <translation id="6663846344464066639">Mains jointes</translation>
 <translation id="6665553082534466207">Triple perforation à droite</translation>
+<translation id="6668389483194953109">Le nom de format de papier « Personnalisé » a été trouvé, mais la propriété « Taille_personnalisée » est vide ou incorrecte.</translation>
 <translation id="6671697161687535275">Supprimer la suggestion de formulaire de Chromium?</translation>
 <translation id="6683717648675961851">Offres d'emploi</translation>
 <translation id="6685834062052613830">Déconnectez-vous et terminez la configuration</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">Bouton Partager cet onglet, appuyez sur la touche Entrée pour partager cet onglet en partageant le lien, en créant un code QR, en diffusant du contenu et plus</translation>
 <translation id="6698381487523150993">Créé :</translation>
 <translation id="6702919718839027939">Présentation</translation>
+<translation id="6704458454638854812">La propriété « Taille_personnalisée » est définie, le nom doit être « Personnalisé ».</translation>
 <translation id="6709133671862442373">Actualités</translation>
 <translation id="6709888928011386878">Instruments de musique</translation>
 <translation id="6710213216561001401">Précédent</translation>

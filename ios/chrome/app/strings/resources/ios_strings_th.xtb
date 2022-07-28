@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">การพิมพ์ล้มเหลว</translation>
 <translation id="1125564390852150847">สร้างแท็บใหม่</translation>
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
+<translation id="1135212215217513471">ดาวน์โหลด Chrome สำหรับ iOS</translation>
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
 <translation id="1154984953698510061">ดูแท็บอื่นๆ</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">โปรดยืนยันว่าเป็นคุณเพื่อให้เข้าถึงข้อมูลที่ซิงค์ไว้ได้ทุกเมื่อ</translation>
 <translation id="1870148520156231997">แสดงรหัสผ่าน</translation>
 <translation id="1872096359983322073">แฟลช</translation>
+<translation id="1910975740091000991">Chrome สำหรับ iOS</translation>
 <translation id="1911619930368729126">อัปโหลดไปยัง Google ไดรฟ์</translation>
 <translation id="1923342640370224680">ชั่วโมงล่าสุด</translation>
 <translation id="1930989359703290198">องค์กรอนุญาตให้คุณลงชื่อเข้าใช้ด้วยบัญชีบางบัญชีเท่านั้น ระบบซ่อนบัญชีที่ไม่ได้รับอนุญาตไว้ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">ค้นหาข้อความที่คุณคัดลอก</translation>
 <translation id="214201757571129614">กำลังลงชื่อเข้าใช้…</translation>
 <translation id="2149973817440762519">แก้ไขบุ๊กมาร์ก</translation>
+<translation id="2155145621546387786">ใช้ Chrome ร่วมกัน</translation>
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
 <translation id="2218443599109088993">ซูมออก</translation>
 <translation id="2230173723195178503">หน้าเว็บโหลดแล้ว</translation>

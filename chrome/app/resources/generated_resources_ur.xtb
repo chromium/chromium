@@ -1522,7 +1522,6 @@
 <translation id="2390347491606624519">پراکسی سے منسلک نہیں ہو سکتے، براہ کرم دوبارہ سائن ان کریں</translation>
 <translation id="2390782873446084770">‏Wi-Fi سِنک</translation>
 <translation id="2391419135980381625">معیاری فونٹ</translation>
-<translation id="2392163307141705938"><ph name="IDS_SHORT_PRODUCT_NAME" /> کے لیے آپ کے والدین کی سیٹ کی ہوئی آپ کی وقت کی حد پوری ہو گئی۔</translation>
 <translation id="2392369802118427583">فعال کریں</translation>
 <translation id="2393136602862631930">‏اپنے Chromebook پر <ph name="APP_NAME" /> سیٹ اپ کریں</translation>
 <translation id="2393313392064891208">‏Google ChromeOS Flex کی شرائط کے مواد</translation>
@@ -1648,7 +1647,6 @@
 <translation id="2505669838803949807">‏آپ کے آلہ کا EID <ph name="EID_NUMBER" /> ہے۔ سروس فعال کرنے میں آپ کی مدد کرنے کیلئے کسٹمر سروس کا نمائندہ EID نمبر کا استعمال کر سکتا ہے۔</translation>
 <translation id="250704661983564564">ڈسپلے کا انتظام</translation>
 <translation id="2507253002925770350">ٹکٹ کو ہٹا دیا گیا</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> موقوف ہے</translation>
 <translation id="2508428939232952663">‏Google Play اسٹور اکاؤنٹ</translation>
 <translation id="2509495747794740764">اسکیل کی مقدار کا 10 سے 200 کے درمیان کا نمبر ہونا ضروری ہے۔</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1892,7 +1890,6 @@
 <translation id="2743387203779672305">کلپ بورڈ پر کاپی کریں</translation>
 <translation id="2745080116229976798">‏Microsoft کوالیفائڈ سب آرڈینیشن</translation>
 <translation id="2747266560080989517">اس فائل میں حساس یا خطرناک مواد ہے۔ اس کے مالک سے درست کرنے کو کہیں۔</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> موقوف ہے</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> میں سائن ان کریں</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ہجے کے ساتھ گرامر چیک کریں</translation>
@@ -4234,7 +4231,6 @@
 <translation id="5033137252639132982">موشن سینسرز استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="5033266061063942743">جیومیٹرک شکلیں</translation>
 <translation id="5037676449506322593">سبھی منتخب کریں</translation>
-<translation id="5038022729081036555">آپ اسے آئندہ کل <ph name="TIME_LIMIT" /> کے لیے استعمال کر سکتے ہیں۔</translation>
 <translation id="5038818366306248416">آپ نے پہلے <ph name="ORIGIN" /> پر کسی بھی ایکسٹینشن کو اجازت نہ دینے کا انتخاب کیا</translation>
 <translation id="5039696241953571917">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
@@ -4272,6 +4268,7 @@
 <translation id="5074761966806028321">سیٹ اپ مکمل کرنے کے لیے ابھی بھی اجازت درکار ہے</translation>
 <translation id="5075563999073408211">اپنے آلے کو ایک یا مزید سوئچز سے کنٹرول کریں۔ سوئچز کی بورڈ کی کلیدیں، گیم پیڈ کے بٹنز، یا متعینہ آلات ہو سکتے ہیں۔</translation>
 <translation id="5075910247684008552">محفوظ سائٹس پر غیر محفوظ مواد بذریعہ ڈیفالٹ مسدود ہوتا ہے</translation>
+<translation id="5078490485380754244">آلہ بھول جائیں</translation>
 <translation id="5078638979202084724">سبھی ٹیبز کو بُک مارک کریں</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5079010647467150187">‏پہلے سے موجود VPN کو شامل کریں...</translation>
@@ -5033,6 +5030,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - کیمرا یا مائیکروفون ریکارڈ کر رہا ہے</translation>
 <translation id="583673505367439042">سائٹس آپ کے آلے پر موجود فائلز یا فولڈرز میں ترمیم کرنے کیلئے پوچھ سکتی ہیں</translation>
 <translation id="583756221537636748">کیس</translation>
+<translation id="5840658767386246331">‏Google سے تلاش کریں</translation>
 <translation id="5840680448799937675">فائلز ہمیشہ آف لائن اشتراک کی جائیں گی</translation>
 <translation id="5841270259333717135">ایتھرنیٹ کو ترتیب دیں</translation>
 <translation id="5842497610951477805">بلوٹوتھ فعال</translation>
@@ -6523,6 +6521,7 @@
 <translation id="7307129035224081534">موقوف ہو گیا</translation>
 <translation id="7308643132139167865">ویب سائٹ کی زبانیں</translation>
 <translation id="7310598146671372464">‏لاگ ان کرنا ناکام ہو گیا۔ سرور متعین Kerberos مرموز کاری کی اقسام کو سپورٹ نہیں کرتا ہے۔ براہ کرم اپنے منتظم سے رابطہ کریں۔</translation>
+<translation id="7311089766378749632"><ph name="SITE_NAME" /> پڑھنے اور تبدیل کرنے کی درخواست کی جا رہی ہے</translation>
 <translation id="7312210124139670355">‏آپ کا منتظم آپ کی eSIM کو ری سیٹ کر رہا ہے۔ اس میں چند منٹ لگ سکتے ہیں۔</translation>
 <translation id="7320213904474460808">نیٹ ورک کو ترجیح دیں</translation>
 <translation id="7321545336522791733">سرور ناقابل رسائی ہے</translation>
@@ -7115,6 +7114,7 @@
 <translation id="7869655448736341731">کوئی</translation>
 <translation id="7870730066603611552">سیٹ اپ کے بعد مطابقت پذیری کے اختیارات کا جائزہ لیں</translation>
 <translation id="7870790288828963061">‏نئے ورژن والی کوئی کیوسک ایپس نہیں ملیں۔ اپ ڈیٹ کرنے کیلئے کچھ بھی نہیں ہے۔ براہ کرم USB اسٹک ہٹائیں۔</translation>
+<translation id="7871049986386271121">ہمیشہ اس سائٹ پر</translation>
 <translation id="7871109039747854576">امیدواروں کی فہرست کا صفحہ بنانے کیلئے، <ph name="COMMA" /> اور <ph name="PERIOD" /> کلیدوں کا استعمال کریں</translation>
 <translation id="787268756490971083">آف</translation>
 <translation id="7872758299142009420">بہت سارے نیسٹ کردہ گروپس: <ph name="ERROR_LINE" /></translation>
@@ -7268,7 +7268,6 @@
 <translation id="8013993649590906847">‏اگر کسی تصویر میں مفید تفصیل موجود نہیں ہے تو Chrome آپ کے لیے تفصیل فراہم کرنے کی کوشش کرے گا۔ تفصیلات تخلیق کرنے کے لیے، تصاویر Google کو بھیجی جاتی ہیں۔</translation>
 <translation id="8014154204619229810">اپ ڈیٹ کنندہ فی الحال چل رہا ہے۔ دوبارہ چیک کرنے کیلئے ایک منٹ بعد ریفریش کریں۔</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> پہلے انسٹال کردہ ورژن پر لوٹنے سے قاصر ہے۔ اپنے آلہ کو پاور واش کرنے کیلئے براہ کرم دوبارہ کوشش کریں۔</translation>
-<translation id="8015163965024115122"><ph name="IDS_SHORT_PRODUCT_NAME" /> یا <ph name="IDS_SHORT_PRODUCT_NAME" /> ایپس پر آپ کے والدین نے جو حد سیٹ کی تھی وہ ختم ہو گئی۔</translation>
 <translation id="8016266267177410919">عارضی اسٹوریج</translation>
 <translation id="8017176852978888182">‏Linux کی اشتراک کردہ ڈائرکٹریز</translation>
 <translation id="8017679124341497925">شارٹ کٹ میں ترمیم کی گئی</translation>
@@ -7713,6 +7712,7 @@
 <translation id="8438566539970814960">تلاشوں اور براؤزنگ کو بہتر بنائیں</translation>
 <translation id="8439506636278576865">اس زبان میں صفحات کا ترجمہ کرنے کی پیشکش کریں</translation>
 <translation id="8440630305826533614">‏Linux ایپس</translation>
+<translation id="844063558976952706">ہمیشہ اس سائٹ پر</translation>
 <translation id="8443795068008423036">براہ کرم یقینی بنائیں کہ آپ کا آلہ اپ ٹو ڈیٹ ہے اور دوبارہ کوشش کریں</translation>
 <translation id="8446884382197647889">مزید جانیں</translation>
 <translation id="8447409163267621480">‏Ctrl یا Alt شامل کریں</translation>
@@ -8406,7 +8406,6 @@
 <translation id="9120693811286642342">‏<ph name="BEGIN_PARAGRAPH1" />بہترین تجربے کیلئے، اپنی اندرونی ڈسک میں <ph name="DEVICE_OS" /> انسٹال کریں۔ آپ بعد میں اسے لاگ ان اسکرین سے بھی انسٹال کر سکتے ہیں۔<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />اگر آپ انسٹال کرنے کیلئے تیار نہیں ہیں تو اسے آزمانے کیلئے، آپ اسے USB سے چلا سکتے ہیں۔ اس سے آپ کا موجودہ OS اور ڈیٹا محفوظ رہے گا، لیکن آپ کی اسٹوریج اور کارکردگی کی حدود کم ہو سکتی ہیں۔<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">پن کردہ ٹیب کے بطور کھولیں</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> موقوف ہے</translation>
 <translation id="9124003689441359348">محفوظ کردہ پاس ورڈز یہاں ظاہر ہوں گے</translation>
 <translation id="9126149354162942022">کرسر کا رنگ</translation>
 <translation id="9128317794749765148">سیٹ اپ مکمل نہیں ہو سکا</translation>

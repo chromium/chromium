@@ -307,6 +307,7 @@
 <translation id="2805756323405976993">Қолданбалар</translation>
 <translation id="2814448776515246190">Экранның бір бөлігін түсіру</translation>
 <translation id="2819276065543622893">Жүйеден қазір шығасыз.</translation>
+<translation id="2822551631199737692">Камера қолданылып жатыр</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> дисплейі <ph name="SPECIFIED_RESOLUTION" /> ажыратымдылығына қолдау көрсетпейді. Ажыратымдылық <ph name="FALLBACK_RESOLUTION" /> етіп өзгертілді.</translation>
 <translation id="2825619548187458965">Сөре</translation>
 <translation id="2831035692318564937">Күн шыққанға дейін қосулы</translation>
@@ -468,7 +469,6 @@
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Телефоныңыз бен <ph name="DEVICE_NAME" /> құрылғысында бірдей Wi-Fi желілері пайдаланылатын болады.</translation>
 <translation id="3694122362646626770">Веб-сайттар</translation>
-<translation id="3701206655856637070">Енді экран жазбалары сақталатын жерді өзгерте аласыз.</translation>
 <translation id="3702809606464356667">Терезелер қазіргі жұмыс үстелінен көрсетіліп тұр. Терезелерді барлық жұмыс үстелінен көрсету үшін жоғарыға бағыттауыш пернені басыңыз.</translation>
 <translation id="3702846122927433391">Нигерия халқының саны</translation>
 <translation id="3705722231355495246">-</translation>
@@ -651,6 +651,7 @@
 <translation id="4690510401873698237">Төмен жақтағы сөре</translation>
 <translation id="4696813013609194136">Құрылғының құлпын ата-ана кодымен ашыңыз</translation>
 <translation id="4702647871202761252">Құпиялылық экраны өшірулі.</translation>
+<translation id="470644585772471629">Түс инверсиясы</translation>
 <translation id="4717575069099566988">USB-C кабелі USB4 стандартын қолдамайды. Құрылғының өнімділігі шектелуі мүмкін.</translation>
 <translation id="4730374152663651037">ЖИІ ПАЙДАЛАНЫЛАТЫНДАР</translation>
 <translation id="4731797938093519117">Ата-ананың кіру рұқсаты</translation>
@@ -809,6 +810,7 @@
 <translation id="5682642926269496722">Қазіргі пайдаланушының аккаунты үшін Google Assistant қолжетімді емес.</translation>
 <translation id="5689633613396158040">Түнгі жарық режимін қосып қойсаңыз, айнала күңгірттеніп тұрғанда, экран жарығы көзіңізді ауыртпайды. Түнгі жарық қосылатын уақытты өзгерту немесе оны толықтай өшіру үшін түртіңіз.</translation>
 <translation id="5691772641933328258">Саусағыңыздың ізі танылмады</translation>
+<translation id="5693255400847650006">Микрофон қолданылып жатыр</translation>
 <translation id="570390244361237317">Барлық қолданбалар. Оларды көру үшін бағыт пернелерін пайдаланыңыз.</translation>
 <translation id="5707775774148071965">Құрылғының деректерді өткізу жылдамдығы кабельге қарағанда жоғары. Құрылғының өнімділігі шектелуі мүмкін.</translation>
 <translation id="5710450975648804523">Мазаламау режимі қосулы</translation>
@@ -984,6 +986,7 @@
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6727969043791803658">Жалғанды, батарея заряды: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
+<translation id="6737983188036277605">Камера мен микрофон қолданылып жатыр</translation>
 <translation id="6739144137573853180">ПАРАМЕТРЛЕРГЕ ӨТУ</translation>
 <translation id="6751052314767925245">Әкімші қосқан.</translation>
 <translation id="6751826523481687655">Жұмыс өнімділігін қадағалау функциясы қосылды</translation>

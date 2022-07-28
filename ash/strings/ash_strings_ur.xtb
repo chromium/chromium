@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">آئٹم اسکین کریں</translation>
 <translation id="1056775291175587022">نیٹ ورک نہیں</translation>
 <translation id="1056898198331236512">وارننگ</translation>
+<translation id="1058009965971887428">تاثرات کی رپورٹ کریں</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">بدلیں</translation>
 <translation id="1073899992769346247">بیٹری کو تبدیل یا ریچارج کریں</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="36813544980941320">‏آپ کے فون اور <ph name="DEVICE_NAME" /> کے درمیان Wi-Fi نیٹ ورکس کا اشتراک کیا جائے گا</translation>
 <translation id="3694122362646626770">ویب سائٹس</translation>
-<translation id="3701206655856637070">اب آپ تبدیل کر سکتے ہیں کہ اسکرین کیپچرز کہاں محفوظ ہیں</translation>
 <translation id="3702809606464356667">موجودہ ڈیسک سے ونڈوز دکھائی جا رہی ہیں تمام ڈیسکس سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="3702846122927433391">نائیجیریا میں آبادی</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@
 <translation id="6182592640011875895">ڈیسک کھولیں</translation>
 <translation id="619279033188484792">اپنے <ph name="DEVICE_TYPE" /> پر اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھیں</translation>
 <translation id="619335566042889110">اب پوری طرح چارج کریں</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">اب آپ اپنے آپ کو اور اپنی اسکرین کو ایک ہی وقت میں ریکارڈ کر سکتے ہیں</translation>
 <translation id="622484624075952240">نیچے</translation>
 <translation id="6231419273573514727">پیریفیرل کی کارکردگی محدود ہو سکتی ہے</translation>
@@ -1170,6 +1171,7 @@
 <translation id="7842569679327885685">انتباہ: تجرباتی خصوصیت</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7848989271541991537">صفحہ <ph name="PAGE_NUMBER" />، قطار <ph name="ROW_NUMBER" />، کالم <ph name="COLUMN_NUMBER" /> میں منتقل کر دیا گیا۔</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">مجموعی جائزے میں داخل ہونے کے لیے تین انگلیوں سے اوپر سوائپ کریں</translation>
 <translation id="7866482334467279021">آن</translation>
 <translation id="7868900307798234037">فنگر پرنٹ سے غیر مقفل کیا جا رہا ہے</translation>

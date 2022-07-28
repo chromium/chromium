@@ -1535,7 +1535,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2390347491606624519">Tidak dapat terhubung ke proxy, harap login lagi</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Font standar</translation>
-<translation id="2392163307141705938">Kamu sudah mencapai batas waktu yang ditetapkan orang tuamu untuk <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Aktifkan</translation>
 <translation id="2393136602862631930">Siapkan <ph name="APP_NAME" /> di Chromebook Anda</translation>
 <translation id="2393313392064891208">Isi Persyaratan Google ChromeOS Flex</translation>
@@ -1661,7 +1660,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2505669838803949807">EID perangkat Anda adalah <ph name="EID_NUMBER" />. Perwakilan layanan pelanggan dapat menggunakan nomor EID tersebut untuk membantu Anda mengaktifkan layanan.</translation>
 <translation id="250704661983564564">Pengaturan tampilan</translation>
 <translation id="2507253002925770350">Tiket dihapus</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> dijeda</translation>
 <translation id="2508428939232952663">Akun Google Play Store</translation>
 <translation id="2509495747794740764">Jumlah skala harus berupa angka antara 10 dan 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1905,7 +1903,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2743387203779672305">Salin ke papan klip</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">File ini berisi konten sensitif atau berbahaya. Minta pemiliknya untuk memperbaiki.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> dijeda</translation>
 <translation id="2749756011735116528">Login ke <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Periksa Grammar Dengan Ejaaan</translation>
@@ -4248,7 +4245,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5033137252639132982">Tidak diizinkan menggunakan sensor gerakan</translation>
 <translation id="5033266061063942743">Bentuk geometris</translation>
 <translation id="5037676449506322593">Pilih Semua</translation>
-<translation id="5038022729081036555">Kamu bisa menggunakannya besok selama <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Anda sebelumnya memilih untuk tidak mengizinkan ekstensi di <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Lihat dan kelola sandi tersimpan di Akun Google Anda</translation>
 <translation id="5039804452771397117">Izinkan</translation>
@@ -4286,6 +4282,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5074761966806028321">Izin masih diperlukan untuk menyelesaikan penyiapan</translation>
 <translation id="5075563999073408211">Kontrol perangkat Anda dengan satu atau beberapa tombol akses. Tombol akses dapat berupa tombol keyboard, tombol gamepad, atau perangkat khusus.</translation>
 <translation id="5075910247684008552">Konten yang tidak aman akan diblokir secara default di situs aman</translation>
+<translation id="5078490485380754244">Lupakan perangkat</translation>
 <translation id="5078638979202084724">Bookmark semua tab</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5079010647467150187">Tambahkan VPN bawaan ...</translation>
@@ -5048,6 +5045,7 @@ Anda dapat menetapkan beberapa tombol akses untuk tindakan ini.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Perekaman kamera atau mikrofon</translation>
 <translation id="583673505367439042">Situs dapat meminta untuk mengedit file dan folder di perangkat Anda</translation>
 <translation id="583756221537636748">Casing</translation>
+<translation id="5840658767386246331">Telusuri dengan Google</translation>
 <translation id="5840680448799937675">File akan selalu dibagikan secara offline</translation>
 <translation id="5841270259333717135">Konfigurasi Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth aktif</translation>
@@ -6538,6 +6536,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7307129035224081534">Dijeda</translation>
 <translation id="7308643132139167865">Bahasa situs</translation>
 <translation id="7310598146671372464">Gagal login. Server tidak mendukung jenis enkripsi Kerberos yang ditentukan. Harap hubungi administrator.</translation>
+<translation id="7311089766378749632">Meminta untuk membaca dan mengubah <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Administrator sedang mereset eSIM Anda. Proses ini mungkin perlu waktu beberapa menit.</translation>
 <translation id="7320213904474460808">Jadikan jaringan default</translation>
 <translation id="7321545336522791733">Server tidak dapat dijangkau</translation>
@@ -7130,6 +7129,7 @@ Tekan tombol akses atau tombol keyboard yang telah ditetapkan untuk menghapus pe
 <translation id="7869655448736341731">Semua</translation>
 <translation id="7870730066603611552">Tinjau opsi sinkronisasi setelah penyiapan</translation>
 <translation id="7870790288828963061">Tidak ada aplikasi Kios dengan versi lebih baru yang ditemukan. Tidak ada yang akan diperbarui. Lepaskan stik USB.</translation>
+<translation id="7871049986386271121">Selalu di Halaman Ini</translation>
 <translation id="7871109039747854576">Gunakan tombol <ph name="COMMA" /> dan <ph name="PERIOD" /> untuk memanggil daftar kandidat</translation>
 <translation id="787268756490971083">Nonaktif</translation>
 <translation id="7872758299142009420">Terlalu banyak grup bertingkat: <ph name="ERROR_LINE" /></translation>
@@ -7284,7 +7284,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8013993649590906847">Jika gambar tidak memiliki deskripsi yang berguna, Chrome akan mencoba memberikan deskripsi untuk Anda. Untuk membuat deskripsi, gambar akan dikirim ke Google.</translation>
 <translation id="8014154204619229810">Alat pembaru sedang berjalan. Segarkan dalam satu menit untuk memeriksa lagi.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> tidak dapat mengembalikan ke versi yang terpasang sebelumnya. Coba lagi untuk melakukan Powerwash perangkat Anda.</translation>
-<translation id="8015163965024115122">Batas waktu pada aplikasi <ph name="IDS_SHORT_PRODUCT_NAME" /> atau<ph name="IDS_SHORT_PRODUCT_NAME" /> yang disetel orang tuamu telah habis.</translation>
 <translation id="8016266267177410919">Penyimpanan sementara</translation>
 <translation id="8017176852978888182">Direktori bersama Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8424,7 +8423,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Untuk mendapatkan pengalaman terbaik, instal <ph name="DEVICE_OS" /> ke disk internal Anda. Anda juga dapat menginstalnya nanti dari layar login.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jika belum siap menginstal, Anda dapat menjalankannya dari USB untuk mencobanya. Tindakan ini akan menyimpan OS dan data yang ada, tetapi Anda dapat melihat batas penyimpanan dan performa.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Buka sebagai tab terpasang</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> dijeda</translation>
 <translation id="9124003689441359348">Sandi yang disimpan akan muncul di sini</translation>
 <translation id="9126149354162942022">Warna kursor</translation>
 <translation id="9128317794749765148">Tidak dapat menyelesaikan penyiapan</translation>

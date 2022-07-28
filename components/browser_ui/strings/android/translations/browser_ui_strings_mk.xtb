@@ -97,6 +97,7 @@
 <translation id="3114012059975132928">Видеоплеер</translation>
 <translation id="3115898365077584848">Прикажи ги информациите</translation>
 <translation id="3123473560110926937">Блокирано на некои сајтови</translation>
+<translation id="3143754809889689516">Пушти од почеток</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> складирани податоци</translation>
 <translation id="3203366800380907218">Од интернет</translation>
 <translation id="321187648315454507">За да овозможите <ph name="APP_NAME" /> да ви испраќа известувања, вклучете ја дозволата за известувања и во <ph name="BEGIN_LINK" />Поставки за Android<ph name="END_LINK" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="3594780231884063836">Исклучете звук на видео</translation>
 <translation id="3596414637720633074">Блокирај колачиња од трети страни во „Инкогнито“</translation>
 <translation id="3600792891314830896">Исклучи го звукот на сајтовите што пуштаат звук</translation>
+<translation id="3628308229821498208">Предложени пребарувања</translation>
 <translation id="3744111561329211289">Синхронизација во заднина</translation>
 <translation id="3763247130972274048">Допрете двапати на видеото лево или десно за да прескокнете 10 секунди</translation>
 <translation id="3797520601150691162">Не применувај темна тема за конкретен сајт</translation>
@@ -226,6 +228,7 @@
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
 <translation id="6216432067784365534">Опции за <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="6231752747840485235">Да се деинсталира „<ph name="APP_NAME" />“?</translation>
+<translation id="6262191102408817757">Според вашата последна картичка</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /> се блокирани</translation>
 <translation id="6270391203985052864">Сајтовите можат да прашуваат дали да испраќаат известувања</translation>
 <translation id="6295158916970320988">Сите локации</translation>

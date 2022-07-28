@@ -78,6 +78,7 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="1344653310988386453">Jumuisha kiungo cha maandishi yaliyoangaziwa</translation>
 <translation id="1347468774581902829">Dhibiti shughuli</translation>
 <translation id="1360432990279830238">Utaondoka na uzime usawazishaji?</translation>
+<translation id="1366525380420346469">Kinapokuwa kimewashwa</translation>
 <translation id="1373696734384179344">Hakuna hifadhi ya kutosha ya kupakua maudhui yaliyochaguliwa.</translation>
 <translation id="1376578503827013741">Inakokotoa...</translation>
 <translation id="1382912999714108023">Je, huoni maelezo yako ya sasa? Tafadhali wasiliana na benki yako ili uyasasishe.</translation>
@@ -513,6 +514,7 @@ Unapofuta historia yako ya kuvinjari — yote au kwa tovuti mahususi — unafuta
 <translation id="3810973564298564668">Dhibiti</translation>
 <translation id="3819178904835489326">Vipakuliwa <ph name="NUMBER_OF_DOWNLOADS" /> vimefutwa</translation>
 <translation id="3819183753496523827">Haupo mtandaoni. Kagua muunganisho wako wa intaneti kisha ujaribu tena.</translation>
+<translation id="3830886834687455630">Sasisha huduma za Google Play ili ukague manenosiri yako</translation>
 <translation id="3845098929839618392">Fungua katika kichupo fiche</translation>
 <translation id="3856096718352044181">Tafadhali thibitisha kuwa huyu ni mtoa huduma sahihi au ujaribu tena baadaye</translation>
 <translation id="3858860766373142691">Jina</translation>
@@ -733,6 +735,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">Imeshindwa kutunga Msimbo wa QR</translation>
 <translation id="5039804452771397117">Ruhusu</translation>
+<translation id="504456571576643789">Mambo ya kuzingatia</translation>
 <translation id="5054455334322721892">Huenda <ph name="BEGIN_LINK1" />aina nyingine za shughuli<ph name="END_LINK1" /> zikahifadhiwa kwenye Akaunti yako ya Google ukiwa umeingia katika akaunti. Unaweza kuzifuta wakati wowote.</translation>
 <translation id="5061533557687621530">Ili uangalie hali ya hewa, gusa maikrofoni na useme “Hali ya hewa ikoje leo?”</translation>
 <translation id="506254248375231072">Hakuna vichupo</translation>
@@ -1215,6 +1218,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="7641339528570811325">Futa data ya kuvinjari...</translation>
 <translation id="7646772052135772216">Kipengele cha usawazishaji wa nenosiri hakifanyi kazi</translation>
 <translation id="7655900163790317559">Inawasha Bluetooth…</translation>
+<translation id="7656862631699126784">Washa mipangilio ya kufunga vichupo vya hali fiche</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7663313374500954251">Kivinjari hiki kinadhibitiwa na <ph name="PARENT_NAME" />.</translation>
 <translation id="7665369617277396874">Ongeza akaunti</translation>
@@ -1517,6 +1521,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="9159716826369098114">Rejesha kikundi cha vichupo <ph name="TAB_COUNT" /> kiwe kikundi kipya cha vichupo vinavyofanya kazi chinichini.</translation>
 <translation id="9169507124922466868">Historia ya uelekezaji imefunguliwa nusu</translation>
 <translation id="9187955620966010988">Maoni yamerekebishwa</translation>
+<translation id="9190276265094487094">Utaona historia yako kwenye vifaa vyako vyote vilivyosawazishwa ili uweze kuendelea na shughuli uliyokuwa ukifanya</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Imekaguliwa dakika moja iliyopita}other{Imekaguliwa dakika # zilizopita}}</translation>
 <translation id="9204836675896933765">Imesalia faili 1</translation>
 <translation id="9205933215779845960">Imeshindwa kupata ukurasa huo. Kagua tahajia zako au jaribu kutafuta kwenye <ph name="SEARCH_ENGINE" />.</translation>

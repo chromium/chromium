@@ -1532,7 +1532,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2390347491606624519">Imeshindwa kuunganisha kwenye seva mbadala, tafadhali ingia katika akaunti tena</translation>
 <translation id="2390782873446084770">Usawazishaji Wi-Fi</translation>
 <translation id="2391419135980381625">Fonti wastani</translation>
-<translation id="2392163307141705938">Umefikisha kikomo cha muda uliowekwa na mzazi wako katika <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Amilisha</translation>
 <translation id="2393136602862631930">Weka mipangilio ya <ph name="APP_NAME" /> kwenye Chromebook yako</translation>
 <translation id="2393313392064891208">Maudhui ya Sheria na Masharti ya Google ChromeOS Flex</translation>
@@ -1658,7 +1657,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2505669838803949807">Nambari ya EID ya kifaa chako ni <ph name="EID_NUMBER" />. Mwakilishi wa huduma kwa wateja anaweza kutumia nambari ya EID ili akusaidie kuwasha huduma.</translation>
 <translation id="250704661983564564">Mpangilio wa skrini</translation>
 <translation id="2507253002925770350">Tiketi imeondolewa</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> imesimamishwa</translation>
 <translation id="2508428939232952663">Akaunti ya Duka la Google Play</translation>
 <translation id="2509495747794740764">Lazima kiwango kiwe nambari kati ya 10 na 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1902,7 +1900,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2743387203779672305">Nakili kwenye ubao wa kunakili</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">Faili hii ina maudhui hatari au nyeti. Mwombe mmiliki airekebishe.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> imesitishwa</translation>
 <translation id="2749756011735116528">Ingia kwenye <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kagua Sarufi Pamoja na Tahajia</translation>
@@ -3909,6 +3906,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4689421377817139245">Sawazisha alamisho hii kwenye iPhone yako</translation>
 <translation id="4690091457710545971">&lt;Faili nne zinazozalishwa na programu dhibiti ya Intel Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon.  Faili za kwanza tatu ni faili za mfumo wa jozi zilizo na data ya faili za sajili, na zimethibitishwa na Intel kuwa hazina maelezo yanayoweza kutambulisha mtu au kifaa. Faili ya mwisho ni faili ya utekelezaji kutoka programu dhibiti ya Intel; imeondolewa maelezo yoyote yanayoweza kutambulisha mtu au kifaa, lakini haiwezi kuonekana hapa kwa kuwa ni kubwa mno.  Faili hizi zilizalishwa ili kusuluhisha matatizo ya hivi majuzi ya Wi-Fi ambayo yalikumba kifaa chako, na tutazishiriki na Intel ili kukusaidia utatue matatizo haya.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> itaweza kuona <ph name="FILENAME" /> hadi ufunge vichupo vyote vya tovuti hii</translation>
+<translation id="4692342362587775867">Arifa kutoka kwenye tovuti hii zinaweza kukuvuruga</translation>
 <translation id="4692623383562244444">Mitambo ya kutafuta</translation>
 <translation id="4692736633446859167">Hapo awali ulichagua kutoruhusu viendelezi vyovyote kwenye <ph name="SITE" />. Ikiwa utaongeza hapa tovuti hii, viendelezi vingine vinaweza kuomba visome na vibadilishe data ya tovuti yako kwenye <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -4242,7 +4240,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5033137252639132982">Zisizoruhusiwa kutumia vitambuzi vya mwendo</translation>
 <translation id="5033266061063942743">Maumbo ya Jiometriki</translation>
 <translation id="5037676449506322593">Chagua Zote</translation>
-<translation id="5038022729081036555">Utaweza kuitumia kwa <ph name="TIME_LIMIT" /> kesho.</translation>
 <translation id="5038818366306248416">Hapo awali ulichagua kutoruhusu kiendelezi chochote kwenye <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Angalia na udhibiti manenosiri uliyohifadhi kwenye Akaunti yako ya Google</translation>
 <translation id="5039804452771397117">Ruhusu</translation>
@@ -4280,6 +4277,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5074761966806028321">Ruhusa inahitajika ili kukamilisha mipangilio</translation>
 <translation id="5075563999073408211">Dhibiti kifaa chako kwa kutumia swichi moja au zaidi. Swichi zinaweza kuwa vitufe vya kibodi, vitufe vya kidhibiti cha michezo au vifaa maalum.</translation>
 <translation id="5075910247684008552">Maudhui yasiyo salama yanazuiwa kwa chaguomsingi kwenye tovuti salama</translation>
+<translation id="5078490485380754244">Ondoa kifaa</translation>
 <translation id="5078638979202084724">Alamisha vichupo vyote</translation>
 <translation id="5078796286268621944">PIN isiyo sahihi</translation>
 <translation id="5079010647467150187">Ongeza VPN iliyojumuishwa ndani...</translation>
@@ -7279,7 +7277,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8013993649590906847">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google.</translation>
 <translation id="8014154204619229810">Programu ya kusasisha inatekeleza kwa sasa. Onyesha upya baada ya dakika moja ili uangalie tena.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> haiwezi kurejesha toleo lililokuwa limesakinishwa. Tafadhali jaribu kutumia tena Powerwash kwenye kifaa chako.</translation>
-<translation id="8015163965024115122">Muda wa kutumia programu za <ph name="IDS_SHORT_PRODUCT_NAME" /> au <ph name="IDS_SHORT_PRODUCT_NAME" /> uliowekwa na mzazi wako umeisha.</translation>
 <translation id="8016266267177410919">Hifadhi ya muda</translation>
 <translation id="8017176852978888182">Saraka za Linux zinazoshirikiwa</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8418,7 +8415,6 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Ili upate hali bora zaidi ya utumiaji, sakinisha <ph name="DEVICE_OS" /> kwenye diski yako ya ndani. Unaweza pia kuisakinisha baadaye kutoka kwenye skrini ya kuingia katika akaunti.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ikiwa hauko tayari kusakinisha, unaweza kuitekeleza kutoka kwenye USB ili uijaribu. Hatua hii itadumisha mfumo wa uendeshaji na data yako iliyopo, lakini huenda ukaona vizuizi vya nafasi ya hifadhi na utendakazi.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Fungua kama kichupo kilichobanwa</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> imesimamishwa</translation>
 <translation id="9124003689441359348">Manenosiri yaliyohifadhiwa yataonekana hapa</translation>
 <translation id="9126149354162942022">Rangi ya kiteuzi</translation>
 <translation id="9128317794749765148">Imeshindwa kukamilisha shughuli ya kusakinisha</translation>

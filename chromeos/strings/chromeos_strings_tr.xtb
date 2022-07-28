@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">Geçmiş</translation>
 <translation id="1645954272419197032">Lütfen cihaz bilgilerini onaylayın</translation>
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
+<translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> adlı takvimi önizle</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
 <translation id="1672499492233627739">Web kamerası video feed'i</translation>
 <translation id="1676557873873341166">Video çekiliyor</translation>
@@ -722,6 +723,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7180611975245234373">Yenile</translation>
 <translation id="7212734716605298123">Harici cihazlar için donanım yazılımı güncellemeleri</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
+<translation id="725133483556299729">E-posta'yı seçme</translation>
 <translation id="7271040990581020067">Tarayıcı şu anda kullanımda. Daha sonra tekrar deneyin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281209642468917121">En az 1 bileşen seçerek tekrar deneyin ya da kalibrasyonu atlayın</translation>
@@ -799,6 +801,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7978412674231730200">Özel anahtar</translation>
 <translation id="7982789257301363584">Ağ</translation>
 <translation id="7994702968232966508">EAP yöntemi</translation>
+<translation id="8018928621986160031">"<ph name="FILE_LOCATION" />" konumuna kaydedildi</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Otomatik renk modunu etkinleştir</translation>

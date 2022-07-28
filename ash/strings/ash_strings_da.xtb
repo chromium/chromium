@@ -14,6 +14,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1052916631016577720">Scan elementer</translation>
 <translation id="1056775291175587022">Ingen netværk</translation>
 <translation id="1056898198331236512">Advarsel</translation>
+<translation id="1058009965971887428">Giv feedback</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Erstat</translation>
 <translation id="1073899992769346247">Udskift eller genoplad batteriet</translation>
@@ -469,7 +470,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Administreret bruger</translation>
 <translation id="36813544980941320">Wi-Fi-netværk deles mellem din telefon og <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
-<translation id="3701206655856637070">Nu kan du ændre, hvor screenshots gemmes</translation>
 <translation id="3702809606464356667">Når du får vist vinduer fra det aktuelle skrivebord, kan du trykke på pil op for at få vist vinduer fra alle skriveborde</translation>
 <translation id="3702846122927433391">Befolkningstallet i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +652,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="4690510401873698237">Hylden er i bunden</translation>
 <translation id="4696813013609194136">Lås enheden op med forældrekode</translation>
 <translation id="4702647871202761252">Privatlivsskærmen er slået fra</translation>
+<translation id="470644585772471629">Ombytning af farver</translation>
 <translation id="4717575069099566988">Dit USB-C-kabel understøtter ikke USB4. Enhedens ydeevne kan være begrænset.</translation>
 <translation id="4730374152663651037">OFTE ANVENDT</translation>
 <translation id="4731797938093519117">Forældreadgang</translation>
@@ -901,6 +902,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6182592640011875895">Åbn skrivebord</translation>
 <translation id="619279033188484792">Se de seneste billeder, mediefiler og notifikationer fra din telefon på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Oplad helt nu</translation>
+<translation id="6193431488227440296">Udv</translation>
 <translation id="6220928844947387476">Du kan nu optage dig selv og din skærm på samme tid</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Din eksterne enheds ydeevne kan være begrænset</translation>

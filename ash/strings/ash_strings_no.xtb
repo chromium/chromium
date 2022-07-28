@@ -14,6 +14,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1052916631016577720">Elementskanning</translation>
 <translation id="1056775291175587022">Ingen nettverk</translation>
 <translation id="1056898198331236512">Advarsel</translation>
+<translation id="1058009965971887428">Rapporter tilbakemelding</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Erstatt</translation>
 <translation id="1073899992769346247">Bytt eller lad batteriet</translation>
@@ -469,7 +470,6 @@ Koble enheten til strøm.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – administrert bruker</translation>
 <translation id="36813544980941320">Wi-Fi-nettverk blir delt mellom telefonen din og <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Nettsteder</translation>
-<translation id="3701206655856637070">Du kan nå endre hvor skjermdumper lagres</translation>
 <translation id="3702809606464356667">Viser vinduer fra det nåværende skrivebordet. Trykk på oppoverpiltasten for å vise vinduer fra alle skrivebord</translation>
 <translation id="3702846122927433391">Antall innbyggere i Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@ Koble enheten til strøm.</translation>
 <translation id="6182592640011875895">Åpne skrivebordet</translation>
 <translation id="619279033188484792">Se nylige bilder, medier og varsler fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Lad helt nå</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">Nå kan du ta opp deg selv og skjermen din samtidig</translation>
 <translation id="622484624075952240">Ned</translation>
 <translation id="6231419273573514727">Ytelsen til eksterne enheter kan være begrenset</translation>

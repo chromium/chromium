@@ -97,6 +97,7 @@
 <translation id="3114012059975132928">Video player</translation>
 <translation id="3115898365077584848">Show info</translation>
 <translation id="3123473560110926937">Blocked on some sites</translation>
+<translation id="3143754809889689516">Play from the beginning</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> stored data</translation>
 <translation id="3203366800380907218">From the web</translation>
 <translation id="321187648315454507">To let <ph name="APP_NAME" /> send you notifications, also turn on notifications in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
@@ -115,6 +116,7 @@
 <translation id="3594780231884063836">Mute video</translation>
 <translation id="3596414637720633074">Block third-party cookies in Incognito</translation>
 <translation id="3600792891314830896">Mute sites that play sound</translation>
+<translation id="3628308229821498208">Suggested searches</translation>
 <translation id="3744111561329211289">Background sync</translation>
 <translation id="3763247130972274048">Double-tap video left or right to skip 10s</translation>
 <translation id="3797520601150691162">Don’t apply Dark theme for a specific site</translation>
@@ -226,6 +228,7 @@
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> Options</translation>
 <translation id="6231752747840485235">Uninstall '<ph name="APP_NAME" />'?</translation>
+<translation id="6262191102408817757">Based on your last tab</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> and <ph name="PERMISSION_2" /> blocked</translation>
 <translation id="6270391203985052864">Sites can ask to send notifications</translation>
 <translation id="6295158916970320988">All sites</translation>

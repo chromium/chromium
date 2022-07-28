@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">デバイス ID:</translation>
 <translation id="3677008721441257057">もしかして: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;</translation>
 <translation id="3678029195006412963">リクエストに署名できませんでした</translation>
+<translation id="3678342917559046352">無効な拡張機能です。値は &lt;extension_id&gt; または &lt;extension_id&gt;;&lt;update_url&gt; のいずれかの形式で指定する必要があります。</translation>
 <translation id="3678529606614285348">ページを新しいシークレット ウィンドウで開く（Ctrl-Shift-N）</translation>
 <translation id="3681007416295224113">証明書情報</translation>
 <translation id="3701427423622901115">リセットを確認しました。</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">検索機能</translation>
 <translation id="4644670975240021822">逆の順序（下向き）</translation>
 <translation id="4646534391647090355">今すぐ表示</translation>
+<translation id="4648262692072505866">ハッシュ形式には SHA-256 を使用する必要があります。</translation>
 <translation id="4652266463001779298">ブロック</translation>
 <translation id="4653167719759882810">合併、買収</translation>
 <translation id="4658638640878098064">ステープル（左上）</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" /> / <ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと検索します</translation>
 <translation id="4930153903256238152">大容量</translation>
+<translation id="4936134414789135531">挿入された <ph name="VALUE_NAME" /> が見つかりませんでした。</translation>
 <translation id="4936675324097895694">金融</translation>
 <translation id="4940163644868678279">Chrome のシークレット モード</translation>
 <translation id="4943872375798546930">結果はありません</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">トレイ 13</translation>
 <translation id="5216942107514965959">最終アクセス日: 今日</translation>
+<translation id="5217759126664161410">プロトコルの形式が無効です。</translation>
 <translation id="5222812217790122047">メールアドレスは必須です</translation>
 <translation id="5228404122310299359">パーティー、イベント用品</translation>
 <translation id="5229588705416009823">大規模マルチプレーヤー型ゲーム</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">広告がブロックされました</translation>
 <translation id="5400836586163650660">グレー</translation>
 <translation id="540969355065856584">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は現在有効ではありません。設定が不適切か、悪意のあるユーザーによって接続が妨害されている可能性があります。</translation>
+<translation id="5412040515238827314">無効な形式です。パターンのリストを指定する必要があります。</translation>
 <translation id="5412236728747081950">このサイトでは Chrome からお客様の興味や関心に関する情報を取得して、関連性の高い広告を表示しています</translation>
 <translation id="541416427766103491">スタッカー 4</translation>
 <translation id="5421136146218899937">閲覧履歴データを削除...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">ペット、動物</translation>
 <translation id="5759751709240058861">カメラの使用と移動</translation>
 <translation id="5763042198335101085">有効なメールアドレスを入力してください</translation>
+<translation id="5764725887548570807">オリジンの形式が無効です。</translation>
 <translation id="5765072501007116331">配達方法と要件を確認するには、住所を選択してください</translation>
 <translation id="57689295674415555">仮想カード番号が入力されない場合</translation>
 <translation id="5776313857861697733">優先度</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">発行先</translation>
 <translation id="610911394827799129">お使いの Google アカウントの <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="6116338172782435947">クリップボードにコピーしたテキストや画像へのアクセス</translation>
+<translation id="6118782133429281336">オリジンのリストが空です。</translation>
 <translation id="6120179357481664955">UPI ID を保存しますか？</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connector</translation>
 <translation id="6127379762771434464">アイテムを削除しました</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome のシークレット モードについて<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ファイル拡張子が空であるか、形式が正しくありません。</translation>
 <translation id="6146055958333702838">ケーブルを確認し、使用しているネットワーク デバイス（ルーター、モデムなど）を
     再起動してください。</translation>
 <translation id="614940544461990577">次をお試しください</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">（x86_64 翻訳）</translation>
 <translation id="6663846344464066639">お願い</translation>
 <translation id="6665553082534466207">3 穴パンチ（右）</translation>
+<translation id="6668389483194953109">用紙サイズ名「custom」が見つかりましたが、「custom_size」プロパティが空であるか無効です。</translation>
 <translation id="6671697161687535275">Chromium から候補を削除してもよろしいですか？</translation>
 <translation id="6683717648675961851">求人情報</translation>
 <translation id="6685834062052613830">ログアウトして設定を完了してください</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">[このタブを共有] ボタンです。Enter キーを押すと、リンクの共有、QR コードの作成、キャストなどを行ってこのタブを共有できます</translation>
 <translation id="6698381487523150993">作成:</translation>
 <translation id="6702919718839027939">プレゼンテーション</translation>
+<translation id="6704458454638854812">プロパティ「custom_size」が設定されているため、名前は「custom」である必要があります。</translation>
 <translation id="6709133671862442373">ニュース</translation>
 <translation id="6709888928011386878">楽器</translation>
 <translation id="6710213216561001401">前へ</translation>

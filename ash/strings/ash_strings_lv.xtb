@@ -14,6 +14,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1052916631016577720">Vienumu meklēšana</translation>
 <translation id="1056775291175587022">Nav tīklu</translation>
 <translation id="1056898198331236512">Brīdinājums</translation>
+<translation id="1058009965971887428">Sniegt atsauksmes</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Aizstāt</translation>
 <translation id="1073899992769346247">Nomainiet vai atkārtoti uzlādējiet akumulatoru.</translation>
@@ -469,7 +470,6 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="366222428570480733">Pārvaldīts lietotājs <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Wi-Fi tīkli tiks kopīgoti jūsu tālrunī un <ph name="DEVICE_NAME" /> ierīcē.</translation>
 <translation id="3694122362646626770">Vietnes</translation>
-<translation id="3701206655856637070">Tagad varat mainīt, kur tiek saglabāti ekrānuzņēmumi.</translation>
 <translation id="3702809606464356667">Tiek rādīti pašreizējās darbvietas logi. Nospiediet augšupvērsto bulttaustiņu, lai tiktu rādīti visu darbvietu logi.</translation>
 <translation id="3702846122927433391">Nigērijas iedzīvotāju skaits</translation>
 <translation id="3705722231355495246">-</translation>
@@ -652,6 +652,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4690510401873698237">Plaukts tiek rādīts apakšā</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
 <translation id="4702647871202761252">Konfidencialitātes ekrāns ir izslēgts</translation>
+<translation id="470644585772471629">Krāsu inversija</translation>
 <translation id="4717575069099566988">Jūsu USB-C vads neatbalsta USB4. Ierīces veiktspēja var būt ierobežota.</translation>
 <translation id="4730374152663651037">BIEŽI IZMANTOTĀS</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
@@ -901,6 +902,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6182592640011875895">Atvērt darbvietu</translation>
 <translation id="619279033188484792">Skatiet tālruņa jaunākos fotoattēlus, multivides saturu un paziņojumus savā ierīcē (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="619335566042889110">Pilnībā uzlādēt</translation>
+<translation id="6193431488227440296">Izstrāde</translation>
 <translation id="6220928844947387476">Tagad varat ierakstīt gan savu video, gan savu ekrānu vienlaikus.</translation>
 <translation id="622484624075952240">Lejup</translation>
 <translation id="6231419273573514727">Perifēro ierīču veiktspēja var būt ierobežota</translation>

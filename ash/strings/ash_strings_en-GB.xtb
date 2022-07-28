@@ -84,6 +84,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1364382257761975320">To unlock your Chromebook, use your fingerprint</translation>
+<translation id="1365866993922957110">Get automatic updates</translation>
 <translation id="1372545819342940910">Save desk for later</translation>
 <translation id="1383597849754832576">Can't download speech files. Try again later.</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -161,6 +162,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> was un-pinned</translation>
 <translation id="1836215606488044471">Assistant (loading...)</translation>
 <translation id="1838895407229022812">Night Light is off.</translation>
+<translation id="1862380676329487333">Update and sign out</translation>
 <translation id="1864454756846565995">USB-C device (rear port)</translation>
 <translation id="1879018240766558464">Incognito windows aren’t currently supported. Other apps will be saved.</translation>
 <translation id="1882814835921407042">No mobile network</translation>
@@ -470,7 +472,6 @@ Connect your device to power.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> managed user</translation>
 <translation id="36813544980941320">Wi-Fi networks will be shared between your phone and <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
-<translation id="3701206655856637070">You can now change where screen captures are saved</translation>
 <translation id="3702809606464356667">Showing windows from the current desk; press the Up arrow key to show windows from all desks</translation>
 <translation id="3702846122927433391">Population in Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -562,6 +563,7 @@ Connect your device to power.</translation>
 <translation id="423685346499232137">Can't copy or paste content at this time</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Open settings</translation>
+<translation id="4247123849143712100">Update and shut down</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">No SIM</translation>
 <translation id="4261870227682513959">Show notification settings. Notifications are off</translation>
@@ -921,6 +923,7 @@ Connect your device to power.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is a managed session managed by <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connected</translation>
 <translation id="6351032674660237738">APP SUGGESTIONS</translation>
+<translation id="6359587239691116345">Get the latest features and security improvements. If you decline this update, your device may no longer work properly and you may experience security and performance issues.</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK is off</translation>
@@ -942,6 +945,7 @@ Connect your device to power.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> before the deadline</translation>
 <translation id="649452524636452238">Smart card PIN</translation>
 <translation id="6495400115277918834">Picture-in-picture started, Alt+Shift+V to focus</translation>
+<translation id="6500896621837555595">Update</translation>
 <translation id="6501401484702599040">Casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Camera lost; trying to reconnect.</translation>
 <translation id="6520517963145875092">Select a window to capture</translation>
@@ -1219,6 +1223,7 @@ New install</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
 <translation id="8061464966246066292">High contrast</translation>
 <translation id="8083540854303889870">Saved for later</translation>
+<translation id="8091387634532529612">Automatic updates</translation>
 <translation id="8098591350844501178">Stop casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">On, all apps</translation>
 <translation id="8120151603115102514">Your phone doesn’t have a lock screen. To unlock your Chromebook, enter password.</translation>
@@ -1425,4 +1430,5 @@ New install</translation>
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Landscape</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>
+<translation id="996204416024568215">Get the latest features and security improvements. Updates happen in the background.</translation>
 </translationbundle>

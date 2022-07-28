@@ -14,6 +14,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1052916631016577720">Pag-scan ng Item</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1056898198331236512">Babala</translation>
+<translation id="1058009965971887428">Iulat ang feedback</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Palitan</translation>
 <translation id="1073899992769346247">Palitan o i-recharge ang baterya</translation>
@@ -469,7 +470,6 @@ Isaksak ang iyong device.</translation>
 <translation id="366222428570480733">Pinapamahalaang user na <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Ibabahagi ang mga Wi-Fi network sa pagitan ng iyong telepono at <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Mga Website</translation>
-<translation id="3701206655856637070">Puwede mo na ngayong baguhin kung saan nase-save ang mga screen capture</translation>
 <translation id="3702809606464356667">Ipinapakita ang mga window mula sa kasalukuyang desk, pindutin ang key na Pataas na arrow para ipakita ang mga window mula sa lahat ng desk</translation>
 <translation id="3702846122927433391">Populasyon sa Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6182592640011875895">Buksan ang desk</translation>
 <translation id="619279033188484792">Tingnan ang mga kamakailang larawan, media, at notification ng iyong telepono sa <ph name="DEVICE_TYPE" /> mo</translation>
 <translation id="619335566042889110">Ganap na i-charge ngayon</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">Puwede mo na ngayong sabay na i-record ang iyong sarili at ang screen mo</translation>
 <translation id="622484624075952240">Down</translation>
 <translation id="6231419273573514727">Posibleng maging limitado ang performance ng peripheral</translation>

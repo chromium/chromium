@@ -83,6 +83,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Runtuhkan menu</translation>
 <translation id="1364382257761975320">Untuk membuka kunci Chromebook anda, gunakan cap jari anda</translation>
+<translation id="1365866993922957110">Dapatkan kemaskinian automatik</translation>
 <translation id="1372545819342940910">Simpan meja untuk dirujuk lagi</translation>
 <translation id="1383597849754832576">Tidak dapat memuat turun fail pertuturan. Cuba lagi nanti.</translation>
 <translation id="1383876407941801731">Carian</translation>
@@ -160,6 +161,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> telah dinyahsemat</translation>
 <translation id="1836215606488044471">Pembantu (memuat...)</translation>
 <translation id="1838895407229022812">Cahaya Malam dimatikan.</translation>
+<translation id="1862380676329487333">Kemas kini dan log keluar</translation>
 <translation id="1864454756846565995">Peranti USB-C (port belakang)</translation>
 <translation id="1879018240766558464">Tetingkap inkognito tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="1882814835921407042">Tiada rangkaian mudah alih</translation>
@@ -469,7 +471,6 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
 <translation id="36813544980941320">Rangkaian Wi-Fi akan dikongsi antara telefon anda dengan <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Laman web</translation>
-<translation id="3701206655856637070">Kini anda boleh menukar tempat tangkapan skrin disimpan</translation>
 <translation id="3702809606464356667">Memaparkan tetingkap daripada meja semasa, tekan kekunci Anak panah ke atas untuk memaparkan tetingkap daripada semua meja</translation>
 <translation id="3702846122927433391">Populasi di Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -562,6 +563,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="423685346499232137">Tidak dapat menyalin atau menampal kandungan pada masa ini</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
+<translation id="4247123849143712100">Kemas kini dan matikan</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
 <translation id="425364040945105958">Tiada SIM</translation>
 <translation id="4261870227682513959">Tunjukkan tetapan pemberitahuan. Pemberitahuan dimatikan</translation>
@@ -920,6 +922,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> disambungkan</translation>
 <translation id="6351032674660237738">CADANGAN APL</translation>
+<translation id="6359587239691116345">Dapatkan ciri terkini dan peningkatan keselamatan. Jika anda menolak kemaskinian ini, peranti anda mungkin tidak lagi berfungsi dengan betul dan anda mungkin mengalami isu keselamatan dan prestasi.</translation>
 <translation id="6376931439017688372">Bluetooth dihidupkan</translation>
 <translation id="6381109794406942707">Untuk membuka kunci peranti, masukkan PIN anda.</translation>
 <translation id="639644700271529076">Kekunci CAPS LOCK dimatikan</translation>
@@ -941,6 +944,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> menghendaki anda mengemas kini <ph name="DEVICE_TYPE" /> anda sebelum tarikh akhir</translation>
 <translation id="649452524636452238">PIN kad pintar</translation>
 <translation id="6495400115277918834">Gambar dalam gambar dimulakan, Alt+Shift+V untuk fokus</translation>
+<translation id="6500896621837555595">Kemas kini</translation>
 <translation id="6501401484702599040">Menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Kamera terputus, cuba menyambung semula.</translation>
 <translation id="6520517963145875092">Pilih tetingkap untuk menangkap imej</translation>
@@ -1218,6 +1222,7 @@ Pemasangan baharu</translation>
 <translation id="8054466585765276473">Mengira tempoh bateri.</translation>
 <translation id="8061464966246066292">Kontras tinggi</translation>
 <translation id="8083540854303889870">Disimpan untuk kemudian</translation>
+<translation id="8091387634532529612">Kemaskinian automatik</translation>
 <translation id="8098591350844501178">Berhenti menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Hidup, semua</translation>
 <translation id="8120151603115102514">Telefon anda tiada skrin kunci. Untuk membuka kunci Chromebook anda, masukkan kata laluan.</translation>
@@ -1424,4 +1429,5 @@ Pemasangan baharu</translation>
 <translation id="974545358917229949">Memaparkan <ph name="RESULT_COUNT" /> hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Lanskap</translation>
 <translation id="990277280839877440">Tetingkap <ph name="WINDOW_TITILE" /> ditutup.</translation>
+<translation id="996204416024568215">Dapatkan ciri terkini dan peningkatan keselamatan. Kemaskinian berlaku di latar belakang.</translation>
 </translationbundle>

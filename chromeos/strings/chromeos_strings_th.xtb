@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3017079585324758401">พื้นหลัง</translation>
+<translation id="302435934487327038">ติดตั้งเสร็จสมบูรณ์</translation>
 <translation id="3027578600144895987">ปิดกล้อง</translation>
 <translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -664,6 +665,7 @@
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>
 <translation id="6643016212128521049">ล้าง</translation>
+<translation id="6644568396961840069">บันทึกไฟล์ไม่ได้ ลองเสียบที่จัดเก็บข้อมูลภายนอกอื่น หรือลองอีกครั้งในภายหลัง</translation>
 <translation id="6647510110698214773">อัลกอริทึมการเข้ารหัส</translation>
 <translation id="6650062777702288430">สลับระหว่างอักขระคานะ/ตัวอักษรและตัวเลขคละกัน</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>

@@ -1003,6 +1003,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3676592649209844519">Enheds-id:</translation>
 <translation id="3677008721441257057">Mente du &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Anmodningen kunne ikke signeres</translation>
+<translation id="3678342917559046352">Ugyldig udvidelse: Det var forventet, at værdien skulle være en af følgende: &lt;extension_id&gt; eller &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Åbn siden i et nyt inkognitovindue (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Certifikatoplysninger</translation>
 <translation id="3701427423622901115">Nulstillingen blev anerkendt.</translation>
@@ -1342,6 +1343,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="464342062220857295">Søgefunktioner</translation>
 <translation id="4644670975240021822">Omvendt rækkefølge med forside nedad</translation>
 <translation id="4646534391647090355">Før mig dertil nu</translation>
+<translation id="4648262692072505866">Hash-værdien skal være i formatet SHA-256.</translation>
 <translation id="4652266463001779298">Ikke tilladt</translation>
 <translation id="4653167719759882810">Fusioner og opkøb</translation>
 <translation id="4658638640878098064">Hæftning øverst til venstre</translation>
@@ -1451,6 +1453,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at søge</translation>
 <translation id="4930153903256238152">Stor kapacitet</translation>
+<translation id="4936134414789135531">Den indsatte <ph name="VALUE_NAME" /> blev ikke fundet.</translation>
 <translation id="4936675324097895694">Økonomi</translation>
 <translation id="4940163644868678279">Inkognitotilstand i Chrome</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
@@ -1568,6 +1571,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Bakke 13</translation>
 <translation id="5216942107514965959">Senest besøgt i dag</translation>
+<translation id="5217759126664161410">Ugyldigt protokolformat.</translation>
 <translation id="5222812217790122047">Mail påkrævet</translation>
 <translation id="5228404122310299359">Festartikler</translation>
 <translation id="5229588705416009823">Spil med mange spillere</translation>
@@ -1640,6 +1644,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5398772614898833570">Annoncer er blokeret</translation>
 <translation id="5400836586163650660">Grå</translation>
 <translation id="540969355065856584">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da dens sikkerhedscertifikat ikke er gyldigt i øjeblikket. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
+<translation id="5412040515238827314">Ugyldigt format: Der blev forventet en liste over mønstre.</translation>
 <translation id="5412236728747081950">Dette website henter dine interesser fra Chrome og bruger dem til at vise dig mere relevante annoncer</translation>
 <translation id="541416427766103491">Stabler 4</translation>
 <translation id="5421136146218899937">Ryd browserdata...</translation>
@@ -1758,6 +1763,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5754400531489347219">Kæledyr og dyr</translation>
 <translation id="5759751709240058861">Brug eller flyt dit kamera</translation>
 <translation id="5763042198335101085">Angiv en gyldig mailadresse</translation>
+<translation id="5764725887548570807">Ugyldigt oprindelsesformat.</translation>
 <translation id="5765072501007116331">Vælg en adresse for at se leveringsmetoder og -krav</translation>
 <translation id="57689295674415555">Er det virtuelle kortnummer ikke udfyldt?</translation>
 <translation id="5776313857861697733">Prioritet</translation>
@@ -1882,10 +1888,12 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6107012941649240045">Udstedt til</translation>
 <translation id="610911394827799129">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Se tekst og billeder, der er kopieret til udklipsholderen</translation>
+<translation id="6118782133429281336">Oprindelseslisten er tom.</translation>
 <translation id="6120179357481664955">Skal dit UPI-id huskes?</translation>
 <translation id="6124432979022149706">Chrome Enterprise-connectorer</translation>
 <translation id="6127379762771434464">Elementet blev fjernet</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Få flere oplysninger om inkognitotilstand i Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Filtypen er tom eller ugyldig.</translation>
 <translation id="6146055958333702838">Kontrollér eventuelle kabler, og genstart alle routere, modemmer eller andre
     netværksenheder, du bruger.</translation>
 <translation id="614940544461990577">Prøv at:</translation>
@@ -2059,6 +2067,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="666259744093848177">(x86_64 oversat)</translation>
 <translation id="6663846344464066639">Foldede hænder</translation>
 <translation id="6665553082534466207">Tre huller i højre side</translation>
+<translation id="6668389483194953109">Der blev fundet et navn, "custom", på papirstørrelsen, men egenskaben "custom_size" er tom eller ugyldig.</translation>
 <translation id="6671697161687535275">Vil du fjerne formularforslag fra Chromium?</translation>
 <translation id="6683717648675961851">Jobannoncer</translation>
 <translation id="6685834062052613830">Log ud, og fuldfør konfigurationen</translation>
@@ -2072,6 +2081,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6696588630955820014">Knappen "Del denne fane" – tryk på Enter for at dele denne fane ved at dele linket, oprette en QR-kode, caste m.m.</translation>
 <translation id="6698381487523150993">Oprettet:</translation>
 <translation id="6702919718839027939">Præsenter</translation>
+<translation id="6704458454638854812">Egenskaben "custom_size" er angivet. Det forventede navn er "custom".</translation>
 <translation id="6709133671862442373">Nyheder</translation>
 <translation id="6709888928011386878">Musikinstrumenter</translation>
 <translation id="6710213216561001401">Forrige</translation>

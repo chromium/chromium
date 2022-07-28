@@ -1002,6 +1002,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3676592649209844519">Ierīces ID:</translation>
 <translation id="3677008721441257057">Vai jūs domājāt &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Pieprasījumu nevarēja parakstīt.</translation>
+<translation id="3678342917559046352">Nederīgs paplašinājums. Vērtībai ir jābūt kādai no šīm veidlapām: &lt;extension_id&gt; vai &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Atvērt lapu jaunā inkognito režīma logā (Ctrl+Shift+N)</translation>
 <translation id="3681007416295224113">Sertifikāta informācija</translation>
 <translation id="3701427423622901115">Atiestatīšana apstiprināta.</translation>
@@ -1341,6 +1342,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="464342062220857295">Meklēšanas funkcijas</translation>
 <translation id="4644670975240021822">Pretēja secība, virspuse uz leju</translation>
 <translation id="4646534391647090355">Doties uz turieni tagad</translation>
+<translation id="4648262692072505866">Jaucējvērtības formātam ir jābūt SHA-256.</translation>
 <translation id="4652266463001779298">Atļauja nav piešķirta</translation>
 <translation id="4653167719759882810">Apvienošanās un iegāde</translation>
 <translation id="4658638640878098064">Skavojums augšējā kreisajā malā</translation>
@@ -1450,6 +1452,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai meklētu, nospiediet tabulēšanas taustiņu un pēc tam taustiņu Enter</translation>
 <translation id="4930153903256238152">Liela ietilpība</translation>
+<translation id="4936134414789135531">Ievietoto elementu “<ph name="VALUE_NAME" />” nevarēja atrast.</translation>
 <translation id="4936675324097895694">Finanses</translation>
 <translation id="4940163644868678279">Inkognito režīms pārlūkā Chrome</translation>
 <translation id="4943872375798546930">Nav rezultātu</translation>
@@ -1567,6 +1570,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">13. paplāte</translation>
 <translation id="5216942107514965959">Pēdējoreiz apmeklēta šodien</translation>
+<translation id="5217759126664161410">Nederīgs protokola formāts.</translation>
 <translation id="5222812217790122047">Jānorāda e-pasta adrese.</translation>
 <translation id="5228404122310299359">Ballīšu un svētku preces</translation>
 <translation id="5229588705416009823">Lielas vairāku spēlētāju režīma spēles</translation>
@@ -1639,6 +1643,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5398772614898833570">Reklāmu rādīšana bloķēta</translation>
 <translation id="5400836586163650660">Pelēka</translation>
 <translation id="540969355065856584">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tā drošības sertifikāts šobrīd nav derīgs. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ļaunprātīgi izmanto jūsu savienojumu.</translation>
+<translation id="5412040515238827314">Nederīgs formāts: ir jābūt rakstu sarakstam.</translation>
 <translation id="5412236728747081950">Šī vietne iegūst informāciju par jūsu interesēm no pārlūka Chrome, lai rādītu jums atbilstošākas reklāmas.</translation>
 <translation id="541416427766103491">4. izvades vieta</translation>
 <translation id="5421136146218899937">Notīrīt pārlūkošanas datus</translation>
@@ -1757,6 +1762,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="5754400531489347219">Mājdzīvnieki un savvaļas dzīvnieki</translation>
 <translation id="5759751709240058861">jūsu kameras izmantošana un kustināšana</translation>
 <translation id="5763042198335101085">Ievadiet derīgu e-pasta adresi</translation>
+<translation id="5764725887548570807">Nederīgs avota formāts.</translation>
 <translation id="5765072501007116331">Lai skatītu piegādes veidus un prasības, atlasiet adresi.</translation>
 <translation id="57689295674415555">Vai nav ievadīts virtuālās kartes numurs?</translation>
 <translation id="5776313857861697733">Prioritārs</translation>
@@ -1881,10 +1887,12 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6107012941649240045">Izsniegts</translation>
 <translation id="610911394827799129">Jūsu Google kontam var būt citu veidu pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">Skatīt starpliktuvē kopēto tekstu un attēlus</translation>
+<translation id="6118782133429281336">Avotu saraksts ir tukšs.</translation>
 <translation id="6120179357481664955">Vai iegaumēt jūsu UPI ID?</translation>
 <translation id="6124432979022149706">Chrome Enterprise savienotāji</translation>
 <translation id="6127379762771434464">Vienums ir noņemts</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Uzzināt vairāk par inkognito režīmu pārlūkā Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Faila paplašinājums ir tukšs vai nepareizi veidots.</translation>
 <translation id="6146055958333702838">Pārbaudiet vadus un atkārtoti palaidiet maršrutētājus, modemus vai citas
     izmantotās tīkla ierīces.</translation>
 <translation id="614940544461990577">Veiciet tālāk norādītās darbības.</translation>
@@ -2058,6 +2066,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="666259744093848177">(x86_64, tulkots)</translation>
 <translation id="6663846344464066639">Lūgšanā saliktas rokas</translation>
 <translation id="6665553082534466207">Trīs caurumi labajā pusē</translation>
+<translation id="6668389483194953109">Atrasts papīra izmēru nosaukums “custom”, taču parametrs “custom_size” ir tukšs vai nederīgs.</translation>
 <translation id="6671697161687535275">Vai noņemt veidlapas ieteikumu no pārlūka Chromium?</translation>
 <translation id="6683717648675961851">Darba sludinājumi</translation>
 <translation id="6685834062052613830">Izrakstieties un pabeidziet iestatīšanu</translation>
@@ -2071,6 +2080,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6696588630955820014">Cilnes kopīgošanas poga. Lai kopīgotu šo cilni, piemēram, kopīgojot saiti, izveidojot kvadrātkodu, sākot apraidi vai citā veidā, nospiediet taustiņu Enter.</translation>
 <translation id="6698381487523150993">Izveidots:</translation>
 <translation id="6702919718839027939">Prezentācija</translation>
+<translation id="6704458454638854812">Parametrs “custom_size” ir iestatīts, paredzētajam nosaukumam ir jābūt “custom”.</translation>
 <translation id="6709133671862442373">Ziņas</translation>
 <translation id="6709888928011386878">Mūzikas instrumenti</translation>
 <translation id="6710213216561001401">Iepriekšējais</translation>

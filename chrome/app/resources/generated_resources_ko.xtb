@@ -1536,7 +1536,6 @@
 <translation id="2390347491606624519">프록시에 연결할 수 없음: 다시 로그인해 주세요</translation>
 <translation id="2390782873446084770">Wi-Fi 동기화</translation>
 <translation id="2391419135980381625">표준 글꼴</translation>
-<translation id="2392163307141705938">부모님이 설정한 <ph name="IDS_SHORT_PRODUCT_NAME" /> 사용 제한 시간에 도달했습니다.</translation>
 <translation id="2392369802118427583">활성화</translation>
 <translation id="2393136602862631930">Chromebook에 <ph name="APP_NAME" /> 설정</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 약관 내용</translation>
@@ -1662,7 +1661,6 @@
 <translation id="2505669838803949807">기기 EID는 <ph name="EID_NUMBER" />입니다. 이 EID 번호를 사용하여 고객 서비스 담당자는 서비스를 활성화하도록 도와줄 수 있습니다.</translation>
 <translation id="250704661983564564">디스플레이 배치</translation>
 <translation id="2507253002925770350">티켓 삭제됨</translation>
-<translation id="2507397597949272797"><ph name="NAME" />이(가) 일시중지됨</translation>
 <translation id="2508428939232952663">Google Play 스토어 계정</translation>
 <translation id="2509495747794740764">배율 값은 10에서 200 사이의 숫자여야 합니다.</translation>
 <translation id="2509566264613697683">8배</translation>
@@ -1906,7 +1904,6 @@
 <translation id="2743387203779672305">클립보드로 복사</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">민감하거나 위험한 콘텐츠가 있는 파일입니다. 소유자에게 수정을 요청하세요.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" />이(가) 일시중지됨</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />에 로그인</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">영문 철자 및 문법 검사</translation>
@@ -4247,7 +4244,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5033137252639132982">움직임 감지 센서 사용이 허용되지 않음</translation>
 <translation id="5033266061063942743">기하학적 모양</translation>
 <translation id="5037676449506322593">모두 선택</translation>
-<translation id="5038022729081036555">내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
 <translation id="5038818366306248416">이전에 <ph name="ORIGIN" />의 확장 프로그램을 일체 허용하지 않았습니다.</translation>
 <translation id="5039696241953571917">Google 계정에 저장된 비밀번호 보기 및 관리</translation>
 <translation id="5039804452771397117">허용</translation>
@@ -4285,6 +4281,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5074761966806028321">설정을 완료하려면 여전히 권한이 필요합니다.</translation>
 <translation id="5075563999073408211">한 개 이상의 스위치로 기기를 제어합니다. 키보드 키, 게임패드 버튼 또는 전용 기기를 스위치로 사용할 수 있습니다.</translation>
 <translation id="5075910247684008552">보안 사이트에서는 안전하지 않은 콘텐츠가 기본적으로 차단됩니다.</translation>
+<translation id="5078490485380754244">기기 삭제</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5079010647467150187">기본 제공 VPN 추가...</translation>
@@ -5047,6 +5044,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 카메라 또는 마이크 녹음</translation>
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="583756221537636748">케이스</translation>
+<translation id="5840658767386246331">Google로 검색</translation>
 <translation id="5840680448799937675">항상 오프라인으로 파일 공유</translation>
 <translation id="5841270259333717135">이더넷 구성</translation>
 <translation id="5842497610951477805">블루투스 사용</translation>
@@ -6537,6 +6535,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7307129035224081534">일시중지됨</translation>
 <translation id="7308643132139167865">웹사이트 언어</translation>
 <translation id="7310598146671372464">로그인하지 못했습니다. 서버가 지정된 Kerberos 암호화 유형을 지원하지 않습니다. 관리자에게 문의하세요.</translation>
+<translation id="7311089766378749632"><ph name="SITE_NAME" /> 사이트 읽기 및 변경 요청</translation>
 <translation id="7312210124139670355">관리자가 eSIM을 재설정하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="7320213904474460808">기본 네트워크 설정</translation>
 <translation id="7321545336522791733">서버에 연결할 수 없음</translation>
@@ -7130,6 +7129,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7869655448736341731">모두</translation>
 <translation id="7870730066603611552">설정 후 동기화 옵션 검토</translation>
 <translation id="7870790288828963061">새로운 버전의 Kiosk 앱을 찾을 수 없습니다. 업데이트할 대상이 없습니다. USB 메모리를 제거하세요.</translation>
+<translation id="7871049986386271121">이 사이트에서 항상 사용</translation>
 <translation id="7871109039747854576"><ph name="COMMA" /> 및 <ph name="PERIOD" /> 키를 사용하여 후보 목록을 페이지에 표시</translation>
 <translation id="787268756490971083">사용 안함</translation>
 <translation id="7872758299142009420">중첩된 그룹이 너무 많음: <ph name="ERROR_LINE" /></translation>
@@ -7284,7 +7284,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8013993649590906847">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
 <translation id="8014154204619229810">업데이터가 현재 실행 중입니다. 잠시 후에 새로고침하여 다시 확인해 주세요.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />을(를) 이전에 설치한 버전으로 되돌릴 수 없습니다. 대신 기기를 Powerwash해 보세요.</translation>
-<translation id="8015163965024115122">부모님이 설정한 <ph name="IDS_SHORT_PRODUCT_NAME" /> 또는 <ph name="IDS_SHORT_PRODUCT_NAME" /> 앱 이용 시간제한에 도달했습니다.</translation>
 <translation id="8016266267177410919">임시 저장소</translation>
 <translation id="8017176852978888182">Linux 공유 디렉터리</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8424,7 +8423,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />최적의 환경에서 이용하려면 <ph name="DEVICE_OS" />을 내부 디스크에 설치하세요. 나중에 로그인 화면에서 설치할 수도 있습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />아직 설치할 준비가 되지 않았다면 USB에서 실행하여 사용해 볼 수도 있습니다. 기존 OS와 데이터는 그대로 유지되지만 저장용량과 성능이 제한될 수 있습니다<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">고정 탭으로 열기</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" />이(가) 일시중지됨</translation>
 <translation id="9124003689441359348">저장한 비밀번호가 여기에 표시됩니다.</translation>
 <translation id="9126149354162942022">커서 색상</translation>
 <translation id="9128317794749765148">설정을 완료할 수 없음</translation>

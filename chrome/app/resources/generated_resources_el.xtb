@@ -1535,7 +1535,6 @@
 <translation id="2390347491606624519">Δεν είναι δυνατή η σύνδεση στον διακομιστή μεσολάβησης, συνδεθείτε ξανά</translation>
 <translation id="2390782873446084770">Συγχρονισμός Wi-Fi</translation>
 <translation id="2391419135980381625">Τυπική γραμματοσειρά</translation>
-<translation id="2392163307141705938">Συμπλήρωσες το χρονικό όριο που έχει θέσει ο γονέας σου για το <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Ενεργοποίηση</translation>
 <translation id="2393136602862631930">Ρύθμιση της εφαρμογής <ph name="APP_NAME" /> στο Chromebook</translation>
 <translation id="2393313392064891208">Περιεχόμενα Όρων Google ChromeOS Flex</translation>
@@ -1661,7 +1660,6 @@
 <translation id="2505669838803949807">Ο αριθμός EID της συσκευής σας είναι <ph name="EID_NUMBER" />. Ένας αντιπρόσωπος της εξυπηρέτησης πελατών μπορεί να χρησιμοποιήσει τον αριθμό EID για να σας βοηθήσει να ενεργοποιήσετε την υπηρεσία.</translation>
 <translation id="250704661983564564">Διάταξη οθόνης</translation>
 <translation id="2507253002925770350">Το εισιτήριο καταργήθηκε.</translation>
-<translation id="2507397597949272797">Η εφαρμογή <ph name="NAME" /> τέθηκε σε παύση</translation>
 <translation id="2508428939232952663">Λογαριασμός Google Play Store</translation>
 <translation id="2509495747794740764">Η κλίμακα πρέπει να είναι αριθμός μεταξύ του 10 και του 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1905,7 +1903,6 @@
 <translation id="2743387203779672305">Αντιγραφή στο πρόχειρο</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">Αυτό το αρχείο έχει ευαίσθητο ή επικίνδυνο περιεχόμενο. Ζητήστε από τον κάτοχο να το διορθώσει.</translation>
-<translation id="2748061034695037846">Το <ph name="DOMAIN" /> τέθηκε σε παύση</translation>
 <translation id="2749756011735116528">Συνδεθείτε στο <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Γραμματικός Έλεγχος Μαζί με τον Ορθογραφικό</translation>
@@ -4248,7 +4245,6 @@
 <translation id="5033137252639132982">Δεν επιτρέπεται να χρησιμοποιούν αισθητήρες κίνησης</translation>
 <translation id="5033266061063942743">Γεωμετρικά σχήματα</translation>
 <translation id="5037676449506322593">Επιλογή Όλων</translation>
-<translation id="5038022729081036555">Μπορείτε να την χρησιμοποιήσετε αύριο για <ph name="TIME_LIMIT" /> .</translation>
 <translation id="5038818366306248416">Είχατε επιλέξει να μην επιτρέπονται επεκτάσεις στη σελίδα <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Προβολή και διαχείριση αποθηκευμένων κωδικών πρόσβασης στον Λογαριασμό σας Google</translation>
 <translation id="5039804452771397117">Επιτρέπεται</translation>
@@ -4286,6 +4282,7 @@
 <translation id="5074761966806028321">Απαιτείται ακόμη άδεια για την ολοκλήρωση της ρύθμισης</translation>
 <translation id="5075563999073408211">Ελέγξτε τη συσκευή σας με έναν ή περισσότερους διακόπτες. Οι διακόπτες μπορεί να είναι πλήκτρα πληκτρολογίου, κουμπιά gamepad ή ειδικές συσκευές.</translation>
 <translation id="5075910247684008552">Το μη ασφαλές περιεχόμενο αποκλείεται από προεπιλογή στους ασφαλείς ιστοτόπους</translation>
+<translation id="5078490485380754244">Διαγραφή συσκευής</translation>
 <translation id="5078638979202084724">Δημιουργία σελιδοδείκτη για όλες τις καρτέλες</translation>
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5079010647467150187">Προσθήκη ενσωματωμένου VPN…</translation>
@@ -5049,6 +5046,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Εγγραφή κάμερας ή μικροφώνου</translation>
 <translation id="583673505367439042">Οι ιστότοποι μπορούν να ζητούν να επεξεργαστούν αρχεία και φακέλους στη συσκευή σας</translation>
 <translation id="583756221537636748">Θήκη</translation>
+<translation id="5840658767386246331">Αναζήτηση με το Google</translation>
 <translation id="5840680448799937675">Θα γίνεται πάντα κοινοποίηση των αρχείων εκτός σύνδεσης.</translation>
 <translation id="5841270259333717135">Διαμόρφωση ethernet</translation>
 <translation id="5842497610951477805">Ενεργοποίηση Bluetooth</translation>
@@ -6539,6 +6537,7 @@
 <translation id="7307129035224081534">Σε παύση</translation>
 <translation id="7308643132139167865">Γλώσσες ιστοτόπου</translation>
 <translation id="7310598146671372464">Η σύνδεση απέτυχε. Ο διακομιστής δεν υποστηρίζει τους καθορισμένους τύπους κρυπτογράφησης Kerberos. Επικοινωνήστε με τον διαχειριστή σας.</translation>
+<translation id="7311089766378749632">Αίτημα για ανάγνωση και αλλαγή του <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Ο διαχειριστής σας επαναφέρει την eSIM. Ενδέχεται να χρειαστούν μερικά λεπτά.</translation>
 <translation id="7320213904474460808">Προεπιλογή δικτύου</translation>
 <translation id="7321545336522791733">Μη προσβάσιμος διακομιστής</translation>
@@ -7131,6 +7130,7 @@
 <translation id="7869655448736341731">Οτιδήποτε</translation>
 <translation id="7870730066603611552">Έλεγχος επιλογών συγχρονισμού μετά τη ρύθμιση</translation>
 <translation id="7870790288828963061">Δεν βρέθηκαν εφαρμογές kiosk με νεότερη έκδοση. Δεν υπάρχουν στοιχεία προς ενημέρωση. Αφαιρέστε τη συσκευή USB.</translation>
+<translation id="7871049986386271121">Πάντα σε αυτόν τον ιστότοπο</translation>
 <translation id="7871109039747854576">Χρησιμοποιήστε τα πλήκτρα <ph name="COMMA" /> και <ph name="PERIOD" /> για αλλαγή σελίδας σε μια λίστα υποψηφίων</translation>
 <translation id="787268756490971083">Ανενεργό</translation>
 <translation id="7872758299142009420">Πάρα πολλές ενσωματωμένες ομάδες: <ph name="ERROR_LINE" /></translation>
@@ -7285,7 +7285,6 @@
 <translation id="8013993649590906847">Εάν μια εικόνα δεν έχει κάποια χρήσιμη περιγραφή, το Chrome θα προσπαθήσει να σας προσφέρει μια περιγραφή. Για τη δημιουργία περιγραφών, αποστέλλονται εικόνες στην Google.</translation>
 <translation id="8014154204619229810">Το πρόγραμμα ενημέρωσης εκτελείται. Κάντε ανανέωση σε ένα λεπτό για να ελέγξετε ξανά.</translation>
 <translation id="8014206674403687691">Το <ph name="IDS_SHORT_PRODUCT_NAME" /> δεν μπορεί να επιστρέψει σε προηγούμενη εγκατεστημένη έκδοση. Δοκιμάστε να χρησιμοποιήσετε ξανά το Powerwash για τη συσκευή σας.</translation>
-<translation id="8015163965024115122">Συμπληρώθηκε το όριο που έθεσε ο γονέας σου για τις εφαρμογές <ph name="IDS_SHORT_PRODUCT_NAME" /> ή <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="8016266267177410919">Προσωρινός αποθηκευτικός χώρος</translation>
 <translation id="8017176852978888182">Κοινόχρηστοι κατάλογοι Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8423,7 +8422,6 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Για την καλύτερη δυνατή εμπειρία, εγκαταστήστε το <ph name="DEVICE_OS" /> στον εσωτερικό δίσκο. Μπορείτε επίσης να το εγκαταστήσετε αργότερα από την οθόνη σύνδεσης.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Εάν δεν είστε έτοιμοι για την εγκατάσταση, μπορείτε να το εκτελέσετε μέσω USB για να το δοκιμάσετε. Με αυτόν τον τρόπο, θα διατηρήσετε το υπάρχον λειτουργικό σύστημα και τα δεδομένα σας, αλλά μπορεί να αντιμετωπίσετε περιορισμούς αποθηκευτικού χώρου και απόδοσης.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Άνοιγμα ως καρφιτσωμένης καρτέλας</translation>
-<translation id="9122176249172999202">Η εφαρμογή <ph name="IDS_SHORT_PRODUCT_NAME" /> τέθηκε σε παύση</translation>
 <translation id="9124003689441359348">Οι αποθηκευμένοι κωδικοί πρόσβασής σας θα εμφανίζονται εδώ</translation>
 <translation id="9126149354162942022">Χρώμα δείκτη</translation>
 <translation id="9128317794749765148">Δεν ήταν δυνατή η ολοκλήρωση της ρύθμισης</translation>

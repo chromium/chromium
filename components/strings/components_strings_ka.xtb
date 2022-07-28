@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">მოწყობილობის ID:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt; ხომ არ იგულისხმეთ?</translation>
 <translation id="3678029195006412963">მოთხოვნის ხელმოწერა ვერ მოხერხდა</translation>
+<translation id="3678342917559046352">გაფართოება არასწორია: მოსალოდნელია მნიშვნელობა ერთ-ერთი შემდეგი ფორმით: &lt;extension_id&gt; ან &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">გვერდის ახალ ინკოგნიტო ფანჯარაში გახსნა (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3701427423622901115">გადაყენება გაცნობიერებულია.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">ძიების ფუნქციები</translation>
 <translation id="4644670975240021822">უკუმიმდევრობა ნაბეჭდი მხარით დაღმა</translation>
 <translation id="4646534391647090355">ახლავე გადასვლა</translation>
+<translation id="4648262692072505866">ჰეში უნდა იყოს SHA-256 ფორმატის.</translation>
 <translation id="4652266463001779298">დაუშვებელია</translation>
 <translation id="4653167719759882810">გაერთიანების და შეძენის ოპერაციები</translation>
 <translation id="4658638640878098064">ზედა მარცხენა ნაწილის დასტეპლერება</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" />-დან</translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, მოსაძიებლად დააჭირეთ Tab-ს, შემდეგ Enter-ს</translation>
 <translation id="4930153903256238152">დიდი მოცულობის</translation>
+<translation id="4936134414789135531">ჩასმული <ph name="VALUE_NAME" /> ვერ მოიძებნა.</translation>
 <translation id="4936675324097895694">ფინანსები</translation>
 <translation id="4940163644868678279">ინკოგნიტო რეჟიმი Chrome-ში</translation>
 <translation id="4943872375798546930">შედეგები არ არის</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">ლანგარი 13</translation>
 <translation id="5216942107514965959">ბოლო ვიზიტი იყო დღეს</translation>
+<translation id="5217759126664161410">პროტოკოლის ფორმატი არასწორია.</translation>
 <translation id="5222812217790122047">აუცილებელია ელფოსტის მითითება</translation>
 <translation id="5228404122310299359">საწვეულებო და სადღესასწაულო ინვენტარი</translation>
 <translation id="5229588705416009823">მასობრივად მრავალმოთამაშიანი თამაშები</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">რეკლამა დაიბლოკა</translation>
 <translation id="5400836586163650660">ნაცრისფერი</translation>
 <translation id="540969355065856584">ეს სერვერი ვერ ამტკიცებს, რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი ამჟამად არასწორია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის ხელში ჩაგდებით.</translation>
+<translation id="5412040515238827314">ფორმატი არასწორია: მოსალოდნელი იყო ნიმუშების სია.</translation>
 <translation id="5412236728747081950">ეს საიტი Chrome-იდან იღებს ინფორმაციას თქვენი ინტერესების შესახებ, უფრო შესაფერისი რეკლამა რომ შემოგთავაზოთ</translation>
 <translation id="541416427766103491">სტეკერი 4</translation>
 <translation id="5421136146218899937">დათვალიერების მონაცემების გასუფთავება…</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">შინაური და გარეული ცხოველები</translation>
 <translation id="5759751709240058861">კამერის გამოყენება და გადაადგილება</translation>
 <translation id="5763042198335101085">შეიყვანეთ ელფოსტის სწორი მისამართი</translation>
+<translation id="5764725887548570807">წყაროს ფორმატი არასწორია.</translation>
 <translation id="5765072501007116331">მიწოდების მეთოდებისა და მოთხოვნების სანახავად აირჩიეთ მისამართი</translation>
 <translation id="57689295674415555">ვირტუალური ბარათის ნომერი არ არის შევსებული?</translation>
 <translation id="5776313857861697733">პრიორიტეტული</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">გაცემულია</translation>
 <translation id="610911394827799129">თქვენს Google ანგარიშში შეიძლება ინახებოდეს სხვა ტიპის დათვალიერების ისტორიაც, რომელიც ხელმისაწვდომია მისამართზე: <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">გაცვლის ბუფერში კოპირებული ტექსტისა და სურათების ნახვა</translation>
+<translation id="6118782133429281336">წყაროების სია ცარიელია.</translation>
 <translation id="6120179357481664955">გსურთ თქვენი UPI ID-ს დამახსოვრება?</translation>
 <translation id="6124432979022149706">Chrome Enterprise მაერთებლები</translation>
 <translation id="6127379762771434464">ერთეული ამოიშალა</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />შეიტყვეთ მეტი ინკოგნიტო რეჟიმის შესახებ Chrome-ში<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">ფაილის გაფართოება ცარიელი ან არასწორად ფორმირებულია.</translation>
 <translation id="6146055958333702838">შეამოწმეთ კაბელები და გადატვირთეთ ყველა როუტერი, მოდემი ან
     სხვა ქსელური მოწყობილობა, რომელსაც იყენებთ.</translation>
 <translation id="614940544461990577">ცადეთ:</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64 ნათარგმნი)</translation>
 <translation id="6663846344464066639">გადაჯვარედინებული ხელები</translation>
 <translation id="6665553082534466207">სამმაგად გახვრეტა მარჯვნივ</translation>
+<translation id="6668389483194953109">ნაპოვნია ქაღალდის ზომის სახელი „custom“, თუმცა „custom_size“ თვისება ცარიელი ან არასწორია.</translation>
 <translation id="6671697161687535275">ამოიშალოს ფორმებისთვის განკუთვნილი შემოთავაზება Chromium-იდან?</translation>
 <translation id="6683717648675961851">ვაკანსიების სია</translation>
 <translation id="6685834062052613830">გამოდით სისტემიდან და დაასრულეთ მოწყობილობის დაყენება</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">ამ ჩანართის გაზიარების ღილაკი, დააჭირეთ Enter-ს ამ ჩანართის გასაზიარებლად ისეთი რამეების მეშვეობით, როგორიცაა ბმულის გაზიარება, QR კოდის შექმნა, ტრანსლირება და სხვა</translation>
 <translation id="6698381487523150993">შექმნილია:</translation>
 <translation id="6702919718839027939">პრეზენტირება</translation>
+<translation id="6704458454638854812">თვისება „custom_size“ განსაზღვრულია, მოსალოდნელი სახელია „custom“.</translation>
 <translation id="6709133671862442373">ახალი ამბები</translation>
 <translation id="6709888928011386878">მუსიკალური ინსტრუმენტები</translation>
 <translation id="6710213216561001401">წინა</translation>

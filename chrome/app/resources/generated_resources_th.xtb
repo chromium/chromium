@@ -1334,6 +1334,7 @@
 <translation id="2241053333139545397">อ่านและเปลี่ยนแปลงข้อมูลของคุณในหลายเว็บไซต์</translation>
 <translation id="2241634353105152135">เพียงครั้งเดียว</translation>
 <translation id="2242687258748107519">ข้อมูลไฟล์</translation>
+<translation id="2245296100676446525">เปิดการซิงค์เพื่อดูบุ๊กมาร์ก รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์นี้รวมถึงทุกที่ที่ซิงค์อยู่</translation>
 <translation id="2245603955208828424">ใช้แป้นลูกศรเพื่อเลื่อนผ่านรายการต่างๆ ทีละตัวอักษร</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> จะอัปเดตอัตโนมัติในเบื้องหลังเพื่อให้คุณได้ใช้ฟีเจอร์ล่าสุดและปรับปรุงความปลอดภัย คุณตรวจสอบค่ากำหนดการอัปเดตได้ในการตั้งค่า</translation>
 <translation id="2246549592927364792">รับคำอธิบายรูปภาพจาก Google ไหม</translation>
@@ -1520,7 +1521,6 @@
 <translation id="2390347491606624519">เชื่อมต่อพร็อกซีไม่สำเร็จ โปรดลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="2390782873446084770">การซิงค์ Wi-Fi</translation>
 <translation id="2391419135980381625">แบบอักษรมาตรฐาน</translation>
-<translation id="2392163307141705938">คุณใช้งาน <ph name="IDS_SHORT_PRODUCT_NAME" /> ถึงขีดจำกัดเวลาที่ผู้ปกครองตั้งไว้แล้ว</translation>
 <translation id="2392369802118427583">เปิดใช้งาน</translation>
 <translation id="2393136602862631930">ตั้งค่า <ph name="APP_NAME" /> ใน Chromebook</translation>
 <translation id="2393313392064891208">เนื้อหาข้อกำหนดของ Google Chrome OS Flex</translation>
@@ -1646,7 +1646,6 @@
 <translation id="2505669838803949807">EID ของอุปกรณ์คือ <ph name="EID_NUMBER" /> ตัวแทนฝ่ายบริการลูกค้าจะใช้หมายเลข EID เพื่อช่วยคุณเปิดใช้งานบริการ</translation>
 <translation id="250704661983564564">การจัดตำแหน่งจอแสดงผล</translation>
 <translation id="2507253002925770350">นำตั๋วออกแล้ว</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> หยุดชั่วคราว</translation>
 <translation id="2508428939232952663">บัญชี Google Play Store</translation>
 <translation id="2509495747794740764">จำนวนขนาดต้องเป็นตัวเลขระหว่าง 10 และ 200</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1890,7 +1889,6 @@
 <translation id="2743387203779672305">คัดลอกไว้ที่คลิปบอร์ด</translation>
 <translation id="2745080116229976798">ตัวย่อยที่เหมาะสมของ Microsoft</translation>
 <translation id="2747266560080989517">ไฟล์นี้มีเนื้อหาที่ละเอียดอ่อนหรือเป็นอันตราย โปรดขอให้เจ้าของไฟล์แก้ไข</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> หยุดชั่วคราว</translation>
 <translation id="2749756011735116528">ลงชื่อเข้าใช้ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">ตรวจสอบไวยากรณ์และตัวสะกด</translation>
@@ -4232,7 +4230,6 @@
 <translation id="5033137252639132982">ไม่ได้รับอนุญาตให้ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหว</translation>
 <translation id="5033266061063942743">รูปทรงเรขาคณิต</translation>
 <translation id="5037676449506322593">เลือก&amp;ทั้งหมด</translation>
-<translation id="5038022729081036555">พรุ่งนี้คุณจะใช้แอปได้ <ph name="TIME_LIMIT" /></translation>
 <translation id="5038818366306248416">คุณเคยเลือกที่จะไม่อนุญาตให้ใช้งานส่วนขยายใดๆ บน <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">ดูและจัดการรหัสผ่านที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="5039804452771397117">อนุญาต</translation>
@@ -4270,6 +4267,7 @@
 <translation id="5074761966806028321">ต้องมีการให้สิทธิ์เพื่อตั้งค่าให้เสร็จสมบูรณ์</translation>
 <translation id="5075563999073408211">ควบคุมอุปกรณ์ด้วยสวิตช์อย่างน้อย 1 ตัว โดยสวิตช์อาจเป็นแป้นบนแป้นพิมพ์ ปุ่มบนเกมแพด หรืออุปกรณ์เฉพาะก็ได้</translation>
 <translation id="5075910247684008552">เว็บไซต์ที่มีความปลอดภัยจะบล็อกเนื้อหาที่ไม่ปลอดภัยโดยค่าเริ่มต้น</translation>
+<translation id="5078490485380754244">ไม่จำอุปกรณ์</translation>
 <translation id="5078638979202084724">บุ๊กมาร์กแท็บทั้งหมด</translation>
 <translation id="5078796286268621944">PIN ไม่ถูกต้อง</translation>
 <translation id="5079010647467150187">เพิ่ม VPN ในตัว…</translation>
@@ -7267,7 +7265,6 @@
 <translation id="8013993649590906847">หากรูปภาพไม่มีคำอธิบายที่เป็นประโยชน์ Chrome จะพยายามใส่คำอธิบายให้คุณ รูปภาพจะส่งมายัง Google เพื่อสร้างคำอธิบาย</translation>
 <translation id="8014154204619229810">โปรแกรมอัปเดตกำลังทำงาน โปรดรีเฟรชในอีก 1 นาทีเพื่อตรวจสอบอีกครั้ง</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ไม่สามารถเปลี่ยนกลับไปเป็นเวอร์ชันที่ติดตั้งไว้ก่อนหน้านี้ได้ โปรดลองอีกครั้งเพื่อ Powerwash อุปกรณ์ของคุณ</translation>
-<translation id="8015163965024115122">การใช้งาน <ph name="IDS_SHORT_PRODUCT_NAME" /> หรือแอป <ph name="IDS_SHORT_PRODUCT_NAME" /> ถึงขีดจำกัดเวลาที่ผู้ปกครองกำหนดไว้แล้ว</translation>
 <translation id="8016266267177410919">พื้นที่เก็บข้อมูลชั่วคราว</translation>
 <translation id="8017176852978888182">ไดเรกทอรีที่แชร์ใน Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8407,7 +8404,6 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />ติดตั้ง <ph name="DEVICE_OS" /> ในดิสก์ภายในเพื่อให้ได้รับประสบการณ์การใช้งานที่ดีที่สุด คุณอาจติดตั้งภายหลังจากหน้าจอการเข้าสู่ระบบก็ได้<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />หากยังไม่พร้อมติดตั้ง คุณจะลองเรียกใช้งานจาก USB ดูก่อนก็ได้ วิธีนี้จะเก็บระบบปฏิบัติการและข้อมูลที่มีอยู่เอาไว้ แต่คุณอาจเห็นว่ามีขีดจำกัดของพื้นที่เก็บข้อมูลและประสิทธิภาพในการทำงาน<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">เปิดเป็นแท็บที่ปักหมุดไว้</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> หยุดชั่วคราว</translation>
 <translation id="9124003689441359348">รหัสผ่านที่บันทึกไว้จะแสดงที่นี่</translation>
 <translation id="9126149354162942022">สีของเคอร์เซอร์</translation>
 <translation id="9128317794749765148">ตั้งค่าไม่สำเร็จ</translation>

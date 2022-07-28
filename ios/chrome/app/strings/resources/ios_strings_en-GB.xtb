@@ -25,6 +25,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1112015203684611006">Printing failed.</translation>
 <translation id="1125564390852150847">Create new tab.</translation>
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
+<translation id="1135212215217513471">Get Chrome for iOS</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
 <translation id="1154984953698510061">See other tabs</translation>
@@ -113,6 +114,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1832848789136765277">To make sure that you can always access your sync data, verify that it's you</translation>
 <translation id="1870148520156231997">Reveal password</translation>
 <translation id="1872096359983322073">Torch</translation>
+<translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1923342640370224680">Last Hour</translation>
 <translation id="1930989359703290198">Your organisation allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2139867232736819575">Search for text that you copied</translation>
 <translation id="214201757571129614">Sign in…</translation>
 <translation id="2149973817440762519">Edit Bookmark</translation>
+<translation id="2155145621546387786">Share Chrome</translation>
 <translation id="2175927920773552910">QR code</translation>
 <translation id="2218443599109088993">Zoom out</translation>
 <translation id="2230173723195178503">Web page loaded</translation>

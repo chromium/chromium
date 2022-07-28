@@ -1346,6 +1346,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2241053333139545397">Read and change your data on a number of websites</translation>
 <translation id="2241634353105152135">Just once</translation>
 <translation id="2242687258748107519">File Info</translation>
+<translation id="2245296100676446525">Turn on sync to get your bookmarks, passwords, history and more on this device and anywhere else that you're syncing.</translation>
 <translation id="2245603955208828424">Use the arrow keys to move through items letter by letter</translation>
 <translation id="2246129643805925002">Your <ph name="DEVICE_TYPE" /> updates automatically in the background to give you the latest features and security improvements. You can review update preferences in Settings.</translation>
 <translation id="2246549592927364792">Get image descriptions from Google?</translation>
@@ -1535,7 +1536,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2390347491606624519">Can’t connect to proxy; please sign in again</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Standard font</translation>
-<translation id="2392163307141705938">You reached the time limit that your parent set for <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Activate</translation>
 <translation id="2393136602862631930">Set up <ph name="APP_NAME" /> on your Chromebook</translation>
 <translation id="2393313392064891208">Google Chrome OS Flex terms contents</translation>
@@ -1661,7 +1661,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2505669838803949807">Your device EID is <ph name="EID_NUMBER" />. A customer service rep can use the EID number to help you activate the service.</translation>
 <translation id="250704661983564564">Display arrangement</translation>
 <translation id="2507253002925770350">Ticket removed</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> is paused</translation>
 <translation id="2508428939232952663">Google Play Store Account</translation>
 <translation id="2509495747794740764">Scale amount must be a number between 10 and 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1905,7 +1904,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2743387203779672305">Copy to clipboard</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">This file has sensitive or dangerous content. Ask its owner to fix it.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> is paused</translation>
 <translation id="2749756011735116528">Sign in to <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Check Grammar With Spelling</translation>
@@ -4248,7 +4246,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5033137252639132982">Not allowed to use motion sensors</translation>
 <translation id="5033266061063942743">Geometric shapes</translation>
 <translation id="5037676449506322593">Select All</translation>
-<translation id="5038022729081036555">You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
 <translation id="5038818366306248416">You previously chose not to allow any extensions on <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">View and manage saved passwords in your Google Account</translation>
 <translation id="5039804452771397117">Allow</translation>
@@ -4286,6 +4283,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5074761966806028321">Permission still needed to complete setup</translation>
 <translation id="5075563999073408211">Control your device with one or more switches. Switches can be keyboard keys, gamepad buttons or dedicated devices.</translation>
 <translation id="5075910247684008552">Insecure content is blocked by default on secure sites</translation>
+<translation id="5078490485380754244">Forget device</translation>
 <translation id="5078638979202084724">Bookmark all tabs</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5079010647467150187">Add built-in VPN…</translation>
@@ -7287,7 +7285,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8014154204619229810">The updater is currently running. Refresh in a minute to check again.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> is unable to revert to the previously installed version. Please try again to Powerwash your device.</translation>
-<translation id="8015163965024115122">The limit on <ph name="IDS_SHORT_PRODUCT_NAME" /> or <ph name="IDS_SHORT_PRODUCT_NAME" /> apps that your parent set ran out.</translation>
 <translation id="8016266267177410919">Temporary storage</translation>
 <translation id="8017176852978888182">Linux shared directories</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8427,7 +8424,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />For the best experience, install <ph name="DEVICE_OS" /> to your internal disk. You can also install it later from the login screen.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />If you're not ready to install, you can run from USB to try it out. This will keep your existing OS and data, but you may see storage and performance limits.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Open as pinned tab</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> is paused</translation>
 <translation id="9124003689441359348">Saved passwords will appear here</translation>
 <translation id="9126149354162942022">Cursor colour</translation>
 <translation id="9128317794749765148">Setup couldn't complete</translation>

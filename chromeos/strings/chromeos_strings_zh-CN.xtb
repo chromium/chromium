@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">历史记录</translation>
 <translation id="1645954272419197032">请确认设备信息</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
+<translation id="1664796644829245314">预览“<ph name="PREVIEW_OBJECT" />”</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
 <translation id="1672499492233627739">摄像头视频画面</translation>
 <translation id="1676557873873341166">正在录制视频</translation>
@@ -799,6 +800,7 @@
 <translation id="7978412674231730200">私有密钥</translation>
 <translation id="7982789257301363584">网络</translation>
 <translation id="7994702968232966508">EAP 方法</translation>
+<translation id="8018928621986160031">已保存到“<ph name="FILE_LOCATION" />”</translation>
 <translation id="802154636333426148">下载失败</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">启用自动颜色模式</translation>

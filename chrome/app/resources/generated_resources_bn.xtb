@@ -1536,7 +1536,6 @@
 <translation id="2390347491606624519">প্রক্সি সার্ভারে কানেক্ট করা যাচ্ছে না, আবার সাইন-ইন করুন</translation>
 <translation id="2390782873446084770">ওয়াই-ফাই সিঙ্ক</translation>
 <translation id="2391419135980381625">মানক হরফ</translation>
-<translation id="2392163307141705938"><ph name="IDS_SHORT_PRODUCT_NAME" />-এর জন্য আপনার অভিভাবক যে সময়সীমা সেট করেছেন তা পার হয়ে গেছে।</translation>
 <translation id="2392369802118427583">সক্রিয় করুন</translation>
 <translation id="2393136602862631930">আপনার Chromebook-এ <ph name="APP_NAME" /> সেট-আপ করুন</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex-এর শর্তাবলী সংক্রান্ত কন্টেন্ট</translation>
@@ -1662,7 +1661,6 @@
 <translation id="2505669838803949807">আপনার ডিভাইসের EID হল <ph name="EID_NUMBER" />। গ্রাহক পরিষেবা প্রতিনিধি এই EID নম্বর ব্যবহার করে পরিষেবা চালু করার ব্যাপারে আপনাকে সাহায্য করতে পারেন।</translation>
 <translation id="250704661983564564">ডিসপ্লে সেট করা</translation>
 <translation id="2507253002925770350">টিকিট সরানো হয়েছে</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> পজ করা আছে</translation>
 <translation id="2508428939232952663">Google Play Store অ্যাকাউন্ট</translation>
 <translation id="2509495747794740764">স্কেলের মাপকে অবশ্যই ১০ থেকে ১০০ এর মধ্যের একটি সংখ্যা হতে হবে।</translation>
 <translation id="2509566264613697683">৮x</translation>
@@ -1906,7 +1904,6 @@
 <translation id="2743387203779672305">ক্লিপবোর্ডে কপি করুন</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">এই ফাইলে সংবেদনশীল বা বিপজ্জনক কন্টেন্ট আছে। ফাইলের মালিককে সেটি ঠিক করতে বলুন।</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> পজ করা আছে</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" />এ সাইন-ইন করুন</translation>
 <translation id="2749836841884031656">সিম (SIM)</translation>
 <translation id="2749881179542288782">বানান সহ ব্যাকরণ চেক করুন</translation>
@@ -4250,7 +4247,6 @@
 <translation id="5033137252639132982">মোশন সেন্সর ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="5033266061063942743">জ্যামিতিক আকৃতি</translation>
 <translation id="5037676449506322593">সকল বেছে নিন</translation>
-<translation id="5038022729081036555">তুমি আগামীকাল এটি <ph name="TIME_LIMIT" /> ব্যবহার করতে পারবে।</translation>
 <translation id="5038818366306248416"><ph name="ORIGIN" />-এ সমস্ত এক্সটেনশনে অনুমতি না দেওয়ার বিষয়টি আপনি আগে বেছে নিয়েছেন</translation>
 <translation id="5039696241953571917">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড দেখুন এবং ম্যানেজ করুন</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
@@ -4288,6 +4284,7 @@
 <translation id="5074761966806028321">সেট-আপ সম্পূর্ণ করতে এখনও অনুমতি প্রয়োজন</translation>
 <translation id="5075563999073408211">এক বা একাধিক সুইচের মাধ্যমে আপনার ডিভাইস নিয়ন্ত্রণ করুন। কীবোর্ডের কী, গেমপ্যাডের বোতাম বা নির্দিষ্ট কোনও ডিভাইসও সুইচ হিসেবে ব্যবহার করা যেতে পারে।</translation>
 <translation id="5075910247684008552">যেসব কন্টেন্ট নিরাপদ নয় সেগুলি নিরাপদ সাইটে ডিফল্ট হিসেবেই ব্লক করে দেওয়া হয়</translation>
+<translation id="5078490485380754244">ডিভাইসটি ভুলে যান</translation>
 <translation id="5078638979202084724">সকল ট্যাব বুকমার্ক করুন</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5079010647467150187">বিল্ট-ইন ভিপিএন যোগ করুন...</translation>
@@ -5051,6 +5048,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ক্যামেরা বা মাইক্রোফোন রেকর্ডিং</translation>
 <translation id="583673505367439042">সাইট আপনার ডিভাইসের ফাইল ও ফোল্ডার এডিট করার অনুমতি চাইতে পারে</translation>
 <translation id="583756221537636748">কেস</translation>
+<translation id="5840658767386246331">Google-এ সার্চ করুন</translation>
 <translation id="5840680448799937675">সর্বদা ফাইল অফলাইনে শেয়ার করা হবে</translation>
 <translation id="5841270259333717135">ইথারনেট কনফিগার করুন</translation>
 <translation id="5842497610951477805">ব্লুটুথ সক্ষম</translation>
@@ -6544,6 +6542,7 @@
 <translation id="7307129035224081534">থামানো হয়েছে</translation>
 <translation id="7308643132139167865">ওয়েবসাইটের ভাষা</translation>
 <translation id="7310598146671372464">লগ-ইন করা সম্ভব হয়নি। সার্ভারটি নির্দিষ্ট Kerberos এনক্রিপশনের ধরনগুলি সমর্থন করে না। আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
+<translation id="7311089766378749632"><ph name="SITE_NAME" /> পড়ার এবং পরিবর্তন করার জন্য অনুরোধ করা হচ্ছে</translation>
 <translation id="7312210124139670355">আপনার অ্যাডমিনিস্ট্রেটর আপনার ই-সিম রিসেট করছেন। এতে কয়েক মিনিট সময় লাগতে পারে।</translation>
 <translation id="7320213904474460808">ডিফল্ট নেটওয়ার্ক</translation>
 <translation id="7321545336522791733">সার্ভারে সংযোগ করা যাচ্ছে না</translation>
@@ -7135,6 +7134,7 @@
 <translation id="7869655448736341731">যেকোনও</translation>
 <translation id="7870730066603611552">সেট-আপের পর সিঙ্কের বিকল্পগুলির রিভিউ</translation>
 <translation id="7870790288828963061">এর থেকে আরও নতুন ভার্সনের কোনও কিয়স্ক অ্যাপ্লিকেশন পাওয়া যায়নি৷ USB স্টিক সরান৷</translation>
+<translation id="7871049986386271121">সর্বদা এই সাইটে</translation>
 <translation id="7871109039747854576">প্রার্থী তালিকা পৃষ্ঠাতে সূচীবদ্ধ করার জন্য <ph name="COMMA" /> এবং <ph name="PERIOD" /> কী ব্যবহার করুন</translation>
 <translation id="787268756490971083">বন্ধ করা আছে</translation>
 <translation id="7872758299142009420">খুব বেশি সংখ্যক নেস্টেড গ্রুপ: রয়েছে <ph name="ERROR_LINE" /></translation>
@@ -7289,7 +7289,6 @@
 <translation id="8013993649590906847">যদি ছবিতে প্রয়োজনীয় বিবরণ দেওয়া না থাকে, তাহলে Chrome আপনাকে একটি বিবরণ দেওয়ার চেষ্টা করবে। বিবরণ তৈরির জন্য, Google-এ ছবি পাঠানো হয়।</translation>
 <translation id="8014154204619229810">আপডেটার চলছে। আবার চেক করতে মিনিটখানেকের মধ্যে রিফ্রেশ করুন।</translation>
 <translation id="8014206674403687691">ইনস্টল করা পূর্ববর্তী সংস্করণে <ph name="IDS_SHORT_PRODUCT_NAME" />কে নিয়ে যাওয়া যায়নি৷ দয়া করে আপনার ডিভাইসকে আবার পাওয়ারওয়াশ করার চেষ্টা করুন৷</translation>
-<translation id="8015163965024115122"><ph name="IDS_SHORT_PRODUCT_NAME" /> বা <ph name="IDS_SHORT_PRODUCT_NAME" />-এর জন্য তোমার অভিভাবকের সেট করা সময়সীমা পেরিয়ে গেছে।</translation>
 <translation id="8016266267177410919">অস্থায়ী স্টোরেজ</translation>
 <translation id="8017176852978888182">Linux-এর শেয়ার করা ডিরেক্টরি</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8430,7 +8429,6 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />সেরা অভিজ্ঞতা পেতে, আপনার ইন্টার্নাল ডিস্কে <ph name="DEVICE_OS" /> ইনস্টল করুন। এছাড়াও, পরে এটি লগ-ইন স্ক্রিন থেকে ইনস্টল করতে পারবেন।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ইনস্টল করার জন্য প্রস্তুত না থাকলে, এটা করে দেখতে, ইউএসবি ব্যবহার করে চালিয়ে দেখতে পারেন। এটি আপনার বর্তমান OS ও ডেটা রাখবে তবে হয়ত দেখবেন যে, স্টোরেজ ও পারফর্ম্যান্সের সীমা কমে গেছে।<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">পিন করা ট্যাব হিসেবে খুলুন</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> পজ করা আছে</translation>
 <translation id="9124003689441359348">সংরক্ষিত পাসওয়ার্ডগুলি এখানে দেখা যাবে</translation>
 <translation id="9126149354162942022">কার্সরের রঙ</translation>
 <translation id="9128317794749765148">সেট-আপ করা যায়নি</translation>

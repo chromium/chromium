@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">История</translation>
 <translation id="1645954272419197032">Моля, потвърдете информацията за устройството</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
+<translation id="1664796644829245314">Визуализация на „<ph name="PREVIEW_OBJECT" />“</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
 <translation id="1672499492233627739">Видеокартина от уебкамерата</translation>
 <translation id="1676557873873341166">Заснема се видеоклип</translation>
@@ -722,6 +723,7 @@
 <translation id="7180611975245234373">Опресняване</translation>
 <translation id="7212734716605298123">Актуализации на фърмуера на външни устройства</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
+<translation id="725133483556299729">Избиране на имейл адрес</translation>
 <translation id="7271040990581020067">Скенерът се използва понастоящем. Опитайте отново по-късно.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281209642468917121">Изберете 1 или повече компоненти и опитайте отново или пропуснете калибрирането</translation>
@@ -799,6 +801,7 @@
 <translation id="7978412674231730200">Личен ключ</translation>
 <translation id="7982789257301363584">Мрежа</translation>
 <translation id="7994702968232966508">Метод с EAP</translation>
+<translation id="8018928621986160031">Запазено в(ъв) „<ph name="FILE_LOCATION" />“</translation>
 <translation id="802154636333426148">Изтеглянето не бе успешно</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Активиране на режима за автоматични цветове</translation>

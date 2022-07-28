@@ -1228,6 +1228,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4305666528087210886">Não foi possível aceder ao seu ficheiro</translation>
 <translation id="4306529830550717874">Pretende guardar o endereço?</translation>
 <translation id="4306812610847412719">área de transferência</translation>
+<translation id="4308567447483056043">Esta política é ignorada porque o utilizador não está afiliado. Para que esta política seja aplicada, o navegador Chrome e o perfil têm de ser geridos através da consola do administrador pela mesma organização.</translation>
 <translation id="4310070645992025887">Pesquise os seus percursos</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predefinição)</translation>

@@ -1519,7 +1519,6 @@
 <translation id="2390347491606624519">Није могуће повезати се са проксијем. Пријавите се поново</translation>
 <translation id="2390782873446084770">WiFi синхронизација</translation>
 <translation id="2391419135980381625">Стандардни фонт</translation>
-<translation id="2392163307141705938">Достигао/ла си временско ограничење које је родитељ подесио за <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Активирај</translation>
 <translation id="2393136602862631930">Подесите апликацију <ph name="APP_NAME" /> на Chromebook-у</translation>
 <translation id="2393313392064891208">Садржај Google Chrome OS Flex услова</translation>
@@ -1645,7 +1644,6 @@
 <translation id="2505669838803949807">EID уређаја је <ph name="EID_NUMBER" />. Представник корисничке подршке може да користи EID број да би вам помогао да активирате услугу.</translation>
 <translation id="250704661983564564">Распоред приказа</translation>
 <translation id="2507253002925770350">Тикет је уклоњен</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> – паузирано</translation>
 <translation id="2508428939232952663">Налог Google Play продавнице</translation>
 <translation id="2509495747794740764">Износ промене величине мора да буде број између 10 и 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1889,7 +1887,6 @@
 <translation id="2743387203779672305">Копирај у меморију</translation>
 <translation id="2745080116229976798">Microsoft квалификовано подређивање</translation>
 <translation id="2747266560080989517">Ова датотека садржи осетљив или опасан садржај. Затражите од власника да реши проблем.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> – паузирано</translation>
 <translation id="2749756011735116528">Пријави ме на производ <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Провери граматику и правопис</translation>
@@ -4231,7 +4228,6 @@
 <translation id="5033137252639132982">Није им дозвољено да користе сензоре покрета</translation>
 <translation id="5033266061063942743">Геометријски облици</translation>
 <translation id="5037676449506322593">Изабери све</translation>
-<translation id="5038022729081036555">Сутра имаш <ph name="TIME_LIMIT" /> на располагању.</translation>
 <translation id="5038818366306248416">Претходно сте одабрали да не дозволите све додатке на <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Прегледајте сачуване лозинке и управљајте њима на Google налогу</translation>
 <translation id="5039804452771397117">Дозволи</translation>
@@ -4269,6 +4265,7 @@
 <translation id="5074761966806028321">Још увек је потребна дозвола да би се довршило подешавање</translation>
 <translation id="5075563999073408211">Контролишите уређај помоћу једног или више прекидача. Прекидачи могу да буду тастери на тастатури, дугмад на џојпеду или наменски уређаји.</translation>
 <translation id="5075910247684008552">Небезбедан садржај се подразумевано блокира на безбедним сајтовима</translation>
+<translation id="5078490485380754244">Заборави уређај</translation>
 <translation id="5078638979202084724">Обележавање свих картица</translation>
 <translation id="5078796286268621944">Нетачан PIN</translation>
 <translation id="5079010647467150187">Додај уграђени VPN…</translation>
@@ -5031,6 +5028,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Камера или микрофон снимају</translation>
 <translation id="583673505367439042">Сајтови могу да траже да мењају фајлове и фолдере на уређају</translation>
 <translation id="583756221537636748">Футрола</translation>
+<translation id="5840658767386246331">Претражујте помоћу Google-а</translation>
 <translation id="5840680448799937675">Датотеке ће се увек делити офлајн</translation>
 <translation id="5841270259333717135">Конфигуришите етернет</translation>
 <translation id="5842497610951477805">Омогући Bluetooth</translation>
@@ -6525,6 +6523,7 @@
 <translation id="7307129035224081534">Паузирано</translation>
 <translation id="7308643132139167865">Језици веб-сајтова</translation>
 <translation id="7310598146671372464">Пријављивање није успело. Сервер не подржава наведене Kerberos типове шифровања. Контактирајте администратора.</translation>
+<translation id="7311089766378749632">Захтев за читање и мењање за <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Администратор ресетује eSIM. То може да потраје неколико минута.</translation>
 <translation id="7320213904474460808">Постави као подразумевану мрежу</translation>
 <translation id="7321545336522791733">Сервер није доступан</translation>
@@ -7117,6 +7116,7 @@
 <translation id="7869655448736341731">Све</translation>
 <translation id="7870730066603611552">Прегледа опције синхронизације после подешавања</translation>
 <translation id="7870790288828963061">Није пронађена ниједна киоск апликација са новијом верзијом. Нема шта да се ажурира. Уклоните USB меморију.</translation>
+<translation id="7871049986386271121">Увек на овом сајту</translation>
 <translation id="7871109039747854576">Користите тастере <ph name="COMMA" /> и <ph name="PERIOD" /> да бисте поставили листу кандидата</translation>
 <translation id="787268756490971083">Искључено</translation>
 <translation id="7872758299142009420">Превише угнеждених група: <ph name="ERROR_LINE" /></translation>
@@ -7270,7 +7270,6 @@
 <translation id="8013993649590906847">Ако слика нема користан опис, Chrome ће пробати да вам га пружи. Слике се шаљу Google-у ради прављења описа.</translation>
 <translation id="8014154204619229810">Програм за ажурирање је тренутно активан. Сачекајте мало, па освежите и проверите поново.</translation>
 <translation id="8014206674403687691">Није могуће вратити <ph name="IDS_SHORT_PRODUCT_NAME" /> на претходно инсталирану верзију. Покушајте да поново обавите Powerwash уређаја.</translation>
-<translation id="8015163965024115122">Ограничење за апликацију <ph name="IDS_SHORT_PRODUCT_NAME" /> или <ph name="IDS_SHORT_PRODUCT_NAME" /> које је поставио твој родитељ је истекло.</translation>
 <translation id="8016266267177410919">Привремени меморијски простор</translation>
 <translation id="8017176852978888182">Дељени Linux директоријуми</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8412,7 +8411,6 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />За најбољи доживљај инсталирајте <ph name="DEVICE_OS" /> на интерни диск. Можете и да га инсталирате касније са екрана за пријављивање.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ако нисте спремни за инсталацију, можете да га покренете са USB-а да бисте га испробали. Тиме ћете задржати постојећи ОС и податке, али можда ћете приметити ограничења у погледу меморијског простора и перформанси.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Отвори као закачену картицу</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> – паузирано</translation>
 <translation id="9124003689441359348">Сачуване лозинке ће се појавити овде</translation>
 <translation id="9126149354162942022">Боја курсора</translation>
 <translation id="9128317794749765148">Подешавање није довршено</translation>

@@ -2259,6 +2259,7 @@
 <translation id="7238585580608191973">SHA-256 ඇඟිලි සලකුණ</translation>
 <translation id="7240120331469437312">සහතික විෂයේ විකල්ප නම</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# ගැළපීමක්}one{ගැළපීම් #ක්}other{ගැළපීම් #ක්}}</translation>
 <translation id="724691107663265825">ඉදිරියේ ඇති අඩවියෙහි අනිෂ්ට මෘදුකාංග අඩංගුය</translation>
 <translation id="724975217298816891">ඔබේ කාඩ්පත් තොරතුරු යාවත්කාලීන කිරීමට <ph name="CREDIT_CARD" /> සඳහා කල් ඉකුත් වීමේ දිනය සහ CVC ඇතුළු කරන්න. ඔබ තහවුරු කළ පසු, ඔබේ කාඩ්පත් විස්තර මෙම අඩවිය සමග බෙදා ගනු ඇත.</translation>
 <translation id="7251437084390964440">ජාල වින්‍යාසය ONC සම්මතයට නොගැළපේ. වින්‍යාසයේ කොටස් ආයාත නොවනු ඇත.

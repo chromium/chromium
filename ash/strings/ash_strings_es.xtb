@@ -14,6 +14,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1052916631016577720">Analizar elemento</translation>
 <translation id="1056775291175587022">No hay redes</translation>
 <translation id="1056898198331236512">Advertencia</translation>
+<translation id="1058009965971887428">Enviar comentarios</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Reemplazar</translation>
 <translation id="1073899992769346247">Cambia o recarga la batería</translation>
@@ -469,7 +470,6 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="36813544980941320">Tu teléfono y el dispositivo <ph name="DEVICE_NAME" /> compartirán las redes Wi‑Fi</translation>
 <translation id="3694122362646626770">Sitios web</translation>
-<translation id="3701206655856637070">Ahora puedes cambiar dónde se guardan las capturas de pantalla</translation>
 <translation id="3702809606464356667">Se muestran las ventanas del escritorio actual. Pulsa la tecla de la flecha hacia arriba para ver las ventanas de todos los escritorios.</translation>
 <translation id="3702846122927433391">Población de Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -903,6 +903,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6182592640011875895">Abrir escritorio</translation>
 <translation id="619279033188484792">Consulta fotos, contenido multimedia y notificaciones recientes de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Cargar al 100 % ahora</translation>
+<translation id="6193431488227440296">Desarrollo</translation>
 <translation id="6220928844947387476">Ahora puedes grabarte a ti mismo y tu pantalla al mismo tiempo</translation>
 <translation id="622484624075952240">Flecha hacia abajo</translation>
 <translation id="6231419273573514727">Es posible que el rendimiento de los periféricos esté limitado</translation>

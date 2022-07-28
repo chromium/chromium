@@ -1520,7 +1520,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2390347491606624519">Kan geen verbinding maken met proxy, log opnieuw in</translation>
 <translation id="2390782873446084770">Wifi-synchronisatie</translation>
 <translation id="2391419135980381625">Standaard lettertype</translation>
-<translation id="2392163307141705938">Je hebt de tijdslimiet bereikt die je ouder heeft ingesteld voor <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Activeren</translation>
 <translation id="2393136602862631930"><ph name="APP_NAME" /> instellen op je Chromebook</translation>
 <translation id="2393313392064891208">Content van Voorwaarden van Google Chrome OS Flex</translation>
@@ -1646,7 +1645,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2505669838803949807">Je apparaat-EID is <ph name="EID_NUMBER" />. Een medewerker van de klantenservice kan het EID-nummer gebruiken om de service te activeren.</translation>
 <translation id="250704661983564564">Schermindeling</translation>
 <translation id="2507253002925770350">Ticket verwijderd</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> is onderbroken</translation>
 <translation id="2508428939232952663">Google Play Store-account</translation>
 <translation id="2509495747794740764">De waarde voor de schaal moet een getal tussen de 10 en 200 zijn.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1890,7 +1888,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2743387203779672305">Kopiëren naar klembord</translation>
 <translation id="2745080116229976798">Gekwalificeerde ondergeschiktheid van Microsoft</translation>
 <translation id="2747266560080989517">Dit bestand bevat gevoelige of gevaarlijke content. Vraag de eigenaar om dit op te lossen.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> is onderbroken</translation>
 <translation id="2749756011735116528">Inloggen op <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">Simkaart</translation>
 <translation id="2749881179542288782">Controleer grammatica met spelling</translation>
@@ -4230,7 +4227,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5033137252639132982">Geen toestemming om bewegingssensoren te gebruiken</translation>
 <translation id="5033266061063942743">Geometrische vormen</translation>
 <translation id="5037676449506322593">Selecteer alles</translation>
-<translation id="5038022729081036555">Je kunt de app morgen <ph name="TIME_LIMIT" /> gebruiken.</translation>
 <translation id="5038818366306248416">Je hebt er eerder voor gekozen om geen extensies op <ph name="ORIGIN" /> toe te staan</translation>
 <translation id="5039696241953571917">Opgeslagen wachtwoorden in je Google-account bekijken en beheren</translation>
 <translation id="5039804452771397117">Toestaan</translation>
@@ -4268,6 +4264,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5074761966806028321">Er zijn nog steeds rechten nodig om het instellen af te ronden</translation>
 <translation id="5075563999073408211">Bedien je apparaat met een of meer schakelaars. Schakelaars kunnen toetsenbordtoetsen, gamepad-knoppen of speciale apparaten zijn.</translation>
 <translation id="5075910247684008552">Onveilige content wordt standaard geblokkeerd op beveiligde sites</translation>
+<translation id="5078490485380754244">Apparaat vergeten</translation>
 <translation id="5078638979202084724">Bookmark toevoegen aan alle tabbladen</translation>
 <translation id="5078796286268621944">Onjuiste pincode</translation>
 <translation id="5079010647467150187">Ingebouwde VPN toevoegen...</translation>
@@ -7262,7 +7259,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8013993649590906847">Als een afbeelding geen nuttige beschrijving bevat, probeert Chrome je er een te geven. Afbeeldingen worden naar Google verzonden om beschrijvingen te maken.</translation>
 <translation id="8014154204619229810">De updater wordt momenteel uitgevoerd. Klik op Vernieuwen om opnieuw te controleren.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> kan niet worden teruggezet naar de voorgaande versie. Probeer Powerwash opnieuw op je apparaat.</translation>
-<translation id="8015163965024115122">De door je ouder ingestelde limiet voor de app <ph name="IDS_SHORT_PRODUCT_NAME" /> of <ph name="IDS_SHORT_PRODUCT_NAME" /> is bereikt.</translation>
 <translation id="8016266267177410919">Tijdelijke opslag</translation>
 <translation id="8017176852978888182">Gedeelde directory's voor Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8403,7 +8399,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Installeer <ph name="DEVICE_OS" /> op de interne schijf voor de beste functionaliteit. Je kunt het besturingssysteem ook later installeren via het inlogscherm.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Als je nog niet klaar bent om te installeren, kun je het OS uitvoeren via USB om het eerst uit te proberen. Je houdt dan je bestaande OS en gegevens, maar je ziet misschien wel opslag- en prestatielimieten.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Openen als vastgezet tabblad</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> is onderbroken</translation>
 <translation id="9124003689441359348">Opgeslagen wachtwoorden zie je hier</translation>
 <translation id="9126149354162942022">Kleur van cursor</translation>
 <translation id="9128317794749765148">Installatie is niet voltooid</translation>

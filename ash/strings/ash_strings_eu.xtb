@@ -14,6 +14,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1052916631016577720">Elementuak fokuratzea</translation>
 <translation id="1056775291175587022">Sarerik ez</translation>
 <translation id="1056898198331236512">Abisua</translation>
+<translation id="1058009965971887428">Eman iritzia</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Ordeztu</translation>
 <translation id="1073899992769346247">Aldatu edo kargatu bateria</translation>
@@ -469,7 +470,6 @@ Konektatu gailua korrontera.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, erabiltzaile kudeatua</translation>
 <translation id="36813544980941320">Wifi-sareak telefonoaren eta <ph name="DEVICE_NAME" /> gailuaren artean partekatuko dira</translation>
 <translation id="3694122362646626770">Webguneak</translation>
-<translation id="3701206655856637070">Pantaila-argazkiak eta -kapturak gordetzeko tokia alda dezakezu orain</translation>
 <translation id="3702809606464356667">Une honetako lan-eremuko leihoak daude ikusgai. Lan-eremu guztietako leihoak egon daitezen ikusgai, sakatu gora egiteko gezi-tekla.</translation>
 <translation id="3702846122927433391">Zenbat biztanle ditu Nigeriak</translation>
 <translation id="3705722231355495246">-</translation>
@@ -653,6 +653,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4690510401873698237">Apala behealdean dago</translation>
 <translation id="4696813013609194136">Desblokeatu gailua gurasoen kodearekin</translation>
 <translation id="4702647871202761252">Desaktibatuta dago pribatutasun-pantaila</translation>
+<translation id="470644585772471629">Koloreen alderantzikatzea</translation>
 <translation id="4717575069099566988">USB-C kableak ez du onartzen USB4. Baliteke gailuaren errendimendua mugatuta egotea.</translation>
 <translation id="4730374152663651037">MAIZ ERABILTZEN DIREN APLIKAZIOAK</translation>
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
@@ -902,6 +903,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6182592640011875895">Ireki lan-eremua</translation>
 <translation id="619279033188484792">Ikusi telefonoko azken argazkiak, multimedia-elementuak eta jakinarazpenak <ph name="DEVICE_TYPE" /> bidez</translation>
 <translation id="619335566042889110">Kargatu guztiz</translation>
+<translation id="6193431488227440296">Garatzaileentzako kanala</translation>
 <translation id="6220928844947387476">Zeure burua eta pantaila aldi berean graba ditzakezu orain</translation>
 <translation id="622484624075952240">Behera</translation>
 <translation id="6231419273573514727">Baliteke gailu periferikoaren errendimendua mugatuta egotea</translation>
@@ -1170,6 +1172,7 @@ Berriki instalatu da</translation>
 <translation id="7842569679327885685">Abisua: eginbide esperimentala da hau</translation>
 <translation id="7846634333498149051">Teklatua</translation>
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" />. orriko <ph name="ROW_NUMBER" />. errenkadako <ph name="COLUMN_NUMBER" /> zutabera eraman da.</translation>
+<translation id="7851768487828137624">Canary</translation>
 <translation id="7860671499921112077">Pasatu hiru hatz gora ikuspegi orokorrean sartzeko</translation>
 <translation id="7866482334467279021">aktibatuta</translation>
 <translation id="7868900307798234037">Hatz-markarekin desblokeatzen</translation>

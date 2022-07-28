@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">आइटम स्कैन</translation>
 <translation id="1056775291175587022">नेटवर्क नहीं है</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
+<translation id="1058009965971887428">सुझाव, शिकायत या राय दें</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">प्रतिस्थापित करें</translation>
 <translation id="1073899992769346247">बैटरी बदलें या उसे रीचार्ज करें</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> प्रबंधित उपयोगकर्ता</translation>
 <translation id="36813544980941320">आपके फ़ोन और <ph name="DEVICE_NAME" /> के बीच वाई-फ़ाई नेटवर्क शेयर किए जाएंगे</translation>
 <translation id="3694122362646626770">वेबसाइट</translation>
-<translation id="3701206655856637070">स्क्रीन कैप्चर कहां सेव किए जाएं, अब यह अपने हिसाब से तय किया जा सकता है</translation>
 <translation id="3702809606464356667">मौजूदा डेस्क की विंडो दिखाई जा रही हैं, सभी डेस्क की विंडो दिखाने के लिए, अप ऐरो बटन दबाएं</translation>
 <translation id="3702846122927433391">नाइजीरिया की जनसंख्या बताओ</translation>
 <translation id="3705722231355495246">-</translation>
@@ -653,6 +653,7 @@
 <translation id="4690510401873698237">शेल्फ़, स्क्रीन पर सबसे नीचे है</translation>
 <translation id="4696813013609194136">माता-पिता के कोड से डिवाइस अनलॉक करें</translation>
 <translation id="4702647871202761252">निजता स्क्रीन बंद है</translation>
+<translation id="470644585772471629">रंग बदलने की सुविधा</translation>
 <translation id="4717575069099566988">आपकी यूएसबी-सी केबल USB4 पर काम नहीं करती है. डिवाइस की परफ़ॉर्मेंस पर बुरा असर पड़ सकता है.</translation>
 <translation id="4730374152663651037">अक्सर उपयोग किए गए</translation>
 <translation id="4731797938093519117">अभिभावक ऐक्सेस</translation>
@@ -902,6 +903,7 @@
 <translation id="6182592640011875895">डेस्क खोलें</translation>
 <translation id="619279033188484792">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, मीडिया, और सूचनाएं <ph name="DEVICE_TYPE" /> पर देखें</translation>
 <translation id="619335566042889110">बैटरी पूरी चार्ज हो चुकी है</translation>
+<translation id="6193431488227440296">डेव</translation>
 <translation id="6220928844947387476">अब, कैमरे और स्क्रीन दोनों पर दिख रही चीज़ों की रिकॉर्डिंग एक साथ की जा सकती है</translation>
 <translation id="622484624075952240">नीचे</translation>
 <translation id="6231419273573514727">हो सकता है कि सहायक डिवाइस पूरी तरह काम न करें</translation>

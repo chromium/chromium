@@ -1003,6 +1003,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3676592649209844519">ID naprave:</translation>
 <translation id="3677008721441257057">Ali ste mislili &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Zahteve ni bilo mogoče podpisati</translation>
+<translation id="3678342917559046352">Neveljavna razširitev – pričakovano je, da bo vrednost v eni od teh oblik: &lt;extension_id&gt; ali &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Odpiranje strani v novem anonimnem oknu (Ctrl + Shift + N)</translation>
 <translation id="3681007416295224113">Informacije o potrdilu</translation>
 <translation id="3701427423622901115">Ponastavitev je potrjena.</translation>
@@ -1342,6 +1343,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="464342062220857295">Funkcije iskanja</translation>
 <translation id="4644670975240021822">V obratnem vrstnem redu s tiskom na spodnji strani</translation>
 <translation id="4646534391647090355">Odpri zdaj</translation>
+<translation id="4648262692072505866">Zgoščena vrednost mora biti v obliki zapisa SHA-256.</translation>
 <translation id="4652266463001779298">Ni dovoljeno</translation>
 <translation id="4653167719759882810">Združitve in pridobitve</translation>
 <translation id="4658638640878098064">Spenjanje zgoraj levo</translation>
@@ -1451,6 +1453,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite iskati</translation>
 <translation id="4930153903256238152">Velika zmogljivost</translation>
+<translation id="4936134414789135531">Vstavljenega elementa <ph name="VALUE_NAME" /> ni bilo mogoče najti.</translation>
 <translation id="4936675324097895694">Finance</translation>
 <translation id="4940163644868678279">Anonimni način v Chromu</translation>
 <translation id="4943872375798546930">Ni rezultatov</translation>
@@ -1568,6 +1571,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Pladenj 13</translation>
 <translation id="5216942107514965959">Nazadnje obiskano danes</translation>
+<translation id="5217759126664161410">Neveljavna oblika protokola.</translation>
 <translation id="5222812217790122047">E-poštni naslov je obvezen</translation>
 <translation id="5228404122310299359">Potrebščine za zabave in praznike</translation>
 <translation id="5229588705416009823">Spletne igre za veliko število igralcev</translation>
@@ -1640,6 +1644,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5398772614898833570">Oglasi blokirani</translation>
 <translation id="5400836586163650660">Siva</translation>
 <translation id="540969355065856584">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; njegovo varnostno potrdilo trenutno ni veljavno. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
+<translation id="5412040515238827314">Neveljavna oblika: Pričakovan je seznam vzorcev.</translation>
 <translation id="5412236728747081950">To spletno mesto pridobi vaša zanimanja iz Chroma, da vam pokaže ustreznejše oglase.</translation>
 <translation id="541416427766103491">Zlagalnik 4</translation>
 <translation id="5421136146218899937">Izbriši podatke brskanja ...</translation>
@@ -1758,6 +1763,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5754400531489347219">Domače in druge živali</translation>
 <translation id="5759751709240058861">Uporaba in premikanje kamere</translation>
 <translation id="5763042198335101085">Vnesite veljaven e-poštni naslov</translation>
+<translation id="5764725887548570807">Neveljavna oblika izhodišča.</translation>
 <translation id="5765072501007116331">Če si želite ogledati načine dostave in zahteve, izberite naslov</translation>
 <translation id="57689295674415555">Številka virtualne kartice ni izpolnjena?</translation>
 <translation id="5776313857861697733">Prednost</translation>
@@ -1882,10 +1888,12 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6107012941649240045">Izdano za</translation>
 <translation id="610911394827799129">V Google Računu so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">ogled besedila in slik, kopiranih v odložišče</translation>
+<translation id="6118782133429281336">Seznam izhodišč je prazen.</translation>
 <translation id="6120179357481664955">Si želite zapomniti ID za UPI?</translation>
 <translation id="6124432979022149706">Priključki za Chrome za podjetja</translation>
 <translation id="6127379762771434464">Element odstranjen</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Preberite več o anonimnem načinu v Chromu<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Pripona datoteke je prazna ali napačno oblikovana.</translation>
 <translation id="6146055958333702838">Preverite kable in znova zaženite usmerjevalnike, modeme ali druge omrežne 
     naprave, ki jih uporabljate.</translation>
 <translation id="614940544461990577">Poskusite:</translation>
@@ -2059,6 +2067,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="666259744093848177">(prevedeno za x86_64)</translation>
 <translation id="6663846344464066639">Sklenjene roke</translation>
 <translation id="6665553082534466207">Trojno luknjanje na desni</translation>
+<translation id="6668389483194953109">Najdeno je bilo ime velikosti papirja »custom«, vendar je lastnost »custom_size« prazna ali neveljavna.</translation>
 <translation id="6671697161687535275">Želite predlog obrazca odstraniti iz Chromiuma?</translation>
 <translation id="6683717648675961851">Prosta delovna mesta</translation>
 <translation id="6685834062052613830">Odjavite se in dokončajte nastavitev</translation>
@@ -2072,6 +2081,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6696588630955820014">Gumb za deljenje zavihka, pritisnite Enter, če želite ta zavihek deliti z drugimi tako, da delite povezavo, ustvarite kodo QR, ga predvajate oziroma na kak drug način.</translation>
 <translation id="6698381487523150993">Ustvarjeno:</translation>
 <translation id="6702919718839027939">Predstavitev</translation>
+<translation id="6704458454638854812">Nastavljena je lastnost »custom_size«; pričakovano ime je »custom«.</translation>
 <translation id="6709133671862442373">Novice</translation>
 <translation id="6709888928011386878">Glasbila</translation>
 <translation id="6710213216561001401">Prejšnji</translation>

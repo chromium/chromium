@@ -14,6 +14,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1052916631016577720">Optično preberi element</translation>
 <translation id="1056775291175587022">Ni omrežij</translation>
 <translation id="1056898198331236512">Opozorilo</translation>
+<translation id="1058009965971887428">Pošiljanje povratnih informacij</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Zamenjaj</translation>
 <translation id="1073899992769346247">Zamenjajte ali napolnite baterijo.</translation>
@@ -469,7 +470,6 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Upravljani uporabnik</translation>
 <translation id="36813544980941320">Omrežja Wi-Fi bodo deljena med telefonom in napravo <ph name="DEVICE_NAME" />.</translation>
 <translation id="3694122362646626770">Spletna mesta</translation>
-<translation id="3701206655856637070">Zdaj lahko spremenite, kje se hranijo zajemi zaslonske slike.</translation>
 <translation id="3702809606464356667">Prikaz oken s trenutnega namizja, pritisnite tipko s puščico gor, če želite prikazati okna z vseh namizij</translation>
 <translation id="3702846122927433391">Število prebivalcev v Nigeriji</translation>
 <translation id="3705722231355495246">–</translation>
@@ -902,6 +902,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6182592640011875895">Odpri namizje</translation>
 <translation id="619279033188484792">Oglejte si nedavne fotografije, predstavnost in obvestila telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="619335566042889110">Napolni v celoti</translation>
+<translation id="6193431488227440296">Za razvijalce</translation>
 <translation id="6220928844947387476">Sebe in zaslon lahko zdaj posnamete istočasno.</translation>
 <translation id="622484624075952240">Dol</translation>
 <translation id="6231419273573514727">Delovanje zunanje dodatne opreme bo morda omejeno</translation>

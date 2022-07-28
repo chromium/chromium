@@ -1522,7 +1522,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2390347491606624519">K proxy serveru sa nedá pripojiť, prihláste sa znova</translation>
 <translation id="2390782873446084770">Synchronizácia Wi-Fi</translation>
 <translation id="2391419135980381625">Štandardné písmo</translation>
-<translation id="2392163307141705938">Dosiahli ste časový limit, ktorý váš rodič nastavil pre <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Aktivovať</translation>
 <translation id="2393136602862631930">Nastavte aplikáciu <ph name="APP_NAME" /> vo svojom Chromebooku</translation>
 <translation id="2393313392064891208">Obsah zmluvných podmienok systému Google Chrome OS Flex</translation>
@@ -1648,7 +1647,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2505669838803949807">EID vášho zariadenia je <ph name="EID_NUMBER" />. Zástupca služieb zákazníkom vám môže pomocou tohto čísla EID aktivovať službu.</translation>
 <translation id="250704661983564564">Usporiadanie zobrazenia</translation>
 <translation id="2507253002925770350">Ticket bol odstránený</translation>
-<translation id="2507397597949272797">Aplikácia <ph name="NAME" /> je pozastavená</translation>
 <translation id="2508428939232952663">Účet Obchodu Google Play</translation>
 <translation id="2509495747794740764">Hodnota mierky musí byť v rozsahu od 10 do 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1892,7 +1890,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2743387203779672305">Kopírovať do schránky</translation>
 <translation id="2745080116229976798">Oprávnené podriadenie od spoločnosti Microsoft</translation>
 <translation id="2747266560080989517">Tento súbor má citlivý alebo nebezpečný obsah. Požiadajte vlastníka o nápravu.</translation>
-<translation id="2748061034695037846">Doména <ph name="DOMAIN" /> je pozastavená</translation>
 <translation id="2749756011735116528">Prihlásiť sa do služby <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Skontrolovať gramatiku s pravopisom</translation>
@@ -4234,7 +4231,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5033137252639132982">Nemôže používať senzory pohybu</translation>
 <translation id="5033266061063942743">Geometrické tvary</translation>
 <translation id="5037676449506322593">Vybrať všetko</translation>
-<translation id="5038022729081036555">Zajtra ju môžete používať <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">V minulosti ste nepovolili žiadne rozšírenie na <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Zobrazenie a správa hesiel uložených v účte Google</translation>
 <translation id="5039804452771397117">Povoliť</translation>
@@ -4272,6 +4268,7 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5074761966806028321">Na dokončenie nastavenia je stále potrebné povolenie</translation>
 <translation id="5075563999073408211">Ovládajte zariadenie jedným alebo viacerými prepínačmi. Prepínače môžu byť klávesy na klávesnici, tlačidlá gamepadu alebo vyhradené zariadenia.</translation>
 <translation id="5075910247684008552">Bezpečné weby predvolene blokujú nezabezpečený obsah</translation>
+<translation id="5078490485380754244">Zabudnutie zariadenia</translation>
 <translation id="5078638979202084724">Uložiť všetky karty ako záložky</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5079010647467150187">Pridať vstavanú sieť VPN…</translation>
@@ -7276,7 +7273,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="8014154204619229810">Aktualizačný nástroj je práve spustený. Obnovením stránky o minútu to znova skontrolujte.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> sa nedokáže vrátiť späť na predchádzajúcu nainštalovanú verziu. Skúste znova vykonať úplné obnovenie svojho zariadenia (tzv. Powerwash).</translation>
-<translation id="8015163965024115122">Vypršal limit aplikácie <ph name="IDS_SHORT_PRODUCT_NAME" /> alebo <ph name="IDS_SHORT_PRODUCT_NAME" /> nastavený rodičom.</translation>
 <translation id="8016266267177410919">Dočasné úložisko</translation>
 <translation id="8017176852978888182">Zdieľané adresáre v systéme Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8418,7 +8414,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Najlepšie prostredie získate inštaláciou operačného systému <ph name="DEVICE_OS" /> na interný disk. Môžete si ho nainštalovať aj neskôr na prihlasovacej obrazovke.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Ak si ho zatiaľ nechcete nainštalovať, môžete ho spustiť z kľúča USB a vyskúšať ho. Ponecháte si tak súčasný operačný systém aj údaje, ale môžete naraziť na obmedzenia ukladacieho priestoru a výkonnosti.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Otvoriť ako pevnú kartu</translation>
-<translation id="9122176249172999202">Aplikácia <ph name="IDS_SHORT_PRODUCT_NAME" /> je pozastavená</translation>
 <translation id="9124003689441359348">Tu sa zobrazia uložené heslá</translation>
 <translation id="9126149354162942022">Farba kurzora</translation>
 <translation id="9128317794749765148">Nastavenie sa nepodarilo dokončiť</translation>

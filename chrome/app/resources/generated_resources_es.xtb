@@ -1521,7 +1521,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2390347491606624519">No se ha podido conectar al proxy, vuelve a iniciar sesión</translation>
 <translation id="2390782873446084770">Sincronización Wi‑Fi</translation>
 <translation id="2391419135980381625">Fuente estándar</translation>
-<translation id="2392163307141705938">Has llegado al límite de tiempo de uso de <ph name="IDS_SHORT_PRODUCT_NAME" /> establecido por tu padre o madre.</translation>
 <translation id="2392369802118427583">Activar</translation>
 <translation id="2393136602862631930">Configura <ph name="APP_NAME" /> en tu Chromebook</translation>
 <translation id="2393313392064891208">Contenido de los Términos de Google ChromeOS Flex</translation>
@@ -1647,7 +1646,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2505669838803949807">El EID de tu dispositivo es <ph name="EID_NUMBER" />. Un representante del servicio de atención al cliente puede usar el número EID para ayudarte a activar el servicio.</translation>
 <translation id="250704661983564564">Disposición de las pantallas</translation>
 <translation id="2507253002925770350">Ticket eliminado</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> está en pausa</translation>
 <translation id="2508428939232952663">Cuenta de Google Play Store</translation>
 <translation id="2509495747794740764">El valor de la escala debe ser un número entre 10 y 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1891,7 +1889,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2743387203779672305">Copiar en portapapeles</translation>
 <translation id="2745080116229976798">Subordinación completa de Microsoft</translation>
 <translation id="2747266560080989517">Este archivo incluye contenido sensible o peligroso. Pídele al propietario que lo corrija.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> está en pausa</translation>
 <translation id="2749756011735116528">Iniciar sesión en <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Comprobar la ortografía y la gramática</translation>
@@ -3898,6 +3895,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4689421377817139245">Sincronizar este marcador con tu iPhone</translation>
 <translation id="4690091457710545971">&lt;El firmware del Wi‑Fi de Intel ha generado cuatro archivos: csr.lst, fh_regs.lst, radio_reg.lst y monitor.lst.sysmon. Los tres primeros son archivos binarios que contienen volcados de registro, e Intel afirma que no contienen información personal o que identifique el dispositivo. El último archivo es un seguimiento de ejecución del firmware de Intel del cual se ha eliminado toda la información personal o que identifique el dispositivo, pero es demasiado grande para mostrarse aquí. Estos archivos se han generado como respuesta a los problemas recientes de tu dispositivo con la conexión Wi‑Fi y se compartirán con Intel para que ayude a solucionarlos.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> podrá ver <ph name="FILENAME" /> hasta que cierres todas las pestañas de este sitio web</translation>
+<translation id="4692342362587775867">Las notificaciones de este sitio pueden ser molestas</translation>
 <translation id="4692623383562244444">Buscadores</translation>
 <translation id="4692736633446859167">Anteriormente elegiste no permitir ninguna extensión en <ph name="SITE" />. Si añades este sitio aquí, otras extensiones también podrán solicitar leer y cambiar los datos de tu sitio en <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Sushi</translation>
@@ -4231,7 +4229,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5033137252639132982">No puede usar sensores de movimiento</translation>
 <translation id="5033266061063942743">Formas geométricas</translation>
 <translation id="5037676449506322593">Seleccionar todo</translation>
-<translation id="5038022729081036555">Podrás usar esta aplicación mañana durante <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Anteriormente elegiste no permitir ninguna extensión en <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Consulta y gestiona las contraseñas guardadas en tu cuenta de Google</translation>
 <translation id="5039804452771397117">Permitir</translation>
@@ -4269,6 +4266,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5074761966806028321">Se sigue necesitando permiso para completar la configuración</translation>
 <translation id="5075563999073408211">Controla tu dispositivo con uno o varios interruptores. Pueden ser teclas del teclado, botones de un mando para jugar o dispositivos específicos.</translation>
 <translation id="5075910247684008552">El contenido no seguro se bloquea de forma predeterminada en los sitios seguros</translation>
+<translation id="5078490485380754244">Olvidar dispositivo</translation>
 <translation id="5078638979202084724">Añadir todas las pestañas a marcadores</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5079010647467150187">Añadir VPN integrada...</translation>
@@ -5031,6 +5029,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: grabación de la cámara o del micrófono</translation>
 <translation id="583673505367439042">Los sitios pueden solicitar permiso para editar archivos y carpetas del dispositivo</translation>
 <translation id="583756221537636748">Funda</translation>
+<translation id="5840658767386246331">Buscar con Google</translation>
 <translation id="5840680448799937675">Los archivos siempre se compartirán sin conexión</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Habilitar Bluetooth</translation>
@@ -6521,6 +6520,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7307129035224081534">En pausa</translation>
 <translation id="7308643132139167865">Idiomas de sitios web</translation>
 <translation id="7310598146671372464">No se ha podido iniciar sesión. El servidor no admite los tipos de cifrado Kerberos especificados. Ponte en contacto con tu administrador.</translation>
+<translation id="7311089766378749632">Solicitar leer y modificar <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Tu administrador está restableciendo tu eSIM. Este proceso puede tardar unos minutos.</translation>
 <translation id="7320213904474460808">Establecer como red predeterminada</translation>
 <translation id="7321545336522791733">No se puede acceder al servidor</translation>
@@ -7113,6 +7113,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7869655448736341731">Cualquiera</translation>
 <translation id="7870730066603611552">Revisar opciones de sincronización después de la configuración</translation>
 <translation id="7870790288828963061">No se ha encontrado ninguna aplicación de kiosco con una versión más reciente. No hay nada que actualizar. Extrae el dispositivo USB.</translation>
+<translation id="7871049986386271121">Siempre en este sitio</translation>
 <translation id="7871109039747854576">Utilizar las teclas <ph name="COMMA" /> y <ph name="PERIOD" /> para mostrar la lista de caracteres disponibles</translation>
 <translation id="787268756490971083">Desactivado</translation>
 <translation id="7872758299142009420">Demasiados grupos anidados: <ph name="ERROR_LINE" /></translation>
@@ -7267,7 +7268,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8013993649590906847">Si una imagen no tiene ninguna descripción útil, Chrome intentará proporcionártela. Para crear las descripciones, las imágenes se envían a Google.</translation>
 <translation id="8014154204619229810">La herramienta de actualización se está ejecutando en este momento. Actualiza en un minuto para comprobarlo de nuevo.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> no puede volver a la versión instalada previamente. Vuelve a intentarlo para hacer un Powerwash del dispositivo.</translation>
-<translation id="8015163965024115122">Se ha agotado el tiempo de uso de las aplicaciones <ph name="IDS_SHORT_PRODUCT_NAME" /> o <ph name="IDS_SHORT_PRODUCT_NAME" /> establecido por tu padre o madre.</translation>
 <translation id="8016266267177410919">Almacenamiento temporal</translation>
 <translation id="8017176852978888182">Directorios compartidos de Linux</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8407,7 +8407,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Para disfrutar de la mejor experiencia posible, instala <ph name="DEVICE_OS" /> en tu disco interno. También puedes instalarlo más adelante desde la pantalla de inicio de sesión.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Si no puedes instalarlo ahora, tienes la opción de ejecutarlo desde un USB para probarlo. De este modo, conservarás tu SO y tus datos actuales, pero es posible que encuentres limitaciones de almacenamiento y rendimiento.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Abrir como pestaña fija</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> está en pausa</translation>
 <translation id="9124003689441359348">Las contraseñas guardadas aparecerán aquí</translation>
 <translation id="9126149354162942022">Color del cursor</translation>
 <translation id="9128317794749765148">No se ha podido completar la configuración</translation>

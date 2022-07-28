@@ -1526,7 +1526,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2390347491606624519">Ei saa puhverserveriga ühendust luua, logige uuesti sisse</translation>
 <translation id="2390782873446084770">WiFi sünkroonimine</translation>
 <translation id="2391419135980381625">Standardne font</translation>
-<translation id="2392163307141705938">Jõudsid piiranguni, mille sinu vanem teenuses <ph name="IDS_SHORT_PRODUCT_NAME" /> määras.</translation>
 <translation id="2392369802118427583">Aktiveeri</translation>
 <translation id="2393136602862631930">Seadistage rakendus <ph name="APP_NAME" /> oma Chromebookis</translation>
 <translation id="2393313392064891208">Google Chrome OS Flexi tingimuste sisu</translation>
@@ -1652,7 +1651,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2505669838803949807">Teie seadme EID on <ph name="EID_NUMBER" />. Klienditeeninduse esindaja saab EID-numbrit kasutada, et aidata teil teenus aktiveerida.</translation>
 <translation id="250704661983564564">Kuva paigutus</translation>
 <translation id="2507253002925770350">Pilet eemaldati</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> on peatatud</translation>
 <translation id="2508428939232952663">Google Play poe konto</translation>
 <translation id="2509495747794740764">Skaleerimise määr peab olema arv vahemikus 10–200.</translation>
 <translation id="2509566264613697683">8-kordne</translation>
@@ -1896,7 +1894,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2743387203779672305">Kopeeri lõikelauale</translation>
 <translation id="2745080116229976798">Microsofti piiratud subordinatsioon</translation>
 <translation id="2747266560080989517">See fail sisaldab tundlikku või ohtlikku sisu. Paluge omanikul see parandada.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> on peatatud</translation>
 <translation id="2749756011735116528">Logi sisse teenusesse <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kontrolli grammatikat õigekirjakontrolliga</translation>
@@ -4238,7 +4235,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5033137252639132982">Pole luba kasutada liikumisandureid</translation>
 <translation id="5033266061063942743">Geomeetrilised kujundid</translation>
 <translation id="5037676449506322593">Vali kõik</translation>
-<translation id="5038022729081036555">Saate seda homme kasutada <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Valisite varem kõikide laienduste keelamise lehel <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Vaadake ja hallake salvestatud paroole oma Google'i kontol</translation>
 <translation id="5039804452771397117">Luba</translation>
@@ -4276,6 +4272,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5074761966806028321">Seadistuse lõpuleviimiseks on siiski vaja luba</translation>
 <translation id="5075563999073408211">Kasutage seadet ühe või enama lüliti abil. Lülitid võivad olla klaviatuuri klahvid, mängupuldi nupud või eriotstarbelised seadmed.</translation>
 <translation id="5075910247684008552">Ebaturvaline sisu blokeeritakse turvalistel saitidel vaikimisi</translation>
+<translation id="5078490485380754244">Unusta seade</translation>
 <translation id="5078638979202084724">Lisab kõik vahelehed järjehoidjatesse</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5079010647467150187">Sisseehitatud VPN-i lisamine …</translation>
@@ -7274,7 +7271,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8013993649590906847">Kui pildil puudub kasulik kirjeldus, üritab Chrome selle ise luua. Kirjelduste loomiseks saadetakse pildid Google'ile.</translation>
 <translation id="8014154204619229810">Värskendaja töötab praegu. Värskendage uuesti kontrollimiseks minuti pärast.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> ei saa varem installitud versiooni ennistada. Proovige uuesti, rakendades oma seadmele funktsiooni Powerwash.</translation>
-<translation id="8015163965024115122">Sinu vanema määratud teenuse <ph name="IDS_SHORT_PRODUCT_NAME" /> või <ph name="IDS_SHORT_PRODUCT_NAME" /> rakenduste limiit sai täis.</translation>
 <translation id="8016266267177410919">Ajutine salvestusruum</translation>
 <translation id="8017176852978888182">Linuxi jagatud kataloogid</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8414,7 +8410,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Parima kasutuskogemuse saamiseks installige <ph name="DEVICE_OS" /> oma sisemisele kettale. Saate selle hiljem installida ka sisselogimiskuval.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Kui te pole installimiseks valmis, saate rakendust proovida, käitades selle USB-seadmelt. See säilitab teie olemasoleva operatsioonisüsteemi ja andmed, kuid kehtida võivad salvestusruumi- ja jõudluspiirangud.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Ava kinnitatud vahelehel</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> on peatatud</translation>
 <translation id="9124003689441359348">Salvestatud paroolid kuvatakse siin</translation>
 <translation id="9126149354162942022">Kursori värv</translation>
 <translation id="9128317794749765148">Seadistust ei õnnestunud lõpule viia</translation>

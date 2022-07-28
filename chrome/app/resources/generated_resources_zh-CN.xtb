@@ -1503,7 +1503,6 @@
 <translation id="2390347491606624519">无法连接到代理，请重新登录</translation>
 <translation id="2390782873446084770">Wi-Fi 同步</translation>
 <translation id="2391419135980381625">标准字体</translation>
-<translation id="2392163307141705938">您已达到您家长为 <ph name="IDS_SHORT_PRODUCT_NAME" /> 设定的使用时限。</translation>
 <translation id="2392369802118427583">激活</translation>
 <translation id="2393136602862631930">在 Chromebook 上设置 <ph name="APP_NAME" /></translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 条款内容</translation>
@@ -1629,7 +1628,6 @@
 <translation id="2505669838803949807">您的设备 EID 为 <ph name="EID_NUMBER" />。客户服务代表可使用此 EID 号码帮助您激活服务。</translation>
 <translation id="250704661983564564">显示屏排列方式</translation>
 <translation id="2507253002925770350">票据已移除</translation>
-<translation id="2507397597949272797"><ph name="NAME" />已被暂停</translation>
 <translation id="2508428939232952663">Google Play 商店帐号</translation>
 <translation id="2509495747794740764">缩放值必须是一个介于 10 到 200 之间的数字。</translation>
 <translation id="2509566264613697683">8 倍</translation>
@@ -1870,7 +1868,6 @@
 <translation id="2743387203779672305">复制到剪贴板</translation>
 <translation id="2745080116229976798">Microsoft 合格的部署</translation>
 <translation id="2747266560080989517">此文件包含敏感或危险内容。请让此文件的所有者解决这一问题。</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> 已暂停</translation>
 <translation id="2749756011735116528">登录<ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">检查拼写和语法</translation>
@@ -3869,6 +3866,7 @@
 <translation id="4689421377817139245">将此书签同步到您的 iPhone</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 固件生成了四个文件：csr.lst、fh_regs.lst、radio_reg.lst 和 monitor.lst.sysmon。前三个文件是包含注册表转储的二进制文件，且 Intel 表示其中并未包含任何个人信息或设备标识信息。最后一个文件是 Intel 固件的执行跟踪记录，其中的个人信息和设备标识信息已全部清除，但由于文件过大而无法显示在这里。因为您的设备最近发生过 Wi-Fi 问题，所以系统生成了这些文件，且会将文件提供给 Intel 以协助排查相关问题。&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> 将能够查看“<ph name="FILENAME" />”中的内容，除非您关闭此网站的所有标签页</translation>
+<translation id="4692342362587775867">来自此网站的通知可能会造成干扰</translation>
 <translation id="4692623383562244444">搜索引擎</translation>
 <translation id="4692736633446859167">您先前已选择禁止 <ph name="SITE" /> 上的所有扩展程序。如果您在此处添加该网站，其他扩展程序也可以请求读取和更改您在 <ph name="SITE" /> 上的网站数据。</translation>
 <translation id="4693155481716051732">寿司</translation>
@@ -4199,7 +4197,6 @@
 <translation id="5033137252639132982">不允许使用移动传感器</translation>
 <translation id="5033266061063942743">几何图形</translation>
 <translation id="5037676449506322593">全选</translation>
-<translation id="5038022729081036555">明天可以继续使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="5038818366306248416">您先前已选择禁止 <ph name="ORIGIN" /> 上的所有扩展程序</translation>
 <translation id="5039696241953571917">查看和管理您的 Google 帐号中保存的密码</translation>
 <translation id="5039804452771397117">允许</translation>
@@ -4236,6 +4233,7 @@
 <translation id="5074318175948309511">您可能需要重新加载此页面，才能使新设置生效。</translation>
 <translation id="5074761966806028321">仍然需要获得权限才能完成设置</translation>
 <translation id="5075910247684008552">默认情况下，安全网站会拦截不安全内容</translation>
+<translation id="5078490485380754244">取消保存设备</translation>
 <translation id="5078638979202084724">为所有标签页添加书签</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5079010647467150187">添加内置 VPN…</translation>
@@ -7221,7 +7219,6 @@
 <translation id="8013993649590906847">如果图片缺少有用的说明，则 Chrome 会尝试为您提供一条说明。为便于创建说明，系统会将图片发送给 Google。</translation>
 <translation id="8014154204619229810">更新程序正在运行，请稍后刷新并再次查看。</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />无法还原到之前安装的版本。请重新尝试对您的设备执行 Powerwash 操作。</translation>
-<translation id="8015163965024115122">您对<ph name="IDS_SHORT_PRODUCT_NAME" />或<ph name="IDS_SHORT_PRODUCT_NAME" />应用的使用时长已达到您家长所设的上限。</translation>
 <translation id="8016266267177410919">临时存储</translation>
 <translation id="8017176852978888182">Linux 共享目录</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8354,7 +8351,6 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />为获得最佳体验，请将 <ph name="DEVICE_OS" /> 安装到您的内部磁盘。您也可等到需要时再从登录屏幕安装它。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果尚未做好安装前的准备工作，您可从 USB 运行它来试用一下。这样做不会更改您的现有操作系统和数据，但可能会在存储和性能方面受到限制。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">在固定标签页中打开</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" />已被暂停</translation>
 <translation id="9124003689441359348">已保存的密码将显示在这里</translation>
 <translation id="9126149354162942022">光标颜色</translation>
 <translation id="9128317794749765148">无法完成设置</translation>

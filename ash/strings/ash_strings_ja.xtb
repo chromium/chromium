@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">アイテムのスキャン</translation>
 <translation id="1056775291175587022">なし</translation>
 <translation id="1056898198331236512">警告</translation>
+<translation id="1058009965971887428">フィードバックを送信</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">置換</translation>
 <translation id="1073899992769346247">バッテリーを交換または充電してください</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> の管理対象ユーザー</translation>
 <translation id="36813544980941320">スマートフォンと <ph name="DEVICE_NAME" /> で Wi-Fi ネットワークが共有されます</translation>
 <translation id="3694122362646626770">ウェブサイト</translation>
-<translation id="3701206655856637070">スクリーン キャプチャの保存先を変更できるようになりました</translation>
 <translation id="3702809606464356667">現在のデスクのウィンドウを表示しています、すべてのデスクのウィンドウを表示するには上矢印キーを押してください</translation>
 <translation id="3702846122927433391">ナイジェリアの人口を教えて</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@
 <translation id="6182592640011875895">デスクを開く</translation>
 <translation id="619279033188484792"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真、メディア、通知を表示します</translation>
 <translation id="619335566042889110">今すぐ完全に充電</translation>
+<translation id="6193431488227440296">Dev</translation>
 <translation id="6220928844947387476">画面と自分を同時に録画できるようになりました</translation>
 <translation id="622484624075952240">下矢印キー</translation>
 <translation id="6231419273573514727">周辺機器のパフォーマンスが制限されている可能性があります</translation>

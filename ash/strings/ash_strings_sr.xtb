@@ -14,6 +14,7 @@
 <translation id="1052916631016577720">Скенирање ставки</translation>
 <translation id="1056775291175587022">Нема мрежа</translation>
 <translation id="1056898198331236512">Упозорење</translation>
+<translation id="1058009965971887428">Пошаљи повратне информације</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Замени</translation>
 <translation id="1073899992769346247">Замените или напуните батерију</translation>
@@ -469,7 +470,6 @@
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Корисник којим се управља</translation>
 <translation id="36813544980941320">WiFi мреже ће се делити између вашег телефона и уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Веб-сајтови</translation>
-<translation id="3701206655856637070">Сада можете да промените где се снимци екрана чувају</translation>
 <translation id="3702809606464356667">Приказују се прозори са актуелне радне површине. Притисните тастер са стрелицом нагоре да би се приказивали прозори са свих радних површина.</translation>
 <translation id="3702846122927433391">Популација Нигерије</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@
 <translation id="6182592640011875895">Отвори радну површину</translation>
 <translation id="619279033188484792">Прегледајте недавне слике, медијски садржај и обавештења телефона на уређају <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Одмах напуните до краја</translation>
+<translation id="6193431488227440296">Развојна</translation>
 <translation id="6220928844947387476">Сада истовремено можете да снимате себе и екран</translation>
 <translation id="622484624075952240">Надоле</translation>
 <translation id="6231419273573514727">Учинак периферних уређаја ће можда бити ограничен</translation>

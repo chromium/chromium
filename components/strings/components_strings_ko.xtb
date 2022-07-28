@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">기기 ID:</translation>
 <translation id="3677008721441257057">&lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;을(를) 찾으셨나요?</translation>
 <translation id="3678029195006412963">요청을 서명할 수 없음</translation>
+<translation id="3678342917559046352">잘못된 확장 프로그램: 값이 &lt;extension_id&gt; 또는 &lt;extension_id&gt;;&lt;update_url&gt; 형식이어야 합니다.</translation>
 <translation id="3678529606614285348">새 시크릿 창에서 페이지 열기(Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">인증서 정보</translation>
 <translation id="3701427423622901115">재설정이 확인되었습니다.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">검색 기능</translation>
 <translation id="4644670975240021822">역순으로 인쇄면이 아래를 향하게</translation>
 <translation id="4646534391647090355">지금 이동</translation>
+<translation id="4648262692072505866">해시는 SHA-256 형식이어야 합니다.</translation>
 <translation id="4652266463001779298">허용되지 않음</translation>
 <translation id="4653167719759882810">합병 및 인수</translation>
 <translation id="4658638640878098064">왼쪽 상단 스테이플</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 검색</translation>
 <translation id="4930153903256238152">대용량</translation>
+<translation id="4936134414789135531">삽입된 <ph name="VALUE_NAME" />을(를) 찾을 수 없습니다.</translation>
 <translation id="4936675324097895694">금융</translation>
 <translation id="4940163644868678279">Chrome 시크릿 모드</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">트레이 13</translation>
 <translation id="5216942107514965959">최근 방문: 오늘</translation>
+<translation id="5217759126664161410">프로토콜 형식이 잘못되었습니다.</translation>
 <translation id="5222812217790122047">이메일은 필수입니다.</translation>
 <translation id="5228404122310299359">파티 및 휴가 용품</translation>
 <translation id="5229588705416009823">대규모 멀티플레이어 게임</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">광고 차단됨</translation>
 <translation id="5400836586163650660">그레이</translation>
 <translation id="540969355065856584">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없습니다. 서버의 보안 인증서가 현재 유효하지 않습니다. 서버를 잘못 설정했거나 공격자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
+<translation id="5412040515238827314">잘못된 형식: 패턴 목록이 필요합니다.</translation>
 <translation id="5412236728747081950">이 사이트는 Chrome에 저장된 내 관심분야 정보를 토대로 더욱 관련성 있는 광고를 표시합니다.</translation>
 <translation id="541416427766103491">스태커 4</translation>
 <translation id="5421136146218899937">인터넷 사용 기록 삭제...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">반려동물 및 야생동물</translation>
 <translation id="5759751709240058861">카메라 사용 및 이동</translation>
 <translation id="5763042198335101085">올바른 이메일 주소를 입력하세요.</translation>
+<translation id="5764725887548570807">원본 형식이 잘못되었습니다.</translation>
 <translation id="5765072501007116331">배달 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="57689295674415555">가상 카드 번호가 자동 완성되지 않았나요?</translation>
 <translation id="5776313857861697733">우선순위</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">발급 대상</translation>
 <translation id="610911394827799129">Google 계정의 내 활동(<ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />)에는 인터넷 방문 기록이 다른 형식으로 남아 있을 수도 있습니다</translation>
 <translation id="6116338172782435947">클립보드에 복사된 텍스트 및 이미지를 확인합니다.</translation>
+<translation id="6118782133429281336">원본 목록이 비어 있습니다.</translation>
 <translation id="6120179357481664955">UPI ID를 저장하시겠습니까?</translation>
 <translation id="6124432979022149706">Chrome Enterprise Connectors</translation>
 <translation id="6127379762771434464">항목 삭제됨</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Chrome 시크릿 모드 자세히 알아보기<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">파일 확장자가 비어 있거나 형식이 잘못되었습니다.</translation>
 <translation id="6146055958333702838">케이블을 확인하고 사용 중인 라우터, 모뎀 또는 기타 네트워크 기기를
     재부팅하시기 바랍니다.</translation>
 <translation id="614940544461990577">다음 방법을 시도해 보세요.</translation>
@@ -2059,6 +2067,7 @@
 <translation id="666259744093848177">(x86_64 번역 버전)</translation>
 <translation id="6663846344464066639">합장</translation>
 <translation id="6665553082534466207">오른쪽 3공 펀칭</translation>
+<translation id="6668389483194953109">이름이 'custom'인 용지 크기를 찾았으나 'custom_size' 속성이 비어 있거나 유효하지 않습니다.</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
 <translation id="6683717648675961851">채용 공고</translation>
 <translation id="6685834062052613830">로그아웃 후 설정 완료</translation>
@@ -2072,6 +2081,7 @@
 <translation id="6696588630955820014">탭 공유 버튼, 링크 공유, QR 코드 생성, 전송 등의 옵션으로 탭을 공유하려면 Enter를 누르세요</translation>
 <translation id="6698381487523150993">생성됨:</translation>
 <translation id="6702919718839027939">발표</translation>
+<translation id="6704458454638854812">'custom_size' 속성이 설정되어 있으므로 속성 이름이 'custom'이어야 합니다.</translation>
 <translation id="6709133671862442373">뉴스</translation>
 <translation id="6709888928011386878">악기</translation>
 <translation id="6710213216561001401">이전</translation>

@@ -1538,7 +1538,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2390347491606624519">S strežnikom proxy se ni mogoče povezati, znova se prijavite</translation>
 <translation id="2390782873446084770">Sinhronizacija poverilnic za Wi-Fi</translation>
 <translation id="2391419135980381625">Standardna pisava</translation>
-<translation id="2392163307141705938">Dosegel(-la) si časovno omejitev, ki jo je starš nastavil za izdelek <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Aktiviraj</translation>
 <translation id="2393136602862631930">Nastavitev aplikacije <ph name="APP_NAME" /> v Chromebooku</translation>
 <translation id="2393313392064891208">Vsebina pogojev za Google ChromeOS Flex</translation>
@@ -1664,7 +1663,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2505669838803949807">EID naprave je <ph name="EID_NUMBER" />. Zastopnik za pomoč strankam vam lahko na podlagi številke EID pomaga aktivirati storitev.</translation>
 <translation id="250704661983564564">Razporeditev prikaza</translation>
 <translation id="2507253002925770350">Kartonček je odstranjen</translation>
-<translation id="2507397597949272797">Aplikacija <ph name="NAME" /> je začasno zaustavljena</translation>
 <translation id="2508428939232952663">Račun za Trgovino Google Play</translation>
 <translation id="2509495747794740764">Vrednost za prilagajanje velikosti mora biti število med 10 in 200.</translation>
 <translation id="2509566264613697683">8 x</translation>
@@ -1908,7 +1906,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2743387203779672305">Kopiraj v odložišče</translation>
 <translation id="2745080116229976798">Microsoftova kvalificirana podrejenost</translation>
 <translation id="2747266560080989517">V tej datoteki je občutljiva ali nevarna vsebina. Lastnika datoteke prosite, naj odpravi težavo.</translation>
-<translation id="2748061034695037846">Domena <ph name="DOMAIN" /> je začasno zaustavljena</translation>
 <translation id="2749756011735116528">Prijavite se v storitev <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Preverjanje slovnice in črkovanja</translation>
@@ -4251,7 +4248,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5033137252639132982">Ni dovoljena uporaba tipal gibanja</translation>
 <translation id="5033266061063942743">Geometrijske oblike</translation>
 <translation id="5037676449506322593">Izberi vse</translation>
-<translation id="5038022729081036555">Jutri jo lahko uporabljaš <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Predhodno ste se odločili, da ne odobritie nobenih razširitev v <ph name="ORIGIN" />.</translation>
 <translation id="5039696241953571917">Shranjena gesla si lahko ogledate in jih upravljate v računu Google</translation>
 <translation id="5039804452771397117">Dovoli</translation>
@@ -4289,6 +4285,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5074761966806028321">Za dokončanje nastavitve je še potrebno dovoljenje</translation>
 <translation id="5075563999073408211">Upravljajte napravo z enim ali več stikali. Stikala so lahko tipke na tipkovnici, gumbi na igralnem ploščku ali namenske naprave.</translation>
 <translation id="5075910247684008552">Vsebina, ki ni varna, je na varnih spletnih mestih privzeto blokirana</translation>
+<translation id="5078490485380754244">Pozabi napravo</translation>
 <translation id="5078638979202084724">Dodaj vse zavihke med zaznamke</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5079010647467150187">Dodaj vgrajeno omrežje VPN …</translation>
@@ -5053,6 +5050,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – snemanje fotoaparata ali mikrofona</translation>
 <translation id="583673505367439042">Spletna mesta lahko zahtevajo urejanje datotek in map v napravi.</translation>
 <translation id="583756221537636748">Škatlica</translation>
+<translation id="5840658767386246331">Poišči z Googlom</translation>
 <translation id="5840680448799937675">Datoteke bodo vedno deljene brez internetne povezave</translation>
 <translation id="5841270259333717135">Konfiguriranje etherneta</translation>
 <translation id="5842497610951477805">Omogočanje Bluetootha</translation>
@@ -6549,6 +6547,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7307129035224081534">Zaustavljeno</translation>
 <translation id="7308643132139167865">Jeziki spletnih mest</translation>
 <translation id="7310598146671372464">Prijava ni uspela. Strežnik ne podpira navedenih vrst šifriranja Kerberos. Obrnite se na skrbnika.</translation>
+<translation id="7311089766378749632">Zahtevanje branja in spreminjanja mesta <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Skrbnik ponastavlja vašo kartico eSIM. To lahko traja nekaj minut.</translation>
 <translation id="7320213904474460808">Privzeto omrežje</translation>
 <translation id="7321545336522791733">Strežnik ni dosegljiv</translation>
@@ -7141,6 +7140,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7869655448736341731">Vse</translation>
 <translation id="7870730066603611552">Ogled možnosti sinhronizacije po nastavitvi</translation>
 <translation id="7870790288828963061">Ni aplikacij za kiosk z novejšo različico. Ni česa posodobiti. Odstranite ključek USB.</translation>
+<translation id="7871049986386271121">Vedno na tem spletnem mestu</translation>
 <translation id="7871109039747854576">Premikanje po seznamu kandidatov s tipkama »<ph name="COMMA" />« in »<ph name="PERIOD" />«.</translation>
 <translation id="787268756490971083">Izklopljeno</translation>
 <translation id="7872758299142009420">Preveč ugnezdenih skupin: <ph name="ERROR_LINE" /></translation>
@@ -7295,7 +7295,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8013993649590906847">Če slika nima koristnega opisa, ga bo Chrome poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu.</translation>
 <translation id="8014154204619229810">Orodje za posodabljanje se trenutno izvaja. Osvežite čez minuto in preverite znova.</translation>
 <translation id="8014206674403687691">Izdelka <ph name="IDS_SHORT_PRODUCT_NAME" /> ni mogoče povrniti na prejšnjo različico. Poskusite uporabiti funkcijo Powerwash.</translation>
-<translation id="8015163965024115122">Omejitev za uporabo aplikacije <ph name="IDS_SHORT_PRODUCT_NAME" /> ali <ph name="IDS_SHORT_PRODUCT_NAME" />, ki jo je nastavil starš, je potekla.</translation>
 <translation id="8016266267177410919">Začasna shramba</translation>
 <translation id="8017176852978888182">Imeniki Linux, deljeni z drugimi</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8438,7 +8437,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Za najboljšo izkušnjo namestite <ph name="DEVICE_OS" /> na notranji disk. Namestite ga lahko tudi pozneje na zaslonu za prijavo.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Če programa še ne želite namestiti, ga lahko zaženete s pogona USB in ga najprej preizkusite. Tako boste ohranili trenutni operacijski sistem in podatke, vendar lahko pride do omejitev shrambe in delovanja.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Odpri na pripetem zavihku</translation>
-<translation id="9122176249172999202">Aplikacija <ph name="IDS_SHORT_PRODUCT_NAME" /> je začasno zaustavljena</translation>
 <translation id="9124003689441359348">Shranjena gesla bodo prikazana tukaj</translation>
 <translation id="9126149354162942022">Barva kazalca</translation>
 <translation id="9128317794749765148">Nastavitve ni bilo mogoče dokončati</translation>

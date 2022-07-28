@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">ИД уређаја:</translation>
 <translation id="3677008721441257057">Да ли сте мислили &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Потписивање захтева није успело</translation>
+<translation id="3678342917559046352">Неважећи додатак: Очекивано је да вредност буде један од следећих облика: &lt;extension_id&gt; или &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Отворите страницу у ноцом прозору без архивирања (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">Информације о сертификату</translation>
 <translation id="3701427423622901115">Ресетовање је потврђено.</translation>
@@ -1342,6 +1343,7 @@
 <translation id="464342062220857295">Функције претраге</translation>
 <translation id="4644670975240021822">Обрнутим редоследом са одштампаном страном надоле</translation>
 <translation id="4646534391647090355">Одведи ме тамо</translation>
+<translation id="4648262692072505866">Хеш мора да буде у формату SHA-256.</translation>
 <translation id="4652266463001779298">Није дозвољено</translation>
 <translation id="4653167719759882810">Припајање и куповина предузећа</translation>
 <translation id="4658638640878098064">Спајање у горњем левом углу</translation>
@@ -1451,6 +1453,7 @@
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте претражили</translation>
 <translation id="4930153903256238152">Велики капацитет</translation>
+<translation id="4936134414789135531">Уметнута вредност <ph name="VALUE_NAME" /> није пронађена.</translation>
 <translation id="4936675324097895694">Финансије</translation>
 <translation id="4940163644868678279">Без архивирања у Chrome-у</translation>
 <translation id="4943872375798546930">Нема резултата</translation>
@@ -1568,6 +1571,7 @@
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">13. фиока</translation>
 <translation id="5216942107514965959">Последњи посећен данас</translation>
+<translation id="5217759126664161410">Неважећи формат протокола.</translation>
 <translation id="5222812217790122047">Имејл је обавезан</translation>
 <translation id="5228404122310299359">Прибор за забаве и празнике</translation>
 <translation id="5229588705416009823">Масовне игре за више играча</translation>
@@ -1640,6 +1644,7 @@
 <translation id="5398772614898833570">Огласи су блокирани</translation>
 <translation id="5400836586163650660">Сива</translation>
 <translation id="540969355065856584">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат тренутно није важећи. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
+<translation id="5412040515238827314">Неважећи формат: Очекивана је листа образаца.</translation>
 <translation id="5412236728747081950">Овај сајт прима податке о вашим интересовањима из Chrome-а да би вам приказивао релевантније огласе</translation>
 <translation id="541416427766103491">4. преграда за слагање</translation>
 <translation id="5421136146218899937">Обриши податке прегледања...</translation>
@@ -1758,6 +1763,7 @@
 <translation id="5754400531489347219">Кућни љубимци и животиње</translation>
 <translation id="5759751709240058861">користи и помера камеру</translation>
 <translation id="5763042198335101085">Унесите важећу имејл адресу</translation>
+<translation id="5764725887548570807">Неважећи формат порекла.</translation>
 <translation id="5765072501007116331">Да бисте видели начине и захтеве за испоруку, изаберите адресу</translation>
 <translation id="57689295674415555">Број виртуелне картице није унет?</translation>
 <translation id="5776313857861697733">Приоритет</translation>
@@ -1882,10 +1888,12 @@
 <translation id="6107012941649240045">Издато за</translation>
 <translation id="610911394827799129">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">да види текст и слике који су копирани у привремену меморију</translation>
+<translation id="6118782133429281336">Листа порекла је празна.</translation>
 <translation id="6120179357481664955">Желите да сачувате ИД за UPI?</translation>
 <translation id="6124432979022149706">Прикључци за Chrome за предузећа</translation>
 <translation id="6127379762771434464">Уклонили сте ставку</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Сазнајте више о режиму Без архивирања у Chrome-у<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">Екстензија фајла је празна или је у погрешном формату.</translation>
 <translation id="6146055958333702838">Проверите све каблове и рестартујте све рутере, модеме или друге мрежне уређаје које можда користите.</translation>
 <translation id="614940544461990577">Покушајте:</translation>
 <translation id="6150036310511284407">Троструко бушење на левој страни</translation>
@@ -2058,6 +2066,7 @@
 <translation id="666259744093848177">(x86_64 преведено)</translation>
 <translation id="6663846344464066639">Склопљене шаке</translation>
 <translation id="6665553082534466207">Троструко бушење на десној страни</translation>
+<translation id="6668389483194953109">Пронађен је назив величине папира „прилагођено“, али је својство „custom_size“ празно или неважеће.</translation>
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
 <translation id="6683717648675961851">Огласи за посао</translation>
 <translation id="6685834062052613830">Одјавите се и довршите подешавање</translation>
@@ -2071,6 +2080,7 @@
 <translation id="6696588630955820014">Дугме Дели ову картицу, притисните Enter да бисте делили ову картицу дељењем линка, прављењем QR кода, пребацивањем и на друге начине</translation>
 <translation id="6698381487523150993">Направљено:</translation>
 <translation id="6702919718839027939">Презентација</translation>
+<translation id="6704458454638854812">Својство „custom_size“ је подешено. Очекивани назив је „прилагођено“.</translation>
 <translation id="6709133671862442373">Вести</translation>
 <translation id="6709888928011386878">Музички инструменти</translation>
 <translation id="6710213216561001401">Претходно</translation>

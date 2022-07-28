@@ -14,6 +14,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="1052916631016577720">Iskeni sento</translation>
 <translation id="1056775291175587022">Akuna-network</translation>
 <translation id="1056898198331236512">Isexwayiso</translation>
+<translation id="1058009965971887428">Bika impendulo</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1062407476771304334">Faka esikhundleni</translation>
 <translation id="1073899992769346247">Miselela noma shaja kabusha ibhethri</translation>
@@ -469,7 +470,6 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="366222428570480733">U-<ph name="USER_EMAIL_ADDRESS" /> Yomsebenzisi ophethwe</translation>
 <translation id="36813544980941320">Amanethiwekhi we-Wi-Fi azokwabiwa phakathi kwefoni yakho ne-<ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Amawebhusayithi</translation>
-<translation id="3701206655856637070">Manje usungashintsha lapho ukuthwebula iskrini okulondolozwa khona</translation>
 <translation id="3702809606464356667">Ibonisa amawindi kusuka kutafula lamanje, cindezela ukhiye Womcibisholo waphezulu ukuze ubonise amawindi kusuka kuwo wonke amatafula</translation>
 <translation id="3702846122927433391">Okudumile e-Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -902,6 +902,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="6182592640011875895">Vula itafula</translation>
 <translation id="619279033188484792">Buka izithombe zakamuva zefoni yakho, imidiya, kanye nezaziso ku-<ph name="DEVICE_TYPE" /> yakho</translation>
 <translation id="619335566042889110">Shaja ngokugcwele manje</translation>
+<translation id="6193431488227440296">I-Dev</translation>
 <translation id="6220928844947387476">Manje usungakwazi ukuzirekhoda wena nesikrini sakho ngesikhathi esifanayo</translation>
 <translation id="622484624075952240">Phansi</translation>
 <translation id="6231419273573514727">Ukusebenza kwemingcele kungakhawulelwa</translation>
@@ -1171,6 +1172,7 @@ Ukufaka okusha</translation>
 <translation id="7842569679327885685">Isexwayiso: Isici sokuhlola</translation>
 <translation id="7846634333498149051">Ikhibhodi</translation>
 <translation id="7848989271541991537">Ihanjiswe kukhasi elingu-<ph name="PAGE_NUMBER" />, umugqa ongu-<ph name="ROW_NUMBER" />, ikholomu engu-<ph name="COLUMN_NUMBER" />.</translation>
+<translation id="7851768487828137624">I-Canary</translation>
 <translation id="7860671499921112077">Swayiphela phezulu ngeminwe emithathu ukungena Kukubuka konke</translation>
 <translation id="7866482334467279021">ku-</translation>
 <translation id="7868900307798234037">Ukuvula ngesigxivizo somunwe</translation>

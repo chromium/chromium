@@ -1535,7 +1535,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2390347491606624519">Không thể kết nối với proxy, vui lòng đăng nhập lại</translation>
 <translation id="2390782873446084770">Đồng bộ hóa Wi-Fi</translation>
 <translation id="2391419135980381625">Phông chữ tiêu chuẩn</translation>
-<translation id="2392163307141705938">Bạn đã đạt đến giới hạn thời gian sử dụng <ph name="IDS_SHORT_PRODUCT_NAME" /> do cha mẹ đặt ra.</translation>
 <translation id="2392369802118427583">Kích hoạt</translation>
 <translation id="2393136602862631930">Thiết lập ứng dụng <ph name="APP_NAME" /> trên Chromebook</translation>
 <translation id="2393313392064891208">Nội dung điều khoản của Google ChromeOS Flex</translation>
@@ -1661,7 +1660,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2505669838803949807">Số EID thiết bị của bạn là <ph name="EID_NUMBER" />. Người đại diện bộ phận dịch vụ khách hàng có thể dùng số EID để giúp bạn kích hoạt dịch vụ.</translation>
 <translation id="250704661983564564">Sắp xếp màn hình</translation>
 <translation id="2507253002925770350">Đã xóa phiếu</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> đã bị tạm dừng</translation>
 <translation id="2508428939232952663">Tài khoản Cửa hàng Google Play</translation>
 <translation id="2509495747794740764">Số tỷ lệ phải là một số giữa 10 và 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1905,7 +1903,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2743387203779672305">Sao chép vào bảng nhớ tạm</translation>
 <translation id="2745080116229976798">Microsoft Qualified Subordination</translation>
 <translation id="2747266560080989517">Tệp này có chứa nội dung nhạy cảm hoặc nguy hiểm. Hãy yêu cầu chủ sở hữu tệp khắc phục vấn đề.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> đã bị tạm dừng</translation>
 <translation id="2749756011735116528">Đăng nhập vào <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Kiểm tra Ngữ pháp và Chính tả</translation>
@@ -4248,7 +4245,6 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5033137252639132982">Không được phép sử dụng cảm biến chuyển động</translation>
 <translation id="5033266061063942743">Hình dạng hình học</translation>
 <translation id="5037676449506322593">Chọn Tất cả</translation>
-<translation id="5038022729081036555">Bạn có thể dùng ứng dụng này trong <ph name="TIME_LIMIT" /> vào ngày mai.</translation>
 <translation id="5038818366306248416">Trước đây, bạn đã chọn không chấp nhận tiện ích nào trên <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Xem và quản lý các mật khẩu đã lưu trong Tài khoản Google của bạn</translation>
 <translation id="5039804452771397117">Cho phép</translation>
@@ -4286,6 +4282,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5074761966806028321">Vẫn cần quyền để hoàn tất quá trình thiết lập</translation>
 <translation id="5075563999073408211">Điều khiển thiết bị bằng một hoặc nhiều công tắc. Công tắc có thể là phím trên bàn phím, nút trên tay điều khiển trò chơi hoặc các thiết bị chuyên dụng.</translation>
 <translation id="5075910247684008552">Theo mặc định, các trang web an toàn sẽ chặn nội dung không an toàn</translation>
+<translation id="5078490485380754244">Quên thiết bị</translation>
 <translation id="5078638979202084724">Đánh dấu trang tất cả các thẻ</translation>
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5079010647467150187">Thêm VPN tích hợp sẵn...</translation>
@@ -7284,7 +7281,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8013993649590906847">Chrome sẽ cố gắng mô tả cho bạn những hình ảnh không có nội dung mô tả hữu ích. Để tạo nội dung mô tả, các hình ảnh sẽ được gửi đến Google.</translation>
 <translation id="8014154204619229810">Trình cập nhật hiện đang chạy. Hãy làm mới sau một phút nữa để kiểm tra lại.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> không thể hoàn nguyên về phiên bản được cài đặt trước. Vui lòng thử lại để Powerwash thiết bị của bạn.</translation>
-<translation id="8015163965024115122">Giới hạn thời gian mà cha mẹ bạn đặt cho các ứng dụng <ph name="IDS_SHORT_PRODUCT_NAME" /> hoặc <ph name="IDS_SHORT_PRODUCT_NAME" /> đã hết.</translation>
 <translation id="8016266267177410919">Bộ nhớ tạm thời</translation>
 <translation id="8017176852978888182">Thư mục do Linux chia sẻ</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8424,7 +8420,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Để có trải nghiệm tốt nhất, hãy cài đặt <ph name="DEVICE_OS" /> vào ổ đĩa trong của bạn. Bạn cũng có thể cài đặt ứng dụng vào lúc khác trên màn hình đăng nhập.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Nếu chưa sẵn sàng cài đặt, bạn có thể chạy ứng dụng từ USB để dùng thử trước. Thao tác này sẽ giữ lại hệ điều hành và dữ liệu hiện có, nhưng bạn có thể gặp phải các giới hạn về dung lượng lưu trữ và hiệu suất.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Mở dưới dạng thẻ được ghim</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> đã bị tạm dừng</translation>
 <translation id="9124003689441359348">Mật khẩu đã lưu của bạn sẽ xuất hiện ở đây</translation>
 <translation id="9126149354162942022">Màu con trỏ</translation>
 <translation id="9128317794749765148">Không thể hoàn tất quá trình thiết lập</translation>

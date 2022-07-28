@@ -1003,6 +1003,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3676592649209844519">ID del dispositivo:</translation>
 <translation id="3677008721441257057">Quizás quisiste decir: &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;</translation>
 <translation id="3678029195006412963">No se ha podido firmar la solicitud</translation>
+<translation id="3678342917559046352">Extensión no válida: se esperaba que el valor tuviera el formato &lt;extension_id&gt; o &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Abre una página en una nueva ventana de Incógnito (Ctrl + Mayús + N).</translation>
 <translation id="3681007416295224113">Datos del certificado</translation>
 <translation id="3701427423622901115">Se han restablecido los ajustes.</translation>
@@ -1342,6 +1343,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="464342062220857295">Buscar funciones</translation>
 <translation id="4644670975240021822">Orden inverso boca abajo</translation>
 <translation id="4646534391647090355">Ir allí ahora</translation>
+<translation id="4648262692072505866">El hash debe tener el formato SHA‑256.</translation>
 <translation id="4652266463001779298">No permitido</translation>
 <translation id="4653167719759882810">Fusiones y adquisiciones</translation>
 <translation id="4658638640878098064">Grapado en la parte superior izquierda</translation>
@@ -1451,6 +1453,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para buscar</translation>
 <translation id="4930153903256238152">Gran capacidad</translation>
+<translation id="4936134414789135531">No se ha encontrado el <ph name="VALUE_NAME" /> insertado.</translation>
 <translation id="4936675324097895694">Finanzas</translation>
 <translation id="4940163644868678279">Incógnito en Chrome</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
@@ -1568,6 +1571,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Bandeja 13</translation>
 <translation id="5216942107514965959">Última visita: hoy</translation>
+<translation id="5217759126664161410">Formato de protocolo no válido.</translation>
 <translation id="5222812217790122047">Correo electrónico obligatorio</translation>
 <translation id="5228404122310299359">Suministros para fiestas y vacaciones</translation>
 <translation id="5229588705416009823">Juegos multijugador masivos</translation>
@@ -1640,6 +1644,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5398772614898833570">Anuncios bloqueados</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="540969355065856584">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, ya que su certificado de seguridad no es válido en este momento. Esto puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
+<translation id="5412040515238827314">Formato no válido: se esperaba una lista de patrones.</translation>
 <translation id="5412236728747081950">Este sitio consulta tus intereses en Chrome para mostrarte anuncios más relevantes</translation>
 <translation id="541416427766103491">Apilador 4</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
@@ -1758,6 +1763,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5754400531489347219">Animales y mascotas</translation>
 <translation id="5759751709240058861">Usar y mover tu cámara</translation>
 <translation id="5763042198335101085">Introduce una dirección de correo electrónico válida</translation>
+<translation id="5764725887548570807">Formato de origen no válido.</translation>
 <translation id="5765072501007116331">Selecciona una dirección para ver los métodos de entrega y los requisitos</translation>
 <translation id="57689295674415555">¿No se ha introducido el número de tarjeta virtual?</translation>
 <translation id="5776313857861697733">Prioridad</translation>
@@ -1882,10 +1888,12 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6107012941649240045">Enviado a</translation>
 <translation id="610911394827799129">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en la página <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes que se hayan copiado en el portapapeles</translation>
+<translation id="6118782133429281336">La lista de orígenes está vacía.</translation>
 <translation id="6120179357481664955">¿Recuerdas tu ID de UPI?</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6127379762771434464">Elemento quitado</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Más información sobre el modo Incógnito de Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">La extensión de archivo está vacía o tiene un formato incorrecto.</translation>
 <translation id="6146055958333702838">Comprueba los cables y reinicia los routers, los módems o cualquier otro dispositivo
     de red que estés utilizando.</translation>
 <translation id="614940544461990577">Prueba a:</translation>
@@ -2059,6 +2067,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="666259744093848177">(x86_64 traducido)</translation>
 <translation id="6663846344464066639">Manos rezando</translation>
 <translation id="6665553082534466207">Perforado triple en la parte derecha</translation>
+<translation id="6668389483194953109">Se ha encontrado el nombre de tamaño de papel "custom", pero la propiedad "custom_size" está vacía o no es válida.</translation>
 <translation id="6671697161687535275">¿Quitar sugerencia de formulario de Chromium?</translation>
 <translation id="6683717648675961851">Ofertas de empleo</translation>
 <translation id="6685834062052613830">Cierra sesión y completa la configuración</translation>
@@ -2072,6 +2081,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6696588630955820014">Botón Compartir esta pestaña: pulsa Intro para compartir esta pestaña mediante el enlace, creando un código QR, enviando contenido y más</translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="6702919718839027939">Presentar</translation>
+<translation id="6704458454638854812">Se ha definido la propiedad "custom_size", pero el nombre esperado era "custom".</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709888928011386878">Instrumentos musicales</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -2259,6 +2269,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7238585580608191973">Huella digital SHA-256</translation>
 <translation id="7240120331469437312">Nombre alternativo de la entidad receptora del certificado</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# coincidencia}other{# coincidencias}}</translation>
 <translation id="724691107663265825">El sitio web al que vas a acceder contiene software malicioso</translation>
 <translation id="724975217298816891">Introduce la fecha de caducidad y el código CVC de la tarjeta <ph name="CREDIT_CARD" /> para actualizar sus detalles. Cuando la confirmes, su información se compartirá con este sitio web.</translation>
 <translation id="7251437084390964440">La configuración de red no cumple el estándar ONC. Es posible que no se importen algunas partes de la configuración.

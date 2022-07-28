@@ -1000,6 +1000,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3676592649209844519">ID dispositivo:</translation>
 <translation id="3677008721441257057">Forse intendevi &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Impossibile firmare la richiesta</translation>
+<translation id="3678342917559046352">Estensione non valida: il valore deve essere in uno dei seguenti formati: &lt;extension_id&gt; o &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Apri la pagina in un'altra finestra di navigazione in incognito (CTRL-MAIUSC-N)</translation>
 <translation id="3681007416295224113">Informazioni certificato</translation>
 <translation id="3701427423622901115">Reimpostazione confermata.</translation>
@@ -1339,6 +1340,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="464342062220857295">Funzionalità di ricerca</translation>
 <translation id="4644670975240021822">Ordine inverso a faccia in giù</translation>
 <translation id="4646534391647090355">Vai subito</translation>
+<translation id="4648262692072505866">L'hash deve essere nel formato SHA-256.</translation>
 <translation id="4652266463001779298">Non consentita</translation>
 <translation id="4653167719759882810">Fusioni e acquisizioni</translation>
 <translation id="4658638640878098064">Pinzatura in alto a sinistra</translation>
@@ -1448,6 +1450,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per cercare</translation>
 <translation id="4930153903256238152">Capacità elevata</translation>
+<translation id="4936134414789135531">Impossibile trovare l'elemento <ph name="VALUE_NAME" /> inserito.</translation>
 <translation id="4936675324097895694">Finanza</translation>
 <translation id="4940163644868678279">Modalità di navigazione in incognito in Chrome</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
@@ -1565,6 +1568,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Vassoio 13</translation>
 <translation id="5216942107514965959">Ultima visita: oggi</translation>
+<translation id="5217759126664161410">Formato del protocollo non valido.</translation>
 <translation id="5222812217790122047">Email obbligatoria</translation>
 <translation id="5228404122310299359">Articoli per feste e festività</translation>
 <translation id="5229588705416009823">Giochi multiplayer di massa</translation>
@@ -1637,6 +1641,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5398772614898833570">Annunci bloccati</translation>
 <translation id="5400836586163650660">Grigio</translation>
 <translation id="540969355065856584">Questo server non è riuscito a verificare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato valido in questa fase. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che ha intercettato la connessione.</translation>
+<translation id="5412040515238827314">Formato non valido: è previsto un elenco di pattern.</translation>
 <translation id="5412236728747081950">Questo sito acquisisce i tuoi interessi da Chrome per mostrarti annunci più pertinenti</translation>
 <translation id="541416427766103491">Fascicolatore 4</translation>
 <translation id="5421136146218899937">Cancella dati di navigazione...</translation>
@@ -1755,6 +1760,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5754400531489347219">Animali e animali da compagnia</translation>
 <translation id="5759751709240058861">Usare e spostare la videocamera</translation>
 <translation id="5763042198335101085">Inserisci un indirizzo email valido</translation>
+<translation id="5764725887548570807">Formato di origine non valido.</translation>
 <translation id="5765072501007116331">Seleziona un indirizzo per conoscere i requisiti e i metodi di consegna</translation>
 <translation id="57689295674415555">Il numero della carta virtuale non è stato compilato?</translation>
 <translation id="5776313857861697733">Priorità</translation>
@@ -1879,10 +1885,12 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6107012941649240045">Rilasciato a</translation>
 <translation id="610911394827799129">Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione all'indirizzo <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Leggere testi e immagini copiati negli appunti</translation>
+<translation id="6118782133429281336">L'elenco delle origini è vuoto.</translation>
 <translation id="6120179357481664955">Ricordi il tuo ID UPI?</translation>
 <translation id="6124432979022149706">Connettori di Chrome Enterprise</translation>
 <translation id="6127379762771434464">Elemento rimosso</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Scopri di più sulla modalità di navigazione in incognito in Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">L'estensione del file è vuota o errata.</translation>
 <translation id="6146055958333702838">Controlla eventuali cavi e riavvia eventuali router, modem o altri dispositivi di rete in uso.</translation>
 <translation id="614940544461990577">Prova a:</translation>
 <translation id="6150036310511284407">Tripla perforatura a sinistra</translation>
@@ -2055,6 +2063,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="666259744093848177">(x86_64 translated)</translation>
 <translation id="6663846344464066639">Mani giunte</translation>
 <translation id="6665553082534466207">Tripla perforatura a destra</translation>
+<translation id="6668389483194953109">Trovato formato carta "custom", ma la proprietà "custom_size" è vuota o non valida.</translation>
 <translation id="6671697161687535275">Rimuovere il suggerimento per i moduli da Chromium?</translation>
 <translation id="6683717648675961851">Annunci di lavoro</translation>
 <translation id="6685834062052613830">Esci e completa la configurazione</translation>
@@ -2068,6 +2077,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6696588630955820014">Pulsante Condividi questa scheda, premi Invio per condividere questa scheda condividendo il link, creando un codice QR, mediante trasmissione e altro ancora</translation>
 <translation id="6698381487523150993">Data creazione:</translation>
 <translation id="6702919718839027939">Presentazione</translation>
+<translation id="6704458454638854812">La proprietà "custom_size" è impostata, il nome previsto è "custom".</translation>
 <translation id="6709133671862442373">Notizie</translation>
 <translation id="6709888928011386878">Strumenti musicali</translation>
 <translation id="6710213216561001401">Precedente</translation>

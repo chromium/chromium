@@ -1507,7 +1507,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2390347491606624519">Nie udało się nawiązać połączenia z serwerem proxy. Zaloguj się ponownie.</translation>
 <translation id="2390782873446084770">Wi-Fi Sync</translation>
 <translation id="2391419135980381625">Czcionka standardowa</translation>
-<translation id="2392163307141705938">Upłynął ustawiony przez rodzica limit czasu korzystania z <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2392369802118427583">Aktywuj</translation>
 <translation id="2393136602862631930">Zainstaluj <ph name="APP_NAME" /> na swoim Chromebooku</translation>
 <translation id="2393313392064891208">Treść Warunków korzystania z ChromeOS Flex</translation>
@@ -1633,7 +1632,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2505669838803949807">Numer EID urządzenia to <ph name="EID_NUMBER" />. Pracownik obsługi klienta może użyć numeru EID do aktywowania usługi.</translation>
 <translation id="250704661983564564">Rozmieszczanie wyświetlaczy</translation>
 <translation id="2507253002925770350">Zgłoszenie zostało usunięte</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> – wstrzymano</translation>
 <translation id="2508428939232952663">Konto w Sklepie Google Play</translation>
 <translation id="2509495747794740764">Współczynnik skalowania musi wynosić od 10 do 200.</translation>
 <translation id="2509566264613697683">8x</translation>
@@ -1877,7 +1875,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2743387203779672305">Skopiuj do schowka</translation>
 <translation id="2745080116229976798">Subordynacja kwalifikowana firmy Microsoft</translation>
 <translation id="2747266560080989517">Ten plik zawiera treści niebezpieczne lub treści o charakterze kontrowersyjnym. Poproś właściciela, by rozwiązał problem.</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> – wstrzymano</translation>
 <translation id="2749756011735116528">Zaloguj się w <ph name="PRODUCT_NAME" /></translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">Sprawdzaj gramatykę razem z pisownią</translation>
@@ -4219,7 +4216,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5033137252639132982">Nie zezwolono na używanie czujników ruchu</translation>
 <translation id="5033266061063942743">Kształty geometryczne</translation>
 <translation id="5037676449506322593">Wybierz wszystko</translation>
-<translation id="5038022729081036555">Jutro możesz z niej korzystać przez <ph name="TIME_LIMIT" />.</translation>
 <translation id="5038818366306248416">Poprzednio nie zezwoliłeś(-aś) na żadne rozszerzenia na <ph name="ORIGIN" /></translation>
 <translation id="5039696241953571917">Możesz wyświetlać zapisane hasła i zarządzać nimi na swoim koncie Google</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
@@ -4257,6 +4253,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5074761966806028321">Aby dokończyć konfigurację, musisz mieć odpowiednie uprawnienia</translation>
 <translation id="5075563999073408211">Steruj urządzeniem za pomocą co najmniej 1 przełącznika. Przełącznikami mogą być klawisze na klawiaturze, przyciski na padzie do gier lub specjalne urządzenia.</translation>
 <translation id="5075910247684008552">Na bezpiecznych stronach treści niezabezpieczone są domyślnie blokowane</translation>
+<translation id="5078490485380754244">Zapominanie urządzenia</translation>
 <translation id="5078638979202084724">Dodaj wszystkie karty do zakładek</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5079010647467150187">Dodaj wbudowaną sieć VPN…</translation>
@@ -5018,6 +5015,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – nagrywanie kamerą lub mikrofonem</translation>
 <translation id="583673505367439042">Strony mogą prosić o zgodę na edytowanie plików i folderów na urządzeniu</translation>
 <translation id="583756221537636748">Etui</translation>
+<translation id="5840658767386246331">Wyszukaj w Google</translation>
 <translation id="5840680448799937675">Pliki będą zawsze udostępniane offline</translation>
 <translation id="5841270259333717135">Konfiguracja sieci Ethernet</translation>
 <translation id="5842497610951477805">Włącz Bluetooth</translation>
@@ -6512,6 +6510,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7307129035224081534">Wstrzymano</translation>
 <translation id="7308643132139167865">Języki wyświetlania stron internetowych</translation>
 <translation id="7310598146671372464">Logowanie nie udało się. Serwer nie obsługuje wybranych typów szyfrowania Kerberos. Skontaktuj się z administratorem.</translation>
+<translation id="7311089766378749632">Prośby o uprawnienia do odczytywania i modyfikowania strony <ph name="SITE_NAME" /></translation>
 <translation id="7312210124139670355">Administrator resetuje Twoją kartę eSIM. Może to potrwać kilka minut.</translation>
 <translation id="7320213904474460808">Łącz domyślnie z siecią</translation>
 <translation id="7321545336522791733">Serwer niedostępny</translation>
@@ -7104,6 +7103,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7869655448736341731">Wszystkie</translation>
 <translation id="7870730066603611552">Sprawdź opcje synchronizowania po konfiguracji</translation>
 <translation id="7870790288828963061">Nie odnaleziono nowszej wersji aplikacji kiosku. Aktualizacja nie jest wymagana. Odłącz pamięć USB.</translation>
+<translation id="7871049986386271121">Zawsze w tej witrynie</translation>
 <translation id="7871109039747854576">Użyj znaków <ph name="COMMA" /> i <ph name="PERIOD" /> do przechodzenia między stronami listy kandydatów</translation>
 <translation id="787268756490971083">Wyłączono</translation>
 <translation id="7872758299142009420">Za dużo zagnieżdżonych grup: <ph name="ERROR_LINE" /></translation>
@@ -7258,7 +7258,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8013993649590906847">Jeśli obraz nie ma przydatnego opisu, Chrome spróbuje go dla Ciebie stworzyć. W tym celu obrazy zostaną wysłane do Google.</translation>
 <translation id="8014154204619229810">Obecnie działa aktualizator. Odśwież za minutę, by sprawdzić ponownie.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> nie może przywrócić poprzednio zainstalowanej wersji. Spróbuj ponownie, by wykonać Powerwash na urządzeniu.</translation>
-<translation id="8015163965024115122">Ustawiony przez rodzica czas korzystania z aplikacji <ph name="IDS_SHORT_PRODUCT_NAME" /> lub <ph name="IDS_SHORT_PRODUCT_NAME" /> dobiegł końca.</translation>
 <translation id="8016266267177410919">Pamięć tymczasowa</translation>
 <translation id="8017176852978888182">Katalogi udostępnione Linuksa</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8397,7 +8396,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />System operacyjny <ph name="DEVICE_OS" /> będzie działać najlepiej po zainstalowaniu na dysku wewnętrznym. Instalację możesz przeprowadzić też później z poziomu ekranu logowania.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jeśli nie wszystko jest gotowe do instalacji, możesz uruchomić system z nośnika USB, aby go wypróbować. W takim przypadku Twój obecny system operacyjny i dane zostaną zachowane, ale możesz zauważyć ograniczenia dotyczące pamięci i wydajności.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">Otwórz jako przypiętą kartę</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> – wstrzymano</translation>
 <translation id="9124003689441359348">Tutaj pojawią się zapisane hasła</translation>
 <translation id="9126149354162942022">Kolor kursora</translation>
 <translation id="9128317794749765148">Nie udało się ukończyć konfiguracji</translation>

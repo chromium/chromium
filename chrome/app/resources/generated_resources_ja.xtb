@@ -1515,7 +1515,6 @@
 <translation id="2390347491606624519">プロキシに接続できません。もう一度ログインしてください</translation>
 <translation id="2390782873446084770">Wi-Fi 同期</translation>
 <translation id="2391419135980381625">標準フォント</translation>
-<translation id="2392163307141705938">保護者が設定した <ph name="IDS_SHORT_PRODUCT_NAME" /> の利用時間の上限に達しました。</translation>
 <translation id="2392369802118427583">有効にする</translation>
 <translation id="2393136602862631930">Chromebook で <ph name="APP_NAME" /> を設定</translation>
 <translation id="2393313392064891208">Google ChromeOS Flex 利用規約コンテンツ</translation>
@@ -1641,7 +1640,6 @@
 <translation id="2505669838803949807">デバイスの EID は <ph name="EID_NUMBER" /> です。カスタマー サービスの担当者はこの EID 番号を使用してサービスを有効化できます。</translation>
 <translation id="250704661983564564">ディスプレイの配置</translation>
 <translation id="2507253002925770350">チケットを削除しました</translation>
-<translation id="2507397597949272797"><ph name="NAME" /> は一時停止中</translation>
 <translation id="2508428939232952663">Google Play ストア アカウント</translation>
 <translation id="2509495747794740764">倍率は 10～200 の数値で指定してください。</translation>
 <translation id="2509566264613697683">8 倍</translation>
@@ -1884,7 +1882,6 @@
 <translation id="2743387203779672305">クリップボードにコピー</translation>
 <translation id="2745080116229976798">Microsoft 限定従属</translation>
 <translation id="2747266560080989517">このファイルにはデリケートなコンテンツまたは危険なコンテンツが含まれています。所有者に修正するよう依頼してください。</translation>
-<translation id="2748061034695037846"><ph name="DOMAIN" /> は一時停止中</translation>
 <translation id="2749756011735116528"><ph name="PRODUCT_NAME" /> にログイン</translation>
 <translation id="2749836841884031656">SIM</translation>
 <translation id="2749881179542288782">スペルと一緒に文法をチェック</translation>
@@ -4220,7 +4217,6 @@
 <translation id="5033137252639132982">モーション センサーの使用を許可しないサイト</translation>
 <translation id="5033266061063942743">幾何学模様</translation>
 <translation id="5037676449506322593">すべてを選択</translation>
-<translation id="5038022729081036555">明日は <ph name="TIME_LIMIT" />まで使えます。</translation>
 <translation id="5038818366306248416"><ph name="ORIGIN" /> の拡張機能を一切許可しないよう選択しています</translation>
 <translation id="5039696241953571917">Google アカウントでの保存パスワードの表示と管理</translation>
 <translation id="5039804452771397117">許可する</translation>
@@ -4258,6 +4254,7 @@
 <translation id="5074761966806028321">設定を完了するには権限が必要です</translation>
 <translation id="5075563999073408211">ひとつ以上のスイッチを使ってデバイスを操作します。スイッチには、キーボードのキー、ゲームパッドのボタン、または専用デバイスを使用できます。</translation>
 <translation id="5075910247684008552">保護されているサイトでは、保護されていないコンテンツはデフォルトでブロックされます。</translation>
+<translation id="5078490485380754244">デバイスの削除</translation>
 <translation id="5078638979202084724">すべてのタブをブックマークに追加する</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5079010647467150187">組み込みの VPN を追加...</translation>
@@ -5018,6 +5015,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - カメラまたはマイクで記録中です</translation>
 <translation id="583673505367439042">サイトがデバイスのファイルやフォルダの編集を要求できるようにする</translation>
 <translation id="583756221537636748">ケース</translation>
+<translation id="5840658767386246331">Google で検索</translation>
 <translation id="5840680448799937675">常にオフラインでファイルを共有します</translation>
 <translation id="5841270259333717135">イーサネットを設定する</translation>
 <translation id="5842497610951477805">Bluetooth 有効</translation>
@@ -6502,6 +6500,7 @@
 <translation id="7307129035224081534">一時停止中</translation>
 <translation id="7308643132139167865">ウェブサイトの言語</translation>
 <translation id="7310598146671372464">ログインできませんでした。指定した Kerberos 暗号化タイプがサーバーでサポートされていません。管理者にお問い合わせください。</translation>
+<translation id="7311089766378749632"><ph name="SITE_NAME" /> の読み取りと変更をリクエストしています</translation>
 <translation id="7312210124139670355">管理者が eSIM をリセットしています。この処理には数分かかることがあります。</translation>
 <translation id="7320213904474460808">デフォルトのネットワーク</translation>
 <translation id="7321545336522791733">サーバーにアクセスできません</translation>
@@ -7093,6 +7092,7 @@
 <translation id="7869655448736341731">指定なし</translation>
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
 <translation id="7870790288828963061">新しいバージョンのキオスクアプリが見つかりませんでした。更新するものはありません。USB スティックを取り外してください。</translation>
+<translation id="7871049986386271121">このサイトで常に許可する</translation>
 <translation id="7871109039747854576"><ph name="COMMA" /> キーと <ph name="PERIOD" /> キーで候補リストのページを切り替える</translation>
 <translation id="787268756490971083">オフ</translation>
 <translation id="7872758299142009420">ネストされたグループの数が多すぎます: <ph name="ERROR_LINE" /></translation>
@@ -7246,7 +7246,6 @@
 <translation id="8013993649590906847">画像に有効な説明が設定されていない場合に、Chrome で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
 <translation id="8014154204619229810">現在アップデータを実行中です。しばらくしてから更新して、もう一度ご確認ください。</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> を以前のインストール バージョンに戻せません。デバイスでもう一度 Powerwash を実行してみてください。</translation>
-<translation id="8015163965024115122">あなたの保護者が設定した制限時間に達したため、今日はこれ以上「<ph name="IDS_SHORT_PRODUCT_NAME" />」アプリまたは「<ph name="IDS_SHORT_PRODUCT_NAME" />」アプリを使えません。</translation>
 <translation id="8016266267177410919">一時ストレージ</translation>
 <translation id="8017176852978888182">Linux の共有ディレクトリ</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
@@ -8386,7 +8385,6 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />快適にご利用いただくには、<ph name="DEVICE_OS" /> を内部ディスクにインストールしてください。後でログイン画面からインストールすることもできます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />インストールする準備ができていない場合は、USB から実行して試してみることもできます。この場合、既存の OS とデータは残りますが、保存容量やパフォーマンスが制限される可能性があります。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9121814364785106365">固定されたタブとして開く</translation>
-<translation id="9122176249172999202"><ph name="IDS_SHORT_PRODUCT_NAME" /> は一時停止中</translation>
 <translation id="9124003689441359348">保存したパスワードがここに表示されます</translation>
 <translation id="9126149354162942022">カーソルの色</translation>
 <translation id="9128317794749765148">セットアップを完了できませんでした</translation>
