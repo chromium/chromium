@@ -24,9 +24,11 @@
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_sharing_permission_delegate.h"
+#include "content/common/content_navigation_policy.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/render_frame_host_test_support.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
@@ -71,6 +73,7 @@ constexpr char kIdpTestOrigin[] = "https://idp.example";
 constexpr char kProviderUrl[] = "https://idp.example/";
 constexpr char kProviderUrlFull[] = "https://idp.example/fedcm.json";
 constexpr char kRpUrl[] = "https://rp.example/";
+constexpr char kRpOtherUrl[] = "https://rp.example/random/";
 constexpr char kAccountsEndpoint[] = "https://idp.example/accounts";
 constexpr char kCrossOriginAccountsEndpoint[] = "https://idp2.example/accounts";
 constexpr char kTokenEndpoint[] = "https://idp.example/token";
@@ -202,6 +205,11 @@ class AuthRequestCallbackHelper {
   absl::optional<RequestTokenStatus> status() const { return status_; }
   absl::optional<std::string> token() const { return token_; }
 
+  base::OnceClosure quit_closure() {
+    return base::BindOnce(&AuthRequestCallbackHelper::Quit,
+                          base::Unretained(this));
+  }
+
   // This can only be called once per lifetime of this object.
   base::OnceCallback<void(RequestTokenStatus,
                           const absl::optional<std::string>&)>
@@ -229,6 +237,8 @@ class AuthRequestCallbackHelper {
     was_called_ = true;
     wait_for_callback_loop_.Quit();
   }
+
+  void Quit() { wait_for_callback_loop_.Quit(); }
 
   bool was_called_ = false;
   base::RunLoop wait_for_callback_loop_;
@@ -660,6 +670,10 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                      bool wait_for_callback) {
     request_remote_->RequestToken(provider, client_id, nonce,
                                   prefer_auto_sign_in, auth_helper_.callback());
+
+    if (wait_for_callback)
+      request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
+
     // Ensure that the request makes its way to FederatedAuthRequestImpl.
     request_remote_.FlushForTesting();
     if (wait_for_callback) {
@@ -668,6 +682,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
       // chance to run.
       task_environment()->FastForwardBy(base::Minutes(10));
       auth_helper_.WaitForCallback();
+
+      request_remote_.set_disconnect_handler(base::OnceClosure());
     }
     return std::make_pair(auth_helper_.status(), auth_helper_.token());
   }
@@ -1434,11 +1450,10 @@ TEST_F(FederatedAuthRequestImplTest, UIIsIgnored) {
 
 TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
   base::HistogramTester histogram_tester;
-  // Sets the WebContents to visible
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->UpdateWebContentsVisibility(Visibility::VISIBLE);
-  ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+  // Sets RenderFrameHost to visible
+  test_rvh()->SimulateWasShown();
+  ASSERT_EQ(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
+            content::PageVisibilityState::kVisible);
 
   // Pretends that the sharing permission has been granted for this account.
   EXPECT_CALL(*mock_sharing_permission_delegate_,
@@ -1456,14 +1471,14 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsVisible) {
 // Test that request fails if the web contents are hidden.
 TEST_F(FederatedAuthRequestImplTest, MetricsForWebContentsInvisible) {
   base::HistogramTester histogram_tester;
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(web_contents());
-  web_contents_impl->UpdateWebContentsVisibility(Visibility::VISIBLE);
-  ASSERT_EQ(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+  test_rvh()->SimulateWasShown();
+  ASSERT_EQ(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
+            content::PageVisibilityState::kVisible);
 
-  // Sets the WebContents to invisible
-  web_contents_impl->UpdateWebContentsVisibility(Visibility::HIDDEN);
-  ASSERT_NE(web_contents_impl->GetVisibility(), Visibility::VISIBLE);
+  // Sets the RenderFrameHost to invisible
+  test_rvh()->SimulateWasHidden();
+  ASSERT_NE(test_rvh()->GetMainRenderFrameHost()->GetVisibilityState(),
+            content::PageVisibilityState::kVisible);
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.customized_dialog = true;
@@ -1881,6 +1896,95 @@ TEST_F(FederatedAuthRequestImplTest, TokenEndpointPostDataEscaping) {
   SetNetworkRequestManager(std::move(checker));
 
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
+}
+
+namespace {
+
+// TestIdpNetworkRequestManager subclass which runs the `account_list_task`
+// passed-in to the constructor prior to the accounts endpoint returning.
+class IdpNetworkRequestManagerAccountListTaskRunner
+    : public TestIdpNetworkRequestManager {
+ public:
+  explicit IdpNetworkRequestManagerAccountListTaskRunner(
+      base::OnceClosure account_list_task)
+      : account_list_task_(std::move(account_list_task)) {}
+
+  IdpNetworkRequestManagerAccountListTaskRunner(
+      const IdpNetworkRequestManagerAccountListTaskRunner&) = delete;
+  IdpNetworkRequestManagerAccountListTaskRunner& operator=(
+      const IdpNetworkRequestManagerAccountListTaskRunner&) = delete;
+
+  void SendAccountsRequest(const GURL& accounts_url,
+                           const std::string& client_id,
+                           AccountsRequestCallback callback) override {
+    if (account_list_task_)
+      std::move(account_list_task_).Run();
+    TestIdpNetworkRequestManager::SendAccountsRequest(accounts_url, client_id,
+                                                      std::move(callback));
+  }
+
+ private:
+  base::OnceClosure account_list_task_;
+};
+
+void NavigateToUrl(content::WebContents* web_contents, const GURL& url) {
+  static_cast<TestWebContents*>(web_contents)
+      ->NavigateAndCommit(url, ui::PAGE_TRANSITION_LINK);
+}
+
+}  // namespace
+
+// Test that the account chooser is not shown if the page navigates prior to the
+// accounts endpoint request completing and BFCache is enabled.
+TEST_F(FederatedAuthRequestImplTest, NavigateDuringAccountFetchBFCacheEnabled) {
+  base::test::ScopedFeatureList list;
+  list.InitWithFeatures(
+      /*enabled_features=*/{features::kBackForwardCache},
+      /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
+  ASSERT_TRUE(content::IsBackForwardCacheEnabled());
+
+  SetNetworkRequestManager(
+      std::make_unique<IdpNetworkRequestManagerAccountListTaskRunner>(
+          base::BindOnce(&NavigateToUrl, web_contents(), GURL(kRpOtherUrl))));
+
+  EXPECT_CALL(*mock_dialog_controller_,
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
+      .Times(0);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.customized_dialog = true;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError,
+      /*devtools_issue_status*/ absl::nullopt,
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::ACCOUNTS};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
+}
+
+// Test that the account chooser is not shown if the page navigates prior to the
+// accounts endpoint request completing and BFCache is disabled.
+TEST_F(FederatedAuthRequestImplTest,
+       NavigateDuringAccountFetchBFCacheDisabled) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kBackForwardCache);
+  ASSERT_FALSE(content::IsBackForwardCacheEnabled());
+
+  SetNetworkRequestManager(
+      std::make_unique<IdpNetworkRequestManagerAccountListTaskRunner>(
+          base::BindOnce(&NavigateToUrl, web_contents(), GURL(kRpOtherUrl))));
+
+  EXPECT_CALL(*mock_dialog_controller_,
+              ShowAccountsDialog(_, _, _, _, _, _, _, _))
+      .Times(0);
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.customized_dialog = true;
+
+  RequestExpectations expectations = {
+      /*return_status*/ absl::nullopt,
+      /*devtools_issue_status*/ absl::nullopt,
+      FetchedEndpoint::MANIFEST | FetchedEndpoint::CLIENT_METADATA |
+          FetchedEndpoint::MANIFEST_LIST | FetchedEndpoint::ACCOUNTS};
+  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
 }
 
 }  // namespace content
