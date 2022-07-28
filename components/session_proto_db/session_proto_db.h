@@ -22,6 +22,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/session_proto_db/session_proto_storage.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
@@ -51,7 +52,7 @@ class SessionProtoDBFactory;
 // - Is a KeyedService to support the per session (BrowserContext/BrowserState)
 //   nature of the database.
 template <typename T>
-class SessionProtoDB : public KeyedService {
+class SessionProtoDB : public KeyedService, public SessionProtoStorage<T> {
  public:
   using KeyAndValue = std::pair<std::string, T>;
 
@@ -70,45 +71,31 @@ class SessionProtoDB : public KeyedService {
   SessionProtoDB& operator=(const SessionProtoDB&) = delete;
   ~SessionProtoDB() override;
 
-  // Loads the entry for the key and passes it to the callback.
-  void LoadOneEntry(const std::string& key, LoadCallback callback);
+  // SessionProtoStorage implementation:
+  void LoadOneEntry(const std::string& key, LoadCallback callback) override;
 
-  // Loads all entries within the databse and passes them to the callback.
-  void LoadAllEntries(LoadCallback callback);
+  void LoadAllEntries(LoadCallback callback) override;
 
-  // Loads the content data matching a prefix for the key and passes them to the
-  // callback.
   void LoadContentWithPrefix(const std::string& key_prefix,
-                             LoadCallback callback);
+                             LoadCallback callback) override;
 
-  // Clean up data in the database which is no longer required by
-  // 1) Matching all keys against a substring
-  // 2) Deleting all keys matched against a susbstring, except for
-  // the keys specified in keys_to_keep
   void PerformMaintenance(const std::vector<std::string>& keys_to_keep,
                           const std::string& key_substring_to_match,
-                          OperationCallback callback);
+                          OperationCallback callback) override;
 
-  // Inserts a value for a given key and passes the result (success/failure) to
-  // OperationCallback.
   void InsertContent(const std::string& key,
                      const T& value,
-                     OperationCallback callback);
+                     OperationCallback callback) override;
 
-  // Deletes the entry with certain key in the database.
-  void DeleteOneEntry(const std::string& key, OperationCallback callback);
+  void DeleteOneEntry(const std::string& key,
+                      OperationCallback callback) override;
 
-  // Deletes content in the database, matching all keys which have a prefix
-  // that matches the key.
   void DeleteContentWithPrefix(const std::string& key_prefix,
-                               OperationCallback callback);
+                               OperationCallback callback) override;
 
-  // Delete all content in the database.
-  void DeleteAllContent(OperationCallback callback);
+  void DeleteAllContent(OperationCallback callback) override;
 
-  // Destroy the cached instance of the database (databases are cached per
-  // session).
-  void Destroy() const;
+  void Destroy() const override;
 
  private:
   friend class ::SessionProtoDBTest;
@@ -351,7 +338,9 @@ void SessionProtoDB<T>::DeleteAllContent(OperationCallback callback) {
 
 template <typename T>
 void SessionProtoDB<T>::Destroy() const {
-  SessionProtoDBFactory<T>::GetInstance()->Disassociate(browser_context_);
+  // TODO(davidjm): Consider calling the factory's disassociate method here.
+  //                This isn't strictly necessary since it will be called when
+  //                the context is destroyed anyway.
 }
 
 template <typename T>
@@ -360,7 +349,8 @@ SessionProtoDB<T>::SessionProtoDB(
     leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& database_dir,
     leveldb_proto::ProtoDbType proto_db_type)
-    : browser_context_(browser_context),
+    : SessionProtoStorage<T>(),
+      browser_context_(browser_context),
       database_status_(absl::nullopt),
       storage_database_(proto_database_provider->GetDB<T>(
           proto_db_type,
@@ -378,7 +368,8 @@ template <typename T>
 SessionProtoDB<T>::SessionProtoDB(
     std::unique_ptr<leveldb_proto::ProtoDatabase<T>> storage_database,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : database_status_(absl::nullopt),
+    : SessionProtoStorage<T>(),
+      database_status_(absl::nullopt),
       storage_database_(std::move(storage_database)) {
   static_assert(std::is_base_of<google::protobuf::MessageLite, T>::value,
                 "T must implement 'google::protobuf::MessageLite'");

@@ -9,6 +9,7 @@ source_set("session_proto_db") {
   sources = [ "session_proto_db.h" ]
 
   deps = [
+    ":core",
     "//base:base",
     "//components/commerce/core:persisted_state_db_content_proto",
     "//components/keyed_service/content",
@@ -18,11 +19,18 @@ source_set("session_proto_db") {
   ]
 }
 
+source_set("core") {
+  sources = [ "session_proto_storage.h" ]
+
+  deps = [ "//components/leveldb_proto" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "session_proto_db_unittest.cc" ]
 
   deps = [
+    ":core",
     ":session_proto_db",
     ":session_proto_db_test_proto",
     "//base:base",
