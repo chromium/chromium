@@ -20,8 +20,9 @@ def RunTestOnFuchsiaDevice(script_cmd):
   parser = argparse.ArgumentParser()
   AddCommonArgs(parser)
   AddTargetSpecificArgs(parser)
-  parser.add_argument('--browser',
-                      choices=['web-engine-shell', 'fuchsia-chrome'])
+  parser.add_argument(
+      '--browser',
+      choices=['web-engine-shell', 'fuchsia-chrome', 'cast-streaming-shell'])
   runner_script_args, test_args = parser.parse_known_args()
   ConfigureLogging(runner_script_args)
 
@@ -38,6 +39,13 @@ def RunTestOnFuchsiaDevice(script_cmd):
 
   if runner_script_args.browser == 'web-engine-shell':
     package_names = ['web_engine_with_webui', 'web_engine_shell']
+    package_dirs = [
+        os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia_web',
+                     'webengine'),
+        os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia_web', 'shell')
+    ]
+  elif runner_script_args.browser == 'cast-streaming-shell':
+    package_names = ['web_engine', 'cast_streaming_shell']
     package_dirs = [
         os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia_web',
                      'webengine'),

@@ -180,7 +180,9 @@ class GpuIntegrationTest(
       if os_name in ('android', 'chromeos'):
         browser_args.remove(cba.DISABLE_GPU)
 
-    if cls._finder_options.browser_type == 'web-engine-shell':
+    if cls._finder_options.browser_type in [
+        'web-engine-shell', 'cast-streaming-shell'
+    ]:
       # Reduce number of video buffers when running tests on Fuchsia to
       # workaround crbug.com/1203580
       # TODO(https://crbug.com/1203580): Remove this once the bug is resolved.
@@ -812,10 +814,9 @@ class GpuIntegrationTest(
          'llvm-10.0.0)-(0x0000c0de)))'),
         ('google-vulkan-1.1.0-(swiftshader-device-('
          'llvm-10.0.0)-(0x0000c0de))'),
-        # These browsers are analogous to a particular OS, and specifying the
-        # OS name is clearer.
         'cros-chrome',  # ChromeOS
         'web-engine-shell',  # Fuchsia
+        'cast-streaming-shell',  # Syonymous with cast_streaming suite
         # WebGL version is already handled by having expectations in separate
         # files.
         # TODO(crbug.com/1140283): Consider merging the two files and using

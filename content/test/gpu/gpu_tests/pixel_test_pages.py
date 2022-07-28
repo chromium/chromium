@@ -1199,3 +1199,12 @@ class PixelTestPages():
             },
             browser_args=[cba.DISABLE_DIRECT_COMPOSITION_FORCE_FULL_DAMAGE]),
     ]
+
+  # This should only be used with the cast_streaming suite.
+  @staticmethod
+  def CastStreamingReceiverPages(base_name):
+    return [
+        PixelTestPage('receiver.html',
+                      base_name + '_VP8_1Frame',
+                      test_rect=[0, 0, 0, 0]),
+    ]

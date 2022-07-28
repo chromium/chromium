@@ -30,6 +30,7 @@ REMOTE_BROWSER_TYPES = [
     'cros-chrome',
     'fuchsia-chrome',
     'web-engine-shell',
+    'cast-streaming-shell',
 ]
 
 

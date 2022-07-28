@@ -7,16 +7,22 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/ui/scenic/cpp/view_token_pair.h>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/fuchsia/mem_buffer_util.h"
 #include "base/fuchsia/process_context.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/test/test_future.h"
 #include "components/cast/message_port/fuchsia/create_web_message.h"
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/test/cast_streaming_test_sender.h"
 #include "fuchsia_web/cast_streaming/cast_streaming.h"
 #include "fuchsia_web/common/init_logging.h"
+#include "fuchsia_web/common/test/fit_adapter.h"
 #include "fuchsia_web/common/test/frame_test_util.h"
 #include "fuchsia_web/shell/remote_debugging_port.h"
 #include "fuchsia_web/webengine/switches.h"
@@ -24,6 +30,10 @@
 #include "media/base/media_util.h"
 
 namespace {
+
+// Identifier for JavaScript to be injected, only relevant if injecting multiple
+// JavaScripts.
+constexpr int kAddBeforeLoadJavaScriptID = 0;
 
 void PrintUsage() {
   std::cerr << "Usage: "
@@ -153,15 +163,42 @@ int main(int argc, char** argv) {
                                                    &receiver_message_port);
 
   constexpr char kCastStreamingMessagePortOrigin[] = "cast-streaming:receiver";
+  base::test::TestFuture<fuchsia::web::Frame_PostMessage_Result>
+      post_message_result;
   frame->PostMessage(kCastStreamingMessagePortOrigin,
                      CreateWebMessage("", std::move(receiver_message_port)),
-                     [quit_run_loop = run_loop.QuitClosure()](
-                         fuchsia::web::Frame_PostMessage_Result result) {
-                       if (result.is_err()) {
-                         LOG(ERROR) << "PostMessage failed.";
-                         quit_run_loop.Run();
-                       }
-                     });
+                     CallbackToFitFunction(post_message_result.GetCallback()));
+  if (!post_message_result.Wait()) {
+    LOG(ERROR) << "PostMessage timed out.";
+    return 1;
+  }
+  if (post_message_result.Get().is_err()) {
+    LOG(ERROR) << "PostMessage failed.";
+    return 1;
+  }
+
+  // Inject JavaScript test harness into receiver.html.
+  base::test::TestFuture<fuchsia::web::Frame_AddBeforeLoadJavaScript_Result>
+      add_before_load_javascript_result;
+  base::FilePath pkg_path;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &pkg_path));
+  base::FilePath test_harness_js_path(pkg_path.AppendASCII(
+      "fuchsia_web/shell/cast_streaming_shell_data/injector.js"));
+  std::string test_harness_string;
+  CHECK(base::ReadFileToString(test_harness_js_path, &test_harness_string));
+  frame->AddBeforeLoadJavaScript(
+      kAddBeforeLoadJavaScriptID, {"*"},
+      base::MemBufferFromString(std::move(test_harness_string),
+                                "test-harness-js"),
+      CallbackToFitFunction(add_before_load_javascript_result.GetCallback()));
+  if (!add_before_load_javascript_result.Wait()) {
+    LOG(ERROR) << "AddBeforeLoadJavaScript timed out.";
+    return 1;
+  }
+  if (add_before_load_javascript_result.Get().is_err()) {
+    LOG(ERROR) << "AddBeforeLoadJavaScript failed.";
+    return 1;
+  }
 
   // Send `sender_message_port` to a Sender and start it.
   cast_streaming::CastStreamingTestSender sender;
@@ -181,21 +218,35 @@ int main(int argc, char** argv) {
   }
 
   // Log the debugging port, if debugging is requested.
+  base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
+      get_remote_debugging_port_result;
   context->GetRemoteDebuggingPort(
-      [quit_run_loop = run_loop.QuitClosure()](
-          fuchsia::web::Context_GetRemoteDebuggingPort_Result result) {
-        if (result.is_err()) {
-          LOG(ERROR) << "Remote debugging service was not opened.";
-          quit_run_loop.Run();
-          return;
-        }
-        LOG(INFO) << "Remote debugging port: " << result.response().port;
-      });
+      CallbackToFitFunction(get_remote_debugging_port_result.GetCallback()));
+  if (!get_remote_debugging_port_result.Wait()) {
+    LOG(ERROR) << "Remote debugging service timed out.";
+    return 1;
+  }
+  if (get_remote_debugging_port_result.Get().is_err()) {
+    LOG(ERROR) << "Remote debugging service was not opened.";
+    return 1;
+  }
+  LOG(INFO) << "Remote debugging port: "
+            << get_remote_debugging_port_result.Get().response().port;
 
   if (!sender.RunUntilActive()) {
     LOG(ERROR) << "RunUntilActive failed.";
     return 1;
   }
+
+  // Send first and only video frame.
+  base::FilePath video_file(
+      pkg_path.AppendASCII("media/test/data/vp8-I-frame-640x240"));
+  std::string video_buffer_string;
+  CHECK(base::ReadFileToString(video_file, &video_buffer_string));
+  scoped_refptr<media::DataBuffer> video_buffer = media::DataBuffer::CopyFrom(
+      (const unsigned char*)video_buffer_string.data(),
+      video_buffer_string.size());
+  sender.SendVideoBuffer(video_buffer, true);
 
   run_loop.Run();
 
