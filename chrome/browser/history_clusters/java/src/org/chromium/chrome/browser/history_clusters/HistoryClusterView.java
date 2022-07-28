@@ -36,6 +36,7 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
         dividerLayoutParams.height = getResources().getDimensionPixelSize(R.dimen.divider_height);
         addView(mDividerView, dividerLayoutParams);
         mEndButtonView.setVisibility(GONE);
+        mEndButtonView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
     @Override
