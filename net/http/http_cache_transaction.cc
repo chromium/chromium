@@ -3485,7 +3485,8 @@ void HttpCache::Transaction::DoneWithEntry(bool entry_is_complete) {
   if (!safe_entry_)
     return;
 
-  cache_->DoneWithEntry(entry(), this, entry_is_complete, partial_ != nullptr);
+  cache_->DoneWithEntry(entry(), this, entry_is_complete, partial_ != nullptr,
+                        safe_entry_.value());
   safe_entry_ = absl::nullopt;
   mode_ = NONE;  // switch to 'pass through' mode
 }
@@ -3495,7 +3496,7 @@ void HttpCache::Transaction::DoneWithEntryForRestartWithCache() {
     return;
 
   cache_->DoneWithEntry(entry(), this, /*entry_is_complete=*/true,
-                        partial_ != nullptr);
+                        partial_ != nullptr, safe_entry_.value());
   safe_entry_ = absl::nullopt;
   new_entry_ = nullptr;
 }
@@ -3523,7 +3524,7 @@ int HttpCache::Transaction::OnCacheReadError(int result, bool restart) {
     // or setting mode to NONE at this point by invoking the wrapper
     // DoneWithEntry.
     cache_->DoneWithEntry(entry(), this, true /* entry_is_complete */,
-                          partial_ != nullptr);
+                          partial_ != nullptr, safe_entry_.value());
     safe_entry_ = absl::nullopt;
     is_sparse_ = false;
     // It's OK to use PartialData::RestoreHeaders here as |restart| is only set
@@ -3565,7 +3566,7 @@ void HttpCache::Transaction::DoomPartialEntry(bool delete_object) {
   }
 
   cache_->DoneWithEntry(entry(), this, false /* entry_is_complete */,
-                        partial_ != nullptr);
+                        partial_ != nullptr, safe_entry_.value());
   safe_entry_ = absl::nullopt;
   is_sparse_ = false;
   truncated_ = false;

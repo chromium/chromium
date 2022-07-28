@@ -526,7 +526,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   void DoneWithEntry(ActiveEntry* entry,
                      Transaction* transaction,
                      bool entry_is_complete,
-                     bool is_partial);
+                     bool is_partial,
+                     base::SafeRef<ActiveEntry> entry_ref);
 
   // Invoked when writers wants to doom the entry and restart any queued and
   // headers transactions.
