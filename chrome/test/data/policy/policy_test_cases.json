@@ -15511,7 +15511,7 @@
         "policies": {
           "OnFileAttachedEnterpriseConnector": [
             {
-              "service_provider": "local_test",
+              "service_provider": "local_user_agent",
               "verification": {
                 "linux": ["key"],
                 "mac": ["key"],
@@ -15606,7 +15606,7 @@
         "policies": {
           "OnFileDownloadedEnterpriseConnector": [
             {
-              "service_provider": "local_test",
+              "service_provider": "local_user_agent",
               "verification": {
                 "linux": ["key"],
                 "mac": ["key"],
@@ -15699,7 +15699,7 @@
         "policies": {
           "OnBulkDataEntryEnterpriseConnector": [
             {
-              "service_provider": "local_test",
+              "service_provider": "local_user_agent",
               "verification": {
                 "linux": ["key"],
                 "mac": ["key"],
@@ -15771,7 +15771,7 @@
         "policies": {
           "OnPrintEnterpriseConnector": [
             {
-              "service_provider": "local_test",
+              "service_provider": "local_user_agent",
               "verification": {
                 "linux": ["key"],
                 "mac": ["key"],

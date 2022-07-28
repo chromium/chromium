@@ -68,7 +68,7 @@ struct ServiceProvider {
 };
 
 using ServiceProviderConfig =
-    base::fixed_flat_map<base::StringPiece, ServiceProvider, 3>;
+    base::fixed_flat_map<base::StringPiece, ServiceProvider, 4>;
 
 // Returns the global service provider configuration, containing every service
 // provider and each of their supported Connector configs.

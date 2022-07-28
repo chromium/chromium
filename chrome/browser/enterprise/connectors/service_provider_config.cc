@@ -166,10 +166,16 @@ constexpr std::array<SupportedTag, 1> kLocalTestSupportedTags = {{
     },
 }};
 
-constexpr AnalysisConfig kLocalTestAnalysisConfig = {
-    .local_path = "test_path",
+constexpr AnalysisConfig kLocalTestUserAnalysisConfig = {
+    .local_path = "path_user",
     .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
     .user_specific = true,
+};
+
+constexpr AnalysisConfig kLocalTestSystemAnalysisConfig = {
+    .local_path = "path_system",
+    .supported_tags = base::span<const SupportedTag>(kLocalTestSupportedTags),
+    .user_specific = false,
 };
 
 constexpr ReportingConfig kGoogleReportingConfig = {
@@ -210,10 +216,17 @@ const ServiceProviderConfig* GetServiceProviderConfig() {
           // TODO(b/226560946): Add the actual local content analysis service
           // providers to this config.
           {
-              "local_test",
+              "local_user_agent",
               {
-                  .display_name = "Local Test",
-                  .analysis = &kLocalTestAnalysisConfig,
+                  .display_name = "Test user agent",
+                  .analysis = &kLocalTestUserAnalysisConfig,
+              },
+          },
+          {
+              "local_system_agent",
+              {
+                  .display_name = "Test system agent",
+                  .analysis = &kLocalTestSystemAnalysisConfig,
               },
           },
       });

@@ -92,7 +92,7 @@ constexpr char kBlockingScansForMalware[] = R"(
 
 constexpr char kLocalServiceProvider[] = R"(
 {
-  "service_provider": "local_test",
+  "service_provider": "local_user_agent",
   "enable": [
     {
       "url_list": ["*"],

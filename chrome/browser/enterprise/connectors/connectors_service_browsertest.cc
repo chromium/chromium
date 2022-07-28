@@ -60,7 +60,7 @@ constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
 
 constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
   {
-    "service_provider": "local_test",
+    "service_provider": "local_user_agent",
     "enable": [
       {"url_list": ["*"], "tags": ["dlp"]}
     ]
@@ -489,6 +489,13 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        DeviceReporting) {
+  // This is not a desktop platform don't try the non-cloud case since it
+  // is not supported.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
+  if (settings_value() == kNormalLocalAnalysisSettingsPref)
+    return;
+#endif
+
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
            settings_value(), /*profile_scope*/ false);
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
@@ -501,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     if (settings_value() == kNormalLocalAnalysisSettingsPref) {
       ASSERT_TRUE(settings.has_value());
       ASSERT_TRUE(settings.value().cloud_or_local_settings.is_local_analysis());
-      ASSERT_EQ("test_path",
+      ASSERT_EQ("path_user",
                 settings.value().cloud_or_local_settings.local_path());
       ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
     } else {
@@ -528,6 +535,13 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        ProfileReporting) {
+  // This is not a desktop platform don't try the non-cloud case since it
+  // is not supported.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
+  if (settings_value() == kNormalLocalAnalysisSettingsPref)
+    return;
+#endif
+
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
            settings_value());
   SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
@@ -565,7 +579,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         ASSERT_TRUE(settings.has_value());
         ASSERT_TRUE(
             settings.value().cloud_or_local_settings.is_local_analysis());
-        ASSERT_EQ("test_path",
+        ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
         ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
       } else {
@@ -604,6 +618,13 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                        NoReporting) {
+  // This is not a desktop platform don't try the non-cloud case since it
+  // is not supported.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX)
+  if (settings_value() == kNormalLocalAnalysisSettingsPref)
+    return;
+#endif
+
   SetPrefs(ConnectorPref(connector()), ConnectorScopePref(connector()),
            settings_value());
   auto settings =
@@ -640,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
         ASSERT_TRUE(settings.has_value());
         ASSERT_TRUE(
             settings.value().cloud_or_local_settings.is_local_analysis());
-        ASSERT_EQ("test_path",
+        ASSERT_EQ("path_user",
                   settings.value().cloud_or_local_settings.local_path());
         ASSERT_TRUE(settings.value().cloud_or_local_settings.user_specific());
       } else {

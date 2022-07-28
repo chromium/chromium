@@ -25252,7 +25252,8 @@
               'type': 'string',
               'enum': [
                 'google',
-                'local_test'
+                'local_user_agent',
+                'local_system_agent'
               ]
             },
             'verification': {
@@ -25414,7 +25415,8 @@
               'type': 'string',
               'enum': [
                 'google',
-                'local_test'
+                'local_user_agent',
+                'local_system_agent'
               ]
             },
             'verification': {
@@ -25576,7 +25578,8 @@
               'type': 'string',
               'enum': [
                 'google',
-                'local_test'
+                'local_user_agent',
+                'local_system_agent'
               ]
             },
             'verification': {
@@ -25734,7 +25737,8 @@
               'type': 'string',
               'enum': [
                 'google',
-                'local_test'
+                'local_user_agent',
+                'local_system_agent'
               ]
             },
             'verification': {

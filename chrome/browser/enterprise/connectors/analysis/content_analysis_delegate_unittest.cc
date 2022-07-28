@@ -91,7 +91,7 @@ constexpr char kNothingEnabled[] = R"({ "service_provider": "google" })";
 
 constexpr char kLocalBlockingScansForDlpAndMalware[] = R"(
 {
-  "service_provider": "local_test",
+  "service_provider": "local_user_agent",
   "enable": [
     {
       "url_list": ["*"],

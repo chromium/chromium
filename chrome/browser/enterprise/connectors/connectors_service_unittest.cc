@@ -54,7 +54,7 @@ constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
 
 constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
   {
-    "service_provider": "local_test",
+    "service_provider": "local_user_agent",
     "enable": [
       {"url_list": ["*"], "tags": ["dlp", "malware"]}
     ],
@@ -244,7 +244,7 @@ constexpr char kNormalSourceDestinationCloudAnalysisSettingsPref[] = R"([
 
 constexpr char kNormalSourceDestinationLocalAnalysisSettingsPref[] = R"([
   {
-    "service_provider": "local_test",
+    "service_provider": "local_user_agent",
     "enable": [
       {
         "source_destination_list": [

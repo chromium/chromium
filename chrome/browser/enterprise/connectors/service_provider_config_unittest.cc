@@ -143,10 +143,10 @@ TEST(ServiceProviderConfigTest, Google) {
   }
 }
 
-TEST(ServiceProviderConfigTest, LocalTest) {
+TEST(ServiceProviderConfigTest, LocalTest1) {
   const ServiceProviderConfig* config = GetServiceProviderConfig();
-  ASSERT_TRUE(config->count("local_test"));
-  ServiceProvider service_provider = config->at("local_test");
+  ASSERT_TRUE(config->count("local_user_agent"));
+  ServiceProvider service_provider = config->at("local_user_agent");
 
   ASSERT_TRUE(service_provider.analysis);
   ASSERT_FALSE(service_provider.reporting);
@@ -154,8 +154,43 @@ TEST(ServiceProviderConfigTest, LocalTest) {
 
   ASSERT_FALSE(service_provider.analysis->url);
   ASSERT_TRUE(service_provider.analysis->local_path);
-  ASSERT_EQ("test_path", std::string(service_provider.analysis->local_path));
+  ASSERT_EQ("path_user", std::string(service_provider.analysis->local_path));
   ASSERT_TRUE(service_provider.analysis->user_specific);
+
+  // The test local service provider has 1 tag: dlp.
+  ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);
+  ASSERT_EQ(std::string(service_provider.analysis->supported_tags[0].name),
+            "dlp");
+  ASSERT_EQ(service_provider.analysis->supported_tags[0].max_file_size,
+            kMaxFileSize);
+
+  // Every type of file is supported for the test local content analysis service
+  // provider.
+  const auto* dlp_supported_files =
+      service_provider.analysis->supported_tags[0].supported_files;
+  for (const base::FilePath::StringType& type : SupportedDlpFileTypes())
+    ASSERT_TRUE(dlp_supported_files->FileExtensionSupported(FilePath(type)));
+  for (const base::FilePath::StringType& type : UnsupportedDlpFileTypes())
+    ASSERT_TRUE(dlp_supported_files->FileExtensionSupported(FilePath(type)));
+  for (const std::string& type : SupportedDlpMimeTypes())
+    ASSERT_TRUE(dlp_supported_files->MimeTypeSupported(type));
+  for (const std::string& type : UnsupportedDlpMimeTypes())
+    ASSERT_TRUE(dlp_supported_files->MimeTypeSupported(type));
+}
+
+TEST(ServiceProviderConfigTest, LocalTest2) {
+  const ServiceProviderConfig* config = GetServiceProviderConfig();
+  ASSERT_TRUE(config->count("local_system_agent"));
+  ServiceProvider service_provider = config->at("local_system_agent");
+
+  ASSERT_TRUE(service_provider.analysis);
+  ASSERT_FALSE(service_provider.reporting);
+  ASSERT_FALSE(service_provider.file_system);
+
+  ASSERT_FALSE(service_provider.analysis->url);
+  ASSERT_TRUE(service_provider.analysis->local_path);
+  ASSERT_EQ("path_system", std::string(service_provider.analysis->local_path));
+  ASSERT_FALSE(service_provider.analysis->user_specific);
 
   // The test local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);

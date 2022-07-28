@@ -77,7 +77,7 @@ constexpr char kInvalidPolicy[] = R"(
 constexpr char kValidLocalContentAnalysisPolicy[] = R"(
     [
       {
-        "service_provider": "local_test",
+        "service_provider": "local_user_agent",
         "enable": "yes",
       },
     ])";

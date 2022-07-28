@@ -69,7 +69,7 @@ constexpr char kNormalCloudAnalysisSettingsPref[] = R"([
 
 constexpr char kNormalLocalAnalysisSettingsPref[] = R"([
   {
-    "service_provider": "local_test",
+    "service_provider": "local_user_agent",
     "enable": [
       {"url_list": ["*"], "tags": ["dlp"]},
     ],
@@ -388,7 +388,7 @@ constexpr char kNormalCloudSourceDestinationSettingsPref[] = R"([{
 }])";
 
 constexpr char kNormalLocalSourceDestinationSettingsPref[] = R"([{
-  "service_provider": "local_test",
+  "service_provider": "local_user_agent",
   "enable": [
     {
       "source_destination_list": [
@@ -586,8 +586,8 @@ class ConnectorsManagerConnectorPoliciesSourceDestinationTest
       NOTREACHED();
     }
 
-    // The "local_test" service provider doesn't support the "malware" tag, so
-    // remove it from expectations.
+    // The "local_user_agent" service provider doesn't support the "malware"
+    // tag, so remove it from expectations.
     if (pref == kNormalLocalSourceDestinationSettingsPref)
       settings.tags.erase("malware");
     if (settings.tags.empty())
@@ -661,8 +661,7 @@ INSTANTIATE_TEST_SUITE_P(
                         &kNoDlpMalwareVolumePair2,
                         &kDlpNoMalwareVolumePair1,
                         &kDlpNoMalwareVolumePair2),
-        testing::Values(kNormalCloudSourceDestinationSettingsPref,
-                        kNormalLocalSourceDestinationSettingsPref)),
+        testing::Values(kNormalCloudSourceDestinationSettingsPref)),
     testingTupleToString);
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

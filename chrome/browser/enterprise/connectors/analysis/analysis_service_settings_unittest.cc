@@ -713,7 +713,7 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
     )";
 
     return base::StringPrintf(GetParam().settings_value,
-                              is_cloud_ ? "google" : "local_test",
+                              is_cloud_ ? "google" : "local_user_agent",
                               verification);
   }
   AnalysisSettings* expected_settings() const {
@@ -734,15 +734,15 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
     }
     if (GetParam().expected_settings != NoSettings() && !is_cloud_) {
       LocalAnalysisSettings local_settings;
-      local_settings.local_path = "test_path";
+      local_settings.local_path = "path_user";
       local_settings.user_specific = true;
       local_settings.verification_signatures.push_back("key");
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(local_settings));
 
-      // The "local_test" analysis provider only supports the "dlp" tag, so
-      // it is expected that the malware tag is absent from final settings even
-      // when it is included in the policy.
+      // The "local_user_agent" analysis provider only supports the "dlp" tag,
+      // so it is expected that the malware tag is absent from final settings
+      // even when it is included in the policy.
       GetParam().expected_settings->tags.erase("malware");
       if (GetParam().expected_settings->tags.empty())
         return NoSettings();
@@ -951,7 +951,7 @@ class AnalysisServiceSourceDestinationSettingsTest
   content::BrowserContext* fs_context() const { return profile_; }
   std::string settings_value() const {
     return base::StringPrintf(GetParam().settings_value,
-                              is_cloud_ ? "google" : "local_test");
+                              is_cloud_ ? "google" : "local_user_agent");
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
@@ -971,13 +971,13 @@ class AnalysisServiceSourceDestinationSettingsTest
     }
     if (GetParam().expected_settings != NoSettings() && !is_cloud_) {
       LocalAnalysisSettings local_settings;
-      local_settings.local_path = "test_path";
+      local_settings.local_path = "path_user";
       GetParam().expected_settings->cloud_or_local_settings =
           CloudOrLocalAnalysisSettings(std::move(local_settings));
 
-      // The "local_test" analysis provider only supports the "dlp" tag, so
-      // it is expected that the malware tag is absent from final settings even
-      // when it is included in the policy.
+      // The "local_user_agent" analysis provider only supports the "dlp" tag,
+      // so it is expected that the malware tag is absent from final settings
+      // even when it is included in the policy.
       GetParam().expected_settings->tags.erase("malware");
       if (GetParam().expected_settings->tags.empty())
         return NoSettings();
