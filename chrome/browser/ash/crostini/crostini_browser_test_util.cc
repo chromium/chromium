@@ -110,7 +110,7 @@ void CrostiniBrowserTestBase::DiskMountImpl(
     const std::string& source_format,
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
-    chromeos::MountType type,
+    ash::MountType type,
     chromeos::MountAccessMode access_mode,
     ash::disks::DiskMountManager::MountPathCallback callback) {
   ash::disks::DiskMountManager::MountPointInfo info(

@@ -34,7 +34,7 @@ MountError PerformFakeMount(const std::string& source_path,
 
   // Fake network mounts are responsible for populating their mount paths so
   // don't need a dummy file.
-  if (type == MOUNT_TYPE_NETWORK_STORAGE)
+  if (type == MountType::kNetworkStorage)
     return MOUNT_ERROR_NONE;
 
   // Put a dummy file.
@@ -81,23 +81,23 @@ void FakeCrosDisksClient::Mount(const std::string& source_path,
   // This fake implementation assumes mounted path is device when source_format
   // is empty, or an archive otherwise.
   MountType type =
-      source_format.empty() ? MOUNT_TYPE_DEVICE : MOUNT_TYPE_ARCHIVE;
+      source_format.empty() ? MountType::kDevice : MountType::kArchive;
 
   // Network storage source paths are URIs.
   if (GURL(source_path).is_valid())
-    type = MOUNT_TYPE_NETWORK_STORAGE;
+    type = MountType::kNetworkStorage;
 
   base::FilePath mounted_path;
   switch (type) {
-    case MOUNT_TYPE_ARCHIVE:
+    case MountType::kArchive:
       mounted_path = GetArchiveMountPoint().Append(
           base::FilePath::FromUTF8Unsafe(mount_label));
       break;
-    case MOUNT_TYPE_DEVICE:
+    case MountType::kDevice:
       mounted_path = GetRemovableDiskMountPoint().Append(
           base::FilePath::FromUTF8Unsafe(mount_label));
       break;
-    case MOUNT_TYPE_NETWORK_STORAGE:
+    case MountType::kNetworkStorage:
       // Call all registered callbacks until mounted_path is non-empty.
       for (auto const& mount_point_callback : custom_mount_point_callbacks_) {
         mounted_path = mount_point_callback.Run(source_path, mount_options);
@@ -106,7 +106,7 @@ void FakeCrosDisksClient::Mount(const std::string& source_path,
         }
       }
       break;
-    case MOUNT_TYPE_INVALID:
+    case MountType::kInvalid:
       NOTREACHED();
       return;
   }

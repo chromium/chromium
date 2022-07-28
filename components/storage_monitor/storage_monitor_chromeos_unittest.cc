@@ -257,11 +257,9 @@ void StorageMonitorCrosTest::EjectNotify(StorageMonitor::EjectStatus status) {
 TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
   base::FilePath mount_path1 = CreateMountPoint(kMountPointA, true);
   ASSERT_FALSE(mount_path1.empty());
-  DiskMountManager::MountPointInfo mount_info(
-      kDevice1,
-      mount_path1.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
-      ash::disks::MOUNT_CONDITION_NONE);
+  DiskMountManager::MountPointInfo mount_info(kDevice1, mount_path1.value(),
+                                              ash::MountType::kDevice,
+                                              ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
               kUniqueId1,
@@ -285,9 +283,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
   base::FilePath mount_path2 = CreateMountPoint(kMountPointB, true);
   ASSERT_FALSE(mount_path2.empty());
   DiskMountManager::MountPointInfo mount_info2(
-      kDevice2,
-      mount_path2.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
+      kDevice2, mount_path2.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info2,
@@ -316,11 +312,9 @@ TEST_F(StorageMonitorCrosTest, NoDCIM) {
   base::FilePath mount_path = CreateMountPoint(kMountPointA, false);
   const std::string kUniqueId = "FFFF-FFFF";
   ASSERT_FALSE(mount_path.empty());
-  DiskMountManager::MountPointInfo mount_info(
-      kDevice1,
-      mount_path.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
-      ash::disks::MOUNT_CONDITION_NONE);
+  DiskMountManager::MountPointInfo mount_info(kDevice1, mount_path.value(),
+                                              ash::MountType::kDevice,
+                                              ash::disks::MOUNT_CONDITION_NONE);
   const std::string device_id = StorageInfo::MakeDeviceId(
       StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM,
       kFSUniqueIdPrefix + kUniqueId);
@@ -346,11 +340,9 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   ASSERT_FALSE(mount_path.empty());
 
   // Mount error.
-  DiskMountManager::MountPointInfo mount_info(
-      kDevice1,
-      mount_path.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
-      ash::disks::MOUNT_CONDITION_NONE);
+  DiskMountManager::MountPointInfo mount_info(kDevice1, mount_path.value(),
+                                              ash::MountType::kDevice,
+                                              ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_UNKNOWN,
               mount_info,
               kUniqueId,
@@ -363,7 +355,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   EXPECT_EQ(0, observer().detach_calls());
 
   // Not a device
-  mount_info.mount_type = chromeos::MOUNT_TYPE_ARCHIVE;
+  mount_info.mount_type = ash::MountType::kArchive;
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
               kUniqueId,
@@ -376,7 +368,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   EXPECT_EQ(0, observer().detach_calls());
 
   // Unsupported file system.
-  mount_info.mount_type = chromeos::MOUNT_TYPE_DEVICE;
+  mount_info.mount_type = ash::MountType::kDevice;
   mount_info.mount_condition =
       ash::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM;
   MountDevice(chromeos::MOUNT_ERROR_NONE,
@@ -395,9 +387,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
   base::FilePath mount_path1 = CreateMountPoint(kSDCardMountPoint1, true);
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPointInfo mount_info1(
-      kSDCardDeviceName1,
-      mount_path1.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
+      kSDCardDeviceName1, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info1,
@@ -422,9 +412,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
   base::FilePath mount_path2 = CreateMountPoint(kSDCardMountPoint2, true);
   ASSERT_FALSE(mount_path2.empty());
   DiskMountManager::MountPointInfo mount_info2(
-      kSDCardDeviceName2,
-      mount_path2.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
+      kSDCardDeviceName2, mount_path2.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info2,
@@ -451,9 +439,7 @@ TEST_F(StorageMonitorCrosTest, AttachDeviceWithEmptyLabel) {
   base::FilePath mount_path1 = CreateMountPoint(kMountPointA, true);
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPointInfo mount_info(
-      kEmptyDeviceLabel,
-      mount_path1.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
+      kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
@@ -480,9 +466,7 @@ TEST_F(StorageMonitorCrosTest, GetStorageSize) {
   base::FilePath mount_path1 = CreateMountPoint(kMountPointA, true);
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPointInfo mount_info(
-      kEmptyDeviceLabel,
-      mount_path1.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
+      kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,
@@ -510,9 +494,7 @@ TEST_F(StorageMonitorCrosTest, EjectTest) {
   base::FilePath mount_path1 = CreateMountPoint(kMountPointA, true);
   ASSERT_FALSE(mount_path1.empty());
   DiskMountManager::MountPointInfo mount_info(
-      kEmptyDeviceLabel,
-      mount_path1.value(),
-      chromeos::MOUNT_TYPE_DEVICE,
+      kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
   MountDevice(chromeos::MOUNT_ERROR_NONE,
               mount_info,

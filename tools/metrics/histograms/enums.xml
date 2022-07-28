@@ -21494,244 +21494,244 @@ metrics consent we also won't be able to send UMA metrics. -->
 
 <enum name="CrosDisksMountTypeError">
   <int value="0" label="Invalid - Success">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_NONE
+    100 * MountType::kInvalid + MOUNT_ERROR_NONE
   </int>
   <int value="1" label="Invalid - Unknown">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_UNKNOWN
+    100 * MountType::kInvalid + MOUNT_ERROR_UNKNOWN
   </int>
   <int value="2" label="Invalid - Internal">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INTERNAL
+    100 * MountType::kInvalid + MOUNT_ERROR_INTERNAL
   </int>
   <int value="3" label="Invalid - Invalid argument">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INVALID_ARGUMENT
+    100 * MountType::kInvalid + MOUNT_ERROR_INVALID_ARGUMENT
   </int>
   <int value="4" label="Invalid - Invalid path">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INVALID_PATH
+    100 * MountType::kInvalid + MOUNT_ERROR_INVALID_PATH
   </int>
   <int value="5" label="Invalid - Path already mounted">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_PATH_ALREADY_MOUNTED
+    100 * MountType::kInvalid + MOUNT_ERROR_PATH_ALREADY_MOUNTED
   </int>
   <int value="6" label="Invalid - Path not mounted">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_PATH_NOT_MOUNTED
+    100 * MountType::kInvalid + MOUNT_ERROR_PATH_NOT_MOUNTED
   </int>
   <int value="7" label="Invalid - Directory creation failed">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
+    100 * MountType::kInvalid + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
   </int>
   <int value="8" label="Invalid - Invalid mount options">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
+    100 * MountType::kInvalid + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
   </int>
   <int value="9" label="Invalid - Invalid unmount options">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
+    100 * MountType::kInvalid + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
   </int>
   <int value="10" label="Invalid - Insufficient permissions">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
+    100 * MountType::kInvalid + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
   </int>
   <int value="11" label="Invalid - Mount program not found">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
+    100 * MountType::kInvalid + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
   </int>
   <int value="12" label="Invalid - Mount program failed">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
+    100 * MountType::kInvalid + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
   </int>
   <int value="13" label="Invalid - Invalid device path">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INVALID_DEVICE_PATH
+    100 * MountType::kInvalid + MOUNT_ERROR_INVALID_DEVICE_PATH
   </int>
   <int value="14" label="Invalid - Unknown filesystem">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_UNKNOWN_FILESYSTEM
+    100 * MountType::kInvalid + MOUNT_ERROR_UNKNOWN_FILESYSTEM
   </int>
   <int value="15" label="Invalid - Unsupported filesystem">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
+    100 * MountType::kInvalid + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
   </int>
   <int value="16" label="Invalid - Invalid archive">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_INVALID_ARCHIVE
+    100 * MountType::kInvalid + MOUNT_ERROR_INVALID_ARCHIVE
   </int>
   <int value="17" label="Invalid - Need password">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_NEED_PASSWORD
+    100 * MountType::kInvalid + MOUNT_ERROR_NEED_PASSWORD
   </int>
   <int value="18" label="Invalid - In progress">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_IN_PROGRESS
+    100 * MountType::kInvalid + MOUNT_ERROR_IN_PROGRESS
   </int>
   <int value="19" label="Invalid - Cancelled">
-    100 * MOUNT_TYPE_INVALID + MOUNT_ERROR_CANCELLED
+    100 * MountType::kInvalid + MOUNT_ERROR_CANCELLED
   </int>
   <int value="100" label="Device - Success">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_NONE
+    100 * MountType::kDevice + MOUNT_ERROR_NONE
   </int>
   <int value="101" label="Device - Unknown">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_UNKNOWN
+    100 * MountType::kDevice + MOUNT_ERROR_UNKNOWN
   </int>
   <int value="102" label="Device - Internal">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INTERNAL
+    100 * MountType::kDevice + MOUNT_ERROR_INTERNAL
   </int>
   <int value="103" label="Device - Invalid argument">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INVALID_ARGUMENT
+    100 * MountType::kDevice + MOUNT_ERROR_INVALID_ARGUMENT
   </int>
   <int value="104" label="Device - Invalid path">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INVALID_PATH
+    100 * MountType::kDevice + MOUNT_ERROR_INVALID_PATH
   </int>
   <int value="105" label="Device - Path already mounted">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_PATH_ALREADY_MOUNTED
+    100 * MountType::kDevice + MOUNT_ERROR_PATH_ALREADY_MOUNTED
   </int>
   <int value="106" label="Device - Path not mounted">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_PATH_NOT_MOUNTED
+    100 * MountType::kDevice + MOUNT_ERROR_PATH_NOT_MOUNTED
   </int>
   <int value="107" label="Device - Directory creation failed">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
+    100 * MountType::kDevice + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
   </int>
   <int value="108" label="Device - Invalid mount options">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
+    100 * MountType::kDevice + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
   </int>
   <int value="109" label="Device - Invalid unmount options">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
+    100 * MountType::kDevice + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
   </int>
   <int value="110" label="Device - Insufficient permissions">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
+    100 * MountType::kDevice + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
   </int>
   <int value="111" label="Device - Mount program not found">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
+    100 * MountType::kDevice + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
   </int>
   <int value="112" label="Device - Mount program failed">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
+    100 * MountType::kDevice + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
   </int>
   <int value="113" label="Device - Invalid device path">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INVALID_DEVICE_PATH
+    100 * MountType::kDevice + MOUNT_ERROR_INVALID_DEVICE_PATH
   </int>
   <int value="114" label="Device - Unknown filesystem">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_UNKNOWN_FILESYSTEM
+    100 * MountType::kDevice + MOUNT_ERROR_UNKNOWN_FILESYSTEM
   </int>
   <int value="115" label="Device - Unsupported filesystem">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
+    100 * MountType::kDevice + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
   </int>
   <int value="116" label="Device - Invalid archive">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_INVALID_ARCHIVE
+    100 * MountType::kDevice + MOUNT_ERROR_INVALID_ARCHIVE
   </int>
   <int value="117" label="Device - Needs password">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_NEED_PASSWORD
+    100 * MountType::kDevice + MOUNT_ERROR_NEED_PASSWORD
   </int>
   <int value="118" label="Device - In progress">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_IN_PROGRESS
+    100 * MountType::kDevice + MOUNT_ERROR_IN_PROGRESS
   </int>
   <int value="119" label="Device - Cancelled">
-    100 * MOUNT_TYPE_DEVICE + MOUNT_ERROR_CANCELLED
+    100 * MountType::kDevice + MOUNT_ERROR_CANCELLED
   </int>
   <int value="200" label="Archive - Success">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_NONE
+    100 * MountType::kArchive + MOUNT_ERROR_NONE
   </int>
   <int value="201" label="Archive - Unknown">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_UNKNOWN
+    100 * MountType::kArchive + MOUNT_ERROR_UNKNOWN
   </int>
   <int value="202" label="Archive - Internal">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INTERNAL
+    100 * MountType::kArchive + MOUNT_ERROR_INTERNAL
   </int>
   <int value="203" label="Archive - Invalid argument">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INVALID_ARGUMENT
+    100 * MountType::kArchive + MOUNT_ERROR_INVALID_ARGUMENT
   </int>
   <int value="204" label="Archive - Invalid path">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INVALID_PATH
+    100 * MountType::kArchive + MOUNT_ERROR_INVALID_PATH
   </int>
   <int value="205" label="Archive - Path already mounted">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_PATH_ALREADY_MOUNTED
+    100 * MountType::kArchive + MOUNT_ERROR_PATH_ALREADY_MOUNTED
   </int>
   <int value="206" label="Archive - Path not mounted">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_PATH_NOT_MOUNTED
+    100 * MountType::kArchive + MOUNT_ERROR_PATH_NOT_MOUNTED
   </int>
   <int value="207" label="Archive - Directory creation failed">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
+    100 * MountType::kArchive + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
   </int>
   <int value="208" label="Archive - Invalid mount options">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
+    100 * MountType::kArchive + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
   </int>
   <int value="209" label="Archive - Invalid unmount options">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
+    100 * MountType::kArchive + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
   </int>
   <int value="210" label="Archive - Insufficient permissions">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
+    100 * MountType::kArchive + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
   </int>
   <int value="211" label="Archive - Mount program not found">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
+    100 * MountType::kArchive + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
   </int>
   <int value="212" label="Archive - Mount program failed">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
+    100 * MountType::kArchive + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
   </int>
   <int value="213" label="Archive - Invalid device path">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INVALID_DEVICE_PATH
+    100 * MountType::kArchive + MOUNT_ERROR_INVALID_DEVICE_PATH
   </int>
   <int value="214" label="Archive - Unknown filesystem">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_UNKNOWN_FILESYSTEM
+    100 * MountType::kArchive + MOUNT_ERROR_UNKNOWN_FILESYSTEM
   </int>
   <int value="215" label="Archive - Unsupported filesystem">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
+    100 * MountType::kArchive + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
   </int>
   <int value="216" label="Archive - Invalid archive">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_INVALID_ARCHIVE
+    100 * MountType::kArchive + MOUNT_ERROR_INVALID_ARCHIVE
   </int>
   <int value="217" label="Archive - Need password">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_NEED_PASSWORD
+    100 * MountType::kArchive + MOUNT_ERROR_NEED_PASSWORD
   </int>
   <int value="218" label="Archive - In progress">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_IN_PROGRESS
+    100 * MountType::kArchive + MOUNT_ERROR_IN_PROGRESS
   </int>
   <int value="219" label="Archive - Cancelled">
-    100 * MOUNT_TYPE_ARCHIVE + MOUNT_ERROR_CANCELLED
+    100 * MountType::kArchive + MOUNT_ERROR_CANCELLED
   </int>
   <int value="300" label="Network - Success">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_NONE
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_NONE
   </int>
   <int value="301" label="Network - Unknown">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_UNKNOWN
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_UNKNOWN
   </int>
   <int value="302" label="Network - Internal">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INTERNAL
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INTERNAL
   </int>
   <int value="303" label="Network - Invalid argument">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INVALID_ARGUMENT
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INVALID_ARGUMENT
   </int>
   <int value="304" label="Network - Invalid path">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INVALID_PATH
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INVALID_PATH
   </int>
   <int value="305" label="Network - Path already mounted">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_PATH_ALREADY_MOUNTED
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_PATH_ALREADY_MOUNTED
   </int>
   <int value="306" label="Network - Path not mounted">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_PATH_NOT_MOUNTED
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_PATH_NOT_MOUNTED
   </int>
   <int value="307" label="Network - Directory creation failed">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_DIRECTORY_CREATION_FAILED
   </int>
   <int value="308" label="Network - Invalid mount options">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INVALID_MOUNT_OPTIONS
   </int>
   <int value="309" label="Network - Invalid unmount options">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS
   </int>
   <int value="310" label="Network - Insufficient permissions">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INSUFFICIENT_PERMISSIONS
   </int>
   <int value="311" label="Network - Mount program not found">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND
   </int>
   <int value="312" label="Network - Mount program failed">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_MOUNT_PROGRAM_FAILED
   </int>
   <int value="313" label="Network - Invalid device path">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INVALID_DEVICE_PATH
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INVALID_DEVICE_PATH
   </int>
   <int value="314" label="Network - Unknown filesystem">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_UNKNOWN_FILESYSTEM
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_UNKNOWN_FILESYSTEM
   </int>
   <int value="315" label="Network - Unsupported filesystem">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_UNSUPPORTED_FILESYSTEM
   </int>
   <int value="316" label="Network - Invalid archive">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_INVALID_ARCHIVE
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_INVALID_ARCHIVE
   </int>
   <int value="317" label="Network - Needs password">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_NEED_PASSWORD
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_NEED_PASSWORD
   </int>
   <int value="318" label="Network - In progress">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_IN_PROGRESS
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_IN_PROGRESS
   </int>
   <int value="319" label="Network - Cancelled">
-    100 * MOUNT_TYPE_NETWORK_STORAGE + MOUNT_ERROR_CANCELLED
+    100 * MountType::kNetworkStorage + MOUNT_ERROR_CANCELLED
   </int>
 </enum>
 

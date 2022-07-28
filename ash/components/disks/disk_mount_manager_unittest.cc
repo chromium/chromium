@@ -74,7 +74,7 @@ struct TestDiskInfo {
 struct TestMountPointInfo {
   const char* source_path;
   const char* mount_path;
-  chromeos::MountType mount_type;
+  MountType mount_type;
   MountCondition mount_condition;
 };
 
@@ -141,19 +141,19 @@ const TestMountPointInfo kTestMountPoints[] = {
   {
     "/archive/source_path",
     "/archive/mount_path",
-    chromeos::MOUNT_TYPE_ARCHIVE,
+    MountType::kArchive,
     MOUNT_CONDITION_NONE
   },
   {
     kDevice1SourcePath,
     kDevice1MountPath,
-    chromeos::MOUNT_TYPE_DEVICE,
+    MountType::kDevice,
     MOUNT_CONDITION_NONE
   },
   {
     kReadOnlyDeviceSourcePath,
     kReadOnlyDeviceMountPath,
-    chromeos::MOUNT_TYPE_DEVICE,
+    MountType::kDevice,
     MOUNT_CONDITION_NONE
   },
 };
@@ -931,8 +931,8 @@ TEST_F(DiskMountManagerTest, Format_ConsecutiveFormatCalls) {
 
   // Simulate the device remounting.
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kDevice1MountPath);
 
   EXPECT_TRUE(HasMountPoint(kDevice1MountPath));
 
@@ -998,7 +998,7 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
   const std::string kSourcePath1 = kDevice1SourcePath;
   const std::string kSourcePath2 = kDevice2SourcePath;
   const std::string kSourceFormat = std::string();
-  const std::string kMountLabel = std::string();  // N/A for MOUNT_TYPE_DEVICE
+  const std::string kMountLabel = std::string();  // N/A for MountType::kDevice
   // For MountCompleted. Must be non-empty strings.
   const std::string kMountPath1 = "/media/foo";
   const std::string kMountPath2 = "/media/bar";
@@ -1025,19 +1025,17 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
       });
 
   manager->MountPath(kSourcePath1, kSourceFormat, std::string(), {},
-                     chromeos::MOUNT_TYPE_DEVICE,
-                     chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                     MountType::kDevice, chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
                      mock_callback1.Get());
   manager->MountPath(kSourcePath2, kSourceFormat, std::string(), {},
-                     chromeos::MOUNT_TYPE_DEVICE,
-                     chromeos::MOUNT_ACCESS_MODE_READ_ONLY,
+                     MountType::kDevice, chromeos::MOUNT_ACCESS_MODE_READ_ONLY,
                      mock_callback2.Get());
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kSourcePath1, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ERROR_NONE, kSourcePath1, MountType::kDevice,
       kMountPath1);
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kSourcePath2, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ERROR_NONE, kSourcePath2, MountType::kDevice,
       kMountPath2);
 
   // Event handlers of observers should be called.
@@ -1068,7 +1066,7 @@ TEST_F(DiskMountManagerTest, MountPath_RecordAccessMode) {
 TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
   DiskMountManager* manager = DiskMountManager::GetInstance();
   const std::string kSourceFormat = std::string();
-  const std::string kMountLabel = std::string();  // N/A for MOUNT_TYPE_DEVICE
+  const std::string kMountLabel = std::string();  // N/A for MountType::kDevice
 
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback;
   EXPECT_CALL(mock_callback,
@@ -1078,13 +1076,13 @@ TEST_F(DiskMountManagerTest, MountPath_ReadOnlyDevice) {
 
   // Attempt to mount a read-only device in read-write mode.
   manager->MountPath(kReadOnlyDeviceSourcePath, kSourceFormat, std::string(),
-                     {}, chromeos::MOUNT_TYPE_DEVICE,
+                     {}, MountType::kDevice,
                      chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
                      mock_callback.Get());
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kReadOnlyDeviceSourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kReadOnlyDeviceMountPath);
+      chromeos::MOUNT_ERROR_NONE, kReadOnlyDeviceSourcePath, MountType::kDevice,
+      kReadOnlyDeviceMountPath);
 
   // Event handlers of observers should be called.
   ASSERT_EQ(1U, observer_->GetEventCount());
@@ -1102,9 +1100,9 @@ TEST_F(DiskMountManagerTest, MountPath_DoubleCall) {
 
   base::MockCallback<DiskMountManager::MountPathCallback> mock_callback1;
 
-  manager->MountPath(
-      kDevice1SourcePath, "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, mock_callback1.Get());
+  manager->MountPath(kDevice1SourcePath, "", "", {}, MountType::kDevice,
+                     chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                     mock_callback1.Get());
 
   {
     // While the first mount is occurring, queue up a second mount for the same
@@ -1113,9 +1111,9 @@ TEST_F(DiskMountManagerTest, MountPath_DoubleCall) {
     EXPECT_CALL(mock_callback2,
                 Run(chromeos::MOUNT_ERROR_PATH_ALREADY_MOUNTED, _));
 
-    manager->MountPath(
-        kDevice1SourcePath, "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
-        chromeos::MOUNT_ACCESS_MODE_READ_WRITE, mock_callback2.Get());
+    manager->MountPath(kDevice1SourcePath, "", "", {}, MountType::kDevice,
+                       chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                       mock_callback2.Get());
   }
 
   // Verify the first mount can complete as expected.
@@ -1124,8 +1122,8 @@ TEST_F(DiskMountManagerTest, MountPath_DoubleCall) {
       Run(chromeos::MOUNT_ERROR_NONE,
           Field(&DiskMountManager::MountPointInfo::mount_path, kMountPath1)));
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kMountPath1);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kMountPath1);
 }
 
 TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
@@ -1146,9 +1144,9 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
         base::MockCallback<DiskMountManager::MountPathCallback> mock_callback2;
         EXPECT_CALL(mock_callback2,
                     Run(chromeos::MOUNT_ERROR_PATH_ALREADY_MOUNTED, _));
-        manager->MountPath(
-            kDevice1SourcePath, "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
-            chromeos::MOUNT_ACCESS_MODE_READ_WRITE, mock_callback2.Get());
+        manager->MountPath(kDevice1SourcePath, "", "", {}, MountType::kDevice,
+                           chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                           mock_callback2.Get());
 
         // Try mount a different path and verify it succeeds.
         base::MockCallback<DiskMountManager::MountPathCallback> mock_callback3;
@@ -1156,20 +1154,20 @@ TEST_F(DiskMountManagerTest, MountPath_CallbackCallsMount) {
                     Run(chromeos::MOUNT_ERROR_NONE,
                         Field(&DiskMountManager::MountPointInfo::mount_path,
                               kMountPath2)));
-        manager->MountPath(
-            kDevice2SourcePath, "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
-            chromeos::MOUNT_ACCESS_MODE_READ_WRITE, mock_callback3.Get());
+        manager->MountPath(kDevice2SourcePath, "", "", {}, MountType::kDevice,
+                           chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                           mock_callback3.Get());
         fake_cros_disks_client_->NotifyMountCompleted(
-            chromeos::MOUNT_ERROR_NONE, kDevice2SourcePath,
-            chromeos::MOUNT_TYPE_DEVICE, kMountPath2);
+            chromeos::MOUNT_ERROR_NONE, kDevice2SourcePath, MountType::kDevice,
+            kMountPath2);
       });
 
-  manager->MountPath(
-      kDevice1SourcePath, "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, mock_callback1.Get());
+  manager->MountPath(kDevice1SourcePath, "", "", {}, MountType::kDevice,
+                     chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                     mock_callback1.Get());
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kMountPath1);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kMountPath1);
 }
 
 TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
@@ -1182,8 +1180,8 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kDevice1MountPath);
 
   // Should remount disks that are not read-only by its hardware device.
   ASSERT_EQ(1U, observer_->GetEventCount());
@@ -1200,8 +1198,8 @@ TEST_F(DiskMountManagerTest, RemountRemovableDrives) {
 
   // Simulate cros_disks reporting mount completed.
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kDevice1MountPath);
   // Event handlers of observers should be called.
   ASSERT_EQ(2U, observer_->GetEventCount());
   VerifyMountEvent(observer_->GetMountEvent(1), DiskMountManager::MOUNTING,
@@ -1505,8 +1503,8 @@ TEST_F(DiskMountManagerTest, Rename_ConsecutiveRenameCalls) {
 
   // Simulate the device remounting.
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kDevice1MountPath);
 
   EXPECT_TRUE(HasMountPoint(kDevice1MountPath));
 
@@ -1734,8 +1732,8 @@ TEST_F(DiskMountManagerTest, Mount_MountUnsetsFirstMount) {
   EXPECT_TRUE(device1->is_first_mount());
 
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kDevice1MountPath);
 
   EXPECT_FALSE(device1->is_first_mount());
 }
@@ -1760,8 +1758,8 @@ TEST_F(DiskMountManagerTest, Mount_RemountPreservesFirstMount) {
       manager->FindDiskBySourcePath(kDevice1SourcePath)->is_first_mount());
 
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kDevice1MountPath);
   EXPECT_FALSE(
       manager->FindDiskBySourcePath(kDevice1SourcePath)->is_first_mount());
 
@@ -1795,8 +1793,8 @@ TEST_F(DiskMountManagerTest, Mount_DefersDuringGetDeviceProperties) {
   fake_cros_disks_client_->NotifyMountEvent(CROS_DISKS_DISK_ADDED,
                                             kDevice1SourcePath);
   fake_cros_disks_client_->NotifyMountCompleted(
-      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath,
-      chromeos::MOUNT_TYPE_DEVICE, kDevice1MountPath);
+      chromeos::MOUNT_ERROR_NONE, kDevice1SourcePath, MountType::kDevice,
+      kDevice1MountPath);
 
   // The mount event will not have fired yet as we are still waiting for
   // GetDeviceProperties() to return.

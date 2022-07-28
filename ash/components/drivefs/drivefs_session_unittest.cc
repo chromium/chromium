@@ -80,7 +80,7 @@ TEST_F(DriveFsDiskMounterTest, MountUnmount) {
   std::move(mount_callback_)
       .Run(chromeos::MOUNT_ERROR_NONE, {base::StrCat({"drivefs://", token}),
                                         kExpectedMountPath,
-                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                                        ash::MountType::kNetworkStorage,
                                         {}});
   run_loop.Run();
 
@@ -97,7 +97,7 @@ TEST_F(DriveFsDiskMounterTest, DestroyAfterMounted) {
   std::move(mount_callback_)
       .Run(chromeos::MOUNT_ERROR_NONE, {base::StrCat({"drivefs://", token}),
                                         kExpectedMountPath,
-                                        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                                        ash::MountType::kNetworkStorage,
                                         {}});
   run_loop.Run();
 
@@ -122,7 +122,7 @@ TEST_F(DriveFsDiskMounterTest, MountError) {
       .Run(chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS,
            {base::StrCat({"drivefs://", token}),
             kExpectedMountPath,
-            chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+            ash::MountType::kNetworkStorage,
             {}});
   run_loop.Run();
 }

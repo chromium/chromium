@@ -122,14 +122,14 @@ class CrostiniSshfsHelperTest : public testing::Test {
       const std::string& source_format,
       const std::string& mount_label,
       const std::vector<std::string>& mount_options,
-      chromeos::MountType type,
+      ash::MountType type,
       chromeos::MountAccessMode access_mode,
       ash::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
     auto code = chromeos::MountError::MOUNT_ERROR_NONE;
     auto info = DiskMountManager::MountPointInfo(
         "sshfs://username@hostname:", "/media/fuse/" + kMountName,
-        chromeos::MOUNT_TYPE_NETWORK_STORAGE, ash::disks::MOUNT_CONDITION_NONE);
+        ash::MountType::kNetworkStorage, ash::disks::MOUNT_CONDITION_NONE);
     disk_manager_->NotifyMountEvent(event, code, info);
     std::move(callback).Run(code, info);
   }
@@ -138,7 +138,7 @@ class CrostiniSshfsHelperTest : public testing::Test {
     EXPECT_CALL(
         *disk_manager_,
         MountPath("sshfs://username@hostname:", "", kMountName,
-                  default_mount_options_, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                  default_mount_options_, ash::MountType::kNetworkStorage,
                   chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
         .Times(n)
         .WillRepeatedly(

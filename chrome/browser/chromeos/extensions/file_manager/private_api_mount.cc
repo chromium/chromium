@@ -124,11 +124,11 @@ void FileManagerPrivateAddMountFunction::OnEncodingDetected(
 void FileManagerPrivateAddMountFunction::FinishMounting() {
   DiskMountManager* const disk_mount_manager = DiskMountManager::GetInstance();
   DCHECK(disk_mount_manager);
-  disk_mount_manager->MountPath(
-      path_.AsUTF8Unsafe(), std::move(extension_),
-      path_.BaseName().AsUTF8Unsafe(), std::move(options_),
-      chromeos::MOUNT_TYPE_ARCHIVE, chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
-      base::DoNothing());
+  disk_mount_manager->MountPath(path_.AsUTF8Unsafe(), std::move(extension_),
+                                path_.BaseName().AsUTF8Unsafe(),
+                                std::move(options_), ash::MountType::kArchive,
+                                chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+                                base::DoNothing());
 }
 
 FileManagerPrivateCancelMountingFunction::

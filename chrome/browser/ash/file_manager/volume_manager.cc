@@ -122,20 +122,21 @@ bool FindDownloadsMountPointPath(Profile* profile, base::FilePath* path) {
   return mount_points->GetRegisteredPath(mount_point_name, path);
 }
 
-VolumeType MountTypeToVolumeType(chromeos::MountType type) {
+VolumeType MountTypeToVolumeType(ash::MountType type) {
   switch (type) {
-    case chromeos::MOUNT_TYPE_INVALID:
+    case ash::MountType::kInvalid:
       // We don't expect this value, but list here, so that when any value
       // is added to the enum definition but this is not edited, the compiler
       // warns it.
       break;
-    case chromeos::MOUNT_TYPE_DEVICE:
+    case ash::MountType::kDevice:
       return VOLUME_TYPE_REMOVABLE_DISK_PARTITION;
-    case chromeos::MOUNT_TYPE_ARCHIVE:
+    case ash::MountType::kArchive:
       return VOLUME_TYPE_MOUNTED_ARCHIVE_FILE;
-    case chromeos::MOUNT_TYPE_NETWORK_STORAGE:
+    case ash::MountType::kNetworkStorage:
       // Network storage mounts are handled by their mounters so
-      // MOUNT_TYPE_NETWORK_STORAGE should never need to be handled here.
+      // MountType::kNetworkStorage should never need to be handled
+      // here.
       break;
   }
 
@@ -313,7 +314,7 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = MountTypeToVolumeType(mount_point.mount_type);
   volume->source_path_ = base::FilePath(mount_point.source_path);
-  volume->source_ = mount_point.mount_type == chromeos::MOUNT_TYPE_ARCHIVE
+  volume->source_ = mount_point.mount_type == ash::MountType::kArchive
                         ? SOURCE_FILE
                         : SOURCE_DEVICE;
   volume->mount_path_ = base::FilePath(mount_point.mount_path);
@@ -333,7 +334,7 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
     volume->volume_label_ = volume->mount_path().BaseName().AsUTF8Unsafe();
     volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
     volume->is_read_only_ =
-        (mount_point.mount_type == chromeos::MOUNT_TYPE_ARCHIVE);
+        (mount_point.mount_type == ash::MountType::kArchive);
   }
   volume->volume_id_ = GenerateVolumeId(*volume);
   volume->watchable_ = true;
@@ -1071,10 +1072,10 @@ void VolumeManager::OnAutoMountableDiskEvent(
         // Initiate disk mount operation. MountPath auto-detects the filesystem
         // format if the second argument is empty. The third argument (mount
         // label) is not used in a disk mount operation.
-        disk_mount_manager_->MountPath(
-            disk.device_path(), std::string(), mount_label, {},
-            chromeos::MOUNT_TYPE_DEVICE, GetExternalStorageAccessMode(profile_),
-            base::DoNothing());
+        disk_mount_manager_->MountPath(disk.device_path(), std::string(),
+                                       mount_label, {}, ash::MountType::kDevice,
+                                       GetExternalStorageAccessMode(profile_),
+                                       base::DoNothing());
         mounting = true;
       }
 
@@ -1130,7 +1131,7 @@ void VolumeManager::OnMountEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Network storage is responsible for doing its own mounting.
-  if (mount_info.mount_type == chromeos::MOUNT_TYPE_NETWORK_STORAGE)
+  if (mount_info.mount_type == ash::MountType::kNetworkStorage)
     return;
 
   // Notify a mounting/unmounting event to observers.
@@ -1172,7 +1173,7 @@ void VolumeManager::OnFormatEvent(
       // empty. The third argument (mount label) is not used in a disk mount
       // operation.
       disk_mount_manager_->MountPath(device_path, std::string(), std::string(),
-                                     {}, chromeos::MOUNT_TYPE_DEVICE,
+                                     {}, ash::MountType::kDevice,
                                      GetExternalStorageAccessMode(profile_),
                                      base::DoNothing());
 
@@ -1211,7 +1212,7 @@ void VolumeManager::OnPartitionEvent(
       if (error_code != chromeos::PARTITION_ERROR_NONE) {
         disk_mount_manager_->MountPath(
             device_path, std::string(), std::string(), {},
-            chromeos::MOUNT_TYPE_DEVICE, GetExternalStorageAccessMode(profile_),
+            ash::MountType::kDevice, GetExternalStorageAccessMode(profile_),
             base::DoNothing());
       }
 
@@ -1256,10 +1257,9 @@ void VolumeManager::OnRenameEvent(
       // second argument is empty. Third argument is a mount point name of the
       // disk when it was first time mounted (to preserve mount point regardless
       // of the volume name).
-      disk_mount_manager_->MountPath(device_path, std::string(), mount_label,
-                                     {}, chromeos::MOUNT_TYPE_DEVICE,
-                                     GetExternalStorageAccessMode(profile_),
-                                     base::DoNothing());
+      disk_mount_manager_->MountPath(
+          device_path, std::string(), mount_label, {}, ash::MountType::kDevice,
+          GetExternalStorageAccessMode(profile_), base::DoNothing());
 
       bool successfully_renamed = error_code == chromeos::RENAME_ERROR_NONE;
       for (auto& observer : observers_)
@@ -1499,7 +1499,7 @@ void VolumeManager::OnExternalStorageDisabledChanged() {
     // unmounted (all external media mounts), and iterate through them.
     std::vector<std::string> remaining_mount_paths;
     for (auto& mount_point : disk_mount_manager_->mount_points()) {
-      if (mount_point.second.mount_type == chromeos::MOUNT_TYPE_DEVICE) {
+      if (mount_point.second.mount_type == ash::MountType::kDevice) {
         remaining_mount_paths.push_back(mount_point.first);
       }
     }
@@ -1737,13 +1737,13 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
       disk_mount_manager_->mount_points();
   for (const auto& mount_point : mount_points) {
     switch (mount_point.second.mount_type) {
-      case chromeos::MOUNT_TYPE_ARCHIVE: {
+      case ash::MountType::kArchive: {
         // Archives are mounted after other types of volume. See below.
         archives.push_back(
             Volume::CreateForRemovable(mount_point.second, nullptr));
         break;
       }
-      case chromeos::MOUNT_TYPE_DEVICE: {
+      case ash::MountType::kDevice: {
         DoMountEvent(
             chromeos::MOUNT_ERROR_NONE,
             Volume::CreateForRemovable(
@@ -1751,10 +1751,10 @@ void VolumeManager::OnDiskMountManagerRefreshed(bool success) {
                                         mount_point.second.source_path)));
         break;
       }
-      case chromeos::MOUNT_TYPE_NETWORK_STORAGE: {
+      case ash::MountType::kNetworkStorage: {
         break;
       }
-      case chromeos::MOUNT_TYPE_INVALID: {
+      case ash::MountType::kInvalid: {
         NOTREACHED();
       }
     }

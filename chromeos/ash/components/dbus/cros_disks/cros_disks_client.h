@@ -30,15 +30,22 @@ class Response;
 // to be clearer where they come from. Also, most of these are partially or
 // completely duplicated in third_party/dbus/service_constants.h. We should
 // probably use enums from service_contstants directly.
-namespace chromeos {
+namespace ash {
 
 // Enum describing types of mount used by cros-disks.
-enum MountType {
-  MOUNT_TYPE_INVALID,
-  MOUNT_TYPE_DEVICE,
-  MOUNT_TYPE_ARCHIVE,
-  MOUNT_TYPE_NETWORK_STORAGE,
+enum class MountType {
+  kInvalid,
+  kDevice,
+  kArchive,
+  kNetworkStorage,
 };
+
+}  // namespace ash
+
+namespace chromeos {
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+using ::ash::MountType;
 
 // Type of device.
 enum DeviceType {
@@ -271,7 +278,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
 struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountEntry {
  public:
   MountEntry()
-      : error_code_(MOUNT_ERROR_UNKNOWN), mount_type_(MOUNT_TYPE_INVALID) {}
+      : error_code_(MOUNT_ERROR_UNKNOWN), mount_type_(MountType::kInvalid) {}
 
   MountEntry(MountError error_code,
              const std::string& source_path,
@@ -470,13 +477,10 @@ using ::chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED;
 using ::chromeos::MOUNT_ERROR_UNKNOWN;
 using ::chromeos::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
 using ::chromeos::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
-using ::chromeos::MOUNT_TYPE_ARCHIVE;
-using ::chromeos::MOUNT_TYPE_DEVICE;
 using ::chromeos::MountAccessMode;
 using ::chromeos::MountEntry;
 using ::chromeos::MountError;
 using ::chromeos::MountEventType;
-using ::chromeos::MountType;
 using ::chromeos::PARTITION_ERROR_INVALID_DEVICE_PATH;
 using ::chromeos::PARTITION_ERROR_NONE;
 using ::chromeos::PARTITION_ERROR_UNKNOWN;

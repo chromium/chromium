@@ -53,7 +53,7 @@ ash::disks::DiskMountManager::MountPointInfo MakeMountPointInfo(
     const std::string& source_path,
     const std::string& mount_path) {
   return ash::disks::DiskMountManager::MountPointInfo(
-      source_path, mount_path, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+      source_path, mount_path, ash::MountType::kNetworkStorage,
       ash::disks::MOUNT_CONDITION_NONE);
 }
 

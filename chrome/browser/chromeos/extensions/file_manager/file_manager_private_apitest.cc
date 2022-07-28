@@ -90,7 +90,7 @@ struct TestDiskInfo {
 struct TestMountPoint {
   std::string source_path;
   std::string mount_path;
-  chromeos::MountType mount_type;
+  ash::MountType mount_type;
   ash::disks::MountCondition mount_condition;
 
   // -1 if there is no disk info.
@@ -238,7 +238,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         "device_path1",
         chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path1").AsUTF8Unsafe(),
-        chromeos::MOUNT_TYPE_DEVICE,
+        ash::MountType::kDevice,
         ash::disks::MOUNT_CONDITION_NONE,
         0
       },
@@ -246,7 +246,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         "device_path2",
         chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path2").AsUTF8Unsafe(),
-        chromeos::MOUNT_TYPE_DEVICE,
+        ash::MountType::kDevice,
         ash::disks::MOUNT_CONDITION_NONE,
         1
       },
@@ -254,7 +254,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         "device_path3",
         chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path3").AsUTF8Unsafe(),
-        chromeos::MOUNT_TYPE_DEVICE,
+        ash::MountType::kDevice,
         ash::disks::MOUNT_CONDITION_NONE,
         2
       },
@@ -264,7 +264,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
             "mount_path3/archive.zip").AsUTF8Unsafe(),
         chromeos::CrosDisksClient::GetArchiveMountPoint().AppendASCII(
             "archive_mount_path").AsUTF8Unsafe(),
-        chromeos::MOUNT_TYPE_ARCHIVE,
+        ash::MountType::kArchive,
         ash::disks::MOUNT_CONDITION_NONE,
         -1
       }
@@ -330,12 +330,12 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                   const std::string& source_format,
                   const std::string& mount_label,
                   const std::vector<std::string>& mount_options,
-                  chromeos::MountType type,
+                  ash::MountType type,
                   chromeos::MountAccessMode access_mode,
                   DiskMountManager::MountPathCallback callback) {
     auto mount_point_info = DiskMountManager::MountPointInfo(
         source_path, "/media/fuse/" + mount_label,
-        chromeos::MountType::MOUNT_TYPE_NETWORK_STORAGE,
+        ash::MountType::kNetworkStorage,
         ash::disks::MountCondition::MOUNT_CONDITION_NONE);
     disk_mount_manager_mock_->NotifyMountEvent(
         DiskMountManager::MountEvent::MOUNTING,
@@ -354,7 +354,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
     EXPECT_CALL(*disk_mount_manager_mock_,
                 MountPath("sshfs://testuser@hostname:", "",
                           "crostini_user_termina_penguin", mount_options,
-                          chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                          ash::MountType::kNetworkStorage,
                           chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
         .WillOnce(Invoke(this, &FileManagerPrivateApiTest::SshfsMount));
   }

@@ -274,7 +274,7 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     // In theory we should also clear the mounted flag from the disk, but we
     // don't rely on that.
     disks::DiskMountManager::MountPointInfo info(
-        "/dev/" + name, "/mount/" + name, chromeos::MOUNT_TYPE_DEVICE,
+        "/dev/" + name, "/mount/" + name, MountType::kDevice,
         disks::MOUNT_CONDITION_NONE);
     mock_disk_mount_manager_->NotifyMountEvent(event, mount_error, info);
   }

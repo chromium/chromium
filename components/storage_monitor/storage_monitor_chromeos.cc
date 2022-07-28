@@ -199,7 +199,7 @@ void StorageMonitorCros::OnMountEvent(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Ignore mount points that are not devices.
-  if (mount_info.mount_type != chromeos::MOUNT_TYPE_DEVICE)
+  if (mount_info.mount_type != ash::MountType::kDevice)
     return;
   // Ignore errors.
   if (error_code != chromeos::MOUNT_ERROR_NONE)

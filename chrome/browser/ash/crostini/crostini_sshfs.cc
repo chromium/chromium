@@ -160,7 +160,7 @@ void CrostiniSshfs::OnGetContainerSshKeys(
                   file_manager::util::GetCrostiniMountPointName(profile_),
                   file_manager::util::GetCrostiniMountOptions(
                       hostname, host_private_key, container_public_key),
-                  chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+                  ash::MountType::kNetworkStorage,
                   chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
                   base::BindOnce(&CrostiniSshfs::OnMountEvent,
                                  weak_ptr_factory_.GetWeakPtr()));
@@ -175,7 +175,7 @@ void CrostiniSshfs::OnMountEvent(
     LOG(ERROR) << "Error mounting crostini container: error_code=" << error_code
                << ", source_path=" << mount_info.source_path
                << ", mount_path=" << mount_info.mount_path
-               << ", mount_type=" << mount_info.mount_type
+               << ", mount_type=" << static_cast<int>(mount_info.mount_type)
                << ", mount_condition=" << mount_info.mount_condition;
     switch (error_code) {
       case chromeos::MountError::MOUNT_ERROR_INTERNAL:

@@ -74,7 +74,7 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
   const std::string kDummyMountPathUnknown = "/dummy/mount/unknown";
   disk_mount_manager_.CreateDiskEntryForMountDevice(
       DiskMountManager::MountPointInfo("/dummy/device/usb", kDummyMountPathUsb,
-                                       chromeos::MOUNT_TYPE_DEVICE,
+                                       MountType::kDevice,
                                        MOUNT_CONDITION_NONE),
       kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_USB,
       1024 * 1024, false /* is_parent */, false /* has_media */,
@@ -82,7 +82,7 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
       kFileSystemType);
   disk_mount_manager_.CreateDiskEntryForMountDevice(
       DiskMountManager::MountPointInfo("/dummy/device/sd", kDummyMountPathSd,
-                                       chromeos::MOUNT_TYPE_DEVICE,
+                                       MountType::kDevice,
                                        MOUNT_CONDITION_NONE),
       kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_SD,
       1024 * 1024, false /* is_parent */, false /* has_media */,
@@ -90,8 +90,8 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
       kFileSystemType);
   disk_mount_manager_.CreateDiskEntryForMountDevice(
       DiskMountManager::MountPointInfo(
-          "/dummy/device/unknown", kDummyMountPathUnknown,
-          chromeos::MOUNT_TYPE_DEVICE, MOUNT_CONDITION_NONE),
+          "/dummy/device/unknown", kDummyMountPathUnknown, MountType::kDevice,
+          MOUNT_CONDITION_NONE),
       kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_UNKNOWN,
       1024 * 1024, false /* is_parent */, false /* has_media */,
       false /* on_boot_device */, true /* on_removable_device */,
@@ -123,7 +123,7 @@ TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
   const std::string kDummyMountPath = "/dummy/mount";
   disk_mount_manager_.CreateDiskEntryForMountDevice(
       DiskMountManager::MountPointInfo("/dummy/device", kDummyMountPath,
-                                       chromeos::MOUNT_TYPE_DEVICE,
+                                       MountType::kDevice,
                                        MOUNT_CONDITION_NONE),
       kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_USB,
       1024 * 1024, false /* is_parent */, false /* has_media */,

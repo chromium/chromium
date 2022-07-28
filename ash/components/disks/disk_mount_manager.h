@@ -174,12 +174,12 @@ class COMPONENT_EXPORT(ASH_DISKS) DiskMountManager {
 
   // Mounts a device or an archive file.
   // |source_path| specifies either a device or an archive file path.
-  // When |type|=MOUNT_TYPE_ARCHIVE, caller may set two optional arguments:
-  // |source_format| and |mount_label|. See CrosDisksClient::Mount for detail.
-  // |access_mode| specifies read-only or read-write mount mode for a device.
-  // Note that the mount operation may fail. To find out the result, one should
-  // observe DiskMountManager for |Observer::OnMountEvent| event, which will be
-  // raised upon the mount operation completion.
+  // When |type|=MountType::kArchive, caller may set two optional
+  // arguments: |source_format| and |mount_label|. See CrosDisksClient::Mount
+  // for detail. |access_mode| specifies read-only or read-write mount mode for
+  // a device. Note that the mount operation may fail. To find out the result,
+  // one should observe DiskMountManager for |Observer::OnMountEvent| event,
+  // which will be raised upon the mount operation completion.
   virtual void MountPath(const std::string& source_path,
                          const std::string& source_format,
                          const std::string& mount_label,

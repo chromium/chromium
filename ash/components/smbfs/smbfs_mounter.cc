@@ -98,7 +98,7 @@ void SmbFsMounter::Mount(SmbFsMounter::DoneCallback callback) {
 
   ash::disks::MountPoint::Mount(
       disk_mount_manager_, mount_url_, "" /* source_format */, mount_dir_name_,
-      {} /* mount_options */, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+      {} /* mount_options */, ash::MountType::kNetworkStorage,
       chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
       base::BindOnce(&SmbFsMounter::OnMountDone, weak_factory_.GetWeakPtr()));
   mount_timer_.Start(

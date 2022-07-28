@@ -111,7 +111,7 @@ void KioskExternalUpdater::OnMountEvent(
     const disks::DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (mount_info.mount_type != MountType::MOUNT_TYPE_DEVICE ||
+  if (mount_info.mount_type != MountType::kDevice ||
       error_code != MountError::MOUNT_ERROR_NONE) {
     return;
   }

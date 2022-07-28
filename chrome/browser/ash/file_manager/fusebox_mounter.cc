@@ -36,7 +36,7 @@ FuseBoxMounter::~FuseBoxMounter() = default;
 void FuseBoxMounter::Mount(FuseBoxDiskMountManager* disk_mount_manager) {
   DCHECK(disk_mount_manager);
 
-  constexpr auto type = chromeos::MOUNT_TYPE_NETWORK_STORAGE;
+  constexpr auto type = ash::MountType::kNetworkStorage;
   constexpr auto mode = chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
 
   disk_mount_manager->MountPath(

@@ -16,7 +16,7 @@ FakeDiskMountManager::MountRequest::MountRequest(
     const std::string& source_format,
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
-    chromeos::MountType type,
+    ash::MountType type,
     chromeos::MountAccessMode access_mode)
     : source_path(source_path),
       source_format(source_format),
@@ -75,7 +75,7 @@ void FakeDiskMountManager::MountPath(
     const std::string& source_format,
     const std::string& mount_label,
     const std::vector<std::string>& mount_options,
-    chromeos::MountType type,
+    ash::MountType type,
     chromeos::MountAccessMode access_mode,
     MountPathCallback callback) {
   mount_requests_.emplace_back(source_path, source_format, mount_label,
@@ -168,7 +168,7 @@ bool FakeDiskMountManager::AddDiskForTest(
 
 bool FakeDiskMountManager::AddMountPointForTest(
     const MountPointInfo& mount_point) {
-  if (mount_point.mount_type == chromeos::MOUNT_TYPE_DEVICE &&
+  if (mount_point.mount_type == ash::MountType::kDevice &&
       disks_.find(mount_point.source_path) == disks_.end()) {
     // Device mount point must have a disk entry.
     return false;

@@ -255,8 +255,8 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
   // Adds a disk entry for test_device_path_ with the same device and file path.
   disk_manager->CreateDiskEntryForMountDevice(
       ash::disks::DiskMountManager::MountPointInfo(
-          test_device_path_.value(), "/dummy/mount",
-          chromeos::MOUNT_TYPE_DEVICE, ash::disks::MOUNT_CONDITION_NONE),
+          test_device_path_.value(), "/dummy/mount", ash::MountType::kDevice,
+          ash::disks::MOUNT_CONDITION_NONE),
       "device_id", "device_label", "Vendor", "Product",
       chromeos::DEVICE_TYPE_USB, kTestFileSize, true, true, true, false,
       kTestFileSystemType);

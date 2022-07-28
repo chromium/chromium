@@ -108,7 +108,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     }
 
     // Hidden and non-existent devices should not be mounted.
-    if (type == MOUNT_TYPE_DEVICE) {
+    if (type == MountType::kDevice) {
       DiskMap::const_iterator it = disks_.find(source_path);
       if (it == disks_.end() || it->second->is_hidden()) {
         OnMountCompleted(
@@ -344,7 +344,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       LOG(ERROR) << "Attempt to add a duplicate mount point";
       return false;
     }
-    if (mount_point.mount_type == chromeos::MOUNT_TYPE_DEVICE &&
+    if (mount_point.mount_type == MountType::kDevice &&
         disks_.find(mount_point.source_path) == disks_.end()) {
       LOG(ERROR) << "Device mount points must have a disk entry";
       return false;
@@ -396,7 +396,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       // inconsistent.
       LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
       OnMountCompleted(MountEntry(MOUNT_ERROR_PATH_NOT_MOUNTED,
-                                  disk.device_path(), MOUNT_TYPE_DEVICE,
+                                  disk.device_path(), MountType::kDevice,
                                   mount_path));
       return;
     }
@@ -470,7 +470,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     }
 
     MountCondition mount_condition = MOUNT_CONDITION_NONE;
-    if (entry.mount_type() == MOUNT_TYPE_DEVICE) {
+    if (entry.mount_type() == MountType::kDevice) {
       if (entry.error_code() == MOUNT_ERROR_UNKNOWN_FILESYSTEM) {
         mount_condition = MOUNT_CONDITION_UNKNOWN_FILESYSTEM;
       }
@@ -490,7 +490,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     Disk* disk = nullptr;
     if ((entry.error_code() == MOUNT_ERROR_NONE ||
          mount_info.mount_condition) &&
-        mount_info.mount_type == MOUNT_TYPE_DEVICE &&
+        mount_info.mount_type == MountType::kDevice &&
         !mount_info.source_path.empty() && !mount_info.mount_path.empty()) {
       DiskMap::iterator disk_map_iter = disks_.find(mount_info.source_path);
       if (disk_map_iter != disks_.end()) {  // disk might have been removed?

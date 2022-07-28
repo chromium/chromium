@@ -496,7 +496,8 @@ class CrosDisksClientImpl : public CrosDisksClient {
                   "CrosDisksClient.MountErrorMountType histogram must be "
                   "updated.");
     const int type_and_error =
-        (entry.mount_type() * kMaxMountErrors) + entry.error_code();
+        (static_cast<int>(entry.mount_type()) * kMaxMountErrors) +
+        entry.error_code();
     base::UmaHistogramSparse("CrosDisksClient.MountErrorMountType",
                              type_and_error);
     for (auto& observer : observer_list_)

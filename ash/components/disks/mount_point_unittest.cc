@@ -35,17 +35,17 @@ class MountPointTest : public testing::Test {
 
 TEST_F(MountPointTest, Mount) {
   EXPECT_CALL(disk_mount_manager_,
-              MountPath(kSourcePath, "", "", _, MOUNT_TYPE_DEVICE,
+              MountPath(kSourcePath, "", "", _, MountType::kDevice,
                         MOUNT_ACCESS_MODE_READ_WRITE, _))
       .WillOnce(RunOnceCallback<6>(
           MOUNT_ERROR_NONE, DiskMountManager::MountPointInfo(
-                                kSourcePath, kMountPath, MOUNT_TYPE_DEVICE,
+                                kSourcePath, kMountPath, MountType::kDevice,
                                 MOUNT_CONDITION_NONE)));
   EXPECT_CALL(disk_mount_manager_, UnmountPath(kMountPath, _)).Times(1);
 
   base::RunLoop run_loop;
   MountPoint::Mount(&disk_mount_manager_, kSourcePath, "", "", {},
-                    MOUNT_TYPE_DEVICE, MOUNT_ACCESS_MODE_READ_WRITE,
+                    MountType::kDevice, MOUNT_ACCESS_MODE_READ_WRITE,
                     base::BindLambdaForTesting(
                         [&run_loop](MountError mount_error,
                                     std::unique_ptr<MountPoint> mount) {
@@ -58,17 +58,17 @@ TEST_F(MountPointTest, Mount) {
 
 TEST_F(MountPointTest, MountFailure) {
   EXPECT_CALL(disk_mount_manager_,
-              MountPath(kSourcePath, "", "", _, MOUNT_TYPE_DEVICE,
+              MountPath(kSourcePath, "", "", _, MountType::kDevice,
                         MOUNT_ACCESS_MODE_READ_WRITE, _))
       .WillOnce(RunOnceCallback<6>(
           MOUNT_ERROR_UNKNOWN, DiskMountManager::MountPointInfo(
-                                   kSourcePath, kMountPath, MOUNT_TYPE_DEVICE,
+                                   kSourcePath, kMountPath, MountType::kDevice,
                                    MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM)));
   EXPECT_CALL(disk_mount_manager_, UnmountPath(_, _)).Times(0);
 
   base::RunLoop run_loop;
   MountPoint::Mount(&disk_mount_manager_, kSourcePath, "", "", {},
-                    MOUNT_TYPE_DEVICE, MOUNT_ACCESS_MODE_READ_WRITE,
+                    MountType::kDevice, MOUNT_ACCESS_MODE_READ_WRITE,
                     base::BindLambdaForTesting(
                         [&run_loop](MountError mount_error,
                                     std::unique_ptr<MountPoint> mount) {

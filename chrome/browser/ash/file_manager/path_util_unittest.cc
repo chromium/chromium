@@ -674,8 +674,7 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
         ash::disks::DiskMountManager::GetInstance()->AddMountPointForTest(
             ash::disks::DiskMountManager::MountPointInfo(
                 "/device/source_path", "/media/removable/a",
-                chromeos::MOUNT_TYPE_DEVICE,
-                ash::disks::MOUNT_CONDITION_NONE)));
+                ash::MountType::kDevice, ash::disks::MOUNT_CONDITION_NONE)));
 
     // Add a Share Cache mount point for the primary profile.
     ASSERT_TRUE(mount_points->RegisterFileSystem(
@@ -1137,14 +1136,14 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
       ash::disks::Disk::Builder().SetDeviceLabel("removable_label").Build();
   volume_manager->AddVolumeForTesting(Volume::CreateForRemovable(
       {"/source_path/removable", "/mount_path/removable",
-       chromeos::MOUNT_TYPE_DEVICE, ash::disks::MOUNT_CONDITION_NONE},
+       ash::MountType::kDevice, ash::disks::MOUNT_CONDITION_NONE},
       removable_disk.get()));
 
   // The source path for archives need to be inside an already mounted volume,
   // so add it under the My Files volume.
   volume_manager->AddVolumeForTesting(Volume::CreateForRemovable(
       {"/mount_path/my_files/archive", "/mount_path/archive.zip",
-       chromeos::MOUNT_TYPE_ARCHIVE, ash::disks::MOUNT_CONDITION_NONE},
+       ash::MountType::kArchive, ash::disks::MOUNT_CONDITION_NONE},
       nullptr));
 
   volume_manager->AddVolumeForTesting(Volume::CreateForProvidedFileSystem(

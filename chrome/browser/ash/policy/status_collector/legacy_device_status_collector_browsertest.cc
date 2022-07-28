@@ -931,7 +931,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
   void AddMountPoint(const std::string& mount_point) {
     mount_point_map_.insert(DiskMountManager::MountPointMap::value_type(
         mount_point, DiskMountManager::MountPointInfo(
-                         mount_point, mount_point, chromeos::MOUNT_TYPE_DEVICE,
+                         mount_point, mount_point, ash::MountType::kDevice,
                          ash::disks::MOUNT_CONDITION_NONE)));
   }
 

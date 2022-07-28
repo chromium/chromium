@@ -48,8 +48,7 @@ class DiskMounterImpl : public DiskMounter {
     ash::disks::MountPoint::Mount(
         disk_mount_manager_, source_path_, "", desired_mount_dir_name,
         {datadir_option, base::StrCat({kMyFilesOption, my_files_path.value()})},
-        chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-        chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
+        ash::MountType::kNetworkStorage, chromeos::MOUNT_ACCESS_MODE_READ_WRITE,
         base::BindOnce(&DiskMounterImpl::OnMountDone,
                        weak_factory_.GetWeakPtr()));
   }
