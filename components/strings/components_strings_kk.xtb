@@ -1466,6 +1466,7 @@
 <translation id="4969341057194253438">Жазбаны жою</translation>
 <translation id="4973922308112707173">Жоғарғы жағын екі рет тесу</translation>
 <translation id="4976702386844183910">Cоңғы кіру: <ph name="DATE" /></translation>
+<translation id="498323057460789381">Схеманы тексеру қатесі: <ph name="ERROR" /></translation>
 <translation id="4984088539114770594">Микрофон пайдаланылсын ба?</translation>
 <translation id="4984339528288761049">Prc5 (Envelope)</translation>
 <translation id="4989163558385430922">Барлығын көру</translation>
@@ -2259,6 +2260,7 @@
 <translation id="7238585580608191973">SHA-256 саусақ ізі</translation>
 <translation id="7240120331469437312">Certificate Subject Alternative Name</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# сәйкестік}other{# сәйкестік}}</translation>
 <translation id="724691107663265825">Алдағы сайтта зиянды бағдарлама бар</translation>
 <translation id="724975217298816891">Карта мәліметтерін жаңарту үшін <ph name="CREDIT_CARD" /> картасының жарамдылық мерзімі мен CVC кодын енгізіңіз. Карта мәліметтері расталғаннан кейін сайтқа беріледі.</translation>
 <translation id="7251437084390964440">Желі конфигурациясы ONC стандартына сәйкес келмейді. Конфигурацияның кей бөліктері импортталмаған болуы мүмкін.

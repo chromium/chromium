@@ -3896,6 +3896,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="4689421377817139245">Sincroniza este marcador co iPhone</translation>
 <translation id="4690091457710545971">&lt;O firmware da wifi de Intel xerou catro ficheiros: csr.lst, fh_regs.lst, radio_reg.lst e monitor.lst.sysmon. Os tres primeiros son ficheiros binarios que conteñen envorcaduras de rexistros e que Intel confirmou que non conteñen información persoal nin datos que permitan identificar o dispositivo. O último ficheiro é un seguimento da execución do firmware de Intel. Quitáronselle toda a información persoal e todos os datos que permitían identificar o dispositivo, pero é demasiado grande para mostralo aquí. Estes ficheiros xeráronse porque se produciron problemas recentes relacionados coa conexión wifi do dispositivo e compartiranse con Intel para axudar a solucionalos.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> poderá ver <ph name="FILENAME" /> ata que peches todas as pestanas deste sitio</translation>
+<translation id="4692342362587775867">As notificacións deste sitio poden resultar molestas</translation>
 <translation id="4692623383562244444">Motores de busca</translation>
 <translation id="4692736633446859167">Escolliches non permitir ningunha extensión en <ph name="SITE" />. Se engades este sitio aquí, outras extensión tamén poderán solicitar ler e modificar os teus datos do sitio en <ph name="SITE" />.</translation>
 <translation id="4693155481716051732">Suxi</translation>

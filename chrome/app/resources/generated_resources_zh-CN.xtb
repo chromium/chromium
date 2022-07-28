@@ -3886,6 +3886,7 @@
 <translation id="4689421377817139245">将此书签同步到您的 iPhone</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 固件生成了四个文件：csr.lst、fh_regs.lst、radio_reg.lst 和 monitor.lst.sysmon。前三个文件是包含注册表转储的二进制文件，且 Intel 表示其中并未包含任何个人信息或设备标识信息。最后一个文件是 Intel 固件的执行跟踪记录，其中的个人信息和设备标识信息已全部清除，但由于文件过大而无法显示在这里。因为您的设备最近发生过 Wi-Fi 问题，所以系统生成了这些文件，且会将文件提供给 Intel 以协助排查相关问题。&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" /> 将能够查看“<ph name="FILENAME" />”中的内容，除非您关闭此网站的所有标签页</translation>
+<translation id="4692342362587775867">来自此网站的通知可能会造成干扰</translation>
 <translation id="4692623383562244444">搜索引擎</translation>
 <translation id="4692736633446859167">您先前已选择禁止 <ph name="SITE" /> 上的所有扩展程序。如果您在此处添加该网站，其他扩展程序也可以请求读取和更改您在 <ph name="SITE" /> 上的网站数据。</translation>
 <translation id="4693155481716051732">寿司</translation>

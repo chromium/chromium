@@ -3895,6 +3895,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4689421377817139245">Bu yer işaretini iPhone'unuzla senkronize edin</translation>
 <translation id="4690091457710545971">&lt;Intel Kablosuz donanım yazılımı tarafından dört dosya oluşturuldu: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. İlk üç dosya, kayıt dökümlerini içeren ikili dosyalardır ve Intel, bu dosyalarda kimlik veya cihaz bilgilerini tanımlayan bilgilerin yer almadığını teyit etmektedir. Son dosya, Intel donanım yazılımındaki bir yürütme izidir. Bu dosyadaki kimlik ve cihaz bilgileri temizlenmiştir, ancak dosya burada görüntülenemeyecek kadar büyüktür. Bu dosyalar, cihazınızla ilgili son kablosuz bağlantı sorunlarına yanıt olarak oluşturulmuştur ve bu sorunların giderilmesinde yardımcı olması için Intel ile paylaşılacaktır.&gt;</translation>
 <translation id="4691791363716065510"><ph name="ORIGIN" />, siz bu siteye ait tüm sekmeleri kapatana kadar <ph name="FILENAME" /> dosyasını görüntüleyebilecek</translation>
+<translation id="4692342362587775867">Bu siteden gelen bildirimler rahatsız edici olabilir.</translation>
 <translation id="4692623383562244444">Arama motorları</translation>
 <translation id="4692736633446859167">Daha önce <ph name="SITE" /> sitesinde uzantılara izin vermemeyi seçtiniz. Buraya eklerseniz diğer uzantılar da <ph name="SITE" /> üzerinde site verilerinizi okuma ve değiştirme isteği iletebilir.</translation>
 <translation id="4693155481716051732">Suşi</translation>

@@ -2984,6 +2984,11 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="408076456549153854">Habilitar inicio de sesión en el navegador</translation>
 <translation id="4081127242481747676">Configuración de sensores</translation>
 <translation id="4082498585300984671">Habilitar la función Clic de llamada</translation>
+<translation id="4082809879536562387">Permite definir el periodo (en milisegundos) que transcurre entre la primera notificación que avisa de que un dispositivo <ph name="PRODUCT_OS_NAME" /> debe reiniciarse para aplicar una actualización pendiente y la finalización del periodo especificado en la política <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" />.
+
+      Si no se establece esta política, se usará el periodo predeterminado de 259.200.000 milisegundos (tres días) para los dispositivos <ph name="PRODUCT_OS_NAME" />.
+
+      En el caso de las restauraciones y otras actualizaciones de <ph name="PRODUCT_OS_NAME" /> que aplicarán la función de Powerwash al dispositivo, el usuario siempre recibirá una notificación de inmediato cuando esté disponible la actualización, sea cual sea el valor de esta política.</translation>
 <translation id="4086150283035515220">Si se asigna el valor "Habilitada" a esta política, los usuarios tendrán que indicar dónde quieren guardar cada archivo antes de descargarlo. Si se le asigna el valor "Inhabilitada", las descargas empezarán de inmediato, sin preguntar a los usuarios dónde quieren guardar el archivo.
 
       Si no se le asigna ningún valor, los usuarios podrán cambiar esta opción.</translation>

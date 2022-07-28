@@ -2260,6 +2260,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7238585580608191973">Gjurma e gishtit SHA-256</translation>
 <translation id="7240120331469437312">Emri alternativ i subjektit të certifikatës</translation>
 <translation id="7243010569062352439"><ph name="PASSWORDS" />; <ph name="SIGNIN_DATA" /></translation>
+<translation id="7244465398154211886">{NUM_MATCHES,plural, =1{# përputhje}other{# përputhje}}</translation>
 <translation id="724691107663265825">Sajti përpara përmban softuerë keqdashës</translation>
 <translation id="724975217298816891">Shkruaj datën e skadimit dhe kodin CVC për <ph name="CREDIT_CARD" /> për të përditësuar të dhënat e kartës. Pasi të konfirmohet, të dhënat e kartës do të ndahen me këtë sajt.</translation>
 <translation id="7251437084390964440">Konfigurimi i rrjetit nuk përputhet me standardin ONC. Disa pjesë të konfigurimit mund të mos jenë importuar.

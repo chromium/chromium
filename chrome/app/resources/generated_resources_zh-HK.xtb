@@ -3914,7 +3914,7 @@
 <translation id="4689421377817139245">將此書籤同步到 iPhone</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 韌體產生的 4 個檔案：csr.lst、fh_regs.lst、radio_reg.lst、monitor.lst.sysmon。首 3 個檔案是包含註冊表的二進制檔案，而這些檔案由 Intel 設定不包含任何個人資料或可識別裝置的資料。最後一個檔案是 Intel 韌體的執行蹤跡，而當中的個人資料或可識別裝置的資料已被清除，但檔案過大而無法在此顯示。若您的裝置最近發生 Wi-Fi 問題，系統便會產生這些檔案，且會將檔案傳送給 Intel 以供解決相關問題。&gt;</translation>
 <translation id="4691791363716065510">在您關閉此網站的所有分頁前，<ph name="ORIGIN" /> 都能查看「<ph name="FILENAME" />」</translation>
-<translation id="4692342362587775867">這個網站的通知可能會造成干擾</translation>
+<translation id="4692342362587775867">此網站的通知可能會造成干擾</translation>
 <translation id="4692623383562244444">搜尋引擎</translation>
 <translation id="4692736633446859167">您先前已選擇不允許 <ph name="SITE" /> 上的所有擴充程式。如果您在此處新增此網站，其他擴充程式亦可要求讀取並變更您在 <ph name="SITE" /> 上的網站資料。</translation>
 <translation id="4693155481716051732">壽司</translation>

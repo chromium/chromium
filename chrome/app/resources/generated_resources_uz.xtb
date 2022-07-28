@@ -3901,6 +3901,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4689421377817139245">Xatcho‘pni iPhone bilan sinxronlang</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi mikrodasturi to‘rtta fayl yaratdi: csr.lst, fh_regs.lst, radio_reg.lst va monitor.lst.sysmon. Ilk uchtasi – binar fayllar bo‘lib, reestrdagi vaqtincha axborotdan iborat bo‘ladi, Intel kompaniyasining axborotiga ko‘ra bu fayllarda shaxsiy va qurilma haqidagi ma’lumotlar saqlanmaydi. Oxirgi fayl esa Intel mikrodasturidan trassirovkani ishga tushiradi (unda ham shaxsiy va qurilma ma1lumotlari saqlanmaydi). Fayl hajmi kattaligi tufayli, biz uni to‘liq ko‘rsata olmaymiz. Bu fayllar qurilmangizdagi Wi-Fi muammolarini bartaraf etishga yordamlashish maqsadida Intel serverlariga yuboriladi.&gt;</translation>
 <translation id="4691791363716065510">Bu sayt uchun barcha varaqlarni yopmasangiz, <ph name="ORIGIN" /> <ph name="FILENAME" /> faylini koʻra oladi</translation>
+<translation id="4692342362587775867">Bu sayt bildirishnomalari xalaqit berishi mumkin</translation>
 <translation id="4692623383562244444">Qidiruv tizimlari</translation>
 <translation id="4692736633446859167">Avvalroq <ph name="SITE" /> saytidagi barcha kengaytmalarga ruxsat bermaslikni tanlagansiz. Bu saytni bu yerga qoʻshsangiz, boshqa kengaytmalar ham <ph name="SITE" /> saytidagi ma'lumotlarni oʻqish va oʻzgartirishni soʻrashi mumkin.</translation>
 <translation id="4693155481716051732">Sushi</translation>

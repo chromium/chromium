@@ -2924,6 +2924,11 @@
 <translation id="408076456549153854">允许登录浏览器</translation>
 <translation id="4081127242481747676">传感器设置</translation>
 <translation id="4082498585300984671">启用“点击通话”功能</translation>
+<translation id="4082809879536562387">您可以设置一个时间段（以毫秒为单位），从而指定第一条通知（提示用户必须重启 <ph name="PRODUCT_OS_NAME" /> 设备以安装更新）的发出时间应与 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策所设时间段的结束时间相隔多久。
+
+      如果您未做设置，系统将会在 <ph name="PRODUCT_OS_NAME" /> 设备上使用默认时间段，即 259200000 毫秒（3 天）。
+
+      对于回滚和其他将对设备执行 Powerwash 的 <ph name="PRODUCT_OS_NAME" /> 更新，只要有可用更新，用户都会立即收到通知，与此政策的值无关。</translation>
 <translation id="4086150283035515220">如果此政策已启用，系统会在开始下载前询问用户要将相应文件保存到何处。如果此政策已停用，系统不会先询问用户要将相应文件保存到何处，而是会立即开始下载文件。
 
       如果您不设置此政策，用户便可更改此设置。</translation>

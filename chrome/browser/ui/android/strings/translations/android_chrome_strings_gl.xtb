@@ -78,6 +78,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="1344653310988386453">Inclúe unha ligazón ao texto destacado</translation>
 <translation id="1347468774581902829">Xestionar actividade</translation>
 <translation id="1360432990279830238">Queres pechar sesión?</translation>
+<translation id="1366525380420346469">Se a función está activada</translation>
 <translation id="1373696734384179344">Memoria insuficiente para descargar o contido seleccionado.</translation>
 <translation id="1376578503827013741">Calculando...</translation>
 <translation id="1382912999714108023">Non ves a túa información actual? Ponte en contacto co banco para actualizala.</translation>
@@ -514,6 +515,7 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descargas eliminadas</translation>
 <translation id="3819183753496523827">Estás sen conexión. Comproba a conexión a Internet e téntao de novo.</translation>
+<translation id="3830886834687455630">Actualiza os servizos de Google Play para comprobar os contrasinais</translation>
 <translation id="3845098929839618392">Abrir en pestana de incógnito</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
@@ -734,6 +736,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5032430150487044192">Non se puido crear o código QR</translation>
 <translation id="5039804452771397117">Permitir</translation>
+<translation id="504456571576643789">Cuestións que se deben ter en conta</translation>
 <translation id="5054455334322721892">Cando teñas a sesión iniciada, é posible que se garden na túa Conta de Google <ph name="BEGIN_LINK1" />outros datos da túa actividade<ph name="END_LINK1" />. Podes eliminalos en calquera momento.</translation>
 <translation id="5061533557687621530">Para consultar o tempo, toca o micrófono e di o seguinte: "Que tempo hai hoxe?"</translation>
 <translation id="506254248375231072">Ningunha pestana</translation>
@@ -1216,6 +1219,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="7641339528570811325">Borrar datos de navegación…</translation>
 <translation id="7646772052135772216">A sincronización de contrasinais non funciona</translation>
 <translation id="7655900163790317559">Activando Bluetooth…</translation>
+<translation id="7656862631699126784">Activar bloqueo no modo de incógnito</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7663313374500954251"><ph name="PARENT_NAME" /> xestiona este navegador.</translation>
 <translation id="7665369617277396874">Engadir conta</translation>
@@ -1518,6 +1522,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="9159716826369098114">Restablecer grupo de <ph name="TAB_COUNT" /> pestanas como un novo grupo de pestanas en segundo plano.</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="9187955620966010988">Reacción axustada</translation>
+<translation id="9190276265094487094">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>
 <translation id="9205933215779845960">Non se puido atopar esa páxina. Comproba que escribises ben a consulta ou proba a realizar a busca en <ph name="SEARCH_ENGINE" />.</translation>

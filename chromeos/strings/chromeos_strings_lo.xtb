@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">ປະຫວັດ</translation>
 <translation id="1645954272419197032">ກະລຸນາຢືນຢັນຂໍ້​ມູນ​ອຸ​ປະ​ກອນ</translation>
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
+<translation id="1664796644829245314">ສະແດງຕົວຢ່າງ <ph name="PREVIEW_OBJECT" /></translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
 <translation id="1672499492233627739">ຟີດວິດີໂອເວັບແຄມ</translation>
 <translation id="1676557873873341166">ກຳລັງຖ່າຍວິດີໂອ</translation>
@@ -800,6 +801,7 @@
 <translation id="7978412674231730200">ປຸ່ມສ່ວນຕົວ</translation>
 <translation id="7982789257301363584">ເຄືອ​ຂ່າຍ</translation>
 <translation id="7994702968232966508">ວິທີການ EAP</translation>
+<translation id="8018928621986160031">ບັນທຶກໄປໃສ່ "<ph name="FILE_LOCATION" />" ແລ້ວ</translation>
 <translation id="802154636333426148">ການດາວໂຫຼດບໍ່ສຳເລັດ</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">ເປີດການນຳໃຊ້ໂໝດປັບສີອັດຕະໂນມັດ</translation>
