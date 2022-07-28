@@ -18,7 +18,7 @@
 
 // This file is copied from
 // gRPC repo's src/core/plugin_registry/grpc_plugin_registry.cc then comment out
-// sevaral lb plugins that have been stripped out by BUILD.chromium.gn.template
+// several lb plugins that have been stripped out by BUILD.chromium.gn.template
 
 #include <grpc/support/port_platform.h>
 
@@ -39,6 +39,8 @@ void grpc_lb_policy_grpclb_init(void);
 void grpc_lb_policy_grpclb_shutdown(void);
 void grpc_lb_policy_priority_init(void);
 void grpc_lb_policy_priority_shutdown(void);
+void grpc_lb_policy_outlier_detection_init(void);
+void grpc_lb_policy_outlier_detection_shutdown(void);
 void grpc_lb_policy_weighted_target_init(void);
 void grpc_lb_policy_weighted_target_shutdown(void);
 void grpc_lb_policy_pick_first_init(void);
@@ -64,7 +66,8 @@ void grpc_register_built_in_plugins(void) {
   grpc_register_plugin(grpc_core::RlsLbPluginInit,
                        grpc_core::RlsLbPluginShutdown);
 #endif  // !GRPC_NO_RLS
-
+  // grpc_register_plugin(grpc_lb_policy_outlier_detection_init,
+  // grpc_lb_policy_outlier_detection_shutdown);
   // grpc_register_plugin(grpc_lb_policy_priority_init,
   // grpc_lb_policy_priority_shutdown);
   // grpc_register_plugin(grpc_lb_policy_weighted_target_init,
