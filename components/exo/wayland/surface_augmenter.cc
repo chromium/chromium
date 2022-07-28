@@ -66,7 +66,7 @@ class AugmentedSurface : public SurfaceObserver {
     surface_->SetViewport(gfx::SizeF(width, height));
   }
 
-  void SetBackgroundColor(absl::optional<SkColor> background_color) {
+  void SetBackgroundColor(absl::optional<SkColor4f> background_color) {
     surface_->SetBackgroundColor(background_color);
   }
 
@@ -137,12 +137,11 @@ void augmented_surface_set_rounded_corners_bounds(wl_client* client,
 void augmented_surface_set_background_color(wl_client* client,
                                             wl_resource* resource,
                                             wl_array* color_data) {
-  absl::optional<SkColor> sk_color;
+  absl::optional<SkColor4f> sk_color;
   // Empty data means no color.
   if (color_data->size) {
     float* data = reinterpret_cast<float*>(color_data->data);
-    SkColor4f color = {data[0], data[1], data[2], data[3]};
-    sk_color = color.toSkColor();
+    sk_color = {data[0], data[1], data[2], data[3]};
   }
 
   GetUserDataAs<AugmentedSurface>(resource)->SetBackgroundColor(sk_color);

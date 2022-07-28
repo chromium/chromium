@@ -183,7 +183,7 @@ class Surface final : public ui::PropertyHandler {
 
   // Sets the background color that shall be associated with the next buffer
   // commit.
-  void SetBackgroundColor(absl::optional<SkColor> background_color);
+  void SetBackgroundColor(absl::optional<SkColor4f> background_color);
 
   // This sets the surface viewport for scaling.
   void SetViewport(const gfx::SizeF& viewport);
@@ -449,7 +449,7 @@ class Surface final : public ui::PropertyHandler {
     bool is_tracking_occlusion = false;
     // Represents optional background color that must be associated with the
     // next buffer commit.
-    absl::optional<SkColor> background_color;
+    absl::optional<SkColor4f> background_color;
   };
   class BufferAttachment {
    public:

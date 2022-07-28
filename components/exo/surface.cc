@@ -544,7 +544,7 @@ void Surface::SetOverlayPriorityHint(OverlayPriority hint) {
   pending_state_.overlay_priority_hint = hint;
 }
 
-void Surface::SetBackgroundColor(absl::optional<SkColor> background_color) {
+void Surface::SetBackgroundColor(absl::optional<SkColor4f> background_color) {
   TRACE_EVENT0("exo", "Surface::SetBackgroundColor");
   pending_state_.basic_state.background_color = background_color;
 }
@@ -1233,8 +1233,8 @@ void Surface::UpdateResource(FrameSinkResourceManager* resource_manager) {
       // Use the buffer's size, so the AppendContentsToFrame() will append
       // a SolidColorDrawQuad with the buffer's size.
       current_resource_.size = state_.buffer->size();
-      SkColor color = state_.buffer->buffer()->GetColor().toSkColor();
-      current_resource_has_alpha_ = SkColorGetA(color) != SK_AlphaOPAQUE;
+      SkColor4f color = state_.buffer->buffer()->GetColor();
+      current_resource_has_alpha_ = !color.isOpaque();
     }
   } else {
     current_resource_.id = viz::kInvalidResourceId;
@@ -1423,8 +1423,7 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
 
     SkColor4f background_color = SkColors::kTransparent;
     if (state_.basic_state.background_color.has_value())
-      background_color =
-          SkColor4f::FromColor(state_.basic_state.background_color.value());
+      background_color = state_.basic_state.background_color.value();
     else if (current_resource_has_alpha_ && are_contents_opaque)
       background_color = SkColors::kBlack;  // Avoid writing alpha < 1
 
@@ -1524,13 +1523,12 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       frame->resource_list.push_back(current_resource_);
     }
   } else {
-    SkColor color = state_.buffer.has_value() && state_.buffer->buffer()
-                        ? state_.buffer->buffer()->GetColor().toSkColor()
-                        : SK_ColorBLACK;
+    SkColor4f color = state_.buffer.has_value() && state_.buffer->buffer()
+                          ? state_.buffer->buffer()->GetColor()
+                          : SkColors::kBlack;
     viz::SolidColorDrawQuad* solid_quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    solid_quad->SetNew(quad_state, quad_rect, quad_rect,
-                       SkColor4f::FromColor(color),
+    solid_quad->SetNew(quad_state, quad_rect, quad_rect, color,
                        false /* force_anti_aliasing_off */);
   }
 
