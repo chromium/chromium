@@ -17,9 +17,6 @@ crbug.com/933880 http/tests/inspector-protocol/network/security-info-on-response
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 
-# Test is for OOPIF-specific behavior.
-http/tests/inspector-protocol/fetch/fetch-oopif.js [ Skip ]
-
 # JS Self-Profiling currently requires site isolation.
 crbug.com/956688 wpt_internal/js-self-profiling/* [ Skip ]
 
@@ -30,11 +27,13 @@ crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incum
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
 
 # OOPIF tests need site isolation
+http/tests/inspector-protocol/fetch/fetch-oopif.js [ Skip ]
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-existing.js [ Skip ]
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
 http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
 http/tests/inspector-protocol/target/message-to-detached-session.js [ Skip ]
+http/tests/inspector-protocol/target/target-filter.js [ Skip ]
 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
 
 # Rely on OOPIF for an iframe to be a separate devtools target

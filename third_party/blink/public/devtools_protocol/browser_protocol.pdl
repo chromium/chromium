@@ -9326,6 +9326,19 @@ domain Target
       experimental optional Page.FrameId openerFrameId
       experimental optional Browser.BrowserContextID browserContextId
 
+  # A filter used by target query/discovery/auto-attach operations.
+  experimental type FilterEntry extends object
+    properties
+      # If set, causes exclusion of mathcing targets from the list.
+      # The remainder of filter entries in the filter arrat are ignored.
+      optional boolean exclude
+      # If not present, matches any type.
+      optional string type
+
+  # If filter is not specified, the one assumed is [{type: "browser", exclude: true}, {}]
+  # (i.e. include everything but browser).
+  experimental type TargetFilter extends array of FilterEntry
+
   experimental type RemoteLocation extends object
     properties
       string host
@@ -9389,7 +9402,6 @@ domain Target
       # An optional list of origins to grant unlimited cross-origin access to.
       # Parts of the URL other than those constituting origin are ignored.
       optional array of string originsWithUniversalNetworkAccess
-
     returns
       # The id of the context created.
       Browser.BrowserContextID browserContextId
@@ -9446,6 +9458,11 @@ domain Target
 
   # Retrieves a list of available targets.
   command getTargets
+    parameters
+      # Only targets matching filter will be reported. If filter is not specified
+      # and target discovery is currently enabled, a filter used for target discovery
+      # is used for consistency.
+      experimental optional TargetFilter filter
     returns
       # The list of targets.
       array of TargetInfo targetInfos
@@ -9477,6 +9494,8 @@ domain Target
       # We plan to make this the default, deprecate non-flattened mode,
       # and eventually retire it. See crbug.com/991325.
       optional boolean flatten
+      # Only targets matching filter will be attached.
+      experimental optional TargetFilter filter
 
   # Adds the specified target to the list of targets that will be monitored for any related target
   # creation (such as child frames, child workers and new versions of service worker) and reported
@@ -9489,6 +9508,8 @@ domain Target
       # Whether to pause new targets when attaching to them. Use `Runtime.runIfWaitingForDebugger`
       # to run paused targets.
       boolean waitForDebuggerOnStart
+      # Only targets matching filter will be attached.
+      experimental optional TargetFilter filter
 
   # Controls whether to discover available targets and notify via
   # `targetCreated/targetInfoChanged/targetDestroyed` events.
@@ -9496,6 +9517,9 @@ domain Target
     parameters
       # Whether to discover available targets.
       boolean discover
+      # Only targets matching filter will be attached. If `discover` is false,
+      # `filter` must be omitted or empty.
+      experimental optional TargetFilter filter
 
   # Enables target discovery for the specified locations, when `setDiscoverTargets` was set to
   # `true`.

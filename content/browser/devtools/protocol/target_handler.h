@@ -67,14 +67,19 @@ class TargetHandler : public DevToolsDomainHandler,
   void DisableAutoAttachOfServiceWorkers();
 
   // Domain implementation.
-  Response SetDiscoverTargets(bool discover) override;
-  void SetAutoAttach(bool auto_attach,
-                     bool wait_for_debugger_on_start,
-                     Maybe<bool> flatten,
-                     std::unique_ptr<SetAutoAttachCallback> callback) override;
+  Response SetDiscoverTargets(
+      bool discover,
+      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter) override;
+  void SetAutoAttach(
+      bool auto_attach,
+      bool wait_for_debugger_on_start,
+      Maybe<bool> flatten,
+      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
+      std::unique_ptr<SetAutoAttachCallback> callback) override;
   void AutoAttachRelated(
       const std::string& targetId,
       bool wait_for_debugger_on_start,
+      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
       std::unique_ptr<AutoAttachRelatedCallback> callback) override;
   Response SetRemoteLocations(
       std::unique_ptr<protocol::Array<Target::RemoteLocation>>) override;
@@ -115,6 +120,7 @@ class TargetHandler : public DevToolsDomainHandler,
                         Maybe<bool> background,
                         std::string* out_target_id) override;
   Response GetTargets(
+      Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
       std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos)
       override;
 
@@ -133,6 +139,7 @@ class TargetHandler : public DevToolsDomainHandler,
   class Throttle;
   class RequestThrottle;
   class ResponseThrottle;
+  class TargetFilter;
 
   // TargetAutoAttacher::Delegate implementation.
   bool AutoAttach(TargetAutoAttacher* source,
@@ -170,19 +177,23 @@ class TargetHandler : public DevToolsDomainHandler,
   void DevToolsAgentHostDetached(DevToolsAgentHost* agent_host) override;
   void DevToolsAgentHostCrashed(DevToolsAgentHost* agent_host,
                                 base::TerminationStatus status) override;
+  bool discover() const { return !!discover_target_filter_; }
 
   TargetAutoAttacher* const auto_attacher_;
   std::unique_ptr<Target::Frontend> frontend_;
 
   bool flatten_auto_attach_ = false;
   bool auto_attach_ = false;
+  // The below is set iff (auto_attach_ ||
+  // !auto_attach_related_targets_.empty())
+  std::unique_ptr<TargetFilter> auto_attach_target_filter_;
   bool wait_for_debugger_on_start_ = false;
   std::map<DevToolsAgentHost*, Session*> auto_attached_sessions_;
   base::flat_map<TargetAutoAttacher*, bool /* wait_for_debugger_on_start */>
       auto_attach_related_targets_;
   bool auto_attach_service_workers_ = true;
 
-  bool discover_;
+  std::unique_ptr<TargetFilter> discover_target_filter_;
   bool observing_agent_hosts_ = false;
   std::map<std::string, std::unique_ptr<Session>> attached_sessions_;
   std::set<DevToolsAgentHost*> reported_hosts_;

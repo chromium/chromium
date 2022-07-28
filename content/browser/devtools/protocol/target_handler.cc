@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -602,13 +603,47 @@ void TargetHandler::Throttle::Clear() {
   is_deferring_ = false;
 }
 
+class TargetHandler::TargetFilter {
+ public:
+  using Filter = std::vector<std::unique_ptr<protocol::Target::FilterEntry>>;
+
+  static std::unique_ptr<TargetFilter> CreateDefault() {
+    Filter default_filter;
+    // - Exclude `browser`.
+    default_filter.push_back(protocol::Target::FilterEntry::Create()
+                                 .SetExclude(true)
+                                 .SetType(DevToolsAgentHost::kTypeBrowser)
+                                 .Build());
+    // - Allow everything else.
+    default_filter.push_back(protocol::Target::FilterEntry::Create().Build());
+    return base::WrapUnique(new TargetFilter(std::move(default_filter)));
+  }
+  static std::unique_ptr<TargetFilter> Create(Maybe<Filter> filter) {
+    if (!filter.isJust())
+      return CreateDefault();
+    return base::WrapUnique(new TargetFilter(std::move(*filter.fromJust())));
+  }
+
+  bool Match(DevToolsAgentHost& host) const {
+    for (const auto& entry : entries_) {
+      if (!entry->HasType() || entry->GetType("") == host.GetType())
+        return !entry->GetExclude(false);
+    }
+    return false;
+  }
+
+ private:
+  explicit TargetFilter(Filter entries) : entries_(std::move(entries)) {}
+
+  const Filter entries_;
+};
+
 TargetHandler::TargetHandler(AccessMode access_mode,
                              const std::string& owner_target_id,
                              TargetAutoAttacher* auto_attacher,
                              DevToolsSession* root_session)
     : DevToolsDomainHandler(Target::Metainfo::domainName),
       auto_attacher_(auto_attacher),
-      discover_(false),
       access_mode_(access_mode),
       owner_target_id_(owner_target_id),
       root_session_(root_session) {}
@@ -628,7 +663,7 @@ void TargetHandler::Wire(UberDispatcher* dispatcher) {
 
 Response TargetHandler::Disable() {
   SetAutoAttachInternal(false, false, false, base::DoNothing());
-  SetDiscoverTargets(false);
+  SetDiscoverTargets(false, {});
   auto_attached_sessions_.clear();
   attached_sessions_.clear();
 
@@ -718,14 +753,15 @@ void TargetHandler::SetAutoAttachInternal(bool auto_attach,
     while (!auto_attached_sessions_.empty())
       auto_attached_sessions_.begin()->second->Detach(false);
     ClearThrottles();
+    auto_attach_target_filter_.reset();
     std::move(callback).Run();
   }
 }
 
 void TargetHandler::UpdateAgentHostObserver() {
-  if (discover_ == observing_agent_hosts_)
+  if (discover() == observing_agent_hosts_)
     return;
-  observing_agent_hosts_ = discover_;
+  observing_agent_hosts_ = discover();
   if (observing_agent_hosts_)
     DevToolsAgentHost::AddObserver(this);
   else
@@ -735,6 +771,10 @@ void TargetHandler::UpdateAgentHostObserver() {
 bool TargetHandler::AutoAttach(TargetAutoAttacher* source,
                                DevToolsAgentHost* host,
                                bool waiting_for_debugger) {
+  DCHECK(host);
+  DCHECK(auto_attach_target_filter_);
+  if (!auto_attach_target_filter_->Match(*host))
+    return false;
   if (auto_attached_sessions_.find(host) != auto_attached_sessions_.end())
     return false;
   if (!auto_attach_service_workers_ &&
@@ -844,14 +884,28 @@ Response TargetHandler::FindSession(Maybe<std::string> session_id,
 
 // ----------------- Protocol ----------------------
 
-Response TargetHandler::SetDiscoverTargets(bool discover) {
+Response TargetHandler::SetDiscoverTargets(
+    bool discover,
+    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
-  if (discover_ == discover)
+  if (!discover && filter.isJust() && !filter.fromJust()->empty()) {
+    return Response::InvalidParams(
+        "Filter should not be present with `discover` is off");
+  }
+  const bool old_discover = TargetHandler::discover();
+  discover_target_filter_ =
+      discover ? TargetFilter::Create(std::move(filter)) : nullptr;
+  if (old_discover == discover) {
+    // Report the newly matching targets that were not yet reported.
+    if (discover) {
+      for (const auto& target : DevToolsAgentHost::GetOrCreateAll())
+        DevToolsAgentHostCreated(target.get());
+    }
     return Response::Success();
-  discover_ = discover;
+  }
   UpdateAgentHostObserver();
-  if (!discover_)
+  if (!TargetHandler::discover())
     reported_hosts_.clear();
   return Response::Success();
 }
@@ -860,12 +914,20 @@ void TargetHandler::SetAutoAttach(
     bool auto_attach,
     bool wait_for_debugger_on_start,
     Maybe<bool> flatten,
+    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
     std::unique_ptr<SetAutoAttachCallback> callback) {
   if (access_mode_ == AccessMode::kBrowser && !flatten.fromMaybe(false)) {
     callback->sendFailure(Response::InvalidParams(
         "Only flatten protocol is supported with browser level auto-attach"));
     return;
   }
+  if (!auto_attach && filter.isJust() && !filter.fromJust()->empty()) {
+    callback->sendFailure(Response::InvalidParams(
+        "Target filter should be empty whien disabling auto-attach"));
+    return;
+  }
+  auto_attach_target_filter_ =
+      auto_attach ? TargetFilter::Create(std::move(filter)) : nullptr;
   SetAutoAttachInternal(
       auto_attach, wait_for_debugger_on_start, flatten.fromMaybe(false),
       base::BindOnce(&SetAutoAttachCallback::sendSuccess, std::move(callback)));
@@ -874,6 +936,7 @@ void TargetHandler::SetAutoAttach(
 void TargetHandler::AutoAttachRelated(
     const std::string& targetId,
     bool wait_for_debugger_on_start,
+    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
     std::unique_ptr<AutoAttachRelatedCallback> callback) {
   if (access_mode_ != AccessMode::kBrowser) {
     callback->sendFailure(Response::ServerError(
@@ -897,6 +960,7 @@ void TargetHandler::AutoAttachRelated(
     SetAutoAttachInternal(false, false, true, base::DoNothing());
   }
   flatten_auto_attach_ = true;
+  auto_attach_target_filter_ = TargetFilter::Create(std::move(filter));
   AutoAttach(auto_attacher_, host.get(), false);
   auto inserted = auto_attach_related_targets_.insert(
       std::make_pair(auto_attacher, wait_for_debugger_on_start));
@@ -1067,12 +1131,22 @@ Response TargetHandler::CreateTarget(const std::string& url,
 }
 
 Response TargetHandler::GetTargets(
+    Maybe<protocol::Array<protocol::Target::FilterEntry>> filter,
     std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos) {
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
+  std::unique_ptr<TargetFilter> passed_filter =
+      filter.isJust() || !discover_target_filter_
+          ? TargetFilter::Create(std::move(filter))
+          : nullptr;
+  const TargetFilter* effective_filter =
+      passed_filter ? passed_filter.get() : discover_target_filter_.get();
+  DCHECK(effective_filter);
   *target_infos = std::make_unique<protocol::Array<Target::TargetInfo>>();
-  for (const auto& host : DevToolsAgentHost::GetOrCreateAll())
-    (*target_infos)->emplace_back(CreateInfo(host.get()));
+  for (const auto& host : DevToolsAgentHost::GetOrCreateAll()) {
+    if (effective_filter->Match(*host))
+      (*target_infos)->emplace_back(CreateInfo(host.get()));
+  }
   return Response::Success();
 }
 
@@ -1083,7 +1157,10 @@ bool TargetHandler::ShouldForceDevToolsAgentHostCreation() {
 }
 
 void TargetHandler::DevToolsAgentHostCreated(DevToolsAgentHost* host) {
-  DCHECK(discover_);
+  DCHECK(discover());
+  DCHECK(host);
+  if (!discover_target_filter_->Match(*host))
+    return;
   // If we start discovering late, all existing agent hosts will be reported,
   // but we could have already attached to some.
   if (reported_hosts_.find(host) == reported_hosts_.end()) {
