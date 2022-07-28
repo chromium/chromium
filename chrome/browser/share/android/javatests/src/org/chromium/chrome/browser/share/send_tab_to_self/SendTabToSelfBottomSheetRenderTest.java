@@ -52,7 +52,7 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_SHARING)
-                    .setRevision(1)
+                    .setRevision(2)
                     .build();
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
