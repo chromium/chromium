@@ -19,6 +19,7 @@ export interface EnterpriseProfileInfo {
   enterpriseInfo: string;
   proceedLabel: string;
   showCancelButton: boolean;
+  checkLinkDataCheckboxByDefault: boolean;
 }
 
 export interface EnterpriseProfileWelcomeBrowserProxy {

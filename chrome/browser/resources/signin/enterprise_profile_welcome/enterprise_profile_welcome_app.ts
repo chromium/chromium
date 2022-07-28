@@ -164,6 +164,7 @@ export class EnterpriseProfileWelcomeAppElement extends
     this.defaultProceedLabel_ = info.proceedLabel;
     this.proceedLabel_ = this.defaultProceedLabel_;
     this.showCancelButton_ = info.showCancelButton;
+    this.linkData_ = info.checkLinkDataCheckboxByDefault;
   }
 }
 

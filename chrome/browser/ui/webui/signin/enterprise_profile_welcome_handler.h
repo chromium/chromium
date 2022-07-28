@@ -42,6 +42,7 @@ class EnterpriseProfileWelcomeHandler
       Browser* browser,
       EnterpriseProfileWelcomeUI::ScreenType type,
       bool profile_creation_required_by_policy,
+      bool show_link_data_option,
       const AccountInfo& account_info,
       absl::optional<SkColor> profile_color,
       signin::SigninChoiceCallback proceed_callback);
@@ -114,6 +115,9 @@ class EnterpriseProfileWelcomeHandler
   raw_ptr<Browser> browser_ = nullptr;
   const EnterpriseProfileWelcomeUI::ScreenType type_;
   const bool profile_creation_required_by_policy_;
+#if !BUILDFLAG(IS_CHROMEOS)
+  const bool show_link_data_option_;
+#endif
   const std::u16string email_;
   const std::string domain_name_;
   const CoreAccountId account_id_;

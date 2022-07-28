@@ -542,7 +542,10 @@ extern const char kWebRTCAllowLegacyTLSProtocols[];
 extern const char kHasSeenWelcomePage[];
 extern const char kManagedAccountsSigninRestriction[];
 extern const char kManagedAccountsSigninRestrictionScopeMachine[];
-#endif
+#if !BUILDFLAG(IS_CHROMEOS)
+extern const char kEnterpriseProfileCreationKeepBrowsingData[];
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
 // Only used in branded builds.

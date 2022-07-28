@@ -24,9 +24,11 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -113,12 +115,16 @@ EnterpriseProfileWelcomeHandler::EnterpriseProfileWelcomeHandler(
     Browser* browser,
     EnterpriseProfileWelcomeUI::ScreenType type,
     bool profile_creation_required_by_policy,
+    bool show_link_data_option,
     const AccountInfo& account_info,
     absl::optional<SkColor> profile_color,
     signin::SigninChoiceCallback proceed_callback)
     : browser_(browser),
       type_(type),
       profile_creation_required_by_policy_(profile_creation_required_by_policy),
+#if !BUILDFLAG(IS_CHROMEOS)
+      show_link_data_option_(show_link_data_option),
+#endif
       email_(base::UTF8ToUTF16(account_info.email)),
       domain_name_(gaia::ExtractDomainName(account_info.email)),
       account_id_(account_info.account_id),
@@ -302,6 +308,13 @@ base::Value EnterpriseProfileWelcomeHandler::GetProfileInfoValue() {
               profile_creation_required_by_policy_
                   ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
                   : IDS_WELCOME_SIGNIN_VIEW_SIGNIN));
+#if !BUILDFLAG(IS_CHROMEOS)
+      dict.SetBoolKey(
+          "checkLinkDataCheckboxByDefault",
+          show_link_data_option_ &&
+              g_browser_process->local_state()->GetBoolean(
+                  prefs::kEnterpriseProfileCreationKeepBrowsingData));
+#endif
       break;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     case EnterpriseProfileWelcomeUI::ScreenType::kLacrosEnterpriseWelcome:

@@ -1654,6 +1654,12 @@ const char kManagedAccountsSigninRestriction[] =
 // will have the restriction applied.
 const char kManagedAccountsSigninRestrictionScopeMachine[] =
     "profile.managed_accounts.restriction.all_managed_accounts";
+#if !BUILDFLAG(IS_CHROMEOS)
+// Whether or not the option to keep existing browsing data is checked by
+// default.
+extern const char kEnterpriseProfileCreationKeepBrowsingData[] =
+    "profile.enterprise_profile_creation.keep_existing_data_by_default";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif
 
 #if BUILDFLAG(IS_WIN)

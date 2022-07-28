@@ -31899,6 +31899,42 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
 
       ECH is an evolving protocol, so <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s implementation is subject to change. As such, this policy is a temporary measure to control the initial experimental implementation. It will be replaced with final controls as the protocol finalizes.''',
     },
+    {
+      'name': 'EnterpriseProfileCreationKeepBrowsingData',
+      'caption': 'Keep browsing data when creating enterprise profile by default',
+      'owners': ['ydago@chromium.org', 'file://components/policy/resources/OWNERS'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'default': False,
+      'supported_on': ['chrome.*:106-'],
+      'features': {
+        'can_be_recommended': True,
+        'can_be_mandatory': False,
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Check the option to keep existing browsing data by default',
+        },
+        {
+          'value': False,
+          'caption': 'Do not check the option to keep existing browsing data by default',
+        },
+      ],
+      'example_value': True,
+      'id': 998,
+      'tags': [],
+      'desc': '''If this policy is Enabled, the option to keep any existing browsing data when creating an enterprise profile will be checked by default.
+
+If this policy is unset or Disabled, the option to keep any existing browsing data when creating an enterprise profile will not be checked by default.
+
+Regardless of the value, the user will be able to decide whether or not to keep any existing browsing data when creating an enterprise profile.
+
+This policy has no effect if the option to keep existing browsing data is not available; this happens if enterprise profile separation is strictly enforced, or if the data would be from an already managed profile.
+''',
+    }
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -32906,6 +32942,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 997,
+  'highest_id_currently_used': 998,
   'highest_atomic_group_id_currently_used': 43
 }

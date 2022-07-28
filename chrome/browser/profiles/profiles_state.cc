@@ -88,6 +88,9 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBrowserProfilePickerShown, false);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(prefs::kLacrosSecondaryProfilesAllowed, true);
+#elif !BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(
+      prefs::kEnterpriseProfileCreationKeepBrowsingData, false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

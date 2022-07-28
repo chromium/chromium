@@ -78,8 +78,8 @@ void EnterpriseProfileWelcomeUI::Initialize(
     absl::optional<SkColor> profile_color,
     signin::SigninChoiceCallback proceed_callback) {
   auto handler = std::make_unique<EnterpriseProfileWelcomeHandler>(
-      browser, type, profile_creation_required_by_policy, account_info,
-      profile_color, std::move(proceed_callback));
+      browser, type, profile_creation_required_by_policy, show_link_data_option,
+      account_info, profile_color, std::move(proceed_callback));
   handler_ = handler.get();
 
   if (type ==
