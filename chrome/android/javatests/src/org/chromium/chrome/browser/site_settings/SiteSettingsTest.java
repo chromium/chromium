@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.pagecontroller.utils.UiAutomatorUtils;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
@@ -67,6 +68,7 @@ import org.chromium.components.browser_ui.site_settings.R;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
@@ -118,6 +120,8 @@ public class SiteSettingsTest {
             new String[] {"binary_toggle", "add_exception"};
     private static final String[] BINARY_TOGGLE_WITH_OS_WARNING_EXTRA =
             new String[] {"binary_toggle", "os_permissions_warning_extra"};
+    private static final String[] CLEAR_BROWSING_DATA_LINK =
+            new String[] {"clear_browsing_data_link", "clear_browsing_divider"};
 
     @Before
     public void setUp() throws TimeoutException {
@@ -868,8 +872,17 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
     public void testOnlyExpectedPreferencesAllSites() {
         checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, NULL_ARRAY);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)
+    public void testOnlyExpectedPreferencesAllSitesV2() {
+        checkPreferencesForCategory(SiteSettingsCategory.Type.ALL_SITES, CLEAR_BROWSING_DATA_LINK);
     }
 
     @Test

@@ -314,7 +314,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     }
 
     private void addPreferencesFromXml() {
-        if (SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
+        if (isNewAllSitesUiEnabled()) {
             SettingsUtils.addPreferencesFromResource(this, R.xml.all_site_preferences_v2);
             ChromeBasePreference clearBrowsingDataLink = findPreference(PREF_CLEAR_BROWSING_DATA);
             if (!getSiteSettingsDelegate().canLaunchClearBrowsingDataDialog()) {
@@ -338,30 +338,37 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
 
     private boolean addWebsites(Collection<Website> sites) {
         filterSelectedDomains(sites);
-
-        List<WebsitePreference> websites = new ArrayList<>();
-
-        // Find origins matching the current search.
-        for (Website site : sites) {
-            if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
-                websites.add(new WebsitePreference(
-                        getStyledContext(), getSiteSettingsDelegate(), site, mCategory));
+        if (isNewAllSitesUiEnabled()) {
+            List<WebsiteGroup> groups = WebsiteGroup.groupWebsites(sites);
+            List<WebsiteGroupPreference> preferences = new ArrayList<>();
+            // Find groups matching the current search.
+            for (WebsiteGroup group : groups) {
+                if (mSearch == null || mSearch.isEmpty() || group.matches(mSearch)) {
+                    preferences.add(new WebsiteGroupPreference(
+                            getStyledContext(), getSiteSettingsDelegate(), group));
+                }
             }
+            Collections.sort(preferences);
+            for (WebsiteGroupPreference preference : preferences) {
+                getPreferenceScreen().addPreference(preference);
+            }
+            return !preferences.isEmpty();
+        } else {
+            List<WebsitePreference> websites = new ArrayList<>();
+            // Find origins matching the current search.
+            for (Website site : sites) {
+                if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
+                    websites.add(new WebsitePreference(
+                            getStyledContext(), getSiteSettingsDelegate(), site, mCategory));
+                }
+            }
+            Collections.sort(websites);
+            for (WebsitePreference website : websites) {
+                getPreferenceScreen().addPreference(website);
+            }
+            mWebsites = websites;
+            return !websites.isEmpty();
         }
-
-        if (websites.size() == 0) {
-            return false;
-        }
-
-        Collections.sort(websites);
-
-        for (WebsitePreference website : websites) {
-            getPreferenceScreen().addPreference(website);
-        }
-
-        mWebsites = websites;
-
-        return websites.size() != 0;
     }
 
     private Context getStyledContext() {
@@ -379,5 +386,13 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
                 it.remove();
             }
         }
+    }
+
+    /** Returns whether the new All Sites UI should be used. */
+    private boolean isNewAllSitesUiEnabled() {
+        // Only in the "All sites" mode and with the flag enabled.
+        return mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
+                && SiteSettingsFeatureList.isEnabled(
+                        SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
     }
 }
