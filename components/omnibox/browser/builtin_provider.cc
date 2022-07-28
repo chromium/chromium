@@ -209,14 +209,17 @@ void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
 
   AutocompleteMatch match(
       this, OmniboxFieldTrial::kSiteSearchStarterPackRelevanceScore.Get(),
-      false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
+      false, AutocompleteMatchType::NAVSUGGEST);
 
+  const std::u16string destination_url =
+      TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
+          template_url.starter_pack_id());
   match.fill_into_edit = template_url.keyword();
-  match.destination_url =
-      GURL(TemplateURLStarterPackData::GetDestinationUrlForStarterPackID(
-          template_url.starter_pack_id()));
-  match.contents = template_url.short_name();
-  match.contents_class.emplace_back(0, ACMatchClassification::NONE);
+  match.destination_url = GURL(destination_url);
+  match.contents = destination_url;
+  match.contents_class.emplace_back(0, ACMatchClassification::URL);
+  match.description = template_url.short_name();
+  match.description_class.emplace_back(0, ACMatchClassification::NONE);
   match.transition = ui::PAGE_TRANSITION_GENERATED;
   match.keyword = template_url.keyword();
   matches_.push_back(match);
