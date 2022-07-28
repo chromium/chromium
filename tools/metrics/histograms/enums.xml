@@ -87832,6 +87832,13 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="14" label="Draw tool: color changed"/>
   <int value="15" label="Shape tool selected"/>
   <int value="16" label="Shape tool: color changed"/>
+  <int value="17" label="Shape tool: shape copied"/>
+  <int value="18" label="Shape tool: shape scaled"/>
+  <int value="19" label="Shape tool: shape rotated"/>
+  <int value="20" label="Shape tool: shape deleted"/>
+  <int value="21" label="Invalid tool selected"/>
+  <int value="22" label="Screenshot Sharing Failed"/>
+  <int value="23" label="Screenshot Saving Failed"/>
 </enum>
 
 <enum name="SharingScreenshotFallbackAction">
