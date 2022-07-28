@@ -555,9 +555,6 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kAriaAttributeChanged:
       event_name = "AriaAttributeChanged";
       break;
-    case ax::mojom::Event::kAutocorrectionOccured:
-      event_name = "AutocorrectionOccured";
-      break;
     case ax::mojom::Event::kBlur:
       event_name = "Blur";
       break;
@@ -576,8 +573,14 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kDocumentTitleChanged:
       event_name = "DocumentTitleChanged";
       break;
+    case ax::mojom::Event::kExpandedChanged:
+      event_name = "ExpandedChanged";
+      break;
     case ax::mojom::Event::kFocus:
       event_name = "Focus";
+      break;
+    case ax::mojom::Event::kHide:
+      event_name = "Hide";
       break;
     case ax::mojom::Event::kHover:
       event_name = "Hover";
@@ -585,11 +588,11 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kLayoutComplete:
       event_name = "LayoutComplete";
       break;
-    case ax::mojom::Event::kLiveRegionChanged:
-      event_name = "LiveRegionChanged";
-      break;
     case ax::mojom::Event::kLoadComplete:
       event_name = "LoadComplete";
+      break;
+    case ax::mojom::Event::kLoadStart:
+      event_name = "LoadStart";
       break;
     case ax::mojom::Event::kLocationChanged:
       event_name = "LocationChanged";
@@ -615,8 +618,8 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kSelectedChildrenChanged:
       event_name = "SelectedChildrenChanged";
       break;
-    case ax::mojom::Event::kTextSelectionChanged:
-      event_name = "SelectedTextChanged";
+    case ax::mojom::Event::kShow:
+      event_name = "Show";
       break;
     case ax::mojom::Event::kTextChanged:
       event_name = "TextChanged";
@@ -624,9 +627,45 @@ void WebFrameTestProxy::PostAccessibilityEvent(const ui::AXEvent& event) {
     case ax::mojom::Event::kValueChanged:
       event_name = "ValueChanged";
       break;
-    default:
-      event_name = "Unknown";
-      break;
+
+    // These events are not fired from Blink.
+    // This list is duplicated in
+    // RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent().
+    case ax::mojom::Event::kAlert:
+    case ax::mojom::Event::kAutocorrectionOccured:
+    case ax::mojom::Event::kControlsChanged:
+    case ax::mojom::Event::kEndOfTest:
+    case ax::mojom::Event::kFocusAfterMenuClose:
+    case ax::mojom::Event::kFocusContext:
+    case ax::mojom::Event::kHitTestResult:
+    case ax::mojom::Event::kImageFrameUpdated:
+    case ax::mojom::Event::kLiveRegionCreated:
+    case ax::mojom::Event::kLiveRegionChanged:
+    case ax::mojom::Event::kMediaStartedPlaying:
+    case ax::mojom::Event::kMediaStoppedPlaying:
+    case ax::mojom::Event::kMenuEnd:
+    case ax::mojom::Event::kMenuPopupEnd:
+    case ax::mojom::Event::kMenuPopupStart:
+    case ax::mojom::Event::kMenuStart:
+    case ax::mojom::Event::kMouseCanceled:
+    case ax::mojom::Event::kMouseDragged:
+    case ax::mojom::Event::kMouseMoved:
+    case ax::mojom::Event::kMousePressed:
+    case ax::mojom::Event::kMouseReleased:
+    case ax::mojom::Event::kNone:
+    case ax::mojom::Event::kSelection:
+    case ax::mojom::Event::kSelectionAdd:
+    case ax::mojom::Event::kSelectionRemove:
+    case ax::mojom::Event::kStateChanged:
+    case ax::mojom::Event::kTextSelectionChanged:
+    case ax::mojom::Event::kTooltipClosed:
+    case ax::mojom::Event::kTooltipOpened:
+    case ax::mojom::Event::kTreeChanged:
+    case ax::mojom::Event::kWindowActivated:
+    case ax::mojom::Event::kWindowDeactivated:
+    case ax::mojom::Event::kWindowVisibilityChanged:
+      // Never fired from Blink.
+      NOTREACHED() << "Event not expected from Blink: " << event.event_type;
   }
 
   blink::WebDocument document = GetWebFrame()->GetDocument();
