@@ -8,7 +8,8 @@ This is a list of all the places where we represent
    Output of the [Blink manifest parser](../../../../third_party/blink/renderer/modules/manifest/manifest_parser.cc).
 
  - [blink::Manifest](../../../../third_party/blink/public/common/manifest/manifest.h)\
-   Pre blink.mojom.Manifest representation that is getting cleaned up: https://crbug.com/1233362
+   Contains subtypes representing certain fields of the manifest that need to be duplicated in handwritten C++ for assorted reasons.
+   Used to be a full duplicate manifest definition until https://crbug.com/1233362.
 
  - [WebAppInstallInfo](../web_app_install_info.h)\
    Used for installation and updates.
