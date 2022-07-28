@@ -44,7 +44,7 @@ KeyedService* ApkWebAppServiceFactory::BuildServiceInstanceFor(
   if (!arc::IsArcAllowedForProfile(profile))
     return nullptr;
 
-  return new ApkWebAppService(profile, /*test_delegate=*/nullptr);
+  return new ApkWebAppService(profile);
 }
 
 }  // namespace ash
