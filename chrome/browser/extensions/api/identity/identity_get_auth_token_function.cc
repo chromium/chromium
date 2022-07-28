@@ -8,19 +8,14 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
-#include "chrome/browser/extensions/api/identity/identity_constants.h"
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_error.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
@@ -30,7 +25,6 @@
 #include "chrome/common/extensions/api/identity.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/scope_set.h"
@@ -38,21 +32,26 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/api/oauth2.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/manifest_handlers/oauth2_manifest_handler.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/profiles/profiles_state.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "google_apis/gaia/gaia_constants.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "components/user_manager/user_manager.h"
-#include "google_apis/gaia/gaia_constants.h"
 #endif
 
 namespace extensions {
@@ -237,24 +236,18 @@ void IdentityGetAuthTokenFunction::OnReceivedExtensionAccountInfo(
     const CoreAccountInfo& account_info) {
   token_key_.account_info = account_info;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  bool is_kiosk = user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
-                  user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp();
-  bool is_public_session =
-      user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
-
-  if (connector->IsDeviceEnterpriseManaged() &&
-      (is_kiosk || is_public_session)) {
-    if (is_public_session) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (g_browser_process->browser_policy_connector()
+          ->IsDeviceEnterpriseManaged()) {
+    if (profiles::IsPublicSession()) {
       CompleteFunctionWithError(IdentityGetAuthTokenError(
           IdentityGetAuthTokenError::State::kNotAllowlistedInPublicSession));
       return;
     }
-
-    StartMintTokenFlow(IdentityMintRequestQueue::MINT_TYPE_NONINTERACTIVE);
-    return;
+    if (profiles::IsKioskSession()) {
+      StartMintTokenFlow(IdentityMintRequestQueue::MINT_TYPE_NONINTERACTIVE);
+      return;
+    }
   }
 #endif
 
@@ -405,7 +398,7 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
 
 void IdentityGetAuthTokenFunction::StartMintTokenFlow(
     IdentityMintRequestQueue::MintType type) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // ChromeOS in kiosk mode may start the mint token flow without account.
   DCHECK(!token_key_.account_info.IsEmpty());
   DCHECK(IdentityManagerFactory::GetForProfile(GetProfile())
@@ -470,23 +463,18 @@ void IdentityGetAuthTokenFunction::StartMintToken(
   if (type == IdentityMintRequestQueue::MINT_TYPE_NONINTERACTIVE) {
     switch (cache_status) {
       case IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         // Always force minting token for ChromeOS kiosk app and public session.
-        if (user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+        if (profiles::IsPublicSession()) {
           CompleteFunctionWithError(
               IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::
                                             kNotAllowlistedInPublicSession));
           return;
         }
-
-        if (user_manager::UserManager::Get()->IsLoggedInAsKioskApp() ||
-            user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
-            user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()) {
+        if (profiles::IsKioskSession()) {
           gaia_mint_token_mode_ = OAuth2MintTokenFlow::MODE_MINT_TOKEN_FORCE;
-          policy::BrowserPolicyConnectorAsh* connector =
-              g_browser_process->platform_part()
-                  ->browser_policy_connector_ash();
-          if (connector->IsDeviceEnterpriseManaged()) {
+          if (g_browser_process->browser_policy_connector()
+                  ->IsDeviceEnterpriseManaged()) {
             StartDeviceAccessTokenRequest();
           } else {
             StartTokenKeyAccountAccessTokenRequest();
@@ -832,18 +820,20 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
       IdentityGetAuthTokenError(IdentityGetAuthTokenError::State::kCanceled));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Even though the DeviceOAuth2TokenService may be available on non-ChromeOS
-// platforms, its robot account is not made available because it should only be
-// used for very specific policy-related things. In fact, the device account on
-// desktop isn't scoped for anything other than policy invalidations.
+#if BUILDFLAG(IS_CHROMEOS)
 void IdentityGetAuthTokenFunction::StartDeviceAccessTokenRequest() {
-  DeviceOAuth2TokenService* service = DeviceOAuth2TokenServiceFactory::Get();
   // Since robot account refresh tokens are scoped down to [any-api] only,
   // request access token for [any-api] instead of login.
   OAuth2AccessTokenManager::ScopeSet scopes;
   scopes.insert(GaiaConstants::kAnyApiOAuth2Scope);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DeviceOAuth2TokenService* service = DeviceOAuth2TokenServiceFactory::Get();
   device_access_token_request_ = service->StartAccessTokenRequest(scopes, this);
+#else
+  // TODO(https://crbug.com/1345922): Plumb the robot account from Ash to
+  // Lacros.
+  NOTIMPLEMENTED();
+#endif
 }
 #endif
 

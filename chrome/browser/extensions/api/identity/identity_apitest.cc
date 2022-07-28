@@ -90,6 +90,7 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
 
@@ -2847,10 +2848,11 @@ class GetAuthTokenFunctionDeviceLocalAccountTest
 class GetAuthTokenFunctionPublicSessionTest
     : public GetAuthTokenFunctionDeviceLocalAccountTest {
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    GetAuthTokenFunctionTest::SetUpInProcessBrowserTestFixture();
-
+  void SetUpOnMainThread() override {
     // Set up the user manager to fake a public session.
+    chromeos::LoginState::Get()->SetLoggedInState(
+        chromeos::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+        chromeos::LoginState::LoggedInUserType::LOGGED_IN_USER_PUBLIC_ACCOUNT);
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*user_manager_, IsLoggedInAsWebKioskApp())
@@ -2860,6 +2862,7 @@ class GetAuthTokenFunctionPublicSessionTest
     EXPECT_CALL(*user_manager_, GetLoggedInUsers())
         .WillRepeatedly(
             testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+    GetAuthTokenFunctionDeviceLocalAccountTest::SetUpOnMainThread();
   }
 };
 
@@ -2881,10 +2884,11 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionPublicSessionTest, NonAllowlisted) {
 class GetAuthTokenFunctionChromeKioskTest
     : public GetAuthTokenFunctionDeviceLocalAccountTest {
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    GetAuthTokenFunctionTest::SetUpInProcessBrowserTestFixture();
-
+  void SetUpOnMainThread() override {
     // Set up the user manager to fake a Chrome Kiosk session.
+    chromeos::LoginState::Get()->SetLoggedInState(
+        chromeos::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+        chromeos::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*user_manager_, IsLoggedInAsWebKioskApp())
@@ -2894,6 +2898,7 @@ class GetAuthTokenFunctionChromeKioskTest
     EXPECT_CALL(*user_manager_, GetLoggedInUsers())
         .WillRepeatedly(
             testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+    GetAuthTokenFunctionDeviceLocalAccountTest::SetUpOnMainThread();
   }
 };
 
@@ -2906,10 +2911,11 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionChromeKioskTest, NonAllowlisted) {
 class GetAuthTokenFunctionWebKioskTest
     : public GetAuthTokenFunctionDeviceLocalAccountTest {
  protected:
-  void SetUpInProcessBrowserTestFixture() override {
-    GetAuthTokenFunctionTest::SetUpInProcessBrowserTestFixture();
-
+  void SetUpOnMainThread() override {
     // Set up the user manager to fake a web Kiosk session.
+    chromeos::LoginState::Get()->SetLoggedInState(
+        chromeos::LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+        chromeos::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*user_manager_, IsLoggedInAsWebKioskApp())
@@ -2919,6 +2925,7 @@ class GetAuthTokenFunctionWebKioskTest
     EXPECT_CALL(*user_manager_, GetLoggedInUsers())
         .WillRepeatedly(
             testing::Invoke(user_manager_, &ash::MockUserManager::GetUsers));
+    GetAuthTokenFunctionDeviceLocalAccountTest::SetUpOnMainThread();
   }
 };
 
