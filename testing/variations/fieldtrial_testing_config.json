@@ -8787,6 +8787,31 @@
             ]
         }
     ],
+    "ThreadedPreloadScanner": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Immediate",
+                    "params": {
+                        "preload-processing-mode": "immediate"
+                    },
+                    "enable_features": [
+                        "ThreadedPreloadScanner"
+                    ]
+                }
+            ]
+        }
+    ],
     "ThreadingOptimizationsOnIO": [
         {
             "platforms": [
