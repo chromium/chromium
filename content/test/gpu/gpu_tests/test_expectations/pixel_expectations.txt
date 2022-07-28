@@ -433,6 +433,9 @@ crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 # Pixel_VideoStreamFromWebGL* tests sporadically fail on Linux FYI Release (NVIDIA) bot
 crbug.com/1348002 [ linux nvidia ] Pixel_VideoStreamFromWebGL* [ RetryOnFailure ]
 
+# Pixel_VideoStreamFromWebGLCanvas fails consistently on Linux FYI Release (AMD RX 500 XT)
+crbug.com/1348122 [ linux amd-0x7340 ] Pixel_VideoStreamFromWebGLCanvas [ Failure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
