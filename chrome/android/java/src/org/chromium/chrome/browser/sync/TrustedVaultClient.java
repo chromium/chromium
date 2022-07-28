@@ -76,11 +76,8 @@ public class TrustedVaultClient {
          * @param methodTypeHint Opaque value provided by the server (e.g. via Javascript).
          * @return a promise which indicates completion.
          */
-        // TODO(crbug.com/1341279): Switch to non-default method once all implementations are ready.
-        default Promise<Void> addTrustedRecoveryMethod(
-                CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
-            return Promise.rejected();
-        }
+        Promise<Void> addTrustedRecoveryMethod(
+                CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint);
 
         /**
          * Gets a PendingIntent that can be used to display a UI that allows the user to resolve a
@@ -124,6 +121,12 @@ public class TrustedVaultClient {
         @Override
         public Promise<Boolean> getIsRecoverabilityDegraded(CoreAccountInfo accountInfo) {
             return Promise.fulfilled(false);
+        }
+
+        @Override
+        public Promise<Void> addTrustedRecoveryMethod(
+                CoreAccountInfo accountInfo, byte[] publicKey, int methodTypeHint) {
+            return Promise.rejected();
         }
 
         @Override
@@ -242,8 +245,6 @@ public class TrustedVaultClient {
     /**
      * Unregisters the previously-registered client, canceling any in-flight requests. Must be
      * called only if there is a registered client.
-     * TODO(crbug.com/1081643): nativeTrustedVaultClientAndroid is only passed to assert that it
-     * matches get().mNativeTrustedVaultClientAndroid. Is this really worth it?
      */
     @VisibleForTesting
     @CalledByNative
