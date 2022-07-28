@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/style/ash_color_id.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/style_util.h"
 #include "ash/style/temp_palette.h"
 #include "ash/system/tray/tray_constants.h"
@@ -39,7 +40,9 @@ constexpr int kDisabledColorOpacity = SK_AlphaOPAQUE * 0.38f;
 void AddShieldAndBaseColors(ui::ColorMixer& mixer,
                             const ui::ColorProviderManager::Key& key) {
   const bool use_dark_color =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      features::IsDarkLightModeEnabled()
+          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 
   // Colors of the Shield and Base layers.
   const SkColor default_background_color =
@@ -64,7 +67,9 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
 void AddControlsColors(ui::ColorMixer& mixer,
                        const ui::ColorProviderManager::Key& key) {
   const bool use_dark_color =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      features::IsDarkLightModeEnabled()
+          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 
   // ControlsLayer colors
   mixer[kColorAshHairlineBorderColor] =
@@ -115,7 +120,9 @@ void AddControlsColors(ui::ColorMixer& mixer,
 void AddContentColors(ui::ColorMixer& mixer,
                       const ui::ColorProviderManager::Key& key) {
   const bool use_dark_color =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      features::IsDarkLightModeEnabled()
+          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
 
   // ContentLayer colors.
   mixer[kColorAshScrollBarColor] =
