@@ -1973,8 +1973,13 @@ void Browser::ExitFullscreenModeForTab(WebContents* web_contents) {
 }
 
 bool Browser::IsFullscreenForTabOrPending(const WebContents* web_contents) {
+  return IsFullscreenForTabOrPending(web_contents, /*display_id=*/nullptr);
+}
+
+bool Browser::IsFullscreenForTabOrPending(const WebContents* web_contents,
+                                          int64_t* display_id) {
   return exclusive_access_manager_->fullscreen_controller()
-      ->IsFullscreenForTabOrPending(web_contents);
+      ->IsFullscreenForTabOrPending(web_contents, display_id);
 }
 
 blink::mojom::DisplayMode Browser::GetDisplayMode(
