@@ -60,7 +60,9 @@ void LayoutFrameSet::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
-LayoutFrameSet::GridAxis::GridAxis() : split_being_resized_(kNoSplit) {}
+bool LayoutFrameSet::GridAxis::CanResizeSplitAt(int split_index) const {
+  return split_index != kNoSplit && !prevent_resize_[split_index];
+}
 
 HTMLFrameSetElement* LayoutFrameSet::FrameSet() const {
   NOT_DESTROYED();

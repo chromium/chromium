@@ -304,10 +304,8 @@ bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
           layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
       StartResizing(layout_frame_set.cols_, local_pos.x());
       StartResizing(layout_frame_set.rows_, local_pos.y());
-      if (layout_frame_set.cols_.split_being_resized_ !=
-              LayoutFrameSet::kNoSplit ||
-          layout_frame_set.rows_.split_being_resized_ !=
-              LayoutFrameSet::kNoSplit) {
+      if (layout_frame_set.cols_.IsResizingSplit() ||
+          layout_frame_set.rows_.IsResizingSplit()) {
         SetIsResizing(true);
         return true;
       }
@@ -338,8 +336,8 @@ void HTMLFrameSetElement::SetIsResizing(bool is_resizing) {
 void HTMLFrameSetElement::StartResizing(LayoutFrameSet::GridAxis& axis,
                                         int position) {
   int split = HitTestSplit(axis, position);
-  if (split == LayoutFrameSet::kNoSplit || axis.prevent_resize_[split]) {
-    axis.split_being_resized_ = LayoutFrameSet::kNoSplit;
+  if (!axis.CanResizeSplitAt(split)) {
+    axis.split_being_resized_ = LayoutFrameSet::GridAxis::kNoSplit;
     return;
   }
   axis.split_being_resized_ = split;
@@ -350,7 +348,7 @@ void HTMLFrameSetElement::ContinueResizing(LayoutFrameSet::GridAxis& axis,
                                            int position) {
   if (GetLayoutObject()->NeedsLayout())
     return;
-  if (axis.split_being_resized_ == LayoutFrameSet::kNoSplit)
+  if (!axis.IsResizingSplit())
     return;
   int current_split_position = SplitPosition(axis, axis.split_being_resized_);
   int delta = (position - current_split_position) - axis.split_resize_offset_;
@@ -382,29 +380,27 @@ int HTMLFrameSetElement::SplitPosition(const LayoutFrameSet::GridAxis& axis,
 bool HTMLFrameSetElement::CanResizeRow(const gfx::Point& p) const {
   const LayoutFrameSet::GridAxis& axis =
       To<LayoutFrameSet>(GetLayoutObject())->rows_;
-  int r = HitTestSplit(axis, p.y());
-  return r != LayoutFrameSet::kNoSplit && !axis.prevent_resize_[r];
+  return axis.CanResizeSplitAt(HitTestSplit(axis, p.y()));
 }
 
 bool HTMLFrameSetElement::CanResizeColumn(const gfx::Point& p) const {
   const LayoutFrameSet::GridAxis& axis =
       To<LayoutFrameSet>(GetLayoutObject())->cols_;
-  int r = HitTestSplit(axis, p.y());
-  return r != LayoutFrameSet::kNoSplit && !axis.prevent_resize_[r];
+  return axis.CanResizeSplitAt(HitTestSplit(axis, p.y()));
 }
 
 int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
                                       int position) const {
   if (GetLayoutObject()->NeedsLayout())
-    return LayoutFrameSet::kNoSplit;
+    return LayoutFrameSet::GridAxis::kNoSplit;
 
   int border_thickness = Border();
   if (border_thickness <= 0)
-    return LayoutFrameSet::kNoSplit;
+    return LayoutFrameSet::GridAxis::kNoSplit;
 
   wtf_size_t size = axis.sizes_.size();
   if (!size)
-    return LayoutFrameSet::kNoSplit;
+    return LayoutFrameSet::GridAxis::kNoSplit;
 
   int split_position = axis.sizes_[0];
   for (wtf_size_t i = 1; i < size; ++i) {
@@ -413,7 +409,7 @@ int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
       return static_cast<int>(i);
     split_position += border_thickness + axis.sizes_[i];
   }
-  return LayoutFrameSet::kNoSplit;
+  return LayoutFrameSet::GridAxis::kNoSplit;
 }
 
 }  // namespace blink

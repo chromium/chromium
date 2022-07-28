@@ -102,16 +102,22 @@ class LayoutFrameSet final : public LayoutBox {
     DISALLOW_NEW();
 
    public:
-    GridAxis();
+    GridAxis() = default;
     GridAxis(const GridAxis&) = delete;
     GridAxis& operator=(const GridAxis&) = delete;
+
     void Resize(int);
+    // Returns true if a split is being resized now.
+    bool IsResizingSplit() const { return split_being_resized_ != kNoSplit; }
+    bool CanResizeSplitAt(int split_index) const;
+
+    static constexpr int kNoSplit = -1;
 
     Vector<int> sizes_;
     Vector<int> deltas_;
     Vector<bool> prevent_resize_;
     Vector<bool> allow_border_;
-    int split_being_resized_;
+    int split_being_resized_ = kNoSplit;
     int split_resize_offset_;
   };
 
@@ -130,8 +136,6 @@ class LayoutFrameSet final : public LayoutBox {
   }
 
  private:
-  static const int kNoSplit = -1;
-
   LayoutObjectChildList* VirtualChildren() override {
     NOT_DESTROYED();
     return Children();
