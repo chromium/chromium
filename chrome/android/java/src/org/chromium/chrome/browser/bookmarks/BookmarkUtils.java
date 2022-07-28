@@ -455,7 +455,7 @@ public class BookmarkUtils {
      * @return Whether the bookmark was successfully opened.
      */
     public static boolean openBookmark(Context context, ComponentName openBookmarkComponentName,
-            BookmarkModel model, BookmarkId bookmarkId, boolean isIncognito) {
+            BookmarkModel model, @Nullable BookmarkId bookmarkId, boolean isIncognito) {
         if (model.getBookmarkById(bookmarkId) == null) return false;
 
         RecordUserAction.record("MobileBookmarkManagerEntryOpened");
@@ -532,12 +532,13 @@ public class BookmarkUtils {
      * Opens a url.
      *
      * @param url Url to open.
+     * @param id The bookmarkId to open, can be null.
      * @param componentName Name of the component opening the URL. If null, {@link
      *          ChromeLauncherActivity} is used.
      * @param launchType If not null, url is opened in a new tab with the specified {@link
      *         TabLaunchType}.
      */
-    private static void openUrl(Context context, String url, BookmarkId id,
+    private static void openUrl(Context context, String url, @Nullable BookmarkId id,
             ComponentName componentName, @Nullable @TabLaunchType Integer launchType,
             boolean isOffTheRecord) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
@@ -545,7 +546,9 @@ public class BookmarkUtils {
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
-        intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID, id.toString());
+        if (id != null) {
+            intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_BOOKMARK_ID, id.toString());
+        }
 
         if (launchType != null) {
             IntentHandler.setTabLaunchType(intent, launchType);
