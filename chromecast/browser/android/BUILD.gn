@@ -191,7 +191,6 @@ common_java_sources = [
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsScopes.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsService.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsSurfaceHelper.java",
-  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsView.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/ElidedLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/ExternalServiceDeviceLogcatProvider.java",
   "$common_java_src_dir/org/chromium/chromecast/shell/LogcatElision.java",
