@@ -223,8 +223,8 @@ def MakeScenarioDriver(scenario_name,
 
   Args:
     scenario_name: Identifier for the scenario to create. Supported scenarios
-      are: meet, idle_on_wiki, idle_on_youtube, navigation, zero_window and
-      idle.
+      are: meet, idle_on_wiki, idle_on_youtube, navigation_top_sites,
+      navigation_heavy_sites, zero_window and idle.
     browser_driver: Browser the scenario is created with.
     meet_meeting_id: Optional meeting id used for meet scenario.
   """
