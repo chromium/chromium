@@ -191,10 +191,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
             'syncPrefs.trustedVaultKeysRequired)',
       },
 
+      // <if expr="not chromeos_ash">
       showSetupCancelDialog_: {
         type: Boolean,
         value: false,
       },
+      // </if>
 
       enterPassphraseLabel_: {
         type: String,
@@ -228,7 +230,11 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private signedIn_: boolean;
   private syncDisabledByAdmin_: boolean;
   private syncSectionDisabled_: boolean;
+
+  // <if expr="not chromeos_ash">
   private showSetupCancelDialog_: boolean;
+  // </if>
+
   private enterPassphraseLabel_: string;
   private existingPassphraseLabel_: string;
 
@@ -391,6 +397,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     });
   }
 
+  // <if expr="not chromeos_ash">
   private onSetupCancelDialogBack_() {
     this.shadowRoot!.querySelector<CrDialogElement>(
                         '#setupCancelDialog')!.cancel();
@@ -411,6 +418,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onSetupCancelDialogClose_() {
     this.showSetupCancelDialog_ = false;
   }
+  // </if>
 
   override currentRouteChanged() {
     const router = Router.getInstance();
@@ -432,6 +440,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
       return;
     }
 
+    // <if expr="not chromeos_ash">
     const userActionCancelsSetup = this.syncStatus &&
         this.syncStatus.firstSetupInProgress && this.didAbort_;
     if (userActionCancelsSetup && !this.setupCancelConfirmed_) {
@@ -455,6 +464,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
     // Reset variable.
     this.setupCancelConfirmed_ = false;
+
+    // </if>
 
     this.onNavigateAwayFromPage_();
   }
