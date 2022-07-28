@@ -108,7 +108,7 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
 
     // Verify pref.
     EXPECT_EQ(AsDictionary(expected_devices),
-              *pref_service_.Get(prefs::kCryptAuthDeviceRegistry));
+              pref_service_.GetValueDict(prefs::kCryptAuthDeviceRegistry));
   }
 
   PrefService* pref_service() { return &pref_service_; }
