@@ -26,6 +26,7 @@ source_set("first_party_sets") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profiles",
     "//components/keyed_service/content",
     "//components/policy:generated",
     "//components/policy:policy_code_generate",

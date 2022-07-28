@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -39,12 +40,10 @@ FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
 FirstPartySetsPolicyServiceFactory::~FirstPartySetsPolicyServiceFactory() =
     default;
 
-// static
-void FirstPartySetsPolicyServiceFactory::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(kFirstPartySetsEnabled, true);
-  registry->RegisterDictionaryPref(kFirstPartySetsOverrides,
-                                   base::DictionaryValue());
+content::BrowserContext*
+FirstPartySetsPolicyServiceFactory::GetBrowserContextToUse(
+    content::BrowserContext* context) const {
+  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
@@ -70,6 +69,14 @@ KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
 bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
+}
+
+// static
+void FirstPartySetsPolicyServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(kFirstPartySetsEnabled, true);
+  registry->RegisterDictionaryPref(kFirstPartySetsOverrides,
+                                   base::DictionaryValue());
 }
 
 }  // namespace first_party_sets

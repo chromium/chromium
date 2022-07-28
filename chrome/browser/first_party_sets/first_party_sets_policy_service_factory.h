@@ -45,11 +45,13 @@ class FirstPartySetsPolicyServiceFactory
   ~FirstPartySetsPolicyServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 };
 
 }  // namespace first_party_sets
