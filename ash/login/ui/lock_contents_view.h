@@ -180,6 +180,7 @@ class ASH_EXPORT LockContentsView
                                                     bool enabled) override;
   void OnFingerprintStateChanged(const AccountId& account_id,
                                  FingerprintState state) override;
+  void OnResetFingerprintUIState(const AccountId& account_id) override;
   void OnFingerprintAuthResult(const AccountId& account_id,
                                bool success) override;
   void OnSmartLockStateChanged(const AccountId& account_id,

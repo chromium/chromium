@@ -75,10 +75,11 @@ class TestSessionStateAnimator : public SessionStateAnimator {
                                   base::OnceClosure callback) override;
   AnimationSequence* BeginAnimationSequence(
       AnimationCallback callback) override;
-  void AbortAllAnimations(int container_mask) override;
   bool IsWallpaperHidden() const override;
   void ShowWallpaper() override;
   void HideWallpaper() override;
+
+  void AbortAnimations(int container_mask);
 
  private:
   class AnimationSequence;

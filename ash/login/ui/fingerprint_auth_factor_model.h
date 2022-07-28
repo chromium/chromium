@@ -42,6 +42,7 @@ class ASH_EXPORT FingerprintAuthFactorModel : public AuthFactorModel {
   ~FingerprintAuthFactorModel() override;
 
   void SetFingerprintState(FingerprintState state);
+  void ResetUIState();
   void NotifyFingerprintAuthResult(bool result);
 
   // If |available| is false, forces |GetAuthFactorState()| to return

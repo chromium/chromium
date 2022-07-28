@@ -20,6 +20,8 @@ void TestLoginScreenModel::SetFingerprintState(const AccountId& account_id,
 void TestLoginScreenModel::NotifyFingerprintAuthResult(
     const AccountId& account_id,
     bool successful) {}
+void TestLoginScreenModel::ResetFingerprintUIState(
+    const AccountId& account_id) {}
 void TestLoginScreenModel::SetSmartLockState(const AccountId& account_id,
                                              ash::SmartLockState state) {}
 void TestLoginScreenModel::NotifySmartLockAuthResult(

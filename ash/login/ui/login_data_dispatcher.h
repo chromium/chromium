@@ -68,6 +68,9 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
     virtual void OnFingerprintAuthResult(const AccountId& account_id,
                                          bool successful);
 
+    // Called after unlock was aborted after successful auth attempt.
+    virtual void OnResetFingerprintUIState(const AccountId& account_id);
+
     // Called when smart lock state is changed.
     virtual void OnSmartLockStateChanged(const AccountId& user,
                                          SmartLockState state);
@@ -190,6 +193,7 @@ class ASH_EXPORT LoginDataDispatcher : public LoginScreenModel {
                            FingerprintState state) override;
   void NotifyFingerprintAuthResult(const AccountId& account_id,
                                    bool successful) override;
+  void ResetFingerprintUIState(const AccountId& account_id) override;
   void SetSmartLockState(const AccountId& user, SmartLockState state) override;
   void NotifySmartLockAuthResult(const AccountId& account_id,
                                  bool successful) override;

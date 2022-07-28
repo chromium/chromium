@@ -655,14 +655,14 @@ void ScreenLocker::Hide() {
 }
 
 void ScreenLocker::ResetToLockedState() {
-  LoginScreen::Get()->GetModel()->SetFingerprintState(
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
-      FingerprintState::AVAILABLE_DEFAULT);
+  LoginScreen::Get()->GetModel()->ResetFingerprintUIState(
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId());
   screen_locker_->unlock_started_ = false;
 }
 
 // static
 void ScreenLocker::OnUnlockAnimationFinished(bool aborted) {
+  VLOG(1) << "ScreenLocker::OnUnlockAnimationFinished aborted=" << aborted;
   if (aborted) {
     // Reset state that was impacted by successful auth.
     screen_locker_->ResetToLockedState();

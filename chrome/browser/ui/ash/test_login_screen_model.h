@@ -28,6 +28,7 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
                            ash::FingerprintState state) override;
   void NotifyFingerprintAuthResult(const AccountId& account_id,
                                    bool successful) override;
+  void ResetFingerprintUIState(const AccountId& account_id) override;
   void SetSmartLockState(const AccountId& account_id,
                          ash::SmartLockState state) override;
   void NotifySmartLockAuthResult(const AccountId& account_id,

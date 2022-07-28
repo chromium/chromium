@@ -188,6 +188,9 @@ class ASH_EXPORT LoginAuthUserView : public NonAccessibleView {
   // Update the current fingerprint state.
   void SetFingerprintState(FingerprintState state);
 
+  // Reset the fingerprint state by updating UI to reflect the current state.
+  void ResetFingerprintUIState();
+
   // Called to show a fingerprint authentication attempt result.
   void NotifyFingerprintAuthResult(bool success);
 

@@ -59,6 +59,11 @@ void FingerprintAuthFactorModel::SetFingerprintState(FingerprintState state) {
   RefreshUI();
 }
 
+void FingerprintAuthFactorModel::ResetUIState() {
+  auth_result_.reset();
+  RefreshUI();
+}
+
 void FingerprintAuthFactorModel::NotifyFingerprintAuthResult(bool result) {
   auth_result_ = result;
   RefreshUI();

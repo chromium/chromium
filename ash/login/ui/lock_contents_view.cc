@@ -1090,6 +1090,20 @@ void LockContentsView::OnFingerprintStateChanged(const AccountId& account_id,
   LayoutAuth(big_view, nullptr /*opt_to_hide*/, true /*animate*/);
 }
 
+void LockContentsView::OnResetFingerprintUIState(const AccountId& account_id) {
+  UserState* user_state = FindStateForUser(account_id);
+  if (!user_state)
+    return;
+
+  LoginBigUserView* big_view =
+      TryToFindBigUser(account_id, true /*require_auth_active*/);
+  if (!big_view || !big_view->auth_user())
+    return;
+
+  big_view->auth_user()->ResetFingerprintUIState();
+  LayoutAuth(big_view, nullptr /*opt_to_hide*/, true /*animate*/);
+}
+
 void LockContentsView::OnFingerprintAuthResult(const AccountId& account_id,
                                                bool success) {
   // Make sure the display backlight is not forced off if there is a fingerprint

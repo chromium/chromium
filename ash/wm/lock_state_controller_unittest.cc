@@ -472,7 +472,7 @@ class LockStateControllerAnimationTest
     if (GetParam()) {
       test_animator_->Advance(test_animator_->GetDuration(speed));
     } else {
-      test_animator_->AbortAllAnimations(
+      test_animator_->AbortAnimations(
           SessionStateAnimator::kAllNonRootContainersMask);
     }
   }

@@ -30,6 +30,9 @@ void LoginDataDispatcher::Observer::OnFingerprintStateChanged(
     const AccountId& account_id,
     FingerprintState state) {}
 
+void LoginDataDispatcher::Observer::OnResetFingerprintUIState(
+    const AccountId& account_id) {}
+
 void LoginDataDispatcher::Observer::OnFingerprintAuthResult(
     const AccountId& account_id,
     bool successful) {}
@@ -158,6 +161,11 @@ void LoginDataDispatcher::NotifyFingerprintAuthResult(
     bool successful) {
   for (auto& observer : observers_)
     observer.OnFingerprintAuthResult(account_id, successful);
+}
+
+void LoginDataDispatcher::ResetFingerprintUIState(const AccountId& account_id) {
+  for (auto& observer : observers_)
+    observer.OnResetFingerprintUIState(account_id);
 }
 
 void LoginDataDispatcher::NotifySmartLockAuthResult(const AccountId& account_id,

@@ -66,6 +66,11 @@ class ASH_PUBLIC_EXPORT LoginScreenModel {
   virtual void NotifyFingerprintAuthResult(const AccountId& account_id,
                                            bool successful) = 0;
 
+  // Reset the fingerprint state after an aborted unlock. This returns
+  // fingerprint elements that were affected by a successful scan to their state
+  // prior to the scan.
+  virtual void ResetFingerprintUIState(const AccountId& account_id) = 0;
+
   // Update the status of Smart Lock for |account_id|.
   virtual void SetSmartLockState(const AccountId& account_id,
                                  SmartLockState state) = 0;

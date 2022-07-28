@@ -460,6 +460,8 @@ class LoginAuthUserView::FingerprintView : public views::View {
     label_->SetTextBasedOnState(state_, can_use_pin_);
   }
 
+  void ResetUIState() { DisplayCurrentState(); }
+
   void NotifyFingerprintAuthResult(bool success) {
     reset_state_.Stop();
     label_->SetTextBasedOnAuthAttempt(success);
@@ -1650,6 +1652,16 @@ void LoginAuthUserView::SetFingerprintState(FingerprintState state) {
   } else {
     DCHECK(fingerprint_view_);
     fingerprint_view_->SetState(state);
+  }
+}
+
+void LoginAuthUserView::ResetFingerprintUIState() {
+  if (smart_lock_ui_revamp_enabled_) {
+    DCHECK(fingerprint_auth_factor_model_);
+    fingerprint_auth_factor_model_->ResetUIState();
+  } else {
+    DCHECK(fingerprint_view_);
+    fingerprint_view_->ResetUIState();
   }
 }
 
