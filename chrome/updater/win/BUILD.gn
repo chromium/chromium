@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/zip.gni")
 import("//build/util/process_version.gni")
 import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/zip.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
@@ -76,7 +76,7 @@ copy("signing") {
   outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
 }
 
-zip("updater_zip") {
+artifact_zip("updater_zip") {
   output = "$root_build_dir/updater.zip"
   inputs = [
              "$root_build_dir/UpdaterSetup.exe",
