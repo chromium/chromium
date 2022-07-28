@@ -38,5 +38,8 @@
 
   testRunner.log(requestDatabaseResult, 'database object store names');
 
+  // Clean up
+  await dp.IndexedDB.deleteDatabase({storageKey, databaseName: "test-database"});
+
   testRunner.completeTest();
 })

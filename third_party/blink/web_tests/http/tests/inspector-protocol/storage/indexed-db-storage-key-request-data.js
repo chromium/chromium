@@ -50,5 +50,8 @@
 
   testRunner.log(requestDataResult, 'data key values equal');
 
+  // Clean up
+  await dp.IndexedDB.deleteDatabase({storageKey, databaseName: "test-database"});
+
   testRunner.completeTest();
 })

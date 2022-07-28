@@ -32,5 +32,8 @@
 
   testRunner.log(`metadata equals ${JSON.stringify(getMetadataResult)}`);
 
+  // Clean up
+  await dp.IndexedDB.deleteDatabase({storageKey, databaseName: "test-database"});
+
   testRunner.completeTest();
 })

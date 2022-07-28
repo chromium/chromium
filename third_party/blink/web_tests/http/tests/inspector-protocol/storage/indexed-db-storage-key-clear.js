@@ -53,5 +53,8 @@
 
   testRunner.log(`data value after clear equals: ${JSON.stringify(valueAfterClear)}`);
 
+  // Clean up
+  await dp.IndexedDB.deleteDatabase({storageKey, databaseName: "test-database"});
+
   testRunner.completeTest();
 })

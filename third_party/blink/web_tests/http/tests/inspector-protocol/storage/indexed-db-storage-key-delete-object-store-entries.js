@@ -66,5 +66,8 @@
 
   testRunner.log(valueAfterClear, 'data values after clear');
 
+  // Clean up
+  await dp.IndexedDB.deleteDatabase({storageKey, databaseName: "test-database"});
+
   testRunner.completeTest();
 })
