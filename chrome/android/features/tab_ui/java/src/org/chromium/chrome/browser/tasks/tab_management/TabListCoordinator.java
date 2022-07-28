@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnLayoutChangeListener;
@@ -337,8 +338,8 @@ public class TabListCoordinator
         final int cardWidthPx = (viewWidth / layoutManager.getSpanCount());
         final int cardHeightPx = TabUtils.deriveGridCardHeight(cardWidthPx, mContext);
         for (int i = 0; i < mModel.size(); i++) {
-            mModel.get(i).model.set(TabProperties.GRID_CARD_WIDTH, cardWidthPx);
-            mModel.get(i).model.set(TabProperties.GRID_CARD_HEIGHT, cardHeightPx);
+            mModel.get(i).model.set(
+                    TabProperties.GRID_CARD_SIZE, new Size(cardWidthPx, cardHeightPx));
         }
     }
 
