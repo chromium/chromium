@@ -958,12 +958,12 @@ if (!is_ios) {
     }
 
     if (is_fuchsia) {
-      use_cfv2 = false
+      use_cfv1 = false
+      test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
       additional_manifest_fragments = [
-        "//build/config/fuchsia/test/font_capabilities.test-cmx",
-        "//build/config/fuchsia/test/jit_capabilities.test-cmx",
-        "//build/config/fuchsia/test/network_capabilities.test-cmx",
-        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+        "//build/config/fuchsia/test/present_view.shard.test-cml",
+        "//build/config/fuchsia/test/fonts.shard.test-cml",
+        "//build/config/fuchsia/test/network.shard.test-cml",
       ]
     }
 

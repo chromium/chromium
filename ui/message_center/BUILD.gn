@@ -235,11 +235,11 @@ if (enable_message_center) {
     }
 
     if (is_fuchsia) {
-      use_cfv2 = false
+      use_cfv1 = false
       additional_manifest_fragments = [
-        "//build/config/fuchsia/test/font_capabilities.test-cmx",
-        "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
-        "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+        "//build/config/fuchsia/test/fonts.shard.test-cml",
+        "//build/config/fuchsia/test/present_view.shard.test-cml",
+        "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
       ]
     }
   }
