@@ -980,8 +980,8 @@
   'CROS_TROGDOR_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'trogdor',
-      'cros_chrome_version': '105.0.5187.0',
-      'cros_img': 'trogdor-release/R105-14985.0.0',
+      'cros_chrome_version': '105.0.5195.5',
+      'cros_img': 'trogdor-release/R105-14989.11.0',
     },
     'enabled': True,
     'identifier': 'TROGDOR_RELEASE_DEV',
