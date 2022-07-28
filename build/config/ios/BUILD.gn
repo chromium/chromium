@@ -65,6 +65,11 @@ config("compiler") {
   # an Objective C struct won't be called, which is very bad.
   cflags_objcc = [ "-fobjc-call-cxx-cdtors" ]
 
+  # TODO(crbug.com/1331345) Disable sprintf errors in Xcode 14 beta 1.
+  if (xcode_version_int >= 1400) {
+    cflags += [ "-Wno-deprecated-declarations" ]
+  }
+
   ldflags = common_flags
 }
 
