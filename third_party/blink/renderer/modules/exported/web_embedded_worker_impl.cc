@@ -216,7 +216,7 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       worker_start_data->ukm_source_id,
       absl::nullopt, /* parent_context_token */
       false,         /* parent_cross_origin_isolated_capability */
-      false,         /* parent_direct_socket_capability */
+      false,         /* parent_isolated_application_capability */
       interface_registry);
 
   worker_thread_ = std::make_unique<ServiceWorkerThread>(

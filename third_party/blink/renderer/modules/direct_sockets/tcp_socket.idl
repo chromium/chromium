@@ -8,7 +8,7 @@
     Exposed=(Window,Worker),
     ActiveScriptWrappable,
     SecureContext,
-    DirectSocketEnabled
+    IsolatedApplication
 ] interface TCPSocket {
   [CallWith=ScriptState, RaisesException]
   constructor(DOMString remoteAddress, unsigned short remotePort, optional TCPSocketOptions options = {});

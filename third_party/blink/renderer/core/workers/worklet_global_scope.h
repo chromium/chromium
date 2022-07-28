@@ -199,8 +199,8 @@ class CORE_EXPORT WorkletGlobalScope
   // This is inherited at construction to ensure it's possible to use APIs
   // like Direct Sockets if they're made available in Worklets.
   //
-  // TODO(mkwst): We need a spec for this capability.
-  const bool parent_direct_socket_capability_;
+  // TODO(crbug.com/1206150): We need a spec for this capability.
+  const bool parent_isolated_application_capability_;
 
   // This is the interface that handles generated code cache
   // requests both to fetch code cache when loading resources

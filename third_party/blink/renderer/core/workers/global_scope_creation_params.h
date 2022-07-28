@@ -75,7 +75,7 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const absl::optional<ExecutionContextToken>& parent_context_token =
           absl::nullopt,
       bool parent_cross_origin_isolated_capability = false,
-      bool parent_direct_socket_capability = false,
+      bool parent_isolated_application_capability = false,
       InterfaceRegistry* interface_registry = nullptr);
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
@@ -197,8 +197,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // Governs whether Direct Sockets are available in a worker context, false
   // when no parent exists.
   //
-  // TODO(mkwst): We need a specification for this capability.
-  const bool parent_direct_socket_capability;
+  // TODO(crbug.com/1206150): We need a specification for this capability.
+  const bool parent_isolated_application_capability;
 
   InterfaceRegistry* const interface_registry;
 };

@@ -1606,16 +1606,17 @@ In case of `func1(...)`, if JavaScript calls `func1(100, 200)`, then `HTMLFoo::f
 In case of `func2(...)` which adds `[DefaultValue=Undefined]`, if JavaScript calls `func2(100, 200)`, then it behaves as if JavaScript called `func2(100, 200, undefined)`. Consequently, `HTMLFoo::func2(int a, int b, int c)` is called in Blink. 100 is passed to `a`, 200 is passed to `b`, and 0 is passed to `c`. (A JavaScript `undefined` is converted to 0, following the value conversion rule in the Web IDL spec; if it were a DOMString parameter, it would end up as the string `"undefined"`.) In this way, Blink needs to just implement `func2(int a, int b, int c)` and needs not to implement both `func2(int a, int b)` and `func2(int a, int b, int c)`.
 
 
-### [DirectSocketEnabled] _(a, i, m)_
+### [IsolatedApplication] _(a, i, m)_
 
-Summary: Interfaces and interface members with a `DirectSocketEnabled` extended attribute are exposed only inside contexts whose [cross-origin isolated capability](https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-cross-origin-isolated-capability) is enabled, and when the [kDirectSocket](https://source.chromium.org/chromium/chromium/src/+/main:content/public/common/content_features.cc;drc=25b97f298830b78a443fd7cdfd0b3e190817d1dd;l=556) feature flag is enabled.
+Summary: Interfaces and interface members with a `IsolatedApplication` extended attribute are exposed only inside contexts with isolated application isolation level. 
+See [explainer](https://github.com/reillyeon/isolated-web-apps) for more details.
 
 Note that it's likely for these requirements to shift over time: <https://crbug.com/1206150>.
 
-Usage: The `[DirectSocketEnabled]` extended attribute may be specified on interfaces, attributes, and operations:
+Usage: The `[IsolatedApplication]` extended attribute may be specified on interfaces, attributes, and operations:
 
 ```webidl
-[DirectSocketEnabled]
+[IsolatedApplication]
 interface TCPSocket {
   ...
 };

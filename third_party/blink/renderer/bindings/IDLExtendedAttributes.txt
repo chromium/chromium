@@ -49,7 +49,6 @@ Custom=|Getter|Setter|LegacyCallAsFunction|PropertyGetter|PropertyEnumerator|Pro
 CustomConstructor
 DefaultValue=Undefined
 DeprecateAs=*
-DirectSocketEnabled
 DoNotCheckConstants
 DoNotTestNewObject
 EnforceRange
@@ -63,6 +62,7 @@ HTMLConstructor
 ImmutablePrototype
 ImplementedAs=*
 IsCodeLike
+IsolatedApplication
 LegacyLenientSetter
 LegacyLenientThis
 LegacyNoInterfaceObject

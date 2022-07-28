@@ -217,8 +217,8 @@ def bind_local_vars(code_node, cg_context):
         S("is_cross_origin_isolated",
           ("const bool ${is_cross_origin_isolated} = "
            "${execution_context}->CrossOriginIsolatedCapability();")),
-        S("is_direct_socket_enabled",
-          ("const bool ${is_direct_socket_enabled} = "
+        S("is_isolated_application",
+          ("const bool ${is_isolated_application} = "
            "${execution_context}->IsolatedApplicationCapability();")),
         S("is_in_secure_context",
           ("const bool ${is_in_secure_context} = "
