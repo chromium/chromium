@@ -52,8 +52,6 @@ import java.lang.annotation.RetentionPolicy;
 class OptionalButtonView extends FrameLayout implements TransitionListener {
     private static final int SWAP_TRANSITION_DURATION_MS = 300;
     private static final int HIDE_TRANSITION_DURATION_MS = 225;
-    /** Delay between action chip expansion end and collapse start. */
-    private static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 3000;
 
     private final int mCollapsedStateWidthPx;
     private final int mExpandedStatePaddingPx;
@@ -351,7 +349,8 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // When finished expanding the action chip schedule the collapse transition in 3 seconds.
         if (mState == State.SHOWING_ACTION_CHIP) {
-            getHandler().postDelayed(mCollapseActionChipRunnable, ACTION_CHIP_COLLAPSE_DELAY_MS);
+            getHandler().postDelayed(mCollapseActionChipRunnable,
+                    AdaptiveToolbarFeatures.getContextualPageActionDelayMs());
         }
     }
 
