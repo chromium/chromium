@@ -291,6 +291,8 @@ void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
 
 void ProjectorControllerImpl::OnCanvasInitialized(bool success) {
   ui_controller_->OnCanvasInitialized(success);
+  if (on_canvas_initialized_callback_for_test_)
+    std::move(on_canvas_initialized_callback_for_test_).Run();
 }
 
 bool ProjectorControllerImpl::GetAnnotatorAvailability() {

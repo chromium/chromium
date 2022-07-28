@@ -147,6 +147,10 @@ class ASH_EXPORT ProjectorControllerImpl
   ProjectorUiController* ui_controller() { return ui_controller_.get(); }
   ProjectorSessionImpl* projector_session() { return projector_session_.get(); }
 
+  void set_canvas_initialized_callback_for_test(base::OnceClosure callback) {
+    on_canvas_initialized_callback_for_test_ = std::move(callback);
+  }
+
   // CrasAudioHandler::AudioObserver:
   void OnAudioNodesChanged() override;
 
@@ -209,6 +213,9 @@ class ASH_EXPORT ProjectorControllerImpl
   // directory deleted.
   OnPathDeletedCallback on_path_deleted_callback_;
   OnFileSavedCallback on_file_saved_callback_;
+
+  // If set, will be called when the canvas is initialized.
+  base::OnceClosure on_canvas_initialized_callback_for_test_;
 
   base::WeakPtrFactory<ProjectorControllerImpl> weak_factory_{this};
 };

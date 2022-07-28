@@ -94,6 +94,10 @@ class ProjectorClientImpl
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
 
+  ash::AnnotatorMessageHandler* get_annotator_message_handler_for_test() {
+    return message_handler_;
+  }
+
  private:
   // Maybe reset |drive_observation_| and observe the Drive integration service
   // of active profile when ActiveUserChanged and OnUserProfileLoaded.

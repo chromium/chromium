@@ -91,3 +91,10 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
+
+# Used to turn off tests that only work with our CIPD package e.g. loading ink.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_CROS_PROJECTOR_APP=$enable_cros_projector_app" ]
+}

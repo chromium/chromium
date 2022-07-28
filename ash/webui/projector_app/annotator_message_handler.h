@@ -35,6 +35,7 @@ class AnnotatorMessageHandler : public content::WebUIMessageHandler {
   void Redo();
   void Clear();
   void set_web_ui_for_test(content::WebUI* web_ui) { set_web_ui(web_ui); }
+  content::WebUI* get_web_ui_for_test() { return web_ui(); }
 
  private:
   void OnToolSet(const base::Value::List& args);
