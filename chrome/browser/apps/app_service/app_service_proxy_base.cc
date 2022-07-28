@@ -375,16 +375,12 @@ void AppServiceProxyBase::LaunchAppWithIntent(
        callback = std::move(callback)](const AppUpdate& update) mutable {
         auto* publisher = GetPublisher(update.AppType());
         if (!publisher) {
-          if (callback) {
-            std::move(callback).Run(/*success=*/false);
-          }
+          std::move(callback).Run(/*success=*/false);
           return;
         }
 
         if (MaybeShowLaunchPreventionDialog(update)) {
-          if (callback) {
-            std::move(callback).Run(/*success=*/false);
-          }
+          std::move(callback).Run(/*success=*/false);
           return;
         }
 
