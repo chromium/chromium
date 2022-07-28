@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/parental_handoff_screen_handler.h"
@@ -24,13 +25,11 @@ class ParentalHandoffScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result)>;
 
-  ParentalHandoffScreen(ParentalHandoffScreenView* view,
+  ParentalHandoffScreen(base::WeakPtr<ParentalHandoffScreenView> view,
                         const ScreenExitCallback& exit_callback);
   ParentalHandoffScreen(const ParentalHandoffScreen&) = delete;
   ParentalHandoffScreen& operator=(const ParentalHandoffScreen&) = delete;
   ~ParentalHandoffScreen() override;
-
-  void OnViewDestroyed(ParentalHandoffScreenView* view);
 
   ScreenExitCallback get_exit_callback_for_test() { return exit_callback_; }
 
@@ -43,9 +42,9 @@ class ParentalHandoffScreen : public BaseScreen {
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
-  ParentalHandoffScreenView* view_ = nullptr;
+  base::WeakPtr<ParentalHandoffScreenView> view_;
   ScreenExitCallback exit_callback_;
 };
 

@@ -767,7 +767,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<ParentalHandoffScreen>(
-      oobe_ui->GetView<ParentalHandoffScreenHandler>(),
+      oobe_ui->GetView<ParentalHandoffScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnParentalHandoffScreenExit,
                           weak_factory_.GetWeakPtr())));
 
