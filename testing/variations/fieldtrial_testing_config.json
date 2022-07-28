@@ -3789,6 +3789,12 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_20220616",
+                    "enable_features": [
+                        "DownloadBubble"
+                    ]
+                },
+                {
                     "name": "Enabled_20220727",
                     "enable_features": [
                         "DownloadBubble"
