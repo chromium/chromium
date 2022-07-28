@@ -30,7 +30,8 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
 // present.
 ShareToData* ShareToDataForURL(const GURL& URL,
                                NSString* title,
-                               NSString* additionalText);
+                               NSString* additionalText,
+                               LPLinkMetadata* linkMetadata);
 
 // Returns a ShareToData object for a single `URLWithTitle`, which is not
 // associated to a WebState. Will also add `additionalText`, if present.

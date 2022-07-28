@@ -40,7 +40,8 @@ class PrintActivityTest : public PlatformTest {
                                 isPageSearchable:YES
                                 canSendTabToSelf:YES
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil];
+                              thumbnailGenerator:nil
+                                    linkMetadata:nil];
   }
 
   id mocked_handler_;

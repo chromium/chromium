@@ -65,7 +65,8 @@ class CopyActivityTest : public PlatformTest {
                                 isPageSearchable:YES
                                 canSendTabToSelf:YES
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil];
+                              thumbnailGenerator:nil
+                                    linkMetadata:nil];
   }
 
   NSString* GetURLString() { return base::SysUTF8ToNSString(kTestShareURL); }

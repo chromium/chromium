@@ -38,7 +38,8 @@ class SendTabToSelfActivityTest : public PlatformTest {
                                 isPageSearchable:YES
                                 canSendTabToSelf:can_send_tab_to_self
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil];
+                              thumbnailGenerator:nil
+                                    linkMetadata:nil];
   }
 
   id mocked_handler_;

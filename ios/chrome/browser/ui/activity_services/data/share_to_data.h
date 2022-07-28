@@ -23,8 +23,8 @@
       isPageSearchable:(BOOL)isPageSearchable
       canSendTabToSelf:(BOOL)canSendTabToSelf
              userAgent:(web::UserAgentType)userAgent
-    thumbnailGenerator:
-        (ChromeActivityItemThumbnailGenerator*)thumbnailGenerator;
+    thumbnailGenerator:(ChromeActivityItemThumbnailGenerator*)thumbnailGenerator
+          linkMetadata:(LPLinkMetadata*)linkMetadata;
 
 // The URL to be shared with share extensions. This URL is the canonical URL of
 // the page.
@@ -54,6 +54,7 @@
 @property(nonatomic, readonly, assign) web::UserAgentType userAgent;
 @property(nonatomic, readonly)
     ChromeActivityItemThumbnailGenerator* thumbnailGenerator;
+@property(nonatomic, readonly) LPLinkMetadata* linkMetadata;
 
 @end
 

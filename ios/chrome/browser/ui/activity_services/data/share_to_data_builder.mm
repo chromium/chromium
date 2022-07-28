@@ -104,12 +104,14 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
                               isPageSearchable:is_page_searchable
                               canSendTabToSelf:can_send_tab_to_self
                                      userAgent:userAgent
-                            thumbnailGenerator:thumbnail_generator];
+                            thumbnailGenerator:thumbnail_generator
+                                  linkMetadata:nil];
 }
 
 ShareToData* ShareToDataForURL(const GURL& URL,
                                NSString* title,
-                               NSString* additionalText) {
+                               NSString* additionalText,
+                               LPLinkMetadata* linkMetadata) {
   return [[ShareToData alloc] initWithShareURL:URL
                                     visibleURL:URL
                                          title:title
@@ -119,11 +121,12 @@ ShareToData* ShareToDataForURL(const GURL& URL,
                               isPageSearchable:NO
                               canSendTabToSelf:NO
                                      userAgent:web::UserAgentType::NONE
-                            thumbnailGenerator:nil];
+                            thumbnailGenerator:nil
+                                  linkMetadata:linkMetadata];
 }
 
 ShareToData* ShareToDataForURLWithTitle(URLWithTitle* URLWithTitle) {
-  return ShareToDataForURL(URLWithTitle.URL, URLWithTitle.title, nil);
+  return ShareToDataForURL(URLWithTitle.URL, URLWithTitle.title, nil, nil);
 }
 
 }  // namespace activity_services

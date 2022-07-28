@@ -375,6 +375,7 @@ chromium-metrics-reviews@google.com.
     <variant name="QRCodeImage" summary="QR code image"/>
     <variant name="ReadingListEntry" summary="Reading List entry"/>
     <variant name="RecentTabsEntry" summary="Recent Tabs entry"/>
+    <variant name="ShareChrome" summary="link to Chrome in the app store"/>
     <variant name="SharedHighlight" summary="highlighted fragment"/>
     <variant name="TabGridItem" summary="tab grid item"/>
     <variant name="TabGridSelectionMode" summary="tab grid selection mode"/>

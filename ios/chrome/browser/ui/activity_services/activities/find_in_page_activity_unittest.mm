@@ -37,7 +37,8 @@ class FindInPageActivityTest : public PlatformTest {
                                 isPageSearchable:is_page_searchable
                                 canSendTabToSelf:YES
                                        userAgent:web::UserAgentType::MOBILE
-                              thumbnailGenerator:nil];
+                              thumbnailGenerator:nil
+                                    linkMetadata:nil];
   }
 
   id mocked_handler_;

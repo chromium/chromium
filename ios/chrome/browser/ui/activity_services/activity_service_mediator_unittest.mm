@@ -101,7 +101,8 @@ TEST_F(ActivityServiceMediatorTest, ActivityItemsForMulitpleDataItems_Success) {
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray<id<ChromeActivityItemSource>>* activityItems =
       [mediator_ activityItemsForDataItems:@[ data ]];
@@ -124,7 +125,8 @@ TEST_F(ActivityServiceMediatorTest,
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray<id<ChromeActivityItemSource>>* activityItems =
       [mediator_ activityItemsForDataItems:@[ data ]];
@@ -149,7 +151,8 @@ TEST_F(ActivityServiceMediatorTest,
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   ShareToData* data2 =
       [[ShareToData alloc] initWithShareURL:GURL("https://www.example.com/")
@@ -161,7 +164,8 @@ TEST_F(ActivityServiceMediatorTest,
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray<id<ChromeActivityItemSource>>* activityItems =
       [mediator_ activityItemsForDataItems:@[ data1, data2 ]];
@@ -184,7 +188,8 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_NotHTTPOrHTTPS) {
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 
@@ -204,7 +209,8 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_HTTP) {
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 
@@ -229,7 +235,8 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForData_HTTPS) {
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 
@@ -254,7 +261,8 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForMultipleDataItems) {
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
   ShareToData* data2 =
       [[ShareToData alloc] initWithShareURL:GURL("https://example.com")
                                  visibleURL:GURL("https://example.com")
@@ -265,7 +273,8 @@ TEST_F(ActivityServiceMediatorTest, ActivitiesForMultipleDataItems) {
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray* activities =
       [mediator_ applicationActivitiesForDataItems:@[ data1, data2 ]];
@@ -412,7 +421,8 @@ TEST_F(ActivityServiceMediatorTest, PrintPrefDisabled) {
                            isPageSearchable:YES
                            canSendTabToSelf:YES
                                   userAgent:web::UserAgentType::MOBILE
-                         thumbnailGenerator:mocked_thumbnail_generator_];
+                         thumbnailGenerator:mocked_thumbnail_generator_
+                               linkMetadata:nil];
 
   NSArray* activities = [mediator_ applicationActivitiesForDataItems:@[ data ]];
 

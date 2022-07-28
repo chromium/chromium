@@ -146,8 +146,8 @@ TEST_F(ShareToDataBuilderTest, ShareToDataForURL) {
   NSString* testTitle = @"Some Title";
   NSString* additionalText = @"Foo, Bar!";
 
-  ShareToData* data =
-      activity_services::ShareToDataForURL(testURL, testTitle, additionalText);
+  ShareToData* data = activity_services::ShareToDataForURL(testURL, testTitle,
+                                                           additionalText, nil);
 
   EXPECT_EQ(testURL, data.shareURL);
   EXPECT_EQ(testURL, data.visibleURL);

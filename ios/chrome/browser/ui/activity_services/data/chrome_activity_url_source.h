@@ -25,6 +25,9 @@
 @property(nonatomic, strong)
     ChromeActivityItemThumbnailGenerator* thumbnailGenerator;
 
+// Prefillled link metadata that can be displayed in the share sheet.
+@property(nonatomic, strong) LPLinkMetadata* linkMetadata;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ACTIVITY_SERVICES_DATA_CHROME_ACTIVITY_URL_SOURCE_H_

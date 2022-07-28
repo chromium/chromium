@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/activity_services/data/chrome_activity_url_source.h"
 
+#import <LinkPresentation/LinkPresentation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #include "base/check.h"
@@ -74,6 +75,11 @@
      thumbnailImageForActivityType:(UIActivityType)activityType
                      suggestedSize:(CGSize)size {
   return [self.thumbnailGenerator thumbnailWithSize:size];
+}
+
+- (LPLinkMetadata*)activityViewControllerLinkMetadata:
+    (UIActivityViewController*)activityViewController {
+  return _linkMetadata;
 }
 
 @end
