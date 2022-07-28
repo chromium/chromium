@@ -370,6 +370,8 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
       return mode == blink::mojom::DisplayMode::kBrowser;
     case CSSValueID::kWindowControlsOverlay:
       return mode == blink::mojom::DisplayMode::kWindowControlsOverlay;
+    case CSSValueID::kBorderless:
+      return mode == blink::mojom::DisplayMode::kBorderless;
     default:
       NOTREACHED();
       return false;

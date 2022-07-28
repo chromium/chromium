@@ -1042,6 +1042,7 @@
     "alphabetic",
 
     // (display-mode:) media feature
+    "borderless",
     "fullscreen",
     "standalone",
     "minimal-ui",
