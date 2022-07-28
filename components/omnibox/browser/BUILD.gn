@@ -203,6 +203,8 @@ static_library("browser") {
     "remote_suggestions_service.h",
     "scored_history_match.cc",
     "scored_history_match.h",
+    "scoring_functor.cc",
+    "scoring_functor.h",
     "search_provider.cc",
     "search_provider.h",
     "search_suggestion_parser.cc",

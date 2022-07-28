@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <vector>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/titled_url_match.h"
@@ -18,7 +20,7 @@ class AutocompleteProviderClient;
 namespace bookmarks {
 class BookmarkModel;
 struct TitledUrlMatch;
-}
+}  // namespace bookmarks
 
 // This class is an autocomplete provider which quickly (and synchronously)
 // provides autocomplete suggestions based on the titles of bookmarks. Page
