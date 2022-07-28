@@ -127,6 +127,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   // Invokes any pending queries.
   void InvokePendingQueries();
 
+  // Returns the current list of First-Party Sets.
+  //
+  // Must be called after the list has been initialized.
+  FlattenedSets GetSetsSync() const;
+
   // Does the following:
   // 1) computes the diff between the `sets_` and the parsed
   // `raw_persisted_sets_`;
@@ -136,6 +141,11 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
   //
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSets() const;
+
+  // Parses the policy and computes the PolicyCustomization that represents the
+  // changes needed to apply `policy` to `sets_`.
+  PolicyCustomization GetCustomizationForPolicyInternal(
+      const base::Value::Dict& policy) const;
 
   // Whether Init has been called already or not.
   bool initialized_ = false;
@@ -161,7 +171,7 @@ class CONTENT_EXPORT FirstPartySetsHandlerImpl : public FirstPartySetsHandler {
 
   // We use a OnceCallback to ensure we only pass along the sets once
   // during Chrome's lifetime (modulo reconfiguring the network service).
-  base::circular_deque<SetsReadyOnceCallback> on_sets_ready_callbacks_
+  base::circular_deque<base::OnceClosure> on_sets_ready_callbacks_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   std::unique_ptr<FirstPartySetsLoader> sets_loader_

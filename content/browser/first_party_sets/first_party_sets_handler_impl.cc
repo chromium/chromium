@@ -85,22 +85,6 @@ void UpdateCustomizationMap(
   }
 }
 
-// Parses the policy and computes the PolicyCustomization that represents the
-// changes needed to apply `policy` to `sets`.
-FirstPartySetsHandler::PolicyCustomization GetCustomizationForPolicyInternal(
-    const base::Value::Dict& policy,
-    const FirstPartySetsHandlerImpl::FlattenedSets& sets) {
-  FirstPartySetParser::ParsedPolicySetLists parsed_policy;
-  absl::optional<FirstPartySetParser::PolicyParsingError> error =
-      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy,
-                                                         &parsed_policy);
-  // Provide empty customization if the policy is malformed.
-  return error.has_value()
-             ? FirstPartySetsHandlerImpl::PolicyCustomization()
-             : FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
-                   sets, parsed_policy);
-}
-
 }  // namespace
 
 bool FirstPartySetsHandler::PolicyParsingError::operator==(
@@ -140,22 +124,17 @@ void FirstPartySetsHandlerImpl::GetCustomizationForPolicy(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PolicyCustomization customization;
   if (sets_.has_value()) {
-    std::move(callback).Run(
-        GetCustomizationForPolicyInternal(policy, sets_.value()));
+    std::move(callback).Run(GetCustomizationForPolicyInternal(policy));
     return;
   }
   // Add to the deque of callbacks that will be processed once the list
   // of First-Party Sets has been fully initialized.
-
-  // TODO (https://crbug.com/1325050): Refactor on_sets_ready_callbacks_
-  // to avoid copying `sets` as an argument.
-  // See https://crrev.com/c/chromium/src/+/3759166/comments/eb14f62f_6d17475a
   on_sets_ready_callbacks_.push_back(
       base::BindOnce(
-          [](base::Value::Dict policy, FlattenedSets sets) {
-            return GetCustomizationForPolicyInternal(policy, sets);
-          },
-          policy.Clone())
+          &FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal,
+          // base::Unretained(this) is safe here because this is a static
+          // singleton.
+          base::Unretained(this), policy.Clone())
           .Then(std::move(callback)));
 }
 
@@ -286,7 +265,11 @@ FirstPartySetsHandlerImpl::GetSets(SetsReadyOnceCallback callback) {
   if (sets_.has_value())
     return sets_;
 
-  on_sets_ready_callbacks_.push_back(std::move(callback));
+  // base::Unretained(this) is safe here because this is a static singleton.
+  on_sets_ready_callbacks_.push_back(
+      base::BindOnce(&FirstPartySetsHandlerImpl::GetSetsSync,
+                     base::Unretained(this))
+          .Then(std::move(callback)));
   return absl::nullopt;
 }
 
@@ -402,12 +385,18 @@ void FirstPartySetsHandlerImpl::SetCompleteSets(
 void FirstPartySetsHandlerImpl::InvokePendingQueries() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (!on_sets_ready_callbacks_.empty()) {
-    SetsReadyOnceCallback callback =
-        std::move(on_sets_ready_callbacks_.front());
+    base::OnceCallback callback = std::move(on_sets_ready_callbacks_.front());
     on_sets_ready_callbacks_.pop_front();
-    std::move(callback).Run(sets_.value());
+    std::move(callback).Run();
   }
   on_sets_ready_callbacks_.shrink_to_fit();
+}
+
+FirstPartySetsHandlerImpl::FlattenedSets
+FirstPartySetsHandlerImpl::GetSetsSync() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(sets_.has_value());
+  return sets_.value();
 }
 
 // static
@@ -459,6 +448,21 @@ void FirstPartySetsHandlerImpl::ClearSiteDataOnChangedSets() const {
             &MaybeWriteSetsToDisk, persisted_sets_path_,
             FirstPartySetParser::SerializeFirstPartySets(sets_.value())));
   }
+}
+
+FirstPartySetsHandler::PolicyCustomization
+FirstPartySetsHandlerImpl::GetCustomizationForPolicyInternal(
+    const base::Value::Dict& policy) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FirstPartySetParser::ParsedPolicySetLists parsed_policy;
+  absl::optional<FirstPartySetParser::PolicyParsingError> error =
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy,
+                                                         &parsed_policy);
+  // Provide empty customization if the policy is malformed.
+  return error.has_value()
+             ? FirstPartySetsHandlerImpl::PolicyCustomization()
+             : FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+                   sets_.value(), parsed_policy);
 }
 
 }  // namespace content
