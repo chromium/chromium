@@ -2,91 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_wrapper.gni")
-import("//tools/typescript/ts_library.gni")
-import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
-import("./tab_strip.gni")
 
 assert(enable_webui_tab_strip)
 
-preprocess_folder = "preprocessed"
-
-copy("copy_mojo") {
-  deps = [
-    "//chrome/browser/ui/webui/tab_strip:mojo_bindings_webui_js",
-    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
-  ]
-  sources = [
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip/tab_strip.mojom-webui.js",
-    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/tabs.mojom-webui.js",
-  ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
-}
-
-preprocess_if_expr("preprocess_src") {
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = ts_files
-}
-
-preprocess_if_expr("preprocess_gen") {
-  deps = [ ":html_wrapper_files" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = html_wrapper_files
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/tab_strip_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/tab_strip_resources.h",
-    "grit/tab_strip_resources_map.cc",
-    "grit/tab_strip_resources_map.h",
-    "tab_strip_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = html_files
-  template = "native"
-}
-
-ts_library("build_ts") {
-  root_dir = "$target_gen_dir/$preprocess_folder"
-  out_dir = "$target_gen_dir/tsc"
-  composite = true
-  tsconfig_base = "tsconfig_base.json"
-  in_files = ts_files + html_wrapper_files + [
-               "tabs.mojom-webui.js",
-               "tab_strip.mojom-webui.js",
-             ]
-  deps = [
-    "//third_party/polymer/v3_0:library",
-    "//ui/webui/resources:library",
-    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
-  ]
-  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
-  extra_deps = [
-    ":copy_mojo",
-    ":preprocess_gen",
-    ":preprocess_src",
-  ]
-}
-
-generate_grd("build_grd") {
+build_webui("build") {
   grd_prefix = "tab_strip"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
+
+  static_files = [
     "alert_indicators/picture_in_picture_alt.svg",
     "alert_indicators/serial_port.svg",
     "alert_indicators/tab_audio_muting_rounded.svg",
@@ -99,9 +24,37 @@ generate_grd("build_grd") {
     "alert_indicators/vr_headset.svg",
     "tab_strip.html",
   ]
-  input_files_base_dir = rebase_path(".", "//")
 
-  deps = [ ":build_ts" ]
-  manifest_files =
-      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  # Files holding a Polymer element definition and have an equivalent .html file.
+  web_component_files = [
+    "alert_indicator.ts",
+    "alert_indicators.ts",
+    "tab_group.ts",
+    "tab_list.ts",
+    "tab.ts",
+  ]
+  html_to_wrapper_template = "native"
+
+  non_web_component_files = [
+    "drag_manager.ts",
+    "tabs_api_proxy.ts",
+    "tab_swiper.ts",
+  ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/tab_strip:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
+  ]
+  mojo_files = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip/tab_strip.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/tabs.mojom-webui.js",
+  ]
+
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
+  ]
 }
