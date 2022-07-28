@@ -604,9 +604,9 @@ TEST_F(BrowserUtilTest, RecordDataVer) {
 
   base::Value expected{base::Value::Type::DICTIONARY};
   expected.SetStringKey(user_id_hash, version.GetString());
-  const base::Value* dict =
-      pref_service_.GetDictionary(browser_util::kDataVerPref);
-  EXPECT_EQ(*dict, expected);
+  const base::Value::Dict& dict =
+      pref_service_.GetValueDict(browser_util::kDataVerPref);
+  EXPECT_EQ(dict, expected);
 }
 
 TEST_F(BrowserUtilTest, RecordDataVerOverrides) {
@@ -620,9 +620,9 @@ TEST_F(BrowserUtilTest, RecordDataVerOverrides) {
   base::Value expected{base::Value::Type::DICTIONARY};
   expected.SetStringKey(user_id_hash, version2.GetString());
 
-  const base::Value* dict =
-      pref_service_.GetDictionary(browser_util::kDataVerPref);
-  EXPECT_EQ(*dict, expected);
+  const base::Value::Dict& dict =
+      pref_service_.GetValueDict(browser_util::kDataVerPref);
+  EXPECT_EQ(dict, expected);
 }
 
 TEST_F(BrowserUtilTest, RecordDataVerWithMultipleUsers) {
@@ -643,9 +643,9 @@ TEST_F(BrowserUtilTest, RecordDataVerWithMultipleUsers) {
   expected.SetStringKey(user_id_hash_1, version3.GetString());
   expected.SetStringKey(user_id_hash_2, version2.GetString());
 
-  const base::Value* dict =
-      pref_service_.GetDictionary(browser_util::kDataVerPref);
-  EXPECT_EQ(*dict, expected);
+  const base::Value::Dict& dict =
+      pref_service_.GetValueDict(browser_util::kDataVerPref);
+  EXPECT_EQ(dict, expected);
 }
 
 TEST_F(BrowserUtilTest, IsDataWipeRequiredInvalid) {
