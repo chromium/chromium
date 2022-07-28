@@ -3388,7 +3388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.CreateReportStatus"
-    enum="ConversionCreateAggregatableReportStatus" expires_after="2022-09-17">
+    enum="ConversionCreateAggregatableReportStatus" expires_after="2023-01-28">
   <obsolete>
     Replaced with Conversions.AggregatableReport.CreateReportStatus2 due to enum
     value change, 04/2022.
@@ -3405,7 +3405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AggregatableReport.CreateReportStatus2"
-    enum="ConversionCreateAggregatableReportStatus" expires_after="2022-12-04">
+    enum="ConversionCreateAggregatableReportStatus" expires_after="2023-01-28">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3484,7 +3484,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Conversions.AggregatableReport.TimeFromTriggerToReportAssembly"
-    units="hours" expires_after="2022-09-08">
+    units="hours" expires_after="2023-01-28">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
