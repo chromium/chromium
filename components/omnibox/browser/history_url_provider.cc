@@ -194,24 +194,17 @@ void RecordAdditionalInfoFromUrlRow(const history::URLRow& info,
   match->RecordAdditionalInfo("last visit", info.last_visit());
 }
 
-// If `create_if_necessary` is true, ensures that `matches` contains an entry
-// for `info`, creating a new such entry if necessary (using `match_template`
-// to get all the other match data).
+// Ensures that `matches` contains an entry for `info`, creating a new such
+// entry if necessary (using `match_template` to get all the other match data).
 //
 // If `promote` is true, this also ensures the entry is the first element in
 // `matches`, moving or adding it to the front as appropriate.  When `promote`
 // is false, existing matches are left in place, and newly added matches are
 // placed at the back.
-//
-// It's OK to call this function with both `create_if_necessary` and `promote`
-// false, in which case we'll do nothing.
-//
-// Returns whether the match exists regardless if it was promoted/created.
-bool CreateOrPromoteMatch(const history::URLRow& info,
-                          const history::HistoryMatch& match_template,
-                          history::HistoryMatches* matches,
-                          bool create_if_necessary,
-                          bool promote) {
+void CreateAndPromoteMatch(const history::URLRow& info,
+                           const history::HistoryMatch& match_template,
+                           history::HistoryMatches* matches,
+                           bool promote) {
   // `matches` may already have an entry for this.
   for (history::HistoryMatches::iterator i(matches->begin());
        i != matches->end(); ++i) {
@@ -219,12 +212,9 @@ bool CreateOrPromoteMatch(const history::URLRow& info,
       // Rotate it to the front if the caller wishes.
       if (promote)
         std::rotate(matches->begin(), i, i + 1);
-      return true;
+      return;
     }
   }
-
-  if (!create_if_necessary)
-    return false;
 
   // No entry, so create one using `match_template` as a basis.
   history::HistoryMatch match = match_template;
@@ -233,8 +223,6 @@ bool CreateOrPromoteMatch(const history::URLRow& info,
     matches->push_front(match);
   else
     matches->push_back(match);
-
-  return true;
 }
 
 // Returns whether `match` is suitable for inline autocompletion.
@@ -914,8 +902,8 @@ bool HistoryURLProvider::FixupExactSuggestion(
     return false;
 
   // Put it on the front of the HistoryMatches for redirect culling.
-  CreateOrPromoteMatch(classifier.url_row(), history::HistoryMatch(),
-                       &params->matches, true, true);
+  CreateAndPromoteMatch(classifier.url_row(), history::HistoryMatch(),
+                        &params->matches, true);
   return true;
 }
 
@@ -1024,8 +1012,8 @@ bool HistoryURLProvider::PromoteOrCreateShorterSuggestion(
   // Promote or add the desired URL to the list of matches.
   const bool ensure_can_inline =
       promote && CanPromoteMatchForInlineAutocomplete(match);
-  return CreateOrPromoteMatch(info, match, &params->matches, true, promote) &&
-         ensure_can_inline;
+  CreateAndPromoteMatch(info, match, &params->matches, promote);
+  return ensure_can_inline;
 }
 
 void HistoryURLProvider::CullPoorMatches(
