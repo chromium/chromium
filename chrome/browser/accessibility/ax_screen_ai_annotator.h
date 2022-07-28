@@ -22,7 +22,7 @@ namespace screen_ai {
 class AXScreenAIAnnotator {
  public:
   explicit AXScreenAIAnnotator(Browser* browser);
-  ~AXScreenAIAnnotator();
+  virtual ~AXScreenAIAnnotator();
   AXScreenAIAnnotator(const AXScreenAIAnnotator&) = delete;
   AXScreenAIAnnotator& operator=(const AXScreenAIAnnotator&) = delete;
 
@@ -34,8 +34,8 @@ class AXScreenAIAnnotator {
   // Receives an screenshot and sends it to ScreenAI library for processing.
   // |ax_tree_id| represents the accessibility tree that is associated with the
   // snapshot at the time of triggering the request.
-  void OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
-                            gfx::Image snapshot);
+  virtual void OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
+                                    gfx::Image snapshot);
 
   // Receives the annotations from ScreenAI service. |ax_tree_id| is the id of
   // the accessibility tree associated with the snapshot that was sent to

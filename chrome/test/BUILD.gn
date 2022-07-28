@@ -31,6 +31,7 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//components/os_crypt/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//components/services/screen_ai/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//components/soda/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
@@ -2340,6 +2341,18 @@ if (!is_android) {
 
     if (enable_reporting) {
       sources += [ "../browser/net/reporting_browsertest.cc" ]
+    }
+
+    if (enable_screen_ai_service) {
+      sources += [
+        "../browser/accessibility/ax_screen_ai_annotator.cc",
+        "../browser/accessibility/ax_screen_ai_annotator.h",
+        "../browser/accessibility/screen_ai_service_browsertest.cc",
+      ]
+      deps += [
+        "//components/services/screen_ai/public/cpp:screen_ai_service_router_factory",
+        "//components/services/screen_ai/public/mojom",
+      ]
     }
 
     if (!is_chromeos_lacros) {
