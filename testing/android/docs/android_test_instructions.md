@@ -99,6 +99,16 @@ Java test files vary a bit more widely than their C++ counterparts:
 Once you know what to build, just do it like you normally would build anything
 else, e.g.: `ninja -C out/Release chrome_public_test_apk`
 
+### Determining Test Target
+
+If you do not know what target a test file belongs to, you can use
+`//tools/autotest.py` to figure it out fo you:
+
+```sh
+# Builds relevant test target and then runs the test:
+tools/autotest.py -C <output directory> TestClassName
+```
+
 ## Running Tests
 
 All functional tests should be runnable via the wrapper scripts generated at
@@ -114,6 +124,18 @@ to do otherwise by `-d/--device`.
 The commands used by the buildbots are printed in the logs. Look at
 https://build.chromium.org/ to duplicate the same test command as a particular
 builder.
+
+### Listing Available Tests
+
+Use `--list-tests` to list what tests are available.
+
+```sh
+# Prints out all available tests:
+<output directory>/bin/run_<target_name> --list-tests
+
+# Prints out all available tests that match a filter:
+<output directory>/bin/run_<target_name> --list-tests -f "*MyFilter*"
+```
 
 ### INSTALL\_FAILED\_CONTAINER\_ERROR or INSTALL\_FAILED\_INSUFFICIENT\_STORAGE
 
