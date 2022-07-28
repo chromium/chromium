@@ -111,12 +111,7 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 #if !BUILDFLAG(IS_ANDROID)
   graph->PassToGraph(FormInteractionTabHelper::CreateGraphObserver());
 
-  // The PageDiscardingHelper instance is required by
-  // UrgentDiscardingFromPerformanceManager.
-
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kUrgentDiscardingFromPerformanceManager) ||
+  if (URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER() ||
       base::FeatureList::IsEnabled(
           performance_manager::features::kHighEfficiencyModeAvailable) ||
       base::FeatureList::IsEnabled(
@@ -125,13 +120,11 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                        performance_manager::policies::PageDiscardingHelper>());
   }
 
-  if (base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kUrgentDiscardingFromPerformanceManager)) {
-    graph->PassToGraph(
-        std::make_unique<
-            performance_manager::policies::UrgentPageDiscardingPolicy>());
-  }
+#if URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
+  graph->PassToGraph(
+      std::make_unique<
+          performance_manager::policies::UrgentPageDiscardingPolicy>());
+#endif  // URGENT_DISCARDING_FROM_PERFORMANCE_MANAGER()
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::

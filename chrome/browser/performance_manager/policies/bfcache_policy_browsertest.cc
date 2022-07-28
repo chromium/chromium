@@ -6,14 +6,10 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_monitor.h"
-#include "base/notreached.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_manager/mechanisms/page_discarder.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -94,9 +90,6 @@ class BFCachePolicyBrowserTest
                    {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
                    {"ignore_outstanding_network_request_for_testing", "true"}});
     DisableFeature(::features::kBackForwardCacheMemoryControls);
-    // Disable discarding of pages directly from PerformanceManager for test.
-    DisableFeature(::performance_manager::features::
-                       kUrgentDiscardingFromPerformanceManager);
     // Occlusion can cause the web_contents to be marked visible between the
     // time the test calls WasHidden and BFCachePolicy::MaybeFlushBFCache is
     // called, which kills the timer set by BFCachePolicy::OnIsVisibleChanged.
@@ -131,6 +124,8 @@ class BFCachePolicyBrowserTest
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    // Disable tab discarding to avoid interference.
+    mechanism::PageDiscarder::DisableForTesting();
   }
 
  protected:

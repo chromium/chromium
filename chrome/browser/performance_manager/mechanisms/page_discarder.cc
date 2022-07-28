@@ -23,6 +23,8 @@ namespace performance_manager {
 namespace mechanism {
 namespace {
 
+bool disabled_for_testing = false;
+
 // Discards pages on the UI thread. Returns true if at least 1 page is
 // discarded.
 // TODO(crbug/1241049): Returns the remaining reclaim target so
@@ -30,6 +32,10 @@ namespace {
 // met or there is no discardable page.
 bool DiscardPagesOnUIThread(const std::vector<WebContentsProxy>& proxies) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (disabled_for_testing)
+    return false;
+
   bool result = false;
   for (auto proxy : proxies) {
     content::WebContents* const contents = proxy.Get();
@@ -50,6 +56,12 @@ bool DiscardPagesOnUIThread(const std::vector<WebContentsProxy>& proxies) {
 }
 
 }  // namespace
+
+// static
+void PageDiscarder::DisableForTesting() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  disabled_for_testing = true;
+}
 
 void PageDiscarder::DiscardPageNodes(
     const std::vector<const PageNode*>& page_nodes,

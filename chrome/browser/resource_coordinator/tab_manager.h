@@ -99,8 +99,10 @@ class TabManager : public LifecycleUnitObserver,
   // was discarded.
   content::WebContents* DiscardTabByExtension(content::WebContents* contents);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Discards a tab in response to memory pressure.
   void DiscardTabFromMemoryPressure();
+#endif
 
   // TODO(fdoray): Remove these methods. TabManager shouldn't know about tabs.
   // https://crbug.com/775644
@@ -167,6 +169,7 @@ class TabManager : public LifecycleUnitObserver,
   // can be easily reloaded and hence makes a good choice to discard.
   static bool IsInternalPage(const GURL& url);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called by the memory pressure listener when the memory pressure rises.
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
@@ -181,6 +184,7 @@ class TabManager : public LifecycleUnitObserver,
   // Unregister to stop listening to memory pressure. Called on shutdown or
   // beginning of tab discards.
   void UnregisterMemoryPressureListener();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Called by OnTabStripModelChanged()
   void OnActiveTabChanged(content::WebContents* old_contents,

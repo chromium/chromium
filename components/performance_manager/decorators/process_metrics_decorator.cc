@@ -22,14 +22,8 @@ namespace performance_manager {
 
 namespace {
 
-// The default process metrics refresh interval.
-constexpr base::TimeDelta kDefaultRefreshTimerPeriod = base::Minutes(2);
-
-#if !BUILDFLAG(IS_ANDROID)
-// The fast process metrics refresh interval. Used in certain situations, see
-// the comment in ProcessMetricsDecorator::StartTimer for more details.
-constexpr base::TimeDelta kFastRefreshTimerPeriod = base::Seconds(20);
-#endif
+// The process metrics refresh interval.
+constexpr base::TimeDelta kMetricsRefreshInterval = base::Minutes(2);
 
 }  // namespace
 
@@ -106,21 +100,8 @@ void ProcessMetricsDecorator::OnMetricsInterestTokenReleased() {
 
 void ProcessMetricsDecorator::StartTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::TimeDelta refresh_period = kDefaultRefreshTimerPeriod;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Bump the refresh frequency when urgent discarding is done from the graph or
-  // when discarding tabs on high PMF as these features relies on relatively
-  // fresh data.
-  // TODO(sebmarchand): Measure the performance impact of this.
-  if (base::FeatureList::IsEnabled(
-          features::kUrgentDiscardingFromPerformanceManager)) {
-    refresh_period = kFastRefreshTimerPeriod;
-  }
-#endif
-
   refresh_timer_.Start(
-      FROM_HERE, refresh_period,
+      FROM_HERE, kMetricsRefreshInterval,
       base::BindRepeating(&ProcessMetricsDecorator::RefreshMetrics,
                           base::Unretained(this)));
 }

@@ -44,20 +44,18 @@ class PageDiscardingHelper : public GraphOwned,
   PageDiscardingHelper(const PageDiscardingHelper& other) = delete;
   PageDiscardingHelper& operator=(const PageDiscardingHelper&) = delete;
 
-  // Selects a tab to discard based on |strategy| and posts to the UI thread to
-  // discard it. This will try to discard a tab until there's been a successful
-  // discard or until there's no more discard candidate.
-  void UrgentlyDiscardAPage(features::DiscardStrategy discard_strategy,
-                            base::OnceCallback<void(bool)> post_discard_cb);
+  // Selects a tab to discard and posts to the UI thread to discard it. This
+  // will try to discard a tab until there's been a successful discard or until
+  // there's no more discard candidate.
+  void UrgentlyDiscardAPage(base::OnceCallback<void(bool)> post_discard_cb);
 
-  // Discards multiple tabs to meet the reclaim target based on |strategy| and
-  // posts to the UI thread to discard these tabs. Retries discarding if all
-  // discardings in the UI thread fail. If |reclaim_target_kb| is nullopt, only
-  // discard one tab. If |discard_protected_tabs| is true, protected tab
-  // (CanUrgentlyDiscard() returns kProtected) can also be discarded.
+  // Discards multiple tabs to meet the reclaim target based and posts to the UI
+  // thread to discard these tabs. Retries discarding if all discardings in the
+  // UI thread fail. If |reclaim_target_kb| is nullopt, only discard one tab. If
+  // |discard_protected_tabs| is true, protected tab (CanUrgentlyDiscard()
+  // returns kProtected) can also be discarded.
   void UrgentlyDiscardMultiplePages(
       absl::optional<uint64_t> reclaim_target_kb,
-      features::DiscardStrategy discard_strategy,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb);
 
@@ -123,7 +121,6 @@ class PageDiscardingHelper : public GraphOwned,
   // candidates.
   void PostDiscardAttemptCallback(
       absl::optional<uint64_t> reclaim_target_kb,
-      features::DiscardStrategy discard_strategy,
       bool discard_protected_tabs,
       base::OnceCallback<void(bool)> post_discard_cb,
       bool success);

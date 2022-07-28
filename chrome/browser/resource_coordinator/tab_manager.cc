@@ -137,33 +137,25 @@ TabManager::~TabManager() {
 }
 
 void TabManager::Start() {
+  // On Linux, there is no tab discarding because MemoryPressureMonitor is not
+  // reliable. On Windows, Mac and ChromeOS Lacros, urgent discarding is
+  // handled by Performance Manager.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   delegate_->StartPeriodicOOMScoreUpdate();
-#endif
 
-// MemoryPressureMonitor is not implemented on Linux so far and tabs are never
-// discarded.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  // Don't handle memory pressure events here if this is done by
-  // PerformanceManager.
-  if (!base::FeatureList::IsEnabled(
-          performance_manager::features::
-              kUrgentDiscardingFromPerformanceManager)) {
-    // Create a |MemoryPressureListener| to listen for memory events when
-    // MemoryCoordinator is disabled. When MemoryCoordinator is enabled
-    // it asks TabManager to do tab discarding.
-    base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
-    if (monitor) {
-      RegisterMemoryPressureListener();
-      base::MemoryPressureListener::MemoryPressureLevel level =
-          monitor->GetCurrentPressureLevel();
-      if (level ==
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-        OnMemoryPressure(level);
-      }
+  // Create a |MemoryPressureListener| to listen for memory events when
+  // MemoryCoordinator is disabled. When MemoryCoordinator is enabled
+  // it asks TabManager to do tab discarding.
+  base::MemoryPressureMonitor* monitor = base::MemoryPressureMonitor::Get();
+  if (monitor) {
+    RegisterMemoryPressureListener();
+    base::MemoryPressureListener::MemoryPressureLevel level =
+        monitor->GetCurrentPressureLevel();
+    if (level == base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+      OnMemoryPressure(level);
     }
   }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Create the graph observer. This is the source of page almost idle data and
   // EQT measurements.
@@ -222,11 +214,8 @@ WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   return DiscardTabImpl(LifecycleUnitDiscardReason::EXTERNAL);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TabManager::DiscardTabFromMemoryPressure() {
-  DCHECK(!base::FeatureList::IsEnabled(
-      performance_manager::features::kUrgentDiscardingFromPerformanceManager));
-
-#if BUILDFLAG(IS_CHROMEOS)
   // Output a log with per-process memory usage and number of file descriptors,
   // as well as GPU memory details. Discard happens without waiting for the log
   // (https://crbug.com/850545) Per comment at
@@ -235,7 +224,6 @@ void TabManager::DiscardTabFromMemoryPressure() {
   // platforms since it is not used and data shows it can create IO thread hangs
   // (https://crbug.com/1040522).
   memory::OomMemoryDetails::Log("Tab Discards Memory details");
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Start handling memory pressure. Suppress further notifications before
   // completion in case a slow handler queues up multiple dispatches of this
@@ -246,6 +234,7 @@ void TabManager::DiscardTabFromMemoryPressure() {
       &TabManager::OnTabDiscardDone, weak_ptr_factory_.GetWeakPtr()));
   DiscardTab(LifecycleUnitDiscardReason::URGENT, std::move(tab_discard_done));
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TabManager::AddObserver(TabLifecycleObserver* observer) {
   TabLifecycleUnitExternal::AddTabLifecycleObserver(observer);
@@ -292,6 +281,7 @@ bool TabManager::IsInternalPage(const GURL& url) {
   return false;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void TabManager::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   // If Chrome is shutting down, do not do anything.
@@ -335,6 +325,7 @@ void TabManager::UnregisterMemoryPressureListener() {
   // Destroying the memory pressure listener to unregister from the observer.
   memory_pressure_listener_.reset();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void TabManager::OnActiveTabChanged(content::WebContents* old_contents,
                                     content::WebContents* new_contents) {
