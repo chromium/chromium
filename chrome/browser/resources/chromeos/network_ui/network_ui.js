@@ -53,6 +53,7 @@ Polymer({
           this.i18n('networkStateTab'),
           this.i18n('networkSelectTab'),
           this.i18n('TrafficCountersTrafficCounters'),
+          this.i18n('networkHotspotTab'),
         ];
       },
     },
@@ -80,6 +81,15 @@ Polymer({
             loadTimeData.getBoolean('isGuestModeActive');
       },
     },
+
+    /** @private */
+    isHotspotEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('isHotspotEnabled') &&
+            loadTimeData.getBoolean('isHotspotEnabled');
+      },
+    },
   },
 
   /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -105,6 +115,7 @@ Polymer({
     this.$$('#import-onc').value = '';
 
     this.requestGlobalPolicy_();
+    this.getTetheringCapabilities_();
     this.getHostname_();
     this.selectTabFromHash_();
     window.addEventListener('hashchange', () => {
@@ -201,6 +212,14 @@ Polymer({
     this.networkConfig_.getGlobalPolicy().then(result => {
       this.$$('#global-policy').textContent =
           JSON.stringify(result.result, null, '\t');
+    });
+  },
+
+  /** @private */
+  getTetheringCapabilities_() {
+    this.browserProxy_.getTetheringCapabilities().then(result => {
+      this.$$('#tethering-capabilities-div').textContent =
+          JSON.stringify(result, null, '\t');
     });
   },
 

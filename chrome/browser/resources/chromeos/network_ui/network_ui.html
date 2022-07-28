@@ -7,7 +7,8 @@
     margin-bottom: 10px;
   }
 
-  #global-policy {
+  #global-policy,
+  #tethering-capabilities-div {
     white-space: pre-wrap;
   }
 
@@ -140,4 +141,14 @@
   <div class="tabpanel" id="counters">
     <traffic-counters id="traffic-counters"></traffic-counters>
   </div>
+
+  <template is="dom-if" if="[[isHotspotEnabled_]]">
+    <div class="tabpanel" id="hotspot">
+      <h2>$i18n{tetheringCapabilitiesLabel}</h2>
+      <div id="tethering-capabilities-div"></div>
+      <cr-button class="action-button" on-click="getTetheringCapabilities_">
+        $i18n{refreshTetheringCapabilitiesButtonText}
+      </cr-button>
+    </div>
+  <template>
 </iron-pages>

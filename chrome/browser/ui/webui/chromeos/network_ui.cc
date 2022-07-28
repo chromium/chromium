@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
@@ -43,6 +44,7 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
@@ -78,6 +80,7 @@ constexpr char kShowNetworkConfig[] = "showNetworkConfig";
 constexpr char kShowAddNewWifiNetworkDialog[] = "showAddNewWifi";
 constexpr char kGetHostname[] = "getHostname";
 constexpr char kSetHostname[] = "setHostname";
+constexpr char kGetTetheringCapabilities[] = "getTetheringCapabilities";
 
 bool GetServicePathFromGuid(const std::string& guid,
                             std::string* service_path) {
@@ -512,6 +515,53 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
 };
 
+class HotspotConfigMessageHandler : public content::WebUIMessageHandler {
+ public:
+  HotspotConfigMessageHandler() = default;
+  ~HotspotConfigMessageHandler() override = default;
+
+  // WebUIMessageHandler implementation.
+  void RegisterMessages() override {
+    web_ui()->RegisterMessageCallback(
+        kGetTetheringCapabilities,
+        base::BindRepeating(
+            &HotspotConfigMessageHandler::GetTetheringCapabilities,
+            base::Unretained(this)));
+  }
+
+ private:
+  void Respond(const std::string& callback_id, const base::Value& response) {
+    AllowJavascript();
+    ResolveJavascriptCallback(base::Value(callback_id), response);
+  }
+
+  void GetTetheringCapabilities(const base::Value::List& arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+
+    ShillManagerClient::Get()->GetProperties(base::BindOnce(
+        &HotspotConfigMessageHandler::OnGetShillTetheringCapabilities,
+        weak_ptr_factory_.GetWeakPtr(), callback_id));
+  }
+
+  void OnGetShillTetheringCapabilities(const std::string& callback_id,
+                                       absl::optional<base::Value> properties) {
+    if (!properties) {
+      NET_LOG(ERROR) << "Error get tethering capabilities.";
+      Respond(callback_id, base::Value("Error get tethering capabilities."));
+      return;
+    }
+
+    const base::Value* tethering_capabilities =
+        properties->FindDictKey(shill::kTetheringCapabilitiesProperty);
+    Respond(callback_id, tethering_capabilities
+                             ? tethering_capabilities->Clone()
+                             : base::Value(base::Value::Type::DICTIONARY));
+  }
+
+  base::WeakPtrFactory<HotspotConfigMessageHandler> weak_ptr_factory_{this};
+};
+
 }  // namespace network_ui
 
 // static
@@ -533,6 +583,9 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
   localized_strings.Set(
       "networkSelectTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_SELECT));
+  localized_strings.Set(
+      "networkHotspotTab",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_HOTSPOT));
 
   localized_strings.Set("autoRefreshText",
                         l10n_util::GetStringUTF16(IDS_NETWORK_UI_AUTO_REFRESH));
@@ -670,6 +723,15 @@ base::Value::Dict NetworkUI::GetLocalizedStrings() {
   localized_strings.Set(
       "NetworkDiagnosticsSendFeedback",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK));
+
+  // Network Hotspot
+  localized_strings.Set(
+      "tetheringCapabilitiesLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_TETHERING_CAPABILITIES_LABEL));
+  localized_strings.Set(
+      "refreshTetheringCapabilitiesButtonText",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_REFRESH_TETHERING_CAPABILITIES_BUTTON_TEXT));
   return localized_strings;
 }
 
@@ -681,6 +743,8 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(std::make_unique<NetworkLogsMessageHandler>());
   web_ui->AddMessageHandler(
       std::make_unique<NetworkDiagnosticsMessageHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<network_ui::HotspotConfigMessageHandler>());
 
   // Enable extension API calls in the WebUI.
   extensions::TabHelper::CreateForWebContents(web_ui->GetWebContents());
@@ -694,6 +758,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
 
   html->AddLocalizedStrings(localized_strings);
   html->AddBoolean("isGuestModeActive", IsGuestModeActive());
+  html->AddBoolean("isHotspotEnabled", ash::features::IsHotspotEnabled());
   network_health::AddResources(html);
   network_diagnostics::AddResources(html);
   cellular_setup::AddLocalizedStrings(html);

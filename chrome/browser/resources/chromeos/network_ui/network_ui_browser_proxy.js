@@ -77,6 +77,11 @@ export class NetworkUIBrowserProxy {
   disableActiveESimProfile() {}
 
   resetEuicc() {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringCapabilities() {}
 }
 
 /**
@@ -170,6 +175,13 @@ export class NetworkUIBrowserProxyImpl {
   /** @override */
   resetEuicc() {
     chrome.send('resetEuicc');
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringCapabilities() {
+    return sendWithPromise('getTetheringCapabilities');
   }
 }
 

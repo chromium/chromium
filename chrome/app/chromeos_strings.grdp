@@ -3186,6 +3186,9 @@
   <message name="IDS_NETWORK_UI_TAB_NETWORK_SELECT" desc="Network Select tab name">
     Network Select
   </message>
+  <message name="IDS_NETWORK_UI_TAB_NETWORK_HOTSPOT" desc="Hotspot tab name">
+    Hotspot
+  </message>
   <message name="IDS_NETWORK_UI_AUTO_REFRESH" desc="Instructions for how to auto-refresh the page">
     Add a query param in URL to auto-refresh the page: chrome://network/?refresh=&lt;sec&gt;
   </message>
@@ -3308,6 +3311,12 @@
   </message>
   <message name="IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_UNKNOWN" desc="Text displayed when the Shill debugging mode is unknown.">
     Unknown
+  </message>
+  <message name="IDS_NETWORK_UI_TETHERING_CAPABILITIES_LABEL" desc="Title for the section for displaying and refreshing tethering capabilities.">
+    Tethering Capabilities:
+  </message>
+  <message name="IDS_NETWORK_UI_REFRESH_TETHERING_CAPABILITIES_BUTTON_TEXT" desc="Text for button which, when pressed, refreshing the tethering capabilities.">
+    Refresh Tethering Capabilities
   </message>
 
   <message name="IDS_DEVICE_LOG_LINK_TEXT" desc="Message preceeding link to chrome://device-log">
