@@ -58,8 +58,7 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
   protocol::Response enable() override;
   protocol::Response disable() override;
   void requestDatabaseNames(
-      protocol::Maybe<String> security_origin,
-      protocol::Maybe<String> storage_key,
+      const String& security_origin,
       std::unique_ptr<RequestDatabaseNamesCallback>) override;
   void requestDatabase(protocol::Maybe<String> security_origin,
                        protocol::Maybe<String> storage_key,

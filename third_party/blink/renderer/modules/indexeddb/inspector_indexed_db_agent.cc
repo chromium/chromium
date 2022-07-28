@@ -771,15 +771,10 @@ absl::variant<LocalFrame*, Response> ResolveFrame(
 }  // namespace
 
 void InspectorIndexedDBAgent::requestDatabaseNames(
-    protocol::Maybe<String> security_origin,
-    protocol::Maybe<String> storage_key,
+    const String& security_origin,
     std::unique_ptr<RequestDatabaseNamesCallback> request_callback) {
-  absl::variant<LocalFrame*, Response> frame_or_response = ResolveFrame(
-      std::move(security_origin), std::move(storage_key), inspected_frames_);
-  if (absl::holds_alternative<Response>(frame_or_response)) {
-    request_callback->sendFailure(absl::get<Response>(frame_or_response));
-  }
-  LocalFrame* frame = absl::get<LocalFrame*>(frame_or_response);
+  LocalFrame* frame =
+      inspected_frames_->FrameWithSecurityOrigin(security_origin);
   if (!frame) {
     request_callback->sendFailure(Response::ServerError(kNoDocumentError));
     return;
