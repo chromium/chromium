@@ -47,6 +47,8 @@ class CONTENT_EXPORT HostZoomMapImpl : public HostZoomMap {
                                     double level) override;
   bool UsesTemporaryZoomLevel(int render_process_id,
                               int render_view_id) override;
+  void SetNoLongerUsesTemporaryZoomLevel(int render_process_id,
+                                         int render_view_id);
   void SetTemporaryZoomLevel(int render_process_id,
                              int render_view_id,
                              double level) override;

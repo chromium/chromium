@@ -6,12 +6,29 @@ package org.chromium.content_public.browser;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.MathUtils;
 import org.chromium.content.browser.HostZoomMapImpl;
 
 /**
  * Implementations of various static methods related to page zoom.
  */
 public class HostZoomMap {
+    // Preset zoom factors that the +/- buttons can "snap" the zoom level to if user chooses to
+    // not use the slider. These zoom factors correspond to the zoom levels that are used on
+    // desktop, i.e. {0.25, 0.33, 0.50, 0.67, ... 3.00, 4.00, 5.00}.
+    public static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-7.60, -6.08, -3.80, -2.20,
+            -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03, 7.60, 8.83};
+
+    // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
+    public static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;
+
+    // The current |fontScale| value from Android Configuration. Represents user font size choice.
+    // The system font scale acts like the "zoom level" of this component. For the default
+    // setting, |fontScale|=1.0; for {Small, Large, XL} the values are {0.85, 1.15, 1.30}.
+    // This will be transparently taken into account. If a user has the system font set to
+    // XL, then Page Zoom will behave as if it is at 130% while displaying 100% to the user.
+    public static float SYSTEM_FONT_SCALE = 1.0f;
+
     // Private constructor to prevent unwanted construction.
     private HostZoomMap() {}
 
@@ -22,7 +39,16 @@ public class HostZoomMap {
      */
     public static void setZoomLevel(@NonNull WebContents webContents, double newZoomLevel) {
         assert !webContents.isDestroyed();
-        HostZoomMapImpl.setZoomLevel(webContents, newZoomLevel);
+
+        // Just before sending the zoom level to the backend, we will take into account the system
+        // level setting. We only do this here and not when applying the default values chosen in
+        // the settings flow so that if the user changes their OS-level setting, the Chrome setting
+        // will continue to display the same value, but adjust accordingly. For example, if the
+        // user chooses 150% zoom in settings with font set to XL, then really that choice is
+        // 195%. If the user then switches to default |fontScale|, we would still want the value
+        // to be 150% shown to the user, and not the 195%.
+        HostZoomMapImpl.setZoomLevel(
+                webContents, newZoomLevel, adjustZoomLevel(newZoomLevel, SYSTEM_FONT_SCALE));
     }
 
     /**
@@ -32,7 +58,12 @@ public class HostZoomMap {
      */
     public static double getZoomLevel(@NonNull WebContents webContents) {
         assert !webContents.isDestroyed();
-        return HostZoomMapImpl.getZoomLevel(webContents);
+
+        // Just before returning a zoom level from the backend, we must again take into account the
+        // system level setting. Here we need to do the reverse operation of the above, effectively
+        // divide rather than multiply, so we will pass the reciprocal of |SYSTEM_FONT_SCALE|.
+        return adjustZoomLevel(
+                HostZoomMapImpl.getZoomLevel(webContents), (float) 1 / SYSTEM_FONT_SCALE);
     }
 
     /**
@@ -52,5 +83,33 @@ public class HostZoomMap {
      */
     public static double getDefaultZoomLevel(BrowserContextHandle context) {
         return HostZoomMapImpl.getDefaultZoomLevel(context);
+    }
+
+    /**
+     * Adjust a given zoom level to account for the OS-level |fontScale| configuration.
+     *
+     * @param zoomLevel    The zoom level to adjust.
+     * @param systemFontScale  User selected font scale value.
+     * @return double      The adjusted zoom level.
+     */
+    public static double adjustZoomLevel(double zoomLevel, float systemFontScale) {
+        // No calculation to do if the user has set OS-level |fontScale| to 1 (default).
+        if (MathUtils.areFloatsEqual(systemFontScale, 1f)) return zoomLevel;
+
+        // Convert the zoom factor to a level, e.g. factor = 0.0 should translate to 1.0 (100%).
+        // Multiply the level by the OS-level |fontScale|. For example, if the user has chosen a
+        // Chrome-level zoom of 150%, and a OS-level setting of XL (130%), then we want to continue
+        // to display 150% to the user but actually render 1.5 * 1.3 = 1.95 (195%) zoom.
+        // We must apply this at the zoom level (not factor) to compensate for logarithmic scale.
+        double adjustedLevel = systemFontScale * Math.pow(TEXT_SIZE_MULTIPLIER_RATIO, zoomLevel);
+
+        // We do not pass levels to the backend, but factors. So convert back and round.
+        double adjustedFactor = Math.log10(adjustedLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
+
+        // At the extremes, this can go over the min/max, so clamp to that range.
+        adjustedFactor = MathUtils.clamp((float) adjustedFactor, (float) AVAILABLE_ZOOM_FACTORS[0],
+                (float) AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
+
+        return MathUtils.roundTwoDecimalPlaces(adjustedFactor);
     }
 }

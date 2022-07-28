@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -126,12 +128,11 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         double newZoomFactor = PageZoomUtils.convertSeekBarValueToZoomFactor(progress);
 
         // If the new zoom factor is greater than the minimum zoom factor, enable decrease button.
-        mDecreaseButton.setEnabled(newZoomFactor > PageZoomUtils.AVAILABLE_ZOOM_FACTORS[0]);
+        mDecreaseButton.setEnabled(newZoomFactor > AVAILABLE_ZOOM_FACTORS[0]);
 
         // If the new zoom factor is less than the maximum zoom factor, enable increase button.
-        mIncreaseButton.setEnabled(newZoomFactor
-                < PageZoomUtils
-                          .AVAILABLE_ZOOM_FACTORS[PageZoomUtils.AVAILABLE_ZOOM_FACTORS.length - 1]);
+        mIncreaseButton.setEnabled(
+                newZoomFactor < AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
     }
 
     @Override
@@ -157,8 +158,8 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
         int index = PageZoomUtils.getNextIndex(true, currentZoomFactor);
 
         if (index >= 0) {
-            int seekBarValue = PageZoomUtils.convertZoomFactorToSeekBarValue(
-                    PageZoomUtils.AVAILABLE_ZOOM_FACTORS[index]);
+            int seekBarValue =
+                    PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]);
             mSeekBar.setProgress(seekBarValue);
             callChangeListener(seekBarValue);
         }
@@ -170,9 +171,9 @@ public class PageZoomPreference extends Preference implements SeekBar.OnSeekBarC
                 PageZoomUtils.convertSeekBarValueToZoomFactor(mSeekBar.getProgress());
         int index = PageZoomUtils.getNextIndex(false, currentZoomFactor);
 
-        if (index <= PageZoomUtils.AVAILABLE_ZOOM_FACTORS.length - 1) {
-            int seekBarValue = PageZoomUtils.convertZoomFactorToSeekBarValue(
-                    PageZoomUtils.AVAILABLE_ZOOM_FACTORS[index]);
+        if (index <= AVAILABLE_ZOOM_FACTORS.length - 1) {
+            int seekBarValue =
+                    PageZoomUtils.convertZoomFactorToSeekBarValue(AVAILABLE_ZOOM_FACTORS[index]);
             mSeekBar.setProgress(seekBarValue);
             callChangeListener(seekBarValue);
         }

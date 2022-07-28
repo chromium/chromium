@@ -4,7 +4,11 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
+import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
+import static org.chromium.content_public.browser.HostZoomMap.TEXT_SIZE_MULTIPLIER_RATIO;
+
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
@@ -38,12 +42,6 @@ import java.util.Arrays;
  *
  */
 public class PageZoomUtils {
-    // Preset zoom factors that the +/- buttons can "snap" the zoom level to if user chooses to
-    // not use the slider. These zoom factors correspond to the zoom levels that are used on
-    // desktop, i.e. {0.25, 0.33, 0.50, 0.67, ... 3.00, 4.00, 5.00}.
-    public static final double[] AVAILABLE_ZOOM_FACTORS = new double[] {-7.60, -6.08, -3.80, -2.20,
-            -1.58, -1.22, -0.58, 0.00, 0.52, 1.22, 1.56, 2.22, 3.07, 3.80, 5.03, 6.03, 7.60, 8.83};
-
     // The default value for zoom that user can change in the accessibility settings page.
     public static final int PAGE_ZOOM_DEFAULT_SEEK_VALUE = convertZoomFactorToSeekBarValue(0.0);
 
@@ -53,9 +51,6 @@ public class PageZoomUtils {
     // The minimum and maximum zoom values as a percentage (e.g. 25% = 0.25, 500% = 5.0)
     private static final float PAGE_ZOOM_MINIMUM_ZOOM_LEVEL = 0.25f;
     private static final float PAGE_ZOOM_MAXIMUM_ZOOM_LEVEL = 5.00f;
-
-    // The value of the base for zoom factor, should match |kTextSizeMultiplierRatio|.
-    private static final float TEXT_SIZE_MULTIPLIER_RATIO = 1.2f;
 
     /**
      * Returns whether the Accessibility Settings page should include the 'Zoom' UI. The page
@@ -87,7 +82,7 @@ public class PageZoomUtils {
         // 10, we can rewrite the above as: log10(chosenZoomLevel) / log10(1.2);
         double result = Math.log10(chosenZoomLevel) / Math.log10(TEXT_SIZE_MULTIPLIER_RATIO);
 
-        return roundTwoDecimalPlaces(result);
+        return MathUtils.roundTwoDecimalPlaces(result);
     }
 
     /**
@@ -177,16 +172,13 @@ public class PageZoomUtils {
      */
     public static int getNextIndex(boolean decrease, double currentZoomFactor) {
         // Assert valid current zoom factor
-        if (decrease && currentZoomFactor <= PageZoomUtils.AVAILABLE_ZOOM_FACTORS[0]) {
-            throw new IllegalArgumentException("currentZoomFactor should be greater than "
-                    + PageZoomUtils.AVAILABLE_ZOOM_FACTORS[0]);
+        if (decrease && currentZoomFactor <= AVAILABLE_ZOOM_FACTORS[0]) {
+            throw new IllegalArgumentException(
+                    "currentZoomFactor should be greater than " + AVAILABLE_ZOOM_FACTORS[0]);
         } else if (!decrease
-                && currentZoomFactor >= PageZoomUtils.AVAILABLE_ZOOM_FACTORS
-                                                [PageZoomUtils.AVAILABLE_ZOOM_FACTORS.length - 1]) {
+                && currentZoomFactor >= AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]) {
             throw new IllegalArgumentException("currentZoomFactor should be less than "
-                    + PageZoomUtils
-                              .AVAILABLE_ZOOM_FACTORS[PageZoomUtils.AVAILABLE_ZOOM_FACTORS.length
-                                      - 1]);
+                    + AVAILABLE_ZOOM_FACTORS[AVAILABLE_ZOOM_FACTORS.length - 1]);
         }
 
         // BinarySearch will return the index of the first value equal to the given value.
@@ -213,18 +205,6 @@ public class PageZoomUtils {
         }
 
         return index;
-    }
-
-    /**
-     * Round the given value to two decimal places.
-     * The zoom factors are stored with two decimal places so this is used for consistent and
-     * accurate comparisons.
-     *
-     * @param value double      The value to round
-     * @return double       The value rounded to two decimal places
-     */
-    public static double roundTwoDecimalPlaces(double value) {
-        return (double) Math.round(value * 100) / 100;
     }
 
     // Methods that interact with Prefs.

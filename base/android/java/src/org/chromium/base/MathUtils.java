@@ -198,4 +198,14 @@ public class MathUtils {
             float value, float fromStart, float fromStop, float toStart, float toStop) {
         return toStart + (toStop - toStart) * ((value - fromStart) / (fromStop - fromStart));
     }
+
+    /**
+     * Round the given value to two decimal places.
+     *
+     * @param value double The value to round.
+     * @return double The value rounded to two decimal places.
+     */
+    public static double roundTwoDecimalPlaces(double value) {
+        return (double) Math.round(value * 100) / 100;
+    }
 }

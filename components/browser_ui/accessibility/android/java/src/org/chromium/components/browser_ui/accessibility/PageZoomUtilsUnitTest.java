@@ -38,9 +38,6 @@ public class PageZoomUtilsUnitTest {
     private static final String GET_NEXT_INDEX_INCREASE_FAILURE =
             "Failure to get next index in increasing direction.";
 
-    private static final String ROUND_FAILURE =
-            "Failure to correctly round value to two decimal places.";
-
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -112,13 +109,5 @@ public class PageZoomUtilsUnitTest {
     @Test(expected = IllegalArgumentException.class)
     public void testGetNextIndexDecreaseMin() {
         PageZoomUtils.getNextIndex(true, -7.60);
-    }
-
-    @Test
-    public void testRoundTwoDecimalPlaces() {
-        Assert.assertEquals(
-                ROUND_FAILURE, 2.12, PageZoomUtils.roundTwoDecimalPlaces(2.123), 0.0001);
-        Assert.assertEquals(
-                ROUND_FAILURE, 2.13, PageZoomUtils.roundTwoDecimalPlaces(2.127), 0.0001);
     }
 }

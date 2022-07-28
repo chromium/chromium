@@ -4,9 +4,13 @@
 
 package org.chromium.content.browser;
 
+import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
+
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -22,8 +26,9 @@ public class HostZoomMapImpl {
      * @param webContents   WebContents to update
      * @param newZoomLevel  double - new zoom level
      */
-    public static void setZoomLevel(WebContents webContents, double newZoomLevel) {
-        HostZoomMapImplJni.get().setZoomLevel(webContents, newZoomLevel);
+    public static void setZoomLevel(
+            WebContents webContents, double newZoomLevel, double adjustedZoomLevel) {
+        HostZoomMapImplJni.get().setZoomLevel(webContents, newZoomLevel, adjustedZoomLevel);
     }
 
     /**
@@ -54,9 +59,14 @@ public class HostZoomMapImpl {
         return HostZoomMapImplJni.get().getDefaultZoomLevel(context);
     }
 
+    @CalledByNative
+    public static double getAdjustedZoomLevel(double zoomLevel) {
+        return HostZoomMap.adjustZoomLevel(zoomLevel, SYSTEM_FONT_SCALE);
+    }
+
     @NativeMethods
     public interface Natives {
-        void setZoomLevel(WebContents webContents, double newZoomLevel);
+        void setZoomLevel(WebContents webContents, double newZoomLevel, double adjustedZoomLevel);
         double getZoomLevel(WebContents webContents);
         void setDefaultZoomLevel(BrowserContextHandle context, double newDefaultZoomLevel);
         double getDefaultZoomLevel(BrowserContextHandle context);

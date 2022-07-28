@@ -4,9 +4,10 @@
 
 package org.chromium.components.browser_ui.accessibility;
 
-import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.AVAILABLE_ZOOM_FACTORS;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE;
 import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.convertZoomFactorToSeekBarValue;
+import static org.chromium.content_public.browser.HostZoomMap.AVAILABLE_ZOOM_FACTORS;
+import static org.chromium.content_public.browser.HostZoomMap.SYSTEM_FONT_SCALE;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
@@ -33,6 +34,11 @@ public class PageZoomMediator {
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
         mModel.set(PageZoomProperties.SEEKBAR_CHANGE_CALLBACK, this::handleSeekBarValueChanged);
         mModel.set(PageZoomProperties.MAXIMUM_SEEK_VALUE, PAGE_ZOOM_MAXIMUM_SEEKBAR_VALUE);
+
+        // Update the stored system font scale based on OS-level configuration. |this| will be
+        // re-constructed after configuration changes, so this will be up-to-date for this session.
+        SYSTEM_FONT_SCALE =
+                ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale;
     }
 
     /**
@@ -57,14 +63,12 @@ public class PageZoomMediator {
         }
 
         // The default (float) |fontScale| is 1, the default page zoom is 1.
-        boolean defaultSystemFontSize = MathUtils.areFloatsEqual(
-                ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale,
-                1f);
+        boolean isUsingDefaultSystemFontScale = MathUtils.areFloatsEqual(SYSTEM_FONT_SCALE, 1f);
 
         // TODO(mschillaci): Replace with a delegate call, cannot depend directly on Profile.
-        boolean defaultDefaultPageZoom = true;
+        boolean isUsingDefaultPageZoom = true;
 
-        return !defaultSystemFontSize || !defaultDefaultPageZoom;
+        return !isUsingDefaultSystemFontScale || !isUsingDefaultPageZoom;
     }
 
     /**
@@ -140,6 +144,6 @@ public class PageZoomMediator {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     double getZoomLevel(@NonNull WebContents webContents) {
-        return PageZoomUtils.roundTwoDecimalPlaces(HostZoomMap.getZoomLevel(webContents));
+        return HostZoomMap.getZoomLevel(webContents);
     }
 }
