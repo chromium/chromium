@@ -277,9 +277,15 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   // recursion, the layerization of the subgroup may be tested for merge &
   // overlap with other chunks in the parent group, if grouping requirement
   // can be satisfied (and the effect node has no direct reason).
+  // |directly_composited_transforms| is used internally to optimize the first
+  // time a paint property tree node is encountered that has direct compositing
+  // reasons. This case will always start a new layer and can skip merge tests.
+  // New values are added when transform nodes are first encountered.
   void LayerizeGroup(const PaintChunkSubset&,
                      const EffectPaintPropertyNode&,
                      PaintChunkIterator& chunk_cursor,
+                     HashSet<const TransformPaintPropertyNode*>&
+                         directly_composited_transforms,
                      bool force_draws_content);
   bool DecompositeEffect(const EffectPaintPropertyNode& parent_effect,
                          wtf_size_t first_layer_in_parent_group_index,

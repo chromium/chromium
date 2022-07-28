@@ -300,6 +300,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return GetTransformCache().nearest_scroll_translation();
   }
 
+  // Returns the nearest ancestor node (including |this|) that has direct
+  // compositing reasons.
+  const TransformPaintPropertyNode* NearestDirectlyCompositedAncestor() const {
+    return GetTransformCache().nearest_directly_composited_ancestor();
+  }
+
   // If true, content with this transform node (or its descendant) appears in
   // the plane of its parent. This is implemented by flattening the total
   // accumulated transform from its ancestors.

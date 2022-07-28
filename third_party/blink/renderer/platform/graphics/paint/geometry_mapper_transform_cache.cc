@@ -50,6 +50,11 @@ void GeometryMapperTransformCache::Update(
   nearest_scroll_translation_ =
       node.ScrollNode() ? &node : parent.nearest_scroll_translation_;
 
+  nearest_directly_composited_ancestor_ =
+      node.HasDirectCompositingReasons()
+          ? &node
+          : parent.nearest_directly_composited_ancestor_;
+
   // screen_transform_ will be updated only when needed.
   screen_transform_ = nullptr;
 

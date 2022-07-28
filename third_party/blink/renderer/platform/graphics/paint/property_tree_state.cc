@@ -10,35 +10,15 @@ namespace blink {
 
 namespace {
 
-bool HasCompositedTransformToAncestor(
-    const TransformPaintPropertyNode& node,
-    const TransformPaintPropertyNode& ancestor) {
-  for (const auto* n = &node; n != &ancestor; n = n->UnaliasedParent()) {
-    if (n->HasDirectCompositingReasons())
-      return true;
-  }
-  return false;
-}
-
-// Returns the lowest common ancestor if there is no composited transform
-// between the two transforms.
-const TransformPaintPropertyNode* NonCompositedLowestCommonAncestor(
-    const TransformPaintPropertyNode& transform1,
-    const TransformPaintPropertyNode& transform2) {
-  const auto& lca = transform1.LowestCommonAncestor(transform2).Unalias();
-  if (HasCompositedTransformToAncestor(transform1, lca) ||
-      HasCompositedTransformToAncestor(transform2, lca))
-    return nullptr;
-  return &lca;
-}
-
 bool ClipChainHasCompositedTransformTo(
     const ClipPaintPropertyNode& node,
     const ClipPaintPropertyNode& ancestor,
     const TransformPaintPropertyNode& transform) {
+  const auto* composited_ancestor =
+      transform.NearestDirectlyCompositedAncestor();
   for (const auto* n = &node; n != &ancestor; n = n->UnaliasedParent()) {
-    if (!NonCompositedLowestCommonAncestor(n->LocalTransformSpace().Unalias(),
-                                           transform))
+    if (composited_ancestor !=
+        n->LocalTransformSpace().Unalias().NearestDirectlyCompositedAncestor())
       return true;
   }
   return false;
@@ -80,12 +60,15 @@ absl::optional<PropertyTreeState> PropertyTreeState::CanUpcastWith(
   if (&Transform() == &guest.Transform()) {
     upcast_transform = &Transform();
   } else {
+    if (Transform().NearestDirectlyCompositedAncestor() !=
+        guest.Transform().NearestDirectlyCompositedAncestor())
+      return absl::nullopt;
+
     if (Transform().IsBackfaceHidden() != guest.Transform().IsBackfaceHidden())
       return absl::nullopt;
+
     upcast_transform =
-        NonCompositedLowestCommonAncestor(Transform(), guest.Transform());
-    if (!upcast_transform)
-      return absl::nullopt;
+        &Transform().LowestCommonAncestor(guest.Transform()).Unalias();
   }
 
   const auto& clip_lca = Clip().LowestCommonAncestor(guest.Clip()).Unalias();

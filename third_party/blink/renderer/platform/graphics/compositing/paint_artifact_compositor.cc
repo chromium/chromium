@@ -378,6 +378,7 @@ void PaintArtifactCompositor::LayerizeGroup(
     const PaintChunkSubset& chunks,
     const EffectPaintPropertyNode& current_group,
     PaintChunkIterator& chunk_cursor,
+    HashSet<const TransformPaintPropertyNode*>& directly_composited_transforms,
     bool force_draws_content) {
   wtf_size_t first_layer_in_current_group = pending_layers_.size();
   // The worst case time complexity of the algorithm is O(pqd), where
@@ -423,6 +424,7 @@ void PaintArtifactCompositor::LayerizeGroup(
       //         a recursion call.
       wtf_size_t first_layer_in_subgroup = pending_layers_.size();
       LayerizeGroup(chunks, *subgroup, chunk_cursor,
+                    directly_composited_transforms,
                     force_draws_content || subgroup->DrawsContent());
       // The above LayerizeGroup generated new layers in pending_layers_
       // [first_layer_in_subgroup .. pending_layers.size() - 1]. If it
@@ -444,6 +446,20 @@ void PaintArtifactCompositor::LayerizeGroup(
     DCHECK_EQ(&current_group, &new_layer.GetPropertyTreeState().Effect());
     if (force_draws_content)
       new_layer.ForceDrawsContent();
+
+    // If the new layer is the first using the nearest directly composited
+    // ancestor, it can't be merged into any previous layers, so skip the merge
+    // and overlap loop below.
+    if (const auto* composited_transform =
+            new_layer.GetPropertyTreeState()
+                .Transform()
+                .NearestDirectlyCompositedAncestor()) {
+      if (directly_composited_transforms.insert(composited_transform)
+              .is_new_entry) {
+        continue;
+      }
+    }
+
     // This iterates pending_layers_[first_layer_in_current_group:-1] in
     // reverse.
     for (wtf_size_t candidate_index = pending_layers_.size() - 1;
@@ -465,8 +481,9 @@ void PaintArtifactCompositor::CollectPendingLayers(
     scoped_refptr<const PaintArtifact> artifact) {
   PaintChunkSubset subset(artifact);
   auto cursor = subset.begin();
+  HashSet<const TransformPaintPropertyNode*> directly_composited_transforms;
   LayerizeGroup(subset, EffectPaintPropertyNode::Root(), cursor,
-                /*force_draws_content*/ false);
+                directly_composited_transforms, /*force_draws_content*/ false);
   DCHECK(cursor == subset.end());
   pending_layers_.ShrinkToReasonableCapacity();
 }

@@ -123,6 +123,11 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     return *nearest_scroll_translation_;
   }
 
+  const TransformPaintPropertyNode* nearest_directly_composited_ancestor()
+      const {
+    return nearest_directly_composited_ancestor_;
+  }
+
  private:
   friend class GeometryMapperTransformCacheTest;
 
@@ -220,6 +225,8 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   bool has_sticky_ = false;
 
   const TransformPaintPropertyNode* nearest_scroll_translation_ = nullptr;
+  const TransformPaintPropertyNode* nearest_directly_composited_ancestor_ =
+      nullptr;
 
   unsigned cache_generation_ = s_global_generation - 1;
 };
