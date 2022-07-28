@@ -60,6 +60,11 @@ class CORE_EXPORT SmoothScrollSequencer final
   // incoming scroll. It may also abort the current sequenced scroll.
   bool FilterNewScrollOrAbortCurrent(mojom::blink::ScrollType incoming_type);
 
+  // Returns the size of the scroll sequence queue.
+  // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
+  // https://crbug.com/1339003.
+  wtf_size_t GetCount() const;
+
   void DidDisposeScrollableArea(const ScrollableArea&);
 
   void Trace(Visitor*) const;

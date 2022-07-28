@@ -697,7 +697,8 @@ void RemoteFrame::ScrollRectToVisible(
       PhysicalRect::EnclosingRect(rect_to_scroll), owner_object->View());
 
   scroll_into_view_util::ScrollRectToVisible(*owner_object, absolute_rect,
-                                             std::move(params));
+                                             std::move(params),
+                                             /*from_remote_frame=*/true);
 }
 
 void RemoteFrame::IntrinsicSizingInfoOfChildChanged(

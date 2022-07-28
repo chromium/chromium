@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -117,7 +118,8 @@ absl::optional<LayoutBox*> GetScrollParent(
 absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
     const LayoutBox& box,
     const PhysicalRect& absolute_rect,
-    mojom::blink::ScrollIntoViewParamsPtr& params) {
+    mojom::blink::ScrollIntoViewParamsPtr& params,
+    bool from_remote_frame) {
   DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
          params->type == mojom::blink::ScrollType::kUser);
 
@@ -126,6 +128,11 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
   const LayoutBox* current_box = &box;
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
+
+  // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
+  // https://crbug.com/1339003.
+  const SecurityOrigin* starting_frame_origin =
+      box.GetFrame()->GetSecurityContext()->GetSecurityOrigin();
 
   while (current_box) {
     if (absolute_rect_to_scroll.Width() <= 0)
@@ -157,8 +164,40 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
     }
 
     if (area_to_scroll) {
+      ScrollOffset scroll_before = area_to_scroll->GetScrollOffset();
+      DCHECK(area_to_scroll->GetSmoothScrollSequencer());
+      wtf_size_t num_scroll_sequences =
+          area_to_scroll->GetSmoothScrollSequencer()->GetCount();
+
       absolute_rect_to_scroll =
           area_to_scroll->ScrollIntoView(absolute_rect_to_scroll, params);
+
+      // TODO(bokan): Temporary, to track cross-origin scroll-into-view
+      // prevalence. https://crbug.com/1339003.
+      // If this is for a scroll sequence, GetScrollOffset won't change until
+      // all the animations in the sequence are run which happens
+      // asynchronously after this method returns. Thus, for scroll sequences,
+      // check instead if an entry was added to the sequence which occurs only
+      // if the scroll offset is changed as a result of ScrollIntoView.
+      bool scroll_changed =
+          params->is_for_scroll_sequence
+              ? area_to_scroll->GetSmoothScrollSequencer()->GetCount() !=
+                    num_scroll_sequences
+              : area_to_scroll->GetScrollOffset() != scroll_before;
+      if (scroll_changed && !params->for_focused_editable &&
+          params->type == mojom::blink::ScrollType::kProgrammatic) {
+        const SecurityOrigin* current_frame_origin =
+            current_box->GetFrame()->GetSecurityContext()->GetSecurityOrigin();
+        if (!current_frame_origin->CanAccess(starting_frame_origin) ||
+            from_remote_frame) {
+          // ScrollIntoView caused a visible scroll in an origin that can't be
+          // accessed from where the ScrollIntoView was initiated.
+          DCHECK(params->cross_origin_boundaries);
+          UseCounter::Count(
+              current_box->GetFrame()->LocalFrameRoot().GetDocument(),
+              WebFeature::kCrossOriginScrollIntoView);
+        }
+      }
     }
 
     bool is_fixed_to_frame =
@@ -226,7 +265,8 @@ namespace scroll_into_view_util {
 
 void ScrollRectToVisible(const LayoutObject& layout_object,
                          const PhysicalRect& absolute_rect,
-                         mojom::blink::ScrollIntoViewParamsPtr params) {
+                         mojom::blink::ScrollIntoViewParamsPtr params,
+                         bool from_remote_frame) {
   LayoutBox* enclosing_box = layout_object.EnclosingBox();
   if (!enclosing_box)
     return;
@@ -239,7 +279,8 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
       params->type == mojom::blink::ScrollType::kProgrammatic;
 
   absl::optional<PhysicalRect> updated_absolute_rect =
-      PerformBubblingScrollIntoView(*enclosing_box, absolute_rect, params);
+      PerformBubblingScrollIntoView(*enclosing_box, absolute_rect, params,
+                                    from_remote_frame);
 
   frame->GetSmoothScrollSequencer().RunQueuedAnimations();
 

@@ -24,9 +24,12 @@ namespace scroll_into_view_util {
 // LayoutObject, and scrolls the LayoutObject and all its containers such that
 // the child content of the LayoutObject at that rect is visible in the
 // viewport.
+// TODO(bokan): `from_remote_frame` is temporary, to track cross-origin
+// scroll-into-view prevalence. https://crbug.com/1339003.
 void CORE_EXPORT ScrollRectToVisible(const LayoutObject&,
                                      const PhysicalRect&,
-                                     mojom::blink::ScrollIntoViewParamsPtr);
+                                     mojom::blink::ScrollIntoViewParamsPtr,
+                                     bool from_remote_frame = false);
 
 // ScrollFocusedEditableIntoView uses the caret rect for ScrollIntoView but
 // stores enough information in `params` so that the editable element's bounds

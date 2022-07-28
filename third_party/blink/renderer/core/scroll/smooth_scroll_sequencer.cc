@@ -66,6 +66,10 @@ bool SmoothScrollSequencer::FilterNewScrollOrAbortCurrent(
   return false;
 }
 
+wtf_size_t SmoothScrollSequencer::GetCount() const {
+  return queue_.size();
+}
+
 void SmoothScrollSequencer::DidDisposeScrollableArea(
     const ScrollableArea& area) {
   for (Member<SequencedScroll>& sequenced_scroll : queue_) {

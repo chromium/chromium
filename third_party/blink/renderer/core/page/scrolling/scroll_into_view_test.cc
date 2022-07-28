@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -775,6 +776,97 @@ TEST_F(ScrollIntoViewTest, LongDistanceSmoothScrollFinishedInThreeSeconds) {
   // Finish scrolling the container
   Compositor().BeginFrame(0.5);
   ASSERT_EQ(Window().scrollY(), target->OffsetTop());
+}
+
+TEST_F(ScrollIntoViewTest, OriginCrossingUseCounter) {
+  v8::HandleScope HandleScope(v8::Isolate::GetCurrent());
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest main("https://example.com/test.html", "text/html");
+  SimRequest local_child("https://example.com/child.html", "text/html");
+  SimRequest xorigin_child("https://xorigin.com/child.html", "text/html");
+  LoadURL("https://example.com/test.html");
+
+  main.Complete(
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body {
+            width: 2000px;
+            height: 2000px;
+          }
+
+          iframe {
+            position: absolute;
+            left: 1000px;
+            top: 1200px;
+            width: 200px;
+            height: 200px;
+          }
+        </style>
+        <iframe id="localChildFrame" src="child.html"></iframe>
+        <iframe id="xoriginChildFrame" src="https://xorigin.com/child.html"></iframe>
+      )HTML");
+
+  String child_html =
+      R"HTML(
+        <!DOCTYPE html>
+        <style>
+          body {
+            width: 1000px;
+            height: 1000px;
+          }
+
+          div {
+            position: absolute;
+            left: 300px;
+            top: 400px;
+            background-color: red;
+          }
+        </style>
+        <div id="target">Target</div>
+      )HTML";
+
+  local_child.Complete(child_html);
+  xorigin_child.Complete(child_html);
+
+  Element* local_child_frame = GetDocument().getElementById("localChildFrame");
+  Element* xorigin_child_frame =
+      GetDocument().getElementById("xoriginChildFrame");
+  Document* local_child_document =
+      To<HTMLIFrameElement>(local_child_frame)->contentDocument();
+  Document* xorigin_child_document =
+      To<HTMLIFrameElement>(xorigin_child_frame)->contentDocument();
+
+  // Same origin frames shouldn't count the scroll into view.
+  {
+    ASSERT_EQ(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
+              ScrollOffset(0, 0));
+
+    Element* target = local_child_document->getElementById("target");
+    target->scrollIntoView();
+
+    ASSERT_NE(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
+              ScrollOffset(0, 0));
+    EXPECT_FALSE(
+        GetDocument().IsUseCounted(WebFeature::kCrossOriginScrollIntoView));
+  }
+
+  GetDocument().View()->GetScrollableArea()->SetScrollOffset(
+      ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
+
+  // Cross origin frames should record the scroll into view use count.
+  {
+    ASSERT_EQ(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
+              ScrollOffset(0, 0));
+
+    Element* target = xorigin_child_document->getElementById("target");
+    target->scrollIntoView();
+
+    ASSERT_NE(GetDocument().View()->GetScrollableArea()->GetScrollOffset(),
+              ScrollOffset(0, 0));
+    EXPECT_TRUE(
+        GetDocument().IsUseCounted(WebFeature::kCrossOriginScrollIntoView));
+  }
 }
 
 TEST_F(ScrollIntoViewTest, FromDisplayNoneIframe) {

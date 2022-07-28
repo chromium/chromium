@@ -3634,6 +3634,7 @@ enum WebFeature {
   kLinkRelPrefetchAsDocumentSameOrigin = 4313,
   kLinkRelPrefetchAsDocumentCrossOrigin = 4314,
   kPersistentQuotaType = 4315,
+  kCrossOriginScrollIntoView = 4316,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

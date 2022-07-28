@@ -372,6 +372,10 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
   // Return the newly moved rect to absolute coordinates.
   // TODO(szager): PaintLayerScrollableArea::ScrollIntoView clips the return
   // value to the visible content rect, but this does not.
+  // TODO(bokan): This returns an unchanged rect for scroll sequences (the PLSA
+  // version correctly computes what the rect will be when the sequence is
+  // executed) and we can't just adjust by `new_scroll_offset` since, to get to
+  // absolute coordinates, we must offset by only the layout viewport's scroll.
   rect_in_document.Move(
       -PhysicalOffset::FromVector2dFRound(LayoutViewport().GetScrollOffset()));
   return rect_in_document;
