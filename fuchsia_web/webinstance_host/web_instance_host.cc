@@ -38,14 +38,11 @@
 #include "build/build_config.h"
 #include "components/fuchsia_component_support/config_reader.h"
 #include "components/fuchsia_component_support/feedback_registration.h"
-#include "content/public/common/content_switches.h"
 #include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/webengine/features.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "media/base/key_system_names.h"
-#include "media/base/media_switches.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -71,6 +68,25 @@ constexpr char kMixedContentAutoupgradeFeatureName[] =
     "AutoupgradeMixedContent";
 constexpr char kDisableMixedContentAutoupgradeOrigin[] =
     "disable-mixed-content-autoupgrade";
+
+// Use a constexpr instead of the existing switch, because of the additional
+// dependencies required.
+
+// Content switches:
+constexpr char kRemoteDebuggingPortSwitch[] = "remote-debugging-port";
+constexpr char kDisableAcceleratedVideoDecodeSwitch[] =
+    "disable-accelerated-video-decode";
+constexpr char kDisableAudioInputSwitch[] = "disable-audio-input";
+constexpr char kDisableAudioOutputSwitch[] = "disable-audio-output";
+
+// Media switches:
+constexpr char kDisableGpuSwitch[] = "disable-gpu";
+constexpr char kDisableSoftwareRasterizerSwitch[] =
+    "disable-software-rasterizer";
+
+// Use a constexpr instead of the media::IsClearKey() helper, because of the
+// additional dependencies required.
+constexpr char kClearKeyKeySystem[] = "org.w3.clearkey";
 
 // Registers product data for the web_instance Component, ensuring it is
 // registered regardless of how the Component is launched and without requiring
@@ -499,7 +515,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
       LOG(WARNING) << "Enabling remote debugging requires NETWORK feature.";
     }
     launch_args.AppendSwitchNative(
-        switches::kRemoteDebuggingPort,
+        kRemoteDebuggingPortSwitch,
         base::NumberToString(params.remote_debugging_port()));
   }
 
@@ -571,8 +587,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     VLOG(1) << "Disabling GPU acceleration.";
     // Disable use of Vulkan GPU, and use of the software-GL rasterizer. The
     // Context will still run a GPU process, but will not support WebGL.
-    launch_args.AppendSwitch(switches::kDisableGpu);
-    launch_args.AppendSwitch(switches::kDisableSoftwareRasterizer);
+    launch_args.AppendSwitch(kDisableGpuSwitch);
+    launch_args.AppendSwitch(kDisableSoftwareRasterizerSwitch);
   }
 
   if (enable_widevine) {
@@ -581,7 +597,7 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
 
   if (enable_playready) {
     const std::string& key_system = params.playready_key_system();
-    if (key_system == kWidevineKeySystem || media::IsClearKey(key_system)) {
+    if (key_system == kWidevineKeySystem || key_system == kClearKeyKeySystem) {
       LOG(ERROR)
           << "Invalid value for CreateContextParams/playready_key_system: "
           << key_system;
@@ -595,15 +611,15 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
   if (!enable_audio) {
     // TODO(fxbug.dev/58902): Split up audio input and output in
     // ContextFeatureFlags.
-    launch_args.AppendSwitch(switches::kDisableAudioOutput);
-    launch_args.AppendSwitch(switches::kDisableAudioInput);
+    launch_args.AppendSwitch(kDisableAudioOutputSwitch);
+    launch_args.AppendSwitch(kDisableAudioInputSwitch);
   }
 
   bool enable_hardware_video_decoder =
       (features & fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) ==
       fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER;
   if (!enable_hardware_video_decoder)
-    launch_args.AppendSwitch(switches::kDisableAcceleratedVideoDecode);
+    launch_args.AppendSwitch(kDisableAcceleratedVideoDecodeSwitch);
 
   if (enable_hardware_video_decoder && !enable_vulkan) {
     DLOG(ERROR) << "HARDWARE_VIDEO_DECODER requires VULKAN.";

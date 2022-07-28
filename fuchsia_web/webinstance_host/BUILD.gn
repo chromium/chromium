@@ -7,6 +7,12 @@ assert(is_fuchsia)
 visibility = []
 
 source_set("webinstance_host") {
+  assert_no_deps = [
+    "//content/public/common",
+    "//media",
+    "//third_party/blink/common",
+  ]
+
   # Only WebInstance clients should use the host.
   visibility += [
     # WebEngine clients that instantiate WebInstances directly.
@@ -24,11 +30,10 @@ source_set("webinstance_host") {
     "//base",
     "//base:base_static",
     "//components/fuchsia_component_support",
-    "//content/public/common",
     "//fuchsia_web/common",
     "//fuchsia_web/webengine:switches",
     "//gpu/command_buffer/service",
-    "//media",
+    "//gpu/config",
     "//services/network/public/cpp",
     "//third_party/fuchsia-sdk/sdk/pkg/async",
     "//third_party/fuchsia-sdk/sdk/pkg/fdio",

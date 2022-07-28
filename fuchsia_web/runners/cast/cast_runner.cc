@@ -32,10 +32,14 @@
 #include "fuchsia_web/runners/cast/cast_streaming.h"
 #include "fuchsia_web/runners/cast/pending_cast_component.h"
 #include "fuchsia_web/runners/common/web_content_runner.h"
-#include "media/base/media_switches.h"
 #include "url/gurl.h"
 
 namespace {
+
+// Use a constexpr instead of the existing switch, because of the additional
+// dependencies required.
+constexpr char kAudioCapturerWithEchoCancellationSwitch[] =
+    "audio-capturer-with-echo-cancellation";
 
 // List of services in CastRunner's Service Directory that will be passed
 // through to each WebEngine instance it creates. Each service in
@@ -569,7 +573,7 @@ WebContentRunner::WebInstanceConfig CastRunner::GetMainWebInstanceConfig() {
   //
   // TODO(crbug.com/852834): Remove once AudioManagerFuchsia is updated to
   // get this information from AudioCapturerFactory.
-  config.extra_args.AppendSwitch(switches::kAudioCapturerWithEchoCancellation);
+  config.extra_args.AppendSwitch(kAudioCapturerWithEchoCancellationSwitch);
 
   *config.params.mutable_features() |=
       fuchsia::web::ContextFeatureFlags::NETWORK |
