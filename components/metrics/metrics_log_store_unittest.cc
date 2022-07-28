@@ -58,7 +58,7 @@ class MetricsLogStoreTest : public testing::Test {
     const char* pref = log_type == MetricsLog::INITIAL_STABILITY_LOG
                            ? prefs::kMetricsInitialLogs
                            : prefs::kMetricsOngoingLogs;
-    return pref_service_.GetList(pref)->GetListDeprecated().size();
+    return pref_service_.GetValueList(pref).size();
   }
 
   TestMetricsServiceClient client_;
