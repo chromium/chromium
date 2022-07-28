@@ -463,7 +463,7 @@ export function shareDataPageTestSuite() {
    */
   test('UserConsentGrantedCheckbox_StartsFalse', async () => {
     const expectedUserConsentMessage =
-        'We may email you for more information or updates';
+        'Allow Google to email you about this issue';
     await initializePage();
 
     assertTrue(page.i18nExists('userConsentLabel'));
