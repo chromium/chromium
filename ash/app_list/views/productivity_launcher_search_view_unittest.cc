@@ -509,7 +509,6 @@ TEST_P(ProductivityLauncherSearchViewTest, SearchResultCategoricalSort) {
   GetProductivityLauncherSearchView()->OnSearchResultContainerResultsChanged();
 
   // Verify result container visibility.
-
   EXPECT_EQ(GetVisibleResultContainers(), (std::vector<size_t>{2, 3}));
 
   // Verify title labels are correctly updated.

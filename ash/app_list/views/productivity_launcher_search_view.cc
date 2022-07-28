@@ -4,8 +4,10 @@
 
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "ash/app_list/app_list_model_provider.h"
@@ -172,6 +174,7 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
   }
 
   SearchResultBaseView* first_result_view = nullptr;
+  std::vector<std::string> search_result_ids;
 
   // If the user cleared the search box text, skip animating the views. The
   // visible views will animate out and the whole search page will be hidden.
@@ -192,11 +195,28 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
     }
 
     for (SearchResultContainerView* view : result_container_views_) {
+      view->AppendShownResultIds(&search_result_ids);
+    }
+
+    int num_matching_leading_results = 0;
+    for (size_t i = 0;
+         i < std::min(search_result_ids.size(), last_result_ids_.size()); i++) {
+      if (search_result_ids[i] != last_result_ids_[i])
+        break;
+      num_matching_leading_results += 1;
+    }
+
+    aggregate_animation_info.first_animated_result_view_index =
+        num_matching_leading_results;
+
+    for (SearchResultContainerView* view : result_container_views_) {
       absl::optional<AnimationInfo> container_animation_info =
           view->ScheduleResultAnimations(aggregate_animation_info);
       DCHECK(container_animation_info);
       aggregate_animation_info.total_views +=
           container_animation_info->total_views;
+      aggregate_animation_info.total_result_views +=
+          container_animation_info->total_result_views;
       aggregate_animation_info.animating_views +=
           container_animation_info->animating_views;
       // Fetch the first visible search result view for search box autocomplete.
@@ -216,6 +236,7 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
   Layout();
 
   last_search_result_count_ = result_count;
+  last_result_ids_.swap(search_result_ids);
 
   ScheduleResultsChangedA11yNotification();
 

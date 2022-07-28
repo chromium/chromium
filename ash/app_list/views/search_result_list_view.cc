@@ -293,7 +293,6 @@ SearchResultListView::ScheduleResultAnimations(
 
   if (num_results_ < 1 || !enabled_) {
     SetVisible(false);
-    last_container_start_index_ = -1;
     for (auto* result_view : search_result_views_)
       result_view->SetVisible(false);
     return current_animation_info;
@@ -303,14 +302,13 @@ SearchResultListView::ScheduleResultAnimations(
   // *   the container is being shown, or
   // *   any of the result views that precede the container in the search UI are
   //     animating, or
-  // *   the number of result views before this container changed (e.g. if some
-  //     results get removed).
+  // *   if.the first animating result view is in a preceding container.
   bool force_animation =
       !GetVisible() || aggregate_animation_info.animating_views > 0 ||
-      last_container_start_index_ != aggregate_animation_info.total_views;
+      aggregate_animation_info.first_animated_result_view_index <=
+          aggregate_animation_info.total_result_views;
 
   SetVisible(true);
-  last_container_start_index_ = aggregate_animation_info.total_views;
   current_animation_info.use_short_animations =
       aggregate_animation_info.use_short_animations;
 
@@ -333,19 +331,34 @@ SearchResultListView::ScheduleResultAnimations(
     SearchResultView* result_view = GetResultViewAt(i);
     result_view->SetVisible(i < num_results_);
 
-    const bool needs_animation = result_view->GetAndResetResultChanged();
     if (i < num_results_) {
-      if (force_animation || needs_animation) {
-        // If one of the result views have to be animated, animate all result
-        // views that follow.
+      // Checks whether the index of the current result view is greater than
+      // or equal to the index of the first result view that should be animated.
+      // Force animations if true.
+      if (aggregate_animation_info.total_result_views +
+              current_animation_info.total_result_views >=
+          aggregate_animation_info.first_animated_result_view_index) {
         force_animation = true;
-        schedule_animation(result_view);
       }
+      if (force_animation)
+        schedule_animation(result_view);
+
       ++current_animation_info.total_views;
+      ++current_animation_info.total_result_views;
     }
   }
 
   return current_animation_info;
+}
+
+void SearchResultListView::AppendShownResultIds(
+    std::vector<std::string>* result_ids) {
+  for (size_t i = 0; i < search_result_views_.size(); ++i) {
+    SearchResultView* result_view = GetResultViewAt(i);
+    if (i >= num_results_ || !result_view->result())
+      return;
+    result_ids->push_back(result_view->result()->id());
+  }
 }
 
 bool SearchResultListView::HasAnimatingChildView() {

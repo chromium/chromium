@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_PRODUCTIVITY_LAUNCHER_SEARCH_VIEW_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "ash/app_list/app_list_model_provider.h"
@@ -127,6 +128,9 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // Containers for search result views. The contained views are owned by the
   // views hierarchy. Used by result_selection_controller_.
   std::vector<SearchResultContainerView*> result_container_views_;
+
+  // Cache of the last shown search results IDs.
+  std::vector<std::string> last_result_ids_;
 
   // Handles search result selection.
   std::unique_ptr<ResultSelectionController> result_selection_controller_;

@@ -420,16 +420,6 @@ SearchResultView::SearchResultView(
 
 SearchResultView::~SearchResultView() = default;
 
-void SearchResultView::OnResultChanging(SearchResult* new_result) {
-  if (result_changed_)
-    return;
-  if (!new_result || !result()) {
-    result_changed_ = new_result;
-    return;
-  }
-  result_changed_ = new_result->id() != result()->id();
-}
-
 void SearchResultView::OnResultChanged() {
   OnMetadataChanged();
   SchedulePaint();
@@ -522,12 +512,6 @@ int SearchResultView::ActionButtonRightMargin() const {
     case SearchResultViewType::kDefault:
       return kDefaultActionButtonRightMargin;
   }
-}
-
-bool SearchResultView::GetAndResetResultChanged() {
-  bool result_changed = result_changed_;
-  result_changed_ = false;
-  return result_changed;
 }
 
 // static

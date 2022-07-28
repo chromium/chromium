@@ -41,6 +41,11 @@ SearchResultContainerView::ScheduleResultAnimations(
   return absl::nullopt;
 }
 
+void SearchResultContainerView::AppendShownResultIds(
+    std::vector<std::string>* result_ids) {
+  NOTREACHED();
+}
+
 bool SearchResultContainerView::HasAnimatingChildView() {
   NOTREACHED();
   return false;
