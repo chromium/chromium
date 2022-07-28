@@ -55,7 +55,6 @@
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_illustrated_item.h"
@@ -124,8 +123,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 NSString* const kOtherDeviceCollapsedKey = @"OtherDevicesCollapsed";
 // Key for saving whether the Recently Closed section is collapsed.
 NSString* const kRecentlyClosedCollapsedKey = @"RecentlyClosedCollapsed";
-// There are 2 static sections before the first SessionSection.
-int const kNumberOfSectionsBeforeSessions = 1;
 // Estimated Table Row height.
 const CGFloat kEstimatedRowHeight = 56;
 // Separation space between sections.
@@ -321,7 +318,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     [self addOtherDevicesSectionForState:self.sessionState];
   }
 
-  if (IsTabsSearchEnabled() && self.searchTerms.length) {
+  if (self.searchTerms.length) {
     [self addSuggestedActionsSection];
   }
 }
@@ -385,7 +382,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
   if (!self.tabRestoreService)
     return;
 
-  if (!IsTabsSearchEnabled() || !self.searchTerms.length) {
+  if (!self.searchTerms.length) {
     // A manual item refresh is necessary when tab search is disabled or when
     // there is no search term.
 
@@ -525,29 +522,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 // Remove all SessionSections from `self.tableViewModel` and `self.tableView`
 // Needs to be called inside a performBatchUpdates block.
 - (void)removeSessionSections {
-  if (!IsTabsSearchEnabled()) {
-    // `_displayedTabs` has been updated by now, that means that
-    // `self.tableViewModel` does not reflect `_displayedTabs` data.
-    NSInteger sectionIdentifierToRemove = kFirstSessionSectionIdentifier;
-    NSInteger sectionToDelete = kNumberOfSectionsBeforeSessions;
-    while ([self.tableViewModel numberOfSections] >
-           kNumberOfSectionsBeforeSessions) {
-      // A SectionIdentifier could've been deleted previously, do not rely on
-      // these being in sequential order at this point.
-      if ([self.tableViewModel
-              hasSectionForSectionIdentifier:sectionIdentifierToRemove]) {
-        [self.tableView
-              deleteSections:[NSIndexSet indexSetWithIndex:sectionToDelete]
-            withRowAnimation:UITableViewRowAnimationNone];
-        sectionToDelete++;
-        [self.tableViewModel
-            removeSectionWithIdentifier:sectionIdentifierToRemove];
-      }
-      sectionIdentifierToRemove++;
-    }
-    return;
-  }
-
   // `_displayedTabs` has been updated by now, that means that
   // `self.tableViewModel` does not reflect `_displayedTabs` data.
   NSInteger firstSessionSectionIndex = 0;
@@ -751,8 +725,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark Suggested Actions Section
 
 - (void)addSuggestedActionsSection {
-  DCHECK(IsTabsSearchEnabled());
-
   TableViewModel* model = self.tableViewModel;
 
   UIColor* actionsTextColor = self.styler.tintColor
@@ -840,10 +812,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (NSInteger)firstSessionSectionIndex {
-  if (!IsTabsSearchEnabled()) {
-    return kNumberOfSectionsBeforeSessions;
-  }
-
   NSInteger firstSessionSectionIndex = 0;
   if ([self recentlyClosedTabsSectionExists]) {
     firstSessionSectionIndex++;
@@ -884,8 +852,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)setSearchTerms:(NSString*)searchTerms {
-  DCHECK(IsTabsSearchEnabled());
-
   if (_searchTerms == searchTerms ||
       // No need for an update if transitioning between nil and empty string.
       // (Length of both `_searchTerms` and `searchTerms` will be zero.)
@@ -1011,7 +977,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
     return;
   }
 
-  if (!IsTabsSearchEnabled() || !self.searchTerms.length) {
+  if (!self.searchTerms.length) {
     // A manual item refresh is necessary when tab search is disabled or there
     // is no search term.
     sync_sessions::SessionSyncService* syncService =
@@ -1331,11 +1297,6 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 #pragma mark - Recently closed tab helpers
 
 - (BOOL)recentlyClosedTabsSectionExists {
-  // Recently closed section always exists when tab search is disabled.
-  if (!IsTabsSearchEnabled()) {
-    return YES;
-  }
-
   // The recently closed section does not exist if the user is searching and
   // there are no matching recently closed items.
   if (self.searchTerms.length && [self numberOfRecentlyClosedTabs] == 0) {
@@ -1514,7 +1475,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
                               &toLoad)) {
     base::RecordAction(base::UserMetricsAction(
         "MobileRecentTabManagerTabFromOtherDeviceOpened"));
-    if (IsTabsSearchEnabled() && self.searchTerms.length) {
+    if (self.searchTerms.length) {
       base::RecordAction(base::UserMetricsAction(
           "MobileRecentTabManagerTabFromOtherDeviceOpenedSearchResult"));
     }
@@ -1554,7 +1515,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
   base::RecordAction(
       base::UserMetricsAction("MobileRecentTabManagerRecentTabOpened"));
-  if (IsTabsSearchEnabled() && self.searchTerms.length) {
+  if (self.searchTerms.length) {
     base::RecordAction(base::UserMetricsAction(
         "MobileRecentTabManagerRecentTabOpenedSearchResult"));
   }

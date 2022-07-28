@@ -49,7 +49,6 @@
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
@@ -389,41 +388,36 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   int index = GetIndexOfTabWithId(self.webStateList, itemID);
   WebStateList* itemWebStateList = self.webStateList;
   if (index == WebStateList::kInvalidIndex) {
-    if (IsTabsSearchEnabled()) {
-      // If this is a search result, it may contain items from other windows -
-      // check other windows first before giving up.
-      BrowserList* browserList =
-          BrowserListFactory::GetForBrowserState(self.browserState);
-      Browser* browser = GetBrowserForTabWithId(
-          browserList, itemID, self.browserState->IsOffTheRecord());
+    // If this is a search result, it may contain items from other windows -
+    // check other windows first before giving up.
+    BrowserList* browserList =
+        BrowserListFactory::GetForBrowserState(self.browserState);
+    Browser* browser = GetBrowserForTabWithId(
+        browserList, itemID, self.browserState->IsOffTheRecord());
 
-      if (!browser)
-        return;
-
-      itemWebStateList = browser->GetWebStateList();
-      index = GetIndexOfTabWithId(itemWebStateList, itemID);
-      SceneState* targetSceneState =
-          SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
-      SceneState* currentSceneState =
-          SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-
-      UISceneActivationRequestOptions* options =
-          [[UISceneActivationRequestOptions alloc] init];
-      options.requestingScene = currentSceneState.scene;
-
-      [[UIApplication sharedApplication]
-          requestSceneSessionActivation:targetSceneState.scene.session
-                           userActivity:nil
-                                options:options
-                           errorHandler:^(NSError* error) {
-                             LOG(ERROR) << base::SysNSStringToUTF8(
-                                 error.localizedDescription);
-                             NOTREACHED();
-                           }];
-    } else {
-      // Don't activate non-existent indexes.
+    if (!browser)
       return;
-    }
+
+    itemWebStateList = browser->GetWebStateList();
+    index = GetIndexOfTabWithId(itemWebStateList, itemID);
+    SceneState* targetSceneState =
+        SceneStateBrowserAgent::FromBrowser(browser)->GetSceneState();
+    SceneState* currentSceneState =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+
+    UISceneActivationRequestOptions* options =
+        [[UISceneActivationRequestOptions alloc] init];
+    options.requestingScene = currentSceneState.scene;
+
+    [[UIApplication sharedApplication]
+        requestSceneSessionActivation:targetSceneState.scene.session
+                         userActivity:nil
+                              options:options
+                         errorHandler:^(NSError* error) {
+                           LOG(ERROR) << base::SysNSStringToUTF8(
+                               error.localizedDescription);
+                           NOTREACHED();
+                         }];
   }
 
   if (IsPriceAlertsEnabled())
@@ -461,8 +455,6 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
   WebStateList* itemWebStateList = self.webStateList;
   int index = GetIndexOfTabWithId(itemWebStateList, itemID);
   if (index == WebStateList::kInvalidIndex) {
-    if (!IsTabsSearchEnabled())
-      return;
     // If this is a search result, it may contain items from other windows -
     // check other windows first before giving up.
     BrowserList* browserList =

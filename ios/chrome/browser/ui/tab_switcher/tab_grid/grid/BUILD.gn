@@ -71,7 +71,6 @@ source_set("grid_ui") {
     "//ios/chrome/browser/ui/menu:context_menu_delegate",
     "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/suggested_actions",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",

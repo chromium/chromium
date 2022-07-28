@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_table_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/disabled_tab_view_controller.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
@@ -678,7 +677,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // Resetting search state when leaving the search mode should happen before
   // changing the mode in the controllers so when they do the cleanup for the
   // new mode they will have the correct items (tabs).
-  if (IsTabsSearchEnabled() && previousMode == TabGridModeSearch) {
+  if (previousMode == TabGridModeSearch) {
     self.remoteTabsViewController.searchTerms = nil;
     self.regularTabsViewController.searchText = nil;
     self.incognitoTabsViewController.searchText = nil;
@@ -1369,15 +1368,11 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [topToolbar setNewTabButtonTarget:self action:@selector(newTabButtonTapped:)];
   [topToolbar setSelectAllButtonTarget:self
                                 action:@selector(selectAllButtonTapped:)];
-  if (IsTabsSearchEnabled()) {
-    [topToolbar setSearchButtonTarget:self
-                               action:@selector(searchButtonTapped:)];
-    [topToolbar
-        setCancelSearchButtonTarget:self
-                             action:@selector(cancelSearchButtonTapped:)];
+  [topToolbar setSearchButtonTarget:self action:@selector(searchButtonTapped:)];
+  [topToolbar setCancelSearchButtonTarget:self
+                                   action:@selector(cancelSearchButtonTapped:)];
+  [topToolbar setSearchBarDelegate:self];
 
-    [topToolbar setSearchBarDelegate:self];
-  }
   // Configure and initialize the page control.
   [topToolbar.pageControl addTarget:self
                              action:@selector(pageControlChangedValue:)
@@ -2111,7 +2106,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   alreadySelected = [tabsDelegate isItemWithIDSelected:itemID];
   [tabsDelegate selectItemWithID:itemID];
 
-  if (IsTabsSearchEnabled() && self.tabGridMode == TabGridModeSearch) {
+  if (self.tabGridMode == TabGridModeSearch) {
     if (![tabsDelegate isItemWithIDSelected:itemID]) {
       // That can happen when the search result that was selected is from
       // another window. In that case don't change the active page for this

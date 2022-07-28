@@ -628,10 +628,6 @@ extern const char kSyncInvalidationsDescription[];
 extern const char kSyncInvalidationsWalletAndOfferName[];
 extern const char kSyncInvalidationsWalletAndOfferDescription[];
 
-// Title and description for the flag to enable tabs search feature.
-extern const char kTabsSearchName[];
-extern const char kTabsSearchDescription[];
-
 // Title and description for the flag to enable TFLite for language detection.
 extern const char kTFLiteLanguageDetectionName[];
 extern const char kTFLiteLanguageDetectionDescription[];

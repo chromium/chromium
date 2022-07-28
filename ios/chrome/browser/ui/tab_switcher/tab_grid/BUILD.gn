@@ -16,7 +16,6 @@ source_set("tab_grid") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":features",
     ":tab_grid_paging",
     ":tab_grid_ui",
     "grid:grid_ui",
@@ -124,7 +123,6 @@ source_set("tab_grid_ui") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
-    ":features",
     ":tab_grid_paging",
     ":tab_grid_ui_constants",
     "grid:grid_ui",
@@ -161,15 +159,6 @@ source_set("tab_grid_ui") {
     "//ios/web/public",
     "//ui/base",
   ]
-}
-
-source_set("features") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -254,7 +243,6 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/thumb_strip:feature_flags",
     "//ios/chrome/browser/ui/util",

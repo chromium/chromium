@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -313,49 +312,6 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 @end
 
 @implementation TabGridTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  std::vector<SEL> searchTests = {
-      @selector(testEnterExitSearch),
-      @selector(testTabGridResetAfterExitingSearch),
-      @selector(testScrimVisibleInSearchModeWhenSearchBarIsEmpty),
-      @selector(testTapOnSearchScrimExitsSearchMode),
-      @selector(testSearchRegularOpenTabs),
-      @selector(testSearchRecentlyClosedTabs),
-      @selector(testSearchRecentlyClosedTabsNoResults),
-      @selector(testSearchRegularOpenTabsSelectResult),
-      @selector(testSearchIncognitoOpenTabsSelectResult),
-      @selector(testSearchOpenTabsContextMenuShare),
-      @selector(testSearchOpenTabsContextMenuAddToReadingList),
-      @selector(testSearchOpenTabsContextMenuAddToBookmarks),
-      @selector(testSearchOpenTabsContextMenuCloseTab),
-      @selector(testSearchOpenTabsContextMenuSelectTabsUnavailable),
-      @selector(testOpenTabsHeaderVisibleInSearchModeWhenSearchBarIsNotEmpty),
-      @selector(testSuggestedActionsVisibleInSearchModeWhenSearchBarIsNotEmpty),
-      @selector(testSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount),
-      @selector
-      (testRecentTabsSearchSuggestedActionsDisplaysCorrectHistoryMatchesCount),
-      @selector(testSearchSuggestedActionsSectionContentInRegularGrid),
-      @selector(testSearchSuggestedActionsSectionContentInRecentTabs),
-      @selector(testSuggestedActionsNotAvailableInIncognitoPageSearchMode),
-      @selector(testSearchSuggestedActionsPageSwitch),
-      @selector(testHistorySuggestedActionInRegularTabsSearch),
-      @selector(testHistorySuggestedActionInRecentTabsSearch),
-      @selector(testSearchOnWebSuggestedActionInRegularTabsSearch),
-      @selector(testSearchOnWebSuggestedActionInRecentTabsSearch),
-      @selector(testEmptyStateAfterNoResultsSearchForIncognitoTabGrid),
-      @selector(testSearchResultCloseTab),
-      @selector(testSearchResultCloseTabInIncognito),
-      /* Add new tests for tab search above this line. */};
-  for (SEL test : searchTests) {
-    if ([self isRunningTest:test]) {
-      config.features_enabled.push_back(kTabsSearch);
-      break;
-    }
-  }
-  return config;
-}
 
 - (void)setUp {
   [super setUp];

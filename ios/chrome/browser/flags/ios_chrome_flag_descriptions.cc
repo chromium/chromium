@@ -698,11 +698,6 @@ const char kStartSurfaceDescription[] =
     "Enable showing the Start Surface when launching Chrome via clicking the "
     "icon or the app switcher.";
 
-const char kTabsSearchName[] = "Enable Tabs Search";
-const char kTabsSearchDescription[] =
-    "Enables the search mode in the Tab grid where users can search open tabs "
-    "or recent tabs.";
-
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";
