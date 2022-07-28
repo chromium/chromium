@@ -15,7 +15,7 @@ function prepareFrames(width, height, count) {
 
 async function testEncodingConfiguration(name, width, height, count, acc) {
   const encoder_config = {
-    codec: "avc1.42001E",
+    codec: "avc1.42001F",
     hardwareAcceleration: acc,
     width: width,
     height: height,
