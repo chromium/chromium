@@ -176,12 +176,6 @@ class PaymentRequestDialogView : public views::DialogDelegateView,
       autofill::AutofillProfile* profile = nullptr);
   void EditorViewUpdated();
 
-  void ShowCvcUnmaskPrompt(
-      const autofill::CreditCard& credit_card,
-      base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-          result_delegate,
-      content::RenderFrameHost* render_frame_host) override;
-
   // Hides the full dialog spinner with the "processing" label.
   void HideProcessingSpinner();
 

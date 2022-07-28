@@ -160,17 +160,6 @@ const GURL& ChromePaymentRequestDelegate::GetLastCommittedURL() const {
                                     : GURL::EmptyGURL();
 }
 
-void ChromePaymentRequestDelegate::DoFullCardRequest(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate) {
-  auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!FrameSupportsPayments(rfh) || !shown_dialog_)
-    return;
-
-  shown_dialog_->ShowCvcUnmaskPrompt(credit_card, result_delegate, rfh);
-}
-
 autofill::RegionDataLoader*
 ChromePaymentRequestDelegate::GetRegionDataLoader() {
   return new autofill::RegionDataLoaderImpl(GetAddressInputSource().release(),

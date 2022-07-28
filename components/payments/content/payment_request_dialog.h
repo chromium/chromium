@@ -30,14 +30,6 @@ class PaymentRequestDialog {
   // Whether a "Processing..." spinner is showing.
   virtual bool IsInteractive() const = 0;
 
-  // Shows the CVC unmask sheet and starts a FullCardRequest with the info
-  // entered by the user.
-  virtual void ShowCvcUnmaskPrompt(
-      const autofill::CreditCard& credit_card,
-      base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-          result_delegate,
-      content::RenderFrameHost* render_frame_host) = 0;
-
   // Display |url| in a new screen and run |callback| after navigation is
   // completed, passing true/false to indicate success/failure.
   virtual void ShowPaymentHandlerScreen(

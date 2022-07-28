@@ -209,15 +209,6 @@ bool SecurePaymentConfirmationController::IsInteractive() const {
   return view_ && !model_.progress_bar_visible();
 }
 
-void SecurePaymentConfirmationController::ShowCvcUnmaskPrompt(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate,
-    content::RenderFrameHost* render_frame_host) {
-  // CVC unmasking is nut supported.
-  NOTREACHED();
-}
-
 void SecurePaymentConfirmationController::ShowPaymentHandlerScreen(
     const GURL& url,
     PaymentHandlerOpenWindowCallback callback) {

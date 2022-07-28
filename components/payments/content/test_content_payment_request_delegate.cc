@@ -93,13 +93,6 @@ const GURL& TestContentPaymentRequestDelegate::GetLastCommittedURL() const {
   return core_delegate_.GetLastCommittedURL();
 }
 
-void TestContentPaymentRequestDelegate::DoFullCardRequest(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate) {
-  return core_delegate_.DoFullCardRequest(credit_card, result_delegate);
-}
-
 autofill::AddressNormalizer*
 TestContentPaymentRequestDelegate::GetAddressNormalizer() {
   return core_delegate_.GetAddressNormalizer();

@@ -44,10 +44,6 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   const std::string& GetApplicationLocale() const override;
   bool IsOffTheRecord() const override;
   const GURL& GetLastCommittedURL() const override;
-  void DoFullCardRequest(
-      const autofill::CreditCard& credit_card,
-      base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-          result_delegate) override;
   autofill::AddressNormalizer* GetAddressNormalizer() override;
   autofill::RegionDataLoader* GetRegionDataLoader() override;
   ukm::UkmRecorder* GetUkmRecorder() override;

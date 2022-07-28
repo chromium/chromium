@@ -36,11 +36,6 @@ class SecurePaymentConfirmationController
   void ShowErrorMessage() override;
   void ShowProcessingSpinner() override;
   bool IsInteractive() const override;
-  void ShowCvcUnmaskPrompt(
-      const autofill::CreditCard& credit_card,
-      base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-          result_delegate,
-      content::RenderFrameHost* render_frame_host) override;
   void ShowPaymentHandlerScreen(
       const GURL& url,
       PaymentHandlerOpenWindowCallback callback) override;

@@ -9,13 +9,11 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/payments/full_card_request.h"
 
 class GURL;
 
 namespace autofill {
 class AddressNormalizer;
-class CreditCard;
 class PersonalDataManager;
 class RegionDataLoader;
 }  // namespace autofill
@@ -45,12 +43,6 @@ class PaymentRequestBaseDelegate {
 
   // Returns the URL of the page that is currently being displayed.
   virtual const GURL& GetLastCommittedURL() const = 0;
-
-  // Starts a FullCardRequest to unmask |credit_card|.
-  virtual void DoFullCardRequest(
-      const autofill::CreditCard& credit_card,
-      base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-          result_delegate) = 0;
 
   // Returns a pointer to the address normalizer to use for the duration of this
   // Payment Request.

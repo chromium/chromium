@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/payments/contact_info_editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/credit_card_editor_view_controller.h"
-#include "chrome/browser/ui/views/payments/cvc_unmask_view_controller.h"
 #include "chrome/browser/ui/views/payments/error_message_view_controller.h"
 #include "chrome/browser/ui/views/payments/order_summary_view_controller.h"
 #include "chrome/browser/ui/views/payments/payment_handler_web_flow_view_controller.h"
@@ -369,25 +368,6 @@ void PaymentRequestDialogView::ShowShippingOptionSheet() {
                     /* animate = */ true);
   if (observer_for_testing_)
     observer_for_testing_->OnShippingOptionSectionOpened();
-}
-
-void PaymentRequestDialogView::ShowCvcUnmaskPrompt(
-    const autofill::CreditCard& credit_card,
-    base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
-        result_delegate,
-    content::RenderFrameHost* render_frame_host) {
-  if (!request_->spec())
-    return;
-
-  view_stack_->Push(CreateViewAndInstallController(
-                        std::make_unique<CvcUnmaskViewController>(
-                            request_->spec(), request_->state(),
-                            weak_ptr_factory_.GetWeakPtr(), credit_card,
-                            result_delegate, render_frame_host),
-                        &controller_map_),
-                    /* animate = */ true);
-  if (observer_for_testing_)
-    observer_for_testing_->OnCvcPromptShown();
 }
 
 void PaymentRequestDialogView::ShowCreditCardEditor(

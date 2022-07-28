@@ -4694,8 +4694,6 @@ static_library("ui") {
       "views/payments/contact_info_editor_view_controller.h",
       "views/payments/credit_card_editor_view_controller.cc",
       "views/payments/credit_card_editor_view_controller.h",
-      "views/payments/cvc_unmask_view_controller.cc",
-      "views/payments/cvc_unmask_view_controller.h",
       "views/payments/editor_view_controller.cc",
       "views/payments/editor_view_controller.h",
       "views/payments/error_message_view_controller.cc",
