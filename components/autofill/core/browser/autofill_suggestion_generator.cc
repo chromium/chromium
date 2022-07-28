@@ -398,12 +398,24 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
     }
 
     suggestion.frontend_id = POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY;
-    suggestion.minor_text.value = suggestion.main_text.value;
-    suggestion.main_text.value = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
-
     suggestion.feature_for_iph =
         feature_engagement::kIPHAutofillVirtualCardSuggestionFeature.name;
+
+    // TODO(crbug.com/1344629): Update "Virtual card" label for other fields.
+    // For virtual cards, prefix "Virtual card" label to field suggestions. For
+    // card number field in a dropdown, show the "Virtual card" label below the
+    // card number for Metadata experiment.
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillEnableVirtualCardMetadata) ||
+        type.GetStorableType() != CREDIT_CARD_NUMBER ||
+        base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory)) {
+      suggestion.minor_text.value = suggestion.main_text.value;
+      suggestion.main_text.value = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+    } else {
+      suggestion.label = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+    }
 
 #if BUILDFLAG(IS_ANDROID)
     suggestion.custom_icon_url = card_art_url_for_virtual_card_option;

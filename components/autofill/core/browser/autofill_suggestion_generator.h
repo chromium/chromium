@@ -89,6 +89,18 @@ class AutofillSuggestionGenerator {
                            CreateCreditCardSuggestion_LocalCard);
   FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
                            CreateCreditCardSuggestion_ServerCard);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutofillSuggestionGeneratorTest,
+      CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNameField);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutofillSuggestionGeneratorTest,
+      CreateCreditCardSuggestion_PopupWithMetadata_VirtualCardNumberField);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutofillSuggestionGeneratorTest,
+      CreateCreditCardSuggestion_PopupWithMetadata_NonVirtualCardNameField);
+  FRIEND_TEST_ALL_PREFIXES(
+      AutofillSuggestionGeneratorTest,
+      CreateCreditCardSuggestion_PopupWithMetadata_NonVirtualCardNumberField);
   FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
                            GetServerCardForLocalCard);
   FRIEND_TEST_ALL_PREFIXES(AutofillSuggestionGeneratorTest,
