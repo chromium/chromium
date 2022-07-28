@@ -805,6 +805,12 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
 
   ALWAYS_INLINE raw_ptr& operator=(const raw_ptr& p) noexcept {
     // Duplicate before releasing, in case the pointer is assigned to itself.
+    //
+    // Unlike the move version of this operator, don't add |this != &p| branch,
+    // for performance reasons. Even though Duplicate() is not cheap, we
+    // practically never assign a raw_ptr<T> to itself. We suspect that a
+    // cumulative cost of a conditional branch, even if always correctly
+    // predicted, would exceed that.
     T* new_ptr = Impl::Duplicate(p.wrapped_ptr_);
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = new_ptr;
@@ -812,6 +818,8 @@ class TRIVIAL_ABI GSL_POINTER raw_ptr {
   }
 
   ALWAYS_INLINE raw_ptr& operator=(raw_ptr&& p) noexcept {
+    // Unlike the the copy version of this operator, this branch is necessaty
+    // for correctness.
     if (LIKELY(this != &p)) {
       Impl::ReleaseWrappedPtr(wrapped_ptr_);
       wrapped_ptr_ = p.wrapped_ptr_;
