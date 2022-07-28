@@ -19,6 +19,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/feed/core/common/pref_names.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_query.pb.h"
 #include "components/feed/core/proto/v2/wire/request.pb.h"
 #include "components/feed/core/proto/v2/wire/response.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
@@ -826,6 +827,24 @@ TEST_F(FeedNetworkTest, TestOverrideDiscoverEndpoint) {
 
   EXPECT_EQ(GURL("http://www.newhost.com/v1/actions:upload"),
             GetPendingRequestURL());
+}
+
+TEST_F(FeedNetworkTest, AppCloseRefreshRequestReasonHasUrl) {
+  CallbackReceiver<QueryRequestResult> receiver;
+  feedwire::Request request = GetTestFeedRequest();
+  request.mutable_feed_request()->mutable_feed_query()->set_reason(
+      feedwire::FeedQuery::APP_CLOSE_REFRESH);
+  feed_network()->SendQueryRequest(NetworkRequestType::kFeedQuery, request,
+                                   account_info(), receiver.Bind());
+  RespondToQueryRequest(GetTestFeedResponse(), net::HTTP_OK);
+
+  ASSERT_TRUE(receiver.GetResult());
+  const QueryRequestResult& result = *receiver.GetResult();
+  EXPECT_EQ(net::HTTP_OK, result.response_info.status_code);
+  EXPECT_EQ(
+      "https://www.google.com/httpservice/noretry/TrellisClankService/"
+      "FeedQuery",
+      result.response_info.base_request_url);
 }
 
 }  // namespace

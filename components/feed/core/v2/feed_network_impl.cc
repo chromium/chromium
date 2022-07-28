@@ -65,6 +65,7 @@ GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
   switch (reason) {
     case feedwire::FeedQuery::SCHEDULED_REFRESH:
     case feedwire::FeedQuery::PREFETCHED_WEB_FEED:
+    case feedwire::FeedQuery::APP_CLOSE_REFRESH:
       return GURL(
           "https://www.google.com/httpservice/noretry/TrellisClankService/"
           "FeedQuery");
@@ -77,7 +78,7 @@ GURL GetFeedQueryURL(feedwire::FeedQuery::RequestReason reason) {
       return GURL(
           "https://www.google.com/httpservice/retry/TrellisClankService/"
           "FeedQuery");
-    default:
+    case feedwire::FeedQuery::UNKNOWN_REQUEST_REASON:
       return GURL();
   }
 }
