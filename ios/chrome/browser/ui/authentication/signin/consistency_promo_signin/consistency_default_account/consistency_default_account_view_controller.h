@@ -44,8 +44,6 @@ enum class AccessPoint : int;
 @property(nonatomic, weak) id<ConsistencyDefaultAccountActionDelegate>
     actionDelegate;
 @property(nonatomic, weak) id<ConsistencyLayoutDelegate> layoutDelegate;
-@property(nonatomic, assign)
-    EnterpriseSignInRestrictions enterpriseSignInRestrictions;
 
 // Starts the spinner and disables buttons.
 - (void)startSpinner;

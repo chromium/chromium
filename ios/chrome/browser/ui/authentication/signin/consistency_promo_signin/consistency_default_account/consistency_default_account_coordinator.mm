@@ -53,14 +53,6 @@
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc]
           initWithAccessPoint:self.accessPoint];
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  PrefService* prefService = browserState->GetPrefs();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
-  self.defaultAccountViewController.enterpriseSignInRestrictions =
-      GetEnterpriseSignInRestrictions(authenticationService, prefService,
-                                      syncService);
   self.mediator.consumer = self.defaultAccountViewController;
   self.defaultAccountViewController.actionDelegate = self;
   self.defaultAccountViewController.layoutDelegate = self.layoutDelegate;

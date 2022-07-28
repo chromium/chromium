@@ -163,13 +163,8 @@ constexpr CGFloat kContentSpacing = 16.;
     label.text =
         l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
   } else {
-    // If there are enterprise restrictions, the string omits "Google Account".
-    BOOL showRestrictionsText =
-        self.enterpriseSignInRestrictions & kEnterpriseRestrictAccounts;
-    label.text = l10n_util::GetNSString(
-        showRestrictionsText
-            ? IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_RESTRICTIONS_LABEL
-            : IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+    label.text =
+        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
   }
 
   label.textColor = [UIColor colorNamed:kGrey700Color];
