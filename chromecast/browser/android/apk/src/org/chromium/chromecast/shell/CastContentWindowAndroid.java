@@ -69,11 +69,9 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private void createWindowForWebContents(
-            WebContents webContents, String appId, int visisbilityPriority) {
+    private void createWindowForWebContents(WebContents webContents, String appId) {
         if (DEBUG) Log.d(TAG, "createWindowForWebContents");
-        mStartParams.set(new CastWebContentsComponent.StartParams(
-                mContext, webContents, appId, visisbilityPriority));
+        mStartParams.set(new CastWebContentsComponent.StartParams(mContext, webContents, appId));
     }
 
     @SuppressWarnings("unused")
@@ -115,20 +113,6 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
 
     @SuppressWarnings("unused")
     @CalledByNative
-    private void requestVisibilityPriority(int visisbilityPriority) {
-        if (DEBUG) Log.d(TAG, "requestVisibilityPriority visibility=" + visisbilityPriority);
-        mComponent.requestVisibilityPriority(visisbilityPriority);
-    }
-
-    @SuppressWarnings("unused")
-    @CalledByNative
-    private void requestMoveOut() {
-        if (DEBUG) Log.d(TAG, "requestMoveOut");
-        mComponent.requestMoveOut();
-    }
-
-    @SuppressWarnings("unused")
-    @CalledByNative
     private void setHostContext(int interactionId, String conversationId) {
         if (DEBUG) {
             Log.d(TAG, "setInteractionid interactionId=%s; conversationID=%s", interactionId,
@@ -155,25 +139,10 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
         }
     }
 
-    @Override
-    public void consumeGesture(int gestureType,
-            CastWebContentsComponent.GestureHandledCallback handledGestureCallback) {
-        if (DEBUG) Log.d(TAG, "consumeGesture type=" + gestureType);
-        if (mNativeCastContentWindowAndroid != 0) {
-            CastContentWindowAndroidJni.get().consumeGesture(mNativeCastContentWindowAndroid,
-                    CastContentWindowAndroid.this, gestureType, handledGestureCallback);
-            return;
-        }
-        handledGestureCallback.invoke(false);
-    }
-
     @NativeMethods
     interface Natives {
         void onActivityStopped(
                 long nativeCastContentWindowAndroid, CastContentWindowAndroid caller);
-        void consumeGesture(long nativeCastContentWindowAndroid, CastContentWindowAndroid caller,
-                int gestureType,
-                CastWebContentsComponent.GestureHandledCallback handledGestureCallback);
         void onVisibilityChange(long nativeCastContentWindowAndroid,
                 CastContentWindowAndroid caller, int visibilityType);
     }

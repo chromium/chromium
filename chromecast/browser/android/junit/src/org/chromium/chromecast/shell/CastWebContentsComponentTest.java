@@ -49,8 +49,6 @@ public class CastWebContentsComponentTest {
 
     private static final String SESSION_ID = "123456789";
 
-    private static final int VISIBILITY_PRIORITY = 2;
-
     private @Mock WebContents mWebContents;
     private Activity mActivity;
     private ShadowActivity mShadowActivity;
@@ -61,7 +59,7 @@ public class CastWebContentsComponentTest {
         MockitoAnnotations.initMocks(this);
         mActivity = Mockito.spy(Robolectric.buildActivity(Activity.class).setup().get());
         mShadowActivity = Shadows.shadowOf(mActivity);
-        mStartParams = new StartParams(mActivity, mWebContents, APP_ID, VISIBILITY_PRIORITY);
+        mStartParams = new StartParams(mActivity, mWebContents, APP_ID);
     }
 
     @Test
@@ -269,19 +267,6 @@ public class CastWebContentsComponentTest {
     }
 
     @Test
-    public void testOnGestureCallback() {
-        CastWebContentsComponent.SurfaceEventHandler callback =
-                Mockito.mock(CastWebContentsComponent.SurfaceEventHandler.class);
-        CastWebContentsComponent component =
-                new CastWebContentsComponent(SESSION_ID, null, callback, false, false, true);
-        component.start(mStartParams, false);
-        CastWebContentsComponent.onGesture(SESSION_ID, 1);
-        component.stop(mActivity);
-
-        verify(callback).consumeGesture(eq(1), any());
-    }
-
-    @Test
     public void testStartWebContentsComponentMultipleTimes() {
         CastWebContentsComponent component =
                 new CastWebContentsComponent(SESSION_ID, null, null, false, false, true);
@@ -289,7 +274,7 @@ public class CastWebContentsComponentTest {
         component.start(mStartParams, delegate);
         Assert.assertTrue(component.isStarted());
         verify(delegate, times(1)).start(eq(mStartParams));
-        StartParams params2 = new StartParams(mActivity, mWebContents, "test", 1);
+        StartParams params2 = new StartParams(mActivity, mWebContents, "test");
         component.start(params2, delegate);
         Assert.assertTrue(component.isStarted());
         verify(delegate, times(2)).start(any(StartParams.class));

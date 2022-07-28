@@ -13,16 +13,8 @@ public class CastIntents {
             "com.google.android.apps.castshell.intent.action.ACTION_SCREEN_OFF";
 
     /**
-     * Action type of intent from CastWebContentsComponent to host activity of
-     * CastWebContentsFragment to show web contents. (To start CastWebContentsActivity use
-     * Context.startActivity())
-     */
-    public static final String ACTION_SHOW_WEB_CONTENT = "com.google.assistant.SHOW_WEB_CONTENT";
-
-    /**
-     * Action type of intent from CastWebContentsComponent to mInternalStopReceiver to detach
-     * WebContents and then file an intent to CastWebContentsFragment's host activity to stop
-     * fragment.
+     * Used by CastWebContentsComponent to tell CastWebContentsSurfaceHelper to tear down the web
+     * contents.
      */
     public static final String ACTION_STOP_WEB_CONTENT = "com.google.assistant.STOP_WEB_CONTENT";
 

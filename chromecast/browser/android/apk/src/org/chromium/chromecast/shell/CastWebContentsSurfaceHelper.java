@@ -22,16 +22,15 @@ import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * A util class for CastWebContentsActivity and CastWebContentsFragment to show
- * WebContent on its views.
+ * A util class for CastWebContentsActivity to show WebContents on its views.
  * <p>
- * This class is to help the activity or fragment class to work with CastContentWindowAndroid,
- * which will start a new instance of activity or fragment. If the CastContentWindowAndroid is
- * destroyed, CastWebContentsActivity or CastWebContentsFragment should be stopped.
- * Similarily,  CastWebContentsActivity or CastWebContentsFragment is stopped, eg.
- * CastWebContentsFragment is removed from a activity or the activity holding it
- * is destroyed, or CastWebContentsActivity is closed, CastContentWindowAndroid should be
- * notified by intent.
+ * This class is to help the activity class to work with CastContentWindowAndroid, which will start
+ * a new instance of the activity. If the CastContentWindowAndroid is destroyed,
+ * CastWebContentsActivity should be stopped.
+ * <p>
+ * Similarly, if CastWebContentsActivity is stopped, eg. the user goes "back" or "home" via the
+ * remote (or a gesture on touch-compatible devices), CastContentWindowAndroid should be notified
+ * by intent.
  */
 class CastWebContentsSurfaceHelper {
     private static final String TAG = "CastWebContents";

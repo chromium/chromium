@@ -35,18 +35,10 @@ public class CastWebContentsComponent {
     public interface OnComponentClosedHandler { void onComponentClosed(); }
 
     /**
-     * Callback interface invoked to indicate whether a gesture has been handled.
-     */
-    public interface GestureHandledCallback {
-        void invoke(boolean handled);
-    }
-
-    /**
      * Callback interface for when UI events occur.
      */
     public interface SurfaceEventHandler {
         void onVisibilityChange(int visibilityType);
-        void consumeGesture(int gestureType, GestureHandledCallback handledGestureCallback);
     }
 
     /**
@@ -56,13 +48,11 @@ public class CastWebContentsComponent {
         public final Context context;
         public final WebContents webContents;
         public final String appId;
-        public final int visibilityPriority;
 
-        public StartParams(Context context, WebContents webContents, String appId, int priority) {
+        public StartParams(Context context, WebContents webContents, String appId) {
             this.context = context;
             this.webContents = webContents;
             this.appId = appId;
-            visibilityPriority = priority;
         }
 
         @Override
@@ -77,8 +67,7 @@ public class CastWebContentsComponent {
 
             StartParams params = (StartParams) other;
             return params.context == this.context && params.webContents == this.webContents
-                    && params.appId.equals(this.appId)
-                    && params.visibilityPriority == this.visibilityPriority;
+                    && params.appId.equals(this.appId);
         }
     }
 
@@ -209,7 +198,6 @@ public class CastWebContentsComponent {
             filter.addAction(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
             filter.addAction(CastWebContentsIntentUtils.ACTION_KEY_EVENT);
             filter.addAction(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
-            filter.addAction(CastWebContentsIntentUtils.ACTION_ON_GESTURE);
             return new LocalBroadcastReceiverScope(filter, this ::onReceiveIntent);
         });
     }
@@ -228,29 +216,6 @@ public class CastWebContentsComponent {
             }
             if (mSurfaceEventHandler != null) {
                 mSurfaceEventHandler.onVisibilityChange(visibilityType);
-            }
-        } else if (CastWebContentsIntentUtils.isIntentOfGesturing(intent)) {
-            int gestureType = CastWebContentsIntentUtils.getGestureType(intent);
-            if (DEBUG) {
-                Log.d(TAG,
-                        "onReceive ACTION_ON_GESTURE_CHANGE instance=" + mSessionId
-                                + "; gesture=" + gestureType);
-            }
-            if (mSurfaceEventHandler != null) {
-                mSurfaceEventHandler.consumeGesture(gestureType, (handled) -> {
-                    if (handled) {
-                        if (DEBUG) Log.d(TAG, "send gesture consumed instance=" + mSessionId);
-                        sendIntentSync(CastWebContentsIntentUtils.gestureConsumed(
-                                mSessionId, gestureType, true));
-                    } else {
-                        if (DEBUG) Log.d(TAG, "send gesture NOT consumed instance=" + mSessionId);
-                        sendIntentSync(CastWebContentsIntentUtils.gestureConsumed(
-                                mSessionId, gestureType, false));
-                    }
-                });
-            } else {
-                sendIntentSync(
-                        CastWebContentsIntentUtils.gestureConsumed(mSessionId, gestureType, false));
             }
         }
     }
@@ -276,8 +241,7 @@ public class CastWebContentsComponent {
         if (DEBUG) {
             Log.d(TAG,
                     "Starting WebContents with delegate: " + mDelegate.getClass().getSimpleName()
-                            + "; Instance ID: " + mSessionId + "; App ID: " + params.appId
-                            + "; Visibility Priority: " + params.visibilityPriority);
+                            + "; Instance ID: " + mSessionId + "; App ID: " + params.appId);
         }
         mHasWebContentsState.set(params.webContents);
         mDelegate.start(params);
@@ -296,21 +260,6 @@ public class CastWebContentsComponent {
         mDelegate.stop(context);
         mDelegate = null;
         mStarted = false;
-    }
-
-    public void requestVisibilityPriority(int visibilityPriority) {
-        if (DEBUG) {
-            Log.d(TAG,
-                    "requestVisibilityPriority: " + mSessionId
-                            + "; Visibility:" + visibilityPriority);
-        }
-        sendIntentSync(CastWebContentsIntentUtils.requestVisibilityPriority(
-                mSessionId, visibilityPriority));
-    }
-
-    public void requestMoveOut() {
-        if (DEBUG) Log.d(TAG, "requestMoveOut: " + mSessionId);
-        sendIntentSync(CastWebContentsIntentUtils.requestMoveOut(mSessionId));
     }
 
     public void enableTouchInput(boolean enabled) {
@@ -336,11 +285,6 @@ public class CastWebContentsComponent {
     public static void onVisibilityChange(String sessionId, int visibilityType) {
         if (DEBUG) Log.d(TAG, "onVisibilityChange");
         sendIntentSync(CastWebContentsIntentUtils.onVisibilityChange(sessionId, visibilityType));
-    }
-
-    public static void onGesture(String sessionId, int gestureType) {
-        if (DEBUG) Log.d(TAG, "onGesture: " + sessionId + "; gestureType: " + gestureType);
-        sendIntentSync(CastWebContentsIntentUtils.onGesture(sessionId, gestureType));
     }
 
     private static boolean sendIntent(Intent in) {
