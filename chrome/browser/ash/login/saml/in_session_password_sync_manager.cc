@@ -281,6 +281,7 @@ void InSessionPasswordSyncManager::DismissDialog() {
 void InSessionPasswordSyncManager::ResetDialog() {
   DCHECK(lock_screen_start_reauth_dialog_);
   lock_screen_start_reauth_dialog_.reset();
+  OnReauthDialogClosedForTesting();  // IN-TEST
 }
 
 int InSessionPasswordSyncManager::GetDialogWidth() {
@@ -298,12 +299,30 @@ bool InSessionPasswordSyncManager::IsReauthDialogLoadedForTesting(
   return false;
 }
 
+bool InSessionPasswordSyncManager::IsReauthDialogClosedForTesting(
+    base::OnceClosure callback) {
+  if (!is_dialog_loaded_for_testing_)
+    return true;
+  DCHECK(!on_dialog_closed_callback_for_testing_);
+  on_dialog_closed_callback_for_testing_ = std::move(callback);
+  return false;
+}
+
 void InSessionPasswordSyncManager::OnReauthDialogReadyForTesting() {
   if (is_dialog_loaded_for_testing_)
     return;
   is_dialog_loaded_for_testing_ = true;
   if (on_dialog_loaded_callback_for_testing_) {
     std::move(on_dialog_loaded_callback_for_testing_).Run();
+  }
+}
+
+void InSessionPasswordSyncManager::OnReauthDialogClosedForTesting() {
+  if (!is_dialog_loaded_for_testing_)
+    return;
+  is_dialog_loaded_for_testing_ = false;
+  if (on_dialog_closed_callback_for_testing_) {
+    std::move(on_dialog_closed_callback_for_testing_).Run();
   }
 }
 

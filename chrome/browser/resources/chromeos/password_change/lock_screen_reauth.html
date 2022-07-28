@@ -260,7 +260,8 @@
           </div>
         </div>
         <div class="flex layout horizontal button-container">
-          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+          <cr-button id="cancelButtonVerifyScreen" class="cancel-button"
+              on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
           <cr-button id="nextButtonVerifyScreen" class="action-button" on-click="onVerify_">
@@ -270,7 +271,7 @@
       </div>
 
       <div class="content-wrapper" hidden="[[!isErrorDisplayed_]]" role="dialog"
-          aria-modal="true"
+          aria-modal="true" id="errorScreen"
           aria-label="$i18n{loginWelcomeMessageWithError}">
         <div class="main-container">
           <div class="header">
@@ -288,7 +289,8 @@
           </div>
         </div>
         <div class="flex layout horizontal button-container">
-          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+          <cr-button id="cancelButtonErrorScreen" class="cancel-button"
+              on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
           <cr-button id="nextButton" class="action-button" on-click="onVerify_">
@@ -310,7 +312,8 @@
         </webview>
       </div>
 
-      <div class="content-wrapper" hidden="[[!isConfirmPassword_]]">
+      <div id="samlConfirmPasswordScreen" class="content-wrapper"
+          hidden="[[!isConfirmPassword_]]">
         <div class="main-container">
           <div class="header">
             <iron-icon class="title-icon" icon="oobe-32:lock"></iron-icon>
@@ -340,7 +343,8 @@
           <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
-          <cr-button id="nextButton" class="action-button" on-click="onConfirm_">
+          <cr-button id="nextButtonSamlConfirmPassword" class="action-button"
+              on-click="onConfirm_">
             $i18n{lockScreenNextButton}
             <iron-icon id="arrowForward" icon="oobe-20:button-arrow-forward">
             </iron-icon>

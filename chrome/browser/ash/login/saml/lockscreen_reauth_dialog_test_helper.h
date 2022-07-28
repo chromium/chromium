@@ -60,12 +60,35 @@ class LockScreenReauthDialogTestHelper {
   // For SAML flows this proceeds to the SAML flow.
   void ClickVerifyButton();
 
+  // Clicks the 'Cancel' button on the 'Verify Account' screen.
+  void ClickCancelButtonOnVerifyScreen();
+
+  // Clicks the 'Cancel' button on the 'Error' screen.
+  void ClickCancelButtonOnErrorScreen();
+
+  // Clicks the 'Cancel' button on the 'Saml Account' screen.
+  void ClickCancelButtonOnSamlScreen();
+
   // Waits for a screen with the `saml-container` element to be shown.
   void WaitForSamlScreen();
 
+  // Next members allow to check visibility for some screens ('verify account',
+  // ' error screen' and 'saml screen')
   void ExpectVerifyAccountScreenVisible();
   void ExpectVerifyAccountScreenHidden();
+  void ExpectErrorScreenVisible();
   void ExpectSamlScreenVisible();
+  void ExpectSamlScreenHidden();
+
+  // Next members allow to check visibility of some elements on 'confirm
+  // password screen' and also help to fill forms. Precondition: 'confirm
+  // password screen' is visible.
+  void ExpectSamlConfirmPasswordVisible();
+  void ExpectPasswordConfirmInputHidden();
+  void ExpectPasswordConfirmInputVisible();
+  void SendConfirmPassword(const std::string& password_to_confirm);
+  void SetManualPasswords(const std::string& password,
+                          const std::string& confirm_password);
 
   void ShowNetworkScreenAndWait();
   void WaitForNetworkDialogAndSetHandlers();
@@ -74,6 +97,9 @@ class LockScreenReauthDialogTestHelper {
   void ExpectNetworkDialogVisible();
   void ExpectNetworkDialogHidden();
   void ClickCloseNetworkButton();
+
+  // Wait until the main dialog closes.
+  void WaitForReauthDialogToClose();
 
   // Wait for the SAML IdP page to load.
   // Precondition: The SAML container is visible.

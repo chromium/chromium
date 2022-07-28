@@ -41,6 +41,8 @@ namespace {
 
 constexpr char kTestAuthSIDCookie1[] = "fake-auth-SID-cookie-1";
 constexpr char kTestAuthLSIDCookie1[] = "fake-auth-LSID-cookie-1";
+constexpr char kTestAuthSIDCookie2[] = "fake-auth-SID-cookie-1";
+constexpr char kTestAuthLSIDCookie2[] = "fake-auth-LSID-cookie-1";
 constexpr char kTestRefreshToken[] = "fake-refresh-token";
 constexpr char kWifiServicePath[] = "/service/wifi1";
 constexpr char kEthServicePath[] = "/service/eth1";
@@ -123,6 +125,25 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
   void Login() { logged_in_user_mixin_.LogInUser(); }
 
+  absl::optional<LockScreenReauthDialogTestHelper>
+  StartSamlAndWaitForIdpPageLoad() {
+    absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+        LockScreenReauthDialogTestHelper::ShowDialogAndWait();
+    DCHECK(reauth_dialog_helper);
+    reauth_dialog_helper->ForceSamlRedirect();
+
+    // Expect the 'Verify Account' screen (the first screen the dialog shows) to
+    // be visible and proceed to the SAML page.
+    reauth_dialog_helper->WaitForVerifyAccountScreen();
+    reauth_dialog_helper->ClickVerifyButton();
+
+    reauth_dialog_helper->WaitForSamlScreen();
+    reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+
+    reauth_dialog_helper->WaitForIdpPageLoad();
+    return reauth_dialog_helper;
+  }
+
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_; }
 
   FakeGaiaMixin* fake_gaia_mixin() {
@@ -147,7 +168,32 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};
 };
 
+// Test Lockscreen reauth main flow.
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      StartSamlAndWaitForIdpPageLoad();
+
+  // Fill-in the SAML IdP form and submit.
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+  signin_frame_js.CreateVisibilityWaiter(true, {"Email"})->Wait();
+  signin_frame_js.TypeIntoPath(FakeGaiaMixin::kEnterpriseUser1, {"Email"});
+  signin_frame_js.TypeIntoPath("actual_password", {"Password"});
+  signin_frame_js.TapOn("Submit");
+
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+  ScreenLockerTester().WaitForUnlock();
+}
+
+// Tests the cancel button in Verify Screen.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, VerifyScreenCancel) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   Login();
@@ -163,21 +209,216 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
   // Expect the 'Verify Account' screen (the first screen the dialog shows) to
   // be visible and proceed to the SAML page.
   reauth_dialog_helper->WaitForVerifyAccountScreen();
-  reauth_dialog_helper->ClickVerifyButton();
+  reauth_dialog_helper->ClickCancelButtonOnVerifyScreen();
 
-  reauth_dialog_helper->WaitForSamlScreen();
-  reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+  ASSERT_TRUE(session_manager::SessionManager::Get()->IsScreenLocked());
+}
 
-  reauth_dialog_helper->WaitForIdpPageLoad();
+// Tests the close button in SAML Screen.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, SamlScreenCancel) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      StartSamlAndWaitForIdpPageLoad();
+
+  reauth_dialog_helper->ClickCancelButtonOnSamlScreen();
+
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+  ASSERT_TRUE(session_manager::SessionManager::Get()->IsScreenLocked());
+}
+
+// Tests the single password scraped flow.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedSingle) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      StartSamlAndWaitForIdpPageLoad();
+
+  content::DOMMessageQueue message_queue(
+      reauth_dialog_helper->DialogWebContents());
+
+  // Make sure that the password is scraped correctly.
+  ASSERT_TRUE(content::ExecuteScript(
+      reauth_dialog_helper->DialogWebContents(),
+      "$('main-element').authenticator_.addEventListener('authCompleted',"
+      "    function(e) {"
+      "      var password = e.detail.password;"
+      "      window.domAutomationController.send(password);"
+      "    });"));
+
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+
+  // Fill-in the SAML IdP form and submit.
+  signin_frame_js.TypeIntoPath("fake_user", {"Email"});
+  signin_frame_js.TypeIntoPath("fake_password", {"Password"});
+
+  // Scraping a single password should finish the login and start the session.
+  signin_frame_js.TapOn("Submit");
+
+  std::string message;
+  do {
+    ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  } while (message != "\"fake_password\"");
+
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+  ScreenLockerTester().WaitForUnlock();
+}
+
+// Tests password scraping from a dynamically created password field.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedDynamic) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      StartSamlAndWaitForIdpPageLoad();
+
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+  signin_frame_js.Evaluate(
+      "(function() {"
+      "  var newPassInput = document.createElement('input');"
+      "  newPassInput.id = 'DynamicallyCreatedPassword';"
+      "  newPassInput.type = 'password';"
+      "  newPassInput.name = 'Password';"
+      "  document.forms[0].appendChild(newPassInput);"
+      "})();");
+
+  // Fill-in the SAML IdP form and submit.
+  signin_frame_js.TypeIntoPath("fake_user", {"Email"});
+  signin_frame_js.TypeIntoPath("fake_password", {"DynamicallyCreatedPassword"});
+
+  // Scraping a single password should finish the login and start the session.
+  signin_frame_js.TapOn("Submit");
+
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+  ScreenLockerTester().WaitForUnlock();
+}
+
+// Tests the multiple password scraped flow.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedMultiple) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_two_passwords.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      StartSamlAndWaitForIdpPageLoad();
 
   // Fill-in the SAML IdP form and submit.
   test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
   signin_frame_js.CreateVisibilityWaiter(true, {"Email"})->Wait();
   signin_frame_js.TypeIntoPath(FakeGaiaMixin::kEnterpriseUser1, {"Email"});
+  signin_frame_js.TypeIntoPath("fake_password", {"Password"});
+  signin_frame_js.TypeIntoPath("password1", {"Password1"});
+  signin_frame_js.TapOn("Submit");
+
+  reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
+  reauth_dialog_helper->ExpectSamlScreenHidden();
+  reauth_dialog_helper->ExpectPasswordConfirmInputHidden();
+
+  // Entering an unknown password should go back to the confirm password screen.
+  reauth_dialog_helper->SendConfirmPassword("wrong_password");
+  reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
+  reauth_dialog_helper->ExpectPasswordConfirmInputHidden();
+
+  // Either scraped password should be able to sign-in.
+  reauth_dialog_helper->SendConfirmPassword("password1");
+
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+  ScreenLockerTester().WaitForUnlock();
+}
+
+// Test when no password is scraped.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ScrapedNone) {
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login_no_passwords.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      StartSamlAndWaitForIdpPageLoad();
+
+  // Fill-in the SAML IdP form and submit.
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+  signin_frame_js.TypeIntoPath("fake_user", {"Email"});
+  signin_frame_js.TapOn("Submit");
+
+  reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
+  reauth_dialog_helper->ExpectSamlScreenHidden();
+  reauth_dialog_helper->ExpectPasswordConfirmInputVisible();
+
+  // Entering passwords that don't match will make us land again in the same
+  // page.
+  reauth_dialog_helper->SetManualPasswords("Test1", "Test2");
+  reauth_dialog_helper->ExpectSamlConfirmPasswordVisible();
+  reauth_dialog_helper->ExpectPasswordConfirmInputVisible();
+
+  // Two matching passwords should let the user to authenticate.
+  reauth_dialog_helper->SetManualPasswords("Test1", "Test1");
+
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+  ScreenLockerTester().WaitForUnlock();
+}
+
+// Tests another account is authenticated other than the one used in sign
+// in.
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, VerifyAgainFlow) {
+  fake_gaia_mixin()->fake_gaia()->SetFakeMergeSessionParams(
+      FakeGaiaMixin::kEnterpriseUser2, kTestAuthSIDCookie1,
+      kTestAuthLSIDCookie1);
+
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  Login();
+
+  // Lock the screen and trigger the lock screen SAML reauth dialog.
+  ScreenLockerTester().Lock();
+
+  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      StartSamlAndWaitForIdpPageLoad();
+
+  // Authenticate in the IdP with another account other than the one used in
+  // sign in.
+  fake_gaia_mixin()->fake_gaia()->SetFakeMergeSessionParams(
+      FakeGaiaMixin::kEnterpriseUser2, kTestAuthSIDCookie2,
+      kTestAuthLSIDCookie2);
+  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+  signin_frame_js.CreateVisibilityWaiter(true, {"Email"})->Wait();
+  signin_frame_js.TypeIntoPath(FakeGaiaMixin::kEnterpriseUser2, {"Email"});
   signin_frame_js.TypeIntoPath("actual_password", {"Password"});
   signin_frame_js.TapOn("Submit");
 
-  ScreenLockerTester().WaitForUnlock();
+  reauth_dialog_helper->ExpectErrorScreenVisible();
+  reauth_dialog_helper->ClickCancelButtonOnErrorScreen();
+
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
+
+  ASSERT_TRUE(session_manager::SessionManager::Get()->IsScreenLocked());
 }
 
 IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
@@ -519,6 +760,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
   signin_frame_js.TypeIntoPath("actual_password", {"Password"});
   signin_frame_js.TapOn("Submit");
 
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
   ScreenLockerTester().WaitForUnlock();
 }
 
