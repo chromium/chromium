@@ -2711,8 +2711,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -2791,8 +2791,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMatchingValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -2890,8 +2890,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithNonMatchingValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3014,8 +3014,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithMultipleValidities) {
   form_structure->set_password_attributes_vote(
       std::make_pair(PasswordAttribute::kHasLowercaseLetter, true));
   form_structure->set_password_length_vote(10u);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3135,8 +3135,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest) {
   form_structure->set_password_length_vote(10u);
   form_structure->set_submission_event(
       SubmissionIndicatorEvent::HTML_FORM_SUBMISSION);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3321,8 +3321,8 @@ TEST_F(FormStructureTestImpl,
                                              {ACCOUNT_CREATION_PASSWORD});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3434,8 +3434,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithAutocomplete) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3528,8 +3528,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestWithPropertiesMask) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3613,8 +3613,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_ObservedSubmissionFalse) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3687,8 +3687,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithLabels) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3760,8 +3760,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithCssClassesAndIds) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   std::unique_ptr<FormStructure> form_structure(new FormStructure(form));
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -3842,8 +3842,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithFormName) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
   form_structure->set_submission_source(SubmissionSource::FRAME_DETACHED);
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
@@ -3924,8 +3924,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequestPartialMetadata) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -4015,8 +4015,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_DisabledMetadata) {
       possible_field_types, possible_field_types_validities, {EMAIL_ADDRESS});
 
   form_structure = std::make_unique<FormStructure>(form);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   ASSERT_EQ(form_structure->field_count(), possible_field_types.size());
   ASSERT_EQ(form_structure->field_count(),
@@ -4230,8 +4230,8 @@ TEST_F(FormStructureTestImpl, CheckDataPresence) {
 
   FormStructure form_structure(form);
   form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
-  for (auto& field : form_structure)
-    field->host_form_signature = form_structure.form_signature();
+  for (auto& fs_field : form_structure)
+    fs_field->host_form_signature = form_structure.form_signature();
 
   std::vector<ServerFieldTypeSet> possible_field_types;
   std::vector<ServerFieldTypeValidityStatesMap> possible_field_types_validities;
@@ -4611,8 +4611,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_PasswordsRevealed) {
 
   FormStructure form_structure(form);
   form_structure.set_passwords_were_revealed(true);
-  for (auto& field : form_structure)
-    field->host_form_signature = form_structure.form_signature();
+  for (auto& fs_field : form_structure)
+    fs_field->host_form_signature = form_structure.form_signature();
 
   std::vector<AutofillUploadContents> uploads =
       form_structure.EncodeUploadRequest(
@@ -4638,8 +4638,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_IsFormTag) {
     form.is_form_tag = is_form_tag;
 
     FormStructure form_structure(form);
-    for (auto& field : form_structure)
-      field->host_form_signature = form_structure.form_signature();
+    for (auto& fs_field : form_structure)
+      fs_field->host_form_signature = form_structure.form_signature();
     form_structure.set_passwords_were_revealed(true);
     std::vector<AutofillUploadContents> uploads =
         form_structure.EncodeUploadRequest(
@@ -5144,8 +5144,8 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest_MissingNames) {
   form.fields.push_back(field);
 
   FormStructure form_structure(form);
-  for (auto& field : form_structure)
-    field->host_form_signature = form_structure.form_signature();
+  for (auto& fs_field : form_structure)
+    fs_field->host_form_signature = form_structure.form_signature();
 
   std::vector<FormStructure*> forms;
   forms.push_back(&form_structure);
@@ -5181,8 +5181,8 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_WithSingleUsernameVoteType) {
   FormStructure form_structure(form);
   form_structure.field(0)->set_single_username_vote_type(
       AutofillUploadContents::Field::STRONG);
-  for (auto& field : form_structure)
-    field->host_form_signature = form_structure.form_signature();
+  for (auto& fs_field : form_structure)
+    fs_field->host_form_signature = form_structure.form_signature();
 
   std::vector<AutofillUploadContents> uploads =
       form_structure.EncodeUploadRequest(

@@ -234,9 +234,9 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
       // autocomplete="tel-local-suffix" corresponds to. In all countries using
       // this format that we are aware of (see unit tests), the suffix consists
       // of the last 4 digits, while the length of the prefix varies.
-      constexpr int kSuffixLength = 4;
-      DCHECK(number.size() >= kSuffixLength);
-      return number.substr(number.size() - kSuffixLength);
+      constexpr size_t kHomePhoneNumberSuffixLength = 4;
+      DCHECK_GE(number.size(), kHomePhoneNumberSuffixLength);
+      return number.substr(number.size() - kHomePhoneNumberSuffixLength);
     }
 
     case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:

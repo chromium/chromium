@@ -345,8 +345,8 @@ TEST_F(AutofillDownloadManagerTest, QueryAndUploadTest) {
 
   form_structures.push_back(std::make_unique<FormStructure>(form));
   for (auto& form_structure : form_structures) {
-    for (auto& field : *form_structure)
-      field->host_form_signature = form_structure->form_signature();
+    for (auto& fs_field : *form_structure)
+      fs_field->host_form_signature = form_structure->form_signature();
   }
 
   // Make download manager.
@@ -726,8 +726,8 @@ TEST_F(AutofillDownloadManagerTest, UploadToAPITest) {
 
   FormStructure form_structure(form);
   form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
-  for (auto& field : form_structure)
-    field->host_form_signature = form_structure.form_signature();
+  for (auto& fs_field : form_structure)
+    fs_field->host_form_signature = form_structure.form_signature();
 
   std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
   AutofillDownloadManager download_manager(
@@ -805,8 +805,8 @@ TEST_F(AutofillDownloadManagerTest, UploadWithRawMetadata) {
     form.fields.push_back(field);
     FormStructure form_structure(form);
     form_structure.set_submission_source(SubmissionSource::FORM_SUBMISSION);
-    for (auto& field : form_structure)
-      field->host_form_signature = form_structure.form_signature();
+    for (auto& fs_field : form_structure)
+      fs_field->host_form_signature = form_structure.form_signature();
 
     std::unique_ptr<PrefService> pref_service = test::PrefServiceForTesting();
     AutofillDownloadManager download_manager(
@@ -881,8 +881,8 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Query) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   form_structures.push_back(std::make_unique<FormStructure>(form));
   for (auto& form_structure : form_structures) {
-    for (auto& field : *form_structure)
-      field->host_form_signature = form_structure->form_signature();
+    for (auto& fs_field : *form_structure)
+      fs_field->host_form_signature = form_structure->form_signature();
   }
 
   // Request with id 0.
@@ -954,8 +954,8 @@ TEST_F(AutofillDownloadManagerTest, BackoffLogic_Upload) {
 
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->set_submission_source(SubmissionSource::FORM_SUBMISSION);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   // Request with id 0.
   EXPECT_TRUE(download_manager_.StartUploadRequest(
@@ -1123,8 +1123,8 @@ TEST_F(AutofillDownloadManagerTest, RetryLimit_Upload) {
 
   auto form_structure = std::make_unique<FormStructure>(form);
   form_structure->set_submission_source(SubmissionSource::FORM_SUBMISSION);
-  for (auto& field : *form_structure)
-    field->host_form_signature = form_structure->form_signature();
+  for (auto& fs_field : *form_structure)
+    fs_field->host_form_signature = form_structure->form_signature();
 
   // Request with id 0.
   EXPECT_TRUE(download_manager_.StartUploadRequest(
@@ -1956,8 +1956,8 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   AutofillDownloadManager download_manager(driver_.get(), this);
   FormStructure form_structure(form);
   form_structure.set_current_page_language(LanguageCode("fr"));
-  for (auto& field : form_structure)
-    field->host_form_signature = form_structure.form_signature();
+  for (auto& fs_field : form_structure)
+    fs_field->host_form_signature = form_structure.form_signature();
 
   pref_service_->SetBoolean(
       RandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled, true);
@@ -2096,10 +2096,10 @@ TEST_P(AutofillUploadTest, ThrottlingDisabled) {
   AutofillDownloadManager download_manager(driver_.get(), this);
   FormStructure form_structure(form);
   FormStructure small_form_structure(small_form);
-  for (auto& field : form_structure)
-    field->host_form_signature = form_structure.form_signature();
-  for (auto& field : small_form_structure)
-    field->host_form_signature = small_form_structure.form_signature();
+  for (auto& fs_field : form_structure)
+    fs_field->host_form_signature = form_structure.form_signature();
+  for (auto& fs_field : small_form_structure)
+    fs_field->host_form_signature = small_form_structure.form_signature();
 
   for (int i = 0; i <= static_cast<int>(SubmissionSource::kMaxValue); ++i) {
     base::HistogramTester histogram_tester;

@@ -2253,7 +2253,6 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCVC) {
 }
 
 TEST_F(AutofillFieldFillerTest, PreviewVirtualCVCAmericanExpress) {
-  const char kAmericanExpressCard[] = "americanExpressCC";
   AutofillField field;
   field.form_control_type = "text";
   FieldFiller filler(/*app_locale=*/"en-US", /*address_normalizer=*/nullptr);
@@ -2274,7 +2273,6 @@ TEST_F(AutofillFieldFillerTest, PreviewVirtualCardNumber) {
   field.set_heuristic_type(GetActivePatternSource(), CREDIT_CARD_NUMBER);
   field.set_credit_card_number_offset(50);
   field.form_control_type = "text";
-  const char kMasterCard[] = "masterCardCC";
 
   CreditCard card = test::GetVirtualCard();
   card.SetNumber(u"5454545454545454");
