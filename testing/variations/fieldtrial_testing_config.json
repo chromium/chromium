@@ -6227,7 +6227,6 @@
                         "PrefixSuggestIgnoreDuplicateVisits": "true",
                         "ShortBookmarkSuggestionsByTotalInputLengthThreshold": "3",
                         "UIMaxAutocompleteMatches": "8",
-                        "ZeroSuggestCacheDurationSec": "0",
                         "ZeroSuggestIgnoreDuplicateVisits": "false"
                     },
                     "enable_features": [
@@ -6262,8 +6261,7 @@
                         "OmniboxDynamicMaxAutocompleteIncreasedLimit": "15",
                         "OmniboxLocalZeroSuggestAgeThreshold": "30",
                         "OmniboxMaxURLMatches": "8",
-                        "UIMaxAutocompleteMatches": "10",
-                        "ZeroSuggestCacheDurationSec": "0"
+                        "UIMaxAutocompleteMatches": "10"
                     },
                     "enable_features": [
                         "AndroidAuxiliarySearch",
@@ -6274,6 +6272,9 @@
                         "OmniboxRetainSuggestionsWithHeaders",
                         "OmniboxUIExperimentMaxAutocompleteMatches",
                         "ZeroSuggestPrefetching"
+                    ],
+                    "disable_features": [
+                        "UseSharedInstanceForZeroSuggestPrefetching"
                     ]
                 }
             ]
