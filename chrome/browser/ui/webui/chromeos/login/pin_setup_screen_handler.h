@@ -7,31 +7,23 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
-
-namespace ash {
-class PinSetupScreen;
-}
 
 namespace chromeos {
 
 // Interface for dependency injection between PinSetupScreen and its
 // WebUI representation.
-class PinSetupScreenView {
+class PinSetupScreenView : public base::SupportsWeakPtr<PinSetupScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"pin-setup"};
+  inline constexpr static StaticOobeScreenId kScreenId{"pin-setup",
+                                                       "PinSetupScreen"};
 
   virtual ~PinSetupScreenView() = default;
 
-  // Sets screen this view belongs to.
-  virtual void Bind(ash::PinSetupScreen* screen) = 0;
-
   // Shows the contents of the screen, using |token| to access QuickUnlock API.
   virtual void Show(const std::string& token, bool is_child_account) = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
 
   virtual void SetLoginSupportAvailable(bool available) = 0;
 };
@@ -52,18 +44,10 @@ class PinSetupScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::Value::Dict* dict) override;
-  void RegisterMessages() override;
 
   // PinSetupScreenView:
-  void Bind(ash::PinSetupScreen* screen) override;
-  void Hide() override;
-  void InitializeDeprecated() override;
   void Show(const std::string& token, bool is_child_account) override;
   void SetLoginSupportAvailable(bool available) override;
-
- private:
-  ash::PinSetupScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos

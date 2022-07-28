@@ -17,13 +17,9 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId PinSetupScreenView::kScreenId;
+PinSetupScreenHandler::PinSetupScreenHandler() : BaseScreenHandler(kScreenId) {}
 
-PinSetupScreenHandler::PinSetupScreenHandler() : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.PinSetupScreen.userActed");
-}
-
-PinSetupScreenHandler::~PinSetupScreenHandler() {}
+PinSetupScreenHandler::~PinSetupScreenHandler() = default;
 
 void PinSetupScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
@@ -76,21 +72,6 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_SETTINGS_PEOPLE_CONFIGURE_PIN_INTERNAL_ERROR);
 }
 
-void PinSetupScreenHandler::RegisterMessages() {
-  BaseScreenHandler::RegisterMessages();
-}
-
-void PinSetupScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {}
-
-void PinSetupScreenHandler::Bind(PinSetupScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-}
-
-void PinSetupScreenHandler::Hide() {}
-
-void PinSetupScreenHandler::InitializeDeprecated() {}
-
 void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account) {
   base::Value::Dict data;
@@ -100,7 +81,7 @@ void PinSetupScreenHandler::Show(const std::string& token,
 }
 
 void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {
-  CallJS("login.PinSetupScreen.setHasLoginSupport", available);
+  CallExternalAPI("setHasLoginSupport", available);
 }
 
 }  // namespace chromeos

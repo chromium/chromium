@@ -91,22 +91,18 @@ bool PinSetupScreen::ShouldSkipBecauseOfPolicy() {
   return false;
 }
 
-PinSetupScreen::PinSetupScreen(PinSetupScreenView* view,
+PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
                                const ScreenExitCallback& exit_callback)
     : BaseScreen(PinSetupScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
       &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
 }
 
-PinSetupScreen::~PinSetupScreen() {
-  if (view_)
-    view_->Bind(nullptr);
-}
+PinSetupScreen::~PinSetupScreen() = default;
 
 bool PinSetupScreen::SkipScreen(WizardContext* context) {
   ClearAuthData(context);
@@ -172,12 +168,12 @@ void PinSetupScreen::ShowImpl() {
 }
 
 void PinSetupScreen::HideImpl() {
-  view_->Hide();
   token_lifetime_timeout_.Stop();
   ClearAuthData(context());
 }
 
-void PinSetupScreen::OnUserActionDeprecated(const std::string& action_id) {
+void PinSetupScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
@@ -191,7 +187,7 @@ void PinSetupScreen::OnUserActionDeprecated(const std::string& action_id) {
     exit_callback_.Run(Result::USER_SKIP);
     return;
   }
-  BaseScreen::OnUserActionDeprecated(action_id);
+  BaseScreen::OnUserAction(args);
 }
 
 void PinSetupScreen::ClearAuthData(WizardContext* context) {

@@ -47,7 +47,7 @@ class PinSetupScreen : public BaseScreen {
   SetForceNoSkipBecauseOfPolicyForTests(bool value);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  PinSetupScreen(PinSetupScreenView* view,
+  PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
                  const ScreenExitCallback& exit_callback);
 
   PinSetupScreen(const PinSetupScreen&) = delete;
@@ -68,7 +68,7 @@ class PinSetupScreen : public BaseScreen {
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
  private:
   // Inticates whether the device supports usage of PIN for login.
@@ -76,7 +76,7 @@ class PinSetupScreen : public BaseScreen {
   // immediately.
   absl::optional<bool> has_login_support_;
 
-  PinSetupScreenView* const view_;
+  base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   base::OneShotTimer token_lifetime_timeout_;
