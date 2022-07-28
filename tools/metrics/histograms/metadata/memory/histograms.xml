@@ -560,15 +560,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.Experimental.Browser.EGLShaderCacheSize.Android"
-    units="KB" expires_after="M77">
-  <owner>ericrk@chromium.org</owner>
-  <summary>
-    The size of the EGL_ANDROID_blob_cache cache file on disk. Recorded once per
-    Chrome launch, after the first page has loaded.
-  </summary>
-</histogram>
-
 <histogram base="true" name="Memory.Experimental.Browser2" units="MB"
     expires_after="2023-01-10">
 <!-- Name completed by histogram_suffixes name="ProcessMemoryAllocator2" -->

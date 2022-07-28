@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.view.inputmethod.InputMethodSubtype;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.CommandLine;
@@ -95,7 +94,6 @@ import org.chromium.components.browser_ui.photo_picker.PhotoPickerDelegateBase;
 import org.chromium.components.browser_ui.photo_picker.PhotoPickerDialog;
 import org.chromium.components.browser_ui.share.ClipboardImageFileProvider;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.minidump_uploader.CrashFileManager;
@@ -422,9 +420,6 @@ public class ProcessInitializationHandler {
                                 ContextUtils.getApplicationContext()));
 
         deferredStartupHandler.addDeferredTask(
-                ProcessInitializationHandler::logEGLShaderCacheSizeHistogram);
-
-        deferredStartupHandler.addDeferredTask(
                 () -> MediaViewerUtils.updateMediaLauncherActivityEnabled());
 
         deferredStartupHandler.addDeferredTask(
@@ -714,50 +709,5 @@ public class ProcessInitializationHandler {
             boolean match = systemLocale.getLanguage().equalsIgnoreCase(keyboardLanguage);
             RecordHistogram.recordBooleanHistogram("InputMethod.MatchesSystemLanguage", match);
         }
-    }
-
-    /**
-     * Logs a histogram with the size of the Android EGL shader cache.
-     */
-    @RequiresApi(Build.VERSION_CODES.N)
-    private static void logEGLShaderCacheSizeHistogram() {
-        // To simplify logic, only log this value on Android N+.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return;
-        }
-        final Context cacheContext =
-                ContextUtils.getApplicationContext().createDeviceProtectedStorageContext();
-
-        // Must log async, as we're doing a file access.
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
-            // Record file sizes between 1-2560KB. Expected range is 1-2048KB, so this gives
-            // us a bit of buffer. These values cannot be changed, as doing so will alter
-            // histogram bucketing and confuse the dashboard.
-            final int minCacheFileSizeKb = 1;
-            final int maxCacheFileSizeKb = 2560;
-
-            File codeCacheDir = cacheContext.getCodeCacheDir();
-            if (codeCacheDir == null) {
-                return;
-            }
-            // This filename is defined in core/java/android/view/HardwareRenderer.java,
-            // and has been located in the codeCacheDir since Android M.
-            File cacheFile = new File(codeCacheDir, "com.android.opengl.shaders_cache");
-            if (!cacheFile.exists()) {
-                return;
-            }
-            long cacheFileSizeKb = ConversionUtils.bytesToKilobytes(cacheFile.length());
-            // Clamp size to [minFileSizeKb, maxFileSizeKb). This also guarantees that the
-            // int-cast below is safe.
-            if (cacheFileSizeKb < minCacheFileSizeKb) {
-                cacheFileSizeKb = minCacheFileSizeKb;
-            }
-            if (cacheFileSizeKb >= maxCacheFileSizeKb) {
-                cacheFileSizeKb = maxCacheFileSizeKb - 1;
-            }
-            String histogramName = "Memory.Experimental.Browser.EGLShaderCacheSize.Android";
-            RecordHistogram.recordCustomCountHistogram(histogramName, (int) cacheFileSizeKb,
-                    minCacheFileSizeKb, maxCacheFileSizeKb, 50);
-        });
     }
 }
