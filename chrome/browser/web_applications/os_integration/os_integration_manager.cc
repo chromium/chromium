@@ -780,9 +780,7 @@ void OsIntegrationManager::OnShortcutsCreated(
                                      OsHookType::kRunOnOsLogin));
   }
 
-  if (options.os_hooks[OsHookType::kUninstallationViaOsSettings] &&
-      base::FeatureList::IsEnabled(
-          features::kEnableWebAppUninstallFromOsSettings)) {
+  if (options.os_hooks[OsHookType::kUninstallationViaOsSettings]) {
     RegisterWebAppOsUninstallation(
         app_id, registrar_ ? registrar_->GetAppShortName(app_id) : "");
   }

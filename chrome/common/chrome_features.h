@@ -251,9 +251,6 @@ extern const base::Feature kEnableAmbientAuthenticationInIncognito;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableRestrictedWebApis;
 
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kEnableWebAppUninstallFromOsSettings;
-
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kEnableWebHidOnExtensionServiceWorker;

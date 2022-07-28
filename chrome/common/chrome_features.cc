@@ -363,10 +363,6 @@ const base::Feature kElidePrioritizationOfPreNativeBootstrapTasks = {
 const base::Feature kEnableRestrictedWebApis{"EnableRestrictedWebApis",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enable web app uninstallation from Windows settings or control panel.
-const base::Feature kEnableWebAppUninstallFromOsSettings{
-    "EnableWebAppUninstallFromOsSettings", base::FEATURE_ENABLED_BY_DEFAULT};
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enable WebHID on extension service workers.
 const base::Feature kEnableWebHidOnExtensionServiceWorker{

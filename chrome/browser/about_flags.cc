@@ -7504,13 +7504,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(language::kDesktopDetailedLanguageSettings)},
 #endif
 
-#if BUILDFLAG(IS_WIN)
-    {"pwa-uninstall-in-windows-os",
-     flag_descriptions::kPwaUninstallInWindowsOsName,
-     flag_descriptions::kPwaUninstallInWindowsOsDescription, kOsWin,
-     FEATURE_VALUE_TYPE(features::kEnableWebAppUninstallFromOsSettings)},
-#endif
-
     {"pwa-update-dialog-for-icon",
      flag_descriptions::kPwaUpdateDialogForAppIconName,
      flag_descriptions::kPwaUpdateDialogForAppIconDescription, kOsAll,

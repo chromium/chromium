@@ -1398,20 +1398,11 @@ TEST(WebAppInstallUtils, DuplicateIconDownloadURLs) {
 INSTANTIATE_TEST_SUITE_P(, FileHandlersFromManifestTest, testing::Bool());
 
 #if BUILDFLAG(IS_WIN)
-class RegisterOsSettingsTest : public testing::Test {
- public:
-  RegisterOsSettingsTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kEnableWebAppUninstallFromOsSettings);
-  }
-  ~RegisterOsSettingsTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  content::BrowserTaskEnvironment browser_task_environment_;
-};
+using RegisterOsSettingsTest = testing::Test;
 
 TEST_F(RegisterOsSettingsTest, MaybeRegisterOsUninstall) {
+  content::BrowserTaskEnvironment task_environment;
+
   // MaybeRegisterOsUninstall
   // Scenario 1.
   // web app sources: kDefault, kPolicy
@@ -1483,6 +1474,8 @@ TEST_F(RegisterOsSettingsTest, MaybeRegisterOsSettings_NoRegistration) {
 }
 
 TEST_F(RegisterOsSettingsTest, MaybeUnregisterOsUninstall) {
+  content::BrowserTaskEnvironment task_environment;
+
   // MaybeUnregisterOsUninstall
   // Scenario 1.
   // web app sources: kDefault
