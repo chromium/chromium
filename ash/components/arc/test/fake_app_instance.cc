@@ -70,19 +70,6 @@ void FakeAppInstance::Init(mojo::PendingRemote<mojom::AppHost> host_remote,
   std::move(callback).Run();
 }
 
-void FakeAppInstance::LaunchAppDeprecated(
-    const std::string& package_name,
-    const std::string& activity,
-    const absl::optional<gfx::Rect>& dimension) {
-  LaunchApp(package_name, activity, 0);
-}
-
-void FakeAppInstance::LaunchApp(const std::string& package_name,
-                                const std::string& activity,
-                                int64_t display_id) {
-  launch_requests_.push_back(std::make_unique<Request>(package_name, activity));
-}
-
 void FakeAppInstance::LaunchAppWithWindowInfo(
     const std::string& package_name,
     const std::string& activity,
@@ -516,17 +503,6 @@ void FakeAppInstance::RequestAssistStructure(
 void FakeAppInstance::IsInstallable(const std::string& package_name,
                                     IsInstallableCallback callback) {
   std::move(callback).Run(is_installable_);
-}
-
-void FakeAppInstance::LaunchIntentDeprecated(
-    const std::string& intent_uri,
-    const absl::optional<gfx::Rect>& dimension_on_screen) {
-  LaunchIntent(intent_uri, 0);
-}
-
-void FakeAppInstance::LaunchIntent(const std::string& intent_uri,
-                                   int64_t display_id) {
-  launch_intents_.push_back(intent_uri);
 }
 
 void FakeAppInstance::LaunchIntentWithWindowInfo(

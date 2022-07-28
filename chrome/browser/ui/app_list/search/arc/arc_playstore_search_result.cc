@@ -84,15 +84,12 @@ bool LaunchIntent(const std::string& intent_uri, int64_t display_id) {
 
   auto* arc_bridge = arc_service_manager->arc_bridge_service();
 
-  if (auto* app_instance =
-          ARC_GET_INSTANCE_FOR_METHOD(arc_bridge->app(), LaunchIntent)) {
-    app_instance->LaunchIntent(intent_uri, display_id);
-    return true;
-  }
-
   if (auto* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
-          arc_bridge->app(), LaunchIntentDeprecated)) {
-    app_instance->LaunchIntentDeprecated(intent_uri, absl::nullopt);
+          arc_bridge->app(), LaunchIntentWithWindowInfo)) {
+    arc::mojom::WindowInfoPtr window_info = arc::mojom::WindowInfo::New();
+    window_info->display_id = display_id;
+    app_instance->LaunchIntentWithWindowInfo(intent_uri,
+                                             std::move(window_info));
     return true;
   }
 

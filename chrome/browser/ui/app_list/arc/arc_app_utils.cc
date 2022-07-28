@@ -164,19 +164,11 @@ bool Launch(content::BrowserContext* context,
   // to minimize lag on an app launch.
   NotifyAppLaunchObservers(context, *app_info);
 
-  int64_t display_id = display::kDefaultDisplayId;
-  if (window_info)
-    display_id = window_info->display_id;
-
   if (app_info->shortcut || intent.has_value()) {
     const std::string intent_uri = intent.value_or(app_info->intent_uri);
     if (auto* app_instance = GET_APP_INSTANCE(LaunchIntentWithWindowInfo)) {
       app_instance->LaunchIntentWithWindowInfo(intent_uri,
                                                std::move(window_info));
-    } else if (auto* app_instance = GET_APP_INSTANCE(LaunchIntent)) {
-      app_instance->LaunchIntent(intent_uri, display_id);
-    } else if (auto* app_instance = GET_APP_INSTANCE(LaunchIntentDeprecated)) {
-      app_instance->LaunchIntentDeprecated(intent_uri, gfx::Rect());
     } else {
       return false;
     }
@@ -184,12 +176,6 @@ bool Launch(content::BrowserContext* context,
     if (auto* app_instance = GET_APP_INSTANCE(LaunchAppWithWindowInfo)) {
       app_instance->LaunchAppWithWindowInfo(
           app_info->package_name, app_info->activity, std::move(window_info));
-    } else if (auto* app_instance = GET_APP_INSTANCE(LaunchApp)) {
-      app_instance->LaunchApp(app_info->package_name, app_info->activity,
-                              display_id);
-    } else if (auto* app_instance = GET_APP_INSTANCE(LaunchAppDeprecated)) {
-      app_instance->LaunchAppDeprecated(app_info->package_name,
-                                        app_info->activity, gfx::Rect());
     } else {
       return false;
     }

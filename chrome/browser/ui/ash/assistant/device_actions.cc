@@ -198,10 +198,13 @@ bool DeviceActions::OpenAndroidApp(const AndroidAppInfo& app_info) {
     return false;
 
   auto* app = ARC_GET_INSTANCE_FOR_METHOD(
-      arc::ArcServiceManager::Get()->arc_bridge_service()->app(), LaunchIntent);
+      arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
+      LaunchIntentWithWindowInfo);
   if (app) {
-    app->LaunchIntent(GetLaunchIntent(std::move(app_info)),
-                      display::kDefaultDisplayId);
+    arc::mojom::WindowInfoPtr window_info = arc::mojom::WindowInfo::New();
+    window_info->display_id = display::kDefaultDisplayId;
+    app->LaunchIntentWithWindowInfo(GetLaunchIntent(std::move(app_info)),
+                                    std::move(window_info));
   } else {
     LOG(ERROR) << "Android container is not running. Discard request for launch"
                << app_info.package_name;
@@ -216,13 +219,16 @@ AppStatus DeviceActions::GetAndroidAppStatus(const AndroidAppInfo& app_info) {
 
 void DeviceActions::LaunchAndroidIntent(const std::string& intent) {
   auto* app = ARC_GET_INSTANCE_FOR_METHOD(
-      arc::ArcServiceManager::Get()->arc_bridge_service()->app(), LaunchIntent);
+      arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
+      LaunchIntentWithWindowInfo);
   if (!app) {
     LOG(ERROR) << "Android container is not running.";
     return;
   }
 
-  app->LaunchIntent(intent, display::kDefaultDisplayId);
+  arc::mojom::WindowInfoPtr window_info = arc::mojom::WindowInfo::New();
+  window_info->display_id = display::kDefaultDisplayId;
+  app->LaunchIntentWithWindowInfo(intent, std::move(window_info));
 }
 
 void DeviceActions::AddAndFireAppListEventSubscriber(

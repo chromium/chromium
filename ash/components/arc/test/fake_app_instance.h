@@ -100,12 +100,6 @@ class FakeAppInstance : public mojom::AppInstance {
   // mojom::AppInstance overrides:
   void Init(mojo::PendingRemote<mojom::AppHost> host_remote,
             InitCallback callback) override;
-  void LaunchAppDeprecated(const std::string& package_name,
-                           const std::string& activity,
-                           const absl::optional<gfx::Rect>& dimension) override;
-  void LaunchApp(const std::string& package_name,
-                 const std::string& activity,
-                 int64_t display_id) override;
   void LaunchAppWithWindowInfo(const std::string& package_name,
                                const std::string& activity,
                                arc::mojom::WindowInfoPtr window_info) override;
@@ -120,10 +114,6 @@ class FakeAppInstance : public mojom::AppInstance {
                   const std::string& activity,
                   int dimension,
                   GetAppIconCallback callback) override;
-  void LaunchIntentDeprecated(
-      const std::string& intent_uri,
-      const absl::optional<gfx::Rect>& dimension_on_screen) override;
-  void LaunchIntent(const std::string& intent_uri, int64_t display_id) override;
   void LaunchIntentWithWindowInfo(
       const std::string& intent_uri,
       arc::mojom::WindowInfoPtr window_info) override;

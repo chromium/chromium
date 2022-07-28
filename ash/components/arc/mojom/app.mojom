@@ -391,7 +391,7 @@ interface AppHost {
 
 // TODO(lhchavez): Migrate all request/response messages to Mojo.
 // Next method ID: 40
-// Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 22
+// Deprecated method IDs: 0, 1, 2, 3, 4, 9, 12, 13, 15, 17, 18, 19, 22
 interface AppInstance {
   // Establishes full-duplex communication with the host.
   [MinVersion=26] Init@21(pending_remote<AppHost> host_remote) => ();
@@ -410,15 +410,6 @@ interface AppInstance {
   // Sends a request to ARC to install package.
   [MinVersion=8] InstallPackage@11(ArcPackageInfo arcPackageInfo);
 
-  LaunchAppDeprecated@1(string package_name, string activity,
-                        [MinVersion=1] Rect? dimension_on_screen);
-
-  // Sends a request to ARC to launch an ARC app defined by |package_name| and
-  // |activity|, which cannot be empty.
-  [MinVersion=23] LaunchApp@18(string package_name,
-                               string activity,
-                               int64 display_id);
-
   // Sends a request to ARC to launch an ARC app with specific launch window
   // info.
   [MinVersion=47] LaunchAppWithWindowInfo@38(string package_name,
@@ -429,14 +420,6 @@ interface AppInstance {
   // shortcut.
   [MinVersion=30] LaunchAppShortcutItem@24(
       string package_name, string shortcut_id, int64 display_id);
-
-  [MinVersion=9] LaunchIntentDeprecated@12(string intent_uri,
-                                           Rect? dimension_on_screen);
-
-  // Sends a request to ARC to launch an intent. The intent is encoded as a URI
-  // string. See Intent.toUri().
-  [MinVersion=23] LaunchIntent@19(string intent_uri,
-                                  int64 display_id);
 
   // Sends a request to ARC to launch an ARC app with specific launch window
   // info.
