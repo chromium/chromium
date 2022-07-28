@@ -4827,6 +4827,29 @@ bool LayoutObject::IsShapingDeferred() const {
   return false;
 }
 
+bool LayoutObject::ForceLegacyLayoutForChildren() const {
+  NOT_DESTROYED();
+  if (bitfields_.ForceLegacyLayout())
+    return true;
+
+  // For container queries, we may end up marking an element for forcing legacy
+  // layout without re-attaching the container itself because we are performing
+  // layout for the container when this is detected. Descendants should still
+  // have legacy forced.
+  //
+  // We skip over anonymous ancestors to do the check because anonymous children
+  // may need to be kept in sync with its parent (For instance LayoutFlowThread
+  // for multicol), in which case the ForceLegacyLayout flag matches the
+  // size container LayoutObject flag and not the element flag.
+  const LayoutObject* non_anonymous =
+      IsAnonymous() ? NonAnonymousAncestor() : this;
+  if (!non_anonymous)
+    return false;
+  if (Element* element = DynamicTo<Element>(non_anonymous->GetNode()))
+    return element->ShouldForceLegacyLayout();
+  return false;
+}
+
 bool IsMenuList(const LayoutObject* object) {
   if (!object)
     return false;

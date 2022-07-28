@@ -4517,8 +4517,10 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
     AttachContext reattach_context;
     reattach_context.parent =
         LayoutTreeBuilderTraversal::ParentLayoutObject(*this);
-    if (reattach_context.parent && reattach_context.parent->ForceLegacyLayout())
+    if (reattach_context.parent &&
+        reattach_context.parent->ForceLegacyLayoutForChildren()) {
       reattach_context.force_legacy_layout = true;
+    }
     ReattachLayoutTree(reattach_context);
     whitespace_attacher.DidReattachElement(this,
                                            reattach_context.previous_in_flow);
