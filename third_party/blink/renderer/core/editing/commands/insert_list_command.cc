@@ -546,9 +546,13 @@ void InsertListCommand::UnlistifyParagraph(
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   VisiblePosition insertion_point = VisiblePosition::BeforeNode(*placeholder);
-  MoveParagraphs(CreateVisiblePosition(start), CreateVisiblePosition(end),
-                 insertion_point, editing_state, kPreserveSelection,
-                 kPreserveStyle, list_child_node);
+  VisiblePosition visible_start = CreateVisiblePosition(start);
+  VisiblePosition visible_end = CreateVisiblePosition(end);
+  DCHECK_LE(start, end);
+  if (visible_end.DeepEquivalent() < visible_start.DeepEquivalent())
+    visible_end = visible_start;
+  MoveParagraphs(visible_start, visible_end, insertion_point, editing_state,
+                 kPreserveSelection, kPreserveStyle, list_child_node);
 }
 
 static HTMLElement* AdjacentEnclosingList(const VisiblePosition& pos,
