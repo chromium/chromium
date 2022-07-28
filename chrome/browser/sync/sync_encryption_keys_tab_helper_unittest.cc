@@ -9,8 +9,10 @@
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/sync_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/site_isolation/features.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/prerender_test_util.h"
@@ -27,16 +29,29 @@ namespace {
 
 class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
+  SyncEncryptionKeysTabHelperTest() {
+    // Avoid the disabling of site isolation due to memory constraints.
+    feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kSitePerProcess, {}},
+         {site_isolation::features::kSiteIsolationMemoryThresholds,
+          {{site_isolation::features::
+                kStrictSiteIsolationMemoryThresholdParamName,
+            "0"},
+           {site_isolation::features::
+                kPartialSiteIsolationMemoryThresholdParamName,
+            "0"}}}},
+        /*disabled_features=*/{});
+  }
+
+  ~SyncEncryptionKeysTabHelperTest() override = default;
+
   SyncEncryptionKeysTabHelperTest(const SyncEncryptionKeysTabHelperTest&) =
       delete;
   SyncEncryptionKeysTabHelperTest& operator=(
       const SyncEncryptionKeysTabHelperTest&) = delete;
 
  protected:
-  SyncEncryptionKeysTabHelperTest() = default;
-
-  ~SyncEncryptionKeysTabHelperTest() override = default;
-
   // content::RenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -63,6 +78,8 @@ class SyncEncryptionKeysTabHelperTest : public ChromeRenderViewHostTestHarness {
             {ChromeSigninClientFactory::GetInstance(),
              base::BindRepeating(&signin::BuildTestSigninClient)}};
   }
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SyncEncryptionKeysTabHelperTest, ShouldExposeMojoApiToAllowedOrigin) {

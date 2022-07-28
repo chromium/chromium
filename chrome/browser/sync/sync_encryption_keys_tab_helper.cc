@@ -38,8 +38,14 @@ bool ShouldExposeMojoApi(content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     return false;
   }
-  // Restrict to allowed origin only.
-  return url::Origin::Create(navigation_handle->GetURL()) == GetAllowedOrigin();
+
+  content::RenderFrameHost* main_frame =
+      navigation_handle->GetRenderFrameHost();
+  const url::Origin main_frame_origin = main_frame->GetLastCommittedOrigin();
+  // Restrict to allowed origin and only if site isolation requires a dedicated
+  // process.
+  return main_frame_origin == GetAllowedOrigin() &&
+         main_frame->GetSiteInstance()->RequiresDedicatedProcess();
 }
 
 // EncryptionKeyApi represents the actual exposure of the Mojo API (i.e.

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "build/buildflag.h"
 #include "components/sync/base/features.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -18,6 +19,7 @@
 #include "gin/function_template.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
@@ -33,6 +35,18 @@ const url::Origin& GetAllowedOrigin() {
   const url::Origin& origin = GaiaUrls::GetInstance()->gaia_origin();
   CHECK(!origin.opaque());
   return origin;
+}
+
+// The logic in this function should be consistent with the logic in
+// ShouldExposeMojoApi() in sync_encryption_keys_tab_helper.cc, because the
+// Javascript API simply exposes the Mojo API to the web page, and hence
+// the Javascript API shouldn't be available if the Mojo API isn't.
+bool ShouldExposeJavascriptApi(content::RenderFrame* render_frame) {
+  DCHECK(render_frame);
+
+  const url::Origin origin = render_frame->GetWebFrame()->GetSecurityOrigin();
+  return render_frame->IsMainFrame() && origin == GetAllowedOrigin() &&
+         blink::Platform::Current()->IsLockedToSite();
 }
 
 // This function is intended to convert a binary blob representing an encryption
@@ -75,14 +89,11 @@ void SyncEncryptionKeysExtension::OnDestruct() {
 void SyncEncryptionKeysExtension::DidCreateScriptContext(
     v8::Local<v8::Context> v8_context,
     int32_t world_id) {
-  if (!render_frame()) {
+  if (!render_frame() || world_id != content::ISOLATED_WORLD_ID_GLOBAL) {
     return;
   }
 
-  url::Origin origin = render_frame()->GetWebFrame()->GetSecurityOrigin();
-  if (render_frame()->IsMainFrame() &&
-      world_id == content::ISOLATED_WORLD_ID_GLOBAL &&
-      origin == GetAllowedOrigin()) {
+  if (ShouldExposeJavascriptApi(render_frame())) {
     Install();
   }
 }
@@ -103,6 +114,12 @@ void SyncEncryptionKeysExtension::Install() {
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
 
+  // On Android, there is no existing plumbing for setSyncEncryptionKeys(), so
+  // let's not expose the Javascript function as available. Namely,
+  // TrustedVaultClientAndroid::StoreKeys() isn't implemented because there is
+  // no underlying Android API to invoke, given that sign in and reauth flows
+  // are handled outside the browser.
+#if !BUILDFLAG(IS_ANDROID)
   chrome
       ->Set(
           context, gin::StringToSymbol(isolate, "setSyncEncryptionKeys"),
@@ -113,6 +130,7 @@ void SyncEncryptionKeysExtension::Install() {
               ->GetFunction(context)
               .ToLocalChecked())
       .Check();
+#endif
 
   if (!base::FeatureList::IsEnabled(
           syncer::kSyncTrustedVaultPassphraseRecovery)) {
