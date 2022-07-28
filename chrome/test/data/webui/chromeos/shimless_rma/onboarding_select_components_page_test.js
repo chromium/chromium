@@ -81,8 +81,8 @@ export function onboardingSelectComponentsPageTest() {
    * @return {!Promise}
    */
   function clickReworkButton() {
-    const reworkFlowLink =
-        component.shadowRoot.querySelector('#reworkFlowLink');
+    const reworkFlowLink = component.shadowRoot.querySelector('#reworkFlowLink')
+                               .shadowRoot.querySelector('a');
     assertTrue(!!reworkFlowLink);
     reworkFlowLink.click();
     return flushTasks();

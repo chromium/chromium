@@ -1,15 +1,13 @@
 <style include="cr-shared-style shimless-rma-shared">
-  #reworkFlowLink {
-    color: var(--cros-link-color);
-    text-decoration: none;
-  }
 </style>
 
 <base-page>
   <div slot="left-pane">
     <h1>[[i18n('selectComponentsTitleText')]]</h1>
     <div class="instructions">
-      <span inner-h-t-m-l="[[reworkFlowLinkText_]]"></span>
+      <localized-link id="reworkFlowLink"
+          localized-string="[[reworkFlowLinkText_]]">
+      </localized-link>
     </div>
   </div>
   <div slot="right-pane">

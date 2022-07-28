@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './base_page.js';
 import './repair_component_chip.js';
 import './shimless_rma_shared_css.js';
@@ -293,7 +294,8 @@ export class OnboardingSelectComponentsPageElement extends
   setReworkFlowLink_() {
     this.reworkFlowLinkText_ =
         this.i18nAdvanced('reworkFlowLinkText', {attrs: ['id']});
-    const linkElement = this.shadowRoot.querySelector('#reworkFlowLink');
+    const linkElement = this.shadowRoot.querySelector('#reworkFlowLink')
+                            .shadowRoot.querySelector('a');
     linkElement.setAttribute('href', '#');
     linkElement.addEventListener('click', e => {
       if (this.allButtonsDisabled) {
