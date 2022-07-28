@@ -14,16 +14,16 @@
 
 // Wait until layout has settled to avoid notification spam.
 async_test_after_layout_and_paint((t) => {
-  const axElement = accessibilityController.accessibleElementById('contentEditable');
-  axElement.setNotificationListener(t.step_func((notification, intents) => {
+  const axRootElement = accessibilityController.rootElement;
+  axRootElement.setNotificationListener(t.step_func((notification, intents) => {
     // Focus notification will come asynchronously.
-    if (notification == 'Focus')
+    if (notification == 'Focus' || notification == 'LoadComplete')
       return;
 
-    if (notification == 'SelectedTextChanged') {
+    if (notification == 'DocumentSelectionChanged') {
       assert_array_equals(intents,
                           ['AXEventIntent(setSelection,none,character,forward)']);
-      axElement.unsetNotificationListener();
+      axRootElement.unsetNotificationListener();
       t.done();
       return;
     }

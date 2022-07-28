@@ -120,7 +120,6 @@ chrome.automation.EventType = {
   SELECTED_VALUE_CHANGED: 'selectedValueChanged',
   SELECTION: 'selection',
   SELECTION_ADD: 'selectionAdd',
-  SELECTION_IN_TEXT_FIELD_CHANGED: 'selectionInTextFieldChanged',
   SELECTION_REMOVE: 'selectionRemove',
   SET_SIZE_CHANGED: 'setSizeChanged',
   SHOW: 'show',

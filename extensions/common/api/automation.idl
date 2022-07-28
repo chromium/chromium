@@ -114,7 +114,6 @@
     selectedValueChanged,
     selection,
     selectionAdd,
-    selectionInTextFieldChanged,
     selectionRemove,
     setSizeChanged,
     show,
@@ -122,7 +121,7 @@
     stateChanged,
     subtreeCreated,
     textAttributeChanged,
-    textSelectionChanged,  // Deprecated.
+    textSelectionChanged,
     textChanged,
     tooltipClosed,
     tooltipOpened,

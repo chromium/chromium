@@ -112,12 +112,12 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     SELECTED_CHANGED,
     SELECTED_CHILDREN_CHANGED,
     SELECTED_VALUE_CHANGED,
-    SELECTION_IN_TEXT_FIELD_CHANGED,
     SET_SIZE_CHANGED,
     SORT_CHANGED,
     STATE_CHANGED,
     SUBTREE_CREATED,
     TEXT_ATTRIBUTE_CHANGED,
+    TEXT_SELECTION_CHANGED,
     VALUE_IN_TEXT_FIELD_CHANGED,
 
     // This event is fired for the exact set of attributes that affect the

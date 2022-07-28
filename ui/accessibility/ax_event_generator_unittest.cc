@@ -456,15 +456,14 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
         UnorderedElementsAre(
             HasEventAtNode(AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED,
                            root.id),
-            HasEventAtNode(
-                AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED,
-                text_field.id)));
+            HasEventAtNode(AXEventGenerator::Event::TEXT_SELECTION_CHANGED,
+                           text_field.id)));
   }
 
   event_generator.ClearEvents();
   {
     // A selection that does not include a text field in it should not raise the
-    // "SELECTION_IN_TEXT_FIELD_CHANGED" event.
+    // "TEXT_SELECTION_CHANGED" event.
     tree_data.sel_anchor_object_id = root.id;
     tree_data.sel_anchor_offset = 0;
     tree_data.sel_focus_object_id = root.id;
@@ -483,7 +482,7 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
   event_generator.ClearEvents();
   {
     // A selection that spans more than one node but which nevertheless ends on
-    // a text field should still raise the "SELECTION_IN_TEXT_FIELD_CHANGED"
+    // a text field should still raise the "TEXT_SELECTION_CHANGED"
     // event.
     tree_data.sel_anchor_object_id = root.id;
     tree_data.sel_anchor_offset = 0;
@@ -499,9 +498,8 @@ TEST(AXEventGeneratorTest, SelectionInTextFieldChanged) {
         UnorderedElementsAre(
             HasEventAtNode(AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED,
                            root.id),
-            HasEventAtNode(
-                AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED,
-                text_field.id)));
+            HasEventAtNode(AXEventGenerator::Event::TEXT_SELECTION_CHANGED,
+                           text_field.id)));
   }
 }
 

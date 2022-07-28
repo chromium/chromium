@@ -365,7 +365,8 @@ class DictationTestBase
         browser()->tab_strip_model()->GetActiveWebContents();
     content::AccessibilityNotificationWaiter selection_waiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        ui::kAXModeComplete, ax::mojom::Event::kTextSelectionChanged);
+        ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
     content::BoundingBoxUpdateWaiter bounding_box_waiter(web_contents);
     SendFinalResultAndWait(result);
     bounding_box_waiter.Wait();
@@ -377,7 +378,8 @@ class DictationTestBase
   void SendFinalResultAndWaitForCaretBoundsChanged(const std::string& result) {
     content::AccessibilityNotificationWaiter selection_waiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        ui::kAXModeComplete, ax::mojom::Event::kTextSelectionChanged);
+        ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
     CaretBoundsChangedWaiter caret_waiter(
         browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
     SendFinalResultAndWait(result);
@@ -1474,7 +1476,8 @@ class DictationHiddenMacrosTest : public DictationTest {
   void RunMacroAndWaitForCaretBoundsChanged(int macro) {
     content::AccessibilityNotificationWaiter selection_waiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        ui::kAXModeComplete, ax::mojom::Event::kTextSelectionChanged);
+        ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
     CaretBoundsChangedWaiter caret_waiter(
         browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod());
     RunHiddenMacro(macro);
@@ -1487,7 +1490,8 @@ class DictationHiddenMacrosTest : public DictationTest {
       const std::string& end_phrase) {
     content::AccessibilityNotificationWaiter selection_waiter(
         browser()->tab_strip_model()->GetActiveWebContents(),
-        ui::kAXModeComplete, ax::mojom::Event::kTextSelectionChanged);
+        ui::kAXModeComplete,
+        ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
     content::BoundingBoxUpdateWaiter bounding_box_waiter(
         browser()->tab_strip_model()->GetActiveWebContents());
     RunHiddenMacroWithTwoStringArgs(/* SMART_SELECT_BTWN_INCL */ 24,

@@ -556,7 +556,6 @@ TEST_F(RenderAccessibilityImplTest, TestDeferred) {
       ax::mojom::Event::kFocus,
       ax::mojom::Event::kHover,
       ax::mojom::Event::kLoadComplete,
-      ax::mojom::Event::kTextSelectionChanged,
       ax::mojom::Event::kValueChanged};
 
   for (ax::mojom::Event event : kInteractiveEvents) {

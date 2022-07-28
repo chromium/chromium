@@ -164,6 +164,7 @@ bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type) {
     case ui::AXEventGenerator::Event::SELECTED_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_CHILDREN_CHANGED:
     case ui::AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
+    case ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
     case ui::AXEventGenerator::Event::SET_SIZE_CHANGED:
     case ui::AXEventGenerator::Event::SORT_CHANGED:
     case ui::AXEventGenerator::Event::STATE_CHANGED:
@@ -179,7 +180,6 @@ bool ShouldIgnoreGeneratedEvent(ui::AXEventGenerator::Event event_type) {
       // These enum values can be ignored and should not be mapped.
     case ui::AXEventGenerator::Event::ATK_TEXT_OBJECT_ATTRIBUTE_CHANGED:
     case ui::AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
-    case ui::AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED:
       return true;
   }
 

@@ -139,7 +139,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
 
   // Since there could be duplicate selection changed events on a node raised
   // from both EventType::DOCUMENT_SELECTION_CHANGED and
-  // EventType::SELECTION_IN_TEXT_FIELD_CHANGED, we keep track of the unique
+  // EventType::TEXT_SELECTION_CHANGED, we keep track of the unique
   // nodes so we only fire the event once for every node.
   std::set<BrowserAccessibility*> selection_changed_nodes_;
 

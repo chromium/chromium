@@ -595,7 +595,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   void DeferTreeUpdateInternal(base::OnceClosure callback, const Node* node);
   void DeferTreeUpdateInternal(base::OnceClosure callback, AXObject* obj);
 
-  void SelectionChangedWithCleanLayout(Node* node);
   void TextChangedWithCleanLayout(Node* node);
   void ChildrenChangedWithCleanLayout(Node* node);
   // If the presence of document markers changed for the given text node, then

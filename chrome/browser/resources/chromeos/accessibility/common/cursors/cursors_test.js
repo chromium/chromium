@@ -520,7 +520,7 @@ AX_TEST_F(
     <p>This<br> is a<a href="#g">test</a>of selection</p>
   `);
       root.addEventListener(
-          'textSelectionChanged', this.newCallback(function(evt) {
+          'documentSelectionChanged', this.newCallback(function(evt) {
             // Test setup moves initial focus; ensure we don't test that here.
             if (testNode !== root.selectionStartObject) {
               return;

@@ -1277,7 +1277,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void HandleActiveDescendantChanged() {}
   virtual void HandleAutofillStateChanged(WebAXAutofillState) {}
   virtual void HandleAriaExpandedChanged() {}
-  virtual void SelectionChanged();
 
   // Static helper functions.
   // TODO(accessibility) Move these to a static helper util class.

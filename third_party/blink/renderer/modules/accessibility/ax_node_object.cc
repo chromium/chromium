@@ -4749,23 +4749,6 @@ void AXNodeObject::SelectedOptions(AXObjectVector& options) const {
   }
 }
 
-void AXNodeObject::SelectionChanged() {
-  // Post the selected text changed event on the first ancestor that's
-  // focused (to handle form controls, ARIA text boxes and contentEditable),
-  // or the web area if the selection is just in the document somewhere.
-  if (IsFocused() || IsWebArea()) {
-    AXObjectCache().PostNotification(
-        this, ax::mojom::blink::Event::kTextSelectionChanged);
-    if (GetDocument()) {
-      AXObject* document_object = AXObjectCache().GetOrCreate(GetDocument());
-      AXObjectCache().PostNotification(
-          document_object, ax::mojom::blink::Event::kDocumentSelectionChanged);
-    }
-  } else {
-    AXObject::SelectionChanged();  // Calls selectionChanged on parent.
-  }
-}
-
 //
 // Notifications that this object may have changed.
 //

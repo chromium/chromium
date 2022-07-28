@@ -42,6 +42,8 @@ async_test((t) => {
   const axTextBox = accessibilityController.accessibleElementById('textbox');
   assert_not_equals(undefined, axTextBox);
 
+  const axRoot = accessibilityController.rootElement;
+
   // The &nbsp; on line one is found in the first text child of the first span.
   const axLine1 = accessibilityController.accessibleElementById('line1').childAtIndex(0);
   assert_not_equals(undefined, axLine1);
@@ -61,8 +63,8 @@ async_test((t) => {
   const expectedIntents = [];
   const testSteps = [];
 
-  axTextBox.setNotificationListener(t.step_func((notification, intents) => {
-    if (notification == "SelectedTextChanged") {
+  axRoot.setNotificationListener(t.step_func((notification, intents) => {
+    if (notification == "DocumentSelectionChanged") {
       verifySelection(expectedSelection[selectedTextChangedCount].anchorObject,
           expectedSelection[selectedTextChangedCount].anchorOffset,
           expectedSelection[selectedTextChangedCount].focusObject,

@@ -770,7 +770,7 @@ void AXEventGenerator::OnTreeDataChanged(AXTree* tree,
       // fields, an event should still fire on the field where the selection
       // ends.
       if (AXNode* text_field = selection_focus->GetTextFieldAncestor())
-        AddEvent(text_field, Event::SELECTION_IN_TEXT_FIELD_CHANGED);
+        AddEvent(text_field, Event::TEXT_SELECTION_CHANGED);
     }
   }
 }
@@ -1340,8 +1340,8 @@ const char* ToString(AXEventGenerator::Event event) {
       return "selectedChildrenChanged";
     case AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
       return "selectedValueChanged";
-    case AXEventGenerator::Event::SELECTION_IN_TEXT_FIELD_CHANGED:
-      return "selectionInTextFieldChanged";
+    case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
+      return "textSelectionChanged";
     case AXEventGenerator::Event::SET_SIZE_CHANGED:
       return "setSizeChanged";
     case AXEventGenerator::Event::SORT_CHANGED:

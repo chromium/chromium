@@ -306,7 +306,7 @@ void AccessibilityWinBrowserTest::SetUpInputFieldHelper(
   // Set the caret before the last character.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   std::wstring caret_offset =
       base::NumberToWString(InputContentsString().size() - 1);
   ExecuteScript(base::WideToUTF16(
@@ -358,7 +358,7 @@ void AccessibilityWinBrowserTest::SetUpTextareaField(
   // Set the caret before the last character.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   std::wstring caret_offset =
       base::NumberToWString(InputContentsString().size() - 1);
   ExecuteScript(base::WideToUTF16(
@@ -2588,7 +2588,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetCaretOffset) {
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   caret_offset = 0;
   hr = input_text->setCaretOffset(caret_offset);
   EXPECT_EQ(S_OK, hr);
@@ -2611,7 +2611,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   caret_offset = 0;
   hr = textarea_text->setCaretOffset(caret_offset);
   EXPECT_EQ(S_OK, hr);
@@ -2635,7 +2635,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetSelection) {
 
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
   start_offset = 0;
   end_offset = contents_string_length;
@@ -2685,7 +2685,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestSetSelectionRanges) {
   ranges[0].activeOffset = contents_string_length;
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   EXPECT_HRESULT_SUCCEEDED(ax_input->setSelectionRanges(n_ranges, ranges));
   ASSERT_TRUE(waiter.WaitForNotification());
   CoTaskMemFree(ranges);
@@ -2835,7 +2835,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   // a node in the iframe tree.
   AccessibilityNotificationWaiter selection_waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ax::mojom::Event::kDocumentSelectionChanged);
   ASSERT_HRESULT_SUCCEEDED(text_after_iframe_iaccessible2_4->setSelectionRanges(
       n_ranges, same_tree_ranges));
   ASSERT_TRUE(selection_waiter.WaitForNotification());
@@ -2880,7 +2880,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestMultiLineSetSelection) {
   LONG contents_string_length = static_cast<LONG>(InputContentsString().size());
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   start_offset = 0;
   end_offset = contents_string_length;
   EXPECT_HRESULT_FAILED(
@@ -2930,7 +2930,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   ranges[0].activeOffset = contents_string_length;
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   EXPECT_HRESULT_SUCCEEDED(ax_textarea->setSelectionRanges(n_ranges, ranges));
   ASSERT_TRUE(waiter.WaitForNotification());
   CoTaskMemFree(ranges);

@@ -1941,16 +1941,14 @@ void AXObjectCacheImpl::SelectionChanged(Node* node) {
   if (settings && settings->GetAriaModalPrunesAXTree())
     UpdateActiveAriaModalDialog(node);
 
-  DeferTreeUpdate(&AXObjectCacheImpl::SelectionChangedWithCleanLayout, node);
-}
+  DeferTreeUpdate(&AXObjectCacheImpl::PostNotification, &GetDocument(),
+                  ax::mojom::blink::Event::kDocumentSelectionChanged);
 
-void AXObjectCacheImpl::SelectionChangedWithCleanLayout(Node* node) {
-  if (!node)
-    return;
-
-  AXObject* ax_object = GetOrCreate(node);
-  if (ax_object)
-    ax_object->SelectionChanged();
+  // If there is a text control, mark it dirty to serialize
+  // IntAttribute::kTextSelStart/kTextSelEnd changes.
+  // TODO(accessibility) Remove once we remove kTextSelStart/kTextSelEnd.
+  if (TextControlElement* text_control = EnclosingTextControl(node))
+    MarkElementDirty(text_control);
 }
 
 void AXObjectCacheImpl::UpdateReverseTextRelations(

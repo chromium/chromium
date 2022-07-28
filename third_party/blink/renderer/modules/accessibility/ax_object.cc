@@ -6115,11 +6115,6 @@ bool AXObject::OnNativeShowContextMenuAction() {
   return true;
 }
 
-void AXObject::SelectionChanged() {
-  if (AXObject* parent = ParentObject())
-    parent->SelectionChanged();
-}
-
 // static
 bool AXObject::IsARIAControl(ax::mojom::blink::Role aria_role) {
   return IsARIAInput(aria_role) ||

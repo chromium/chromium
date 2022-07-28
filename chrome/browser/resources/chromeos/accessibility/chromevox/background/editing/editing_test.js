@@ -1464,8 +1464,6 @@ AX_TEST_F('ChromeVoxEditingTest', 'InputEvents', async function() {
   const input = await this.focusFirstTextField(root);
 
   // EventType.TEXT_SELECTION_CHANGED fires on focus as well.
-  //
-  // TODO(nektar): Deprecate and remove TEXT_SELECTION_CHANGED.
   event = await this.waitForEditableEvent();
   assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
   assertEquals(input, event.target);
@@ -1473,27 +1471,27 @@ AX_TEST_F('ChromeVoxEditingTest', 'InputEvents', async function() {
 
   this.press(KeyCode.A)();
 
-  event = await this.waitForEditableEvent();
-  assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
-  assertEquals(input, event.target);
-  assertEquals('a', input.value);
-
-  // We deliberately used EventType.TEXT_SELECTION_CHANGED instead of
+  // We deliberately use EventType.TEXT_SELECTION_CHANGED instead of
   // EventType.DOCUMENT_SELECTION_CHANGED for text fields.
   event = await this.waitForEditableEvent();
   assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
   assertEquals(input, event.target);
   assertEquals('a', input.value);
 
+  event = await this.waitForEditableEvent();
+  assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
+  assertEquals(input, event.target);
+  assertEquals('a', input.value);
+
   this.press(KeyCode.B)();
 
   event = await this.waitForEditableEvent();
-  assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
+  assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
   assertEquals(input, event.target);
   assertEquals('ab', input.value);
 
   event = await this.waitForEditableEvent();
-  assertEquals(EventType.TEXT_SELECTION_CHANGED, event.type);
+  assertEquals(EventType.VALUE_IN_TEXT_FIELD_CHANGED, event.type);
   assertEquals(input, event.target);
   assertEquals('ab', input.value);
 });

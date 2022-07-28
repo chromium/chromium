@@ -260,7 +260,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // Notifications that this object may have changed.
   void ChildrenChangedWithCleanLayout() override;
-  void SelectionChanged() final;
   void HandleAriaExpandedChanged() override;
   void HandleActiveDescendantChanged() override;
 

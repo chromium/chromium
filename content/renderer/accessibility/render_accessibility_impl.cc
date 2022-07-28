@@ -531,7 +531,7 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
   if (IsImmediateProcessingRequiredForEvent(event))
     event_schedule_mode_ = EventScheduleMode::kProcessEventsImmediately;
 
-  if (ShouldSerializeNodeForEvent(obj, event)) {
+  if (!obj.IsDetached()) {
     MarkWebAXObjectDirty(obj, /* subtree= */ false, event.event_from,
                          event.event_from_action, event.event_intents,
                          event.event_type);
@@ -557,7 +557,6 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kFocus:
     case ax::mojom::Event::kHover:
     case ax::mojom::Event::kLoadComplete:
-    case ax::mojom::Event::kTextSelectionChanged:
     case ax::mojom::Event::kValueChanged:
       return true;
 
@@ -606,6 +605,7 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::Event::kSelectionAdd:
     case ax::mojom::Event::kSelectionRemove:
     case ax::mojom::Event::kStateChanged:
+    case ax::mojom::Event::kTextSelectionChanged:
     case ax::mojom::Event::kTooltipClosed:
     case ax::mojom::Event::kTooltipOpened:
     case ax::mojom::Event::kTreeChanged:
@@ -616,28 +616,6 @@ bool RenderAccessibilityImpl::IsImmediateProcessingRequiredForEvent(
       NOTREACHED() << "Event not expected from Blink: " << event.event_type;
       return false;
   }
-}
-
-bool RenderAccessibilityImpl::ShouldSerializeNodeForEvent(
-    const WebAXObject& obj,
-    const ui::AXEvent& event) const {
-  if (obj.IsDetached())
-    return false;
-
-  if (event.event_type == ax::mojom::Event::kTextSelectionChanged &&
-      !obj.IsAtomicTextField()) {
-    // Selection changes on non-atomic text fields cause no change to the
-    // control node's data.
-    //
-    // Selection offsets exposed via kTextSelStart and kTextSelEnd are only used
-    // for atomic text fields, (input of a text field type, and textarea). Rich
-    // editable areas, such as contenteditables, use AXTreeData.
-    //
-    // TODO(nektar): Remove kTextSelStart and kTextSelEnd from the renderer.
-    return false;
-  }
-
-  return true;
 }
 
 std::list<std::unique_ptr<AXDirtyObject>>::iterator

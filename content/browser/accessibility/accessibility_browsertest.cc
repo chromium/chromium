@@ -100,7 +100,7 @@ void AccessibilityBrowserTest::LoadSampleParagraphInScrollableEditable() {
 
   AccessibilityNotificationWaiter selection_waiter(
       shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   ExecuteScript(
       u"let selection=document.getSelection();"
       u"let range=document.createRange();"

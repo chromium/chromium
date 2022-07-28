@@ -735,7 +735,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
       [web_contents](const char* script) {
         AccessibilityNotificationWaiter waiter(
             web_contents, ui::kAXModeComplete,
-            ax::mojom::Event::kTextSelectionChanged);
+            ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
         ASSERT_TRUE(ExecJs(web_contents, script));
         ASSERT_TRUE(waiter.WaitForNotification());
       };
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
   AccessibilityNotificationWaiter waiter2(
       web_contents, ui::kAXModeComplete,
-      ax::mojom::Event::kTextSelectionChanged);
+      ui::AXEventGenerator::Event::TEXT_SELECTION_CHANGED);
   run_script_and_wait_for_selection_change(R"script(
       let editable = document.getElementById('editable');
       const selection = window.getSelection();
