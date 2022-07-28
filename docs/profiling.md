@@ -61,6 +61,10 @@ To stop profiling, press `Control-c` in the terminal window where `perf` is runn
 Tip for Googlers: running `gcert` first will make `pprof` run faster, and eliminate some useless spew to the terminal.
 ***
 
+If you want to profile all renderer processes use the custom `--renderer-cmd-prefix` profiling script:
+
+  $ src/out/Release/chrome --renderer-cmd-prefix="tools/profiling/linux-perf-renderer-cmd.sh"
+
 If you want to limit the profile to a single thread, run:
 
     $ ps -T -p <Process ID>
