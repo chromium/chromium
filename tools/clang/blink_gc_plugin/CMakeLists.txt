@@ -31,6 +31,6 @@ endforeach()
 set_property(TARGET clang APPEND PROPERTY SOURCES ${absolute_sources})
 
 cr_add_test(blink_gc_plugin_test
-  python tests/test.py
+  python3 tests/test.py
   ${CMAKE_BINARY_DIR}/bin/clang
   )
