@@ -103,6 +103,15 @@ SkColor AppListColorProviderImpl::GetSearchBoxSecondaryTextColor(
   return default_color;
 }
 
+SkColor AppListColorProviderImpl::GetSearchBoxSuggestionTextColor(
+    SkColor default_color) const {
+  if (ShouldUseDarkLightColors()) {
+    return ash_color_provider_->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorSuggestion);
+  }
+  return default_color;
+}
+
 SkColor AppListColorProviderImpl::GetSuggestionChipBackgroundColor() const {
   if (ShouldUseDarkLightColors()) {
     if (IsTabletModeEnabled()) {

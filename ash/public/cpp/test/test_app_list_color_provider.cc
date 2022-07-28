@@ -42,6 +42,11 @@ SkColor TestAppListColorProvider::GetSearchBoxSecondaryTextColor(
   return gfx::kGoogleGrey500;
 }
 
+SkColor TestAppListColorProvider::GetSearchBoxSuggestionTextColor(
+    SkColor default_color) const {
+  return gfx::kGoogleGrey600;
+}
+
 SkColor TestAppListColorProvider::GetSuggestionChipBackgroundColor() const {
   return SkColorSetA(SK_ColorWHITE, 0x1A);
 }

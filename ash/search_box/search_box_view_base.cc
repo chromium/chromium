@@ -625,18 +625,13 @@ void SearchBoxViewBase::OnThemeChanged() {
   views::View::OnThemeChanged();
 
   if (features::IsAutocompleteExtendedSuggestionsEnabled()) {
-    autocomplete_ghost_text_->SetEnabledColor(
-        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-            kDeprecatedSearchBoxTextDefaultColor));
-    separator_label_->SetEnabledColor(
-        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-            kDeprecatedSearchBoxTextDefaultColor));
-    category_ghost_text_->SetEnabledColor(
-        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-            kDeprecatedSearchBoxTextDefaultColor));
-    category_separator_label_->SetEnabledColor(
-        AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-            kDeprecatedSearchBoxTextDefaultColor));
+    auto ghost_text_color =
+        AppListColorProvider::Get()->GetSearchBoxSuggestionTextColor(
+            kDeprecatedSearchBoxTextDefaultColor);
+    autocomplete_ghost_text_->SetEnabledColor(ghost_text_color);
+    separator_label_->SetEnabledColor(ghost_text_color);
+    category_ghost_text_->SetEnabledColor(ghost_text_color);
+    category_separator_label_->SetEnabledColor(ghost_text_color);
     search_box_->SetSelectionBackgroundColor(
         AppListColorProvider::Get()->GetFolderNameSelectionColor());
   }

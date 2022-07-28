@@ -77,6 +77,7 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kTextColorWarning,
     kTextColorPositive,
     kTextColorURL,
+    kTextColorSuggestion,
 
     kIconColorPrimary,
     kIconColorSecondary,

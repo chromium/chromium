@@ -295,6 +295,8 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
     case ContentLayerType::kInvertedTextColorPrimary:
     case ContentLayerType::kInvertedButtonLabelColor:
       return use_dark_color ? gfx::kGoogleGrey900 : gfx::kGoogleGrey200;
+    case ContentLayerType::kTextColorSuggestion:
+      return use_dark_color ? gfx::kGoogleGrey500 : gfx::kGoogleGrey600;
     default:
       return ResolveColor(type, use_dark_color);
   }

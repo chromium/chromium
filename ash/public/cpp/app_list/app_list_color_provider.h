@@ -32,6 +32,8 @@ class ASH_PUBLIC_EXPORT AppListColorProvider {
   virtual SkColor GetSearchBoxTextColor(SkColor default_color) const = 0;
   virtual SkColor GetSearchBoxSecondaryTextColor(
       SkColor default_color) const = 0;
+  virtual SkColor GetSearchBoxSuggestionTextColor(
+      SkColor default_color) const = 0;
   virtual SkColor GetSuggestionChipBackgroundColor() const = 0;
   virtual SkColor GetSuggestionChipTextColor() const = 0;
   virtual SkColor GetAppListItemTextColor(bool is_in_folder) const = 0;
