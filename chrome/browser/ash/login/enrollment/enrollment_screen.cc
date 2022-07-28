@@ -296,6 +296,7 @@ void EnrollmentScreen::ShowImpl() {
   // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
   // in the logs.
   LOG(WARNING) << "Show enrollment screen";
+  is_rollback_flow_ = IsRollbackFlow(*context());
   if (view_)
     view_->SetEnrollmentController(this);
   // Block enrollment on liveboot (OS isn't installed yet and this is trial
@@ -808,7 +809,7 @@ void EnrollmentScreen::UpdateChromadMigrationOobeFlow(bool exists) {
 
 bool EnrollmentScreen::IsAutomaticEnrollmentFlow() {
   return is_chromad_migration_oobe_flow_ ||
-         WizardController::IsZeroTouchHandsOffOobeFlow();
+         WizardController::IsZeroTouchHandsOffOobeFlow() || is_rollback_flow_;
 }
 
 }  // namespace ash

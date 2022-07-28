@@ -137,7 +137,7 @@ class EnrollmentScreen
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
-  friend class ZeroTouchEnrollmentScreenUnitTest;
+  friend class EnrollmentScreenUnitTest;
   friend class AutomaticReenrollmentScreenUnitTest;
   friend class test::EnrollmentHelperMixin;
 
@@ -145,12 +145,10 @@ class EnrollmentScreen
   FRIEND_TEST_ALL_PREFIXES(ForcedAttestationAuthEnrollmentScreenTest,
                            TestCancel);
   FRIEND_TEST_ALL_PREFIXES(MultiAuthEnrollmentScreenTest, TestCancel);
-  FRIEND_TEST_ALL_PREFIXES(ZeroTouchEnrollmentScreenUnitTest, Retry);
-  FRIEND_TEST_ALL_PREFIXES(ZeroTouchEnrollmentScreenUnitTest, TestSuccess);
-  FRIEND_TEST_ALL_PREFIXES(ZeroTouchEnrollmentScreenUnitTest,
-                           DoNotRetryOnTopOfUser);
-  FRIEND_TEST_ALL_PREFIXES(ZeroTouchEnrollmentScreenUnitTest,
-                           DoNotRetryAfterSuccess);
+  FRIEND_TEST_ALL_PREFIXES(EnrollmentScreenUnitTest,
+                           ZeroTouchFlowShouldNotRetryOnTopOfUser);
+  FRIEND_TEST_ALL_PREFIXES(EnrollmentScreenUnitTest,
+                           ZeroTouchFlowShouldNotRetryAfterSuccess);
 
   // The authentication mechanisms that this class can use.
   enum Auth {
@@ -266,6 +264,9 @@ class EnrollmentScreen
   // Chromad to cloud device migration. If so, "Enterprise enrollment complete"
   // screen should be skipped.
   bool is_chromad_migration_oobe_flow_ = false;
+
+  // Whether the ongoing flow belongs to an enterprise rollback.
+  bool is_rollback_flow_ = false;
 
   std::string enrolling_user_domain_;
   std::unique_ptr<base::ElapsedTimer> elapsed_timer_;
