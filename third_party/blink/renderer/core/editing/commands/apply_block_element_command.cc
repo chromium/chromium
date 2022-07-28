@@ -387,7 +387,11 @@ ApplyBlockElementCommand::EndOfNextParagrahSplittingTextNodesIfNeeded(
   // paragraph is trimmed by moveParagraphWithClones. If endOfNextParagraph was
   // pointing at this same text node, endOfNextParagraph will be shifted by one
   // paragraph. Avoid this by splitting "\n"
-  SplitTextNode(end_of_next_paragraph_text, 1);
+  if (end_of_next_paragraph_text->length() > 1) {
+    // To avoid empty `Text` node, `end_of_next_paragraph_text` should be
+    // longer than one. See http://crbug.com/1264470
+    SplitTextNode(end_of_next_paragraph_text, 1);
+  }
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   Text* const previous_text =
       DynamicTo<Text>(end_of_next_paragraph_text->previousSibling());

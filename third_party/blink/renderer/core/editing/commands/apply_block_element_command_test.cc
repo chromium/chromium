@@ -356,4 +356,21 @@ TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesWithJunkCrash) {
       "</div>",
       GetSelectionTextFromBody());
 }
+
+// http://crbug.com/1264470
+TEST_F(ApplyBlockElementCommandTest, SplitTextNodeWithJustNewline) {
+  InsertStyleElement("b {-webkit-text-security: square;}");
+  Selection().SetSelection(SetSelectionTextToBody("<pre contenteditable>"
+                                                  "<b>|<p>X</p>\n</b>"
+                                                  "</pre>"),
+                           SetSelectionOptions());
+
+  auto* const format_block = MakeGarbageCollected<FormatBlockCommand>(
+      GetDocument(), html_names::kDivTag);
+
+  ASSERT_TRUE(format_block->Apply());
+  EXPECT_EQ("<pre contenteditable><b><div>|X</div>\n</b></pre>",
+            GetSelectionTextFromBody());
+}
+
 }  // namespace blink

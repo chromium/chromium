@@ -42,7 +42,9 @@ SplitTextNodeCommand::SplitTextNodeCommand(Text* text, int offset)
   DCHECK(text2_);
   DCHECK_GT(text2_->length(), 0u);
   DCHECK_GT(offset_, 0u);
-  DCHECK_LT(offset_, text2_->length());
+  DCHECK_LT(offset_, text2_->length())
+      << "Please change caller to avoid having empty Text node after "
+         "SplitTextNodeCommand.";
 }
 
 void SplitTextNodeCommand::DoApply(EditingState*) {
