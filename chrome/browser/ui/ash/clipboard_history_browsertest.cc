@@ -202,6 +202,9 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   ClipboardHistoryBrowserTest() {
     login_mixin_.AppendRegularUsers(1);
     account_id1_ = login_mixin_.users()[0].account_id;
+    std::vector<base::Feature> disabled_features = {
+        ash::features::kClipboardHistoryReorder};
+    feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled_features);
   }
 
   ~ClipboardHistoryBrowserTest() override = default;
@@ -335,6 +338,9 @@ class ClipboardHistoryBrowserTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
   base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Verifies the history menu's ui interaction with the menu item selection.

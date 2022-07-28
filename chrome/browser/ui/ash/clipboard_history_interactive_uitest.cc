@@ -8,6 +8,7 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/shell.h"
 #include "base/path_service.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/clipboard_history_test_util.h"
 #include "chrome/browser/ui/ash/clipboard_image_model_request.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,14 +35,16 @@ const std::list<ash::ClipboardHistoryItem>& GetClipboardItems() {
 
 }  // namespace
 
-// Use the interactive ui test rather than the browser test. Otherwise, the
-// clipboard history menu could be closed unexpectedly due to the window capture
-// change when multiple browser tests run in parallel.
-// TODO(crbug.com/1304484): Make this class inherit from
-// `ClipboardHistoryBrowserTest` instead if possible.
+// Interactive UI tests are used rather than browser tests in cases where window
+// capture changes caused by other browser tests running in parallel could cause
+// tests to fail, e.g., because the clipboard history menu closes.
 class ClipboardHistoryWebContentsInteractiveTest : public InProcessBrowserTest {
  public:
-  ClipboardHistoryWebContentsInteractiveTest() = default;
+  ClipboardHistoryWebContentsInteractiveTest() {
+    std::vector<base::Feature> disabled_features = {
+        ash::features::kClipboardHistoryReorder};
+    feature_list_.InitWithFeatures(/*enabled_features=*/{}, disabled_features);
+  }
   ~ClipboardHistoryWebContentsInteractiveTest() override = default;
 
   // InProcessBrowserTest:
@@ -54,11 +57,13 @@ class ClipboardHistoryWebContentsInteractiveTest : public InProcessBrowserTest {
         test_data_dir.AppendASCII("chrome/test/data/ash/clipboard_history"));
     ASSERT_TRUE(embedded_test_server()->Start());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-// Verifies that the images rendered from the copied web contents should
-// show in the clipboard history menu. Switching the auto resize mode is covered
-// in this test case.
+// Verifies that the images rendered from the copied web contents show in the
+// clipboard history menu. This test case covers switching auto-resize mode.
 IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
                        VerifyHTMLRendering) {
   // Load the web page which contains images and text.
@@ -81,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
 
   base::HistogramTester histogram_tester;
 
-  // Show the clipboard history menu through the acclerator. When the clipboard
-  // history shows, the process of HTML rendering starts.
+  // Show the clipboard history menu through the accelerator. When the clipboard
+  // history menu shows, the process of HTML rendering starts.
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       ash::Shell::GetPrimaryRootWindow());
   event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
@@ -111,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
   // Select another part. Wait until the selection region updates. Then copy
-  // the selected html code to clipboard.
+  // the selected HTML code to clipboard.
   content::BoundingBoxUpdateWaiter select_part_two(web_contents);
   ASSERT_TRUE(ExecuteScript(web_contents, "selectPart2();"));
   select_part_two.Wait();
@@ -141,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
           ClipboardImageModelRequest::RequestStopReason::kFulfilled),
       2);
 
-  // Verify that the clipboard history menu's status.
+  // Verify that the clipboard history menu is open and populated with the
+  // correct number of items.
   EXPECT_TRUE(GetClipboardHistoryController()->IsMenuShowing());
   ASSERT_EQ(2, GetContextMenu()->GetMenuItemsCount());
 }
@@ -170,8 +176,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
 
   base::HistogramTester histogram_tester;
 
-  // Show the clipboard history menu through the acclerator. When the clipboard
-  // history shows, the process of HTML rendering starts.
+  // Show the clipboard history menu through the accelerator. When the clipboard
+  // history menu shows, the process of HTML rendering starts.
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       ash::Shell::GetPrimaryRootWindow());
   event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);
@@ -180,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsInteractiveTest,
       /*callback=*/base::NullCallback());
 
   // Wait until the rendering finishes. Check that the web page is rendered
-  // in the auto resize mode because the original web page's size is too big.
+  // in auto-resize mode because the original web page's size is too big.
   clipboard_history::ClipboardImageModelRequestWaiter image_request_waiter(
       &test_params, /*expect_auto_resize=*/true);
   image_request_waiter.Wait();
