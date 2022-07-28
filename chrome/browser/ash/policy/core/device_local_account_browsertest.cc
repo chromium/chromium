@@ -1069,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
 }
 
 // TODO(crbug.com/1348015): Deflake and re-enable the test.
-IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_ExtensionsCached) {
+IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsCached) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Pre-populate the device local account's extension cache with a hosted app
@@ -1111,7 +1111,7 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, DISABLED_ExtensionsCached) {
 
   // Start listening for app/extension installation results.
   ExtensionInstallObserver hosted_app_install_observer(kHostedAppID);
-  ExtensionInstallObserver extension_install_observer(kHostedAppID);
+  ExtensionInstallObserver extension_install_observer(kGoodExtensionID);
 
   ASSERT_NO_FATAL_FAILURE(StartLogin(std::string(), std::string()));
 
