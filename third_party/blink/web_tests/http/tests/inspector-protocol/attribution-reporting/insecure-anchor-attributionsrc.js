@@ -19,7 +19,6 @@
     userGesture: true
   });
   const issue = await issuePromise;
-  testRunner.log(
-      issue.params.issue, 'Issue reported: ', ['frame', 'violatingNodeId']);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['violatingNodeId']);
   testRunner.completeTest();
 })

@@ -15,7 +15,6 @@
 
   const issuePromise = dp.Audits.onceIssueAdded();
   const issue = await issuePromise;
-  testRunner.log(
-      issue.params.issue, 'Issue reported: ', ['frame', 'request']);
+  testRunner.log(issue.params.issue, 'Issue reported: ', ['request']);
   testRunner.completeTest();
 })
