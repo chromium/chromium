@@ -174,6 +174,7 @@ using ::guest_view::GuestViewManager;
 using ::guest_view::TestGuestViewManager;
 using ::guest_view::TestGuestViewManagerFactory;
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
+using ::pdf_extension_test_util::GetPdfPluginFrames;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 using ::testing::Contains;
 using ::testing::IsEmpty;
@@ -354,31 +355,8 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
         guest_contents->GetPrimaryMainFrame());
   }
 
-  // Finds the `RenderFrameHost`s of PDF plugin frames within a given
-  // `WebContents`.
-  std::vector<content::RenderFrameHost*> GetPluginFrames(
-      WebContents* contents) {
-    std::vector<content::RenderFrameHost*> plugin_frames;
-    contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
-        [&plugin_frames](content::RenderFrameHost* frame) {
-          if (IsPluginFrame(*frame))
-            plugin_frames.push_back(frame);
-        }));
-    return plugin_frames;
-  }
-
   int CountPDFProcesses() {
-    base::flat_set<content::RenderProcessHost*> pdf_processes;
-
-    const TabStripModel* tab_strip = browser()->tab_strip_model();
-    for (int tab = 0; tab < tab_strip->count(); ++tab) {
-      for (content::RenderFrameHost* plugin_frame :
-           GetPluginFrames(tab_strip->GetWebContentsAt(tab))) {
-        pdf_processes.insert(plugin_frame->GetProcess());
-      }
-    }
-
-    return pdf_processes.size();
+    return pdf_extension_test_util::CountPdfPluginProcesses(browser());
   }
 
   ui::AXTreeUpdate GetAccessibilityTreeSnapshotForPdf(
@@ -404,14 +382,6 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   virtual std::vector<base::Feature> GetDisabledFeatures() const { return {}; }
 
  private:
-  static bool IsPluginFrame(content::RenderFrameHost& frame) {
-    if (!frame.GetProcess()->IsPdf())
-      return false;
-
-    EXPECT_TRUE(frame.IsCrossProcessSubframe());
-    return true;
-  }
-
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -2585,7 +2555,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, PdfAndHtml) {
   // The PDF plugin frame and the iframe should not share renderer processes
   // even though they share origins.
   std::vector<content::RenderFrameHost*> plugin_frames =
-      GetPluginFrames(guest_contents);
+      GetPdfPluginFrames(guest_contents);
   ASSERT_EQ(plugin_frames.size(), 1u);
 
   content::RenderFrameHost* iframe = ChildFrameAt(GetActiveWebContents(), 0);
@@ -2607,7 +2577,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, DataNavigation) {
   // processes even though the extension triggers a data: navigation when
   // loading its plugin.
   std::vector<content::RenderFrameHost*> plugin_frames =
-      GetPluginFrames(guest_contents);
+      GetPdfPluginFrames(guest_contents);
   ASSERT_EQ(plugin_frames.size(), 1u);
   EXPECT_NE(plugin_frames[0]->GetProcess(),
             guest_contents->GetPrimaryMainFrame()->GetProcess());
@@ -2638,7 +2608,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionIsolatedContentTest, Jitless) {
 
   // PDF content should always be in JIT-less processes.
   std::vector<content::RenderFrameHost*> plugin_frames =
-      GetPluginFrames(guest_contents);
+      GetPdfPluginFrames(guest_contents);
   ASSERT_EQ(plugin_frames.size(), 1u);
   EXPECT_TRUE(plugin_frames[0]->GetProcess()->IsJitDisabled());
 }

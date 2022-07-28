@@ -133,12 +133,6 @@ class CONTENT_EXPORT PluginService {
   // Returns true iff PPAPI "dev channel" methods are supported.
   virtual bool PpapiDevChannelSupported(BrowserContext* browser_context,
                                         const GURL& document_url) = 0;
-
-  // Determine the number of PPAPI processes currently tracked by the service.
-  // Exposed primarily for testing purposes.
-  virtual int CountPpapiPluginProcessesForProfile(
-      const base::FilePath& plugin_path,
-      const base::FilePath& profile_data_directory) = 0;
 };
 
 }  // namespace content

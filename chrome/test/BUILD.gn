@@ -2742,11 +2742,15 @@ if (!is_android) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
     }
 
-    # TODO(crbug.com/1306610): Split out files that only need `enable_plugins`.
-    if (enable_ppapi) {
+    if (enable_plugins) {
       sources += [
         "../browser/chrome_plugin_browsertest.cc",
         "../browser/plugins/plugin_response_interceptor_url_loader_throttle_browsertest.cc",
+      ]
+    }
+
+    if (enable_ppapi) {
+      sources += [
         "ppapi/ppapi_browsertest.cc",
         "ppapi/ppapi_filechooser_browsertest.cc",
       ]

@@ -5,9 +5,16 @@
 #ifndef CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_UTIL_H_
 #define CHROME_BROWSER_PDF_PDF_EXTENSION_TEST_UTIL_H_
 
+#include <stddef.h>
+
+#include <vector>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
+class Browser;
+
 namespace content {
+class RenderFrameHost;
 class ToRenderFrameHost;
 class WebContents;
 }  // namespace content
@@ -17,6 +24,13 @@ class Point;
 }  // namespace gfx
 
 namespace pdf_extension_test_util {
+
+// Gets all the PDF plugin frames for a given `WebContents`.
+std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
+    content::WebContents* contents);
+
+// Counts the total number of unique PDF plugin processes.
+size_t CountPdfPluginProcesses(Browser* browser);
 
 // Ensures, inside the given `frame`, that a PDF has either finished
 // loading or prompted a password. The result indicates success if the PDF loads

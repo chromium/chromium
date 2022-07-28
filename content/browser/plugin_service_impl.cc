@@ -25,12 +25,10 @@
 #include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/plugin_list.h"
-#include "content/browser/ppapi_plugin_process_host.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/pepper_plugin_list.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -43,10 +41,16 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/process_type.h"
 #include "content/public/common/webplugininfo.h"
-#include "ppapi/shared_impl/ppapi_permissions.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "content/browser/ppapi_plugin_process_host.h"
+#include "content/common/pepper_plugin_list.h"
+#include "ppapi/shared_impl/ppapi_permissions.h"
+#endif  // BUILDFLAG(ENABLE_PPAPI)
+
 namespace content {
+
 namespace {
 
 // Callback set on the PluginList to assert that plugin loading happens on the
@@ -54,6 +58,21 @@ namespace {
 void WillLoadPluginsCallback(base::SequenceChecker* sequence_checker) {
   DCHECK(sequence_checker->CalledOnValidSequence());
 }
+
+#if BUILDFLAG(ENABLE_PPAPI)
+int CountPpapiPluginProcessesForProfile(
+    const base::FilePath& plugin_path,
+    const base::FilePath& profile_data_directory) {
+  int count = 0;
+  for (PpapiPluginProcessHostIterator iter; !iter.Done(); ++iter) {
+    if (iter->plugin_path() == plugin_path &&
+        iter->profile_data_directory() == profile_data_directory) {
+      ++count;
+    }
+  }
+  return count;
+}
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 }  // namespace
 
@@ -106,19 +125,6 @@ PpapiPluginProcessHost* PluginServiceImpl::FindPpapiPluginProcess(
     }
   }
   return nullptr;
-}
-
-int PluginServiceImpl::CountPpapiPluginProcessesForProfile(
-    const base::FilePath& plugin_path,
-    const base::FilePath& profile_data_directory) {
-  int count = 0;
-  for (PpapiPluginProcessHostIterator iter; !iter.Done(); ++iter) {
-    if (iter->plugin_path() == plugin_path &&
-        iter->profile_data_directory() == profile_data_directory) {
-      ++count;
-    }
-  }
-  return count;
 }
 
 PpapiPluginProcessHost* PluginServiceImpl::FindOrStartPpapiPluginProcess(

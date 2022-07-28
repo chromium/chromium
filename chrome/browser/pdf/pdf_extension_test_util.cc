@@ -4,14 +4,59 @@
 
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 
+#include <stddef.h>
+
 #include "base/bind.h"
+#include "base/containers/flat_set.h"
+#include "base/test/bind.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/focus_changed_observer.h"
 #include "content/public/test/hit_test_region_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace pdf_extension_test_util {
+
+namespace {
+
+bool IsPluginFrame(content::RenderFrameHost& frame) {
+  if (!frame.GetProcess()->IsPdf())
+    return false;
+
+  EXPECT_TRUE(frame.IsCrossProcessSubframe());
+  return true;
+}
+
+}  // namespace
+
+std::vector<content::RenderFrameHost*> GetPdfPluginFrames(
+    content::WebContents* contents) {
+  std::vector<content::RenderFrameHost*> plugin_frames;
+  contents->ForEachRenderFrameHost(base::BindLambdaForTesting(
+      [&plugin_frames](content::RenderFrameHost* frame) {
+        if (IsPluginFrame(*frame))
+          plugin_frames.push_back(frame);
+      }));
+  return plugin_frames;
+}
+
+size_t CountPdfPluginProcesses(Browser* browser) {
+  base::flat_set<content::RenderProcessHost*> pdf_processes;
+
+  const TabStripModel* tab_strip = browser->tab_strip_model();
+  for (int tab = 0; tab < tab_strip->count(); ++tab) {
+    for (content::RenderFrameHost* plugin_frame :
+         GetPdfPluginFrames(tab_strip->GetWebContentsAt(tab))) {
+      pdf_processes.insert(plugin_frame->GetProcess());
+    }
+  }
+
+  return pdf_processes.size();
+}
 
 testing::AssertionResult EnsurePDFHasLoaded(
     const content::ToRenderFrameHost& frame,

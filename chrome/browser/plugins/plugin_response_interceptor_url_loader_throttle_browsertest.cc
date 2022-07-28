@@ -7,13 +7,13 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -45,13 +45,6 @@ class PluginResponseInterceptorURLLoaderThrottleBrowserTest
 
   WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  int CountPDFProcesses() {
-    auto* service = content::PluginService::GetInstance();
-    return service->CountPpapiPluginProcessesForProfile(
-        base::FilePath(ChromeContentClient::kPDFPluginPath),
-        browser()->profile()->GetPath());
   }
 };
 
@@ -95,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(PluginResponseInterceptorURLLoaderThrottleBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_EQ(url, download_observer.GetLastUrl());
 
-  // Didn't launch a PPAPI process.
-  EXPECT_EQ(0, CountPDFProcesses());
+  // Didn't launch a PDF plugin process.
+  EXPECT_EQ(0u, pdf_extension_test_util::CountPdfPluginProcesses(browser()));
 
   // Cancel the download to shutdown cleanly.
   download_manager->RemoveObserver(&download_observer);
