@@ -72,44 +72,74 @@ class ProcessManagementTest : public ExtensionBrowserTest {
   base::test::ScopedFeatureList disabled_feature_list_;
 };
 
-class ChromeWebStoreProcessTest : public ExtensionBrowserTest {
- public:
-  const GURL& gallery_url() { return gallery_url_; }
+// Domain which the Webstore hosted app is associated with in production.
+constexpr char kWebstoreURL[] = "chrome.google.com";
+// Domain for testing an overridden Webstore URL.
+constexpr char kWebstoreURLOverride[] = "chrome.webstore.test.com";
 
-  // Overrides location of Chrome Web Store gallery to a test controlled URL.
+class ChromeWebStoreProcessTest
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<const char*> {
+ public:
+  ChromeWebStoreProcessTest() {
+    // The Webstore hosted app uses https for its launch URL, so we need an
+    // https server that can resolve both that URL as well an unrelated
+    // non-Webstore URL.
+    UseHttpsTestServer();
+    net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+    cert_config.dns_names = {GetParam(), "foo.com"};
+    embedded_test_server()->SetSSLConfig(cert_config);
+
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/extensions");
+
+    EXPECT_TRUE(embedded_test_server()->Start());
+    webstore_url_ = embedded_test_server()->GetURL(GetParam(), "/");
+  }
+  ~ChromeWebStoreProcessTest() override = default;
+
+  // Overrides location of Chrome Webstore to a test controlled URL.
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ExtensionBrowserTest::SetUpCommandLine(command_line);
 
-    ASSERT_TRUE(embedded_test_server()->Start());
-    gallery_url_ =
-        embedded_test_server()->GetURL("chrome.webstore.test.com", "/");
-    command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
-                                    gallery_url_.spec());
+    // Only use the override if this test case is testing the override URL.
+    if (GetParam() == kWebstoreURLOverride) {
+      command_line->AppendSwitchASCII(::switches::kAppsGalleryURL,
+                                      webstore_url().spec());
+    }
   }
+
+  // Serve up a page Chrome will detect as being associated with the Webstore.
+  // For the normal Webstore this needs to be served from a 'webstore'
+  // directory, but otherwise it can just be from the root.
+  GURL GetWebstorePage() {
+    GURL::Replacements replace_path;
+    if (GetParam() == kWebstoreURL) {
+      replace_path.SetPathStr("webstore/mock_store.html");
+    } else {
+      replace_path.SetPathStr("title1.html");
+    }
+    return webstore_url().ReplaceComponents(replace_path);
+  }
+
+  const GURL& webstore_url() { return webstore_url_; }
 
  private:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
-  GURL gallery_url_;
+  GURL webstore_url_;
 };
 
 class ChromeWebStoreInIsolatedOriginTest : public ChromeWebStoreProcessTest {
  public:
-  ChromeWebStoreInIsolatedOriginTest() {}
-
-  ChromeWebStoreInIsolatedOriginTest(
-      const ChromeWebStoreInIsolatedOriginTest&) = delete;
-  ChromeWebStoreInIsolatedOriginTest& operator=(
-      const ChromeWebStoreInIsolatedOriginTest&) = delete;
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ChromeWebStoreProcessTest::SetUpCommandLine(command_line);
 
     // Mark the Chrome Web Store URL as an isolated origin.
     command_line->AppendSwitchASCII(::switches::kIsolateOrigins,
-                                    gallery_url().spec());
+                                    webstore_url().spec());
   }
 };
 
@@ -514,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest,
   EXPECT_NE(old_process_host, new_process_host);
 }
 
-IN_PROC_BROWSER_TEST_F(ChromeWebStoreProcessTest,
+IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
                        NavigateWebTabToChromeWebStoreViaPost) {
   // Navigate a tab to a web page with a form.
   GURL web_url = embedded_test_server()->GetURL("foo.com", "/form.html");
@@ -525,31 +555,25 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreProcessTest,
   content::RenderProcessHost* old_process_host =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
-  // Calculate an URL that is 1) relative to the fake (i.e. test-controlled)
-  // Chrome Web Store gallery URL and 2) resolves to something that
-  // embedded_test_server can actually serve (e.g. title1.html test file).
-  GURL::Replacements replace_path;
-  replace_path.SetPathStr("/title1.html");
-  GURL cws_web_url = gallery_url().ReplaceComponents(replace_path);
+  GURL cws_web_url = GetWebstorePage();
 
   // Note that the |setTimeout| call below is needed to make sure
   // ExecuteScriptAndExtractBool returns *after* a scheduled navigation has
   // already started.
-  std::string navigation_starting_script =
-      "var form = document.getElementById('form');\n"
-      "form.action = '" + cws_web_url.spec() + "';\n"
-      "form.submit();\n"
-      "setTimeout(\n"
-      "    function() { window.domAutomationController.send(true); },\n"
-      "    0);\n";
+  std::string navigation_starting_script = R"(
+      var form = document.getElementById('form');
+      form.action = $1;
+      form.submit();
+      setTimeout(() => { window.domAutomationController.send(true); }, 0);)";
 
-  // Trigger a renderer-initiated POST navigation (via the form) to a Chrome Web
-  // Store gallery URL (which will commit into a chrome-extension://cws-app-id).
+  // Trigger a renderer-initiated POST navigation (via the form) to a Chrome
+  // Webstore URL.
   bool ignored_script_result = false;
   content::TestNavigationObserver nav_observer(web_contents, 1);
 
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
-      web_contents, navigation_starting_script, &ignored_script_result));
+      web_contents, content::JsReplace(navigation_starting_script, cws_web_url),
+      &ignored_script_result));
 
   // The expectation is that the store will be properly put in its own process,
   // otherwise the renderer process is going to be terminated.
@@ -557,35 +581,33 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreProcessTest,
   nav_observer.Wait();
   EXPECT_EQ(cws_web_url, web_contents->GetLastCommittedURL());
 
-  // Verify that we really have the Chrome Web Store app loaded in the Web
-  // Contents.
+  // Verify that we have the Webstore hosted app loaded in the Web Contents.
   content::RenderProcessHost* new_process_host =
       web_contents->GetPrimaryMainFrame()->GetProcess();
   EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
       extensions::kWebStoreAppId, new_process_host->GetID()));
 
-  // Verify that Chrome Web Store is isolated in a separate renderer process.
+  // Verify that Webstore is isolated in a separate renderer process.
   EXPECT_NE(old_process_host, new_process_host);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeWebStoreProcessTest,
+                         testing::Values(kWebstoreURL, kWebstoreURLOverride));
 
 // Check that navigations to the Chrome Web Store succeed when the Chrome Web
 // Store URL's origin is set as an isolated origin via the
 // --isolate-origins flag.  See https://crbug.com/788837.
-IN_PROC_BROWSER_TEST_F(ChromeWebStoreInIsolatedOriginTest,
+IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
                        NavigationLoadsChromeWebStore) {
   // Sanity check that a SiteInstance for a Chrome Web Store URL requires a
   // dedicated process.
   content::BrowserContext* context = browser()->profile();
   scoped_refptr<content::SiteInstance> cws_site_instance =
-      content::SiteInstance::CreateForURL(context, gallery_url());
+      content::SiteInstance::CreateForURL(context, webstore_url());
   EXPECT_TRUE(cws_site_instance->RequiresDedicatedProcess());
 
-  // Calculate an URL that is 1) relative to the fake (i.e. test-controlled)
-  // Chrome Web Store gallery URL and 2) resolves to something that
-  // embedded_test_server can actually serve (e.g. title1.html test file).
-  GURL::Replacements replace_path;
-  replace_path.SetPathStr("/title1.html");
-  GURL cws_web_url = gallery_url().ReplaceComponents(replace_path);
+  GURL cws_web_url = GetWebstorePage();
 
   // Navigate to Chrome Web Store and check that it's loaded successfully.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cws_web_url));
@@ -599,6 +621,10 @@ IN_PROC_BROWSER_TEST_F(ChromeWebStoreInIsolatedOriginTest,
   EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
       extensions::kWebStoreAppId, render_process_host->GetID()));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ChromeWebStoreInIsolatedOriginTest,
+                         testing::Values(kWebstoreURL, kWebstoreURLOverride));
 
 // This test verifies that blocked navigations to extensions pages do not
 // overwrite process-per-site map inside content/.
