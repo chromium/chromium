@@ -2325,26 +2325,6 @@
             ]
         }
     ],
-    "CheckCacheForQueuedRequests": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_100",
-                    "enable_features": [
-                        "CheckCacheForQueuedRequests"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromeLabs": [
         {
             "platforms": [

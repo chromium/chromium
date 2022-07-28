@@ -281,12 +281,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // Resets g_init_cache and g_enable_split_cache for tests.
   static void ClearGlobalsForTesting();
 
-  Error CheckResourceExistence(const GURL& url,
-                               const base::StringPiece method,
-                               const NetworkIsolationKey& network_isolation_key,
-                               bool is_subframe,
-                               base::OnceCallback<void(Error)>);
-
  private:
   // Types --------------------------------------------------------------------
 
@@ -655,9 +649,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // Processes the backend creation notification.
   void OnBackendCreated(int result, PendingOp* pending_op);
-
-  void ResourceExistenceCheckCallback(base::OnceCallback<void(Error)> callback,
-                                      disk_cache::EntryResult entry_result);
 
   // Constants ----------------------------------------------------------------
 

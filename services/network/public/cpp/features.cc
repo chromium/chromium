@@ -230,23 +230,6 @@ uint32_t GetLoaderChunkSize() {
   return kMaxNumConsumedBytesInTask;
 }
 
-// Check disk cache to see if the queued requests (especially those don't need
-// validation) have already been cached. If yes, start them as they may not
-// contend for network.
-const base::Feature kCheckCacheForQueuedRequests{
-    "CheckCacheForQueuedRequests", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// The time interval before checking the cache for queued request.
-constexpr base::FeatureParam<base::TimeDelta> kQueuedRequestsCacheCheckInterval{
-    &kCheckCacheForQueuedRequests, "queued_requests_cache_check_interval",
-    base::Milliseconds(100)};
-
-// Cache check is only valid for requests queued for long than this threshold.
-constexpr base::FeatureParam<base::TimeDelta>
-    kQueuedRequestsCacheCheckTimeThreshold{
-        &kCheckCacheForQueuedRequests,
-        "queued_requests_cache_check_time_threshold", base::Milliseconds(100)};
-
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
 const base::Feature kCorsNonWildcardRequestHeadersSupport{
     "CorsNonWildcardRequestHeadersSupport", base::FEATURE_DISABLED_BY_DEFAULT};

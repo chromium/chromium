@@ -84,17 +84,6 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern uint32_t GetLoaderChunkSize();
 
 COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::Feature kCheckCacheForQueuedRequests;
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<base::TimeDelta>
-    kQueuedRequestsCacheCheckInterval;
-
-COMPONENT_EXPORT(NETWORK_CPP)
-extern const base::FeatureParam<base::TimeDelta>
-    kQueuedRequestsCacheCheckTimeThreshold;
-
-COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kCorsNonWildcardRequestHeadersSupport;
 
 COMPONENT_EXPORT(NETWORK_CPP)
