@@ -170,7 +170,7 @@ void SharingHubBubbleViewImpl::PopulateScrollView(
 
   auto* share_link_label =
       new views::Label(l10n_util::GetStringUTF16(IDS_SHARING_HUB_SHARE_LABEL),
-                       views::style::CONTEXT_DIALOG_TITLE);
+                       views::style::CONTEXT_DIALOG_BODY_TEXT);
   share_link_label->SetLineHeight(kLabelLineHeight);
   share_link_label->SetMultiLine(true);
   share_link_label->SetHorizontalAlignment(gfx::ALIGN_TO_HEAD);
