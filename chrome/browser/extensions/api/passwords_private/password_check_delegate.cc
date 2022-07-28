@@ -531,8 +531,7 @@ void PasswordCheckDelegate::OnSavedPasswordsChanged(SavedPasswordsView) {
   NotifyPasswordCheckStatusChanged();
 }
 
-void PasswordCheckDelegate::OnInsecureCredentialsChanged(
-    InsecureCredentialsView credentials) {
+void PasswordCheckDelegate::OnInsecureCredentialsChanged() {
   if (auto* event_router =
           PasswordsPrivateEventRouterFactory::GetForProfile(profile_)) {
     event_router->OnCompromisedCredentialsChanged(GetCompromisedCredentials());

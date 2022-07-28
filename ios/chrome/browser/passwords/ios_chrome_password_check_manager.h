@@ -46,9 +46,7 @@ class IOSChromePasswordCheckManager
   class Observer : public base::CheckedObserver {
    public:
     virtual void PasswordCheckStatusChanged(PasswordCheckState state) {}
-    virtual void CompromisedCredentialsChanged(
-        password_manager::InsecureCredentialsManager::CredentialsView
-            credentials) {}
+    virtual void CompromisedCredentialsChanged() {}
   };
 
   // Requests to start a check for compromised passwords.
@@ -90,9 +88,7 @@ class IOSChromePasswordCheckManager
       override;
 
   // password_manager::InsecureCredentialsManager::Observer:
-  void OnInsecureCredentialsChanged(
-      password_manager::InsecureCredentialsManager::CredentialsView credentials)
-      override;
+  void OnInsecureCredentialsChanged() override;
 
   // password_manager::BulkLeakCheckServiceInterface::Observer:
   void OnStateChanged(

@@ -274,8 +274,7 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
                                            .size()];
 }
 
-- (void)compromisedCredentialsDidChange:
-    (password_manager::InsecureCredentialsManager::CredentialsView)credentials {
+- (void)compromisedCredentialsDidChange {
   // Compromised passwords changes has no effect on UI while check is running.
   if (_passwordCheckManager->GetPasswordCheckState() ==
       PasswordCheckState::kRunning)
@@ -283,9 +282,12 @@ constexpr base::TimeDelta kJustCheckedTimeThresholdInMinutes = base::Minutes(1);
 
   DCHECK(self.consumer);
 
-  [self.consumer setPasswordCheckUIState:
-                     [self computePasswordCheckUIStateWith:_currentState]
-        unmutedCompromisedPasswordsCount:credentials.size()];
+  [self.consumer
+               setPasswordCheckUIState:
+                   [self computePasswordCheckUIStateWith:_currentState]
+      unmutedCompromisedPasswordsCount:_passwordCheckManager
+                                           ->GetUnmutedCompromisedCredentials()
+                                           .size()];
 }
 
 #pragma mark - PasswordAutoFillStatusObserver

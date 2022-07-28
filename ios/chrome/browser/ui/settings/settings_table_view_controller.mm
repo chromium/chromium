@@ -1945,8 +1945,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
 }
 
-- (void)compromisedCredentialsDidChange:
-    (password_manager::InsecureCredentialsManager::CredentialsView)credentials {
+- (void)compromisedCredentialsDidChange {
   [self setSafetyCheckIssueStateUnsafe:[self hasPasswordIssuesRemaining]];
 }
 

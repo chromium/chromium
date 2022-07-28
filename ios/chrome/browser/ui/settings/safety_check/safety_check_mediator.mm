@@ -360,8 +360,7 @@ constexpr double kSafeBrowsingRowMinDelay = 3.0;
   [self reconfigurePasswordCheckItem];
 }
 
-- (void)compromisedCredentialsDidChange:
-    (password_manager::InsecureCredentialsManager::CredentialsView)credentials {
+- (void)compromisedCredentialsDidChange {
   self.passwordCheckRowState =
       [self computePasswordCheckRowState:self.currentPasswordCheckState];
   // Push update to the display.

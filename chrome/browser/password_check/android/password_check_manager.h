@@ -167,9 +167,7 @@ class PasswordCheckManager
       override;
 
   // InsecureCredentialsManager::Observer
-  void OnInsecureCredentialsChanged(
-      password_manager::InsecureCredentialsManager::CredentialsView credentials)
-      override;
+  void OnInsecureCredentialsChanged() override;
 
   // BulkLeakCheckServiceInterface::Observer
   void OnStateChanged(

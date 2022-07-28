@@ -156,7 +156,7 @@ class InsecureCredentialsManager : public SavedPasswordsPresenter::Observer {
   // gets out of scope.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnInsecureCredentialsChanged(CredentialsView credentials) = 0;
+    virtual void OnInsecureCredentialsChanged() = 0;
     virtual void OnWeakCredentialsChanged() {}
   };
 

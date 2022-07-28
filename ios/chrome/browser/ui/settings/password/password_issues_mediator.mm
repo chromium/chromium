@@ -78,8 +78,7 @@
   // No-op.
 }
 
-- (void)compromisedCredentialsDidChange:
-    (password_manager::InsecureCredentialsManager::CredentialsView)credentials {
+- (void)compromisedCredentialsDidChange {
   [self fetchPasswordIssues];
 }
 

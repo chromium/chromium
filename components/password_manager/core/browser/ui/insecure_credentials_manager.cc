@@ -458,10 +458,8 @@ void InsecureCredentialsManager::OnSavedPasswordsChanged(
 }
 
 void InsecureCredentialsManager::NotifyInsecureCredentialsChanged() {
-  std::vector<CredentialWithPassword> insecure_credentials =
-      ExtractInsecureCredentials(credentials_to_forms_, &IsInsecure);
   for (auto& observer : observers_) {
-    observer.OnInsecureCredentialsChanged(insecure_credentials);
+    observer.OnInsecureCredentialsChanged();
   }
 }
 

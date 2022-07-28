@@ -51,9 +51,7 @@ constexpr char16_t kPassword116[] = u"s3cre3t";
 
 using password_manager::BulkLeakCheckServiceInterface;
 using password_manager::CredentialUIEntry;
-using password_manager::CredentialWithPassword;
 using password_manager::InsecureCredential;
-using password_manager::InsecureCredentialTypeFlags;
 using password_manager::InsecureType;
 using password_manager::IsLeaked;
 using password_manager::LeakCheckCredential;
@@ -67,15 +65,9 @@ using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::StrictMock;
 
-using InsecureCredentialsView =
-    password_manager::InsecureCredentialsManager::CredentialsView;
-
 struct MockPasswordCheckManagerObserver
     : IOSChromePasswordCheckManager::Observer {
-  MOCK_METHOD(void,
-              CompromisedCredentialsChanged,
-              (InsecureCredentialsView),
-              (override));
+  MOCK_METHOD(void, CompromisedCredentialsChanged, (), (override));
   MOCK_METHOD(void,
               PasswordCheckStatusChanged,
               (PasswordCheckState),
@@ -131,20 +123,6 @@ void AddIssueToForm(PasswordForm* form,
       type, password_manager::InsecurityMetadata(
                 base::Time::Now() - time_since_creation,
                 password_manager::IsMuted(is_muted)));
-}
-
-// Creates matcher for a given compromised credential
-auto ExpectCompromisedCredential(const std::string& signon_realm,
-                                 const base::StringPiece16& username,
-                                 const base::StringPiece16& password,
-                                 base::TimeDelta elapsed_time_since_compromise,
-                                 InsecureCredentialTypeFlags insecure_type) {
-  return AllOf(Field(&CredentialWithPassword::signon_realm, signon_realm),
-               Field(&CredentialWithPassword::username, username),
-               Field(&CredentialWithPassword::password, password),
-               Field(&CredentialWithPassword::create_time,
-                     (base::Time::Now() - elapsed_time_since_compromise)),
-               Field(&CredentialWithPassword::insecure_type, insecure_type));
 }
 
 class IOSChromePasswordCheckManagerTest : public PlatformTest {
@@ -268,11 +246,7 @@ TEST_F(IOSChromePasswordCheckManagerTest,
 
   // Adding a compromised credential should notify observers.
   EXPECT_CALL(observer, PasswordCheckStatusChanged);
-  EXPECT_CALL(
-      observer,
-      CompromisedCredentialsChanged(ElementsAre(ExpectCompromisedCredential(
-          kExampleCom, kUsername116, kPassword116, base::Minutes(1),
-          InsecureCredentialTypeFlags::kCredentialLeaked))));
+  EXPECT_CALL(observer, CompromisedCredentialsChanged);
   AddIssueToForm(&form, InsecureType::kLeaked, base::Minutes(1));
   store().UpdateLogin(form);
   RunUntilIdle();

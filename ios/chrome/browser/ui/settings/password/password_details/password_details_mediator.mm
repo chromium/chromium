@@ -16,8 +16,6 @@
 #endif
 
 using base::SysNSStringToUTF16;
-using InsecureCredentialsView =
-    password_manager::InsecureCredentialsManager::CredentialsView;
 
 @interface PasswordDetailsMediator () <
     PasswordCheckObserver,
@@ -134,7 +132,7 @@ using InsecureCredentialsView =
   // passwords.
 }
 
-- (void)compromisedCredentialsDidChange:(InsecureCredentialsView)credentials {
+- (void)compromisedCredentialsDidChange {
   [self fetchPasswordWith:_manager->GetUnmutedCompromisedCredentials()];
 }
 

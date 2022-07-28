@@ -22,8 +22,6 @@ namespace {
 using password_manager::CredentialUIEntry;
 using password_manager::InsecureType;
 using password_manager::LeakCheckCredential;
-using InsecureCredentialsView =
-    password_manager::InsecureCredentialsManager::CredentialsView;
 using SavedPasswordsView =
     password_manager::SavedPasswordsPresenter::SavedPasswordsView;
 using State = password_manager::BulkLeakCheckServiceInterface::State;
@@ -163,10 +161,9 @@ void IOSChromePasswordCheckManager::OnSavedPasswordsChanged(
   }
 }
 
-void IOSChromePasswordCheckManager::OnInsecureCredentialsChanged(
-    InsecureCredentialsView credentials) {
+void IOSChromePasswordCheckManager::OnInsecureCredentialsChanged() {
   for (auto& observer : observers_) {
-    observer.CompromisedCredentialsChanged(credentials);
+    observer.CompromisedCredentialsChanged();
   }
 }
 

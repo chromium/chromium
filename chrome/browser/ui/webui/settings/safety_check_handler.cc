@@ -983,8 +983,7 @@ void SafetyCheckHandler::OnCredentialDone(
   }
 }
 
-void SafetyCheckHandler::OnInsecureCredentialsChanged(
-    password_manager::InsecureCredentialsManager::CredentialsView credentials) {
+void SafetyCheckHandler::OnInsecureCredentialsChanged() {
   extensions::api::passwords_private::PasswordCheckStatus status =
       passwords_delegate_->GetPasswordCheckStatus();
   // Ignore the event, unless the password check is idle with no errors.

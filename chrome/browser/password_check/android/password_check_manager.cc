@@ -200,14 +200,14 @@ void PasswordCheckManager::OnSavedPasswordsChanged(
   }
 }
 
-void PasswordCheckManager::OnInsecureCredentialsChanged(
-    password_manager::InsecureCredentialsManager::CredentialsView credentials) {
+void PasswordCheckManager::OnInsecureCredentialsChanged() {
+  int count = GetCompromisedCredentialsCount();
   if (AreScriptsRefreshed()) {
     FulfillPrecondition(kKnownCredentialsFetched);
   } else {
-    credentials_count_to_notify_ = credentials.size();
+    credentials_count_to_notify_ = count;
   }
-  observer_->OnCompromisedCredentialsChanged(credentials.size());
+  observer_->OnCompromisedCredentialsChanged(count);
 }
 
 void PasswordCheckManager::OnStateChanged(State state) {

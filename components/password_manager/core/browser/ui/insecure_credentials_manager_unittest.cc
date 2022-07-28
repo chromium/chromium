@@ -57,10 +57,7 @@ using ::testing::SizeIs;
 
 struct MockInsecureCredentialsManagerObserver
     : InsecureCredentialsManager::Observer {
-  MOCK_METHOD(void,
-              OnInsecureCredentialsChanged,
-              (InsecureCredentialsManager::CredentialsView),
-              (override));
+  MOCK_METHOD(void, OnInsecureCredentialsChanged, (), (override));
   MOCK_METHOD(void, OnWeakCredentialsChanged, (), (override));
 };
 
@@ -202,7 +199,7 @@ TEST_F(InsecureCredentialsManagerTest,
 
   // Remove should notify, and observers should be passed an empty list.
   password_form.password_issues.clear();
-  EXPECT_CALL(observer, OnInsecureCredentialsChanged(IsEmpty()));
+  EXPECT_CALL(observer, OnInsecureCredentialsChanged);
   EXPECT_CALL(observer, OnWeakCredentialsChanged);
   store().UpdateLogin(password_form);
 
