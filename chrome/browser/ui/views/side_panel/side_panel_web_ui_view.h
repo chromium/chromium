@@ -13,8 +13,6 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
 
-class Browser;
-
 namespace ui {
 class MenuModel;
 }  // namespace ui
@@ -29,8 +27,7 @@ class MenuRunner;
 class SidePanelWebUIView : public views::WebView,
                            public BubbleContentsWrapper::Host {
  public:
-  SidePanelWebUIView(Browser* browser,
-                     base::RepeatingClosure on_show_cb,
+  SidePanelWebUIView(base::RepeatingClosure on_show_cb,
                      base::RepeatingClosure close_cb,
                      BubbleContentsWrapper* contents_wrapper);
   SidePanelWebUIView(const SidePanelWebUIView&) = delete;
@@ -54,7 +51,6 @@ class SidePanelWebUIView : public views::WebView,
       const content::NativeWebKeyboardEvent& event) override;
 
  private:
-  const raw_ptr<Browser> browser_;
   base::RepeatingClosure on_show_cb_;
   base::RepeatingClosure close_cb_;
   raw_ptr<BubbleContentsWrapper> contents_wrapper_;
@@ -70,12 +66,10 @@ template <class T>
 class SidePanelWebUIViewT : public SidePanelWebUIView {
  public:
   SidePanelWebUIViewT(
-      Browser* browser,
       base::RepeatingClosure on_show_cb,
       base::RepeatingClosure close_cb,
       std::unique_ptr<BubbleContentsWrapperT<T>> contents_wrapper)
-      : SidePanelWebUIView(browser,
-                           std::move(on_show_cb),
+      : SidePanelWebUIView(std::move(on_show_cb),
                            std::move(close_cb),
                            contents_wrapper.get()),
         contents_wrapper_(std::move(contents_wrapper)) {

@@ -21,7 +21,6 @@ ReadLaterSidePanelWebView::ReadLaterSidePanelWebView(
     Browser* browser,
     base::RepeatingClosure close_cb)
     : SidePanelWebUIViewT(
-          browser,
           base::BindRepeating(
               &ReadLaterSidePanelWebView::UpdateActiveURLToActiveTab,
               base::Unretained(this)),

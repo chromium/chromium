@@ -37,7 +37,7 @@ void FeedSidePanelCoordinator::CreateAndRegisterEntry(
 
 std::unique_ptr<views::View> FeedSidePanelCoordinator::CreateFeedWebUIView() {
   auto view = std::make_unique<SidePanelWebUIViewT<FeedUI>>(
-      &GetBrowser(), base::RepeatingClosure(), base::RepeatingClosure(),
+      base::RepeatingClosure(), base::RepeatingClosure(),
       std::make_unique<BubbleContentsWrapperT<FeedUI>>(
           GURL(chrome::kChromeUIUntrustedFeedURL), GetBrowser().profile(),
           IDS_FEED_TITLE,

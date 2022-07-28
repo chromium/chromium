@@ -103,7 +103,6 @@ std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
 
   Browser* browser = &GetBrowser();
   auto content_web_view = std::make_unique<SidePanelWebUIViewT<ReadAnythingUI>>(
-      browser,
       /* on_show_cb= */ base::RepeatingClosure(),
       /* close_cb= */ base::RepeatingClosure(),
       /* contents_wrapper= */

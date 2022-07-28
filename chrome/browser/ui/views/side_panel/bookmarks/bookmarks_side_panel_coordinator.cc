@@ -40,7 +40,7 @@ std::unique_ptr<views::View>
 BookmarksSidePanelCoordinator::CreateBookmarksWebView() {
   auto bookmarks_web_view =
       std::make_unique<SidePanelWebUIViewT<BookmarksSidePanelUI>>(
-          &GetBrowser(), base::RepeatingClosure(), base::RepeatingClosure(),
+          base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<BubbleContentsWrapperT<BookmarksSidePanelUI>>(
               GURL(chrome::kChromeUIBookmarksSidePanelURL),
               GetBrowser().profile(), IDS_BOOKMARK_MANAGER_TITLE,

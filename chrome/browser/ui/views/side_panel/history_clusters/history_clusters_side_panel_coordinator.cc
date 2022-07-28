@@ -39,7 +39,7 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
 std::unique_ptr<views::View>
 HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
   return std::make_unique<SidePanelWebUIViewT<HistoryClustersSidePanelUI>>(
-      &GetBrowser(), base::RepeatingClosure(), base::RepeatingClosure(),
+      base::RepeatingClosure(), base::RepeatingClosure(),
       std::make_unique<BubbleContentsWrapperT<HistoryClustersSidePanelUI>>(
           GURL(chrome::kChromeUIHistoryClustersSidePanelURL),
           GetBrowser().profile(), IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL,
