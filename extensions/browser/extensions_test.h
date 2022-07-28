@@ -72,6 +72,10 @@ class ExtensionsTest : public testing::Test {
         extension_system_factory_.GetForBrowserContext(browser_context_.get()));
   }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return task_environment_.get();
+  }
+
   // testing::Test overrides:
   void SetUp() override;
   void TearDown() override;
