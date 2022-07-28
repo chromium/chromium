@@ -35,7 +35,7 @@ HttpStreamRequest::HttpStreamRequest(
 
 HttpStreamRequest::~HttpStreamRequest() {
   net_log_.EndEvent(NetLogEventType::HTTP_STREAM_REQUEST);
-  helper_->OnRequestComplete();
+  helper_.ExtractAsDangling()->OnRequestComplete();  // May delete `*helper_`;
 }
 
 void HttpStreamRequest::Complete(bool was_alpn_negotiated,

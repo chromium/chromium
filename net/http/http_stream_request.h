@@ -219,8 +219,8 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
  private:
   const GURL url_;
 
-  // Unowned. The helper must outlive this request.
-  raw_ptr<Helper, DanglingUntriaged> helper_;
+  // Unowned. The helper must not be destroyed before this object is.
+  raw_ptr<Helper> helper_;
 
   const raw_ptr<WebSocketHandshakeStreamBase::CreateHelper>
       websocket_handshake_stream_create_helper_;
