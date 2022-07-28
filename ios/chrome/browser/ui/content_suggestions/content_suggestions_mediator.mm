@@ -816,7 +816,9 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       ChromeBrowserState::FromBrowserState(self.browser->GetBrowserState())
           ->GetPrefs();
   BOOL isFeedVisible =
-      pref_service->GetBoolean(prefs::kArticlesForYouEnabled) &&
+      (pref_service->GetBoolean(prefs::kArticlesForYouEnabled) &&
+       pref_service->GetBoolean(prefs::kNTPContentSuggestionsEnabled) &&
+       !IsFeedAblationEnabled()) &&
       pref_service->GetBoolean(feed::prefs::kArticlesListVisible);
   if (ShouldOnlyShowTrendingQueriesForDisabledFeed() && isFeedVisible) {
     // Notify consumer with empty array so it knows to remove the module.
