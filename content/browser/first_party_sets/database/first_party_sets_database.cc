@@ -64,6 +64,16 @@ const char kRunCountKey[] = "run_count";
   if (!db.Execute(kClearedAtRunBrowserContextsSql))
     return false;
 
+  static constexpr char kPolicyModificationsSql[] =
+      "CREATE TABLE IF NOT EXISTS policy_modifications("
+      "browser_context_id TEXT NOT NULL,"
+      "site TEXT NOT NULL,"
+      "site_owner TEXT,"  // May be NULL if this row represents a deletion.
+      "PRIMARY KEY(browser_context_id,site)"
+      ")WITHOUT ROWID";
+  if (!db.Execute(kPolicyModificationsSql))
+    return false;
+
   return true;
 }
 
@@ -133,6 +143,47 @@ bool FirstPartySetsDatabase::InsertBrowserContextCleared(
   statement.BindInt64(1, run_count_);
 
   return statement.Run();
+}
+
+bool FirstPartySetsDatabase::InsertPolicyModifications(
+    const std::string& browser_context_id,
+    const base::flat_map<net::SchemefulSite,
+                         absl::optional<net::SchemefulSite>>& modificatons) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit())
+    return false;
+
+  sql::Transaction transaction(db_.get());
+  if (!transaction.Begin())
+    return false;
+
+  static constexpr char kDeleteSql[] =
+      "DELETE FROM policy_modifications WHERE browser_context_id=?";
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kDeleteSql));
+  statement.BindString(0, browser_context_id);
+  if (!statement.Run())
+    return false;
+
+  for (const auto& [site, owner] : modificatons) {
+    DCHECK(!site.opaque());
+    static constexpr char kInsertSql[] =
+        "INSERT INTO policy_modifications(browser_context_id,site,site_owner)"
+        "VALUES(?,?,?)";
+    sql::Statement statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kInsertSql));
+    statement.BindString(0, browser_context_id);
+    statement.BindString(1, site.Serialize());
+    if (owner.has_value()) {
+      statement.BindString(2, owner.value().Serialize());
+    } else {
+      statement.BindNull(2);
+    }
+
+    if (!statement.Run())
+      return false;
+  }
+  return transaction.Commit();
 }
 
 std::vector<net::SchemefulSite> FirstPartySetsDatabase::FetchSitesToClear(
@@ -209,6 +260,43 @@ FirstPartySetsDatabase::FetchAllSitesToClearFilter(
   if (!statement.Succeeded())
     return {};
 
+  return results;
+}
+
+base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>
+FirstPartySetsDatabase::FetchPolicyModifications(
+    const std::string& browser_context_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit())
+    return {};
+
+  base::flat_map<net::SchemefulSite, absl::optional<net::SchemefulSite>>
+      results;
+  static constexpr char kSelectSql[] =
+      // clang-format off
+      "SELECT site,site_owner FROM policy_modifications "
+      "WHERE browser_context_id=?";
+  // clang-format on
+  sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSelectSql));
+  statement.BindString(0, browser_context_id);
+
+  while (statement.Step()) {
+    absl::optional<net::SchemefulSite> site =
+        FirstPartySetParser::CanonicalizeRegisteredDomain(
+            statement.ColumnString(0), /*emit_errors=*/false);
+
+    absl::optional<net::SchemefulSite> maybe_site_owner;
+    if (statement.ColumnString(1) != "") {
+      maybe_site_owner = FirstPartySetParser::CanonicalizeRegisteredDomain(
+          statement.ColumnString(1), /*emit_errors=*/false);
+    }
+
+    // TODO(crbug/1314039): Invalid sites should be rare case but possible.
+    // Consider deleting them from DB.
+    if (site.has_value())
+      results.emplace(std::move(site.value()), maybe_site_owner);
+  }
   return results;
 }
 

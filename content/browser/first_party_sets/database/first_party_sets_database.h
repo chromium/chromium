@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "content/common/content_export.h"
 #include "sql/meta_table.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class SchemefulSite;
@@ -73,6 +74,14 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   [[nodiscard]] bool InsertBrowserContextCleared(
       const std::string& browser_context_id);
 
+  // Stores the policy modifications into policy_modifications table, and
+  // returns true on success. Note that inserting new modifications will
+  // wipe out the pre-existing ones for the given `browser_context_id`.
+  [[nodiscard]] bool InsertPolicyModifications(
+      const std::string& browser_context_id,
+      const base::flat_map<net::SchemefulSite,
+                           absl::optional<net::SchemefulSite>>& modificatons);
+
   // Gets the list of sites to clear for the `browser_context_id`.
   [[nodiscard]] std::vector<net::SchemefulSite> FetchSitesToClear(
       const std::string& browser_context_id);
@@ -82,6 +91,12 @@ class CONTENT_EXPORT FirstPartySetsDatabase {
   // run, for the `browser_context_id`.
   [[nodiscard]] base::flat_map<net::SchemefulSite, int64_t>
   FetchAllSitesToClearFilter(const std::string& browser_context_id);
+
+  // Gets the previously-stored policy modifications for the
+  // `browser_context_id`.
+  [[nodiscard]] base::flat_map<net::SchemefulSite,
+                               absl::optional<net::SchemefulSite>>
+  FetchPolicyModifications(const std::string& browser_context_id);
 
  private:
   // Called at the start of each public operation, and initializes the database
