@@ -1110,12 +1110,14 @@ def GetRevision(revision_text):
   # number. First read from Chromium Dash, then fall back to OmahaProxy, as CD
   # data is more correct but only if it's available (crbug.com/1317667).
   if len(revision_text.split('.')) == 4:
-    response = urllib.urlopen(CRDASH_REVISIONS_URL % revision_text)
+    revisions_url = CRDASH_REVISIONS_URL % revision_text
+    fallback_revisions_url = OMAHA_REVISIONS_URL % revision_text
+    response = urllib.urlopen(revisions_url)
     revision_details = json.loads(response.read())
     revision_text = revision_details.get('chromium_main_branch_position')
     if not revision_text:
       # OmahaProxy fallback.
-      response = urllib.urlopen(OMAHA_REVISIONS_URL % revision_text)
+      response = urllib.urlopen(fallback_revisions_url)
       revision_details = json.loads(response.read())
       revision_text = revision_details['chromium_base_position']
 
