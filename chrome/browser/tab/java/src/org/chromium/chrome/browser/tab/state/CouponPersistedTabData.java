@@ -15,14 +15,18 @@ import org.json.JSONObject;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.commerce.PriceUtils;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.CouponPersistedTabData.CouponPersistedTabDataProto;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.payments.CurrencyFormatter;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 
@@ -33,8 +37,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * {@link PersistedTabData} for Shopping websites with coupons.
  *
- * TODO(crbug.com/1337120): Implement prefetching for CouponPersistedTabData
- * TODO(crbug.com/1337124): Implement clearing CouponPersistedTabData upon new navigation
  */
 public class CouponPersistedTabData extends PersistedTabData {
     private static final String ENDPOINT =
@@ -82,6 +84,11 @@ public class CouponPersistedTabData extends PersistedTabData {
                             + "      'Not implemented.'"
                             + "}");
 
+    @VisibleForTesting
+    protected EmptyTabObserver mUrlUpdatedObserver;
+    @VisibleForTesting
+    protected ObservableSupplierImpl<Boolean> mIsTabSaveEnabledSupplier =
+            new ObservableSupplierImpl<>();
     private Coupon mCoupon;
 
     /**
@@ -105,6 +112,7 @@ public class CouponPersistedTabData extends PersistedTabData {
                         .getStorage(),
                 PersistedTabDataConfiguration.get(CouponPersistedTabData.class, tab.isIncognito())
                         .getId());
+        setupPersistence(tab);
     }
 
     /**
@@ -122,6 +130,13 @@ public class CouponPersistedTabData extends PersistedTabData {
             PERCENT_OFF,
             AMOUNT_OFF,
             UNKNOWN,
+        }
+
+        public Coupon() {
+            couponName = null;
+            promoCode = null;
+            discountType = null;
+            discountUnits = -1;
         }
 
         /**
@@ -339,7 +354,9 @@ public class CouponPersistedTabData extends PersistedTabData {
         if (coupon == null || !coupon.hasCoupon()) {
             return null;
         }
-        return new CouponPersistedTabData(tab, coupon);
+        CouponPersistedTabData res = new CouponPersistedTabData(tab, coupon);
+        res.enableSaving();
+        return res;
     }
 
     private static Coupon getCouponFromJSON(JSONArray discountsArray) {
@@ -373,6 +390,64 @@ public class CouponPersistedTabData extends PersistedTabData {
             return null;
         }
         return new Coupon(name, promoCode, currencyCode, units, type);
+    }
+
+    private void setupPersistence(Tab tab) {
+        // CouponPersistedTabData is not saved by default - only when its fields are populated
+        // (after a successful endpoint response)
+        disableSaving();
+        registerIsTabSaveEnabledSupplier(mIsTabSaveEnabledSupplier);
+        mUrlUpdatedObserver = new EmptyTabObserver() {
+            @Override
+            public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
+                if (!navigationHandle.isInPrimaryMainFrame() || navigationHandle.isSameDocument()) {
+                    return;
+                }
+                // User is navigating to a different page - as detected by a change in URL
+                if (!tab.getUrl().equals(navigationHandle.getUrl())) {
+                    resetCoupon();
+                }
+            }
+            @Override
+            public void onDidFinishNavigation(Tab tab, NavigationHandle navigationHandle) {
+                String scheme = navigationHandle.getUrl().getScheme();
+                if (!scheme.equals(UrlConstants.HTTP_SCHEME)
+                        && !scheme.equals(UrlConstants.HTTPS_SCHEME)) {
+                    return;
+                }
+                resetCoupon();
+                prefetchOnNewNavigation(tab, navigationHandle);
+            }
+        };
+        tab.addObserver(mUrlUpdatedObserver);
+    }
+
+    protected void resetCoupon() {
+        delete();
+        mCoupon = new Coupon();
+    }
+
+    /**
+     * Enable saving of {@link CouponPersistedTabData}
+     */
+    protected void enableSaving() {
+        mIsTabSaveEnabledSupplier.set(true);
+    }
+
+    /**
+     * Disable saving of {@link CouponPersistedTabData}. Deletes previously saved {@link
+     * CouponPersistedTabData} as well.
+     */
+    public void disableSaving() {
+        mIsTabSaveEnabledSupplier.set(false);
+    }
+
+    // TODO(crbug.com/1337120): Implement prefetching for CouponPersistedTabData
+    private void prefetchOnNewNavigation(Tab tab, NavigationHandle navigationHandle) {}
+
+    @VisibleForTesting
+    public EmptyTabObserver getUrlUpdatedObserverForTesting() {
+        return mUrlUpdatedObserver;
     }
 
     @Override
