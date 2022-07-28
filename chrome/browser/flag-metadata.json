@@ -2785,11 +2785,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "enable-sharesheet-copy-to-clipboard",
-    "owners": [ "melzhang", "chromeos-apps-foundation-team" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "enable-shortcut-customization-app",
     "owners": [ "jimmyxgong", "zentaro", "cros-peripherals@google.com"],
     "expiry_milestone": 115

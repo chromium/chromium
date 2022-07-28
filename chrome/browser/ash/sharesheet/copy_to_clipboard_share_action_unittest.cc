@@ -6,11 +6,9 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_test_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -47,8 +45,6 @@ class CopyToClipboardShareActionTest : public ChromeAshTestBase {
   void SetUp() override {
     ChromeAshTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSharesheetCopyToClipboard);
     profile_ = std::make_unique<TestingProfile>();
     share_action_cache_ =
         std::make_unique<::sharesheet::ShareActionCache>(profile_.get());
@@ -60,7 +56,6 @@ class CopyToClipboardShareActionTest : public ChromeAshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<::sharesheet::ShareActionCache> share_action_cache_;
 };

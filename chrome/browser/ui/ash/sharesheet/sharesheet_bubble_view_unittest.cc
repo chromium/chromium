@@ -11,7 +11,6 @@
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
@@ -20,7 +19,6 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view_delegate.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_header_view.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -75,9 +73,6 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
   // ChromeAshTestBase:
   void SetUp() override {
     ChromeAshTestBase::SetUp();
-
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSharesheetCopyToClipboard);
 
     profile_ = std::make_unique<TestingProfile>();
 
@@ -164,7 +159,6 @@ class SharesheetBubbleViewTest : public ChromeAshTestBase {
   Profile* profile() { return profile_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   gfx::NativeWindow parent_window_;
   std::unique_ptr<TestingProfile> profile_;
   SharesheetBubbleViewDelegate* bubble_delegate_;

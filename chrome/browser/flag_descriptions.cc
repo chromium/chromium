@@ -5576,12 +5576,6 @@ const char kSecondaryGoogleAccountUsageDescription[] =
     "Add restrictions on a managed account's usage as a secondary account on "
     "ChromeOS.";
 
-const char kSharesheetCopyToClipboardName[] =
-    "Enable copy to clipboard in the ChromeOS Sharesheet.";
-const char kSharesheetCopyToClipboardDescription[] =
-    "Enables a share action in the sharesheet that copies the selected data to "
-    "the clipboard.";
-
 const char kShelfAutoHideSeparationName[] =
     "Enable separate shelf auto-hide preferences.";
 const char kShelfAutoHideSeparationDescription[] =

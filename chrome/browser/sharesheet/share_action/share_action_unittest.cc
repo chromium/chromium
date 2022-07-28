@@ -9,11 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/sharesheet/share_action/share_action_cache.h"
 #include "chrome/browser/sharesheet/sharesheet_test_util.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -25,11 +23,6 @@ namespace sharesheet {
 
 class ShareActionTest : public ::testing::Test {
  public:
-  ShareActionTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSharesheetCopyToClipboard);
-  }
-
   // Test:
   void SetUp() override {
     auto profile = std::make_unique<TestingProfile>();
@@ -39,7 +32,6 @@ class ShareActionTest : public ::testing::Test {
   ShareActionCache* share_action_cache() { return share_action_cache_.get(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<ShareActionCache> share_action_cache_;
