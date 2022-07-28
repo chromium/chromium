@@ -101,6 +101,7 @@ GL_EXPORT extern const base::Feature kDirectCompositionVerifyDrawOffset;
 GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetX;
 GL_EXPORT extern const base::FeatureParam<int> kVerifyDrawOffsetY;
 GL_EXPORT extern const base::Feature kDirectCompositionSoftwareOverlays;
+GL_EXPORT extern const base::Feature kEGLDualGpuRendering;
 GL_EXPORT extern const base::Feature kIntelVpSuperResolution;
 GL_EXPORT extern const base::Feature kDefaultANGLEOpenGL;
 GL_EXPORT extern const base::Feature kDefaultANGLEMetal;
@@ -112,6 +113,8 @@ GL_EXPORT extern const base::FeatureParam<int>
     kDXGIWaitableSwapChainMaxQueuedFrames;
 
 GL_EXPORT bool IsDefaultANGLEVulkan();
+
+GL_EXPORT bool SupportsEGLDualGpuRendering();
 
 }  // namespace features
 

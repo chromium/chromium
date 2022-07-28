@@ -185,6 +185,75 @@ uint64_t CHROME_LUID_to_uint64_t(const CHROME_LUID& luid) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
+#if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+// GPU picking is only effective with ANGLE/Metal backend on Mac and
+// on Windows with EGL.
+// Returns the default GPU's system_device_id.
+uint64_t SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
+                                  const GpuFeatureInfo& gpu_feature_info) {
+  const GPUInfo::GPUDevice* gpu_high_perf =
+      gpu_info.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
+  const GPUInfo::GPUDevice* gpu_low_power =
+      gpu_info.GetGpuByPreference(gl::GpuPreference::kLowPower);
+#if BUILDFLAG(IS_WIN)
+  // On Windows the default GPU may not be the low power GPU.
+  const GPUInfo::GPUDevice* gpu_default = &(gpu_info.gpu);
+  uint64_t system_device_id_high_perf =
+      gpu_high_perf ? CHROME_LUID_to_uint64_t(gpu_high_perf->luid) : 0;
+  uint64_t system_device_id_low_power =
+      gpu_low_power ? CHROME_LUID_to_uint64_t(gpu_low_power->luid) : 0;
+  uint64_t system_device_id_default =
+      CHROME_LUID_to_uint64_t(gpu_default->luid);
+#else  // IS_MAC
+  const GPUInfo::GPUDevice* gpu_default =
+      gpu_low_power ? gpu_low_power : &(gpu_info.gpu);
+  uint64_t system_device_id_high_perf =
+      gpu_high_perf ? gpu_high_perf->register_id : 0;
+  uint64_t system_device_id_low_power =
+      gpu_low_power ? gpu_low_power->register_id : 0;
+  uint64_t system_device_id_default = gpu_default->register_id;
+#endif
+  DCHECK(gpu_default);
+
+  if (gpu_info.GpuCount() <= 1) {
+    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
+                            system_device_id_default);
+    return system_device_id_default;
+  }
+  if (gpu_feature_info.IsWorkaroundEnabled(FORCE_LOW_POWER_GPU) &&
+      system_device_id_low_power) {
+    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
+                            system_device_id_low_power);
+    return system_device_id_low_power;
+  }
+  if (gpu_feature_info.IsWorkaroundEnabled(FORCE_HIGH_PERFORMANCE_GPU) &&
+      system_device_id_high_perf) {
+    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
+                            system_device_id_high_perf);
+    return system_device_id_high_perf;
+  }
+  if (gpu_default == gpu_high_perf) {
+    // If the default GPU is already the high performance GPU, then it's better
+    // for Chrome to always use this GPU.
+    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
+                            system_device_id_high_perf);
+    return system_device_id_high_perf;
+  }
+
+  // Chrome uses the default GPU for internal rendering and the high
+  // performance GPU for WebGL/WebGPU contexts that prefer high performance.
+  // At this moment, a low power GPU different from the default GPU is not
+  // supported.
+  gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault,
+                          system_device_id_default);
+  if (system_device_id_high_perf) {
+    gl::SetGpuPreferenceEGL(gl::GpuPreference::kHighPerformance,
+                            system_device_id_high_perf);
+  }
+  return system_device_id_default;
+}
+#endif  // USE_EGL && (IS_WIN || IS_MAC)
+
 }  // namespace
 
 GpuInit::GpuInit() = default;
@@ -238,39 +307,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                                               command_line, &needs_more_info);
   }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // GPU picking is only effective with ANGLE/Metal backend on Mac and
-  // on Windows.
-  bool force_low_power_gpu =
-      gpu_feature_info_.IsWorkaroundEnabled(FORCE_LOW_POWER_GPU);
-  bool force_high_performance_gpu =
-      gpu_feature_info_.IsWorkaroundEnabled(FORCE_HIGH_PERFORMANCE_GPU);
-#if BUILDFLAG(IS_MAC)
-  // Default to the integrated gpu on a multi-gpu Mac.
-  if (!force_high_performance_gpu)
-    force_low_power_gpu = true;
-#endif  // IS_MAC
-  GPUInfo::GPUDevice* preferred_gpu = nullptr;
-  if (force_high_performance_gpu) {
-    preferred_gpu =
-        gpu_info_.GetGpuByPreference(gl::GpuPreference::kHighPerformance);
-  } else if (force_low_power_gpu) {
-    preferred_gpu = gpu_info_.GetGpuByPreference(gl::GpuPreference::kLowPower);
-  }
-  if (preferred_gpu) {
-#if BUILDFLAG(IS_WIN)
-    system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu->luid);
-#else  // IS_MAC
-    system_device_id = preferred_gpu->register_id;
-#endif
-  }
-
-#if defined(USE_EGL)
-  if (system_device_id != 0) {
-    gl::SetGpuPreferenceEGL(gl::GpuPreference::kDefault, system_device_id);
-  }
-#endif  // USE_EGL
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if defined(USE_EGL) && (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC))
+  system_device_id = SetupGLDisplayManagerEGL(gpu_info_, gpu_feature_info_);
+#endif  // USE_EGL && (IS_WIN || IS_MAC)
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CASTOS)
 
   gpu_info_.in_process_gpu = false;
