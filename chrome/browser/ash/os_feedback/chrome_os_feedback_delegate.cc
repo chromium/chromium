@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/shell.h"
+#include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -216,6 +217,12 @@ void ChromeOsFeedbackDelegate::SendReport(
     // for all tasks to complete.
     feedback_data->AttachAndCompressFileData(std::move(file_data));
   }
+
+  // Handle Feedback Metrics
+  // Records whether the screenshot is included when the feedback report is
+  // submitted.
+  ash::os_feedback_ui::metrics::EmitFeedbackAppIncludedScreenshot(
+      report->include_screenshot);
 
   feedback_service_->SendFeedback(
       feedback_params, feedback_data,

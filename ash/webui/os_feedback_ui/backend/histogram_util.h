@@ -16,10 +16,14 @@ namespace ash::os_feedback_ui::metrics {
 constexpr char kFeedbackAppOpenDuration[] = "Feedback.ChromeOSApp.OpenDuration";
 constexpr char kFeedbackAppPostSubmitAction[] =
     "Feedback.ChromeOSApp.PostSubmitAction";
+constexpr char kFeedbackAppIncludedScreenshot[] =
+    "Feedback.ChromeOSApp.IncludedScreenshot";
 
 void EmitFeedbackAppOpenDuration(const base::TimeDelta& time_elapsed);
 
 void EmitFeedbackAppPostSubmitAction(mojom::FeedbackAppPostSubmitAction action);
+
+void EmitFeedbackAppIncludedScreenshot(bool included_screenshot);
 
 }  // namespace ash::os_feedback_ui::metrics
 

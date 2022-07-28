@@ -16,4 +16,9 @@ void EmitFeedbackAppPostSubmitAction(
   base::UmaHistogramEnumeration(kFeedbackAppPostSubmitAction, action);
 }
 
+void EmitFeedbackAppIncludedScreenshot(bool included_screenshot) {
+  base::UmaHistogramBoolean(kFeedbackAppIncludedScreenshot,
+                            included_screenshot);
+}
+
 }  // namespace ash::os_feedback_ui::metrics
