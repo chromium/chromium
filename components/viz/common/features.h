@@ -32,7 +32,6 @@ VIZ_COMMON_EXPORT extern const base::Feature kVideoDetectorIgnoreNonVideos;
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicColorGamut;
 #endif
 VIZ_COMMON_EXPORT extern const base::Feature kVizFrameSubmissionForWebView;
-VIZ_COMMON_EXPORT extern const base::Feature kUsePreferredIntervalForVideo;
 VIZ_COMMON_EXPORT extern const base::Feature kUseRealBuffersForPageFlipTest;
 #if BUILDFLAG(IS_FUCHSIA)
 VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaOutputDeviceBufferQueue;

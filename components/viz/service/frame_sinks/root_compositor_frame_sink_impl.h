@@ -136,7 +136,6 @@ class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
       std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source,
       std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
       std::unique_ptr<Display> display,
-      bool use_preferred_interval_for_video,
       bool hw_support_for_multiple_refresh_rates,
       bool apply_simple_frame_rate_throttling);
 

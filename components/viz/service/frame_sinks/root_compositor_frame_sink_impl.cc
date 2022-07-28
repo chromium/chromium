@@ -144,7 +144,7 @@ RootCompositorFrameSinkImpl::Create(
       // Vsync updates are required to update the FrameRateDecider with
       // supported refresh rates.
 #if !BUILDFLAG(IS_APPLE)
-      wants_vsync_updates = params->use_preferred_interval_for_video;
+      wants_vsync_updates = true;
 #endif
       external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
           restart_id, output_surface.get());
@@ -200,7 +200,6 @@ RootCompositorFrameSinkImpl::Create(
       std::move(params->display_private), std::move(display_client),
       std::move(synthetic_begin_frame_source),
       std::move(external_begin_frame_source), std::move(display),
-      params->use_preferred_interval_for_video,
       hw_support_for_multiple_refresh_rates,
       params->renderer_settings.apply_simple_frame_rate_throttling));
 
@@ -496,7 +495,6 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source,
     std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
     std::unique_ptr<Display> display,
-    bool use_preferred_interval_for_video,
     bool hw_support_for_multiple_refresh_rates,
     bool apply_simple_frame_rate_throttling)
     : compositor_frame_sink_client_(std::move(frame_sink_client)),
@@ -520,8 +518,7 @@ RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
                        Display::kEnableSharedImages,
                        hw_support_for_multiple_refresh_rates);
   support_->SetUpHitTest(display_.get());
-  if (use_preferred_interval_for_video &&
-      !hw_support_for_multiple_refresh_rates) {
+  if (!hw_support_for_multiple_refresh_rates) {
     display_->SetSupportedFrameIntervals(
         {display_frame_interval_, display_frame_interval_ * 2});
     use_preferred_interval_ = true;

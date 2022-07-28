@@ -403,8 +403,6 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
   if (command_line->HasSwitch(switches::kDisableFrameRateLimit))
     root_params->disable_frame_rate_limit = true;
 
-  root_params->use_preferred_interval_for_video =
-      features::IsUsingPreferredIntervalForVideo();
 #if BUILDFLAG(IS_WIN)
   root_params->set_present_duration_allowed =
       features::ShouldUseSetPresentDuration();
