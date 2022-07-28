@@ -703,12 +703,6 @@ const char kTabsSearchDescription[] =
     "Enables the search mode in the Tab grid where users can search open tabs "
     "or recent tabs.";
 
-const char kTabsSearchRegularResultsSuggestedActionsName[] =
-    "Enable Tabs Search regular results suggested actions section";
-const char kTabsSearchRegularResultsSuggestedActionsDescription[] =
-    "Enables the suggested actions section in the regular tabs page when the "
-    "search mode is enabled.";
-
 const char kTFLiteLanguageDetectionName[] = "TFLite-based Language Detection";
 const char kTFLiteLanguageDetectionDescription[] =
     "Uses TFLite for language detection in place of CLD3";

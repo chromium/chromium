@@ -192,11 +192,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
       forCellWithReuseIdentifier:kCellIdentifier];
   [collectionView registerClass:[PlusSignCell class]
       forCellWithReuseIdentifier:kPlusSignCellIdentifier];
-  if (IsTabsSearchRegularResultsSuggestedActionsEnabled()) {
+  if (IsTabsSearchEnabled()) {
     [collectionView registerClass:[SuggestedActionsGridCell class]
         forCellWithReuseIdentifier:kSuggestedActionsCellIdentifier];
-  }
-  if (IsTabsSearchEnabled()) {
     [collectionView registerClass:[GridHeader class]
         forSupplementaryViewOfKind:UICollectionElementKindSectionHeader
                withReuseIdentifier:UICollectionElementKindSectionHeader];
@@ -313,7 +311,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.collectionView.dragInteractionEnabled = (_mode != TabGridModeSearch);
   self.emptyStateView.tabGridMode = _mode;
 
-  if (IsTabsSearchRegularResultsSuggestedActionsEnabled()) {
+  if (IsTabsSearchEnabled()) {
     if (mode == TabGridModeSearch && self.suggestedActionsDelegate) {
       if (!self.suggestedActionsViewController) {
         self.suggestedActionsViewController =
@@ -465,8 +463,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (NSInteger)numberOfSectionsInCollectionView:
     (UICollectionView*)collectionView {
-  if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
-      self.showingSuggestedActions) {
+  if (IsTabsSearchEnabled() && self.showingSuggestedActions) {
     return kSuggestedActionsSectionIndex + 1;
   }
   return 1;
@@ -474,8 +471,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (NSInteger)collectionView:(UICollectionView*)collectionView
      numberOfItemsInSection:(NSInteger)section {
-  if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
-      section == kSuggestedActionsSectionIndex) {
+  if (IsTabsSearchEnabled() && section == kSuggestedActionsSectionIndex) {
     // In the search mode there there is only one item in the suggested actions
     // section which contains the table for the suggested actions.
     if (self.showingSuggestedActions)
@@ -525,7 +521,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   NSUInteger itemIndex = base::checked_cast<NSUInteger>(indexPath.item);
   UICollectionViewCell* cell;
 
-  if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
+  if (IsTabsSearchEnabled() &&
       indexPath.section == kSuggestedActionsSectionIndex) {
     DCHECK(self.suggestedActionsViewController);
     cell = [collectionView
@@ -594,7 +590,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // `prepareLayout` of the layout class. For that specific cell calculate the
   // anticipated size from the layout section insets and the content view insets
   // and return it.
-  if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
+  if (IsTabsSearchEnabled() &&
       indexPath.section == kSuggestedActionsSectionIndex) {
     UIEdgeInsets sectionInset = layout.sectionInset;
     UIEdgeInsets contentInset = layout.collectionView.adjustedContentInset;
@@ -1586,8 +1582,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 
 - (BOOL)shouldShowEmptyState {
-  if (IsTabsSearchRegularResultsSuggestedActionsEnabled() &&
-      self.showingSuggestedActions) {
+  if (IsTabsSearchEnabled() && self.showingSuggestedActions) {
     return NO;
   }
   return self.items.count == 0;

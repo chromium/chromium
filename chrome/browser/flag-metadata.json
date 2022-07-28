@@ -6083,11 +6083,6 @@
     "expiry_milestone":103
   },
   {
-    "name": "tabs-search-regular-results-suggested-actions-ios",
-    "owners": [ "mrefaat", "michaeldo", "bling-flags@google.com" ],
-    "expiry_milestone":103
-  },
-  {
     "name": "tangible-sync",
     "owners": [ "aliceywang", "chrome-signin-team" ],
     "expiry_milestone":120
