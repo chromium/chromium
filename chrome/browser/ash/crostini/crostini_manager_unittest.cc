@@ -713,22 +713,23 @@ TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalOperationBlocked) {
 }
 
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerCreated) {
-  const base::Value* pref =
-      profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->GetList().size(), 0);
+  const base::Value::List* pref =
+      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+  EXPECT_EQ(pref->size(), 0);
   crostini_manager()->CreateLxdContainer(
       container_id(), absl::nullopt, absl::nullopt,
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
-  pref = profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->GetList().size(), 1);
+  pref =
+      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+  EXPECT_EQ(pref->size(), 1);
 }
 
 TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
-  const base::Value* pref =
-      profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->GetList().size(), 0);
+  const base::Value::List* pref =
+      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+  EXPECT_EQ(pref->size(), 0);
   vm_tools::cicerone::CreateLxdContainerResponse response;
   response.set_status(vm_tools::cicerone::CreateLxdContainerResponse::EXISTS);
   fake_cicerone_client_->set_create_lxd_container_response(response);
@@ -737,8 +738,9 @@ TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));
   run_loop()->Run();
-  pref = profile_->GetPrefs()->GetList(guest_os::prefs::kGuestOsContainers);
-  EXPECT_EQ(pref->GetList().size(), 1);
+  pref =
+      &profile_->GetPrefs()->GetValueList(guest_os::prefs::kGuestOsContainers);
+  EXPECT_EQ(pref->size(), 1);
 }
 
 class CrostiniManagerRestartTest : public CrostiniManagerTest,
