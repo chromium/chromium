@@ -1,3 +1,3 @@
 # Desktop Web App Integration Testing Framework
 
-Documentation has moved [here](/docs/webapps/integration-testing-framework.md).
+Documentation is [here](/docs/webapps/integration-testing-framework.md).
