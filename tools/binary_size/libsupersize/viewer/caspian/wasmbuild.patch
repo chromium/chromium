@@ -16,11 +16,11 @@ index c737e53c2ce72..963a095d14a19 100644
  # =============================================================================
  # TARGET DEFAULTS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index c3ae8f2250358..9a756be9b3c51 100644
+index 9fbd5db5119a8..0156a05d43c81 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
-@@ -635,6 +635,20 @@ config("compiler") {
-     defines += [ "_LIBCPP_HAS_NO_ALIGNED_ALLOCATION" ]
+@@ -624,6 +624,20 @@ config("compiler") {
+     cflags_cc += [ "-Wno-trigraphs" ]
    }
  
 +  if (is_wasm) {
@@ -40,27 +40,25 @@ index c3ae8f2250358..9a756be9b3c51 100644
    # Add flags for link-time optimization. These flags enable
    # optimizations/transformations that require whole-program visibility at link
    # time, so they need to be applied to all translation units, and we may end up
-@@ -751,9 +765,7 @@ config("compiler") {
+@@ -744,7 +758,7 @@ config("compiler") {
    if (use_lld && !enable_call_graph_profile_sort) {
      if (is_win) {
        ldflags += [ "/call-graph-profile-sort:no" ]
--    } else if (!is_apple) {
--      # TODO(thakis): Once LLD's Mach-O port basically works, implement call
--      # graph profile sorting for it, add an opt-out flag, and pass it here.
+-    } else {
 +    } else if (!is_wasm) {
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -1536,7 +1548,7 @@ config("default_warnings") {
-         cflags += [ "-Wno-unqualified-std-cast-call" ]
-       }
+@@ -1535,7 +1549,7 @@ config("default_warnings") {
+         "-Wno-ignored-pragma-optimize",
+       ]
  
--      if (!is_nacl && !(is_chromeos ||
-+      if (!is_wasm && !is_nacl && !(is_chromeos ||
-                         default_toolchain == "//build/toolchain/cros:target")) {
-         # TODO(https://crbug.com/1322823): Remove flags once potential miscompile is investigated.
+-      if (!is_nacl) {
++      if (!is_nacl && !is_wasm) {
          cflags += [
-@@ -2305,6 +2317,9 @@ config("symbols") {
+           # TODO(https://crbug.com/1300731) Clean up and enable.
+           "-Wno-unqualified-std-cast-call",
+@@ -2309,6 +2323,9 @@ config("symbols") {
  
      # All configs using /DEBUG should include this:
      configs = [ ":win_pdbaltpath" ]
@@ -71,7 +69,7 @@ index c3ae8f2250358..9a756be9b3c51 100644
      cflags = []
      if (is_mac && enable_dsyms) {
 diff --git a/build/toolchain/toolchain.gni b/build/toolchain/toolchain.gni
-index 86d9ff778c6fa..3b5acb0942190 100644
+index 1b97c8fa3eb5c..6ee47ccac4fad 100644
 --- a/build/toolchain/toolchain.gni
 +++ b/build/toolchain/toolchain.gni
 @@ -47,6 +47,9 @@ if (is_apple) {
