@@ -232,7 +232,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   RequestPriority priority_ = DEFAULT_PRIORITY;
 
   HttpRequestInfo request_info_;
-  raw_ptr<const HttpResponseInfo, DanglingUntriaged> response_info_ = nullptr;
 
   // Used for any logic, e.g. DNS-based scheme upgrade, that needs to synthesize
   // response info to override the real response info. Transaction should be
@@ -247,6 +246,12 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   bool read_in_progress_ = false;
 
   std::unique_ptr<HttpTransaction> transaction_;
+
+  // This needs to be declared after `transaction_` and
+  // `override_response_info_` because `response_info_` holds a pointer that's
+  // itself owned by one of those, so `response_info_` needs to be destroyed
+  // first.
+  raw_ptr<const HttpResponseInfo> response_info_ = nullptr;
 
   // This is used to supervise traffic and enforce exponential
   // back-off. May be NULL.
