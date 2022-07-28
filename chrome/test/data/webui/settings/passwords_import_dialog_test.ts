@@ -7,11 +7,12 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ImportDialogState} from 'chrome://settings/lazy_load.js';
-import {PasswordManagerImpl} from 'chrome://settings/settings.js';
+import {PasswordManagerImpl, SettingsPluralStringProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, flushTasks, isVisible} from 'chrome://webui-test/test_util.js';
+import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
+import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
@@ -20,6 +21,7 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
 suite('PasswordsImportDialog', function() {
   let passwordManager: TestPasswordManagerProxy;
+  let pluralString: TestPluralStringProxy;
   let elementFactory: PasswordSectionElementFactory;
 
   setup(function() {
@@ -27,12 +29,14 @@ suite('PasswordsImportDialog', function() {
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
+    pluralString = new TestPluralStringProxy();
+    SettingsPluralStringProxyImpl.setInstance(pluralString);
     elementFactory = new PasswordSectionElementFactory(document);
   });
 
   test('hasCorrectInitialState', async function() {
     const importDialog = elementFactory.createPasswordsImportDialog();
-    assertEquals(importDialog.dialogState, ImportDialogState.START);
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
 
     const cancel =
         importDialog.shadowRoot!.querySelector<HTMLElement>('#cancel');
@@ -58,7 +62,7 @@ suite('PasswordsImportDialog', function() {
 
   test('hasCorrectSuccessState', async function() {
     const importDialog = elementFactory.createPasswordsImportDialog();
-    assertEquals(importDialog.dialogState, ImportDialogState.START);
+    assertEquals(ImportDialogState.START, importDialog.dialogState);
     passwordManager.setImportResults({
       status: chrome.passwordsPrivate.ImportResultsStatus.SUCCESS,
       numberImported: 42,
@@ -73,16 +77,11 @@ suite('PasswordsImportDialog', function() {
     chooseFile.click();
     // Import flow should have been triggered.
     await passwordManager.whenCalled('importPasswords');
-    await flushTasks();
+    await pluralString.whenCalled('getPluralString');
+    flush();
     // After the import, the dialog should switch to SUCCESS state.
-    assertEquals(importDialog.dialogState, ImportDialogState.SUCCESS);
+    assertEquals(ImportDialogState.SUCCESS, importDialog.dialogState);
     assertFalse(isVisible(chooseFile));
-
-    const expectedSuccessSummary =
-        await PluralStringProxyImpl.getInstance().getPluralString(
-            'importPasswordsSuccessSummaryDevice', 42);
-    const successSummary = importDialog.$.descriptionText.textContent!.trim();
-    assertEquals(expectedSuccessSummary, successSummary);
 
     const successTip =
         importDialog.shadowRoot!.querySelector<HTMLElement>('#successTip');
