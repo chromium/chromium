@@ -28,8 +28,8 @@ constexpr char kKeyLaunchError[] = "launch_error";
 constexpr char kKeyCryptohomeFailure[] = "cryptohome_failure";
 
 // Get Kiosk dictionary value. It is replaced after each update.
-const base::Value* GetKioskDictionary() {
-  return g_browser_process->local_state()->GetDictionary(
+const base::Value::Dict& GetKioskDictionary() {
+  return g_browser_process->local_state()->GetValueDict(
       KioskAppManager::kKioskDictionaryName);
 }
 
@@ -99,12 +99,11 @@ TEST_F(KioskAppLaunchErrorTest, GetErrorMessage) {
 
 TEST_F(KioskAppLaunchErrorTest, SaveError) {
   // No launch error is stored before it is saved.
-  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyLaunchError), nullptr);
+  EXPECT_FALSE(GetKioskDictionary().contains(kKeyLaunchError));
   KioskAppLaunchError::Save(KioskAppLaunchError::Error::kUserCancel);
 
   // The launch error can be retrieved.
-  absl::optional<int> out_error =
-      GetKioskDictionary()->FindIntKey(kKeyLaunchError);
+  absl::optional<int> out_error = GetKioskDictionary().FindInt(kKeyLaunchError);
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(),
             static_cast<int>(KioskAppLaunchError::Error::kUserCancel));
@@ -113,25 +112,25 @@ TEST_F(KioskAppLaunchErrorTest, SaveError) {
 
   // The launch error is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();
-  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyLaunchError), nullptr);
+  EXPECT_FALSE(GetKioskDictionary().contains(kKeyLaunchError));
   EXPECT_EQ(KioskAppLaunchError::Get(), KioskAppLaunchError::Error::kNone);
 }
 
 TEST_F(KioskAppLaunchErrorTest, SaveCryptohomeFailure) {
   // No cryptohome failure is stored before it is saved.
-  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyCryptohomeFailure), nullptr);
+  EXPECT_FALSE(GetKioskDictionary().contains(kKeyCryptohomeFailure));
   AuthFailure auth_failure(AuthFailure::FailureReason::AUTH_DISABLED);
   KioskAppLaunchError::SaveCryptohomeFailure(auth_failure);
 
   // The cryptohome failure can be retrieved.
   absl::optional<int> out_error =
-      GetKioskDictionary()->FindIntKey(kKeyCryptohomeFailure);
+      GetKioskDictionary().FindInt(kKeyCryptohomeFailure);
   EXPECT_TRUE(out_error.has_value());
   EXPECT_EQ(out_error.value(), auth_failure.reason());
 
   // The cryptohome failure is cleaned up after clear operation.
   KioskAppLaunchError::RecordMetricAndClear();
-  EXPECT_EQ(GetKioskDictionary()->FindKey(kKeyCryptohomeFailure), nullptr);
+  EXPECT_FALSE(GetKioskDictionary().contains(kKeyCryptohomeFailure));
 }
 
 }  // namespace ash

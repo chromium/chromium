@@ -370,22 +370,23 @@ class KioskAppManagerTest : public InProcessBrowserTest {
 
     // Check data is cached in local state correctly.
     PrefService* local_state = g_browser_process->local_state();
-    const base::Value* dict =
-        local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
+    const base::Value::Dict& dict =
+        local_state->GetValueDict(KioskAppManager::kKioskDictionaryName);
 
     const std::string name_key = "apps." + app_id + ".name";
-    const std::string* name = dict->FindStringPath(name_key);
+    const std::string* name = dict.FindStringByDottedPath(name_key);
     ASSERT_TRUE(name);
     EXPECT_EQ(expected_app_name, *name);
 
     const std::string icon_path_key = "apps." + app_id + ".icon";
-    const std::string* icon_path_string = dict->FindStringPath(icon_path_key);
+    const std::string* icon_path_string =
+        dict.FindStringByDottedPath(icon_path_key);
     ASSERT_TRUE(icon_path_string);
 
     const std::string required_platform_version_key =
         "apps." + app_id + ".required_platform_version";
     const std::string* required_platform_version =
-        dict->FindStringPath(required_platform_version_key);
+        dict.FindStringByDottedPath(required_platform_version_key);
     ASSERT_TRUE(required_platform_version);
     EXPECT_EQ(expected_required_platform_version, *required_platform_version);
 
@@ -543,15 +544,16 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, ClearAppData) {
   SetExistingApp("app_1", "Cached App1 Name", "red16x16.png", "");
 
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* dict =
-      local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
-  const base::Value* apps_dict = dict->FindDictKey(KioskAppDataBase::kKeyApps);
+  const base::Value::Dict& dict =
+      local_state->GetValueDict(KioskAppManager::kKioskDictionaryName);
+  const base::Value::Dict* apps_dict =
+      dict.FindDict(KioskAppDataBase::kKeyApps);
   EXPECT_TRUE(apps_dict);
-  EXPECT_TRUE(apps_dict->FindKey("app_1") != nullptr);
+  EXPECT_TRUE(apps_dict->contains("app_1"));
 
   manager()->ClearAppData("app_1");
 
-  EXPECT_EQ(apps_dict->FindKey("app_1"), nullptr);
+  EXPECT_FALSE(apps_dict->contains("app_1"));
 }
 
 IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, UpdateAppDataFromProfile) {

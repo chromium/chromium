@@ -45,20 +45,14 @@ class LowDiskMetricsServiceTest
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
   absl::optional<KioskLowDiskSeverity> GetLowDiskSeverityFromLocalState() {
-    const auto* metrics_value =
-        local_state()->GetDictionary(prefs::kKioskMetrics);
-    if (!metrics_value)
-      return absl::nullopt;
-    const auto* metrics_dict = metrics_value->GetIfDict();
-    if (!metrics_dict)
-      return absl::nullopt;
-    const auto* severity_value = metrics_dict->Find(kKioskLowDiskSeverity);
-    if (!severity_value || !severity_value->is_int()) {
+    const auto& metrics_dict =
+        local_state()->GetValueDict(prefs::kKioskMetrics);
+    const auto severity_value = metrics_dict.FindInt(kKioskLowDiskSeverity);
+    if (!severity_value) {
       return absl::nullopt;
     }
 
-    return static_cast<KioskLowDiskSeverity>(
-        severity_value->GetIfInt().value());
+    return static_cast<KioskLowDiskSeverity>(severity_value.value());
   }
 
   void SendLowDiskSpaceEvent(uint64_t disk_free_bytes) {

@@ -59,6 +59,14 @@ void PopulateIcon(WebAppInstallInfo* web_app_info,
   web_app::PopulateProductIcons(web_app_info, &icons_map);
 }
 
+const std::string* GetLastIconUrlForAppId() {
+  return g_browser_process->local_state()
+      ->GetValueDict(WebKioskAppManager::kWebKioskDictionaryName)
+      .FindDict(KioskAppDataBase::kKeyApps)
+      ->FindDict(kAppId)
+      ->FindString(kLastIconUrlKey);
+}
+
 }  // namespace
 
 class WebKioskAppDataTest : public InProcessBrowserTest,
@@ -152,12 +160,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, PRE_DownloadedIconPersists) {
 
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   EXPECT_EQ(app_data.name(), kAppTitle);
-  const std::string* icon_url_string =
-      g_browser_process->local_state()
-          ->GetDictionary(WebKioskAppManager::kWebKioskDictionaryName)
-          ->FindDictKey(KioskAppDataBase::kKeyApps)
-          ->FindDictKey(kAppId)
-          ->FindStringKey(kLastIconUrlKey);
+  const std::string* icon_url_string = GetLastIconUrlForAppId();
   ASSERT_TRUE(icon_url_string);
   ASSERT_EQ(*icon_url_string, test_server.GetURL(kIconUrl).spec());
 }
@@ -167,12 +170,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, DownloadedIconPersists) {
   // cached icon.
   // We should still find the correct icon url in order to not initiate a
   // redownload.
-  const std::string* icon_url_string =
-      g_browser_process->local_state()
-          ->GetDictionary(WebKioskAppManager::kWebKioskDictionaryName)
-          ->FindDictKey(KioskAppDataBase::kKeyApps)
-          ->FindDictKey(kAppId)
-          ->FindStringKey(kLastIconUrlKey);
+  const std::string* icon_url_string = GetLastIconUrlForAppId();
   ASSERT_TRUE(icon_url_string);
   const GURL icon_url = GURL(*icon_url_string);
 
@@ -299,12 +297,7 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, InvalidIcon) {
   app_data.LoadIcon();
   loop.Run();
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
-  const std::string* icon_url_string =
-      g_browser_process->local_state()
-          ->GetDictionary(WebKioskAppManager::kWebKioskDictionaryName)
-          ->FindDictKey(KioskAppDataBase::kKeyApps)
-          ->FindDictKey(kAppId)
-          ->FindStringKey(kLastIconUrlKey);
+  const std::string* icon_url_string = GetLastIconUrlForAppId();
   ASSERT_FALSE(icon_url_string);
 }
 }  // namespace ash

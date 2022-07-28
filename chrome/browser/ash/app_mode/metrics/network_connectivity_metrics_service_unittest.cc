@@ -44,19 +44,9 @@ class NetworkConnectivityMetricsServiceTest : public testing::Test {
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
   absl::optional<int> GetNetworkDropsFromLocalState() {
-    const auto* metrics_value =
-        local_state()->GetDictionary(prefs::kKioskMetrics);
-    if (!metrics_value)
-      return absl::nullopt;
-    const auto* metrics_dict = metrics_value->GetIfDict();
-    if (!metrics_dict)
-      return absl::nullopt;
-    const auto* network_drops_value = metrics_dict->Find(kKioskNetworkDrops);
-    if (!network_drops_value) {
-      return absl::nullopt;
-    }
-
-    return network_drops_value->GetIfInt();
+    return local_state()
+        ->GetValueDict(prefs::kKioskMetrics)
+        .FindInt(kKioskNetworkDrops);
   }
 
   void SimulateConnectionFailure(const NetworkState* network,
