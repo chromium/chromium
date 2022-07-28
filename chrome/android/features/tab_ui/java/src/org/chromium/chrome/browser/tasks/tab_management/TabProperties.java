@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.Card
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
 import android.content.res.ColorStateList;
+import android.util.Size;
 import android.view.View.AccessibilityDelegate;
 
 import androidx.annotation.IntDef;
@@ -16,7 +17,6 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -55,9 +55,8 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabListMediator.ThumbnailFetcher>
             THUMBNAIL_FETCHER = new WritableObjectPropertyKey<>(true);
 
-    public static final WritableIntPropertyKey GRID_CARD_WIDTH = new WritableIntPropertyKey();
-
-    public static final WritableIntPropertyKey GRID_CARD_HEIGHT = new WritableIntPropertyKey();
+    public static final WritableObjectPropertyKey<Size> GRID_CARD_SIZE =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<TabListMediator.IphProvider> IPH_PROVIDER =
             new WritableObjectPropertyKey<>();
@@ -132,17 +131,16 @@ public class TabProperties {
             new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS_TAB_GRID = new PropertyKey[] {TAB_ID,
-            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON, THUMBNAIL_FETCHER, IPH_PROVIDER,
-            TITLE, IS_SELECTED, CHECKED_DRAWABLE_STATE_LIST, CREATE_GROUP_LISTENER, CARD_ALPHA,
-            CARD_ANIMATION_STATUS, SELECTABLE_TAB_CLICKED_LISTENER, TAB_SELECTION_DELEGATE,
-            IS_INCOGNITO, SELECTED_TAB_BACKGROUND_DRAWABLE_ID, TABSTRIP_FAVICON_BACKGROUND_COLOR_ID,
-            SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
+            TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON, THUMBNAIL_FETCHER, GRID_CARD_SIZE,
+            IPH_PROVIDER, TITLE, IS_SELECTED, CHECKED_DRAWABLE_STATE_LIST, CREATE_GROUP_LISTENER,
+            CARD_ALPHA, CARD_ANIMATION_STATUS, SELECTABLE_TAB_CLICKED_LISTENER,
+            TAB_SELECTION_DELEGATE, IS_INCOGNITO, SELECTED_TAB_BACKGROUND_DRAWABLE_ID,
+            TABSTRIP_FAVICON_BACKGROUND_COLOR_ID, SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
             SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND, URL_DOMAIN, ACCESSIBILITY_DELEGATE,
             SEARCH_QUERY, PAGE_INFO_LISTENER, PAGE_INFO_ICON_DRAWABLE_ID, CARD_TYPE,
             CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
             SHOPPING_PERSISTED_TAB_DATA_FETCHER, STORE_PERSISTED_TAB_DATA_FETCHER,
-            COUPON_PERSISTED_TAB_DATA_FETCHER, SHOULD_SHOW_PRICE_DROP_TOOLTIP, GRID_CARD_WIDTH,
-            GRID_CARD_HEIGHT};
+            COUPON_PERSISTED_TAB_DATA_FETCHER, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {TAB_ID, TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON,

@@ -14,6 +14,7 @@ import android.util.Size;
 import android.view.Display;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApplicationStatus;
@@ -283,14 +284,13 @@ public class TabUtils {
 
     /**
      * Derive thumbnail size based on parent card size.
-     * @param gridCardWidth width of parent card.
-     * @param gridCardHeight height of parent card.
+     * @param gridCardSize size of parent card.
      * @param context to derive view margins.
      * @return computed width and height of thumbnail.
      */
-    public static Size deriveThumbnailSize(int gridCardWidth, int gridCardHeight, Context context) {
-        int thumbnailWidth = gridCardWidth - getThumbnailWidthDiff(context);
-        int thumbnailHeight = gridCardHeight - getThumbnailHeightDiff(context);
+    public static Size deriveThumbnailSize(@NonNull Size gridCardSize, @NonNull Context context) {
+        int thumbnailWidth = gridCardSize.getWidth() - getThumbnailWidthDiff(context);
+        int thumbnailHeight = gridCardSize.getHeight() - getThumbnailHeightDiff(context);
         return new Size(thumbnailWidth, thumbnailHeight);
     }
 
