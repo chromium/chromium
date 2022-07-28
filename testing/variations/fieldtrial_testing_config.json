@@ -10311,21 +10311,6 @@
             ]
         }
     ],
-    "WebViewNewInvalidateHeuristic": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebViewNewInvalidateHeuristic"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebViewOriginTrials": [
         {
             "platforms": [
@@ -10351,11 +10336,11 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_PreRelease",
+                    "name": "Enabled",
                     "enable_features": [
+                        "WebViewNewInvalidateHeuristic",
                         "WebViewSurfaceControl"
-                    ],
-                    "min_os_version": "13.0.0"
+                    ]
                 }
             ]
         }
