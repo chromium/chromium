@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/test-helper.js"></script>
+
+<script>
+
+// baseURL will be used to create a <base> element, which will change the
+// baseURL of the import map.
+const baseURL = "http://{{host}}:{{ports[http][0]}}/import-maps/resources/";
+const importMap = `
+{
+  "imports": {
+    "bare/bare": "./log.js?pipe=sub&name=bare"
+  }
+}
+`;
+
+window.addEventListener("load", () => {
+  testStaticImport(importMap, baseURL, "bare/bare", "log:bare");
+  testDynamicImport(importMap, baseURL, "bare/bare", "log:bare", "module");
+  testDynamicImport(importMap, baseURL, "bare/bare", "log:bare",
+      "text/javascript");
+
+  testStaticImportInjectBase(importMap, baseURL, "bare/bare", "log:bare");
+  testDynamicImportInjectBase(importMap, baseURL, "bare/bare", "log:bare", "module");
+  testDynamicImportInjectBase(importMap, baseURL, "bare/bare", "log:bare",
+      "text/javascript");
+});
+
+</script>
+<body>

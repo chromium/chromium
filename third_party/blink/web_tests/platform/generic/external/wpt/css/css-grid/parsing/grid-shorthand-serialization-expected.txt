@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Serialization without grid-template-areas
+PASS Serialization with grid-template-areas
+FAIL Serialization with grid-auto-flow assert_equals: grid shorthand must not be serialized when it doesn't roundtrip expected "" but got "30px 40px / auto-flow auto"
+Harness: the test ran to completion.
+
