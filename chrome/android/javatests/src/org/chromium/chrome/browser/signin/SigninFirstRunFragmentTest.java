@@ -70,6 +70,7 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
@@ -890,6 +891,7 @@ public class SigninFirstRunFragmentTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1348325")
     public void testNativePolicyAndChildStatusLoadMetricRecordedOnlyOnce() {
         launchActivityWithFragment();
         verify(mFirstRunPageDelegateMock).recordNativePolicyAndChildStatusLoadedHistogram();
