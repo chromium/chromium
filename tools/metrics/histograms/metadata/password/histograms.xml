@@ -1492,6 +1492,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FillingSuccessIOS" enum="BooleanSuccess"
+    expires_after="M111">
+  <owner>theocristea@google.com</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    This metric records whether filling was successful or not on IOS.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.FillSuggestionsIncludeAndroidAppCredentials"
     enum="PasswordManagerOfferedAndroidCredentials" expires_after="2022-09-18">
   <owner>kazinova@google.com</owner>
