@@ -79,7 +79,6 @@ extern const char kOnResponseStarted[];
 extern const char kOnSendHeaders[];
 
 // Error messages.
-extern const char kInvalidPublicSessionBlockingResponse[];
 extern const char kInvalidRedirectUrl[];
 extern const char kInvalidBlockingResponse[];
 extern const char kInvalidRequestFilterUrl[];

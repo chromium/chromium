@@ -14,7 +14,6 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/web_request/permission_helper.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
-#include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_registry.h"
@@ -48,8 +47,6 @@ bool HasWebRequestScheme(const GURL& url) {
           url.SchemeIs(extensions::kExtensionScheme) || url.SchemeIsWSOrWSS() ||
           url.SchemeIs(url::kUuidInPackageScheme));
 }
-
-bool g_allow_all_extension_locations_in_public_session = false;
 
 PermissionsData::PageAccess GetHostAccessForURL(
     const extensions::Extension& extension,
@@ -93,19 +90,6 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
   if (initiator &&
       extension->permissions_data()->IsPolicyBlockedHost(initiator->GetURL())) {
     return PermissionsData::PageAccess::kDenied;
-  }
-
-  // When restrictions are enabled in Public Session, allow all URLs for
-  // webRequests initiated by a regular extension (but don't allow chrome://
-  // URLs).
-  if (extension_web_request_api_helpers::
-          ArePublicSessionRestrictionsEnabled() &&
-      extension->is_extension() && !url.SchemeIs("chrome")) {
-    // Make sure that the extension is truly installed by policy (the assumption
-    // in Public Session is that all extensions are installed by policy).
-    CHECK(g_allow_all_extension_locations_in_public_session ||
-          extensions::Manifest::IsPolicyLocation(extension->location()));
-    return PermissionsData::PageAccess::kAllowed;
   }
 
   // Check if this event crosses incognito boundaries when it shouldn't.
@@ -343,12 +327,6 @@ bool WebRequestPermissions::HideRequest(
   }
 
   return false;
-}
-
-// static
-void WebRequestPermissions::
-     AllowAllExtensionLocationsInPublicSessionForTesting(bool value) {
-  g_allow_all_extension_locations_in_public_session = value;
 }
 
 // static

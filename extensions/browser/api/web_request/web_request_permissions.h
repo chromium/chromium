@@ -46,10 +46,6 @@ class WebRequestPermissions {
   static bool HideRequest(extensions::PermissionHelper* permission_helper,
                           const extensions::WebRequestInfo& request);
 
-  // Helper function used only in tests, sets a variable which enables or
-  // disables a CHECK.
-  static void AllowAllExtensionLocationsInPublicSessionForTesting(bool value);
-
   // |host_permission_check| controls how permissions are checked with regard to
   // |url| and |initiator| if an initiator exists.
   static extensions::PermissionsData::PageAccess CanExtensionAccessURL(

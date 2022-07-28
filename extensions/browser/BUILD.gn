@@ -262,8 +262,6 @@ source_set("browser_sources") {
     "crx_file_info.cc",
     "crx_file_info.h",
     "deferred_start_render_host.h",
-    "device_local_account_util.cc",
-    "device_local_account_util.h",
     "disable_reason.h",
     "error_map.cc",
     "error_map.h",

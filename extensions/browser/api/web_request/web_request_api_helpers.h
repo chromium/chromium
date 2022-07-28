@@ -507,9 +507,6 @@ bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
 // Returns whether a response header should be hidden from listeners.
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name);
 
-// Returns true if we're in a Public Session and restrictions are enabled.
-bool ArePublicSessionRestrictionsEnabled();
-
 }  // namespace extension_web_request_api_helpers
 
 #endif  // EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_API_HELPERS_H_

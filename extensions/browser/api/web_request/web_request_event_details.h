@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/common/extension_id.h"
@@ -109,16 +108,7 @@ class WebRequestEventDetails {
   // dictionary is empty.
   std::unique_ptr<base::DictionaryValue> GetAndClearDict();
 
-  // Returns a filtered copy with only allowlisted data for public session.
-  std::unique_ptr<WebRequestEventDetails> CreatePublicSessionCopy();
-
  private:
-  FRIEND_TEST_ALL_PREFIXES(WebRequestEventDetailsTest,
-                           AllowlistedCopyForPublicSession);
-
-  // Empty constructor used in unittests.
-  WebRequestEventDetails();
-
   // The details that are always included in a webRequest event object.
   base::DictionaryValue dict_;
 

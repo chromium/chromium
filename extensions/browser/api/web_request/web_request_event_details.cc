@@ -198,34 +198,4 @@ WebRequestEventDetails::GetAndClearDict() {
   return result;
 }
 
-std::unique_ptr<WebRequestEventDetails>
-WebRequestEventDetails::CreatePublicSessionCopy() {
-  std::unique_ptr<WebRequestEventDetails> copy(new WebRequestEventDetails);
-  copy->initiator_ = initiator_;
-  copy->render_process_id_ = render_process_id_;
-
-  static const char* const kSafeAttributes[] = {
-    "method", "requestId", "timeStamp", "type", "tabId", "frameId",
-    "parentFrameId", "fromCache", "error", "ip", "statusLine", "statusCode"
-  };
-
-  for (const char* safe_attr : kSafeAttributes) {
-    base::Value* val = dict_.FindKey(safe_attr);
-    if (val)
-      copy->dict_.SetKey(safe_attr, val->Clone());
-  }
-
-  // URL is stripped down to the origin.
-  const std::string* url = dict_.FindStringKey(keys::kUrlKey);
-  DCHECK(url);
-  GURL gurl(*url);
-  copy->dict_.SetStringKey(keys::kUrlKey,
-                           gurl.DeprecatedGetOriginAsURL().spec());
-
-  return copy;
-}
-
-WebRequestEventDetails::WebRequestEventDetails()
-    : extra_info_spec_(0), render_process_id_(0) {}
-
 }  // namespace extensions

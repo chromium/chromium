@@ -5347,6 +5347,8 @@ static_library("browser") {
       "chromeos/app_mode/kiosk_settings_navigation_throttle.h",
       "chromeos/app_mode/startup_app_launcher_update_checker.cc",
       "chromeos/app_mode/startup_app_launcher_update_checker.h",
+      "chromeos/extensions/device_local_account_util.cc",
+      "chromeos/extensions/device_local_account_util.h",
       "chromeos/extensions/echo_private/echo_private_api.cc",
       "chromeos/extensions/echo_private/echo_private_api.h",
       "chromeos/extensions/file_system_provider/file_system_provider_api.cc",

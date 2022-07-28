@@ -57,7 +57,6 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/api/web_request/web_request_time_tracker.h"
 #include "extensions/browser/api_activity_monitor.h"
-#include "extensions/browser/device_local_account_util.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extension_prefs.h"
@@ -1625,8 +1624,6 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
         &data_[data.cross_context].active_listeners[event_name];
   }
 
-  std::unique_ptr<WebRequestEventDetails> event_details_filtered_copy;
-
   for (const EventListener::ID& id : *listener_ids) {
     // It's possible that the listener is no longer present. Check to make sure
     // it's still there.
@@ -1647,22 +1644,8 @@ void ExtensionWebRequestEventRouter::DispatchEventToListeners(
     // Filter out the optional keys that this listener didn't request.
     base::Value::List args_filtered;
 
-    // In Public Sessions we want to restrict access to security or privacy
-    // sensitive data. Data is filtered for *all* listeners, not only extensions
-    // which are force-installed by policy. Allowlisted extensions are exempt
-    // from this filtering.
-    WebRequestEventDetails* custom_event_details = event_details.get();
-    if (extension_web_request_api_helpers::
-            ArePublicSessionRestrictionsEnabled() &&
-        !extensions::IsAllowlistedForPublicSession(listener->id.extension_id)) {
-      if (!event_details_filtered_copy) {
-        event_details_filtered_copy =
-            event_details->CreatePublicSessionCopy();
-      }
-      custom_event_details = event_details_filtered_copy.get();
-    }
     args_filtered.Append(
-        base::Value::FromUniquePtrValue(custom_event_details->GetFilteredDict(
+        base::Value::FromUniquePtrValue(event_details->GetFilteredDict(
             listener->extra_info_spec, PermissionHelper::Get(browser_context),
             listener->id.extension_id, crosses_incognito)));
 
@@ -2679,12 +2662,7 @@ WebRequestInternalAddEventListenerFunction::Run() {
     // http://www.example.com/bar/*.
     // For this reason we do only a coarse check here to warn the extension
     // developer if they do something obviously wrong.
-    // When restrictions are enabled in Public Session, allow all URLs for
-    // webRequests initiated by a regular extension.
-    if (!(extension_web_request_api_helpers::
-              ArePublicSessionRestrictionsEnabled() &&
-          extension->is_extension()) &&
-        extension->permissions_data()
+    if (extension->permissions_data()
             ->GetEffectiveHostPermissions()
             .is_empty() &&
         extension->permissions_data()
@@ -2764,18 +2742,6 @@ WebRequestInternalEventHandledFunction::Run() {
         dict_value.FindKey("requestHeaders");
     const base::Value* response_headers_value =
         dict_value.FindKey("responseHeaders");
-
-    // In Public Session we restrict everything but "cancel" (except for
-    // allowlisted extensions which have no such restrictions).
-    if (extension_web_request_api_helpers::
-            ArePublicSessionRestrictionsEnabled() &&
-        !extensions::IsAllowlistedForPublicSession(extension_id_safe()) &&
-        (redirect_url_value || auth_credentials_value ||
-         request_headers_value || response_headers_value)) {
-      OnError(event_name, sub_event_name, request_id, render_process_id,
-              web_view_instance_id, std::move(response));
-      return RespondNow(Error(keys::kInvalidPublicSessionBlockingResponse));
-    }
 
     const base::Value* cancel_value = dict_value.FindKey("cancel");
     if (cancel_value) {

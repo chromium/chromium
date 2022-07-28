@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/browser/device_local_account_util.h"
+#include "chrome/browser/chromeos/extensions/device_local_account_util.h"
 
 #include <algorithm>
 

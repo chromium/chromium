@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_BROWSER_DEVICE_LOCAL_ACCOUNT_UTIL_H_
-#define EXTENSIONS_BROWSER_DEVICE_LOCAL_ACCOUNT_UTIL_H_
+#ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_DEVICE_LOCAL_ACCOUNT_UTIL_H_
+#define CHROME_BROWSER_CHROMEOS_EXTENSIONS_DEVICE_LOCAL_ACCOUNT_UTIL_H_
 
 #include <string>
 
@@ -17,4 +17,4 @@ bool IsAllowlistedForPublicSession(const std::string& extension_id);
 
 }  // namespace extensions
 
-#endif  // EXTENSIONS_BROWSER_DEVICE_LOCAL_ACCOUNT_UTIL_H_
+#endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_DEVICE_LOCAL_ACCOUNT_UTIL_H_
