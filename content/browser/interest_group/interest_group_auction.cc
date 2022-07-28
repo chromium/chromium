@@ -264,6 +264,18 @@ class InterestGroupAuction::BuyerHelper {
   // out.
   bool has_potential_bidder() const { return !bid_states_.empty(); }
 
+  size_t num_potential_bidders() const { return bid_states_.size(); }
+
+  void GetInterestGroupsThatBid(
+      blink::InterestGroupSet& interest_groups) const {
+    for (const BidState& bid_state : bid_states_) {
+      if (bid_state.made_bid) {
+        interest_groups.emplace(bid_state.bidder.interest_group.owner,
+                                bid_state.bidder.interest_group.name);
+      }
+    }
+  }
+
  private:
   // Temporarily friend parent class to make CLs adding this class simpler.
   //
@@ -736,18 +748,24 @@ void InterestGroupAuction::ClosePipes() {
   }
 }
 
+size_t InterestGroupAuction::NumPotentialBidders() const {
+  size_t num_interest_groups = 0;
+  for (const auto& buyer_helper : buyer_helpers_) {
+    num_interest_groups += buyer_helper->num_potential_bidders();
+  }
+  for (auto& component_auction : component_auctions_) {
+    num_interest_groups += component_auction->NumPotentialBidders();
+  }
+  return num_interest_groups;
+}
+
 void InterestGroupAuction::GetInterestGroupsThatBid(
     blink::InterestGroupSet& interest_groups) const {
   if (!all_bids_scored_)
     return;
 
   for (auto& buyer_helper : buyer_helpers_) {
-    for (const BidState& bid_state : buyer_helper->bid_states_) {
-      if (bid_state.made_bid) {
-        interest_groups.emplace(bid_state.bidder.interest_group.owner,
-                                bid_state.bidder.interest_group.name);
-      }
-    }
+    buyer_helper->GetInterestGroupsThatBid(interest_groups);
   }
 
   // Retrieve data from component auctions as well.
@@ -1029,22 +1047,12 @@ void InterestGroupAuction::OnOneLoadCompleted() {
     // Only record histograms if there were interest groups that could
     // theoretically participate in the auction.
     if (num_owners_loaded_ > 0) {
-      int num_interest_groups = 0;
-      for (const auto& buyer_helper : buyer_helpers_) {
-        num_interest_groups += buyer_helper->bid_states_.size();
-      }
-      size_t num_sellers_with_bidders = 0;
-      for (auto& component_auction : component_auctions_) {
-        // This double-counts interest groups that are participating in multiple
-        // auctions.
-        for (const auto& buyer_helper : component_auction->buyer_helpers_) {
-          num_interest_groups += buyer_helper->bid_states_.size();
-        }
-        ++num_sellers_with_bidders;
-      }
+      size_t num_interest_groups = NumPotentialBidders();
+      size_t num_sellers_with_bidders = component_auctions_.size();
+
       // If the top-level seller either has interest groups itself, or any of
       // the component auctions do, then the top-level seller also has bidders.
-      if (num_interest_groups)
+      if (num_interest_groups > 0)
         ++num_sellers_with_bidders;
 
       UMA_HISTOGRAM_COUNTS_1000("Ads.InterestGroup.Auction.NumInterestGroups",
@@ -1195,6 +1203,8 @@ void InterestGroupAuction::OnBidSourceDone() {
 void InterestGroupAuction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
   DCHECK(bid);
   DCHECK(bid->bid_state->made_bid);
+
+  any_bid_made_ = true;
 
   // If seller worklet hasn't been received yet, wait until it is.
   if (!seller_worklet_received_) {
@@ -1409,17 +1419,11 @@ void InterestGroupAuction::MaybeCompleteBiddingAndScoringPhase() {
   // If there's no winning bid, fail with kAllBidsRejected if there were any
   // bids. Otherwise, fail with kNoBids.
   if (!top_bid_) {
-    // TODO(mmenke): This is not correct - it ignores bids from component
-    // auctions that may have been made and rejected.
-    for (const auto& bidder_helper : buyer_helpers_) {
-      for (BidState& bid_state : bidder_helper->bid_states_) {
-        if (bid_state.made_bid) {
-          OnBiddingAndScoringComplete(AuctionResult::kAllBidsRejected);
-          return;
-        }
-      }
+    if (any_bid_made_) {
+      OnBiddingAndScoringComplete(AuctionResult::kAllBidsRejected);
+    } else {
+      OnBiddingAndScoringComplete(AuctionResult::kNoBids);
     }
-    OnBiddingAndScoringComplete(AuctionResult::kNoBids);
     return;
   }
 

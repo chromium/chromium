@@ -2812,6 +2812,38 @@ TEST_F(AuctionRunnerTest, ComponentAuctionComponentSellersHaveNoBuyers) {
                   /*expected_sellers=*/1);
 }
 
+// Test a component auction where the top level seller rejects all bids. The
+// only bids come from a component auction. This should fail with
+// kAllBidsRejected instead of kNoBids.
+TEST_F(AuctionRunnerTest, ComponentAuctionTopSellerRejectsBids) {
+  // Run a standard component auction, but replace the default seller script
+  // with one that rejects bids.
+  SetUpComponentAuctionAndResponses(/*bidder1_seller=*/kComponentSeller1,
+                                    /*bidder2_seller=*/kComponentSeller1,
+                                    /*bid_from_component_auction_wins=*/true,
+                                    /*report_post_auction_signals=*/false);
+
+  auction_worklet::AddJavascriptResponse(&url_loader_factory_, kSellerUrl,
+                                         R"(
+    function scoreAd() {
+      return {desirability: 0,
+              allowComponentAuction: true};
+    }
+)");
+
+  RunStandardAuction();
+  EXPECT_THAT(result_.errors, testing::ElementsAre());
+  EXPECT_EQ(absl::nullopt, result_.ad_url);
+  EXPECT_THAT(result_.report_urls, testing::UnorderedElementsAre());
+  EXPECT_EQ(6, result_.bidder1_bid_count);
+  EXPECT_EQ(3u, result_.bidder1_prev_wins.size());
+  EXPECT_EQ(6, result_.bidder2_bid_count);
+  ASSERT_EQ(3u, result_.bidder2_prev_wins.size());
+  CheckHistograms(InterestGroupAuction::AuctionResult::kAllBidsRejected,
+                  /*expected_interest_groups=*/2, /*expected_owners=*/2,
+                  /*expected_sellers=*/2);
+}
+
 // A component auction with one component. Both the top-level and component
 // auction have one buyer. The top-level seller worklet has the winning buyer.
 TEST_F(AuctionRunnerTest, ComponentAuctionTopLevelSellerBidWins) {

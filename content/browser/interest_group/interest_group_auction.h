@@ -357,6 +357,12 @@ class CONTENT_EXPORT InterestGroupAuction {
   // auction fails and on auction complete.
   void ClosePipes();
 
+  // Returns the number of interest groups participating in the auction that can
+  // potentially make bids. Includes interest groups in component auctions.
+  // Double-counts interest groups participating multiple times in different
+  // InterestGroupAuctions.
+  size_t NumPotentialBidders() const;
+
   // Returns all interest groups that bid in an auction. Expected to be called
   // after the bidding and scoring phase completes, but before the reporting
   // phase. Returns an empty set if the auction failed for any reason other
@@ -644,6 +650,8 @@ class CONTENT_EXPORT InterestGroupAuction {
   // worklets. Once it hits 0, the seller worklet for `this` is loaded. See
   // StartBiddingAndScoringPhase() for more details.
   size_t pending_component_seller_worklet_requests_ = 0;
+
+  bool any_bid_made_ = false;
 
   // State of all buyers participating in the auction. Excludes buyers that
   // don't own any interest groups the user belongs to.
