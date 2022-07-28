@@ -185,7 +185,6 @@ std::unique_ptr<VideoFrameConverter> MailboxVideoFrameConverter::Create(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetCommandBufferStubCB get_stub_cb,
     bool enable_unsafe_webgpu) {
-  DCHECK(unwrap_frame_cb);
   DCHECK(gpu_task_runner);
   DCHECK(get_stub_cb);
 
