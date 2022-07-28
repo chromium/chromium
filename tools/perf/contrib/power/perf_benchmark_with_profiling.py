@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 from core.perf_benchmark import PerfBenchmark
+from telemetry.timeline.chrome_trace_config import ChromeTraceConfig
 
 
 class PerfBenchmarkWithProfiling(PerfBenchmark):
@@ -67,6 +68,8 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
           # Enable wildcard to sample all processes for the selected browser.
           "{}*".format(self._browser_package),
           self.GetSamplingFrequencyHz())
+      # This adds metadata about Chrome processes to the profile.
+      options.config.system_trace_config.EnableChrome(ChromeTraceConfig())
 
     self.CustomizeSystemTraceConfig(options.config.system_trace_config)
     return options
