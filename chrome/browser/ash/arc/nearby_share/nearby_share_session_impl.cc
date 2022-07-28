@@ -71,6 +71,18 @@ void DeletePathAndFiles(const base::FilePath& file_path) {
   }
 }
 
+void DoDeleteShareCacheFilePaths(base::FilePath profile_path,
+                                 base::FilePath user_cache_file_path) {
+  // Up until M99, shared files were stored in <user_cache_dir>/.NearbyShare.
+  // We should remove this obsolete directory path if it is still present.
+  base::FilePath cache_base_path;
+  chrome::GetUserCacheDirectory(profile_path, &cache_base_path);
+  DeletePathAndFiles(cache_base_path.Append(kArcNearbyShareDirname));
+
+  // Delete the current user cache file path.
+  DeletePathAndFiles(user_cache_file_path);
+}
+
 // Calculate the amount of disk space, in bytes, needed in |share_dir| to
 // stream |total_file_size| bytes from Android to the Chrome OS file system.
 static int64_t CalculateRequiredSpace(const base::FilePath share_dir,
@@ -137,14 +149,10 @@ NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 void NearbyShareSessionImpl::DeleteShareCacheFilePaths(Profile* const profile) {
   DCHECK(profile);
 
-  // Up until M99, shared files were stored in <user_cache_dir>/.NearbyShare.
-  // We should remove this obsolete directory path if it is still present.
-  base::FilePath cache_base_path;
-  chrome::GetUserCacheDirectory(profile->GetPath(), &cache_base_path);
-  DeletePathAndFiles(cache_base_path.Append(kArcNearbyShareDirname));
-
-  // Delete the current user cache file path.
-  DeletePathAndFiles(GetUserCacheFilePath(profile));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&DoDeleteShareCacheFilePaths, profile->GetPath(),
+                     GetUserCacheFilePath(profile)));
 }
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(
