@@ -9666,12 +9666,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PLT.iOS.BrowserInitiatedPageLoadTime2" units="ms"
-    expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
+    expires_after="2023-07-27">
   <owner>djean@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Page load time for Browser-initiated navigations.
 
@@ -9711,9 +9708,6 @@ chromium-metrics-reviews@google.com.
 
     Any navigation that is not considered browser-initiated is considered to be
     renderer-initiated (see PLT.iOS.RendererInitiatedPageLoadTime2).
-
-    Do not modify this metric in any way without contacting
-    chrome-analysis-team@google.com.
   </summary>
 </histogram>
 
@@ -9769,12 +9763,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PLT.iOS.RendererInitiatedPageLoadTime2" units="ms"
-    expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
+    expires_after="2023-07-27">
   <owner>djean@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Page load time for Renderer-initiated navigations.
 
@@ -9815,9 +9806,6 @@ chromium-metrics-reviews@google.com.
     Chromium changes, this metric can move due to exogenous factors such as
     changes in what type of web page people are looking at or changes in the
     implementation of popular websites.
-
-    Do not modify this metric in any way without contacting
-    chrome-analysis-team@google.com.
   </summary>
 </histogram>
 
