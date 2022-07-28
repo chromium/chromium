@@ -6,6 +6,7 @@
 
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
+#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -49,8 +50,7 @@ content::BrowserContext* RealtimeReportingClientFactory::GetBrowserContextToUse(
   if (!profile || profile->IsSystemProfile()) {
     return nullptr;
   }
-  return extensions::ExtensionsBrowserClient::Get()->GetOriginalContext(
-      context);
+  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool RealtimeReportingClientFactory::ServiceIsCreatedWithBrowserContext()
