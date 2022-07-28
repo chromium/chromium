@@ -15,8 +15,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_config.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
@@ -45,7 +45,7 @@ class CrOSSystemTracingSession {
     }
 
     base::trace_event::TraceConfig trace_config(config);
-    debug_daemon_ = chromeos::DebugDaemonClient::Get();
+    debug_daemon_ = ash::DebugDaemonClient::Get();
     if (!trace_config.IsSystraceEnabled() || !debug_daemon_) {
       if (callback)
         std::move(callback).Run(/*success=*/false);
@@ -90,7 +90,7 @@ class CrOSSystemTracingSession {
   }
 
   bool is_tracing_ = false;
-  chromeos::DebugDaemonClient* debug_daemon_ = nullptr;
+  ash::DebugDaemonClient* debug_daemon_ = nullptr;
 };
 
 namespace {

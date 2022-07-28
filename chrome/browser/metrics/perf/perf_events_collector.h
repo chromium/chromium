@@ -18,13 +18,13 @@
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/re2/src/re2/stringpiece.h"
 
+namespace ash {
+class DebugDaemonClientProvider;
+}
+
 namespace base {
 class SequencedTaskRunner;
 }
-
-namespace chromeos {
-class DebugDaemonClientProvider;
-}  // namespace chromeos
 
 namespace metrics {
 
@@ -164,7 +164,7 @@ class PerfCollector : public internal::MetricCollector {
   RandomSelector command_selector_;
 
   // |debugd_client_provider_| hosts the private DBus connection to debugd.
-  std::unique_ptr<chromeos::DebugDaemonClientProvider> debugd_client_provider_;
+  std::unique_ptr<ash::DebugDaemonClientProvider> debugd_client_provider_;
 
   // An active call to perf/quipper, if set.
   std::unique_ptr<PerfOutputCall> perf_output_call_;

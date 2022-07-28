@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/telemetry_extension/probe_service_converters.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -62,7 +62,7 @@ void ProbeService::ProbeTelemetryInfo(
 }
 
 void ProbeService::GetOemData(GetOemDataCallback callback) {
-  chromeos::DebugDaemonClient::Get()->GetLog(
+  DebugDaemonClient::Get()->GetLog(
       kOemDataLogName,
       base::BindOnce(
           [](GetOemDataCallback callback,

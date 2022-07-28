@@ -17,9 +17,9 @@
 #include "chromeos/dbus/common/pipe_reader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 class DebugDaemonClient;
-}  // namespace chromeos
+}
 
 namespace metrics {
 
@@ -35,7 +35,7 @@ class PerfOutputCall {
   // The output is transferred to |perf_stdout|.
   using DoneCallback = base::OnceCallback<void(std::string perf_stdout)>;
 
-  PerfOutputCall(chromeos::DebugDaemonClient* debug_daemon_client,
+  PerfOutputCall(ash::DebugDaemonClient* debug_daemon_client,
                  const std::vector<std::string>& quipper_args,
                  bool disable_cpu_idle,
                  DoneCallback callback);
@@ -60,7 +60,7 @@ class PerfOutputCall {
   void StopImpl();
 
   // A non-retaining pointer to the DebugDaemonClient instance.
-  chromeos::DebugDaemonClient* debug_daemon_client_;
+  ash::DebugDaemonClient* debug_daemon_client_;
 
   // Used to capture perf data written to a pipe.
   std::unique_ptr<chromeos::PipeReader> perf_data_pipe_reader_;

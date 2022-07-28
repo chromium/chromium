@@ -26,10 +26,10 @@ source_set("telemetry_services") {
     "//ash/webui/telemetry_extension_ui/mojom",
     "//base",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus",
-    "//chromeos/dbus/debug_daemon",
   ]
 }
 
@@ -60,10 +60,10 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
+    "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/dbus",
-    "//chromeos/dbus/debug_daemon",
     "//testing/gmock",
     "//testing/gtest",
   ]

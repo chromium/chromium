@@ -24,7 +24,7 @@
 #include "chrome/browser/metrics/perf/process_type_collector.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client_provider.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -377,8 +377,7 @@ void PerfCollector::SetUp() {
 
   // Create DebugdClientProvider to bind its private DBus connection to the
   // current sequence.
-  debugd_client_provider_ =
-      std::make_unique<chromeos::DebugDaemonClientProvider>();
+  debugd_client_provider_ = std::make_unique<ash::DebugDaemonClientProvider>();
 
   auto task_runner = base::SequencedTaskRunnerHandle::Get();
   base::ThreadPool::PostTask(

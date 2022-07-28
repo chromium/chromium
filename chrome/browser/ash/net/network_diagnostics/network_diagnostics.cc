@@ -23,7 +23,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/lan_connectivity_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/signal_strength_routine.h"
 #include "chrome/browser/ash/net/network_diagnostics/video_conferencing_routine.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,8 +33,7 @@ namespace network_diagnostics {
 // TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
 namespace mojom = ::chromeos::network_diagnostics::mojom;
 
-NetworkDiagnostics::NetworkDiagnostics(
-    chromeos::DebugDaemonClient* debug_daemon_client) {
+NetworkDiagnostics::NetworkDiagnostics(DebugDaemonClient* debug_daemon_client) {
   DCHECK(debug_daemon_client);
   if (debug_daemon_client) {
     debug_daemon_client_ = debug_daemon_client;

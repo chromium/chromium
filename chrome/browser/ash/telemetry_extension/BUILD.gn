@@ -16,11 +16,11 @@ source_set("telemetry_extension") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus",
-    "//chromeos/dbus/debug_daemon",
   ]
 }
 
@@ -49,11 +49,11 @@ source_set("unit_tests") {
     ":telemetry_extension",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
     "//chromeos/crosapi/mojom",
     "//chromeos/dbus",
-    "//chromeos/dbus/debug_daemon",
     "//testing/gmock",
     "//testing/gtest",
   ]

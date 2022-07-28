@@ -9,7 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 
 namespace extensions {
 
@@ -66,7 +66,7 @@ ExtensionFunction::ResponseAction DiagnosticsSendPacketFunction::Run() {
   if (params->options.size)
     config[kSize] = base::NumberToString(*params->options.size);
 
-  chromeos::DebugDaemonClient::Get()->TestICMPWithOptions(
+  ash::DebugDaemonClient::Get()->TestICMPWithOptions(
       params->options.ip, config,
       base::BindOnce(&DiagnosticsSendPacketFunction::OnTestICMPCompleted,
                      this));

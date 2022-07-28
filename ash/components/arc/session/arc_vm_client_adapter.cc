@@ -56,10 +56,10 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/components/sensors/buildflags.h"
 #include "chromeos/dbus/common/dbus_method_call_status.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/system/core_scheduling.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/version_info/version_info.h"
@@ -113,8 +113,8 @@ ash::ConciergeClient* GetConciergeClient() {
   return ash::ConciergeClient::Get();
 }
 
-chromeos::DebugDaemonClient* GetDebugDaemonClient() {
-  return chromeos::DebugDaemonClient::Get();
+ash::DebugDaemonClient* GetDebugDaemonClient() {
+  return ash::DebugDaemonClient::Get();
 }
 
 ArcBinaryTranslationType IdentifyBinaryTranslationType(

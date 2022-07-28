@@ -19,7 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/logging_chrome.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -76,7 +76,7 @@ void WriteDebugLogToFile(std::unique_ptr<base::File> file,
                << ", error: " << file->error_details();
     return;
   }
-  chromeos::DebugDaemonClient::Get()->DumpDebugLogs(
+  ash::DebugDaemonClient::Get()->DumpDebugLogs(
       should_compress, file->GetPlatformFile(),
       base::BindOnce(&WriteDebugLogToFileCompleted, file_path,
                      std::move(callback)));

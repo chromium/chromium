@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 
 #include <dbus/dbus-protocol.h>
 #include <fcntl.h>
@@ -30,15 +30,15 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_config.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/common/pipe_reader.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -117,7 +117,7 @@ class PipeReaderWrapper : public base::SupportsWeakPtr<PipeReaderWrapper> {
     delete this;
   }
 
-  PipeReader pipe_reader_;
+  chromeos::PipeReader pipe_reader_;
   DebugDaemonClient::GetLogsCallback callback_;
 };
 
@@ -348,7 +348,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
     }
 
     pipe_reader_ =
-        std::make_unique<PipeReader>(stop_agent_tracing_task_runner_);
+        std::make_unique<chromeos::PipeReader>(stop_agent_tracing_task_runner_);
     callback_ = std::move(callback);
     base::ScopedFD pipe_write_end = pipe_reader_->StartIO(base::BindOnce(
         &DebugDaemonClientImpl::OnIOComplete, weak_ptr_factory_.GetWeakPtr()));
@@ -1105,7 +1105,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
   }
 
   dbus::ObjectProxy* debugdaemon_proxy_;
-  std::unique_ptr<PipeReader> pipe_reader_;
+  std::unique_ptr<chromeos::PipeReader> pipe_reader_;
   StopAgentTracingCallback callback_;
   scoped_refptr<base::TaskRunner> stop_agent_tracing_task_runner_;
   base::ObserverList<Observer> observers_;
@@ -1157,4 +1157,4 @@ std::unique_ptr<DebugDaemonClient> DebugDaemonClient::CreateInstance() {
   return std::make_unique<DebugDaemonClientImpl>();
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -265,6 +265,7 @@ source_set("chromeos") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/cros_healthd",
     "//chromeos/ash/components/dbus/cups_proxy",
+    "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/federated",
     "//chromeos/ash/components/dbus/fusebox",
     "//chromeos/ash/components/dbus/fusebox:proto",

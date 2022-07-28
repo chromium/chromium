@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -43,7 +43,7 @@ constexpr base::TimeDelta kMaxAllowedLatencyMs = base::Milliseconds(1500);
 }  // namespace
 
 GatewayCanBePingedRoutine::GatewayCanBePingedRoutine(
-    chromeos::DebugDaemonClient* debug_daemon_client)
+    DebugDaemonClient* debug_daemon_client)
     : debug_daemon_client_(debug_daemon_client) {
   set_verdict(mojom::RoutineVerdict::kNotRun);
   GetNetworkConfigService(

@@ -85,6 +85,7 @@ if (enable_rlz_support) {
         "chromeos/lib/rlz_value_store_chromeos.h",
       ]
       deps += [
+        "//chromeos/ash/components/dbus/debug_daemon",
         "//chromeos/dbus",
         "//chromeos/system",
       ]
@@ -200,6 +201,7 @@ if (enable_rlz_support) {
     ]
     if (is_chromeos_ash) {
       deps += [
+        "//chromeos/ash/components/dbus/debug_daemon",
         "//chromeos/dbus:test_support",
         "//chromeos/system",
       ]

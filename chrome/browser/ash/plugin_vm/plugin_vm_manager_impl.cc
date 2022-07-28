@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dlcservice/dlcservice.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -145,7 +145,7 @@ void PluginVmManagerImpl::OnPrimaryUserSessionStarted() {
             if (reply.has_value()) {
               LOG(ERROR) << "New session has dispatcher unexpected already "
                             "running. Perhaps Chrome crashed?";
-              chromeos::DebugDaemonClient::Get()->StopPluginVmDispatcher(
+              ash::DebugDaemonClient::Get()->StopPluginVmDispatcher(
                   base::BindOnce([](bool success) {
                     if (!success) {
                       LOG(ERROR) << "Failed to stop the dispatcher";
@@ -391,7 +391,7 @@ void PluginVmManagerImpl::OnVmStateChanged(
 void PluginVmManagerImpl::StartDispatcher(
     base::OnceCallback<void(bool)> callback) const {
   LOG_FUNCTION_CALL();
-  chromeos::DebugDaemonClient::Get()->StartPluginVmDispatcher(
+  ash::DebugDaemonClient::Get()->StartPluginVmDispatcher(
       owner_id_, g_browser_process->GetApplicationLocale(),
       std::move(callback));
 }

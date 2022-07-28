@@ -11,8 +11,8 @@
 #include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -30,13 +30,13 @@ class ArcClientAdapterTest : public testing::Test,
   void ArcInstanceStopped(bool is_system_shutdown) override {}
 
   void SetUp() override {
-    chromeos::DebugDaemonClient::InitializeFake();
+    ash::DebugDaemonClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     ash::UpstartClient::InitializeFake();
   }
   void TearDown() override {
     ash::ConciergeClient::Shutdown();
-    chromeos::DebugDaemonClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
   }
 
  private:

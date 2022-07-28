@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace system_logs {
@@ -46,7 +46,7 @@ void SingleDebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!callback.is_null());
 
-  chromeos::DebugDaemonClient::Get()->GetLog(
+  ash::DebugDaemonClient::Get()->GetLog(
       source_name(),
       base::BindOnce(&SingleDebugDaemonLogSource::OnFetchComplete,
                      weak_ptr_factory_.GetWeakPtr(), source_name(),

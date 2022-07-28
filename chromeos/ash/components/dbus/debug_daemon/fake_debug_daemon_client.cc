@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -30,7 +30,7 @@ const char kCrOSTraceLabel[] = "systemTraceEvents";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 FakeDebugDaemonClient::FakeDebugDaemonClient()
     : features_mask_(DebugDaemonClient::DEV_FEATURE_NONE),
@@ -359,4 +359,4 @@ void FakeDebugDaemonClient::StopPacketCapture(const std::string& handle) {
   PacketCaptureStopSignalReceived(nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash

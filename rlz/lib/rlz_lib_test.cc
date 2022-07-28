@@ -52,9 +52,9 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/cxx17_backports.h"
 #include "base/files/important_file_writer.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 #endif
 
@@ -1079,10 +1079,10 @@ TEST_F(RlzLibTest, LockAcquistionSucceedsButStoreFileCannotBeCreated) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class ScopedTestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
+class ScopedTestDebugDaemonClient : public ash::FakeDebugDaemonClient {
  public:
   ScopedTestDebugDaemonClient() {
-    chromeos::DebugDaemonClient::SetInstanceForTest(this);
+    ash::DebugDaemonClient::SetInstanceForTest(this);
   }
 
   ScopedTestDebugDaemonClient(const ScopedTestDebugDaemonClient&) = delete;
@@ -1090,7 +1090,7 @@ class ScopedTestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
       delete;
 
   ~ScopedTestDebugDaemonClient() override {
-    chromeos::DebugDaemonClient::SetInstanceForTest(nullptr);
+    ash::DebugDaemonClient::SetInstanceForTest(nullptr);
   }
 
   int num_set_rlz_ping_sent() const { return num_set_rlz_ping_sent_; }

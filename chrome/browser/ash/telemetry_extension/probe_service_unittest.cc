@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,13 +26,13 @@ class ProbeServiceTest : public testing::Test {
  public:
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::DebugDaemonClient::InitializeFake();
+    DebugDaemonClient::InitializeFake();
     cros_healthd::FakeCrosHealthd::Initialize();
   }
 
   void TearDown() override {
     cros_healthd::FakeCrosHealthd::Shutdown();
-    chromeos::DebugDaemonClient::Shutdown();
+    DebugDaemonClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

@@ -12,9 +12,6 @@ component("dbus") {
   public_deps = [
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
-
-    # TODO(jamescook): Remove this and fix all build targets that need it.
-    "//chromeos/dbus/debug_daemon",
     "//chromeos/dbus/init",
     "//chromeos/dbus/shill",
     "//dbus",

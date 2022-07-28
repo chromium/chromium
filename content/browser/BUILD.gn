@@ -2474,6 +2474,8 @@ source_set("browser") {
       "tracing/cros_tracing_agent.h",
     ]
     deps += [
+      "//chromeos/ash/components/dbus/debug_daemon",
+      "//chromeos/dbus",
       "//components/chromeos_camera:mojo_mjpeg_decode_accelerator",
       "//services/data_decoder/public/cpp",
       "//services/data_decoder/public/mojom",
@@ -3092,9 +3094,6 @@ source_set("browser") {
       "//ash/constants",
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/components/network",
-      "//chromeos/dbus",
-      "//chromeos/dbus/power",
-      "//chromeos/dbus/power:power_manager_proto",
       "//chromeos/system",
       "//components/session_manager/core",
     ]

@@ -34,7 +34,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/system/fake_statistics_provider.h"
 #include "chromeos/system/statistics_provider.h"
 #endif
@@ -105,7 +105,7 @@ class TracingControllerTest : public ContentBrowserTest {
     disable_recording_done_callback_count_ = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::DebugDaemonClient::InitializeFake();
+    ash::DebugDaemonClient::InitializeFake();
     // Set statistic provider for hardware class tests.
     chromeos::system::StatisticsProvider::SetTestProvider(
         &fake_statistics_provider_);
@@ -118,7 +118,7 @@ class TracingControllerTest : public ContentBrowserTest {
   void TearDown() override {
     ContentBrowserTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::DebugDaemonClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
 #endif
   }
 

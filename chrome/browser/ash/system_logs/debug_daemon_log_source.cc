@@ -21,7 +21,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/feedback/feedback_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -142,7 +142,7 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK(callback_.is_null());
 
   callback_ = std::move(callback);
-  chromeos::DebugDaemonClient* client = chromeos::DebugDaemonClient::Get();
+  ash::DebugDaemonClient* client = ash::DebugDaemonClient::Get();
 
   client->GetRoutes(true,   // Numeric
                     false,  // No IPv6

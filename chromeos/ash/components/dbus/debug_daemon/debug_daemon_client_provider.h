@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_PROVIDER_H_
-#define CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_PROVIDER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_PROVIDER_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_PROVIDER_H_
 
 #include <memory>
 
@@ -14,7 +14,7 @@ namespace dbus {
 class Bus;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 class DebugDaemonClient;
 
 // This class hosts an instance of DebugDaemonClient used to connect to debugd
@@ -51,6 +51,6 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClientProvider {
   std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-#endif  // CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_PROVIDER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_PROVIDER_H_

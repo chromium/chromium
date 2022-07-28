@@ -15,7 +15,7 @@
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/test_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/time.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -158,13 +158,13 @@ class MockTabManagerDelegate : public TabManagerDelegate {
 
   LifecycleUnitVector GetLifecycleUnits() override { return lifecycle_units_; }
 
-  chromeos::DebugDaemonClient* GetDebugDaemonClient() override {
+  ash::DebugDaemonClient* GetDebugDaemonClient() override {
     return &debugd_client_;
   }
 
  private:
   LifecycleUnitVector lifecycle_units_;
-  chromeos::FakeDebugDaemonClient debugd_client_;
+  ash::FakeDebugDaemonClient debugd_client_;
   std::vector<int> killed_arc_processes_;
   LifecycleUnitVector killed_tabs_;
   bool always_return_true_from_is_recently_killed_;

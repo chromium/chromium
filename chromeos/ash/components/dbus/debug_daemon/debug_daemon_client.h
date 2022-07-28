@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_
-#define CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -28,7 +28,8 @@
 namespace cryptohome {
 class AccountIdentifier;
 }
-namespace chromeos {
+
+namespace ash {
 
 // A DbusLibraryError represents an error response received from D-Bus.
 enum DbusLibraryError {
@@ -353,13 +354,11 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) DebugDaemonClient
   static std::unique_ptr<DebugDaemonClient> CreateInstance();
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::DbusLibraryError;
-using ::chromeos::DebugDaemonClient;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::DebugDaemonClient;
+}
+
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_DEBUG_DAEMON_DEBUG_DAEMON_CLIENT_H_

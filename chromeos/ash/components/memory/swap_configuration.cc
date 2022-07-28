@@ -8,8 +8,8 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 
 namespace ash {
 
@@ -108,8 +108,7 @@ void ConfigureMinFilelistIfEnabled() {
     return;
   }
 
-  chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DebugDaemonClient::Get();
+  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
   CHECK(debugd_client);
 
   int min_mb = kCrOSMinFilelistMb.Get();
@@ -128,8 +127,7 @@ void ConfigureRamVsSwapWeightIfEnabled() {
   if (!base::FeatureList::IsEnabled(kCrOSTuneRamVsSwapWeight))
     return;
 
-  chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DebugDaemonClient::Get();
+  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
   CHECK(debugd_client);
 
   int swap_weight = kCrOSRamVsSwapWeight.Get();
@@ -150,8 +148,7 @@ void ConfigureExtraFreeIfEnabled() {
   if (!base::FeatureList::IsEnabled(kCrOSTuneExtraFree))
     return;
 
-  chromeos::DebugDaemonClient* debugd_client =
-      chromeos::DebugDaemonClient::Get();
+  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
   CHECK(debugd_client);
 
   int extra_free = kCrOSExtraFreeMb.Get();

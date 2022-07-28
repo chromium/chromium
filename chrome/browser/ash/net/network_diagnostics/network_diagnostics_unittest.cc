@@ -9,7 +9,7 @@
 #include "base/test/bind.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_test_helper.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +33,7 @@ const std::vector<std::string> kWellFormedDnsServers = {
 
 // This fakes a DebugDaemonClient by serving fake ICMP results when the
 // DebugDaemonClient calls TestICMP().
-class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
+class TestDebugDaemonClient : public FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
   TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;

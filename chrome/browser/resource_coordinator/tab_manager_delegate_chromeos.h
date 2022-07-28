@@ -25,7 +25,7 @@
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-forward.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -107,7 +107,7 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
                        ::mojom::LifecycleUnitDiscardReason reason);
 
   // Get debugd client instance. Virtual for unit testing.
-  virtual chromeos::DebugDaemonClient* GetDebugDaemonClient();
+  virtual ash::DebugDaemonClient* GetDebugDaemonClient();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, CandidatesSorted);

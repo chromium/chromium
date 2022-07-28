@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/login/localized_values_builder.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 

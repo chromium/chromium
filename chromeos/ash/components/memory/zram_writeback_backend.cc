@@ -16,8 +16,8 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -105,8 +105,7 @@ class ZramWritebackBackendImpl : public ZramWritebackBackend {
   }
 
   void EnableWriteback(uint64_t size_mb, IntCallback cb) override {
-    chromeos::DebugDaemonClient* debugd_client =
-        chromeos::DebugDaemonClient::Get();
+    DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
     CHECK(debugd_client);
 
     debugd_client->SwapZramEnableWriteback(
@@ -131,8 +130,7 @@ class ZramWritebackBackendImpl : public ZramWritebackBackend {
   }
 
   void MarkIdle(base::TimeDelta age, Callback cb) override {
-    chromeos::DebugDaemonClient* debugd_client =
-        chromeos::DebugDaemonClient::Get();
+    DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
     CHECK(debugd_client);
 
     debugd_client->SwapZramMarkIdle(
@@ -166,8 +164,7 @@ class ZramWritebackBackendImpl : public ZramWritebackBackend {
   }
 
   void SetWritebackLimit(uint64_t size_pages, IntCallback cb) override {
-    chromeos::DebugDaemonClient* debugd_client =
-        chromeos::DebugDaemonClient::Get();
+    DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
     CHECK(debugd_client);
 
     debugd_client->SwapZramSetWritebackLimit(
@@ -198,8 +195,7 @@ class ZramWritebackBackendImpl : public ZramWritebackBackend {
   }
 
   void InitiateWriteback(ZramWritebackMode mode, Callback cb) override {
-    chromeos::DebugDaemonClient* debugd_client =
-        chromeos::DebugDaemonClient::Get();
+    DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
     CHECK(debugd_client);
 
     debugd_client->InitiateSwapZramWriteback(

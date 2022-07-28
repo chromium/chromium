@@ -17,8 +17,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -110,7 +110,7 @@ class FakeNetworkDiagnostics : public NetworkDiagnostics {
 
   RunHttpsLatencyCallback callback_;
 
-  ::chromeos::FakeDebugDaemonClient fake_debug_daemon_client_;
+  ash::FakeDebugDaemonClient fake_debug_daemon_client_;
 };
 
 class FakeHttpsLatencyDelegate : public HttpsLatencySampler::Delegate {

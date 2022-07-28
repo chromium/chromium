@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/debug_daemon/debug_daemon_client_provider.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client_provider.h"
 
 #include "base/task/thread_pool.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 DebugDaemonClientProvider::DebugDaemonClientProvider()
     : dbus_task_runner_(base::ThreadPool::CreateSingleThreadTaskRunner(
@@ -36,4 +36,4 @@ DebugDaemonClientProvider::~DebugDaemonClientProvider() {
       FROM_HERE, base::BindOnce(&dbus::Bus::ShutdownAndBlock, dbus_bus_));
 }
 
-}  // namespace chromeos
+}  // namespace ash

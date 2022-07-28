@@ -1906,7 +1906,7 @@ test("content_browsertests") {
     deps += [
       "//ash/components/audio",
       "//chromeos/ash/components/dbus/audio",
-      "//chromeos/dbus/debug_daemon",
+      "//chromeos/ash/components/dbus/debug_daemon",
       "//chromeos/system",
     ]
   }

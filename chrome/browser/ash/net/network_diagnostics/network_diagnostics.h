@@ -15,17 +15,16 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-class DebugDaemonClient;
-}
-
 namespace ash {
+
+class DebugDaemonClient;
+
 namespace network_diagnostics {
 
 class NetworkDiagnostics
     : public chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines {
  public:
-  explicit NetworkDiagnostics(chromeos::DebugDaemonClient* debug_daemon_client);
+  explicit NetworkDiagnostics(DebugDaemonClient* debug_daemon_client);
   NetworkDiagnostics(const NetworkDiagnostics&) = delete;
   NetworkDiagnostics& operator=(const NetworkDiagnostics&) = delete;
   ~NetworkDiagnostics() override;
@@ -66,7 +65,7 @@ class NetworkDiagnostics
       RoutineResultCallback callback,
       chromeos::network_diagnostics::mojom::RoutineResultPtr result);
   // An unowned pointer to the DebugDaemonClient instance.
-  chromeos::DebugDaemonClient* debug_daemon_client_;
+  DebugDaemonClient* debug_daemon_client_;
   // Receivers for external requests (WebUI, Feedback, CrosHealthdClient).
   mojo::ReceiverSet<
       chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
