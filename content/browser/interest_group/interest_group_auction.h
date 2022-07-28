@@ -584,12 +584,13 @@ class CONTENT_EXPORT InterestGroupAuction {
 
   // Replace `${}` placeholders in debug report URLs for post auction signals
   // if exist.
-  GURL FillPostAuctionSignals(const GURL& url,
-                              const PostAuctionSignals& signals,
-                              const absl::optional<PostAuctionSignals>&
-                                  top_level_signals = absl::nullopt);
+  static GURL FillPostAuctionSignals(const GURL& url,
+                                     const PostAuctionSignals& signals,
+                                     const absl::optional<PostAuctionSignals>&
+                                         top_level_signals = absl::nullopt);
 
-  // Tracing ID associated with the Auction. A nestable async "Auction" trace
+  // Tracing ID associated with the Auction. A nestable
+  // async "Auction" trace
   // event lasts for the lifetime of `this`. Sequential events that apply to
   // the entire auction are logged using this ID, including potentially
   // out-of-process events by bidder and seller worklet reporting methods.

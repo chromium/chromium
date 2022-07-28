@@ -187,14 +187,14 @@ class InterestGroupAuction::BuyerHelper {
   // `auction` is expected to own the BuyerHelper, and therefore outlive it.
   BuyerHelper(InterestGroupAuction* auction,
               std::vector<StorageInterestGroup> interest_groups)
-      : auction_(auction) {
+      : auction_(auction), owner_(interest_groups[0].interest_group.owner) {
     DCHECK(!interest_groups.empty());
 
     size_t size_limit =
         auction_->config_->non_shared_params.all_buyers_group_limit;
     const auto limit_iter =
         auction_->config_->non_shared_params.per_buyer_group_limits.find(
-            interest_groups[0].interest_group.owner);
+            owner_);
     if (limit_iter !=
         auction_->config_->non_shared_params.per_buyer_group_limits.cend()) {
       size_limit = static_cast<size_t>(limit_iter->second);
@@ -266,6 +266,8 @@ class InterestGroupAuction::BuyerHelper {
 
   size_t num_potential_bidders() const { return bid_states_.size(); }
 
+  const url::Origin& owner() const { return owner_; }
+
   void GetInterestGroupsThatBid(
       blink::InterestGroupSet& interest_groups) const {
     for (const BidState& bid_state : bid_states_) {
@@ -276,12 +278,67 @@ class InterestGroupAuction::BuyerHelper {
     }
   }
 
- private:
-  // Temporarily friend parent class to make CLs adding this class simpler.
+  // Adds debug reporting URLs to `debug_win_report_urls` and
+  // `debug_loss_report_urls`, if there are any, filling in report URL template
+  // parameters as needed.
   //
-  // TODO(mmenke): Remove this.
-  friend class InterestGroupAuction;
+  // `winner` is the BidState associated with the winning bid, if there is one.
+  // If it's not a BidState managed by `this`, it has no effect.
+  //
+  // `signals` are the PostAuctionSignals from the auction `this` was a part of.
+  //
+  // `top_level_signals` are the PostAuctionSignals of the top-level auction, if
+  // this is a component auction, and nullopt otherwise.
+  void TakeDebugReportUrls(
+      const BidState* winner,
+      const PostAuctionSignals& signals,
+      const absl::optional<PostAuctionSignals>& top_level_signals,
+      std::vector<GURL>& debug_win_report_urls,
+      std::vector<GURL>& debug_loss_report_urls) {
+    for (BidState& bid_state : bid_states_) {
+      if (&bid_state == winner) {
+        if (winner->bidder_debug_win_report_url.has_value()) {
+          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
+              std::move(winner->bidder_debug_win_report_url).value(), signals));
+        }
+        if (winner->seller_debug_win_report_url.has_value()) {
+          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
+              std::move(winner->seller_debug_win_report_url).value(), signals,
+              top_level_signals));
+        }
+        // `top_level_signals` is passed as parameter `signals` for top level
+        // seller.
+        if (winner->top_level_seller_debug_win_report_url.has_value()) {
+          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
+              std::move(winner->top_level_seller_debug_win_report_url).value(),
+              top_level_signals.value()));
+        }
+        continue;
+      }
+      if (bid_state.bidder_debug_loss_report_url.has_value()) {
+        // Losing bidders should not get highest_scoring_other_bid and
+        // made_highest_scoring_other_bid signals.
+        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
+            std::move(bid_state.bidder_debug_loss_report_url).value(),
+            PostAuctionSignals(signals.winning_bid, signals.made_winning_bid,
+                               0.0, false)));
+      }
+      if (bid_state.seller_debug_loss_report_url.has_value()) {
+        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
+            std::move(bid_state.seller_debug_loss_report_url).value(), signals,
+            top_level_signals));
+      }
+      // `top_level_signals` is passed as parameter `signals` for top level
+      // seller.
+      if (bid_state.top_level_seller_debug_loss_report_url.has_value()) {
+        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
+            std::move(bid_state.top_level_seller_debug_loss_report_url).value(),
+            top_level_signals.value()));
+      }
+    }
+  }
 
+ private:
   // Called when the `bid_state` BidderWorklet crashes or fails to load.
   // Invokes OnGenerateBidComplete() for the worklet with a failure.
   void OnBidderWorkletGenerateBidFatalError(
@@ -513,6 +570,8 @@ class InterestGroupAuction::BuyerHelper {
   }
 
   const raw_ptr<InterestGroupAuction> auction_;
+
+  const url::Origin owner_;
 
   // State of loaded interest groups owned by `owner_`.
   std::vector<BidState> bid_states_;
@@ -821,8 +880,8 @@ void InterestGroupAuction::TakeDebugReportUrls(
   if (!all_bids_scored_)
     return;
 
-  // Set `winner` to the element of `bid_states_` that won the entire auction,
-  // if there is one.
+  // Set `winner` to the BidState in this auction associated with the winning
+  // bid of the top-level auction, if there is one.
   //
   // In a component auction, the highest bid may have lost the top-level
   // auction, and we want to report that as a loss. In this case, AuctionResult
@@ -830,7 +889,7 @@ void InterestGroupAuction::TakeDebugReportUrls(
   //
   // Also for the top-level auction in the case a component auctions bid won,
   // the highest bid's BidState and its reporting URLs are stored with the
-  // component auction, so the component auction will be the one populate
+  // component auction, so the component auction will be the one to populate
   // `debug_win_report_urls`.
   BidState* winner = nullptr;
   if (final_auction_result_ == AuctionResult::kSuccess &&
@@ -860,62 +919,23 @@ void InterestGroupAuction::TakeDebugReportUrls(
   }
 
   for (const auto& buyer_helper : buyer_helpers_) {
-    for (BidState& bid_state : buyer_helper->bid_states_) {
-      const url::Origin& owner = bid_state.bidder.interest_group.owner;
-      if (top_bid_)
-        signals.made_winning_bid =
-            owner == top_bid_->bid->interest_group->owner;
+    const url::Origin& owner = buyer_helper->owner();
+    if (top_bid_)
+      signals.made_winning_bid = owner == top_bid_->bid->interest_group->owner;
 
-      if (highest_scoring_other_bid_owner_.has_value()) {
-        DCHECK_GT(highest_scoring_other_bid_, 0);
-        signals.made_highest_scoring_other_bid =
-            owner == highest_scoring_other_bid_owner_.value();
-      }
-      if (parent_ && parent_->top_bid_) {
-        top_level_signals->made_winning_bid =
-            owner == parent_->top_bid_->bid->interest_group->owner;
-      }
-
-      if (&bid_state == winner) {
-        if (winner->bidder_debug_win_report_url.has_value()) {
-          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
-              std::move(winner->bidder_debug_win_report_url).value(), signals));
-        }
-        if (winner->seller_debug_win_report_url.has_value()) {
-          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
-              std::move(winner->seller_debug_win_report_url).value(), signals,
-              top_level_signals));
-        }
-        // `top_level_signals` is passed as parameter `signals` for top level
-        // seller.
-        if (winner->top_level_seller_debug_win_report_url.has_value()) {
-          debug_win_report_urls.emplace_back(FillPostAuctionSignals(
-              std::move(winner->top_level_seller_debug_win_report_url).value(),
-              top_level_signals.value()));
-        }
-        continue;
-      }
-      if (bid_state.bidder_debug_loss_report_url.has_value()) {
-        // Losing bidders should not get highest_scoring_other_bid and
-        // made_highest_scoring_other_bid signals.
-        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
-            std::move(bid_state.bidder_debug_loss_report_url).value(),
-            PostAuctionSignals(signals.winning_bid, signals.made_winning_bid,
-                               0.0, false)));
-      }
-      if (bid_state.seller_debug_loss_report_url.has_value()) {
-        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
-            std::move(bid_state.seller_debug_loss_report_url).value(), signals,
-            top_level_signals));
-      }
-      // `top_level_signals` is passed as parameter `signals` for top level
-      // seller.
-      if (bid_state.top_level_seller_debug_loss_report_url.has_value()) {
-        debug_loss_report_urls.emplace_back(FillPostAuctionSignals(
-            std::move(bid_state.top_level_seller_debug_loss_report_url).value(),
-            top_level_signals.value()));
-      }
+    if (highest_scoring_other_bid_owner_.has_value()) {
+      DCHECK_GT(highest_scoring_other_bid_, 0);
+      signals.made_highest_scoring_other_bid =
+          owner == highest_scoring_other_bid_owner_.value();
     }
+    if (parent_ && parent_->top_bid_) {
+      top_level_signals->made_winning_bid =
+          owner == parent_->top_bid_->bid->interest_group->owner;
+    }
+
+    buyer_helper->TakeDebugReportUrls(winner, signals, top_level_signals,
+                                      debug_win_report_urls,
+                                      debug_loss_report_urls);
   }
 
   // Retrieve data from component auctions as well.
