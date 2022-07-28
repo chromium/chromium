@@ -139,29 +139,21 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
           storage_keys),
       std::move(callback));
 }
+StorageAreaImpl::Options createOptions() {
+  // Delay for a moment after a value is set in anticipation
+  // of other values being set, so changes are batched.
+  static constexpr base::TimeDelta kCommitDefaultDelaySecs = base::Seconds(5);
 
-}  // namespace
+  // To avoid excessive IO we apply limits to the amount of data being written
+  // and the frequency of writes.
+  static const size_t kMaxBytesPerHour = kPerStorageAreaQuota;
+  static constexpr int kMaxCommitsPerHour = 60;
 
-class LocalStorageImpl::StorageAreaHolder final
-    : public StorageAreaImpl::Delegate {
- public:
-  StorageAreaHolder(LocalStorageImpl* context,
-                    const blink::StorageKey& storage_key)
-      : context_(context), storage_key_(storage_key) {
-    // Delay for a moment after a value is set in anticipation
-    // of other values being set, so changes are batched.
-    static constexpr base::TimeDelta kCommitDefaultDelaySecs = base::Seconds(5);
-
-    // To avoid excessive IO we apply limits to the amount of data being written
-    // and the frequency of writes.
-    static const size_t kMaxBytesPerHour = kPerStorageAreaQuota;
-    static constexpr int kMaxCommitsPerHour = 60;
-
-    StorageAreaImpl::Options options;
-    options.max_size = kPerStorageAreaQuota + kPerStorageAreaOverQuotaAllowance;
-    options.default_commit_delay = kCommitDefaultDelaySecs;
-    options.max_bytes_per_hour = kMaxBytesPerHour;
-    options.max_commits_per_hour = kMaxCommitsPerHour;
+  StorageAreaImpl::Options options;
+  options.max_size = kPerStorageAreaQuota + kPerStorageAreaOverQuotaAllowance;
+  options.default_commit_delay = kCommitDefaultDelaySecs;
+  options.max_bytes_per_hour = kMaxBytesPerHour;
+  options.max_commits_per_hour = kMaxCommitsPerHour;
 #if BUILDFLAG(IS_ANDROID)
     options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
 #else
@@ -170,13 +162,23 @@ class LocalStorageImpl::StorageAreaHolder final
       options.cache_mode = StorageAreaImpl::CacheMode::KEYS_ONLY_WHEN_POSSIBLE;
     }
 #endif
-    area_ = std::make_unique<StorageAreaImpl>(
-        context_->database_.get(), MakeStorageKeyPrefix(storage_key_), this,
-        options);
-    area_ptr_ = area_.get();
-  }
+    return options;
+}
+}  // namespace
 
-  StorageAreaImpl* storage_area() { return area_ptr_; }
+class LocalStorageImpl::StorageAreaHolder final
+    : public StorageAreaImpl::Delegate {
+ public:
+  StorageAreaHolder(LocalStorageImpl* context,
+                    const blink::StorageKey& storage_key)
+      : context_(context),
+        storage_key_(storage_key),
+        area_(context_->database_.get(),
+              MakeStorageKeyPrefix(storage_key_),
+              this,
+              createOptions()) {}
+
+  StorageAreaImpl* storage_area() { return &area_; }
 
   void OnNoBindings() override {
     has_bindings_ = false;
@@ -227,12 +229,7 @@ class LocalStorageImpl::StorageAreaHolder final
  private:
   raw_ptr<LocalStorageImpl> context_;
   blink::StorageKey storage_key_;
-  // Holds the same value as |area_|. The reason for this is that
-  // during destruction of the StorageAreaImpl instance we might still get
-  // called and need access  to the StorageAreaImpl instance. The unique_ptr
-  // could already be null, but this field should still be valid.
-  raw_ptr<StorageAreaImpl, DanglingUntriaged> area_ptr_;
-  std::unique_ptr<StorageAreaImpl> area_;
+  StorageAreaImpl area_;
   bool has_bindings_ = false;
 };
 
