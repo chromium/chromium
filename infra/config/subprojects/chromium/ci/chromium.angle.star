@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.angle builder group."""
 
-load("//lib/builders.star", "goma", "xcode")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/builders.star", "goma", "reclient", "xcode")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -42,8 +42,8 @@ ci.gpu.linux_builder(
         short_name = "arm64",
     ),
     goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -62,8 +62,8 @@ ci.gpu.linux_builder(
         short_name = "arm64",
     ),
     goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -90,8 +90,8 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -119,8 +119,8 @@ ci.gpu.linux_builder(
         short_name = "x64",
     ),
     goma_backend = None,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
 ci.thin_tester(
@@ -192,8 +192,8 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.thin_tester(
@@ -221,8 +221,8 @@ ci.gpu.windows_builder(
         short_name = "x86",
     ),
     goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.gpu.windows_builder(
@@ -232,8 +232,8 @@ ci.gpu.windows_builder(
         short_name = "x64",
     ),
     goma_backend = None,
-    reclient_jobs = rbe_jobs.LOW_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.thin_tester(

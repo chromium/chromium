@@ -2,9 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "defaults", "goma")
+load("//lib/builders.star", "builder", "defaults", "goma", "reclient")
 load("//lib/consoles.star", "consoles")
-load("//lib/ci.star", "rbe_instance", "rbe_jobs")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
 luci.bucket(
@@ -62,6 +61,6 @@ builder(
     name = "findit-rerun",
     executable = "recipe:findit/chromium/single_revision",
     goma_backend = goma.backend.RBE_PROD,
-    reclient_instance = rbe_instance.DEFAULT,
-    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
