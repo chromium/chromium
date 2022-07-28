@@ -20,7 +20,11 @@ let doCancel: (() => void)|null = null;
  */
 export function start(): Promise<void> {
   doCancel = null;
-  if (!state.get(state.State.TIMER)) {
+
+  const isTimerOptionShown =
+      getComputedStyle(dom.get('#open-timer-panel', HTMLElement)).display !==
+      'none';
+  if (!state.get(state.State.TIMER) || !isTimerOptionShown) {
     return Promise.resolve();
   }
   return new Promise((resolve, reject) => {
