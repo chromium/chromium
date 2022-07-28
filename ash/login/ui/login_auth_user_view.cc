@@ -1634,6 +1634,7 @@ void LoginAuthUserView::UpdateForUser(const LoginUserInfo& user) {
                             user.basic_user_info.account_id;
   user_view_->UpdateForUser(user, true /*animate*/);
   if (user_changed) {
+    pin_input_view_->Reset();
     password_view_->Reset();
     password_view_->SetDisplayPasswordButtonVisible(
         user.show_display_password_button);

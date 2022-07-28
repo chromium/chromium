@@ -155,6 +155,10 @@ absl::optional<std::string> LoginPinInputView::TestApi::GetCode() {
   return view_->code_input_->GetCode();
 }
 
+bool LoginPinInputView::TestApi::IsEmpty() {
+  return view_->code_input_->IsEmpty();
+}
+
 LoginPinInputView::LoginPinInputView(const LoginPalette& palette)
     : length_(kDefaultLength), palette_(palette) {
   SetLayoutManager(std::make_unique<views::FillLayout>());

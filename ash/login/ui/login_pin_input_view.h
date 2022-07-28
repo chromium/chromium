@@ -44,6 +44,7 @@ class ASH_EXPORT LoginPinInputView : public views::View {
 
     views::View* code_input();
     absl::optional<std::string> GetCode();
+    bool IsEmpty();
 
    private:
     LoginPinInputView* const view_;
