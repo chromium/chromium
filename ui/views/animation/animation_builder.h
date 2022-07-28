@@ -30,6 +30,20 @@ namespace views {
 class AnimationAbortHandle;
 
 // Provides an unfinalized animation sequence block if any to build animations.
+
+// Usage notes for callbacks set on AnimationBuilder:
+// When setting callbacks for the animations note that the AnimationBuilder’s
+// observer that calls these callbacks may outlive the callback's parameters.
+
+// The OnEnded callback runs when all animations created on the AnimationBuilder
+// have finished. The OnAborted callback runs when any one animation created on
+// the AnimationBuilder has been aborted. Therefore, these callbacks and every
+// object the callback accesses needs to outlive all the Layers/LayerOwners
+// being animated on since the Layers ultimately own the objects that run the
+// animation. Otherwise, developers may need to use weak pointers or force
+// animations to be cancelled in the object’s destructor to prevent accessing
+// destroyed objects.
+
 class VIEWS_EXPORT AnimationBuilder {
  public:
   class Observer : public ui::LayerAnimationObserver {
