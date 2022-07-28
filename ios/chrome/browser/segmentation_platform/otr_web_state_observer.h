@@ -47,6 +47,8 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
   void AddObserver(ObserverClient* client);
   void RemoveObserver(ObserverClient* client);
 
+  void TearDown();
+
  private:
   class WebStateObserver;
 
@@ -70,9 +72,11 @@ class OTRWebStateObserver : public BrowserStateInfoCacheObserver {
   bool HasAnyOtrWebState() const;
 
   base::ObserverList<ObserverClient> observer_clients_;
-  const raw_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
+  raw_ptr<ios::ChromeBrowserStateManager> browser_state_manager_;
   base::flat_map<base::FilePath, std::unique_ptr<BrowserStateData>>
       browser_state_data_;
+
+  bool shutting_down_ = false;
 };
 
 }  // namespace segmentation_platform
