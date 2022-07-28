@@ -600,6 +600,7 @@ class OobeApiProvider {
       DemoPreferencesScreen: new DemoPreferencesScreenTester(),
       ArcTosScreen: new ArcTosScreenTester(),
       ThemeSelectionScreen: new ThemeSelectionScreenTester(),
+      GestureNavigation: new GestureNavigationScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
@@ -648,6 +649,22 @@ class GuestTosScreenTester extends ScreenElementApi {
   /** @return {string} */
   getNextButtonName() {
     return loadTimeData.getString('guestTosAccept');
+  }
+}
+
+class GestureNavigationScreenTester extends ScreenElementApi {
+  constructor() {
+    super('gesture-navigation');
+  }
+
+  /** @return {string} */
+  getNextButtonName() {
+    return loadTimeData.getString('gestureNavigationIntroNextButton');
+  }
+
+  /** @return {string} */
+  getGetStartedButtonName() {
+    return loadTimeData.getString('welcomeScreenGetStarted');
   }
 }
 
