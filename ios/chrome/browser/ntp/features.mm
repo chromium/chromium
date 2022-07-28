@@ -52,11 +52,12 @@ bool IsWebChannelsEnabled() {
 bool IsFeedBackgroundRefreshEnabled() {
 #if !BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
   return false;
-#endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
+#else
   static bool feedBackgroundRefreshEnabled =
       [[NSUserDefaults standardUserDefaults]
           boolForKey:kEnableFeedBackgroundRefreshForNextColdStart];
   return feedBackgroundRefreshEnabled;
+#endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 }
 
 void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
