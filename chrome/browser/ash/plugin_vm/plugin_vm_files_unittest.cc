@@ -29,7 +29,6 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -97,24 +96,22 @@ class PluginVmFilesTest : public testing::Test {
         blink::StorageKey(), mount_name_, base::FilePath(path));
   }
 
-  struct ScopedDBusThreadManager {
-    ScopedDBusThreadManager() {
-      chromeos::DBusThreadManager::Initialize();
+  struct ScopedDBusClients {
+    ScopedDBusClients() {
       ash::CiceroneClient::InitializeFake();
       ash::ConciergeClient::InitializeFake();
       ash::SeneschalClient::InitializeFake();
       ash::ChunneldClient::InitializeFake();
       ash::VmPluginDispatcherClient::InitializeFake();
     }
-    ~ScopedDBusThreadManager() {
+    ~ScopedDBusClients() {
       ash::VmPluginDispatcherClient::Shutdown();
       ash::SeneschalClient::Shutdown();
       ash::ConciergeClient::Shutdown();
       ash::CiceroneClient::Shutdown();
       ash::ChunneldClient::Shutdown();
-      chromeos::DBusThreadManager::Shutdown();
     }
-  } dbus_thread_manager_;
+  } dbus_clients_;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;

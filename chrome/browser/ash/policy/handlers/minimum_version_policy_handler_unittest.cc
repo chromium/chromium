@@ -24,7 +24,6 @@
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -108,7 +107,6 @@ MinimumVersionPolicyHandlerTest::MinimumVersionPolicyHandlerTest()
 }
 
 void MinimumVersionPolicyHandlerTest::SetUp() {
-  chromeos::DBusThreadManager::Initialize();
   fake_update_engine_client_ = ash::UpdateEngineClient::InitializeFakeForTest();
   network_handler_test_helper_ =
       std::make_unique<ash::NetworkHandlerTestHelper>();
@@ -131,7 +129,6 @@ void MinimumVersionPolicyHandlerTest::TearDown() {
   minimum_version_policy_handler_.reset();
   network_handler_test_helper_.reset();
   ash::UpdateEngineClient::Shutdown();
-  chromeos::DBusThreadManager::Shutdown();
 }
 
 void MinimumVersionPolicyHandlerTest::CreateMinimumVersionHandler() {

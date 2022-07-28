@@ -23,7 +23,6 @@
 #include "chromeos/ash/components/dbus/lorgnette_manager/fake_lorgnette_manager_client.h"
 #include "chromeos/ash/components/dbus/lorgnette_manager/lorgnette_manager_client.h"
 #include "chromeos/ash/components/scanning/scanner.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "net/base/ip_address.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -165,7 +164,6 @@ class LorgnetteScannerManagerTest : public testing::Test {
  public:
   LorgnetteScannerManagerTest() {
     run_loop_ = std::make_unique<base::RunLoop>();
-    DBusThreadManager::Initialize();
     LorgnetteManagerClient::InitializeFake();
     auto fake_zeroconf_scanner_detector =
         std::make_unique<FakeZeroconfScannerDetector>();
@@ -179,7 +177,6 @@ class LorgnetteScannerManagerTest : public testing::Test {
 
   ~LorgnetteScannerManagerTest() override {
     LorgnetteManagerClient::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
   // Returns a FakeLorgnetteManagerClient with an empty but successful

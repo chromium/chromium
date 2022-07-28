@@ -39,7 +39,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/shill/shill_clients.h"
@@ -124,7 +123,6 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
-    chromeos::DBusThreadManager::Initialize();
     fake_update_engine_client_ =
         ash::UpdateEngineClient::InitializeFakeForTest();
     chromeos::PowerManagerClient::InitializeFake();
@@ -154,7 +152,6 @@ class DeviceScheduledUpdateCheckerTest : public testing::Test {
     network_state_test_helper_.reset();
     chromeos::PowerManagerClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::NullCallback());
   }

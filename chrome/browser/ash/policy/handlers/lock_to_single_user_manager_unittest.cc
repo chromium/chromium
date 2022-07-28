@@ -30,7 +30,6 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -49,9 +48,7 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
   ~LockToSingleUserManagerTest() override = default;
 
   void SetUp() override {
-    // This is required before Concierge tests start calling
-    // DBusThreadManager::Get() for GuestOsStabilityMonitor.
-    chromeos::DBusThreadManager::Initialize();
+    // This is required for GuestOsStabilityMonitor.
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
@@ -111,7 +108,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void LogInUser(bool is_affiliated) {

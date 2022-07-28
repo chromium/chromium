@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,17 +31,13 @@ class PluginVmUtilTest : public testing::Test {
   MOCK_METHOD(void, OnPolicyChanged, (bool));
 
  protected:
-  struct ScopedDBusThreadManager {
-    ScopedDBusThreadManager() {
-      chromeos::DBusThreadManager::Initialize();
+  struct ScopedDBusClients {
+    ScopedDBusClients() {
       ash::ConciergeClient::InitializeFake(
           /*fake_cicerone_client=*/nullptr);
     }
-    ~ScopedDBusThreadManager() {
-      ash::ConciergeClient::Shutdown();
-      chromeos::DBusThreadManager::Shutdown();
-    }
-  } dbus_thread_manager_;
+    ~ScopedDBusClients() { ash::ConciergeClient::Shutdown(); }
+  } dbus_clients_;
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> testing_profile_;

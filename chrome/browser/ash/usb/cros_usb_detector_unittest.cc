@@ -42,7 +42,6 @@
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
@@ -135,8 +134,7 @@ class TestCrosUsbDeviceObserver : public CrosUsbDeviceObserver {
 class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
  public:
   CrosUsbDetectorTest() {
-    // Needed for ChunneldClient via GuestOsStabilityMonitor.
-    chromeos::DBusThreadManager::Initialize();
+    // Needed for GuestOsStabilityMonitor.
     ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ConciergeClient::InitializeFake();
@@ -163,7 +161,6 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
     ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ChunneldClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   TestingProfile* CreateProfile() override {

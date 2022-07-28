@@ -32,7 +32,6 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/fake_vm_plugin_dispatcher_client.h"
 #include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,7 +50,6 @@ using MockLaunchPluginVmCallback =
 class PluginVmManagerImplTest : public testing::Test {
  public:
   PluginVmManagerImplTest() {
-    chromeos::DBusThreadManager::Initialize();
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
@@ -101,7 +99,6 @@ class PluginVmManagerImplTest : public testing::Test {
     ash::ConciergeClient::Shutdown();
     ash::CiceroneClient::Shutdown();
     ash::ChunneldClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
  protected:

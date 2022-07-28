@@ -124,7 +124,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -413,7 +412,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     // they are installed.
     command_line->AppendSwitch(switches::kDisableDefaultApps);
 
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     web_app::PreinstalledWebAppManager::SkipStartupForTesting();
@@ -598,7 +596,6 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
     shelf_item_factory_.reset();
     BrowserWithTestWindowTest::TearDown();
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
     app_list::AppListSyncableServiceFactory::SetUseInTesting(false);
   }
 

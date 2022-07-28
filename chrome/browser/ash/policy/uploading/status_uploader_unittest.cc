@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -73,8 +72,6 @@ class StatusUploaderTest : public testing::Test {
 
   void SetUp() override {
     // Required for `DeviceStatusCollector`.
-    chromeos::DBusThreadManager::Initialize();
-
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     client_.SetDMToken("dm_token");
@@ -89,7 +86,6 @@ class StatusUploaderTest : public testing::Test {
     content::RunAllTasksUntilIdle();
     chromeos::TpmManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   // Given a pending task to upload status, runs the task and returns the

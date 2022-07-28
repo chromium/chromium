@@ -38,7 +38,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -155,7 +154,6 @@ class UserCloudPolicyManagerAshTest
                 &test_system_url_loader_factory_)) {}
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     scoped_feature_list_.InitWithFeatures(
@@ -240,7 +238,6 @@ class UserCloudPolicyManagerAshTest
     test_signin_shared_loader_factory_->Detach();
 
     ash::ConciergeClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   void MakeManagerWithEmptyStore(const base::TimeDelta& fetch_timeout,

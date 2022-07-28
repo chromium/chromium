@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,7 +24,6 @@ namespace cros_healthd = ::ash::cros_healthd;
 class ProbeServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
     DebugDaemonClient::InitializeFake();
     cros_healthd::FakeCrosHealthd::Initialize();
   }
@@ -33,7 +31,6 @@ class ProbeServiceTest : public testing::Test {
   void TearDown() override {
     cros_healthd::FakeCrosHealthd::Shutdown();
     DebugDaemonClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
   }
 
   health::mojom::ProbeServiceProxy* probe_service() const {
