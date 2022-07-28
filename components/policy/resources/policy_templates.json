@@ -1336,8 +1336,8 @@
     {
       'name': 'Projector',
       'type': 'group',
-      'caption': '''Projector''',
-      'desc': '''Controls policies for Projector.''',
+      'caption': '''Screencast''',
+      'desc': '''Controls policies for Screencast.''',
       'policies': [
         'ProjectorEnabled',
         'ProjectorDogfoodForFamilyLinkEnabled',
@@ -30899,23 +30899,23 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'items': [
         {
           'value': True,
-          'caption': 'Enable Projector',
+          'caption': 'Enable Screencast',
         },
         {
           'value': False,
-          'caption': 'Disable Projector',
+          'caption': 'Disable Screencast',
         },
       ],
       'example_value': True,
       'default': True,
       'id': 935,
-      'caption': '''Enable Projector''',
-      'desc': '''This policy gives Projector permission to create and transcribe screen recording and upload to Drive for enterprise users.
+      'caption': '''Enable Screencast''',
+      'desc': '''This policy gives Screencast permission to create and transcribe screen recording and upload to Drive for enterprise users.
       This policy does not affect Family Link users.
       This policy does not affect <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME">ProjectorDogfoodForFamilyLinkEnabled</ph> policy for Family Link users.
 
-      If the policy is unset or enabled, Projector will be enabled.
-      If the policy is disabled, Projector will be disabled.''',
+      If the policy is unset or enabled, Screencast will be enabled.
+      If the policy is disabled, Screencast will be disabled.''',
     },
     {
       'name': 'DeviceKeylockerForStorageEncryptionEnabled',
@@ -31755,24 +31755,24 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'items': [
         {
           'value': True,
-          'caption': 'Enable Projector dogfood for Family Link users',
+          'caption': 'Enable Screencast dogfood for Family Link users',
         },
         {
           'value': False,
-          'caption': 'Disable Projector dogfood for Family Link users',
+          'caption': 'Disable Screencast dogfood for Family Link users',
         },
       ],
       'example_value': True,
       'default': False,
       'id': 980,
-      'caption': '''Enable Projector dogfood for Family Link users''',
-      'desc': '''This policy enables Projector feature for Family Link users and gives it permission to create and transcribe screen recording and upload to Drive.
+      'caption': '''Enable Screencast dogfood for Family Link users''',
+      'desc': '''This policy enables Screencast feature for Family Link users and gives it permission to create and transcribe screen recording and upload to Drive.
       This policy does not affect other types of users.
       This policy does not affect <ph name="PROJECTOR_ENABLED_POLICY_NAME">ProjectorEnabled</ph> policy for enterprise users.
 
-      If the policy is enabled, Projector dogfood will be enabled for Family Link users.
-      If the policy is disabled, Projector dogfood will be disabled for Family Link users.
-      If the policy is not set, Projector dogfood will be by default disabled for Family Link users.''',
+      If the policy is enabled, Screencast dogfood will be enabled for Family Link users.
+      If the policy is disabled, Screencast dogfood will be disabled for Family Link users.
+      If the policy is not set, Screencast dogfood will be by default disabled for Family Link users.''',
     },
     {
       'name': 'ScreenTimeEnabled',
