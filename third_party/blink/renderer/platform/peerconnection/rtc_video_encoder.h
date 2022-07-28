@@ -64,8 +64,6 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
       const webrtc::VideoEncoder::RateControlParameters& parameters) override;
   EncoderInfo GetEncoderInfo() const override;
 
-  // Returns true if there's H264 HW support for temporal layers.
-  static bool H264HwSupportForTemporalLayers();
   // Returns true if there's VP9 HW support for spatial layers.
   static bool Vp9HwSupportForSpatialLayers();
 
