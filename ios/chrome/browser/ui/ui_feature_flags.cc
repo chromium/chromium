@@ -78,6 +78,3 @@ const base::Feature kCalendarExperienceKit{"CalendarExperienceKit",
 
 const base::Feature kEnableExpKitAppleCalendar{
     "EnableExpKitAppleCalendar", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kEnableExpKitCalendarTextClassifier{
-    "EnableExpKitCalendarTextClassifier", base::FEATURE_DISABLED_BY_DEFAULT};

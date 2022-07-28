@@ -72,6 +72,7 @@
 #include "ios/chrome/browser/screen_time/screen_time_buildflags.h"
 #import "ios/chrome/browser/sessions/session_features.h"
 #include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/text_selection/text_selection_util.h"
 #include "ios/chrome/browser/ui/autofill/features.h"
 #include "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"

@@ -136,6 +136,7 @@ source_set("browser_state_impl") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/tabs_search:tabs_search_factory",
+    "//ios/chrome/browser/text_selection",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/voice",

@@ -696,6 +696,7 @@
     },
     'chrome_intelligence': {
       'filepath': 'history_clusters'\
+                  '|ios/chrome/browser/text_selection'\
                   '|optimization_guide'\
                   '|optimization_hints'\
                   '|third_party/eigen3'\
