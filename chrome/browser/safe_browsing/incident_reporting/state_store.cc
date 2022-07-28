@@ -59,10 +59,10 @@ void StateStore::Transaction::Clear(IncidentType type, const std::string& key) {
   // will result in a full serialize-and-write operation on the preferences
   // store.
   std::string type_string(base::NumberToString(static_cast<int>(type)));
-  const base::DictionaryValue* const_type_dict = nullptr;
-  if (store_->incidents_sent_->GetDictionaryWithoutPathExpansion(
-          type_string, &const_type_dict) &&
-      const_type_dict->FindKey(key)) {
+
+  const base::Value::Dict* const_type_dict =
+      store_->incidents_sent_->GetDict().FindDict(type_string);
+  if (const_type_dict && const_type_dict->Find(key)) {
     base::Value* type_dict = GetPrefDict()->FindDictKey(type_string);
     type_dict->RemoveKey(key);
   }
@@ -78,11 +78,8 @@ void StateStore::Transaction::ClearForType(IncidentType type) {
   // will result in a full serialize-and-write operation on the preferences
   // store.
   std::string type_string(base::NumberToString(static_cast<int>(type)));
-  const base::DictionaryValue* type_dict = nullptr;
-  if (store_->incidents_sent_->GetDictionaryWithoutPathExpansion(type_string,
-                                                                 &type_dict)) {
+  if (store_->incidents_sent_->GetDict().FindDict(type_string))
     GetPrefDict()->RemoveKey(type_string);
-  }
 }
 
 void StateStore::Transaction::ClearAll() {
@@ -148,13 +145,13 @@ StateStore::~StateStore() {
 bool StateStore::HasBeenReported(IncidentType type,
                                  const std::string& key,
                                  IncidentDigest digest) {
-  const base::DictionaryValue* type_dict = nullptr;
-  if (!incidents_sent_ ||
-      !incidents_sent_->GetDictionaryWithoutPathExpansion(
-          base::NumberToString(static_cast<int>(type)), &type_dict)) {
+  const base::Value::Dict* type_dict =
+      incidents_sent_ ? incidents_sent_->GetDict().FindDict(
+                            base::NumberToString(static_cast<int>(type)))
+                      : nullptr;
+  if (!type_dict)
     return false;
-  }
-  const std::string* digest_string = type_dict->FindStringKey(key);
+  const std::string* digest_string = type_dict->FindString(key);
   return (digest_string && *digest_string == base::NumberToString(digest));
 }
 
