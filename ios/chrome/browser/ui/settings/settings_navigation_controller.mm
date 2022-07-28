@@ -419,6 +419,12 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 #pragma mark - Public
 
 - (UIBarButtonItem*)doneButton {
+  if (self.presentingViewController == nil) {
+    // This can be called while being dismissed. In that case, return nil. See
+    // crbug.com/1346604.
+    return nil;
+  }
+
   UIBarButtonItem* item = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
