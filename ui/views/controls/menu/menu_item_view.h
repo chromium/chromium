@@ -369,7 +369,6 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool is_alerted() const { return is_alerted_; }
 
   // Returns whether or not a "new" badge should be shown on this menu item.
-  // Takes into account whether the badging feature is enabled.
   bool ShouldShowNewBadge() const;
 
   // Returns whether keyboard navigation through the menu should stop on this
@@ -580,8 +579,8 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Command id.
   int command_ = 0;
 
-  // Whether the menu item should be badged as "New" (if badging is enabled) as
-  // a way to highlight a new feature for users.
+  // Whether the menu item should be badged as "New" as a way to highlight a new
+  // feature for users.
   bool is_new_ = false;
 
   // Whether the menu item contains user-created text.

@@ -5,7 +5,6 @@
 // https://wicg.github.io/badging/
 [
     SecureContext,
-    RuntimeEnabled=Badging,
     ImplementedAs=NavigatorBadge
 ] partial interface WorkerNavigator {
   [Exposed=ServiceWorker, CallWith=ScriptState, MeasureAs=BadgeSet]

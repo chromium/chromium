@@ -21,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 
 using content::RenderFrameHost;
@@ -32,11 +31,6 @@ class WebAppBadgingBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppBadgingBrowserTest()
       : cross_origin_https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WebAppControllerBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "Badging");
-  }
 
   void SetUpOnMainThread() override {
     WebAppControllerBrowserTest::SetUpOnMainThread();

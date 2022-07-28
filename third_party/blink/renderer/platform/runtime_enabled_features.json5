@@ -249,10 +249,6 @@
       status: "stable",
     },
     {
-      name: "Badging",
-      status: "stable",
-    },
-    {
       name: "BarcodeDetector",
       status: {
         // Built-in barcode detection APIs are only available from some
