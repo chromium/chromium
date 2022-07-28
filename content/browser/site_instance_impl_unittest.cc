@@ -66,6 +66,7 @@ SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                               bool requires_origin_keyed_process) {
   return SiteInfo(GURL("https://www.foo.com"), process_lock_url,
                   requires_origin_keyed_process, false /* is_sandboxed */,
+                  UrlInfo::kInvalidUniqueSandboxId,
                   CreateStoragePartitionConfigForTesting(),
                   WebExposedIsolationInfo::CreateNonIsolated(),
                   false /* is_guest */,
@@ -263,6 +264,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
       false /* requires_origin_keyed_process */, false /* is_sandboxed */,
+      UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       true /* does_site_request_dedicated_process_for_coop */,
@@ -277,6 +279,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
       false /* requires_origin_keyed_process */, false /* is_sandboxed */,
+      UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -289,6 +292,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
       GURL("https://www.foo.com") /* site_url */,
       GURL("https://foo.com") /* process_lock_url */,
       false /* requires_origin_keyed_process */, false /* is_sandboxed */,
+      UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -739,6 +743,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
   SiteInfo expected_site_info(
       app_url /* site_url */, nonapp_site_url /* process_lock_url */,
       false /* requires_origin_keyed_process */, false /* is_sandboxed */,
+      UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -1542,6 +1547,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
   SiteInfo expected_site_info(
       app_url /* site_url */, original_url /* process_lock_url */,
       false /* requires_origin_keyed_process */, false /* is_sandboxed */,
+      UrlInfo::kInvalidUniqueSandboxId,
       CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
@@ -1591,7 +1597,8 @@ namespace {
 ProcessLock ProcessLockFromString(const std::string& url) {
   return ProcessLock::FromSiteInfo(SiteInfo(
       GURL(url), GURL(url), false /* requires_origin_keyed_process */,
-      false /* is_sandboxed */, CreateStoragePartitionConfigForTesting(),
+      false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
+      CreateStoragePartitionConfigForTesting(),
       WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* is_pdf */));

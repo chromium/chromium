@@ -180,7 +180,8 @@ SiteInfo SiteInfo::CreateForErrorPage(
     bool is_guest) {
   return SiteInfo(GetErrorPageSiteAndLockURL(), GetErrorPageSiteAndLockURL(),
                   false /* requires_origin_keyed_process */,
-                  false /* is_sandboxed */, storage_partition_config,
+                  false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
+                  storage_partition_config,
                   WebExposedIsolationInfo::CreateNonIsolated(), is_guest,
                   false /* does_site_request_dedicated_process_for_coop */,
                   false /* is_jit_disabled */, false /* is_pdf */);
@@ -201,8 +202,9 @@ SiteInfo SiteInfo::CreateForDefaultSiteInstance(
   return SiteInfo(SiteInstanceImpl::GetDefaultSiteURL(),
                   SiteInstanceImpl::GetDefaultSiteURL(),
                   false /* requires_origin_keyed_process */,
-                  false /* is_sandboxed */, storage_partition_config,
-                  web_exposed_isolation_info, isolation_context.is_guest(),
+                  false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
+                  storage_partition_config, web_exposed_isolation_info,
+                  isolation_context.is_guest(),
                   false /* does_site_request_dedicated_process_for_coop */,
                   is_jit_disabled, false /* is_pdf */);
 }
@@ -231,8 +233,9 @@ SiteInfo SiteInfo::CreateForGuest(
 
   return SiteInfo(
       guest_site_url, guest_site_url, false /* requires_origin_keyed_process */,
-      false /* is_sandboxed */, partition_config,
-      WebExposedIsolationInfo::CreateNonIsolated(), true /* is_guest */,
+      false /* is_sandboxed */, UrlInfo::kInvalidUniqueSandboxId,
+      partition_config, WebExposedIsolationInfo::CreateNonIsolated(),
+      true /* is_guest */,
       false /* does_site_request_dedicated_process_for_coop */,
       false /* is_jit_disabled */, false /* is_pdf */);
 }
@@ -260,6 +263,8 @@ SiteInfo SiteInfo::CreateOnIOThread(const IsolationContext& isolation_context,
 SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
                                   const UrlInfo& url_info,
                                   bool compute_site_url) {
+  DCHECK(url_info.is_sandboxed ||
+         url_info.unique_sandbox_id == UrlInfo::kInvalidUniqueSandboxId);
   GURL lock_url = DetermineProcessLockURL(isolation_context, url_info);
   GURL site_url = lock_url;
 
@@ -335,7 +340,8 @@ SiteInfo SiteInfo::CreateInternal(const IsolationContext& isolation_context,
   // appropriate to disregard WebExposedIsolationInfo and override it manually
   // to what they expect the other value to be.
   return SiteInfo(site_url, lock_url, requires_origin_keyed_process,
-                  url_info.is_sandboxed, storage_partition_config.value(),
+                  url_info.is_sandboxed, url_info.unique_sandbox_id,
+                  storage_partition_config.value(),
                   url_info.web_exposed_isolation_info.value_or(
                       WebExposedIsolationInfo::CreateNonIsolated()),
                   isolation_context.is_guest(),
@@ -353,6 +359,7 @@ SiteInfo::SiteInfo(const GURL& site_url,
                    const GURL& process_lock_url,
                    bool requires_origin_keyed_process,
                    bool is_sandboxed,
+                   int unique_sandbox_id_,
                    const StoragePartitionConfig storage_partition_config,
                    const WebExposedIsolationInfo& web_exposed_isolation_info,
                    bool is_guest,
@@ -363,13 +370,17 @@ SiteInfo::SiteInfo(const GURL& site_url,
       process_lock_url_(process_lock_url),
       requires_origin_keyed_process_(requires_origin_keyed_process),
       is_sandboxed_(is_sandboxed),
+      unique_sandbox_id_(unique_sandbox_id_),
       storage_partition_config_(storage_partition_config),
       web_exposed_isolation_info_(web_exposed_isolation_info),
       is_guest_(is_guest),
       does_site_request_dedicated_process_for_coop_(
           does_site_request_dedicated_process_for_coop),
       is_jit_disabled_(is_jit_disabled),
-      is_pdf_(is_pdf) {}
+      is_pdf_(is_pdf) {
+  DCHECK(is_sandboxed_ ||
+         unique_sandbox_id_ == UrlInfo::kInvalidUniqueSandboxId);
+}
 SiteInfo::SiteInfo(const SiteInfo& rhs) = default;
 
 SiteInfo::~SiteInfo() = default;
@@ -380,6 +391,7 @@ SiteInfo::SiteInfo(BrowserContext* browser_context)
           /*process_lock_url=*/GURL(),
           /*requires_origin_keyed_process=*/false,
           /*is_sandboxed*/ false,
+          UrlInfo::kInvalidUniqueSandboxId,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(),
           /*is_guest=*/false,
@@ -406,7 +418,8 @@ auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
                   // TODO(wjmaclean): Update this if we ever start to create
                   // separate SiteInfos for same-process OriginAgentCluster.
                   site_info.requires_origin_keyed_process_,
-                  site_info.is_sandboxed_, site_info.storage_partition_config_,
+                  site_info.is_sandboxed_, site_info.unique_sandbox_id_,
+                  site_info.storage_partition_config_,
                   site_info.web_exposed_isolation_info_, site_info.is_guest_,
                   site_info.is_jit_disabled_, site_info.is_pdf_);
 }
@@ -455,9 +468,13 @@ SiteInfo SiteInfo::GetNonOriginKeyedEquivalentForMetrics(
   return non_oac_site_info;
 }
 
-SiteInfo SiteInfo::SandboxedClone() const {
+SiteInfo SiteInfo::SandboxedClone(int document_unique_id) const {
   SiteInfo sandboxed_copy(*this);
   sandboxed_copy.is_sandboxed_ = true;
+  if (features::kIsolateSandboxedIframesGroupingParam.Get() ==
+      features::IsolateSandboxedIframesGrouping::kPerDocument) {
+    sandboxed_copy.unique_sandbox_id_ = document_unique_id;
+  }
   return sandboxed_copy;
 }
 
@@ -473,6 +490,7 @@ bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
       process_lock_url_ == other.process_lock_url_ &&
       requires_origin_keyed_process_ == other.requires_origin_keyed_process_ &&
       is_sandboxed_ == other.is_sandboxed_ &&
+      unique_sandbox_id_ == other.unique_sandbox_id_ &&
       storage_partition_config_ == other.storage_partition_config_ &&
       web_exposed_isolation_info_ == other.web_exposed_isolation_info_ &&
       is_guest_ == other.is_guest_ &&
@@ -499,7 +517,7 @@ auto SiteInfo::MakeProcessLockComparisonKey() const {
   // TODO(wjmaclean, alexmos): Figure out why including `is_jit_disabled_` here
   // leads to crashes in https://crbug.com/1279453.
   return std::tie(process_lock_url_, requires_origin_keyed_process_,
-                  is_sandboxed_, is_pdf_, is_guest_,
+                  is_sandboxed_, unique_sandbox_id_, is_pdf_, is_guest_,
                   web_exposed_isolation_info_, storage_partition_config_);
 }
 
@@ -537,8 +555,11 @@ std::string SiteInfo::GetDebugString() const {
   if (requires_origin_keyed_process_)
     debug_string += ", origin-keyed";
 
-  if (is_sandboxed_)
+  if (is_sandboxed_) {
     debug_string += ", sandboxed";
+    if (unique_sandbox_id_ != UrlInfo::kInvalidUniqueSandboxId)
+      debug_string += base::StringPrintf(" (id=%d)", unique_sandbox_id_);
+  }
 
   if (web_exposed_isolation_info_.is_isolated()) {
     debug_string += ", cross-origin isolated";

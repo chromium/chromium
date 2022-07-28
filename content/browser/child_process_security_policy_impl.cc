@@ -1730,7 +1730,9 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForMaybeOpaqueOrigin(
                         .WithWebExposedIsolationInfo(
                             actual_process_lock.GetWebExposedIsolationInfo())
                         .WithIsPdf(actual_process_lock.is_pdf())
-                        .WithSandbox(actual_process_lock.is_sandboxed())));
+                        .WithSandbox(actual_process_lock.is_sandboxed())
+                        .WithUniqueSandboxId(
+                            actual_process_lock.unique_sandbox_id())));
 
         if (actual_process_lock.is_locked_to_site()) {
           // Jail-style enforcement - a process with a lock can only access

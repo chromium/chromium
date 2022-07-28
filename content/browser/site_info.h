@@ -131,6 +131,7 @@ class CONTENT_EXPORT SiteInfo {
            const GURL& process_lock_url,
            bool requires_origin_keyed_process,
            bool is_sandboxed,
+           int unique_sandbox_id,
            const StoragePartitionConfig storage_partition_config,
            const WebExposedIsolationInfo& web_exposed_isolation_info,
            bool is_guest,
@@ -148,8 +149,9 @@ class CONTENT_EXPORT SiteInfo {
   SiteInfo GetNonOriginKeyedEquivalentForMetrics(
       const IsolationContext& isolation_context) const;
 
-  // Returns a copy of `this` but with `is_sandboxed_` set to true.
-  SiteInfo SandboxedClone() const;
+  // Returns a copy of `this` but with `is_sandboxed_` set to true, and
+  // `unique_sandbox_id_` set to `document_unique_id`.
+  SiteInfo SandboxedClone(int document_unique_id) const;
 
   // Returns the site URL associated with all of the documents and workers in
   // this principal, as described above.
@@ -200,6 +202,12 @@ class CONTENT_EXPORT SiteInfo {
   // The following accessor is for the `is_sandboxed` flag, which is true when
   // this SiteInfo is for an origin-restricted-sandboxed iframe.
   bool is_sandboxed() const { return is_sandboxed_; }
+
+  // Returns either kInvalidUniqueSandboxId or the unique sandbox id provided
+  // when this SiteInfo was created. The latter case only occurs when
+  // `is_sandboxed` is true, and kIsolateSandboxedIframes was specified with
+  // the per-document grouping parameter.
+  int unique_sandbox_id() const { return unique_sandbox_id_; }
 
   // Returns the web-exposed isolation status of pages hosted by the
   // SiteInstance. The level of isolation which a page opts-into has
@@ -348,6 +356,16 @@ class CONTENT_EXPORT SiteInfo {
   // When true, indicates this SiteInfo is for a origin-restricted-sandboxed
   // iframe.
   bool is_sandboxed_ = false;
+
+  // When kIsolateSandboxedIframes is active using per-document grouping, each
+  // isolated frame gets its own SiteInfo with a unique document identifier,
+  // which in practice is the `navigation_id` for the NavigationRequest that led
+  // to the creation of the SiteInstance. This value will be used in comparing
+  // SiteInfos unless it is kInvalidUniqueSandboxId. It should be noted that the
+  // value of `unique_sandbox_id_` will change for any cross-document
+  // navigation, even if it's same-origin and/or stays in the same
+  // RenderFrameHost.
+  int unique_sandbox_id_;
 
   // The StoragePartitionConfig to use when loading content belonging to this
   // SiteInfo.

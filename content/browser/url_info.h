@@ -65,6 +65,12 @@ struct CONTENT_EXPORT UrlInfo {
     kCOOP = (1 << 2)
   };
 
+  // For isolated sandboxed iframes, when per-document mode is used, we
+  // assign each sandboxed SiteInstance a unique identifier to prevent other
+  // same-site/same-origin frames from re-using the same SiteInstance. This
+  // identifier is used to indicate that the sandbox id is not in use.
+  static const int64_t kInvalidUniqueSandboxId;
+
   UrlInfo();  // Needed for inclusion in SiteInstanceDescriptor.
   UrlInfo(const UrlInfo& other);
   explicit UrlInfo(const UrlInfoInit& init);
@@ -129,6 +135,10 @@ struct CONTENT_EXPORT UrlInfo {
   // then this flag will be true.
   bool is_sandboxed = false;
 
+  // Only used when `is_sandboxed` is true, this unique identifier allows for
+  // per-document SiteInfo grouping.
+  int64_t unique_sandbox_id = kInvalidUniqueSandboxId;
+
   // The StoragePartitionConfig that should be used when loading content from
   // |url|. If absent, ContentBrowserClient::GetStoragePartitionConfig will be
   // used to determine which StoragePartitionConfig to use.
@@ -171,6 +181,7 @@ class CONTENT_EXPORT UrlInfoInit {
       UrlInfo::OriginIsolationRequest origin_isolation_request);
   UrlInfoInit& WithOrigin(const url::Origin& origin);
   UrlInfoInit& WithSandbox(bool is_sandboxed);
+  UrlInfoInit& WithUniqueSandboxId(int unique_sandbox_id);
   UrlInfoInit& WithStoragePartitionConfig(
       absl::optional<StoragePartitionConfig> storage_partition_config);
   UrlInfoInit& WithWebExposedIsolationInfo(
@@ -189,6 +200,7 @@ class CONTENT_EXPORT UrlInfoInit {
       UrlInfo::OriginIsolationRequest::kNone;
   absl::optional<url::Origin> origin_;
   bool is_sandboxed_ = false;
+  int64_t unique_sandbox_id_ = UrlInfo::kInvalidUniqueSandboxId;
   absl::optional<StoragePartitionConfig> storage_partition_config_;
   absl::optional<WebExposedIsolationInfo> web_exposed_isolation_info_;
   bool is_pdf_ = false;

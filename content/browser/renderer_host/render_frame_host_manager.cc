@@ -2489,10 +2489,12 @@ bool RenderFrameHostManager::CanUseSourceSiteInstance(
   // If `dest_url_info` is sandboxed, then we can't assign it to a SiteInstance
   // that isn't sandboxed. But if the `source_instance` is also sandboxed, then
   // it's possible (e.g. a sandboxed child frame in a sandboxed parent frame).
-  if (dest_url_info.is_sandboxed !=
-      static_cast<SiteInstanceImpl*>(source_instance)
-          ->GetSiteInfo()
-          .is_sandboxed()) {
+  auto& source_site_info =
+      static_cast<SiteInstanceImpl*>(source_instance)->GetSiteInfo();
+  if (dest_url_info.is_sandboxed != source_site_info.is_sandboxed())
+    return false;
+  if (dest_url_info.is_sandboxed &&
+      dest_url_info.unique_sandbox_id != source_site_info.unique_sandbox_id()) {
     return false;
   }
 
@@ -3142,7 +3144,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigationRequest(
       // same as the parent frame, but with the `is_sandbox` flag set. srcdoc
       // iframes are normally considered to have the same origin as their
       // parents, so this seems reasonable.
-      return parent->GetSiteInstance()->GetCompatibleSandboxedSiteInstance();
+      return parent->GetSiteInstance()->GetCompatibleSandboxedSiteInstance(
+          request->GetNavigationId());
     }
     AppendReason(reason,
                  "GetSiteInstanceForNavigationRequest => parent-instance"

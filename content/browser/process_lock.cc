@@ -4,6 +4,7 @@
 
 #include "content/browser/process_lock.h"
 
+#include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -12,11 +13,12 @@ namespace content {
 ProcessLock ProcessLock::CreateAllowAnySite(
     const StoragePartitionConfig& storage_partition_config,
     const WebExposedIsolationInfo& web_exposed_isolation_info) {
-  return ProcessLock(SiteInfo(
-      GURL(), GURL(), false, false /* is_sandboxed */, storage_partition_config,
-      web_exposed_isolation_info, /* is_guest */ false,
-      /* does_site_request_dedicated_process_for_coop */ false,
-      /* is_jit_disabled */ false, /* is_pdf */ false));
+  return ProcessLock(
+      SiteInfo(GURL(), GURL(), false, false /* is_sandboxed */,
+               UrlInfo::kInvalidUniqueSandboxId, storage_partition_config,
+               web_exposed_isolation_info, /* is_guest */ false,
+               /* does_site_request_dedicated_process_for_coop */ false,
+               /* is_jit_disabled */ false, /* is_pdf */ false));
 }
 
 // static
@@ -121,8 +123,11 @@ std::string ProcessLock::ToString() const {
     if (is_origin_keyed_process())
       ret += " origin-keyed";
 
-    if (is_sandboxed())
+    if (is_sandboxed()) {
       ret += " sandboxed";
+      if (site_info_->unique_sandbox_id() != UrlInfo::kInvalidUniqueSandboxId)
+        ret += base::StringPrintf(" (id=%d)", site_info_->unique_sandbox_id());
+    }
 
     if (is_pdf())
       ret += " pdf";

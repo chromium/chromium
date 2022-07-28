@@ -3228,12 +3228,16 @@ const FeatureEntry::FeatureParam kIsolateSandboxedIframesGroupingPerSite{
     "grouping", "per-site"};
 const FeatureEntry::FeatureParam kIsolateSandboxedIframesGroupingPerOrigin{
     "grouping", "per-origin"};
+const FeatureEntry::FeatureParam kIsolateSandboxedIframesGroupingPerDocument{
+    "grouping", "per-document"};
 const FeatureEntry::FeatureVariation
     kIsolateSandboxedIframesGroupingVariations[] = {
         {"with grouping by URL's site",
          &kIsolateSandboxedIframesGroupingPerSite, 1, nullptr},
         {"with grouping by URL's origin",
          &kIsolateSandboxedIframesGroupingPerOrigin, 1, nullptr},
+        {"with each sandboxed frame document in its own process",
+         &kIsolateSandboxedIframesGroupingPerDocument, 1, nullptr},
 };
 #endif  // !BUILDFLAG(IS_ANDROID)
 

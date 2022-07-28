@@ -1115,6 +1115,7 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       ProcessLock::FromSiteInfo(SiteInfo(
           GURL("https://a.test"), GURL("https://a.test"),
           false /* requires_origin_keyed_process */, false /* is_sandboxed */,
+          UrlInfo::kInvalidUniqueSandboxId,
           StoragePartitionConfig::CreateDefault(browser_context),
           WebExposedIsolationInfo::CreateNonIsolated(), false /* is_guest */,
           false /* does_site_request_dedicated_process_for_coop */,

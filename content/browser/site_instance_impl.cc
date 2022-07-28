@@ -132,6 +132,8 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForUrlInfo(
     BrowserContext* browser_context,
     const UrlInfo& url_info,
     bool is_guest) {
+  DCHECK(url_info.is_sandboxed ||
+         url_info.unique_sandbox_id == UrlInfo::kInvalidUniqueSandboxId);
   CHECK(!is_guest || url_info.storage_partition_config.has_value());
 
   if (is_guest && !SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
@@ -675,6 +677,16 @@ size_t SiteInstanceImpl::GetRelatedActiveContentsCount() {
   return browsing_instance_->active_contents_count();
 }
 
+namespace {
+
+bool SandboxConfigurationsMatch(const SiteInfo& site_info,
+                                const UrlInfo& url_info) {
+  return site_info.is_sandboxed() == url_info.is_sandboxed &&
+         site_info.unique_sandbox_id() == url_info.unique_sandbox_id;
+}
+
+}  // namespace
+
 bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   const GURL& url = url_info.url;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -694,8 +706,9 @@ bool SiteInstanceImpl::IsSuitableForUrlInfo(const UrlInfo& url_info) {
   if (url.IsAboutBlank() && !site_info_.is_error_page())
     return true;
 
-  // The is_sandboxed flags must match for this to be a suitable SiteInstance.
-  if (GetSiteInfo().is_sandboxed() != url_info.is_sandboxed)
+  // The is_sandboxed flags and unique_sandbox_ids must match for this to be a
+  // suitable SiteInstance.
+  if (!SandboxConfigurationsMatch(GetSiteInfo(), url_info))
     return false;
 
   // If the site URL is an extension (e.g., for hosted apps or WebUI) but the
@@ -927,7 +940,9 @@ bool SiteInstanceImpl::IsNavigationSameSite(
     const url::Origin& last_committed_origin,
     bool for_outermost_main_frame,
     const UrlInfo& dest_url_info) {
-  if (GetSiteInfo().is_sandboxed() != dest_url_info.is_sandboxed)
+  // The is_sandboxed flags and unique_sandbox_ids must match for this to be a
+  // same-site navigation.
+  if (!SandboxConfigurationsMatch(GetSiteInfo(), dest_url_info))
     return false;
 
   const GURL& dest_url = dest_url_info.url;
@@ -1377,14 +1392,14 @@ int SiteInstanceImpl::EstimateOriginAgentClusterOverheadForMetrics() {
 }
 
 scoped_refptr<SiteInstanceImpl>
-SiteInstanceImpl::GetCompatibleSandboxedSiteInstance() {
+SiteInstanceImpl::GetCompatibleSandboxedSiteInstance(int unique_sandbox_id) {
   DCHECK(!IsDefaultSiteInstance());
   DCHECK(has_site_);
   const SiteInfo& site_info = GetSiteInfo();
   DCHECK(!site_info.is_sandboxed());
 
   auto result = browsing_instance_->GetSiteInstanceForSiteInfo(
-      site_info.SandboxedClone());
+      site_info.SandboxedClone(unique_sandbox_id));
   result->original_url_ = original_url_;
   return result;
 }

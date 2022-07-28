@@ -127,6 +127,10 @@ enum class IsolateSandboxedIframesGrouping {
   // BrowsingInstance whose URLs share the same origin will be isolated in an
   // origin-keyed process.
   kPerOrigin,
+  // Unlike the other two modes, which group sandboxed frames per-site or
+  // per-origin, this one doesn't do any grouping at all and uses one process
+  // per document.
+  kPerDocument,
 };
 CONTENT_EXPORT extern const base::FeatureParam<IsolateSandboxedIframesGrouping>
     kIsolateSandboxedIframesGroupingParam;

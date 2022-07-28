@@ -3351,6 +3351,17 @@ UrlInfo NavigationRequest::GetUrlInfo() {
       if (SiteInfo::Create(isolation_context, UrlInfo(url_info_init))
               .RequiresDedicatedProcess(isolation_context)) {
         url_info_init.WithSandbox(true);
+        // If an isolated sandbox is required, and the "per-document" grouping
+        // mode has been specified with kIsolateSandboxedIframes, then we use a
+        // unique document identifier, provided by `navigation_id_`, to
+        // guarantee that each sandboxed iframe gets its own SiteInstance, even
+        // if two or more such documents share a site/origin. Using
+        // navigation_id_ means that each new NavigationRequest (and thus each
+        // document) will get a different value.
+        if (features::kIsolateSandboxedIframesGroupingParam.Get() ==
+            features::IsolateSandboxedIframesGrouping::kPerDocument) {
+          url_info_init.WithUniqueSandboxId(navigation_id_);
+        }
       }
     }
   }

@@ -403,10 +403,12 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
 
   // Finds an existing SiteInstance in this SiteInstance's BrowsingInstance that
   // matches this SiteInstance's SiteInfo but with the `is_sandboxed_` flag
-  // true. If an existing SiteInstance isn't found, a new one is created in the
-  // same BrowsingInstance. Note that this SiteInstance must have had its
-  // SiteInfo already assigned via SetSite() before calling this function.
-  scoped_refptr<SiteInstanceImpl> GetCompatibleSandboxedSiteInstance();
+  // true, and the `unique_sandbox_id_` set to the supplied value. If an
+  // existing SiteInstance isn't found, a new one is created in the same
+  // BrowsingInstance. Note that this SiteInstance must have had its SiteInfo
+  // already assigned via SetSite() before calling this function.
+  scoped_refptr<SiteInstanceImpl> GetCompatibleSandboxedSiteInstance(
+      int unique_sandbox_id);
 
  private:
   friend class BrowsingInstance;

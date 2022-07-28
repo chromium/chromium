@@ -485,7 +485,8 @@ const base::Feature kIsolateSandboxedIframes{"IsolateSandboxedIframes",
 const base::FeatureParam<IsolateSandboxedIframesGrouping>::Option
     isolated_sandboxed_iframes_grouping_types[] = {
         {IsolateSandboxedIframesGrouping::kPerSite, "per-site"},
-        {IsolateSandboxedIframesGrouping::kPerOrigin, "per-origin"}};
+        {IsolateSandboxedIframesGrouping::kPerOrigin, "per-origin"},
+        {IsolateSandboxedIframesGrouping::kPerDocument, "per-document"}};
 const base::FeatureParam<IsolateSandboxedIframesGrouping>
     kIsolateSandboxedIframesGroupingParam{
         &kIsolateSandboxedIframes, "grouping",

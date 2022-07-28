@@ -107,12 +107,23 @@ class CONTENT_EXPORT ProcessLock {
            site_info_->requires_origin_keyed_process();
   }
 
-  // True if this ProcessLock is for a origin-restricted sandboxed iframe.
+  // True if this ProcessLock is for a sandboxed iframe without
+  // allow-same-origin.
   // TODO(wjmaclean): This function's return type could mutate to an enum in
   // future if required for sandboxed iframes that are restricted with different
   // sandbox flags.
   bool is_sandboxed() const {
     return site_info_.has_value() && site_info_->is_sandboxed();
+  }
+
+  // If this ProcessLock is for a sandboxed iframe without allow-same-origin,
+  // and per-document grouping has been enabled for kIsolateSandboxedIframes,
+  // then each SiteInfo will have a unique sandbox id encoded as part of the
+  // lock. If per-document grouping is not enabled, this returns
+  // UrlInfo::kInvalidUniqueSandboxId.
+  int unique_sandbox_id() const {
+    return (site_info_.has_value() ? site_info_->unique_sandbox_id()
+                                   : UrlInfo::kInvalidUniqueSandboxId);
   }
 
   // Returns whether this ProcessLock is specific to PDF contents.
