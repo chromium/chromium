@@ -27,7 +27,7 @@ class BrowserContext;
 namespace chromeos {
 class CertificateProvider;
 class PolicyCertificateProvider;
-}
+}  // namespace chromeos
 #endif
 
 // CertificateManagerModel provides the data to be displayed in the certificate
@@ -241,9 +241,9 @@ class CertificateManagerModel {
                     net::CertType type,
                     net::NSSCertDatabase::TrustBits trust_bits);
 
-  // Delete the cert.  Returns true on success.  |cert| is still valid when this
-  // function returns.
-  bool Delete(CERTCertificate* cert);
+  // Remove the cert from the cert database.
+  void RemoveFromDatabase(net::ScopedCERTCertificate cert,
+                          base::OnceCallback<void(bool /*success*/)> callback);
 
  private:
   // Called when one of the |certs_sources_| has been updated. Will notify the

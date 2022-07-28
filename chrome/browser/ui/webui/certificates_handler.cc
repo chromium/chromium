@@ -994,7 +994,13 @@ void CertificatesHandler::HandleDeleteCertificate(
     return;
   }
 
-  bool result = certificate_manager_model_->Delete(cert_info->cert());
+  certificate_manager_model_->RemoveFromDatabase(
+      net::x509_util::DupCERTCertificate(cert_info->cert()),
+      base::BindOnce(&CertificatesHandler::OnCertificateDeleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CertificatesHandler::OnCertificateDeleted(bool result) {
   if (!result) {
     // TODO(mattm): better error messages?
     RejectCallbackWithError(

@@ -166,6 +166,7 @@ class CertificatesHandler : public content::WebUIMessageHandler,
 
   // Delete certificate and private key (if any).
   void HandleDeleteCertificate(const base::Value::List& args);
+  void OnCertificateDeleted(bool result);
 
   // Model initialization methods.
   void OnCertificateManagerModelCreated(

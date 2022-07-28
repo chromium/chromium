@@ -8,6 +8,7 @@
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -521,7 +522,11 @@ TEST_F(CertificateManagerModelChromeOSTest,
   // certificate should be visible afterwards.
   base::RunLoop run_loop;
   fake_observer_->RunOnNextRefresh(run_loop.QuitClosure());
-  certificate_manager_model_->Delete(platform_cert);
+  base::test::TestFuture<bool> remove_result;
+  certificate_manager_model_->RemoveFromDatabase(
+      net::x509_util::DupCERTCertificate(platform_cert),
+      remove_result.GetCallback());
+  EXPECT_TRUE(remove_result.Get());
   run_loop.Run();
 
   {
@@ -644,7 +649,10 @@ TEST_F(CertificateManagerModelChromeOSTest,
   // certificate should be visible afterwards.
   base::RunLoop run_loop;
   fake_observer_->RunOnNextRefresh(run_loop.QuitClosure());
-  certificate_manager_model_->Delete(platform_client_cert.get());
+  base::test::TestFuture<bool> remove_result;
+  certificate_manager_model_->RemoveFromDatabase(
+      std::move(platform_client_cert), remove_result.GetCallback());
+  EXPECT_TRUE(remove_result.Get());
   run_loop.Run();
 
   {

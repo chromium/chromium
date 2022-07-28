@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/nss_service.h"
@@ -138,9 +139,10 @@ class CertificateManagerModel::CertsSource {
                             net::CertType type,
                             net::NSSCertDatabase::TrustBits trust_bits) = 0;
 
-  // Delete the cert. Returns true on success. |cert| is still valid when this
-  // function returns.
-  virtual bool Delete(CERTCertificate* cert) = 0;
+  // Remove the cert from the cert database.
+  virtual void RemoveFromDatabase(
+      net::ScopedCERTCertificate cert,
+      base::OnceCallback<void(bool /*success*/)> callback) = 0;
 
  protected:
   // To be called by subclasses to set the CertInfo list provided by this
@@ -229,9 +231,19 @@ class CertsSourcePlatformNSS : public CertificateManagerModel::CertsSource,
     return cert_db_->SetCertTrust(cert, type, trust_bits);
   }
 
-  bool Delete(CERTCertificate* cert) override {
+  void RemoveFromDatabase(net::ScopedCERTCertificate cert,
+                          base::OnceCallback<void(bool)> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return cert_db_->DeleteCertAndKey(cert);
+    auto callback_and_runner = base::BindPostTask(
+        base::SequencedTaskRunnerHandle::Get(), std::move(callback));
+
+    // Passing Unretained(cert_db_) is safe because the corresponding profile
+    // should be alive during this call and therefore the deletion task for the
+    // database can only be scheduled on the IO thread after this task.
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&net::NSSCertDatabase::DeleteCertAndKeyAsync,
+                                  base::Unretained(cert_db_), std::move(cert),
+                                  std::move(callback_and_runner)));
   }
 
  private:
@@ -353,10 +365,12 @@ class CertsSourcePolicy : public CertificateManagerModel::CertsSource,
     return false;
   }
 
-  bool Delete(CERTCertificate* cert) override {
+  void RemoveFromDatabase(net::ScopedCERTCertificate cert,
+                          base::OnceCallback<void(bool)> callback) override {
     // Policy-provided certificates can not be deleted.
     LOG(WARNING) << kOperationNotPermitted << "Policy";
-    return false;
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 
  private:
@@ -419,10 +433,12 @@ class CertsSourceExtensions : public CertificateManagerModel::CertsSource {
     return false;
   }
 
-  bool Delete(CERTCertificate* cert) override {
+  void RemoveFromDatabase(net::ScopedCERTCertificate cert,
+                          base::OnceCallback<void(bool)> callback) override {
     // Extension-provided certificates can not be deleted.
     LOG(WARNING) << kOperationNotPermitted << "Extension";
-    return false;
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 
  private:
@@ -669,11 +685,16 @@ bool CertificateManagerModel::SetCertTrust(
   return certs_source->SetCertTrust(cert, type, trust_bits);
 }
 
-bool CertificateManagerModel::Delete(CERTCertificate* cert) {
-  CertsSource* certs_source = FindCertsSourceForCert(cert);
-  if (!certs_source)
-    return false;
-  return certs_source->Delete(cert);
+void CertificateManagerModel::RemoveFromDatabase(
+    net::ScopedCERTCertificate cert,
+    base::OnceCallback<void(bool)> callback) {
+  CertsSource* certs_source = FindCertsSourceForCert(cert.get());
+  if (!certs_source) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
+    return;
+  }
+  return certs_source->RemoveFromDatabase(std::move(cert), std::move(callback));
 }
 
 // static
