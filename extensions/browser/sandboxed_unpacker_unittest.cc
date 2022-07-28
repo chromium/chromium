@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "build/build_config.h"
 
 #include <memory>
 #include <tuple>
@@ -443,7 +444,13 @@ TEST_F(SandboxedUnpackerTest, FromDirWithCatalogsSuccess) {
   EXPECT_EQ(CrxInstallErrorType::NONE, GetInstallErrorType());
 }
 
-TEST_F(SandboxedUnpackerTest, FailHashCheck) {
+// TODO(crbug.com/1348091): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_FailHashCheck DISABLED_FailHashCheck
+#else
+#define MAYBE_FailHashCheck FailHashCheck
+#endif
+TEST_F(SandboxedUnpackerTest, MAYBE_FailHashCheck) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       extensions::switches::kEnableCrxHashCheck);
   SetupUnpacker("good_l10n.crx", std::string(64, '0'));
