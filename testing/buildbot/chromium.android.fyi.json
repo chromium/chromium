@@ -2633,7 +2633,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v",
           "--avd-config=../../tools/android/avd/proto/generic_android24.textpb"
         ],

@@ -63,13 +63,11 @@
     "gtest_tests": [
       {
         "args": [
-          "angle_end2end_tests",
           "--gtest_filter=-*Vulkan_SwiftShader*",
           "--platform",
           "iPhone X",
           "--version",
           "14.4",
-          "--bot-mode",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
@@ -124,12 +122,10 @@
       },
       {
         "args": [
-          "angle_white_box_tests",
           "--platform",
           "iPhone X",
           "--version",
           "14.4",
-          "--bot-mode",
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",

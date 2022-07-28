@@ -435,7 +435,7 @@
     "gtest_tests": [
       {
         "args": [
-          "angle_unittests"
+          "--no-xvfb"
         ],
         "merge": {
           "args": [],
@@ -858,7 +858,7 @@
     "gtest_tests": [
       {
         "args": [
-          "angle_unittests"
+          "--no-xvfb"
         ],
         "merge": {
           "args": [],
@@ -1280,9 +1280,6 @@
   "Mac Debug (Intel)": {
     "gtest_tests": [
       {
-        "args": [
-          "angle_unittests"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -1713,9 +1710,6 @@
   "Mac Release (Intel)": {
     "gtest_tests": [
       {
-        "args": [
-          "angle_unittests"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2174,9 +2168,6 @@
   "Mac Retina Debug (AMD)": {
     "gtest_tests": [
       {
-        "args": [
-          "angle_unittests"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -2631,9 +2622,6 @@
   "Mac Retina Release (AMD)": {
     "gtest_tests": [
       {
-        "args": [
-          "angle_unittests"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3119,9 +3107,6 @@
   "Win10 x64 Debug (NVIDIA)": {
     "gtest_tests": [
       {
-        "args": [
-          "angle_unittests"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -3591,9 +3576,6 @@
   "Win10 x64 Release (NVIDIA)": {
     "gtest_tests": [
       {
-        "args": [
-          "angle_unittests"
-        ],
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"

@@ -898,9 +898,6 @@
     'chromium_gtests': {
       'absl_hardening_tests': {},
       'angle_unittests': {
-        'args': [
-          'angle_unittests',
-        ],
         'android_args': [
           '-v',
         ],
@@ -2132,15 +2129,12 @@
           'shards': 4,
         },
         'args': [
-          'angle_end2end_tests',
           '--gtest_filter=-*Vulkan_SwiftShader*',
         ],
-        'desktop_args': [
-          '--bot-mode',
-        ],
-        # Linux has issues with creating too many windows at once.
         'linux_args': [
+          # Linux has issues with creating too many windows at once.
           '--max-processes=4',
+          '--no-xvfb',
         ],
         'swarming': {
           'shards': 2,
@@ -2160,28 +2154,21 @@
 
     'gpu_angle_unit_gtests': {
       'angle_unittests': {
-        'args': [
-          'angle_unittests',
-        ],
         'android_args': [
           '-v',
         ],
+        'linux_args': ['--no-xvfb'],
         'use_isolated_scripts_api': True,
       },
     },
 
     'gpu_angle_white_box_gtests': {
       'angle_white_box_tests': {
-        'args': [
-          'angle_white_box_tests',
-        ],
-        'desktop_args': [
-          '--bot-mode',
-        ],
+        'linux_args': ['--no-xvfb'],
         'use_isolated_scripts_api': True,
       },
     },
-    
+
     # The command buffer perf tests are only run on Windows.
     # They are mostly driver and platform independent.
     'gpu_command_buffer_perf_passthrough_isolated_scripts': {
@@ -4177,9 +4164,6 @@
       # (crbug.com/1201386), so we exclude that as well.
       'absl_hardening_tests': {},
       'angle_unittests': {
-        'args': [
-          'angle_unittests',
-        ],
         'android_args': [
           '-v',
         ],
@@ -4463,67 +4447,37 @@
     'swangle_gtests': {
       'angle_deqp_egl_tests': {
         'args': [
-          'angle_deqp_egl_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles2_tests': {
         'args': [
-          'angle_deqp_gles2_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles31_rotate180_tests': {
         'args': [
-          'angle_deqp_gles31_rotate180_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles31_rotate270_tests': {
         'args': [
-          'angle_deqp_gles31_rotate270_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles31_rotate90_tests': {
         'args': [
-          'angle_deqp_gles31_rotate90_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles31_tests': {
         'args': [
-          'angle_deqp_gles31_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'swarming': {
           'shards': 10,
@@ -4532,45 +4486,25 @@
       },
       'angle_deqp_gles3_rotate180_tests': {
         'args': [
-          'angle_deqp_gles3_rotate180_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles3_rotate270_tests': {
         'args': [
-          'angle_deqp_gles3_rotate270_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles3_rotate90_tests': {
         'args': [
-          'angle_deqp_gles3_rotate90_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_gles3_tests': {
         'args': [
-          'angle_deqp_gles3_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'swarming': {
           'shards': 4,
@@ -4579,45 +4513,25 @@
       },
       'angle_deqp_khr_gles2_tests': {
         'args': [
-          'angle_deqp_khr_gles2_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_khr_gles31_tests': {
         'args': [
-          'angle_deqp_khr_gles31_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_deqp_khr_gles3_tests': {
         'args': [
-          'angle_deqp_khr_gles3_tests',
           '--use-angle=swiftshader',
-          '--bot-mode',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },
       'angle_end2end_tests': {
         'args': [
-          'angle_end2end_tests',
-          '--bot-mode',
           '--gtest_filter=*Vulkan_SwiftShader*',
-        ],
-        'linux_args': [
-          '--xvfb',
         ],
         'use_isolated_scripts_api': True,
       },

@@ -1982,7 +1982,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v"
         ],
         "merge": {
@@ -5608,7 +5607,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v"
         ],
         "merge": {
@@ -10600,7 +10598,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v",
           "--avd-config=../../tools/android/avd/proto/generic_android30.textpb"
         ],
@@ -15289,7 +15286,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v",
           "--avd-config=../../tools/android/avd/proto/generic_android31.textpb"
         ],
@@ -20180,7 +20176,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v"
         ],
         "merge": {
@@ -28334,7 +28329,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v"
         ],
         "isolate_profile_data": true,
@@ -33748,7 +33742,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v",
           "--avd-config=../../tools/android/avd/proto/generic_android23.textpb"
         ],
@@ -36787,7 +36780,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v"
         ],
         "isolate_profile_data": true,
@@ -41581,7 +41573,6 @@
       },
       {
         "args": [
-          "angle_unittests",
           "-v",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
         ],
