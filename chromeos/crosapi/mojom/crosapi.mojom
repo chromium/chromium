@@ -24,6 +24,7 @@ import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/cros_display_config.mojom";
 import "chromeos/crosapi/mojom/desk_template.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
+import "chromeos/crosapi/mojom/device_oauth2_token_service.mojom";
 import "chromeos/crosapi/mojom/device_settings_service.mojom";
 import "chromeos/crosapi/mojom/digital_goods.mojom";
 import "chromeos/crosapi/mojom/dlp.mojom";
@@ -121,8 +122,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 91
-// Next method id: 95
+// Next version: 92
+// Next method id: 96
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -243,6 +244,12 @@ interface Crosapi {
   // Added in M89.
   [MinVersion=12] BindDeviceAttributes@17(
       pending_receiver<DeviceAttributes> receiver);
+
+  // Binds the DeviceOAuth2TokenService interface for the device oauth2 token
+  // service in Lacros-Chrome.
+  // Added in M106.
+  [MinVersion=91] BindDeviceOAuth2TokenService@95(
+    pending_receiver<DeviceOAuth2TokenService> receiver);
 
   // Binds the DeviceSettingsService interface for initializing device settings
   // in Lacros-Chrome.

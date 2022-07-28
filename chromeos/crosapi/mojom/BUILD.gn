@@ -28,6 +28,7 @@ mojom("mojom") {
     "crosapi.mojom",
     "desk_template.mojom",
     "device_attributes.mojom",
+    "device_oauth2_token_service.mojom",
     "device_settings_service.mojom",
     "digital_goods.mojom",
     "dlp.mojom",

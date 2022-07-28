@@ -55,6 +55,7 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/desk_template.mojom.h"
 #include "chromeos/crosapi/mojom/device_attributes.mojom.h"
+#include "chromeos/crosapi/mojom/device_oauth2_token_service.mojom.h"
 #include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
 #include "chromeos/crosapi/mojom/digital_goods.mojom.h"
 #include "chromeos/crosapi/mojom/dlp.mojom.h"
@@ -236,7 +237,7 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
-static_assert(crosapi::mojom::Crosapi::Version_ == 90,
+static_assert(crosapi::mojom::Crosapi::Version_ == 91,
               "If you add a new crosapi, please add it to "
               "kInterfaceVersionEntries below.");
 
@@ -266,6 +267,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Crosapi>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeskTemplate>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeviceAttributes>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::DeviceOAuth2TokenService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DeviceSettingsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::DigitalGoodsFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Dlp>(),

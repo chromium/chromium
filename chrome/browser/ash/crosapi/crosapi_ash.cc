@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/desk_template_ash.h"
 #include "chrome/browser/ash/crosapi/device_attributes_ash.h"
+#include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
 #include "chrome/browser/ash/crosapi/device_settings_ash.h"
 #include "chrome/browser/ash/crosapi/dlp_ash.h"
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
@@ -177,6 +178,8 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       content_protection_ash_(std::make_unique<ContentProtectionAsh>()),
       desk_template_ash_(std::make_unique<DeskTemplateAsh>()),
       device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
+      device_oauth2_token_service_ash_(
+          std::make_unique<DeviceOAuth2TokenServiceAsh>()),
       device_settings_ash_(std::make_unique<DeviceSettingsAsh>()),
       digital_goods_factory_ash_(
           std::make_unique<apps::DigitalGoodsFactoryAsh>()),
@@ -612,6 +615,11 @@ void CrosapiAsh::BindDeskTemplate(
 void CrosapiAsh::BindDeviceAttributes(
     mojo::PendingReceiver<mojom::DeviceAttributes> receiver) {
   device_attributes_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindDeviceOAuth2TokenService(
+    mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) {
+  device_oauth2_token_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindDeviceSettingsService(

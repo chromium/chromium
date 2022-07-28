@@ -44,6 +44,7 @@ class ContentProtectionAsh;
 class CrosapiDependencyRegistry;
 class DeskTemplateAsh;
 class DeviceAttributesAsh;
+class DeviceOAuth2TokenServiceAsh;
 class DeviceSettingsAsh;
 class DlpAsh;
 class DocumentScanAsh;
@@ -162,6 +163,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::DeskTemplate> receiver) override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
+  void BindDeviceOAuth2TokenService(
+      mojo::PendingReceiver<mojom::DeviceOAuth2TokenService> receiver) override;
   void BindDeviceSettingsService(
       mojo::PendingReceiver<mojom::DeviceSettingsService> receiver) override;
   void BindDigitalGoodsFactory(
@@ -435,6 +438,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ContentProtectionAsh> content_protection_ash_;
   std::unique_ptr<DeskTemplateAsh> desk_template_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
+  std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<DeviceSettingsAsh> device_settings_ash_;
   std::unique_ptr<apps::DigitalGoodsFactoryAsh> digital_goods_factory_ash_;
   std::unique_ptr<DlpAsh> dlp_ash_;
