@@ -115,13 +115,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     /** This represents the current fully-launched configuration. */
     private static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
 
-    /**
-     * This represents the Translations addition to the Longpress configuration.
-     * This is likely the best launch candidate.
-     */
-    private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
-
     private UserActionTester mActionTester;
 
     @Override
@@ -1016,9 +1009,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testTapIsIgnoredWithLongpressResolveEnabled() throws Exception {
-        // Enabling Translations implicitly enables Longpress too.
-        FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
-
         clickNode("states");
         Assert.assertNull(getSelectedText());
         assertPanelClosedOrUndefined();
@@ -1029,9 +1019,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     public void testLongpressResolveEnabled() throws Exception {
-        // Enabling Translations implicitly enables Longpress too.
-        FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
-
         longPressNode("states");
         assertLoadedNoUrl();
         assertSearchTermRequested();
@@ -1083,9 +1070,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @Feature({"ContextualSearch"})
     @DisabledTest(message = "https://crbug.com/1048827, https://crbug.com/1181088")
     public void testLongpressExtendingSelectionExactResolve() throws Exception {
-        // Enabling Translations implicitly enables Longpress too.
-        FeatureList.setTestFeatures(ENABLE_TRANSLATIONS);
-
         // Set up UserAction monitoring.
         Set<String> userActions = new HashSet();
         userActions.add("ContextualSearch.SelectionEstablished");

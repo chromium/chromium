@@ -300,12 +300,7 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
   // Set the Coca-integration version.
   // This is based on our current active feature.
   int contextual_cards_version =
-        contextual_search::kContextualCardsDefinitionsIntegration;
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kContextualSearchTranslations)) {
-    contextual_cards_version =
-        contextual_search::kContextualCardsTranslationsIntegration;
-  }
+      contextual_search::kContextualCardsTranslationsIntegration;
   // Mixin the debug setting.
   if (base::FeatureList::IsEnabled(chrome::android::kContextualSearchDebug)) {
     contextual_cards_version +=

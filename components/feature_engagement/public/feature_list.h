@@ -80,20 +80,6 @@ DEFINE_VARIATION_PARAM(kIPHChromeReengagementNotification2Feature,
                        "IPH_ChromeReengagementNotification2");
 DEFINE_VARIATION_PARAM(kIPHChromeReengagementNotification3Feature,
                        "IPH_ChromeReengagementNotification3");
-DEFINE_VARIATION_PARAM(kIPHContextualSearchTranslationEnableFeature,
-                       "IPH_ContextualSearchTranslationEnable");
-DEFINE_VARIATION_PARAM(kIPHContextualSearchWebSearchFeature,
-                       "IPH_ContextualSearchWebSearch");
-DEFINE_VARIATION_PARAM(kIPHContextualSearchPromoteTapFeature,
-                       "IPH_ContextualSearchPromoteTap");
-DEFINE_VARIATION_PARAM(kIPHContextualSearchPromotePanelOpenFeature,
-                       "IPH_ContextualSearchPromotePanelOpen");
-DEFINE_VARIATION_PARAM(kIPHContextualSearchOptInFeature,
-                       "IPH_ContextualSearchOptIn");
-DEFINE_VARIATION_PARAM(kIPHContextualSearchTappedButShouldLongpressFeature,
-                       "IPH_ContextualSearchTappedButShouldLongpress");
-DEFINE_VARIATION_PARAM(kIPHContextualSearchInPanelHelpFeature,
-                       "IPH_ContextualSearchInPanelHelp");
 DEFINE_VARIATION_PARAM(kIPHDownloadSettingsFeature, "IPH_DownloadSettings");
 DEFINE_VARIATION_PARAM(kIPHDownloadInfoBarDownloadContinuingFeature,
                        "IPH_DownloadInfoBarDownloadContinuing");
@@ -293,13 +279,6 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHChromeReengagementNotification1Feature),
         VARIATION_ENTRY(kIPHChromeReengagementNotification2Feature),
         VARIATION_ENTRY(kIPHChromeReengagementNotification3Feature),
-        VARIATION_ENTRY(kIPHContextualSearchTranslationEnableFeature),
-        VARIATION_ENTRY(kIPHContextualSearchWebSearchFeature),
-        VARIATION_ENTRY(kIPHContextualSearchPromoteTapFeature),
-        VARIATION_ENTRY(kIPHContextualSearchPromotePanelOpenFeature),
-        VARIATION_ENTRY(kIPHContextualSearchOptInFeature),
-        VARIATION_ENTRY(kIPHContextualSearchTappedButShouldLongpressFeature),
-        VARIATION_ENTRY(kIPHContextualSearchInPanelHelpFeature),
         VARIATION_ENTRY(kIPHDownloadSettingsFeature),
         VARIATION_ENTRY(kIPHDownloadInfoBarDownloadContinuingFeature),
         VARIATION_ENTRY(kIPHDownloadInfoBarDownloadsAreFasterFeature),

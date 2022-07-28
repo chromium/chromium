@@ -29,10 +29,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(donnd): Add parameterized testing so Long-press resolve and Translations
-// can be tested too.  Or just remove this whole suite if it's not useful for
-// these experimental triggering changes.
-@Features.DisableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchTest extends ContextualSearchInstrumentationBase {
     @Override

@@ -78,7 +78,6 @@ extern const base::Feature kContextualSearchDisableOnlineDetection;
 extern const base::Feature kContextualSearchForceCaption;
 extern const base::Feature kContextualSearchSuppressShortView;
 extern const base::Feature kContextualSearchThinWebViewImplementation;
-extern const base::Feature kContextualSearchTranslations;
 extern const base::Feature kContextualTriggersSelectionHandles;
 extern const base::Feature kContextualTriggersSelectionMenu;
 extern const base::Feature kContextualTriggersSelectionSize;

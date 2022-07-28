@@ -1881,9 +1881,6 @@ extern const char kContextualSearchForceCaptionDescription[];
 extern const char kContextualSearchSuppressShortViewName[];
 extern const char kContextualSearchSuppressShortViewDescription[];
 
-extern const char kContextualSearchTranslationsName[];
-extern const char kContextualSearchTranslationsDescription[];
-
 extern const char kContextualTriggersSelectionHandlesName[];
 extern const char kContextualTriggersSelectionHandlesDescription[];
 

@@ -28,15 +28,7 @@ import java.lang.annotation.RetentionPolicy;
         FeatureConstants.DATA_SAVER_PREVIEW_FEATURE, FeatureConstants.DATA_SAVER_DETAIL_FEATURE,
         FeatureConstants.DATA_SAVER_MILESTONE_PROMO_FEATURE, FeatureConstants.EPHEMERAL_TAB_FEATURE,
         FeatureConstants.EXPLORE_SITES_TILE_FEATURE, FeatureConstants.PREVIEWS_OMNIBOX_UI_FEATURE,
-        FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE,
-        FeatureConstants.CONTEXTUAL_SEARCH_TRANSLATION_ENABLE_FEATURE,
-        FeatureConstants.CONTEXTUAL_SEARCH_WEB_SEARCH_FEATURE,
-        FeatureConstants.CONTEXTUAL_SEARCH_PROMOTE_TAP_FEATURE,
-        FeatureConstants.CONTEXTUAL_SEARCH_PROMOTE_PANEL_OPEN_FEATURE,
-        FeatureConstants.CONTEXTUAL_SEARCH_OPT_IN_FEATURE,
-        FeatureConstants.CONTEXTUAL_SEARCH_TAPPED_BUT_SHOULD_LONGPRESS_FEATURE,
-        FeatureConstants.CONTEXTUAL_SEARCH_IN_PANEL_HELP_FEATURE,
-        FeatureConstants.INSTANCE_SWITCHER,
+        FeatureConstants.TRANSLATE_MENU_BUTTON_FEATURE, FeatureConstants.INSTANCE_SWITCHER,
         FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
         FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE,
@@ -123,44 +115,6 @@ public @interface FeatureConstants {
     String READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE = "IPH_ReadLaterAppMenuBookmarkThisPage";
     String READ_LATER_APP_MENU_BOOKMARKS_FEATURE = "IPH_ReadLaterAppMenuBookmarks";
     String READ_LATER_BOTTOM_SHEET_FEATURE = "IPH_ReadLaterBottomSheet";
-
-    /**
-     * An IPH feature that encourages users to get better translations by enabling access to page
-     * content.
-     */
-    String CONTEXTUAL_SEARCH_TRANSLATION_ENABLE_FEATURE = "IPH_ContextualSearchTranslationEnable";
-
-    /**
-     * An IPH feature that encourages users who search a query from a web page in a new tab, to use
-     * Contextual Search instead.
-     */
-    String CONTEXTUAL_SEARCH_WEB_SEARCH_FEATURE = "IPH_ContextualSearchWebSearch";
-
-    /**
-     * An IPH feature for promoting tap over longpress for activating Contextual Search.
-     */
-    String CONTEXTUAL_SEARCH_PROMOTE_TAP_FEATURE = "IPH_ContextualSearchPromoteTap";
-
-    /**
-     * An IPH feature for encouraging users to open the Contextual Search Panel.
-     */
-    String CONTEXTUAL_SEARCH_PROMOTE_PANEL_OPEN_FEATURE = "IPH_ContextualSearchPromotePanelOpen";
-
-    /**
-     * An IPH feature for encouraging users to opt-in for Contextual Search.
-     */
-    String CONTEXTUAL_SEARCH_OPT_IN_FEATURE = "IPH_ContextualSearchOptIn";
-
-    /**
-     * An IPH feature educating users that tap to use longpress instead.
-     */
-    String CONTEXTUAL_SEARCH_TAPPED_BUT_SHOULD_LONGPRESS_FEATURE =
-            "IPH_ContextualSearchTappedButShouldLongpress";
-
-    /**
-     * Another IPH to use longpress instead of tap, but this one appears inside the Panel.
-     */
-    String CONTEXTUAL_SEARCH_IN_PANEL_HELP_FEATURE = "IPH_ContextualSearchInPanelHelp";
 
     /**
      * An IPH feature indicating to users that there are settings for downloads and they are

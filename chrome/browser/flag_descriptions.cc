@@ -3338,12 +3338,6 @@ const char kContextualSearchSuppressShortViewName[] =
 const char kContextualSearchSuppressShortViewDescription[] =
     "Contextual Search suppress when the base page view is too short";
 
-const char kContextualSearchTranslationsName[] =
-    "Contextual Search translations";
-const char kContextualSearchTranslationsDescription[] =
-    "Enables automatic translations of words on a page to be presented in the "
-    "caption of the bottom bar.";
-
 const char kContextualTriggersSelectionHandlesName[] =
     "Contextual Triggers selection handles";
 const char kContextualTriggersSelectionHandlesDescription[] =

@@ -304,7 +304,6 @@ public abstract class ChromeFeatureList {
             "ContextualSearchSuppressShortView";
     public static final String CONTEXTUAL_SEARCH_THIN_WEB_VIEW_IMPLEMENTATION =
             "ContextualSearchThinWebViewImplementation";
-    public static final String CONTEXTUAL_SEARCH_TRANSLATIONS = "ContextualSearchTranslations";
     public static final String CONTEXTUAL_TRIGGERS_SELECTION_HANDLES =
             "ContextualTriggersSelectionHandles";
     public static final String CONTEXTUAL_TRIGGERS_SELECTION_MENU =
