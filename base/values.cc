@@ -1732,25 +1732,6 @@ bool DictionaryValue::GetDictionaryWithoutPathExpansion(
       key, const_cast<const DictionaryValue**>(out_value));
 }
 
-bool DictionaryValue::GetListWithoutPathExpansion(
-    StringPiece key,
-    const ListValue** out_value) const {
-  const Value* value = FindKey(key);
-  if (!value || !value->is_list())
-    return false;
-
-  if (out_value)
-    *out_value = static_cast<const ListValue*>(value);
-
-  return true;
-}
-
-bool DictionaryValue::GetListWithoutPathExpansion(StringPiece key,
-                                                  ListValue** out_value) {
-  return as_const(*this).GetListWithoutPathExpansion(
-      key, const_cast<const ListValue**>(out_value));
-}
-
 std::unique_ptr<DictionaryValue> DictionaryValue::DeepCopyWithoutEmptyChildren()
     const {
   std::unique_ptr<DictionaryValue> copy =

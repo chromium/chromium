@@ -1362,11 +1362,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::FindDictKey(key)` instead.
   bool GetDictionaryWithoutPathExpansion(StringPiece key,
                                          DictionaryValue** out_value);
-  // DEPRECATED, use `Value::FindListKey(key)` instead.
-  bool GetListWithoutPathExpansion(StringPiece key,
-                                   const ListValue** out_value) const;
-  // DEPRECATED, use `Value::FindListKey(key)` instead.
-  bool GetListWithoutPathExpansion(StringPiece key, ListValue** out_value);
 
   // Makes a copy of `this` but doesn't include empty dictionaries and lists in
   // the copy.  This never returns NULL, even if `this` itself is empty.

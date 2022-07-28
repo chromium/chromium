@@ -2382,15 +2382,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_TRUE(main_dict.GetDictionaryWithoutPathExpansion("dict", nullptr));
   EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("list", nullptr));
   EXPECT_FALSE(main_dict.GetDictionaryWithoutPathExpansion("DNE", nullptr));
-
-  EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("bool", nullptr));
-  EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("int", nullptr));
-  EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("double", nullptr));
-  EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("string", nullptr));
-  EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("binary", nullptr));
-  EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("dict", nullptr));
-  EXPECT_TRUE(main_dict.GetListWithoutPathExpansion("list", nullptr));
-  EXPECT_FALSE(main_dict.GetListWithoutPathExpansion("DNE", nullptr));
 }
 
 TEST(ValuesTest, SelfSwap) {
