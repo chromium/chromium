@@ -46,6 +46,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSwitchAccessBluetoothDevice[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kSwitchAccessUnknownDevice[];
 
+// The string that represents the current time. Only used in pixel tests.
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kFakeNowTimeStringInPixelTest[];
+
 // The default delay before Switch Access automatically moves to the next
 // element on the page that is interesting, based on the Switch Access
 // predicates. This value is mostly overridden by the setup guide's default

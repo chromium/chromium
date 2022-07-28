@@ -617,6 +617,11 @@ const char kIgnoreArcVmDevConf[] = "ignore-arcvm-dev-conf";
 const char kIgnoreUserProfileMappingForTests[] =
     "ignore-user-profile-mapping-for-tests";
 
+// If true, the time dependent views (such as the time view) show with the
+// predefined fixed time.
+const char kStabilizeTimeDependentViewForTests[] =
+    "stabilize-time-dependent-view-for-tests";
+
 // Decreases delay in uploading installation event logs for integration test.
 const char kInstallLogFastUploadForTests[] =
     "install-log-fast-upload-for-tests";
@@ -1011,6 +1016,11 @@ bool HasHps() {
 bool IsSkipRecorderNudgeShowThresholdDurationEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kSkipReorderNudgeShowThresholdDurationForTest);
+}
+
+bool IsStabilizeTimeDependentViewForTestsEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kStabilizeTimeDependentViewForTests);
 }
 
 }  // namespace switches

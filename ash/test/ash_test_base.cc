@@ -12,6 +12,7 @@
 #include "ash/accessibility/ui/accessibility_panel_layout_manager.h"
 #include "ash/ambient/test/ambient_ash_test_helper.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/display/extended_mouse_warp_controller.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -318,7 +319,12 @@ void AshTestBase::PrepareForPixelDiffTest() {
   // In pixel tests, we want to take screenshots then compare them with the
   // benchmark images. Therefore, enable pixel output in tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnablePixelOutputInTests);
+      ::switches::kEnablePixelOutputInTests);
+
+  // Enable the switch so that the time dependent views (such as the time view)
+  // are stable.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kStabilizeTimeDependentViewForTests);
 
   // Expect this function to be called before setup. Because the code that
   // stabilizes the system UI for pixel tests should be executed during setup.

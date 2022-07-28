@@ -17,4 +17,6 @@ const char kSwitchAccessUsbDevice[] = "usb";
 const char kSwitchAccessBluetoothDevice[] = "bluetooth";
 const char kSwitchAccessUnknownDevice[] = "unknown";
 
+const char kFakeNowTimeStringInPixelTest[] = "Sun, 6 May 2018 14:30:00 CDT";
+
 }  // namespace ash

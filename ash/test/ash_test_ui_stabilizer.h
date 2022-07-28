@@ -9,10 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/icu_test_util.h"
 
-namespace base::subtle {
-class ScopedTimeClockOverrides;
-}  // namespace base::subtle
-
 namespace gfx {
 class Size;
 }  // namespace gfx
@@ -31,9 +27,6 @@ class AshTestUiStabilizer {
   // constant to avoid flakiness in pixel tests.
   void StabilizeUi(const gfx::Size& wallpaper_size);
 
-  // Overrides the current time. It ensures that `Time::Now()` is constant.
-  void OverrideTime();
-
   const AccountId& account_id() const { return account_id_; }
 
  private:
@@ -51,9 +44,6 @@ class AshTestUiStabilizer {
   // Used for setting the locale and the time zone.
   const base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
   const base::test::ScopedRestoreDefaultTimezone time_zone_;
-
-  // Overrides the current time.
-  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 
   const AccountId account_id_;
 

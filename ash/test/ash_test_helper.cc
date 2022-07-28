@@ -233,10 +233,10 @@ aura::client::CaptureClient* AshTestHelper::GetCaptureClient() {
 }
 
 void AshTestHelper::SetUp(InitParams init_params) {
-  if (init_params.is_pixel_test) {
+  // Constructing `ui_stabilizer_` sets the locale. Therefore, building
+  // `ui_stabilizer_` before the code that establishes the Ash UI.
+  if (init_params.is_pixel_test)
     ui_stabilizer_ = std::make_unique<AshTestUiStabilizer>();
-    ui_stabilizer_->OverrideTime();
-  }
 
   // This block of objects are conditionally initialized here rather than in the
   // constructor to make it easier for test classes to override them.

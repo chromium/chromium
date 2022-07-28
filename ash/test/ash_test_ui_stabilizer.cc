@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
-#include "base/time/time_override.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
@@ -28,9 +27,6 @@ constexpr char kWallpaperFileName[] = "test-file";
 // The color of the default wallpaper in pixel tests.
 constexpr SkColor kWallPaperColor = SK_ColorMAGENTA;
 
-// The string that represents the current time. Used in pixel tests.
-constexpr char kFakeNowTimeString[] = "Sun, 6 May 2018 14:30:00 CDT";
-
 // Specify the locale and the time zone used in pixel tests.
 constexpr char kLocale[] = "en_US";
 constexpr char kTimeZone[] = "America/Chicago";
@@ -43,17 +39,6 @@ gfx::ImageSkia CreateImage(const gfx::Size& image_size, SkColor color) {
   gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
   return image;
 }
-
-// TimeOverrideHelper ----------------------------------------------------------
-
-struct TimeOverrideHelper {
-  static base::Time TimeNow() { return current_time; }
-
-  // Used as the current time in ash pixel diff tests.
-  static base::Time current_time;
-};
-
-base::Time TimeOverrideHelper::current_time;
 
 }  // namespace
 
@@ -69,15 +54,6 @@ void AshTestUiStabilizer::StabilizeUi(const gfx::Size& wallpaper_size) {
   MaybeSetDarkMode();
   SetWallPaper(wallpaper_size);
   SetBatteryState();
-}
-
-// Overrides the current time. It ensures that `Time::Now()` is constant.
-void AshTestUiStabilizer::OverrideTime() {
-  ASSERT_TRUE(base::Time::FromString(kFakeNowTimeString,
-                                     &TimeOverrideHelper::current_time));
-  time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
-      &TimeOverrideHelper::TimeNow, /*time_ticks_override=*/nullptr,
-      /*thread_ticks_override=*/nullptr);
 }
 
 void AshTestUiStabilizer::MaybeSetDarkMode() {

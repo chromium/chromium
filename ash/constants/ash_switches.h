@@ -261,6 +261,8 @@ extern const char kSkipForceOnlineSignInForTesting[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSkipReorderNudgeShowThresholdDurationForTest[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kStabilizeTimeDependentViewForTests[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSupportsClamshellAutoRotation[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kSuppressMessageCenterPopups[];
@@ -375,6 +377,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool HasHps();
 // shown is skipped.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsSkipRecorderNudgeShowThresholdDurationEnabled();
+
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsStabilizeTimeDependentViewForTestsEnabled();
 
 }  // namespace ash::switches
 
