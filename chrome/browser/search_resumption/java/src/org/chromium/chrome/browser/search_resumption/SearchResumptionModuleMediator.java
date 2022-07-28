@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -33,14 +34,21 @@ import java.util.List;
 /**
  * This class holds querying search suggestions related business logic.
  */
-public class SearchResumptionModuleMediator
-        implements OnSuggestionsReceivedListener, SignInStateObserver {
+public class SearchResumptionModuleMediator implements OnSuggestionsReceivedListener,
+                                                       SignInStateObserver,
+                                                       SyncService.SyncStateChangedListener {
     private final ViewStub mStub;
     private final Tab mTabToTrackSuggestion;
     private final SearchResumptionTileBuilder mTileBuilder;
     private final SigninManager mSignInManager;
+    private final SyncService mSyncService;
     private AutocompleteController mAutoComplete;
     private PropertyModel mModel;
+    // Set the default values of these variable true since all of them have been checked before
+    // creating the coordinator in SearchResumptionModuleUtils#shouldShowSearchResumptionModule.
+    private boolean mIsDefaultSearchEngineGoogle = true;
+    private boolean mIsSignedIn = true;
+    private boolean mHasKeepEverythingSynced = true;
 
     private @Nullable SearchResumptionModuleView mModuleLayoutView;
     private @Nullable SearchResumptionModuleBridge mSearchResumptionModuleBridge;
@@ -53,6 +61,8 @@ public class SearchResumptionModuleMediator
         start(profile);
         mSignInManager = IdentityServicesProvider.get().getSigninManager(profile);
         mSignInManager.addSignInStateObserver(this);
+        mSyncService = SyncService.get();
+        mSyncService.addSyncStateChangedListener(this);
         TemplateUrlServiceFactory.get().addObserver(this::onTemplateURLServiceChanged);
     }
 
@@ -66,14 +76,25 @@ public class SearchResumptionModuleMediator
         showSearchSuggestionModule(autocompleteResult);
     }
 
+    /**
+     * SyncService.SyncStateChangedListener implementation, listens to sync state changes.
+     */
+    @Override
+    public void syncStateChanged() {
+        mHasKeepEverythingSynced = mSyncService.hasKeepEverythingSynced();
+        updateVisbility();
+    }
+
     @Override
     public void onSignedIn() {
-        setVisibility(true);
+        mIsSignedIn = true;
+        updateVisbility();
     }
 
     @Override
     public void onSignedOut() {
-        setVisibility(false);
+        mIsSignedIn = false;
+        updateVisbility();
     }
 
     /**
@@ -121,6 +142,7 @@ public class SearchResumptionModuleMediator
         }
         TemplateUrlServiceFactory.get().removeObserver(this::onTemplateURLServiceChanged);
         mSignInManager.removeSignInStateObserver(this);
+        mSyncService.removeSyncStateChangedListener(this);
     }
 
     /**
@@ -212,9 +234,10 @@ public class SearchResumptionModuleMediator
         return true;
     }
 
-    private void setVisibility(boolean isVisible) {
+    private void updateVisbility() {
         if (mModel != null) {
-            mModel.set(SearchResumptionModuleProperties.IS_VISIBLE, isVisible);
+            mModel.set(SearchResumptionModuleProperties.IS_VISIBLE,
+                    mIsDefaultSearchEngineGoogle && mIsSignedIn && mHasKeepEverythingSynced);
         }
     }
 
@@ -231,6 +254,8 @@ public class SearchResumptionModuleMediator
 
     @VisibleForTesting
     void onTemplateURLServiceChanged() {
-        setVisibility(TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle());
+        mIsDefaultSearchEngineGoogle =
+                TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
+        updateVisbility();
     }
 }

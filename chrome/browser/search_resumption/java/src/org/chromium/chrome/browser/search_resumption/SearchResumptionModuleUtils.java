@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -101,7 +102,8 @@ public class SearchResumptionModuleUtils {
 
         if (!TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle()
                 || !IdentityServicesProvider.get().getIdentityManager(profile).hasPrimaryAccount(
-                        ConsentLevel.SYNC)) {
+                        ConsentLevel.SYNC)
+                || !SyncService.get().hasKeepEverythingSynced()) {
             return false;
         }
 

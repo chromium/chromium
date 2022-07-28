@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.search_resumption;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 
 import androidx.test.filters.SmallTest;
 
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.test.util.browser.Features;
@@ -99,6 +101,8 @@ public class SearchResumptionModuleUtilsUnitTest {
     @Mock
     private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
+    private SyncService mSyncServiceMock;
+    @Mock
     private IdentityManager mIdentityManager;
     @Mock
     private Profile mProfile;
@@ -117,6 +121,7 @@ public class SearchResumptionModuleUtilsUnitTest {
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
+        SyncService.overrideForTests(mSyncServiceMock);
 
         ShadowChromeFeatureList.sEnableScrollableMVT = true;
         ShadowChromeFeatureList.sEnableSearchResumptionModule = true;
@@ -144,18 +149,27 @@ public class SearchResumptionModuleUtilsUnitTest {
                 SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(false);
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
+        Assert.assertFalse(
+                SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
+
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(true);
         doReturn(false).when(mIdentityManager).hasPrimaryAccount(anyInt());
         Assert.assertFalse(
                 SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
+        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(true);
         doReturn(true).when(mTab).canGoForward();
         Assert.assertFalse(
                 SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(true).when(mIdentityManager).hasPrimaryAccount(anyInt());
+        when(mSyncServiceMock.hasKeepEverythingSynced()).thenReturn(true);
         doReturn(false).when(mTab).canGoForward();
         Assert.assertTrue(
                 SearchResumptionModuleUtils.shouldShowSearchResumptionModule(mProfile, mTab));
