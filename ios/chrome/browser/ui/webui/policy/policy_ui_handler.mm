@@ -179,7 +179,7 @@ void PolicyUIHandler::OnPolicyUpdated(const policy::PolicyNamespace& ns,
   SendPolicies();
 }
 
-base::Value PolicyUIHandler::GetPolicyNames() const {
+base::Value::Dict PolicyUIHandler::GetPolicyNames() const {
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
   policy::SchemaRegistry* registry =
@@ -187,7 +187,7 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
   scoped_refptr<policy::SchemaMap> schema_map = registry->schema_map();
 
   // Add Chrome policy names.
-  base::Value chrome_policy_names(base::Value::Type::LIST);
+  base::Value::List chrome_policy_names;
   policy::PolicyNamespace chrome_namespace(policy::POLICY_DOMAIN_CHROME, "");
   const policy::Schema* chrome_schema = schema_map->GetSchema(chrome_namespace);
   for (auto it = chrome_schema->GetPropertiesIterator(); !it.IsAtEnd();
@@ -195,12 +195,12 @@ base::Value PolicyUIHandler::GetPolicyNames() const {
     chrome_policy_names.Append(base::Value(it.key()));
   }
 
-  base::Value chrome_values(base::Value::Type::DICTIONARY);
-  chrome_values.SetStringKey("name", "Chrome Policies");
-  chrome_values.SetKey("policyNames", std::move(chrome_policy_names));
+  base::Value::Dict chrome_values;
+  chrome_values.Set("name", "Chrome Policies");
+  chrome_values.Set("policyNames", std::move(chrome_policy_names));
 
-  base::Value names(base::Value::Type::DICTIONARY);
-  names.SetKey("chrome", std::move(chrome_values));
+  base::Value::Dict names;
+  names.Set("chrome", std::move(chrome_values));
   return names;
 }
 
@@ -223,15 +223,13 @@ void PolicyUIHandler::HandleReloadPolicies(const base::Value::List& args) {
 }
 
 void PolicyUIHandler::SendPolicies() {
-  base::Value names = GetPolicyNames();
-  base::Value values = base::Value(GetPolicyValues());
-  std::vector<const base::Value*> args;
-  args.push_back(&names);
-  args.push_back(&values);
-  web_ui()->FireWebUIListener("policies-updated", args);
+  base::Value::Dict names = GetPolicyNames();
+  base::Value::List values = GetPolicyValues();
+  web_ui()->FireWebUIListener("policies-updated", names, values);
 }
 
-base::Value PolicyUIHandler::GetStatusValue(bool include_box_legend_key) const {
+base::Value::Dict PolicyUIHandler::GetStatusValue(
+    bool include_box_legend_key) const {
   base::Value::Dict machine_status = machine_status_provider_->GetStatus();
 
   // Given that it's usual for users to bring their own devices and the fact
@@ -246,13 +244,12 @@ base::Value PolicyUIHandler::GetStatusValue(bool include_box_legend_key) const {
     }
     status.Set("machine", std::move(machine_status));
   }
-  return base::Value(std::move(status));
+  return status;
 }
 
 void PolicyUIHandler::SendStatus() {
-  base::Value status = GetStatusValue(/*include_box_legend_key=*/true);
-  std::vector<const base::Value*> args = {&status};
-  web_ui()->FireWebUIListener("status-updated", args);
+  base::Value::Dict status = GetStatusValue(/*include_box_legend_key=*/true);
+  web_ui()->FireWebUIListener("status-updated", status);
 }
 
 void PolicyUIHandler::OnRefreshPoliciesDone() {

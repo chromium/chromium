@@ -7,11 +7,9 @@
 
 #include <string>
 
-class GURL;
+#include "base/strings/string_piece.h"
 
-namespace base {
-class Value;
-}
+class GURL;
 
 namespace web {
 
@@ -28,8 +26,7 @@ class WebUIIOSController {
   // Allows the controller to override handling all messages from the page.
   // Return true if the message handling was overridden.
   virtual bool OverrideHandleWebUIIOSMessage(const GURL& source_url,
-                                             const std::string& message,
-                                             const base::Value& args);
+                                             base::StringPiece message);
 
   WebUIIOS* web_ui() const { return web_ui_; }
 

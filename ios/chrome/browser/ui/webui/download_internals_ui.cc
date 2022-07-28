@@ -66,34 +66,25 @@ class DownloadInternalsUIMessageHandler : public web::WebUIIOSMessageHandler,
 
   // download::Logger::Observer implementation.
   void OnServiceStatusChanged(const base::Value& service_status) override {
-    std::vector<const base::Value*> args;
-    args.push_back(&service_status);
-    web_ui()->FireWebUIListener("service-status-changed", args);
+    web_ui()->FireWebUIListener("service-status-changed", service_status);
   }
 
   void OnServiceDownloadsAvailable(
       const base::Value& service_downloads) override {
-    std::vector<const base::Value*> args;
-    args.push_back(&service_downloads);
-    web_ui()->FireWebUIListener("service-downloads-available", args);
+    web_ui()->FireWebUIListener("service-downloads-available",
+                                service_downloads);
   }
 
   void OnServiceDownloadChanged(const base::Value& service_download) override {
-    std::vector<const base::Value*> args;
-    args.push_back(&service_download);
-    web_ui()->FireWebUIListener("service-download-changed", args);
+    web_ui()->FireWebUIListener("service-download-changed", service_download);
   }
 
   void OnServiceDownloadFailed(const base::Value& service_download) override {
-    std::vector<const base::Value*> args;
-    args.push_back(&service_download);
-    web_ui()->FireWebUIListener("service-download-failed", args);
+    web_ui()->FireWebUIListener("service-download-failed", service_download);
   }
 
   void OnServiceRequestMade(const base::Value& service_request) override {
-    std::vector<const base::Value*> args;
-    args.push_back(&service_request);
-    web_ui()->FireWebUIListener("service-request-made", args);
+    web_ui()->FireWebUIListener("service-request-made", service_request);
   }
 
   void HandleGetServiceStatus(const base::Value::List& args) {

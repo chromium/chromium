@@ -509,7 +509,7 @@ void PolicyUIHandler::SendStatus() {
   FireWebUIListener("status-updated", GetStatusValue(/*for_webui*/ true));
 }
 
-base::Value PolicyUIHandler::GetStatusValue(bool for_webui) const {
+base::Value::Dict PolicyUIHandler::GetStatusValue(bool for_webui) const {
   base::Value::Dict device_status = device_status_provider_->GetStatus();
   base::Value::Dict user_status = user_status_provider_->GetStatus();
   const std::string* username = user_status.FindString("username");
@@ -544,7 +544,7 @@ base::Value PolicyUIHandler::GetStatusValue(bool for_webui) const {
       updater_status.Set("boxLegendKey", "statusUpdater");
     status.Set("updater", std::move(updater_status));
   }
-  return base::Value(std::move(status));
+  return status;
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::Value::List& args) {

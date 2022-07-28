@@ -32,7 +32,7 @@ namespace web {
 
 // static
 std::u16string WebUIIOS::GetJavascriptCall(
-    const std::string& function_name,
+    base::StringPiece function_name,
     base::span<const base::ValueView> arg_list) {
   std::u16string parameters;
   std::string json;
@@ -74,41 +74,34 @@ void WebUIIOSImpl::SetController(
 }
 
 void WebUIIOSImpl::CallJavascriptFunction(
-    const std::string& function_name,
+    base::StringPiece function_name,
     base::span<const base::ValueView> args) {
   DCHECK(base::IsStringASCII(function_name));
   ExecuteJavascript(GetJavascriptCall(function_name, args));
 }
 
-void WebUIIOSImpl::ResolveJavascriptCallback(const base::Value& callback_id,
-                                             const base::Value& response) {
+void WebUIIOSImpl::ResolveJavascriptCallback(const base::ValueView callback_id,
+                                             const base::ValueView response) {
   // cr.webUIResponse is a global JS function exposed from cr.js.
   base::Value request_successful = base::Value(true);
   base::ValueView args[] = {callback_id, request_successful, response};
   ExecuteJavascript(GetJavascriptCall("cr.webUIResponse", args));
 }
 
-void WebUIIOSImpl::RejectJavascriptCallback(const base::Value& callback_id,
-                                            const base::Value& response) {
+void WebUIIOSImpl::RejectJavascriptCallback(const base::ValueView callback_id,
+                                            const base::ValueView response) {
   // cr.webUIResponse is a global JS function exposed from cr.js.
   base::Value request_successful = base::Value(false);
   base::ValueView args[] = {callback_id, request_successful, response};
   ExecuteJavascript(GetJavascriptCall("cr.webUIResponse", args));
 }
 
-void WebUIIOSImpl::FireWebUIListener(
-    const std::string& event_name,
-    const std::vector<const base::Value*>& args) {
-  base::Value callback_arg(event_name);
-  std::vector<base::ValueView> modified_args;
-  modified_args.push_back(callback_arg);
-  for (const auto* arg : args)
-    modified_args.emplace_back(*arg);
-  ExecuteJavascript(
-      GetJavascriptCall("cr.webUIListenerCallback", modified_args));
+void WebUIIOSImpl::FireWebUIListenerSpan(
+    base::span<const base::ValueView> values) {
+  ExecuteJavascript(GetJavascriptCall("cr.webUIListenerCallback", values));
 }
 
-void WebUIIOSImpl::RegisterMessageCallback(const std::string& message,
+void WebUIIOSImpl::RegisterMessageCallback(base::StringPiece message,
                                            MessageCallback callback) {
   message_callbacks_.emplace(message, std::move(callback));
 }
@@ -121,16 +114,19 @@ void WebUIIOSImpl::OnJsMessage(const base::Value& message,
   if (!sender_frame->IsMainFrame())
     return;
 
+  DCHECK(message.is_dict());
+  const auto& dict = message.GetDict();
+
   web::URLVerificationTrustLevel trust_level =
       web::URLVerificationTrustLevel::kNone;
   const GURL current_url = web_state_->GetCurrentURL(&trust_level);
   if (web::GetWebClient()->IsAppSpecificURL(current_url)) {
-    const std::string* message_content = message.FindStringKey("message");
+    const std::string* message_content = dict.FindString("message");
     if (!message_content) {
       DLOG(WARNING) << "JS message parameter not found: message";
       return;
     }
-    const base::Value* arguments = message.FindListKey("arguments");
+    const base::Value::List* arguments = dict.FindList("arguments");
     if (!arguments) {
       DLOG(WARNING) << "JS message parameter not found: arguments";
       return;
@@ -140,17 +136,16 @@ void WebUIIOSImpl::OnJsMessage(const base::Value& message,
 }
 
 void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
-                                          const std::string& message,
-                                          const base::Value& args) {
-  DCHECK(args.is_list());
-  if (controller_->OverrideHandleWebUIIOSMessage(source_url, message, args))
+                                          base::StringPiece message,
+                                          const base::Value::List& args) {
+  if (controller_->OverrideHandleWebUIIOSMessage(source_url, message))
     return;
 
   // Look up the callback for this message.
   auto message_callback_it = message_callbacks_.find(message);
   if (message_callback_it != message_callbacks_.end()) {
     // Forward this message and content on.
-    message_callback_it->second.Run(args.GetList());
+    message_callback_it->second.Run(args);
     return;
   }
 }

@@ -8,8 +8,7 @@ namespace web {
 
 bool WebUIIOSController::OverrideHandleWebUIIOSMessage(
     const GURL& source_url,
-    const std::string& message,
-    const base::Value& args) {
+    base::StringPiece message) {
   return false;
 }
 

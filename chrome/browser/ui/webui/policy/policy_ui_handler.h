@@ -110,7 +110,7 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   // enabled (device and/or user), a dictionary containing status information.
   // If |for_webui| is true, values needed for webui will be included
   // additionally.
-  base::Value GetStatusValue(bool for_webui) const;
+  base::Value::Dict GetStatusValue(bool for_webui) const;
 
   // Build a JSON string of all the policies.
   std::string GetPoliciesAsJson();

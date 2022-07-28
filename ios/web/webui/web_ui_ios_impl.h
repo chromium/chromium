@@ -37,19 +37,18 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void SetController(std::unique_ptr<WebUIIOSController> controller) override;
   void AddMessageHandler(
       std::unique_ptr<WebUIIOSMessageHandler> handler) override;
-  void RegisterMessageCallback(const std::string& message,
+  void RegisterMessageCallback(base::StringPiece message,
                                MessageCallback callback) override;
   void ProcessWebUIIOSMessage(const GURL& source_url,
-                              const std::string& message,
-                              const base::Value& args) override;
-  void CallJavascriptFunction(const std::string& function_name,
+                              base::StringPiece message,
+                              const base::Value::List& args) override;
+  void CallJavascriptFunction(base::StringPiece function_name,
                               base::span<const base::ValueView> args) override;
-  void ResolveJavascriptCallback(const base::Value& callback_id,
-                                 const base::Value& response) override;
-  void RejectJavascriptCallback(const base::Value& callback_id,
-                                const base::Value& response) override;
-  void FireWebUIListener(const std::string& event_name,
-                         const std::vector<const base::Value*>& args) override;
+  void ResolveJavascriptCallback(const base::ValueView callback_id,
+                                 const base::ValueView response) override;
+  void RejectJavascriptCallback(const base::ValueView callback_id,
+                                const base::ValueView response) override;
+  void FireWebUIListenerSpan(base::span<const base::ValueView> values) override;
 
  private:
   void OnJsMessage(const base::Value& message,
@@ -61,7 +60,8 @@ class WebUIIOSImpl : public web::WebUIIOS,
   void ExecuteJavascript(const std::u16string& javascript);
 
   // A map of message name -> message handling callback.
-  using MessageCallbackMap = std::map<std::string, MessageCallback>;
+  using MessageCallbackMap =
+      std::map<std::string, MessageCallback, std::less<>>;
   MessageCallbackMap message_callbacks_;
 
   // The WebUIIOSMessageHandlers we own.

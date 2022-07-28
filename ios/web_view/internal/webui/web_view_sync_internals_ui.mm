@@ -20,8 +20,7 @@ WebViewSyncInternalsUI::~WebViewSyncInternalsUI() {}
 
 bool WebViewSyncInternalsUI::OverrideHandleWebUIIOSMessage(
     const GURL& source_url,
-    const std::string& message,
-    const base::Value& args) {
+    base::StringPiece message) {
   // ios/web_view only supports sync in transport mode. Explicitly override sync
   // start and stop messages and perform a no op.
   return message == syncer::sync_ui_util::kRequestStart ||

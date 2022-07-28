@@ -27,7 +27,7 @@ JsonGenerationParams::~JsonGenerationParams() = default;
 JsonGenerationParams::JsonGenerationParams(JsonGenerationParams&&) = default;
 
 std::string GenerateJson(std::unique_ptr<PolicyConversionsClient> client,
-                         base::Value status,
+                         base::Value::Dict status,
                          const JsonGenerationParams& params) {
   base::Value::Dict dict =
       policy::DictionaryPolicyConversions(std::move(client)).ToValueDict();

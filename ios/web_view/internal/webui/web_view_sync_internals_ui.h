@@ -25,8 +25,7 @@ class WebViewSyncInternalsUI : public SyncInternalsUI {
 
   ~WebViewSyncInternalsUI() override;
   bool OverrideHandleWebUIIOSMessage(const GURL& source_url,
-                                     const std::string& message,
-                                     const base::Value& args) override;
+                                     base::StringPiece message) override;
 };
 
 }  // namespace ios_web_view
