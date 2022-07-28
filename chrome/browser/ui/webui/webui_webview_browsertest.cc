@@ -190,40 +190,20 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, ExecuteScriptCodeFromFile) {
       base::Value(GetTestUrl("empty.html").spec())));
 }
 
-// TODO(crbug.com/751907) Flaky on CrOS trybots.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_AddContentScript DISABLED_AddContentScript
-#else
-#define MAYBE_AddContentScript AddContentScript
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_AddContentScript) {
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddContentScript) {
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
       "testAddContentScript", base::Value(GetTestUrl("empty.html").spec())));
 }
 
-// TODO(crbug.com/751907) Flaky on CrOS trybots.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_AddMultiContentScripts DISABLED_AddMultiContentScripts
-#else
-#define MAYBE_AddMultiContentScripts AddMultiContentScripts
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, MAYBE_AddMultiContentScripts) {
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddMultiContentScripts) {
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
       "testAddMultiContentScripts",
       base::Value(GetTestUrl("empty.html").spec())));
 }
 
-// TODO(crbug.com/751907) Flaky on CrOS trybots.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_AddContentScriptWithSameNameShouldOverwriteTheExistingOne \
-  DISABLED_AddContentScriptWithSameNameShouldOverwriteTheExistingOne
-#else
-#define MAYBE_AddContentScriptWithSameNameShouldOverwriteTheExistingOne \
-  AddContentScriptWithSameNameShouldOverwriteTheExistingOne
-#endif
 IN_PROC_BROWSER_TEST_F(
     WebUIWebViewBrowserTest,
-    MAYBE_AddContentScriptWithSameNameShouldOverwriteTheExistingOne) {
+    AddContentScriptWithSameNameShouldOverwriteTheExistingOne) {
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
       "testAddContentScriptWithSameNameShouldOverwriteTheExistingOne",
       base::Value(GetTestUrl("empty.html").spec())));
@@ -245,14 +225,7 @@ IN_PROC_BROWSER_TEST_F(
       base::Value(GetTestUrl("empty.html").spec())));
 }
 
-// TODO(crbug.com/751907) Flaky on CrOS trybots.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_AddAndRemoveContentScripts DISABLED_AddAndRemoveContentScripts
-#else
-#define MAYBE_AddAndRemoveContentScripts AddAndRemoveContentScripts
-#endif
-IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
-                       MAYBE_AddAndRemoveContentScripts) {
+IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, AddAndRemoveContentScripts) {
   ASSERT_TRUE(WebUIBrowserTest::RunJavascriptAsyncTest(
       "testAddAndRemoveContentScripts",
       base::Value(GetTestUrl("empty.html").spec())));
