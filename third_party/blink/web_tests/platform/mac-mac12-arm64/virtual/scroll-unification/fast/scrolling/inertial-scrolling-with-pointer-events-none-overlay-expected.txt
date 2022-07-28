@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Make sure inertial scrolling is not broken with pointer-events:none overlay. assert_greater_than: container should scroll at least 100 pixels, which is the length of the swipe. expected a number greater than 100 but got 100
-Harness: the test ran to completion.
-
