@@ -120,8 +120,8 @@ class SyncCategorizationDisabledTest : public SyncCategorizationBaseTest {
 IN_PROC_BROWSER_TEST_F(SyncCategorizationEnabledTest,
                        OSPreferencesSyncAsBothTypes) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  ASSERT_NE(*GetPrefs(0)->Get(kOsPreferenceKey), kOsPreferenceNewValue);
-  ASSERT_NE(*GetPrefs(0)->Get(kOsPriorityPreferenceKey),
+  ASSERT_NE(GetPrefs(0)->GetValue(kOsPreferenceKey), kOsPreferenceNewValue);
+  ASSERT_NE(GetPrefs(0)->GetValue(kOsPriorityPreferenceKey),
             kOsPriorityPreferenceNewValue);
 
   ASSERT_TRUE(SetupSync());
@@ -169,9 +169,9 @@ IN_PROC_BROWSER_TEST_F(SyncCategorizationDisabledTest, ReceiveSyncedOSPrefs) {
 
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  EXPECT_EQ(*GetPrefs(/*index=*/0)->Get(kOsPreferenceKey),
+  EXPECT_EQ(GetPrefs(/*index=*/0)->GetValue(kOsPreferenceKey),
             kOsPreferenceNewValue);
-  EXPECT_EQ(*GetPrefs(/*index=*/0)->Get(kOsPriorityPreferenceKey),
+  EXPECT_EQ(GetPrefs(/*index=*/0)->GetValue(kOsPriorityPreferenceKey),
             kOsPriorityPreferenceNewValue);
 }
 
@@ -179,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(SyncCategorizationDisabledTest, ReceiveSyncedOSPrefs) {
 IN_PROC_BROWSER_TEST_F(SyncCategorizationDisabledTest,
                        OSPreferencesSyncOnlyAsBrowserPrefs) {
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  ASSERT_NE(*GetPrefs(0)->Get(kOsPreferenceKey), kOsPreferenceNewValue);
-  ASSERT_NE(*GetPrefs(0)->Get(kOsPriorityPreferenceKey),
+  ASSERT_NE(GetPrefs(0)->GetValue(kOsPreferenceKey), kOsPreferenceNewValue);
+  ASSERT_NE(GetPrefs(0)->GetValue(kOsPriorityPreferenceKey),
             kOsPriorityPreferenceNewValue);
 
   ASSERT_TRUE(SetupSync());
