@@ -49,6 +49,8 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user_names.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -122,6 +124,17 @@ void WaitForAppToOpen(const GURL& expected_url) {
   EXPECT_EQ(num_browsers + 1, chrome::GetTotalBrowserCount());
   // Help app should have opened at the expected page.
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
+}
+
+void ShowGestureEducationHelp(bool post_task) {
+  if (post_task) {
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(ShowGestureEducationHelp, /*post_task=*/false));
+    return;
+  }
+
+  SystemTrayClientImpl::Get()->ShowGestureEducationHelp();
 }
 
 }  // namespace
@@ -760,10 +773,11 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
-  SystemTrayClientImpl::Get()->ShowGestureEducationHelp();
+  ShowGestureEducationHelp(/*post_task=*/true);
 
   EXPECT_NO_FATAL_FAILURE(
       WaitForAppToOpen(GURL("chrome://help-app/help/sub/3399710/id/9739838")));
+
   // The HELP app is 18, see DefaultAppName in
   // src/chrome/browser/apps/app_service/app_service_metrics.cc
   histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromOtherApp", 18,
