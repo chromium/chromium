@@ -1049,10 +1049,10 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         statement.ColumnInt(16));                         // source_port
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
-          << L"CreationDate too recent";
+          << "CreationDate too recent";
       if (!cc->LastUpdateDate().is_null()) {
         DLOG_IF(WARNING, cc->LastUpdateDate() > Time::Now())
-            << L"LastUpdateDate too recent";
+            << "LastUpdateDate too recent";
         // In order to anticipate the potential effects of the expiry limit in
         // rfc6265bis, we need to check how long it's been since the cookie was
         // refreshed (if LastUpdateDate is populated). We use 100 buckets for

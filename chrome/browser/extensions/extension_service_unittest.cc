@@ -398,8 +398,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
     // values we gave it. So if the id we doesn't exist in our internal
     // dictionary then something is wrong.
     EXPECT_TRUE(prefs_->GetDictionary(info.extension_id, &pref))
-        << "Got back ID (" << info.extension_id.c_str()
-        << ") we weren't expecting";
+        << "Got back ID (" << info.extension_id << ") we weren't expecting";
 
     EXPECT_TRUE(info.path.IsAbsolute());
     if (!fake_base_path_.empty())
@@ -439,8 +438,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
     // values we gave it. So if the id we doesn't exist in our internal
     // dictionary then something is wrong.
     EXPECT_TRUE(prefs_->GetDictionary(info.extension_id, &pref))
-        << L"Got back ID (" << info.extension_id.c_str()
-        << ") we weren't expecting";
+        << "Got back ID (" << info.extension_id << ") we weren't expecting";
     EXPECT_EQ(ManifestLocation::kExternalPrefDownload, info.download_location);
 
     if (pref) {
