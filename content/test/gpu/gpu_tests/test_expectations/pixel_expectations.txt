@@ -430,6 +430,9 @@ crbug.com/1340081 [ linux release amd-0x7340 ] Pixel_ScissorTestWithPreserveDraw
 
 crbug.com/1345777 [ android ] Pixel_VideoStreamFromWebGLCanvas [ Skip ]
 
+# Pixel_VideoStreamFromWebGL* tests sporadically fail on Linux FYI Release (NVIDIA) bot
+crbug.com/1348002 [ linux nvidia ] Pixel_VideoStreamFromWebGL* [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
