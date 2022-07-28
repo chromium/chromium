@@ -6,6 +6,7 @@
  * @fileoverview Handles gesture-based commands.
  */
 import {EventGenerator} from '../../common/event_generator.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData, GestureGranularity} from '../common/gesture_command_data.js';
 

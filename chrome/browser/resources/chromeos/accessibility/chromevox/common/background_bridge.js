@@ -7,10 +7,9 @@
  * panel, etc.) to communicate with the background.
  */
 
-goog.provide('BackgroundBridge');
+import {BridgeHelper} from './bridge_helper.js';
 
-goog.require('BridgeConstants');
-goog.require('BridgeHelper');
+export const BackgroundBridge = {};
 
 BackgroundBridge.BrailleBackground = {
   /**

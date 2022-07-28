@@ -9,6 +9,7 @@ import {Cursor, CursorUnit} from '../../common/cursors/cursor.js';
 import {CursorRange} from '../../common/cursors/range.js';
 import {EventGenerator} from '../../common/event_generator.js';
 import {AbstractTts} from '../common/abstract_tts.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
 import {CommandStore} from '../common/command_store.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '../common/custom_automation_event.js';
 import {EventSourceType} from '../common/event_source_type.js';

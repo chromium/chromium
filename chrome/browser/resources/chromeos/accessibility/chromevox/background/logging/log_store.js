@@ -6,6 +6,8 @@
  * @fileoverview Store ChromeVox log.
  */
 
+import {BridgeHelper} from '../../common/bridge_helper.js';
+
 export class LogStore {
   constructor() {
     /**

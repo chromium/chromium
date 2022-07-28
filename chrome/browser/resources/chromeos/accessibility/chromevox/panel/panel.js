@@ -6,7 +6,9 @@
  * @fileoverview The ChromeVox panel and menus.
  */
 import {EventGenerator} from '../../common/event_generator.js';
+import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
+import {BridgeHelper} from '../common/bridge_helper.js';
 import {CommandStore} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';
 import {GestureCommandData} from '../common/gesture_command_data.js';
@@ -143,6 +145,13 @@ export class Panel extends PanelInterface {
    */
   static setTouchGestureSourceForTesting() {
     Panel.mockTouchGestureSourceForTesting_ = true;
+  }
+
+  /**
+   * Adds BackgroundBridge to the global object so that tests can mock it.
+   */
+  static exportBackgroundBridgeForTesting() {
+    window.BackgroundBridge = BackgroundBridge;
   }
 
   /**

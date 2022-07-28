@@ -6,6 +6,7 @@
  * @fileoverview ChromeVox options page.
  */
 import {AbstractTts} from '../common/abstract_tts.js';
+import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleTable} from '../common/braille/braille_table.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';
 import {Msgs} from '../common/msgs.js';

@@ -638,7 +638,8 @@ AX_TEST_F(
       let userActionMonitorCreatedCount = 0;
       let userActionMonitorDestroyedCount = 0;
       let isUserActionMonitorActive = false;
-
+      // Expose the correct BackgroundBridge so we can override the functions
+      this.getPanel().exportBackgroundBridgeForTesting();
       // Swap in functions below so we can track the number of times
       // UserActionMonitor is created and destroyed.
       this.getPanelWindow().BackgroundBridge.UserActionMonitor.create = () => {

@@ -7,6 +7,8 @@
  *
  */
 
+import {BackgroundBridge} from '../common/background_bridge.js';
+
 /**
  * Class to manage the log page.
  */

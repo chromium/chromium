@@ -5,6 +5,7 @@
 /**
  * @fileoverview An item in a drop-down menu in the ChromeVox panel.
  */
+import {BackgroundBridge} from '../common/background_bridge.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
 export class PanelMenuItem {

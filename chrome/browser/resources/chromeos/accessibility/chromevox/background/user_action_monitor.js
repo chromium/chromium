@@ -5,6 +5,7 @@
 /**
  * @fileoverview Monitors user actions.
  */
+import {BridgeHelper} from '../common/bridge_helper.js';
 import {KeySequence} from '../common/key_sequence.js';
 import {KeyUtil} from '../common/key_util.js';
 import {PanelCommand, PanelCommandType} from '../common/panel_command.js';

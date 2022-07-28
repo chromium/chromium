@@ -5,6 +5,8 @@
 /**
  * @fileoverview The driver for the UI for incremental search.
  */
+import {BackgroundBridge} from '../common/background_bridge.js';
+
 import {PanelInterface} from './panel_interface.js';
 
 const AutomationNode = chrome.automation.AutomationNode;

@@ -5,6 +5,7 @@
 /**
  * @fileoverview Tracks event sources.
  */
+import {BridgeHelper} from '../common/bridge_helper.js';
 import {EventSourceType} from '../common/event_source_type.js';
 
 export const EventSourceState = {};
