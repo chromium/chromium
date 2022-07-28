@@ -1548,7 +1548,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
         // element of the style rule containing the :has() pseudo class because
         // the mutation can affect the state of the :has().
         if (context.in_rightmost_compound)
-          element_style_->SetAffectedBySubjectHas();
+          element.SetAffectedBySubjectHas();
         else
           element.SetAffectedByNonSubjectHas();
 

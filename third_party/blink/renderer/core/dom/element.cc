@@ -5870,6 +5870,16 @@ void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
       value);
 }
 
+bool Element::AffectedBySubjectHas() const {
+  if (HasRareData())
+    return GetElementRareData()->AffectedBySubjectHas();
+  return false;
+}
+
+void Element::SetAffectedBySubjectHas() {
+  EnsureElementRareData().SetAffectedBySubjectHas();
+}
+
 bool Element::AffectedByNonSubjectHas() const {
   if (HasRareData())
     return GetElementRareData()->AffectedByNonSubjectHas();

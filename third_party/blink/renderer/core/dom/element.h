@@ -1147,6 +1147,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // For font-related style invalidation.
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool);
 
+  bool AffectedBySubjectHas() const;
+  void SetAffectedBySubjectHas();
   bool AffectedByNonSubjectHas() const;
   void SetAffectedByNonSubjectHas();
   bool AncestorsOrAncestorSiblingsAffectedByHas() const;

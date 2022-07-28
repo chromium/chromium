@@ -75,9 +75,7 @@ void AffectedByPseudoTest::CheckAffectedByFlagsForHas(
   for (auto iter : expected) {
     switch (iter.first) {
       case kAffectedBySubjectHas:
-        actual = GetElementById(element_id)
-                     ->GetComputedStyle()
-                     ->AffectedBySubjectHas();
+        actual = GetElementById(element_id)->AffectedBySubjectHas();
         flag_name = "AffectedBySubjectHas";
         break;
       case kAffectedByNonSubjectHas:

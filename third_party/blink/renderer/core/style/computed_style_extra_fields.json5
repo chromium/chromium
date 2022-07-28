@@ -141,14 +141,6 @@
       custom_copy: true,
       custom_compare: true,
     },
-    // Whether this style is related with :has() pseudo-class
-    {
-      name: "AffectedBySubjectHas",
-      field_template: "monotonic_flag",
-      default_value: "false",
-      custom_copy: true,
-      custom_compare: true,
-    },
     // A non-inherited property references a variable or @apply is used
     {
       name: "HasVariableReferenceFromNonInheritedProperty",

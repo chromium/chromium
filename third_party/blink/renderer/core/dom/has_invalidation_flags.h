@@ -12,7 +12,7 @@ namespace blink {
 // The flags can be categorized 3 types.
 //
 // 1. Flags for the :has() anchor elements.
-//    - AffectedBySubjectHas (defined at computed style extra flags)
+//    - AffectedBySubjectHas
 //        Indicates that this element may match a subject :has() selector, which
 //        means we need to invalidate the element when the :has() state changes.
 //    - AffectedByNonSubjectHas
@@ -176,6 +176,7 @@ enum SiblingsAffectedByHasFlags : unsigned {
 };
 
 struct HasInvalidationFlags {
+  unsigned affected_by_subject_has : 1;
   unsigned affected_by_non_subject_has : 1;
   unsigned affected_by_pseudos_in_has : 1;
 
@@ -189,7 +190,8 @@ struct HasInvalidationFlags {
   unsigned affected_by_logical_combinations_in_has : 1;
 
   HasInvalidationFlags()
-      : affected_by_non_subject_has(false),
+      : affected_by_subject_has(false),
+        affected_by_non_subject_has(false),
         affected_by_pseudos_in_has(false),
         siblings_affected_by_has(0),
         ancestors_or_ancestor_siblings_affected_by_has(false),

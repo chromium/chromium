@@ -166,6 +166,12 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
 
   void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
+  bool AffectedBySubjectHas() const {
+    return has_invalidation_flags_.affected_by_subject_has;
+  }
+  void SetAffectedBySubjectHas() {
+    has_invalidation_flags_.affected_by_subject_has = true;
+  }
   bool AffectedByNonSubjectHas() const {
     return has_invalidation_flags_.affected_by_non_subject_has;
   }
@@ -421,6 +427,12 @@ class ElementRareData final : public NodeRareData {
   }
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
     scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
+  }
+  bool AffectedBySubjectHas() const {
+    return super_rare_data_ ? super_rare_data_->AffectedBySubjectHas() : false;
+  }
+  void SetAffectedBySubjectHas() {
+    EnsureSuperRareData().SetAffectedBySubjectHas();
   }
   bool AffectedByNonSubjectHas() const {
     return super_rare_data_ ? super_rare_data_->AffectedByNonSubjectHas()

@@ -1033,9 +1033,7 @@ void StyleEngine::InvalidateElementAffectedByHas(Element& element,
   if (for_pseudo_change && !element.AffectedByPseudoInHas())
     return;
 
-  const ComputedStyle* style = element.GetComputedStyle();
-
-  if (style && style->AffectedBySubjectHas()) {
+  if (element.AffectedBySubjectHas()) {
     // TODO(blee@igalia.com) Need filtering for irrelevant elements.
     // e.g. When we have '.a:has(.b) {}', '.c:has(.d) {}', mutation of class
     // value 'd' can invalidate ancestor with class value 'a' because we
