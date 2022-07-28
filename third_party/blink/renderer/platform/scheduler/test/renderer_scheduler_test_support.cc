@@ -25,8 +25,8 @@ namespace {
 class SimpleMockMainThreadScheduler : public WebMockThreadScheduler {
  public:
   SimpleMockMainThreadScheduler()
-      : simple_thread_scheduler_(CreateDummyWebThreadScheduler()) {}
-  ~SimpleMockMainThreadScheduler() override {}
+      : simple_thread_scheduler_(CreateDummyWebMainThreadScheduler()) {}
+  ~SimpleMockMainThreadScheduler() override = default;
 
   std::unique_ptr<Thread> CreateMainThread() override {
     return simple_thread_scheduler_->CreateMainThread();
@@ -39,7 +39,7 @@ class SimpleMockMainThreadScheduler : public WebMockThreadScheduler {
 }  // namespace
 
 std::unique_ptr<WebThreadScheduler> CreateWebMainThreadSchedulerForTests() {
-  return CreateDummyWebThreadScheduler();
+  return CreateDummyWebMainThreadScheduler();
 }
 
 std::unique_ptr<WebMockThreadScheduler>

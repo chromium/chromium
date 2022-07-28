@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
 #include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
@@ -191,7 +191,7 @@ class DummyPageScheduler : public PageScheduler {
 class DummyAgentGroupScheduler : public AgentGroupScheduler {
  public:
   DummyAgentGroupScheduler()
-      : main_thread_scheduler_(CreateDummyWebThreadScheduler()) {}
+      : main_thread_scheduler_(CreateDummyWebMainThreadScheduler()) {}
   ~DummyAgentGroupScheduler() override = default;
 
   DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
@@ -243,37 +243,14 @@ class SimpleThread : public Thread {
   ThreadScheduler* scheduler_;
 };
 
-class DummyThreadScheduler : public ThreadScheduler {
+class DummyWebMainThreadScheduler : public WebThreadScheduler,
+                                    public MainThreadScheduler {
  public:
-  DummyThreadScheduler() {}
-  ~DummyThreadScheduler() override {}
+  DummyWebMainThreadScheduler() = default;
+  ~DummyWebMainThreadScheduler() override = default;
 
+  // WebThreadScheduler implementation:
   void Shutdown() override {}
-
-  scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
-      override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
-    return CreateDummyAgentGroupScheduler();
-  }
-
-  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
-    return nullptr;
-  }
 
   // ThreadScheduler implementation:
   bool ShouldYieldForHighPriorityWork() override { return false; }
@@ -295,16 +272,6 @@ class DummyThreadScheduler : public ThreadScheduler {
     return nullptr;
   }
   void SetV8Isolate(v8::Isolate* isolate) override {}
-};
-
-class DummyWebThreadScheduler : public WebThreadScheduler,
-                                public DummyThreadScheduler {
- public:
-  DummyWebThreadScheduler() {}
-  ~DummyWebThreadScheduler() override {}
-
-  // WebThreadScheduler implementation:
-  void Shutdown() override {}
 
   scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
       override {
@@ -330,7 +297,16 @@ class DummyWebThreadScheduler : public WebThreadScheduler,
     return CreateDummyAgentGroupScheduler();
   }
 
+  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
+    DCHECK(WTF::IsMainThread());
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
   WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
+    return nullptr;
+  }
+
+  std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
     return nullptr;
   }
 };
@@ -349,12 +325,8 @@ std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupScheduler() {
   return std::make_unique<DummyAgentGroupScheduler>();
 }
 
-std::unique_ptr<ThreadScheduler> CreateDummyThreadScheduler() {
-  return std::make_unique<DummyThreadScheduler>();
-}
-
-std::unique_ptr<WebThreadScheduler> CreateDummyWebThreadScheduler() {
-  return std::make_unique<DummyWebThreadScheduler>();
+std::unique_ptr<WebThreadScheduler> CreateDummyWebMainThreadScheduler() {
+  return std::make_unique<DummyWebMainThreadScheduler>();
 }
 
 }  // namespace scheduler

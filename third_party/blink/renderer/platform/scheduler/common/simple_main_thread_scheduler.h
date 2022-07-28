@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_THREAD_SCHEDULER_H_
-#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_THREAD_SCHEDULER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_MAIN_THREAD_SCHEDULER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_MAIN_THREAD_SCHEDULER_H_
 
 #include <memory>
 
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 
 namespace blink {
 namespace scheduler {
@@ -23,12 +23,13 @@ namespace scheduler {
 // Apparently we don't rely on those missing features at least for things that
 // use this scheduler.
 
-class SimpleThreadScheduler : public ThreadScheduler {
+class SimpleMainThreadScheduler : public MainThreadScheduler {
  public:
-  SimpleThreadScheduler();
-  SimpleThreadScheduler(const SimpleThreadScheduler&) = delete;
-  SimpleThreadScheduler& operator=(const SimpleThreadScheduler&) = delete;
-  ~SimpleThreadScheduler() override;
+  SimpleMainThreadScheduler();
+  SimpleMainThreadScheduler(const SimpleMainThreadScheduler&) = delete;
+  SimpleMainThreadScheduler& operator=(const SimpleMainThreadScheduler&) =
+      delete;
+  ~SimpleMainThreadScheduler() override;
 
   // Do nothing.
   void Shutdown() override;
@@ -76,11 +77,13 @@ class SimpleThreadScheduler : public ThreadScheduler {
 
   // Return nullptr.
   NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override;
+  MainThreadScheduler* ToMainThreadScheduler() override;
 
   void SetV8Isolate(v8::Isolate* isolate) override {}
+  std::unique_ptr<RendererPauseHandle> PauseScheduler() override;
 };
 
 }  // namespace scheduler
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_THREAD_SCHEDULER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SIMPLE_MAIN_THREAD_SCHEDULER_H_

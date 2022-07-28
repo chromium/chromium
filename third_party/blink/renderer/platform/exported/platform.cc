@@ -62,7 +62,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/memory_cache_dump_provider.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/scheduler/common/simple_thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/common/simple_main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
@@ -178,7 +178,7 @@ class SimpleMainThread : public Thread {
  private:
   bool IsSimpleMainThread() const override { return true; }
 
-  scheduler::SimpleThreadScheduler scheduler_;
+  scheduler::SimpleMainThreadScheduler scheduler_;
   scoped_refptr<base::SingleThreadTaskRunner>
       main_thread_task_runner_for_testing_;
 };
