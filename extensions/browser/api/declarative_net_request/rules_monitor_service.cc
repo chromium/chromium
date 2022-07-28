@@ -925,23 +925,23 @@ void RulesMonitorService::OnNewStaticRulesetsLoaded(
     return;
   }
 
-  if (!matcher) {
+  if (matcher) {
+    bool had_extra_headers_matcher =
+        ruleset_manager_.HasAnyExtraHeadersMatcher();
+    matcher->RemoveRulesetsWithIDs(ids_to_disable);
+    matcher->AddOrUpdateRulesets(std::move(new_matchers));
+    AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);
+  } else {
     // The extension didn't have any existing rulesets. Hence just add a new
-    // CompositeMatcher with |new_matchers|.
+    // CompositeMatcher with |new_matchers|. Note, this also updates the
+    // extra header listener count.
     AddCompositeMatcher(*extension, std::move(new_matchers));
-    std::move(callback).Run(absl::nullopt);
-    return;
+    matcher = ruleset_manager_.GetMatcherForExtension(load_data.extension_id);
+    DCHECK(matcher);
   }
-
-  bool had_extra_headers_matcher = ruleset_manager_.HasAnyExtraHeadersMatcher();
-
-  matcher->RemoveRulesetsWithIDs(ids_to_disable);
-  matcher->AddOrUpdateRulesets(std::move(new_matchers));
 
   prefs_->SetDNREnabledStaticRulesets(load_data.extension_id,
                                       matcher->ComputeStaticRulesetIDs());
-
-  AdjustExtraHeaderListenerCountIfNeeded(had_extra_headers_matcher);
 
   std::move(callback).Run(absl::nullopt);
 }

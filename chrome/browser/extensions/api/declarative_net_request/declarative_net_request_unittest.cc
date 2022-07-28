@@ -2150,6 +2150,43 @@ TEST_P(MultipleRulesetsTest, UpdateAndGetEnabledRulesets_RuleCountExceeded) {
   CheckExtensionAllocationInPrefs(extension()->id(), 200);
 }
 
+TEST_P(MultipleRulesetsTest,
+       UpdateAndGetEnabledRulesets_KeepEnabledStaticRulesetsAfterReload) {
+  AddRuleset(CreateRuleset(kId1, 90, 0, false));
+  AddRuleset(CreateRuleset(kId2, 60, 0, false));
+  AddRuleset(CreateRuleset(kId3, 150, 0, false));
+
+  RulesetManagerObserver ruleset_waiter(manager());
+
+  DeclarativeNetRequestUnittest::LoadAndExpectSuccess(
+      300, 0, false /* expect_rulesets_indexed */);
+
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+
+  RunUpdateEnabledRulesetsFunction(*extension(), {}, {kId2, kId3},
+                                   absl::nullopt /* expected_error */);
+  VerifyPublicRulesetIDs(*extension(), {kId2, kId3});
+  VerifyGetEnabledRulesetsFunction(*extension(), {kId2, kId3});
+
+  // Ensure the set of enabled rulesets persists across extension reloads.
+  // Regression test for crbug.com/1346185.
+  const ExtensionId extension_id = extension()->id();
+  service()->DisableExtension(extension_id,
+                              disable_reason::DISABLE_USER_ACTION);
+
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
+
+  service()->EnableExtension(extension_id);
+
+  ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
+
+  const Extension* extension =
+      registry()->GetExtensionById(extension_id, ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension);
+  VerifyPublicRulesetIDs(*extension, {kId2, kId3});
+  VerifyGetEnabledRulesetsFunction(*extension, {kId2, kId3});
+}
+
 // Test that getAvailableStaticRuleCount returns the correct number of rules an
 // extension can still enable.
 TEST_P(MultipleRulesetsTest, GetAvailableStaticRuleCount) {
