@@ -259,7 +259,8 @@ void MailboxVideoFrameConverter::ConvertFrame(scoped_refptr<VideoFrame> frame) {
   if (!frame || frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER)
     return OnError(FROM_HERE, "Invalid frame.");
 
-  VideoFrame* origin_frame = unwrap_frame_cb_.Run(*frame);
+  VideoFrame* origin_frame =
+      !unwrap_frame_cb_.is_null() ? unwrap_frame_cb_.Run(*frame) : frame.get();
   if (!origin_frame)
     return OnError(FROM_HERE, "Failed to get origin frame.");
 

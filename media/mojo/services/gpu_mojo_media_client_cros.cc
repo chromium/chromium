@@ -129,10 +129,17 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2: {
       auto frame_pool = std::make_unique<PlatformVideoFramePool>();
+
+      // With out-of-process video decoding, we don't feed wrapped frames to the
+      // MailboxVideoFrameConverter.
+      MailboxVideoFrameConverter::UnwrapFrameCB unwrap_frame_cb =
+          traits.oop_video_decoder
+              ? base::NullCallback()
+              : base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
+                                    base::Unretained(frame_pool.get()));
       auto frame_converter = MailboxVideoFrameConverter::Create(
-          base::BindRepeating(&PlatformVideoFramePool::UnwrapFrame,
-                              base::Unretained(frame_pool.get())),
-          traits.gpu_task_runner, traits.get_command_buffer_stub_cb,
+          std::move(unwrap_frame_cb), traits.gpu_task_runner,
+          traits.get_command_buffer_stub_cb,
           traits.gpu_preferences.enable_unsafe_webgpu);
       return VideoDecoderPipeline::Create(
           traits.task_runner, std::move(frame_pool), std::move(frame_converter),

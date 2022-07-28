@@ -73,12 +73,15 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
         const gpu::SyncToken& sync_token) = 0;
   };
 
-  // Creates a MailboxVideoFrameConverter instance. The callers will send
-  // wrapped VideoFrames to ConvertFrame(), |unwrap_frame_cb| is the callback
-  // used to get the original, unwrapped, VideoFrame. |gpu_task_runner| is the
-  // task runner of the GPU main thread. |enable_unsafe_webgpu| hints whether
-  // to create SharedImage of SHARED_IMAGE_USAGE_WEBGPU for VideoFrame. Returns
-  // nullptr if any argument is invalid.
+  // Creates a MailboxVideoFrameConverter instance. If |unwrap_frame_cb| is
+  // non-null, the MailboxVideoFrameConverter instance assumes that callers will
+  // call ConvertFrame() with wrapped VideoFrames and |unwrap_frame_cb| is the
+  // callback needed to unwrap them. If |unwrap_frame_cb| is null, the instance
+  // assumes that callers will call ConvertFrame() with unwrapped VideoFrames.
+  // |gpu_task_runner| is the task runner of the GPU main thread.
+  // |enable_unsafe_webgpu| hints whether to request the creation of
+  // SharedImages with SHARED_IMAGE_USAGE_WEBGPU. Returns nullptr if the
+  // MailboxVideoFrameConverter can't be created.
   static std::unique_ptr<VideoFrameConverter> Create(
       UnwrapFrameCB unwrap_frame_cb,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -100,6 +103,7 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter : public VideoFrameConverter {
 
  private:
   friend class MailboxVideoFrameConverterTest;
+  friend class MailboxVideoFrameConverterWithUnwrappedFramesTest;
 
   // Use VideoFrame::unique_id() as internal VideoFrame indexing.
   using UniqueID = decltype(std::declval<VideoFrame>().unique_id());
