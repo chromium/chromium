@@ -1003,13 +1003,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUINetworkHost)
     return &NewWebUI<chromeos::NetworkUI>;
   if (url.host_piece() == chrome::kChromeUIOobeHost) {
-    // TODO(crbug.com/1329058): Eliminate chrome://oobe/login and fix OOBE tests
-    // running inside the session.
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    bool is_running_test = command_line->HasSwitch(::switches::kTestName) ||
-                           command_line->HasSwitch(::switches::kTestType);
-    if (ash::ProfileHelper::IsSigninProfile(profile) ||
-        (url.path() == "/login" && is_running_test)) {
+    if (ash::ProfileHelper::IsSigninProfile(profile)) {
       return &NewWebUI<chromeos::OobeUI>;
     }
     return nullptr;

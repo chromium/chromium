@@ -43,7 +43,6 @@ class OobeUI : public ui::MojoWebUIController {
   // example chrome://oobe/gaia-signin.
   static const char kAppLaunchSplashDisplay[];
   static const char kGaiaSigninDisplay[];
-  static const char kLoginDisplay[];
   static const char kOobeDisplay[];
 
   class Observer {

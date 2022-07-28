@@ -315,8 +315,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://linux-proxy-config",
     "chrome://multidevice-setup",
     "chrome://network",
-    // TODO(crbug.com/1329058): Eliminate chrome://oobe/login
-    "chrome://oobe/login",
     "chrome://os-credits",
     "chrome://os-settings",
     "chrome://power",
