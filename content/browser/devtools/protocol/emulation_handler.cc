@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/bind.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -595,15 +596,15 @@ void EmulationHandler::UpdateDeviceEmulationState() {
   // this is tricky since we'd have to track the DevTools message id with the
   // WidgetMsg and acknowledgment, as well as plump the acknowledgment back to
   // the EmulationHandler somehow. Mojo callbacks should make this much simpler.
-  UpdateDeviceEmulationStateForHost(host_->GetRenderWidgetHost());
-
-  // Update portals inside this page.
-  for (auto* web_contents : GetWebContents()->GetWebContentsAndAllInner()) {
-    if (web_contents->IsPortal()) {
-      UpdateDeviceEmulationStateForHost(
-          web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost());
-    }
-  }
+  host_->ForEachRenderFrameHostIncludingSpeculative(base::BindRepeating(
+      [](EmulationHandler* handler, RenderFrameHostImpl* host) {
+        // The main frame of nested subpages (ex. fenced frames, portals) inside
+        // this page are updated as well.
+        if (host->is_main_frame())
+          handler->UpdateDeviceEmulationStateForHost(
+              host->GetRenderWidgetHost());
+      },
+      this));
 }
 
 void EmulationHandler::UpdateDeviceEmulationStateForHost(
