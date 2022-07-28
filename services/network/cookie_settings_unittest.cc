@@ -677,7 +677,6 @@ TEST_F(SamePartyCookieSettingsTest, IsCookieAccessible) {
 }
 
 TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -688,9 +687,6 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *unpartitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 
   std::unique_ptr<net::CanonicalCookie> partitioned_cookie =
       MakeCanonicalCookie(
@@ -700,9 +696,6 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   EXPECT_TRUE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 
   // If there is a site-specific content setting blocking cookies, then
   // partitioned cookies should not be available.
@@ -712,9 +705,6 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 
   // If third-party cookie blocking is enabled and there is a site-specific
   // content setting blocking the top-frame origin's own cookies, then
@@ -725,9 +715,6 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   EXPECT_FALSE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 
   // If third-party cookie blocking is enabled and there is a site-specific
   // setting for the top-frame origin that only applies on an unrelated site,
@@ -737,9 +724,6 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   EXPECT_TRUE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 
   // If third-party cookie blocking is enabled and there is a matching Storage
   // Access setting whose value is BLOCK, then the partitioned cookie should
@@ -752,9 +736,6 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   EXPECT_TRUE(settings.IsCookieAccessible(
       *partitioned_cookie, GURL(kURL), net::SiteForCookies(),
       url::Origin::Create(GURL(kOtherURL))));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Cookie.SameParty.BlockedByThirdPartyCookieBlockingSetting"),
-              IsEmpty());
 }
 
 TEST_F(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
@@ -919,7 +900,6 @@ net::CookieAccessResultList MakeUnpartitionedAndPartitionedCookies() {
 
 TEST_F(CookieSettingsTest,
        AnnotateAndMoveUserBlockedCookies_PartitionedCookies) {
-  base::HistogramTester histogram_tester;
   CookieSettings settings;
 
   net::CookieAccessResultList maybe_included_cookies =
