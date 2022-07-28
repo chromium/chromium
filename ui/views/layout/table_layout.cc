@@ -846,7 +846,7 @@ void TableLayout::ResizeUsingMin(int total_delta) const {
 bool TableLayout::CanUseMinimum(const ViewState& view_state) const {
   const auto begin =
       columns_.cbegin() + static_cast<ptrdiff_t>(view_state.start_col);
-  return std::all_of(begin, begin + static_cast<ptrdiff_t>(view_state.col_span),
+  return std::any_of(begin, begin + static_cast<ptrdiff_t>(view_state.col_span),
                      [](const auto& col) {
                        return col.resizable() &&
                               col.size_type() != ColumnSize::kFixed;

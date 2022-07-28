@@ -181,7 +181,8 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   // target width.
   void ResizeUsingMin(int delta) const;
 
-  // Only use the minimum size if all the columns the view is in are resizable.
+  // Only use the minimum size if any of the columns the view is in
+  // is resizable. Fixed columns will retain their fixed width.
   bool CanUseMinimum(const ViewState& view_state) const;
 
   // Columns.
