@@ -722,49 +722,6 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
   test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
 }
 
-class OfflineDemoSetupTest : public DemoSetupArcSupportedTest {
- public:
-  OfflineDemoSetupTest(const OfflineDemoSetupTest&) = delete;
-  OfflineDemoSetupTest& operator=(const OfflineDemoSetupTest&) = delete;
-
- protected:
-  OfflineDemoSetupTest() {
-    // Offline demo mode is not handled in the updated consolidated consent
-    // flow.
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kOobeConsolidatedConsent);
-  }
-  ~OfflineDemoSetupTest() override = default;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Flake on ASAN: crbug.com/1340651
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_NextDisabledOnNetworkScreen DISABLED_NextDisabledOnNetworkScreen
-#else
-#define MAYBE_NextDisabledOnNetworkScreen NextDisabledOnNetworkScreen
-#endif
-IN_PROC_BROWSER_TEST_F(OfflineDemoSetupTest,
-                       MAYBE_NextDisabledOnNetworkScreen) {
-  SimulateNetworkDisconnected();
-
-  TriggerDemoModeOnWelcomeScreen();
-
-  test::WaitForNetworkSelectionScreen();
-
-  test::OobeJS().ExpectDisabledPath(kNetworkNextButton);
-
-  test::OobeJS()
-      .CreateEnabledWaiter(false /* disabled */, kNetworkNextButton)
-      ->Wait();
-
-  test::OobeJS().TapOnPath(kNetworkNextButton);
-
-  // Screen should not change.
-  test::WaitForNetworkSelectionScreen();
-}
-
 // Flake on ASAN: crbug.com/1234593
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_ClickNetworkOnNetworkScreen DISABLED_ClickNetworkOnNetworkScreen
@@ -1040,7 +997,7 @@ class DemoSetupVariantCountryCodeRegionTest : public DemoSetupArcSupportedTest {
 };
 
 // Flake on ASAN: crbug.com/1340982
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_VariantCountryCodeRegionDefaultCountryIsSet \
   DISABLED_VariantCountryCodeRegionDefaultCountryIsSet
 #else
@@ -1089,7 +1046,7 @@ class DemoSetupVirtualSetRegionCodeTest : public DemoSetupArcSupportedTest {
 };
 
 // Flake on ASAN: crbug.com/1340618
-#if defined(ADDRESS_SANITIZER)
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_VirtualSetCountryCodeRegionPlaceholderIsSet \
   DISABLED_VirtualSetCountryCodeRegionPlaceholderIsSet
 #else
@@ -1127,12 +1084,12 @@ class DemoSetupRegionCodeNotExistTest : public DemoSetupArcSupportedTest {
 };
 
 // TODO(crbug.com/1320444): Re-enable the test in debug.
-#if defined(NDEBUG)
-#define MAYBE_RegionCodeNotExistPlaceholderIsSet \
-  RegionCodeNotExistPlaceholderIsSet
-#else
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_RegionCodeNotExistPlaceholderIsSet \
   DISABLED_RegionCodeNotExistPlaceholderIsSet
+#else
+#define MAYBE_RegionCodeNotExistPlaceholderIsSet \
+  RegionCodeNotExistPlaceholderIsSet
 #endif
 IN_PROC_BROWSER_TEST_F(DemoSetupRegionCodeNotExistTest,
                        MAYBE_RegionCodeNotExistPlaceholderIsSet) {
