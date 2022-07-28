@@ -33,10 +33,9 @@ class DeviceSyncCryptAuthKeyRegistryImplTest : public testing::Test {
 
   // Verify that changing the in-memory key bundle map updates the pref.
   void VerifyPrefValue(const base::Value& expected_dict) {
-    const base::Value* dict =
-        pref_service_.GetDictionary(prefs::kCryptAuthKeyRegistry);
-    ASSERT_TRUE(dict);
-    EXPECT_EQ(expected_dict, *dict);
+    const base::Value::Dict& dict =
+        pref_service_.GetValueDict(prefs::kCryptAuthKeyRegistry);
+    EXPECT_EQ(expected_dict, dict);
   }
 
   PrefService* pref_service() { return &pref_service_; }
