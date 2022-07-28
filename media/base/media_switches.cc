@@ -930,13 +930,10 @@ constexpr base::FeatureParam<MediaFoundationClearRenderingStrategy>::Option
         {MediaFoundationClearRenderingStrategy::kFrameServer, "frame-server"},
         {MediaFoundationClearRenderingStrategy::kDynamic, "dynamic"}};
 
-// TODO(crbug.com/1321817, wicarr): Media Foundation for Clear should operate in
-// dynamic mode by default. However due to a bug with dual adapters when using
-// Frame Serve mode we currently start in Direct Composition mode.
 const base::FeatureParam<MediaFoundationClearRenderingStrategy>
     kMediaFoundationClearRenderingStrategyParam{
         &kMediaFoundationClearRendering, "strategy",
-        MediaFoundationClearRenderingStrategy::kDirectComposition,
+        MediaFoundationClearRenderingStrategy::kDynamic,
         &kMediaFoundationClearRenderingStrategyOptions};
 #endif  // BUILDFLAG(IS_WIN)
 
