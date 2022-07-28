@@ -4,6 +4,13 @@
 
   const url = 'http://localhost:8000/inspector-protocol/fetch/resources/post-echo.pl';
 
+  const protocolMessages = [];
+  const originalDispatchMessage = DevToolsAPI.dispatchMessage;
+  DevToolsAPI.dispatchMessage = (message) => {
+    protocolMessages.push(message);
+    originalDispatchMessage(message);
+  };
+
   await dp.Network.enable();
   await dp.Fetch.enable();
 
@@ -26,6 +33,7 @@
   const request1 = (await dp.Fetch.onceRequestPaused()).params;
   testRunner.log(`request 1: ${request1.request.method} ${request1.request.url} networkId: ${typeof request1.networkId}`);
   if (request1.request.method !== 'OPTIONS') {
+    testRunner.log(protocolMessages);
     testRunner.fail(`FAIL: preflight request expected`);
     return;
   }
