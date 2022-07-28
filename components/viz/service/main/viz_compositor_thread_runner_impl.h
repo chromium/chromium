@@ -74,6 +74,8 @@ class VizCompositorThreadRunnerImpl : public VizCompositorThreadRunner {
   std::unique_ptr<ServerSharedBitmapManager> server_shared_bitmap_manager_;
   std::unique_ptr<InProcessGpuMemoryBufferManager> gpu_memory_buffer_manager_;
   std::unique_ptr<OutputSurfaceProvider> output_surface_provider_;
+  // `gmb_video_frame_pool_context_provider_` depends on
+  // `gpu_memory_buffer_manager_`. It must be created last, deleted first.
   std::unique_ptr<GmbVideoFramePoolContextProvider>
       gmb_video_frame_pool_context_provider_;
   std::unique_ptr<FrameSinkManagerImpl> frame_sink_manager_;

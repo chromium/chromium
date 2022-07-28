@@ -236,6 +236,7 @@ void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
   frame_sink_manager_.reset();
   hint_session_factory_.reset();
   output_surface_provider_.reset();
+  gmb_video_frame_pool_context_provider_.reset();
   gpu_memory_buffer_manager_.reset();
   server_shared_bitmap_manager_.reset();
 }
