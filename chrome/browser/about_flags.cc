@@ -6764,13 +6764,6 @@ const FeatureEntry kFeatureEntries[] = {
          kLensContextMenuSearchVariations,
          "ContextMenuSearchWithGoogleLens")},
 
-    {"context-menu-search-and-shop-with-google-lens",
-     flag_descriptions::kContextMenuSearchAndShopWithGoogleLensName,
-     flag_descriptions::kContextMenuSearchAndShopWithGoogleLensDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kContextMenuSearchAndShopWithGoogleLens)},
-
     {"lens-camera-assisted-search",
      flag_descriptions::kLensCameraAssistedSearchName,
      flag_descriptions::kLensCameraAssistedSearchDescription, kOsAndroid,

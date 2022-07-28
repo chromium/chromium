@@ -1004,11 +1004,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "context-menu-search-and-shop-with-google-lens",
-    "owners": [ "yusuyoutube@google.com", "benwgold@google.com", "lens-chrome@google.com" ],
-    "expiry_milestone": 96
-  },
-  {
     "name": "context-menu-search-with-google-lens",
     "owners": [ "benwgold@google.com", "lens-chrome@google.com" ],
     "expiry_milestone": 107

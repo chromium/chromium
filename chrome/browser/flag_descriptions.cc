@@ -685,13 +685,6 @@ const char kContextMenuSearchWithGoogleLensDescription[] =
     "Replaces default image search with an intent to Google Lens when "
     "supported.";
 
-const char kContextMenuSearchAndShopWithGoogleLensName[] =
-    "Additional menu item for Google Lens image search for shoppable images in "
-    "the context menu.";
-const char kContextMenuSearchAndShopWithGoogleLensDescription[] =
-    "Display an additional menu item for a Shopping intent to Google Lens "
-    "below Search with Google Lens when Lens shopping feature is enabled";
-
 const char kClientStorageAccessContextAuditingName[] =
     "Access contexts for client-side storage";
 const char kClientStorageAccessContextAuditingDescription[] =

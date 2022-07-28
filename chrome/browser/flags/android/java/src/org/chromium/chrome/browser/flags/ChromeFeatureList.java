@@ -287,8 +287,6 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXT_MENU_POPUP_STYLE = "ContextMenuPopupStyle";
     public static final String CONTEXT_MENU_SEARCH_WITH_GOOGLE_LENS =
             "ContextMenuSearchWithGoogleLens";
-    public static final String CONTEXT_MENU_SEARCH_AND_SHOP_WITH_GOOGLE_LENS =
-            "ContextMenuSearchAndShopWithGoogleLens";
     public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
             "ContextMenuTranslateWithGoogleLens";
     public static final String LENS_CAMERA_ASSISTED_SEARCH = "LensCameraAssistedSearch";
