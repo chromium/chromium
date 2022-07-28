@@ -7,12 +7,11 @@ package org.chromium.chrome.browser.feed.feedmanagement;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
-import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -20,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -28,6 +26,7 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.test.R;
+import org.chromium.ui.base.TestActivity;
 
 /**
  * Tests {@link FeedManagementCoordinator}.
@@ -39,22 +38,16 @@ public class FeedManagementCoordinatorTest {
 
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
     private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
-    private static class TestActivity extends AppCompatActivity {
-        TestActivity() {}
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setTheme(R.style.Theme_BrowserUI);
-        }
-    }
-
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         MockitoAnnotations.initMocks(this);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
