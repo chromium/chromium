@@ -1067,7 +1067,6 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsUncached) {
       test_dir.Append(kGoodExtensionCRXPath)));
 }
 
-// TODO(crbug.com/1348015): Deflake and re-enable the test.
 IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, ExtensionsCached) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
