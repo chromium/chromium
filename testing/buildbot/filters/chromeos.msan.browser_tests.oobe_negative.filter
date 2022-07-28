@@ -163,6 +163,7 @@
 -UserCreationScreenTest.*
 -UserSelectionScreenBlockOfflineTest.*
 -WebKioskTest.*
+-WebUIWebViewBrowserTest.*
 -WebviewChildLoginTest.*
 -WebviewClientCertsLoginTest.*
 -WebviewClientCertsLoginTestBase.*
