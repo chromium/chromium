@@ -122,7 +122,7 @@ class UpdateRequiredScreen : public BaseScreen,
   std::unique_ptr<ErrorScreensHistogramHelper> histogram_helper_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Whether the screen is shown.

@@ -13,9 +13,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
-namespace test {
+namespace ash::test {
 
 class FastTransitionObserverTest : public ::testing::Test {
  public:
@@ -68,5 +66,4 @@ TEST_F(FastTransitionObserverTest, FastTransitionChangeCallsShill) {
   EXPECT_FALSE(GetFastTransitionStatus());
 }
 
-}  // namespace test
-}  // namespace chromeos
+}  // namespace ash::test

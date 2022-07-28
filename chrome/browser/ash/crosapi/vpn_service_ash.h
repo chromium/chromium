@@ -87,9 +87,8 @@ class VpnProvidersObserver
 class VpnServiceAsh;
 
 // This class manages configurations for a particular extension.
-class VpnServiceForExtensionAsh
-    : public crosapi::mojom::VpnServiceForExtension,
-      public chromeos::NetworkConfigurationObserver {
+class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
+                                  public ash::NetworkConfigurationObserver {
  public:
   // Callback definitions.
   using SuccessCallback = base::OnceClosure;
@@ -133,7 +132,7 @@ class VpnServiceForExtensionAsh
   void DispatchConfigureDialogEvent(
       const std::string& configuration_name) override;
 
-  // chromeos::NetworkConfigurationObserver:
+  // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
                               const std::string& guid) override;
 
@@ -207,7 +206,7 @@ class VpnServiceForExtensionAsh
   raw_ptr<VpnConfiguration> active_configuration_ = nullptr;
 
   base::ScopedObservation<chromeos::NetworkConfigurationHandler,
-                          chromeos::NetworkConfigurationObserver>
+                          ash::NetworkConfigurationObserver>
       network_configuration_observer_{this};
 
   mojo::ReceiverSet<crosapi::mojom::VpnServiceForExtension> receivers_;
@@ -217,7 +216,7 @@ class VpnServiceForExtensionAsh
 };
 
 class VpnServiceAsh : public crosapi::mojom::VpnService,
-                      public chromeos::NetworkStateHandlerObserver,
+                      public ash::NetworkStateHandlerObserver,
                       public VpnProvidersObserver::Delegate {
  public:
   VpnServiceAsh();
@@ -239,7 +238,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
       const std::string& extension_id,
       bool destroy_configurations) override;
 
-  // chromeos::NetworkStateHandlerObserver:
+  // ash::NetworkStateHandlerObserver:
   void NetworkListChanged() override;
 
   // VpnProvidersObserver::Delegate:
@@ -266,7 +265,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
   base::flat_set<std::string> vpn_extensions_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Supports any number of receivers.

@@ -278,7 +278,7 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
   std::unique_ptr<PrefChangeRegistrar> profile_pref_change_registrar_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::RepeatingClosure send_auth_details_closure_for_test_;

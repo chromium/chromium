@@ -5,9 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_OBSERVER_H_
 #define CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_OBSERVER_H_
 
-namespace chromeos {
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_profile.h"
 
-struct NetworkProfile;
+namespace ash {
 
 class NetworkProfileObserver {
  public:
@@ -20,6 +21,11 @@ class NetworkProfileObserver {
   virtual ~NetworkProfileObserver() {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkProfileObserver;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_PROFILE_OBSERVER_H_

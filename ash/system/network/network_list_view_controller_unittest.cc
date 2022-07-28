@@ -113,8 +113,7 @@ std::string CreateTestEid(int euicc_num) {
   return base::StringPrintf("%s%d", kTestBaseEid, euicc_num);
 }
 
-class TestNetworkStateHandlerObserver
-    : public chromeos::NetworkStateHandlerObserver {
+class TestNetworkStateHandlerObserver : public NetworkStateHandlerObserver {
  public:
   TestNetworkStateHandlerObserver() = default;
 
@@ -123,7 +122,7 @@ class TestNetworkStateHandlerObserver
   TestNetworkStateHandlerObserver& operator=(
       const TestNetworkStateHandlerObserver&) = delete;
 
-  // chromeos::NetworkStateHandlerObserver:
+  // NetworkStateHandlerObserver:
   void ScanRequested(const NetworkTypePattern& type) override {
     scan_request_count_++;
 

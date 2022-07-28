@@ -31,8 +31,8 @@ class User;
 // network is about to change to  a non-cellular network. We introduce a delay
 // in operations that we think might run into this issue.
 class MobileDataNotifications
-    : public chromeos::NetworkStateHandlerObserver,
-      public chromeos::NetworkConnectionObserver,
+    : public ash::NetworkStateHandlerObserver,
+      public ash::NetworkConnectionObserver,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver {
  public:
@@ -83,7 +83,7 @@ class MobileDataNotifications
   base::OneShotTimer one_shot_notification_check_delay_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::WeakPtrFactory<MobileDataNotifications> weak_factory_{this};

@@ -194,7 +194,7 @@ class EuiccStatusUploaderTest : public testing::Test {
   }
 
   void UpdateUploader(EuiccStatusUploader* status_uploader) {
-    (static_cast<chromeos::NetworkPolicyObserver*>(status_uploader))
+    (static_cast<ash::NetworkPolicyObserver*>(status_uploader))
         ->PoliciesApplied(/*userhash=*/std::string());
     status_uploader->FireRetryTimerIfExistsForTesting();
   }

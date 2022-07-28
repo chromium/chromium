@@ -21,6 +21,8 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
 #include "chromeos/ash/components/network/network_state.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/ash/components/network/shill_property_handler.h"
 
@@ -31,7 +33,6 @@ class Value;
 
 namespace chromeos {
 
-class NetworkStateHandlerObserver;
 class NetworkStateHandlerTest;
 
 // Class for tracking the list of visible networks and their properties.

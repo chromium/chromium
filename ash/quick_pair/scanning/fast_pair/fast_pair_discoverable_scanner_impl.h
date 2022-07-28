@@ -29,10 +29,9 @@ namespace quick_pair {
 class DeviceMetadata;
 enum class PairFailure;
 
-class FastPairDiscoverableScannerImpl
-    : public FastPairDiscoverableScanner,
-      public FastPairScanner::Observer,
-      public chromeos::NetworkStateHandlerObserver {
+class FastPairDiscoverableScannerImpl : public FastPairDiscoverableScanner,
+                                        public FastPairScanner::Observer,
+                                        public NetworkStateHandlerObserver {
  public:
   class Factory {
    public:
@@ -71,7 +70,7 @@ class FastPairDiscoverableScannerImpl
   void OnDeviceFound(device::BluetoothDevice* device) override;
   void OnDeviceLost(device::BluetoothDevice* device) override;
 
-  // chromeos::NetworkStateHandlerObserver:
+  // NetworkStateHandlerObserver:
   void DefaultNetworkChanged(const NetworkState* network) override;
 
  private:

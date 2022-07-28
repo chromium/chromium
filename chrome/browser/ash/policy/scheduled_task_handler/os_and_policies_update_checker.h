@@ -37,9 +37,8 @@ constexpr base::TimeDelta kWaitForNetworkTimeout = base::Minutes(5);
 
 // This class is used by the scheduled update check policy to perform the actual
 // device update check.
-class OsAndPoliciesUpdateChecker
-    : public ash::UpdateEngineClient::Observer,
-      public chromeos::NetworkStateHandlerObserver {
+class OsAndPoliciesUpdateChecker : public ash::UpdateEngineClient::Observer,
+                                   public ash::NetworkStateHandlerObserver {
  public:
   explicit OsAndPoliciesUpdateChecker(
       chromeos::NetworkStateHandler* network_state_handler);
@@ -67,7 +66,7 @@ class OsAndPoliciesUpdateChecker
   // Returns true if |Start| has been called and not been |Stop|ped.
   bool IsRunning() const;
 
-  // chromeos::NetworkStateHandlerObserver overrides.
+  // ash::NetworkStateHandlerObserver overrides.
   void DefaultNetworkChanged(const ash::NetworkState* network) override;
 
  private:
@@ -119,7 +118,7 @@ class OsAndPoliciesUpdateChecker
   // Not owned.
   chromeos::NetworkStateHandler* const network_state_handler_;
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Scheduled and retries |StartUpdateCheck|.

@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/network_connection_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkConnectionObserver::NetworkConnectionObserver() = default;
 
@@ -26,4 +26,4 @@ void NetworkConnectionObserver::DisconnectRequested(
 
 NetworkConnectionObserver::~NetworkConnectionObserver() = default;
 
-}  // namespace chromeos
+}  // namespace ash

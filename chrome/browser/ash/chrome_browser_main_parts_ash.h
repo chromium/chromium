@@ -22,8 +22,6 @@
 #include "chrome/browser/memory/memory_kills_monitor.h"
 #include "chromeos/ash/components/memory/memory.h"
 #include "chromeos/ash/components/memory/zram_writeback_controller.h"
-// TODO(https://crbug.com/1164001): remove and use forward declaration.
-#include "chromeos/ash/components/network/fast_transition_observer.h"
 
 class AssistantBrowserDelegateImpl;
 class AssistantStateClient;
@@ -77,6 +75,7 @@ class CrosUsbDetector;
 class DebugdNotificationHandler;
 class DemoModeResourcesRemover;
 class EventRewriterDelegateImpl;
+class FastTransitionObserver;
 class FirmwareUpdateManager;
 class FwupdDownloadClientImpl;
 class GnubbyNotification;

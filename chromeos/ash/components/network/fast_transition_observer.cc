@@ -16,7 +16,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 FastTransitionObserver::FastTransitionObserver(PrefService* local_state)
     : local_state_(local_state) {
@@ -47,4 +47,4 @@ void FastTransitionObserver::OnPreferenceChanged(const std::string& pref_name) {
       enabled);
 }
 
-}  // namespace chromeos
+}  // namespace ash

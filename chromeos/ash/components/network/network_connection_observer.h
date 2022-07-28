@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Observer class for network connection events.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
@@ -42,12 +42,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnectionObserver {
   virtual ~NetworkConnectionObserver();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::NetworkConnectionObserver;
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkConnectionObserver;
 }
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_CONNECTION_OBSERVER_H_

@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) PsmDelegate {
 // TODO(https://crbug.com/1302175): Move methods passing DeviceActiveUseCase* to
 // methods of DeviceActiveUseCase class.
 class COMPONENT_EXPORT(ASH_DEVICE_ACTIVITY) DeviceActivityClient
-    : public chromeos::NetworkStateHandlerObserver {
+    : public NetworkStateHandlerObserver {
  public:
   // Tracks the state the client is in, given the use case (i.e DAILY).
   // These values are persisted to logs. Entries should not be renumbered and

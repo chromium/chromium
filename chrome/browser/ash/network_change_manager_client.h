@@ -32,7 +32,7 @@ namespace ash {
 // the NetworkChangeManager if the network service is enabled.
 class NetworkChangeManagerClient
     : public chromeos::PowerManagerClient::Observer,
-      public chromeos::NetworkStateHandlerObserver {
+      public NetworkStateHandlerObserver {
  public:
   NetworkChangeManagerClient(
       net::NetworkChangeNotifierPosix* network_change_notifier);
@@ -115,7 +115,7 @@ class NetworkChangeManagerClient
   std::string service_path_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   net::NetworkChangeNotifierPosix* network_change_notifier_;

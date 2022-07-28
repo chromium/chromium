@@ -31,7 +31,7 @@ namespace policy {
 // Class responsible for uploading the information about the current ESim
 // profiles to DMServer.
 class EuiccStatusUploader
-    : public chromeos::NetworkPolicyObserver,
+    : public ash::NetworkPolicyObserver,
       public ash::HermesManagerClient::Observer,
       public ash::HermesEuiccClient::Observer,
       public chromeos::ManagedCellularPrefHandler::Observer,
@@ -73,7 +73,7 @@ class EuiccStatusUploader
   ConstructRequestFromStatus(const base::Value& status,
                              bool clear_profile_list);
 
-  // chromeos::NetworkPolicyObserver:
+  // ash::NetworkPolicyObserver:
   void PoliciesApplied(const std::string& userhash) override;
   void OnManagedNetworkConfigurationHandlerShuttingDown() override;
 

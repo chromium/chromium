@@ -343,7 +343,7 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   // A connecting or newly connected network may not immediately have any
   // usable IP config object if IPv4 dhcp or IPv6 autoconf have not completed
   // yet. This case is covered by requesting shill properties asynchronously
-  // when chromeos::NetworkStateHandlerObserver::NetworkPropertiesUpdated is
+  // when ash::NetworkStateHandlerObserver::NetworkPropertiesUpdated is
   // called.
 
   // Add shill's Device properties to the given mojo NetworkConfiguration

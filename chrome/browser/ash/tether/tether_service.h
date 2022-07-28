@@ -58,7 +58,7 @@ class TetherService
       public chromeos::PowerManagerClient::Observer,
       public TetherHostFetcher::Observer,
       public device::BluetoothAdapter::Observer,
-      public chromeos::NetworkStateHandlerObserver,
+      public NetworkStateHandlerObserver,
       public TetherComponent::Observer,
       public device_sync::DeviceSyncClient::Observer,
       public multidevice_setup::MultiDeviceSetupClient::Observer {
@@ -103,7 +103,7 @@ class TetherService
   void AdapterPoweredChanged(device::BluetoothAdapter* adapter,
                              bool powered) override;
 
-  // chromeos::NetworkStateHandlerObserver:
+  // NetworkStateHandlerObserver:
   void DeviceListChanged() override;
   void DevicePropertiesUpdated(const DeviceState* device) override;
 
@@ -273,7 +273,7 @@ class TetherService
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   chromeos::NetworkStateHandler* network_state_handler_;
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
   session_manager::SessionManager* session_manager_;
   std::unique_ptr<NotificationPresenter> notification_presenter_;

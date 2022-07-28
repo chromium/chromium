@@ -226,7 +226,7 @@ class CertProvisioningSchedulerImpl
   platform_keys::PlatformKeysService* platform_keys_service_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   PrefChangeRegistrar pref_change_registrar_;

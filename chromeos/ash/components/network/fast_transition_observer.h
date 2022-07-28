@@ -13,7 +13,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 // FastTransitionObserver is a singleton, owned by
 // `ChromeBrowserMainPartsAsh`.
@@ -38,11 +38,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) FastTransitionObserver {
   PrefChangeRegistrar pref_change_registrar_;
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
-using ::chromeos::FastTransitionObserver;
-}
+}  // namespace ash
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_FAST_TRANSITION_OBSERVER_H_

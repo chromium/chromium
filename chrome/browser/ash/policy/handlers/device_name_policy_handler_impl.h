@@ -24,9 +24,8 @@ namespace policy {
 // This class observes the device setting |DeviceHostname|, and calls
 // NetworkStateHandler::SetHostname() appropriately based on the value of that
 // setting.
-class DeviceNamePolicyHandlerImpl
-    : public DeviceNamePolicyHandler,
-      public chromeos::NetworkStateHandlerObserver {
+class DeviceNamePolicyHandlerImpl : public DeviceNamePolicyHandler,
+                                    public ash::NetworkStateHandlerObserver {
  public:
   explicit DeviceNamePolicyHandlerImpl(ash::CrosSettings* cros_settings);
 
@@ -74,7 +73,7 @@ class DeviceNamePolicyHandlerImpl
   chromeos::system::StatisticsProvider* statistics_provider_;
   chromeos::NetworkStateHandler* handler_;
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   DeviceNamePolicy device_name_policy_;

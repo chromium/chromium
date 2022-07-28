@@ -141,7 +141,7 @@ class NetworkStateNotifier : public NetworkConnectionObserver,
   std::set<std::string> cellular_activating_guids_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkStateNotifier> weak_ptr_factory_{this};

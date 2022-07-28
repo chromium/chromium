@@ -256,7 +256,7 @@ class MobileActivator : public NetworkStateHandlerObserver {
   base::Time cellular_plan_payment_time_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::ObserverList<Observer>::Unchecked observers_;

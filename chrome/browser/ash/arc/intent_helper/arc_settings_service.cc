@@ -138,7 +138,7 @@ class ArcSettingsServiceFactory
 // about and sends the new values to Android to keep the state in sync.
 class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
                                public ConnectionObserver<mojom::AppInstance>,
-                               public chromeos::NetworkStateHandlerObserver {
+                               public ash::NetworkStateHandlerObserver {
  public:
   ArcSettingsServiceImpl(Profile* profile,
                          ArcBridgeService* arc_bridge_service);
@@ -255,7 +255,7 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   base::CallbackListSubscription default_zoom_level_subscription_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Name of the default network. Used to keep track of whether the default

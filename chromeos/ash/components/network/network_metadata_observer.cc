@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/network_metadata_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkMetadataObserver::NetworkMetadataObserver() = default;
 
@@ -19,4 +19,4 @@ void NetworkMetadataObserver::OnNetworkUpdate(
     const std::string& guid,
     const base::Value* set_properties) {}
 
-}  // namespace chromeos
+}  // namespace ash

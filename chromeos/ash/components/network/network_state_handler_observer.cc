@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/network_state_handler_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkStateHandlerObserver::NetworkStateHandlerObserver() = default;
 
@@ -31,7 +31,7 @@ void NetworkStateHandlerObserver::NetworkPropertiesUpdated(
     const NetworkState* network) {}
 
 void NetworkStateHandlerObserver::DevicePropertiesUpdated(
-    const chromeos::DeviceState* device) {}
+    const DeviceState* device) {}
 
 void NetworkStateHandlerObserver::ScanRequested(
     const NetworkTypePattern& type) {}
@@ -51,4 +51,4 @@ void NetworkStateHandlerObserver::HostnameChanged(const std::string& hostname) {
 
 void NetworkStateHandlerObserver::OnShuttingDown() {}
 
-}  // namespace chromeos
+}  // namespace ash

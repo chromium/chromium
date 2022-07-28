@@ -11,7 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 // Observer class for events that affect network metadata.  All callbacks are
 // executed after related metadata has been updated.
@@ -35,6 +35,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetadataObserver
   ~NetworkMetadataObserver() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkMetadataObserver;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_METADATA_OBSERVER_H_

@@ -151,7 +151,7 @@ class CrostiniManager : public KeyedService,
                         public ash::AnomalyDetectorClient::Observer,
                         public ash::ConciergeClient::VmObserver,
                         public ash::CiceroneClient::Observer,
-                        public chromeos::NetworkStateHandlerObserver,
+                        public ash::NetworkStateHandlerObserver,
                         public chromeos::PowerManagerClient::Observer {
  public:
   using CrostiniResultCallback =
@@ -536,7 +536,7 @@ class CrostiniManager : public KeyedService,
   void OnStartLxdProgress(
       const vm_tools::cicerone::StartLxdProgressSignal& signal) override;
 
-  // chromeos::NetworkStateHandlerObserver overrides:
+  // ash::NetworkStateHandlerObserver overrides:
   void ActiveNetworksChanged(
       const std::vector<const ash::NetworkState*>& active_networks) override;
   void OnShuttingDown() override;
@@ -931,7 +931,7 @@ class CrostiniManager : public KeyedService,
       terminal_provider_ids_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::flat_map<guest_os::GuestId, guest_os::GuestOsMountProviderRegistry::Id>

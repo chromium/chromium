@@ -23,8 +23,8 @@ namespace ash {
 // network after the user has explicitly requested another network connection.
 // See https://crbug.com/764000 for details.
 class ASH_EXPORT AutoConnectNotifier
-    : public chromeos::NetworkConnectionObserver,
-      public chromeos::NetworkStateHandlerObserver,
+    : public NetworkConnectionObserver,
+      public NetworkStateHandlerObserver,
       public chromeos::AutoConnectHandler::Observer {
  public:
   AutoConnectNotifier();
@@ -34,10 +34,10 @@ class ASH_EXPORT AutoConnectNotifier
 
   ~AutoConnectNotifier() override;
 
-  // chromeos::NetworkConnectionObserver:
+  // NetworkConnectionObserver:
   void ConnectToNetworkRequested(const std::string& service_path) override;
 
-  // chromeos::NetworkStateHandlerObserver:
+  // NetworkStateHandlerObserver:
   void NetworkConnectionStateChanged(const NetworkState* network) override;
 
   // chromeos::AutoConnectHandler::Observer:

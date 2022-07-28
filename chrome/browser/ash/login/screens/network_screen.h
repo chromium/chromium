@@ -155,7 +155,7 @@ class NetworkScreen : public BaseScreen, public NetworkStateHandlerObserver {
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   base::WeakPtrFactory<NetworkScreen> weak_ptr_factory_{this};

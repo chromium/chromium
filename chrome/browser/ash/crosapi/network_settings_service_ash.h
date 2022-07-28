@@ -37,7 +37,7 @@ namespace crosapi {
 // then it will clear the proxy settings set by an extension in the primary
 // profile.
 class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
-                                  public chromeos::NetworkStateHandlerObserver,
+                                  public ash::NetworkStateHandlerObserver,
                                   public ProfileManagerObserver {
  public:
   explicit NetworkSettingsServiceAsh(PrefService* local_state);
@@ -98,7 +98,7 @@ class NetworkSettingsServiceAsh : public crosapi::mojom::NetworkSettingsService,
   ProfileManager* profile_manager_ = nullptr;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          ash::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Support any number of connections.

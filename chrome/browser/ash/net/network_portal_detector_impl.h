@@ -47,7 +47,7 @@ class NetworkState;
 // NetworkStateHandler and delegates portal detection for the default
 // network to captive_portal::CaptivePortalService.
 class NetworkPortalDetectorImpl : public NetworkPortalDetector,
-                                  public chromeos::NetworkStateHandlerObserver,
+                                  public NetworkStateHandlerObserver,
                                   public content::NotificationObserver,
                                   public PortalDetectorStrategy::Delegate {
  public:
@@ -230,7 +230,7 @@ class NetworkPortalDetectorImpl : public NetworkPortalDetector,
   content::NotificationRegistrar registrar_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Test time ticks used by unit tests.

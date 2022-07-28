@@ -15,12 +15,12 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_profile.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/components/network/network_profile_observer.h"
 #include "chromeos/dbus/shill/shill_property_changed_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
-
-class NetworkProfileObserver;
 
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkProfileHandler
     : public ShillPropertyChangedObserver {

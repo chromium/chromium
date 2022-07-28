@@ -39,8 +39,8 @@ class ArcBridgeService;
 // Private implementation of ArcNetHost.
 class ArcNetHostImpl : public KeyedService,
                        public ConnectionObserver<mojom::NetInstance>,
-                       public chromeos::NetworkConnectionObserver,
-                       public chromeos::NetworkStateHandlerObserver,
+                       public ash::NetworkConnectionObserver,
+                       public ash::NetworkStateHandlerObserver,
                        public ash::PatchPanelClient::Observer,
                        public mojom::NetHost {
  public:
@@ -103,7 +103,7 @@ class ArcNetHostImpl : public KeyedService,
 
   void DisconnectHostVpn() override;
 
-  // Overridden from chromeos::NetworkStateHandlerObserver.
+  // Overridden from ash::NetworkStateHandlerObserver.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;
   void OnShuttingDown() override;
   void NetworkConnectionStateChanged(const ash::NetworkState* network) override;
@@ -111,7 +111,7 @@ class ArcNetHostImpl : public KeyedService,
   void DeviceListChanged() override;
   void NetworkPropertiesUpdated(const ash::NetworkState* network) override;
 
-  // Overridden from chromeos::NetworkConnectionObserver.
+  // Overridden from ash::NetworkConnectionObserver.
   void DisconnectRequested(const std::string& service_path) override;
 
   // Overridden from ConnectionObserver<mojom::NetInstance>:

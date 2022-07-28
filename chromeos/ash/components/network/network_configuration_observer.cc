@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/network_configuration_observer.h"
 
-namespace chromeos {
+namespace ash {
 
 // NetworkConfigurationObserver::NetworkConfigurationObserver() = default;
 
@@ -29,4 +29,4 @@ void NetworkConfigurationObserver::OnConfigurationRemoved(
 
 void NetworkConfigurationObserver::OnShuttingDown() {}
 
-}  // namespace chromeos
+}  // namespace ash

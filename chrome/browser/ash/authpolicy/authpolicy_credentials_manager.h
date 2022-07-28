@@ -39,9 +39,8 @@ namespace ash {
 
 // A service responsible for tracking user credential status. Created for each
 // Active Directory user profile.
-class AuthPolicyCredentialsManager
-    : public KeyedService,
-      public chromeos::NetworkStateHandlerObserver {
+class AuthPolicyCredentialsManager : public KeyedService,
+                                     public NetworkStateHandlerObserver {
  public:
   explicit AuthPolicyCredentialsManager(Profile* profile);
 
@@ -54,7 +53,7 @@ class AuthPolicyCredentialsManager
   // KeyedService overrides.
   void Shutdown() override;
 
-  // chromeos::NetworkStateHandlerObserver overrides.
+  // NetworkStateHandlerObserver overrides.
   void DefaultNetworkChanged(const NetworkState* network) override;
   void NetworkConnectionStateChanged(const NetworkState* network) override;
   void OnShuttingDown() override;
@@ -116,7 +115,7 @@ class AuthPolicyCredentialsManager
   KerberosFilesHandler kerberos_files_handler_;
 
   base::ScopedObservation<chromeos::NetworkStateHandler,
-                          chromeos::NetworkStateHandlerObserver>
+                          NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
 
   // Stores message ids of shown notifications. Each notification is shown at
