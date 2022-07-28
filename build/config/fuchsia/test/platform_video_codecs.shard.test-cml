@@ -1,0 +1,39 @@
+{
+  children: [
+    {
+      // Run an isolated instance of codec_factory so that tests can run on
+      // system images that don't run it.
+      name: "isolated_codec_factory",
+      url: "fuchsia-pkg://fuchsia.com/codec_factory#meta/codec_factory.cm",
+    },
+  ],
+  offer: [
+    {
+      protocol: [
+        "fuchsia.logger.LogSink",
+        "fuchsia.sysinfo.SysInfo",
+        "fuchsia.sysmem.Allocator",
+      ],
+      from: "parent",
+      to: "#isolated_codec_factory",
+    },
+    {
+        directory: "dev-mediacodec",
+        from: "parent",
+        to: "#isolated_codec_factory",
+        rights: [ "rw*" ],
+    },
+    {
+        directory: "dev-gpu",
+        from: "parent",
+        to: "#isolated_codec_factory",
+        rights: [ "rw*" ],
+    },
+  ],
+  use: [
+    {
+      protocol: "fuchsia.mediacodec.CodecFactory",
+      from: "#isolated_codec_factory",
+    },
+  ],
+}

@@ -211,16 +211,16 @@ test("media_unittests") {
       "//media/fuchsia/video:unittests",
     ]
 
-    use_cfv2 = false
+    use_cfv1 = false
+
+    # PaintCanvasVideoRendererWithGLTest.* uses SwiftShader, which generates
+    # machine code.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+
     additional_manifest_fragments = [
-      "//build/config/fuchsia/test/audio_capabilities.test-cmx",
-
-      # TODO(crbug.com/1185811): Figure out why
-      # PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture
-      # crashes without "deprecated-ambient-replace-as-executable".
-      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
-
-      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+      "//build/config/fuchsia/test/audio_output.shard.test-cml",
+      "//build/config/fuchsia/test/platform_video_codecs.shard.test-cml",
+      "//third_party/fuchsia-sdk/sdk/pkg/vulkan/client.shard.cml",
     ]
   }
 
@@ -281,9 +281,9 @@ test("audio_unittests") {
   }
 
   if (is_fuchsia) {
-    use_cfv2 = false
+    use_cfv1 = false
     additional_manifest_fragments =
-        [ "//build/config/fuchsia/test/audio_capabilities.test-cmx" ]
+        [ "//build/config/fuchsia/test/audio_output.shard.test-cml" ]
   }
 }
 
