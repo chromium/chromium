@@ -415,7 +415,9 @@ void MojoVideoDecoderService::OnDecoderOutput(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame->metadata().power_efficient);
 
   absl::optional<base::UnguessableToken> release_token;
-  if (frame->HasReleaseMailboxCB() && video_frame_handle_releaser_) {
+  if ((decoder_->FramesHoldExternalResources() ||
+       frame->HasReleaseMailboxCB()) &&
+      video_frame_handle_releaser_) {
     // |video_frame_handle_releaser_| is explicitly constructed with a
     // VideoFrameHandleReleaserImpl in Construct().
     VideoFrameHandleReleaserImpl* releaser =

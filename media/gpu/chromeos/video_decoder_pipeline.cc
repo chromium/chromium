@@ -336,6 +336,11 @@ int VideoDecoderPipeline::GetMaxDecodeRequests() const {
   return 4;
 }
 
+bool VideoDecoderPipeline::FramesHoldExternalResources() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
+  return true;
+}
+
 bool VideoDecoderPipeline::NeedsBitstreamConversion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 

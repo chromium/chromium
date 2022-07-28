@@ -158,6 +158,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   VideoDecoderType GetDecoderType() const override;
   bool IsPlatformDecoder() const override;
   int GetMaxDecodeRequests() const override;
+  bool FramesHoldExternalResources() const override;
   bool NeedsBitstreamConversion() const override;
   bool CanReadWithoutStalling() const override;
   void Initialize(const VideoDecoderConfig& config,

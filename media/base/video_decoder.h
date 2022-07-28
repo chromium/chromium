@@ -114,6 +114,11 @@ class MEDIA_EXPORT VideoDecoder : public Decoder {
   // Returns maximum number of parallel decode requests.
   virtual int GetMaxDecodeRequests() const;
 
+  // If true, the VideoDecoder outputs frames that hold resources which must be
+  // kept alive for as long as the decoder's client needs them. This is only
+  // relevant for VideoDecoders owned directly by the MojoVideoDecoderService.
+  virtual bool FramesHoldExternalResources() const;
+
   // Returns the recommended number of threads for software video decoding. If
   // the --video-threads command line option is specified and is valid, that
   // value is returned. Otherwise |desired_threads| is clamped to the number of
