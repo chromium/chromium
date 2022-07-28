@@ -24,6 +24,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
@@ -96,7 +97,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
 
   // TODO(dmurph): This eventually needs to be async, to support scopes
   // multithreading.
-  void ForceClose(const storage::BucketLocator& bucket_locator,
+  void ForceClose(storage::BucketId bucket_id,
                   bool delete_in_memory_store) override;
 
   void ForceSchemaDowngrade(
@@ -114,8 +115,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   // Called by IndexedDBBackingStore when blob files have been cleaned.
   void BlobFilesCleaned(const storage::BucketLocator& bucket_locator) override;
 
-  size_t GetConnectionCount(
-      const storage::BucketLocator& bucket_locator) const override;
+  size_t GetConnectionCount(storage::BucketId bucket_id) const override;
 
   void NotifyIndexedDBContentChanged(
       const storage::BucketLocator& bucket_locator,
@@ -128,10 +128,9 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   base::Time GetLastModified(
       const storage::BucketLocator& bucket_locator) const override;
 
-  std::vector<storage::BucketLocator> GetOpenBuckets() const;
+  std::vector<storage::BucketId> GetOpenBuckets() const;
 
-  IndexedDBBucketState* GetBucketFactory(
-      const storage::BucketLocator& bucket_locator) const;
+  IndexedDBBucketState* GetBucketFactory(const storage::BucketId& id) const;
 
   // On an OK status, the factory handle is populated. Otherwise (when status is
   // not OK), the `IndexedDBDatabaseError` will be populated. If the status was
@@ -227,7 +226,7 @@ class CONTENT_EXPORT IndexedDBFactoryImpl
   base::Time earliest_sweep_;
   base::Time earliest_compaction_;
 
-  base::flat_map<storage::BucketLocator, std::unique_ptr<IndexedDBBucketState>>
+  base::flat_map<storage::BucketId, std::unique_ptr<IndexedDBBucketState>>
       factories_per_bucket_;
 
   std::set<storage::BucketLocator> backends_opened_since_startup_;

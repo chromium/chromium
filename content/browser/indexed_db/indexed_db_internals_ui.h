@@ -14,14 +14,11 @@
 #include "base/values.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
+#include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
-
-namespace blink {
-class StorageKey;
-}
 
 namespace download {
 class DownloadItem;
@@ -87,12 +84,11 @@ class IndexedDBInternalsHandler : public WebUIMessageHandler {
   void OnForcedClose(const std::string& callback_id, uint64_t connection_count);
 
   bool GetBucketControl(const base::FilePath& path,
-                        const blink::StorageKey& storage_key,
                         storage::mojom::IndexedDBControl** control);
   bool GetBucketData(const base::Value::List& args,
                      std::string* callback_id,
                      base::FilePath* path,
-                     blink::StorageKey* storage_key,
+                     storage::BucketId* bucket_id,
                      storage::mojom::IndexedDBControl** control);
 
   base::WeakPtrFactory<IndexedDBInternalsHandler> weak_factory_{this};

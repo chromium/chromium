@@ -387,12 +387,11 @@ class IndexedDBBackingStoreTest : public testing::Test {
       // Loop through all open buckets, and force close them, and request the
       // deletion of the leveldb state. Once the states are no longer around,
       // delete all of the databases on disk.
-      auto open_factory_buckets = factory->GetOpenBuckets();
 
-      for (const auto& bucket_locator : open_factory_buckets) {
+      for (const auto& bucket_id : factory->GetOpenBuckets()) {
         base::RunLoop loop;
         IndexedDBBucketState* per_bucket_factory =
-            factory->GetBucketFactory(bucket_locator);
+            factory->GetBucketFactory(bucket_id);
 
         auto* leveldb_state =
             per_bucket_factory->backing_store()->db()->leveldb_state();
@@ -407,7 +406,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
             base::SequencedTaskRunnerHandle::Get());
 
         idb_context_->ForceClose(
-            bucket_locator,
+            bucket_id,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
             base::DoNothing());
         loop.Run();

@@ -79,7 +79,7 @@ class MockIndexedDBFactory : public IndexedDBFactory {
   std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
       const storage::BucketLocator& bucket_locator) const override;
   MOCK_METHOD2(ForceClose,
-               void(const storage::BucketLocator& bucket_locator,
+               void(storage::BucketId bucket_locator,
                     bool delete_in_memory_store));
   MOCK_METHOD1(ForceSchemaDowngrade,
                void(const storage::BucketLocator& bucket_locator));
@@ -92,7 +92,7 @@ class MockIndexedDBFactory : public IndexedDBFactory {
                void(const storage::BucketLocator& bucket_locator));
 
   MOCK_CONST_METHOD1(GetConnectionCount,
-                     size_t(const storage::BucketLocator& bucket_locator));
+                     size_t(storage::BucketId bucket_locator));
 
   MOCK_CONST_METHOD1(GetInMemoryDBSize,
                      int64_t(const storage::BucketLocator& bucket_locator));

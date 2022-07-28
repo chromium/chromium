@@ -71,11 +71,11 @@ class CONTENT_EXPORT IndexedDBFactory {
   virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
       const storage::BucketLocator& bucket_locator) const = 0;
 
-  // Close all connections to all databases within the storage key. If
+  // Close all connections to all databases within the bucket. If
   // `delete_in_memory_store` is true, references to in-memory databases will be
   // dropped thereby allowing their deletion (otherwise they are retained for
   // the lifetime of the factory).
-  virtual void ForceClose(const storage::BucketLocator& bucket_locator,
+  virtual void ForceClose(storage::BucketId bucket_id,
                           bool delete_in_memory_store = false) = 0;
 
   virtual void ForceSchemaDowngrade(
@@ -95,8 +95,7 @@ class CONTENT_EXPORT IndexedDBFactory {
   virtual void BlobFilesCleaned(
       const storage::BucketLocator& bucket_locator) = 0;
 
-  virtual size_t GetConnectionCount(
-      const storage::BucketLocator& bucket_locator) const = 0;
+  virtual size_t GetConnectionCount(storage::BucketId bucket_id) const = 0;
 
   virtual int64_t GetInMemoryDBSize(
       const storage::BucketLocator& bucket_locator) const = 0;

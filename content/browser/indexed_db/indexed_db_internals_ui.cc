@@ -27,7 +27,6 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "storage/common/database/database_identifier.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "url/origin.h"
 
@@ -60,16 +59,12 @@ IndexedDBInternalsHandler::IndexedDBInternalsHandler() = default;
 IndexedDBInternalsHandler::~IndexedDBInternalsHandler() = default;
 
 void IndexedDBInternalsHandler::RegisterMessages() {
-  // TODO(https://crbug.com/1199077): Fix this name as part of storage key
-  // migration.
   web_ui()->RegisterMessageCallback(
-      "getAllOrigins",
+      "getAllBucketsAcrossAllOrigins",
       base::BindRepeating(&IndexedDBInternalsHandler::GetAllBuckets,
                           base::Unretained(this)));
-  // TODO(https://crbug.com/1199077): Fix this name as part of storage key
-  // migration.
   web_ui()->RegisterMessageCallback(
-      "downloadOriginData",
+      "downloadBucketData",
       base::BindRepeating(&IndexedDBInternalsHandler::DownloadBucketData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
@@ -135,22 +130,20 @@ bool IndexedDBInternalsHandler::GetBucketData(
     const base::Value::List& args,
     std::string* callback_id,
     base::FilePath* partition_path,
-    blink::StorageKey* storage_key,
+    storage::BucketId* bucket_id,
     storage::mojom::IndexedDBControl** control) {
   if (args.size() < 3)
     return false;
 
   *callback_id = args[0].GetString();
   *partition_path = base::FilePath::FromUTF8Unsafe(args[1].GetString());
-  *storage_key =
-      blink::StorageKey(url::Origin::Create(GURL(args[2].GetString())));
+  *bucket_id = storage::BucketId::FromUnsafeValue(args[2].GetInt());
 
-  return GetBucketControl(*partition_path, *storage_key, control);
+  return GetBucketControl(*partition_path, control);
 }
 
 bool IndexedDBInternalsHandler::GetBucketControl(
     const base::FilePath& path,
-    const blink::StorageKey& storage_key,
     storage::mojom::IndexedDBControl** control) {
   // search the storage keys to find the right context
   BrowserContext* browser_context =
@@ -173,30 +166,28 @@ void IndexedDBInternalsHandler::DownloadBucketData(
 
   std::string callback_id;
   base::FilePath partition_path;
-  blink::StorageKey storage_key;
+  storage::BucketId bucket_id;
   storage::mojom::IndexedDBControl* control;
-  if (!GetBucketData(args, &callback_id, &partition_path, &storage_key,
-                     &control))
+  if (!GetBucketData(args, &callback_id, &partition_path, &bucket_id, &control))
     return;
 
   AllowJavascript();
   DCHECK(control);
-  // TODO(crbug.com/1315371): Allow custom bucket names.
   control->ForceClose(
-      storage_key, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
           [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-             blink::StorageKey storage_key,
+             storage::BucketId bucket_id,
              storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             // Is the connection count always zero after closing,
             // such that this can be simplified?
             // TODO(crbug.com/1315371): Allow custom bucket names.
             control->GetConnectionCount(
-                storage_key,
+                bucket_id,
                 base::BindOnce(
                     [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-                       blink::StorageKey storage_key,
+                       storage::BucketId bucket_id,
                        storage::mojom::IndexedDBControl* control,
                        const std::string& callback_id,
                        uint64_t connection_count) {
@@ -205,14 +196,14 @@ void IndexedDBInternalsHandler::DownloadBucketData(
 
                       // TODO(crbug.com/1315371): Allow custom bucket names.
                       control->DownloadBucketData(
-                          storage_key,
+                          bucket_id,
                           base::BindOnce(
                               &IndexedDBInternalsHandler::OnDownloadDataReady,
                               handler, callback_id, connection_count));
                     },
-                    handler, storage_key, control, callback_id));
+                    handler, bucket_id, control, callback_id));
           },
-          weak_factory_.GetWeakPtr(), storage_key, control, callback_id));
+          weak_factory_.GetWeakPtr(), bucket_id, control, callback_id));
 }
 
 void IndexedDBInternalsHandler::ForceCloseBucket(
@@ -221,30 +212,27 @@ void IndexedDBInternalsHandler::ForceCloseBucket(
 
   std::string callback_id;
   base::FilePath partition_path;
-  blink::StorageKey storage_key;
+  storage::BucketId bucket_id;
   storage::mojom::IndexedDBControl* control;
-  if (!GetBucketData(args, &callback_id, &partition_path, &storage_key,
-                     &control))
+  if (!GetBucketData(args, &callback_id, &partition_path, &bucket_id, &control))
     return;
 
   AllowJavascript();
-  // TODO(crbug.com/1315371): Allow custom bucket names.
   control->ForceClose(
-      storage_key, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
           [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-             blink::StorageKey storage_key,
+             storage::BucketId bucket_id,
              storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             if (!handler)
               return;
-            // TODO(crbug.com/1315371): Allow custom bucket names.
             control->GetConnectionCount(
-                storage_key,
+                bucket_id,
                 base::BindOnce(&IndexedDBInternalsHandler::OnForcedClose,
                                handler, callback_id));
           },
-          weak_factory_.GetWeakPtr(), storage_key, control, callback_id));
+          weak_factory_.GetWeakPtr(), bucket_id, control, callback_id));
 }
 
 void IndexedDBInternalsHandler::OnForcedClose(const std::string& callback_id,

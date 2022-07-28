@@ -70,28 +70,28 @@ void IndexedDBControlWrapper::DeleteForStorageKey(
 }
 
 void IndexedDBControlWrapper::ForceClose(
-    const blink::StorageKey& storage_key,
+    storage::BucketId bucket_id,
     storage::mojom::ForceCloseReason reason,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  indexed_db_control_->ForceClose(storage_key, reason, std::move(callback));
+  indexed_db_control_->ForceClose(bucket_id, reason, std::move(callback));
 }
 
 void IndexedDBControlWrapper::GetConnectionCount(
-    const blink::StorageKey& storage_key,
+    storage::BucketId bucket_id,
     GetConnectionCountCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  indexed_db_control_->GetConnectionCount(storage_key, std::move(callback));
+  indexed_db_control_->GetConnectionCount(bucket_id, std::move(callback));
 }
 
 void IndexedDBControlWrapper::DownloadBucketData(
-    const blink::StorageKey& storage_key,
+    storage::BucketId bucket_id,
     DownloadBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();
-  indexed_db_control_->DownloadBucketData(storage_key, std::move(callback));
+  indexed_db_control_->DownloadBucketData(bucket_id, std::move(callback));
 }
 
 void IndexedDBControlWrapper::GetAllBucketsDetails(

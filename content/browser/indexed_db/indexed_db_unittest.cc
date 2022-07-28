@@ -189,10 +189,9 @@ class IndexedDBTest : public testing::Test,
       // Loop through all open buckets, and force close them, and request
       // the deletion of the leveldb state. Once the states are no longer
       // around, delete all of the databases on disk.
-      auto open_factory_buckets = factory->GetOpenBuckets();
-      for (const auto& bucket_locator : open_factory_buckets) {
+      for (const auto& bucket_id : factory->GetOpenBuckets()) {
         context_->ForceClose(
-            bucket_locator,
+            bucket_id,
             storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
             base::DoNothing());
       }
@@ -420,7 +419,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteFirstParty) {
   RunPostedTasks();
 
   context()->ForceClose(
-      bucket_locator,
+      bucket_locator.id,
       storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
       base::DoNothing());
   EXPECT_TRUE(open_db_callbacks->forced_close_called());
@@ -481,7 +480,7 @@ TEST_P(IndexedDBTest, ForceCloseOpenDatabasesOnDeleteThirdParty) {
   RunPostedTasks();
 
   context()->ForceClose(
-      bucket_locator,
+      bucket_locator.id,
       storage::mojom::ForceCloseReason::FORCE_CLOSE_DELETE_ORIGIN,
       base::DoNothing());
   EXPECT_TRUE(open_db_callbacks->forced_close_called());

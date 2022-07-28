@@ -390,7 +390,7 @@ void IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB",
                "IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase");
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end()) {
     std::move(callback).Run(leveldb::Status::OK());
     return;
@@ -406,7 +406,7 @@ void IndexedDBFactoryImpl::AbortTransactionsForDatabase(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("IndexedDB",
                "IndexedDBFactoryImpl::AbortTransactionsForDatabase");
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end()) {
     std::move(callback).Run(leveldb::Status::OK());
     return;
@@ -423,7 +423,7 @@ void IndexedDBFactoryImpl::HandleBackingStoreFailure(
   if (!context_)
     return;
   context_->ForceClose(
-      bucket_locator,
+      bucket_locator.id,
       storage::mojom::ForceCloseReason::FORCE_CLOSE_BACKING_STORE_FAILURE,
       base::DoNothing());
 }
@@ -460,7 +460,7 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
 std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForBucket(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return std::vector<IndexedDBDatabase*>();
   IndexedDBBucketState* factory = it->second.get();
@@ -471,11 +471,10 @@ std::vector<IndexedDBDatabase*> IndexedDBFactoryImpl::GetOpenDatabasesForBucket(
   return out;
 }
 
-void IndexedDBFactoryImpl::ForceClose(
-    const storage::BucketLocator& bucket_locator,
-    bool delete_in_memory_store) {
+void IndexedDBFactoryImpl::ForceClose(storage::BucketId bucket_id,
+                                      bool delete_in_memory_store) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_id);
   if (it == factories_per_bucket_.end())
     return;
 
@@ -495,7 +494,7 @@ void IndexedDBFactoryImpl::ForceClose(
 void IndexedDBFactoryImpl::ForceSchemaDowngrade(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return;
 
@@ -507,7 +506,7 @@ void IndexedDBFactoryImpl::ForceSchemaDowngrade(
 V2SchemaCorruptionStatus IndexedDBFactoryImpl::HasV2SchemaCorruption(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return V2SchemaCorruptionStatus::kUnknown;
 
@@ -537,7 +536,7 @@ void IndexedDBFactoryImpl::ReportOutstandingBlobs(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!context_)
     return;
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   DCHECK(it != factories_per_bucket_.end());
 
   it->second->ReportOutstandingBlobs(blobs_outstanding);
@@ -553,9 +552,9 @@ void IndexedDBFactoryImpl::BlobFilesCleaned(
 }
 
 size_t IndexedDBFactoryImpl::GetConnectionCount(
-    const storage::BucketLocator& bucket_locator) const {
+    storage::BucketId bucket_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_id);
   if (it == factories_per_bucket_.end())
     return 0;
   size_t count = 0;
@@ -580,7 +579,7 @@ void IndexedDBFactoryImpl::NotifyIndexedDBContentChanged(
 int64_t IndexedDBFactoryImpl::GetInMemoryDBSize(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return 0;
   IndexedDBBackingStore* backing_store = it->second->backing_store();
@@ -596,17 +595,16 @@ int64_t IndexedDBFactoryImpl::GetInMemoryDBSize(
 base::Time IndexedDBFactoryImpl::GetLastModified(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return base::Time();
   IndexedDBBackingStore* backing_store = it->second->backing_store();
   return backing_store->db()->LastModified();
 }
 
-std::vector<storage::BucketLocator> IndexedDBFactoryImpl::GetOpenBuckets()
-    const {
+std::vector<storage::BucketId> IndexedDBFactoryImpl::GetOpenBuckets() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<storage::BucketLocator> output;
+  std::vector<storage::BucketId> output;
   output.reserve(factories_per_bucket_.size());
   for (const auto& pair : factories_per_bucket_) {
     output.push_back(pair.first);
@@ -615,9 +613,9 @@ std::vector<storage::BucketLocator> IndexedDBFactoryImpl::GetOpenBuckets()
 }
 
 IndexedDBBucketState* IndexedDBFactoryImpl::GetBucketFactory(
-    const storage::BucketLocator& bucket_locator) const {
+    const storage::BucketId& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(id);
   if (it != factories_per_bucket_.end())
     return it->second.get();
   return nullptr;
@@ -639,7 +637,7 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
   // where the flowchart should be seen as the 'master' logic template. Please
   // check the git history of both to make sure they are in sync.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it != factories_per_bucket_.end()) {
     return {it->second->CreateHandle(), leveldb::Status::OK(),
             IndexedDBDatabaseError(), IndexedDBDataLossInfo(),
@@ -782,7 +780,7 @@ IndexedDBFactoryImpl::GetOrOpenBucketFactory(
       std::move(run_tasks_callback), std::move(tear_down_callback),
       std::move(backing_store));
 
-  it = factories_per_bucket_.emplace(bucket_locator, std::move(bucket_state))
+  it = factories_per_bucket_.emplace(bucket_locator.id, std::move(bucket_state))
            .first;
   context_->FactoryOpened(bucket_locator);
   return {it->second->CreateHandle(), s, IndexedDBDatabaseError(),
@@ -953,7 +951,7 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
 
 void IndexedDBFactoryImpl::RemoveBucketState(
     const storage::BucketLocator& bucket_locator) {
-  factories_per_bucket_.erase(bucket_locator);
+  factories_per_bucket_.erase(bucket_locator.id);
 }
 
 void IndexedDBFactoryImpl::OnDatabaseError(
@@ -994,7 +992,7 @@ void IndexedDBFactoryImpl::MaybeRunTasksForBucket(
     const storage::BucketLocator& bucket_locator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return;
 
@@ -1024,7 +1022,7 @@ void IndexedDBFactoryImpl::RunTasksForBucket(
       OnDatabaseError(bucket_state->bucket_locator(), status, nullptr);
       return;
     case IndexedDBBucketState::RunTasksResult::kCanBeDestroyed:
-      factories_per_bucket_.erase(bucket_state->bucket_locator());
+      factories_per_bucket_.erase(bucket_state->bucket_locator().id);
       return;
   }
 }
@@ -1033,7 +1031,7 @@ bool IndexedDBFactoryImpl::IsDatabaseOpen(
     const storage::BucketLocator& bucket_locator,
     const std::u16string& name) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return false;
   return base::Contains(it->second->databases(), name);
@@ -1042,13 +1040,13 @@ bool IndexedDBFactoryImpl::IsDatabaseOpen(
 bool IndexedDBFactoryImpl::IsBackingStoreOpen(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Contains(factories_per_bucket_, bucket_locator);
+  return base::Contains(factories_per_bucket_, bucket_locator.id);
 }
 
 bool IndexedDBFactoryImpl::IsBackingStorePendingClose(
     const storage::BucketLocator& bucket_locator) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = factories_per_bucket_.find(bucket_locator);
+  auto it = factories_per_bucket_.find(bucket_locator.id);
   if (it == factories_per_bucket_.end())
     return false;
   return it->second->IsClosing();
