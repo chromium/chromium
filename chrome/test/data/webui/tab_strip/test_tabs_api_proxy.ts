@@ -37,7 +37,6 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
   private groupVisualData_: {[key: string]: TabGroupVisualData} = {};
   private tabs_: Tab[] = [];
   private thumbnailRequestCounts_: Map<number, number>;
-  private colors_: {[key: string]: string} = {};
   private layout_: {[key: string]: string} = {};
   private visible_: boolean = false;
 
@@ -53,7 +52,6 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
       'setThumbnailTracked',
       'ungroupTab',
       'closeContainer',
-      'getColors',
       'getLayout',
       'isVisible',
       'observeThemeChanges',
@@ -152,11 +150,6 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
     this.methodCalled('ungroupTab', [tabId]);
   }
 
-  getColors() {
-    this.methodCalled('getColors');
-    return Promise.resolve({colors: this.colors_});
-  }
-
   getLayout() {
     this.methodCalled('getLayout');
     return Promise.resolve({layout: this.layout_});
@@ -165,10 +158,6 @@ export class TestTabsApiProxy extends TestBrowserProxy implements TabsApiProxy {
   isVisible() {
     this.methodCalled('isVisible');
     return this.visible_;
-  }
-
-  setColors(colors: {[key: string]: string}) {
-    this.colors_ = colors;
   }
 
   setLayout(layout: {[key: string]: string}) {

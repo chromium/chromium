@@ -95,10 +95,6 @@ suite('TabList', () => {
     TabsApiProxyImpl.setInstance(testTabsApiProxy);
     callbackRouter = testTabsApiProxy.getCallbackRouterRemote();
 
-    testTabsApiProxy.setColors({
-      '--background-color': 'white',
-      '--foreground-color': 'black',
-    });
     testTabsApiProxy.setLayout({
       '--height': '100px',
       '--width': '150px',
@@ -115,24 +111,6 @@ suite('TabList', () => {
 
   teardown(() => {
     testTabsApiProxy.reset();
-  });
-
-  test('sets theme colors on init', async () => {
-    await testTabsApiProxy.whenCalled('getColors');
-    assertEquals(tabList.style.getPropertyValue('--background-color'), 'white');
-    assertEquals(tabList.style.getPropertyValue('--foreground-color'), 'black');
-  });
-
-  test('updates theme colors when theme changes', async () => {
-    testTabsApiProxy.setColors({
-      '--background-color': 'pink',
-      '--foreground-color': 'blue',
-    });
-    callbackRouter.themeChanged();
-    await flushTasks();
-    await testTabsApiProxy.whenCalled('getColors');
-    assertEquals(tabList.style.getPropertyValue('--background-color'), 'pink');
-    assertEquals(tabList.style.getPropertyValue('--foreground-color'), 'blue');
   });
 
   test('sets layout variables on init', async () => {
