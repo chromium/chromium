@@ -144,6 +144,7 @@
 #include "ash/system/power/power_prefs.h"
 #include "ash/system/power/power_status.h"
 #include "ash/system/power/video_activity_notifier.h"
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/system/privacy_hub/microphone_privacy_switch_controller.h"
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/screen_security/screen_switch_check_controller.h"
@@ -627,6 +628,9 @@ Shell::~Shell() {
 
   hud_display::HUDDisplayView::Destroy();
 
+  // Observes `SessionController` and must be destroyed before it.
+  camera_privacy_switch_controller_.reset();
+
   for (auto& observer : shell_observers_)
     observer.OnShellDestroying();
 
@@ -997,6 +1001,11 @@ void Shell::Init(
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.
+  // Privacy hub controllers.
+  // TODO(b/239400029): Move this to the unified privacy hub controller
+  // after it is created.
+  camera_privacy_switch_controller_ =
+      std::make_unique<CameraPrivacySwitchController>();
   touch_devices_controller_ = std::make_unique<TouchDevicesController>();
   if (!ash::features::IsBluetoothRevampEnabled()) {
     bluetooth_power_controller_ =
