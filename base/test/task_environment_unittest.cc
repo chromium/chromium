@@ -413,8 +413,8 @@ TEST_F(TaskEnvironmentTest, MockTimeStartsWithWholeMilliseconds) {
   const Clock* mock_clock = task_environment.GetMockClock();
   EXPECT_TRUE(
       (mock_tick_clock->NowTicks().since_origin() % Milliseconds(1)).is_zero());
-  // The Windows epoch has no subsecond components, so any subsecond components
-  // in `Time::Now()` will appear in their difference.
+  // The Windows epoch has no submillisecond components, so any submillisecond
+  // components in `Time::Now()` will appear in their difference.
   EXPECT_TRUE((mock_clock->Now().since_origin() % Milliseconds(1)).is_zero());
   EXPECT_TRUE((Time::Now().since_origin() % Milliseconds(1)).is_zero());
   EXPECT_TRUE((TimeTicks::Now().since_origin() % Milliseconds(1)).is_zero());

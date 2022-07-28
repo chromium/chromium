@@ -25,6 +25,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time_to_iso8601.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +39,13 @@
 
 namespace base {
 namespace {
+
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
+using ::testing::Return;
+using ::testing::ReturnPointee;
 
 TestResult GenerateTestResult(const std::string& test_name,
                               TestResult::Status status,
@@ -103,14 +111,21 @@ class MockTestLauncherDelegate : public TestLauncherDelegate {
   MOCK_METHOD0(GetBatchSize, size_t());
 };
 
+class MockResultWatcher : public ResultWatcher {
+ public:
+  MockResultWatcher(FilePath result_file, size_t num_tests)
+      : ResultWatcher(result_file, num_tests) {}
+
+  MOCK_METHOD(bool, WaitWithTimeout, (TimeDelta), (override));
+};
+
 // Using MockTestLauncher to test TestLauncher.
 // Test TestLauncher filters, and command line switches setup.
 class TestLauncherTest : public testing::Test {
  protected:
   TestLauncherTest()
       : command_line(new CommandLine(CommandLine::NO_PROGRAM)),
-        test_launcher(&delegate, 10),
-        task_environment(base::test::TaskEnvironment::MainThreadType::IO) {}
+        test_launcher(&delegate, 10) {}
 
   // Adds tests to be returned by the delegate.
   void AddMockedTests(std::string test_case_name,
@@ -127,7 +142,6 @@ class TestLauncherTest : public testing::Test {
 
   // Setup expected delegate calls, and which tests the delegate will return.
   void SetUpExpectCalls(size_t batch_size = 10) {
-    using ::testing::_;
     EXPECT_CALL(delegate, GetTests(_))
         .WillOnce(::testing::DoAll(testing::SetArgPointee<0>(tests_),
                                    testing::Return(true)));
@@ -150,11 +164,30 @@ class TestLauncherTest : public testing::Test {
   std::unique_ptr<CommandLine> command_line;
   MockTestLauncher test_launcher;
   MockTestLauncherDelegate delegate;
-  base::test::TaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::IO};
   ScopedTempDir dir;
 
  private:
   std::vector<TestIdentifier> tests_;
+};
+
+class ResultWatcherTest : public testing::Test {
+ protected:
+  ResultWatcherTest() = default;
+
+  FilePath CreateResultFile() {
+    FilePath result_file = dir.GetPath().AppendASCII("test_results.xml");
+    WriteFile(result_file,
+              "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+              "<testsuites>\n"
+              "  <testsuite>\n");
+    return result_file;
+  }
+
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTempDir dir;
 };
 
 // Action to mock delegate invoking OnTestFinish on test launcher.
@@ -195,7 +228,6 @@ TEST_F(TestLauncherTest, OrphanePreTest) {
 // When There are no tests, delegate should not be called.
 TEST_F(TestLauncherTest, EmptyTestSetPasses) {
   SetUpExpectCalls();
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _)).Times(0);
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
 }
@@ -207,7 +239,6 @@ TEST_F(TestLauncherTest, FilterDisabledTestByDefault) {
                  {"firstTest", "secondTest", "DISABLED_firstTestDisabled"});
   SetUpExpectCalls();
   std::vector<std::string> tests_names = {"Test.firstTest", "Test.secondTest"};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -226,7 +257,6 @@ TEST_F(TestLauncherTest, ReorderPreTests) {
   SetUpExpectCalls();
   std::vector<std::string> tests_names = {
       "Test.PRE_PRE_firstTest", "Test.PRE_firstTest", "Test.firstTest"};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -243,7 +273,6 @@ TEST_F(TestLauncherTest, UsingCommandLineFilter) {
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("gtest_filter", "Test*.first*");
   std::vector<std::string> tests_names = {"Test.firstTest"};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -261,7 +290,6 @@ TEST_F(TestLauncherTest, FilterIncludePreTest) {
   command_line->AppendSwitchASCII("gtest_filter", "Test.firstTest");
   std::vector<std::string> tests_names = {"Test.PRE_firstTest",
                                           "Test.firstTest"};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -284,7 +312,6 @@ TEST_F(TestLauncherTest, FilterIncludeExclude) {
       "Test.firstTest",
       "Test.thirdTest",
   };
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -300,7 +327,6 @@ TEST_F(TestLauncherTest, RepeatTest) {
   SetUpExpectCalls();
   // Unless --gtest-break-on-failure is specified,
   command_line->AppendSwitchASCII("gtest_repeat", "2");
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .Times(2)
       .WillRepeatedly(::testing::DoAll(OnTestResult(
@@ -315,7 +341,6 @@ TEST_F(TestLauncherTest, RunningMultipleIterationsUntilFailure) {
   // Unless --gtest-break-on-failure is specified,
   command_line->AppendSwitchASCII("gtest_repeat", "4");
   command_line->AppendSwitch("gtest_break_on_failure");
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(::testing::DoAll(OnTestResult(&test_launcher, "Test.firstTest",
                                               TestResult::TEST_SUCCESS)))
@@ -331,7 +356,6 @@ TEST_F(TestLauncherTest, SuccessOnRetryTests) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-retry-limit", "2");
-  using ::testing::_;
   std::vector<std::string> tests_names = {"Test.firstTest"};
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
@@ -351,7 +375,6 @@ TEST_F(TestLauncherTest, FailOnRetryTests) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-retry-limit", "2");
-  using ::testing::_;
   std::vector<std::string> tests_names = {"Test.firstTest"};
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
@@ -373,7 +396,6 @@ TEST_F(TestLauncherTest, RetryPreTests) {
       GenerateTestResult("Test.PRE_PRE_firstTest", TestResult::TEST_SUCCESS),
       GenerateTestResult("Test.PRE_firstTest", TestResult::TEST_FAILURE),
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS)};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(::testing::DoAll(
           OnTestResult(&test_launcher, "Test.PRE_PRE_firstTest",
@@ -416,7 +438,6 @@ TEST_F(TestLauncherTest, PreTestFailure) {
   std::vector<TestResult> results = {
       GenerateTestResult("Test.PRE_FirstTest", TestResult::TEST_FAILURE),
       GenerateTestResult("Test.FirstTest", TestResult::TEST_SUCCESS)};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(
           ::testing::DoAll(OnTestResult(&test_launcher, "Test.PRE_FirstTest",
@@ -447,7 +468,6 @@ TEST_F(TestLauncherTest, RunDisabledTests) {
   std::vector<std::string> tests_names = {"DISABLED_TestDisabled.firstTest",
                                           "Test.firstTest",
                                           "Test.DISABLED_firstTestDisabled"};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -469,7 +489,6 @@ TEST_F(TestLauncherTest, DisablePreTests) {
                           "PRE_firstTest", "secondTest"});
   SetUpExpectCalls();
   std::vector<std::string> tests_names = {"Test.secondTest"};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -483,7 +502,6 @@ TEST_F(TestLauncherTest, DisablePreTests) {
 TEST_F(TestLauncherTest, ExcessiveOutput) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
-  using ::testing::_;
   command_line->AppendSwitchASCII("test-launcher-retry-limit", "0");
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
   TestResult test_result =
@@ -500,7 +518,6 @@ TEST_F(TestLauncherTest, OutputLimitSwitch) {
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "never");
   command_line->AppendSwitchASCII("test-launcher-output-bytes-limit", "800000");
-  using ::testing::_;
   TestResult test_result =
       GenerateTestResult("Test.firstTest", TestResult::TEST_SUCCESS,
                          Milliseconds(30), std::string(500000, 'a'));
@@ -521,7 +538,6 @@ TEST_F(TestLauncherTest, RedirectStdio) {
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
   command_line->AppendSwitchASCII("test-launcher-print-test-stdio", "always");
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, "Test.firstTest",
                              TestResult::TEST_SUCCESS));
@@ -536,7 +552,6 @@ TEST_F(TestLauncherTest, StableSharding) {
   command_line->AppendSwitchASCII("test-launcher-shard-index", "0");
   command_line->AppendSwitch("test-launcher-stable-sharding");
   std::vector<std::string> tests_names = {"Test.firstTest", "Test.secondTest"};
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(
                                  _,
                                  testing::ElementsAreArray(tests_names.cbegin(),
@@ -656,7 +671,6 @@ TEST_F(TestLauncherTest, JsonSummary) {
       GenerateTestResult("Test.secondTest", TestResult::TEST_SUCCESS,
                          Milliseconds(50), "output_second");
 
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .Times(2)
       .WillRepeatedly(
@@ -711,7 +725,6 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
       GenerateTestResult("Test.DISABLED_Test", TestResult::TEST_SUCCESS,
                          Milliseconds(50), "output_second");
 
-  using ::testing::_;
   EXPECT_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
       .WillOnce(OnTestResult(&test_launcher, test_result));
   EXPECT_TRUE(test_launcher.Run(command_line.get()));
@@ -746,7 +759,6 @@ MATCHER(DirectoryIsParentOf, "") {
 // Test that the launcher creates a dedicated temp dir for a child proc and
 // cleans it up.
 TEST_F(TestLauncherTest, TestChildTempDir) {
-  using ::testing::_;
   AddMockedTests("Test", {"firstTest"});
   SetUpExpectCalls();
   ON_CALL(test_launcher, LaunchChildGTestProcess(_, _, _, _))
@@ -822,6 +834,217 @@ TEST_F(UnitTestLauncherDelegateTester, GetCommandLine) {
   for (unsigned i = 0; i < test_names.size(); i++) {
     EXPECT_EQ(gtest_filter_tests.at(i), test_names.at(i));
   }
+}
+
+// Verify that a result watcher can stop polling early when all tests complete.
+TEST_F(ResultWatcherTest, PollCompletesQuickly) {
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath result_file = CreateResultFile();
+  ASSERT_TRUE(AppendToFile(
+      result_file,
+      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
+              "classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\">\n", "    </testcase>\n",
+              "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(), "\" />\n",
+              "    <testcase name=\"C\" status=\"run\" time=\"0.500\" "
+              "classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(), "\">\n",
+              "    </testcase>\n", "  </testsuite>\n", "</testsuites>\n"})));
+
+  MockResultWatcher result_watcher(result_file, 2);
+  EXPECT_CALL(result_watcher, WaitWithTimeout(_))
+      .WillOnce(DoAll(InvokeWithoutArgs([&]() {
+                        task_environment.AdvanceClock(Milliseconds(1500));
+                      }),
+                      Return(true)));
+
+  Time start = Time::Now();
+  ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
+  ASSERT_EQ(Time::Now() - start, Milliseconds(1500));
+}
+
+// Verify that a result watcher repeatedly checks the file for a batch of slow
+// tests. Each test completes in 40s, which is just under the timeout of 45s.
+TEST_F(ResultWatcherTest, PollCompletesSlowly) {
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath result_file = CreateResultFile();
+  ASSERT_TRUE(AppendToFile(
+      result_file,
+      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\" />\n"})));
+
+  MockResultWatcher result_watcher(result_file, 10);
+  size_t checks = 0;
+  bool done = false;
+  EXPECT_CALL(result_watcher, WaitWithTimeout(_))
+      .Times(10)
+      .WillRepeatedly(
+          DoAll(Invoke([&](TimeDelta timeout) {
+                  task_environment.AdvanceClock(timeout);
+                  // Append a result with "time" (duration) as 40.000s and
+                  // "timestamp" (test start) as `Now()` - 45s.
+                  AppendToFile(
+                      result_file,
+                      StrCat({"    <testcase name=\"B\" status=\"run\" "
+                              "time=\"40.000\" classname=\"A\" timestamp=\"",
+                              TimeToISO8601(Time::Now() - Seconds(45)).c_str(),
+                              "\">\n", "    </testcase>\n"}));
+                  checks++;
+                  if (checks == 10) {
+                    AppendToFile(result_file,
+                                 "  </testsuite>\n"
+                                 "</testsuites>\n");
+                    done = true;
+                  } else {
+                    // Append a preliminary result for the next test that
+                    // started when the last test completed (i.e., `Now()` - 45s
+                    // + 40s).
+                    AppendToFile(
+                        result_file,
+                        StrCat({"    <x-teststart name=\"B\" classname=\"A\" "
+                                "timestamp=\"",
+                                TimeToISO8601(Time::Now() - Seconds(5)).c_str(),
+                                "\" />\n"}));
+                  }
+                }),
+                ReturnPointee(&done)));
+
+  Time start = Time::Now();
+  ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
+  // The first check occurs 45s after the batch starts, so the sequence of
+  // events looks like:
+  //   00:00 - Test 1 starts
+  //   00:40 - Test 1 completes, test 2 starts
+  //   00:45 - Check 1 occurs
+  //   01:20 - Test 2 completes, test 3 starts
+  //   01:25 - Check 2 occurs
+  //   02:00 - Test 3 completes, test 4 starts
+  //   02:05 - Check 3 occurs
+  //   ...
+  ASSERT_EQ(Time::Now() - start, Seconds(45 + 40 * 9));
+}
+
+// Verify that the result watcher identifies when a test times out.
+TEST_F(ResultWatcherTest, PollTimeout) {
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath result_file = CreateResultFile();
+  ASSERT_TRUE(AppendToFile(
+      result_file,
+      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\" />\n"})));
+
+  MockResultWatcher result_watcher(result_file, 10);
+  EXPECT_CALL(result_watcher, WaitWithTimeout(_))
+      .Times(2)
+      .WillRepeatedly(
+          DoAll(Invoke(&task_environment, &test::TaskEnvironment::AdvanceClock),
+                Return(false)));
+
+  Time start = Time::Now();
+  ASSERT_FALSE(result_watcher.PollUntilDone(Seconds(45)));
+  // Include a small grace period.
+  ASSERT_EQ(Time::Now() - start, Seconds(45) + TestTimeouts::tiny_timeout());
+}
+
+// Verify that the result watcher retries incomplete reads.
+TEST_F(ResultWatcherTest, RetryIncompleteResultRead) {
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath result_file = CreateResultFile();
+  // Opening "<summary>" tag is not closed.
+  ASSERT_TRUE(AppendToFile(
+      result_file,
+      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              "    <testcase name=\"B\" status=\"run\" time=\"40.000\" "
+              "classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\">\n",
+              "      <summary>"})));
+
+  MockResultWatcher result_watcher(result_file, 2);
+  size_t attempts = 0;
+  bool done = false;
+  EXPECT_CALL(result_watcher, WaitWithTimeout(_))
+      .Times(5)
+      .WillRepeatedly(DoAll(Invoke([&](TimeDelta timeout) {
+                              task_environment.AdvanceClock(timeout);
+                              // Don't bother writing the rest of the file when
+                              // this test completes.
+                              done = ++attempts >= 5;
+                            }),
+                            ReturnPointee(&done)));
+
+  Time start = Time::Now();
+  ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
+  ASSERT_EQ(Time::Now() - start,
+            Seconds(45) + 4 * TestTimeouts::tiny_timeout());
+}
+
+// Verify that the result watcher continues polling with the base timeout when
+// the clock jumps backward.
+TEST_F(ResultWatcherTest, PollWithClockJumpBackward) {
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath result_file = CreateResultFile();
+  // Cannot move the mock time source backward, so write future timestamps into
+  // the result file instead.
+  Time time_before_change = Time::Now() + Hours(1);
+  ASSERT_TRUE(AppendToFile(
+      result_file,
+      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(time_before_change).c_str(), "\" />\n",
+              "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
+              "classname=\"A\" timestamp=\"",
+              TimeToISO8601(time_before_change).c_str(), "\">\n",
+              "    </testcase>\n",
+              "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(time_before_change + Milliseconds(500)).c_str(),
+              "\" />\n"})));
+
+  MockResultWatcher result_watcher(result_file, 2);
+  EXPECT_CALL(result_watcher, WaitWithTimeout(_))
+      .WillOnce(
+          DoAll(Invoke(&task_environment, &test::TaskEnvironment::AdvanceClock),
+                Return(false)))
+      .WillOnce(
+          DoAll(Invoke(&task_environment, &test::TaskEnvironment::AdvanceClock),
+                Return(true)));
+
+  Time start = Time::Now();
+  ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
+  ASSERT_EQ(Time::Now() - start, Seconds(90));
+}
+
+// Verify that the result watcher continues polling with the base timeout when
+// the clock jumps forward.
+TEST_F(ResultWatcherTest, PollWithClockJumpForward) {
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath result_file = CreateResultFile();
+  ASSERT_TRUE(AppendToFile(
+      result_file,
+      StrCat({"    <x-teststart name=\"B\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\" />\n",
+              "    <testcase name=\"B\" status=\"run\" time=\"0.500\" "
+              "classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now()).c_str(), "\">\n", "    </testcase>\n",
+              "    <x-teststart name=\"C\" classname=\"A\" timestamp=\"",
+              TimeToISO8601(Time::Now() + Milliseconds(500)).c_str(),
+              "\" />\n"})));
+  task_environment.AdvanceClock(Hours(1));
+
+  MockResultWatcher result_watcher(result_file, 2);
+  EXPECT_CALL(result_watcher, WaitWithTimeout(_))
+      .WillOnce(
+          DoAll(Invoke(&task_environment, &test::TaskEnvironment::AdvanceClock),
+                Return(false)))
+      .WillOnce(
+          DoAll(Invoke(&task_environment, &test::TaskEnvironment::AdvanceClock),
+                Return(true)));
+
+  Time start = Time::Now();
+  ASSERT_TRUE(result_watcher.PollUntilDone(Seconds(45)));
+  ASSERT_EQ(Time::Now() - start, Seconds(90));
 }
 
 // Validate delegate sets batch size correctly.

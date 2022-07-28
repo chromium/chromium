@@ -334,6 +334,43 @@ class TestLauncher {
   int repeats_per_iteration_ = 1;
 };
 
+// Watch a gtest XML result file for tests run in a batch to complete.
+class ResultWatcher {
+ public:
+  ResultWatcher(FilePath result_file, size_t num_tests);
+
+  // Poll the incomplete result file, blocking until the batch completes or a
+  // test timed out. Returns true iff no tests timed out.
+  bool PollUntilDone(TimeDelta timeout_per_test);
+
+  // Wait and block for up to `timeout` before we poll the result file again.
+  // Returns true iff we should stop polling the results early.
+  virtual bool WaitWithTimeout(TimeDelta timeout) = 0;
+
+ private:
+  // Read the results, check if a timeout occurred, and then return how long
+  // the polling loop should wait for. A nonpositive return value indicates a
+  // timeout (i.e., the next check is overdue).
+  //
+  // If a timeout did not occur, this method tries to schedule the next check
+  // for `timeout_per_test` since the last test completed.
+  TimeDelta PollOnce(TimeDelta timeout_per_test);
+
+  // Get the timestamp of the test that completed most recently. If no tests
+  // have completed, return the null time.
+  Time LatestCompletionTimestamp(const std::vector<TestResult>& test_results);
+
+  // Path to the results file.
+  FilePath result_file_;
+
+  // The number of tests that run in this batch.
+  size_t num_tests_;
+
+  // The threshold past which we attribute a large time since latest completion
+  // to daylight savings time instead of a timed out test.
+  static constexpr TimeDelta kDaylightSavingsThreshold = Minutes(50);
+};
+
 // Return the number of parallel jobs to use, or 0U in case of error.
 size_t NumParallelJobs(unsigned int cores_per_job);
 

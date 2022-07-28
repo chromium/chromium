@@ -254,7 +254,7 @@ TEST(ToolsSanityTest, DISABLED_AddressSanitizerGlobalOOBCrashTest) {
 
 #ifndef HARMFUL_ACCESS_IS_NOOP
 TEST(ToolsSanityTest, AsanHeapOverflow) {
-  HARMFUL_ACCESS(debug::AsanHeapOverflow() ,"to the right");
+  HARMFUL_ACCESS(debug::AsanHeapOverflow(), "to the right");
 }
 
 TEST(ToolsSanityTest, AsanHeapUnderflow) {

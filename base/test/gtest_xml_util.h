@@ -14,8 +14,8 @@ struct TestResult;
 
 // Produces a vector of test results based on GTest output file.
 // Returns true iff the output file exists and has been successfully parsed.
-// On successful return |crashed| is set to true if the test results
-// are valid but incomplete.
+// On successful return and if non-null, |crashed| is set to true if the test
+// results are valid but incomplete.
 [[nodiscard]] bool ProcessGTestOutput(const base::FilePath& output_file,
                                       std::vector<TestResult>* results,
                                       bool* crashed);
