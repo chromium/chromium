@@ -515,9 +515,13 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
   // objects if the app is not currently handling a UI event to ensure they're
   // released promptly even in the absence of UI events.
   MessagePumpScopedAutoreleasePool autorelease_pool(this);
-  // Call DoIdleWork once, and if something was done, arrange to come back here
-  // again as long as the loop is still running.
+  // Pop the current work item scope as it captures any native work happening
+  // *between* the last DoWork() and this DoIdleWork()
+  PopWorkItemScope();
   bool did_work = delegate_->DoIdleWork();
+  // As in DoWork(), push a new scope to cover any native work that could
+  // possibly happen between now and BeforeWait().
+  PushWorkItemScope();
   if (did_work)
     CFRunLoopSourceSignal(idle_work_source_);
 }
@@ -552,6 +556,8 @@ void MessagePumpCFRunLoopBase::RunNestingDeferredWork() {
 
 void MessagePumpCFRunLoopBase::BeforeWait() {
   // Current work item tracking needs to go away since execution will stop.
+  // Matches the PushWorkItemScope() in AfterWaitObserver() (with an arbitrary
+  // amount of matching Pop/Push in between when running work items).
   PopWorkItemScope();
 
   if (!delegate_) {
@@ -605,7 +611,8 @@ void MessagePumpCFRunLoopBase::AfterWaitObserver(CFRunLoopObserverRef observer,
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
   base::mac::CallWithEHFrame(^{
     // Emerging from sleep, any work happening after this (outside of a
-    // RunWork()) should be considered native work.
+    // RunWork()) should be considered native work. Matching PopWorkItemScope()
+    // is in BeforeWait().
     self->PushWorkItemScope();
   });
 }
