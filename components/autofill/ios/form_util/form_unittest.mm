@@ -336,3 +336,20 @@ TEST_F(FormJsTest, AddCustomElement) {
     return info != nil;
   }));
 }
+
+// Tests getting max length from element.
+TEST_F(FormJsTest, GetMaxLength) {
+  LoadHtml(@"<form>"
+            "<input type='password' name='password' id='id1' maxlength='12'>"
+            "<input type='password2' name='password2' id='id2'>"
+            "</form>");
+  id result = ExecuteJavaScript(
+      @"__gCrWeb.form.getMaxLength(document.getElementById('id1'));");
+  NSInteger result_int = [result integerValue];
+  EXPECT_EQ(result_int, 12);
+
+  id result2 = ExecuteJavaScript(
+      @"__gCrWeb.form.getMaxLength(document.getElementById('id2'));");
+  result_int = [result2 integerValue];
+  EXPECT_EQ(result_int, 0);
+}

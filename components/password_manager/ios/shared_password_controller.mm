@@ -128,6 +128,9 @@ NSString* const kSuggestionSuffix = @" ••••••••";
   // The value that was last typed by the user.
   NSString* _lastTypedValue;
 
+  // The max length for the focused field.
+  int _maxLength;
+
   // Identifier of the last focused form.
   FormRendererId _lastFocusedFormIdentifier;
 
@@ -651,11 +654,10 @@ NSString* const kSuggestionSuffix = @" ••••••••";
     [self formEligibleForGenerationFound:generationData];
   }
 
-  // TODO(crbug.com/886583): pass correct |max_length|.
   std::u16string generatedPassword =
       self.passwordGenerationHelper->GeneratePassword(
           [self lastCommittedURL], autofill::FormSignature(0),
-          autofill::FieldSignature(0), /*max_length=*/0);
+          autofill::FieldSignature(0), _maxLength);
 
   self.generatedPotentialPassword = SysUTF16ToNSString(generatedPassword);
 
@@ -788,6 +790,7 @@ NSString* const kSuggestionSuffix = @" ••••••••";
     _lastFocusedFormIdentifier = params.unique_form_id;
     _lastFocusedFieldIdentifier = params.unique_field_id;
     _lastFocusedFrame = frame;
+    _maxLength = params.max_length;
   }
 
   // If there's a change in password forms on a page, they should be parsed

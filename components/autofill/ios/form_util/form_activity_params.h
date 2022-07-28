@@ -62,6 +62,7 @@ struct FormActivityParams : public BaseFormActivityParams {
   std::string field_type;
   std::string value;
   std::string type;
+  int max_length;
   // |has_user_gesture| is true when the activity was registered as a result of
   // a user action, and not by an event created and dispatched by JavaScript.
   bool has_user_gesture = false;

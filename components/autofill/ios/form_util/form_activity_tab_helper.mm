@@ -92,6 +92,7 @@ void FormActivityTabHelper::HandleFormActivity(
   const std::string* field_type = message_body->FindStringKey("fieldType");
   const std::string* type = message_body->FindStringKey("type");
   const std::string* value = message_body->FindStringKey("value");
+  absl::optional<double> max_length = message_body->FindDoubleKey("maxlength");
   absl::optional<bool> has_user_gesture =
       message_body->FindBoolKey("hasUserGesture");
   if (!field_identifier || !unique_field_id || !field_type || !type || !value ||
@@ -111,6 +112,8 @@ void FormActivityTabHelper::HandleFormActivity(
     params.value = *value;
   if (has_user_gesture)
     params.has_user_gesture = *has_user_gesture;
+  if (max_length.has_value())
+    params.max_length = static_cast<int>(max_length.value());
 
   for (auto& observer : observers_)
     observer.FormActivityRegistered(web_state, sender_frame, params);

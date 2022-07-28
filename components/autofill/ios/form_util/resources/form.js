@@ -301,3 +301,17 @@ __gCrWeb.form['fieldWasEditedByUser'] = function(element) {
   }
   return __gCrWeb.form.wasEditedByUser.get(element);
 };
+
+/**
+ * Returns the form's |maxLength| attribute if non-empty; otherwise returns 0.
+ *
+ * @param {Element} field An element for which the max length is returned.
+ * @return {number} an integer that represents the element's max length.
+ */
+__gCrWeb.form.getMaxLength = function(element) {
+  if (!element) {
+    return 0;
+  }
+  const maxLength = element.maxLength;
+  return (!maxLength || maxLength < 0) ? 0 : maxLength;
+};

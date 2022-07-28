@@ -131,6 +131,7 @@ function trackPasswordField_(field) {
           'type': 'password_form_cleared',
           'value': __gCrWeb.stringify(formData),
           'hasUserGesture': false,
+          'maxlength': 0,
         };
         sendMessageOnNextLoop_(msg);
       }
@@ -227,6 +228,7 @@ function formActivity_(evt) {
     'type': type,
     'value': value,
     'hasUserGesture': evt.isTrusted,
+    'maxlength': __gCrWeb.form.getMaxLength(field),
   };
   sendMessageOnNextLoop_(msg);
 }
@@ -424,6 +426,7 @@ __gCrWeb.formHandlers['trackFormMutations'] = function(delay) {
           'type': 'form_changed',
           'value': '',
           'hasUserGesture': false,
+          'maxlength': 0,
         };
         return sendFormMutationMessageAfterDelay_(msg, delay);
       }
