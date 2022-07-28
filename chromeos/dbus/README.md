@@ -14,7 +14,7 @@ With the significantly increased number of clients, this model no longer makes
 sense.
 
 New clients should not be added to DBusThreadManager but instead should follow
-the pattern described below. DBusThreadManager will eventually be deprecated.
+the pattern described below.
 
 ## D-Bus Client Best Practices
 
@@ -43,14 +43,6 @@ in [src/chromeos/ash/components/dbus/kerberos].
 *   These clients do not have any dependency on FeatureList, and care should be
     taken regarding initialization order if such dependencies are added (see
     BluezDBusManager for an example of such client).
-
-## Shill clients
-
-The DBusThreadManager::GetShill*Client() methods have been left intact for now.
-However, the clients are no longer owned by DBusThreadManager so that they can
-be initialized independently.
-
-New code should prefer Shill*Client::Get() over the DBusThreadManager accessors.
 
 ## Older clients that have been removed:
 

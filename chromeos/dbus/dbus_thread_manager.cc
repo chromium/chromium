@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "chromeos/dbus/common/dbus_client.h"
 
 namespace chromeos {
 
@@ -18,21 +17,15 @@ DBusThreadManager::DBusThreadManager() = default;
 
 DBusThreadManager::~DBusThreadManager() = default;
 
-void DBusThreadManager::InitializeClients() {
-  // Some clients call DBusThreadManager::Get() during initialization.
-  DCHECK(g_dbus_thread_manager);
-
-  if (!IsUsingFakes())
-    VLOG(1) << "DBusThreadManager initialized for ChromeOS";
-  else
-    VLOG(1) << "DBusThreadManager created for testing";
-}
-
 // static
 void DBusThreadManager::Initialize() {
   CHECK(!g_dbus_thread_manager);
   g_dbus_thread_manager = new DBusThreadManager();
-  g_dbus_thread_manager->InitializeClients();
+
+  if (!g_dbus_thread_manager->IsUsingFakes())
+    VLOG(1) << "DBusThreadManager initialized for ChromeOS";
+  else
+    VLOG(1) << "DBusThreadManager created for testing";
 }
 
 // static

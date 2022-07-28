@@ -51,10 +51,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   // Returns the global instance if initialized. May return null.
   static ShillIPConfigClient* Get();
 
-  // Factory function, creates a new instance which is owned by the caller.
-  // For normal usage, access the singleton via DBusThreadManager::Get().
-  static ShillIPConfigClient* Create();
-
   ShillIPConfigClient(const ShillIPConfigClient&) = delete;
   ShillIPConfigClient& operator=(const ShillIPConfigClient&) = delete;
 

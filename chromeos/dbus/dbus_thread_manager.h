@@ -34,11 +34,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
   DBusThreadManager(const DBusThreadManager&) = delete;
   const DBusThreadManager& operator=(const DBusThreadManager&) = delete;
   ~DBusThreadManager() override;
-
-  // Performs additional setup.
-  // TODO(https://crbug.com/948390): Remove after shill client initialization
-  // moves into chrome/browser.
-  void InitializeClients();
 };
 
 }  // namespace chromeos
