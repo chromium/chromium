@@ -2405,6 +2405,14 @@ const char kNoncedPartitionedCookiesDescription[] =
     "feature is disabled. If \"Partitioned cookies\" are enabled, then "
     "enabling or disabling this feature does nothing.";
 
+const char kThirdPartyStoragePartitioningName[] =
+    "Experimental third-party storage partitioning.";
+const char kThirdPartyStoragePartitioningDescription[] =
+    "Enables partitioning of third-party storage by top-level site. "
+    "Note: this is under active development and may result in unexpected "
+    "behavior. Please file bugs at https://bugs.chromium.org/p/chromium/issues/"
+    "entry?labels=StoragePartitioning-trial-bugs&components=Blink%3EStorage.";
+
 const char kScrollableTabStripFlagId[] = "scrollable-tabstrip";
 const char kScrollableTabStripName[] = "Tab Scrolling";
 const char kScrollableTabStripDescription[] =

@@ -6094,6 +6094,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "third-party-storage-partitioning",
+    "owners": [ "miketaylr", "eliason" ],
+    "expiry_milestone": 112
+  },
+  {
     "name": "throttle-foreground-timers",
     "owners": [ "fdoray", "scheduler-dev" ],
     "expiry_milestone": 102
