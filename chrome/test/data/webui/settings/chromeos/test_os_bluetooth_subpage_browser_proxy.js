@@ -16,6 +16,7 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends
   constructor() {
     super([
       'requestFastPairSavedDevices',
+      'deleteFastPairSavedDevice',
     ]);
     this.savedDevices = [];
   }
@@ -23,5 +24,15 @@ export class TestOsBluetoothDevicesSubpageBrowserProxy extends
   requestFastPairSavedDevices() {
     this.methodCalled('requestFastPairSavedDevices');
     webUIListenerCallback('fast-pair-saved-devices-list', this.savedDevices);
+  }
+
+  /**
+   * @override
+   * @param {string} accountKey
+   */
+  deleteFastPairSavedDevice(accountKey) {
+    // Remove the device from the proxy's device list if it exists,
+    this.savedDevices =
+        this.savedDevices.filter(device => device.accountKey !== accountKey);
   }
 }
