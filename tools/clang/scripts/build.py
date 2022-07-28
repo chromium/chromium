@@ -183,14 +183,6 @@ def GetCommitDescription(commit):
       universal_newlines=True).rstrip()
 
 
-def DeleteChromeToolsShim():
-  # TODO: These dirs are no longer used. Remove this code after a while.
-  OLD_SHIM_DIR = os.path.join(LLVM_DIR, 'tools', 'zzz-chrometools')
-  shutil.rmtree(OLD_SHIM_DIR, ignore_errors=True)
-  CHROME_TOOLS_SHIM_DIR = os.path.join(LLVM_DIR, 'llvm', 'tools', 'chrometools')
-  shutil.rmtree(CHROME_TOOLS_SHIM_DIR, ignore_errors=True)
-
-
 def AddCMakeToPath(args):
   """Download CMake and add it to PATH."""
   if args.use_system_cmake:
@@ -642,7 +634,6 @@ def main():
   WriteStampFile('', FORCE_HEAD_REVISION_FILE)
 
   AddCMakeToPath(args)
-  DeleteChromeToolsShim()
 
 
   if args.skip_build:
