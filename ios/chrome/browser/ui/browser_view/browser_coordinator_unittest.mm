@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/sync/sync_error_browser_agent.h"
+#import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
@@ -185,6 +186,50 @@ TEST_F(BrowserCoordinatorTest, SharePage) {
   BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
   [browser_coordinator start];
   [browser_coordinator sharePage];
+
+  // Check that fullscreen is exited.
+  EXPECT_EQ(1.0, controller_ptr->GetProgress());
+
+  [browser_coordinator stop];
+
+  // Check that -start has been called.
+  EXPECT_OCMOCK_VERIFY(classMock);
+}
+
+// Tests that -shareChromeApp is instantiating the SharingCoordinator
+// with ActivityParams where scenario is ShareChrome, leaving fullscreen
+// and starting the share coordinator.
+TEST_F(BrowserCoordinatorTest, ShareChromeApp) {
+  FullscreenModel model;
+  std::unique_ptr<TestFullscreenController> controller =
+      std::make_unique<TestFullscreenController>(&model);
+  TestFullscreenController* controller_ptr = controller.get();
+
+  browser_->SetUserData(TestFullscreenController::UserDataKeyForTesting(),
+                        std::move(controller));
+
+  controller_ptr->EnterFullscreen();
+  ASSERT_EQ(0.0, controller_ptr->GetProgress());
+
+  id expectShareChromeScenarioArg =
+      [OCMArg checkWithBlock:^BOOL(ActivityParams* params) {
+        return params.scenario == ActivityScenario::ShareChrome;
+      }];
+
+  id classMock = OCMClassMock([SharingCoordinator class]);
+  SharingCoordinator* mockSharingCoordinator = classMock;
+  OCMExpect([classMock alloc]).andReturn(classMock);
+  OCMExpect([[classMock ignoringNonObjectArgs]
+                initWithBaseViewController:[OCMArg any]
+                                   browser:browser_.get()
+                                    params:expectShareChromeScenarioArg
+                                originView:[OCMArg any]])
+      .andReturn(mockSharingCoordinator);
+  OCMExpect([mockSharingCoordinator start]);
+
+  BrowserCoordinator* browser_coordinator = GetBrowserCoordinator();
+  [browser_coordinator start];
+  [browser_coordinator shareChromeApp];
 
   // Check that fullscreen is exited.
   EXPECT_EQ(1.0, controller_ptr->GetProgress());

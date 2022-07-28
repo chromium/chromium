@@ -12,6 +12,9 @@
 // Shows the share sheet for the current page.
 - (void)sharePage;
 
+// Shows the share sheet for a link to the Chrome App in the App Store.
+- (void)shareChromeApp;
+
 // Shows the share sheet for the page and currently highlighted text.
 - (void)shareHighlight:(ShareHighlightCommand*)command;
 

@@ -165,6 +165,9 @@
 constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
     base::Milliseconds(300);
 
+// URL to share when user selects "Share Chrome"
+const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
+
 @interface BrowserCoordinator () <ActivityServiceCommands,
                                   BrowserCoordinatorCommands,
                                   CRWWebStateObserver,
@@ -1077,6 +1080,29 @@ constexpr base::TimeDelta kLegacyFullscreenControllerToolbarAnimationDuration =
                       originView:positioner.sourceView
                       originRect:positioner.sourceRect
                           anchor:anchor];
+  [self.sharingCoordinator start];
+}
+
+- (void)shareChromeApp {
+  GURL URL = GURL(kChromeAppStoreUrl);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_TITLE);
+  NSString* additionalText =
+      l10n_util::GetNSString(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME_DESC);
+  ActivityParams* params =
+      [[ActivityParams alloc] initWithURL:URL
+                                    title:title
+                           additionalText:additionalText
+                                 scenario:ActivityScenario::ShareChrome];
+
+  // Exit fullscreen if needed to make sure that share button is visible.
+  FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
+
+  self.sharingCoordinator = [[SharingCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         browser:self.browser
+                          params:params
+                      originView:self.viewController.view];
   [self.sharingCoordinator start];
 }
 
