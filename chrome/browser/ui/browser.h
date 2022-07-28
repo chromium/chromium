@@ -759,10 +759,6 @@ class Browser : public TabStripModelObserver,
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void RunScreenAIAnnotator();
-
-  // Ownership will be transferred to browser.
-  void SetScreenAIAnnotatorForTesting(
-      std::unique_ptr<screen_ai::AXScreenAIAnnotator> annotator);
 #endif
 
  private:
