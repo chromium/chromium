@@ -2314,10 +2314,10 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
     def disabled_test_driver_logging(self):
         # FIXME: Figure out how to either use a mock-test port to
         # get output or mack mock ports work again.
-        host = Host()
+        host = MockHost()
         _, err, _ = logging_run([
             '--platform', 'mock-win', '--driver-logging',
-            'fast/harness/results.html'
+            'passes/skipped/skip.html'
         ],
                                 tests_included=True,
                                 host=host)

@@ -25,9 +25,6 @@
 # Perf tests are really slow in debug builds and there are few benefits in running them.
 [ Debug ] http/tests/perf/* [ Skip ]
 
-# Not intended to be run as a test.
-fast/harness/results.html [ Skip ]
-
 # Chrome Win/Linux doesn't support emacs key-bindings.
 [ Win ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]
 [ Linux ] editing/pasteboard/emacs-cntl-y-001.html [ Skip ]

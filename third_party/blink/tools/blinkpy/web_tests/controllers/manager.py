@@ -722,7 +722,8 @@ class Manager(object):
 
     def _copy_results_html_file(self, destination_dir, filename):
         """Copies a file from the template directory to the results directory."""
-        template_dir = self._path_finder.path_from_web_tests('fast', 'harness')
+        template_dir = self._path_finder.path_from_blink_tools(
+            'blinkpy', 'web_tests')
         source_path = self._filesystem.join(template_dir, filename)
         destination_path = self._filesystem.join(destination_dir, filename)
         # Note that the results.html template file won't exist when

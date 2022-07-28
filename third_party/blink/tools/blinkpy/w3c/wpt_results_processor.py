@@ -129,8 +129,8 @@ class WPTResultsProcessor(object):
         _log.info('Recreated artifacts directory (%s)', self.artifacts_dir)
 
     def _copy_results_viewer(self):
-        source = self.fs.join(self.web_tests_dir, 'fast', 'harness',
-                              'results.html')
+        source = self.path_finder.path_from_blink_tools(
+            'blinkpy', 'web_tests', 'results.html')
         destination = self.fs.join(self.artifacts_dir, 'results.html')
         self.fs.copyfile(source, destination)
         _log.info('Copied results viewer (%s -> %s)', source, destination)
@@ -244,7 +244,7 @@ class WPTResultsProcessor(object):
                                            test_passed)
             self._maybe_write_screenshots(artifacts, current_path)
             self._maybe_write_logs(artifacts, current_path)
-            # Required by fast/harness/results.html to show stderr.
+            # Required by blinkpy/web_tests/results.html to show stderr.
             if 'stderr' in artifacts:
                 current_node['has_stderr'] = True
             self._add_result_to_sink(current_node, current_path,

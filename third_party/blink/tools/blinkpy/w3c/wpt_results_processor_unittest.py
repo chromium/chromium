@@ -8,6 +8,7 @@ import re
 import unittest
 
 from blinkpy.common.host_mock import MockHost as BlinkMockHost
+from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
@@ -54,6 +55,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.host = BlinkMockHost()
         self.host.port_factory = MockPortFactory(self.host)
         self.fs = self.host.filesystem
+        self.path_finder = PathFinder(self.fs)
         port = self.host.port_factory.get()
         self.wpt_report_path = self.fs.join('out', 'Default',
                                             'wpt_report.json')
@@ -95,8 +97,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
                 },
             }))
         self.fs.write_text_file(
-            self.fs.join(port.web_tests_dir(), 'fast', 'harness',
-                         'results.html'), 'results-viewer-body')
+            self.path_finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                                   'results.html'),
+            'results-viewer-body')
         self.fs.write_text_file(
             self.fs.join(port.web_tests_dir(), 'external', 'Version'),
             'Version: afd66ac5976672821b2788cd5f6ae57701240308\n')

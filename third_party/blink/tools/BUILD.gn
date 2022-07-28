@@ -33,9 +33,6 @@ group("wpt_tests_isolate") {
     # Include the results processor.
     "//third_party/blink/tools/wpt_process_results.py",
 
-    # Include the results viewer
-    "//third_party/blink/web_tests/fast/harness/results.html",
-
     # Include the various Test Expectations files.
     "//third_party/blink/web_tests/ASANExpectations",
     "//third_party/blink/web_tests/LeakExpectations",
