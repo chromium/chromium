@@ -102,6 +102,12 @@ ResolvedSourceString SourceString::SkipVariableSubstitution() const {
       ResolvedSourceStringState{.contains_substitutions = false});
 }
 
+template <typename ResolutionState>
+void GenericSourceString<ResolutionState>::TrimStart() {
+  auto start = Str().find_first_not_of(" \t");
+  Consume(start);
+}
+
 template <>
 bool SourceString::ContainsSubstitutions() const {
   return false;

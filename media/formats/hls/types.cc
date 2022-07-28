@@ -59,8 +59,12 @@ absl::optional<SourceString> ExtractAttributeName(SourceString* source_str) {
 
 // Returns the substring matching a valid AttributeValue, advancing `source_str`
 // to the following character. If no such substring exists, returns
-// `absl::nullopt` and leaves `source_str` untouched. This like like matching
-// the regex `^[a-zA-Z0-9_.-]+|"[^"\r\n]*"`.
+// `absl::nullopt` and leaves `source_str` untouched.
+// Attribute values may either be quoted or unquoted.
+// Quoted attribute values begin and end with a double-quote ("), and may
+// contain internal whitespace and commas. Unquoted attribute values must not
+// begin with a double-quote, but may contain any character excluding whitespace
+// and commas.
 absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
   // Cache string to stack so we don't modify it unless its valid
   auto str = *source_str;
@@ -73,15 +77,10 @@ absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
   // If this is a quoted attribute value, get everything between the matching
   // quotes
   if (*str.Str().begin() == '"') {
-    const auto matching_quote = str.Str().find_first_of("\"\r\n", 1);
+    const auto matching_quote = str.Str().find('"', 1);
 
     // If match wasn't found, value isn't valid
     if (matching_quote == base::StringPiece::npos) {
-      return absl::nullopt;
-    }
-
-    // If match was not '"', value isn't valid
-    if (str.Str().at(matching_quote) != '"') {
       return absl::nullopt;
     }
 
@@ -90,18 +89,10 @@ absl::optional<SourceString> ExtractAttributeValue(SourceString* source_str) {
     return result;
   }
 
-  // Otherwise, extract valid unquoted chars.
-  // This returns whether a given char is permitted in an unquoted attribute
-  // value.
-  const auto is_char_valid = [](char c) -> bool {
-    return base::IsAsciiAlphaNumeric(c) || IsOneOf(c, "-_.");
-  };
-
-  const char* end =
-      std::find_if_not(str.Str().cbegin(), str.Str().cend(), is_char_valid);
-  const auto result = str.Consume(end - str.Str().cbegin());
-
-  // At least one character must have matched
+  // Otherwise, extract characters up to the next comma or whitespace. This must
+  // not be empty.
+  const auto end = str.Str().find_first_of(", \t");
+  const auto result = str.Consume(end);
   if (result.Empty()) {
     return absl::nullopt;
   }
@@ -296,13 +287,16 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
   // we'll continue returning the same error.
   auto content = remaining_content_;
 
+  // Whitespace is allowed preceding the attribute name
+  content.TrimStart();
+
   // Empty string is tolerated, but caller must handle this case.
   if (content.Empty()) {
     return ParseStatusCode::kReachedEOF;
   }
 
   // The remainder of the function expects a string matching
-  // {AttributeName}={AttributeValue}[,][...]
+  // {AttributeName}[ ]=[ ]{AttributeValue}[ ][,[...]]
 
   // Extract attribute name
   const auto name = ExtractAttributeName(&content);
@@ -310,10 +304,16 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
     return ParseStatusCode::kMalformedAttributeList;
   }
 
+  // Whitespace is allowed following the attribute name
+  content.TrimStart();
+
   // Next character must be '='
   if (content.Consume(1).Str() != "=") {
     return ParseStatusCode::kMalformedAttributeList;
   }
+
+  // Whitespace is allowed preceding the attribute value
+  content.TrimStart();
 
   // Extract attribute value
   const auto value = ExtractAttributeValue(&content);
@@ -321,10 +321,12 @@ ParseStatus::Or<AttributeListIterator::Item> AttributeListIterator::Next() {
     return ParseStatusCode::kMalformedAttributeList;
   }
 
+  // Whitespace is allowed following attribute value
+  content.TrimStart();
+
   // Following character must either be a comma, or the end of the string
-  // The wording of the spec doesn't explicitly allow or reject trailing
-  // commas. Since they appear in other contexts (and they're great) I'm going
-  // to support them.
+  // Trailing commas are allowed (not explicitly by the spec, but supported by
+  // Safari).
   if (!content.Empty() && content.Consume(1).Str() != ",") {
     return ParseStatusCode::kMalformedAttributeList;
   }

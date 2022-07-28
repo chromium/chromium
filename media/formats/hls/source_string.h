@@ -95,6 +95,12 @@ class MEDIA_EXPORT GenericSourceString {
   // references.
   ResolvedSourceString SkipVariableSubstitution() const;
 
+  // Trims whitespace from the start of this SourceString. The only tolerated
+  // "whitespace" characters are space (' ') and tab ('\t'). Page break ('\f')
+  // is not tolerated, and carriage return ('\r') and line-feed ('\n') should
+  // never appear in `SourceString`.
+  void TrimStart();
+
   // Returns whether this string contains variable substitutions, i.e. is
   // different from the original source.
   bool ContainsSubstitutions() const;
