@@ -56,6 +56,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;
     window.press = this.press;
+    window.doDefault = this.doDefault;
+    window.focus = this.focus;
     window.Mod = constants.ModifierFlag;
     window.ActionType = chrome.automation.ActionType;
 
@@ -73,6 +75,15 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
       EventGenerator.sendKeyPress(keyCode, modifiers);
     };
   }
+
+  focus(node) {
+    return () => node.focus();
+  }
+
+  doDefault(node) {
+    return () => node.doDefault();
+  }
+
 
   get linksAndHeadingsDoc() {
     return `
@@ -225,8 +236,6 @@ ChromeVoxBackgroundTestWithTestServer = class extends ChromeVoxBackgroundTest {
     return true;
   }
 };
-
-
 
 /** Tests that ChromeVox classic is in this context. */
 AX_TEST_F('ChromeVoxBackgroundTest', 'ClassicNamespaces', function() {
@@ -400,7 +409,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'ShowContextMenu', async function() {
   const rootNode =
       await this.runWithLoadedTree('<p>before</p><a href="a">a</a>');
   const go = rootNode.find({role: RoleType.LINK});
-  mockFeedback.call(go.focus.bind(go))
+  mockFeedback.call(focus(go))
       .expectSpeech('a', 'Link')
       .call(doCmd('contextMenu'))
       .expectSpeech(/menu opened/)
@@ -434,11 +443,11 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'BrailleRouting', async function() {
       rootNode.find({role: RoleType.BUTTON, attributes: {name: 'Click me'}});
   const textField = rootNode.find({role: RoleType.TEXT_FIELD});
   mockFeedback.expectBraille('start')
-      .call(button1.focus.bind(button1))
+      .call(focus(button1))
       .expectBraille(/^Click me btn/)
       .call(route.bind(null, 5))
       .expectBraille(/Focus me btn/)
-      .call(textField.focus.bind(textField))
+      .call(focus(textField))
       .expectBraille('Edit me ed', {startIndex: 0})
       .call(route.bind(null, 3))
       .expectBraille('Edit me ed', {startIndex: 3})
@@ -460,11 +469,11 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'FocusInputElement', async function() {
   const quest = rootNode.find({attributes: {value: 'Grail'}});
   const color = rootNode.find({attributes: {value: 'Blue'}});
 
-  mockFeedback.call(quest.focus.bind(quest))
+  mockFeedback.call(focus(quest))
       .expectSpeech('Grail', 'Edit text')
-      .call(color.focus.bind(color))
+      .call(focus(color))
       .expectSpeech('Blue', 'Edit text')
-      .call(name.focus.bind(name))
+      .call(focus(name))
       .expectNextSpeechUtteranceIsNot('Blue')
       .expectSpeech('Lancelot', 'Edit text');
   mockFeedback.replay();
@@ -611,11 +620,9 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NoisySlider', async function() {
   const root = await this.runWithLoadedTree(site);
   const go = root.find({role: RoleType.BUTTON});
   const slider = root.find({role: RoleType.SLIDER});
-  const focusButton = go.focus.bind(go);
-  const focusSlider = slider.focus.bind(slider);
-  mockFeedback.call(focusButton)
+  mockFeedback.call(focus(go))
       .expectNextSpeechUtteranceIsNot('noisy')
-      .call(focusSlider)
+      .call(focus(slider))
       .expectSpeech('noisy')
       .expectSpeech('noisy')
       .replay();
@@ -640,17 +647,15 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'Checkbox', async function() {
   `;
   const root = await this.runWithLoadedTree(site);
   const cbx = root.find({role: RoleType.CHECK_BOX});
-  const click = cbx.doDefault.bind(cbx);
-  const focus = cbx.focus.bind(cbx);
-  mockFeedback.call(focus)
+  mockFeedback.call(focus(cbx))
       .expectSpeech('go')
       .expectSpeech('Check box')
       .expectSpeech('Not checked')
-      .call(click)
+      .call(doDefault(cbx))
       .expectSpeech('go')
       .expectSpeech('Check box')
       .expectSpeech('Checked')
-      .call(click)
+      .call(doDefault(cbx))
       .expectSpeech('go')
       .expectSpeech('Check box')
       .expectSpeech('Not checked')
@@ -732,7 +737,7 @@ AX_TEST_F(
         };
         const beforeButton =
             rootNode.find({role: RoleType.BUTTON, name: 'Before'});
-        mockFeedback.call(beforeButton.focus.bind(beforeButton))
+        mockFeedback.call(focus(beforeButton))
             .expectSpeech('Before', 'Button')
             .call(suppressFocusActionOutput)
             .call(doCmd('nextObject'))
@@ -774,7 +779,6 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', async function() {
   `;
   const root = await this.runWithLoadedTree(site);
   const select = root.find({role: RoleType.POP_UP_BUTTON});
-  const clickSelect = select.doDefault.bind(select);
   const selectLastOption = () => {
     const options = select.findAll({role: RoleType.LIST_BOX_OPTION});
     options[options.length - 1].doDefault();
@@ -782,7 +786,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SelectOptionSelected', async function() {
 
   mockFeedback.call(doCmd('nextObject'))
       .expectSpeech('Button', 'Press Search+Space to activate')
-      .call(clickSelect)
+      .call(doDefault(select))
       .expectSpeech('apple')
       .expectSpeech('Button')
       .expectSpeech('Expanded')
@@ -863,7 +867,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'BackwardForwardSync', async function() {
   const root = await this.runWithLoadedTree(site);
   const listItem = root.find({role: RoleType.LIST_ITEM});
 
-  mockFeedback.call(listItem.focus.bind(listItem))
+  mockFeedback.call(focus(listItem))
       .expectSpeech('ok', 'List item')
       .call(this.doCmd('nextObject'))
       .expectSpeech('\u2022 ')  // bullet
@@ -886,7 +890,6 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'DisappearingObject', async function() {
   const rootNode = await this.runWithLoadedTree(this.disappearingObjectDoc);
   const deleteButton =
       rootNode.find({role: RoleType.BUTTON, attributes: {name: 'Delete'}});
-  const pressDelete = deleteButton.doDefault.bind(deleteButton);
   mockFeedback.expectSpeech('start').expectBraille('start');
 
   mockFeedback.call(doCmd('nextObject'))
@@ -897,7 +900,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'DisappearingObject', async function() {
       .expectSpeech('Before3')
       .call(doCmd('nextObject'))
       .expectSpeech('Disappearing')
-      .call(pressDelete)
+      .call(doDefault(deleteButton))
       .expectSpeech('Deleted')
       .call(doCmd('nextObject'))
       .expectSpeech('After1')
@@ -933,7 +936,7 @@ AX_TEST_F(
       const site = '<input type="submit" aria-label="foo" value="foo"></input>';
       const root = await this.runWithLoadedTree(site);
       const btn = root.find({role: RoleType.BUTTON});
-      mockFeedback.call(btn.focus.bind(btn))
+      mockFeedback.call(focus(btn))
           .expectSpeech('foo')
           .expectSpeech('Button')
           .replay();
@@ -947,7 +950,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NameFromHeadingLink', async function() {
   `;
   const root = await this.runWithLoadedTree(site);
   const link = root.find({role: RoleType.LINK});
-  mockFeedback.call(link.focus.bind(link))
+  mockFeedback.call(focus(link))
       .expectSpeech('go')
       .expectSpeech('Link')
       .expectSpeech('Heading 1')
@@ -1240,9 +1243,9 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NavigationMovesFocus', async function() {
   const root = await this.runWithLoadedTree(site);
   doCmd('nextEditText')();
   await this.waitForEvent(root.find({role: RoleType.TEXT_FIELD}), 'focus');
-  const focus = ChromeVoxState.instance.currentRange.start.node;
-  assertEquals(RoleType.TEXT_FIELD, focus.role);
-  assertTrue(focus.state.focused);
+  const textField = ChromeVoxState.instance.currentRange.start.node;
+  assertEquals(RoleType.TEXT_FIELD, textField.role);
+  assertTrue(textField.state.focused);
 });
 
 AX_TEST_F(
@@ -1473,16 +1476,16 @@ TEST_F_WITH_PREAMBLE(
     `);
         const textField = root.find({role: RoleType.TEXT_FIELD});
         const div = textField.parent;
-        mockFeedback.call(textField.focus.bind(textField))
+        mockFeedback.call(focus(textField))
             .expectSpeech('Edit text')
-            .call(div.doDefault.bind(div))
+            .call(doDefault(div))
             .expectSpeechWithQueueMode('go', QueueMode.CATEGORY_FLUSH)
 
-            .call(div.doDefault.bind(div))
+            .call(doDefault(div))
             .expectSpeechWithQueueMode('queued', QueueMode.QUEUE)
             .expectSpeechWithQueueMode('e', QueueMode.CATEGORY_FLUSH)
 
-            .call(div.doDefault.bind(div))
+            .call(doDefault(div))
             .expectSpeechWithQueueMode('interrupted', QueueMode.QUEUE)
             .expectSpeechWithQueueMode('s', QueueMode.CATEGORY_FLUSH)
 
@@ -1552,10 +1555,10 @@ AX_TEST_F(
   `;
       const root = await this.runWithLoadedTree(site);
       const group = root.firstChild;
-      mockFeedback.call(group.focus.bind(group))
-          .call(group.doDefault.bind(group))
+      mockFeedback.call(focus(group))
+          .call(doDefault(group))
           .expectSpeech('Tree item', ' 2 of 2 ')
-          .call(group.doDefault.bind(group))
+          .call(doDefault(group))
           .expectSpeech('Tree item', 'Not selected', ' 1 of 2 ')
           .replay();
     });
@@ -1602,7 +1605,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'NavigationEscapesEdit', async function() {
       .call(assertBeginning.bind(this, false))
       .call(assertEnd.bind(this, true))
 
-      .call(textArea.focus.bind(textArea))
+      .call(focus(textArea))
       .expectSpeech('Text area')
       .call(assertBeginning.bind(this, true))
       .call(assertEnd.bind(this, false))
@@ -1640,7 +1643,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       const select = root.find({role: RoleType.POP_UP_BUTTON});
       mockFeedback.expectSpeech('Button', 'has pop up', 'Collapsed')
-          .call(select.doDefault.bind(select))
+          .call(doDefault(select))
           .expectSpeech('Expanded')
           .call(
               () => assertEquals(
@@ -1984,9 +1987,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       const slider = root.find({role: RoleType.SLIDER});
       assertNotNullNorUndefined(slider);
-      mockFeedback.call(slider.doDefault.bind(slider))
-          .expectSpeech('51')
-          .replay();
+      mockFeedback.call(doDefault(slider)).expectSpeech('51').replay();
     });
 
 AX_TEST_F(
@@ -2008,7 +2009,7 @@ AX_TEST_F(
       const slider = root.find({role: RoleType.SLIDER});
       assertNotNullNorUndefined(slider);
       mockFeedback.clearPendingOutput()
-          .call(slider.doDefault.bind(slider))
+          .call(doDefault(slider))
           .expectNextSpeechUtteranceIsNot('51')
           .expectSpeech('large')
           .replay();
@@ -2570,7 +2571,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       const contentEditable =
           root.find({attributes: {nonAtomicTextFieldRoot: true}});
-      mockFeedback.call(contentEditable.focus.bind(contentEditable))
+      mockFeedback.call(focus(contentEditable))
           .expectSpeech(/Testing testing\s+one two three/)
           .call(doCmd('nextLine'))
           .expectSpeech('one two three')
@@ -2581,7 +2582,7 @@ AX_TEST_F(
           // line, because all subsequent commands require the content
           // editable to be focused first):
           .clearPendingOutput()
-          .call(contentEditable.focus.bind(contentEditable))
+          .call(focus(contentEditable))
           .expectSpeech(/Testing testing\s+one two three/)
           .call(doCmd('nextLine'))
           .expectSpeech('one two three')
@@ -2942,11 +2943,11 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'SortDirection', async function() {
   const root = await this.runWithLoadedTree(site);
   const sortButton = root.find({role: RoleType.BUTTON});
   mockFeedback.expectSpeech('Button', 'Ascending sort')
-      .call(sortButton.doDefault.bind(sortButton))
+      .call(doDefault(sortButton))
       .expectSpeech('Descending sort')
-      .call(sortButton.doDefault.bind(sortButton))
+      .call(doDefault(sortButton))
       .expectSpeech('Ascending sort')
-      .call(sortButton.doDefault.bind(sortButton))
+      .call(doDefault(sortButton))
       .expectSpeech('Descending sort')
       .replay();
 });
@@ -3624,7 +3625,7 @@ AX_TEST_F('ChromeVoxBackgroundTest', 'DetailsChanged', async function() {
   const root = await this.runWithLoadedTree(site);
   const button = root.find({role: RoleType.BUTTON});
   mockFeedback.expectSpeech('ok')
-      .call(button.doDefault.bind(button))
+      .call(doDefault(button))
       .expectSpeech('Press Search+A, J to jump to details')
       .replay();
 });
@@ -3843,7 +3844,7 @@ AX_TEST_F(
       const root = await this.runWithLoadedTree(site);
       const button = root.find({role: RoleType.BUTTON});
       mockFeedback.expectSpeech('hello')
-          .call(button.doDefault.bind(button))
+          .call(doDefault(button))
           .expectSpeech('test title')
           .replay();
     });
