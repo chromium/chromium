@@ -148,6 +148,12 @@ struct CHROME_CONDITION_VARIABLE {
 struct CHROME_LUID {
   DWORD LowPart;
   LONG HighPart;
+
+  bool operator==(CHROME_LUID const& that) const {
+    return this->LowPart == that.LowPart && this->HighPart == that.HighPart;
+  }
+
+  bool operator!=(CHROME_LUID const& that) const { return !(*this == that); }
 };
 
 // _WIN32_FIND_DATAW is 592 bytes and the largest built-in type in it is a

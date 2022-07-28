@@ -70,6 +70,7 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   MediaFoundationRenderer(scoped_refptr<base::SequencedTaskRunner> task_runner,
                           std::unique_ptr<MediaLog> media_log,
+                          LUID gpu_process_adapter_luid,
                           bool force_dcomp_mode_for_testing = false);
   MediaFoundationRenderer(const MediaFoundationRenderer&) = delete;
   MediaFoundationRenderer& operator=(const MediaFoundationRenderer&) = delete;
@@ -92,17 +93,18 @@ class MEDIA_EXPORT MediaFoundationRenderer
   void SetVideoStreamEnabled(bool enabled) override;
   void SetOutputRect(const gfx::Rect& output_rect,
                      SetOutputRectCB callback) override;
+  void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
+  void RequestNextFrameBetweenTimestamps(base::TimeTicks deadline_min,
+                                         base::TimeTicks deadline_max) override;
+  void SetMediaFoundationRenderingMode(
+      MediaFoundationRenderingMode render_mode) override;
 
   using FrameReturnCallback = base::RepeatingCallback<
       void(const base::UnguessableToken&, const gfx::Size&, base::TimeDelta)>;
   void SetFrameReturnCallbacks(
       FrameReturnCallback frame_available_cb,
       FramePoolInitializedCallback initialized_frame_pool_cb);
-  void NotifyFrameReleased(const base::UnguessableToken& frame_token) override;
-  void RequestNextFrameBetweenTimestamps(base::TimeTicks deadline_min,
-                                         base::TimeTicks deadline_max) override;
-  void SetMediaFoundationRenderingMode(
-      MediaFoundationRenderingMode render_mode) override;
+  void SetGpuProcessAdapterLuid(LUID gpu_process_adapter_luid);
 
   // Testing verification
   bool InFrameServerMode();
@@ -159,6 +161,11 @@ class MEDIA_EXPORT MediaFoundationRenderer
 
   // Used to report media logs. Can be called on any thread.
   std::unique_ptr<MediaLog> media_log_;
+
+  // LUID identifying the graphics adapter used by the GPU process, the DXGI
+  // device created for Media Foundation Renderer must match in order to share
+  // handles between the two processes for Frame Server mode.
+  LUID gpu_process_adapter_luid_;
 
   // Once set, will force `mf_media_engine_` to use DirectComposition mode.
   // This is used for testing.

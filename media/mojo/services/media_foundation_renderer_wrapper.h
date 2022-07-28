@@ -27,7 +27,8 @@ namespace media {
 class MediaFoundationRendererWrapper final
     : public Renderer,
       public mojom::MediaFoundationRendererExtension,
-      public mojom::MuteStateObserver {
+      public mojom::MuteStateObserver,
+      public mojom::GpuInfoObserver {
  public:
   using RendererExtension = mojom::MediaFoundationRendererExtension;
   using ClientExtension = mojom::MediaFoundationRendererClientExtension;
@@ -70,6 +71,9 @@ class MediaFoundationRendererWrapper final
   // mojom::MuteStateObserver implementation.
   void OnMuteStateChange(bool muted) override;
 
+  // mojom::GpuInfoObserver
+  void OnGpuLuidChange(const CHROME_LUID& adapter_luid) override;
+
  private:
   void OnReceiveDCOMPSurface(GetDCOMPSurfaceCallback callback,
                              base::win::ScopedHandle handle,
@@ -91,6 +95,7 @@ class MediaFoundationRendererWrapper final
   mojo::Remote<media::mojom::MediaFoundationRendererClientExtension>
       client_extension_remote_;
   mojo::Receiver<mojom::MuteStateObserver> site_mute_observer_;
+  mojo::Receiver<mojom::GpuInfoObserver> gpu_info_observer_;
 
   float volume_ = 1.0;
   bool muted_ = false;  // Whether the site (WebContents) is muted.

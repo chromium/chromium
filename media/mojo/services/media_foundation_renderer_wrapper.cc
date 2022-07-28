@@ -27,6 +27,13 @@ bool HasAudio(MediaResource* media_resource) {
   return false;
 }
 
+LUID ChromeLuidToLuid(const CHROME_LUID& chrome_luid) {
+  LUID luid;
+  luid.LowPart = chrome_luid.LowPart;
+  luid.HighPart = chrome_luid.HighPart;
+  return luid;
+}
+
 }  // namespace
 
 MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
@@ -36,16 +43,22 @@ MediaFoundationRendererWrapper::MediaFoundationRendererWrapper(
     mojo::PendingReceiver<RendererExtension> renderer_extension_receiver,
     mojo::PendingRemote<ClientExtension> client_extension_remote)
     : frame_interfaces_(frame_interfaces),
-      renderer_(std::make_unique<MediaFoundationRenderer>(
-          task_runner,
-          std::make_unique<MojoMediaLog>(std::move(media_log_remote),
-                                         task_runner))),
       renderer_extension_receiver_(this,
                                    std::move(renderer_extension_receiver)),
       client_extension_remote_(std::move(client_extension_remote), task_runner),
-      site_mute_observer_(this) {
+      site_mute_observer_(this),
+      gpu_info_observer_(this) {
   DVLOG_FUNC(1);
   DCHECK(frame_interfaces_);
+
+  CHROME_LUID adapter_luid;
+  frame_interfaces_->RegisterGpuInfoObserver(
+      gpu_info_observer_.BindNewPipeAndPassRemote(), &adapter_luid);
+  LUID gpu_process_adapter_luid = ChromeLuidToLuid(adapter_luid);
+  renderer_ = std::make_unique<MediaFoundationRenderer>(
+      std::move(task_runner),
+      std::make_unique<MojoMediaLog>(std::move(media_log_remote), task_runner),
+      gpu_process_adapter_luid);
 }
 
 MediaFoundationRendererWrapper::~MediaFoundationRendererWrapper() {
@@ -137,6 +150,12 @@ void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {
 
   muted_ = muted;
   renderer_->SetVolume(muted_ ? 0 : volume_);
+}
+
+void MediaFoundationRendererWrapper::OnGpuLuidChange(
+    const CHROME_LUID& adapter_luid) {
+  LUID gpu_process_adapter_luid = ChromeLuidToLuid(adapter_luid);
+  renderer_->SetGpuProcessAdapterLuid(gpu_process_adapter_luid);
 }
 
 void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(

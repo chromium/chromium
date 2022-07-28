@@ -9,6 +9,8 @@ import "media/mojo/mojom/provision_fetcher.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
 import "url/mojom/origin.mojom";
 [EnableIf=is_win]
+import "gpu/ipc/common/luid.mojom";
+[EnableIf=is_win]
 import "media/mojo/mojom/dcomp_surface_registry.mojom";
 
 // Implemented by things like audio playback in the utility process to respond
@@ -18,6 +20,14 @@ import "media/mojo/mojom/dcomp_surface_registry.mojom";
 interface MuteStateObserver {
   // Notifies mute state change.
   OnMuteStateChange(bool muted);
+};
+
+// Implemented by utility processes which would like change notifications
+// when GpuInfo changes  (currently subsetted to the LUID).
+[EnableIf=is_win]
+interface GpuInfoObserver {
+  // Notifies client of GPU Adapter LUID on GPU Info state change.
+  OnGpuLuidChange(gpu.mojom.Luid adapter_luid);
 };
 
 // A factory providing extra services for media mojo services running remotely.
@@ -49,4 +59,10 @@ interface FrameInterfaceFactory {
   // Binds a generic media frame-bound interface. This is to allow //content
   // embedders to provide additional interfaces.
   BindEmbedderReceiver(mojo_base.mojom.GenericPendingReceiver receiver);
+
+  // Registers `observer` to get notified of the active GPU adapter LUID when
+  // GpuInfo changes, synchronously returns the current adapter LUID.
+  [EnableIf=is_win, Sync]
+  RegisterGpuInfoObserver(pending_remote<GpuInfoObserver> observer)
+      => (gpu.mojom.Luid adapter_luid);
 };

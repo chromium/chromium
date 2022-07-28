@@ -21,6 +21,8 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/gpu_data_manager.h"
+#include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/media_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/service_process_host.h"
@@ -28,6 +30,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
+#include "gpu/config/gpu_info.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_type.h"
 #include "media/media_buildflags.h"
@@ -141,6 +144,9 @@ media::mojom::MediaService& GetSecondaryMediaService() {
 }
 
 class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
+#if BUILDFLAG(IS_WIN)
+                                  public content::GpuDataManagerObserver,
+#endif  // BUILDFLAG(IS_WIN)
                                   public WebContentsObserver {
  public:
   FrameInterfaceFactoryImpl(RenderFrameHost* render_frame_host,
@@ -148,7 +154,17 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
       : WebContentsObserver(
             WebContents::FromRenderFrameHost(render_frame_host)),
         render_frame_host_(render_frame_host),
-        cdm_type_(cdm_type) {}
+        cdm_type_(cdm_type) {
+#if BUILDFLAG(IS_WIN)
+    content::GpuDataManager::GetInstance()->AddObserver(this);
+#endif  // BUILDFLAG(IS_WIN)
+  }
+
+#if BUILDFLAG(IS_WIN)
+  ~FrameInterfaceFactoryImpl() override {
+    content::GpuDataManager::GetInstance()->RemoveObserver(this);
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
   // media::mojom::FrameInterfaceFactory implementation:
 
@@ -201,6 +217,17 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
           std::make_unique<DCOMPSurfaceRegistryBroker>(), std::move(receiver));
     }
   }
+
+  void RegisterGpuInfoObserver(
+      mojo::PendingRemote<media::mojom::GpuInfoObserver> observer,
+      RegisterGpuInfoObserverCallback callback) override {
+    gpu_info_observers_.Add(std::move(observer));
+
+    // Synchronous return of initial GPU Info LUID.
+    last_gpu_luid_ =
+        content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid;
+    std::move(callback).Run(last_gpu_luid_);
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
   void GetCdmOrigin(GetCdmOriginCallback callback) override {
@@ -219,6 +246,18 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
     for (const auto& observer : site_mute_observers_)
       observer->OnMuteStateChange(muted);
   }
+
+  // content::GpuDataManagerObserver implementation:
+  void OnGpuInfoUpdate() override {
+    auto current_gpu_luid =
+        content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid;
+    if (last_gpu_luid_ != current_gpu_luid) {
+      last_gpu_luid_ = current_gpu_luid;
+      for (const auto& observer : gpu_info_observers_) {
+        observer->OnGpuLuidChange(last_gpu_luid_);
+      }
+    }
+  }
 #endif  // BUILDFLAG(IS_WIN)
 
  private:
@@ -226,7 +265,9 @@ class FrameInterfaceFactoryImpl : public media::mojom::FrameInterfaceFactory,
   const media::CdmType cdm_type_;
 
 #if BUILDFLAG(IS_WIN)
+  CHROME_LUID last_gpu_luid_;
   mojo::RemoteSet<media::mojom::MuteStateObserver> site_mute_observers_;
+  mojo::RemoteSet<media::mojom::GpuInfoObserver> gpu_info_observers_;
 #endif  // BUILDFLAG(IS_WIN)
 };
 

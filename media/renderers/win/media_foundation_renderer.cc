@@ -114,9 +114,11 @@ bool MediaFoundationRenderer::IsSupported() {
 MediaFoundationRenderer::MediaFoundationRenderer(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     std::unique_ptr<MediaLog> media_log,
+    LUID gpu_process_adapter_luid,
     bool force_dcomp_mode_for_testing)
     : task_runner_(std::move(task_runner)),
       media_log_(std::move(media_log)),
+      gpu_process_adapter_luid_(gpu_process_adapter_luid),
       force_dcomp_mode_for_testing_(force_dcomp_mode_for_testing) {
   DVLOG_FUNC(1);
 }
@@ -368,10 +370,29 @@ HRESULT MediaFoundationRenderer::InitializeDXGIDeviceManager() {
       D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
       D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3,  D3D_FEATURE_LEVEL_9_2,
       D3D_FEATURE_LEVEL_9_1};
-  RETURN_IF_FAILED(
-      D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, creation_flags,
-                        feature_levels, std::size(feature_levels),
-                        D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr));
+
+  Microsoft::WRL::ComPtr<IDXGIFactory1> factory;
+  RETURN_IF_FAILED(CreateDXGIFactory1(IID_PPV_ARGS(&factory)));
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> adapter_to_use;
+  if (gpu_process_adapter_luid_.LowPart || gpu_process_adapter_luid_.HighPart) {
+    Microsoft::WRL::ComPtr<IDXGIAdapter> temp_adapter;
+    for (UINT i = 0; SUCCEEDED(factory->EnumAdapters(i, &temp_adapter)); i++) {
+      DXGI_ADAPTER_DESC desc;
+      RETURN_IF_FAILED(temp_adapter->GetDesc(&desc));
+      if (desc.AdapterLuid.LowPart == gpu_process_adapter_luid_.LowPart &&
+          desc.AdapterLuid.HighPart == gpu_process_adapter_luid_.HighPart) {
+        adapter_to_use = std::move(temp_adapter);
+        break;
+      }
+    }
+  }
+
+  RETURN_IF_FAILED(D3D11CreateDevice(
+      adapter_to_use.Get(),
+      adapter_to_use ? D3D_DRIVER_TYPE_UNKNOWN : D3D_DRIVER_TYPE_HARDWARE, 0,
+      creation_flags, feature_levels, std::size(feature_levels),
+      D3D11_SDK_VERSION, &d3d11_device, nullptr, nullptr));
   RETURN_IF_FAILED(media::SetDebugName(d3d11_device.Get(), "Media_MFRenderer"));
 
   ComPtr<ID3D10Multithread> multithreaded_device;
@@ -750,6 +771,14 @@ void MediaFoundationRenderer::SetFrameReturnCallbacks(
     FramePoolInitializedCallback initialized_frame_pool_cb) {
   frame_available_cb_ = std::move(frame_available_cb);
   initialized_frame_pool_cb_ = std::move(initialized_frame_pool_cb);
+}
+
+void MediaFoundationRenderer::SetGpuProcessAdapterLuid(
+    LUID gpu_process_adapter_luid) {
+  // TODO(wicarr, crbug.com/1342621): When the GPU adapter changes or the GPU
+  // process is restarted we need to recover our Frame Server or DComp
+  // textures, otherwise we'll fail to present any video frames to the user.
+  gpu_process_adapter_luid_ = gpu_process_adapter_luid;
 }
 
 base::TimeDelta MediaFoundationRenderer::GetMediaTime() {

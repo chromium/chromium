@@ -107,9 +107,10 @@ class MediaFoundationRendererTest : public testing::Test {
     MockMediaProtectionPMPServer::MakeMockMediaProtectionPMPServer(
         &pmp_server_);
 
+    LUID empty_luid{0, 0};
     mf_renderer_ = std::make_unique<MediaFoundationRenderer>(
         task_environment_.GetMainThreadTaskRunner(),
-        std::make_unique<NullMediaLog>());
+        std::make_unique<NullMediaLog>(), empty_luid);
 
     // Some default actions.
     ON_CALL(cdm_context_, GetMediaFoundationCdmProxy())

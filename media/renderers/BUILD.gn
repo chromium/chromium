@@ -90,6 +90,7 @@ source_set("renderers") {
     libs = [
       "d3d11.lib",
       "mfplat.lib",
+      "dxgi.lib",
     ]
   }
 
