@@ -241,7 +241,8 @@ bool BaseSearchProvider::IsSearchResultsPage(
   return (classification ==
           OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) ||
          (classification ==
-          OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT);
+          OEP::SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT) ||
+         (classification == OEP::SRP_ZPS_PREFETCH);
 }
 
 // static

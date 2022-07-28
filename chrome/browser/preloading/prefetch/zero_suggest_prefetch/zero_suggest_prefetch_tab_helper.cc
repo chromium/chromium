@@ -13,18 +13,38 @@
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
 
+using OEP = metrics::OmniboxEventProto;
+
+// Returns whether or not the given URL represents a New Tab Page (NTP).
+bool IsNTP(const GURL& url) {
+  return url == GURL(chrome::kChromeUINewTabPageURL);
+}
+
+// Returns whether or not the given URL is eligible for ZPS prefetching.
+bool IsURLEligibleForZPSPrefetching(const GURL& url) {
+  bool is_ntp =
+      base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) &&
+      IsNTP(url);
+  bool is_srp =
+      base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP) &&
+      google_util::IsGoogleSearchUrl(url);
+  return is_ntp || is_srp;
+}
+
 // Starts prefetching zero-prefix suggestions using the AutocompleteController
-// instance owned by the omnibox with a dedicated NTP_ZPS_PREFETCH page context.
-void StartPrefetch(content::WebContents* web_contents) {
+// instance owned by the omnibox with a dedicated page context.
+void StartPrefetch(content::WebContents* web_contents, const GURL& page_url) {
   auto* omnibox_view = search::GetOmniboxView(web_contents);
   if (!omnibox_view) {
     return;
@@ -32,10 +52,21 @@ void StartPrefetch(content::WebContents* web_contents) {
 
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto page_classification =
+      IsNTP(page_url)
+          ? OEP::NTP_ZPS_PREFETCH
+          : (google_util::IsGoogleSearchUrl(page_url) ? OEP::SRP_ZPS_PREFETCH
+                                                      : OEP::INVALID_SPEC);
+  DCHECK(page_classification != OEP::INVALID_SPEC)
+      << "Prefetch page classification undefined for given URL.";
   AutocompleteInput autocomplete_input(
-      u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
-      ChromeAutocompleteSchemeClassifier(profile));
+      u"", page_classification, ChromeAutocompleteSchemeClassifier(profile));
   autocomplete_input.set_focus_type(OmniboxFocusType::ON_FOCUS);
+  // Construct proper on-clobber input for ZPS prefetch requests on SRP/Web.
+  if (page_classification != OEP::NTP_ZPS_PREFETCH) {
+    autocomplete_input.set_focus_type(OmniboxFocusType::DELETED_PERMANENT_TEXT);
+    autocomplete_input.set_current_url(page_url);
+  }
   omnibox_view->StartPrefetch(autocomplete_input);
 }
 
@@ -50,8 +81,8 @@ ZeroSuggestPrefetchTabHelper::ZeroSuggestPrefetchTabHelper(
 ZeroSuggestPrefetchTabHelper::~ZeroSuggestPrefetchTabHelper() = default;
 
 void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
-  if (page.GetMainDocument().GetLastCommittedURL() !=
-      GURL(chrome::kChromeUINewTabPageURL))
+  const auto& last_committed_url = page.GetMainDocument().GetLastCommittedURL();
+  if (!IsURLEligibleForZPSPrefetching(last_committed_url))
     return;
 
   // Make sure to observe the TabStripModel, if not already, in order to get
@@ -68,21 +99,23 @@ void ZeroSuggestPrefetchTabHelper::PrimaryPageChanged(content::Page& page) {
     browser->tab_strip_model()->AddObserver(this);
   }
 
-  StartPrefetch(web_contents());
+  StartPrefetch(web_contents(), last_committed_url);
 }
 
 void ZeroSuggestPrefetchTabHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
+  const auto& last_committed_url =
+      web_contents()->GetPrimaryPage().GetMainDocument().GetLastCommittedURL();
   if (!selection.active_tab_changed() ||
       web_contents() != selection.new_contents ||
-      web_contents()->GetVisibleURL() != GURL(chrome::kChromeUINewTabURL)) {
+      !IsURLEligibleForZPSPrefetching(last_committed_url)) {
     return;
   }
 
   // We get here when a New Tab Page is brought to foreground (aka switched to).
-  StartPrefetch(web_contents());
+  StartPrefetch(web_contents(), last_committed_url);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ZeroSuggestPrefetchTabHelper);

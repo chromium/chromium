@@ -174,7 +174,7 @@
 #include "components/accuracy_tips/accuracy_web_contents_observer.h"
 #include "components/commerce/content/browser/hint/commerce_hint_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/omnibox/common/omnibox_features.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/zoom_controller.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -507,7 +507,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     ThumbnailTabHelper::CreateForWebContents(web_contents);
   }
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
+  if (OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabled()) {
     ZeroSuggestPrefetchTabHelper::CreateForWebContents(web_contents);
   }
   if (commerce::isContextualConsentEnabled()) {

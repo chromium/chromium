@@ -509,6 +509,9 @@ extern const base::FeatureParam<int> kLocalHistoryZeroSuggestRelevanceScore;
 // which spins off a new throw-away AutocompleteController instance.
 bool UseSharedInstanceForZeroSuggestPrefetching();
 
+// Returns true if any of the zero-suggest prefetching features are enabled.
+bool IsZeroSuggestPrefetchingEnabled();
+
 // Whether duplicative visits should be ignored for local history zero-suggest.
 // A duplicative visit is a visit to the same search term in an interval smaller
 // than kAutocompleteDuplicateVisitIntervalThreshold.

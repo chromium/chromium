@@ -769,6 +769,11 @@ bool UseSharedInstanceForZeroSuggestPrefetching() {
              kUseSharedInstanceForZeroSuggestPrefetching);
 }
 
+bool IsZeroSuggestPrefetchingEnabled() {
+  return base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching) ||
+         base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetchingOnSRP);
+}
+
 const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits(
     &omnibox::kLocalHistorySuggestRevamp,
     "ZeroSuggestIgnoreDuplicateVisits",
