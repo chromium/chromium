@@ -35,11 +35,23 @@ void AXScreenAIAnnotator::Run() {
   if (!native_view)
     return;
 
+#if BUILDFLAG(IS_MAC)
+  gfx::Image snapshot;
+  if (!ui::GrabViewSnapshot(native_view, gfx::Rect(web_contents->GetSize()),
+                            &snapshot)) {
+    VLOG(0) << "AxScreenAIAnnotator could not grab snapshot.";
+    return;
+  }
+
+  AXScreenAIAnnotator::OnScreenshotReceived(
+      web_contents->GetPrimaryMainFrame()->GetAXTreeID(), std::move(snapshot));
+#else
   ui::GrabViewSnapshotAsync(
       native_view, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetPrimaryMainFrame()->GetAXTreeID()));
+#endif
 }
 
 void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,
