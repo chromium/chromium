@@ -27,24 +27,19 @@
 
 namespace blink {
 
-namespace {
-
-constexpr uint32_t kReadableStreamBufferSize = 32;
-
-}
-
 // UDPReadableStreamWrapper definition
 
 UDPReadableStreamWrapper::UDPReadableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
-    const Member<UDPSocketMojoRemote> udp_socket)
+    const Member<UDPSocketMojoRemote> udp_socket,
+    uint32_t high_water_mark)
     : ReadableStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       udp_socket_(udp_socket) {
   InitSourceAndReadable(
       /*source=*/MakeGarbageCollected<UnderlyingSource>(GetScriptState(), this),
-      kReadableStreamBufferSize);
+      high_water_mark);
 }
 
 void UDPReadableStreamWrapper::Pull() {

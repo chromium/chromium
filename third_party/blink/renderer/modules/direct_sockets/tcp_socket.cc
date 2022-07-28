@@ -53,6 +53,16 @@ mojom::blink::DirectSocketOptionsPtr CreateTCPSocketOptions(
   socket_options->remote_hostname = remote_address;
   socket_options->remote_port = remote_port;
 
+  const bool has_full_local_address =
+      options->hasLocalAddress() && options->hasLocalPort();
+
+  if (const bool has_partial_local_address =
+          options->hasLocalAddress() || options->hasLocalPort();
+      has_partial_local_address && !has_full_local_address) {
+    exception_state.ThrowTypeError("Incomplete local address specified.");
+    return {};
+  }
+
   if (!CheckSendReceiveBufferSize(options, exception_state)) {
     return {};
   }
@@ -74,6 +84,11 @@ mojom::blink::DirectSocketOptionsPtr CreateTCPSocketOptions(
           /*delay=*/options->hasKeepAliveDelay()
               ? base::Milliseconds(options->keepAliveDelay()).InSeconds()
               : 0);
+
+  if (has_full_local_address) {
+    socket_options->local_hostname = options->localAddress();
+    socket_options->local_port = options->localPort();
+  }
 
   if (options->hasSendBufferSize()) {
     socket_options->send_buffer_size = options->sendBufferSize();

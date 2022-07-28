@@ -74,7 +74,8 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
 
     auto* script_state = scope.GetScriptState();
     stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
-        script_state, base::DoNothing(), udp_socket);
+        script_state, base::DoNothing(), udp_socket,
+        /*high_water_mark=*/1);
     return stream_wrapper_;
   }
 
