@@ -549,7 +549,7 @@ export class BookmarksCommandManagerElement extends
       } else {
         node.children!.forEach(function(child) {
           const childNode = nodes[child]!;
-          if (childNode.id) {
+          if (childNode.id && childNode.url) {
             result.push(childNode.id);
           }
         });
