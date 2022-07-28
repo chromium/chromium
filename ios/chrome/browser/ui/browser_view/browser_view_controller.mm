@@ -1303,7 +1303,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Update the toolbar visibility.
   // TODO(crbug.com/1329087): Move this update to the toolbar view
   // controller(s)?
-  [self updateToolbar];
+  [self.primaryToolbarCoordinator updateToolbar];
 
   // Update the tab strip visibility.
   if (self.tabStripView) {
@@ -2012,7 +2012,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   }
   // TODO(crbug.com/1329087): Move this update to the toolbar coordinator,
   // somehow.
-  [self updateToolbar];
+  [self.primaryToolbarCoordinator updateToolbar];
 
   // TODO(crbug.com/971364): The webState is not necessarily added to the view
   // hierarchy, even though the bookkeeping says that the WebState is visible.
@@ -2048,56 +2048,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 #pragma mark - Private Methods: UI Configuration, update and Layout
-
-// TODO(crbug.com/1329087): Move this update to primaryToolbarCoordinator,
-// triggered by mediators as apprpriate. Update the state of back and forward
-// buttons, hiding the forward button if there is nowhere to go. Assumes the
-// model's current tab is up to date.
-- (void)updateToolbar {
-  // If the BVC has been partially torn down for low memory, wait for the
-  // view rebuild to handle toolbar updates.
-  if (!self.browserState)
-    return;
-
-  web::WebState* webState = self.currentWebState;
-  if (!webState)
-    return;
-
-  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
-  BOOL isPrerendered =
-      (_prerenderService && _prerenderService->IsLoadingPrerender());
-
-  // Please note, this notion of isLoading is slightly different from WebState's
-  // IsLoading().
-  BOOL isToolbarLoading =
-      self.currentWebState && self.currentWebState->IsLoading() &&
-      !self.currentWebState->GetLastCommittedURL().SchemeIs(kChromeUIScheme);
-
-  if (isPrerendered && isToolbarLoading)
-    [self.primaryToolbarCoordinator showPrerenderingAnimation];
-
-  [self.dispatcher showFindUIIfActive];
-  [self.textZoomHandler showTextZoomUIIfActive];
-
-  BOOL hideToolbar = NO;
-  if (webState) {
-    // There are times when the NTP can be hidden but before the visibleURL
-    // changes.  This can leave the BVC in a blank state where only the bottom
-    // toolbar is visible. Instead, if possible, use the NewTabPageTabHelper
-    // IsActive() value rather than checking -IsVisibleURLNewTabPage.
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webState);
-    BOOL isNTP = NTPHelper && NTPHelper->IsActive();
-    // Hide the toolbar when displaying content suggestions without the tab
-    // strip, without the focused omnibox, and for UI Refresh, only when in
-    // split toolbar mode.
-    hideToolbar = isNTP && !_isOffTheRecord &&
-                  ![self.primaryToolbarCoordinator isOmniboxFirstResponder] &&
-                  ![self.primaryToolbarCoordinator showingOmniboxPopup] &&
-                  ![self canShowTabStrip] && IsSplitToolbarMode(self);
-  }
-  [self.primaryToolbarCoordinator.viewController.view setHidden:hideToolbar];
-}
 
 // Starts or stops broadcasting the toolbar UI and main content UI depending on
 // whether the BVC is visible and active.
@@ -2837,7 +2787,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)webState:(web::WebState*)webState
     didStartNavigation:(web::NavigationContext*)navigation {
   if (webState == self.currentWebState)
-    [self updateToolbar];
+    [self.primaryToolbarCoordinator updateToolbar];
 }
 
 // TODO(crbug.com/1329086): Move pageload logic to a TabEventsMediator
@@ -3625,7 +3575,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform this
   // update. Longer-term, make SideSwipeControllerDelegate observable instead of
   // delegating.
-  [self updateToolbar];
+  [self.primaryToolbarCoordinator updateToolbar];
 
   // Reset horizontal stack view.
   [sideSwipeView removeFromSuperview];
@@ -3664,7 +3614,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     // TODO(crbug.com/1329087): Signal to the toolbar coordinator to perform
     // this update. Longer-term, make SideSwipeControllerDelegate observable
     // instead of delegating.
-    [self updateToolbar];
+    [self.primaryToolbarCoordinator updateToolbar];
   } else {
     // Hide UI accessories such as find bar and first visit overlays
     // for welcome page.

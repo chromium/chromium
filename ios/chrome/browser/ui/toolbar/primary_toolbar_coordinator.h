@@ -49,6 +49,9 @@
 - (void)setPanGestureHandler:
     (ViewRevealingVerticalPanHandler*)panGestureHandler;
 
+// Updates toolbar appearance.
+- (void)updateToolbar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_PRIMARY_TOOLBAR_COORDINATOR_H_
