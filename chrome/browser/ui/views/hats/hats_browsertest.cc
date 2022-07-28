@@ -150,15 +150,17 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
       kHatsNextTestSurveyProductSpecificStringData);
 
   // Check that no record of a survey being shown is present.
-  const base::Value* pref_data =
-      browser()->profile()->GetPrefs()->GetDictionary(
-          prefs::kHatsSurveyMetadata);
-  absl::optional<base::Time> last_survey_started_time =
-      base::ValueToTime(pref_data->FindPath(kLastSurveyStartedTime));
-  absl::optional<int> last_major_version =
-      pref_data->FindIntPath(kLastMajorVersion);
-  ASSERT_FALSE(last_survey_started_time.has_value());
-  ASSERT_FALSE(last_major_version.has_value());
+  {
+    const base::Value::Dict& pref_data =
+        browser()->profile()->GetPrefs()->GetValueDict(
+            prefs::kHatsSurveyMetadata);
+    absl::optional<base::Time> last_survey_started_time =
+        base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
+    absl::optional<int> last_major_version =
+        pref_data.FindIntByDottedPath(kLastMajorVersion);
+    ASSERT_FALSE(last_survey_started_time.has_value());
+    ASSERT_FALSE(last_major_version.has_value());
+  }
 
   // The hats_next_mock.html will provide a state update to the dialog to
   // indicate that the survey has been loaded.
@@ -174,15 +176,19 @@ IN_PROC_BROWSER_TEST_F(HatsNextWebDialogBrowserTest, SurveyLoaded) {
   EXPECT_EQ(0, failure_count);
 
   // Check that a record of the survey being shown has been recorded.
-  pref_data = browser()->profile()->GetPrefs()->GetDictionary(
-      prefs::kHatsSurveyMetadata);
-  last_survey_started_time =
-      base::ValueToTime(pref_data->FindPath(kLastSurveyStartedTime));
-  last_major_version = pref_data->FindIntPath(kLastMajorVersion);
-  ASSERT_TRUE(last_survey_started_time.has_value());
-  ASSERT_TRUE(last_major_version.has_value());
-  ASSERT_EQ(static_cast<uint32_t>(*last_major_version),
-            version_info::GetVersion().components()[0]);
+  {
+    const base::Value::Dict& pref_data =
+        browser()->profile()->GetPrefs()->GetValueDict(
+            prefs::kHatsSurveyMetadata);
+    absl::optional<base::Time> last_survey_started_time =
+        base::ValueToTime(pref_data.FindByDottedPath(kLastSurveyStartedTime));
+    absl::optional<int> last_major_version =
+        pref_data.FindIntByDottedPath(kLastMajorVersion);
+    ASSERT_TRUE(last_survey_started_time.has_value());
+    ASSERT_TRUE(last_major_version.has_value());
+    ASSERT_EQ(static_cast<uint32_t>(*last_major_version),
+              version_info::GetVersion().components()[0]);
+  }
 }
 
 // Test that the web dialog correctly receives change to history state that
