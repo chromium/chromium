@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/login_status.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "base/files/file_path.h"
@@ -70,6 +71,7 @@ class ASH_EXPORT DiagnosticsLogController : SessionObserver {
   // Removes directory at |path|.
   void RemoveDirectory(const base::FilePath& path);
 
+  LoginStatus previous_status_;
   std::unique_ptr<DiagnosticsBrowserDelegate> delegate_;
   base::FilePath log_base_path_;
   std::unique_ptr<NetworkingLog> networking_log_;

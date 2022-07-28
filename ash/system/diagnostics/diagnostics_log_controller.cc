@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/cpp/session/session_types.h"
+#include "ash/login_status.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
@@ -18,7 +18,6 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
@@ -51,6 +50,32 @@ std::string GetRoutineResultsString(const std::string& results) {
 
   return section_header + results;
 }
+
+// Determines if LoginStatus state update should trigger a reset of log
+// pointers.
+bool ShouldResetAndInitializeLogWritersForLoginStatus(
+    LoginStatus previous_status,
+    LoginStatus current_status) {
+  if (previous_status == current_status)
+    return false;
+
+  switch (current_status) {
+    case ash::LoginStatus::LOCKED:
+      // User has not changed.
+      return false;
+    case LoginStatus::GUEST:
+    case LoginStatus::PUBLIC:
+    case LoginStatus::KIOSK_APP:
+    case LoginStatus::USER:
+    case LoginStatus::CHILD:
+      // Do not reset if user has just unlocked screen.
+      return previous_status != ash::LoginStatus::LOCKED;
+    case LoginStatus::NOT_LOGGED_IN:
+      // When status goes to not_logged_in we should clear existing logs.
+      return true;
+  }
+}
+
 // Determines if profile should be accessed with current session state.  If at
 // sign-in screen, guest user, kiosk app, or before the profile has
 // successfully loaded temporary path should be used for storing logs.
@@ -67,6 +92,8 @@ DiagnosticsLogController::DiagnosticsLogController()
   DCHECK_EQ(nullptr, g_instance);
   ash::Shell::Get()->session_controller()->AddObserver(this);
   g_instance = this;
+  g_instance->previous_status_ =
+      ash::Shell::Get()->session_controller()->login_status();
 }
 
 DiagnosticsLogController::~DiagnosticsLogController() {
@@ -91,6 +118,8 @@ void DiagnosticsLogController::Initialize(
   DCHECK(g_instance);
   DCHECK_CALLED_ON_VALID_SEQUENCE(g_instance->sequence_checker_);
   g_instance->delegate_ = std::move(delegate);
+  g_instance->previous_status_ =
+      ash::Shell::Get()->session_controller()->login_status();
   g_instance->ResetAndInitializeLogWriters();
 
   // Schedule removal of log directory.
@@ -165,6 +194,9 @@ TelemetryLog* DiagnosticsLogController::GetTelemetryLog() {
 void DiagnosticsLogController::ResetLogBasePath() {
   const session_manager::SessionState state =
       ash::Shell::Get()->session_controller()->GetSessionState();
+  // g_instance->previous_status_ is updated OnLoginStatusChanged after
+  // ResetLogBasePath. To ensure we have the current status we need to query the
+  // session_controller for it.
   const LoginStatus status =
       ash::Shell::Get()->session_controller()->login_status();
 
@@ -190,7 +222,12 @@ void DiagnosticsLogController::OnLoginStatusChanged(LoginStatus login_status) {
     return;
   }
 
-  g_instance->ResetAndInitializeLogWriters();
+  if (ShouldResetAndInitializeLogWritersForLoginStatus(
+          g_instance->previous_status_, login_status)) {
+    g_instance->ResetAndInitializeLogWriters();
+  }
+
+  g_instance->previous_status_ = login_status;
 }
 
 void DiagnosticsLogController::RemoveDirectory(const base::FilePath& path) {

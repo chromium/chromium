@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_browser_delegate.h"
 #include "ash/system/diagnostics/log_test_helpers.h"
@@ -98,6 +100,34 @@ class DiagnosticsLogControllerTest : public NoSessionAshTestBase {
     std::unique_ptr<DiagnosticsBrowserDelegate> delegate =
         std::make_unique<FakeDiagnosticsBrowserDelegate>();
     DiagnosticsLogController::Initialize(std::move(delegate));
+  }
+
+  void SimulateLockScreen() {
+    DCHECK(!Shell::Get()->session_controller()->IsScreenLocked());
+
+    Shell::Get()->session_controller()->LockScreen();
+    task_environment()->RunUntilIdle();
+
+    EXPECT_TRUE(Shell::Get()->session_controller()->IsScreenLocked());
+  }
+
+  void SimulateUnlockScreen() {
+    DCHECK(Shell::Get()->session_controller()->IsScreenLocked());
+
+    SessionInfo info;
+    info.state = session_manager::SessionState::ACTIVE;
+    Shell::Get()->session_controller()->SetSessionInfo(std::move(info));
+    task_environment()->RunUntilIdle();
+
+    EXPECT_FALSE(Shell::Get()->session_controller()->IsScreenLocked());
+  }
+
+  void SimulateLogoutActiveUser() {
+    Shell::Get()->session_controller()->RequestSignOut();
+    task_environment()->RunUntilIdle();
+
+    EXPECT_FALSE(
+        Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   }
 
  private:
@@ -274,6 +304,15 @@ TEST_F(DiagnosticsLogControllerTest,
   const base::FilePath expected_path_regular_user =
       base::FilePath(kDefaultUserDir).Append(kDiangosticsDirName);
   EXPECT_EQ(expected_path_regular_user, log_base_path());
+
+  SimulateLockScreen();
+  EXPECT_EQ(expected_path_regular_user, log_base_path());
+
+  SimulateUnlockScreen();
+  EXPECT_EQ(expected_path_regular_user, log_base_path());
+
+  SimulateLogoutActiveUser();
+  EXPECT_EQ(expected_path_not_regular_user, log_base_path());
 }
 
 TEST_F(DiagnosticsLogControllerTest, SetLogWritersUsingLogBasePath) {
