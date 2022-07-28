@@ -1,5 +1,7 @@
 <style include="os-feedback-shared">
   :host {
+    --cr-icon-button-margin-start: 20px;
+    --cr-section-vertical-padding: 11px;
     --iron-icon-height: 40px;
   }
 
@@ -7,7 +9,7 @@
     --cr-link-row-icon-width: 40px;
     border: 1px solid var(--cros-separator-color);
     border-radius: 4px;
-    height: 64px;
+    box-sizing: border-box;
     margin: 12px 0 0 0;
   }
 
@@ -25,15 +27,15 @@
 
   #message {
     color: var(--cros-text-color-secondary);
-    font-family: 'Roboto';
+    font-family: var(--feedback-roboto-font-family);
     font-size: 13px;
-    font-weight: 400;
-    line-height: 18px;
+    font-weight: var(--feedback-regular-font-weight);
+    line-height: 20px;
   }
 
   .label {
     color: var(--cros-text-color-primary);
-    font-family: 'Roboto';
+    font-family: var(--feedback-roboto-font-family);
     font-size: 14px;
     font-weight: var(--feedback-medium-font-weight);
     line-height: 20px;
@@ -41,10 +43,23 @@
 
   .sub-label {
     color: var(--cros-text-color-secondary);
-    font-family: 'Roboto';
+    font-family: var(--feedback-roboto-font-family);
     font-size: 13px;
     font-weight: var(--feedback-regular-font-weight);
     line-height: 20px;
+  }
+
+  #helpResourcesLabel {
+    color: var(--cros-text-color-secondary);
+    font-family: var(--feedback-google-sans-font-family);
+    font-size: 15px;
+    font-weight: var(--feedback-medium-font-weight);
+    line-height: 22px;
+    margin: 24px 0 0;
+  }
+
+  cr-link-row::part(icon) {
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
   }
 </style>
 <div id="container">
