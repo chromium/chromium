@@ -16,7 +16,6 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DisplayableImage} from '../../common/constants.js';
 import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
@@ -24,6 +23,7 @@ import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
 
+import {DisplayableImage} from './constants.js';
 import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_element.html.js';
 import {fetchGooglePhotosPhotos, selectWallpaper} from './wallpaper_controller.js';

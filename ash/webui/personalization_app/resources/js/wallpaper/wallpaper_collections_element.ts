@@ -13,12 +13,12 @@ import '../../css/wallpaper.css.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DefaultImageSymbol} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {CollectionsGrid} from './collections_grid_element.js';
+import {DefaultImageSymbol} from './constants.js';
 import {getTemplate} from './wallpaper_collections_element.html.js';
 import {initializeBackdropData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';

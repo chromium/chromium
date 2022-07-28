@@ -19,12 +19,12 @@ import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from '../../common/constants.js';
 import {getLoadingPlaceholderAnimationDelay, isSelectionEvent} from '../../common/utils.js';
 import {CurrentWallpaper, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getPathOrSymbol, isDefaultImage, isFilePath} from '../utils.js';
 
+import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 import {getTemplate} from './local_images_element.html.js';
 import {fetchLocalData, getDefaultImageThumbnail, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';

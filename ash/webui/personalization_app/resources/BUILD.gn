@@ -21,7 +21,6 @@ preprocess_folder = "preprocessed"
 # polymer based ts files, `css_wrapper_files` are Polymer css files,
 # `static_resource_files` are non-js files, e.g. image, html, css
 non_web_component_files = [
-  "common/constants.ts",
   "common/utils.ts",
 
   "js/ambient/ambient_actions.ts",
@@ -58,6 +57,7 @@ non_web_component_files = [
   "js/user/user_state.ts",
   "js/user/webcam_utils_proxy.ts",
   "js/utils.ts",
+  "js/wallpaper/constants.ts",
   "js/wallpaper/google_photos_metrics_logger.ts",
   "js/wallpaper/wallpaper_actions.ts",
   "js/wallpaper/wallpaper_controller.ts",

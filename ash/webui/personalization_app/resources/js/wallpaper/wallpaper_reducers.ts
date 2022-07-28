@@ -5,7 +5,6 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {DefaultImageSymbol, kDefaultImageSymbol} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {Actions} from '../personalization_actions.js';
 import {WallpaperCollection} from '../personalization_app.mojom-webui.js';
@@ -13,6 +12,7 @@ import {ReducerFunction} from '../personalization_reducers.js';
 import {PersonalizationState} from '../personalization_state.js';
 import {isDefaultImage, isFilePath} from '../utils.js';
 
+import {DefaultImageSymbol, kDefaultImageSymbol} from './constants.js';
 import {WallpaperActionName} from './wallpaper_actions.js';
 import {DailyRefreshType, WallpaperState} from './wallpaper_state.js';
 

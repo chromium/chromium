@@ -6,12 +6,12 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {DisplayableImage} from '../../common/constants.js';
 import {isNonEmptyArray} from '../../common/utils.js';
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
 import {appendMaxResolutionSuffix, isDefaultImage, isFilePath, isGooglePhotosPhoto, isImageEqualToSelected, isWallpaperImage} from '../utils.js';
 
+import {DisplayableImage} from './constants.js';
 import * as action from './wallpaper_actions.js';
 
 /**

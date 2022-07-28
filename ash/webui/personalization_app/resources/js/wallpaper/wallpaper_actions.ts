@@ -6,8 +6,9 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {DisplayableImage} from '../../common/constants.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
+
+import {DisplayableImage} from './constants.js';
 
 /**
  * @fileoverview Defines the actions to change wallpaper state.

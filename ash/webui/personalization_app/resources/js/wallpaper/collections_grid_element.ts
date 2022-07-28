@@ -13,7 +13,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from '../../common/constants.js';
 import {getCountText, getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
 import {GooglePhotosEnablementState, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
@@ -21,6 +20,7 @@ import {WithPersonalizationStore} from '../personalization_store.js';
 import {getPathOrSymbol} from '../utils.js';
 
 import {getTemplate} from './collections_grid_element.html.js';
+import {DefaultImageSymbol, kDefaultImageSymbol, kMaximumLocalImagePreviews} from './constants.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user

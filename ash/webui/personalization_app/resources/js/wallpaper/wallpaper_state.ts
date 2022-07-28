@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 
-import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from '../../common/constants.js';
 import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage} from '../personalization_app.mojom-webui.js';
+
+import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './constants.js';
 
 /**
  * Stores collections and images from backdrop server.

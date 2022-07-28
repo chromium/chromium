@@ -12,9 +12,8 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from '../common/constants.js';
-
 import {AmbientModeAlbum, CurrentWallpaper, GooglePhotosPhoto, TopicSource, WallpaperImage, WallpaperLayout, WallpaperType} from './personalization_app.mojom-webui.js';
+import {DefaultImageSymbol, DisplayableImage, kDefaultImageSymbol} from './wallpaper/constants.js';
 
 
 export function isWallpaperImage(obj: any): obj is WallpaperImage {

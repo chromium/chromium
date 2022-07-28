@@ -13,11 +13,11 @@ import '../../common/icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {DisplayableImage} from '../../common/constants.js';
 import {CurrentWallpaper, WallpaperLayout, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {getWallpaperLayoutEnum, isFilePath, isGooglePhotosPhoto} from '../utils.js';
 
+import {DisplayableImage} from './constants.js';
 import {setFullscreenEnabledAction} from './wallpaper_actions.js';
 import {cancelPreviewWallpaper, confirmPreviewWallpaper, selectWallpaper} from './wallpaper_controller.js';
 import {getTemplate} from './wallpaper_fullscreen_element.html.js';
