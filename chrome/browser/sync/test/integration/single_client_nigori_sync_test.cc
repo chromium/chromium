@@ -53,6 +53,7 @@
 #include "crypto/ec_private_key.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/url_constants.h"
@@ -745,6 +746,8 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
 
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     security_domains_server_ =
         std::make_unique<syncer::FakeSecurityDomainsServer>(
             embedded_test_server()->base_url());
@@ -981,6 +984,39 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
+                       ShouldAcceptEncryptionKeysFromSubFrameIfSyncEnabled) {
+  // Mimic the account being already using a trusted vault passphrase.
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics({kTestEncryptionKey}),
+                        GetFakeServer());
+
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(GetSyncService(0)
+                  ->GetUserSettings()
+                  ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+  ASSERT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PASSWORDS));
+
+  // Mimic opening a page that embeds the retrieval page as a cross-origin
+  // iframe.
+  chrome::AddTabAt(
+      GetBrowser(0),
+      embedded_test_server()->GetURL(
+          "foo.com", base::StringPrintf(
+                         "/sync/encryption_keys_retrieval_with_iframe.html?%s",
+                         GaiaUrls::GetInstance()
+                             ->signin_chrome_sync_keys_retrieval_url()
+                             .spec()
+                             .c_str())),
+      /*index=*/0,
+      /*foreground=*/true);
+
+  // Wait until the keys-missing error gets resolved.
+  EXPECT_TRUE(PasswordSyncActiveChecker(GetSyncService(0)).Wait());
+  EXPECT_FALSE(GetSyncService(0)
+                   ->GetUserSettings()
+                   ->IsTrustedVaultKeyRequiredForPreferredDataTypes());
+}
 
 IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithWebApiTest,
                        PRE_ShouldAcceptEncryptionKeysFromTheWebBeforeSignIn) {

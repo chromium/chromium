@@ -34,20 +34,18 @@ const url::Origin& GetAllowedOrigin() {
 }
 
 bool ShouldExposeMojoApi(content::NavigationHandle* navigation_handle) {
-  DCHECK(navigation_handle->IsInMainFrame());
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     return false;
   }
 
-  content::RenderFrameHost* main_frame =
-      navigation_handle->GetRenderFrameHost();
-  const url::Origin main_frame_origin = main_frame->GetLastCommittedOrigin();
+  content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
+  const url::Origin rfh_origin = rfh->GetLastCommittedOrigin();
   // Restrict to allowed origin and only if site isolation requires a dedicated
   // process. The host is compared explicitly to confirm that the allowed origin
   // uses a dedicated process, rather than sharing process with eTLD+1.
-  return main_frame_origin == GetAllowedOrigin() &&
-         main_frame->GetSiteInstance()->RequiresDedicatedProcess() &&
-         main_frame->GetSiteInstance()->GetSiteURL().host() ==
+  return rfh_origin == GetAllowedOrigin() &&
+         rfh->GetSiteInstance()->RequiresDedicatedProcess() &&
+         rfh->GetSiteInstance()->GetSiteURL().host() ==
              GetAllowedOrigin().host();
 }
 
@@ -72,7 +70,7 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
       const std::vector<std::vector<uint8_t>>& encryption_keys,
       int last_key_version,
       SetEncryptionKeysCallback callback) override {
-    // Extra safeguard, e.g. to guard against subframes.
+    // Extra safeguard.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
         GetAllowedOrigin()) {
       return;
@@ -93,7 +91,7 @@ class EncryptionKeyApi : public chrome::mojom::SyncEncryptionKeysExtension,
       return;
     }
 
-    // Extra safeguard, e.g. to guard against subframes.
+    // Extra safeguard.
     if (receivers_.GetCurrentTargetFrame()->GetLastCommittedOrigin() !=
         GetAllowedOrigin()) {
       return;
@@ -176,8 +174,7 @@ SyncEncryptionKeysTabHelper::~SyncEncryptionKeysTabHelper() = default;
 
 void SyncEncryptionKeysTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
-      navigation_handle->IsSameDocument()) {
+  if (navigation_handle->IsSameDocument()) {
     return;
   }
 

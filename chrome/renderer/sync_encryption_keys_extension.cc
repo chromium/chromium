@@ -45,7 +45,7 @@ bool ShouldExposeJavascriptApi(content::RenderFrame* render_frame) {
   DCHECK(render_frame);
 
   const url::Origin origin = render_frame->GetWebFrame()->GetSecurityOrigin();
-  return render_frame->IsMainFrame() && origin == GetAllowedOrigin() &&
+  return origin == GetAllowedOrigin() &&
          blink::Platform::Current()->IsLockedToSite();
 }
 
