@@ -5,25 +5,16 @@
 #ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_API_H_
 #define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_PUSH_NOTIFICATION_PUSH_NOTIFICATION_API_H_
 
-@class NSData;
-@class UIApplication;
-@protocol SingleSignOnService;
+#import <memory>
+
+#import "ios/chrome/browser/push_notification/push_notification_configuration.h"
+#import "ios/chrome/browser/push_notification/push_notification_service.h"
 
 namespace ios {
 namespace provider {
 
-// Initializes the device to handle push notifications
-void InitializeConfiguration(id<SingleSignOnService> sso_service);
-
-// Registers the device with the server to receive push notifications
-void RegisterDevice(NSData* device_token);
-
-// Registers the device with Apple Push Notification Service (APNS)
-void RegisterDeviceWithAPNS(UIApplication* application);
-
-// Prompts the user to choose accept or refuse push notification
-// permissions.
-void RequestPushNotificationPermission();
+// Creates a new instance of PushNotificationService.
+std::unique_ptr<PushNotificationService> CreatePushNotificationService();
 
 }  // namespace provider
 }  // namespace ios

@@ -4,28 +4,65 @@
 
 #import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
 
+#import "base/threading/sequenced_task_runner_handle.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace ios {
 namespace provider {
+namespace {
 
-void InitializeConfiguration(id<SingleSignOnService> sso_service) {
-  // Chromium does not initialize push notification configurations
+// Domain for Chromium push_notification error API.
+NSString* const kChromiumPushNotificationErrorDomain =
+    @"chromium_push_notification_error_domain";
+
+class ChromiumPushNotificationService final : public PushNotificationService {
+ public:
+  // PushNotificationService implementation.
+  void RegisterDevice(PushNotificationConfiguration* config,
+                      void (^completion_handler)(NSError* error)) final;
+  void UnregisterDevice(void (^completion_handler)(NSError* error)) final;
+};
+
+void ChromiumPushNotificationService::RegisterDevice(
+    PushNotificationConfiguration* config,
+    void (^completion_handler)(NSError* error)) {
+  // Chromium does not initialize the device's connection to the push
+  // notification server. As a result, the `completion_handler` is called with
+  // a NSFeatureUnsupportedError.
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        NSError* error =
+            [NSError errorWithDomain:kChromiumPushNotificationErrorDomain
+                                code:NSFeatureUnsupportedError
+                            userInfo:nil];
+        completion_handler(error);
+      }));
 }
 
-void RegisterDevice(NSData* device_token) {
-  // Chromium does not register devices for push notifications
+void ChromiumPushNotificationService::UnregisterDevice(
+    void (^completion_handler)(NSError* error)) {
+  // Chromium does not unregister the device on the push notification server. As
+  // a result, the `completion_handler` is called with a
+  // NSFeatureUnsupportedError.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        NSError* error =
+            [NSError errorWithDomain:kChromiumPushNotificationErrorDomain
+                                code:NSFeatureUnsupportedError
+                            userInfo:nil];
+        completion_handler(error);
+      }));
 }
 
-void RegisterDeviceWithAPNS(UIApplication* application) {
-  // Chromium does not register devices with Apple Push Notification Service
-  // (APNS) for push notifications
-}
+}  // namespace
 
-void RequestPushNotificationPermission() {
-  // Chromium does not request push notification permissions
+std::unique_ptr<PushNotificationService> CreatePushNotificationService(
+    PushNotificationConfiguration* config) {
+  return std::make_unique<ChromiumPushNotificationService>();
 }
 
 }  // namespace provider

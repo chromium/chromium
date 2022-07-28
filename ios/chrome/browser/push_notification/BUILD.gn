@@ -1,0 +1,20 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("push_notification_service") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "push_notification_configuration.h",
+    "push_notification_configuration.mm",
+    "push_notification_service.h",
+    "push_notification_service.mm",
+    "push_notification_util.h",
+    "push_notification_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
