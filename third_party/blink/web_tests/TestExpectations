@@ -6700,9 +6700,6 @@ crbug.com/1295980 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/user-act
 crbug.com/1295980 virtual/fenced-frame-shadow-dom/wpt_internal/fenced_frame/user-activation.https.html [ Failure Pass Timeout ]
 crbug.com/1298633 http/tests/inspector-protocol/network/cross-origin-isolation/coep-load-error-reporting-worker.js [ Pass Timeout ]
 
-# Sheriff 2022-03-16
-crbug.com/1306770 http/tests/inspector-protocol/network/interception-download.js [ Failure Pass ]
-
 # Sheriff 2022-03-18
 crbug.com/1290040 external/wpt/service-workers/service-worker/same-site-cookies.https.html [ Skip ]
 
@@ -7031,8 +7028,6 @@ crbug.com/1221127 virtual/coop-restrict-properties/external/wpt/html/cross-origi
 # Sheriff 2022-07-13
 crbug.com/1204176 [ Linux ] fast/scrolling/overflow-scrollability.html [ Failure Pass ]
 crbug.com/1344175 [ Mac12 ] external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-root.html [ Failure Pass ]
-# Flaking on WebKit Linux MSAN
-crbug.com/1344277 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Crash Failure Pass ]
 
 # Sheriff 2022-07-15
 crbug.com/1344652 [ Mac ] external/wpt/webmessaging/with-ports/020.html [ Failure Pass ]
@@ -7052,7 +7047,6 @@ crbug.com/1345745 virtual/async-script-scheduling-first-paint-or-finished-parsin
 # Sheriff 2022-07-21
 crbug.com/1346158 crbug.com/1346158 external/wpt/dom/events/non-cancelable-when-passive/non-passive-mousewheel-event-listener-on-window.html [ Failure Pass ]
 crbug.com/1310202 [ Mac11 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
-crbug.com/1310202 [ Linux ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass ]
 
 # Sheriff 2022-07-25
 crbug.com/1346822 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-002.https.html [ Failure Pass ]
@@ -7071,3 +7065,12 @@ crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoratio
 
 # Sheriff 2022-07-28
 crbug.com/1348053 [ Mac12 ] virtual/scroll-unification/fast/scrolling/inertial-scrolling-with-pointer-events-none-overlay.html [ Failure Pass ]
+# Flaky timeouts on WebKit Linux MSAN
+crbug.com/1348118 [ Linux ] virtual/partitioned-cookies-first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Timeout Pass ]
+# Failure on all platforms was added before, see crbug.com/1306770
+crbug.com/1348118 http/tests/inspector-protocol/network/interception-download.js [ Timeout Failure Pass ]
+crbug.com/1348118 [ Linux ] virtual/first-party-sets/http/tests/inspector-protocol/network/interception-download.js [ Timeout Pass ]
+# See crbug.com/1310202 for Failure
+crbug.com/1348118 [ Linux ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Timeout Failure Pass ]
+# See crbug.com/1344277 for Crash and Failure
+crbug.com/1348118 [ Linux ] wpt_internal/webxr/ar/ar_light_estimation.https.html [ Timeout Crash Failure Pass ]
