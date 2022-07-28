@@ -16,7 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -99,12 +98,6 @@ LoginFailureReason GetLoginFailureReasonForReport(
 }
 }  // namespace
 
-// static
-const base::Feature
-    LoginLogoutReporter::kEnableKioskAndGuestLoginLogoutReporting{
-        "EnableKioskAndGuestLoginLogoutReporting",
-        base::FEATURE_ENABLED_BY_DEFAULT};
-
 AccountId LoginLogoutReporter::Delegate::GetLastLoginAttemptAccountId() const {
   if (!ash::ExistingUserController::current_controller()) {
     return EmptyAccountId();
@@ -163,11 +156,6 @@ void LoginLogoutReporter::MaybeReportEvent(LoginLogoutRecord record,
   }
 
   const LoginLogoutSessionType session_type = GetSessionType(account_id);
-  if (!base::FeatureList::IsEnabled(kEnableKioskAndGuestLoginLogoutReporting) &&
-      (session_type == LoginLogoutSessionType::GUEST_SESSION ||
-       session_type == LoginLogoutSessionType::KIOSK_SESSION)) {
-    return;
-  }
   record.set_event_timestamp_sec(clock_->Now().ToTimeT());
   record.set_session_type(session_type);
   const std::string& user_email = account_id.GetUserEmail();
@@ -213,8 +201,7 @@ void LoginLogoutReporter::OnLoginFailure(const AuthFailure& error) {
 void LoginLogoutReporter::OnKioskLoginFailure() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(kEnableKioskAndGuestLoginLogoutReporting) ||
-      !reporter_helper_->ReportingEnabled(kReportDeviceLoginLogout) ||
+  if (!reporter_helper_->ReportingEnabled(kReportDeviceLoginLogout) ||
       !GetLocalState()) {
     return;
   }
@@ -228,8 +215,7 @@ void LoginLogoutReporter::OnKioskLoginFailure() {
 void LoginLogoutReporter::MaybeReportKioskLoginFailure() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!base::FeatureList::IsEnabled(kEnableKioskAndGuestLoginLogoutReporting) ||
-      !GetLocalState()) {
+  if (!GetLocalState()) {
     return;
   }
 

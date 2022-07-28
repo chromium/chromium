@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "ash/components/login/auth/auth_status_consumer.h"
-#include "base/feature_list.h"
 #include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -74,8 +72,6 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
   void OnKioskLoginFailure() override;
 
  private:
-  static const base::Feature kEnableKioskAndGuestLoginLogoutReporting;
-
   LoginLogoutReporter(
       std::unique_ptr<::reporting::UserEventReporterHelper> reporter_helper,
       std::unique_ptr<Delegate> delegate,
