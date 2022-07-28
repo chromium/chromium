@@ -2455,15 +2455,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Wifi.SecurityDowngrade"
-    enum="NetworkSecurityDowngrade" expires_after="2022-12-01">
+<histogram name="Network.Shill.Wifi.SecurityChange"
+    enum="NetworkSecurityChange" expires_after="2022-12-01">
   <owner>andrzejo@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
-    Chrome OS network metric for WiFi security downgrades. It is emitted every
-    time a new BSSID is being added to a network, this network has already been
+    Chrome OS network metric for WiFi security changes. It is emitted every time
+    a new BSSID is being added to a network, this network has already been
     connected before and configuration of this new BSSID causes network security
-    to be lowered.
+    to be changed in a non-trivial way - that is a downgrade or an upgrade that
+    can cause split of an network into two services.
   </summary>
 </histogram>
 

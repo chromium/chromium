@@ -69671,15 +69671,23 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="kDisabledBecauseOfFailedLaunch"/>
 </enum>
 
-<enum name="NetworkSecurityDowngrade">
+<enum name="NetworkSecurityChange">
   <summary>
-    Possible instances of WiFi security downgrades that happen after initial
-    connection.
+    Possible instances of WiFi security changes that happen after initial
+    connection. These are not all possible security changes but a subset that is
+    interesting: downgrades plus &quot;WPA1/2 to WPA1/2/3&quot; change which
+    could trigger splitting of a network into two services.
   </summary>
-  <int value="0" label="Downgrade to WPA"/>
-  <int value="1" label="Downgrade to WPA2"/>
-  <int value="2" label="Downgrade to EAP-WPA"/>
-  <int value="3" label="Downgrade to EAP-WPA2"/>
+  <int value="0" label="WPA3 to WPA2/3"/>
+  <int value="1" label="WPA3 to WPA1/2/3"/>
+  <int value="2" label="WPA2/3 to WPA1/2/3"/>
+  <int value="3" label="WPA2 to WPA1/2"/>
+  <int value="4" label="EAP-WPA3 to EAP-WPA2/3"/>
+  <int value="5" label="EAP-WPA3 to EAP-WPA1/2/3"/>
+  <int value="6" label="EAP-WPA2/3 to EAP-WPA1/2/3"/>
+  <int value="7" label="EAP-WPA2 to EAP-WPA1/2"/>
+  <int value="8" label="WPA1/2 to WPA1/2/3"/>
+  <int value="9" label="EAP-WPA1/2 to EAP-WPA1/2/3"/>
 </enum>
 
 <enum name="NetworkSecurityType">
