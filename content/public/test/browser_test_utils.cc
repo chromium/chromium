@@ -2709,18 +2709,11 @@ bool DOMMessageQueue::HasMessages() {
 }
 
 WebContentsAddedObserver::WebContentsAddedObserver()
-    : web_contents_created_callback_(
+    : creation_subscription_(RegisterWebContentsCreationCallback(
           base::BindRepeating(&WebContentsAddedObserver::WebContentsCreated,
-                              base::Unretained(this))),
-      web_contents_(nullptr) {
-  WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(
-      web_contents_created_callback_);
-}
+                              base::Unretained(this)))) {}
 
-WebContentsAddedObserver::~WebContentsAddedObserver() {
-  WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
-      web_contents_created_callback_);
-}
+WebContentsAddedObserver::~WebContentsAddedObserver() = default;
 
 void WebContentsAddedObserver::WebContentsCreated(WebContents* web_contents) {
   DCHECK(!web_contents_);
@@ -4210,16 +4203,12 @@ bool HistoryGoForward(WebContents* wc) {
 }
 
 CreateAndLoadWebContentsObserver::CreateAndLoadWebContentsObserver()
-    : web_contents_created_callback_(base::BindRepeating(
-          &CreateAndLoadWebContentsObserver::OnWebContentsCreated,
-          base::Unretained(this))) {
-  WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(
-      web_contents_created_callback_);
-}
+    : creation_subscription_(
+          RegisterWebContentsCreationCallback(base::BindRepeating(
+              &CreateAndLoadWebContentsObserver::OnWebContentsCreated,
+              base::Unretained(this)))) {}
 
-CreateAndLoadWebContentsObserver::~CreateAndLoadWebContentsObserver() {
-  UnregisterIfNeeded();
-}
+CreateAndLoadWebContentsObserver::~CreateAndLoadWebContentsObserver() = default;
 
 void CreateAndLoadWebContentsObserver::OnWebContentsCreated(
     WebContents* web_contents) {
@@ -4240,15 +4229,6 @@ void CreateAndLoadWebContentsObserver::OnWebContentsCreated(
     std::move(quit_closure_).Run();
 }
 
-void CreateAndLoadWebContentsObserver::UnregisterIfNeeded() {
-  if (!web_contents_created_callback_)
-    return;
-
-  WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
-      web_contents_created_callback_);
-  web_contents_created_callback_.Reset();
-}
-
 WebContents* CreateAndLoadWebContentsObserver::Wait() {
   // Wait for a new WebContents if we haven't gotten one yet.
   if (!load_stop_observer_) {
@@ -4262,11 +4242,16 @@ WebContents* CreateAndLoadWebContentsObserver::Wait() {
   // Do this after waiting for load to complete, since exactly one WebContents
   // should be created before Wait() returns.  If a second one is created while
   // the first is loading, then it's still broken.
-  UnregisterIfNeeded();
+  creation_subscription_ = base::CallbackListSubscription();
 
   EXPECT_FALSE(failed_);
 
   return web_contents_;
+}
+
+base::CallbackListSubscription RegisterWebContentsCreationCallback(
+    base::RepeatingCallback<void(WebContents*)> callback) {
+  return WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(callback);
 }
 
 }  // namespace content

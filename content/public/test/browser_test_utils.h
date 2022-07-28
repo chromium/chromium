@@ -1320,10 +1320,9 @@ class WebContentsAddedObserver {
  private:
   void WebContentsCreated(WebContents* web_contents);
 
-  // Callback to WebContentCreated(). Cached so that we can unregister it.
-  base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
+  base::CallbackListSubscription creation_subscription_;
 
-  raw_ptr<WebContents> web_contents_;
+  raw_ptr<WebContents> web_contents_ = nullptr;
   base::OnceClosure quit_closure_;
 };
 
@@ -2271,12 +2270,16 @@ class CreateAndLoadWebContentsObserver {
   void UnregisterIfNeeded();
 
   absl::optional<LoadStopObserver> load_stop_observer_;
-  base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
+  base::CallbackListSubscription creation_subscription_;
 
   raw_ptr<WebContents> web_contents_ = nullptr;
   base::OnceClosure quit_closure_;
   bool failed_ = false;
 };
+
+[[nodiscard]] base::CallbackListSubscription
+RegisterWebContentsCreationCallback(
+    base::RepeatingCallback<void(WebContents*)> callback);
 
 // Functions to traverse history and wait until the traversal completes. These
 // are wrappers around the same-named methods of the `NavigationController`.

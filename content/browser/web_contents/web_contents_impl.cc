@@ -216,9 +216,8 @@ constexpr auto kUpdateLoadStatesInterval = base::Milliseconds(250);
 using LifecycleState = RenderFrameHost::LifecycleState;
 using LifecycleStateImpl = RenderFrameHostImpl::LifecycleStateImpl;
 
-base::LazyInstance<std::vector<
-    WebContentsImpl::FriendWrapper::CreatedCallback>>::DestructorAtExit
-    g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<base::RepeatingCallbackList<void(WebContents*)>>::
+    DestructorAtExit g_created_callbacks = LAZY_INSTANCE_INITIALIZER;
 
 bool HasMatchingWidgetHost(FrameTree* tree, RenderWidgetHostImpl* host) {
   // This method scans the frame tree rather than checking whether
@@ -603,19 +602,10 @@ std::unique_ptr<WebContents> WebContents::CreateWithSessionStorage(
   return new_contents;
 }
 
-void WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(
+base::CallbackListSubscription
+WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(
     const CreatedCallback& callback) {
-  g_created_callbacks.Get().push_back(callback);
-}
-
-void WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
-    const CreatedCallback& callback) {
-  for (size_t i = 0; i < g_created_callbacks.Get().size(); ++i) {
-    if (g_created_callbacks.Get().at(i) == callback) {
-      g_created_callbacks.Get().erase(g_created_callbacks.Get().begin() + i);
-      return;
-    }
-  }
+  return g_created_callbacks.Get().Add(callback);
 }
 
 WebContents* WebContents::FromRenderViewHost(RenderViewHost* rvh) {
@@ -3109,8 +3099,7 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params,
   if (browser_plugin_guest_)
     browser_plugin_guest_->Init();
 
-  for (auto& i : g_created_callbacks.Get())
-    i.Run(this);
+  g_created_callbacks.Get().Notify(this);
 
   // Create the renderer process in advance if requested.
   if (params.desired_renderer_state ==

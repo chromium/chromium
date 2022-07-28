@@ -6,6 +6,7 @@
 #define CONTENT_TEST_CONTENT_BROWSER_CONSISTENCY_CHECKER_H_
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 
 namespace content {
 
@@ -36,8 +37,7 @@ class ContentBrowserConsistencyChecker {
  private:
   void OnWebContentsCreated(WebContents* web_contents);
 
-  // The callback needs to be cached so that it can be unregistered.
-  base::RepeatingCallback<void(WebContents*)> creation_hook_;
+  base::CallbackListSubscription creation_subscription_;
 };
 
 }  // namespace content

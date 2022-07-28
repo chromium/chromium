@@ -24,6 +24,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -1244,12 +1245,30 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
 
   // Wait for a 'DONE' message sent from popup_iframe.html, indicating that it
   // loaded successfully.
-  content::DOMMessageQueue message_queue;
+  std::unique_ptr<content::DOMMessageQueue> message_queue;
   std::string message;
-  OpenDevToolsWindow(kDebuggerTestPage, false);
 
+  // OpenDevToolsWindow() internally creates and initializes a WebContents,
+  // which we need to listen to messages from; to ensure that we don't miss
+  // the message, listen for that WebContents being created and set up a
+  // DOMMessageQueue for it.
+  {
+    auto subscription = content::RegisterWebContentsCreationCallback(
+        // Note that we only care about the first WebContents; for all
+        // subsequent WebContents, message_queue will already be non-null.
+        base::BindLambdaForTesting([&](content::WebContents* contents) {
+          if (!message_queue) {
+            message_queue =
+                std::make_unique<content::DOMMessageQueue>(contents);
+          }
+        }));
+    OpenDevToolsWindow(kDebuggerTestPage, false);
+  }
+
+  ASSERT_TRUE(message_queue) <<
+      "OpenDevToolsWindow must create at least one WebContents";
   while (true) {
-    ASSERT_TRUE(message_queue.WaitForMessage(&message));
+    ASSERT_TRUE(message_queue->WaitForMessage(&message));
     if (message == "\"DONE\"")
       break;
   }
@@ -1632,7 +1651,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   // Now that we know the panel is loaded, switch to it. We'll wait until we
   // see a 'DONE' message sent from popup_iframe.html, indicating that it
   // loaded successfully.
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(main_web_contents());
   SwitchToExtensionPanel(window_, extension, "the_panel_name");
   std::string message;
   while (true) {

@@ -10,6 +10,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace content {
 
@@ -110,9 +111,7 @@ TestNavigationObserver::TestNavigationObserver(
                              quit_mode,
                              ignore_uncommitted_navigations) {}
 
-TestNavigationObserver::~TestNavigationObserver() {
-  StopWatchingNewWebContents();
-}
+TestNavigationObserver::~TestNavigationObserver() = default;
 
 void TestNavigationObserver::Wait() {
   was_event_consumed_ = false;
@@ -137,13 +136,13 @@ void TestNavigationObserver::WaitForNavigationFinished() {
 }
 
 void TestNavigationObserver::StartWatchingNewWebContents() {
-  WebContentsImpl::FriendWrapper::AddCreatedCallbackForTesting(
-      web_contents_created_callback_);
+  creation_subscription_ = RegisterWebContentsCreationCallback(
+      base::BindRepeating(&TestNavigationObserver::OnWebContentsCreated,
+                          base::Unretained(this)));
 }
 
 void TestNavigationObserver::StopWatchingNewWebContents() {
-  WebContentsImpl::FriendWrapper::RemoveCreatedCallbackForTesting(
-      web_contents_created_callback_);
+  creation_subscription_ = base::CallbackListSubscription();
 }
 
 void TestNavigationObserver::WatchExistingWebContents() {
@@ -173,10 +172,7 @@ TestNavigationObserver::TestNavigationObserver(
       last_navigation_succeeded_(false),
       last_net_error_code_(net::OK),
       last_navigation_type_(NAVIGATION_TYPE_UNKNOWN),
-      message_loop_runner_(new MessageLoopRunner(quit_mode)),
-      web_contents_created_callback_(
-          base::BindRepeating(&TestNavigationObserver::OnWebContentsCreated,
-                              base::Unretained(this))) {
+      message_loop_runner_(new MessageLoopRunner(quit_mode)) {
   if (web_contents)
     RegisterAsObserver(web_contents);
 }

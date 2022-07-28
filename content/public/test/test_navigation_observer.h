@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "content/public/browser/navigation_type.h"
 #include "content/public/common/child_process_host.h"
@@ -276,8 +277,7 @@ class TestNavigationObserver {
   // The MessageLoopRunner used to spin the message loop.
   scoped_refptr<MessageLoopRunner> message_loop_runner_;
 
-  // Callback invoked on WebContents creation.
-  base::RepeatingCallback<void(WebContents*)> web_contents_created_callback_;
+  base::CallbackListSubscription creation_subscription_;
 };
 
 }  // namespace content
