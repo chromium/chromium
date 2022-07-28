@@ -8,7 +8,7 @@ import './shimless_rma_shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
-import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
@@ -18,6 +18,7 @@ import {enableNextButton, executeThenTransitionState} from './shimless_rma_util.
 /**
  * @typedef {{
  *   component: !ComponentType,
+ *   uniqueId: number,
  *   id: string,
  *   identifier: string,
  *   name: string,
@@ -32,6 +33,8 @@ let ComponentCheckbox;
  * 'onboarding-select-components-page' is the page for selecting the components
  * that were replaced during repair.
  */
+
+const NUM_COLUMNS = 2;
 
 /**
  * @constructor
@@ -68,6 +71,16 @@ export class OnboardingSelectComponentsPageElement extends
 
       /** @private {string} */
       reworkFlowLinkText_: {type: String, value: ''},
+
+      /**
+       * The index into componentCheckboxes_ for keyboard navigation between
+       * components.
+       * @private
+       */
+      focusedComponentIndex_: {
+        type: Number,
+        value: -1,
+      },
     };
   }
 
@@ -79,6 +92,70 @@ export class OnboardingSelectComponentsPageElement extends
     super();
     /** @private {ShimlessRmaServiceInterface} */
     this.shimlessRmaService_ = getShimlessRmaService();
+
+    /**
+     * Handles keyboard navigation over the list of components.
+     * @private {?Function}
+     */
+    this.HandleKeyDownEvent = (event) => {
+      if (event.key !== 'ArrowRight' && event.key !== 'ArrowDown' &&
+          event.key !== 'ArrowLeft' && event.key !== 'ArrowUp') {
+        return;
+      }
+
+      // If there are no selectable components, do nothing.
+      if (this.focusedComponentIndex_ === -1) {
+        return;
+      }
+
+      // Don't use keyboard navigation if the user tabbed out of the
+      // component list.
+      if (!this.shadowRoot.activeElement ||
+          this.shadowRoot.activeElement.tagName !== 'REPAIR-COMPONENT-CHIP') {
+        return;
+      }
+
+      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        // The Down button should send you down the column, so we go forward
+        // by two components, which is the size of the row.
+        let step = 1;
+        if (event.key === 'ArrowDown') {
+          step = NUM_COLUMNS;
+        }
+
+        let newIndex = this.focusedComponentIndex_ + step;
+        // Keep skipping disabled components until we encounter one that is
+        // not disabled.
+        while (newIndex < this.componentCheckboxes_.length &&
+               this.componentCheckboxes_[newIndex].disabled) {
+          newIndex += step;
+        }
+        // Check that we haven't ended up outside of the array before
+        // applying the changes.
+        if (newIndex < this.componentCheckboxes_.length) {
+          this.focusedComponentIndex_ = newIndex;
+        }
+      }
+
+      // The left and up arrows work similarly to down and right, but go
+      // backwards.
+      if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        let step = 1;
+        if (event.key === 'ArrowUp') {
+          step = NUM_COLUMNS;
+        }
+
+        let newIndex = this.focusedComponentIndex_ - step;
+        while (newIndex >= 0 && this.componentCheckboxes_[newIndex].disabled) {
+          newIndex -= step;
+        }
+        if (newIndex >= 0) {
+          this.focusedComponentIndex_ = newIndex;
+        }
+      }
+
+      this.focusOnCurrentComponent_();
+    };
   }
 
   /** @override */
@@ -87,6 +164,28 @@ export class OnboardingSelectComponentsPageElement extends
     this.setReworkFlowLink_();
     this.getComponents_();
     enableNextButton(this);
+
+
+
+    // Whenever we tab into the list of components, we need to focus on the one
+    // we were focused on, when we tabbed out.
+    const componentList = this.shadowRoot.querySelector('#componentList');
+    componentList.addEventListener('focusin', (event) => {
+      this.focusOnCurrentComponent_();
+    });
+
+    // When a component is clicked, it should come into focus.
+    componentList.addEventListener('click', (event) => {
+      const clickedComponentIndex = this.componentCheckboxes_.findIndex(
+          component => component.uniqueId === event.target.uniqueId);
+
+      if (clickedComponentIndex !== -1 &&
+          !this.componentCheckboxes_[clickedComponentIndex].disabled) {
+        this.focusedComponentIndex_ = clickedComponentIndex;
+      }
+
+      this.focusOnCurrentComponent_();
+    });
 
     // Hide the gradient when the list is scrolled to the end.
     this.shadowRoot.querySelector('.scroll-container')
@@ -110,10 +209,11 @@ export class OnboardingSelectComponentsPageElement extends
         return;
       }
 
-      this.componentCheckboxes_ = result.components.map(item => {
+      this.componentCheckboxes_ = result.components.map((item, index) => {
         assert(item.component);
         return {
           component: item.component,
+          uniqueId: index,
           id: ComponentTypeToId[item.component],
           identifier: item.identifier,
           name: this.i18n(ComponentTypeToId[item.component]),
@@ -121,7 +221,38 @@ export class OnboardingSelectComponentsPageElement extends
           disabled: item.state === ComponentRepairStatus.kMissing,
         };
       });
+
+      // Focus on the first clickable component at the beginning.
+      this.focusedComponentIndex_ =
+          this.componentCheckboxes_.findIndex(component => !component.disabled);
+      afterNextRender(this, () => {
+        this.focusOnCurrentComponent_();
+      });
     });
+  }
+
+  /** @override */
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('keydown', this.HandleKeyDownEvent);
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('keydown', this.HandleKeyDownEvent);
+  }
+
+  /**
+   * Make the page focus on the component at focusedComponentIndex_.
+   * @private
+   */
+  focusOnCurrentComponent_() {
+    if (this.focusedComponentIndex_ != -1) {
+      const componentChip = this.shadowRoot.querySelector(`[unique-id="${
+          this.componentCheckboxes_[this.focusedComponentIndex_].uniqueId}"]`);
+      componentChip.shadowRoot.querySelector('#componentButton').focus();
+    }
   }
 
   /**

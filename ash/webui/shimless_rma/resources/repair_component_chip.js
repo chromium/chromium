@@ -60,6 +60,13 @@ export class RepairComponentChip extends RepairComponentChipBase {
       /** @type {string} */
       componentIdentifier: {type: String, value: ''},
 
+      /** @type {number} */
+      uniqueId: {
+        reflectToAttribute: true,
+        type: Number,
+        value: '',
+      },
+
       /** @type {boolean} */
       isFirstClickableComponent: {
         type: Boolean,

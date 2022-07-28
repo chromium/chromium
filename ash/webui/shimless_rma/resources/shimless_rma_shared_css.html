@@ -145,6 +145,11 @@
       width: 100%;
     }
 
+    /**
+     * NOTE: If you change the number of columns, don't forget to update the
+     * NUM_COLUMNS constant in the keyboard navigation code. Otherwise the down
+     * and up arrows won't work as expected.
+     */
     .component-grid.repair {
       grid-template-columns: auto auto;
     }

@@ -177,6 +177,11 @@ export const fakeComponents = [
 /** @type {!Array<!Component>} */
 export const fakeComponentsForRepairStateTest = [
   {
+    component: ComponentType.kAudioCodec,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Audio_XYZ',
+  },
+  {
     component: ComponentType.kCamera,
     state: ComponentRepairStatus.kOriginal,
     identifier: 'Camera_XYZ_1',
@@ -190,6 +195,31 @@ export const fakeComponentsForRepairStateTest = [
     component: ComponentType.kTouchpad,
     state: ComponentRepairStatus.kReplaced,
     identifier: 'Touchpad_XYZ_2',
+  },
+  {
+    component: ComponentType.kStorage,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Storage_XYZ',
+  },
+  {
+    component: ComponentType.kVpdCached,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'VpdCached_XYZ',
+  },
+  {
+    component: ComponentType.kNetwork,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Network_XYZ',
+  },
+  {
+    component: ComponentType.kCamera,
+    state: ComponentRepairStatus.kOriginal,
+    identifier: 'Camera_XYZ_2',
+  },
+  {
+    component: ComponentType.kTouchsreen,
+    state: ComponentRepairStatus.kMissing,
+    identifier: 'Touchscreen_XYZ',
   },
 ];
 
