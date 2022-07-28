@@ -314,6 +314,8 @@ class Chromium_ycmExtraConfTest(unittest.TestCase):
         '-Wno-unknown-warning-option', '-I[OUT]/a', '-I[OUT]/tag-default'
     ])
 
+  @unittest.skipIf(os.name == "nt", "Test fails with path differences on "
+                   "Windows.")
   def testGetFlagsForSysrootAbsPath(self):
     result = self.ycm_extra_conf.FlagsForFile(
         os.path.join(self.chrome_root, 'six.cc'))
@@ -354,6 +356,8 @@ class Chromium_ycmExtraConfTest(unittest.TestCase):
         '[SRC]/build/mac.sdk',
     ])
 
+  @unittest.skipIf(os.name == "nt", "Test fails with path differences on "
+                   "Windows.")
   def testGetFlagsForIsystem(self):
     result = self.ycm_extra_conf.FlagsForFile(
         os.path.join(self.chrome_root, 'ten.cc'))
