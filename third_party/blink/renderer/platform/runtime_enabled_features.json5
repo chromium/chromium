@@ -344,10 +344,6 @@
       status: {"Android": "", "default": "stable"},
     },
     {
-      name: "CaptureTimeInCsrc",
-      status: "stable",
-    },
-    {
       name: "checkVisibility",
       status: "stable",
     },

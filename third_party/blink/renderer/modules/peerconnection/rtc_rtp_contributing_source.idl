@@ -9,7 +9,7 @@ dictionary RTCRtpContributingSource {
              double              audioLevel;
     required unsigned long       rtpTimestamp;
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpcontributingsource-capturetimestamp
-    [RuntimeEnabled=CaptureTimeInCsrc] DOMHighResTimeStamp captureTimestamp;
+    DOMHighResTimeStamp captureTimestamp;
     // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpcontributingsource-sendercapturetimeoffset
-    [RuntimeEnabled=CaptureTimeInCsrc] DOMHighResTimeStamp senderCaptureTimeOffset;
+    DOMHighResTimeStamp senderCaptureTimeOffset;
 };
