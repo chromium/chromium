@@ -403,6 +403,7 @@ src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
 src/webgpu/shader/validation/shader_validation_test.ts
 src/webgpu/shader/validation/parse/align.spec.ts
 src/webgpu/shader/validation/parse/blankspace.spec.ts
+src/webgpu/shader/validation/parse/builtin.spec.ts
 src/webgpu/shader/validation/parse/comments.spec.ts
 src/webgpu/shader/validation/parse/identifiers.spec.ts
 src/webgpu/shader/validation/parse/literal.spec.ts
