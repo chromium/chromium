@@ -49,6 +49,7 @@ void MakeSymbol(SizeInfo* size_info,
   sym.section_id_ = section_id;
   sym.size_ = size;
   sym.source_path_ = path;
+  sym.object_path_ = "";
   sym.component_ = component;
   sym.container_ = &size_info->containers[0];
   sym.size_info_ = size_info;
@@ -97,9 +98,9 @@ TEST(TreeBuilderTest, TestComponentLens) {
   FilterList filters;
   builder.Build(std::make_unique<ComponentLens>(), '>', false, filters);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
-  EXPECT_EQ("Ct", builder.Open("A")["type"].asString());
+  EXPECT_EQ("Gt", builder.Open("A")["type"].asString());
   EXPECT_EQ(20, builder.Open("A")["size"].asInt());
-  EXPECT_EQ("Ct", builder.Open("B")["type"].asString());
+  EXPECT_EQ("Gt", builder.Open("B")["type"].asString());
   EXPECT_EQ(30, builder.Open("B")["size"].asInt());
 }
 
@@ -121,7 +122,7 @@ TEST(TreeBuilderTest, TestTemplateLens) {
   builder.Build(std::make_unique<TemplateLens>(), '/', false, filters);
   CheckAllTreeNodesFindable(builder, builder.Open(""));
   EXPECT_EQ(
-      "Ct",
+      "Gt",
       builder.Open("base::internal::Invoker<>::RunOnce")["type"].asString());
   EXPECT_EQ(50,
             builder.Open("base::internal::Invoker<>::RunOnce")["size"].asInt());
