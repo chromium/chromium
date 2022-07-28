@@ -125,9 +125,8 @@ class DownloadUIModel {
     bool has_checkbox = false;
     std::u16string checkbox_label;
 
-    // Label and commands for the primary button
-    bool has_primary_button = false;
-    DownloadCommands::Command primary_button_command;
+    // The command for the primary button
+    absl::optional<DownloadCommands::Command> primary_button_command;
 
     // List of quick actions
     std::vector<QuickAction> quick_actions;

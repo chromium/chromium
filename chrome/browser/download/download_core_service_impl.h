@@ -52,7 +52,7 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   void CancelDownloads() override;
   void SetDownloadManagerDelegateForTesting(
       std::unique_ptr<ChromeDownloadManagerDelegate> delegate) override;
-  bool IsShelfEnabled() override;
+  bool IsDownloadUiEnabled() override;
   void SetDownloadHistoryForTesting(
       std::unique_ptr<DownloadHistory> download_history) override;
 

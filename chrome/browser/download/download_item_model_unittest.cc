@@ -792,12 +792,8 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo) {
                 base::UTF16ToUTF8(bubble_ui_info.warning_summary));
       EXPECT_EQ(test_case.expected_icon_model_override,
                 bubble_ui_info.icon_model_override);
-      if (!test_case.expected_primary_button_command.has_value()) {
-        EXPECT_FALSE(bubble_ui_info.has_primary_button);
-      } else {
-        EXPECT_EQ(test_case.expected_primary_button_command.value(),
-                  bubble_ui_info.primary_button_command);
-      }
+      EXPECT_EQ(test_case.expected_primary_button_command,
+                bubble_ui_info.primary_button_command);
       EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
       EXPECT_FALSE(bubble_ui_info.has_progress_bar);
     }
@@ -846,12 +842,8 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_BubbleV2Off) {
                 base::UTF16ToUTF8(bubble_ui_info.warning_summary));
       EXPECT_EQ(test_case.expected_icon_model_override,
                 bubble_ui_info.icon_model_override);
-      if (!test_case.expected_primary_button_command.has_value()) {
-        EXPECT_FALSE(bubble_ui_info.has_primary_button);
-      } else {
-        EXPECT_EQ(test_case.expected_primary_button_command.value(),
-                  bubble_ui_info.primary_button_command);
-      }
+      EXPECT_EQ(test_case.expected_primary_button_command,
+                bubble_ui_info.primary_button_command);
       EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
       EXPECT_FALSE(bubble_ui_info.has_progress_bar);
     }

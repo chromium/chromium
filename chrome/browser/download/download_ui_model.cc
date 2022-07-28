@@ -706,7 +706,6 @@ DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddIconAndColor(
 }
 DownloadUIModel::BubbleUIInfo& DownloadUIModel::BubbleUIInfo::AddPrimaryButton(
     DownloadCommands::Command command) {
-  has_primary_button = true;
   primary_button_command = command;
   return *this;
 }
