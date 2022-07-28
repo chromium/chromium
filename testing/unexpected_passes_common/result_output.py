@@ -568,7 +568,8 @@ def AddStatsToStr(s: str, stats: data_types.BuildStats) -> str:
 
 
 def OutputAffectedUrls(removed_urls: RemovedUrlsType,
-                       orphaned_urls: Optional[RemovedUrlsType] = None) -> None:
+                       orphaned_urls: Optional[RemovedUrlsType] = None,
+                       bug_file_handle: Optional[IO] = None) -> None:
   """Outputs URLs of affected expectations for easier consumption by the user.
 
   Outputs the following:
@@ -584,6 +585,8 @@ def OutputAffectedUrls(removed_urls: RemovedUrlsType,
     removed_urls: A set or list of strings containing bug URLs.
     orphaned_urls: A subset of |removed_urls| whose bugs no longer have any
         corresponding expectations.
+    bug_file_handle: An optional open file-like object to write CL description
+        bug information to. If not specified, will print to the terminal.
   """
   removed_urls = list(removed_urls)
   removed_urls.sort()
@@ -591,7 +594,9 @@ def OutputAffectedUrls(removed_urls: RemovedUrlsType,
   orphaned_urls = list(orphaned_urls)
   orphaned_urls.sort()
   _OutputAffectedUrls(removed_urls, orphaned_urls)
-  _OutputUrlsForClDescription(removed_urls, orphaned_urls)
+  _OutputUrlsForClDescription(removed_urls,
+                              orphaned_urls,
+                              file_handle=bug_file_handle)
 
 
 def _OutputAffectedUrls(affected_urls: List[str],

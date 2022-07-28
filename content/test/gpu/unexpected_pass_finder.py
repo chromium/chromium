@@ -145,8 +145,14 @@ def main():
       querier.FillExpectationMapForBuilders(test_expectation_map, try_builders))
   unused_expectations = test_expectation_map.FilterOutUnusedExpectations()
   stale, semi_stale, active = test_expectation_map.SplitByStaleness()
-  result_output.OutputResults(stale, semi_stale, active, unmatched,
-                              unused_expectations, args.output_format)
+  if args.result_output_file:
+    with open(args.result_output_file, 'w') as outfile:
+      result_output.OutputResults(stale, semi_stale, active, unmatched,
+                                  unused_expectations, args.output_format,
+                                  outfile)
+  else:
+    result_output.OutputResults(stale, semi_stale, active, unmatched,
+                                unused_expectations, args.output_format)
 
   affected_urls = set()
   stale_message = ''
@@ -176,7 +182,12 @@ def main():
     print(stale_message)
   if affected_urls:
     orphaned_urls = expectations_instance.FindOrphanedBugs(affected_urls)
-    result_output.OutputAffectedUrls(affected_urls, orphaned_urls)
+    if args.bug_output_file:
+      with open(args.bug_output_file, 'w') as bug_outfile:
+        result_output.OutputAffectedUrls(affected_urls, orphaned_urls,
+                                         bug_outfile)
+    else:
+      result_output.OutputAffectedUrls(affected_urls, orphaned_urls)
 # pylint: enable=too-many-locals
 
 

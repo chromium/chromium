@@ -69,6 +69,14 @@ def AddCommonArguments(parser: argparse.ArgumentParser) -> None:
                             'from being removed before a sufficient amount of '
                             'data has been generated with the expectation '
                             'active. Set to a negative value to disable.'))
+  parser.add_argument('--result-output-file',
+                      help=('Output file to store the generated results. If '
+                            'not specified, will use a temporary file.'))
+  parser.add_argument('--bug-output-file',
+                      help=('Output file to store "Bug:"/"Fixed:" text '
+                            'intended for use in CL descriptions. If not '
+                            'specified, will be printed to the terminal '
+                            'instead.'))
   internal_group = parser.add_mutually_exclusive_group()
   internal_group.add_argument('--include-internal-builders',
                               action='store_true',
