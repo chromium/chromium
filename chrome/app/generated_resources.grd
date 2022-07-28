@@ -6658,6 +6658,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="BREAK">&lt;br&gt;</ph>
         You can manage settings from the card menu or see more options in Customize Chrome.
       </message>
+      <message name="IDS_NTP_MODULES_RECIPE_EXTENDED_INFO" desc="Text shown in the body of the info dialog of the recipe module for Recipes V1.1.">
+        You’re seeing recipes based on your recent Search activity for recipes.
+        <ph name="BREAK">&lt;br&gt;</ph>
+        <ph name="BREAK">&lt;br&gt;</ph>
+        You can manage settings from the card menu or see more options in Customize Chrome.
+      </message>
       <message name="IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE" desc="Name of the recipe tasks module in sentence case shown in various UIs.">
         Recipe ideas
       </message>

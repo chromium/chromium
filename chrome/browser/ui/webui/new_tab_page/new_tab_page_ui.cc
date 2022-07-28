@@ -307,6 +307,7 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       {"modulesDisableButtonText", IDS_NTP_MODULES_DISABLE_BUTTON_TEXT},
       {"modulesCustomizeButtonText", IDS_NTP_MODULES_CUSTOMIZE_BUTTON_TEXT},
       {"modulesRecipeInfo", IDS_NTP_MODULES_RECIPE_INFO},
+      {"modulesRecipeExtendedInfo", IDS_NTP_MODULES_RECIPE_EXTENDED_INFO},
       {"modulesRecipeTasksSentence", IDS_NTP_MODULES_RECIPE_TASKS_SENTENCE},
       {"modulesRecipeTasksLower", IDS_NTP_MODULES_RECIPE_TASKS_LOWER},
       {"modulesRecipeTasksLowerThese",
@@ -467,6 +468,9 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean(
       "modulesRecipeHistoricalExperimentEnabled",
       !splitExperimentGroup.empty() && splitExperimentGroup[0] == "historical");
+  source->AddBoolean(
+      "moduleRecipeExtendedExperimentEnabled",
+      !splitExperimentGroup.empty() && (splitExperimentGroup[0] == "historical" || splitExperimentGroup[0] == "mix"));
 
   RealboxHandler::SetupWebUIDataSource(source);
 
