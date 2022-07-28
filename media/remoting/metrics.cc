@@ -66,7 +66,7 @@ void SessionMetricsRecorder::DidStartSession() {
 
 void SessionMetricsRecorder::StartSessionFailed(
     mojom::RemotingStartFailReason reason) {
-  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.SessionStartFailReason", reason);
+  UMA_HISTOGRAM_ENUMERATION("Media.Remoting.SessionStartFailedReason", reason);
 }
 
 void SessionMetricsRecorder::WillStopSession(StopTrigger trigger) {
