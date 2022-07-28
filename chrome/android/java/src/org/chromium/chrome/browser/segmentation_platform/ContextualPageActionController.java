@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.components.segmentation_platform.SegmentSelectionResult;
 import org.chromium.url.GURL;
@@ -77,8 +78,12 @@ public class ContextualPageActionController {
 
     private void maybeShowContextualPageAction() {
         Tab tab = mTabSupplier.get();
-        // TODO(shaktisahu): Maybe hide the action.
-        if (tab == null || tab.isIncognito() || tab.isDestroyed()) return;
+        if (tab == null || tab.isIncognito() || tab.isDestroyed()) {
+            // On incognito tabs revert back to static action.
+            mAdaptiveToolbarButtonController.showDynamicAction(
+                    AdaptiveToolbarButtonVariant.UNKNOWN);
+            return;
+        }
 
         ContextualPageActionControllerJni.get().computeContextualPageAction(
                 mProfileSupplier.get(), tab.getUrl(), result -> {
