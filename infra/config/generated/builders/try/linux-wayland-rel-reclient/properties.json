@@ -67,21 +67,29 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Linux Tests (Wayland)",
+          "builder": "Linux Builder (Wayland)",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
+      "builder_ids_in_scope_for_testing": [
         {
-          "builder": "linux-wayland-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
-          "builder": "linux-wayland-rel-reclient",
-          "group": "tryserver.chromium.linux"
+          "bucket": "ci",
+          "builder": "Linux Tests (Wayland)",
+          "project": "chromium"
         }
       ]
     }
+  },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "jobs": 80,
+    "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -90,9 +98,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.linux",
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "chromium"
-  ]
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium_trybot"
 }

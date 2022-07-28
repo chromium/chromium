@@ -82,6 +82,10 @@
         {
           "builder": "linux-wayland-rel",
           "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-wayland-rel-reclient",
+          "group": "tryserver.chromium.linux"
         }
       ]
     }

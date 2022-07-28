@@ -5,7 +5,7 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma", "os", "reclient")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//project.star", "settings")
@@ -297,6 +297,17 @@ try_.builder(
     builderless = not settings.is_main,
     main_list_view = "try",
     tryjob = try_.job(),
+)
+
+# b/236069482: Experimental builder to test reclient migration
+try_.builder(
+    name = "linux-wayland-rel-reclient",
+    mirrors = builder_config.copy_from("linux-wayland-rel"),
+    reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        experiment_percentage = 1,
+    ),
 )
 
 try_.builder(

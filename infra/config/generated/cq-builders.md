@@ -501,6 +501,9 @@ as required builders.
 * [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-ml""))
   * Experiment percentage: 5.0
 
+* [linux-wayland-rel-reclient](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel-reclient) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-wayland-rel-reclient"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-wayland-rel-reclient""))
+  * Experiment percentage: 1.0
+
 * [mac12-arm64-rel](https://ci.chromium.org/p/chromium/builders/try/mac12-arm64-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac12-arm64-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""mac12-arm64-rel""))
   * Experiment percentage: 100.0
 
