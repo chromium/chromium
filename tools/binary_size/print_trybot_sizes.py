@@ -31,8 +31,11 @@ _CommitInfo = collections.namedtuple(
 def _git_log(git_log_args):
   cmd = ['git', 'log']
 
-  # Ensure there's a limit on number of commits.
-  if not any(x.startswith('-n') for x in git_log_args):
+  if len(git_log_args) == 1 and '..' not in git_log_args[0]:
+    # Single commit rather than commit range.
+    cmd += ['-n1']
+  elif not any(x.startswith('-n') for x in git_log_args):
+    # Ensure there's a limit on number of commits.
     cmd += [f'-n{_COMMIT_LIMIT}']
 
   cmd += git_log_args
@@ -67,8 +70,8 @@ def _query_size(review_url):
   if result.returncode:
     return '<missing>'
 
-  # Take the last one that has a size set.
-  for json_str in result.stdout.splitlines()[::-1]:
+  # Take the last one that has a size set (output is in reverse order already).
+  for json_str in result.stdout.splitlines():
     try:
       obj = json.loads(json_str)
     except json.JSONDecodeError:
