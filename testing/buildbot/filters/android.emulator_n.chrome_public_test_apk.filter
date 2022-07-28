@@ -15,3 +15,6 @@
 
 # TODO(crbug/1347615)
 -org.chromium.chrome.browser.site_settings.SiteSettingsTest.testProtectedContentAllowThenBlock
+
+# TODO(crbug/1347903)
+-org.chromium.chrome.features.start_surface.StartSurfaceBackButtonTest.testShow_SingleAsHomepage_BackButtonWithTabSwitcher__NoInstant_Return
