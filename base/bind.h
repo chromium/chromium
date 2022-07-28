@@ -144,6 +144,11 @@ inline internal::UnretainedWrapper<T> Unretained(const raw_ptr<T, O>& o) {
   return internal::UnretainedWrapper<T>(o);
 }
 
+template <typename T, typename O>
+inline auto Unretained(const raw_ref<T, O>& o) {
+  return internal::UnretainedRefWrapper(o);
+}
+
 // RetainedRef() accepts a ref counted object and retains a reference to it.
 // When the callback is called, the object is passed as a raw pointer.
 //

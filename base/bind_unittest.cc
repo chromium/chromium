@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -1199,6 +1200,25 @@ TYPED_TEST(BindVariantsTest, RawPtrReceiver) {
   raw_ptr<HasRef> rawptr(&has_ref);
   auto rawptr_cb = TypeParam::Bind(&HasRef::HasAtLeastOneRef, rawptr);
   EXPECT_EQ(1, std::move(rawptr_cb).Run());
+}
+
+TYPED_TEST(BindVariantsTest, UnretainedRawRefReceiver) {
+  StrictMock<HasRef> has_ref;
+  EXPECT_CALL(has_ref, AddRef()).Times(0);
+  EXPECT_CALL(has_ref, Release()).Times(0);
+  EXPECT_CALL(has_ref, HasAtLeastOneRef()).WillRepeatedly(Return(true));
+
+  raw_ref<HasRef> raw_has_ref(has_ref);
+  auto has_ref_cb =
+      TypeParam::Bind(&HasRef::HasAtLeastOneRef, Unretained(raw_has_ref));
+  EXPECT_EQ(1, std::move(has_ref_cb).Run());
+
+  StrictMock<NoRef> no_ref;
+  EXPECT_CALL(has_ref, IntMethod0()).WillRepeatedly(Return(1));
+
+  raw_ref<NoRef> raw_no_ref(has_ref);
+  auto no_ref_cb = TypeParam::Bind(&NoRef::IntMethod0, Unretained(raw_no_ref));
+  EXPECT_EQ(1, std::move(no_ref_cb).Run());
 }
 
 // Tests for Passed() wrapper support:

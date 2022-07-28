@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/template_util.h"
 
 // It is dangerous to post a task with a T* argument where T is a subtype of
@@ -36,8 +37,13 @@ struct IsRefCountedType<T,
 // pointer type and are convertible to a RefCounted(Base|ThreadSafeBase) type.
 template <typename T>
 struct NeedsScopedRefptrButGetsRawPtr
-    : std::conjunction<base::IsPointer<T>,
-                       IsRefCountedType<base::RemovePointerT<T>>> {
+    : std::disjunction<
+          // TODO(danakj): Should ban native references and
+          // std::reference_wrapper here too.
+          std::conjunction<base::IsRawRef<T>,
+                           IsRefCountedType<base::RemoveRawRefT<T>>>,
+          std::conjunction<base::IsPointer<T>,
+                           IsRefCountedType<base::RemovePointerT<T>>>> {
   static_assert(!std::is_reference<T>::value,
                 "NeedsScopedRefptrButGetsRawPtr requires non-reference type.");
 };

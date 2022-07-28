@@ -10,6 +10,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/test/bind.h"
 
 namespace base {
@@ -145,6 +147,74 @@ void WontCompile() {
   no_ref_const_cb.Run();
 }
 
+#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+
+// Method bound to non-refcounted object. It fails to compile with
+// std::reference_wrapper.
+void WontCompile() {
+  NoRef no_ref;
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, std::cref(no_ref));
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a native reference.
+void WontCompile() {
+  NoRef no_ref;
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, no_ref);
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_RAW_REF_RECEIVER_NON_REFCOUNTED_OBJECT)  // [r"fatal error: .*Receivers may not be raw_ref<T>\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a raw_ref.
+void WontCompile() {
+  NoRef no_ref;
+  raw_ref<NoRef> rawref(no_ref);
+  RepeatingCallback<void()> no_ref_cb =
+      BindRepeating(&NoRef::VoidMethod0, rawref);
+  no_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_REF_WRAPPER_RECEIVER_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+
+// Method bound to non-refcounted object. It fails to compile with
+// std::reference_wrapper.
+void WontCompile() {
+  HasRef has_ref;
+  RepeatingCallback<void()> has_ref_cb =
+      BindRepeating(&HasRef::VoidMethod0, std::cref(has_ref));
+  has_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_NATIVE_REF_RECEIVER_REFCOUNTED_OBJECT)  // [r"fatal error: indirection requires pointer operand"]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a native reference.
+void WontCompile() {
+  HasRef has_ref;
+  RepeatingCallback<void()> has_ref_cb =
+      BindRepeating(&HasRef::VoidMethod0, has_ref);
+  has_ref_cb.Run();
+}
+
+#elif defined(NCTEST_METHOD_BIND_RAW_REF_RECEIVER_REFCOUNTED_OBJECT)  // [r"fatal error: .*Receivers may not be raw_ref<T>\."]
+
+// Method bound to non-refcounted object. It fails to compile with
+// a raw_ref.
+void WontCompile() {
+  HasRef has_ref;
+  raw_ref<HasRef> rawref(has_ref);
+  RepeatingCallback<void()> has_ref_cb =
+      BindRepeating(&HasRef::VoidMethod0, rawref);
+  has_ref_cb.Run();
+}
+
 #elif defined(NCTEST_CONST_POINTER)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
 // Const argument used with non-const pointer parameter of same type.
 //
@@ -234,6 +304,20 @@ void WontCompile() {
   RepeatingCallback<void()> method_bound_to_array_cb =
       BindRepeating(&HasRef::VoidMethod0, p);
   method_bound_to_array_cb.Run();
+}
+
+#elif defined(NCTEST_NO_RVALUE_RAW_REF_FOR_REFCOUNTED_TYPES)  // [r"fatal error: static_assert failed due to requirement '!HasRefCountedTypeAsRawPtr<.*raw_ref<base::HasRef,.*: A parameter is a refcounted type and needs scoped_refptr."]
+
+// Refcounted types should not be bound as a raw pointer.
+void WontCompile() {
+  HasRef has_ref;
+  raw_ref<HasRef> rr(has_ref);
+  int a;
+  raw_ref<int> rr_a(a);
+  RepeatingCallback<void()> ref_count_as_raw_ptr_a =
+      BindRepeating(&VoidPolymorphic1<raw_ref<int>>, rr_a);
+  RepeatingCallback<void()> ref_count_as_raw_ptr =
+      BindRepeating(&VoidPolymorphic1<raw_ref<HasRef>>, rr);
 }
 
 #elif defined(NCTEST_NO_RVALUE_RAW_PTR_FOR_REFCOUNTED_TYPES)  // [r"fatal error: static_assert failed due to requirement '!HasRefCountedTypeAsRawPtr<base::HasRef \*>::value': A parameter is a refcounted type and needs scoped_refptr."]
