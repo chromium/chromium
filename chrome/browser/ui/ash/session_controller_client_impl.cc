@@ -56,6 +56,10 @@ using user_manager::User;
 using user_manager::UserList;
 using user_manager::UserManager;
 
+// TODO(b/228873153): Remove after figuring out the root cause of the bug
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace {
 
 // The minimum session length limit that can be set.
@@ -410,8 +414,9 @@ void SessionControllerClientImpl::DoLockScreen() {
   if (!CanLockScreen())
     return;
 
-  VLOG(1) << "Requesting screen lock from SessionControllerClientImpl";
-  chromeos::SessionManagerClient::Get()->RequestLockScreen();
+  VLOG(1) << "b/228873153 : Requesting screen lock from "
+             "SessionControllerClientImpl";
+  ash::SessionManagerClient::Get()->RequestLockScreen();
 }
 
 // static

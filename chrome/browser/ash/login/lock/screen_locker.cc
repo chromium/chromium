@@ -76,6 +76,10 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
+// TODO(b/228873153): Remove after figuring out the root cause of the bug
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace ash {
 namespace {
 
@@ -204,6 +208,7 @@ ScreenLocker::ScreenLocker(const user_manager::UserList& users)
 }
 
 void ScreenLocker::Init() {
+  VLOG(1) << "ScreenLocker::Init()";
   input_method::InputMethodManager* imm =
       input_method::InputMethodManager::Get();
   saved_ime_state_ = imm->GetActiveIMEState();
@@ -609,6 +614,7 @@ void ScreenLocker::HandleShowLockScreenRequest() {
 
 // static
 void ScreenLocker::Show() {
+  VLOG(1) << "ScreenLocker::Show()";
   base::RecordAction(UserMetricsAction("ScreenLocker_Show"));
   DCHECK(base::CurrentUIThread::IsSet());
 
