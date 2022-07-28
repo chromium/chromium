@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_PROMO_BUBBLE_VIEW_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
-#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 
 namespace content {
 class WebContents;
@@ -27,8 +26,7 @@ class SendTabToSelfBubbleController;
 // b) User is signed in but has no other signed-in device to share a tab to. The
 // view will contain text explaining they can use the feature by signing in on
 // another device.
-class SendTabToSelfPromoBubbleView : public SendTabToSelfBubbleView,
-                                     public LocationBarBubbleDelegateView {
+class SendTabToSelfPromoBubbleView : public SendTabToSelfBubbleView {
  public:
   // Bubble will be anchored to |anchor_view|.
   SendTabToSelfPromoBubbleView(views::View* anchor_view,

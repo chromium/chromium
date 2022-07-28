@@ -71,7 +71,7 @@
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/sharing_hub/screenshot/screenshot_captured_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
@@ -1291,10 +1291,7 @@ void ManagePasswordsForPage(Browser* browser) {
 void SendTabToSelfFromPageAction(Browser* browser) {
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  send_tab_to_self::SendTabToSelfBubbleController* controller =
-      send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(web_contents);
-  controller->ShowBubble();
+  send_tab_to_self::ShowBubble(web_contents);
 }
 
 void GenerateQRCodeFromPageAction(Browser* browser) {

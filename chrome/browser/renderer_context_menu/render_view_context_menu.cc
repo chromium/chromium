@@ -87,7 +87,7 @@
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
@@ -2725,9 +2725,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       break;
 
     case IDC_SEND_TAB_TO_SELF:
-      send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(embedder_web_contents_)
-              ->ShowBubble();
+      send_tab_to_self::ShowBubble(embedder_web_contents_);
       break;
 
     case IDC_CONTENT_CONTEXT_GENERATE_QR_CODE: {
