@@ -226,8 +226,10 @@ export class MultiMenuButton {
         break;
       case 'keydown':
         this.handleKeyDown(e);
-        // If a menu is visible we let it handle all the keyboard events.
-        if (e.currentTarget == this.ownerDocument && this.hasVisibleMenu_()) {
+        // If a menu is visible we let it handle all the keyboard events
+        // unless Ctrl is held down.
+        if (e.currentTarget == this.ownerDocument && this.hasVisibleMenu_() &&
+            !e.ctrlKey) {
           this.menu.handleKeyDown(e);
           e.preventDefault();
           e.stopPropagation();
