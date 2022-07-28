@@ -324,7 +324,7 @@ void AddTypedURLToClient(const GURL& url) {
 
   historyService->AddPage(url, base::Time::Now(), nullptr, 1, GURL(),
                           history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                          history::SOURCE_BROWSED, false, false);
+                          history::SOURCE_BROWSED, false);
 }
 
 void AddTypedURLToFakeSyncServer(const std::string& url) {

@@ -179,7 +179,7 @@ class HistoryQueryTest : public testing::Test {
 
     history_->AddPage(url, entry.time, context_id, nav_entry_id_++, GURL(),
                       history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                      history::SOURCE_BROWSED, false, false);
+                      history::SOURCE_BROWSED, false);
     history_->SetPageTitle(url, base::UTF8ToUTF16(entry.title));
   }
 

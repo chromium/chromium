@@ -276,7 +276,6 @@ HistoryAddPageArgs::HistoryAddPageArgs()
                          SOURCE_BROWSED,
                          false,
                          true,
-                         false,
                          absl::nullopt,
                          absl::nullopt,
                          absl::nullopt) {}
@@ -292,7 +291,6 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
                                        VisitSource source,
                                        bool did_replace_entry,
                                        bool consider_for_ntp_most_visited,
-                                       bool floc_allowed,
                                        absl::optional<std::u16string> title,
                                        absl::optional<Opener> opener,
                                        absl::optional<int64_t> bookmark_id)
@@ -307,7 +305,6 @@ HistoryAddPageArgs::HistoryAddPageArgs(const GURL& url,
       visit_source(source),
       did_replace_entry(did_replace_entry),
       consider_for_ntp_most_visited(consider_for_ntp_most_visited),
-      floc_allowed(floc_allowed),
       title(title),
       opener(opener),
       bookmark_id(bookmark_id) {}

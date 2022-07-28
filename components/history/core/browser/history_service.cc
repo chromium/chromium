@@ -387,13 +387,12 @@ void HistoryService::AddPage(const GURL& url,
                              const RedirectList& redirects,
                              ui::PageTransition transition,
                              VisitSource visit_source,
-                             bool did_replace_entry,
-                             bool floc_allowed) {
+                             bool did_replace_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   AddPage(HistoryAddPageArgs(
       url, time, context_id, nav_entry_id, referrer, redirects, transition,
       !ui::PageTransitionIsMainFrame(transition), visit_source,
-      did_replace_entry, /*consider_for_ntp_most_visited=*/true, floc_allowed));
+      did_replace_entry, /*consider_for_ntp_most_visited=*/true));
 }
 
 void HistoryService::AddPage(const GURL& url,
@@ -404,8 +403,7 @@ void HistoryService::AddPage(const GURL& url,
       url, time, /*context_id=*/nullptr, /*nav_entry_id=*/0,
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_LINK,
       /*hidden=*/false, visit_source,
-      /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*floc_allowed=*/false));
+      /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true));
 }
 
 void HistoryService::AddPage(const HistoryAddPageArgs& add_page_args) {

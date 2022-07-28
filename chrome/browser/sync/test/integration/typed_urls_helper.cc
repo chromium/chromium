@@ -223,8 +223,7 @@ void AddToHistory(history::HistoryService* service,
   service->AddPage(url, timestamp, /*context_id=*/nullptr,
                    /*nav_entry_id=*/1234,
                    /*referrer=*/GURL(), history::RedirectList(), transition,
-                   source, /*did_replace_entry=*/false,
-                   /*floc_allowed=*/false);
+                   source, /*did_replace_entry=*/false);
 }
 
 history::URLRows GetTypedUrlsFromHistoryService(

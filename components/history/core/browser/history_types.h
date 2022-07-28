@@ -442,7 +442,7 @@ struct HistoryAddPageArgs {
   //       GURL(), base::Time(), nullptr, 0, GURL(),
   //       RedirectList(), ui::PAGE_TRANSITION_LINK,
   //       false, SOURCE_BROWSED, false, true,
-  //       absl::nullopt, absl::nullopt)
+  //       absl::nullopt, absl::nullopt, absl::nullopt)
   HistoryAddPageArgs();
   HistoryAddPageArgs(const GURL& url,
                      base::Time time,
@@ -455,7 +455,6 @@ struct HistoryAddPageArgs {
                      VisitSource source,
                      bool did_replace_entry,
                      bool consider_for_ntp_most_visited,
-                     bool floc_allowed,
                      absl::optional<std::u16string> title = absl::nullopt,
                      absl::optional<Opener> opener = absl::nullopt,
                      absl::optional<int64_t> bookmark_id = absl::nullopt);

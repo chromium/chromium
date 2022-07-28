@@ -81,8 +81,7 @@ class HistoryTabHelperTest : public ChromeRenderViewHostTestHarness {
         page_url_, base::Time::Now(), /*context_id=*/nullptr,
         /*nav_entry_id=*/0,
         /*referrer=*/GURL(), history::RedirectList(), ui::PAGE_TRANSITION_TYPED,
-        history::SOURCE_BROWSED, /*did_replace_entry=*/false,
-        /*floc_allowed=*/true);
+        history::SOURCE_BROWSED, /*did_replace_entry=*/false);
     HistoryTabHelper::CreateForWebContents(web_contents());
   }
 

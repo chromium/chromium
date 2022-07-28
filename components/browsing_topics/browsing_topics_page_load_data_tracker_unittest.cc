@@ -106,8 +106,7 @@ class BrowsingTopicsPageLoadDataTrackerTest
         /*referrer=*/GURL(),
         /*redirects=*/{}, ui::PageTransition::PAGE_TRANSITION_TYPED,
         history::VisitSource::SOURCE_BROWSED,
-        /*did_replace_entry=*/false,
-        /*floc_allowed=*/false);
+        /*did_replace_entry=*/false);
   }
 
   BrowsingTopicsPageLoadDataTracker* GetBrowsingTopicsPageLoadDataTracker() {

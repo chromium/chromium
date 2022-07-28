@@ -177,7 +177,6 @@ void HistoryTabHelper::DidFinishNavigation(
       last_committed_item->GetUniqueID(), referrer_url, redirects, transition,
       hidden, history::SOURCE_BROWSED,
       /*did_replace_entry=*/false, consider_for_ntp_most_visited,
-      /*floc_allowed=*/false,
       navigation_context->IsSameDocument() ? GetPageTitle(*last_committed_item)
                                            : absl::nullopt);
 

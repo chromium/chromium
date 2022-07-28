@@ -150,16 +150,12 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           ? nullptr
           : static_cast<ChromeNavigationUIData*>(
                 navigation_handle->GetNavigationUIData());
-  // Note: floc_allowed is set to false initially and is later updated by the
-  // floc eligibility observer. Eventually it will be removed from the history
-  // service API.
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
       referrer_url, navigation_handle->GetRedirectChain(), page_transition,
       hidden, history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
-      /*floc_allowed=*/false,
       // Reloads do not result in calling TitleWasSet() (which normally sets
       // the title), so a reload needs to set the title. This is important for
       // a reload after clearing history.
@@ -283,7 +279,7 @@ void HistoryTabHelper::DidActivatePortal(
       /* redirects */ {}, ui::PAGE_TRANSITION_LINK,
       /* hidden */ false, history::SOURCE_BROWSED, did_replace_entry,
       /* consider_for_ntp_most_visited */ true,
-      /* floc_allowed */ false, last_committed_entry->GetTitle());
+      last_committed_entry->GetTitle());
   hs->AddPage(add_page_args);
 }
 

@@ -2192,8 +2192,7 @@ TEST_F(DownloadProtectionServiceTest,
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->AddPage(tab_url, base::Time::Now(),
                   reinterpret_cast<history::ContextID>(1), 0, GURL(), redirects,
-                  ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED, false,
-                  false);
+                  ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED, false);
 
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
@@ -3932,8 +3931,7 @@ TEST_F(DownloadProtectionServiceTest,
                                          ServiceAccessType::EXPLICIT_ACCESS)
         ->AddPage(tab_url, base::Time::Now(),
                   reinterpret_cast<history::ContextID>(1), 0, GURL(), redirects,
-                  ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED, false,
-                  false);
+                  ui::PAGE_TRANSITION_TYPED, history::SOURCE_BROWSED, false);
 
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
