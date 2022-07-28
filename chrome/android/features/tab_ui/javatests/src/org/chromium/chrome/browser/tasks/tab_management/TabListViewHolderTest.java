@@ -141,8 +141,13 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             "The price of this item recently dropped from $10 to $5.00";
     private static final GURL TEST_GURL = new GURL("https://www.google.com");
 
-    private static final String EXPECTED_COUPON_NAME = "TEST";
-    private static final String EXPECTED_COUPON_CODE = "TESTCODE";
+    private static final String EXPECTED_COUPON_NAME = "40% Off All Shoes";
+    private static final String EXPECTED_COUPON_CODE = "SHOE40";
+    private static final String EXPECTED_COUPON_CURRENCY_CODE = null;
+    private static final long EXPECTED_COUPON_DISCOUNT_AMOUNT = 40;
+    private static final String EXPECTED_COUPON_ANNOTATION_TEXT = "40% Off";
+    private static final CouponPersistedTabData.Coupon.DiscountType EXPECTED_COUPON_DISCOUNT_TYPE =
+            CouponPersistedTabData.Coupon.DiscountType.PERCENT_OFF;
 
     private ViewGroup mTabGridView;
     private PropertyModel mGridModel;
@@ -792,8 +797,10 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         setCouponsEnabledForTesting();
         Tab tab = MockTab.createAndInitialize(1, false);
         MockCouponPersistedTabDataFetcher fetcher = new MockCouponPersistedTabDataFetcher(tab);
-        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE);
-        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_NAME);
+        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
+        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_ANNOTATION_TEXT);
     }
 
     @Test
@@ -823,8 +830,10 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         setCouponsEnabledForTesting();
         Tab tab = MockTab.createAndInitialize(1, false);
         MockCouponPersistedTabDataFetcher fetcher = new MockCouponPersistedTabDataFetcher(tab);
-        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE);
-        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_NAME);
+        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
+        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_ANNOTATION_TEXT);
         fetcher.setEmptyCoupon();
         testCouponString(tab, fetcher, View.GONE, null);
     }
@@ -835,8 +844,10 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
     public void testCouponStringTurnFeatureOff() {
         Tab tab = MockTab.createAndInitialize(1, false);
         MockCouponPersistedTabDataFetcher fetcher = new MockCouponPersistedTabDataFetcher(tab);
-        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE);
-        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_NAME);
+        fetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
+        testCouponString(tab, fetcher, View.VISIBLE, EXPECTED_COUPON_ANNOTATION_TEXT);
         testCouponString(tab, null, View.GONE, null);
     }
 
@@ -855,12 +866,14 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
 
         MockCouponPersistedTabDataFetcher couponFetcher =
                 new MockCouponPersistedTabDataFetcher(tab);
-        couponFetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE);
+        couponFetcher.setCouponStrings(EXPECTED_COUPON_NAME, EXPECTED_COUPON_CODE,
+                EXPECTED_COUPON_CURRENCY_CODE, EXPECTED_COUPON_DISCOUNT_AMOUNT,
+                EXPECTED_COUPON_DISCOUNT_TYPE);
         testCouponString(tab, couponFetcher, View.GONE, null);
     }
 
     private void testCouponString(Tab tab, MockCouponPersistedTabDataFetcher fetcher,
-            int expectedVisibility, String expectedName) {
+            int expectedVisibility, String expectedText) {
         testGridSelected(mTabGridView, mGridModel);
         CouponCardView couponCardView = mTabGridView.findViewById(R.id.coupon_info_box_outer);
         TextView name = mTabGridView.findViewById(R.id.coupon_name);
@@ -868,7 +881,7 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
         mGridModel.set(TabProperties.COUPON_PERSISTED_TAB_DATA_FETCHER, fetcher);
         Assert.assertEquals(expectedVisibility, couponCardView.getVisibility());
         if (expectedVisibility == View.VISIBLE) {
-            Assert.assertEquals(expectedName, name.getText());
+            Assert.assertEquals(expectedText, name.getText());
         }
     }
 
@@ -922,8 +935,9 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             super(tab);
         }
 
-        public void setCoupon(String name, String code) {
-            mCoupon = new Coupon(name, code);
+        public void setCoupon(String name, String promoCode, String currencyCode, long units,
+                Coupon.DiscountType type) {
+            mCoupon = new Coupon(name, promoCode, currencyCode, units, type);
         }
 
         @Override
@@ -942,10 +956,11 @@ public class TabListViewHolderTest extends BlankUiTestActivityTestCase {
             super(tab);
         }
 
-        public void setCouponStrings(String nameString, String codeString) {
+        public void setCouponStrings(String nameString, String promoString, String currString,
+                long unitsLong, CouponPersistedTabData.Coupon.DiscountType typeDT) {
             mCouponPersistedTabData = new MockCouponPersistedTabData(mTab);
             ((MockCouponPersistedTabData) mCouponPersistedTabData)
-                    .setCoupon(nameString, codeString);
+                    .setCoupon(nameString, promoString, currString, unitsLong, typeDT);
         }
 
         public void setEmptyCoupon() {

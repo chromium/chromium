@@ -240,11 +240,11 @@ class TabGridViewBinder {
                             // TODO(crbug.com/1337117): add logging for when
                             // couponPersistedTabData is not null
                             if (couponPersistedTabData == null
-                                    || couponPersistedTabData.getCoupon() == null) {
+                                    || couponPersistedTabData.getCouponAnnotationText() == null) {
                                 couponCardView.setVisibility(View.GONE);
                             } else {
                                 couponCardView.setCouponString(
-                                        couponPersistedTabData.getCoupon().couponName);
+                                        couponPersistedTabData.getCouponAnnotationText());
                                 couponCardView.setVisibility(View.VISIBLE);
                             }
                         });

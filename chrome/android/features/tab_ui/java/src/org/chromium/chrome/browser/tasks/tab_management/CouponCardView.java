@@ -24,12 +24,10 @@ public class CouponCardView extends FrameLayout {
     }
 
     /**
-     * Sets the current price string and previous price string when a price drop is detected.
+     * Sets the coupon annotation text when coupon is available.
      */
-    public void setCouponString(String couponName) {
-        // TODO(crbug.com/1335127): Display coupon discount amount as text for coupon
-        // annotations on Tab UI.
-        mCouponInfoBox.setText(couponName);
+    public void setCouponString(String couponText) {
+        mCouponInfoBox.setText(couponText);
     }
 
     @Override

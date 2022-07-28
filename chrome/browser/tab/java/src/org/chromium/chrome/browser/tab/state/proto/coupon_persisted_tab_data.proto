@@ -14,4 +14,21 @@ message CouponPersistedTabDataProto {
 
   // String representing the promotional code related to the coupon.
   optional string code = 2;
+
+  // String representing currency code if monetary amount discount or null
+  // if percent off discount.
+  optional string currency_code = 3;
+
+  // String representing the numeric monetary amount or percentage being offered
+  // in the discount.
+  optional int64 discount_units = 4;
+
+  enum DiscountType {
+    PERCENT_OFF = 1;
+    AMOUNT_OFF = 2;
+    UNKNOWN = 3;
+  }
+
+  // Type of discount being offered by the coupon.
+  optional DiscountType discount_type = 5;
 }

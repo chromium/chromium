@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -50,7 +51,7 @@ import java.util.concurrent.TimeoutException;
  * Test relating to {@link CouponPersistedTabData}
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class CouponPersistedTabDataTest {
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -58,22 +59,48 @@ public class CouponPersistedTabDataTest {
     @Rule
     public TestRule mProcessor = new Features.InstrumentationProcessor();
 
+    @Rule
+    public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+
     @Mock
     private EndpointFetcher.Natives mEndpointFetcherJniMock;
 
     @Mock
     private Profile mProfileMock;
 
-    private static final String SERIALIZE_DESERIALIZE_NAME = "25% Off";
+    private static final String SERIALIZE_DESERIALIZE_NAME = "$25 Off";
     private static final String SERIALIZE_DESERIALIZE_CODE = "DISCOUNT25";
+    private static final String SERIALIZE_DESERIALIZE_CURRENCY_CODE = "USD";
+    private static final CouponPersistedTabData.Coupon
+            .DiscountType SERIALIZE_DESERIALIZE_DISCOUNT_TYPE =
+            CouponPersistedTabData.Coupon.DiscountType.AMOUNT_OFF;
+    private static final long SERIALIZE_DESERIALIZE_DISCOUNT_UNITS = 25;
 
-    private static final String MOCK_ENDPOINT_RESPONSE_STRING =
+    private static final String MOCK_ENDPOINT_RESPONSE_STRING_AMOUNT =
             "{\"discounts\":[{\"amountOff\":{\"currencyCode\":\"USD\",\"units\":\"20\"},"
             + "\"freeListingDiscountInfo\":{\"promoDocid\":\"16137933697037590414\","
             + "\"longTitle\":\"$20 off on dining set\",\"couponCode\":\"DIN20\"},"
             + "\"isMerchantLevelDiscount\":false}]}";
-    private static final String EXPECTED_NAME_GENERAL_CASE = "$20 off on dining set";
-    private static final String EXPECTED_CODE_GENERAL_CASE = "DIN20";
+    private static final String EXPECTED_NAME_GENERAL_CASE_AMOUNT = "$20 off on dining set";
+    private static final String EXPECTED_CODE_GENERAL_CASE_AMOUNT = "DIN20";
+    private static final String EXPECTED_ANNOTATION_GENERAL_CASE_AMOUNT = "$20 Off";
+
+    private static final String MOCK_ENDPOINT_RESPONSE_STRING_PERCENT =
+            "{\"discounts\":[{\"percentOff\":30,\"freeListingDiscountInfo\":"
+            + "{\"promoDocid\":\"11828199513928538057\",\"longTitle\":"
+            + "\"Save 30% on MyPillow Bath Robes w/ Promo Code\",\"couponCode\":\"G46\"},"
+            + "\"isMerchantLevelDiscount\":false}]}";
+    private static final String EXPECTED_NAME_GENERAL_CASE_PERCENT =
+            "Save 30% on MyPillow Bath Robes w/ Promo Code";
+    private static final String EXPECTED_CODE_GENERAL_CASE_PERCENT = "G46";
+    private static final String EXPECTED_ANNOTATION_GENERAL_CASE_PERCENT = "30% Off";
+
+    private static final String MOCK_ENDPOINT_RESPONSE_STRING_AMOUNT_NO_DISCOUNT_INFO =
+            "{\"discounts\":[{\"amountOff\":{\"currencyCode\":\"\",\"units\":\"20\"},"
+            + "\"freeListingDiscountInfo\":{\"promoDocid\":\"16137933697037590414\","
+            + "\"longTitle\":\"$20 off on dining set\",\"couponCode\":\"DIN20\"},"
+            + "\"isMerchantLevelDiscount\":false}]}";
+    private static final String EXPECTED_ANNOTATION_NO_DISCOUNT_INFO_CASE = "Coupon Available";
 
     private static final String EMPTY_ENDPOINT_RESPONSE = "";
     private static final String MALFORMED_ENDPOINT_RESPONSE = "malformed response";
@@ -98,13 +125,20 @@ public class CouponPersistedTabDataTest {
     public void testSerializeDeserialize() throws ExecutionException {
         Tab tab = TestThreadUtils.runOnUiThreadBlocking(() -> new MockTab(1, false));
         CouponPersistedTabData couponPersistedTabData = new CouponPersistedTabData(tab,
-                new CouponPersistedTabData.Coupon(
-                        SERIALIZE_DESERIALIZE_NAME, SERIALIZE_DESERIALIZE_CODE));
+                new CouponPersistedTabData.Coupon(SERIALIZE_DESERIALIZE_NAME,
+                        SERIALIZE_DESERIALIZE_CODE, SERIALIZE_DESERIALIZE_CURRENCY_CODE,
+                        SERIALIZE_DESERIALIZE_DISCOUNT_UNITS, SERIALIZE_DESERIALIZE_DISCOUNT_TYPE));
         ByteBuffer serialized = couponPersistedTabData.getSerializeSupplier().get();
         CouponPersistedTabData deserialized = new CouponPersistedTabData(tab);
         Assert.assertTrue(deserialized.deserialize(serialized));
         Assert.assertEquals(SERIALIZE_DESERIALIZE_NAME, deserialized.getCoupon().couponName);
         Assert.assertEquals(SERIALIZE_DESERIALIZE_CODE, deserialized.getCoupon().promoCode);
+        Assert.assertEquals(
+                SERIALIZE_DESERIALIZE_CURRENCY_CODE, deserialized.getCoupon().currencyCode);
+        Assert.assertEquals(
+                SERIALIZE_DESERIALIZE_DISCOUNT_UNITS, deserialized.getCoupon().discountUnits);
+        Assert.assertEquals(
+                SERIALIZE_DESERIALIZE_DISCOUNT_TYPE, deserialized.getCoupon().discountType);
     }
 
     @SmallTest
@@ -128,14 +162,55 @@ public class CouponPersistedTabDataTest {
 
     @SmallTest
     @Test
-    public void testCOPTDUponSuccessfulResponse() throws TimeoutException, ExecutionException {
+    public void testCOPTDUponSuccessfulResponsePercentOff()
+            throws TimeoutException, ExecutionException {
         Tab tab = TestThreadUtils.runOnUiThreadBlocking(() -> { return new MockTab(1, false); });
-        mockEndpointResponse(MOCK_ENDPOINT_RESPONSE_STRING);
+        mockEndpointResponse(MOCK_ENDPOINT_RESPONSE_STRING_PERCENT);
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             CouponPersistedTabData.from(tab, (res) -> {
-                Assert.assertEquals(EXPECTED_NAME_GENERAL_CASE, res.getCoupon().couponName);
-                Assert.assertEquals(EXPECTED_CODE_GENERAL_CASE, res.getCoupon().promoCode);
+                Assert.assertEquals(EXPECTED_NAME_GENERAL_CASE_PERCENT, res.getCoupon().couponName);
+                Assert.assertEquals(EXPECTED_CODE_GENERAL_CASE_PERCENT, res.getCoupon().promoCode);
+                Assert.assertEquals(
+                        EXPECTED_ANNOTATION_GENERAL_CASE_PERCENT, res.getCouponAnnotationText());
+                callbackHelper.notifyCalled();
+            });
+        });
+        callbackHelper.waitForCallback(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testCOPTDUponSuccessfulResponseAmountOff()
+            throws TimeoutException, ExecutionException {
+        Tab tab = TestThreadUtils.runOnUiThreadBlocking(() -> { return new MockTab(1, false); });
+        mockEndpointResponse(MOCK_ENDPOINT_RESPONSE_STRING_AMOUNT);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            CouponPersistedTabData.from(tab, (res) -> {
+                Assert.assertEquals(EXPECTED_NAME_GENERAL_CASE_AMOUNT, res.getCoupon().couponName);
+                Assert.assertEquals(EXPECTED_CODE_GENERAL_CASE_AMOUNT, res.getCoupon().promoCode);
+                Assert.assertEquals(
+                        EXPECTED_ANNOTATION_GENERAL_CASE_AMOUNT, res.getCouponAnnotationText());
+                callbackHelper.notifyCalled();
+            });
+        });
+        callbackHelper.waitForCallback(0);
+    }
+
+    @SmallTest
+    @Test
+    public void testCOPTDUponSuccessfulResponseAmountOffNoDiscountInfo()
+            throws TimeoutException, ExecutionException {
+        Tab tab = TestThreadUtils.runOnUiThreadBlocking(() -> { return new MockTab(1, false); });
+        mockEndpointResponse(MOCK_ENDPOINT_RESPONSE_STRING_AMOUNT_NO_DISCOUNT_INFO);
+        CallbackHelper callbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            CouponPersistedTabData.from(tab, (res) -> {
+                Assert.assertEquals(EXPECTED_NAME_GENERAL_CASE_AMOUNT, res.getCoupon().couponName);
+                Assert.assertEquals(EXPECTED_CODE_GENERAL_CASE_AMOUNT, res.getCoupon().promoCode);
+                Assert.assertEquals(
+                        EXPECTED_ANNOTATION_NO_DISCOUNT_INFO_CASE, res.getCouponAnnotationText());
                 callbackHelper.notifyCalled();
             });
         });
