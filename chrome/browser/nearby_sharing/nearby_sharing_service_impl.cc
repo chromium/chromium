@@ -1217,7 +1217,11 @@ void NearbySharingServiceImpl::FlushMojoForTesting() {
 void NearbySharingServiceImpl::OnEnabledChanged(bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RecordNearbyShareEnabledMetric(GetNearbyShareEnabledState(prefs_));
-  base::UmaHistogramBoolean("Nearby.Share.EnabledStateChanged", enabled);
+
+  if (settings_.IsOnboardingComplete()) {
+    base::UmaHistogramBoolean("Nearby.Share.EnabledStateChanged", enabled);
+  }
+
   if (enabled) {
     NS_LOG(VERBOSE) << __func__ << ": Nearby sharing enabled!";
     local_device_data_manager_->Start();
