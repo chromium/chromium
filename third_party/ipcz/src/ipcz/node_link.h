@@ -12,6 +12,7 @@
 
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_transport.h"
+#include "ipcz/fragment_ref.h"
 #include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node.h"
@@ -124,6 +125,22 @@ class NodeLink : public msg::NodeMessageListener {
   // node identified by `name`.
   void RejectIntroduction(const NodeName& name);
 
+  // Sends a request to the remote node to establish a new RouterLink over this
+  // this NodeLink, to replace an existing RouterLink between the remote node
+  // and `current_peer_node`. `current_peer_sublink` identifies the specific
+  // RouterLink between them which is to be replaced.
+  //
+  // `inbound_sequence_length_from_bypassed_link` is the final length of the
+  // parcel sequence to be routed over the link which is being bypassed.
+  // `new_sublink` and (optionally null) `new_link_state` can be used to
+  // establish the new link over the NodeLink transmitting this message.
+  void AcceptBypassLink(
+      const NodeName& current_peer_node,
+      SublinkId current_peer_sublink,
+      SequenceNumber inbound_sequence_length_from_bypassed_link,
+      SublinkId new_sublink,
+      FragmentRef<RouterLinkState> new_link_state);
+
   // Permanently deactivates this NodeLink. Once this call returns the NodeLink
   // will no longer receive transport messages. It may still be used to transmit
   // outgoing messages, but it cannot be reactivated. Transmissions over a
@@ -157,7 +174,12 @@ class NodeLink : public msg::NodeMessageListener {
   bool OnAcceptParcel(msg::AcceptParcel& accept) override;
   bool OnRouteClosed(msg::RouteClosed& route_closed) override;
   bool OnRouteDisconnected(msg::RouteDisconnected& route_disconnected) override;
-  bool OnSetRouterLinkState(msg::SetRouterLinkState& set) override;
+  bool OnBypassPeer(msg::BypassPeer& bypass) override;
+  bool OnAcceptBypassLink(msg::AcceptBypassLink& accept) override;
+  bool OnStopProxying(msg::StopProxying& stop) override;
+  bool OnProxyWillStop(msg::ProxyWillStop& will_stop) override;
+  bool OnBypassPeerWithLink(msg::BypassPeerWithLink& bypass) override;
+  bool OnStopProxyingToLocalPeer(msg::StopProxyingToLocalPeer& stop) override;
   bool OnFlushRouter(msg::FlushRouter& flush) override;
   void OnTransportError() override;
 

@@ -194,6 +194,7 @@ ipcz_source_set("util") {
 
   public = [
     "util/log.h",
+    "util/multi_mutex_lock.h",
     "util/ref_counted.h",
     "util/stack_trace.h",
     "util/strong_alias.h",

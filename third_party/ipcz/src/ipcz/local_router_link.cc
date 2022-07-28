@@ -151,6 +151,37 @@ bool LocalRouterLink::CanNodeRequestBypass(
              bypass_request_source;
 }
 
+void LocalRouterLink::BypassPeer(const NodeName& bypass_target_node,
+                                 SublinkId bypass_target_sublink) {
+  // Not implemented, and never called on local links.
+  ABSL_ASSERT(false);
+}
+
+void LocalRouterLink::StopProxying(SequenceNumber inbound_sequence_length,
+                                   SequenceNumber outbound_sequence_length) {
+  // Not implemented, and never called on local links.
+  ABSL_ASSERT(false);
+}
+
+void LocalRouterLink::ProxyWillStop(SequenceNumber inbound_sequence_length) {
+  // Not implemented, and never called on local links.
+  ABSL_ASSERT(false);
+}
+
+void LocalRouterLink::BypassPeerWithLink(
+    SublinkId new_sublink,
+    FragmentRef<RouterLinkState> new_link_state,
+    SequenceNumber inbound_sequence_length) {
+  // Not implemented, and never called on local links.
+  ABSL_ASSERT(false);
+}
+
+void LocalRouterLink::StopProxyingToLocalPeer(
+    SequenceNumber outbound_sequence_length) {
+  // Not implemented, and never called on local links.
+  ABSL_ASSERT(false);
+}
+
 void LocalRouterLink::Deactivate() {
   state_->Deactivate(side_);
 }

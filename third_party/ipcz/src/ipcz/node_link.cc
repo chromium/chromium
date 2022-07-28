@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "ipcz/box.h"
+#include "ipcz/fragment_ref.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/link_side.h"
 #include "ipcz/link_type.h"
 #include "ipcz/message.h"
 #include "ipcz/node.h"
@@ -20,11 +22,28 @@
 #include "ipcz/portal.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/router.h"
+#include "ipcz/router_link.h"
+#include "ipcz/router_link_state.h"
+#include "ipcz/sublink_id.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/log.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
+
+namespace {
+
+template <typename T>
+FragmentRef<T> MaybeAdoptFragmentRef(NodeLinkMemory& memory,
+                                     const FragmentDescriptor& descriptor) {
+  if (descriptor.is_null() || descriptor.size() < sizeof(T)) {
+    return {};
+  }
+
+  return memory.AdoptFragmentRef<T>(memory.GetFragment(descriptor));
+}
+
+}  // namespace
 
 // static
 Ref<NodeLink> NodeLink::Create(Ref<Node> node,
@@ -156,6 +175,22 @@ void NodeLink::RejectIntroduction(const NodeName& name) {
   msg::RejectIntroduction reject;
   reject.params().name = name;
   Transmit(reject);
+}
+
+void NodeLink::AcceptBypassLink(
+    const NodeName& current_peer_node,
+    SublinkId current_peer_sublink,
+    SequenceNumber inbound_sequence_length_from_bypassed_link,
+    SublinkId new_sublink,
+    FragmentRef<RouterLinkState> link_state) {
+  msg::AcceptBypassLink accept;
+  accept.params().current_peer_node = current_peer_node;
+  accept.params().current_peer_sublink = current_peer_sublink;
+  accept.params().inbound_sequence_length_from_bypassed_link =
+      inbound_sequence_length_from_bypassed_link;
+  accept.params().new_sublink = new_sublink;
+  accept.params().new_link_state_fragment = link_state.release().descriptor();
+  Transmit(accept);
 }
 
 void NodeLink::Deactivate() {
@@ -365,17 +400,96 @@ bool NodeLink::OnRouteDisconnected(msg::RouteDisconnected& route_closed) {
       sublink->router_link->GetType());
 }
 
-bool NodeLink::OnSetRouterLinkState(msg::SetRouterLinkState& set) {
-  if (set.params().descriptor.is_null()) {
+bool NodeLink::OnBypassPeer(msg::BypassPeer& bypass) {
+  absl::optional<Sublink> sublink = GetSublink(bypass.params().sublink);
+  if (!sublink) {
+    return true;
+  }
+
+  // NOTE: This request is authenticated by the receiving Router, within
+  // BypassPeer().
+  return sublink->receiver->BypassPeer(*sublink->router_link,
+                                       bypass.params().bypass_target_node,
+                                       bypass.params().bypass_target_sublink);
+}
+
+bool NodeLink::OnAcceptBypassLink(msg::AcceptBypassLink& accept) {
+  Ref<NodeLink> node_link_to_peer =
+      node_->GetLink(accept.params().current_peer_node);
+  if (!node_link_to_peer) {
+    // If the link to the peer has been severed for whatever reason, the
+    // relevant route will be torn down anyway. It's safe to ignore this
+    // request in that case.
+    return true;
+  }
+
+  const Ref<Router> receiver =
+      node_link_to_peer->GetRouter(accept.params().current_peer_sublink);
+  if (!receiver) {
+    // Similar to above, if the targeted Router cannot be resolved from the
+    // given sublink, this implies that the route has already been at least
+    // partially torn down. It's safe to ignore this request.
+    return true;
+  }
+
+  auto link_state = MaybeAdoptFragmentRef<RouterLinkState>(
+      memory(), accept.params().new_link_state_fragment);
+  if (link_state.is_null()) {
+    // Bypass links must always come with a valid fragment for their
+    // RouterLinkState. If one has not been provided, that's a validation
+    // failure.
     return false;
   }
 
-  if (absl::optional<Sublink> sublink = GetSublink(set.params().sublink)) {
-    auto fragment = memory().GetFragment(set.params().descriptor);
-    sublink->router_link->SetLinkState(
-        memory().AdoptFragmentRef<RouterLinkState>(fragment));
+  return receiver->AcceptBypassLink(
+      WrapRefCounted(this), accept.params().new_sublink, std::move(link_state),
+      accept.params().inbound_sequence_length_from_bypassed_link);
+}
+
+bool NodeLink::OnStopProxying(msg::StopProxying& stop) {
+  Ref<Router> router = GetRouter(stop.params().sublink);
+  if (!router) {
+    return true;
   }
-  return true;
+
+  return router->StopProxying(stop.params().inbound_sequence_length,
+                              stop.params().outbound_sequence_length);
+}
+
+bool NodeLink::OnProxyWillStop(msg::ProxyWillStop& will_stop) {
+  Ref<Router> router = GetRouter(will_stop.params().sublink);
+  if (!router) {
+    return true;
+  }
+
+  return router->NotifyProxyWillStop(
+      will_stop.params().inbound_sequence_length);
+}
+
+bool NodeLink::OnBypassPeerWithLink(msg::BypassPeerWithLink& bypass) {
+  Ref<Router> router = GetRouter(bypass.params().sublink);
+  if (!router) {
+    return true;
+  }
+
+  auto link_state = MaybeAdoptFragmentRef<RouterLinkState>(
+      memory(), bypass.params().new_link_state_fragment);
+  if (link_state.is_null()) {
+    return false;
+  }
+  return router->BypassPeerWithLink(*this, bypass.params().new_sublink,
+                                    std::move(link_state),
+                                    bypass.params().inbound_sequence_length);
+}
+
+bool NodeLink::OnStopProxyingToLocalPeer(msg::StopProxyingToLocalPeer& stop) {
+  Ref<Router> router = GetRouter(stop.params().sublink);
+  if (!router) {
+    return true;
+  }
+
+  return router->StopProxyingToLocalPeer(
+      stop.params().outbound_sequence_length);
 }
 
 bool NodeLink::OnFlushRouter(msg::FlushRouter& flush) {

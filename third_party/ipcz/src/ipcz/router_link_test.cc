@@ -350,38 +350,6 @@ TEST_F(RemoteRouterLinkTest, NewLinkWithPendingState) {
   CloseRoutes(router_pairs);
 }
 
-TEST_F(RemoteRouterLinkTest, NewLinkWithNullState) {
-  // Occupy all fragments in the primary buffer so they aren't usable.
-  std::vector<FragmentRef<RouterLinkState>> unused_fragments =
-      nodes().AllocateAllRouterLinkStates();
-
-  constexpr size_t kNumIterations = 15000;
-  std::vector<Router::Pair> router_pairs =
-      CreateTestRouterPairs(kNumIterations);
-  std::vector<RouterLink::Pair> links;
-  for (size_t i = 0; i < kNumIterations; ++i) {
-    auto [a, b] = router_pairs[i];
-    auto [a_link, b_link] = nodes().LinkRemoteRouters(a, nullptr, b, nullptr);
-    a_link->MarkSideStable();
-    b_link->MarkSideStable();
-    EXPECT_FALSE(a_link->TryLockForClosure());
-    EXPECT_FALSE(b_link->TryLockForClosure());
-    links.emplace_back(std::move(a_link), std::move(b_link));
-  }
-
-  // Since we're using the synchronous driver, by the time transport activation
-  // completes, side A of each link must have already dynamically allocated a
-  // RouterLinkState and shared it with side B.
-  nodes().ActivateTransports();
-  for (const auto& [a_link, b_link] : links) {
-    EXPECT_TRUE(a_link->TryLockForClosure());
-    a_link->Unlock();
-    EXPECT_TRUE(b_link->TryLockForClosure());
-  }
-
-  CloseRoutes(router_pairs);
-}
-
 INSTANTIATE_TEST_SUITE_P(,
                          RouterLinkTest,
                          ::testing::Values(RouterLinkTestMode::kLocal,

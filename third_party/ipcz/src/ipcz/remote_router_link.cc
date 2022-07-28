@@ -26,7 +26,10 @@ RemoteRouterLink::RemoteRouterLink(Ref<NodeLink> node_link,
       sublink_(sublink),
       type_(type),
       side_(side) {
-  ABSL_ASSERT(type.is_central() || link_state.is_null());
+  // Central links must be constructed with a valid RouterLinkState fragment.
+  // Other links must not.
+  ABSL_ASSERT(type.is_central() == !link_state.is_null());
+
   if (type.is_central()) {
     SetLinkState(std::move(link_state));
   }
@@ -47,32 +50,17 @@ Ref<RemoteRouterLink> RemoteRouterLink::Create(
 
 void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
   ABSL_ASSERT(type_.is_central());
-  if (state.is_null()) {
-    // By convention, if a central link has no RouterLinkState at construction
-    // time, side A is responsible for allocating a new one and sharing it with
-    // side B eventually. Side B lives with a null RouterLinkState until then.
-    if (side_.is_side_a()) {
-      AllocateAndShareLinkState();
-    }
-    return;
-  }
+  ABSL_ASSERT(!state.is_null());
 
   if (state.is_pending()) {
-    // By convention, side A should never be given a pending RouterLinkState
-    // fragment.
-    ABSL_ASSERT(side_.is_side_b());
-
-    // Side B on the other hand may obtain a RouterLinkState fragment which it
-    // can't address yet, and in this case, we wait for the fragment's buffer to
-    // be mapped locally.
+    // Wait for the fragment's buffer to be mapped locally.
     Ref<NodeLinkMemory> memory = WrapRefCounted(&node_link()->memory());
     FragmentDescriptor descriptor = state.fragment().descriptor();
     memory->WaitForBufferAsync(
         descriptor.buffer_id(),
         [self = WrapRefCounted(this), memory, descriptor] {
-          auto fragment = memory->GetFragment(descriptor);
-          self->SetLinkState(
-              memory->AdoptFragmentRef<RouterLinkState>(fragment));
+          self->SetLinkState(memory->AdoptFragmentRef<RouterLinkState>(
+              memory->GetFragment(descriptor)));
         });
     return;
   }
@@ -283,30 +271,60 @@ void RemoteRouterLink::Deactivate() {
   node_link()->RemoveRemoteRouterLink(sublink_);
 }
 
+void RemoteRouterLink::BypassPeer(const NodeName& bypass_target_node,
+                                  SublinkId bypass_target_sublink) {
+  msg::BypassPeer bypass;
+  bypass.params().sublink = sublink_;
+  bypass.params().reserved0 = 0;
+  bypass.params().bypass_target_node = bypass_target_node;
+  bypass.params().bypass_target_sublink = bypass_target_sublink;
+  node_link()->Transmit(bypass);
+}
+
+void RemoteRouterLink::StopProxying(SequenceNumber inbound_sequence_length,
+                                    SequenceNumber outbound_sequence_length) {
+  msg::StopProxying stop;
+  stop.params().sublink = sublink_;
+  stop.params().inbound_sequence_length = inbound_sequence_length;
+  stop.params().outbound_sequence_length = outbound_sequence_length;
+  node_link()->Transmit(stop);
+}
+
+void RemoteRouterLink::ProxyWillStop(SequenceNumber inbound_sequence_length) {
+  msg::ProxyWillStop will_stop;
+  will_stop.params().sublink = sublink_;
+  will_stop.params().inbound_sequence_length = inbound_sequence_length;
+  node_link()->Transmit(will_stop);
+}
+
+void RemoteRouterLink::BypassPeerWithLink(
+    SublinkId new_sublink,
+    FragmentRef<RouterLinkState> new_link_state,
+    SequenceNumber inbound_sequence_length) {
+  msg::BypassPeerWithLink bypass;
+  bypass.params().sublink = sublink_;
+  bypass.params().new_sublink = new_sublink;
+  bypass.params().new_link_state_fragment =
+      new_link_state.release().descriptor();
+  bypass.params().inbound_sequence_length = inbound_sequence_length;
+  node_link()->Transmit(bypass);
+}
+
+void RemoteRouterLink::StopProxyingToLocalPeer(
+    SequenceNumber outbound_sequence_length) {
+  msg::StopProxyingToLocalPeer stop;
+  stop.params().sublink = sublink_;
+  stop.params().outbound_sequence_length = outbound_sequence_length;
+  node_link()->Transmit(stop);
+}
+
 std::string RemoteRouterLink::Describe() const {
   std::stringstream ss;
-  ss << type_.ToString() << " link on "
+  ss << type_.ToString() << " link from "
      << node_link_->local_node_name().ToString() << " to "
      << node_link_->remote_node_name().ToString() << " via sublink "
      << sublink_;
   return ss.str();
-}
-
-void RemoteRouterLink::AllocateAndShareLinkState() {
-  node_link()->memory().AllocateRouterLinkState(
-      [self = WrapRefCounted(this)](FragmentRef<RouterLinkState> state) {
-        if (state.is_null()) {
-          DLOG(ERROR) << "Unable to allocate RouterLinkState.";
-          return;
-        }
-        ABSL_ASSERT(state.is_addressable());
-        self->SetLinkState(state);
-
-        msg::SetRouterLinkState set;
-        set.params().sublink = self->sublink();
-        set.params().descriptor = state.release().descriptor();
-        self->node_link()->Transmit(set);
-      });
 }
 
 }  // namespace ipcz

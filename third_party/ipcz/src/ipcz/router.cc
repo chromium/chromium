@@ -496,6 +496,46 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
   Flush();
 }
 
+bool Router::BypassPeer(RemoteRouterLink& requestor,
+                        const NodeName& bypass_target_node,
+                        SublinkId bypass_target_sublink) {
+  // TODO: Implement this.
+  return true;
+}
+
+bool Router::AcceptBypassLink(
+    Ref<NodeLink> new_node_link,
+    SublinkId new_sublink,
+    FragmentRef<RouterLinkState> new_link_state,
+    SequenceNumber inbound_sequence_length_from_bypassed_link) {
+  // TODO: Implement this.
+  return true;
+}
+
+bool Router::StopProxying(SequenceNumber inbound_sequence_length,
+                          SequenceNumber outbound_sequence_length) {
+  // TODO: Implement this.
+  return true;
+}
+
+bool Router::NotifyProxyWillStop(SequenceNumber inbound_sequence_length) {
+  // TODO: Implement this.
+  return true;
+}
+
+bool Router::BypassPeerWithLink(NodeLink& from_node_link,
+                                SublinkId new_sublink,
+                                FragmentRef<RouterLinkState> new_link_state,
+                                SequenceNumber inbound_sequence_length) {
+  // TODO: Implement this.
+  return true;
+}
+
+bool Router::StopProxyingToLocalPeer(SequenceNumber outbound_sequence_length) {
+  // TODO: Implement this.
+  return true;
+}
+
 void Router::NotifyLinkDisconnected(RemoteRouterLink& link) {
   {
     absl::MutexLock lock(&mutex_);

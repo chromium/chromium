@@ -39,6 +39,16 @@ class LocalRouterLink : public RouterLink {
   void Unlock() override;
   bool FlushOtherSideIfWaiting() override;
   bool CanNodeRequestBypass(const NodeName& bypass_request_source) override;
+  void BypassPeer(const NodeName& bypass_target_node,
+                  SublinkId bypass_target_sublink) override;
+  void StopProxying(SequenceNumber inbound_sequence_length,
+                    SequenceNumber outbound_sequence_length) override;
+  void ProxyWillStop(SequenceNumber inbound_sequence_length) override;
+  void BypassPeerWithLink(SublinkId new_sublink,
+                          FragmentRef<RouterLinkState> new_link_state,
+                          SequenceNumber inbound_sequence_length) override;
+  void StopProxyingToLocalPeer(
+      SequenceNumber outbound_sequence_length) override;
   void Deactivate() override;
   std::string Describe() const override;
 

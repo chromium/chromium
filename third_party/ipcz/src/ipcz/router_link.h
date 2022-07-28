@@ -5,6 +5,7 @@
 #ifndef IPCZ_SRC_IPCZ_ROUTER_LINK_H_
 #define IPCZ_SRC_IPCZ_ROUTER_LINK_H_
 
+#include "ipcz/fragment_ref.h"
 #include "ipcz/link_type.h"
 #include "ipcz/node_name.h"
 #include "ipcz/sequence_number.h"
@@ -15,6 +16,7 @@ namespace ipcz {
 
 class NodeLink;
 class Parcel;
+class RemoteRouterLink;
 class Router;
 struct RouterLinkState;
 
@@ -37,7 +39,8 @@ class RouterLink : public RefCounted {
   // returns null.
   virtual RouterLinkState* GetLinkState() const = 0;
 
-  // Returns true iff this is a LocalRouterLink whose peer router is `router`.
+  // Returns true if this is a LocalRouterLink and the Router on the other side
+  // of the link is `router`.
   virtual bool HasLocalPeer(const Router& router) = 0;
 
   // Passes a parcel to the Router on the other side of this link to be queued
@@ -95,6 +98,49 @@ class RouterLink : public RefCounted {
   // side of this link has already initiated bypass and `bypass_request_source`
   // matches the NodeName it stored in this link's shared state at that time.
   virtual bool CanNodeRequestBypass(const NodeName& bypass_request_source) = 0;
+
+  // Requests that the router on the other side of this link bypass the router
+  // on this side. `bypass_target_node` is the name node where the router's
+  // outward peer lives, and `bypass_target_sublink` identifies the link between
+  // that router and the router on the other side of this link.
+  virtual void BypassPeer(const NodeName& bypass_target_node,
+                          SublinkId bypass_target_sublink) = 0;
+
+  // Informs the router on the other side of this link about when it can drop
+  // its inward and outward links. Specifically,`inbound_sequence_length` is the
+  // final length of the parcel sequence the router must expect to receive from
+  // its outward peer and forward to its inbound peer; while
+  // `outbound_sequence_length` is the final length of the parcel sequence the
+  // router must expect to receive from its inward peer and forward to its
+  // outward peer.
+  virtual void StopProxying(SequenceNumber inbound_sequence_length,
+                            SequenceNumber outbound_sequence_length) = 0;
+
+  // Informs the router on the other side of this link that the router it most
+  // recently bypassed will stop sending it parcels once the router's inbound
+  // sequence length reaches `inbound_sequence_length`, at which point the
+  // router's link to the proxy can be dropped.
+  virtual void ProxyWillStop(SequenceNumber inbound_sequence_length) = 0;
+
+  // Informs the router on the other side of this link that its outward peer
+  // (and the router on this side of this link) can be bypassed, and provides a
+  // new link (over the same NodeLink) to adopt for that bypass operation.
+  // `new_link_state` is a freshly allocated RouterLinkState fragment for the
+  // new link, and `inbound_sequence_length` is the current inbound sequence
+  // length of the router on this side of the link.
+  virtual void BypassPeerWithLink(SublinkId new_sublink,
+                                  FragmentRef<RouterLinkState> new_link_state,
+                                  SequenceNumber inbound_sequence_length) = 0;
+
+  // Informs the router on the other side of this link that its inward peer
+  // (i.e. the router on this side of the link) has bypassed it in favor of a
+  // direct link to proxy's own local outward peer. This is essentially a reply
+  // to a BypassPeerWithLink() call from the other side of this link.
+  // `outbound_sequence_length` is the current outbound sequence length of the
+  // router on this side of the link at the moment it switches to the new link
+  // for its outward transmissions.
+  virtual void StopProxyingToLocalPeer(
+      SequenceNumber outbound_sequence_length) = 0;
 
   // Deactivates this RouterLink to sever any binding it may have to a specific
   // Router. Note that deactivation is not necessarily synchronous, so some

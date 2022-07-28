@@ -169,12 +169,179 @@ IPCZ_MSG_BEGIN(RouteDisconnected, IPCZ_MSG_ID(23), IPCZ_MSG_VERSION(0))
   IPCZ_MSG_PARAM(SublinkId, sublink)
 IPCZ_MSG_END()
 
-// Notifies a node that the Router it has bound to `sublink` (on the
-// transmitting NodeLink) now has an allocated RouterLinkState in the fragment
-// identified by `descriptor`.
-IPCZ_MSG_BEGIN(SetRouterLinkState, IPCZ_MSG_ID(24), IPCZ_MSG_VERSION(0))
+// Informs a router that its outward peer can be bypassed. Given routers X and Y
+// on the central link, and a router Z as Y's inward peer:
+//
+//     X ==== (central) ==== Y ======== Z
+//
+// Once Y successfully locks the central link, Y may send this message to Z
+// with sufficient information for Z to establish a direct link to X. Z
+// accomplishes this via an AcceptBypassLink message to X's node.
+//
+// Note that this message is only used when X and Y belong to different nodes.
+// If X and Y belong to the same node, then Y sends Z a BypassPeerWithLink
+// message instead.
+IPCZ_MSG_BEGIN(BypassPeer, IPCZ_MSG_ID(30), IPCZ_MSG_VERSION(0))
+  // Identifies the router to receive this message.
   IPCZ_MSG_PARAM(SublinkId, sublink)
-  IPCZ_MSG_PARAM(FragmentDescriptor, descriptor)
+
+  // Padding for NodeName alignment. Reserved for future use and must be zero.
+  IPCZ_MSG_PARAM(uint64_t, reserved0)
+
+  // The name of the node where router X lives. That is the outward peer of
+  // the recipient's outward peer.
+  IPCZ_MSG_PARAM(NodeName, bypass_target_node)
+
+  // The sublink used to route between the recipient's outward peer and that
+  // router's own outward peer; i.e., the link between X and Y.
+  IPCZ_MSG_PARAM(SublinkId, bypass_target_sublink)
+IPCZ_MSG_END()
+
+// Provides a router with a new outward link to replace its existing outward
+// link to some other node. Given routers X and Y on the central link, and a
+// router Z as Y's inward peer:
+//
+//     X ==== (central) ==== Y ======== Z
+//
+// Z sends this message to X's node to establish a new direct link to X. Both
+// X's and Z's existing links to Y are left intact in a decaying state:
+//
+//         - - - Y - - -
+//       /               \
+//     X === (central) === Z
+//
+// The recipient of this message must send a StopProxying message to Y, as well
+// as a ProxyWillStop message to Z, in order for those decaying links to be
+// phased out.
+//
+// Z must send this message to X only after receiving a BypassPeer request from
+// Y. That request signifies that X's node has been adequately prepared by Y to
+// authenticate this request from Z.
+IPCZ_MSG_BEGIN(AcceptBypassLink, IPCZ_MSG_ID(31), IPCZ_MSG_VERSION(0))
+  // Identifies the node of the targeted router's own outward peer, as well as
+  // the sublink their nodes use to route between those routers. In the above
+  // scenario these fields identify the link between X and Y to be replaced, and
+  // as a consequence they uniquely identify X itself to the recipient.
+  IPCZ_MSG_PARAM(NodeName, current_peer_node)
+  IPCZ_MSG_PARAM(SublinkId, current_peer_sublink)
+
+  // The length of the parcel sequence routed from Z to Y before Z adopted X as
+  // its new outward peer, which is implicitly also the final length of the
+  // parcel sequence to be routed from Y to X before that link is dropped.
+  IPCZ_MSG_PARAM(SequenceNumber, inbound_sequence_length_from_bypassed_link)
+
+  // A new sublink which can now be used to route messages between X and Z on
+  // the NodeLink transmitting this AcceptBypassLink message.
+  IPCZ_MSG_PARAM(SublinkId, new_sublink)
+
+  // The shared memory location of the new link's RouterLinkState. This may be
+  // null if one could not be allocated ahead of time, in which case one will be
+  // allocated and shared later.
+  IPCZ_MSG_PARAM(FragmentDescriptor, new_link_state_fragment)
+IPCZ_MSG_END()
+
+// Informs a router about how many more parcels it can expect to receive from
+// its inward and outward peers before it can stop proxying between them and
+// cease to exist. Given routers X, Y, and Z in a configuration resulting from
+// a BypassPeer from Y to Z, followed by an AcceptBypassLink from Z to X:
+//
+//         - - - Y - - -
+//       /               \
+//     X === (central) === Z
+//
+// This message is sent from X to Y to provide the final length of the sequence
+// of parcels routed through Y in either direction, now that X and Z have
+// established a direct connection.
+IPCZ_MSG_BEGIN(StopProxying, IPCZ_MSG_ID(32), IPCZ_MSG_VERSION(0))
+  // Identifies the router to receive this message.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+
+  // The final sequence length of inbound parcels the router can expect from its
+  // outward peer. In the scenario above, this is the sequence of parcels routed
+  // from X to Y.
+  IPCZ_MSG_PARAM(SequenceNumber, inbound_sequence_length)
+
+  // The final sequence length of outbound parcels the router can expect from
+  // its inward peer. In the scenario above, this is the sequence of parcels
+  // routed from Z to Y.
+  IPCZ_MSG_PARAM(SequenceNumber, outbound_sequence_length)
+IPCZ_MSG_END()
+
+// Informs a router about how many more parcels it can expect to receive from
+// its outward peer. Given routers X, Y, and Z in a configuration resulting from
+// a BypassPeer from Y to Z, followed by an AcceptBypassLink from Z to X:
+//
+//         - - - Y - - -
+//       /               \
+//     X === (central) === Z
+//
+// This message is sent from X to Z to provide the final length of the sequence
+// of parcels routed from X to Y (and therefore from Y to Z), now that X and Z
+// have established a direct connection.
+IPCZ_MSG_BEGIN(ProxyWillStop, IPCZ_MSG_ID(33), IPCZ_MSG_VERSION(0))
+  // Identifies the router to receive this message.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+
+  // The final sequence length of inbound parcels the router can expect from its
+  // outward peer.
+  IPCZ_MSG_PARAM(SequenceNumber, inbound_sequence_length)
+IPCZ_MSG_END()
+
+// Informs a router that its outward peer can be bypassed, and provides a new
+// link with which to execute that bypass. Given the following arrangement where
+// X, Y, and Z are routers; AND X and Y live on the same node as each other:
+//
+//     X ==== (central) ==== Y ======== Z
+//
+// Y sends this to Z to establish a new link (over the same NodeLink) directly
+// between Z and X. Both X's and Z's existing links to Y are left intact in a
+// decaying state:
+//
+//         - - - Y - - -
+//       /               \
+//     X === (central) === Z
+//
+// Note that unlike with BypassPeer/AcceptBypassLink, there is no need to
+// authenticate this request, as it's only swapping one sublink out for another
+// along the same NodeLink.
+IPCZ_MSG_BEGIN(BypassPeerWithLink, IPCZ_MSG_ID(34), IPCZ_MSG_VERSION(0))
+  // Identifies the router to receive this message.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+
+  // A new sublink which can now be used to route messages between X and Z on
+  // the NodeLink transmitting this BypassPeerWithLink message.
+  IPCZ_MSG_PARAM(SublinkId, new_sublink)
+
+  // The shared memory location of the new link's RouterLinkState. This may be
+  // null if one could not be allocated ahead of time, in which case one will be
+  // allocated and shared later.
+  IPCZ_MSG_PARAM(FragmentDescriptor, new_link_state_fragment)
+
+  // The final length of the sequence of inbound parcels the recipient Z can
+  // expect to receive from Y. Parcels beyond this point come directly from X
+  // over the newly established link.
+  IPCZ_MSG_PARAM(SequenceNumber, inbound_sequence_length)
+IPCZ_MSG_END()
+
+// Provides a router with the final length of the sequence of outbound parcels
+// that will be routed to it via its decaying inward link. Given the following
+// arrangement where X, Y, and Z are routers; X and Y live on the same node
+// as each other: and Y has already sent a BypassPeerWithLink message to Z:
+//
+//         - - - Y - - -
+//       /               \
+//     X === (central) === Z
+//
+// This message is sent from Z back to Y, informing Y of the last parcel it can
+// expect to receive from Z, now that X and Z are connected directly.
+IPCZ_MSG_BEGIN(StopProxyingToLocalPeer, IPCZ_MSG_ID(35), IPCZ_MSG_VERSION(0))
+  // Identifies the router to receive this message.
+  IPCZ_MSG_PARAM(SublinkId, sublink)
+
+  // The final length of the sequence of outbound parcels the recipient Y can
+  // expect to receive from the sender Z. Beyond this point, parcels are no
+  // longer routed through Y in that direction.
+  IPCZ_MSG_PARAM(SequenceNumber, outbound_sequence_length)
 IPCZ_MSG_END()
 
 // Hints to the target router that it should flush its state. Generally sent to

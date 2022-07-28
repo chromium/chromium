@@ -38,7 +38,7 @@ class RemoteRouterLink : public RouterLink {
   // this RemoteRouterLink falls (side A or B), and `type` indicates what type
   // of link it is -- which for remote links must be either kCentral,
   // kPeripheralInward, or kPeripheralOutward. If the link is kCentral, a
-  // non-null `link_state` may be provided to use as the link's RouterLinkState.
+  // non-null `link_state` must be provided for the link's RouterLinkState.
   static Ref<RemoteRouterLink> Create(Ref<NodeLink> node_link,
                                       SublinkId sublink,
                                       FragmentRef<RouterLinkState> link_state,
@@ -47,23 +47,6 @@ class RemoteRouterLink : public RouterLink {
 
   const Ref<NodeLink>& node_link() const { return node_link_; }
   SublinkId sublink() const { return sublink_; }
-
-  // Sets this link's RouterLinkState.
-  //
-  // If `state` is null and this link is on side B, this call is a no-op. If
-  // `state` is null and this link is on side A, this call will kick off an
-  // asynchronous allocation of a new RouterLinkState. When that completes, the
-  // new state will be adopted by side A and shared with side B.
-  //
-  // If `state` references a pending fragment and this link is on side A, the
-  // call is a no-op. If `state` references a pending fragment and this link
-  // is on side B, this operation will be automatically deferred until the
-  // NodeLink acquires a mapping of the buffer referenced by `state` and the
-  // fragment can be resolved to an addressable one.
-  //
-  // Finally, if `state` references a valid, addressable fragment, it is
-  // adopted as-is.
-  void SetLinkState(FragmentRef<RouterLinkState> state);
 
   // RouterLink:
   LinkType GetType() const override;
@@ -78,6 +61,16 @@ class RemoteRouterLink : public RouterLink {
   void Unlock() override;
   bool FlushOtherSideIfWaiting() override;
   bool CanNodeRequestBypass(const NodeName& bypass_request_source) override;
+  void BypassPeer(const NodeName& bypass_target_node,
+                  SublinkId bypass_request_sublink) override;
+  void StopProxying(SequenceNumber inbound_sequence_length,
+                    SequenceNumber outbound_sequence_length) override;
+  void ProxyWillStop(SequenceNumber inbound_sequence_length) override;
+  void BypassPeerWithLink(SublinkId new_sublink,
+                          FragmentRef<RouterLinkState> new_link_state,
+                          SequenceNumber inbound_sequence_length) override;
+  void StopProxyingToLocalPeer(
+      SequenceNumber outbound_sequence_length) override;
   void Deactivate() override;
   std::string Describe() const override;
 
@@ -90,7 +83,9 @@ class RemoteRouterLink : public RouterLink {
 
   ~RemoteRouterLink() override;
 
-  void AllocateAndShareLinkState();
+  // Sets this link's RouterLinkState. `state` must be pending or addressable
+  // and this must be a central link.
+  void SetLinkState(FragmentRef<RouterLinkState> state);
 
   const Ref<NodeLink> node_link_;
   const SublinkId sublink_;
@@ -103,15 +98,10 @@ class RemoteRouterLink : public RouterLink {
   std::atomic<bool> side_is_stable_{false};
 
   // A reference to the shared memory Fragment containing the RouterLinkState
-  // shared by both ends of this RouterLink. Always null for non-central links,
-  // and may be null for a central links if its RouterLinkState has not yet been
-  // allocated or shared.
-  //
-  // Must be set at most once and is only retained by this object to keep the
-  // fragment allocated. Access is unguarded and is restricted to
-  // SetLinkState(), and only allowed while `link_state_` below is still null.
-  // Any other access is unsafe. Use GetLinkState() to get a usable reference to
-  // the RouterLinkState instance.
+  // shared by both ends of this RouterLink. Only used by central links. Once
+  // this is set to a non-null fragment and that fragment is addressable by this
+  // link's node, `link_state_` is also updated to cache a pointer to this
+  // fragment's mapped memory.
   FragmentRef<RouterLinkState> link_state_fragment_;
 
   // Cached address of the shared RouterLinkState referenced by
