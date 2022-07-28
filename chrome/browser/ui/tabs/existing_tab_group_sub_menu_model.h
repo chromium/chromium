@@ -31,7 +31,9 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   // Whether the submenu should be shown in the provided context. True iff
   // the submenu would show at least one group. Does not assume ownership of
   // |model|; |model| must outlive this instance.
-  static bool ShouldShowSubmenu(TabStripModel* model, int context_index);
+  static bool ShouldShowSubmenu(TabStripModel* model,
+                                int context_index,
+                                TabMenuModelDelegate* tab_menu_model_delegate);
 
   // ExistingBaseSubMenuModel:
   std::u16string GetLabelAt(size_t index) const override;

@@ -58,7 +58,8 @@ void TabMenuModel::Build(TabStripModel* tab_strip, int index) {
     SetEnabledAt(GetItemCount() - 1,
                  tab_strip->IsReadLaterSupportedForAny(indices));
   }
-  if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(tab_strip, index)) {
+  if (ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
+          tab_strip, index, tab_menu_model_delegate_)) {
     // Create submenu with existing groups
     add_to_existing_group_submenu_ =
         std::make_unique<ExistingTabGroupSubMenuModel>(

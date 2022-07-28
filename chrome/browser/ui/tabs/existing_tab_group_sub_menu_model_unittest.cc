@@ -33,8 +33,10 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowSubmenu) {
   ASSERT_FALSE(model->GetTabGroupForTab(1).has_value());
   ASSERT_EQ(model->count(), 2);
 
-  EXPECT_FALSE(ExistingTabGroupSubMenuModel::ShouldShowSubmenu(model, 0));
-  EXPECT_TRUE(ExistingTabGroupSubMenuModel::ShouldShowSubmenu(model, 1));
+  EXPECT_FALSE(
+      ExistingTabGroupSubMenuModel::ShouldShowSubmenu(model, 0, nullptr));
+  EXPECT_TRUE(
+      ExistingTabGroupSubMenuModel::ShouldShowSubmenu(model, 1, nullptr));
 }
 
 // Validate that the submenu has the correct items.
@@ -139,7 +141,7 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
   TabStripModel* model_2 = browser()->tab_strip_model();
 
   EXPECT_EQ(model_1->count(), 4);
-  EXPECT_EQ(model_1->count(), 4);
+  EXPECT_EQ(model_2->count(), 4);
 
   std::unique_ptr<TabMenuModelDelegate> delegate_1 =
       std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser.get());
@@ -183,6 +185,43 @@ TEST_F(ExistingTabGroupSubMenuModelTest, AddAllSelectedTabsToAnotherWindow) {
 
   // Expect the number of tabs we moved from model_1 into model_2 is still 3.
   EXPECT_EQ(num_selected, 3);
+
+  new_browser.get()->tab_strip_model()->CloseAllTabs();
+  new_browser.reset();
+}
+
+TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowExistingTabGroups) {
+  std::unique_ptr<BrowserWindow> window_1 = CreateBrowserWindow();
+  std::unique_ptr<Browser> new_browser = CreateBrowser(
+      browser()->profile(), browser()->type(), false, window_1.get());
+
+  AddTab(browser(), GURL("chrome://newtab"));
+  AddTab(browser(), GURL("chrome://newtab"));
+  AddTab(new_browser.get(), GURL("chrome://newtab"));
+
+  TabStripModel* model_1 = browser()->tab_strip_model();
+  TabStripModel* model_2 = new_browser->tab_strip_model();
+
+  EXPECT_EQ(model_1->count(), 2);
+  EXPECT_EQ(model_2->count(), 1);
+
+  ASSERT_EQ(model_1->group_model()->ListTabGroups().size(), 0U);
+  ASSERT_EQ(model_2->group_model()->ListTabGroups().size(), 0U);
+
+  // create tab group in first browser window
+  model_1->AddToNewGroup({0});
+
+  ASSERT_EQ(model_1->group_model()->ListTabGroups().size(), 1U);
+  ASSERT_EQ(model_2->group_model()->ListTabGroups().size(), 0U);
+
+  std::unique_ptr<TabMenuModelDelegate> delegate_1 =
+      std::make_unique<chrome::BrowserTabMenuModelDelegate>(new_browser.get());
+
+  ExistingTabGroupSubMenuModel menu_1(nullptr, delegate_1.get(), model_1, 1);
+  ExistingTabGroupSubMenuModel menu_2(nullptr, delegate_1.get(), model_2, 0);
+
+  EXPECT_EQ(3u, menu_1.GetItemCount());
+  EXPECT_EQ(3u, menu_2.GetItemCount());
 
   new_browser.get()->tab_strip_model()->CloseAllTabs();
   new_browser.reset();

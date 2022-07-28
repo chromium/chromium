@@ -145,17 +145,37 @@ ExistingTabGroupSubMenuModel::GetMenuItemsFromModel(
 }
 
 // static
-bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(TabStripModel* model,
-                                                     int context_index) {
+bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
+    TabStripModel* model,
+    int context_index,
+    TabMenuModelDelegate* tab_menu_model_delegate) {
   TabGroupModel* group_model = model->group_model();
   if (!group_model)
     return false;
 
+  // Look at tab groups in current window
   for (tab_groups::TabGroupId group : group_model->ListTabGroups()) {
     if (ShouldShowGroup(model, context_index, group)) {
       return true;
     }
   }
+
+  // Look at tab groups in all other windows
+  if (tab_menu_model_delegate) {
+    for (Browser* browser :
+         tab_menu_model_delegate->GetExistingWindowsForMoveMenu()) {
+      TabGroupModel* browser_group_model =
+          browser->tab_strip_model()->group_model();
+      if (!browser_group_model)
+        continue;
+      for (tab_groups::TabGroupId group :
+           browser_group_model->ListTabGroups()) {
+        if (ShouldShowGroup(model, context_index, group))
+          return true;
+      }
+    }
+  }
+
   return false;
 }
 
