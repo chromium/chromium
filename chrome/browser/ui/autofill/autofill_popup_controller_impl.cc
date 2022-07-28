@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -98,6 +99,13 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
+  // TODO(crbug.com/1341374, crbug.com/1277218): Remove.
+  struct RaiiTrueToFalse {
+    explicit RaiiTrueToFalse(bool* b) : value(b) { *value = true; }
+    ~RaiiTrueToFalse() { *value = false; }
+    bool* value;
+  } is_inside_show(&is_inside_show_);
+
   // TODO(crbug.com/1341374, crbug.com/1277218): Why can `this` be deleted
   // synchronously?
   WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
@@ -585,6 +593,9 @@ void AutofillPopupControllerImpl::ClearState() {
 }
 
 void AutofillPopupControllerImpl::HideViewAndDie() {
+  if (is_inside_show_)
+    base::debug::DumpWithoutCrashing();
+
   // Invalidates in particular ChromeAutofillClient's WeakPtr to |this|, which
   // prevents recursive calls triggered by `view_->Hide()` (crbug.com/1267047).
   weak_ptr_factory_.InvalidateWeakPtrs();
