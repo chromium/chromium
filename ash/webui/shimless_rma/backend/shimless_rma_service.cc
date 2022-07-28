@@ -26,9 +26,9 @@
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/version/version_loader.h"
 #include "components/qr_code_generator/qr_code_generator.h"
 
 using chromeos::network_config::mojom::ConnectionStateType;

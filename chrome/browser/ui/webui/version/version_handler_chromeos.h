@@ -9,7 +9,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
-#include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/version/version_loader.h"
 
 // VersionHandlerChromeOS is responsible for loading the Chrome OS
 // version.

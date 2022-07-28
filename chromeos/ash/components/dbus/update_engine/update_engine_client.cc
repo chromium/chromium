@@ -21,6 +21,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
+#include "chromeos/version/version_loader.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"

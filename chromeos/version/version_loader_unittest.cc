@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/version/version_loader.h"
 
 #include <string>
 

@@ -13,9 +13,9 @@
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/ash/services/assistant/service_context.h"
-#include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/libassistant/public/mojom/settings_controller.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
+#include "chromeos/version/version_loader.h"
 
 namespace chromeos {
 namespace assistant {

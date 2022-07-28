@@ -18,7 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/version/version_loader.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

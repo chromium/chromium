@@ -129,6 +129,7 @@ test("chromeos_unittests") {
       "//chromeos/startup:unit_tests",
       "//chromeos/ui/base:unit_tests",
       "//chromeos/utils:unit_tests",
+      "//chromeos/version:unit_tests",
       "//components/onc",
       "//components/prefs:test_support",
       "//components/proxy_config",

@@ -28,7 +28,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/version/version_loader.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"

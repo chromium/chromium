@@ -15,6 +15,7 @@ component("update_engine") {
     "//base",
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
+    "//chromeos/version",
     "//dbus",
   ]
   sources = [

@@ -19,10 +19,7 @@ component("dbus") {
     "//chromeos/dbus/shill",
     "//dbus",
   ]
-  deps = [
-    "//base",
-    "//chromeos/dbus/util",
-  ]
+  deps = [ "//base" ]
   sources = [
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
@@ -64,7 +61,6 @@ source_set("unit_tests") {
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//chromeos/dbus/u2f",
     "//chromeos/dbus/u2f:u2f_proto",
-    "//chromeos/dbus/util:unit_tests",
     "//dbus",
     "//dbus:test_support",
     "//testing/gmock",

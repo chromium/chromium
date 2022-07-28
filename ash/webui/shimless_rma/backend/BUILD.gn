@@ -25,9 +25,9 @@ static_library("backend") {
     "//chromeos/ash/components/network",
     "//chromeos/dbus",
     "//chromeos/dbus/power",
-    "//chromeos/dbus/util",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config/public/mojom:mojom",
+    "//chromeos/version",
     "//components/qr_code_generator",
   ]
 }

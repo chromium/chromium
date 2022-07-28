@@ -51,8 +51,8 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/metrics/chromeos_metrics_provider.h"
 #include "chrome/browser/metrics/enrollment_status.h"
-#include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/system/statistics_provider.h"
+#include "chromeos/version/version_loader.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -18,9 +18,9 @@
 #include "chromeos/assistant/internal/internal_constants.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/util_headers.h"
-#include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/libassistant/constants.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
+#include "chromeos/version/version_loader.h"
 
 using ::assistant::api::Interaction;
 using chromeos::assistant::shared::ClientInteraction;
