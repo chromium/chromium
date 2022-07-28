@@ -9604,6 +9604,7 @@ if (!is_android) {
         "//chrome/app:chrome_dll_resources",
         "//chrome/elevation_service:public_headers",
         "//chrome/install_static:install_static_util",
+        "//chrome/installer/util:interactive_ui_tests",
         "//chrome/installer/util:strings",
         "//third_party/isimpledom",
         "//third_party/webrtc_overrides:webrtc_component",
