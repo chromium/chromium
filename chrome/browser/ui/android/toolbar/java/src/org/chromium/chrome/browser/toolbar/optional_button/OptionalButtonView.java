@@ -30,12 +30,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import com.google.android.material.color.MaterialColors;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -565,7 +568,12 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         mButton.setImageDrawable(mIconDrawable);
         mButton.setVisibility(GONE);
 
-        mBackground.setColorFilter(mBackgroundColorFilter);
+        if (AdaptiveToolbarFeatures.shouldUseAlternativeActionChipColor()) {
+            int highlightColor = MaterialColors.getColor(this, R.attr.colorSecondaryContainer);
+            mBackground.setColorFilter(highlightColor);
+        } else {
+            mBackground.setColorFilter(mBackgroundColorFilter);
+        }
 
         // Begin a transition, all layout changes after this call will be animated. The animation
         // starts at the next frame.
@@ -592,6 +600,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // starts at the next frame.
         beginDelayedTransition(createActionChipTransition());
 
+        mBackground.setColorFilter(mBackgroundColorFilter);
         mActionChipLabel.setVisibility(GONE);
         setWidth(mCollapsedStateWidthPx);
 
@@ -641,6 +650,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         setWidth(mCollapsedStateWidthPx);
         mButton.setVisibility(VISIBLE);
 
+        mBackground.setColorFilter(mBackgroundColorFilter);
         mBackground.setVisibility(mNextButtonType == ButtonType.DYNAMIC ? VISIBLE : GONE);
 
         mState = State.RUNNING_SHOW_TRANSITION;

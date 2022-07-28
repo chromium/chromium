@@ -16,11 +16,14 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.ColorFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
 import android.transition.Transition;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -33,6 +36,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,12 +47,15 @@ import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
-import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
 
@@ -57,7 +64,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstan
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class OptionalButtonViewTest {
-    private Activity mActivity;
+    private Context mActivity;
 
     private OptionalButtonView mOptionalButtonView;
     private ImageButton mInnerButton;
@@ -66,13 +73,19 @@ public class OptionalButtonViewTest {
     private ShadowLooper mShadowLooper;
     private BooleanSupplier mMockAnimationChecker;
     private Callback<Transition> mMockBeginDelayedTransition;
-    private int mBeginTransitionCount;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.setupActivity(Activity.class);
+        mActivity = new ContextThemeWrapper(
+                Robolectric.setupActivity(Activity.class), R.style.Theme_BrowserUI_DayNight);
         mMockAnimationChecker = Mockito.mock(BooleanSupplier.class);
         when(mMockAnimationChecker.getAsBoolean()).thenReturn(true);
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+                "action_chip_with_different_color", "false");
+
+        FeatureList.setTestValues(testValues);
 
         mOptionalButtonView = (OptionalButtonView) LayoutInflater.from(mActivity).inflate(
                 R.layout.optional_button_layout, null, false);
@@ -346,6 +359,42 @@ public class OptionalButtonViewTest {
         assertEquals(View.VISIBLE, mOptionalButtonView.getVisibility());
         assertEquals(View.VISIBLE, mInnerButton.getVisibility());
         assertEquals(View.VISIBLE, mActionChipLabel.getVisibility());
+    }
+
+    @Test
+    public void testUpdateButtonWithAnimation_actionChipWithAlternativeColor() {
+        ButtonData actionChipButtonData = getDataForPriceTrackingActionChip();
+
+        // Alternative color is controlled by a field trial param.
+        TestValues testValues = new TestValues();
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING,
+                "action_chip_with_different_color", "true");
+        FeatureList.setTestValues(testValues);
+
+        ViewGroup transitionRoot = mock(ViewGroup.class);
+        mOptionalButtonView.setTransitionRoot(transitionRoot);
+
+        // Transition from hidden to action chip
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+
+        // Normally called by TransitionManager.
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        ColorFilter filterAfterExpansion = mButtonBackground.getColorFilter();
+
+        // Advance looper to begin collapse transition.
+        mShadowLooper.runOneTask();
+        // Normally called by TransitionManager.
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        ColorFilter filterAfterCollapse = mButtonBackground.getColorFilter();
+
+        Assert.assertNotNull(filterAfterCollapse);
+        Assert.assertNotNull(filterAfterExpansion);
+        Assert.assertNotEquals(filterAfterCollapse, filterAfterExpansion);
     }
 
     @Test
