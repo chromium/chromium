@@ -19,7 +19,6 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/Fido2Api.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
-    "java/src/org/chromium/components/webauthn/Fido2ApiHandler.java",
     "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/FidoErrorResponseCallback.java",
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
@@ -56,8 +55,9 @@ android_library("java") {
 
 android_library("test_support_java") {
   testonly = true
-  sources =
-      [ "java/src/org/chromium/components/webauthn/MockFido2ApiHandler.java" ]
+  sources = [
+    "java/src/org/chromium/components/webauthn/MockFido2CredentialRequest.java",
+  ]
   deps = [
     ":java",
     "//content/public/android:content_java",

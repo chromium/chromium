@@ -25,8 +25,8 @@ import org.chromium.components.media_router.BrowserMediaRouter;
 import org.chromium.components.media_router.MockMediaRouteProvider;
 import org.chromium.components.media_router.RouterTestUtils;
 import org.chromium.components.permissions.PermissionDialogController;
-import org.chromium.components.webauthn.Fido2ApiHandler;
-import org.chromium.components.webauthn.MockFido2ApiHandler;
+import org.chromium.components.webauthn.AuthenticatorImpl;
+import org.chromium.components.webauthn.MockFido2CredentialRequest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -318,9 +318,10 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
     @Override
     public void setMockWebAuthnEnabled(boolean enabled) {
         if (enabled) {
-            Fido2ApiHandler.overrideInstanceForTesting(new MockFido2ApiHandler());
+            AuthenticatorImpl.overrideFido2CredentialRequestForTesting(
+                    new MockFido2CredentialRequest());
         } else {
-            Fido2ApiHandler.overrideInstanceForTesting(null);
+            AuthenticatorImpl.overrideFido2CredentialRequestForTesting(null);
         }
     }
 

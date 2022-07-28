@@ -52,14 +52,9 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.Fido2Api;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
-import org.chromium.components.webauthn.Fido2ApiHandler;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
-import org.chromium.components.webauthn.FidoErrorResponseCallback;
-import org.chromium.components.webauthn.GetAssertionResponseCallback;
 import org.chromium.components.webauthn.InternalAuthenticator;
 import org.chromium.components.webauthn.InternalAuthenticatorJni;
-import org.chromium.components.webauthn.IsUvpaaResponseCallback;
-import org.chromium.components.webauthn.MakeCredentialResponseCallback;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
 import org.chromium.components.webauthn.WebAuthnCredentialDetails;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -256,42 +251,6 @@ public class Fido2CredentialRequestTest {
         }
     }
 
-    private static class MockFido2ApiHandler extends Fido2ApiHandler {
-        private Fido2CredentialRequest mRequest;
-
-        MockFido2ApiHandler(Fido2CredentialRequest request) {
-            mRequest = request;
-        }
-
-        @Override
-        protected void makeCredential(PublicKeyCredentialCreationOptions options,
-                WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost frameHost,
-                Origin origin, @WebAuthenticationDelegate.Support int supportLevel,
-                MakeCredentialResponseCallback callback, FidoErrorResponseCallback errorCallback) {
-            mRequest.handleMakeCredentialRequest(
-                    options, frameHost, origin, callback, errorCallback);
-        }
-
-        @Override
-        protected void getAssertion(PublicKeyCredentialRequestOptions options,
-                WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost frameHost,
-                Origin origin, PaymentOptions payment,
-                @WebAuthenticationDelegate.Support int supportLevel,
-                GetAssertionResponseCallback callback, FidoErrorResponseCallback errorCallback) {
-            mRequest.handleGetAssertionRequest(
-                    options, frameHost, origin, payment, callback, errorCallback);
-        }
-
-        @Override
-        protected void isUserVerifyingPlatformAuthenticatorAvailable(
-                WebAuthenticationDelegate.IntentSender intentSender, RenderFrameHost frameHost,
-                @WebAuthenticationDelegate.Support int supportLevel,
-                IsUvpaaResponseCallback callback) {
-            mRequest.handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
-                    frameHost, callback);
-        }
-    }
-
     private static class TestAuthenticatorImplJni implements InternalAuthenticator.Natives {
         private AuthenticatorCallback mCallback;
 
@@ -461,7 +420,7 @@ public class Fido2CredentialRequestTest {
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         mRequest = new Fido2CredentialRequest(
                 mIntentSender, WebAuthenticationDelegate.Support.BROWSER);
-        Fido2ApiHandler.overrideInstanceForTesting(new MockFido2ApiHandler(mRequest));
+        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
 
         mFido2ApiCallHelper = new MockFido2ApiCallHelper();
         mFido2ApiCallHelper.setReturnedCredentialDetails(Fido2ApiTestHelper.getCredentialDetails());
@@ -480,7 +439,7 @@ public class Fido2CredentialRequestTest {
     private boolean gmsVersionSupported() {
         if (PackageUtils.getPackageVersion(
                     ContextUtils.getApplicationContext(), GOOGLE_PLAY_SERVICES_PACKAGE)
-                >= Fido2ApiHandler.GMSCORE_MIN_VERSION) {
+                >= AuthenticatorImpl.GMSCORE_MIN_VERSION) {
             return true;
         }
         return false;
