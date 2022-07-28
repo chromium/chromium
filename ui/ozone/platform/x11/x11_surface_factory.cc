@@ -17,6 +17,7 @@
 #include "ui/gl/gl_surface_egl_x11_gles2.h"
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
+#include "ui/ozone/common/native_pixmap_egl_binding.h"
 #include "ui/ozone/platform/x11/gl_ozone_glx.h"
 #include "ui/ozone/platform/x11/gl_surface_egl_readback_x11.h"
 #include "ui/ozone/platform/x11/native_pixmap_egl_x11_binding.h"
@@ -45,12 +46,11 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
     return GLOzoneEGL::InitializeStaticGLBindings(implementation);
   }
 
-  bool CanImportNativePixmap() override { return false; }
+  bool CanImportNativePixmap() override {
+    return gl::GLSurfaceEGL::GetGLDisplayEGL()
+        ->ext->b_EGL_EXT_image_dma_buf_import;
+  }
 
-  // This implementation is used when ANGLE supports pixmaps through
-  // eglCreatePixmapSurface and exposes it through EGL extension
-  // EGL_NOK_texture_from_pixmap to chrome. This can then be used to create
-  // native bindings using GLImageEGLPixmap.
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
       gfx::BufferFormat plane_format,
@@ -59,8 +59,9 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) override {
-    return NativePixmapEGLX11Binding::Create(pixmap, plane_format, plane_size,
-                                             target, texture_id);
+    return NativePixmapEGLBinding::Create(pixmap, plane_format, plane,
+                                          plane_size, color_space, target,
+                                          texture_id);
   }
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
