@@ -24,8 +24,7 @@ namespace blink {
 
 enum class LineBreakIteratorMode { kDefault, kNormal, kStrict, kLoose };
 
-class PLATFORM_EXPORT LayoutLocale
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<LayoutLocale> {
+class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   USING_FAST_MALLOC(LayoutLocale);
 
  public:

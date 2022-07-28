@@ -64,9 +64,7 @@ struct SameSizeAsHarfBuzzRunGlyphData {
 
 ASSERT_SIZE(HarfBuzzRunGlyphData, SameSizeAsHarfBuzzRunGlyphData);
 
-struct SameSizeAsRunInfo
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<
-          SameSizeAsRunInfo> {
+struct SameSizeAsRunInfo : public RefCounted<SameSizeAsRunInfo> {
   struct GlyphDataCollection {
     void* pointers[2];
     unsigned integer;
@@ -78,9 +76,7 @@ struct SameSizeAsRunInfo
 
 ASSERT_SIZE(ShapeResult::RunInfo, SameSizeAsRunInfo);
 
-struct SameSizeAsShapeResult
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<
-          SameSizeAsShapeResult> {
+struct SameSizeAsShapeResult : public RefCounted<SameSizeAsShapeResult> {
   float floats[5];
   Vector<int> vector;
   void* pointers[2];

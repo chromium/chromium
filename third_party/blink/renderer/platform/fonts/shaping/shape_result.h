@@ -109,8 +109,7 @@ typedef void (*GraphemeClusterCallback)(void* context,
                                         float cluster_advance,
                                         CanvasRotationInVertical);
 
-class PLATFORM_EXPORT ShapeResult
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<ShapeResult> {
+class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   USING_FAST_MALLOC(ShapeResult);
 
  public:

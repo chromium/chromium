@@ -89,10 +89,8 @@ class PLATFORM_EXPORT FontFamily {
   mutable bool is_prewarmed_ = false;
 };
 
-class PLATFORM_EXPORT SharedFontFamily
-    : public FontFamily,
-      public RefCountedWillBeThreadSafeForParallelTextShaping<
-          SharedFontFamily> {
+class PLATFORM_EXPORT SharedFontFamily : public FontFamily,
+                                         public RefCounted<SharedFontFamily> {
   USING_FAST_MALLOC(SharedFontFamily);
  public:
   SharedFontFamily(const SharedFontFamily&) = delete;

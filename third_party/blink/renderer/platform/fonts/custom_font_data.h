@@ -34,8 +34,7 @@ namespace blink {
 //  * `BinaryDataFontFaceSource` as loaded font resource
 //  * `LocalFontFaceSource` as derived class `CSSCustomFontData`
 //  * `RemoteFontFaceSource` as derived class `CSSCustomFontData`
-class PLATFORM_EXPORT CustomFontData
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<CustomFontData> {
+class PLATFORM_EXPORT CustomFontData : public RefCounted<CustomFontData> {
  public:
   static scoped_refptr<CustomFontData> Create() {
     return base::AdoptRef(new CustomFontData());

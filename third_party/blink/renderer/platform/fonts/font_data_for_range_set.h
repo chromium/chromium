@@ -37,8 +37,7 @@ namespace blink {
 class SimpleFontData;
 
 class PLATFORM_EXPORT FontDataForRangeSet
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<
-          FontDataForRangeSet> {
+    : public RefCounted<FontDataForRangeSet> {
  public:
   explicit FontDataForRangeSet(
       scoped_refptr<SimpleFontData> font_data = nullptr,

@@ -37,8 +37,7 @@ namespace blink {
 
 class SimpleFontData;
 
-class PLATFORM_EXPORT FontData
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<FontData> {
+class PLATFORM_EXPORT FontData : public RefCounted<FontData> {
  public:
   FontData() = default;
   FontData(const FontData&) = delete;

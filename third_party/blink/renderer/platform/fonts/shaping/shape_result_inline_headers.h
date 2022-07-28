@@ -72,9 +72,7 @@ struct HarfBuzzRunGlyphData {
   float advance;
 };
 
-struct ShapeResult::RunInfo final
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<
-          ShapeResult::RunInfo> {
+struct ShapeResult::RunInfo final : public RefCounted<ShapeResult::RunInfo> {
   USING_FAST_MALLOC(RunInfo);
 
  public:

@@ -111,8 +111,7 @@ using FontVariationAxis = FontTagValuePair<float>;
 
 class PLATFORM_EXPORT FontFeatureSettings
     : public FontSettings<FontFeature>,
-      public RefCountedWillBeThreadSafeForParallelTextShaping<
-          FontFeatureSettings> {
+      public RefCounted<FontFeatureSettings> {
  public:
   static scoped_refptr<FontFeatureSettings> Create() {
     return base::AdoptRef(new FontFeatureSettings());
@@ -127,8 +126,7 @@ class PLATFORM_EXPORT FontFeatureSettings
 
 class PLATFORM_EXPORT FontVariationSettings
     : public FontSettings<FontVariationAxis>,
-      public RefCountedWillBeThreadSafeForParallelTextShaping<
-          FontVariationSettings> {
+      public RefCounted<FontVariationSettings> {
  public:
   static scoped_refptr<FontVariationSettings> Create() {
     return base::AdoptRef(new FontVariationSettings());

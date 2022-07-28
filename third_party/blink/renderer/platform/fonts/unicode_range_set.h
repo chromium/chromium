@@ -56,8 +56,7 @@ struct PLATFORM_EXPORT UnicodeRange final {
   UChar32 to_;
 };
 
-class PLATFORM_EXPORT UnicodeRangeSet
-    : public RefCountedWillBeThreadSafeForParallelTextShaping<UnicodeRangeSet> {
+class PLATFORM_EXPORT UnicodeRangeSet : public RefCounted<UnicodeRangeSet> {
   USING_FAST_MALLOC(UnicodeRangeSet);
 
  public:

@@ -70,9 +70,4 @@ class ThreadSafeRefCounted : public base::RefCountedThreadSafe<T, Traits> {
 
 using WTF::ThreadSafeRefCounted;
 
-// TODO(yosin): Once parallel text shaping is release, we should get rid of
-// this alias.
-template <typename T>
-using RefCountedWillBeThreadSafeForParallelTextShaping = RefCounted<T>;
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREAD_SAFE_REF_COUNTED_H_
