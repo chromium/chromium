@@ -81,22 +81,22 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   bool CanCallJavascript() override;
   void CallJavascriptFunctionUnsafe(const std::string& function_name) override;
   void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg) override;
+                                    base::ValueView arg) override;
   void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg1,
-                                    const base::Value& arg2) override;
+                                    base::ValueView arg1,
+                                    base::ValueView arg2) override;
   void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg1,
-                                    const base::Value& arg2,
-                                    const base::Value& arg3) override;
+                                    base::ValueView arg1,
+                                    base::ValueView arg2,
+                                    base::ValueView arg3) override;
   void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    const base::Value& arg1,
-                                    const base::Value& arg2,
-                                    const base::Value& arg3,
-                                    const base::Value& arg4) override;
+                                    base::ValueView arg1,
+                                    base::ValueView arg2,
+                                    base::ValueView arg3,
+                                    base::ValueView arg4) override;
   void CallJavascriptFunctionUnsafe(
       const std::string& function_name,
-      const std::vector<const base::Value*>& args) override;
+      base::span<const base::ValueView> args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
 

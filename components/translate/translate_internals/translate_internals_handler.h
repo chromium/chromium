@@ -18,6 +18,7 @@
 
 namespace base {
 class Value;
+class ValueView;
 }  // namespace base
 
 namespace translate {
@@ -52,7 +53,7 @@ class TranslateInternalsHandler {
   // Calls a Javascript function with the given name and arguments.
   virtual void CallJavascriptFunction(
       const std::string& function_name,
-      const std::vector<const base::Value*>& args) = 0;
+      base::span<const base::ValueView> args) = 0;
 
  protected:
   // Subclasses should call this in order to handle messages from JavaScript.

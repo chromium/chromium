@@ -105,48 +105,48 @@ void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name) {
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             const base::Value& arg1) {
+                                             base::ValueView arg1) {
   call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.Clone()));
+  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
   OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             const base::Value& arg1,
-                                             const base::Value& arg2) {
+                                             base::ValueView arg1,
+                                             base::ValueView arg2) {
   call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.Clone()));
-  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.Clone()));
+  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
+  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.ToValue()));
   OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             const base::Value& arg1,
-                                             const base::Value& arg2,
-                                             const base::Value& arg3) {
+                                             base::ValueView arg1,
+                                             base::ValueView arg2,
+                                             base::ValueView arg3) {
   call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.Clone()));
-  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.Clone()));
-  call_data_.back()->TakeAsArg3(base::Value::ToUniquePtrValue(arg3.Clone()));
+  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
+  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.ToValue()));
+  call_data_.back()->TakeAsArg3(base::Value::ToUniquePtrValue(arg3.ToValue()));
   OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             const base::Value& arg1,
-                                             const base::Value& arg2,
-                                             const base::Value& arg3,
-                                             const base::Value& arg4) {
+                                             base::ValueView arg1,
+                                             base::ValueView arg2,
+                                             base::ValueView arg3,
+                                             base::ValueView arg4) {
   call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.Clone()));
-  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.Clone()));
-  call_data_.back()->TakeAsArg3(base::Value::ToUniquePtrValue(arg3.Clone()));
-  call_data_.back()->TakeAsArg4(base::Value::ToUniquePtrValue(arg4.Clone()));
+  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
+  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.ToValue()));
+  call_data_.back()->TakeAsArg3(base::Value::ToUniquePtrValue(arg3.ToValue()));
+  call_data_.back()->TakeAsArg4(base::Value::ToUniquePtrValue(arg4.ToValue()));
   OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(
     const std::string& function_name,
-    const std::vector<const base::Value*>& args) {
+    base::span<const base::ValueView> args) {
   NOTREACHED();
 }
 

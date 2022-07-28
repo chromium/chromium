@@ -80,7 +80,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
 
   if (!about_signin_internals) {
     base::Value empty;
-    std::vector<const base::Value*> return_args{&callback, &success, &empty};
+    base::ValueView return_args[] = {callback, success, empty};
     web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
     return;
   }
@@ -91,7 +91,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   // open in non-incognito mode always (like about:settings for ex.).
   about_signin_internals->AddSigninObserver(this);
   const base::Value status = about_signin_internals->GetSigninStatus();
-  std::vector<const base::Value*> return_args{&callback, &success, &status};
+  base::ValueView return_args[] = {callback, success, status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
@@ -105,14 +105,16 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
 }
 
 void SignInInternalsHandlerIOS::OnSigninStateChanged(const base::Value* info) {
+  DCHECK(info);
   base::Value event_name("signin-info-changed");
-  std::vector<const base::Value*> args{&event_name, info};
+  base::ValueView args[] = {event_name, *info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 void SignInInternalsHandlerIOS::OnCookieAccountsFetched(
     const base::Value* info) {
+  DCHECK(info);
   base::Value event_name("update-cookie-accounts");
-  std::vector<const base::Value*> args{&event_name, info};
+  base::ValueView args[] = {event_name, *info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }

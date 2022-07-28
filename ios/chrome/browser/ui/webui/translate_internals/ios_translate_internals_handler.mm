@@ -40,7 +40,7 @@ void IOSTranslateInternalsHandler::RegisterMessageCallback(
 
 void IOSTranslateInternalsHandler::CallJavascriptFunction(
     const std::string& function_name,
-    const std::vector<const base::Value*>& args) {
+    base::span<const base::ValueView> args) {
   web_ui()->CallJavascriptFunction(function_name, args);
 }
 

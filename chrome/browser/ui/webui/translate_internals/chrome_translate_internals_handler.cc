@@ -57,7 +57,7 @@ void ChromeTranslateInternalsHandler::RegisterMessageCallback(
 
 void ChromeTranslateInternalsHandler::CallJavascriptFunction(
     const std::string& function_name,
-    const std::vector<const base::Value*>& args) {
+    base::span<const base::ValueView> args) {
   web_ui()->CallJavascriptFunctionUnsafe(function_name, args);
 }
 

@@ -74,7 +74,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
       gcm_driver::SetGCMInternalsInfo(stats, profile_service, prefs);
 
   base::Value event_name(gcm_driver::kSetGcmInternalsInfo);
-  std::vector<const base::Value*> args{&event_name, &results};
+  base::ValueView args[] = {event_name, results};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 

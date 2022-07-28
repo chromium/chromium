@@ -151,20 +151,18 @@ void CrashesDOMHandler::UpdateUI() {
   if (crash_reporting_enabled)
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
 
-  base::Value result(base::Value::Type::DICTIONARY);
-  result.GetDict().Set("enabled", crash_reporting_enabled);
-  result.GetDict().Set("dynamicBackend", false);
-  result.GetDict().Set("manualUploads", crash_reporter::IsCrashpadRunning());
-  result.GetDict().Set("crashes", std::move(crash_list));
-  result.GetDict().Set("version", version_info::GetVersionNumber());
-  result.GetDict().Set("os", base::SysInfo::OperatingSystemName() + " " +
-                                 base::SysInfo::OperatingSystemVersion());
+  base::Value::Dict result;
+  result.Set("enabled", crash_reporting_enabled);
+  result.Set("dynamicBackend", false);
+  result.Set("manualUploads", crash_reporter::IsCrashpadRunning());
+  result.Set("crashes", std::move(crash_list));
+  result.Set("version", version_info::GetVersionNumber());
+  result.Set("os", base::SysInfo::OperatingSystemName() + " " +
+                       base::SysInfo::OperatingSystemVersion());
 
   base::Value event_name(crash_reporter::kCrashesUIUpdateCrashList);
 
-  std::vector<const base::Value*> args;
-  args.push_back(&event_name);
-  args.push_back(&result);
+  base::ValueView args[] = {event_name, result};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 

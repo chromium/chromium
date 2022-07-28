@@ -26,11 +26,8 @@ void CastWebUIMessageHandler::CallJavascriptFunction(
     std::vector<base::Value> args) {
   AllowJavascript();
   javascript_called_ = true;
-  std::vector<const base::Value*> args_copy;
-  for (const auto& arg : args) {
-    args_copy.push_back(&arg);
-  }
-  WebUIMessageHandler::CallJavascriptFunction(function, args_copy);
+  WebUIMessageHandler::CallJavascriptFunction(
+      function, std::vector<base::ValueView>(args.begin(), args.end()));
 }
 
 }  // namespace chromecast

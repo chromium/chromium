@@ -28,7 +28,7 @@ class WebUIIOS {
   // by |function_name| with the arguments specified in |arg_list|.
   static std::u16string GetJavascriptCall(
       const std::string& function_name,
-      const std::vector<const base::Value*>& arg_list);
+      base::span<const base::ValueView> arg_list);
 
   virtual ~WebUIIOS() {}
 
@@ -62,7 +62,7 @@ class WebUIIOS {
   // ASCII characters.
   virtual void CallJavascriptFunction(
       const std::string& function_name,
-      const std::vector<const base::Value*>& args) = 0;
+      base::span<const base::ValueView> args) = 0;
 
   // Helper method for responding to Javascript requests initiated with
   // cr.sendWithPromise() (defined in cr.js) for the case where the returned

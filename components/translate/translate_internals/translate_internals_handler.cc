@@ -229,7 +229,7 @@ void TranslateInternalsHandler::SendMessageToJs(const std::string& message,
                                                 const base::Value& value) {
   const char func[] = "cr.webUIListenerCallback";
   base::Value message_data(message);
-  std::vector<const base::Value*> args{&message_data, &value};
+  base::ValueView args[] = {message_data, value};
   CallJavascriptFunction(func, args);
 }
 

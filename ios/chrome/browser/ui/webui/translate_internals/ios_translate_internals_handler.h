@@ -38,9 +38,8 @@ class IOSTranslateInternalsHandler
   variations::VariationsService* GetVariationsService() override;
   void RegisterMessageCallback(const std::string& message,
                                MessageCallback callback) override;
-  void CallJavascriptFunction(
-      const std::string& function_name,
-      const std::vector<const base::Value*>& args) override;
+  void CallJavascriptFunction(const std::string& function_name,
+                              base::span<const base::ValueView> args) override;
 
   // web::WebUIIOSMessageHandler.
   void RegisterMessages() override;

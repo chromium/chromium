@@ -33,14 +33,14 @@ namespace web {
 // static
 std::u16string WebUIIOS::GetJavascriptCall(
     const std::string& function_name,
-    const std::vector<const base::Value*>& arg_list) {
+    base::span<const base::ValueView> arg_list) {
   std::u16string parameters;
   std::string json;
   for (size_t i = 0; i < arg_list.size(); ++i) {
     if (i > 0)
       parameters += u',';
 
-    base::JSONWriter::Write(*arg_list[i], &json);
+    base::JSONWriter::Write(arg_list[i], &json);
     parameters += base::UTF8ToUTF16(json);
   }
   return base::ASCIIToUTF16(function_name) + u'(' + parameters + u");";
@@ -75,7 +75,7 @@ void WebUIIOSImpl::SetController(
 
 void WebUIIOSImpl::CallJavascriptFunction(
     const std::string& function_name,
-    const std::vector<const base::Value*>& args) {
+    base::span<const base::ValueView> args) {
   DCHECK(base::IsStringASCII(function_name));
   ExecuteJavascript(GetJavascriptCall(function_name, args));
 }
@@ -84,8 +84,7 @@ void WebUIIOSImpl::ResolveJavascriptCallback(const base::Value& callback_id,
                                              const base::Value& response) {
   // cr.webUIResponse is a global JS function exposed from cr.js.
   base::Value request_successful = base::Value(true);
-  std::vector<const base::Value*> args{&callback_id, &request_successful,
-                                       &response};
+  base::ValueView args[] = {callback_id, request_successful, response};
   ExecuteJavascript(GetJavascriptCall("cr.webUIResponse", args));
 }
 
@@ -93,8 +92,7 @@ void WebUIIOSImpl::RejectJavascriptCallback(const base::Value& callback_id,
                                             const base::Value& response) {
   // cr.webUIResponse is a global JS function exposed from cr.js.
   base::Value request_successful = base::Value(false);
-  std::vector<const base::Value*> args{&callback_id, &request_successful,
-                                       &response};
+  base::ValueView args[] = {callback_id, request_successful, response};
   ExecuteJavascript(GetJavascriptCall("cr.webUIResponse", args));
 }
 
@@ -102,9 +100,10 @@ void WebUIIOSImpl::FireWebUIListener(
     const std::string& event_name,
     const std::vector<const base::Value*>& args) {
   base::Value callback_arg(event_name);
-  std::vector<const base::Value*> modified_args;
-  modified_args.push_back(&callback_arg);
-  modified_args.insert(modified_args.end(), args.begin(), args.end());
+  std::vector<base::ValueView> modified_args;
+  modified_args.push_back(callback_arg);
+  for (const auto* arg : args)
+    modified_args.emplace_back(*arg);
   ExecuteJavascript(
       GetJavascriptCall("cr.webUIListenerCallback", modified_args));
 }

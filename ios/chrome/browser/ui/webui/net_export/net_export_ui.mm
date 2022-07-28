@@ -204,7 +204,7 @@ void NetExportMessageHandler::NotifyUIWithState(
   base::Value state = file_writer_state->Clone();
   base::Value event(net_log::kNetLogInfoChangedEvent);
 
-  std::vector<const base::Value*> args{&event, &state};
+  base::ValueView args[] = {event, state};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 

@@ -239,7 +239,7 @@ void SyncInternalsMessageHandler::OnReceivedAllNodes(
   base::Value nodes_clone = nodes->Clone();
   base::Value success(true);
 
-  std::vector<const base::Value*> args{&id, &success, &nodes_clone};
+  base::ValueView args[] = {id, success, nodes_clone};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", args);
 }
 
@@ -328,8 +328,6 @@ void SyncInternalsMessageHandler::DispatchEvent(
     const std::string& name,
     const base::Value& details_value) {
   base::Value event_name = base::Value(name);
-
-  std::vector<const base::Value*> args{&event_name, &details_value};
-
+  base::ValueView args[] = {event_name, details_value};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }

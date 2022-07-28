@@ -78,7 +78,7 @@ void OmahaDOMHandler::HandleRequestDebugInformation(
 
 void OmahaDOMHandler::OnDebugInformationAvailable(
     base::DictionaryValue* debug_information) {
-  std::vector<const base::Value*> args{debug_information};
+  base::ValueView args[] = {*debug_information};
   web_ui()->CallJavascriptFunction("updateOmahaDebugInformation", args);
 }
 

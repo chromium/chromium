@@ -585,11 +585,11 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
       called_function = BuildRunTestJSCall(is_async, function_name,
                                            std::move(function_arguments));
     } else {
-      std::vector<const base::Value*> ptr_vector(function_arguments.size());
-      for (size_t i = 0; i < function_arguments.size(); ++i)
-        ptr_vector[i] = &function_arguments[i];
+      std::vector<base::ValueView> view_vector;
+      for (const auto& argument : function_arguments)
+        view_vector.emplace_back(argument);
       called_function =
-          content::WebUI::GetJavascriptCall(function_name, ptr_vector);
+          content::WebUI::GetJavascriptCall(function_name, view_vector);
     }
     content.append(called_function);
   }

@@ -60,9 +60,9 @@ class ChromeNTPTilesInternalsMessageHandlerClient
       const std::string& message,
       base::RepeatingCallback<void(const base::Value::List&)> callback)
       override;
-  void CallJavascriptFunctionVector(
+  void CallJavascriptFunctionSpan(
       const std::string& name,
-      const std::vector<const base::Value*>& values) override;
+      base::span<const base::ValueView> values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
 };
@@ -118,9 +118,9 @@ void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
-void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionVector(
+void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
     const std::string& name,
-    const std::vector<const base::Value*>& values) {
+    base::span<const base::ValueView> values) {
   web_ui()->CallJavascriptFunctionUnsafe(name, values);
 }
 

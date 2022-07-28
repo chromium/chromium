@@ -219,9 +219,9 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
 void MediaInternalsAudioFocusHelper::SerializeAndSendUpdate(
     const std::string& function,
     const base::Value* value) {
+  base::ValueView args[] = {*value};
   return MediaInternals::GetInstance()->SendUpdate(
-      content::WebUI::GetJavascriptCall(
-          function, std::vector<const base::Value*>(1, value)));
+      content::WebUI::GetJavascriptCall(function, args));
 }
 
 std::string MediaInternalsAudioFocusHelper::BuildNameString(

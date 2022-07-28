@@ -56,8 +56,8 @@ namespace {
 
 std::u16string SerializeUpdate(const std::string& function,
                                const base::Value* value) {
-  return content::WebUI::GetJavascriptCall(
-      function, std::vector<const base::Value*>(1, value));
+  base::ValueView args[] = {*value};
+  return content::WebUI::GetJavascriptCall(function, args);
 }
 
 std::string EffectsToString(int effects) {

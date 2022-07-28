@@ -47,14 +47,15 @@ class NTPTilesInternalsMessageHandlerClient {
       base::RepeatingCallback<void(const base::Value::List&)> callback) = 0;
 
   // Invokes a function in Javascript. See content::WebUI and web::WebUIIOS.
-  virtual void CallJavascriptFunctionVector(
+  virtual void CallJavascriptFunctionSpan(
       const std::string& name,
-      const std::vector<const base::Value*>& values) = 0;
+      base::span<const base::ValueView> values) = 0;
 
-  // Convenience function for CallJavascriptFunctionVector().
+  // Convenience function for CallJavascriptFunctionSpan().
   template <typename... Arg>
   void CallJavascriptFunction(const std::string& name, const Arg&... arg) {
-    CallJavascriptFunctionVector(name, {&arg...});
+    base::ValueView args[] = {arg...};
+    CallJavascriptFunctionSpan(name, args);
   }
 
  protected:
