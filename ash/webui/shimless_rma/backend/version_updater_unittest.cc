@@ -182,7 +182,7 @@ TEST_F(VersionUpdaterTest, IsIdleWhenUpdateEngineIdle) {
 
 TEST_F(VersionUpdaterTest, IsNotIdleWhenUpdateEngineNotIdle) {
   update_engine::StatusResult status;
-  status.set_current_operation(update_engine::Operation::CHECKING_FOR_UPDATE);
+  status.set_current_operation(update_engine::Operation::DOWNLOADING);
   fake_update_engine_client().set_default_status(status);
   EXPECT_FALSE(version_updater().IsUpdateEngineIdle());
 }
