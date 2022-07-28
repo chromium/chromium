@@ -119,6 +119,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   void OnWindowControlsOverlayEnabledChanged(bool enabled,
                                              SkColor background_color);
 
+  // Updates the visibility of the caption button container based on whether the
+  // app is in borderless mode or not, which means whether the title bar is
+  // shown or not.
+  void UpdateBorderlessModeEnabled(bool enabled);
+
   // Updates the caption buttons' state based on the caption button model's
   // state. A parent view should relayout to reflect the change in states.
   void UpdateCaptionButtonState(bool animate);
@@ -212,6 +217,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   // background of the entire view should be updated when the background of the
   // button container changes and SetBackgroundColor() gets called.
   bool window_controls_overlay_enabled_ = false;
+
+  // Keeps track of the borderless mode being enabled or not. This defines the
+  // visibility of the caption button container.
+  bool is_borderless_mode_enabled_ = false;
 };
 
 }  // namespace chromeos

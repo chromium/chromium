@@ -292,6 +292,18 @@ void FrameCaptionButtonContainerView::OnWindowControlsOverlayEnabledChanged(
   }
 }
 
+void FrameCaptionButtonContainerView::UpdateBorderlessModeEnabled(
+    bool enabled) {
+  if (is_borderless_mode_enabled_ == enabled)
+    return;
+
+  // In borderless mode, the windowing controls will be drawn in web content,
+  // so similarly to hiding the title bar, also the caption button container
+  // containing them will be hidden.
+  is_borderless_mode_enabled_ = enabled;
+  SetVisible(enabled);
+}
+
 void FrameCaptionButtonContainerView::UpdateCaptionButtonState(bool animate) {
   bool size_button_visible =
       (model_->IsVisible(views::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE) ||

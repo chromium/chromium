@@ -385,9 +385,16 @@ class BrowserView : public BrowserWindow,
   // window-controls-overlay.
   bool AppUsesWindowControlsOverlay() const;
 
+  // Returns true when an app's effective display mode is borderless.
+  bool AppUsesBorderlessMode() const;
+
   // Returns true when the window controls overlay should be displayed instead
   // of a full titlebar. This is only supported for desktop web apps.
   bool IsWindowControlsOverlayEnabled() const;
+
+  // Returns true when the borderless mode should be displayed instead
+  // of a full titlebar. This is only supported for desktop web apps.
+  bool IsBorderlessModeEnabled() const;
 
   // Enable or disable the window controls overlay and notify the browser frame
   // view of the update.
@@ -910,6 +917,10 @@ class BrowserView : public BrowserWindow,
   // Updates the visibility of the Window Controls Overlay toggle button.
   void UpdateWindowControlsOverlayToggleVisible();
 
+  // Updates the variable keeping track of the borderless mode visibility, which
+  // controls whether the title bar is shown or not.
+  void UpdateBorderlessModeEnabled();
+
   // The BrowserFrame that hosts this view.
   raw_ptr<BrowserFrame> frame_ = nullptr;
 
@@ -1147,6 +1158,7 @@ class BrowserView : public BrowserWindow,
 
   bool window_controls_overlay_enabled_ = false;
   bool should_show_window_controls_overlay_toggle_ = false;
+  bool borderless_mode_enabled_ = false;
 
   mutable base::WeakPtrFactory<BrowserView> weak_ptr_factory_{this};
 };

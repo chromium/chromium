@@ -206,9 +206,10 @@ gfx::Rect OpaqueBrowserFrameViewLayout::CalculateClientAreaBounds(
     int width,
     int height) const {
   auto border_thickness = FrameBorderInsets(false);
-  int top_height = is_window_controls_overlay_enabled_
-                       ? border_thickness.top()
-                       : NonClientTopHeight(false);
+  int top_height =
+      (is_window_controls_overlay_enabled_ || is_borderless_mode_enabled_)
+          ? border_thickness.top()
+          : NonClientTopHeight(false);
   return gfx::Rect(
       border_thickness.left(), top_height,
       std::max(0, width - border_thickness.width()),
@@ -269,6 +270,11 @@ void OpaqueBrowserFrameViewLayout::SetWindowControlsOverlayEnabled(
       button->DestroyLayer();
     }
   }
+}
+
+void OpaqueBrowserFrameViewLayout::SetBorderlessModeEnabled(bool enabled,
+                                                            views::View* host) {
+  is_borderless_mode_enabled_ = enabled;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

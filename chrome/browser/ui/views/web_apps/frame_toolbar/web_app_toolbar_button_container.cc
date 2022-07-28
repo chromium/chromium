@@ -82,7 +82,10 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
 
   const auto* app_controller = browser_view_->browser()->app_controller();
 
-  if (app_controller->HasTitlebarAppOriginText()) {
+  // App's origin will not be shown in the borderless mode, it will only be
+  // visible in App Settings UI.
+  if (app_controller->HasTitlebarAppOriginText() &&
+      !browser_view_->IsBorderlessModeEnabled()) {
     web_app_origin_text_ = AddChildView(
         std::make_unique<WebAppOriginText>(browser_view_->browser()));
   }

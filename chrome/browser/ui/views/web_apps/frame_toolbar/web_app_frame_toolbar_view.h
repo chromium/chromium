@@ -86,6 +86,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
                          const gfx::Rect& rect) const override;
 
   void OnWindowControlsOverlayEnabledChanged();
+  void UpdateBorderlessModeEnabled();
   void SetWindowControlsOverlayToggleVisible(bool visible);
 
   WebAppNavigationButtonContainer* get_left_container_for_testing() {

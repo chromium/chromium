@@ -49,6 +49,10 @@ class WebAppFrameToolbarTestHelper {
       net::test_server::EmbeddedTestServer* embedded_test_server,
       base::ScopedTempDir* temp_dir);
 
+  GURL LoadBorderlessTestPageWithDataAndGetURL(
+      net::test_server::EmbeddedTestServer* embedded_test_server,
+      base::ScopedTempDir* temp_dir);
+
   // WebContents is used to run JS to parse rectangle values into a list value.
   static base::Value::List GetXYWidthHeightListValue(
       content::WebContents* web_contents,
@@ -64,6 +68,8 @@ class WebAppFrameToolbarTestHelper {
   // Add window-controls-overlay's ongeometrychange callback into the document.
   void SetupGeometryChangeCallback(content::WebContents* web_contents);
 
+  void TestDraggableRegions();
+
   Browser* app_browser() { return app_browser_; }
   BrowserView* browser_view() { return browser_view_; }
   BrowserNonClientFrameView* frame_view() { return frame_view_; }
@@ -76,6 +82,11 @@ class WebAppFrameToolbarTestHelper {
   raw_ptr<BrowserView> browser_view_ = nullptr;
   raw_ptr<BrowserNonClientFrameView> frame_view_ = nullptr;
   raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar_ = nullptr;
+
+  GURL LoadTestPageWithDataAndGetURL(
+      net::test_server::EmbeddedTestServer* embedded_test_server,
+      base::ScopedTempDir* temp_dir,
+      const char kTestHTML[]);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_FRAME_TOOLBAR_TEST_HELPER_H_

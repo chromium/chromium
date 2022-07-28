@@ -138,6 +138,11 @@ OpaqueBrowserFrameView::OpaqueBrowserFrameView(
     layout_->SetWindowControlsOverlayEnabled(
         browser_view->IsWindowControlsOverlayEnabled(), this);
   }
+
+  if (browser_view->AppUsesBorderlessMode()) {
+    layout_->SetBorderlessModeEnabled(browser_view->IsBorderlessModeEnabled(),
+                                      this);
+  }
   SetLayoutManager(std::unique_ptr<views::LayoutManager>(layout_));
 }
 

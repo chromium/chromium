@@ -313,6 +313,12 @@ void AppBrowserController::DidFinishNavigation(
       navigation_handle->IsSameDocument())
     return;
 
+  // For borderless mode when we navigate out of scope and then back to scope,
+  // the draggable regions stay same and nothing triggers to re-initialize them.
+  // So if they are cleared, they don't work anymore when coming back to scope.
+  if (AppUsesBorderlessMode())
+    return;
+
   // Reset the draggable regions so they are not cached on navigation.
   draggable_region_ = absl::nullopt;
 }

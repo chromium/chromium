@@ -172,6 +172,8 @@ class BrowserNonClientFrameViewChromeOS
 
   friend class WebAppNonClientFrameViewAshTest;
 
+  bool AppIsBorderlessPwa();
+
   // Returns true if GetShowCaptionButtonsWhenNotInOverview() returns true
   // and this browser window is not showing in overview or in fullscreen mode.
   bool GetShowCaptionButtons() const;
@@ -218,6 +220,8 @@ class BrowserNonClientFrameViewChromeOS
   void UpdateProfileIcons();
 
   void LayoutProfileIndicator();
+
+  void UpdateBorderlessModeEnabled();
 
   void LayoutWindowControlsOverlay();
 

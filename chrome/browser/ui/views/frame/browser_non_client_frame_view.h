@@ -127,6 +127,10 @@ class BrowserNonClientFrameView : public views::NonClientFrameView,
   // Set the visibility of the window controls overlay toggle button.
   void SetWindowControlsOverlayToggleVisible(bool visible);
 
+  // Updates the visibility of the title bar based on the visibility of the
+  // borderless mode.
+  void UpdateBorderlessModeEnabled();
+
   // views::NonClientFrameView:
   using views::NonClientFrameView::ShouldPaintAsActive;
   void Layout() override;

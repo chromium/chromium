@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_menu_button.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_navigation_button_container.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_origin_text.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/window_controls_overlay_toggle_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -85,6 +86,8 @@ WebAppFrameToolbarView::WebAppFrameToolbarView(views::Widget* widget,
 
   if (browser_view_->IsWindowControlsOverlayEnabled())
     OnWindowControlsOverlayEnabledChanged();
+  if (browser_view_->AppUsesBorderlessMode())
+    UpdateBorderlessModeEnabled();
 }
 
 WebAppFrameToolbarView::~WebAppFrameToolbarView() = default;
@@ -293,6 +296,18 @@ void WebAppFrameToolbarView::OnWindowControlsOverlayEnabledChanged() {
     DestroyLayer();
     views::SetHitTestComponent(this, static_cast<int>(HTNOWHERE));
   }
+}
+
+void WebAppFrameToolbarView::UpdateBorderlessModeEnabled() {
+  bool is_borderless_mode_enabled_ = browser_view_->IsBorderlessModeEnabled();
+
+  // The toolbar and menu button are hidden and not set to nullptrs,
+  // because there are many features that depend on the toolbar and would not
+  // work without it. For example all the shortcut commands (e.g. Ctrl+F, zoom)
+  // rely on the menu button and toolbar so when these are hidden, the shortcuts
+  // will still work.
+  SetVisible(!is_borderless_mode_enabled_);
+  GetAppMenuButton()->SetVisible(!is_borderless_mode_enabled_);
 }
 
 void WebAppFrameToolbarView::SetWindowControlsOverlayToggleVisible(

@@ -529,8 +529,10 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   int GetTopInsetInBrowserView() const override {
     // BrowserView should fill the full window when window controls overlay
     // is enabled.
-    if (browser_view_->IsWindowControlsOverlayEnabled())
+    if (browser_view_->IsWindowControlsOverlayEnabled() ||
+        browser_view_->IsBorderlessModeEnabled()) {
       return 0;
+    }
     return browser_view_->frame()->GetTopInset() - browser_view_->y();
   }
 
@@ -857,6 +859,7 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
         browser_->app_controller()->GetTabMenuModelFactory();
 
     UpdateWindowControlsOverlayEnabled();
+    UpdateBorderlessModeEnabled();
   }
   // TabStrip takes ownership of the controller.
   auto tabstrip_controller = std::make_unique<BrowserTabStripController>(
@@ -1852,6 +1855,8 @@ void BrowserView::FullscreenStateChanged() {
 
   if (AppUsesWindowControlsOverlay())
     UpdateWindowControlsOverlayEnabled();
+  if (AppUsesBorderlessMode())
+    UpdateBorderlessModeEnabled();
 
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1989,6 +1994,9 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
   // that the visibility of the infobar may have changed.
   if (AppUsesWindowControlsOverlay())
     UpdateWindowControlsOverlayEnabled();
+
+  if (AppUsesBorderlessMode())
+    UpdateBorderlessModeEnabled();
 }
 
 void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
@@ -2094,9 +2102,39 @@ void BrowserView::UpdateWindowControlsOverlayToggleVisible() {
     frame_->GetFrameView()->SetWindowControlsOverlayToggleVisible(should_show);
 }
 
+void BrowserView::UpdateBorderlessModeEnabled() {
+  bool borderless_mode_enabled = AppUsesBorderlessMode();
+
+  if (toolbar_ && toolbar_->custom_tab_bar() &&
+      toolbar_->custom_tab_bar()->GetVisible()) {
+    borderless_mode_enabled = false;
+  } else if (infobar_container_ && infobar_container_->GetVisible()) {
+    borderless_mode_enabled = false;
+  } else if (IsImmersiveModeEnabled()) {
+    borderless_mode_enabled = false;
+  }
+
+  if (borderless_mode_enabled == borderless_mode_enabled_)
+    return;
+  borderless_mode_enabled_ = borderless_mode_enabled;
+
+  if (frame_ && frame_->GetFrameView()) {
+    frame_->GetFrameView()->UpdateBorderlessModeEnabled();
+  }
+}
+
 void BrowserView::ToggleWindowControlsOverlayEnabled() {
   browser()->app_controller()->ToggleWindowControlsOverlayEnabled();
   UpdateWindowControlsOverlayEnabled();
+}
+
+bool BrowserView::IsBorderlessModeEnabled() const {
+  return borderless_mode_enabled_;
+}
+
+bool BrowserView::AppUsesBorderlessMode() const {
+  return browser()->app_controller() &&
+         browser()->app_controller()->AppUsesBorderlessMode();
 }
 
 void BrowserView::UpdateSidePanelHorizontalAlignment() {
@@ -3512,7 +3550,9 @@ bool BrowserView::ShouldDescendIntoChildForEventHandling(
   // Window for PWAs with window-controls-overlay display override should claim
   // mouse events that fall within the draggable region.
   web_app::AppBrowserController* controller = browser()->app_controller();
-  if (IsWindowControlsOverlayEnabled() && controller &&
+  bool is_wco_or_borderless_mode =
+      IsWindowControlsOverlayEnabled() || IsBorderlessModeEnabled();
+  if (is_wco_or_borderless_mode && controller &&
       controller->draggable_region().has_value()) {
     // Draggable regions are defined relative to the web contents.
     gfx::Point point_in_contents_web_view_coords(location);

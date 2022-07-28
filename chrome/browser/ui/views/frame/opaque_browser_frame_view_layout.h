@@ -124,6 +124,9 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   // Enables or disables WCO and updates child views accordingly.
   void SetWindowControlsOverlayEnabled(bool enabled, views::View* host);
 
+  // Enables or disables borderless.
+  void SetBorderlessModeEnabled(bool enabled, views::View* host);
+
   // views::LayoutManager:
   // Called explicitly from OpaqueBrowserFrameView so we can't group it with
   // the other overrides.
@@ -243,6 +246,7 @@ class OpaqueBrowserFrameViewLayout : public views::LayoutManager {
   raw_ptr<views::ClientView> client_view_ = nullptr;
 
   bool is_window_controls_overlay_enabled_ = false;
+  bool is_borderless_mode_enabled_ = false;
   raw_ptr<CaptionButtonPlaceholderContainer>
       caption_button_placeholder_container_;
 };
