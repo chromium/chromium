@@ -1374,10 +1374,6 @@
       status: "test",
     },
     {
-      name: "MediaCapabilitiesWebRtc",
-      status: "stable",
-    },
-    {
       name: "MediaCapture",
       status: {"Android": "stable"},
     },

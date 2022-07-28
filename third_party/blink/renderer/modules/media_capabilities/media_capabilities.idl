@@ -7,6 +7,6 @@
 [Exposed=(Window,Worker)]
 interface MediaCapabilities {
     [CallWith=ScriptState, RaisesException, Measure] Promise<MediaCapabilitiesDecodingInfo> decodingInfo(MediaDecodingConfiguration configuration);
-    [CallWith=ScriptState, RaisesException, Measure, RuntimeEnabled=MediaCapabilitiesWebRtc] Promise<MediaCapabilitiesInfo> encodingInfo(
+    [CallWith=ScriptState, RaisesException, Measure] Promise<MediaCapabilitiesInfo> encodingInfo(
         MediaEncodingConfiguration configuration);
 };

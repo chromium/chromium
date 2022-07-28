@@ -816,13 +816,6 @@ ScriptPromise MediaCapabilities::decodingInfo(
   }
 
   const bool is_webrtc = config->type() == "webrtc";
-  if (is_webrtc && !RuntimeEnabledFeatures::MediaCapabilitiesWebRtcEnabled()) {
-    exception_state.ThrowTypeError(
-        "The provided value 'webrtc' is not a valid enum value of type "
-        "MediaDecodingType.");
-    return ScriptPromise();
-  }
-
   String message;
   if (!IsValidMediaDecodingConfiguration(config, is_webrtc, &message)) {
     exception_state.ThrowTypeError(message);
