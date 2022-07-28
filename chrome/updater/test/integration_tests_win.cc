@@ -890,20 +890,26 @@ void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                expected_final_state, expected_error_code));
 }
 
-void SetFcLaunchCmd(const std::wstring& id) {
-  base::win::RegKey key;
-  ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, GetAppClientsKey(id).c_str(),
-                       Wow6432(KEY_WRITE)),
-            ERROR_SUCCESS);
-  EXPECT_EQ(key.WriteValue(L"fc", L"fc /?"), ERROR_SUCCESS);
+void SetupLaunchCommandElevated(const std::wstring& app_id,
+                                const std::wstring& command_id,
+                                const std::wstring& command_parameters,
+                                base::ScopedTempDir& temp_dir) {
+  base::CommandLine cmd_exe_command_line(base::CommandLine::NO_PROGRAM);
+  SetupCmdExe(UpdaterScope::kSystem, cmd_exe_command_line, temp_dir);
+  EXPECT_EQ(
+      CreateAppClientKey(UpdaterScope::kSystem, app_id)
+          .WriteValue(command_id.c_str(),
+                      base::StrCat({cmd_exe_command_line.GetCommandLineString(),
+                                    command_parameters.c_str()})
+                          .c_str()),
+      ERROR_SUCCESS);
 }
 
-void DeleteFcLaunchCmd(const std::wstring& id) {
-  base::win::RegKey key;
-  ASSERT_EQ(key.Create(HKEY_LOCAL_MACHINE, GetAppClientsKey(id).c_str(),
-                       Wow6432(KEY_WRITE)),
+void DeleteLaunchCommandElevated(const std::wstring& app_id,
+                                 const std::wstring& command_id) {
+  EXPECT_EQ(CreateAppClientKey(UpdaterScope::kSystem, app_id)
+                .DeleteValue(command_id.c_str()),
             ERROR_SUCCESS);
-  EXPECT_EQ(key.DeleteValue(L"fc"), ERROR_SUCCESS);
 }
 
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
@@ -917,25 +923,29 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
                                               IID_PPV_ARGS(&process_launcher)));
   EXPECT_TRUE(process_launcher);
 
-  const wchar_t* const kAppId1 = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
+  constexpr wchar_t kAppId1[] = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
+  constexpr wchar_t kCommandId[] = L"CmdExit0";
   ULONG_PTR proc_handle = 0;
   DWORD caller_proc_id = ::GetCurrentProcessId();
 
   // Succeeds when the command is present in the registry.
-  SetFcLaunchCmd(kAppId1);
+  base::ScopedTempDir temp_dir;
+  SetupLaunchCommandElevated(kAppId1, kCommandId, L" /c \"exit 5420\"",
+                             temp_dir);
   EXPECT_HRESULT_SUCCEEDED(process_launcher->LaunchCmdElevated(
-      kAppId1, _T("fc"), caller_proc_id, &proc_handle));
+      kAppId1, kCommandId, caller_proc_id, &proc_handle));
   EXPECT_NE(static_cast<ULONG_PTR>(0), proc_handle);
 
-  HANDLE handle = reinterpret_cast<HANDLE>(proc_handle);
-  EXPECT_NE(WAIT_FAILED, ::WaitForSingleObject(handle, 10000));
-  EXPECT_TRUE(::CloseHandle(handle));
-  DeleteFcLaunchCmd(kAppId1);
+  base::Process process = base::Process(reinterpret_cast<HANDLE>(proc_handle));
+  int exit_code = 0;
+  EXPECT_TRUE(process.WaitForExitWithTimeout(TestTimeouts::action_max_timeout(),
+                                             &exit_code));
+  EXPECT_EQ(exit_code, 5420);
 
-  // Returns HRESULT_FROM_WIN32(ERROR_NOT_FOUND) when the command is missing in
-  // the registry.
-  EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_NOT_FOUND),
-            process_launcher->LaunchCmdElevated(kAppId1, _T("fc"),
+  DeleteLaunchCommandElevated(kAppId1, kCommandId);
+
+  EXPECT_EQ(HRESULT_FROM_WIN32(ERROR_BAD_COMMAND),
+            process_launcher->LaunchCmdElevated(kAppId1, kCommandId,
                                                 caller_proc_id, &proc_handle));
   EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
 }

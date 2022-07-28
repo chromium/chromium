@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/win/registry.h"
 #include "chrome/updater/updater_scope.h"
 
 namespace updater {
@@ -23,7 +24,8 @@ std::wstring GetAppCommandKeyName(const std::wstring& app_id,
 
 // Creates the key `{HKLM\HKCU}\Software\{CompanyName}\Update\Clients\{app_id}`.
 // `{HKLM\HKCU}` is determined by `scope`.
-void CreateAppClientKey(UpdaterScope scope, const std::wstring& app_id);
+base::win::RegKey CreateAppClientKey(UpdaterScope scope,
+                                     const std::wstring& app_id);
 
 // Deletes the key `{HKLM\HKCU}\Software\{CompanyName}\Update\Clients\{app_id}`.
 // `{HKLM\HKCU}` is determined by `scope`.

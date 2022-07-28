@@ -55,12 +55,14 @@ std::wstring GetAppCommandKeyName(const std::wstring& app_id,
       {GetClientKeyName(app_id), L"\\", kRegKeyCommands, L"\\", command_id});
 }
 
-void CreateAppClientKey(UpdaterScope scope, const std::wstring& app_id) {
+base::win::RegKey CreateAppClientKey(UpdaterScope scope,
+                                     const std::wstring& app_id) {
   base::win::RegKey client_key;
   EXPECT_EQ(
       client_key.Create(UpdaterScopeToHKeyRoot(scope),
                         GetClientKeyName(app_id).c_str(), Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
+  return client_key;
 }
 
 void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id) {
