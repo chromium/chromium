@@ -207,9 +207,11 @@ var OSSettingsOsBluetoothSavedDevicesListV3Test =
   }
 };
 
-TEST_F('OSSettingsOsBluetoothSavedDevicesListV3Test', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsOsBluetoothSavedDevicesListV3Test', 'DISABLED_AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 var OSSettingsSearchEngineV3Test = class extends OSSettingsV3BrowserTest {
   /** @override */
