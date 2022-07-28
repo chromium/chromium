@@ -674,6 +674,7 @@ void AccessibilitySection::AddLoadTimeData(
       {"onScreenKeyboardDescription",
        IDS_SETTINGS_ON_SCREEN_KEYBOARD_DESCRIPTION},
       {"monoAudioLabel", IDS_SETTINGS_MONO_AUDIO_LABEL},
+      {"monoAudioDescription", IDS_SETTINGS_MONO_AUDIO_DESCRIPTION},
       {"startupSoundLabel", IDS_SETTINGS_STARTUP_SOUND_LABEL},
       {"a11yExplanation", IDS_SETTINGS_ACCESSIBILITY_EXPLANATION},
       {"caretHighlightLabel",

@@ -1337,7 +1337,7 @@
     Startup sound
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_STARTUP_SOUND_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable playing a sound upon device startup. Alternate phrase for: 'Startup sound'">
-    Play sound on startup
+    Play sound on device startup
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_CAPTIONS" desc="Text for search result item which, when clicked, navigates the user to accessibility caption preferences.">
     Caption preferences

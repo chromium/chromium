@@ -1178,10 +1178,13 @@ Use Ctrl + Alt + Brightness down to zoom out.
     Select a text field to open the keyboard. You can also select the Keyboard icon on the bottom of your screen. 
   </message>
   <message name="IDS_SETTINGS_MONO_AUDIO_LABEL" desc="Label for checkbox which enables mono audio output.">
-    Play the same audio through all speakers (mono audio)
+    Mono audio
+  </message>
+  <message name="IDS_SETTINGS_MONO_AUDIO_DESCRIPTION" desc="Description for checkbox which enables mono audio output.">
+    Play the same audio through all speakers
   </message>
   <message name="IDS_SETTINGS_STARTUP_SOUND_LABEL" desc="Label for checkbox which enables startup sound.">
-    Play sound on startup
+    Play sound on device startup
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_DISPLAY_HEADING" desc="In the settings tab, the heading for accessibility features related to the computer's display.">
     Display
