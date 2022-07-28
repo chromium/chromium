@@ -86,7 +86,7 @@ void BackendIO::OnDone(bool cancel) {
   if (ReturnsEntry() && result_ == net::OK) {
     static_cast<EntryImpl*>(out_entry_)->OnEntryCreated(backend_);
     if (cancel)
-      out_entry_->Close();
+      out_entry_.ExtractAsDangling()->Close();
   }
 }
 
