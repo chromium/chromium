@@ -22,9 +22,7 @@ void MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
-    const std::u16string& name,
-    const std::u16string& prefix,
-    const std::string& form_control_type,
+    const FormFieldData& field,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   // If merchant promo code offers are available for the given site, and the
@@ -35,9 +33,9 @@ void MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(
-          promo_code_offers,
-          QueryHandler(query_id, autoselect_first_suggestion, prefix, handler));
-      uma_recorder_.OnOffersSuggestionsShown(name, promo_code_offers);
+          promo_code_offers, QueryHandler(query_id, autoselect_first_suggestion,
+                                          field.value, handler));
+      uma_recorder_.OnOffersSuggestionsShown(field.name, promo_code_offers);
       return;
     }
   }

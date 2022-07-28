@@ -46,9 +46,7 @@ class SingleFieldFormFillRouter : public SingleFieldFormFiller {
       int query_id,
       bool is_autocomplete_enabled,
       bool autoselect_first_suggestion,
-      const std::u16string& name,
-      const std::u16string& prefix,
-      const std::string& form_control_type,
+      const FormFieldData& field,
       base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
       const SuggestionsContext& context) override;
   void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,

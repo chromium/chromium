@@ -82,32 +82,30 @@ void AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
-    const std::u16string& name,
-    const std::u16string& prefix,
-    const std::string& form_control_type,
+    const FormFieldData& field,
     base::WeakPtr<SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   CancelPendingQueries(handler.get());
 
-  if (!IsMeaningfulFieldName(name) || !is_autocomplete_enabled ||
-      form_control_type == "textarea" ||
+  if (!IsMeaningfulFieldName(field.name) || !is_autocomplete_enabled ||
+      field.form_control_type == "textarea" ||
       IsInAutofillSuggestionsDisabledExperiment()) {
     SendSuggestions({}, QueryHandler(query_id, autoselect_first_suggestion,
-                                     prefix, handler));
-    uma_recorder_.OnGetAutocompleteSuggestions(name,
+                                     field.value, handler));
+    uma_recorder_.OnGetAutocompleteSuggestions(field.name,
                                                0 /* pending_query_handle */);
     return;
   }
 
   if (profile_database_) {
     auto query_handle = profile_database_->GetFormValuesForElementName(
-        name, prefix, kMaxAutocompleteMenuItems, this);
-    uma_recorder_.OnGetAutocompleteSuggestions(name, query_handle);
+        field.name, field.value, kMaxAutocompleteMenuItems, this);
+    uma_recorder_.OnGetAutocompleteSuggestions(field.name, query_handle);
 
     // We can simply insert, since |query_handle| is always unique.
     pending_queries_.insert(
-        {query_handle,
-         QueryHandler(query_id, autoselect_first_suggestion, prefix, handler)});
+        {query_handle, QueryHandler(query_id, autoselect_first_suggestion,
+                                    field.value, handler)});
   }
 }
 

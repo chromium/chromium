@@ -204,9 +204,11 @@ class AutofillAutocompleteTest : public InProcessBrowserTest {
   void GetAutocompleteSuggestions(const std::string& input_name,
                                   const std::string& prefix,
                                   MockSuggestionsHandler& handler) {
+    FormFieldData field;
+    test::CreateTestFormField(/*label=*/"", input_name.c_str(), prefix.c_str(),
+                              "input", &field);
     autocomplete_history_manager()->OnGetSingleFieldSuggestions(
-        1, true, false, ASCIIToUTF16(input_name), ASCIIToUTF16(prefix), "input",
-        handler.GetWeakPtr(), SuggestionsContext());
+        1, true, false, field, handler.GetWeakPtr(), SuggestionsContext());
 
     // Make sure the DB task gets executed.
     WaitForDBTasks();

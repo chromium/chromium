@@ -55,6 +55,8 @@ class MerchantPromoCodeManagerTest : public testing::Test {
     merchant_promo_code_manager_ = std::make_unique<MerchantPromoCodeManager>();
     merchant_promo_code_manager_->Init(personal_data_manager_.get(),
                                        /*is_off_the_record=*/false);
+    test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
+                              "Some Type", &test_field_);
   }
 
   // Sets up the TestPersonalDataManager with a promo code offer for the given
@@ -74,17 +76,15 @@ class MerchantPromoCodeManagerTest : public testing::Test {
 
   std::unique_ptr<MerchantPromoCodeManager> merchant_promo_code_manager_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
+  FormFieldData test_field_;
 };
 
 TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   base::HistogramTester histogram_tester;
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
   bool autoselect_first_suggestion = false;
   bool is_autocomplete_enabled = true;
-  std::string form_control_type = "Some Type";
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
   form_data.main_frame_origin =
@@ -116,24 +116,24 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   // suggestions.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
-      test_name, test_prefix, form_control_type,
-      suggestions_handler->GetWeakPtr(),
+      test_field_, suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Trigger offers suggestions popup again to be able to test that we do not
   // log metrics twice for the same field.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
-      test_name, test_prefix, form_control_type,
-      suggestions_handler->GetWeakPtr(),
+      test_field_, suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Trigger offers suggestions popup again to be able to test that we log
   // metrics more than once if it is a different field.
+  FormFieldData other_field;
+  test::CreateTestFormField(/*label=*/"", "Some Other Name", "SomePrefix",
+                            "Some Type", &other_field);
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
-      u"other_name", test_prefix, form_control_type,
-      suggestions_handler->GetWeakPtr(),
+      other_field, suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   histogram_tester.ExpectBucketCount(
@@ -176,8 +176,8 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate request for suggestions.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
-      /*prefix=*/u"SomePrefix", "Some Type", suggestions_handler->GetWeakPtr(),
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Ensure that no metrics were logged.
@@ -219,8 +219,8 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate request for suggestions.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
-      /*prefix=*/u"SomePrefix", "Some Type", suggestions_handler->GetWeakPtr(),
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Ensure that no metrics were logged.
@@ -261,8 +261,8 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
   // Simulate request for suggestions.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
-      /*prefix=*/u"SomePrefix", "Some Type", suggestions_handler->GetWeakPtr(),
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Ensure that no metrics were logged.
@@ -290,12 +290,9 @@ TEST_F(MerchantPromoCodeManagerTest,
   base::HistogramTester histogram_tester;
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
   std::u16string test_promo_code = u"test_promo_code";
   bool autoselect_first_suggestion = false;
   bool is_autocomplete_enabled = true;
-  std::string form_control_type = "Some Type";
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
   form_data.main_frame_origin =
@@ -317,8 +314,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
-      test_name, test_prefix, form_control_type,
-      suggestions_handler->GetWeakPtr(),
+      test_field_, suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Simulate selecting a promo code offer suggestion.
@@ -337,8 +333,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
-      test_name, test_prefix, form_control_type,
-      suggestions_handler->GetWeakPtr(),
+      test_field_, suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Simulate selecting a promo code offer suggestion.
@@ -361,12 +356,9 @@ TEST_F(MerchantPromoCodeManagerTest,
   base::HistogramTester histogram_tester;
   auto suggestions_handler = std::make_unique<MockSuggestionsHandler>();
   int test_query_id = 2;
-  std::u16string test_name = u"Some Field Name";
-  std::u16string test_prefix = u"SomePrefix";
   std::u16string test_promo_code = u"test_promo_code";
   bool autoselect_first_suggestion = false;
   bool is_autocomplete_enabled = true;
-  std::string form_control_type = "Some Type";
   std::string last_committed_origin_url = "https://www.example.com";
   FormData form_data;
   form_data.main_frame_origin =
@@ -390,8 +382,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
-      test_name, test_prefix, form_control_type,
-      suggestions_handler->GetWeakPtr(),
+      test_field_, suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Simulate selecting a promo code offer suggestion.
@@ -413,8 +404,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   // Simulate showing the promo code offers suggestions popup.
   merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
       test_query_id, is_autocomplete_enabled, autoselect_first_suggestion,
-      test_name, test_prefix, form_control_type,
-      suggestions_handler->GetWeakPtr(),
+      test_field_, suggestions_handler->GetWeakPtr(),
       /*context=*/context);
 
   // Simulate selecting a promo code offer suggestion.

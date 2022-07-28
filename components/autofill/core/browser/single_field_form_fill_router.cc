@@ -56,21 +56,19 @@ void SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     int query_id,
     bool is_autocomplete_enabled,
     bool autoselect_first_suggestion,
-    const std::u16string& name,
-    const std::u16string& prefix,
-    const std::string& form_control_type,
+    const FormFieldData& field,
     base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
     const SuggestionsContext& context) {
   // Retrieving suggestions for a new field; select the appropriate filler.
   if (merchant_promo_code_manager_ && context.focused_field &&
       context.focused_field->Type().GetStorableType() == MERCHANT_PROMO_CODE) {
     merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
-        query_id, is_autocomplete_enabled, autoselect_first_suggestion, name,
-        prefix, form_control_type, handler, context);
+        query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
+        handler, context);
   } else {
     autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-        query_id, is_autocomplete_enabled, autoselect_first_suggestion, name,
-        prefix, form_control_type, handler, context);
+        query_id, is_autocomplete_enabled, autoselect_first_suggestion, field,
+        handler, context);
   }
 }
 

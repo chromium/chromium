@@ -1089,8 +1089,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     // will handle sending the results back to the renderer.
     single_field_form_fill_router_->OnGetSingleFieldSuggestions(
         query_id, client()->IsAutocompleteEnabled(),
-        autoselect_first_suggestion, field.name, field.value,
-        field.form_control_type, weak_ptr_factory_.GetWeakPtr(), context);
+        autoselect_first_suggestion, field, weak_ptr_factory_.GetWeakPtr(),
+        context);
     return;
   }
 

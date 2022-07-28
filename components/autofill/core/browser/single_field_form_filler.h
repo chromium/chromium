@@ -42,21 +42,16 @@ class SingleFieldFormFiller {
   // |query_id| is given by the client as context.
   // |is_autocomplete_enabled| is to determine if the feature is enable for the
   // requestor's context (e.g. Android WebViews have different contexts).
-  // |name| is the name of the field.
-  // |prefix| is the field's value.
-  // |form_control_type| is the field's control type.
-  // |handler| is weak pointer to the requestor, which we will call back once we
-  // receive the response. There can only be one pending query per |handler|,
-  // hence this function will cancel the previous pending query if it hadn't
-  // already been resolved, at which point no method of the handler will be
-  // called.
+  // |field| is the given field. |handler| is weak pointer to the requestor,
+  // which we will call back once we receive the response. There can only be one
+  // pending query per |handler|, hence this function will cancel the previous
+  // pending query if it hadn't already been resolved, at which point no method
+  // of the handler will be called.
   virtual void OnGetSingleFieldSuggestions(
       int query_id,
       bool is_autocomplete_enabled,
       bool autoselect_first_suggestion,
-      const std::u16string& name,
-      const std::u16string& prefix,
-      const std::string& form_control_type,
+      const FormFieldData& field,
       base::WeakPtr<SuggestionsHandler> handler,
       const SuggestionsContext& context) = 0;
 

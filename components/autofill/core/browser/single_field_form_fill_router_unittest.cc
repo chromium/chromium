@@ -74,6 +74,8 @@ class SingleFieldFormFillRouterTest : public testing::Test {
         std::make_unique<SingleFieldFormFillRouter>(
             autocomplete_history_manager_.get(),
             merchant_promo_code_manager_.get());
+    test::CreateTestFormField(/*label=*/"", "Some Field Name", "SomePrefix",
+                              "SomeType", &test_field_);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -83,6 +85,7 @@ class SingleFieldFormFillRouterTest : public testing::Test {
   std::unique_ptr<MockAutocompleteHistoryManager> autocomplete_history_manager_;
   std::unique_ptr<MockMerchantPromoCodeManager> merchant_promo_code_manager_;
   std::unique_ptr<PrefService> prefs_;
+  FormFieldData test_field_;
 };
 
 // Ensure that the router routes to AutocompleteHistoryManager for this
@@ -95,10 +98,8 @@ TEST_F(SingleFieldFormFillRouterTest,
 
   single_field_form_fill_router_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
-      /*prefix=*/u"SomePrefix",
-      /*form_control_type=*/"SomeType", suggestions_handler->GetWeakPtr(),
-      SuggestionsContext());
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), SuggestionsContext());
 }
 
 // Ensure that the router routes to all SingleFieldFormFillers for this
@@ -228,10 +229,8 @@ TEST_F(SingleFieldFormFillRouterTest,
   context.focused_field = &autofill_field;
   single_field_form_fill_router_->OnGetSingleFieldSuggestions(
       /*query_id=*/2, /*is_autocomplete_enabled=*/true,
-      /*autoselect_first_suggestion=*/false, /*name=*/u"Some Field Name",
-      /*prefix=*/u"SomePrefix",
-      /*form_control_type=*/"SomeType", suggestions_handler->GetWeakPtr(),
-      context);
+      /*autoselect_first_suggestion=*/false, test_field_,
+      suggestions_handler->GetWeakPtr(), context);
 }
 
 // Ensure that the router routes to MerchantPromoCodeManager for this

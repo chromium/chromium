@@ -22,9 +22,7 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
       (int query_id,
        bool is_autocomplete_enabled,
        bool autoselect_first_suggestion,
-       const std::u16string& name,
-       const std::u16string& prefix,
-       const std::string& form_control_type,
+       const FormFieldData& field,
        base::WeakPtr<MerchantPromoCodeManager::SuggestionsHandler> handler,
        const SuggestionsContext& context),
       (override));
