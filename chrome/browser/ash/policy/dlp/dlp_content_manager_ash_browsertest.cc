@@ -394,6 +394,95 @@ IN_PROC_BROWSER_TEST_F(ScreenshotTest, WarningProceededReportedAfterCapture) {
                   kSrcPattern, DlpRulesManager::Restriction::kScreenshot)));
 }
 
+IN_PROC_BROWSER_TEST_F(ScreenshotTest, CheckRestriction_Blocked_Lacros) {
+  SetupReporting();
+
+  // Create a Lacros-like Exo surface.
+  exo::WMHelperChromeOS wm_helper;
+  std::unique_ptr<exo::ShellSurface> shell_surface =
+      exo::test::ShellSurfaceBuilder({640, 480}).BuildShellSurface();
+  shell_surface->root_surface()->window()->TrackOcclusionState();
+  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
+
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  ScreenshotArea fullscreen = ScreenshotArea::CreateForAllRootWindows();
+  ScreenshotArea window_area = ScreenshotArea::CreateForWindow(window);
+  const gfx::Rect rect = window->GetBoundsInRootWindow();
+  gfx::Rect out_rect(rect);
+  out_rect.Offset(window->GetBoundsInRootWindow().width(),
+                  window->GetBoundsInRootWindow().height());
+  gfx::Rect in_rect(rect);
+  in_rect.Offset(window->GetBoundsInRootWindow().width() / 2,
+                 window->GetBoundsInRootWindow().height() / 2);
+  ScreenshotArea partial_out =
+      ScreenshotArea::CreateForPartialWindow(root_window, out_rect);
+  ScreenshotArea partial_in =
+      ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
+
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window_area, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/0, /*warned_count=*/0,
+                        /*total_count=*/4,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 0u);
+
+  DlpContentManagerAsh* manager =
+      static_cast<DlpContentManagerAsh*>(helper_->GetContentManager());
+  manager->OnWindowRestrictionChanged(window, kScreenshotRestricted);
+  CheckScreenshotRestriction(fullscreen, false);
+  CheckScreenshotRestriction(window_area, false);
+  CheckScreenshotRestriction(partial_in, false);
+  CheckScreenshotRestriction(partial_out, true);
+  VerifyHistogramCounts(/*blocked_count=*/3, /*warned_count=*/0,
+                        /*total_count=*/8,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 3u);
+
+  window->Hide();
+  manager->OnWindowOcclusionChanged(window);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(window_area, /*expected_allowed=*/false);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/4, /*warned_count=*/0,
+                        /*total_count=*/12,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 4u);
+
+  window->Show();
+  manager->OnWindowOcclusionChanged(window);
+  CheckScreenshotRestriction(fullscreen, false);
+  CheckScreenshotRestriction(window_area, false);
+  CheckScreenshotRestriction(partial_in, false);
+  CheckScreenshotRestriction(partial_out, true);
+  VerifyHistogramCounts(/*blocked_count=*/7, /*warned_count=*/0,
+                        /*total_count=*/16,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 7u);
+
+  manager->OnWindowDestroying(window);
+  CheckScreenshotRestriction(fullscreen, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_in, /*expected_allowed=*/true);
+  CheckScreenshotRestriction(partial_out, /*expected_allowed=*/true);
+  VerifyHistogramCounts(/*blocked_count=*/7, /*warned_count=*/0,
+                        /*total_count=*/19,
+                        /*blocked_suffix=*/dlp::kScreenshotBlockedUMA,
+                        /*warned_suffix=*/dlp::kScreenshotWarnedUMA);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 7u);
+}
+
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
                        VideoCaptureStoppedWhenConfidentialWindowResized) {
   SetupReporting();
