@@ -78,6 +78,17 @@ def ParseArgs():
                             'only need to be passed if the tags in the '
                             'expectation files are not ordered from least '
                             'specific to most specific.'))
+  parser.add_argument('--result-output-file',
+                      help=('Output file to store the generated results. If '
+                            'not specified, will use a temporary file.'))
+  parser.add_argument('--bypass-up-to-date-check',
+                      action='store_true',
+                      default=False,
+                      help=('Bypasses the check that the local expectation '
+                            'files are up to date. Only intended for use on '
+                            'bots to avoid failures due to potential race '
+                            'conditions between updating the checkout and '
+                            'running the script.'))
   args = parser.parse_args()
 
   if not args.prompt_for_user_input:
@@ -94,12 +105,17 @@ def ParseArgs():
 
 def main():
   args = ParseArgs()
-  expectations.AssertCheckoutIsUpToDate()
+  if not args.bypass_up_to_date_check:
+    expectations.AssertCheckoutIsUpToDate()
   querier_instance = queries.BigQueryQuerier(args.sample_period, args.project)
   results = querier_instance.GetFlakyOrFailingCiTests()
   results.extend(querier_instance.GetFlakyOrFailingTryTests())
   aggregated_results = results_module.AggregateResults(results)
-  result_output.GenerateHtmlOutputFile(aggregated_results)
+  if args.result_output_file:
+    with open(args.result_output_file, 'w') as outfile:
+      result_output.GenerateHtmlOutputFile(aggregated_results, outfile)
+  else:
+    result_output.GenerateHtmlOutputFile(aggregated_results)
   print('If there are many instances of failed tests, that may be indicative '
         'of an issue that should be handled in some other way, e.g. reverting '
         'a bad CL.')
