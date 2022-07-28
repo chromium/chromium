@@ -34,9 +34,11 @@
 #import "ios/chrome/browser/ui/settings/elements/elements_constants.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/ui/settings/privacy/privacy_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -692,6 +694,46 @@ NSString* const kDomain2 = @"domain2.com";
   bool promptPresented = base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, condition);
   GREYAssertTrue(promptPresented, @"'Sync Disabled' prompt not shown");
+}
+
+// Tests enterprise mode in the Privacy Safe Browsing settings as if the
+// enterprise selected Enhanced Protection as the choice of protection.
+- (void)testEnhancedSafeBrowsing {
+  SetPolicy(2, policy::key::kSafeBrowsingProtectionLevel);
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];
+  [ChromeEarlGreyUI
+      tapPrivacyMenuButton:chrome_test_util::ButtonWithAccessibilityLabelId(
+                               IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE)];
+
+  // Tap the info button on row. Accessibility point has been changed in this
+  // TableViewInfoButtonItem to be on the center of the row instead of on the
+  // "i" button. To tap the "i" button, we select the info button as the matcher
+  // instead of the row.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_allOf(grey_ancestor(grey_accessibilityID(
+                         kSettingsSafeBrowsingStandardProtectionCellId)),
+                     grey_accessibilityID(kTableViewCellInfoButtonViewId),
+                     grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+
+  // Check if the contextual bubble is shown.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap outside of the bubble.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kSettingsSafeBrowsingStandardProtectionCellId)]
+      performAction:grey_tap()];
+
+  // Check if the contextual bubble is hidden.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kEnterpriseInfoBubbleViewId)]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
