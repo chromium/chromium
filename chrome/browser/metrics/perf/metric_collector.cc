@@ -66,6 +66,15 @@ void RemoveUnknownFieldsFromMessagesWithStrings(PerfDataProto* proto) {
           ->clear();
     }
   }
+  for (PerfDataProto::PerfEventType& event_type :
+       *proto->mutable_event_types()) {
+    event_type.mutable_unknown_fields()->clear();
+  }
+  for (PerfDataProto::PerfPMUMappingsMetadata& mapping :
+       *proto->mutable_pmu_mappings()) {
+    mapping.mutable_unknown_fields()->clear();
+  }
+  proto->mutable_unknown_fields()->clear();
 }
 
 }  // namespace
