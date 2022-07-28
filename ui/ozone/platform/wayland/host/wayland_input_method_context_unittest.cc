@@ -59,6 +59,9 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   void OnCommit(const std::u16string& text) override {
     was_on_commit_called_ = true;
   }
+  void OnConfirmCompositionText(bool keep_selection) override {
+    was_on_confirm_composition_text_called_ = true;
+  }
   void OnPreeditChanged(const ui::CompositionText& composition_text) override {
     was_on_preedit_changed_called_ = true;
   }
@@ -83,6 +86,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   }
 
   bool was_on_commit_called() const { return was_on_commit_called_; }
+
+  bool was_on_confirm_composition_text_called() const {
+    return was_on_confirm_composition_text_called_;
+  }
 
   bool was_on_preedit_changed_called() const {
     return was_on_preedit_changed_called_;
@@ -111,6 +118,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
 
  private:
   bool was_on_commit_called_ = false;
+  bool was_on_confirm_composition_text_called_ = false;
   bool was_on_preedit_changed_called_ = false;
   bool was_on_set_preedit_region_called_ = false;
   bool was_on_clear_grammar_fragments_called_ = false;
@@ -450,6 +458,26 @@ TEST_P(WaylandInputMethodContextTest, OnCommit) {
                                        "CommitString");
   Sync();
   EXPECT_TRUE(input_method_context_delegate_->was_on_commit_called());
+}
+
+TEST_P(WaylandInputMethodContextTest, OnConfirmCompositionText) {
+  constexpr char16_t text[] = u"ab😀cあdef";
+  const gfx::Range range(5, 6);  // あ is selected.
+
+  // SetSurroundingText should be called in UTF-8.
+  EXPECT_CALL(*zwp_text_input_,
+              SetSurroundingText("ab😀cあdef", gfx::Range(7, 10)));
+  input_method_context_->SetSurroundingText(text, range);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  zwp_text_input_v1_send_cursor_position(zwp_text_input_->resource(), 7, 10);
+  zwp_text_input_v1_send_commit_string(zwp_text_input_->resource(), 0,
+                                       "ab😀cあdef");
+  Sync();
+  EXPECT_TRUE(
+      input_method_context_delegate_->was_on_confirm_composition_text_called());
 }
 
 TEST_P(WaylandInputMethodContextTest, OnSetPreeditRegion_Success) {

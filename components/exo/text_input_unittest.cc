@@ -447,7 +447,7 @@ TEST_F(TextInputTest, CompositionTextEmpty) {
   text_input()->ClearCompositionText();
 }
 
-TEST_F(TextInputTest, CommitCompositionText) {
+TEST_F(TextInputTest, ConfirmCompositionText) {
   SetCompositionText(u"composition");
 
   EXPECT_CALL(*delegate(), Commit(std::u16string(u"composition"))).Times(1);
@@ -458,6 +458,25 @@ TEST_F(TextInputTest, CommitCompositionText) {
 
   // Second call should be the empty commit string.
   EXPECT_EQ(0u, text_input()->ConfirmCompositionText(/*keep_selection=*/false));
+  EXPECT_FALSE(text_input()->HasCompositionText());
+}
+
+TEST_F(TextInputTest, ConfirmCompositionTextKeepSelection) {
+  constexpr char16_t kCompositionText[] = u"composition";
+  SetCompositionText(kCompositionText);
+  text_input()->SetSurroundingText(kCompositionText, gfx::Range(2, 3));
+
+  EXPECT_CALL(*delegate(), SetCursor(base::StringPiece16(kCompositionText),
+                                     gfx::Range(2, 3)))
+      .Times(1);
+  EXPECT_CALL(*delegate(), Commit(std::u16string(kCompositionText))).Times(1);
+  const uint32_t composition_text_length =
+      text_input()->ConfirmCompositionText(/*keep_selection=*/true);
+  EXPECT_EQ(composition_text_length, static_cast<uint32_t>(11));
+  testing::Mock::VerifyAndClearExpectations(delegate());
+
+  // Second call should be the empty commit string.
+  EXPECT_EQ(0u, text_input()->ConfirmCompositionText(/*keep_selection=*/true));
   EXPECT_FALSE(text_input()->HasCompositionText());
 }
 
@@ -545,6 +564,19 @@ TEST_F(TextInputTest, SurroundingText) {
   EXPECT_EQ(gfx::Range(11, 11 + composition_size).ToString(), range.ToString());
   EXPECT_TRUE(text_input()->GetEditableSelectionRange(&range));
   EXPECT_EQ(gfx::Range(11, 12).ToString(), range.ToString());
+}
+
+TEST_F(TextInputTest, SetEditableSelectionRange) {
+  SetCompositionText(u"text");
+  text_input()->SetSurroundingText(u"text", gfx::Range(1, 2));
+
+  // Should commit composition text and set selection range.
+  EXPECT_CALL(*delegate(),
+              SetCursor(base::StringPiece16(u"text"), gfx::Range(0, 3)))
+      .Times(1);
+  EXPECT_CALL(*delegate(), Commit(std::u16string(u"text"))).Times(1);
+  EXPECT_TRUE(text_input()->SetEditableSelectionRange(gfx::Range(0, 3)));
+  testing::Mock::VerifyAndClearExpectations(delegate());
 }
 
 TEST_F(TextInputTest, GetTextFromRange) {

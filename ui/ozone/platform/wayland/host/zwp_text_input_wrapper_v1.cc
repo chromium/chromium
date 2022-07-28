@@ -321,7 +321,8 @@ void ZWPTextInputWrapperV1::OnCursorPosition(
     struct zwp_text_input_v1* text_input,
     int32_t index,
     int32_t anchor) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  auto* self = static_cast<ZWPTextInputWrapperV1*>(data);
+  self->client_->OnCursorPosition(index, anchor);
 }
 
 // static

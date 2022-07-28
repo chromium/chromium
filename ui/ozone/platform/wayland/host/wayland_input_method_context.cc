@@ -422,7 +422,37 @@ void WaylandInputMethodContext::OnPreeditString(
 }
 
 void WaylandInputMethodContext::OnCommitString(base::StringPiece text) {
+  if (pending_keep_selection_) {
+    ime_delegate_->OnConfirmCompositionText(true);
+    pending_keep_selection_ = false;
+    return;
+  }
   ime_delegate_->OnCommit(base::UTF8ToUTF16(text));
+}
+
+void WaylandInputMethodContext::OnCursorPosition(int32_t index,
+                                                 int32_t anchor) {
+  if (surrounding_text_.empty()) {
+    LOG(ERROR) << "SetSurroundingText should run before OnCursorPosition.";
+    return;
+  }
+
+  if (index < 0 || static_cast<uint32_t>(index) > surrounding_text_.size()) {
+    LOG(ERROR) << "Invalid index is specified.";
+    return;
+  }
+  if (anchor < 0 || static_cast<uint32_t>(anchor) > surrounding_text_.size()) {
+    LOG(ERROR) << "Invalid anchor is specified.";
+    return;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (selection_range_utf8_ == gfx::Range(index, anchor)) {
+    pending_keep_selection_ = true;
+  } else {
+    NOTIMPLEMENTED_LOG_ONCE();
+  }
+#endif
 }
 
 void WaylandInputMethodContext::OnDeleteSurroundingText(int32_t index,

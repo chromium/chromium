@@ -479,6 +479,10 @@ void InputMethodAuraLinux::OnCommit(const std::u16string& text) {
   }
 }
 
+void InputMethodAuraLinux::OnConfirmCompositionText(bool keep_selection) {
+  ConfirmCompositionText(keep_selection);
+}
+
 void InputMethodAuraLinux::OnDeleteSurroundingText(size_t before,
                                                    size_t after) {
   auto* client = GetTextInputClient();
@@ -548,7 +552,7 @@ void InputMethodAuraLinux::OnSetAutocorrectRange(const gfx::Range& range) {
 void InputMethodAuraLinux::OnWillChangeFocusedClient(
     TextInputClient* focused_before,
     TextInputClient* focused) {
-  ConfirmCompositionText();
+  ResetContext();
 }
 
 void InputMethodAuraLinux::OnDidChangeFocusedClient(
@@ -611,8 +615,13 @@ ui::EventDispatchDetails InputMethodAuraLinux::SendFakeProcessKeyEvent(
   return details;
 }
 
-void InputMethodAuraLinux::ConfirmCompositionText() {
-  ResetContext();
+void InputMethodAuraLinux::ConfirmCompositionText(bool keep_selection) {
+  auto* client = GetTextInputClient();
+  if (client)
+    client->ConfirmCompositionText(keep_selection);
+  composition_ = CompositionText();
+  composition_changed_ = false;
+  result_text_.reset();
 }
 
 }  // namespace ui
