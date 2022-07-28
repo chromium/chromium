@@ -205,6 +205,12 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
                         absl::string_view priority_field_value) override {}
   bool OnUnknownFrame(spdy::SpdyStreamId stream_id,
                       uint8_t frame_type) override;
+  void OnUnknownFrameStart(spdy::SpdyStreamId stream_id,
+                           size_t length,
+                           uint8_t type,
+                           uint8_t flags) override {}
+  void OnUnknownFramePayload(spdy::SpdyStreamId stream_id,
+                             absl::string_view payload) override {}
 
   // spdy::SpdyFramer methods.
   size_t ProcessInput(const char* data, size_t len);

@@ -697,7 +697,7 @@ void DedicatedWebTransportHttp3Client::SetErrorIfNecessary(
 }
 
 void DedicatedWebTransportHttp3Client::OnSessionReady(
-    const spdy::SpdyHeaderBlock& spdy_headers) {
+    const spdy::Http2HeaderBlock& spdy_headers) {
   session_ready_ = true;
   http_response_info_ = std::make_unique<HttpResponseInfo>();
   const int rv =
