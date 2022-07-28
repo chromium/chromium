@@ -25,12 +25,12 @@ class FileResult;
 
 class FileSearchProvider : public SearchProvider {
  public:
-  struct PathInfo {
+  struct FileInfo {
     base::FilePath path;
     bool is_directory;
     base::Time last_accessed;
 
-    PathInfo(const base::FilePath& path,
+    FileInfo(const base::FilePath& path,
              const bool is_directory,
              const base::Time& last_accessed)
         : path(path),
@@ -53,9 +53,9 @@ class FileSearchProvider : public SearchProvider {
   }
 
  private:
-  void OnSearchComplete(std::vector<FileSearchProvider::PathInfo> paths);
+  void OnSearchComplete(std::vector<FileSearchProvider::FileInfo> paths);
   std::unique_ptr<FileResult> MakeResult(
-      const FileSearchProvider::PathInfo& path,
+      const FileSearchProvider::FileInfo& path,
       const double relevance);
 
   base::TimeTicks query_start_time_;

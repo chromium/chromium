@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,12 +25,12 @@
 namespace app_list {
 namespace {
 
-using base::test::ScopedFeatureList;
+using ::base::test::ScopedFeatureList;
 using ::file_manager::file_tasks::FileTasksObserver;
 using ::testing::UnorderedElementsAre;
 
 MATCHER_P(Title, title, "") {
-  return base::UTF16ToUTF8(arg->title()) == title;
+  return arg->title() == title;
 }
 
 }  // namespace
@@ -120,6 +119,7 @@ TEST_P(ZeroStateFileProviderTest, ResultsProvided) {
   WriteFile("exists_2.png");
   WriteFile("exists_3.pdf");
 
+  // Results are only added if they have been opened at least once.
   provider_->OnFilesOpened(
       {OpenEvent("exists_1.txt"), OpenEvent("exists_2.png")});
   provider_->OnFilesOpened({OpenEvent("nonexistant.txt")});
@@ -127,8 +127,8 @@ TEST_P(ZeroStateFileProviderTest, ResultsProvided) {
   StartZeroStateSearch();
   Wait();
 
-  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("exists_1.txt"),
-                                                  Title("exists_2.png")));
+  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"exists_1.txt"),
+                                                  Title(u"exists_2.png")));
 }
 
 TEST_P(ZeroStateFileProviderTest, OldFilesNotReturned) {
@@ -142,7 +142,7 @@ TEST_P(ZeroStateFileProviderTest, OldFilesNotReturned) {
   StartZeroStateSearch();
   Wait();
 
-  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title("new.txt")));
+  EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"new.txt")));
 }
 
 }  // namespace app_list

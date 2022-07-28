@@ -48,10 +48,10 @@ void LogStatus(Status status) {
 }
 
 // Stats each file to retrieve its last accessed time.
-std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> GetItemInfo(
+std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> GetFileInfo(
     std::vector<drivefs::mojom::QueryItemPtr> items,
     base::FilePath mount_path) {
-  std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> item_info;
+  std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> item_info;
 
   for (const auto& item : items) {
     // Strip leading separators so that the path can be reparented.
@@ -71,7 +71,7 @@ std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> GetItemInfo(
     if (base::GetFileInfo(reparented_path, &info))
       last_accessed = info.last_accessed;
 
-    item_info.push_back(std::make_unique<DriveSearchProvider::ItemInfo>(
+    item_info.push_back(std::make_unique<DriveSearchProvider::FileInfo>(
         reparented_path, std::move(item->metadata), last_accessed));
   }
 
@@ -80,7 +80,7 @@ std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> GetItemInfo(
 
 }  // namespace
 
-DriveSearchProvider::ItemInfo::ItemInfo(
+DriveSearchProvider::FileInfo::FileInfo(
     const base::FilePath& reparented_path,
     drivefs::mojom::FileMetadataPtr metadata,
     const absl::optional<base::Time>& last_accessed)
@@ -88,7 +88,7 @@ DriveSearchProvider::ItemInfo::ItemInfo(
   this->metadata = std::move(metadata);
 }
 
-DriveSearchProvider::ItemInfo::~ItemInfo() = default;
+DriveSearchProvider::FileInfo::~FileInfo() = default;
 
 DriveSearchProvider::DriveSearchProvider(Profile* profile)
     : profile_(profile),
@@ -155,14 +155,14 @@ void DriveSearchProvider::OnSearchDriveByFileName(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&GetItemInfo, std::move(items),
+      base::BindOnce(&GetFileInfo, std::move(items),
                      drive_service_->GetMountPointPath()),
       base::BindOnce(&DriveSearchProvider::SetSearchResults,
                      weak_factory_.GetWeakPtr()));
 }
 
 void DriveSearchProvider::SetSearchResults(
-    std::vector<std::unique_ptr<DriveSearchProvider::ItemInfo>> item_info) {
+    std::vector<std::unique_ptr<DriveSearchProvider::FileInfo>> item_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SearchProvider::Results results;

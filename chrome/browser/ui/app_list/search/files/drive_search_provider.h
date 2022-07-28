@@ -28,18 +28,18 @@ namespace app_list {
 
 class DriveSearchProvider : public SearchProvider {
  public:
-  struct ItemInfo {
+  struct FileInfo {
     base::FilePath reparented_path;
     drivefs::mojom::FileMetadataPtr metadata;
     absl::optional<base::Time> last_accessed;
 
-    ItemInfo(const base::FilePath& reparented_path,
+    FileInfo(const base::FilePath& reparented_path,
              drivefs::mojom::FileMetadataPtr metadata,
              const absl::optional<base::Time>& last_accessed);
-    ~ItemInfo();
+    ~FileInfo();
 
-    ItemInfo(const ItemInfo&) = delete;
-    ItemInfo& operator=(const ItemInfo&) = delete;
+    FileInfo(const FileInfo&) = delete;
+    FileInfo& operator=(const FileInfo&) = delete;
   };
 
   explicit DriveSearchProvider(Profile* profile);
@@ -55,7 +55,7 @@ class DriveSearchProvider : public SearchProvider {
  private:
   void OnSearchDriveByFileName(drive::FileError error,
                                std::vector<drivefs::mojom::QueryItemPtr> items);
-  void SetSearchResults(std::vector<std::unique_ptr<ItemInfo>> items);
+  void SetSearchResults(std::vector<std::unique_ptr<FileInfo>> items);
   std::unique_ptr<FileResult> MakeResult(
       const base::FilePath& path,
       double relevance,
