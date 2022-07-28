@@ -27,26 +27,23 @@ class DisplayPrefsBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  const base::Value* GetDisplayProperties(int index) {
+  const base::Value::Dict* GetDisplayProperties(int index) {
     int64_t display_id =
         ash::Shell::Get()->display_manager()->GetDisplayAt(index).id();
-    const base::Value* display_properties =
-        local_state_->GetDictionary(ash::prefs::kDisplayProperties);
-    return display_properties ? display_properties->FindKeyOfType(
-                                    base::NumberToString(display_id),
-                                    base::Value::Type::DICTIONARY)
-                              : nullptr;
+
+    const base::Value::Dict& display_properties =
+        local_state_->GetValueDict(ash::prefs::kDisplayProperties);
+    return display_properties.FindDict(base::NumberToString(display_id));
   }
 
   display::Display::Rotation GetRotation(int index) {
-    const base::Value* properties = GetDisplayProperties(index);
+    const base::Value::Dict* properties = GetDisplayProperties(index);
     EXPECT_TRUE(properties);
     display::Display::Rotation result = display::Display::ROTATE_0;
-    const base::Value* rot_value =
-        properties->FindKeyOfType("rotation", base::Value::Type::INTEGER);
+    absl::optional<int> rot_value = properties->FindInt("rotation");
     EXPECT_TRUE(rot_value);
     if (rot_value)
-      result = static_cast<display::Display::Rotation>(rot_value->GetInt());
+      result = static_cast<display::Display::Rotation>(rot_value.value());
     return result;
   }
 
