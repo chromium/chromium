@@ -24,11 +24,13 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowInsets;
 import android.view.WindowManager;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -77,6 +79,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private static final int NAVBAR_FADE_DURATION_MS = 16;
     private static final int SPINNER_FADEIN_DURATION_MS = 100;
     private static final int SPINNER_FADEOUT_DURATION_MS = 400;
+
+    private static final int FLING_VELOCITY_PIXELS_PER_MS = 1000;
 
     @IntDef({HeightStatus.TOP, HeightStatus.INITIAL_HEIGHT, HeightStatus.TRANSITION})
     @Retention(RetentionPolicy.SOURCE)
@@ -147,17 +151,25 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     /* package */ class PartialCustomTabHandleStrategy
             extends GestureDetector.SimpleOnGestureListener
             implements CustomTabToolbar.HandleStrategy {
-        private static final int CLOSE_DISTANCE = 300;
+        /**
+         * The base duration of the settling animation of the sheet. 218 ms is a spec for material
+         * design (this is the minimum time a user is guaranteed to pay attention to something).
+         */
+        private static final long BASE_ANIMATION_DURATION_MS = 218;
+
+        private static final int FLING_THRESHOLD_PX = 100;
+
         private GestureDetector mGestureDetector;
         private float mLastPosY;
-        private float mLastDownPosY;
-        private float mMostRecentYDistance;
-        private float mInitialY;
+        private float mOffsetY;
+        private float mDeltaY;
         private boolean mSeenFirstMoveOrDown;
+        private VelocityTracker mVelocityTracker;
         private Runnable mCloseHandler;
 
         public PartialCustomTabHandleStrategy(Context context) {
             mGestureDetector = new GestureDetector(context, this, ThreadUtils.getUiThreadHandler());
+            mVelocityTracker = VelocityTracker.obtain();
         }
 
         @Override
@@ -187,30 +199,27 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 case MotionEvent.ACTION_MOVE:
                     if (!mSeenFirstMoveOrDown) {
                         mSeenFirstMoveOrDown = true;
+                        mVelocityTracker.clear();
                         onMoveStart();
-                        mLastDownPosY = y;
-                        mInitialY = mActivity.getWindow().getAttributes().y;
+                        mOffsetY = mActivity.getWindow().getAttributes().y - y;
+                        mLastPosY = y;
                     } else {
-                        updateWindowPos((int) (mInitialY - mLastDownPosY + y));
-                        if (y - mLastPosY != 0) {
-                            mMostRecentYDistance = y - mLastPosY;
-                        }
-                        if (mStatus == HeightStatus.INITIAL_HEIGHT
-                                && y - mInitialY > CLOSE_DISTANCE) {
-                            mCloseHandler.run();
-                        }
+                        mVelocityTracker.addMovement(event);
+                        updateWindowPos((int) (y + mOffsetY));
                     }
+                    mDeltaY = y - mLastPosY;
                     mLastPosY = y;
                     return true;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
                     if (mSeenFirstMoveOrDown) {
-                        if (!handleAnimation(mMostRecentYDistance)) {
-                            onMoveEnd();
-                        }
+                        mVelocityTracker.computeCurrentVelocity(FLING_VELOCITY_PIXELS_PER_MS);
+                        float v = Math.abs(mVelocityTracker.getYVelocity());
+                        int flingDist = Math.abs(v) < FLING_THRESHOLD_PX ? 0 : getFlingDistance(v);
+                        int direction = (int) Math.signum(mDeltaY);
+                        if (!handleAnimation(flingDist * direction)) mCloseHandler.run();
+                        mSeenFirstMoveOrDown = false;
                     }
-                    mMostRecentYDistance = 0;
-                    mSeenFirstMoveOrDown = false;
                     return true;
                 default:
                     return true;
@@ -228,26 +237,52 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             return true;
         }
 
-        private boolean handleAnimation(float distanceY) {
-            boolean playAnimation = false;
+        /**
+         * Gets the distance of a fling based on the velocity and the base animation time. This
+         * formula assumes the deceleration curve is quadratic (t^2), hence the displacement formula
+         * should be: displacement = initialVelocity * duration / 2.
+         * @param velocity The velocity of the fling.
+         * @return The distance the fling would cover.
+         */
+        private int getFlingDistance(float velocity) {
+            // This includes conversion from seconds to ms.
+            return (int) (velocity * BASE_ANIMATION_DURATION_MS / 2000f);
+        }
+
+        private boolean handleAnimation(int flingDistance) {
+            int currentY = mActivity.getWindow().getAttributes().y;
+            int finalY = currentY + flingDistance;
+            int topY = getFullyExpandedYCoordinateWithAdjustment();
+            int initialY = mDisplayHeight - mInitialHeight;
+            int bottomY = mDisplayHeight - mNavbarHeight;
 
             int start = 0;
             int end = 0;
+            boolean playAnimation = true;
 
-            if (distanceY < 0) {
-                start = mActivity.getWindow().getAttributes().y;
-                end = getFullyExpandedYCoordinateWithAdjustment();
-                if (start > end) {
-                    playAnimation = true;
+            if (finalY == initialY) return false;
+
+            if (finalY < initialY) { // Move up
+                if (Math.abs(topY - finalY) < Math.abs(finalY - initialY)) {
+                    start = currentY;
+                    end = topY;
+                    mTargetStatus = HeightStatus.TOP;
+                } else {
+                    start = currentY;
+                    end = initialY;
+                    mTargetStatus = HeightStatus.INITIAL_HEIGHT;
                 }
-                mTargetStatus = HeightStatus.TOP;
-            } else if (distanceY > 0) {
-                start = mActivity.getWindow().getAttributes().y;
-                end = mMaxHeight - mInitialHeight;
-                if (start < end) {
-                    playAnimation = true;
+            } else { // Move down
+                // Prevents skipping intial state when swiping from the top.
+                if (mStatus == HeightStatus.TOP) finalY = Math.min(initialY, finalY);
+
+                if (Math.abs(initialY - finalY) < Math.abs(finalY - bottomY)) {
+                    start = currentY;
+                    end = initialY;
+                    mTargetStatus = HeightStatus.INITIAL_HEIGHT;
+                } else {
+                    playAnimation = false;
                 }
-                mTargetStatus = HeightStatus.INITIAL_HEIGHT;
             }
             if (playAnimation) {
                 mAnimator.setIntValues(start, end);
@@ -551,10 +586,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     }
 
     private void updateWindowPos(@Px int y) {
-        // Do not allow the Window to go down below the initial position or above the minimum
-        // threshold capped by the status bar and (optionally) the 90%-height adjustment.
-        y = MathUtils.clamp(
-                y, getFullyExpandedYCoordinateWithAdjustment(), mMaxHeight - mInitialHeight);
+        // Do not allow the Window to go above the minimum threshold capped by the status
+        // bar and (optionally) the 90%-height adjustment.
+        y = MathUtils.clamp(y, getFullyExpandedYCoordinateWithAdjustment(), mMaxHeight);
         WindowManager.LayoutParams attributes = mActivity.getWindow().getAttributes();
         if (attributes.y == y) return;
 
@@ -829,7 +863,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         int start = mActivity.getWindow().getAttributes().y;
         int end = mDisplayHeight - mNavbarHeight;
-        mInitialHeight = 0;
 
         if (isFullHeight()) {
             mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
@@ -837,6 +870,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mAnimator.setDuration(
                 mActivity.getResources().getInteger(android.R.integer.config_mediumAnimTime));
         mAnimator.setIntValues(start, end);
+        mAnimator.setInterpolator(new AccelerateInterpolator());
         mAnimator.start();
     }
 

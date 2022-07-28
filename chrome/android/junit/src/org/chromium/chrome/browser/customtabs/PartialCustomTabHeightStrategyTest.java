@@ -55,6 +55,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.customtabs.PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -242,8 +243,54 @@ public class PartialCustomTabHeightStrategyTest {
         assertEquals(0, mAttributeResults.get(0).y);
     }
 
+    private static MotionEvent event(long ts, int action, int ypos) {
+        return MotionEvent.obtain(ts, ts, action, DEVICE_WIDTH / 2, ypos, 0);
+    }
+
+    private static void actionDown(PartialCustomTabHandleStrategy strategy, long ts, int ypos) {
+        strategy.onTouchEvent(event(ts, MotionEvent.ACTION_DOWN, ypos));
+    }
+
+    private static void actionMove(PartialCustomTabHandleStrategy strategy, long ts, int ypos) {
+        strategy.onTouchEvent(event(ts, MotionEvent.ACTION_MOVE, ypos));
+    }
+
+    private static void actionUp(PartialCustomTabHandleStrategy strategy, long ts, int ypos) {
+        strategy.onTouchEvent(event(ts, MotionEvent.ACTION_UP, ypos));
+    }
+
+    /**
+     * Simulate dragging the tab and lifting the finger at the end.
+     * @param handleStrategy {@link PartialCustomTabHandleStrategy} object.
+     * @param ypos Series of y positions simulating the events.
+     * @return Y position of the tab after the dragging finishes.
+     */
+    private int dragTab(PartialCustomTabHandleStrategy handleStrategy, int... ypos) {
+        int npos = ypos.length;
+        assert npos >= 2;
+        long timestamp = SystemClock.uptimeMillis();
+
+        // ACTION_DOWN -> ACTION_MOVE * (npos-1) -> ACTION_UP
+        actionDown(handleStrategy, timestamp, ypos[0]);
+        for (int i = 1; i < npos; ++i) actionMove(handleStrategy, timestamp, ypos[i]);
+        actionUp(handleStrategy, timestamp, ypos[npos - 1]);
+
+        // Wait animation to finish.
+        shadowOf(Looper.getMainLooper()).idle();
+
+        int length = mAttributeResults.size();
+        assertTrue(length > 1);
+        return mAttributeResults.get(length - 1).y;
+    }
+
+    private void assertMotionEventIgnored(PartialCustomTabHandleStrategy handleStrategy) {
+        assertFalse(handleStrategy.onInterceptTouchEvent(
+                event(SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 1500)));
+    }
+
     @Test
-    public void moveUp() {
+    public void moveFromTop() {
+        // Drag to the top
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
         verifyWindowFlagsSet();
 
@@ -252,29 +299,52 @@ public class PartialCustomTabHeightStrategyTest {
 
         // Pass null because we have a mock Activity and we don't depend on the GestureDetector
         // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+        PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
-        // action down
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0));
-        // action move
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1450, 0));
-        // action move again
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1400, 0));
-        // action up
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, DEVICE_WIDTH / 2, 1400, 0));
+        // Drag to the top.
+        assertEquals(0, dragTab(handleStrategy, 1500, 1000, 500));
 
-        // Wait animation to finish.
-        shadowOf(Looper.getMainLooper()).idle();
+        // Drag down a little -> slide back to the top.
+        assertEquals(0, dragTab(handleStrategy, 50, 100, 150));
 
-        final int length = mAttributeResults.size();
-        assertTrue(length > 1);
-        // Move to cover the whole screen.
-        assertEquals(0, mAttributeResults.get(length - 1).y);
+        // Drag down enough -> slide to the initial position.
+        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 50, 650, 1300));
+    }
+
+    @Test
+    public void moveFromInitialHeight() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+        verifyWindowFlagsSet();
+
+        assertEquals(1, mAttributeResults.size());
+        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        // Drag up slightly -> slide back to the initial height.
+        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 1500, 1450, 1400));
+
+        // Drag down slightly -> slide back to the initial height.
+        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 1500, 1550, 1600));
+    }
+
+    @Test
+    public void moveUpThenDown() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+
+        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        assertEquals(1, mAttributeResults.size());
+        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        // Shake the tab from the initial position slightly -> back to the initial height.
+        assertEquals(MAX_INIT_POS, dragTab(handleStrategy, 1500, 1450, 1600));
     }
 
     @Test
@@ -283,16 +353,9 @@ public class PartialCustomTabHeightStrategyTest {
         mRealMetrics.widthPixels = DEVICE_HEIGHT;
         mRealMetrics.heightPixels = DEVICE_WIDTH;
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
-
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+        PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
-
-        // action down
-        assertFalse(handleStrategy.onInterceptTouchEvent(
-                MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0)));
+        assertMotionEventIgnored(handleStrategy);
     }
 
     @Test
@@ -300,33 +363,22 @@ public class PartialCustomTabHeightStrategyTest {
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
 
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+        PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
-        // action down
-        assertFalse(handleStrategy.onInterceptTouchEvent(
-                MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0)));
+        assertMotionEventIgnored(handleStrategy);
     }
 
     @Test
     public void rotateToLandescapeUnresizable() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
 
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+        PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
         strategy.onConfigurationChanged(mConfiguration);
-
-        // action down
-        assertFalse(handleStrategy.onInterceptTouchEvent(
-                MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0)));
+        assertMotionEventIgnored(handleStrategy);
     }
 
     @Test
@@ -369,114 +421,12 @@ public class PartialCustomTabHeightStrategyTest {
     public void enterMultiwindowModeUnresizable() {
         PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
 
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+        PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
         strategy.onConfigurationChanged(mConfiguration);
-
-        // action down
-        assertFalse(handleStrategy.onInterceptTouchEvent(
-                MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
-                        MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0)));
-    }
-
-    @Test
-    public void moveUpThenDown() {
-        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-
-        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-        assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
-
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
-                strategy.new PartialCustomTabHandleStrategy(null);
-
-        // action down
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0));
-        // action move
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1450, 0));
-        // action move again
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1600, 0));
-        // action up
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, DEVICE_WIDTH / 2, 1600, 0));
-
-        // Wait animation to finish.
-        shadowOf(Looper.getMainLooper()).idle();
-
-        final int length = mAttributeResults.size();
-        assertTrue(length > 1);
-        // Back to the original height.
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(length - 1).y);
-    }
-
-    @Test
-    public void moveToTopThenMoveDown() {
-        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
-
-        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
-        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
-
-        assertEquals(1, mAttributeResults.size());
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
-
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
-                strategy.new PartialCustomTabHandleStrategy(null);
-
-        // action down
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0));
-        // action move
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1450, 0));
-        // action move again
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1400, 0));
-        // action up
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, DEVICE_WIDTH / 2, 1400, 0));
-
-        // Wait animation to finish.
-        shadowOf(Looper.getMainLooper()).idle();
-
-        final int length = mAttributeResults.size();
-        assertTrue(length > 1);
-        // Move to cover the whole screen.
-        assertEquals(0, mAttributeResults.get(length - 1).y);
-
-        // action down
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 500, 0));
-        // action move
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 650, 0));
-        // action move again
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 700, 0));
-        // action up
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, DEVICE_WIDTH / 2, 700, 0));
-
-        // Wait animation to finish.
-        shadowOf(Looper.getMainLooper()).idle();
-
-        final int length2 = mAttributeResults.size();
-        assertTrue(length2 > 1);
-
-        // Back to the original height.
-        assertEquals(MAX_INIT_POS, mAttributeResults.get(length2 - 1).y);
+        assertMotionEventIgnored(handleStrategy);
     }
 
     @Test
@@ -487,21 +437,12 @@ public class PartialCustomTabHeightStrategyTest {
         assertEquals(1, mAttributeResults.size());
         assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
 
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+        PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
         final boolean[] closed = {false};
         handleStrategy.setCloseClickHandler(() -> closed[0] = true);
 
-        // action down
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0));
-        // action move, the distance on y axis should be larger than
-        // PartialCustomTabHandleStrategy.CLOSE_DISTANCE.
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1850, 0));
-
+        dragTab(handleStrategy, MAX_INIT_POS, DEVICE_HEIGHT - 400);
         assertTrue("Close click handler should be called.", closed[0]);
     }
 
@@ -517,37 +458,27 @@ public class PartialCustomTabHeightStrategyTest {
 
         when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
-        // Pass null because we have a mock Activity and we don't depend on the GestureDetector
-        // inside as we test MotionEvents directly.
-        PartialCustomTabHeightStrategy.PartialCustomTabHandleStrategy handleStrategy =
+        PartialCustomTabHandleStrategy handleStrategy =
                 strategy.new PartialCustomTabHandleStrategy(null);
 
-        // action down
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0));
-
-        // action move
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 1450, 0));
+        long timestamp = SystemClock.uptimeMillis();
+        actionDown(handleStrategy, timestamp, 1500);
+        actionMove(handleStrategy, timestamp, 1450);
 
         // Verify the spinner is visible.
         verify(mSpinnerView, times(1)).setVisibility(View.VISIBLE);
         when(mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
         clearInvocations(mSpinnerView);
 
-        // action up
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_UP, DEVICE_WIDTH / 2, 1400, 0));
+        actionUp(handleStrategy, timestamp, 1450);
 
         // Wait animation to finish.
         shadowOf(Looper.getMainLooper()).idle();
         when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
 
         // Now the tab is full-height. Start dragging down.
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 500, 0));
-        handleStrategy.onTouchEvent(MotionEvent.obtain(SystemClock.uptimeMillis(),
-                SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, DEVICE_WIDTH / 2, 650, 0));
+        actionDown(handleStrategy, timestamp, 500);
+        actionMove(handleStrategy, timestamp, 650);
 
         // Verify the spinner remained invisible.
         verify(mSpinnerView, times(0)).setVisibility(anyInt());
