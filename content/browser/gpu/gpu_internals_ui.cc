@@ -900,7 +900,7 @@ void GpuMessageHandler::OnGpuInfoUpdate() {
 
   // Send GPU Info to javascript.
   web_ui()->CallJavascriptFunctionUnsafe("browserBridge.onGpuInfoUpdate",
-                                         base::Value(std::move(gpu_info_val)));
+                                         std::move(gpu_info_val));
 }
 
 void GpuMessageHandler::OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {
