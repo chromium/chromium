@@ -464,12 +464,34 @@ void GetAdminDaclSecurityAttributes(CSecurityAttributes* sec_attr,
   sec_attr->Set(sd);
 }
 
+std::wstring GetAppClientsKey(const std::string& app_id) {
+  return GetAppClientsKey(base::ASCIIToWide(app_id));
+}
+
+std::wstring GetAppClientsKey(const std::wstring& app_id) {
+  return base::StrCat({CLIENTS_KEY, app_id});
+}
+
+std::wstring GetAppClientStateKey(const std::string& app_id) {
+  return GetAppClientStateKey(base::ASCIIToWide(app_id));
+}
+
+std::wstring GetAppClientStateKey(const std::wstring& app_id) {
+  return base::StrCat({CLIENT_STATE_KEY, app_id});
+}
+
+std::wstring GetAppCommandKey(const std::wstring& app_id,
+                              const std::wstring& command_id) {
+  return base::StrCat(
+      {GetAppClientsKey(app_id), L"\\", kRegKeyCommands, L"\\", command_id});
+}
+
 std::wstring GetRegistryKeyClientsUpdater() {
-  return base::StrCat({CLIENTS_KEY, base::ASCIIToWide(kUpdaterAppId)});
+  return GetAppClientsKey(kUpdaterAppId);
 }
 
 std::wstring GetRegistryKeyClientStateUpdater() {
-  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(kUpdaterAppId)});
+  return GetAppClientStateKey(kUpdaterAppId);
 }
 
 int GetDownloadProgress(int64_t downloaded_bytes, int64_t total_bytes) {

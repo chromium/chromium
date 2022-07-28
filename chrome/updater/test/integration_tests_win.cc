@@ -105,14 +105,6 @@ absl::optional<base::FilePath> GetProductVersionPath(UpdaterScope scope) {
                       : product_path;
 }
 
-std::wstring GetAppClientsKey(const std::wstring& id) {
-  return base::StrCat({CLIENTS_KEY, id});
-}
-
-std::wstring GetAppClientStateKey(const std::string& id) {
-  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(id)});
-}
-
 bool RegKeyExists(HKEY root, const std::wstring& path) {
   return base::win::RegKey(root, path.c_str(), Wow6432(KEY_QUERY_VALUE))
       .Valid();
@@ -223,8 +215,7 @@ void CheckInstallation(UpdaterScope scope,
       EXPECT_EQ(ERROR_SUCCESS,
                 base::win::RegKey(
                     root,
-                    base::StrCat({CLIENTS_KEY,
-                                  L"{430FD4D0-B729-4F61-AA34-91526481799D}"})
+                    GetAppClientsKey(L"{430FD4D0-B729-4F61-AA34-91526481799D}")
                         .c_str(),
                     Wow6432(KEY_READ))
                     .ReadValue(kRegValuePV, &pv));
@@ -1184,12 +1175,9 @@ void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
 
 void InstallApp(UpdaterScope scope, const std::string& app_id) {
   base::win::RegKey key;
-  ASSERT_EQ(
-      key.Create(
-          UpdaterScopeToHKeyRoot(scope),
-          base::StrCat({CLIENTS_KEY, base::SysUTF8ToWide(app_id)}).c_str(),
-          Wow6432(KEY_WRITE)),
-      ERROR_SUCCESS);
+  ASSERT_EQ(key.Create(UpdaterScopeToHKeyRoot(scope),
+                       GetAppClientsKey(app_id).c_str(), Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
   RegisterApp(scope, app_id);
 }
 

@@ -14,14 +14,6 @@
 
 namespace updater {
 
-// Returns the registry path `Software\{CompanyName}\Update\Clients\{app_id}`.
-std::wstring GetClientKeyName(const std::wstring& app_id);
-
-// Returns the registry path
-// `Software\{CompanyName}\Update\Clients\{app_id}\Commands\{command_id}`.
-std::wstring GetAppCommandKeyName(const std::wstring& app_id,
-                                  const std::wstring& command_id);
-
 // Creates the key `{HKLM\HKCU}\Software\{CompanyName}\Update\Clients\{app_id}`.
 // `{HKLM\HKCU}` is determined by `scope`.
 base::win::RegKey CreateAppClientKey(UpdaterScope scope,

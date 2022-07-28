@@ -32,7 +32,7 @@ void CreateAppCommandRegistryHelper(UpdaterScope scope,
   CreateAppClientKey(scope, app_id);
   base::win::RegKey command_key;
   EXPECT_EQ(command_key.Create(UpdaterScopeToHKeyRoot(scope),
-                               GetAppCommandKeyName(app_id, cmd_id).c_str(),
+                               GetAppCommandKey(app_id, cmd_id).c_str(),
                                Wow6432(KEY_WRITE)),
             ERROR_SUCCESS);
   EXPECT_EQ(command_key.WriteValue(kRegValueCommandLine, cmd_line.c_str()),
@@ -45,29 +45,19 @@ void CreateAppCommandRegistryHelper(UpdaterScope scope,
 
 }  // namespace
 
-std::wstring GetClientKeyName(const std::wstring& app_id) {
-  return base::StrCat({CLIENTS_KEY, app_id});
-}
-
-std::wstring GetAppCommandKeyName(const std::wstring& app_id,
-                                  const std::wstring& command_id) {
-  return base::StrCat(
-      {GetClientKeyName(app_id), L"\\", kRegKeyCommands, L"\\", command_id});
-}
-
 base::win::RegKey CreateAppClientKey(UpdaterScope scope,
                                      const std::wstring& app_id) {
   base::win::RegKey client_key;
   EXPECT_EQ(
       client_key.Create(UpdaterScopeToHKeyRoot(scope),
-                        GetClientKeyName(app_id).c_str(), Wow6432(KEY_WRITE)),
+                        GetAppClientsKey(app_id).c_str(), Wow6432(KEY_WRITE)),
       ERROR_SUCCESS);
   return client_key;
 }
 
 void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id) {
   base::win::RegKey(UpdaterScopeToHKeyRoot(scope), L"", Wow6432(DELETE))
-      .DeleteKey(GetClientKeyName(app_id).c_str());
+      .DeleteKey(GetAppClientsKey(app_id).c_str());
 }
 
 void CreateAppCommandRegistry(UpdaterScope scope,

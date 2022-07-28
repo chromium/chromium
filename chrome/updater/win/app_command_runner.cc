@@ -161,17 +161,13 @@ HRESULT AppCommandRunner::LoadAppCommand(UpdaterScope scope,
                                          const std::wstring& command_id,
                                          AppCommandRunner& app_command_runner) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
-  const std::wstring app_key_name = base::StrCat({CLIENTS_KEY, app_id});
   std::wstring command_format;
 
   if (const base::win::RegKey command_key(
-          root,
-          base::StrCat(
-              {app_key_name, L"\\", kRegKeyCommands, L"\\", command_id})
-              .c_str(),
+          root, GetAppCommandKey(app_id, command_id).c_str(),
           Wow6432(KEY_QUERY_VALUE));
       !command_key.Valid()) {
-    const base::win::RegKey app_key(root, app_key_name.c_str(),
+    const base::win::RegKey app_key(root, GetAppClientsKey(app_id).c_str(),
                                     Wow6432(KEY_QUERY_VALUE));
     if (!app_key.HasValue(command_id.c_str()))
       return HRESULT_FROM_WIN32(ERROR_BAD_COMMAND);
@@ -205,15 +201,14 @@ AppCommandRunner::LoadAutoRunOnOsUpgradeAppCommands(
     UpdaterScope scope,
     const std::wstring& app_id) {
   const HKEY root = UpdaterScopeToHKeyRoot(scope);
-  const std::wstring commands_key_name =
-      base::StrCat({CLIENTS_KEY, app_id, L"\\", kRegKeyCommands});
+  const std::wstring commands_key_name = GetAppCommandKey(app_id, L"");
 
   std::vector<AppCommandRunner> app_command_runners;
   for (base::win::RegistryKeyIterator it(root, commands_key_name.c_str(),
                                          KEY_WOW64_32KEY);
        it.Valid(); ++it) {
     const base::win::RegKey command_key(
-        root, base::StrCat({commands_key_name, L"\\", it.Name()}).c_str(),
+        root, base::StrCat({commands_key_name, it.Name()}).c_str(),
         Wow6432(KEY_QUERY_VALUE));
     if (!command_key.Valid())
       continue;

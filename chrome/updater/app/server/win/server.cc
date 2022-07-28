@@ -184,7 +184,7 @@ bool SwapGoogleUpdate(UpdaterScope scope,
                             WorkItem::ALWAYS);
 
   const std::wstring google_update_appid_key =
-      base::StrCat({CLIENTS_KEY, L"{430FD4D0-B729-4F61-AA34-91526481799D}"});
+      GetAppClientsKey(L"{430FD4D0-B729-4F61-AA34-91526481799D}");
   list->AddCreateRegKeyWorkItem(root, COMPANY_KEY, KEY_WOW64_32KEY);
   list->AddCreateRegKeyWorkItem(root, UPDATER_KEY, KEY_WOW64_32KEY);
   list->AddCreateRegKeyWorkItem(root, CLIENTS_KEY, KEY_WOW64_32KEY);
@@ -330,8 +330,8 @@ bool ComServerApp::MigrateLegacyUpdaters(
       continue;
 
     base::win::RegKey key;
-    if (key.Open(root, base::StrCat({CLIENTS_KEY, app_id}).c_str(),
-                 Wow6432(KEY_READ)) != ERROR_SUCCESS) {
+    if (key.Open(root, GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ)) !=
+        ERROR_SUCCESS) {
       continue;
     }
 

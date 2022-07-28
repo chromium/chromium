@@ -153,6 +153,20 @@ void GetAdminDaclSecurityAttributes(CSecurityAttributes* sec_attr,
 // to admins and system.
 void GetAdminDaclSecurityDescriptor(CSecurityDesc* sd, ACCESS_MASK accessmask);
 
+// Returns the registry path `Software\{CompanyName}\Update\Clients\{app_id}`.
+std::wstring GetAppClientsKey(const std::string& app_id);
+std::wstring GetAppClientsKey(const std::wstring& app_id);
+
+// Returns the registry path
+// `Software\{CompanyName}\Update\ClientState\{app_id}`.
+std::wstring GetAppClientStateKey(const std::string& app_id);
+std::wstring GetAppClientStateKey(const std::wstring& app_id);
+
+// Returns the registry path
+// `Software\{CompanyName}\Update\Clients\{app_id}\Commands\{command_id}`.
+std::wstring GetAppCommandKey(const std::wstring& app_id,
+                              const std::wstring& command_id);
+
 // Returns the registry path for the Updater app id under the |Clients| subkey.
 // The path does not include the registry root hive prefix.
 std::wstring GetRegistryKeyClientsUpdater();

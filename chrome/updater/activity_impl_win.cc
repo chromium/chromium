@@ -26,10 +26,6 @@ using ProcessActiveBitUnderKeyCallback =
 
 constexpr wchar_t kDidRun[] = L"dr";
 
-std::wstring GetAppClientStateKey(const std::string& id) {
-  return base::StrCat({CLIENT_STATE_KEY, base::ASCIIToWide(id)});
-}
-
 bool GetActiveBitUnderKey(HKEY rootkey, const std::wstring& key_name) {
   base::win::RegKey key;
   if (key.Open(rootkey, key_name.c_str(), Wow6432(KEY_QUERY_VALUE)) ==
