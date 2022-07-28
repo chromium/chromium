@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -47,7 +48,8 @@ std::vector<ash::NotifierMetadata> PwaNotifierController::GetNotifierList(
               apps::PermissionType::kNotifications) {
             continue;
           }
-          DCHECK(permission->value->tristate_value.has_value());
+          DCHECK(absl::holds_alternative<apps::TriState>(
+              permission->value->value));
           // Do not include notifier metadata for system apps.
           if (update.InstallReason() == apps::InstallReason::kSystem) {
             return;

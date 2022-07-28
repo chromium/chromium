@@ -9,6 +9,7 @@
 
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace {
 
@@ -1118,10 +1119,10 @@ bool EnumTraits<crosapi::mojom::TriState, apps::TriState>::FromMojom(
 crosapi::mojom::PermissionValueDataView::Tag UnionTraits<
     crosapi::mojom::PermissionValueDataView,
     apps::PermissionValuePtr>::GetTag(const apps::PermissionValuePtr& r) {
-  if (r->bool_value.has_value()) {
+  if (absl::holds_alternative<bool>(r->value)) {
     return crosapi::mojom::PermissionValueDataView::Tag::kBoolValue;
   }
-  if (r->tristate_value.has_value()) {
+  if (absl::holds_alternative<apps::TriState>(r->value)) {
     return crosapi::mojom::PermissionValueDataView::Tag::kTristateValue;
   }
   NOTREACHED();

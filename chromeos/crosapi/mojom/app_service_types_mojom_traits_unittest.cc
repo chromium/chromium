@@ -18,6 +18,7 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 // Test that every field in apps::App in correctly converted.
@@ -115,8 +116,8 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTrip) {
   ASSERT_EQ(output->permissions.size(), 1U);
   auto& out_permission = output->permissions[0];
   EXPECT_EQ(out_permission->permission_type, apps::PermissionType::kCamera);
-  ASSERT_TRUE(out_permission->value->bool_value.has_value());
-  EXPECT_TRUE(out_permission->value->bool_value.value());
+  ASSERT_TRUE(absl::holds_alternative<bool>(out_permission->value->value));
+  EXPECT_TRUE(absl::get<bool>(out_permission->value->value));
   EXPECT_TRUE(out_permission->is_managed);
 
   EXPECT_TRUE(output->allow_uninstall.value());

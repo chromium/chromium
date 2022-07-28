@@ -12,6 +12,7 @@
 #include "components/services/app_service/public/cpp/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace apps {
 
@@ -45,8 +46,7 @@ struct COMPONENT_EXPORT(APP_TYPES) PermissionValue {
   // Allow represent permission enabled.
   bool IsPermissionEnabled() const;
 
-  absl::optional<bool> bool_value;
-  absl::optional<TriState> tristate_value;
+  absl::variant<bool, TriState> value;
 };
 
 using PermissionValuePtr = std::unique_ptr<PermissionValue>;

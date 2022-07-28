@@ -8,6 +8,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/run_on_os_login_types.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 namespace mojo {
@@ -65,17 +66,24 @@ struct UnionTraits<PermissionValueDataView, apps::PermissionValuePtr> {
   static PermissionValueDataView::Tag GetTag(const apps::PermissionValuePtr& r);
 
   static bool IsNull(const apps::PermissionValuePtr& r) {
-    return !r->bool_value.has_value() && !r->tristate_value.has_value();
+    return !absl::holds_alternative<bool>(r->value) &&
+           !absl::holds_alternative<apps::TriState>(r->value);
   }
 
   static void SetToNull(apps::PermissionValuePtr* out) { out->reset(); }
 
   static bool bool_value(const apps::PermissionValuePtr& r) {
-    return r->bool_value.value();
+    if (absl::holds_alternative<bool>(r->value)) {
+      return absl::get<bool>(r->value);
+    }
+    return false;
   }
 
   static apps::TriState tristate_value(const apps::PermissionValuePtr& r) {
-    return r->tristate_value.value();
+    if (absl::holds_alternative<apps::TriState>(r->value)) {
+      return absl::get<apps::TriState>(r->value);
+    }
+    return apps::TriState::kBlock;
   }
 
   static bool Read(PermissionValueDataView data, apps::PermissionValuePtr* out);

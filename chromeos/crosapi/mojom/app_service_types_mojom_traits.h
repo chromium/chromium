@@ -16,6 +16,7 @@
 #include "components/services/app_service/public/cpp/preferred_app.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 
@@ -331,17 +332,24 @@ struct UnionTraits<crosapi::mojom::PermissionValueDataView,
       const apps::PermissionValuePtr& r);
 
   static bool IsNull(const apps::PermissionValuePtr& r) {
-    return !r->bool_value.has_value() && !r->tristate_value.has_value();
+    return !absl::holds_alternative<bool>(r->value) &&
+           !absl::holds_alternative<apps::TriState>(r->value);
   }
 
   static void SetToNull(apps::PermissionValuePtr* out) {}
 
   static bool bool_value(const apps::PermissionValuePtr& r) {
-    return r->bool_value.value();
+    if (absl::holds_alternative<bool>(r->value)) {
+      return absl::get<bool>(r->value);
+    }
+    return false;
   }
 
   static apps::TriState tristate_value(const apps::PermissionValuePtr& r) {
-    return r->tristate_value.value();
+    if (absl::holds_alternative<apps::TriState>(r->value)) {
+      return absl::get<apps::TriState>(r->value);
+    }
+    return apps::TriState::kBlock;
   }
 
   static bool Read(crosapi::mojom::PermissionValueDataView data,

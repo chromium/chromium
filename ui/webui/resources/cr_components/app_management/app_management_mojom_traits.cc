@@ -197,9 +197,9 @@ bool EnumTraits<TriState, apps::TriState>::FromMojom(TriState input,
 PermissionValueDataView::Tag
 UnionTraits<PermissionValueDataView, apps::PermissionValuePtr>::GetTag(
     const apps::PermissionValuePtr& r) {
-  if (r->bool_value.has_value()) {
+  if (absl::holds_alternative<bool>(r->value)) {
     return PermissionValueDataView::Tag::kBoolValue;
-  } else if (r->tristate_value.has_value()) {
+  } else if (absl::holds_alternative<apps::TriState>(r->value)) {
     return PermissionValueDataView::Tag::kTristateValue;
   }
   NOTREACHED();
