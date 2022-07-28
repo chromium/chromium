@@ -1409,10 +1409,6 @@
       status: "test",
     },
     {
-      name: "MediaPreservesPitch",
-      status: "stable",
-    },
-    {
       name: "MediaQueryNavigationControls",
     },
     {
