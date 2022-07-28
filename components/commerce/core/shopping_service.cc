@@ -38,6 +38,9 @@ const char kOgPriceCurrency[] = "price:currency";
 const char kOgPriceAmount[] = "price:amount";
 const long kToMicroCurrency = 1e6;
 
+const char kImageAvailabilityHistogramName[] =
+    "Commerce.ShoppingService.ProductInfo.ImageAvailability";
+
 ProductInfo::ProductInfo() = default;
 ProductInfo::ProductInfo(const ProductInfo&) = default;
 ProductInfo& ProductInfo::operator=(const ProductInfo&) = default;
@@ -342,9 +345,16 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
       if (buyable_product.has_title())
         info->title = buyable_product.title();
 
-      if (buyable_product.has_image_url() &&
-          base::FeatureList::IsEnabled(kCommerceAllowServerImages)) {
-        info->image_url = GURL(buyable_product.image_url());
+      if (buyable_product.has_image_url()) {
+        info->server_image_available = true;
+
+        // Only keep the server-provided image if we're allowed to.
+        if (base::FeatureList::IsEnabled(
+                commerce::kCommerceAllowServerImages)) {
+          info->image_url = GURL(buyable_product.image_url());
+        }
+      } else {
+        info->server_image_available = false;
       }
 
       if (buyable_product.has_offer_id())
@@ -374,7 +384,8 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   std::move(callback).Run(url, optional_info);
 }
 
-void MergeProductInfoData(ProductInfo* info, base::Value& on_page_data_map) {
+void ShoppingService::MergeProductInfoData(ProductInfo* info,
+                                           base::Value& on_page_data_map) {
   if (!info)
     return;
 
@@ -382,26 +393,34 @@ void MergeProductInfoData(ProductInfo* info, base::Value& on_page_data_map) {
   // populate fields in |meta|.
   bool data_was_merged = false;
 
+  bool had_fallback_image = false;
+
   for (auto it : on_page_data_map.DictItems()) {
     if (base::CompareCaseInsensitiveASCII(it.first, kOgTitle) == 0) {
       if (info->title.empty()) {
         info->title = it.second.GetString();
         base::UmaHistogramEnumeration(
             "Commerce.ShoppingService.ProductInfo.FallbackDataContent",
-            ProductInfoFallback::kTitle, ProductInfoFallback::kMaxValue);
+            ProductInfoFallback::kTitle);
         data_was_merged = true;
       }
     } else if (base::CompareCaseInsensitiveASCII(it.first, kOgImage) == 0) {
+      had_fallback_image = true;
+
       // If the product already has an image, add the one found on the page as
       // a fallback. The original image, if it exists, should have been
       // retrieved from the proto received from optimization guide before this
       // callback runs.
       if (info->image_url.is_empty()) {
         GURL og_url(it.second.GetString());
-        info->image_url.Swap(&og_url);
+
+        // Only keep the local image if we're allowed to.
+        if (base::FeatureList::IsEnabled(commerce::kCommerceAllowLocalImages))
+          info->image_url.Swap(&og_url);
+
         base::UmaHistogramEnumeration(
             "Commerce.ShoppingService.ProductInfo.FallbackDataContent",
-            ProductInfoFallback::kLeadImage, ProductInfoFallback::kMaxValue);
+            ProductInfoFallback::kLeadImage);
         data_was_merged = true;
       }
       // TODO(mdjones): Add capacity for fallback images when necessary.
@@ -418,12 +437,24 @@ void MergeProductInfoData(ProductInfo* info, base::Value& on_page_data_map) {
           info->currency_code = it.second.GetString();
           base::UmaHistogramEnumeration(
               "Commerce.ShoppingService.ProductInfo.FallbackDataContent",
-              ProductInfoFallback::kPrice, ProductInfoFallback::kMaxValue);
+              ProductInfoFallback::kPrice);
           data_was_merged = true;
         }
       }
     }
   }
+
+  ProductImageAvailability image_availability =
+      ProductImageAvailability::kNeitherAvailable;
+  if (info->server_image_available && had_fallback_image) {
+    image_availability = ProductImageAvailability::kBothAvailable;
+  } else if (had_fallback_image) {
+    image_availability = ProductImageAvailability::kLocalOnly;
+  } else if (info->server_image_available) {
+    image_availability = ProductImageAvailability::kServerOnly;
+  }
+  base::UmaHistogramEnumeration(kImageAvailabilityHistogramName,
+                                image_availability);
 
   base::UmaHistogramBoolean(
       "Commerce.ShoppingService.ProductInfo.FallbackDataUsed", data_was_merged);

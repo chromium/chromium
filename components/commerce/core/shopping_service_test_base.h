@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/commerce/core/shopping_service.h"
@@ -117,11 +118,15 @@ class ShoppingServiceTestBase : public testing::Test {
 
   void TestBody() override;
 
+  void TearDown() override;
+
   // A direct proxies to the same methods in the ShoppingService class.
   void DidNavigatePrimaryMainFrame(WebWrapper* web);
   void DidFinishLoad(WebWrapper* web);
   void DidNavigateAway(WebWrapper* web, const GURL& url);
   void WebWrapperDestroyed(WebWrapper* web);
+  static void MergeProductInfoData(ProductInfo* info,
+                                   base::Value& on_page_data_map);
 
   // Get the count of the number of tabs a particular URL is open in from the
   // product info cache.
@@ -143,6 +148,8 @@ class ShoppingServiceTestBase : public testing::Test {
   std::unique_ptr<ShoppingService> shopping_service_;
 
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+
+  base::test::ScopedFeatureList test_features_;
 };
 
 }  // namespace commerce

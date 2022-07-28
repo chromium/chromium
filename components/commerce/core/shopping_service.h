@@ -49,6 +49,18 @@ extern const char kOgPriceAmount[];
 // micro-currency units.
 extern const long kToMicroCurrency;
 
+extern const char kImageAvailabilityHistogramName[];
+
+// The availability of the product image for an offer. This needs to be kept in
+// sync with the ProductImageAvailability enum in enums.xml.
+enum class ProductImageAvailability {
+  kServerOnly = 0,
+  kLocalOnly = 1,
+  kBothAvailable = 2,
+  kNeitherAvailable = 3,
+  kMaxValue = kNeitherAvailable,
+};
+
 // The type of fallback data can be used when generating product info.
 enum class ProductInfoFallback {
   kTitle = 0,
@@ -65,6 +77,7 @@ struct CommerceSubscription;
 
 // Information returned by the product info APIs.
 struct ProductInfo {
+ public:
   ProductInfo();
   ProductInfo(const ProductInfo&);
   ProductInfo& operator=(const ProductInfo&);
@@ -72,11 +85,20 @@ struct ProductInfo {
 
   std::string title;
   GURL image_url;
-  uint64_t product_cluster_id;
-  uint64_t offer_id;
+  uint64_t product_cluster_id{0};
+  uint64_t offer_id{0};
   std::string currency_code;
-  long amount_micros;
+  long amount_micros{0};
   std::string country_code;
+
+ private:
+  friend class ShoppingService;
+
+  // This is used to track whether the server provided an image with the rest
+  // of the product info. This value being |true| does not necessarily mean an
+  // image is available in the ProductInfo struct (as it is flag gated) and is
+  // primarily used for recording metrics.
+  bool server_image_available{false};
 };
 
 // Information returned by the merchant info APIs.
@@ -210,6 +232,12 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       const GURL url,
       data_decoder::DataDecoder::ValueOrError result);
 
+  // Merge shopping data from existing |info| and the result of on-page
+  // heuristics -- a JSON object holding key -> value pairs (a map) stored in
+  // |on_page_data_map|. The merged data is written to |info|.
+  static void MergeProductInfoData(ProductInfo* info,
+                                   base::Value& on_page_data_map);
+
   void HandleOptGuideMerchantInfoResponse(
       const GURL& url,
       MerchantInfoCallback callback,
@@ -256,11 +284,6 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
 
   base::WeakPtrFactory<ShoppingService> weak_ptr_factory_;
 };
-
-// Merge shopping data from existing |info| and the result of on-page
-// heuristics -- a JSON object holding key -> value pairs (a map) stored in
-// |on_page_data_map|.
-void MergeProductInfoData(ProductInfo* info, base::Value& on_page_data_map);
 
 }  // namespace commerce
 
