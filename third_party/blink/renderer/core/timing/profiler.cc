@@ -20,8 +20,6 @@ Profiler* Profiler::Create(ScriptState* script_state,
                            ExceptionState& exception_state) {
   auto* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context);
-  DCHECK(
-      RuntimeEnabledFeatures::ExperimentalJSProfilerEnabled(execution_context));
 
   Performance* performance = nullptr;
   bool can_profile = false;

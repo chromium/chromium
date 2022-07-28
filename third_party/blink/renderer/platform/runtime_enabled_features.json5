@@ -948,13 +948,6 @@
       name: "ExperimentalContentSecurityPolicyFeatures",
       status: "experimental",
     },
-    // Enables a DOM-exposed interface to profile client JS.
-    // https://github.com/WICG/js-self-profiling
-    {
-      name: "ExperimentalJSProfiler",
-      origin_trial_feature_name: "ExperimentalJSProfiler",
-      status: "stable"
-    },
     {
       name: "ExperimentalJSProfilerMarkers",
       status: "experimental"

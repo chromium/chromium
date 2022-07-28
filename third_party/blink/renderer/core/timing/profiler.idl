@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // https://wicg.github.io/js-self-profiling/#the-profiler-interface
-[Exposed=Window, RuntimeEnabled=ExperimentalJSProfiler]
+[Exposed=Window]
 interface Profiler : EventTarget {
   readonly attribute DOMHighResTimeStamp sampleInterval;
   readonly attribute boolean stopped;
