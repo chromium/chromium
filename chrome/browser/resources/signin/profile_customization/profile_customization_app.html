@@ -18,9 +18,8 @@
   }
 
   #avatarContainer {
-    --avatar-image-width: 60px;
     --avatar-border: 2px;
-    --avatar-size: calc(var(--avatar-image-width) + 2 * var(--avatar-border));
+    --avatar-size: 60px;
     height: var(--avatar-size);
     left: calc(50% - var(--avatar-size)/2);
     position: absolute;
@@ -29,8 +28,8 @@
   }
 
   .in-dialog-design #avatarContainer {
-    --avatar-image-width: 72px;
-    top: 90px;
+    --avatar-size: 76px;
+    top: 91px;
   }
 
   #avatar {
@@ -38,9 +37,11 @@
     background-color: var(--md-background-color);
     border: var(--avatar-border) solid var(--md-background-color);
     border-radius: 50%;
-    height: var(--avatar-image-width);
-    top: 43px;
-    width: var(--avatar-image-width);
+    height: 100%;
+    left: calc(-1 * var(--avatar-border));
+    position: absolute;
+    top: calc(-1 * var(--avatar-border));
+    width: 100%;
   }
 
   .work-badge {
@@ -73,6 +74,10 @@
     right: 0;
     top: 0;
     width: var(--work-icon-size);
+  }
+
+  .in-dialog-design .work-badge > iron-icon {
+    --work-icon-size: 16px;
   }
 
   #body {
