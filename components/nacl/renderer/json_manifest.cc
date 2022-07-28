@@ -251,14 +251,13 @@ bool IsValidPnaclTranslateSpec(const base::Value& pnacl_spec,
 // ISA specified in |sandbox_isa| or have a fallback 'portable' entry if
 // there is no match. Returns true if parent_dictionary[parent_key] is an
 // ISA to URL map.  Sets |error_info| to something descriptive if it fails.
-bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
+bool IsValidISADictionary(const base::Value::Dict& parent_dictionary,
                           const std::string& parent_key,
                           const std::string& sandbox_isa,
                           bool must_find_matching_entry,
                           JsonManifest::ErrorInfo* error_info) {
-  const base::DictionaryValue* dictionary = nullptr;
-  if (!parent_dictionary.GetDictionaryWithoutPathExpansion(parent_key,
-                                                           &dictionary)) {
+  const base::Value::Dict* dictionary = parent_dictionary.FindDict(parent_key);
+  if (!dictionary) {
     error_info->error = PP_NACL_ERROR_MANIFEST_SCHEMA_VALIDATE;
     error_info->string = std::string("manifest: ") + parent_key +
                          " property is not an ISA to URL dictionary";
@@ -286,10 +285,7 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
     isaPropertiesLength = std::size(kNaClManifestISAProperties);
   }
   // Check that entries in the dictionary are structurally correct.
-  for (base::DictionaryValue::Iterator it(*dictionary); !it.IsAtEnd();
-       it.Advance()) {
-    const std::string& property_name = it.key();
-    const base::Value& property_value = it.value();
+  for (const auto [property_name, property_value] : *dictionary) {
     std::string error_string;
     if (FindMatchingProperty(property_name,
                              isaProperties,
@@ -332,7 +328,7 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
   }
 
   if (sandbox_isa == kPortableKey) {
-    if (!dictionary->FindKey(kPortableKey)) {
+    if (!dictionary->Find(kPortableKey)) {
       error_info->error = PP_NACL_ERROR_MANIFEST_PROGRAM_MISSING_ARCH;
       error_info->string = "manifest: no version of " + parent_key +
                            " given for portable.";
@@ -341,8 +337,8 @@ bool IsValidISADictionary(const base::DictionaryValue& parent_dictionary,
   } else if (must_find_matching_entry) {
     // TODO(elijahtaylor) add ISA resolver here if we expand ISAs to include
     // micro-architectures that can resolve to multiple valid sandboxes.
-    bool has_isa = dictionary->FindKey(sandbox_isa);
-    bool has_portable = dictionary->FindKey(kPortableKey);
+    bool has_isa = dictionary->Find(sandbox_isa);
+    bool has_portable = dictionary->Find(kPortableKey);
 
     if (!has_isa && !has_portable) {
       error_info->error = PP_NACL_ERROR_MANIFEST_PROGRAM_MISSING_ARCH;
@@ -509,8 +505,8 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
   // Validate the program section.
   // There must be a matching (portable or sandbox_isa_) entry for program for
   // NaCl.
-  if (!IsValidISADictionary(*dictionary_, kProgramKey, sandbox_isa_, true,
-                            error_info)) {
+  if (!IsValidISADictionary(dictionary_->GetDict(), kProgramKey, sandbox_isa_,
+                            true, error_info)) {
     return false;
   }
 
@@ -518,8 +514,8 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
   // There must be a matching (portable or sandbox_isa_) entry for interpreter
   // for NaCl.
   if (dictionary_->FindKey(kInterpreterKey)) {
-    if (!IsValidISADictionary(*dictionary_, kInterpreterKey, sandbox_isa_, true,
-                              error_info)) {
+    if (!IsValidISADictionary(dictionary_->GetDict(), kInterpreterKey,
+                              sandbox_isa_, true, error_info)) {
       return false;
     }
   }
@@ -539,8 +535,8 @@ bool JsonManifest::MatchesSchema(ErrorInfo* error_info) {
     for (base::DictionaryValue::Iterator it(*files_dictionary); !it.IsAtEnd();
          it.Advance()) {
       const std::string& file_name = it.key();
-      if (!IsValidISADictionary(*files_dictionary, file_name, sandbox_isa_,
-                                false, error_info)) {
+      if (!IsValidISADictionary(files_dictionary->GetDict(), file_name,
+                                sandbox_isa_, false, error_info)) {
         return false;
       }
     }
@@ -594,8 +590,8 @@ bool JsonManifest::GetURLFromISADictionary(
   // When the application actually requests a resolved URL, we must have
   // a matching entry (sandbox_isa_ or portable) for NaCl.
   ErrorInfo ignored_error_info;
-  if (!IsValidISADictionary(parent_dictionary, parent_key, sandbox_isa_, true,
-                            &ignored_error_info)) {
+  if (!IsValidISADictionary(parent_dictionary.GetDict(), parent_key,
+                            sandbox_isa_, true, &ignored_error_info)) {
     error_info->error = PP_NACL_ERROR_MANIFEST_RESOLVE_URL;
     error_info->string = "architecture " + sandbox_isa_ +
                          " is not found for file " + parent_key;
