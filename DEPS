@@ -1583,17 +1583,6 @@ deps = {
   'src/third_party/pthreadpool/src':
     Var('chromium_git') + '/external/github.com/Maratyszcza/pthreadpool.git' + '@' + '1787867f6183f056420e532eec640cba25efafea',
 
-  'src/third_party/proguard': {
-      'packages': [
-          {
-              'package': 'chromium/third_party/proguard',
-              'version': 'Fd91BJFVlmiO6c46YMTsdy7n2f5Sk2hVVGlzPLvqZPsC',
-          },
-      ],
-      'condition': 'checkout_android',
-      'dep_type': 'cipd',
-  },
-
   # Dependency of skia.
   'src/third_party/pyelftools': {
       'url': Var('chromium_git') + '/chromiumos/third_party/pyelftools.git' + '@' + '19b3e610c86fcadb837d252c794cb5e8008826ae',

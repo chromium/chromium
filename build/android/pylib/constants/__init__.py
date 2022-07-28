@@ -151,7 +151,6 @@ PYTHON_UNIT_TEST_SUITES = {
             'devil.android.md5sum_test',
             'devil.utils.cmd_helper_test',
             'pylib.results.json_results_test',
-            'pylib.utils.proguard_test',
         ]
     },
     'gyp_py_unittests': {
