@@ -101,9 +101,8 @@ void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
                                 const char pref_name[],
                                 AccountId account_id,
                                 WallpaperInfo info) {
-  const base::Value* stored_info_dict =
-      pref_service->GetDictionary(pref_name)->FindDictKey(
-          account_id.GetUserEmail());
+  const base::Value::Dict* stored_info_dict =
+      pref_service->GetValueDict(pref_name).FindDict(account_id.GetUserEmail());
   base::Value expected_info_dict = CreateWallpaperInfoDict(info);
   EXPECT_EQ(expected_info_dict, *stored_info_dict);
 }
