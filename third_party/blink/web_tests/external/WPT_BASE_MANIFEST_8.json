@@ -300357,7 +300357,7 @@
       []
      ],
      "multitest.js": [
-      "47e5849fece76172cbabf4b446b63e74fa682b50",
+      "656ea07a6d3ae58cea1a7bd66c87e51d951c23c4",
       []
      ],
      "outdent.js": [
@@ -403386,6 +403386,13 @@
       ],
       "sibling.html": [
        "c0e04fb8b3a048a42e3ea9afdb2a70423245ba24",
+       [
+        null,
+        {}
+       ]
+      ],
+      "subject-has-invalidation-with-display-none-anchor-element.html": [
+       "6c87560c691c7ee21f613b531e0209600939e495",
        [
         null,
         {}
