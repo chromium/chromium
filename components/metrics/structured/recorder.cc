@@ -95,9 +95,10 @@ void Recorder::OnReportingStateChanged(bool enabled) {
   }
 }
 
-void Recorder::OnHardwareClassInitialized() {
+void Recorder::OnHardwareClassInitialized(
+    const std::string& full_hardware_class) {
   for (auto& observer : observers_) {
-    observer.OnHardwareClassInitialized();
+    observer.OnHardwareClassInitialized(full_hardware_class);
   }
 }
 

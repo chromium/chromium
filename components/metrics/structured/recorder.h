@@ -49,8 +49,9 @@ class Recorder : public StructuredMetricsClient::RecordingDelegate {
     virtual void OnProfileAdded(const base::FilePath& profile_path) = 0;
     // Called on a call to OnReportingStateChanged.
     virtual void OnReportingStateChanged(bool enabled) = 0;
-    // Called when hardware class has been loaded.
-    virtual void OnHardwareClassInitialized(){};
+    // Called when full hardware class has been loaded.
+    virtual void OnHardwareClassInitialized(
+        const std::string& full_hardware_class){};
     // Called on a call to LastKeyRotation.
     virtual absl::optional<int> LastKeyRotation(uint64_t project_name_hash) = 0;
   };
@@ -78,8 +79,8 @@ class Recorder : public StructuredMetricsClient::RecordingDelegate {
   // Notifies observers that metrics reporting has been enabled or disabled.
   void OnReportingStateChanged(bool enabled);
 
-  // Notifies observers that hardware class has been loaded.
-  void OnHardwareClassInitialized();
+  // Notifies observers that full hardware class has been loaded.
+  void OnHardwareClassInitialized(const std::string& full_hardware_class);
 
   void SetUiTaskRunner(
       const scoped_refptr<base::SequencedTaskRunner> ui_task_runner);

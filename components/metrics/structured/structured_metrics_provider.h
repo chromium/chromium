@@ -89,7 +89,8 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   void OnProfileAdded(const base::FilePath& profile_path) override;
   void OnRecord(const EventBase& event) override;
   void OnReportingStateChanged(bool enabled) override;
-  void OnHardwareClassInitialized() override;
+  void OnHardwareClassInitialized(
+      const std::string& full_hardware_class) override;
   absl::optional<int> LastKeyRotation(uint64_t project_name_hash) override;
 
   // metrics::MetricsProvider:
@@ -115,6 +116,11 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // Hashes events and persists the events to disk. Should be called once |this|
   // has been initialized.
   void HashUnhashedEventsAndPersist();
+
+  // Populates full hardware class needed for Structured Metrics.
+  // Independent metric uploads must populate hardware_class as the normal
+  // ChromeOSMetricsProvider will not be called to populate the SystemProfile.
+  void ProvideFullHardwareClass(SystemProfileProto* system_profile);
 
   // Beyond this number of logging events between successive calls to
   // ProvideCurrentSessionData, we stop recording events.
@@ -166,9 +172,6 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // state will be purged upon initialization.
   bool purge_state_on_init_ = false;
 
-  // Tracks whether hardware class has been loaded.
-  bool hardware_class_initialized_ = false;
-
   // The last time we provided independent metrics.
   base::Time last_provided_independent_metrics_;
 
@@ -190,6 +193,9 @@ class StructuredMetricsProvider : public metrics::MetricsProvider,
   // Used to override the otherwise hardcoded path for device keys in unit tests
   // only.
   absl::optional<base::FilePath> device_key_data_path_for_test_;
+
+  // Hardware class used to populate independent metric uploads.
+  absl::optional<std::string> full_hardware_class_;
 
   base::WeakPtrFactory<StructuredMetricsProvider> weak_factory_{this};
 };

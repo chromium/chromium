@@ -22,6 +22,7 @@ namespace structured {
 namespace {
 
 using ::metrics::ChromeUserMetricsExtension;
+using ::metrics::SystemProfileProto;
 
 // The delay period for the PersistentProto.
 constexpr int kSaveDelayMs = 1000;
@@ -262,8 +263,9 @@ void StructuredMetricsProvider::OnReportingStateChanged(bool enabled) {
   }
 }
 
-void StructuredMetricsProvider::OnHardwareClassInitialized() {
-  hardware_class_initialized_ = true;
+void StructuredMetricsProvider::OnHardwareClassInitialized(
+    const std::string& full_hardware_class) {
+  full_hardware_class_ = full_hardware_class;
 }
 
 void StructuredMetricsProvider::ProvideCurrentSessionData(
@@ -273,7 +275,7 @@ void StructuredMetricsProvider::ProvideCurrentSessionData(
     return;
 
   if (base::FeatureList::IsEnabled(kDelayUploadUntilHwid) &&
-      !hardware_class_initialized_) {
+      !full_hardware_class_.has_value()) {
     return;
   }
 
@@ -301,7 +303,7 @@ bool StructuredMetricsProvider::HasIndependentMetrics() {
   }
 
   if (base::FeatureList::IsEnabled(kDelayUploadUntilHwid) &&
-      !hardware_class_initialized_) {
+      !full_hardware_class_.has_value()) {
     return false;
   }
 
@@ -319,7 +321,7 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   }
 
   if (base::FeatureList::IsEnabled(kDelayUploadUntilHwid) &&
-      !hardware_class_initialized_) {
+      !full_hardware_class_.has_value()) {
     std::move(done_callback).Run(false);
     return;
   }
@@ -327,6 +329,11 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   last_provided_independent_metrics_ = base::Time::Now();
 
   LogNumEventsInUpload(events_.get()->get()->non_uma_events_size());
+
+  // Independent metrics need to manually populate Chrome OS fields such as
+  // full_hardware_class as ChromeOSMetricsProvider will not be called for
+  // IndependentMetrics.
+  ProvideFullHardwareClass(uma_proto->mutable_system_profile());
 
   auto* structured_data = uma_proto->mutable_structured_data();
   structured_data->mutable_events()->Swap(
@@ -338,6 +345,18 @@ void StructuredMetricsProvider::ProvideIndependentMetrics(
   // it.
   uma_proto->clear_client_id();
   std::move(done_callback).Run(true);
+}
+
+void StructuredMetricsProvider::ProvideFullHardwareClass(
+    SystemProfileProto* system_profile) {
+  SystemProfileProto::Hardware* hardware = system_profile->mutable_hardware();
+
+  // Populate proto with full_hardware_class if it does not contain the value
+  // yet. The field may be populated if ChromeOSMetricsProvider has already run.
+  if (full_hardware_class_.has_value() &&
+      !hardware->has_full_hardware_class()) {
+    hardware->set_full_hardware_class(full_hardware_class_.value());
+  }
 }
 
 void StructuredMetricsProvider::WriteNowForTest() {
