@@ -35,7 +35,7 @@ class MicrophonePrivacySwitchControllerTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    // This makes sure a globale instance of MicrophoneMuteNotificationDelegate
+    // This makes sure a global instance of MicrophoneMuteNotificationDelegate
     // is created before running tests.
     delegate_ = std::make_unique<FakeMicrophoneMuteNotificationDelegate>();
   }
@@ -44,6 +44,13 @@ class MicrophonePrivacySwitchControllerTest : public AshTestBase {
   void SetUserPref(bool allowed) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
         prefs::kUserMicrophoneAllowed, allowed);
+  }
+
+  bool GetUserPref() {
+    return Shell::Get()
+        ->session_controller()
+        ->GetActivePrefService()
+        ->GetBoolean(prefs::kUserMicrophoneAllowed);
   }
 
  private:
@@ -71,6 +78,15 @@ TEST_F(MicrophonePrivacySwitchControllerTest, OnPreferenceChanged) {
   for (bool microphone_allowed : {false, true, false}) {
     SetUserPref(microphone_allowed);
     EXPECT_EQ(CrasAudioHandler::Get()->IsInputMuted(), !microphone_allowed);
+  }
+}
+
+TEST_F(MicrophonePrivacySwitchControllerTest, OnInputMuteChanged) {
+  for (bool microphone_muted : {false, true, false}) {
+    const bool microphone_allowed = !microphone_muted;
+
+    CrasAudioHandler::Get()->SetInputMute(microphone_muted);
+    EXPECT_EQ(GetUserPref(), microphone_allowed);
   }
 }
 

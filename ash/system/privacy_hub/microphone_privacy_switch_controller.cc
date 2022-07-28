@@ -18,10 +18,12 @@ namespace ash {
 
 MicrophonePrivacySwitchController::MicrophonePrivacySwitchController() {
   Shell::Get()->session_controller()->AddObserver(this);
+  CrasAudioHandler::Get()->AddAudioObserver(this);
 }
 
 MicrophonePrivacySwitchController::~MicrophonePrivacySwitchController() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  CrasAudioHandler::Get()->RemoveAudioObserver(this);
 }
 
 void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
@@ -41,14 +43,32 @@ void MicrophonePrivacySwitchController::OnActiveUserPrefServiceChanged(
   SetSystemMute();
 }
 
+void MicrophonePrivacySwitchController::OnInputMuteChanged(bool mute_on) {
+  // `pref_change_registrar_` is only initialized after a user logs in. If
+  // OnInputMuteChanged is called when `pref_change_registrar_` is null, we
+  // should simply ignore those events.
+  if (pref_change_registrar_ == nullptr)
+    return;
+
+  const bool microphone_allowed = !mute_on;
+  if (pref_change_registrar_->prefs()->GetBoolean(
+          prefs::kUserMicrophoneAllowed) != microphone_allowed) {
+    pref_change_registrar_->prefs()->SetBoolean(prefs::kUserMicrophoneAllowed,
+                                                microphone_allowed);
+  }
+}
+
 void MicrophonePrivacySwitchController::OnPreferenceChanged() {
   SetSystemMute();
 }
 
 void MicrophonePrivacySwitchController::SetSystemMute() {
-  const bool allowed = pref_change_registrar_->prefs()->GetBoolean(
+  const bool microphone_allowed = pref_change_registrar_->prefs()->GetBoolean(
       prefs::kUserMicrophoneAllowed);
-  CrasAudioHandler::Get()->SetInputMute(!allowed);
+  const bool microphone_muted = !microphone_allowed;
+  if (CrasAudioHandler::Get()->IsInputMuted() != microphone_muted) {
+    CrasAudioHandler::Get()->SetInputMute(microphone_muted);
+  }
 }
 
 }  // namespace ash
