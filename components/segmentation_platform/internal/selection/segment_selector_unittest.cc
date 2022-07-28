@@ -14,8 +14,8 @@
 #include "components/segmentation_platform/internal/execution/default_model_manager.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
-#include "components/segmentation_platform/internal/metric_filter_utils.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
+#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -33,6 +33,13 @@ class SegmentInfo;
 
 namespace {
 
+#define SEGMENT_ID_ENTRY(segment)                          \
+  {                                                        \
+    segment, Config::SegmentMetadata {                     \
+      stats::OptimizationTargetToHistogramVariant(segment) \
+    }                                                      \
+  }
+
 class MockFieldTrialRegister : public FieldTrialRegister {
  public:
   MOCK_METHOD2(RegisterFieldTrial,
@@ -48,10 +55,12 @@ class MockFieldTrialRegister : public FieldTrialRegister {
 Config CreateTestConfig() {
   Config config;
   config.segmentation_key = "test_key";
+  config.segmentation_uma_name = "TestKey";
   config.segment_selection_ttl = base::Days(28);
   config.unknown_selection_ttl = base::Days(14);
-  config.segment_ids = {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
-                        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE};
+  config.segments = {
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB),
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE)};
   return config;
 }
 
@@ -89,8 +98,11 @@ class SegmentSelectorTest : public testing::Test {
   void SetUpWithConfig(const Config& config) {
     clock_.SetNow(base::Time::Now());
     config_ = config;
-    default_manager_ = std::make_unique<DefaultModelManager>(
-        &provider_factory_, config_.segment_ids);
+    std::vector<proto::SegmentId> all_segments;
+    for (auto it : config.segments)
+      all_segments.push_back(it.first);
+    default_manager_ =
+        std::make_unique<DefaultModelManager>(&provider_factory_, all_segments);
     segment_database_ = std::make_unique<test::TestSegmentInfoDatabase>();
     auto prefs_moved = std::make_unique<TestSegmentationResultPrefs>();
     prefs_ = prefs_moved.get();
@@ -320,8 +332,8 @@ TEST_F(SegmentSelectorTest, NewSegmentResultOverridesThePreviousBest) {
 
 TEST_F(SegmentSelectorTest, UnknownSegmentTtlExpiryForBooleanModel) {
   Config config = CreateTestConfig();
-  config.segment_ids = {
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID};
+  config.segments = {SEGMENT_ID_ENTRY(
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID)};
   SetUpWithConfig(config);
 
   SegmentId segment_id =
@@ -465,7 +477,7 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
 
   // Create config with Feed segment.
   Config config = CreateTestConfig();
-  config.segment_ids.push_back(kSubsegmentEnabledTarget);
+  config.segments.insert(SEGMENT_ID_ENTRY(kSubsegmentEnabledTarget));
   // Previous selection result is not available at this time, so it should
   // record unselected.
   EXPECT_CALL(field_trial_register_,
@@ -512,30 +524,37 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
       &config_, &field_trial_register_, &clock_,
       PlatformOptions::CreateDefault(), default_manager_.get());
 
-  // When segment result is missing, unknown subsegment is recorded.
-  EXPECT_CALL(
-      field_trial_register_,
-      RegisterSubsegmentFieldTrialIfNeeded(
-          base::StringPiece("Segmentation_TestKey_Share"), segment_id0, 0));
-  EXPECT_CALL(
-      field_trial_register_,
-      RegisterSubsegmentFieldTrialIfNeeded(
-          base::StringPiece("Segmentation_TestKey_NewTab"),
-          proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0));
-
-  // The new selector will record subsegment metric groups based on the mapping.
+  // When segment result is missing, unknown subsegment is recorded, otherwise
+  // record metrics based on the subsegment mapping.
   base::RunLoop wait_for_subsegment;
+  std::vector<std::tuple<base::StringPiece, SegmentId, int>> actual_calls;
+  int call_count = 0;
+
   EXPECT_CALL(field_trial_register_,
-              RegisterSubsegmentFieldTrialIfNeeded(
-                  base::StringPiece("Segmentation_TestKey_FeedUserSegment"),
-                  kSubsegmentEnabledTarget, 3))
-      .WillOnce(
-          Invoke([&wait_for_subsegment](base::StringPiece, SegmentId, int) {
-            wait_for_subsegment.QuitClosure().Run();
+              RegisterSubsegmentFieldTrialIfNeeded(_, _, _))
+      .Times(3)
+      .WillRepeatedly(
+          Invoke([&wait_for_subsegment, &actual_calls, &call_count](
+                     base::StringPiece trial, SegmentId id, int rank) {
+            actual_calls.emplace_back(trial, id, rank);
+            call_count++;
+            if (call_count == 3)
+              wait_for_subsegment.QuitClosure().Run();
           }));
 
   segment_selector_->OnPlatformInitialized(nullptr);
   wait_for_subsegment.Run();
+  EXPECT_THAT(
+      actual_calls,
+      testing::UnorderedElementsAre(
+          std::make_tuple(base::StringPiece("Segmentation_TestKey_Share"),
+                          segment_id0, 0),
+          std::make_tuple(
+              base::StringPiece("Segmentation_TestKey_NewTab"),
+              proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0),
+          std::make_tuple(
+              base::StringPiece("Segmentation_TestKey_FeedUserSegment"),
+              kSubsegmentEnabledTarget, 3)));
 }
 
 }  // namespace segmentation_platform

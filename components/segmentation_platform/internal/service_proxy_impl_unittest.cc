@@ -43,7 +43,7 @@ proto::SegmentInfo AddSegmentInfo(
   info.set_segment_id(segment_id);
   db_entries->insert(
       std::make_pair(base::NumberToString(static_cast<int>(segment_id)), info));
-  config->segment_ids.emplace_back(segment_id);
+  config->segments.insert({segment_id, {"UmaName"}});
   return info;
 }
 

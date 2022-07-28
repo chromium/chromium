@@ -10,6 +10,7 @@
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#import "components/segmentation_platform/internal/stats.h"
 #import "components/segmentation_platform/public/config.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/model_provider.h"
@@ -24,6 +25,13 @@ namespace segmentation_platform {
 
 namespace {
 
+#define SEGMENT_ID_ENTRY(segment)                          \
+  {                                                        \
+    segment, Config::SegmentMetadata {                     \
+      stats::OptimizationTargetToHistogramVariant(segment) \
+    }                                                      \
+  }
+
 using ::segmentation_platform::proto::SegmentId;
 
 constexpr int kFeedUserSegmentSelectionTTLDays = 14;
@@ -32,8 +40,10 @@ constexpr int kFeedUserSegmentUnknownSelectionTTLDays = 14;
 std::unique_ptr<Config> GetConfigForFeedSegments() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kFeedUserSegmentationKey;
-  config->segment_ids = {
-      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER,
+  config->segmentation_uma_name =
+      stats::SegmentationKeyToUmaName(config->segmentation_key);
+  config->segments = {
+      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER),
   };
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(

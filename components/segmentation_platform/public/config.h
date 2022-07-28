@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_CONFIG_H_
 
 #include <string>
+#include <unordered_map>
 
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
@@ -61,6 +62,9 @@ struct Config {
   // discrete mapping and writing results to prefs.
   std::string segmentation_key;
 
+  // The name used for the segmentation key in UMA filters.
+  std::string segmentation_uma_name;
+
   // The trigger event type that triggers segment selection. If trigger is
   // non-none, |on_demand_execution| must be true.
   TriggerType trigger = TriggerType::kNone;
@@ -76,13 +80,26 @@ struct Config {
   // as output option after having served other valid segments.
   base::TimeDelta unknown_selection_ttl;
 
-  // List of segment ids that the current config requires to be available.
-  std::vector<proto::SegmentId> segment_ids;
+  // List of segments needed to make a selection.
+  struct SegmentMetadata {
+    // The name used for this segment in UMA filters.
+    std::string uma_name;
+
+    bool operator==(const SegmentMetadata& other) const;
+  };
+  std::unordered_map<proto::SegmentId, SegmentMetadata> segments;
 
   // The selection only supports returning results from on-demand model
   // executions instead of returning result from previous sessions. The
   // selection TTLs are ignored in this config.
   bool on_demand_execution = false;
+
+  // Returns the filter name that will be shown in the metrics for this
+  // segmentation config.
+  std::string GetSegmentationFilterName() const;
+
+  // Returns the segment name for the `segment` used by the metrics.
+  std::string GetSegmentUmaName(proto::SegmentId segment) const;
 };
 
 }  // namespace segmentation_platform

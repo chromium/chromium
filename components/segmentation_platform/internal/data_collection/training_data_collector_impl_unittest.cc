@@ -85,10 +85,11 @@ class TrainingDataCollectorImplTest : public ::testing::Test {
 
     configs_.emplace_back(std::make_unique<Config>());
     configs_[0]->segmentation_key = kSegmentationKey;
-    configs_[0]->segment_ids.push_back(
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
-    configs_[0]->segment_ids.push_back(
-        SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    configs_[0]->segments.insert(
+        {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+         {"UmaNameNewTab"}});
+    configs_[0]->segments.insert(
+        {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, {"UmaNameShare"}});
 
     SegmentationResultPrefs result_prefs(&prefs_);
     SelectedSegment selected_segment(
