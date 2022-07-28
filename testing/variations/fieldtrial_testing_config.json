@@ -3108,6 +3108,21 @@
             ]
         }
     ],
+    "CustomTabSessionRecording": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTPackageNameRecording"
+                    ]
+                }
+            ]
+        }
+    ],
     "DecodeScriptSourceOffThread": [
         {
             "platforms": [
