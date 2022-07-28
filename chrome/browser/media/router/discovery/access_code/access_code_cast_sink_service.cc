@@ -128,24 +128,22 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       false,
   };
 
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
-    // We don't need to post this task per the DiscoveryNetworkMonitor's
-    // promise: "All observers will be notified of network changes on the thread
-    // from which they registered."
-    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs_);
-    network_monitor_->AddObserver(this);
-    InitAllStoredDevices();
-    user_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    user_prefs_registrar_->Init(prefs_);
-    user_prefs_registrar_->Add(
-        prefs::kAccessCodeCastDeviceDuration,
-        base::BindRepeating(&AccessCodeCastSinkService::OnDurationPrefChange,
-                            base::Unretained(this)));
-    user_prefs_registrar_->Add(
-        prefs::kAccessCodeCastEnabled,
-        base::BindRepeating(&AccessCodeCastSinkService::OnEnabledPrefChange,
-                            base::Unretained(this)));
-  }
+  // We don't need to post this task per the DiscoveryNetworkMonitor's
+  // promise: "All observers will be notified of network changes on the thread
+  // from which they registered."
+  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdater>(prefs_);
+  network_monitor_->AddObserver(this);
+  InitAllStoredDevices();
+  user_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  user_prefs_registrar_->Init(prefs_);
+  user_prefs_registrar_->Add(
+      prefs::kAccessCodeCastDeviceDuration,
+      base::BindRepeating(&AccessCodeCastSinkService::OnDurationPrefChange,
+                          base::Unretained(this)));
+  user_prefs_registrar_->Add(
+      prefs::kAccessCodeCastEnabled,
+      base::BindRepeating(&AccessCodeCastSinkService::OnEnabledPrefChange,
+                          base::Unretained(this)));
 }
 
 AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
@@ -260,19 +258,12 @@ void AccessCodeCastSinkService::OnAccessCodeRouteRemoved(
   // the sink if a new route wasn't established during the pause.
   auto route_id = GetActiveRouteId(sink->id());
 
-  // Only remove the sink if there is still no active routes for this sink.
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
-    // If a sink is pending expiration that means we can
-    // remove it from the media router.
-    if (!route_id.has_value() && pending_expirations_.count(sink->id())) {
-      RemoveSinkIdFromAllEntries(sink->id());
-      RemoveMediaSinkFromRouter(sink);
-      pending_expirations_.erase(sink->id());
-    }
-  } else {
-    if (!route_id.has_value()) {
-      RemoveMediaSinkFromRouter(sink);
-    }
+  // If a sink is pending expiration that means we can
+  // remove it from the media router.
+  if (!route_id.has_value() && pending_expirations_.count(sink->id())) {
+    RemoveSinkIdFromAllEntries(sink->id());
+    RemoveMediaSinkFromRouter(sink);
+    pending_expirations_.erase(sink->id());
   }
 }
 
@@ -780,38 +771,36 @@ void AccessCodeCastSinkService::RemoveExistingSinksOnNetwork() {
 
 void AccessCodeCastSinkService::LogInfo(const std::string& log_message,
                                         const std::string& sink_id) {
-  if (media_router_) {
-    media_router_->GetLogger()->LogInfo(mojom::LogCategory::kDiscovery,
-                                        kLoggerComponent, log_message, sink_id,
-                                        "", "");
-  }
+  if (!media_router_ || !media_router_->GetLogger())
+    return;
+  media_router_->GetLogger()->LogInfo(mojom::LogCategory::kDiscovery,
+                                      kLoggerComponent, log_message, sink_id,
+                                      "", "");
 }
 
 void AccessCodeCastSinkService::LogWarning(const std::string& log_message,
                                            const std::string& sink_id) {
-  if (media_router_) {
-    media_router_->GetLogger()->LogWarning(mojom::LogCategory::kDiscovery,
-                                           kLoggerComponent, log_message,
-                                           sink_id, "", "");
-  }
+  if (!media_router_ || !media_router_->GetLogger())
+    return;
+  media_router_->GetLogger()->LogWarning(mojom::LogCategory::kDiscovery,
+                                         kLoggerComponent, log_message, sink_id,
+                                         "", "");
 }
 
 void AccessCodeCastSinkService::LogError(const std::string& log_message,
                                          const std::string& sink_id) {
-  if (media_router_) {
-    media_router_->GetLogger()->LogError(mojom::LogCategory::kDiscovery,
-                                         kLoggerComponent, log_message, sink_id,
-                                         "", "");
-  }
+  if (!media_router_ || !media_router_->GetLogger())
+    return;
+  media_router_->GetLogger()->LogError(mojom::LogCategory::kDiscovery,
+                                       kLoggerComponent, log_message, sink_id,
+                                       "", "");
 }
 
 void AccessCodeCastSinkService::OnNetworksChanged(
     const std::string& network_id) {
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
-    RemoveExistingSinksOnNetwork();
-    ResetExpirationTimers();
-    InitAllStoredDevices();
-  }
+  RemoveExistingSinksOnNetwork();
+  ResetExpirationTimers();
+  InitAllStoredDevices();
 }
 
 void AccessCodeCastSinkService::OnDurationPrefChange() {
@@ -830,9 +819,7 @@ void AccessCodeCastSinkService::OnEnabledPrefChange() {
 }
 
 void AccessCodeCastSinkService::Shutdown() {
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
-    network_monitor_->RemoveObserver(this);
-  }
+  network_monitor_->RemoveObserver(this);
   // There's no guarantee that MediaRouter is still in the
   // MediaRoutesObserver. |media_routes_observer_| accesses MediaRouter in its
   // dtor. Since MediaRouter and |this| are both KeyedServices, we must not

@@ -169,10 +169,10 @@ void AccessCodeCastHandler::AddSink(
     return;
   }
   AddSinkCallback callback_with_default_invoker =
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-          AddSinkResultCode::UNKNOWN_ERROR);
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), AddSinkResultCode::UNKNOWN_ERROR);
   add_sink_callback_ = std::move(base::BindOnce(&AddSinkMetricsCallback))
-          .Then(std::move(callback_with_default_invoker));
+                           .Then(std::move(callback_with_default_invoker));
   access_code_sink_service_->DiscoverSink(
       access_code, base::BindOnce(&AccessCodeCastHandler::OnSinkAddedResult,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -202,9 +202,7 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   }
 
   // Sink has been completely added so caller can be alerted.
-  if (base::FeatureList::IsEnabled(features::kAccessCodeCastRememberDevices)) {
-    access_code_sink_service_->StoreSinkAndSetExpirationTimer(sink_id_.value());
-  }
+  access_code_sink_service_->StoreSinkAndSetExpirationTimer(sink_id_.value());
 
   std::move(add_sink_callback_).Run(AddSinkResultCode::OK);
 }

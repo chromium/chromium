@@ -74,30 +74,4 @@ TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPref) {
             GetAccessCodeDeviceDurationPref(pref_service.get()));
 }
 
-TEST(AccessCodeCastFeatureTest, GetAccessCodeDeviceDurationPrefSwitchEnabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAccessCodeCastRememberDevices}, {});
-  EnableCommandLineSupportForTesting();
-  const int non_default = 10;
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  pref_service->registry()->RegisterBooleanPref(prefs::kAccessCodeCastEnabled,
-                                                false);
-  pref_service->registry()->RegisterIntegerPref(
-      prefs::kAccessCodeCastDeviceDuration, 0);
-
-  pref_service->SetManagedPref(prefs::kAccessCodeCastEnabled,
-                               std::make_unique<base::Value>(true));
-
-  // Defaults to 0.
-  EXPECT_EQ(base::Seconds(0),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
-
-  // Setting to a non-zero value should cause the return value to match.
-  // Additionally set the value using a switch from the command line.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(switches::kAccessCodeCastDeviceDurationSwitch,
-                                  base::NumberToString(non_default));
-  EXPECT_EQ(base::Seconds(non_default),
-            GetAccessCodeDeviceDurationPref(pref_service.get()));
-}
 }  // namespace media_router
