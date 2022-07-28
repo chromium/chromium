@@ -3774,9 +3774,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20220727",
                     "enable_features": [
                         "DownloadBubble"
+                    ],
+                    "disable_features": [
+                        "DownloadBubbleV2"
                     ]
                 }
             ]
