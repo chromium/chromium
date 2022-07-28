@@ -119,6 +119,51 @@ SupportedCodecs GetHevcCodecs(
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+// Dolby Vision HEVC-based profiles are only be supported when HEVC is enabled.
+// However, this is enforced elsewhere, as DV profiles for both AVC and HEVC
+// are returned here.
+SupportedCodecs GetDolbyVisionCodecs(
+    const base::flat_set<media::VideoCodecProfile>& profiles) {
+  // If no profiles are specified, then all are supported.
+  if (profiles.empty()) {
+    return media::EME_CODEC_DOLBY_VISION_AVC |
+           media::EME_CODEC_DOLBY_VISION_HEVC;
+  }
+
+  SupportedCodecs supported_dv_codecs = media::EME_CODEC_NONE;
+  for (const auto& profile : profiles) {
+    switch (profile) {
+      case media::DOLBYVISION_PROFILE0:
+        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE0;
+        break;
+      case media::DOLBYVISION_PROFILE4:
+        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE4;
+        break;
+      case media::DOLBYVISION_PROFILE5:
+        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE5;
+        break;
+      case media::DOLBYVISION_PROFILE7:
+        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE7;
+        break;
+      case media::DOLBYVISION_PROFILE8:
+        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE8;
+        break;
+      case media::DOLBYVISION_PROFILE9:
+        supported_dv_codecs |= media::EME_CODEC_DOLBY_VISION_PROFILE9;
+        break;
+      default:
+        DVLOG(1) << "Unexpected "
+                 << GetCodecName(media::VideoCodec::kDolbyVision)
+                 << " profile: " << GetProfileName(profile);
+        break;
+    }
+  }
+
+  return supported_dv_codecs;
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+
 SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
   SupportedCodecs supported_codecs = media::EME_CODEC_NONE;
 
@@ -174,6 +219,12 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
             GetHevcCodecs(video_codec_info.video_codec_profiles);
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+      case media::VideoCodec::kDolbyVision:
+        supported_codecs |=
+            GetDolbyVisionCodecs(video_codec_info.video_codec_profiles);
+        break;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
       default:
         DVLOG(1) << "Unexpected supported codec: " << GetCodecName(codec);
         break;

@@ -315,10 +315,21 @@ absl::optional<CdmCapability> GetCdmCapability(
                               {{kRobustnessQueryName, robustness}});
 
     if (IsTypeSupportedInternal(cdm_factory, key_system, is_hw_secure, type)) {
-      // IsTypeSupported() does not support querying profiling, so specify {}
-      // to indicate all relevant profiles should be considered supported.
-      const media::VideoCodecInfo kAllProfiles;
-      capability.video_codecs.emplace(video_codec, kAllProfiles);
+      // IsTypeSupported() does not support querying profiling, in general
+      // assume all relevant profiles are supported.
+      VideoCodecInfo video_codec_info;
+
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION) && BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      // Dolby Vision on Windows only support profile 4/5/8 now.
+      if (video_codec == VideoCodec::kDolbyVision) {
+        video_codec_info.video_codec_profiles = {
+            VideoCodecProfile::DOLBYVISION_PROFILE4,
+            VideoCodecProfile::DOLBYVISION_PROFILE5,
+            VideoCodecProfile::DOLBYVISION_PROFILE8};
+      }
+#endif
+
+      capability.video_codecs.emplace(video_codec, video_codec_info);
     }
   }
 

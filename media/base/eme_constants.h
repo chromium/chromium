@@ -20,9 +20,9 @@ enum class EmeInitDataType { UNKNOWN, WEBM, CENC, KEYIDS, MAX = KEYIDS };
 // Defines bitmask values that specify codecs used in Encrypted Media Extensions
 // (EME). Generally codec profiles are not specified and it is assumed that the
 // profile support for encrypted playback is the same as for clear playback.
-// The only exception is VP9 where we have older CDMs only supporting profile 0,
-// while new CDMs could support profile 2. Profile 1 and 3 are not supported by
-// EME, see https://crbug.com/898298.
+// For VP9 we have older CDMs only supporting profile 0, while new CDMs could
+// support profile 2. Profile 1 and 3 are not supported by EME, see
+// https://crbug.com/898298.
 enum EmeCodec : uint32_t {
   EME_CODEC_NONE = 0,
   EME_CODEC_OPUS = 1 << 0,
@@ -33,22 +33,34 @@ enum EmeCodec : uint32_t {
   EME_CODEC_AVC1 = 1 << 5,
   EME_CODEC_VP9_PROFILE2 = 1 << 6,  // VP9 profiles 2
   EME_CODEC_HEVC_PROFILE_MAIN = 1 << 7,
-  EME_CODEC_DOLBY_VISION_AVC = 1 << 8,
-  EME_CODEC_DOLBY_VISION_HEVC = 1 << 9,
-  EME_CODEC_AC3 = 1 << 10,
-  EME_CODEC_EAC3 = 1 << 11,
-  EME_CODEC_MPEG_H_AUDIO = 1 << 12,
-  EME_CODEC_FLAC = 1 << 13,
-  EME_CODEC_AV1 = 1 << 14,
-  EME_CODEC_HEVC_PROFILE_MAIN10 = 1 << 15,
-  EME_CODEC_DTS = 1 << 16,
-  EME_CODEC_DTSXP2 = 1 << 17,
+  EME_CODEC_DOLBY_VISION_PROFILE0 = 1 << 8,
+  EME_CODEC_DOLBY_VISION_PROFILE4 = 1 << 9,
+  EME_CODEC_DOLBY_VISION_PROFILE5 = 1 << 10,
+  EME_CODEC_DOLBY_VISION_PROFILE7 = 1 << 11,
+  EME_CODEC_DOLBY_VISION_PROFILE8 = 1 << 12,
+  EME_CODEC_DOLBY_VISION_PROFILE9 = 1 << 13,
+  EME_CODEC_AC3 = 1 << 14,
+  EME_CODEC_EAC3 = 1 << 15,
+  EME_CODEC_MPEG_H_AUDIO = 1 << 16,
+  EME_CODEC_FLAC = 1 << 17,
+  EME_CODEC_AV1 = 1 << 18,
+  EME_CODEC_HEVC_PROFILE_MAIN10 = 1 << 19,
+  EME_CODEC_DTS = 1 << 20,
+  EME_CODEC_DTSXP2 = 1 << 21,
 };
 
 // *_ALL values should only be used for masking, do not use them to specify
 // codec support because they may be extended to include more codecs.
 
 using SupportedCodecs = uint32_t;
+
+// Dolby Vision profile 0 and 9 are based on AVC while profile 4, 5, 7 and 8 are
+// based on HEVC.
+constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_AVC =
+    EME_CODEC_DOLBY_VISION_PROFILE0 | EME_CODEC_DOLBY_VISION_PROFILE9;
+constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_HEVC =
+    EME_CODEC_DOLBY_VISION_PROFILE4 | EME_CODEC_DOLBY_VISION_PROFILE5 |
+    EME_CODEC_DOLBY_VISION_PROFILE7 | EME_CODEC_DOLBY_VISION_PROFILE8;
 
 namespace {
 
