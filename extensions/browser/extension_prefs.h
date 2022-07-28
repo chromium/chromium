@@ -143,12 +143,12 @@ class ExtensionPrefs : public KeyedService {
 
     // Returns a mutable value for the key (ownership remains with the prefs),
     // if one exists. Otherwise, returns NULL.
-    base::ListValue* Get();
+    base::Value::List* Get();
 
     // Creates and returns a mutable value for the key (the prefs own the new
     // value), if one does not already exist. Otherwise, returns the current
     // value.
-    base::ListValue* Create();
+    base::Value::List* Ensure();
 
    private:
     std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update_;

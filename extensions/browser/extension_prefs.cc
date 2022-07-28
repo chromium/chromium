@@ -362,21 +362,16 @@ ExtensionPrefs::ScopedListUpdate::ScopedListUpdate(
 
 ExtensionPrefs::ScopedListUpdate::~ScopedListUpdate() = default;
 
-base::ListValue* ExtensionPrefs::ScopedListUpdate::Get() {
-  base::ListValue* key_value = NULL;
-  (*update_)->GetList(key_, &key_value);
+base::Value::List* ExtensionPrefs::ScopedListUpdate::Get() {
+  base::Value::List* key_value = nullptr;
+  (*update_)->GetListWithoutPathExpansion(key_, &key_value);
   return key_value;
 }
 
-base::ListValue* ExtensionPrefs::ScopedListUpdate::Create() {
-  base::ListValue* key_value = NULL;
-  if ((*update_)->GetList(key_, &key_value))
-    return key_value;
-
-  auto list_value = std::make_unique<base::ListValue>();
-  key_value = list_value.get();
-  (*update_)->Set(key_, std::move(list_value));
-  return key_value;
+base::Value::List* ExtensionPrefs::ScopedListUpdate::Ensure() {
+  if (base::Value::List* existing = Get())
+    return existing;
+  return &(*update_)->SetKey(key_, base::Value(base::Value::List()))->GetList();
 }
 
 //

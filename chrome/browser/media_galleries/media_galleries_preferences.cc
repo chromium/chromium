@@ -1167,25 +1167,21 @@ bool MediaGalleriesPreferences::SetGalleryPermissionInPrefs(
   ExtensionPrefs::ScopedListUpdate update(GetExtensionPrefs(),
                                           extension_id,
                                           kMediaGalleriesPermissions);
-  base::ListValue* permissions = update.Get();
-  if (!permissions) {
-    permissions = update.Create();
-  } else {
-    // If the gallery is already in the list, update the permission...
-    for (auto& permission : permissions->GetListDeprecated()) {
-      if (!permission.is_dict())
-        continue;
-      MediaGalleryPermission perm;
-      if (!GetMediaGalleryPermissionFromDictionary(
-              &base::Value::AsDictionaryValue(permission), &perm))
-        continue;
-      if (perm.pref_id == gallery_id) {
-        if (has_access != perm.has_permission) {
-          permission.SetBoolKey(kMediaGalleryHasPermissionKey, has_access);
-          return true;
-        } else {
-          return false;
-        }
+  base::Value::List* permissions = update.Ensure();
+  // If the gallery is already in the list, update the permission...
+  for (auto& permission : *permissions) {
+    if (!permission.is_dict())
+      continue;
+    MediaGalleryPermission perm;
+    if (!GetMediaGalleryPermissionFromDictionary(
+            &base::Value::AsDictionaryValue(permission), &perm))
+      continue;
+    if (perm.pref_id == gallery_id) {
+      if (has_access != perm.has_permission) {
+        permission.SetBoolKey(kMediaGalleryHasPermissionKey, has_access);
+        return true;
+      } else {
+        return false;
       }
     }
   }
@@ -1204,12 +1200,11 @@ bool MediaGalleriesPreferences::UnsetGalleryPermissionInPrefs(
   ExtensionPrefs::ScopedListUpdate update(GetExtensionPrefs(),
                                           extension_id,
                                           kMediaGalleriesPermissions);
-  base::ListValue* permissions = update.Get();
+  base::Value::List* permissions = update.Get();
   if (!permissions)
     return false;
 
-  for (auto iter = permissions->GetListDeprecated().begin();
-       iter != permissions->GetListDeprecated().end(); ++iter) {
+  for (auto iter = permissions->begin(); iter != permissions->end(); ++iter) {
     if (!iter->is_dict())
       continue;
     MediaGalleryPermission perm;
@@ -1217,7 +1212,7 @@ bool MediaGalleriesPreferences::UnsetGalleryPermissionInPrefs(
             &base::Value::AsDictionaryValue(*iter), &perm))
       continue;
     if (perm.pref_id == gallery_id) {
-      permissions->EraseListIter(iter);
+      permissions->erase(iter);
       return true;
     }
   }

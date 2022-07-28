@@ -93,13 +93,10 @@ void SaveDevicePermissionEntry(BrowserContext* context,
                                scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::ListValue* devices = update.Get();
-  if (!devices) {
-    devices = update.Create();
-  }
+  base::Value::List* devices = update.Ensure();
 
   base::Value device_entry(entry->ToValue());
-  DCHECK(!base::Contains(devices->GetList(), device_entry));
+  DCHECK(!base::Contains(*devices, device_entry));
   devices->Append(std::move(device_entry));
 }
 
@@ -132,12 +129,9 @@ void UpdateDevicePermissionEntry(BrowserContext* context,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::ListValue* devices = update.Get();
-  if (!devices) {
-    return;
-  }
+  base::Value::List* devices = update.Ensure();
 
-  for (auto& value : devices->GetList()) {
+  for (auto& value : *devices) {
     if (!value.is_dict())
       continue;
     if (!MatchesDevicePermissionEntry(value.GetDict(), entry)) {
@@ -155,19 +149,18 @@ void RemoveDevicePermissionEntry(BrowserContext* context,
                                  scoped_refptr<DevicePermissionEntry> entry) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(context);
   ExtensionPrefs::ScopedListUpdate update(prefs, extension_id, kDevices);
-  base::ListValue* devices = update.Get();
+  base::Value::List* devices = update.Get();
   if (!devices) {
     return;
   }
 
-  for (auto it = devices->GetList().begin(); it != devices->GetList().end();
-       ++it) {
+  for (auto it = devices->begin(); it != devices->end(); ++it) {
     if (!it->is_dict())
       continue;
     if (!MatchesDevicePermissionEntry(it->GetDict(), entry)) {
       continue;
     }
-    devices->GetList().erase(it);
+    devices->erase(it);
     break;
   }
 }

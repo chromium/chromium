@@ -101,13 +101,14 @@ std::unique_ptr<DictionaryValueUpdate> DictionaryValueUpdate::SetDictionary(
       report_update_, dictionary_value, ConcatPath(path_, path));
 }
 
-void DictionaryValueUpdate::SetKey(base::StringPiece key, base::Value value) {
-  const base::Value* found = value_->FindKey(key);
+base::Value* DictionaryValueUpdate::SetKey(base::StringPiece key,
+                                           base::Value value) {
+  base::Value* found = value_->FindKey(key);
   if (found && *found == value)
-    return;
+    return found;
 
   RecordKey(key);
-  value_->SetKey(key, std::move(value));
+  return value_->SetKey(key, std::move(value));
 }
 
 void DictionaryValueUpdate::SetWithoutPathExpansion(

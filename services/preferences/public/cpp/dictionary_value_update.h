@@ -75,8 +75,8 @@ class DictionaryValueUpdate {
       std::unique_ptr<base::DictionaryValue> in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
-  // be used as paths.
-  void SetKey(base::StringPiece key, base::Value value);
+  // be used as paths. Returns a pointer to the set `value`.
+  base::Value* SetKey(base::StringPiece key, base::Value value);
   void SetWithoutPathExpansion(base::StringPiece key,
                                std::unique_ptr<base::Value> in_value);
 
