@@ -172,11 +172,7 @@ class LayoutFrameSet final : public LayoutBox {
   void FillFromEdgeInfo(const FrameEdgeInfo&, int r, int c);
   void PositionFrames();
 
-  int SplitPosition(const GridAxis&, int split) const;
   int HitTestSplit(const GridAxis&, int position) const;
-
-  void StartResizing(GridAxis&, int position);
-  void ContinueResizing(GridAxis&, int position);
 
   LayoutObjectChildList children_;
 

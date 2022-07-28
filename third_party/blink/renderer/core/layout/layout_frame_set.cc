@@ -461,33 +461,6 @@ void LayoutFrameSet::PositionFrames() {
   ClearNeedsLayoutOnHiddenFrames(child);
 }
 
-void LayoutFrameSet::StartResizing(GridAxis& axis, int position) {
-  NOT_DESTROYED();
-  int split = HitTestSplit(axis, position);
-  if (split == kNoSplit || axis.prevent_resize_[split]) {
-    axis.split_being_resized_ = kNoSplit;
-    return;
-  }
-  axis.split_being_resized_ = split;
-  axis.split_resize_offset_ = position - SplitPosition(axis, split);
-}
-
-void LayoutFrameSet::ContinueResizing(GridAxis& axis, int position) {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return;
-  if (axis.split_being_resized_ == kNoSplit)
-    return;
-  int current_split_position = SplitPosition(axis, axis.split_being_resized_);
-  int delta = (position - current_split_position) - axis.split_resize_offset_;
-  if (!delta)
-    return;
-  axis.deltas_[axis.split_being_resized_ - 1] += delta;
-  axis.deltas_[axis.split_being_resized_] -= delta;
-  SetNeedsLayoutAndFullPaintInvalidation(
-      layout_invalidation_reason::kSizeChanged);
-}
-
 bool LayoutFrameSet::CanResizeRow(const gfx::Point& p) const {
   NOT_DESTROYED();
   int r = HitTestSplit(rows_, p.y());
@@ -498,23 +471,6 @@ bool LayoutFrameSet::CanResizeColumn(const gfx::Point& p) const {
   NOT_DESTROYED();
   int c = HitTestSplit(cols_, p.x());
   return c != kNoSplit && !cols_.prevent_resize_[c];
-}
-
-int LayoutFrameSet::SplitPosition(const GridAxis& axis, int split) const {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return 0;
-
-  int border_thickness = FrameSet()->Border();
-
-  int size = axis.sizes_.size();
-  if (!size)
-    return 0;
-
-  int position = 0;
-  for (int i = 0; i < split && i < size; ++i)
-    position += axis.sizes_[i] + border_thickness;
-  return position - border_thickness;
 }
 
 int LayoutFrameSet::HitTestSplit(const GridAxis& axis, int position) const {

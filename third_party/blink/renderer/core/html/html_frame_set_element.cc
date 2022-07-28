@@ -302,8 +302,8 @@ bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
     if (event.type() == event_type_names::kMousedown && event.IsLeftButton()) {
       gfx::PointF local_pos =
           layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
-      layout_frame_set.StartResizing(layout_frame_set.cols_, local_pos.x());
-      layout_frame_set.StartResizing(layout_frame_set.rows_, local_pos.y());
+      StartResizing(layout_frame_set.cols_, local_pos.x());
+      StartResizing(layout_frame_set.rows_, local_pos.y());
       if (layout_frame_set.cols_.split_being_resized_ !=
               LayoutFrameSet::kNoSplit ||
           layout_frame_set.rows_.split_being_resized_ !=
@@ -317,8 +317,8 @@ bool HTMLFrameSetElement::UserResize(const MouseEvent& event) {
         (event.type() == event_type_names::kMouseup && event.IsLeftButton())) {
       gfx::PointF local_pos =
           layout_frame_set.AbsoluteToLocalPoint(event.AbsoluteLocation());
-      layout_frame_set.ContinueResizing(layout_frame_set.cols_, local_pos.x());
-      layout_frame_set.ContinueResizing(layout_frame_set.rows_, local_pos.y());
+      ContinueResizing(layout_frame_set.cols_, local_pos.x());
+      ContinueResizing(layout_frame_set.rows_, local_pos.y());
       if (event.type() == event_type_names::kMouseup && event.IsLeftButton()) {
         SetIsResizing(false);
         return true;
@@ -333,6 +333,51 @@ void HTMLFrameSetElement::SetIsResizing(bool is_resizing) {
   is_resizing_ = is_resizing;
   if (LocalFrame* frame = GetDocument().GetFrame())
     frame->GetEventHandler().SetResizingFrameSet(is_resizing ? this : nullptr);
+}
+
+void HTMLFrameSetElement::StartResizing(LayoutFrameSet::GridAxis& axis,
+                                        int position) {
+  int split =
+      To<LayoutFrameSet>(GetLayoutObject())->HitTestSplit(axis, position);
+  if (split == LayoutFrameSet::kNoSplit || axis.prevent_resize_[split]) {
+    axis.split_being_resized_ = LayoutFrameSet::kNoSplit;
+    return;
+  }
+  axis.split_being_resized_ = split;
+  axis.split_resize_offset_ = position - SplitPosition(axis, split);
+}
+
+void HTMLFrameSetElement::ContinueResizing(LayoutFrameSet::GridAxis& axis,
+                                           int position) {
+  if (GetLayoutObject()->NeedsLayout())
+    return;
+  if (axis.split_being_resized_ == LayoutFrameSet::kNoSplit)
+    return;
+  int current_split_position = SplitPosition(axis, axis.split_being_resized_);
+  int delta = (position - current_split_position) - axis.split_resize_offset_;
+  if (!delta)
+    return;
+  axis.deltas_[axis.split_being_resized_ - 1] += delta;
+  axis.deltas_[axis.split_being_resized_] -= delta;
+  GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
+      layout_invalidation_reason::kSizeChanged);
+}
+
+int HTMLFrameSetElement::SplitPosition(const LayoutFrameSet::GridAxis& axis,
+                                       int split) const {
+  if (GetLayoutObject()->NeedsLayout())
+    return 0;
+
+  int border_thickness = Border();
+
+  int size = axis.sizes_.size();
+  if (!size)
+    return 0;
+
+  int position = 0;
+  for (int i = 0; i < split && i < size; ++i)
+    position += axis.sizes_[i] + border_thickness;
+  return position - border_thickness;
 }
 
 }  // namespace blink

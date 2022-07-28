@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_frame_set.h"
 
 namespace blink {
 
@@ -87,6 +88,9 @@ class HTMLFrameSetElement final : public HTMLElement {
 
   bool UserResize(const MouseEvent& event);
   void SetIsResizing(bool is_resizing);
+  void StartResizing(LayoutFrameSet::GridAxis& axis, int position);
+  void ContinueResizing(LayoutFrameSet::GridAxis& axis, int position);
+  int SplitPosition(const LayoutFrameSet::GridAxis& axis, int split) const;
 
   Vector<HTMLDimension> row_lengths_;
   Vector<HTMLDimension> col_lengths_;
