@@ -84,6 +84,9 @@ class ArcAppInstallEventLogCollector : public InstallEventLogCollectorBase,
   void OnReportForceInstallMainLoopFailed(
       base::Time time,
       const std::set<std::string>& package_names) override;
+  void OnPlayStoreLocalPolicySet(
+      base::Time time,
+      const std::set<std::string>& package_names) override;
 
   // ArcAppListPrefs::Observer:
   void OnInstallationStarted(const std::string& package_name) override;

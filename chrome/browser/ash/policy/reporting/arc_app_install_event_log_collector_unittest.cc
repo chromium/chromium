@@ -456,4 +456,18 @@ TEST_F(ArcAppInstallEventLogCollectorTest, InstallPackages) {
   EXPECT_EQ(0, delegate()->add_for_all_count());
 }
 
+TEST_F(ArcAppInstallEventLogCollectorTest, OnPlayStoreLocalPolicySet) {
+  std::unique_ptr<ArcAppInstallEventLogCollector> collector =
+      std::make_unique<ArcAppInstallEventLogCollector>(delegate(), profile(),
+                                                       packages_);
+  base::Time time = base::Time::Now();
+  collector->OnPlayStoreLocalPolicySet(time, packages_);
+  ASSERT_EQ(1, delegate()->add_count());
+  EXPECT_EQ(em::AppInstallReportLogEvent::PLAYSTORE_LOCAL_POLICY_SET,
+            delegate()->last_event().event_type());
+  EXPECT_EQ(TimeToTimestamp(time), delegate()->requests()[0].event.timestamp());
+  EXPECT_EQ(kPackageName, delegate()->last_request().package_name);
+  EXPECT_TRUE(delegate()->last_request().add_disk_space_info);
+}
+
 }  // namespace policy

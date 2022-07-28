@@ -637,6 +637,15 @@ void ArcPolicyBridge::ReportDPCVersion(const std::string& version) {
     observer.OnReportDPCVersion(version);
 }
 
+void ArcPolicyBridge::ReportPlayStoreLocalPolicySet(
+    base::Time time,
+    const std::vector<std::string>& package_names) {
+  const std::set<std::string> packages_set(package_names.begin(),
+                                           package_names.end());
+  for (Observer& observer : observers_)
+    observer.OnPlayStoreLocalPolicySet(time, packages_set);
+}
+
 void ArcPolicyBridge::OnPolicyUpdated(const policy::PolicyNamespace& ns,
                                       const policy::PolicyMap& previous,
                                       const policy::PolicyMap& current) {

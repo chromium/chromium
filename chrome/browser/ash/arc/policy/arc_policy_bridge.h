@@ -100,6 +100,11 @@ class ArcPolicyBridge : public KeyedService,
     // Called when ARC DPC starts.
     virtual void OnReportDPCVersion(const std::string& version) {}
 
+    // Called when a Play Store local policy was set.
+    virtual void OnPlayStoreLocalPolicySet(
+        base::Time time,
+        const std::set<std::string>& package_names) {}
+
    protected:
     Observer() = default;
     virtual ~Observer() = default;
@@ -166,6 +171,9 @@ class ArcPolicyBridge : public KeyedService,
       base::Time time,
       const std::vector<std::string>& package_names) override;
   void ReportDPCVersion(const std::string& version) override;
+  void ReportPlayStoreLocalPolicySet(
+      base::Time time,
+      const std::vector<std::string>& package_names) override;
 
   // PolicyService::Observer overrides.
   void OnPolicyUpdated(const policy::PolicyNamespace& ns,

@@ -3466,6 +3466,8 @@ message AppInstallReportLogEvent {
     DIRECT_INSTALL = 13;
     // No more regular attempts to install
     CLOUDDPC_MAIN_LOOP_FAILED = 14;
+    // PlayStore local policy was set
+    PLAYSTORE_LOCAL_POLICY_SET = 15;
   }
 
   // Enumerates the possible changes in session state.

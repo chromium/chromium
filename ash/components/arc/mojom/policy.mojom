@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module arc.mojom;
 
@@ -59,7 +59,7 @@ enum CommandResultType {
   SUCCESS = 2,  // The command was successfully executed.
 };
 
-// Next Method ID: 7
+// Next Method ID: 9
 interface PolicyHost {
   // Get policies from Chrome OS, as JSON-encoded dictionary with the policies'
   // names as keys and their values as values. The list of possible policies can
@@ -96,6 +96,10 @@ interface PolicyHost {
 
   // Reports the version of ARC DPC.
   [MinVersion=6] ReportDPCVersion@7(string version);
+
+  // Reports that a PlayStore local policy was set.
+  [MinVersion=7] ReportPlayStoreLocalPolicySet@8(
+      mojo_base.mojom.Time time, array<string> package_names);
 };
 
 // Deprecated method IDs: 0
