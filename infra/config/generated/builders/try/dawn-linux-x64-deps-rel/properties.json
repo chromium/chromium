@@ -34,7 +34,7 @@
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "Dawn Linux x64 DEPS Release (Intel HD 630)",
+              "builder": "Dawn Linux x64 DEPS Release (Intel UHD 630)",
               "project": "chromium"
             },
             "builder_spec": {
@@ -103,7 +103,7 @@
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
-          "builder": "Dawn Linux x64 DEPS Release (Intel HD 630)",
+          "builder": "Dawn Linux x64 DEPS Release (Intel UHD 630)",
           "project": "chromium"
         },
         {

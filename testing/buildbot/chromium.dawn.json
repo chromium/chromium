@@ -3,7 +3,7 @@
   "AAAAA2 See generate_buildbot_json.py to make changes": {},
   "Dawn Linux x64 Builder": {},
   "Dawn Linux x64 DEPS Builder": {},
-  "Dawn Linux x64 DEPS Release (Intel HD 630)": {
+  "Dawn Linux x64 DEPS Release (Intel UHD 630)": {
     "gtest_tests": [
       {
         "args": [
@@ -20,8 +20,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -47,8 +47,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -74,8 +74,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -101,8 +101,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -127,8 +127,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -151,8 +151,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -181,8 +181,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -204,8 +204,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -242,8 +242,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -280,8 +280,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -314,8 +314,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -688,7 +688,7 @@
       }
     ]
   },
-  "Dawn Linux x64 Release (Intel HD 630)": {
+  "Dawn Linux x64 Release (Intel UHD 630)": {
     "gtest_tests": [
       {
         "args": [
@@ -705,8 +705,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -732,8 +732,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -759,8 +759,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -786,8 +786,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -812,8 +812,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -836,8 +836,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -866,8 +866,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -889,8 +889,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -927,8 +927,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -965,8 +965,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],
@@ -999,8 +999,8 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912-19.0.2",
-              "os": "Ubuntu-19.04",
+              "gpu": "8086:9bc5-20.0.8",
+              "os": "Ubuntu-18.04.6",
               "pool": "chromium.tests.gpu"
             }
           ],

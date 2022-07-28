@@ -307,11 +307,27 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Linux FYI Experimental Release (Intel HD 630)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel",
-        short_name = "exp",
+    name = "Linux FYI Experimental Release (Intel UHD 630)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        run_tests_serially = True,
     ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Linux|Intel",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Linux Builder"],
 )
@@ -346,23 +362,26 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "Linux FYI Release (Intel HD 630)",
+    name = "Linux FYI Release (Intel UHD 630)",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+        ),
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Intel",
         short_name = "rel",
     ),
-    triggered_by = ["GPU FYI Linux Builder"],
-)
-
-ci.thin_tester(
-    name = "Linux FYI Release (Intel UHD 630)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Intel",
-        short_name = "uhd",
-    ),
-    # TODO(https://crbug.com/986939): Remove this increased timeout once more
-    # devices are added.
-    execution_timeout = 18 * time.hour,
     triggered_by = ["GPU FYI Linux Builder"],
 )
 
