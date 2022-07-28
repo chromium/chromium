@@ -19,24 +19,15 @@ constexpr char kUserActionLearnMore[] = "learn-more";
 }  // namespace
 
 SignInFatalErrorScreen::SignInFatalErrorScreen(
-    SignInFatalErrorView* view,
+    base::WeakPtr<SignInFatalErrorView> view,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(SignInFatalErrorView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  view_->Bind(this);
 }
 
-SignInFatalErrorScreen::~SignInFatalErrorScreen() {
-  if (view_)
-    view_->Unbind();
-}
-
-void SignInFatalErrorScreen::OnViewDestroyed(SignInFatalErrorView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+SignInFatalErrorScreen::~SignInFatalErrorScreen() = default;
 
 void SignInFatalErrorScreen::SetErrorState(Error error,
                                            const base::Value* params) {
@@ -74,8 +65,8 @@ void SignInFatalErrorScreen::ShowImpl() {
 
 void SignInFatalErrorScreen::HideImpl() {}
 
-void SignInFatalErrorScreen::OnUserActionDeprecated(
-    const std::string& action_id) {
+void SignInFatalErrorScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionScreenDismissed) {
     exit_callback_.Run();
   } else if (action_id == kUserActionLearnMore) {
@@ -85,7 +76,7 @@ void SignInFatalErrorScreen::OnUserActionDeprecated(
     }
     help_app_->ShowHelpTopic(HelpAppLauncher::HELP_CANT_ACCESS_ACCOUNT);
   } else {
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 

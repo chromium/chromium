@@ -762,7 +762,7 @@ WizardController::CreateScreens() {
                           weak_factory_.GetWeakPtr())));
 
   append(std::make_unique<SignInFatalErrorScreen>(
-      oobe_ui->GetView<SignInFatalErrorScreenHandler>(),
+      oobe_ui->GetView<SignInFatalErrorScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnSignInFatalErrorScreenExit,
                           weak_factory_.GetWeakPtr())));
 

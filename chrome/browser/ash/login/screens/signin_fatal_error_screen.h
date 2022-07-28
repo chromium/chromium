@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ash/login/screen_manager.h"
@@ -36,15 +37,12 @@ class SignInFatalErrorScreen : public BaseScreen {
     CUSTOM = 4,
   };
 
-  explicit SignInFatalErrorScreen(chromeos::SignInFatalErrorView* view,
-                                  const base::RepeatingClosure& exit_callback);
+  explicit SignInFatalErrorScreen(
+      base::WeakPtr<chromeos::SignInFatalErrorView> view,
+      const base::RepeatingClosure& exit_callback);
   SignInFatalErrorScreen(const SignInFatalErrorScreen&) = delete;
   SignInFatalErrorScreen& operator=(const SignInFatalErrorScreen&) = delete;
   ~SignInFatalErrorScreen() override;
-
-  // Called when the screen is being destroyed. This should call Unbind() on the
-  // associated View if this class is destroyed before that.
-  void OnViewDestroyed(chromeos::SignInFatalErrorView* view);
 
   // Setting the error methods.
   void SetErrorState(Error error, const base::Value* params);
@@ -57,12 +55,12 @@ class SignInFatalErrorScreen : public BaseScreen {
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   Error error_state_ = Error::UNKNOWN;
   absl::optional<base::Value> extra_error_info_;
 
-  chromeos::SignInFatalErrorView* view_ = nullptr;
+  base::WeakPtr<chromeos::SignInFatalErrorView> view_;
   base::RepeatingClosure exit_callback_;
 
   // Help application used for help dialogs.

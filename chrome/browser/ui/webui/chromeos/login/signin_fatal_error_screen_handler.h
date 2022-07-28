@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SIGNIN_FATAL_ERROR_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_SIGNIN_FATAL_ERROR_SCREEN_HANDLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
@@ -13,20 +14,16 @@ namespace chromeos {
 
 // Interface for dependency injection between SignInFatalErrorScreen and its
 // WebUI representation.
-class SignInFatalErrorView {
+class SignInFatalErrorView
+    : public base::SupportsWeakPtr<SignInFatalErrorView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"signin-fatal-error"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "signin-fatal-error", "SignInFatalErrorScreen"};
   virtual ~SignInFatalErrorView() = default;
 
   // Shows the contents of the screen.
   virtual void Show(SignInFatalErrorScreen::Error error,
                     const base::Value* params) = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(SignInFatalErrorScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 };
 
 class SignInFatalErrorScreenHandler : public SignInFatalErrorView,
@@ -43,15 +40,10 @@ class SignInFatalErrorScreenHandler : public SignInFatalErrorView,
  private:
   void Show(SignInFatalErrorScreen::Error error,
             const base::Value* params) override;
-  void Bind(SignInFatalErrorScreen* screen) override;
-  void Unbind() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void InitializeDeprecated() override;
-
-  SignInFatalErrorScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
