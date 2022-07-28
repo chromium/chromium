@@ -95,7 +95,7 @@ def main_run(args):
     if rc == 0 and sheet_config is not None:
       print("Tests succeeded. Updating annotations sheet...")
 
-      config_file = tempfile.NamedTemporaryFile(delete=False)
+      config_file = tempfile.NamedTemporaryFile(delete=False, mode='w+')
       json.dump(sheet_config, config_file, indent=4)
       config_filename = config_file.name
       config_file.close()
