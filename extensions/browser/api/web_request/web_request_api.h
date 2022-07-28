@@ -601,19 +601,35 @@ class ExtensionWebRequestEventRouter {
   using RawListeners = std::vector<EventListener*>;
   using ListenerIDs = std::vector<EventListener::ID>;
   using Listeners = std::vector<std::unique_ptr<EventListener>>;
-  using ListenerMapForBrowserContext = std::map<std::string, Listeners>;
-  using ListenerMap =
-      std::map<content::BrowserContext*, ListenerMapForBrowserContext>;
-  using ExtraHeadersListenerCountMap = std::map<content::BrowserContext*, int>;
+  using ListenerMap = std::map<std::string, Listeners>;
+
+  // A collection of data associated with a given BrowserContext.
+  struct BrowserContextData {
+    BrowserContextData();
+    BrowserContextData(BrowserContextData&&);
+    ~BrowserContextData();
+
+    // The listeners that are currently active (i.e., have a corresponding
+    // render process).
+    ListenerMap active_listeners;
+    // The number of listeners that request extra headers be included with their
+    // events. Modified through `IncrementExtraHeadersListenerCount()` and
+    // `DecrementExtraHeadersListenerCount()`.
+    int extra_headers_count = 0;
+    // Whether the browser context is incognito.
+    // TODO(devlin): Remove this. BrowserContexts know if they're incognito.
+    bool is_incognito = false;
+    // The corresponding incognito or on-the-record context for this
+    // BrowserContext. That is, if this context is incognito, `cross_context`
+    // will point to the original context; if this context is the original,
+    // `cross_context` will point to the incognito context (if any).
+    content::BrowserContext* cross_context = nullptr;
+  };
+
+  using DataMap = std::map<content::BrowserContext*, BrowserContextData>;
   using BlockedRequestMap = std::map<uint64_t, BlockedRequest>;
   // Map of request_id -> bit vector of EventTypes already signaled
   using SignaledRequestMap = std::map<uint64_t, int>;
-  // For each browser_context: a bool indicating whether it is an incognito
-  // browser_context, and a pointer to the corresponding (non-)incognito
-  // browser_context.
-  using CrossBrowserContextMap =
-      std::map<content::BrowserContext*,
-               std::pair<bool, content::BrowserContext*>>;
   using CallbacksForPageLoad = std::list<base::OnceClosure>;
 
   ExtensionWebRequestEventRouter();
@@ -753,16 +769,8 @@ class ExtensionWebRequestEventRouter {
   size_t GetListenerCountForTesting(content::BrowserContext* browser_context,
                                     const std::string& event_name);
 
-  // TODO(karandeepb): The below code should be refactored to have a single map
-  // to store per-browser-context data.
-
-  // A map for each browser_context that maps an event name to a set of
-  // extensions that are listening to that event.
-  ListenerMap listeners_;
-
-  // Count of listeners per browser context which request extra headers. Must be
-  // modified through [Increment/Decrement]ExtraHeadersListenerCount.
-  ExtraHeadersListenerCountMap extra_headers_listener_count_;
+  // A map of data associated with given BrowserContexts.
+  DataMap data_;
 
   // A map of network requests that are waiting for at least one event handler
   // to respond.
@@ -771,10 +779,6 @@ class ExtensionWebRequestEventRouter {
   // A map of request ids to a bitvector indicating which events have been
   // signaled and should not be sent again.
   SignaledRequestMap signaled_requests_;
-
-  // A map of original browser_context -> corresponding incognito
-  // browser_context (and vice versa).
-  CrossBrowserContextMap cross_browser_context_map_;
 
   // Keeps track of time spent waiting on extensions using the blocking
   // webRequest API.
