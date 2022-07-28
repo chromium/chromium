@@ -1215,9 +1215,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
       static_cast<guest_view::TestGuestViewManager*>(
           guest_view::TestGuestViewManager::FromBrowserContext(
               browser()->profile()));
-  auto* guest_view = guest_manager->WaitForSingleGuestViewCreated();
-  guest_manager->WaitUntilAttached(guest_view);
-  auto* guest_rfh = guest_manager->GetLastGuestRenderFrameHostCreated();
+  content::WebContents* guest = guest_manager->WaitForSingleGuestCreated();
+  guest_manager->WaitUntilAttached(guest);
 
   // There should be two extension frames in ProcessManager: the app's main
   // page and the background page.
@@ -1248,8 +1247,9 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
   EXPECT_FALSE(policy->CanRequestURL(
       web_tab->GetPrimaryMainFrame()->GetProcess()->GetID(),
       app_origin.GetURL()));
-  EXPECT_TRUE(policy->CanRequestURL(guest_rfh->GetProcess()->GetID(),
-                                    app_origin.GetURL()));
+  EXPECT_TRUE(
+      policy->CanRequestURL(guest->GetPrimaryMainFrame()->GetProcess()->GetID(),
+                            app_origin.GetURL()));
 
   // Try navigating the web tab to each nested URL with the app's origin.  This
   // should be blocked.

@@ -3057,33 +3057,21 @@ void FrameFocusedObserver::Wait() {
 class FrameDeletedObserver::FrameTreeNodeObserverImpl
     : public FrameTreeNode::Observer {
  public:
-  explicit FrameTreeNodeObserverImpl(FrameTreeNode* owner)
-      : frame_tree_node_id_(owner->frame_tree_node_id()), owner_(owner) {
+  explicit FrameTreeNodeObserverImpl(FrameTreeNode* owner) : owner_(owner) {
     owner->AddObserver(this);
   }
   ~FrameTreeNodeObserverImpl() override = default;
 
-  void Run() {
-    if (!IsDestroyed()) {
-      run_loop_.Run();
-    }
-  }
-
-  bool IsDestroyed() const { return owner_ == nullptr; }
-
-  int frame_tree_node_id() const { return frame_tree_node_id_; }
+  void Run() { run_loop_.Run(); }
 
  private:
-  // FrameTreeNode::Observer:
+  // FrameTreeNode::Observer
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override {
-    if (node == owner_) {
-      owner_ = nullptr;
+    if (node == owner_)
       run_loop_.Quit();
-    }
   }
 
-  const int frame_tree_node_id_;
-  raw_ptr<FrameTreeNode> owner_;
+  raw_ptr<FrameTreeNode, DanglingUntriaged> owner_;
   base::RunLoop run_loop_;
 };
 
@@ -3095,14 +3083,6 @@ FrameDeletedObserver::~FrameDeletedObserver() = default;
 
 void FrameDeletedObserver::Wait() {
   impl_->Run();
-}
-
-bool FrameDeletedObserver::IsDeleted() const {
-  return impl_->IsDestroyed();
-}
-
-int FrameDeletedObserver::GetFrameTreeNodeId() const {
-  return impl_->frame_tree_node_id();
 }
 
 TestNavigationManager::TestNavigationManager(WebContents* web_contents,

@@ -134,8 +134,8 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
   TestGuestViewManager* GetGuestViewManager() {
     TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
         TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // Test code may access the TestGuestViewManager before it would be created
-    // during creation of the first guest.
+    // TestGuestViewManager::WaitForSingleGuestCreated may and will get called
+    // before a guest is created.
     if (!manager) {
       manager = static_cast<TestGuestViewManager*>(
           GuestViewManager::CreateWithDelegate(
@@ -297,8 +297,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     ASSERT_TRUE(done_listener->WaitUntilSatisfied());
 
     embedder_web_contents_ = embedder_web_contents;
-    guest_web_contents_ =
-        GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+    guest_web_contents_ = GetGuestViewManager()->WaitForSingleGuestCreated();
   }
 
   void SendMessageToEmbedder(const std::string& message) {
@@ -753,7 +752,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_AdvanceFocus) {
 
     // In oopif-webview, the click it directly routed to the guest.
     content::WebContents* guest =
-        GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+        GetGuestViewManager()->WaitForSingleGuestCreated();
 
     SimulateRWHMouseClick(
         guest->GetPrimaryMainFrame()->GetRenderViewHost()->GetWidget(),
@@ -791,7 +790,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
 
   content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
   content::WebContents* guest_web_contents =
-      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
+      GetGuestViewManager()->WaitForSingleGuestCreated();
 
   content::MainThreadFrameObserver embedder_observer(
       embedder_web_contents->GetPrimaryMainFrame()
@@ -1509,7 +1508,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest,
   content::RunAllPendingInMessageLoop();
 
   content::WebContents* guest_web_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+      GetGuestViewManager()->GetLastGuestCreated();
 
   // Click the <input> element inside the <webview>. In its focus handle, the
   // <input> inside the <webview> initializes its value to "A B X D".
@@ -1566,7 +1565,7 @@ IN_PROC_BROWSER_TEST_F(WebViewImeInteractiveTest, CompositionRangeUpdates) {
   content::RunAllPendingInMessageLoop();
 
   content::WebContents* guest_web_contents =
-      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
+      GetGuestViewManager()->GetLastGuestCreated();
 
   // Click the <input> element inside the <webview>. In its focus handle, the
   // <input> inside the <webview> initializes its value to "A B X D".

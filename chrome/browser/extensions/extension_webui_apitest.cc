@@ -119,7 +119,7 @@ class ExtensionWebUIEmbeddedOptionsTest : public ExtensionWebUITest {
             extension->id())));
 
     content::WebContents* guest_web_contents =
-        test_guest_view_manager_->DeprecatedWaitForSingleGuestCreated();
+        test_guest_view_manager_->WaitForSingleGuestCreated();
     EXPECT_TRUE(guest_web_contents);
     EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));
 
