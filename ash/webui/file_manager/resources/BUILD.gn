@@ -8,6 +8,7 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
@@ -107,6 +108,25 @@ preprocess_if_expr("preprocess_mojo") {
   deps = [ "//ash/webui/file_manager/mojom:mojom_webui_js" ]
 }
 
+# Only build Labs for debug (non-optimize-webui).
+if (!optimize_webui) {
+  ts_files = [ "labs/main.ts" ]
+
+  copy("copy_labs") {
+    sources = [ "labs/labs.html" ] + ts_files
+    outputs = [ "$target_gen_dir/{{source_target_relative}}" ]
+  }
+
+  ts_library("labs_build_ts") {
+    root_dir = target_gen_dir
+    out_dir = "$target_gen_dir/tsc"
+    tsconfig_base = "labs/tsconfig_base.json"
+    extra_deps = [ ":copy_labs" ]
+
+    in_files = ts_files
+  }
+}
+
 optimize_webui("build") {
   host = "file-manager"
   input = rebase_path(preprocess_folder, root_build_dir)
@@ -179,6 +199,15 @@ generate_grd("build_grd") {
     ]
   } else {
     manifest_files += [ "$target_gen_dir/manifest_preprocess.json" ]
+
+    # Labs:
+    manifest_files +=
+        filter_include(get_target_outputs(":labs_build_ts"), [ "*.manifest" ])
+    input_files += [ "labs/labs.html" ]
+    deps += [
+      ":copy_labs",
+      ":labs_build_ts",
+    ]
   }
 }
 
