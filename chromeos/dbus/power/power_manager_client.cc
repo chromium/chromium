@@ -1149,7 +1149,8 @@ class PowerManagerClientImpl : public PowerManagerClient {
     POWER_LOG(EVENT) << "Got " << power_manager::kSuspendDoneSignal
                      << " signal:"
                      << " suspend_id=" << proto.suspend_id()
-                     << " duration=" << duration.InSeconds() << " sec";
+                     << " duration=" << duration.InSeconds() << " sec"
+                     << " deepest_state=" << proto.deepest_state();
 
     // RenderProcessManagerDelegate is only notified that suspend is imminent
     // when readiness is being reported to powerd. If the suspend attempt was
@@ -1176,7 +1177,7 @@ class PowerManagerClientImpl : public PowerManagerClient {
     suspend_readiness_registry_.clear();
 
     for (auto& observer : observers_)
-      observer.SuspendDone(duration);
+      observer.SuspendDoneEx(proto);
     base::PowerMonitorDeviceSource::HandleSystemResumed();
   }
 
@@ -1470,6 +1471,13 @@ void PowerManagerClient::Shutdown() {
 // static
 PowerManagerClient* PowerManagerClient::Get() {
   return g_instance;
+}
+
+void PowerManagerClient::Observer::SuspendDoneEx(
+    const power_manager::SuspendDone& proto) {
+  const base::TimeDelta duration =
+      base::TimeDelta::FromInternalValue(proto.suspend_duration());
+  this->SuspendDone(duration);
 }
 
 }  // namespace chromeos

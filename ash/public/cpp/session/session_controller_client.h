@@ -20,6 +20,9 @@ class ASH_PUBLIC_EXPORT SessionControllerClient {
   // Requests to lock screen.
   virtual void RequestLockScreen() = 0;
 
+  // Requests to dismiss the lock screen.
+  virtual void RequestHideLockScreen() = 0;
+
   // Requests signing out all users, ending the current session.
   virtual void RequestSignOut() = 0;
 

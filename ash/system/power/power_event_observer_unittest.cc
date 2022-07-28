@@ -114,7 +114,7 @@ TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
   EXPECT_EQ(0, GetNumVisibleCompositors());
 
   // If the system is already locked, no callback should be requested.
-  observer_->SuspendDone(base::TimeDelta());
+  observer_->SuspendDoneEx(power_manager::SuspendDone());
   EXPECT_EQ(1, GetNumVisibleCompositors());
   UnblockUserSession();
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
@@ -133,7 +133,7 @@ TEST_F(PowerEventObserverTest, LockBeforeSuspend) {
 
   // It also shouldn't request a callback if it isn't instructed to lock the
   // screen.
-  observer_->SuspendDone(base::TimeDelta());
+  observer_->SuspendDoneEx(power_manager::SuspendDone());
   UnblockUserSession();
   SetShouldLockScreenAutomatically(false);
   EXPECT_EQ(1, GetNumVisibleCompositors());
@@ -149,7 +149,7 @@ TEST_F(PowerEventObserverTest, SetInvisibleBeforeSuspend) {
 
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(0, GetNumVisibleCompositors());
-  observer_->SuspendDone(base::TimeDelta());
+  observer_->SuspendDoneEx(power_manager::SuspendDone());
 
   // Tests that all the Compositors are marked invisible _after_ the screen lock
   // animations have completed.
@@ -169,7 +169,7 @@ TEST_F(PowerEventObserverTest, SetInvisibleBeforeSuspend) {
                   .SimulateCompositorsReadyForSuspend());
   EXPECT_EQ(0, GetNumVisibleCompositors());
 
-  observer_->SuspendDone(base::TimeDelta());
+  observer_->SuspendDoneEx(power_manager::SuspendDone());
   EXPECT_EQ(1, GetNumVisibleCompositors());
 }
 
@@ -181,7 +181,7 @@ TEST_F(PowerEventObserverTest, CanceledSuspend) {
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(1, GetNumVisibleCompositors());
 
-  observer_->SuspendDone(base::TimeDelta());
+  observer_->SuspendDoneEx(power_manager::SuspendDone());
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   observer_->OnLockAnimationsComplete();
   EXPECT_EQ(1, GetNumVisibleCompositors());
@@ -208,7 +208,7 @@ TEST_F(PowerEventObserverTest, DelayResuspendForLockAnimations) {
   EXPECT_EQ(1, client->num_pending_suspend_readiness_callbacks());
 
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
-  observer_->SuspendDone(base::TimeDelta());
+  observer_->SuspendDoneEx(power_manager::SuspendDone());
   observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
 
   // The expected number of suspend readiness callbacks is 2 because the
@@ -381,6 +381,28 @@ TEST_F(PowerEventObserverTest, ImmediateLockAnimations) {
       SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE));
   EXPECT_EQ(0u, test_animator->GetAnimationCount());
   EXPECT_FALSE(lock_state_test_api.is_animating_lock());
+}
+
+// Tests that the lock screen is dismissed after a resume from hibernate.
+TEST_F(PowerEventObserverTest, HibernateDismissesLockScreen) {
+  SetCanLockScreen(true);
+  SetShouldLockScreenAutomatically(true);
+  ASSERT_FALSE(GetLockedState());
+
+  // First check that the screen locks after a regular suspend/resume.
+  power_manager::SuspendDone suspend_done = power_manager::SuspendDone();
+  observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
+  EXPECT_TRUE(GetLockedState());
+  observer_->SuspendDoneEx(suspend_done);
+  EXPECT_TRUE(GetLockedState());
+
+  // Then check that a suspend and resume from hibernate unlocks the screen.
+  observer_->SuspendImminent(power_manager::SuspendImminent_Reason_OTHER);
+  EXPECT_TRUE(GetLockedState());
+  suspend_done.set_deepest_state(
+      power_manager::SuspendDone_SuspendState_TO_DISK);
+  observer_->SuspendDoneEx(suspend_done);
+  EXPECT_FALSE(GetLockedState());
 }
 
 // Tests that displays will not be considered ready to suspend until the

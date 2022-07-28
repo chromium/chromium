@@ -141,6 +141,14 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
     // suspended (if e.g. the user canceled the suspend attempt).
     virtual void SuspendDone(base::TimeDelta sleep_duration) {}
 
+    // Called when a suspend attempt (previously announced via
+    // SuspendImminent()) has completed. The system may not have actually
+    // suspended (if e.g. the user canceled the suspend attempt). This is the
+    // same callback as SuspendDone() except that it receives the complete
+    // SuspendDone protobuf rather than only the sleep duration. Clients that
+    // override SuspendDoneEx() will not also get a SuspendDone() callback.
+    virtual void SuspendDoneEx(const power_manager::SuspendDone& proto);
+
     // Called when the system is about to resuspend from a dark resume.  Like
     // SuspendImminent(), the suspend will be deferred until all observers have
     // finished running and those observers that wish to asynchronously delay

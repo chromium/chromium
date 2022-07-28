@@ -57,7 +57,7 @@ class ASH_EXPORT PowerEventObserver
 
   // chromeos::PowerManagerClient::Observer overrides:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(base::TimeDelta sleep_duration) override;
+  void SuspendDoneEx(const power_manager::SuspendDone& proto) override;
 
   // SessionObserver overrides:
   void OnLoginStatusChanged(LoginStatus login_status) override;

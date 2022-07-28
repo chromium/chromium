@@ -304,7 +304,8 @@ void PowerEventObserver::SuspendImminent(
   }
 }
 
-void PowerEventObserver::SuspendDone(base::TimeDelta sleep_duration) {
+void PowerEventObserver::SuspendDoneEx(
+    const power_manager::SuspendDone& proto) {
   suspend_in_progress_ = false;
 
   Shell::Get()->display_configurator()->ResumeDisplays();
@@ -317,6 +318,13 @@ void PowerEventObserver::SuspendDone(base::TimeDelta sleep_duration) {
   block_suspend_token_ = {};
 
   StartRootWindowCompositors();
+  // If this is a resume from hibernation, the user just authenticated in order
+  // to launch the resume image. Dismiss the lock screen here to avoid making
+  // them log in twice.
+  if (proto.deepest_state() ==
+      power_manager::SuspendDone_SuspendState_TO_DISK) {
+    Shell::Get()->session_controller()->HideLockScreen();
+  }
 }
 
 void PowerEventObserver::OnLoginStatusChanged(LoginStatus) {
