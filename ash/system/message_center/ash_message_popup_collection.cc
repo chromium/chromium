@@ -178,6 +178,7 @@ void AshMessagePopupCollection::NotifyPopupAdded(
 
 void AshMessagePopupCollection::NotifyPopupClosed(
     message_center::MessagePopupView* popup) {
+  metrics_utils::LogPopupClosed(popup);
   MessagePopupCollection::NotifyPopupClosed(popup);
   popup->message_view()->RemoveObserver(this);
   if (last_pop_up_added_ == popup)

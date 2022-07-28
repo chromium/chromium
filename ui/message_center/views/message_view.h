@@ -208,6 +208,10 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   NotifierId notifier_id() const { return notifier_id_; }
 
+  base::Time timestamp() const { return timestamp_; }
+
+  bool pinned() const { return pinned_; }
+
   bool is_active() const { return is_active_; }
 
   void set_parent_message_view(MessageView* parent_message_view) {
@@ -268,6 +272,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   std::string notification_id_;
   std::u16string accessible_name_;
   const NotifierId notifier_id_;
+  base::Time timestamp_;
 
   // Tracks whether background should be drawn as active based on gesture
   // events.

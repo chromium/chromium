@@ -3203,6 +3203,61 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.Popup.Dismissed.{TimeRange}"
+    enum="NotificationCatalogName" expires_after="2023-02-10">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the time a specific system notification spends as a pop-up before
+    being dismissed either by the user or system. Records the notification
+    catalog name in one of the time buckets available when the pop-up is
+    dismissed either manually or by time out.
+  </summary>
+  <token key="UnpinnedOrPinned">
+    <variant name=""/>
+    <variant name="Pinned"/>
+  </token>
+  <token key="TimeRange">
+    <variant name="After7s"/>
+    <variant name="Within1s"/>
+    <variant name="Within3s"/>
+    <variant name="Within7s"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.Popup.ShownCount"
+    enum="NotificationCatalogName" expires_after="2023-02-10">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Tracks the number of times a specific system notification pop-up is shown to
+    users.
+  </summary>
+  <token key="UnpinnedOrPinned">
+    <variant name=""/>
+    <variant name="Pinned"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Ash.NotifierFramework.{UnpinnedOrPinned}SystemNotification.Popup.UserJourneyTime"
+    units="seconds" expires_after="2023-02-10">
+  <owner>kradtke@google.com</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the time a system notification spends as a pop-up before being
+    dismissed either by the user or system. Starts measuring time whenever the
+    pop-up is shown to the user, and records metric when the pop-up is dismissed
+    either manually or by time out.
+  </summary>
+  <token key="UnpinnedOrPinned">
+    <variant name=""/>
+    <variant name="Pinned"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
     expires_after="2023-04-10">
 <!-- Name completed by histogram_suffixes

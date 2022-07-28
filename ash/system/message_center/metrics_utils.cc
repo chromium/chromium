@@ -8,9 +8,47 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
+#include "ui/message_center/views/message_view.h"
+
+namespace {
+
+// Used in histogram names that are persisted to metric logs.
+std::string GetNotifierFrameworkNotificationHistogramBase(bool pinned) {
+  if (pinned)
+    return "Ash.NotifierFramework.PinnedSystemNotification";
+  return "Ash.NotifierFramework.SystemNotification";
+}
+
+// Used in histogram names that are persisted to metric logs.
+std::string GetNotifierFrameworkPopupDismissedTimeRange(
+    const base::TimeDelta& time) {
+  if (time <= base::Seconds(1))
+    return "Within1s";
+  if (time <= base::Seconds(3))
+    return "Within3s";
+  if (time <= base::Seconds(7))
+    return "Within7s";
+  return "After7s";
+}
+
+bool ValidCatalogName(const message_center::NotifierId& notifier_id) {
+  if (notifier_id.type != message_center::NotifierType::SYSTEM_COMPONENT)
+    return false;
+
+  if (notifier_id.catalog_name == ash::NotificationCatalogName::kNone ||
+      notifier_id.catalog_name ==
+          ash::NotificationCatalogName::kTestCatalogName) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
 
 namespace ash {
 namespace metrics_utils {
@@ -458,6 +496,47 @@ void LogPopupShown(const std::string& notification_id) {
 
   UMA_HISTOGRAM_ENUMERATION("Notifications.Cros.Actions.Popup.Shown",
                             type.value());
+
+  auto* notification =
+      message_center::MessageCenter::Get()->FindNotificationById(
+          notification_id);
+  if (!notification)
+    return;
+
+  if (!ValidCatalogName(notification->notifier_id()))
+    return;
+
+  const std::string histogram_base =
+      GetNotifierFrameworkNotificationHistogramBase(notification->pinned());
+
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("%s.Popup.ShownCount", histogram_base.c_str()),
+      notification->notifier_id().catalog_name);
+}
+
+void LogPopupClosed(message_center::MessagePopupView* popup) {
+  const message_center::NotifierId notifier_id =
+      popup->message_view()->notifier_id();
+
+  if (!ValidCatalogName(notifier_id))
+    return;
+
+  const std::string histogram_base =
+      GetNotifierFrameworkNotificationHistogramBase(
+          popup->message_view()->pinned());
+  const base::TimeDelta user_journey_time =
+      base::Time::Now() - popup->message_view()->timestamp();
+  const std::string time_range =
+      GetNotifierFrameworkPopupDismissedTimeRange(user_journey_time);
+
+  base::UmaHistogramMediumTimes(
+      base::StringPrintf("%s.Popup.UserJourneyTime", histogram_base.c_str()),
+      user_journey_time);
+
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("%s.Popup.Dismissed.%s", histogram_base.c_str(),
+                         time_range.c_str()),
+      notifier_id.catalog_name);
 }
 
 void LogClosedByClearAll(const std::string& notification_id) {
@@ -496,27 +575,15 @@ void LogSystemNotificationAdded(const std::string& notification_id) {
   if (!notification)
     return;
 
-  if (notification->notifier_id().type !=
-      message_center::NotifierType::SYSTEM_COMPONENT) {
+  if (!ValidCatalogName(notification->notifier_id()))
     return;
-  }
 
-  if (notification->notifier_id().catalog_name ==
-          NotificationCatalogName::kNone ||
-      notification->notifier_id().catalog_name ==
-          NotificationCatalogName::kTestCatalogName) {
-    return;
-  }
+  const std::string histogram_base =
+      GetNotifierFrameworkNotificationHistogramBase(notification->pinned());
 
-  if (!notification->pinned()) {
-    base::UmaHistogramEnumeration(
-        "Ash.NotifierFramework.SystemNotification.Added",
-        notification->notifier_id().catalog_name);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Ash.NotifierFramework.PinnedSystemNotification.Added",
-        notification->notifier_id().catalog_name);
-  }
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("%s.Added", histogram_base.c_str()),
+      notification->notifier_id().catalog_name);
 }
 
 void LogNotificationsShownInFirstMinute(int count) {

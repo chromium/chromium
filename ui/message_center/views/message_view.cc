@@ -95,6 +95,7 @@ SkPath MessageView::HighlightPathGenerator::GetHighlightPath(
 MessageView::MessageView(const Notification& notification)
     : notification_id_(notification.id()),
       notifier_id_(notification.notifier_id()),
+      timestamp_(notification.timestamp()),
       slide_out_controller_(this, this) {
   SetFocusBehavior(FocusBehavior::ALWAYS);
   views::FocusRing::Install(this);

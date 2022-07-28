@@ -13,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
@@ -38,6 +39,21 @@ constexpr char kSystemNotificationAddedHistogramName[] =
 
 constexpr char kPinnedSystemNotificationAddedHistogramName[] =
     "Ash.NotifierFramework.PinnedSystemNotification.Added";
+
+constexpr char kSystemNotificationPopupShownHistogramName[] =
+    "Ash.NotifierFramework.SystemNotification.Popup.ShownCount";
+
+constexpr char kSystemNotificationPopupUserJourneyTime[] =
+    "Ash.NotifierFramework.SystemNotification.Popup.UserJourneyTime";
+
+constexpr char kSystemNotificationPopupDismissedWithin1s[] =
+    "Ash.NotifierFramework.SystemNotification.Popup.Dismissed.Within1s";
+
+constexpr char kSystemNotificationPopupDismissedWithin7s[] =
+    "Ash.NotifierFramework.SystemNotification.Popup.Dismissed.Within7s";
+
+constexpr char kSystemNotificationPopupDismissedAfter7s[] =
+    "Ash.NotifierFramework.SystemNotification.Popup.Dismissed.After7s";
 
 const gfx::Image CreateTestImage() {
   SkBitmap bitmap;
@@ -108,7 +124,8 @@ namespace ash {
 // notification/message center.
 class MessageCenterMetricsUtilsTest : public AshTestBase {
  public:
-  MessageCenterMetricsUtilsTest() {
+  MessageCenterMetricsUtilsTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitAndEnableFeature(features::kNotificationsRefresh);
   }
@@ -495,8 +512,10 @@ TEST_F(MessageCenterMetricsUtilsTest,
   EXPECT_TRUE(PopupVisible(notification->id()));
   EXPECT_TRUE(NotificationVisible(notification->id()));
 
-  // Expect metric to be recorded.
+  // Expect `Added` and `PopupShown` metrics to be recorded.
   histograms.ExpectBucketCount(kSystemNotificationAddedHistogramName,
+                               catalog_name, 1);
+  histograms.ExpectBucketCount(kSystemNotificationPopupShownHistogramName,
                                catalog_name, 1);
 
   // Apply a notification blocker.
@@ -508,13 +527,64 @@ TEST_F(MessageCenterMetricsUtilsTest,
   message_center->AddNotification(
       std::make_unique<message_center::Notification>(*notification));
 
-  // Verify notification wasn't shown with notification blockers enabled.
+  // Verify notification wasn't shown with notification blockers.
   EXPECT_FALSE(PopupVisible(notification->id()));
   EXPECT_FALSE(NotificationVisible(notification->id()));
 
-  // Verify the metric is recorded even with notification blockers enabled.
+  // Verify the `Added` metric is recorded even with notification blockers.
   histograms.ExpectBucketCount(kSystemNotificationAddedHistogramName,
                                catalog_name, 2);
+
+  // Verify `Popup Shown` metric is not recorded with notification blockers.
+  histograms.ExpectBucketCount(kSystemNotificationPopupShownHistogramName,
+                               catalog_name, 1);
+}
+
+TEST_F(MessageCenterMetricsUtilsTest, RecordPopupUserJourneyTime) {
+  base::HistogramTester histograms;
+
+  // Create a non-pinned system notification with a valid catalog name.
+  const NotificationCatalogName catalog_name =
+      NotificationCatalogName::kFullRestore;
+  auto notification = CreateNotificationWithCatalogName(catalog_name);
+
+  // Add notification to message center.
+  auto* message_center = message_center::MessageCenter::Get();
+  message_center->AddNotification(
+      std::make_unique<message_center::Notification>(*notification));
+
+  // Wait for notification popup to time out.
+  base::TimeDelta popup_timeout_duration = base::Seconds(7);
+  task_environment()->FastForwardBy(popup_timeout_duration);
+
+  // Expect user journey time metric to record the popup duration due to timeout
+  // (value is between 6 and 7 seconds).
+  auto buckets =
+      histograms.GetAllSamples(kSystemNotificationPopupUserJourneyTime);
+  EXPECT_TRUE(buckets[0].min >= 6000 && buckets[0].min <= 7000);
+  histograms.ExpectBucketCount(kSystemNotificationPopupDismissedWithin7s,
+                               catalog_name, 1);
+  message_center->RemoveNotification(notification->id(), /*by_user=*/true);
+
+  // Dismiss popup within 1s.
+  notification->set_timestamp(base::Time::Now());
+  message_center->AddNotification(
+      std::make_unique<message_center::Notification>(*notification));
+  message_center->RemoveNotification(notification->id(), /*by_user=*/true);
+  task_environment()->FastForwardBy(popup_timeout_duration);
+  histograms.ExpectBucketCount(kSystemNotificationPopupDismissedWithin1s,
+                               catalog_name, 1);
+
+  // Dismiss "never timeout" popup after 7s.
+  notification->set_timestamp(base::Time::Now());
+  notification->set_never_timeout(true);
+  message_center->AddNotification(
+      std::make_unique<message_center::Notification>(*notification));
+  task_environment()->FastForwardBy(popup_timeout_duration + base::Seconds(1));
+  message_center->RemoveNotification(notification->id(), /*by_user=*/true);
+  task_environment()->FastForwardBy(popup_timeout_duration);
+  histograms.ExpectBucketCount(kSystemNotificationPopupDismissedAfter7s,
+                               catalog_name, 1);
 }
 
 }  // namespace ash
