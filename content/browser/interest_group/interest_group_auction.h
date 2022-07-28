@@ -399,6 +399,12 @@ class CONTENT_EXPORT InterestGroupAuction {
  private:
   using AuctionList = std::list<std::unique_ptr<InterestGroupAuction>>;
 
+  // BuyerHelpers create and own the BidStates for a particular buyer, to
+  // better handle per-buyer cross-interest-group behavior (e.g., enforcing
+  // a shared per-buyer timeout, only generating bids for the highest priority N
+  // interest groups of a particular buyer, etc).
+  class BuyerHelper;
+
   // ---------------------------------
   // Load interest group phase methods
   // ---------------------------------
@@ -442,9 +448,6 @@ class CONTENT_EXPORT InterestGroupAuction {
   // are any.
   void OnSellerWorkletReceived();
 
-  // Requests bidder worklets from the AuctionWorkletManager for all bidders.
-  void RequestBidderWorklets();
-
   // Invoked by the AuctionWorkletManager on fatal errors, at any point after
   // a SellerWorklet has been provided. Results in auction immediately
   // failing. Unlike most other methods, may be invoked during either the
@@ -454,63 +457,27 @@ class CONTENT_EXPORT InterestGroupAuction {
       AuctionWorkletManager::FatalErrorType fatal_error_type,
       const std::vector<std::string>& errors);
 
-  // Invoked whenever the AuctionWorkletManager has provided a BidderWorket
-  // for the bidder identified by `bid_state`. Starts generating a bid.
-  void OnBidderWorkletReceived(BidState* bid_state);
-
-  // Calls SendPendingSignalsRequests() for the BidderWorklet of `bid_state`,
-  // if it hasn't been destroyed. This is done asynchronously, so that
-  // BidStates that share a BidderWorklet all call GenerateBid() before this
-  // is invoked for all of them.
-  //
-  // This does result in invoking SendPendingSignalsRequests() multiple times
-  // for BidStates that share BidderWorklets, though that should be fairly low
-  // overhead.
-  void SendPendingSignalsRequestsForBidder(BidState* bid_state);
-
-  // Called when the `bid_state` BidderWorklet crashes or fails to load.
-  // Invokes OnGenerateBidComplete() for the worklet with a failure.
-  void OnBidderWorkletGenerateBidFatalError(
-      BidState* bid_state,
-      AuctionWorkletManager::FatalErrorType fatal_error_type,
-      const std::vector<std::string>& errors);
-
-  // Called once a bid has been generated, or has failed to be generated.
-  // Releases the BidderWorklet handle and instructs the SellerWorklet to
-  // start scoring the bid, if there is one.
-  void OnGenerateBidComplete(BidState* state,
-                             auction_worklet::mojom::BidderWorkletBidPtr bid,
-                             uint32_t bidding_signals_data_version,
-                             bool has_bidding_signals_data_version,
-                             const absl::optional<GURL>& debug_loss_report_url,
-                             const absl::optional<GURL>& debug_win_report_url,
-                             double set_priority,
-                             bool has_set_priority,
-                             const std::vector<std::string>& errors);
-
-  // True if all bid results and the seller script load are complete.
-  bool AllBidsScored() const { return outstanding_bids_ == 0; }
+  // True if all bids have been generated and scored.
+  bool AllBidsScored() const {
+    return outstanding_bid_sources_ == 0 && bids_being_scored_ == 0 &&
+           unscored_bids_.empty();
+  }
 
   // Invoked when a component auction completes. If `success` is true, gets
   // the Bid from `component_auction` and passes a copy of it to ScoreBid().
   void OnComponentAuctionComplete(InterestGroupAuction* component_auction,
                                   bool success);
 
-  // Called when either a bidder worklet's GenerateBid() method or a component
-  // seller worklet's bid and scoring phase completes without creating a bid
-  // (this includes worklet crashes and load failures).
-  void OnNoBid();
-
-  // Validates that `mojo_bid` is valid and, if it is, creates a Bid
-  // corresponding to it, consuming it. Returns nullptr and calls
-  // ReportBadMessage() if it's not valid. Does not mutate `bid_state`, but
-  // the returned Bid has a non-const pointer to it.
-  std::unique_ptr<Bid> TryToCreateBid(
-      auction_worklet::mojom::BidderWorkletBidPtr mojo_bid,
-      BidState& bid_state,
-      const absl::optional<uint32_t>& bidding_signals_data_version,
-      const absl::optional<GURL>& debug_loss_report_url,
-      const absl::optional<GURL>& debug_win_report_url);
+  // Called when a potential source of bids has finished generating bids. This
+  // could be either a component auction completing (with or without generating
+  // a bid) or a BuyerHelper that has finished generating bids. Must be called
+  // only after ScoreBidIfReady() has been called for all bids the bidder
+  // generated.
+  //
+  // Updates `outstanding_bid_sources_`, flushes pending scoring signals
+  // requests, and advances to the next state of the auction, if the bidding and
+  // scoring phase is complete.
+  void OnBidSourceDone();
 
   // Calls into the seller asynchronously to score the passed in bid.
   void ScoreBidIfReady(std::unique_ptr<Bid> bid);
@@ -537,8 +504,7 @@ class CONTENT_EXPORT InterestGroupAuction {
   absl::optional<base::TimeDelta> PerBuyerTimeout(const BidState* state);
   absl::optional<base::TimeDelta> SellerTimeout();
 
-  // If there are no `outstanding_bids_`, completes the bidding and scoring
-  // phase.
+  // If AllBidsScored() is true, completes the bidding and scoring phase.
   void MaybeCompleteBiddingAndScoringPhase();
 
   // Invoked when the bidding and scoring phase of an auction completes.
@@ -661,29 +627,27 @@ class CONTENT_EXPORT InterestGroupAuction {
   // AuctionWorkletManager.
   bool seller_worklet_received_ = false;
 
-  // Number of bids that have yet to be sent to the SellerWorklet. This
-  // includes BidderWorklets that have not yet been loaded, those whose
-  // GenerateBid() method is currently being run, and those that are waiting
-  // on the seller worklet to load, as well as component auctions that are
-  // still running. When this reaches 0, the SellerWorklet's
-  // SendPendingSignalsRequests() should be invoked, so it can send any
-  // pending scoring signals requests.
-  int num_bids_not_sent_to_seller_worklet_;
+  // Number of bidders that are still attempting to generate bids. This includes
+  // both BuyerHelpers and component auctions. BuyerHelpers may generate
+  // multiple bids (or no bids).
+  //
+  // When this reaches 0, the SellerWorklet's SendPendingSignalsRequests()
+  // method should be invoked, so it can send any pending scoring signals
+  // requests.
+  int outstanding_bid_sources_ = 0;
 
-  // Number of bids which the seller has not yet finished scoring. This
-  // includes bids included in `num_bids_not_sent_to_seller_worklet_`, as well
-  // as any bids waiting on the seller worklet to load, and bids the seller
-  // worklet is currently scoring. When this reaches 0, the bid with the
-  // highest score is the winner, and bidding and scoring phase is completed.
-  int outstanding_bids_;
+  // Number of bids that have been send to the seller worklet to score, but
+  // that haven't yet had their score received from the seller worklet.
+  int bids_being_scored_ = 0;
 
   // The number of `component_auctions_` that have yet to request seller
   // worklets. Once it hits 0, the seller worklet for `this` is loaded. See
   // StartBiddingAndScoringPhase() for more details.
   size_t pending_component_seller_worklet_requests_ = 0;
 
-  // State of all loaded interest groups.
-  std::vector<BidState> bid_states_;
+  // State of all buyers participating in the auction. Excludes buyers that
+  // don't own any interest groups the user belongs to.
+  std::vector<std::unique_ptr<BuyerHelper>> buyer_helpers_;
 
   // Bids waiting on the seller worklet to load before scoring. Does not
   // include bids that are currently waiting on the worklet's ScoreAd() method
