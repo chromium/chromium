@@ -61,6 +61,9 @@ class HTMLFrameSetElement final : public HTMLElement {
 
   bool HasNonInBodyInsertionMode() const override { return true; }
 
+  bool CanResizeRow(const gfx::Point& p) const;
+  bool CanResizeColumn(const gfx::Point& p) const;
+
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(error, kError)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(focus, kFocus)
@@ -91,6 +94,7 @@ class HTMLFrameSetElement final : public HTMLElement {
   void StartResizing(LayoutFrameSet::GridAxis& axis, int position);
   void ContinueResizing(LayoutFrameSet::GridAxis& axis, int position);
   int SplitPosition(const LayoutFrameSet::GridAxis& axis, int split) const;
+  int HitTestSplit(const LayoutFrameSet::GridAxis& axis, int position) const;
 
   Vector<HTMLDimension> row_lengths_;
   Vector<HTMLDimension> col_lengths_;

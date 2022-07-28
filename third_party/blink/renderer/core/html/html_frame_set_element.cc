@@ -337,8 +337,7 @@ void HTMLFrameSetElement::SetIsResizing(bool is_resizing) {
 
 void HTMLFrameSetElement::StartResizing(LayoutFrameSet::GridAxis& axis,
                                         int position) {
-  int split =
-      To<LayoutFrameSet>(GetLayoutObject())->HitTestSplit(axis, position);
+  int split = HitTestSplit(axis, position);
   if (split == LayoutFrameSet::kNoSplit || axis.prevent_resize_[split]) {
     axis.split_being_resized_ = LayoutFrameSet::kNoSplit;
     return;
@@ -378,6 +377,43 @@ int HTMLFrameSetElement::SplitPosition(const LayoutFrameSet::GridAxis& axis,
   for (int i = 0; i < split && i < size; ++i)
     position += axis.sizes_[i] + border_thickness;
   return position - border_thickness;
+}
+
+bool HTMLFrameSetElement::CanResizeRow(const gfx::Point& p) const {
+  const LayoutFrameSet::GridAxis& axis =
+      To<LayoutFrameSet>(GetLayoutObject())->rows_;
+  int r = HitTestSplit(axis, p.y());
+  return r != LayoutFrameSet::kNoSplit && !axis.prevent_resize_[r];
+}
+
+bool HTMLFrameSetElement::CanResizeColumn(const gfx::Point& p) const {
+  const LayoutFrameSet::GridAxis& axis =
+      To<LayoutFrameSet>(GetLayoutObject())->cols_;
+  int r = HitTestSplit(axis, p.y());
+  return r != LayoutFrameSet::kNoSplit && !axis.prevent_resize_[r];
+}
+
+int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
+                                      int position) const {
+  if (GetLayoutObject()->NeedsLayout())
+    return LayoutFrameSet::kNoSplit;
+
+  int border_thickness = Border();
+  if (border_thickness <= 0)
+    return LayoutFrameSet::kNoSplit;
+
+  wtf_size_t size = axis.sizes_.size();
+  if (!size)
+    return LayoutFrameSet::kNoSplit;
+
+  int split_position = axis.sizes_[0];
+  for (wtf_size_t i = 1; i < size; ++i) {
+    if (position >= split_position &&
+        position < split_position + border_thickness)
+      return static_cast<int>(i);
+    split_position += border_thickness + axis.sizes_[i];
+  }
+  return LayoutFrameSet::kNoSplit;
 }
 
 }  // namespace blink

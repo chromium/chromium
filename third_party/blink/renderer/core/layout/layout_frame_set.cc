@@ -461,41 +461,6 @@ void LayoutFrameSet::PositionFrames() {
   ClearNeedsLayoutOnHiddenFrames(child);
 }
 
-bool LayoutFrameSet::CanResizeRow(const gfx::Point& p) const {
-  NOT_DESTROYED();
-  int r = HitTestSplit(rows_, p.y());
-  return r != kNoSplit && !rows_.prevent_resize_[r];
-}
-
-bool LayoutFrameSet::CanResizeColumn(const gfx::Point& p) const {
-  NOT_DESTROYED();
-  int c = HitTestSplit(cols_, p.x());
-  return c != kNoSplit && !cols_.prevent_resize_[c];
-}
-
-int LayoutFrameSet::HitTestSplit(const GridAxis& axis, int position) const {
-  NOT_DESTROYED();
-  if (NeedsLayout())
-    return kNoSplit;
-
-  int border_thickness = FrameSet()->Border();
-  if (border_thickness <= 0)
-    return kNoSplit;
-
-  wtf_size_t size = axis.sizes_.size();
-  if (!size)
-    return kNoSplit;
-
-  int split_position = axis.sizes_[0];
-  for (wtf_size_t i = 1; i < size; ++i) {
-    if (position >= split_position &&
-        position < split_position + border_thickness)
-      return static_cast<int>(i);
-    split_position += border_thickness + axis.sizes_[i];
-  }
-  return kNoSplit;
-}
-
 bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
                                     const ComputedStyle&) const {
   NOT_DESTROYED();
@@ -506,11 +471,11 @@ CursorDirective LayoutFrameSet::GetCursor(const PhysicalOffset& point,
                                           ui::Cursor& cursor) const {
   NOT_DESTROYED();
   gfx::Point rounded_point = ToRoundedPoint(point);
-  if (CanResizeRow(rounded_point)) {
+  if (FrameSet()->CanResizeRow(rounded_point)) {
     cursor = RowResizeCursor();
     return kSetCursor;
   }
-  if (CanResizeColumn(rounded_point)) {
+  if (FrameSet()->CanResizeColumn(rounded_point)) {
     cursor = ColumnResizeCursor();
     return kSetCursor;
   }

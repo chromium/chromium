@@ -95,9 +95,6 @@ class LayoutFrameSet final : public LayoutBox {
 
   FrameEdgeInfo EdgeInfo() const;
 
-  bool CanResizeRow(const gfx::Point&) const;
-  bool CanResizeColumn(const gfx::Point&) const;
-
   void NotifyFrameEdgeInfoChanged();
   HTMLFrameSetElement* FrameSet() const;
 
@@ -171,8 +168,6 @@ class LayoutFrameSet final : public LayoutBox {
   void ComputeEdgeInfo();
   void FillFromEdgeInfo(const FrameEdgeInfo&, int r, int c);
   void PositionFrames();
-
-  int HitTestSplit(const GridAxis&, int position) const;
 
   LayoutObjectChildList children_;
 
