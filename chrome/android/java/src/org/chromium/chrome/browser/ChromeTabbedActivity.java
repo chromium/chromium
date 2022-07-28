@@ -216,6 +216,7 @@ import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.widget.Toast;
@@ -987,7 +988,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.startNativeInitialization")) {
             // This is on the critical path so don't delay.
             setupCompositorContentPostNative();
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SPLIT_COMPOSITOR_TASK)) {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SPLIT_COMPOSITOR_TASK)
+                    && (!DeviceFormFactor.isTablet()
+                            || ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                                    ChromeFeatureList.SPLIT_COMPOSITOR_TASK, "enable_on_tablet",
+                                    false))) {
                 PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                         mCallbackController.makeCancelable(this::initializeCompositorContent));
             } else {
