@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import os
-import re
 import unittest
 
 import mock
@@ -27,13 +26,6 @@ class PerfBenchmarkForTesting(PerfBenchmarkWithProfiling):
 
 
 class PerfBenchmarkWithProfilingTest(unittest.TestCase):
-  def assertEqualIgnoringWhitespace(self, actual, expected):
-    def removeWhitespace(text):
-      return re.sub(r"\s+", "", text, flags=re.UNICODE)
-
-    return self.assertEqual(removeWhitespace(actual),
-                            removeWhitespace(expected))
-
   def setUp(self):
     self._finder_options = options_for_unittests.GetCopy()
     self._fake_platform = mock.Mock(spec=android_platform.AndroidPlatform)
@@ -46,24 +38,8 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
     benchmark.CustomizeOptions(finder_options=self._finder_options,
                                possible_browser=None)
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
-    self.assertEqualIgnoringWhitespace(
-        options.config.system_trace_config.GetTextConfig(), """
-        buffers: {
-          size_kb: 200000
-          fill_policy: DISCARD
-        }
-        duration_ms: 1800000
-        data_sources: {
-          config {
-            name: "linux.ftrace"
-            ftrace_config {
-              ftrace_events: "power/suspend_resume"
-              ftrace_events: "power/cpu_frequency"
-              ftrace_events: "power/cpu_idle"
-            }
-          }
-        }""")
-    self.assertNotIn("PERFETTO_SYMBOLIZER_MODE", os.environ)
+    text_config = options.config.system_trace_config.GetTextConfig()
+    self.assertNotIn('name: "linux.perf"', text_config)
     self.assertNotIn("PERFETTO_BINARY_PATH", os.environ)
 
   def testWithoutAndroidBrowser(self):
@@ -74,23 +50,8 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
     benchmark.CustomizeOptions(finder_options=self._finder_options,
                                possible_browser=possible_browser)
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
-    self.assertEqualIgnoringWhitespace(
-        options.config.system_trace_config.GetTextConfig(), """
-        buffers: {
-          size_kb: 200000
-          fill_policy: DISCARD
-        }
-        duration_ms: 1800000
-        data_sources: {
-          config {
-            name: "linux.ftrace"
-            ftrace_config {
-              ftrace_events: "power/suspend_resume"
-              ftrace_events: "power/cpu_frequency"
-              ftrace_events: "power/cpu_idle"
-            }
-          }
-        }""")
+    text_config = options.config.system_trace_config.GetTextConfig()
+    self.assertNotIn('name: "linux.perf"', text_config)
     self.assertNotIn("PERFETTO_SYMBOLIZER_MODE", os.environ)
     self.assertNotIn("PERFETTO_BINARY_PATH", os.environ)
 
@@ -102,52 +63,10 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
     benchmark.CustomizeOptions(finder_options=self._finder_options,
                                possible_browser=possible_browser)
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
-    self.assertEqualIgnoringWhitespace(
-        options.config.system_trace_config.GetTextConfig(), """
-        buffers: {
-          size_kb: 200000
-          fill_policy: DISCARD
-        }
-        buffers {
-          size_kb: 190464
-        }
-
-        buffers {
-          size_kb: 190464
-        }
-        data_sources {
-          config {
-            name: "linux.process_stats"
-            target_buffer: 1
-            process_stats_config {
-                scan_all_processes_on_start: true
-                record_thread_names: true
-                proc_stats_poll_ms: 100
-            }
-          }
-        }
-        data_sources {
-          config {
-            name: "linux.perf"
-            target_buffer: 2
-            perf_event_config {
-                all_cpus: true
-                sampling_frequency: 1234
-                target_cmdline: "org.chromium.chrome*"
-            }
-          }
-        }
-        duration_ms: 1800000
-        data_sources: {
-          config {
-            name: "linux.ftrace"
-            ftrace_config {
-              ftrace_events: "power/suspend_resume"
-              ftrace_events: "power/cpu_frequency"
-              ftrace_events: "power/cpu_idle"
-            }
-          }
-        }""")
+    text_config = options.config.system_trace_config.GetTextConfig()
+    self.assertIn('name: "linux.perf"', text_config)
+    self.assertIn('sampling_frequency: 1234', text_config)
+    self.assertIn('target_cmdline: "org.chromium.chrome*"', text_config)
     self.assertIn("PERFETTO_SYMBOLIZER_MODE", os.environ)
     self.assertIn("PERFETTO_BINARY_PATH", os.environ)
     self.assertTrue(
