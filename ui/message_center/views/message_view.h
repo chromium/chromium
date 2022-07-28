@@ -91,10 +91,6 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   ~MessageView() override;
 
-  // Abort all layer animations. Unimplemented by default, used in
-  // `AshNotificationView` to abort animations when it's widget is being closed.
-  virtual void AbortAllLayerAnimations() {}
-
   // Updates this view with an additional grouped notification. If the view
   // wasn't previously grouped it also takes care of converting the view to
   // the grouped notification state.
@@ -195,10 +191,6 @@ class MESSAGE_CENTER_EXPORT MessageView
 
   // Updates the width of the buttons which are hidden and avail by swipe.
   void SetSlideButtonWidth(int coutrol_button_width);
-
-  base::WeakPtr<MessageView> GetWeakPtr() {
-    return message_view_weak_factory_.GetWeakPtr();
-  }
 
   void set_notification_id(const std::string& notification_id) {
     notification_id_ = notification_id;
@@ -306,8 +298,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
-
-  base::WeakPtrFactory<MessageView> message_view_weak_factory_{this};
 };
 
 }  // namespace message_center

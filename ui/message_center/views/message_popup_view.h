@@ -6,7 +6,6 @@
 #define UI_MESSAGE_CENTER_VIEWS_MESSAGE_POPUP_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/widget/widget.h"
@@ -74,7 +73,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   bool is_hovered() const { return is_hovered_; }
   bool is_focused() const { return is_focused_; }
 
-  MessageView* message_view() { return message_view_.get(); }
+  MessageView* message_view() { return message_view_; }
 
  protected:
   // For unit testing.
@@ -85,9 +84,7 @@ class MESSAGE_CENTER_EXPORT MessagePopupView
   bool IsWidgetValid() const;
 
   // Owned by views hierarchy.
-  // crbug/1347815: This needs to be a WeakPtr to ensure we do not use this
-  // uninitialized incase the view is deleted before this popup_view.
-  base::WeakPtr<MessageView> message_view_;
+  raw_ptr<MessageView> message_view_;
 
   // Unowned.
   const raw_ptr<MessagePopupCollection> popup_collection_;

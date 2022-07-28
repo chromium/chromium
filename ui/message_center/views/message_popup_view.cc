@@ -33,7 +33,7 @@ namespace message_center {
 MessagePopupView::MessagePopupView(MessageView* message_view,
                                    MessagePopupCollection* popup_collection,
                                    bool a11y_feedback_on_init)
-    : message_view_(message_view->GetWeakPtr()),
+    : message_view_(message_view),
       popup_collection_(popup_collection),
       a11y_feedback_on_init_(a11y_feedback_on_init) {
   set_suppress_default_focus_handling();
@@ -163,12 +163,6 @@ void MessagePopupView::Show() {
 }
 
 void MessagePopupView::Close() {
-  // crbug/1337661: Ensure we abort any running layer animations before closing
-  // the widget. This is to prevent any callbacks from initiating additional
-  // animations.
-  if (message_view_)
-    message_view_->AbortAllLayerAnimations();
-
   if (!GetWidget()) {
     DeleteDelegate();
     return;
@@ -226,7 +220,7 @@ void MessagePopupView::OnWorkAreaChanged() {
 void MessagePopupView::OnFocus() {
   // This view is just a container, so advance focus to the underlying
   // MessageView.
-  GetFocusManager()->SetFocusedView(message_view_.get());
+  GetFocusManager()->SetFocusedView(message_view_);
 }
 
 void MessagePopupView::AddedToWidget() {
