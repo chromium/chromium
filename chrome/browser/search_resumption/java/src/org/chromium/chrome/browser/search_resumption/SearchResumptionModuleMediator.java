@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_resumption.SearchResumptionModuleUtils.ModuleNotShownReason;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
@@ -69,10 +70,14 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
     @Override
     public void onSuggestionsReceived(
             AutocompleteResult autocompleteResult, String inlineAutocompleteText, boolean isFinal) {
-        if (!isFinal || mModel != null
-                || !shouldShowSuggestionModule(autocompleteResult.getSuggestionsList())) {
+        if (!isFinal || mModel != null) return;
+
+        if (!shouldShowSuggestionModule(autocompleteResult.getSuggestionsList())) {
+            SearchResumptionModuleUtils.recordModuleNotShownReason(
+                    ModuleNotShownReason.NOT_ENOUGH_RESULT);
             return;
         }
+
         showSearchSuggestionModule(autocompleteResult);
     }
 
@@ -103,9 +108,14 @@ public class SearchResumptionModuleMediator implements OnSuggestionsReceivedList
      * @param suggestionUrls The URLs of the suggestions.
      */
     void onSuggestionsAvailable(String[] suggestionTexts, GURL[] suggestionUrls) {
-        if (mModel != null || !shouldShowSuggestionModule(suggestionUrls, suggestionTexts)) {
+        if (mModel != null) return;
+
+        if (!shouldShowSuggestionModule(suggestionUrls, suggestionTexts)) {
+            SearchResumptionModuleUtils.recordModuleNotShownReason(
+                    ModuleNotShownReason.NOT_ENOUGH_RESULT);
             return;
         }
+
         showSearchSuggestionModule(suggestionTexts, suggestionUrls);
     }
 
