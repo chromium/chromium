@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-
 from core.perf_benchmark import PerfBenchmark
-from telemetry.core import util
 
 
 class PerfBenchmarkWithProfiling(PerfBenchmark):
@@ -21,11 +18,6 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
     super(PerfBenchmarkWithProfiling, self).__init__(*args, **kwargs)
     # The browser selected for benchmarking.
     self._browser_package = None
-    # A build/symbols directory, if any, for the browser being benchmarked.
-    self._symbols_directory = None
-    # Clear environment variables that are conditionally set by this class.
-    os.environ.pop("PERFETTO_SYMBOLIZER_MODE", None)
-    os.environ.pop("PERFETTO_BINARY_PATH", None)
 
   # You should, if needed, override the methods below.
 
@@ -59,18 +51,6 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
       # Not an Android browser.
       pass
 
-    build_directory = next(util.GetBuildDirectories(finder_options.chrome_root),
-                           None)
-
-    # Append the symbols directory to the provided build directory.
-    if build_directory is not None:
-      build_directory = build_directory.rstrip(os.path.sep)
-      _SYMBOLS_SUBDIRECTORY = "lib.unstripped"
-      if os.path.basename(build_directory) != _SYMBOLS_SUBDIRECTORY:
-        build_directory = os.path.join(build_directory, _SYMBOLS_SUBDIRECTORY)
-
-    self._symbols_directory = build_directory
-
   def CreateCoreTimelineBasedMeasurementOptions(self):
     """DO NOT OVERRIDE this method in your benchmark subclass.
 
@@ -87,13 +67,6 @@ class PerfBenchmarkWithProfiling(PerfBenchmark):
           # Enable wildcard to sample all processes for the selected browser.
           "{}*".format(self._browser_package),
           self.GetSamplingFrequencyHz())
-
-      # These environment variables are set here so that they can be used during
-      # symbolization, which happens separately from benchmarking, during the
-      # "results processing" stage (in results_processor.ProcessResults).
-      if self._symbols_directory is not None:
-        os.environ["PERFETTO_SYMBOLIZER_MODE"] = "index"
-        os.environ["PERFETTO_BINARY_PATH"] = self._symbols_directory
 
     self.CustomizeSystemTraceConfig(options.config.system_trace_config)
     return options

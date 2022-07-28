@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import unittest
 
 import mock
@@ -40,7 +39,6 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
     text_config = options.config.system_trace_config.GetTextConfig()
     self.assertNotIn('name: "linux.perf"', text_config)
-    self.assertNotIn("PERFETTO_BINARY_PATH", os.environ)
 
   def testWithoutAndroidBrowser(self):
     benchmark = PerfBenchmarkForTesting()
@@ -52,8 +50,6 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
     options = benchmark.CreateCoreTimelineBasedMeasurementOptions()
     text_config = options.config.system_trace_config.GetTextConfig()
     self.assertNotIn('name: "linux.perf"', text_config)
-    self.assertNotIn("PERFETTO_SYMBOLIZER_MODE", os.environ)
-    self.assertNotIn("PERFETTO_BINARY_PATH", os.environ)
 
   def testWithAndroidBrowser(self):
     benchmark = PerfBenchmarkForTesting()
@@ -67,7 +63,3 @@ class PerfBenchmarkWithProfilingTest(unittest.TestCase):
     self.assertIn('name: "linux.perf"', text_config)
     self.assertIn('sampling_frequency: 1234', text_config)
     self.assertIn('target_cmdline: "org.chromium.chrome*"', text_config)
-    self.assertIn("PERFETTO_SYMBOLIZER_MODE", os.environ)
-    self.assertIn("PERFETTO_BINARY_PATH", os.environ)
-    self.assertTrue(
-        os.environ["PERFETTO_BINARY_PATH"].endswith("lib.unstripped"))
