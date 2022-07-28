@@ -297,19 +297,17 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
              base::Value(ProxyPrefs::kAutoDetectProxyModeName), nullptr);
   provider_.UpdateChromePolicy(policy);
 
-  const base::Value* proxy_pref =
-      browser()->profile()->GetPrefs()->GetDictionary(
+  const base::Value::Dict& proxy_pref =
+      browser()->profile()->GetPrefs()->GetValueDict(
           proxy_config::prefs::kProxy);
-  ASSERT_TRUE(proxy_pref);
-  EXPECT_EQ(*proxy_pref, ProxyConfigDictionary::CreateAutoDetect());
+  EXPECT_EQ(proxy_pref, ProxyConfigDictionary::CreateAutoDetect());
 
   // The kLacrosProxyControllingExtension pref which is used to display the
   // extension controlling the proxy should also be reset.
-  const base::Value* extension_proxy_pref =
-      browser()->profile()->GetPrefs()->GetDictionary(
+  const base::Value::Dict& extension_proxy_pref =
+      browser()->profile()->GetPrefs()->GetValueDict(
           ash::prefs::kLacrosProxyControllingExtension);
-  ASSERT_TRUE(extension_proxy_pref);
-  EXPECT_EQ(*extension_proxy_pref, base::Value(base::Value::Type::DICTIONARY));
+  EXPECT_TRUE(extension_proxy_pref.empty());
 }
 
 // Same as the `UserPolicyHasPrecedence` test, but with reverse order of proxies
@@ -335,11 +333,10 @@ IN_PROC_BROWSER_TEST_F(NetworkSettingsServiceAshExtensionTest,
   proxy_config->extension->can_be_disabled = true;
   network_service_ash_->SetExtensionProxy(std::move(proxy_config));
   base::RunLoop().RunUntilIdle();
-  const base::Value* proxy_pref =
-      browser()->profile()->GetPrefs()->GetDictionary(
+  const base::Value::Dict& proxy_pref =
+      browser()->profile()->GetPrefs()->GetValueDict(
           proxy_config::prefs::kProxy);
-  ASSERT_TRUE(proxy_pref);
-  EXPECT_EQ(*proxy_pref, ProxyConfigDictionary::CreateDirect());
+  EXPECT_EQ(proxy_pref, ProxyConfigDictionary::CreateDirect());
 }
 
 // Proxies set by extensions in the primary profile should have priority in Ash
