@@ -19,6 +19,8 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_TH
 
 import android.os.Build;
 
+import androidx.appcompat.app.AppCompatDelegate;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,17 +29,31 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.VoidAnswer1;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateControllerTest.ShadowAppCompatDelegate;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
  * Unit tests for {@link GlobalNightModeStateController}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = ShadowAppCompatDelegate.class)
 public class GlobalNightModeStateControllerTest {
+    /**
+     * Shadow implementation of {@link androidx.appcompat.app.AppCompatDelegate} that bypass
+     * activity recreation. Used as a stop gap to stop test failure due to activity leaks.
+     * See https://crbug.com/1347906.
+     */
+    @Implements(AppCompatDelegate.class)
+    public static class ShadowAppCompatDelegate {
+        @Implementation
+        public static void setDefaultNightMode(int mode) {}
+    }
+
     @Mock
     private NightModeStateProvider.Observer mObserver;
 
