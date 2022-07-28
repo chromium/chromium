@@ -706,15 +706,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // Whether this result is a recommendation.
   bool is_recommendation = false;
 
-  // A query URL associated with this result. The meaning and treatment of the
-  // URL (e.g. displaying inline web contents) is dependent on the result type.
-  absl::optional<GURL> query_url;
-
-  // An optional id that identifies an equivalent result to this result. Answer
-  // card result has this set to remove the equivalent omnibox
-  // search-what-you-typed result when there is an answer card for the query.
-  absl::optional<std::string> equivalent_result_id;
-
   // The icon of this result.
   SearchResultIconInfo icon;
 

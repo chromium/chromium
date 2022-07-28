@@ -393,8 +393,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "Explore");
   // No priority for position.
   EXPECT_EQ(result->position_priority(), 0);
-  // No override url (will open app at default page).
-  EXPECT_FALSE(result->query_url().has_value());
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {

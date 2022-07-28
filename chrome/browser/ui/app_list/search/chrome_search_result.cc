@@ -169,14 +169,6 @@ void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   SetSearchResultMetadata();
 }
 
-void ChromeSearchResult::SetEquivalentResultId(
-    const std::string& equivalent_result_id) {
-  metadata_->equivalent_result_id = equivalent_result_id;
-  auto* updater = model_updater();
-  if (updater)
-    updater->SetSearchResultMetadata(id(), CloneMetadata());
-}
-
 void ChromeSearchResult::SetIcon(const IconInfo& icon) {
   icon.icon.EnsureRepsForSupportedScales();
   metadata_->icon = icon;
