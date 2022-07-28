@@ -2166,7 +2166,7 @@ void AXObjectCacheImpl::DidInsertChildrenOfNode(Node* node) {
   // changed.
   DCHECK(node);
   while (node) {
-    if (Get(node)) {
+    if (SafeGet(node, true)) {
       TextChanged(node);
       return;
     }
