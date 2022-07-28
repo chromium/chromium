@@ -392,8 +392,8 @@ void VirtualDisplayMacUtil::RemoveDisplay(int64_t display_id) {
 bool VirtualDisplayMacUtil::IsAPIAvailable() {
   bool is_api_available = false;
   // The underlying API is only available on macos 10.14 or higher.
-  // TODO(crbug.com/1126278): enable support on 10.15 and 10.14.
-  if (@available(macos 11.0, *)) {
+  // TODO(crbug.com/1126278): enable support on 10.14.
+  if (@available(macos 10.15, *)) {
     is_api_available = true;
   }
   if (!is_api_available) {
