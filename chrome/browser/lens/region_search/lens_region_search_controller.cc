@@ -47,15 +47,6 @@ void LensRegionSearchController::Start(bool use_fullscreen_capture,
     screenshot_flow_ =
         std::make_unique<image_editor::ScreenshotFlow>(web_contents());
 
-  // Create user education bubble anchored to the toolbar container.
-  bubble_widget_ = lens::OpenLensRegionSearchInstructions(
-      browser_,
-      base::BindOnce(&LensRegionSearchController::Close,
-                     base::Unretained(this)),
-      base::BindOnce(&LensRegionSearchController::Escape,
-                     base::Unretained(this)));
-  bubble_widget_->Show();
-
   base::OnceCallback<void(const image_editor::ScreenshotCaptureResult&)>
       callback = base::BindOnce(&LensRegionSearchController::OnCaptureCompleted,
                                 weak_this_);
@@ -63,6 +54,15 @@ void LensRegionSearchController::Start(bool use_fullscreen_capture,
   if (use_fullscreen_capture) {
     screenshot_flow_->StartFullscreenCapture(std::move(callback));
   } else {
+    // Create user education bubble anchored to the toolbar container.
+    // This is only done for non-fulllscreen capture.
+    bubble_widget_ = lens::OpenLensRegionSearchInstructions(
+        browser_,
+        base::BindOnce(&LensRegionSearchController::Close,
+                       base::Unretained(this)),
+        base::BindOnce(&LensRegionSearchController::Escape,
+                       base::Unretained(this)));
+    bubble_widget_->Show();
     screenshot_flow_->Start(std::move(callback));
   }
 }
