@@ -46,10 +46,15 @@ class DirectWritingServiceBinder {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             Log.d(TAG, "onServiceDisconnected for " + mPackageName + ", ComponentName=" + name);
+            // When service is disconnected for any reason, it is needed to unbind the service so
+            // that we can reconnect and start writing again. This also ensures service callback is
+            // registered again which would have been reset at service when this happened.
+            unbindService(mContext);
         }
     };
 
     private DirectWritingTriggerCallback mTriggerCallback;
+    private Context mContext;
 
     /**
      * Callback interface for DirectWritingTrigger class.
@@ -100,6 +105,7 @@ class DirectWritingServiceBinder {
 
             mPackageName = context.getPackageName();
             mTriggerCallback = triggerCallback;
+            mContext = context;
             Log.d(TAG, "bindService success");
         } catch (RuntimeException e) {
             Log.e(TAG, "bindService failed," + e);
