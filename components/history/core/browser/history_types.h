@@ -52,7 +52,12 @@ enum VisitSource {
   SOURCE_SAFARI_IMPORTED = 5,
 };
 
+// Corresponds to the "id" column of the "visits" SQL table.
 typedef int64_t VisitID;
+// `kInvalidVisitID` is 0 because SQL AUTOINCREMENT's very first row has
+// "id" == 1. Therefore any 0 VisitID is a sentinel null-like value.
+constexpr VisitID kInvalidVisitID = 0;
+
 // Structure to hold the mapping between each visit's id and its source.
 typedef std::map<VisitID, VisitSource> VisitSourceMap;
 
@@ -86,7 +91,7 @@ class VisitRow {
   //    devices. This is just a local AUTOINCREMENTed SQL row ID that has no
   //    special meaning or uniqueness guarantee outside of this local machine.
   //  - See `originator_cache_guid` and `originator_visit_id` for more details.
-  VisitID visit_id = 0;
+  VisitID visit_id = kInvalidVisitID;
 
   // Row ID into the URL table of the URL that this page is.
   URLID url_id = 0;
@@ -94,9 +99,9 @@ class VisitRow {
   base::Time visit_time;
 
   // Indicates another visit that was the redirecting or referring page for this
-  // one. 0 indicates no referrer/redirect.
+  // one. 0 (kInvalidVisitId) indicates no referrer/redirect.
   // Note that this corresponds to the "from_visit" column in the visit DB.
-  VisitID referring_visit = 0;
+  VisitID referring_visit = kInvalidVisitID;
 
   // A combination of bits from PageTransition.
   ui::PageTransition transition = ui::PAGE_TRANSITION_LINK;
@@ -116,15 +121,15 @@ class VisitRow {
 
   // Indicates the visit that opened this one.
   //
-  // 0 indicates no opener visit. Only non-zero if this visit was directly
-  // initiated by open in a new tab, window, or for same-document navigations.
-  // It is possible for this to be non-zero and the visit to not exist (i.e., if
-  // the visit expired).
+  // 0 (kInvalidVisitId) indicates no opener visit. Only non-zero if this visit
+  // was directly initiated by open in a new tab, window, or for same-document
+  // navigations. It is possible for this to be non-zero and the visit to not
+  // exist (i.e., if the visit expired).
   //
   // This differs from `referring_visit` since this links visits across tabs
   // whereas `referring_visit` is only populated if the Referrer is from the
   // same tab.
-  VisitID opener_visit = 0;
+  VisitID opener_visit = kInvalidVisitID;
 
   // These are set only for synced visits originating from a different machine.
   // `originator_cache_guid` is the originator machine's unique client ID. It's
@@ -135,14 +140,14 @@ class VisitRow {
   // `opener_visit`).
   // Note that even for synced visits, this may be 0, if the visit came from a
   // "legacy" client (which was using Sessions sync rather than History sync).
-  VisitID originator_visit_id = 0;
+  VisitID originator_visit_id = kInvalidVisitID;
   // `originator_referring_visit` and `originator_opener_visit` are similar to
   // the non-"originator" versions, but their contents refer to originator visit
   // IDs rather than to local ones.
   // Note that `originator_referring_visit` corresponds to the
   // "originator_from_visit" column in the visit DB.
-  VisitID originator_referring_visit = 0;
-  VisitID originator_opener_visit = 0;
+  VisitID originator_referring_visit = kInvalidVisitID;
+  VisitID originator_opener_visit = kInvalidVisitID;
 
   // We allow the implicit copy constructor and operator=.
 };
