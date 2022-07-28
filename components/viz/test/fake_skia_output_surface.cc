@@ -171,6 +171,8 @@ SkCanvas* FakeSkiaOutputSurface::BeginPaintRenderPass(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Make sure there is no unsubmitted PaintFrame or PaintRenderPass.
   DCHECK_EQ(current_render_pass_id_, AggregatedRenderPassId{0u});
+
+  mailbox_pass_ids_.insert_or_assign(mailbox, id);
   auto& sk_surface = sk_surfaces_[id];
 
   if (!sk_surface) {
@@ -192,7 +194,8 @@ SkCanvas* FakeSkiaOutputSurface::RecordOverdrawForCurrentPaint() {
 
 void FakeSkiaOutputSurface::EndPaint(
     base::OnceClosure on_finished,
-    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
+    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+    bool is_overlay) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   sk_surfaces_[current_render_pass_id_]->flushAndSubmit();
   current_render_pass_id_ = AggregatedRenderPassId{0};
@@ -227,15 +230,29 @@ void FakeSkiaOutputSurface::RemoveRenderPassResource(
     DCHECK(it != sk_surfaces_.end());
     sk_surfaces_.erase(it);
   }
+
+  // Erase mailbox mappings that exist for these ids.
+  base::EraseIf(mailbox_pass_ids_, [&ids](auto& entry) {
+    for (auto& id : ids) {
+      if (id == entry.second) {
+        return true;
+      }
+    }
+    return false;
+  });
 }
 
 void FakeSkiaOutputSurface::CopyOutput(
-    AggregatedRenderPassId id,
     const copy_output::RenderPassGeometry& geometry,
     const gfx::ColorSpace& color_space,
     std::unique_ptr<CopyOutputRequest> request,
     const gpu::Mailbox& mailbox) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  auto it = mailbox_pass_ids_.find(mailbox);
+  DCHECK(mailbox.IsZero() || it != mailbox_pass_ids_.end());
+  AggregatedRenderPassId id =
+      mailbox.IsZero() ? AggregatedRenderPassId(0) : it->second;
 
   DCHECK(sk_surfaces_.find(id) != sk_surfaces_.end());
   auto* surface = sk_surfaces_[id].get();

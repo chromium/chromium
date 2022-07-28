@@ -198,6 +198,14 @@ void SkiaOutputSurfaceImplOnGpu::PromiseImageAccessHelper::EndAccess() {
   image_contexts_.clear();
 }
 
+SkiaOutputSurfaceImplOnGpu::OverlayPassAccess::OverlayPassAccess() = default;
+SkiaOutputSurfaceImplOnGpu::OverlayPassAccess::OverlayPassAccess(
+    OverlayPassAccess&& other) = default;
+SkiaOutputSurfaceImplOnGpu::OverlayPassAccess&
+SkiaOutputSurfaceImplOnGpu::OverlayPassAccess::operator=(
+    OverlayPassAccess&& other) = default;
+SkiaOutputSurfaceImplOnGpu::OverlayPassAccess::~OverlayPassAccess() = default;
+
 namespace {
 
 scoped_refptr<gpu::SyncPointClientState> CreateSyncPointClientState(
@@ -602,7 +610,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     std::vector<ImageContextImpl*> image_contexts,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished,
-    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
+    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+    bool is_overlay) {
   TRACE_EVENT0("viz", "SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(ddl);
@@ -615,21 +624,42 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     return;
   }
 
-  auto backing_representation =
+  auto local_skia_representation =
       shared_image_representation_factory_->ProduceSkia(mailbox,
                                                         context_state_.get());
-  DCHECK(backing_representation);
+  DCHECK(local_skia_representation);
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   std::vector<GrBackendSemaphore> end_semaphores;
   const auto& characterization = ddl->characterization();
-  auto scoped_access = backing_representation->BeginScopedWriteAccess(
+  auto local_scoped_access = local_skia_representation->BeginScopedWriteAccess(
       characterization.sampleCount(), characterization.surfaceProps(),
       &begin_semaphores, &end_semaphores,
       gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  if (!scoped_access) {
+  if (!local_scoped_access) {
     MarkContextLost(CONTEXT_LOST_UNKNOWN);
     return;
+  }
+
+  // Only overlayed images require end_semaphore synchronization.
+  DCHECK(is_overlay || end_semaphores.empty());
+
+  // If this render pass is an overlay we need to hang on to the skia
+  // representation and the scoped access until PostSubmit(), so we'll transfer
+  // ownership to member variables. This is because in Vulkan on Android we need
+  // to wait until submit is called before ending the ScopedWriteAccess.
+  // We'll also create raw pointers to them first for use within this function.
+  gpu::SkiaImageRepresentation* skia_representation =
+      local_skia_representation.get();
+  gpu::SkiaImageRepresentation::ScopedWriteAccess* scoped_access =
+      local_scoped_access.get();
+  if (is_overlay) {
+    DCHECK(overlay_pass_accesses_.find(mailbox) ==
+           overlay_pass_accesses_.end());
+    OverlayPassAccess overlay_access;
+    overlay_access.skia_representation = std::move(local_skia_representation);
+    overlay_access.scoped_access = std::move(local_scoped_access);
+    overlay_pass_accesses_.emplace(mailbox, std::move(overlay_access));
   }
 
   SkSurface* surface = scoped_access->surface();
@@ -650,7 +680,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
       DCHECK(result);
     }
     surface->draw(ddl);
-    backing_representation->SetCleared();
+    skia_representation->SetCleared();
     destroy_after_swap_.emplace_back(std::move(ddl));
 
     if (overdraw_ddl) {
@@ -672,7 +702,6 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
           std::move(return_release_fence_cb));
     }
 #endif
-
     GrFlushInfo flush_info = {
         .fNumSemaphores = end_semaphores.size(),
         .fSignalSemaphores = end_semaphores.data(),
@@ -682,7 +711,8 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     if (on_finished)
       gpu::AddCleanupTaskForSkiaFlush(std::move(on_finished), &flush_info);
 
-    auto result = surface->flush(flush_info);
+    auto end_state = scoped_access->TakeEndState();
+    auto result = surface->flush(flush_info, end_state.get());
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       if (!return_release_fence_cb.is_null()) {
@@ -1382,7 +1412,6 @@ void SkiaOutputSurfaceImplOnGpu::DestroyCopyOutputResourcesOnGpuThread(
 }
 
 void SkiaOutputSurfaceImplOnGpu::CopyOutput(
-    AggregatedRenderPassId id,
     const copy_output::RenderPassGeometry& geometry,
     const gfx::ColorSpace& color_space,
     std::unique_ptr<CopyOutputRequest> request,
@@ -1395,7 +1424,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   if (context_is_lost_)
     return;
 
-  bool from_framebuffer = !id;
+  bool from_framebuffer = mailbox.IsZero();
   DCHECK(scoped_output_device_paint_ || !from_framebuffer);
 
   SkSurface* surface;
@@ -1408,23 +1437,29 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
   if (from_framebuffer) {
     surface = scoped_output_device_paint_->sk_surface();
   } else {
-    backing_representation = shared_image_representation_factory_->ProduceSkia(
-        mailbox, context_state_.get());
-    DCHECK(backing_representation);
+    auto overlay_pass_access = overlay_pass_accesses_.find(mailbox);
+    if (overlay_pass_access != overlay_pass_accesses_.end()) {
+      surface = overlay_pass_access->second.scoped_access->surface();
+    } else {
+      backing_representation =
+          shared_image_representation_factory_->ProduceSkia(
+              mailbox, context_state_.get());
+      DCHECK(backing_representation);
 
-    SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
-    // TODO(https://crbug.com/1226672): Use BeginScopedReadAccess instead
-    scoped_access = backing_representation->BeginScopedWriteAccess(
-        /*final_msaa_count=*/1, surface_props, &begin_semaphores,
-        &end_semaphores,
-        gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
-    surface = scoped_access->surface();
-    end_state = scoped_access->TakeEndState();
-    if (!begin_semaphores.empty()) {
-      auto result =
-          surface->wait(begin_semaphores.size(), begin_semaphores.data(),
-                        /*deleteSemaphoresAfterWait=*/false);
-      DCHECK(result);
+      SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+      // TODO(https://crbug.com/1226672): Use BeginScopedReadAccess instead
+      scoped_access = backing_representation->BeginScopedWriteAccess(
+          /*final_msaa_count=*/1, surface_props, &begin_semaphores,
+          &end_semaphores,
+          gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
+      surface = scoped_access->surface();
+      end_state = scoped_access->TakeEndState();
+      if (!begin_semaphores.empty()) {
+        auto result =
+            surface->wait(begin_semaphores.size(), begin_semaphores.data(),
+                          /*deleteSemaphoresAfterWait=*/false);
+        DCHECK(result);
+      }
     }
   }
 
@@ -1953,6 +1988,7 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
     absl::optional<OutputSurfaceFrame> frame) {
   promise_image_access_helper_.EndAccess();
   scoped_output_device_paint_.reset();
+  overlay_pass_accesses_.clear();
 
 #if BUILDFLAG(ENABLE_VULKAN)
   while (!pending_release_fence_cbs_.empty()) {

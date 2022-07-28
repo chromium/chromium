@@ -98,8 +98,8 @@ gpu::SyncToken SkiaOutputSurfaceImplTest::PaintRootRenderPass(
   SkCanvas* root_canvas = output_surface_->BeginPaintCurrentFrame();
   root_canvas->drawRect(
       SkRect::MakeXYWH(rect.x(), rect.y(), rect.height(), rect.width()), paint);
-  output_surface_->EndPaint(std::move(closure),
-                            std::move(return_release_fence));
+  output_surface_->EndPaint(std::move(closure), std::move(return_release_fence),
+                            /*is_overlay=*/false);
   return output_surface_->Flush();
 }
 
@@ -173,8 +173,8 @@ TEST_F(SkiaOutputSurfaceImplTest, EndPaint) {
   geometry.sampling_bounds = output_rect;
   geometry.readback_offset = gfx::Vector2d(0, 0);
 
-  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
-                              std::move(request), gpu::Mailbox());
+  output_surface_->CopyOutput(geometry, color_space, std::move(request),
+                              gpu::Mailbox());
   output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   BlockMainThread();
@@ -248,8 +248,8 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapSupportedColorSpace) {
   geometry.readback_offset = gfx::Vector2d(0, 0);
 
   PaintRootRenderPass(kSurfaceRect, base::DoNothing(), base::DoNothing());
-  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
-                              std::move(request), gpu::Mailbox());
+  output_surface_->CopyOutput(geometry, color_space, std::move(request),
+                              gpu::Mailbox());
   output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   run_loop.Run();
@@ -289,8 +289,8 @@ TEST_F(SkiaOutputSurfaceImplTest, CopyOutputBitmapUnsupportedColorSpace) {
   geometry.readback_offset = gfx::Vector2d(0, 0);
 
   PaintRootRenderPass(kSurfaceRect, base::DoNothing(), base::DoNothing());
-  output_surface_->CopyOutput(AggregatedRenderPassId{0}, geometry, color_space,
-                              std::move(request), gpu::Mailbox());
+  output_surface_->CopyOutput(geometry, color_space, std::move(request),
+                              gpu::Mailbox());
   output_surface_->SwapBuffersSkipped(kSurfaceRect);
   output_surface_->Flush();
   run_loop.Run();

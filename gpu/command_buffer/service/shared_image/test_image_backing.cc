@@ -11,6 +11,7 @@
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/mock/GrMockTypes.h"
+#include "ui/gl/gl_image.h"
 
 namespace gpu {
 namespace {
@@ -130,7 +131,14 @@ class TestOverlayImageRepresentation : public OverlayImageRepresentation {
     return true;
   }
   void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
-  gl::GLImage* GetGLImage() override { return nullptr; }
+
+  gl::GLImage* GetGLImage() override {
+    gl_image_ = base::MakeRefCounted<gl::GLImage>();
+    return gl_image_.get();
+  }
+
+ private:
+  scoped_refptr<gl::GLImage> gl_image_;
 };
 
 }  // namespace

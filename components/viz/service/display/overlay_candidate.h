@@ -184,6 +184,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // surface and have the same |DrawQuad::rect| they will have the same
   // |tracking_id|.
   TrackingId tracking_id = kDefaultTrackingId;
+
+  // Whether this overlay candidate represents the root render pass.
+  bool is_root_render_pass = false;
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

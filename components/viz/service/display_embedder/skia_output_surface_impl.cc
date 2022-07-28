@@ -507,8 +507,11 @@ SkiaOutputSurfaceImpl::CreateImageContext(
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!current_paint_);
-  DCHECK_EQ(!frame.sub_buffer_rect || !frame.sub_buffer_rect->IsEmpty(),
-            current_buffer_modified_);
+  // If the renderer allocates images then `current_buffer_modified_` isn't
+  // updated, and we can't make this check.
+  DCHECK(capabilities_.renderer_allocates_images ||
+         ((!frame.sub_buffer_rect || !frame.sub_buffer_rect->IsEmpty()) ==
+          current_buffer_modified_));
 
   has_set_draw_rectangle_for_frame_ = false;
 
@@ -590,8 +593,8 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
       ResourceFormatToClosestSkColorType(/*gpu_compositing=*/true, format);
   SkSurfaceCharacterization characterization = CreateSkSurfaceCharacterization(
       surface_size, color_type, kPremul_SkAlphaType, mipmap,
-      std::move(color_space), /*is_root_render_pass=*/false,
-      /*is_overlay=*/is_overlay);
+      std::move(color_space),
+      /*is_root_render_pass=*/false, is_overlay);
   if (!characterization.isValid())
     return nullptr;
 
@@ -636,7 +639,8 @@ SkCanvas* SkiaOutputSurfaceImpl::RecordOverdrawForCurrentPaint() {
 
 void SkiaOutputSurfaceImpl::EndPaint(
     base::OnceClosure on_finished,
-    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb) {
+    base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+    bool is_overlay) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
   auto ddl = current_paint_->recorder()->detach();
@@ -673,7 +677,7 @@ void SkiaOutputSurfaceImpl::EndPaint(
         base::Unretained(impl_on_gpu_.get()), current_paint_->mailbox(),
         std::move(ddl), std::move(overdraw_ddl),
         std::move(images_in_current_paint_), resource_sync_tokens_,
-        std::move(on_finished), std::move(return_release_fence_cb));
+        std::move(on_finished), std::move(return_release_fence_cb), is_overlay);
     EnqueueGpuTask(std::move(task), std::move(resource_sync_tokens_),
                    /*make_current=*/true, /*need_framebuffer=*/false);
   }
@@ -751,7 +755,6 @@ void SkiaOutputSurfaceImpl::RemoveRenderPassResource(
 }
 
 void SkiaOutputSurfaceImpl::CopyOutput(
-    AggregatedRenderPassId id,
     const copy_output::RenderPassGeometry& geometry,
     const gfx::ColorSpace& color_space,
     std::unique_ptr<CopyOutputRequest> request,
@@ -766,12 +769,11 @@ void SkiaOutputSurfaceImpl::CopyOutput(
     }
   }
 
-  auto callback =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
-                     base::Unretained(impl_on_gpu_.get()), id, geometry,
-                     color_space, std::move(request), mailbox);
+  auto callback = base::BindOnce(&SkiaOutputSurfaceImplOnGpu::CopyOutput,
+                                 base::Unretained(impl_on_gpu_.get()), geometry,
+                                 color_space, std::move(request), mailbox);
   EnqueueGpuTask(std::move(callback), std::move(resource_sync_tokens_),
-                 /*make_current=*/true, /*need_framebuffer=*/!id);
+                 /*make_current=*/true, /*need_framebuffer=*/mailbox.IsZero());
 }
 
 void SkiaOutputSurfaceImpl::ScheduleOverlays(
@@ -847,7 +849,9 @@ bool SkiaOutputSurfaceImpl::Initialize() {
         capabilities_.damage_area_from_skia_output_device) {
       use_damage_area_from_skia_output_device_ = true;
       damage_of_current_buffer_ = gfx::Rect();
-    } else {
+    } else if (!capabilities_.renderer_allocates_images) {
+      // We don't need a damage tracker if SkiaRenderer allocates the images,
+      // because it will keep track of the damage as well.
       frame_buffer_damage_tracker_.emplace(capabilities_.number_of_buffers);
     }
   }

@@ -171,6 +171,11 @@ void DirectRenderer::ReallocatedFrameBuffers() {
   next_frame_needs_full_frame_redraw_ = true;
 }
 
+void DirectRenderer::Reshape(
+    const OutputSurface::ReshapeParams& reshape_params) {
+  output_surface_->Reshape(reshape_params);
+}
+
 void DirectRenderer::DecideRenderPassAllocationsForFrame(
     const AggregatedRenderPassList& render_passes_in_draw_order) {
   DCHECK(render_pass_bypass_quads_.empty());
@@ -182,7 +187,8 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
   for (const auto& pass : render_passes_in_draw_order) {
     // If there's a copy request, we need an explicit renderpass backing so
     // only try to draw directly if there are no copy requests.
-    if (pass != root_render_pass && pass->copy_requests.empty()) {
+    bool is_root = pass == root_render_pass;
+    if (!is_root && pass->copy_requests.empty()) {
       if (const DrawQuad* quad = CanPassBeDrawnDirectly(pass.get())) {
         // If the render pass is drawn directly, it will not be drawn from as
         // a render pass so it's not added to the map.
@@ -190,8 +196,12 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
         continue;
       }
     }
-    render_passes_in_frame[pass->id] = {
-        CalculateTextureSizeForRenderPass(pass.get()), pass->generate_mipmap};
+    gfx::Size size = pass->output_rect.size();
+    // We should not change the buffer size for the root render pass.
+    if (!is_root) {
+      size = CalculateTextureSizeForRenderPass(pass.get());
+    }
+    render_passes_in_frame[pass->id] = {size, pass->generate_mipmap};
   }
   UMA_HISTOGRAM_COUNTS_1000(
       "Compositing.Display.FlattenedRenderPassCount",
@@ -349,7 +359,7 @@ void DirectRenderer::DrawFrame(
     next_frame_needs_full_frame_redraw_ = false;
     reshape_params_ = reshape_params;
     reshape_display_transform_ = display_transform;
-    output_surface_->Reshape(reshape_params);
+    Reshape(reshape_params);
 #if BUILDFLAG(IS_APPLE)
     // For Mac, all render passes will be promoted to CALayer, the redraw full
     // frame is for the main surface only.
@@ -404,8 +414,12 @@ void DirectRenderer::DrawFrame(
   current_frame_valid_ = false;
 }
 
+gfx::Rect DirectRenderer::GetCurrentFramebufferDamage() const {
+  return output_surface_->GetCurrentFramebufferDamage();
+}
+
 gfx::Rect DirectRenderer::GetTargetDamageBoundingRect() const {
-  gfx::Rect bounding_rect = output_surface_->GetCurrentFramebufferDamage();
+  gfx::Rect bounding_rect = GetCurrentFramebufferDamage();
   if (overlay_processor_) {
     bounding_rect.Union(
         overlay_processor_->GetPreviousFrameOverlaysBoundingRect());
@@ -718,8 +732,14 @@ bool DirectRenderer::CanSkipRenderPass(
 }
 
 void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
+  bool is_root = render_pass == current_frame()->root_render_pass;
   current_frame()->current_render_pass = render_pass;
-  if (render_pass == current_frame()->root_render_pass) {
+  // The root render pass will be either bound to the buffer allocated by
+  // the SkiaOutputSurface, or if the renderer allocatates images then the root
+  // render pass buffer will be allocated in
+  // AllocateRenderPassResourceIfNeeded(), and bound in
+  // BindFramebufferToTexture().
+  if (is_root && !output_surface_->capabilities().renderer_allocates_images) {
     BindFramebufferToOutputSurface();
     if (output_surface_->capabilities().supports_dc_layers)
       output_surface_->SetDrawRectangle(current_frame()->root_damage_rect);
@@ -729,12 +749,16 @@ void DirectRenderer::UseRenderPass(const AggregatedRenderPass* render_pass) {
     return;
   }
 
-  gfx::Size enlarged_size = CalculateTextureSizeForRenderPass(render_pass);
-  enlarged_size.Enlarge(enlarge_pass_texture_amount_.width(),
-                        enlarge_pass_texture_amount_.height());
+  gfx::Size size = render_pass->output_rect.size();
+  // We should not change the buffer size for the root render pass.
+  if (!is_root) {
+    size = CalculateTextureSizeForRenderPass(render_pass);
+    size.Enlarge(enlarge_pass_texture_amount_.width(),
+                 enlarge_pass_texture_amount_.height());
+  }
 
-  AllocateRenderPassResourceIfNeeded(
-      render_pass->id, {enlarged_size, render_pass->generate_mipmap});
+  AllocateRenderPassResourceIfNeeded(render_pass->id,
+                                     {size, render_pass->generate_mipmap});
 
   // TODO(crbug.com/582554): This change applies only when Vulkan is enabled and
   // it will be removed once SkiaRenderer has complete support for Vulkan.
@@ -757,8 +781,7 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   // If |frame_buffer_damage|, which is carried over from the previous frame
   // when we want to preserve buffer content, is not empty, we should add it
   // to both root and non-root render passes.
-  gfx::Rect frame_buffer_damage =
-      output_surface_->GetCurrentFramebufferDamage();
+  gfx::Rect frame_buffer_damage = GetCurrentFramebufferDamage();
 
   if (render_pass == root_render_pass) {
     base::CheckedNumeric<int64_t> display_area =

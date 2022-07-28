@@ -119,9 +119,10 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
                                  bool is_overlay,
                                  const gpu::Mailbox& mailbox) override;
   SkCanvas* RecordOverdrawForCurrentPaint() override;
-  void EndPaint(base::OnceClosure on_finished,
-                base::OnceCallback<void(gfx::GpuFenceHandle)>
-                    return_release_fence_cb) override;
+  void EndPaint(
+      base::OnceClosure on_finished,
+      base::OnceCallback<void(gfx::GpuFenceHandle)> return_release_fence_cb,
+      bool is_overlay) override;
   void MakePromiseSkImage(ImageContext* image_context) override;
   sk_sp<SkImage> MakePromiseSkImageFromRenderPass(
       const AggregatedRenderPassId& id,
@@ -136,8 +137,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceImpl : public SkiaOutputSurface {
   void ScheduleOverlays(OverlayList overlays,
                         std::vector<gpu::SyncToken> sync_tokens) override;
 
-  void CopyOutput(AggregatedRenderPassId id,
-                  const copy_output::RenderPassGeometry& geometry,
+  void CopyOutput(const copy_output::RenderPassGeometry& geometry,
                   const gfx::ColorSpace& color_space,
                   std::unique_ptr<CopyOutputRequest> request,
                   const gpu::Mailbox& mailbox) override;
