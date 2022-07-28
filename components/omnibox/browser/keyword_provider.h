@@ -180,6 +180,8 @@ class KeywordProvider : public AutocompleteProvider {
   // Delegate to handle the extensions-only logic for KeywordProvider.
   // NULL when extensions are not enabled. May be NULL for tests.
   std::unique_ptr<KeywordExtensionsDelegate> extensions_delegate_;
+
+  raw_ptr<AutocompleteProviderClient> client_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_KEYWORD_PROVIDER_H_

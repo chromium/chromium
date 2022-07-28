@@ -25,6 +25,7 @@
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
@@ -87,7 +88,8 @@ KeywordProvider::KeywordProvider(AutocompleteProviderClient* client,
                                  AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_KEYWORD),
       model_(client->GetTemplateURLService()),
-      extensions_delegate_(client->GetKeywordExtensionsDelegate(this)) {
+      extensions_delegate_(client->GetKeywordExtensionsDelegate(this)),
+      client_(client) {
   AddListener(listener);
 }
 
@@ -235,6 +237,13 @@ std::u16string KeywordProvider::GetKeywordForText(
   if (template_url->type() != TemplateURL::OMNIBOX_API_EXTENSION &&
       template_url->prepopulate_id() == 0 &&
       template_url->is_active() != TemplateURLData::ActiveStatus::kTrue) {
+    return std::u16string();
+  }
+
+  // The built-in history keyword mode is disabled in incognito mode.  Don't
+  // provide a keyword in that case.
+  if (client_->IsOffTheRecord() &&
+      template_url->starter_pack_id() == TemplateURLStarterPackData::kHistory) {
     return std::u16string();
   }
 

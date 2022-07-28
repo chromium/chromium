@@ -201,6 +201,12 @@ void BuiltinProvider::AddBuiltinMatch(const std::u16string& match_string,
 }
 
 void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
+  // The history starter pack engine is disabled in incognito mode.
+  if (client_->IsOffTheRecord() &&
+      template_url.starter_pack_id() == TemplateURLStarterPackData::kHistory) {
+    return;
+  }
+
   AutocompleteMatch match(
       this, OmniboxFieldTrial::kSiteSearchStarterPackRelevanceScore.Get(),
       false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
