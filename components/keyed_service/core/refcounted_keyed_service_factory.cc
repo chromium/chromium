@@ -97,8 +97,10 @@ scoped_refptr<RefcountedKeyedService> RefcountedKeyedServiceFactory::Associate(
     void* context,
     scoped_refptr<RefcountedKeyedService> service) {
   DCHECK(!base::Contains(mapping_, context));
+  // Only count non-null services
+  if (service)
+    GetRefcountedKeyedServicesCount()[context]++;
   auto iterator = mapping_.emplace(context, std::move(service)).first;
-  GetRefcountedKeyedServicesCount()[context]++;
   return iterator->second;
 }
 
@@ -107,9 +109,10 @@ void RefcountedKeyedServiceFactory::Disassociate(void* context) {
   // the service to be destroyed. If not, oh well.
   auto iterator = mapping_.find(context);
   if (iterator != mapping_.end()) {
-    mapping_.erase(iterator);
-    if (--GetRefcountedKeyedServicesCount()[context] == 0)
+    // if a service was null, it is not considered in the count.
+    if (iterator->second && --GetRefcountedKeyedServicesCount()[context] == 0)
       GetRefcountedKeyedServicesCount().erase(context);
+    mapping_.erase(iterator);
   }
 }
 
@@ -144,7 +147,8 @@ void RefcountedKeyedServiceFactory::CreateServiceNow(void* context) {
 }
 
 bool RefcountedKeyedServiceFactory::IsServiceCreated(void* context) const {
-  return base::Contains(mapping_, context);
+  auto it = mapping_.find(context);
+  return it != mapping_.end() && it->second != nullptr;
 }
 
 // static

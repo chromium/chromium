@@ -100,17 +100,20 @@ KeyedService* KeyedServiceFactory::Associate(
     void* context,
     std::unique_ptr<KeyedService> service) {
   DCHECK(!base::Contains(mapping_, context));
+  // Only count non-null services
+  if (service)
+    GetKeyedServicesCount()[context]++;
   auto iterator = mapping_.emplace(context, std::move(service)).first;
-  GetKeyedServicesCount()[context]++;
   return iterator->second.get();
 }
 
 void KeyedServiceFactory::Disassociate(void* context) {
   auto iterator = mapping_.find(context);
   if (iterator != mapping_.end()) {
-    mapping_.erase(iterator);
-    if (--GetKeyedServicesCount()[context] == 0)
+    // if a service was null, it is not considered in the count.
+    if (iterator->second && --GetKeyedServicesCount()[context] == 0)
       GetKeyedServicesCount().erase(context);
+    mapping_.erase(iterator);
   }
 }
 
@@ -141,7 +144,8 @@ bool KeyedServiceFactory::HasTestingFactory(void* context) {
 }
 
 bool KeyedServiceFactory::IsServiceCreated(void* context) const {
-  return base::Contains(mapping_, context);
+  auto it = mapping_.find(context);
+  return it != mapping_.end() && it->second != nullptr;
 }
 
 // static
