@@ -14576,7 +14576,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebContentsObserver.{Method}" units="ms"
-    expires_after="2022-09-07">
+    expires_after="2023-07-28">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
