@@ -157,7 +157,7 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
           ? media::IsSupportedMediaFormat(container_mime_type, codec_vector)
           : media::IsSupportedEncryptedMediaFormat(container_mime_type,
                                                    codec_vector);
-  return (support_result == media::IsSupported);
+  return (support_result == media::SupportsType::kSupported);
 }
 
 }  // namespace

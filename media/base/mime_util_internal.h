@@ -124,12 +124,13 @@ class MEDIA_EXPORT MimeUtil {
   void AddContainerWithCodecs(const std::string& mime_type,
                               const CodecSet& codecs_list);
 
-  // Returns IsSupported if all codec IDs in |codecs| are unambiguous and are
-  // supported in |mime_type_lower_case|. MayBeSupported is returned if at least
-  // one codec ID in |codecs| is ambiguous but all the codecs are supported.
-  // IsNotSupported is returned if |mime_type_lower_case| is not supported or at
-  // least one is not supported in |mime_type_lower_case|. |is_encrypted| means
-  // the codec will be used with encrypted blocks.
+  // Returns SupportsType::kSupported if all codec IDs in |codecs| are
+  // unambiguous and are supported in |mime_type_lower_case|. kMaybeSupported is
+  // returned if at least one codec ID in |codecs| is ambiguous but all the
+  // codecs are supported. kNotSupported is returned if |mime_type_lower_case|
+  // is not supported or at least one is not supported in
+  // |mime_type_lower_case|. |is_encrypted| means the codec will be used with
+  // encrypted blocks.
   SupportsType AreSupportedCodecs(
       const std::vector<ParsedCodecResult>& parsed_codecs,
       const std::string& mime_type_lower_case,
@@ -170,8 +171,8 @@ class MEDIA_EXPORT MimeUtil {
                         const std::string& codec_id,
                         ParsedCodecResult* out_result) const;
 
-  // Returns IsSupported if |codec| when platform supports codec contained in
-  // |mime_type_lower_case|. Returns MayBeSupported when platform support is
+  // Returns kSupported if |codec| when platform supports codec contained in
+  // |mime_type_lower_case|. Returns kMaybeSupported when platform support is
   // unclear. Otherwise returns NotSupported. Note: This method will always
   // return NotSupported for proprietary codecs if |allow_proprietary_codecs_|
   // is set to false. |is_encrypted| means the codec will be used with encrypted

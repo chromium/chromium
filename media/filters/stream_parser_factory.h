@@ -24,11 +24,11 @@ class MEDIA_EXPORT StreamParserFactory {
  public:
   // Checks to see if the specified |type| and |codecs| list are supported.
   // Returns one of the following SupportsType values:
-  // IsNotSupported indicates definitive lack of support.
-  // IsSupported indicates the mime type is supported, any non-empty codecs
+  // kNotSupported indicates definitive lack of support.
+  // kSupported indicates the mime type is supported, any non-empty codecs
   // requirement is met for the mime type, and all of the passed codecs are
   // supported for the mime type.
-  // MayBeSupported indicates the mime type is supported, but the mime type
+  // kMaybeSupported indicates the mime type is supported, but the mime type
   // requires a codecs parameter that is missing.
   static SupportsType IsTypeSupported(const std::string& type,
                                       base::span<const std::string> codecs);

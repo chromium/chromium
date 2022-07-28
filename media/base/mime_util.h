@@ -63,27 +63,27 @@ MEDIA_EXPORT bool ParseAudioCodecString(const std::string& mime_type,
                                         AudioCodec* out_codec);
 
 // Indicates that the MIME type and (possible codec string) are supported.
-enum SupportsType {
+enum class SupportsType {
   // The given MIME type and codec combination is not supported.
-  IsNotSupported,
+  kNotSupported,
 
   // The given MIME type and codec combination is supported.
-  IsSupported,
+  kSupported,
 
   // There's not enough information to determine if the given MIME type and
   // codec combination can be rendered or not before actually trying to play it.
-  MayBeSupported
+  kMaybeSupported
 };
 
 // Checks the |mime_type| and |codecs| against the MIME types known to support
 // only a particular subset of codecs.
-// * Returns IsSupported if the |mime_type| is supported and all the codecs
+// * Returns kSupported if the |mime_type| is supported and all the codecs
 //   within the |codecs| are supported for the |mime_type|.
-// * Returns MayBeSupported if the |mime_type| is supported and is known to
+// * Returns kMaybeSupported if the |mime_type| is supported and is known to
 //   support only a subset of codecs, but |codecs| was empty. Also returned if
 //   all the codecs in |codecs| are supported, but additional codec parameters
 //   were supplied (such as profile) for which the support cannot be decided.
-// * Returns IsNotSupported if either the |mime_type| is not supported or the
+// * Returns kNotSupported if either the |mime_type| is not supported or the
 //   |mime_type| is supported but at least one of the codecs within |codecs| is
 //   not supported for the |mime_type|.
 MEDIA_EXPORT SupportsType

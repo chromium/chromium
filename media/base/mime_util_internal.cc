@@ -229,7 +229,7 @@ SupportsType MimeUtil::AreSupportedCodecs(
   DCHECK(!parsed_codecs.empty());
   DCHECK_EQ(base::ToLowerASCII(mime_type_lower_case), mime_type_lower_case);
 
-  SupportsType combined_result = IsSupported;
+  SupportsType combined_result = SupportsType::kSupported;
 
   for (const auto& parsed_codec : parsed_codecs) {
     // Make conservative guesses to resolve ambiguity before checking platform
@@ -265,21 +265,21 @@ SupportsType MimeUtil::AreSupportedCodecs(
     SupportsType result = IsCodecSupported(
         mime_type_lower_case, parsed_codec.codec, video_profile, video_level,
         parsed_codec.video_color_space, is_encrypted);
-    if (result == IsNotSupported) {
+    if (result == SupportsType::kNotSupported) {
       DVLOG(2) << __func__ << ": Codec " << parsed_codec.codec
                << " not supported by platform.";
-      return IsNotSupported;
+      return SupportsType::kNotSupported;
     }
 
-    // If any codec is "MayBeSupported", return Maybe for the combined result.
-    if (result == MayBeSupported ||
-        // Downgrade to MayBeSupported if we had to guess the meaning of one of
+    // If any codec is "kMaybeSupported", return Maybe for the combined result.
+    if (result == SupportsType::kMaybeSupported ||
+        // Downgrade to kMaybeSupported if we had to guess the meaning of one of
         // the codec strings. Do not downgrade for VP9 because we historically
         // returned "Probably" for the old "vp9" string and cannot change to
         // returning "Maybe" as this will break sites.
-        (result == IsSupported && parsed_codec.is_ambiguous &&
+        (result == SupportsType::kSupported && parsed_codec.is_ambiguous &&
          parsed_codec.codec != MimeUtil::VP9)) {
-      combined_result = MayBeSupported;
+      combined_result = SupportsType::kMaybeSupported;
     }
   }
 
@@ -533,12 +533,12 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   if (!ParseCodecStrings(mime_type_lower_case, codecs, &parsed_results)) {
     DVLOG(3) << __func__ << " Media format unsupported; codec parsing failed "
              << mime_type << " " << base::JoinString(codecs, ",");
-    return IsNotSupported;
+    return SupportsType::kNotSupported;
   }
 
   if (parsed_results.empty()) {
     NOTREACHED() << __func__ << " Successful parsing should output results.";
-    return IsNotSupported;
+    return SupportsType::kNotSupported;
   }
 
   // We get here if the mime type expects to get a codecs parameter
@@ -548,7 +548,7 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   if (codecs.empty() && parsed_results.size() == 1 &&
       parsed_results[0].codec == INVALID_CODEC) {
     DCHECK(parsed_results[0].is_ambiguous);
-    return MayBeSupported;
+    return SupportsType::kMaybeSupported;
   }
 
   return AreSupportedCodecs(parsed_results, mime_type_lower_case, is_encrypted);
@@ -925,13 +925,13 @@ SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
       audio_profile = AudioCodecProfile::kXHE_AAC;
 
     if (!IsSupportedAudioType({audio_codec, audio_profile, false}))
-      return IsNotSupported;
+      return SupportsType::kNotSupported;
   }
 
   if (video_codec != VideoCodec::kUnknown) {
     if (!IsSupportedVideoType(
             {video_codec, video_profile, video_level, color_space})) {
-      return IsNotSupported;
+      return SupportsType::kNotSupported;
     }
   }
 
@@ -940,11 +940,12 @@ SupportsType MimeUtil::IsCodecSupported(const std::string& mime_type_lower_case,
   // handled by (android specific) media::IsSupportedVideoType() above.
   if (!IsCodecSupportedOnAndroid(codec, mime_type_lower_case, is_encrypted,
                                  video_profile, platform_info_)) {
-    return IsNotSupported;
+    return SupportsType::kNotSupported;
   }
 #endif
 
-  return ambiguous_platform_support ? MayBeSupported : IsSupported;
+  return ambiguous_platform_support ? SupportsType::kMaybeSupported
+                                    : SupportsType::kSupported;
 }
 
 bool MimeUtil::GetDefaultCodec(const std::string& mime_type,

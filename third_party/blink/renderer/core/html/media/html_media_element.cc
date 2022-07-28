@@ -350,7 +350,7 @@ bool CanLoadURL(const KURL& url, const String& content_type_str) {
       content_type_codecs.IsEmpty()) {
     return MIMETypeRegistry::SupportsMediaMIMEType(content_mime_type,
                                                    content_type_codecs) !=
-           MIMETypeRegistry::kIsNotSupported;
+           MIMETypeRegistry::kNotSupported;
   }
 
   return false;
@@ -407,13 +407,13 @@ MIMETypeRegistry::SupportsType HTMLMediaElement::GetSupportsType(
   String type_codecs = content_type.Parameter("codecs");
 
   if (type.IsEmpty())
-    return MIMETypeRegistry::kIsNotSupported;
+    return MIMETypeRegistry::kNotSupported;
 
   // 4.8.12.3 MIME types - The canPlayType(type) method must return the empty
   // string if type is a type that the user agent knows it cannot render or is
   // the type "application/octet-stream"
   if (type == "application/octet-stream")
-    return MIMETypeRegistry::kIsNotSupported;
+    return MIMETypeRegistry::kNotSupported;
 
   // |contentType| could be handled using ParsedContentType, but there are
   // still a lot of sites using codec strings that don't work with the
@@ -911,13 +911,13 @@ String HTMLMediaElement::canPlayType(ExecutionContext* context,
 
   // 4.8.12.3
   switch (support) {
-    case MIMETypeRegistry::kIsNotSupported:
+    case MIMETypeRegistry::kNotSupported:
       can_play = g_empty_string;
       break;
-    case MIMETypeRegistry::kMayBeSupported:
+    case MIMETypeRegistry::kMaybeSupported:
       can_play = "maybe";
       break;
-    case MIMETypeRegistry::kIsSupported:
+    case MIMETypeRegistry::kSupported:
       can_play = "probably";
       break;
   }

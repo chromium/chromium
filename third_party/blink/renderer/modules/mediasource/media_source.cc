@@ -588,7 +588,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // HTMLMediaElement knows it cannot play.
   auto get_supports_type_result =
       HTMLMediaElement::GetSupportsType(content_type);
-  if (get_supports_type_result == MIMETypeRegistry::kIsNotSupported) {
+  if (get_supports_type_result == MIMETypeRegistry::kNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
              << ") -> false (not supported by HTMLMediaElement)";
@@ -616,7 +616,7 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   MIMETypeRegistry::SupportsType supported =
       MIMETypeRegistry::SupportsMediaSourceMIMEType(mime_type, codecs);
 
-  bool result = supported == MIMETypeRegistry::kIsSupported;
+  bool result = supported == MIMETypeRegistry::kSupported;
 
   DVLOG(2) << __func__ << "(" << type << ", "
            << (enforce_codec_specificity ? "true" : "false") << ") -> "

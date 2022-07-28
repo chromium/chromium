@@ -465,15 +465,15 @@ static bool VerifyCodec(const CodecInfo* codec_info,
 }
 
 // Checks to see if the specified |type| and |codecs| list are supported.
-// Returns IsNotSupported if |type| and |codecs| are definitively not supported.
+// Returns kNotSupported if |type| and |codecs| are definitively not supported.
 // The values of |factory_function|, |audio_codecs|, and |video_codecs| are
 // undefined in this case.
-// Returns IsSupported if |type| and all codecs listed in |codecs| are
+// Returns kSupported if |type| and all codecs listed in |codecs| are
 // supported, any non-empty codecs requirement is met for |type|, and all of
 // |codecs| are supported for |type|.
-// Returns MayBeSupported if |type| is supported, but requires a codecs
+// Returns kMaybeSupported if |type| is supported, but requires a codecs
 // parameter that is missing.
-// For both IsSupported and MayBeSupported results, |factory_function| is
+// For both kSupported and kMaybeSupported results, |factory_function| is
 // updated to be a function that can build a StreamParser for this type,
 // |audio_codecs| is updated with the appropriate HistogramTags for matching
 // audio codecs specified in |codecs|, and |video_codecs| is updated with the
@@ -501,13 +501,13 @@ static SupportsType CheckTypeAndCodecs(
           // support.
           if (factory_function)
             *factory_function = type_info.factory_function;
-          return IsSupported;
+          return SupportsType::kSupported;
         }
 
         MEDIA_LOG(DEBUG, media_log)
             << "A codecs parameter must be provided for '" << type
             << "' to determine definitive support proactively.";
-        return MayBeSupported;
+        return SupportsType::kMaybeSupported;
       }
 
       // Make sure all the codecs specified in |codecs| are
@@ -543,7 +543,7 @@ static SupportsType CheckTypeAndCodecs(
               << "'";
           // Though the major/minor type is supported, a codecs parameter value
           // was found to not be supported.
-          return IsNotSupported;
+          return SupportsType::kNotSupported;
         }
       }
 
@@ -552,12 +552,12 @@ static SupportsType CheckTypeAndCodecs(
 
       // There was a non-empty |codecs| for this supported |type|, and all of
       // |codecs| are supported for this |type|.
-      return IsSupported;
+      return SupportsType::kSupported;
     }
   }
 
   // |type| didn't match any of the supported types.
-  return IsNotSupported;
+  return SupportsType::kNotSupported;
 }
 
 // static
@@ -581,7 +581,7 @@ std::unique_ptr<StreamParser> StreamParserFactory::Create(
   std::vector<CodecInfo::HistogramTag> video_codecs;
 
   // TODO(crbug.com/535738): Relax the requirement for specific codecs (allow
-  // MayBeSupported here), and relocate the logging to the parser configuration
+  // kMaybeSupported here), and relocate the logging to the parser configuration
   // callback. This creation method is called in AddId(), and also in
   // CanChangeType() and ChangeType(), so potentially overlogs codecs leading to
   // disproportion versus actually parsed codec configurations from
@@ -591,7 +591,7 @@ std::unique_ptr<StreamParser> StreamParserFactory::Create(
   SupportsType supportsType = CheckTypeAndCodecs(
       type, codecs, media_log, &factory_function, &audio_codecs, &video_codecs);
 
-  if (IsSupported == supportsType) {
+  if (SupportsType::kSupported == supportsType) {
     // Log the expected codecs.
     for (size_t i = 0; i < audio_codecs.size(); ++i) {
       UMA_HISTOGRAM_ENUMERATION("Media.MSE.AudioCodec", audio_codecs[i],
