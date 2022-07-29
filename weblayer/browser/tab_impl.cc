@@ -32,7 +32,6 @@
 #include "components/js_injection/browser/js_communication_host.h"
 #include "components/js_injection/browser/web_message_host.h"
 #include "components/js_injection/browser/web_message_host_factory.h"
-#include "components/metrics/content/content_stability_metrics_provider.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
@@ -388,8 +387,6 @@ TabImpl::TabImpl(ProfileImpl* profile,
 
   InitializePageLoadMetricsForWebContents(web_contents_.get());
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents_.get());
-  metrics::ContentStabilityMetricsProvider::SetupWebContentsObserver(
-      web_contents_.get());
 
 #if BUILDFLAG(IS_ANDROID)
   javascript_dialogs::TabModalDialogManager::CreateForWebContents(

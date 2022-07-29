@@ -125,24 +125,36 @@ TEST_F(ContentStabilityMetricsProviderTest, NotificationObserver) {
   content::ChildProcessTerminationInfo crash_details;
   crash_details.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
   crash_details.exit_code = 1;
-  provider.RenderProcessExited(host, crash_details);
+  provider.Observe(
+      content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+      content::Source<content::RenderProcessHost>(host),
+      content::Details<content::ChildProcessTerminationInfo>(&crash_details));
 
   content::ChildProcessTerminationInfo term_details;
   term_details.status = base::TERMINATION_STATUS_ABNORMAL_TERMINATION;
   term_details.exit_code = 1;
-  provider.RenderProcessExited(host, term_details);
+  provider.Observe(
+      content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+      content::Source<content::RenderProcessHost>(host),
+      content::Details<content::ChildProcessTerminationInfo>(&term_details));
 
   // Kill does not increment renderer crash count.
   content::ChildProcessTerminationInfo kill_details;
   kill_details.status = base::TERMINATION_STATUS_PROCESS_WAS_KILLED;
   kill_details.exit_code = 1;
-  provider.RenderProcessExited(host, kill_details);
+  provider.Observe(
+      content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+      content::Source<content::RenderProcessHost>(host),
+      content::Details<content::ChildProcessTerminationInfo>(&kill_details));
 
   // Failed launch increments failed launch count.
   content::ChildProcessTerminationInfo failed_launch_details;
   failed_launch_details.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
   failed_launch_details.exit_code = 1;
-  provider.RenderProcessExited(host, failed_launch_details);
+  provider.Observe(content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+                   content::Source<content::RenderProcessHost>(host),
+                   content::Details<content::ChildProcessTerminationInfo>(
+                       &failed_launch_details));
 
   // Verify metrics.
   histogram_tester.ExpectBucketCount("Stability.Counts2",
@@ -180,13 +192,19 @@ TEST_F(ContentStabilityMetricsProviderTest, ExtensionsNotificationObserver) {
   content::ChildProcessTerminationInfo crash_details;
   crash_details.status = base::TERMINATION_STATUS_PROCESS_CRASHED;
   crash_details.exit_code = 1;
-  provider.RenderProcessExited(extension_host, crash_details);
+  provider.Observe(
+      content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+      content::Source<content::RenderProcessHost>(extension_host),
+      content::Details<content::ChildProcessTerminationInfo>(&crash_details));
 
   // Failed launch increments failed launch count.
   content::ChildProcessTerminationInfo failed_launch_details;
   failed_launch_details.status = base::TERMINATION_STATUS_LAUNCH_FAILED;
   failed_launch_details.exit_code = 1;
-  provider.RenderProcessExited(extension_host, failed_launch_details);
+  provider.Observe(content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+                   content::Source<content::RenderProcessHost>(extension_host),
+                   content::Details<content::ChildProcessTerminationInfo>(
+                       &failed_launch_details));
 
   // Verify metrics.
   histogram_tester.ExpectBucketCount("Stability.Counts2",

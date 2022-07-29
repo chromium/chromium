@@ -5,8 +5,6 @@
 #include "components/metrics/content/content_stability_metrics_provider.h"
 
 #include "base/check.h"
-#include "base/containers/cxx20_erase.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -14,6 +12,8 @@
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/process_type.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -23,28 +23,21 @@
 #endif
 
 namespace metrics {
-namespace {
-
-using content::RenderProcessHost;
-
-base::LazyInstance<std::vector<ContentStabilityMetricsProvider*>>::Leaky
-    g_providers;
-
-}  // namespace
 
 ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
     PrefService* local_state,
     std::unique_ptr<ExtensionsHelper> extensions_helper)
     : helper_(local_state), extensions_helper_(std::move(extensions_helper)) {
   BrowserChildProcessObserver::Add(this);
-  g_providers.Get().push_back(this);
 
-  // Observe existing render processes. (When a new render process is created,
-  // we will observe it in OnRenderProcessHostCreated.)
-  for (auto it = RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
-       it.Advance()) {
-    scoped_observations_.AddObservation(it.GetCurrentValue());
-  }
+  registrar_.Add(this, content::NOTIFICATION_LOAD_START,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
+                 content::NotificationService::AllSources());
+  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
+                 content::NotificationService::AllSources());
 
 #if BUILDFLAG(IS_ANDROID)
   auto* crash_manager = crash_reporter::CrashMetricsReporter::GetInstance();
@@ -54,8 +47,8 @@ ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
 }
 
 ContentStabilityMetricsProvider::~ContentStabilityMetricsProvider() {
+  registrar_.RemoveAll();
   BrowserChildProcessObserver::Remove(this);
-  base::Erase(g_providers.Get(), this);
 }
 
 void ContentStabilityMetricsProvider::OnRecordingEnabled() {}
@@ -72,6 +65,50 @@ void ContentStabilityMetricsProvider::ClearSavedStabilityMetrics() {
   helper_.ClearSavedStabilityMetrics();
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+void ContentStabilityMetricsProvider::Observe(
+    int type,
+    const content::NotificationSource& source,
+    const content::NotificationDetails& details) {
+  switch (type) {
+    case content::NOTIFICATION_LOAD_START:
+      helper_.LogLoadStarted();
+      break;
+
+    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED: {
+      // On Android, the renderer crashes are recorded in
+      // `OnCrashDumpProcessed`.
+#if !BUILDFLAG(IS_ANDROID)
+      content::ChildProcessTerminationInfo* process_info =
+          content::Details<content::ChildProcessTerminationInfo>(details).ptr();
+      bool was_extension_process =
+          extensions_helper_ &&
+          extensions_helper_->IsExtensionProcess(
+              content::Source<content::RenderProcessHost>(source).ptr());
+      helper_.LogRendererCrash(was_extension_process, process_info->status,
+                               process_info->exit_code);
+#endif  // !BUILDFLAG(IS_ANDROID)
+      break;
+    }
+
+    case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
+      helper_.LogRendererHang();
+      break;
+
+    case content::NOTIFICATION_RENDERER_PROCESS_CREATED: {
+      bool was_extension_process =
+          extensions_helper_ &&
+          extensions_helper_->IsExtensionProcess(
+              content::Source<content::RenderProcessHost>(source).ptr());
+      helper_.LogRendererLaunched(was_extension_process);
+      break;
+    }
+
+    default:
+      NOTREACHED();
+      break;
+  }
+}
 
 void ContentStabilityMetricsProvider::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
@@ -102,49 +139,6 @@ void ContentStabilityMetricsProvider::BrowserChildProcessLaunchFailed(
     );
 }
 
-void ContentStabilityMetricsProvider::OnRenderProcessHostCreated(
-    RenderProcessHost* host) {
-  // Sometimes, the same host will cause multiple notifications in tests so
-  // could possibly do the same in a release build.
-  if (!scoped_observations_.IsObservingSource(host))
-    scoped_observations_.AddObservation(host);
-
-  bool is_extension_process =
-      extensions_helper_ && extensions_helper_->IsExtensionProcess(host);
-  helper_.LogRendererLaunched(is_extension_process);
-}
-
-void ContentStabilityMetricsProvider::RenderProcessExited(
-    RenderProcessHost* host,
-    const content::ChildProcessTerminationInfo& info) {
-  // On Android, the renderer crashes are recorded in `OnCrashDumpProcessed`.
-#if !BUILDFLAG(IS_ANDROID)
-  bool was_extension_process =
-      extensions_helper_ && extensions_helper_->IsExtensionProcess(host);
-  helper_.LogRendererCrash(was_extension_process, info.status, info.exit_code);
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-void ContentStabilityMetricsProvider::RenderProcessHostDestroyed(
-    RenderProcessHost* host) {
-  scoped_observations_.RemoveObservation(host);
-}
-
-void ContentStabilityMetricsProvider::DidStartLoading() {
-  helper_.LogLoadStarted();
-}
-
-void ContentStabilityMetricsProvider::OnRendererUnresponsive() {
-  helper_.LogRendererHang();
-}
-
-void ContentStabilityMetricsProvider::SetupWebContentsObserver(
-    content::WebContents* web_contents) {
-  web_contents->SetUserData(
-      WebContentsObserverImpl::UserDataKey(),
-      base::WrapUnique(new WebContentsObserverImpl(web_contents)));
-}
-
 #if BUILDFLAG(IS_ANDROID)
 void ContentStabilityMetricsProvider::OnCrashDumpProcessed(
     int rph_id,
@@ -160,25 +154,5 @@ void ContentStabilityMetricsProvider::OnCrashDumpProcessed(
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-ContentStabilityMetricsProvider::WebContentsObserverImpl::
-    WebContentsObserverImpl(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<WebContentsObserverImpl>(*web_contents) {}
-
-void ContentStabilityMetricsProvider::WebContentsObserverImpl::
-    DidStartLoading() {
-  for (auto* provider : g_providers.Get())
-    provider->DidStartLoading();
-}
-
-void ContentStabilityMetricsProvider::WebContentsObserverImpl::
-    OnRendererUnresponsive(RenderProcessHost* host) {
-  for (auto* provider : g_providers.Get())
-    provider->OnRendererUnresponsive();
-}
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(
-    ContentStabilityMetricsProvider::WebContentsObserverImpl);
 
 }  // namespace metrics

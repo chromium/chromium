@@ -449,7 +449,6 @@ source_set("weblayer_lib_base") {
     "//components/language/core/browser",
     "//components/leveldb_proto",
     "//components/metrics",
-    "//components/metrics:content",
     "//components/net_log",
     "//components/network_time",
     "//components/no_state_prefetch/browser",
