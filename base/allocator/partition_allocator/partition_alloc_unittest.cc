@@ -2095,8 +2095,10 @@ TEST_P(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
                "Passed DoReturnNullTest");
 }
 
-// See crbug.com/1187404 to re-enable the tests below.
-// Test "return null" with a 512 kB block size.
+// TODO(crbug.com/1348221) re-enable the tests below, once the allocator
+// actually returns nullptr for non direct-mapped allocations.
+//
+// Tests "return null" with a 512 kB block size.
 TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   // A single-slot but non-direct-mapped allocation size.
   size_t single_slot_size = 512 * 1024;
