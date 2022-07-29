@@ -47,6 +47,8 @@ export const PermissionsSetupStatus = {
   NOTIFICATION_ACCESS_PROHIBITED: 6,
   COMPLETED_USER_REJECTED: 7,
   FAILED_OR_CANCELLED: 8,
+  CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED: 9,
+  CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED: 10,
 };
 
 /**
@@ -409,9 +411,10 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     // COMPLETED_USER_REJECTED we should continue on with the setup flow if
     // there are additional features, all other results will change the screen
     // that is shown and pause or terminate the setup flow.
-    if (combinedSetupResult !== PermissionsSetupStatus.COMPLETED_SUCCESSFULLY &&
-        combinedSetupResult !==
-            PermissionsSetupStatus.COMPLETED_USER_REJECTED) {
+    if (this.terminateCombinedSetup_(combinedSetupResult)) {
+      if (combinedSetupResult === PermissionsSetupStatus.FAILED_OR_CANCELLED) {
+        this.updateCamearRollSetupResultIfNeeded_();
+      }
       this.setupState_ = combinedSetupResult;
       return;
     }
@@ -420,17 +423,18 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
     // this.completeMode_. Otherwise, we cannot use the final
     // this.completedMode_ to determine the completed title.
     if (combinedSetupResult === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY) {
-      if (this.setupMode_ & CAMERA_ROLL_FEATURE && !this.showCameraRoll) {
-        this.completedMode_ |= CAMERA_ROLL_FEATURE;
-        this.browserProxy_.setFeatureEnabledState(
-            MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, true);
-      }
+      this.updateCamearRollSetupResultIfNeeded_();
+      this.updateNotificationsSetupResultIfNeeded_();
+    }
 
-      if (this.setupMode_ & NOTIFICATION_FEATURE && !this.showNotifications) {
-        this.completedMode_ |= NOTIFICATION_FEATURE;
-        this.browserProxy_.setFeatureEnabledState(
-            MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
-      }
+    if (combinedSetupResult ===
+        PermissionsSetupStatus.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED) {
+      this.updateCamearRollSetupResultIfNeeded_();
+    }
+
+    if (combinedSetupResult ===
+        PermissionsSetupStatus.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED) {
+      this.updateNotificationsSetupResultIfNeeded_();
     }
 
     if (this.showAppStreaming) {
@@ -446,6 +450,54 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       // can log completed case here.
       this.browserProxy_.logPhoneHubPermissionSetUpScreenAction(
           this.setupScreen_, PhoneHubPermissionsSetupAction.SHOWN);
+    }
+  }
+
+  /**
+   * @param {!PermissionsSetupStatus} combinedSetupResult
+   * @return {boolean}
+   * @private
+   */
+  terminateCombinedSetup_(combinedSetupResult) {
+    switch (combinedSetupResult) {
+      case PermissionsSetupStatus.COMPLETED_SUCCESSFULLY:
+      case PermissionsSetupStatus.COMPLETED_USER_REJECTED:
+      case PermissionsSetupStatus.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED:
+      case PermissionsSetupStatus.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED:
+        return false;
+      case PermissionsSetupStatus.CONNECTION_REQUESTED:
+      case PermissionsSetupStatus.CONNECTING:
+      case PermissionsSetupStatus.TIMED_OUT_CONNECTING:
+      case PermissionsSetupStatus.CONNECTION_DISCONNECTED:
+      case PermissionsSetupStatus
+          .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE:
+      case PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED:
+      case PermissionsSetupStatus.FAILED_OR_CANCELLED:
+        return true;
+      default:
+        return true;
+    }
+  }
+
+  /**
+   * @private
+   */
+  updateCamearRollSetupResultIfNeeded_() {
+    if (this.setupMode_ & CAMERA_ROLL_FEATURE && !this.showCameraRoll) {
+      this.completedMode_ |= CAMERA_ROLL_FEATURE;
+      this.browserProxy_.setFeatureEnabledState(
+          MultiDeviceFeature.PHONE_HUB_CAMERA_ROLL, true);
+    }
+  }
+
+  /**
+   * @private
+   */
+  updateNotificationsSetupResultIfNeeded_() {
+    if (this.setupMode_ & NOTIFICATION_FEATURE && !this.showNotifications) {
+      this.completedMode_ |= NOTIFICATION_FEATURE;
+      this.browserProxy_.setFeatureEnabledState(
+          MultiDeviceFeature.PHONE_HUB_NOTIFICATIONS, true);
     }
   }
 
@@ -483,7 +535,11 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
   computeHasCompletedSetup_() {
     return this.setupState_ === PermissionsSetupStatus.COMPLETED_SUCCESSFULLY ||
         this.setupState_ === PermissionsSetupStatus.COMPLETED_USER_REJECTED ||
-        this.setupState_ === PermissionsSetupStatus.FAILED_OR_CANCELLED;
+        this.setupState_ === PermissionsSetupStatus.FAILED_OR_CANCELLED ||
+        this.setupState_ ===
+        PermissionsSetupStatus.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED ||
+        this.setupState_ ===
+        PermissionsSetupStatus.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED;
   }
 
   /**
@@ -634,6 +690,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       case Status.COMPLETED_SUCCESSFULLY:
       case Status.COMPLETED_USER_REJECTED:
       case Status.FAILED_OR_CANCELLED:
+      case Status.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED:
+      case Status.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED:
         return PhoneHubPermissionsSetupFlowScreens.CONNECTED;
       case Status.TIMED_OUT_CONNECTING:
         return PhoneHubPermissionsSetupFlowScreens.CONNECTION_TIME_OUT;
@@ -666,6 +724,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       case Status.COMPLETED_SUCCESSFULLY:
       case Status.COMPLETED_USER_REJECTED:
       case Status.FAILED_OR_CANCELLED:
+      case Status.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED:
+      case Status.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED:
         return this.getSetupCompleteTitle_();
       case Status.TIMED_OUT_CONNECTING:
         return this.i18n(
@@ -699,6 +759,8 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
       case Status.COMPLETED_SUCCESSFULLY:
       case Status.COMPLETED_USER_REJECTED:
       case Status.FAILED_OR_CANCELLED:
+      case Status.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED:
+      case Status.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED:
         return (this.setupMode_ === this.completedMode_) ?
             '' :
             this.i18n(
@@ -740,7 +802,11 @@ class SettingsMultidevicePermissionsSetupDialogElement extends
         this.setupState_ !== PermissionsSetupStatus.COMPLETED_USER_REJECTED &&
         this.setupState_ !== PermissionsSetupStatus.FAILED_OR_CANCELLED &&
         this.setupState_ !==
-        PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED;
+        PermissionsSetupStatus.NOTIFICATION_ACCESS_PROHIBITED &&
+        this.setupState_ !==
+        PermissionsSetupStatus.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED &&
+        this.setupState_ !==
+        PermissionsSetupStatus.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED;
   }
 
   /**
