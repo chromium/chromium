@@ -82,6 +82,22 @@ export class NetworkUIBrowserProxy {
    * @return {Promise<string>}
    */
   getTetheringCapabilities() {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringStatus() {}
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringConfig() {}
+
+  /**
+   * @param {string} config
+   * @return {Promise<string>}
+   */
+  setTetheringConfig(config) {}
 }
 
 /**
@@ -182,6 +198,28 @@ export class NetworkUIBrowserProxyImpl {
    */
   getTetheringCapabilities() {
     return sendWithPromise('getTetheringCapabilities');
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringStatus() {
+    return sendWithPromise('getTetheringStatus');
+  }
+
+  /**
+   * @return {Promise<string>}
+   */
+  getTetheringConfig() {
+    return sendWithPromise('getTetheringConfig');
+  }
+
+  /**
+   * @param {string} config
+   * @return {Promise<string>}
+   */
+  setTetheringConfig(config) {
+    return sendWithPromise('setTetheringConfig', config);
   }
 }
 

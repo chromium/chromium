@@ -3318,6 +3318,21 @@
   <message name="IDS_NETWORK_UI_REFRESH_TETHERING_CAPABILITIES_BUTTON_TEXT" desc="Text for button which, when pressed, refreshing the tethering capabilities.">
     Refresh Tethering Capabilities
   </message>
+  <message name="IDS_NETWORK_UI_TETHERING_STATUS_LABEL" desc="Title for the section for displaying and refreshing tethering status.">
+    Tethering Status:
+  </message>
+  <message name="IDS_NETWORK_UI_REFRESH_TETHERING_STATUS_BUTTON_TEXT" desc="Text for button which, when pressed, refresh the tethering status.">
+    Refresh Tethering Status
+  </message>
+  <message name="IDS_NETWORK_UI_TETHERING_CONFIG_LABEL" desc="Title for the section for displaying and refreshing tethering configuration.">
+    Tethering Configuration:
+  </message>
+  <message name="IDS_NETWORK_UI_REFRESH_TETHERING_CONFIG_BUTTON_TEXT" desc="Text for button which, when pressed, refresh the tethering configuration.">
+    Refresh Tethering Configuration
+  </message>
+  <message name="IDS_NETWORK_UI_SET_TETHERING_CONFIG_BUTTON_TEXT" desc="Text for button which, when pressed, set the tethering configuration.">
+    Set Tethering Configuration
+  </message>
 
   <message name="IDS_DEVICE_LOG_LINK_TEXT" desc="Message preceeding link to chrome://device-log">
     To view network UI logs, see: <ph name="DEVICE_LOG_LINK">&lt;a href="chrome://device-log"&gt;chrome://device-log&lt;/a&gt;</ph>

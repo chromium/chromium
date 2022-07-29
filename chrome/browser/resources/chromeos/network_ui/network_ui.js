@@ -74,6 +74,12 @@ Polymer({
     },
 
     /** @private */
+    tetheringConfigToSet_: {
+      type: String,
+      value: '',
+    },
+
+    /** @private */
     isGuestModeActive_: {
       type: Boolean,
       value() {
@@ -90,6 +96,13 @@ Polymer({
             loadTimeData.getBoolean('isHotspotEnabled');
       },
     },
+
+    /** @private */
+    invalidJSON_: {
+      type: Boolean,
+      value: false,
+    },
+
   },
 
   /** @type {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
@@ -116,11 +129,22 @@ Polymer({
 
     this.requestGlobalPolicy_();
     this.getTetheringCapabilities_();
+    this.getTetheringConfig_();
+    this.getTetheringStatus_();
     this.getHostname_();
     this.selectTabFromHash_();
     window.addEventListener('hashchange', () => {
       this.selectTabFromHash_();
     });
+  },
+
+  /**
+   * @param {*} result that need to stringify to JSON
+   * @return {string}
+   * @private
+   */
+  stringifyJSON_(result) {
+    return JSON.stringify(result, null, '\t');
   },
 
   /** @private */
@@ -211,7 +235,7 @@ Polymer({
   requestGlobalPolicy_() {
     this.networkConfig_.getGlobalPolicy().then(result => {
       this.$$('#global-policy').textContent =
-          JSON.stringify(result.result, null, '\t');
+          this.stringifyJSON_(result.result);
     });
   },
 
@@ -219,8 +243,61 @@ Polymer({
   getTetheringCapabilities_() {
     this.browserProxy_.getTetheringCapabilities().then(result => {
       this.$$('#tethering-capabilities-div').textContent =
-          JSON.stringify(result, null, '\t');
+          this.stringifyJSON_(result);
     });
+  },
+
+  /** @private */
+  getTetheringStatus_() {
+    this.browserProxy_.getTetheringStatus().then(result => {
+      this.$$('#tethering-status-div').textContent =
+          this.stringifyJSON_(result);
+    });
+  },
+
+  /** @private */
+  getTetheringConfig_() {
+    this.browserProxy_.getTetheringConfig().then(result => {
+      this.$$('#tethering-config-div').textContent =
+          this.stringifyJSON_(result);
+    });
+  },
+
+  /** @private */
+  setTetheringConfig_() {
+    this.browserProxy_.setTetheringConfig(this.tetheringConfigToSet_)
+        .then((result) => {
+          const success = result === 'success';
+          const resultDiv = this.$$('#set-tethering-config-result');
+          resultDiv.innerText = result;
+          resultDiv.classList.toggle('error', !success);
+          if (success) {
+            this.getTetheringConfig_();
+          }
+        });
+  },
+
+  /**
+   * Check if the input tethering config string is a valid JSON object.
+   * @private
+   */
+  validateJSON_() {
+    if (this.tetheringConfigToSet_ === '') {
+      this.invalidJSON_ = false;
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(this.tetheringConfigToSet_);
+      // Check if the parsed JSON is object type by its constructor
+      if (parsed.constructor === ({}).constructor) {
+        this.invalidJSON_ = false;
+        return;
+      }
+      this.invalidJSON_ = true;
+    } catch (e) {
+      this.invalidJSON_ = true;
+    }
   },
 
   /**
