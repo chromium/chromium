@@ -1549,9 +1549,9 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                            embedded_test_server()->GetURL("example.net", "/"));
 }
 
-// Test Combo Squatting heuristic. In this test, if kNavigatedUrl is
-// Combo Squatting, the metrics should be recorded but no interstitial
-// page (full page warning) is shown.
+// Navigate to a URL that triggers combo squatting heuristic via the
+// hard coded brand name list. This should record metrics but shouldn't show
+// an interstitial.
 IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
                        ComboSquatting_ShouldRecordMetricsWithoutUI) {
   base::HistogramTester histograms;
@@ -1566,6 +1566,29 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 
   CheckUkm({kNavigatedUrl}, "MatchType",
            LookalikeUrlMatchType::kComboSquatting);
+  CheckUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
+}
+
+// Navigate to a URL that triggers combo squatting heuristic via a
+// brand name from engaged sites. This should record metrics but shouldn't show
+// an interstitial.
+IN_PROC_BROWSER_TEST_P(
+    LookalikeUrlNavigationThrottleBrowserTest,
+    ComboSquatting_EngagedSites_ShouldRecordMetricsWithoutUI) {
+  base::HistogramTester histograms;
+  SetEngagementScore(browser(), GURL("https://example.com"), kHighEngagement);
+  const GURL kNavigatedUrl = GetURL("example-login.com");
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(
+      lookalikes::kHistogramName,
+      NavigationSuggestionEvent::kComboSquattingSiteEngagement, 1);
+
+  CheckUkm({kNavigatedUrl}, "MatchType",
+           LookalikeUrlMatchType::kComboSquattingSiteEngagement);
   CheckUkm({kNavigatedUrl}, "TriggeredByInitialUrl", false);
 }
 

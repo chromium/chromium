@@ -611,66 +611,86 @@ class ComboSquattingTest : public testing::Test {
 
 // Test for Combo Squatting check of domains.
 TEST_F(ComboSquattingTest, IsComboSquatting) {
+  const std::vector<DomainInfo> kEngagedSites = {
+      // An engaged site which is not in the hard coded brand names.
+      GetDomainInfo(GURL("https://engagedsite.com")),
+      // An engaged site which is duplicate with a hard coded brand name.
+      GetDomainInfo(GURL("https://subdomain.google.com")),
+      // An engaged site with length less than threshold (4) for
+      // consideration.
+      GetDomainInfo(GURL("https://len.com")),
+  };
   const struct TestCase {
     const char* domain;
     const char* expected_suggested_domain;
-    bool expected_result;
+    const ComboSquattingType expected_type;
+    ;
   } kTestCases[] = {
       // Not Combo Squatting (CSQ).
-      {"google.com", "", false},
-      {"youtube.ca", "", false},
+      {"google.com", "", ComboSquattingType::kNone},
+      {"youtube.ca", "", ComboSquattingType::kNone},
 
       // Not CSQ, contains subdomains.
-      {"login.google.com", "", false},
+      {"login.google.com", "", ComboSquattingType::kNone},
 
       // Not CSQ, non registrable domains.
-      {"google-login.test", "", false},
+      {"google-login.test", "", ComboSquattingType::kNone},
 
       // CSQ with "-".
-      {"google-online.com", "google.com", true},
+      {"google-online.com", "google.com", ComboSquattingType::kHardCoded},
 
       // CSQ with more than one keyword (login, online) with "-".
-      {"google-login-online.com", "google.com", true},
+      {"google-login-online.com", "google.com", ComboSquattingType::kHardCoded},
 
       // CSQ with one keyword (online) and one random word (one) with "-".
-      {"one-sample-online.com", "sample.com", true},
+      {"one-sample-online.com", "sample.com", ComboSquattingType::kHardCoded},
 
       // Not CSQ, with a keyword (test) as TLD.
-      {"www.example.test", "", false},
+      {"www.example.test", "", ComboSquattingType::kNone},
 
       // CSQ with more than one brand (google, youtube) with "-".
-      {"google-youtube-account.com", "google.com", true},
+      {"google-youtube-account.com", "google.com",
+       ComboSquattingType::kHardCoded},
 
       // CSQ without separator.
-      {"loginsample.com", "sample.com", true},
+      {"loginsample.com", "sample.com", ComboSquattingType::kHardCoded},
 
       // Not CSQ with a keyword (ample) inside brand name (sample).
-      {"sample.com", "", false},
+      {"sample.com", "", ComboSquattingType::kNone},
 
       // Current version of the heuristic cannot flag this kind of CSQ
       // with a keyword (ample) inside brand name (sample) and as an added
       // keyword to the domain.
-      {"sample-ample.com", "", false},
+      {"sample-ample.com", "", ComboSquattingType::kNone},
 
       // CSQ with more than one keyword (account, online) without separator.
-      {"accountexampleonline.com", "example.com", true},
+      {"accountexampleonline.com", "example.com",
+       ComboSquattingType::kHardCoded},
 
       // CSQ with one keyword (login) and one random word (one) without "-".
-      {"oneyoutubelogin.com", "youtube.com", true},
+      {"oneyoutubelogin.com", "youtube.com", ComboSquattingType::kHardCoded},
 
       // Not CSQ, google is a public TLD.
-      {"online.google", "", false},
+      {"online.google", "", ComboSquattingType::kNone},
 
       // Not CSQ, brand name (vice) is part of keyword (service).
-      {"keyservices.com", "", false},
+      {"keyservices.com", "", ComboSquattingType::kNone},
+
+      // CSQ, brand name (engagedsite) is from engaged sites list.
+      {"engagedsite-login.com", "engagedsite.com",
+       ComboSquattingType::kSiteEngagement},
+
+      // Not CSQ, brand name (len) is from engaged sites list but it is short.
+      {"len-online.com", "", ComboSquattingType::kNone},
   };
   for (const TestCase& test_case : kTestCases) {
     auto navigated =
         GetDomainInfo(GURL(std::string(url::kHttpsScheme) +
                            url::kStandardSchemeSeparator + test_case.domain));
     std::string matched_domain;
-    bool result = IsComboSquatting(navigated, &matched_domain);
+    ComboSquattingType type =
+        GetComboSquattingType(navigated, kEngagedSites, &matched_domain);
     EXPECT_EQ(std::string(test_case.expected_suggested_domain), matched_domain);
-    EXPECT_EQ(test_case.expected_result, result);
+    EXPECT_EQ(test_case.expected_type, type);
   }
 }

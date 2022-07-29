@@ -1326,7 +1326,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Test that a Safety Tips is not shown and metrics are recorded when
-// a combo squatting url is flagged.
+// a combo squatting url is flagged with a hard-coded brand name.
 IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                        DoesntTriggerOnComboSquatting) {
   base::HistogramTester histograms;
@@ -1341,10 +1341,34 @@ IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
                                NavigationSuggestionEvent::kComboSquatting, 1);
 
   // TODO(crbug.com/1343630): keyword (embedded keyword) heuristic should
-  // be removed from the code. The last `false` value in
+  // be removed from the code. The second `false` value in
   // the input of CheckHeuristicsUkmRecord is correlated to this heuristic.
   CheckRecordedHeuristicsUkmCount(1);
   CheckHeuristicsUkmRecord({kNavigatedUrl, {false, false, true}}, 0);
+}
+
+// Test that a Safety Tips is not shown and metrics are recorded when
+// a combo squatting url is flagged with a brand name from engaged sites.
+IN_PROC_BROWSER_TEST_F(SafetyTipPageInfoBubbleViewBrowserTest,
+                       DoesntTriggerOnComboSquattingSiteEngagement) {
+  base::HistogramTester histograms;
+  const GURL kEngagedUrl = GetURL("example.com");
+  const GURL kNavigatedUrl = GetURL("example-login.com");
+  SetEngagementScore(browser(), kEngagedUrl, kHighEngagement);
+  SetEngagementScore(browser(), kNavigatedUrl, kLowEngagement);
+
+  NavigateToURL(browser(), kNavigatedUrl, WindowOpenDisposition::CURRENT_TAB);
+  EXPECT_FALSE(IsUIShowing());
+
+  histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
+  histograms.ExpectBucketCount(
+      lookalikes::kHistogramName,
+      NavigationSuggestionEvent::kComboSquattingSiteEngagement, 1);
+
+  // Heuristics with no UI don't record Safety Tips UKM.
+  CheckRecordedHeuristicsUkmCount(0);
+  // TODO(crbug.com/1337475): Add CheckHeuristicsUkmRecord after showing the
+  // safety tip for this heuristic.
 }
 
 // Tests for Digital Asset Links for lookalike checks.

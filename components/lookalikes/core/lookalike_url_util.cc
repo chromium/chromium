@@ -543,6 +543,59 @@ char GetFirstDifferentChar(const std::string& str1, const std::string& str2) {
   return 0;
 }
 
+// Brand names with length of 4 or less should not be checked in domains for
+// Combo Squatting. Short brand names can cause false positives in results.
+bool IsComboSquattingCandidate(const std::string& brand) {
+  return brand.size() > kMinBrandNameLengthForComboSquatting;
+}
+
+// Extract brand names from engaged sites to be checked for Combo Squatting, if
+// the brand is not one of the hard coded brand names.
+std::vector<std::string> GetBrandNamesFromEngagedSites(
+    const std::vector<DomainInfo>& engaged_sites) {
+  std::vector<std::string> output;
+
+  for (const DomainInfo& engaged_site : engaged_sites) {
+    std::string domain_without_registry = engaged_site.domain_without_registry;
+    if (IsComboSquattingCandidate(domain_without_registry)) {
+      output.emplace_back(domain_without_registry);
+    }
+  }
+  return output;
+}
+
+// Returns true if the navigated_domain is flagged as Combo Squatting.
+// matched_domain is the suggested domain that will be shown to the user
+// instead of the navigated_domain in the warning UI.
+bool IsComboSquatting(const std::vector<std::string>& brand_names,
+                      const ComboSquattingParams& combo_squatting_params,
+                      const DomainInfo& navigated_domain,
+                      std::string* matched_domain) {
+  // Check if the domain has any brand name and any popular keyword.
+  for (auto& brand : brand_names) {
+    DCHECK(IsComboSquattingCandidate(brand));
+
+    if (navigated_domain.domain_without_registry.size() == brand.size() ||
+        navigated_domain.domain_without_registry.find(brand) ==
+            std::string::npos) {
+      continue;
+    }
+
+    for (size_t j = 0; j < combo_squatting_params.num_popular_keywords; j++) {
+      auto* const keyword = combo_squatting_params.popular_keywords[j];
+      if (navigated_domain.domain_without_registry.find(keyword) !=
+              std::string::npos &&
+          std::string(brand).find(keyword) == std::string::npos &&
+          std::string(keyword).find(brand) == std::string::npos) {
+        // TODO(crbug.com/1341320): Compute a better matched_domain.
+        *matched_domain = std::string(brand) + ".com";
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 DomainInfo::DomainInfo(const std::string& arg_hostname,
@@ -842,13 +895,20 @@ bool GetMatchingDomain(
   }
 
   // If none of the previous heuristics work, check it for Combo Squatting.
-  if (IsComboSquatting(navigated_domain, matched_domain)) {
+  ComboSquattingType combo_squatting_type =
+      GetComboSquattingType(navigated_domain, engaged_sites, matched_domain);
+  if (combo_squatting_type == ComboSquattingType::kHardCoded) {
     *match_type = LookalikeUrlMatchType::kComboSquatting;
+    DCHECK(!matched_domain->empty());
+    return true;
+  } else if (combo_squatting_type == ComboSquattingType::kSiteEngagement) {
+    *match_type = LookalikeUrlMatchType::kComboSquattingSiteEngagement;
     DCHECK(!matched_domain->empty());
     return true;
   }
 
   DCHECK(embedding_type == TargetEmbeddingType::kNone);
+  DCHECK(combo_squatting_type == ComboSquattingType::kNone);
   return false;
 }
 
@@ -887,6 +947,9 @@ void RecordUMAFromMatchType(LookalikeUrlMatchType match_type) {
       break;
     case LookalikeUrlMatchType::kComboSquatting:
       RecordEvent(NavigationSuggestionEvent::kComboSquatting);
+      break;
+    case LookalikeUrlMatchType::kComboSquattingSiteEngagement:
+      RecordEvent(NavigationSuggestionEvent::kComboSquattingSiteEngagement);
       break;
     case LookalikeUrlMatchType::kNone:
       break;
@@ -1224,34 +1287,29 @@ void ResetComboSquattingParamsForTesting() {
              kPopularKeywordsforCSQ, std::size(kPopularKeywordsforCSQ)};
 }
 
-bool IsComboSquatting(const DomainInfo& navigated_domain,
-                      std::string* matched_domain) {
-  // TODO(crbug.com/1341023): We should check the domain in allowlist once we
-  // start getting metrics in future iterations.
-  ComboSquattingParams* combo_squatting_params = GetComboSquattingParams();
-  // Check if the domain has any brand name and any popular keyword.
+ComboSquattingType GetComboSquattingType(
+    const DomainInfo& navigated_domain,
+    const std::vector<DomainInfo>& engaged_sites,
+    std::string* matched_domain) {
+  const ComboSquattingParams* combo_squatting_params =
+      GetComboSquattingParams();
+
+  // First check Combo Squatting with hard coded brand names.
+  std::vector<std::string> brand_names;
   for (size_t i = 0; i < combo_squatting_params->num_brand_names; i++) {
-    auto* const brand = combo_squatting_params->brand_names[i];
-    DCHECK(std::string(brand).size() > kMinBrandNameLengthForComboSquatting);
-
-    if (!(navigated_domain.domain_without_registry.find(brand) !=
-              std::string::npos &&
-          navigated_domain.domain_without_registry.size() != strlen(brand))) {
-      continue;
-    }
-
-    for (size_t j = 0; j < combo_squatting_params->num_popular_keywords; j++) {
-      auto* const keyword = combo_squatting_params->popular_keywords[j];
-      if (navigated_domain.domain_without_registry.find(keyword) !=
-              std::string::npos &&
-          std::string(brand).find(keyword) == std::string::npos &&
-          std::string(keyword).find(brand) == std::string::npos) {
-        // TODO(crbug.com/1341320): In future cls we will compute a better
-        // suggestion for each domain.
-        *matched_domain = std::string(brand) + ".com";
-        return true;
-      }
-    }
+    brand_names.emplace_back(combo_squatting_params->brand_names[i]);
   }
-  return false;
+  if (IsComboSquatting(brand_names, *combo_squatting_params, navigated_domain,
+                       matched_domain)) {
+    return ComboSquattingType::kHardCoded;
+  }
+
+  // Then check Combo Squatting with brand names in engaged sites.
+  brand_names = GetBrandNamesFromEngagedSites(engaged_sites);
+  if (IsComboSquatting(brand_names, *combo_squatting_params, navigated_domain,
+                       matched_domain)) {
+    return ComboSquattingType::kSiteEngagement;
+  }
+
+  return ComboSquattingType::kNone;
 }

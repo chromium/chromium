@@ -416,7 +416,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
 
   // TODO(crbug.com/1344981): Once the Combo Squatting heuristic is fully
   // launched, this console message should be removed.
-  if (match_type == LookalikeUrlMatchType::kComboSquatting) {
+  if (match_type == LookalikeUrlMatchType::kComboSquatting ||
+      match_type == LookalikeUrlMatchType::kComboSquattingSiteEngagement) {
     GURL lookalike_url = first_is_lookalike ? first_url : last_url;
 
     navigation_handle()->GetRenderFrameHost()->AddMessageToConsole(

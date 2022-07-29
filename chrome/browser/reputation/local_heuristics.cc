@@ -111,6 +111,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
           reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES,
           navigated_domain.domain_and_registry, chrome::GetChannel());
     case LookalikeUrlMatchType::kComboSquatting:
+    case LookalikeUrlMatchType::kComboSquattingSiteEngagement:
       return false;
     case LookalikeUrlMatchType::kNone:
       NOTREACHED();
