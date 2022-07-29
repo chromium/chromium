@@ -225,11 +225,6 @@ SkColor AshColorProvider::GetBackgroundColor() const {
                                       IsDarkModeEnabled());
 }
 
-SkColor AshColorProvider::GetInvertedBackgroundColor() const {
-  return GetBackgroundThemedColorImpl(GetInvertedBackgroundDefaultColor(),
-                                      !IsDarkModeEnabled());
-}
-
 SkColor AshColorProvider::GetBackgroundColorInMode(bool use_dark_color) const {
   return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
                                    use_dark_color);

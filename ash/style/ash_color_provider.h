@@ -59,9 +59,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   // color will be different based on color mode and color theme (see
   // |is_themed_|).
   SkColor GetBackgroundColor() const;
-  // Same as above, but returns the color based on the current inverted color
-  // mode and color theme.
-  SkColor GetInvertedBackgroundColor() const;
   // Gets the background color in the desired color mode dark/light.
   SkColor GetBackgroundColorInMode(bool use_dark_color) const;
 
