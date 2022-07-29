@@ -1967,21 +1967,6 @@
             ]
         }
     ],
-    "BrowsingDataLifetimeManager": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "BrowsingDataLifetimeManager"
-                    ]
-                }
-            ]
-        }
-    ],
     "CCTNewDownloadTab": [
         {
             "platforms": [
