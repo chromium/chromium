@@ -305,14 +305,12 @@ TEST(InvalidatorRegistrarWithMemoryTest,
      ClearsTopicsWithObsoleteOwnerNamesWhenPrefIsEmpty) {
   TestingPrefServiceSimple pref_service;
   InvalidatorRegistrarWithMemory::RegisterProfilePrefs(pref_service.registry());
-  ASSERT_EQ(base::Value(base::Value::Type::DICTIONARY),
-            *pref_service.Get(kTopicsToHandler));
+  ASSERT_TRUE(pref_service.GetValueDict(kTopicsToHandler).empty());
 
   InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
       &pref_service);
 
-  EXPECT_EQ(base::Value(base::Value::Type::DICTIONARY),
-            *pref_service.Get(kTopicsToHandler));
+  ASSERT_TRUE(pref_service.GetValueDict(kTopicsToHandler).empty());
 }
 
 TEST(InvalidatorRegistrarWithMemoryTest, ClearsTopicsWithObsoleteOwnerNames) {
@@ -347,7 +345,8 @@ TEST(InvalidatorRegistrarWithMemoryTest, ClearsTopicsWithObsoleteOwnerNames) {
 
   pref_service.Set(kTopicsToHandler, initial_stored_topics->Clone());
 
-  ASSERT_EQ(*initial_stored_topics, *pref_service.Get(kTopicsToHandler));
+  ASSERT_EQ(*initial_stored_topics,
+            pref_service.GetValueDict(kTopicsToHandler));
 
   InvalidatorRegistrarWithMemory::ClearTopicsWithObsoleteOwnerNames(
       &pref_service);
@@ -369,7 +368,8 @@ TEST(InvalidatorRegistrarWithMemoryTest, ClearsTopicsWithObsoleteOwnerNames) {
   ASSERT_TRUE(expected_stored_topics.has_value())
       << expected_stored_topics.error().message;
 
-  EXPECT_EQ(*expected_stored_topics, *pref_service.Get(kTopicsToHandler));
+  EXPECT_EQ(*expected_stored_topics,
+            pref_service.GetValueDict(kTopicsToHandler));
 }
 
 // This test verifies that topics are not unsubscribed after browser restart
