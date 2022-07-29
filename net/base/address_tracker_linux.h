@@ -69,7 +69,7 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
 
   AddressMap GetAddressMap() const;
 
-  // Returns set of interface indicies for online interfaces.
+  // Returns set of interface indices for online interfaces.
   std::unordered_set<int> GetOnlineLinks() const;
 
   // Implementation of NetworkChangeNotifierLinux::GetCurrentConnectionType().
