@@ -144,12 +144,16 @@ void SearchPrefetchService::Shutdown() {
   observer_.Reset();
 }
 
-bool SearchPrefetchService::MaybePrefetchURL(const GURL& url) {
-  return MaybePrefetchURL(url, /*navigation_prefetch=*/false);
+bool SearchPrefetchService::MaybePrefetchURL(
+    const GURL& url,
+    content::WebContents* web_contents) {
+  return MaybePrefetchURL(url, /*navigation_prefetch=*/false, web_contents);
 }
 
-bool SearchPrefetchService::MaybePrefetchURL(const GURL& url,
-                                             bool navigation_prefetch) {
+bool SearchPrefetchService::MaybePrefetchURL(
+    const GURL& url,
+    bool navigation_prefetch,
+    content::WebContents* web_contents) {
   if (!SearchPrefetchServicePrefetchingIsEnabled())
     return false;
 
@@ -537,8 +541,10 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     }
 
     if (BaseSearchProvider::ShouldPrefetch(match)) {
-      MaybePrefetchURL(GetPreloadURLFromMatch(
-          match, template_url_service, /*attach_prefetch_information=*/true));
+      MaybePrefetchURL(
+          GetPreloadURLFromMatch(match, template_url_service,
+                                 /*attach_prefetch_information=*/true),
+          web_contents);
     }
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
         BaseSearchProvider::ShouldPrerender(match)) {
@@ -552,7 +558,8 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
 
 void SearchPrefetchService::MaybePrefetchLikelyMatch(
     size_t index,
-    const AutocompleteMatch& match) {
+    const AutocompleteMatch& match,
+    content::WebContents* web_contents) {
   if (!IsSearchNavigationPrefetchEnabled())
     return;
   // Assume the user is going back to enter more for now.
@@ -577,7 +584,7 @@ void SearchPrefetchService::MaybePrefetchLikelyMatch(
   }
   MaybePrefetchURL(GetPreloadURLFromMatch(match, template_url_service,
                                           /*attach_prefetch_information=*/true),
-                   /*navigation_prefetch=*/true);
+                   /*navigation_prefetch=*/true, web_contents);
 }
 
 void SearchPrefetchService::OnTemplateURLServiceChanged() {
@@ -771,7 +778,7 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   DCHECK(web_contents);
   GURL prefetch_url = GetPreloadURLFromMatch(
       match, template_url_service, /*attach_prefetch_information=*/true);
-  MaybePrefetchURL(prefetch_url);
+  MaybePrefetchURL(prefetch_url, web_contents);
   if (!BaseSearchProvider::ShouldPrerender(match))
     return;
 

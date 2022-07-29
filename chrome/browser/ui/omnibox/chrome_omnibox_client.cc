@@ -430,7 +430,8 @@ void ChromeOmniboxClient::OnSelectedMatchChanged(
     const AutocompleteMatch& match) {
   if (SearchPrefetchService* search_prefetch_service =
           SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-    search_prefetch_service->MaybePrefetchLikelyMatch(index, match);
+    search_prefetch_service->MaybePrefetchLikelyMatch(
+        index, match, controller_->GetWebContents());
   }
 }
 

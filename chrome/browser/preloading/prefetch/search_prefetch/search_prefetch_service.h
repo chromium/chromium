@@ -117,7 +117,7 @@ class SearchPrefetchService : public KeyedService,
                        const AutocompleteResult& result);
 
   // Returns whether the prefetch started or not.
-  bool MaybePrefetchURL(const GURL& url);
+  bool MaybePrefetchURL(const GURL& url, content::WebContents* web_contents);
 
   // Clear all prefetches from the service.
   void ClearPrefetches();
@@ -179,14 +179,20 @@ class SearchPrefetchService : public KeyedService,
 
   // Considers if this prefetch is worth starting, and if so, starts a prefetch
   // for |match|. |index| is the location within the omnibox drop down.
-  void MaybePrefetchLikelyMatch(size_t index, const AutocompleteMatch& match);
+  // |web_contents| represents the active WebContents this prefetch is started
+  // which can be nullptr in case no active WebContents is present.
+  void MaybePrefetchLikelyMatch(size_t index,
+                                const AutocompleteMatch& match,
+                                content::WebContents* web_contents);
 
   // Fires all timers.
   void FireAllExpiryTimerForTesting();
 
  private:
   // Returns whether the prefetch started or not.
-  bool MaybePrefetchURL(const GURL& url, bool navigation_prefetch);
+  bool MaybePrefetchURL(const GURL& url,
+                        bool navigation_prefetch,
+                        content::WebContents* web_contents);
 
   // Adds |this| as an observer of |template_url_service| if not added already.
   void ObserveTemplateURLService(TemplateURLService* template_url_service);
