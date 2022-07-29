@@ -415,11 +415,9 @@ crosapi::mojom::LaunchParamsPtr ConvertLaunchParamsToCrosapi(
     crosapi_params->intent = apps_util::ConvertAppServiceToCrosapiIntent(
         apps_util::CreateIntentFromUrl(params.override_url), profile);
   } else if (!params.launch_files.empty()) {
-    auto files = apps::mojom::FilePaths::New();
-    for (const auto& file : params.launch_files) {
-      files->file_paths.push_back(file);
-    }
-    crosapi_params->intent = apps_util::CreateCrosapiIntentForViewFiles(files);
+    std::vector<base::FilePath> files = params.launch_files;
+    crosapi_params->intent =
+        apps_util::CreateCrosapiIntentForViewFiles(std::move(files));
   }
   crosapi_params->container =
       ConvertAppServiceToCrosapiLaunchContainer(params.container);

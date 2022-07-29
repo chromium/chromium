@@ -219,6 +219,11 @@ apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
     Profile* profile);
 
 crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
+    std::vector<base::FilePath> file_paths);
+
+// TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+// interface.
+crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
     const apps::mojom::FilePathsPtr& file_paths);
 #endif
 }  // namespace apps_util

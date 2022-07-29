@@ -1370,6 +1370,20 @@ apps::mojom::IntentPtr ConvertCrosapiToAppServiceIntent(
 }
 
 crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
+    std::vector<base::FilePath> file_paths) {
+  auto intent = crosapi::mojom::Intent::New();
+  intent->action = kIntentActionView;
+  std::vector<crosapi::mojom::IntentFilePtr> crosapi_files;
+  for (const auto& file_path : file_paths) {
+    auto crosapi_file = crosapi::mojom::IntentFile::New();
+    crosapi_file->file_path = file_path;
+    crosapi_files.push_back(std::move(crosapi_file));
+  }
+  intent->files = std::move(crosapi_files);
+  return intent;
+}
+
+crosapi::mojom::IntentPtr CreateCrosapiIntentForViewFiles(
     const apps::mojom::FilePathsPtr& file_paths) {
   auto intent = crosapi::mojom::Intent::New();
   intent->action = kIntentActionView;

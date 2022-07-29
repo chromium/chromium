@@ -1489,6 +1489,25 @@ TEST_F(IntentUtilsFileTest, ConvertFileSchemeMojom) {
 
 TEST_F(IntentUtilsFileTest, CrosapiIntentToAppService) {
   const std::string path = "Documents/foo.txt";
+  std::vector<base::FilePath> file_paths;
+  file_paths.push_back(base::FilePath(fs_root_).Append(path));
+  auto crosapi_intent =
+      apps_util::CreateCrosapiIntentForViewFiles(std::move(file_paths));
+
+  auto app_service_intent =
+      apps_util::ConvertCrosapiToAppServiceIntent(crosapi_intent, GetProfile());
+  EXPECT_EQ(app_service_intent->action, crosapi_intent->action);
+  EXPECT_EQ(app_service_intent->mime_type, crosapi_intent->mime_type);
+  ASSERT_TRUE(crosapi_intent->files.has_value());
+  ASSERT_EQ(crosapi_intent->files.value().size(), 1U);
+  EXPECT_EQ(
+      app_service_intent->files.value()[0]->url,
+      ToGURL(base::FilePath(storage::kExternalDir).Append(mount_name_), path));
+}
+
+// TODO(crbug.com/1253250): Will be removed soon.
+TEST_F(IntentUtilsFileTest, CrosapiIntentToAppServiceMojom) {
+  const std::string path = "Documents/foo.txt";
   auto file_path = base::FilePath(fs_root_).Append(path);
   auto file_paths = apps::mojom::FilePaths::New();
   file_paths->file_paths.push_back(file_path);
