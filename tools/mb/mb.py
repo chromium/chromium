@@ -589,7 +589,7 @@ class MetaBuildWrapper:
       if self.args.verbose:
         self.Print(('| ' if previous_res else '') + ' '.join(cmd))
 
-      res, out, err = self.Call(cmd, stdin=previous_res)
+      res, out, err = self.Call(cmd, input=previous_res)
       if res != 0:
         self.Print("Err while running '%s'. Output:\n%s\nstderr:\n%s" % (
           ' '.join(cmd), out, err))
@@ -739,7 +739,7 @@ class MetaBuildWrapper:
       if self.args.extra_args:
         cmd += self.args.extra_args
       self.Print('')
-      ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
+      ret, _, _ = self.Run(cmd, force_verbose=True, capture_output=False)
       if ret:
         return ret
       task_json = self.ReadFile(json_file)
@@ -755,7 +755,7 @@ class MetaBuildWrapper:
           collect_output,
           task_id,
       ]
-      ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
+      ret, _, _ = self.Run(cmd, force_verbose=True, capture_output=False)
       if ret != 0:
         return ret
       collect_json = json.loads(self.ReadFile(collect_output))
@@ -777,7 +777,7 @@ class MetaBuildWrapper:
     ]
     if self.args.extra_args:
       cmd += ['--'] + self.args.extra_args
-    ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
+    ret, _, _ = self.Run(cmd, force_verbose=True, capture_output=False)
     return ret
 
   def _DefaultDimensions(self):
@@ -1460,7 +1460,7 @@ class MetaBuildWrapper:
         '-i',
         self.ToSrcRelPath('%s/%s.isolate' % (build_dir, target)),
     ],
-                         buffer_output=False)
+                         capture_output=False)
 
     return ret
 
@@ -2032,17 +2032,17 @@ class MetaBuildWrapper:
     if self.args.jobs:
       ninja_cmd.extend(['-j', '%d' % self.args.jobs])
     ninja_cmd.append(target)
-    ret, _, _ = self.Run(ninja_cmd, buffer_output=False)
+    ret, _, _ = self.Run(ninja_cmd, capture_output=False)
     return ret
 
-  def Run(self, cmd, env=None, force_verbose=True, buffer_output=True):
+  def Run(self, cmd, env=None, force_verbose=True, capture_output=True):
     # This function largely exists so it can be overridden for testing.
     if self.args.dryrun or self.args.verbose or force_verbose:
       self.PrintCmd(cmd)
     if self.args.dryrun:
       return 0, '', ''
 
-    ret, out, err = self.Call(cmd, env=env, buffer_output=buffer_output)
+    ret, out, err = self.Call(cmd, env=env, capture_output=capture_output)
     if self.args.verbose or force_verbose:
       if ret != 0:
         self.Print('  -> returned %d' % ret)
@@ -2053,20 +2053,25 @@ class MetaBuildWrapper:
         self.Print(err, end='', file=sys.stderr)
     return ret, out, err
 
-  def Call(self, cmd, env=None, buffer_output=True, stdin=None):
-    if buffer_output:
-      p = subprocess.Popen(cmd, shell=False, cwd=self.chromium_src_dir,
-                           stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                           env=env, stdin=subprocess.PIPE)
-      out, err = p.communicate(input=stdin)
-      out = out.decode('utf-8')
-      err = err.decode('utf-8')
-    else:
-      p = subprocess.Popen(cmd, shell=False, cwd=self.chromium_src_dir,
-                           env=env)
-      p.wait()
-      out = err = ''
-    return p.returncode, out, err
+  # Call has argument input to match subprocess.run
+  def Call(
+      self,
+      cmd,
+      env=None,
+      capture_output=True,
+      input='',
+  ):  # pylint: disable=redefined-builtin
+    # We are returning the exit code, we don't want an exception thrown
+    # for non-zero exit code
+    # pylint: disable=subprocess-run-check
+    p = subprocess.run(cmd,
+                       shell=False,
+                       capture_output=capture_output,
+                       cwd=self.chromium_src_dir,
+                       env=env,
+                       text=True,
+                       input=input)
+    return p.returncode, p.stdout, p.stderr
 
   def _CipdPlatform(self):
     """Returns current CIPD platform, e.g. linux-amd64.
