@@ -174,7 +174,7 @@ public class CachedFeatureFlags {
                 return flag;
             }
 
-            flag = sSafeMode.isEnabled(featureName, preferenceName);
+            flag = sSafeMode.isEnabled(featureName, preferenceName, defaultValue);
             if (flag == null) {
                 SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
                 if (prefs.contains(preferenceName)) {
@@ -475,7 +475,7 @@ public class CachedFeatureFlags {
 
     @VisibleForTesting
     public static void resetFlagsForTesting() {
-        sValuesReturned = new ValuesReturned();
+        sValuesReturned.clearForTesting();
         sValuesOverridden.removeOverrides();
         sSafeMode.clearMemoryForTesting();
     }

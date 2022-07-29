@@ -267,39 +267,110 @@ class CachedFlagsSafeMode {
         TraceEvent.end("writeSafeValues");
     }
 
-    Boolean isEnabled(String featureName, String preferenceName) {
+    Boolean isEnabled(String featureName, String preferenceName, boolean defaultValue) {
         if (!isSafeModeExperimentEnabled()) return null;
 
-        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
-        return null;
+        switch (mBehavior.get()) {
+            case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
+                return null;
+            case Behavior.ENGAGED_WITH_SAFE_VALUES:
+                SharedPreferences prefs = getSafeValuePreferences();
+                if (!prefs.contains(preferenceName)) {
+                    return null;
+                }
+                return prefs.getBoolean(preferenceName, false);
+            case Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES:
+            case Behavior.ENGAGED_WITHOUT_SAFE_VALUES:
+                return defaultValue;
+            default:
+                assert false;
+                return null;
+        }
     }
 
     Boolean getBooleanFieldTrialParam(String preferenceName, boolean defaultValue) {
         if (!isSafeModeExperimentEnabled()) return null;
 
-        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
-        return null;
+        switch (mBehavior.get()) {
+            case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
+                return null;
+            case Behavior.ENGAGED_WITH_SAFE_VALUES:
+                SharedPreferences prefs = getSafeValuePreferences();
+                if (!prefs.contains(preferenceName)) {
+                    return null;
+                }
+                return prefs.getBoolean(preferenceName, false);
+            case Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES:
+            case Behavior.ENGAGED_WITHOUT_SAFE_VALUES:
+                return defaultValue;
+            default:
+                assert false;
+                return null;
+        }
     }
 
     Integer getIntFieldTrialParam(String preferenceName, int defaultValue) {
         if (!isSafeModeExperimentEnabled()) return null;
 
-        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
-        return null;
+        switch (mBehavior.get()) {
+            case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
+                return null;
+            case Behavior.ENGAGED_WITH_SAFE_VALUES:
+                SharedPreferences prefs = getSafeValuePreferences();
+                if (!prefs.contains(preferenceName)) {
+                    return null;
+                }
+                return prefs.getInt(preferenceName, 0);
+            case Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES:
+            case Behavior.ENGAGED_WITHOUT_SAFE_VALUES:
+                return defaultValue;
+            default:
+                assert false;
+                return null;
+        }
     }
 
     Double getDoubleFieldTrialParam(String preferenceName, double defaultValue) {
         if (!isSafeModeExperimentEnabled()) return null;
 
-        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
-        return null;
+        switch (mBehavior.get()) {
+            case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
+                return null;
+            case Behavior.ENGAGED_WITH_SAFE_VALUES:
+                SharedPreferences prefs = getSafeValuePreferences();
+                if (!prefs.contains(preferenceName)) {
+                    return null;
+                }
+                long ieee754LongValue = prefs.getLong(preferenceName, 0L);
+                return Double.longBitsToDouble(ieee754LongValue);
+            case Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES:
+            case Behavior.ENGAGED_WITHOUT_SAFE_VALUES:
+                return defaultValue;
+            default:
+                assert false;
+                return null;
+        }
     }
 
     String getStringFieldTrialParam(String preferenceName, String defaultValue) {
         if (!isSafeModeExperimentEnabled()) return null;
 
-        // TODO(crbug.com/1199069): Return safe values if safe mode is engaged.
-        return null;
+        switch (mBehavior.get()) {
+            case Behavior.NOT_ENGAGED_BELOW_THRESHOLD:
+                return null;
+            case Behavior.ENGAGED_WITH_SAFE_VALUES:
+                SharedPreferences prefs = getSafeValuePreferences();
+                if (!prefs.contains(preferenceName)) {
+                    return null;
+                }
+                return prefs.getString(preferenceName, null);
+            case Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES:
+            case Behavior.ENGAGED_WITHOUT_SAFE_VALUES:
+                return defaultValue;
+            default:
+                assert false;
+                return null;
+        }
     }
 
     void cacheSafeModeForCachedFlagsEnabled() {

@@ -16,12 +16,12 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.CachedFlagsSafeMode.Behavior;
 
 import java.util.Arrays;
-import java.util.HashMap;
 
 /**
  * Unit Tests for the Safe Mode mechanism for {@link CachedFeatureFlags}.
@@ -35,8 +35,39 @@ import java.util.HashMap;
 public class CachedFeatureFlagsSafeModeUnitTest {
     private static final String CRASHY_FEATURE = "CrashyFeature";
     private static final String OK_FEATURE = "OkFeature";
-    private static final CachedFlag sCrashyFeature = new CachedFlag(CRASHY_FEATURE, false);
-    private static final CachedFlag sOkFeature = new CachedFlag(OK_FEATURE, false);
+    private static final boolean CRASHY_FEATURE_DEFAULT = false;
+    private static final boolean OK_FEATURE_DEFAULT = false;
+    private static final CachedFlag sCrashyFeature =
+            new CachedFlag(CRASHY_FEATURE, CRASHY_FEATURE_DEFAULT);
+    private static final CachedFlag sOkFeature = new CachedFlag(OK_FEATURE, OK_FEATURE_DEFAULT);
+
+    private static final String BOOL_PARAM_NAME = "BoolParam";
+    private static final String INT_PARAM_NAME = "IntParam";
+    private static final String DOUBLE_PARAM_NAME = "DoubleParam";
+    private static final String STRING_PARAM_NAME = "StringParam";
+    private static final boolean BOOL_PARAM_DEFAULT = false;
+    private static final int INT_PARAM_DEFAULT = 111;
+    private static final double DOUBLE_PARAM_DEFAULT = 55.5;
+    private static final String STRING_PARAM_DEFAULT = "foo";
+    private static final boolean BOOL_PARAM_NATIVE_1 = false;
+    private static final int INT_PARAM_NATIVE_1 = 222;
+    private static final double DOUBLE_PARAM_NATIVE_1 = 66.5;
+    private static final String STRING_PARAM_NATIVE_1 = "bar";
+    private static final boolean BOOL_PARAM_NATIVE_2 = true;
+    private static final int INT_PARAM_NATIVE_2 = 333;
+    private static final double DOUBLE_PARAM_NATIVE_2 = 77.5;
+    private static final String STRING_PARAM_NATIVE_2 = "baz";
+
+    private static final BooleanCachedFieldTrialParameter BOOL_PARAM =
+            new BooleanCachedFieldTrialParameter(OK_FEATURE, BOOL_PARAM_NAME, BOOL_PARAM_DEFAULT);
+    private static final IntCachedFieldTrialParameter INT_PARAM =
+            new IntCachedFieldTrialParameter(OK_FEATURE, INT_PARAM_NAME, INT_PARAM_DEFAULT);
+    private static final DoubleCachedFieldTrialParameter DOUBLE_PARAM =
+            new DoubleCachedFieldTrialParameter(
+                    OK_FEATURE, DOUBLE_PARAM_NAME, DOUBLE_PARAM_DEFAULT);
+    private static final StringCachedFieldTrialParameter STRING_PARAM =
+            new StringCachedFieldTrialParameter(
+                    OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_DEFAULT);
 
     @Before
     public void setUp() {
@@ -48,6 +79,7 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     public void tearDown() {
         CachedFeatureFlags.setSafeModeExperimentEnabledForTesting(null);
         CachedFeatureFlags.resetFlagsForTesting();
+
         FeatureList.setTestFeatures(null);
         CachedFlagsSafeMode.clearDiskForTesting();
     }
@@ -57,77 +89,92 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
         // There are no safe values.
-        // There are no cached flag values, so the defaults false/false are used.
+        // There are no cached values, so the defaults false/false/defaults are used.
+        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
+        endCleanRun(false, true, BOOL_PARAM_NATIVE_1, INT_PARAM_NATIVE_1, DOUBLE_PARAM_NATIVE_1,
+                STRING_PARAM_NATIVE_1);
+        // Safe values became false/false/defaults.
+        // Cached values became false/true/native1.
+
+        startRun();
+        // Crash streak is 0. Do not engage Safe Mode.
+        // Safe values are false/false/defaults.
+        // Cached values are false/true/native1, from previous run.
+        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative1();
+        endCleanRun(true, true, BOOL_PARAM_NATIVE_2, INT_PARAM_NATIVE_2, DOUBLE_PARAM_NATIVE_2,
+                STRING_PARAM_NATIVE_2);
+        // Safe values became false/true/native1.
+        // Cached values became true(crashy)/true/native2.
+
+        startRun();
+        // Crash streak is 0. Do not engage Safe Mode.
+        // Safe values are false/true/native1.
+        // Cached values remain true(crashy)/true/native2 and are used.
+        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative2();
+        endCrashyRun();
+        // Cached values remain true(crashy)/true/native2.
+
+        startRun();
+        // Crash streak is 1. Do not engage Safe Mode.
+        // Safe values are false/true/native1.
+        // Cached values remain true(crashy)/true/native2 and are used.
+        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertTrue(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative2();
+        endCrashyRun();
+        // Cached values remain true(crashy)/true/native2.
+
+        startRun();
+        // Crash streak is 2. Engage Safe Mode.
+        // Safe values are false/true/native1, and are used during this run.
+        // Cached values remain true(crashy)/true/native2, but are not used because Safe Mode is
+        // engaged.
+        assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative1();
+        endCleanRun(true, false, BOOL_PARAM_NATIVE_2, INT_PARAM_NATIVE_2, DOUBLE_PARAM_NATIVE_2,
+                STRING_PARAM_NATIVE_2);
+        // Cached values became true(crashy)/false/native2, cached from native.
+
+        startRun();
+        // Second run of Safe Mode.
+        // Safe values are false/true/native1, and are used during this run.
+        // Cached values true(crashy)/false/native2 are used, cached from native last run, but are
+        // not used because Safe Mode is engaged.
+        assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
+                CachedFeatureFlags.getSafeModeBehaviorForTesting());
+        assertFalse(sCrashyFeature.isEnabled());
+        assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative1();
+        endCleanRun(false, false, BOOL_PARAM_NATIVE_2, INT_PARAM_NATIVE_2, DOUBLE_PARAM_NATIVE_2,
+                STRING_PARAM_NATIVE_2);
+        // Cached values became false/false/native2, cached from native.
+
+        startRun();
+        // Crash streak is 1. Do not engage Safe Mode.
+        // Safe values are still false/true/native1.
+        // Cached values false/false/native2 are used, cached from native last run.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertFalse(sCrashyFeature.isEnabled());
         assertFalse(sOkFeature.isEnabled());
-        endCleanRun(false, true);
-        // Safe values became false/false.
-        // Cached values became false/true.
-
-        startRun();
-        // Crash streak is 0. Do not engage Safe Mode.
-        // Safe values are false/false.
-        // Cached flag values are false/true, from previous run.
-        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
-                CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(sCrashyFeature.isEnabled());
-        assertTrue(sOkFeature.isEnabled());
-        endCleanRun(true, true);
-        // Safe values became false/true.
-        // Cached values became true(crashy)/true.
-
-        startRun();
-        // Crash streak is 0. Do not engage Safe Mode.
-        // Safe values are false/true.
-        // Cached values remain true(crashy)/true and are used.
-        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
-                CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(sCrashyFeature.isEnabled());
-        assertTrue(sOkFeature.isEnabled());
-        endCrashyRun();
-        // Cached values remain true(crashy)/true.
-
-        startRun();
-        // Crash streak is 1. Do not engage Safe Mode.
-        // Safe values are false/true.
-        // Cached values remain true(crashy)/true and are used.
-        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
-                CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertTrue(sCrashyFeature.isEnabled());
-        assertTrue(sOkFeature.isEnabled());
-        endCrashyRun();
-        // Cached values remain true(crashy)/true.
-
-        startRun();
-        // Crash streak is 2. Engage Safe Mode.
-        // Safe values are false/true, and are used during this run.
-        // Cached values remain true(crashy)/true, but are not used because Safe Mode is engaged.
-        assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
-                CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        // TODO(crbug.com/1217708): Assert cached flags values are false/true.
-        endCleanRun(true, false);
-        // Cached values became true(crashy)/false, cached from native.
-
-        startRun();
-        // Second run of Safe Mode.
-        // Safe values are false/true, and are used during this run.
-        // Cached values true(crashy)/false are used, cached from native last run, but are not used
-        // because Safe Mode is engaged.
-        assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
-                CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        // TODO(crbug.com/1217708): Assert cached flags values are false/true.
-        endCleanRun(false, false);
-        // Cached values became false/false, cached from native.
-
-        startRun();
-        // Crash streak is 1. Do not engage Safe Mode.
-        // Safe values are false/true still.
-        // Cached values false/false are used, cached from native last run.
-        assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
-                CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        // TODO(crbug.com/1217708): Assert cached flags values are false/false.
+        assertCachedParamsEqualNative2();
     }
 
     @Test
@@ -135,12 +182,12 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         startRun();
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(false, true);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(true, true);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
@@ -158,13 +205,13 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Crash streak is 2. Engage Safe Mode.
         assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(true, false);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         // Second run of safe mode.
         assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(true, false);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         // Crash streak is 1. Do not engage Safe Mode.
@@ -183,12 +230,12 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         startRun();
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(false, true);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(true, true);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
@@ -206,19 +253,19 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Crash streak is 2. Engage Safe Mode.
         assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(true, false);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         // Second run of safe mode.
         assertEquals(Behavior.ENGAGED_WITH_SAFE_VALUES,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(true, false);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         // Crash streak is 1. Do not engage Safe Mode.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        endCleanRun(true, false);
+        endCleanRunCachingIrrelevantValues();
 
         startRun();
         // Crash streak is down to 0. Do not engage Safe Mode.
@@ -237,47 +284,53 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
         // There are no safe values.
-        // There are no cached flag values, so the defaults false/false are used.
+        // There are no cached values, so the defaults false/false/defaults are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(sCrashyFeature.isEnabled());
-        assertFalse(sOkFeature.isEnabled());
-        endCleanRun(true, true);
-        // Safe values became false/false.
-        // Cached values became true(flaky)/true.
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
+        endCleanRun(true, true, BOOL_PARAM_NATIVE_2, INT_PARAM_NATIVE_2, DOUBLE_PARAM_NATIVE_2,
+                STRING_PARAM_NATIVE_2);
+        // Safe values became false/false/defaults.
+        // Cached values became true(flaky)/true/native2.
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
-        // Safe values are false/false.
-        // Cached flag values are true(flaky)/true.
+        // Safe values are false/false/defaults.
+        // Cached values are true(flaky)/true/native2.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative2();
         endCrashyRun();
-        // Cached values remain true(crashy)/true.
+        // Cached values remain true(crashy)/true/native2.
 
         startRun();
         // Crash streak is 1. Do not engage Safe Mode.
-        // Safe values are false/false.
-        // Cached flag values are true(flaky)/true.
+        // Safe values are false/false/defaults.
+        // Cached values are true(flaky)/true/native2.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        // Cached flag values are the flaky ones cached from native.
+        // Cached values are the flaky ones cached from native.
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
-        endCleanRun(true, true);
-        // Safe values became true(flaky)/true.
-        // Cached values remain true(flaky)/true.
+        assertCachedParamsEqualNative2();
+        endCleanRun(true, true, BOOL_PARAM_NATIVE_2, INT_PARAM_NATIVE_2, DOUBLE_PARAM_NATIVE_2,
+                STRING_PARAM_NATIVE_2);
+        // Safe values became true(flaky)/true/native2.
+        // Cached values remain true(flaky)/true/native2.
 
         startRun();
         // Crash streak is 0, do not engage, use flaky values.
-        // Safe values are true(flaky)/true.
-        // Cached flag values are true(flaky)/true.
+        // Safe values are true(flaky)/true/native2.
+        // Cached values are true(flaky)/true/native2.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative2();
     }
 
     /**
@@ -289,31 +342,34 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
         // There are no safe values.
-        // There are no cached flag values, so the defaults false/false are used.
+        // There are no cached values, so the defaults false/false/defaults are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(sCrashyFeature.isEnabled());
-        assertFalse(sOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
         endFirstRunWithKill();
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
         // There are no safe values.
-        // There are no cached flag values, so the defaults false/false are used.
+        // There are no cached values, so the defaults false/false/defaults are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(sCrashyFeature.isEnabled());
-        assertFalse(sOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
         endFirstRunWithKill();
 
         startRun();
         // Crash streak is 0, do not engage, use flaky values.
         // There are no safe values.
-        // There are no cached flag values, so the defaults false/false are used.
+        // There are no cached values, so the defaults false/false/defaults are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(sCrashyFeature.isEnabled());
-        assertFalse(sOkFeature.isEnabled());
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
     }
 
     @Test
@@ -321,41 +377,58 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         // Simulate a cache without writing safe values. This happens before Safe Mode was
         // implemented and will become rare as clients start writing safe values.
         // Cache a crashy value.
-        FeatureList.setTestFeatures(makeFeatureMap(true, true));
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(CRASHY_FEATURE, true);
+        testValues.addFeatureFlagOverride(OK_FEATURE, true);
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, BOOL_PARAM_NAME, Boolean.toString(BOOL_PARAM_NATIVE_1));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, INT_PARAM_NAME, Integer.toString(INT_PARAM_NATIVE_1));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, DOUBLE_PARAM_NAME, Double.toString(DOUBLE_PARAM_NATIVE_1));
+        testValues.addFieldTrialParamOverride(OK_FEATURE, STRING_PARAM_NAME, STRING_PARAM_NATIVE_1);
+        FeatureList.setTestValues(testValues);
         CachedFeatureFlags.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
+        CachedFeatureFlags.cacheFieldTrialParameters(
+                Arrays.asList(BOOL_PARAM, INT_PARAM, DOUBLE_PARAM, STRING_PARAM));
+
         CachedFeatureFlags.resetFlagsForTesting();
-        // Cached values became true(crashy)/true.
+        // Cached values became true(crashy)/true/native1.
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
         // There are no safe values.
-        // Cached values are true(crashy)/true.
+        // Cached values are true(crashy)/true/native1.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative1();
         endCrashyRun();
-        // Cached values remain true(crashy)/true.
+        // Cached values remain true(crashy)/true/native1.
 
         startRun();
         // Crash streak is 1. Do not engage Safe Mode.
         // There are no safe values.
-        // Cached values are true(crashy)/true.
+        // Cached values are true(crashy)/true/native1.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative1();
         endCrashyRun();
-        // Cached values remain true(crashy)/true.
+        // Cached values remain true(crashy)/true/native1.
 
         startRun();
         // Crash streak is 2. Engage Safe Mode without safe values.
         // There are no safe values.
-        // Cached values are true(crashy)/true, but the default values false/false are returned
-        // since Safe Mode is falling back to default.
+        // Cached values are true(crashy)/true/native1, but the default values false/false/defaults
+        // are returned since Safe Mode is falling back to default.
         assertEquals(Behavior.ENGAGED_WITHOUT_SAFE_VALUES,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        // TODO(crbug.com/1217708): Assert cached flags values are false/false.
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
     }
 
     @Test
@@ -363,26 +436,30 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
         // There are no safe values.
-        // There are no cached flag values, so the defaults false/false are used.
+        // There are no cached values, so the defaults false/false/defaults are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
-        assertFalse(sCrashyFeature.isEnabled());
-        assertFalse(sOkFeature.isEnabled());
-        endCleanRun(false, true);
-        // Safe values became false/false.
-        // Cached values became false/true.
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
+        endCleanRun(false, true, BOOL_PARAM_NATIVE_1, INT_PARAM_NATIVE_1, DOUBLE_PARAM_NATIVE_1,
+                STRING_PARAM_NATIVE_1);
+        // Safe values became false/false/defaults.
+        // Cached values became false/true/native1.
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
-        // Safe values are false/false.
-        // Cached flag values are false/true, from previous run.
+        // Safe values are false/false/defaults.
+        // Cached values are false/true/native1, from previous run.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertFalse(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
-        endCleanRun(true, true);
-        // Safe values became false/true.
-        // Cached values became true(crashy)/true.
+        assertCachedParamsEqualNative1();
+        endCleanRun(true, true, BOOL_PARAM_NATIVE_2, INT_PARAM_NATIVE_2, DOUBLE_PARAM_NATIVE_2,
+                STRING_PARAM_NATIVE_2);
+        // Safe values became false/true/native1.
+        // Cached values became true(crashy)/true/native2.
 
         // Pretend safe values are from an older version
         CachedFlagsSafeMode.getSafeValuePreferences()
@@ -392,34 +469,38 @@ public class CachedFeatureFlagsSafeModeUnitTest {
 
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
-        // Safe values are false/true, but from another version.
-        // Cached values are true(crashy)/true.
+        // Safe values are false/true/native1, but from another version.
+        // Cached values are true(crashy)/true/native2.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative2();
         endCrashyRun();
-        // Cached values remain true(crashy)/true.
+        // Cached values remain true(crashy)/true/native2.
 
         startRun();
         // Crash streak is 1. Do not engage Safe Mode.
-        // Safe values are false/true, but from another version.
-        // Cached values are true(crashy)/true.
+        // Safe values are false/true/native1, but from another version.
+        // Cached values are true(crashy)/true/native2.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative2();
         endCrashyRun();
-        // Cached values remain true(crashy)/true.
+        // Cached values remain true(crashy)/true/native2.
 
         startRun();
         assertEquals(Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         // Crash streak is 2. Engage Safe Mode with obsolete safe values.
-        // Safe values are false/true, but from another version.
-        // Cached values are true(crashy)/true, but the default values false/false are returned
-        // since Safe Mode is falling back to default.
-        // TODO(crbug.com/1217708): Assert cached flags values are false/false.
+        // Safe values are false/true/native1, but from another version.
+        // Cached values are true(crashy)/true/native2, but the default values false/false/defaults
+        // are returned since Safe Mode is falling back to default.
+        assertEquals(CRASHY_FEATURE_DEFAULT, sCrashyFeature.isEnabled());
+        assertEquals(OK_FEATURE_DEFAULT, sOkFeature.isEnabled());
+        assertCachedParamsEqualDefaults();
     }
 
     @Test
@@ -427,28 +508,30 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
         // There are no safe values.
-        // There are no cached flag values, so the defaults false/false are used.
+        // There are no cached values, so the defaults false/false are used.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertFalse(sCrashyFeature.isEnabled());
         assertFalse(sOkFeature.isEnabled());
-        endCleanRun(true, true);
-        // Safe values became false/false.
-        // Cached values became true(flaky)/true.
+        endCleanRun(true, true, BOOL_PARAM_NATIVE_1, INT_PARAM_NATIVE_1, DOUBLE_PARAM_NATIVE_1,
+                STRING_PARAM_NATIVE_1);
+        // Safe values became false/false/defaults.
+        // Cached values became true(crashy)/true/native1.
 
         startRun();
         startRun();
         startRun();
         startRun();
         // Crash streak is 0. Do not engage Safe Mode.
-        // Safe values are false/false.
-        // Cached flag values are true(flaky)/true.
+        // Safe values are false/false/defaults.
+        // Cached values are true(crashy)/true/native1.
         assertEquals(Behavior.NOT_ENGAGED_BELOW_THRESHOLD,
                 CachedFeatureFlags.getSafeModeBehaviorForTesting());
         assertTrue(sCrashyFeature.isEnabled());
         assertTrue(sOkFeature.isEnabled());
+        assertCachedParamsEqualNative1();
         endCrashyRun();
-        // Cached values remain true(crashy)/true.
+        // Cached values remain true(crashy)/true/native1.
 
         startRun();
         // Crash streak is 1, despite the multiple startRun() calls above. Do not engage Safe Mode.
@@ -457,8 +540,18 @@ public class CachedFeatureFlagsSafeModeUnitTest {
     }
 
     private void startRun() {
+        // Enter safe mode or not before the start checkpoint, since that's what happens and should
+        // be supported.
         sCrashyFeature.isEnabled();
+
         CachedFeatureFlags.onStartOrResumeCheckpoint();
+
+        // Only flags and params that are checked before native flags are cached need to be switched
+        // to safe values.
+        BOOL_PARAM.getValue();
+        INT_PARAM.getValue();
+        DOUBLE_PARAM.getValue();
+        STRING_PARAM.getValue();
     }
 
     private void endFirstRunWithKill() {
@@ -470,9 +563,29 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         CachedFeatureFlags.resetFlagsForTesting();
     }
 
-    private void endCleanRun(boolean crashyFeatureValue, boolean okFeatureValue) {
-        FeatureList.setTestFeatures(makeFeatureMap(crashyFeatureValue, okFeatureValue));
+    private void endCleanRunCachingIrrelevantValues() {
+        endCleanRun(false, false, BOOL_PARAM_NATIVE_1, INT_PARAM_NATIVE_1, DOUBLE_PARAM_NATIVE_1,
+                STRING_PARAM_NATIVE_1);
+    }
+
+    private void endCleanRun(boolean crashyFeatureValue, boolean okFeatureValue,
+            boolean boolParamValue, int intParamValue, double doubleParamValue,
+            String stringParamValue) {
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(CRASHY_FEATURE, crashyFeatureValue);
+        testValues.addFeatureFlagOverride(OK_FEATURE, okFeatureValue);
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, BOOL_PARAM_NAME, Boolean.toString(boolParamValue));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, INT_PARAM_NAME, Integer.toString(intParamValue));
+        testValues.addFieldTrialParamOverride(
+                OK_FEATURE, DOUBLE_PARAM_NAME, Double.toString(doubleParamValue));
+        testValues.addFieldTrialParamOverride(OK_FEATURE, STRING_PARAM_NAME, stringParamValue);
+        FeatureList.setTestValues(testValues);
+
         CachedFeatureFlags.cacheNativeFlags(Arrays.asList(sCrashyFeature, sOkFeature));
+        CachedFeatureFlags.cacheFieldTrialParameters(
+                Arrays.asList(BOOL_PARAM, INT_PARAM, DOUBLE_PARAM, STRING_PARAM));
 
         CachedFeatureFlags.onEndCheckpoint();
         // Async task writing values should have run synchronously because of ShadowPostTask.
@@ -482,13 +595,24 @@ public class CachedFeatureFlagsSafeModeUnitTest {
         CachedFeatureFlags.resetFlagsForTesting();
     }
 
-    private HashMap<String, Boolean> makeFeatureMap(
-            boolean crashyFeatureValue, boolean okFeatureValue) {
-        return new HashMap<String, Boolean>() {
-            {
-                put(CRASHY_FEATURE, crashyFeatureValue);
-                put(OK_FEATURE, okFeatureValue);
-            }
-        };
+    private void assertCachedParamsEqualDefaults() {
+        assertEquals(BOOL_PARAM_DEFAULT, BOOL_PARAM.getValue());
+        assertEquals(INT_PARAM_DEFAULT, INT_PARAM.getValue());
+        assertEquals(DOUBLE_PARAM_DEFAULT, DOUBLE_PARAM.getValue(), 1e-10);
+        assertEquals(STRING_PARAM_DEFAULT, STRING_PARAM.getValue());
+    }
+
+    private void assertCachedParamsEqualNative1() {
+        assertEquals(BOOL_PARAM_NATIVE_1, BOOL_PARAM.getValue());
+        assertEquals(INT_PARAM_NATIVE_1, INT_PARAM.getValue());
+        assertEquals(DOUBLE_PARAM_NATIVE_1, DOUBLE_PARAM.getValue(), 1e-10);
+        assertEquals(STRING_PARAM_NATIVE_1, STRING_PARAM.getValue());
+    }
+
+    private void assertCachedParamsEqualNative2() {
+        assertEquals(BOOL_PARAM_NATIVE_2, BOOL_PARAM.getValue());
+        assertEquals(INT_PARAM_NATIVE_2, INT_PARAM.getValue());
+        assertEquals(DOUBLE_PARAM_NATIVE_2, DOUBLE_PARAM.getValue(), 1e-10);
+        assertEquals(STRING_PARAM_NATIVE_2, STRING_PARAM.getValue());
     }
 }
