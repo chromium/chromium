@@ -12,6 +12,7 @@
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/tab_matcher.h"
+#include "components/url_formatter/url_formatter.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "content/public/browser/web_contents.h"
@@ -84,7 +85,16 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   // another default match over an open tab result.
   match.allowed_to_be_default_match = true;
 
-  match.contents = base::UTF8ToUTF16(url.spec());
+  // For display in the suggestion UI, elide all optional parts. The user has
+  // already opened these URLs so there's no need for them to make nuanced
+  // judgements about the URL (for example, whether the scheme is http:// or
+  // https:// or whether there's a "www" subdomain).
+  match.contents = url_formatter::FormatUrl(
+      url,
+      AutocompleteMatch::GetFormatTypes(/*preserve_scheme=*/false,
+                                        /*preserve_subdomain=*/false),
+      base::UnescapeRule::SPACES, nullptr, nullptr, nullptr);
+
   auto contents_terms = FindTermMatches(input.text(), match.contents);
   match.contents_class = ClassifyTermMatches(
       contents_terms, match.contents.size(),
