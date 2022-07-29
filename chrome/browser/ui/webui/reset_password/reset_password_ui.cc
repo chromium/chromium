@@ -142,8 +142,11 @@ void ResetPasswordUI::BindInterface(
 base::Value::Dict ResetPasswordUI::PopulateStrings() const {
   auto* service = safe_browsing::ChromePasswordProtectionService::
       GetPasswordProtectionService(Profile::FromWebUI(web_ui()));
-  std::string org_name = service->GetOrganizationName(
-      service->reused_password_account_type_for_last_shown_warning());
+  std::string org_name =
+      service
+          ? service->GetOrganizationName(
+                service->reused_password_account_type_for_last_shown_warning())
+          : std::string();
   bool known_password_type =
       password_type_ != PasswordType::PASSWORD_TYPE_UNKNOWN;
 
