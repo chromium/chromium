@@ -122,7 +122,7 @@ class CONTENT_EXPORT RateLimitTable {
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Must outlive |this|.
-  raw_ptr<const AttributionStorageDelegate, DanglingUntriaged> delegate_
+  raw_ptr<const AttributionStorageDelegate> delegate_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Time at which `DeleteExpiredRateLimits()` was last called. Initialized to

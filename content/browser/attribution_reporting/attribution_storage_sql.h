@@ -392,15 +392,16 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   //  - table/index initialization failed
   std::unique_ptr<sql::Database> db_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  std::unique_ptr<AttributionStorageDelegate> delegate_
+      GUARDED_BY_CONTEXT(sequence_checker_);
   // Table which stores timestamps of sent reports, and checks if new reports
   // can be created given API rate limits. The underlying table is created in
   // |db_|, but only accessed within |RateLimitTable|.
+  // `rate_limit_table_` references `delegate_` So it must be declared last and
+  // deleted first.
   RateLimitTable rate_limit_table_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   sql::MetaTable meta_table_ GUARDED_BY_CONTEXT(sequence_checker_);
-
-  std::unique_ptr<AttributionStorageDelegate> delegate_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Time at which `DeleteExpiredSources()` was last called. Initialized to
   // the NULL time.

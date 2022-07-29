@@ -438,8 +438,8 @@ AttributionStorageSql::AttributionStorageSql(
     std::unique_ptr<AttributionStorageDelegate> delegate)
     : path_to_database_(g_run_in_memory_ ? base::FilePath(kInMemoryPath)
                                          : DatabasePath(path_to_database)),
-      rate_limit_table_(delegate.get()),
-      delegate_(std::move(delegate)) {
+      delegate_(std::move(delegate)),
+      rate_limit_table_(delegate_.get()) {
   DCHECK(delegate_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
