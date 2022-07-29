@@ -426,7 +426,8 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
   if (cellular_state == DeviceStateType::kUninitialized) {
     CreateInfoLabelIfMissingAndUpdate(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR,
                                       &mobile_status_message_);
-    mobile_header_view_->SetToggleVisibility(/*visible=*/false);
+    mobile_header_view_->SetToggleState(/*enabled=*/false,
+                                        /*is_on=*/false);
     return;
   }
 

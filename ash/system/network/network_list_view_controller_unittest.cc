@@ -902,7 +902,9 @@ TEST_F(NetworkListViewControllerTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_NE(nullptr, GetMobileStatusMessage());
-  EXPECT_FALSE(GetMobileToggleButton()->GetVisible());
+  EXPECT_TRUE(GetMobileToggleButton()->GetVisible());
+  EXPECT_FALSE(GetMobileSubHeader()->is_toggle_enabled());
+  EXPECT_FALSE(GetMobileSubHeader()->is_toggle_on());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR),
       GetMobileStatusMessage()->label()->GetText());
