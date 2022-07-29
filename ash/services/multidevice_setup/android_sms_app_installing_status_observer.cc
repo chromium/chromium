@@ -34,13 +34,13 @@ AndroidSmsAppInstallingStatusObserver::Factory::Create(
     AndroidSmsAppHelperDelegate* android_sms_app_helper_delegate,
     PrefService* pref_service) {
   if (test_factory_) {
-    return test_factory_->CreateInstance(
-        host_status_provider, feature_state_manager,
-        std::move(android_sms_app_helper_delegate));
+    return test_factory_->CreateInstance(host_status_provider,
+                                         feature_state_manager,
+                                         android_sms_app_helper_delegate);
   }
   return base::WrapUnique(new AndroidSmsAppInstallingStatusObserver(
       host_status_provider, feature_state_manager,
-      std::move(android_sms_app_helper_delegate), pref_service));
+      android_sms_app_helper_delegate, pref_service));
 }
 
 // static
