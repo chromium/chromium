@@ -794,8 +794,7 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
     EXPECT_EQ(protection_level_ >= PROTECTION_ENABLED_BASIC ? 0U : 2U,
               profile()
                   ->GetPrefs()
-                  ->GetList(prefs::kURLsToRestoreOnStartup)
-                  ->GetListDeprecated()
+                  ->GetValueList(prefs::kURLsToRestoreOnStartup)
                   .size());
 #endif
 

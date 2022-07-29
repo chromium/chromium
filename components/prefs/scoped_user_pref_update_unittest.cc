@@ -55,25 +55,21 @@ TEST_F(ScopedUserPrefUpdateTest, RegularUse) {
     Mock::VerifyAndClearExpectations(&observer_);
 
     // Modifications happen online and are instantly visible, though.
-    const base::Value* current_value = prefs_.GetDictionary(kPref);
-    ASSERT_TRUE(current_value);
-    EXPECT_EQ(expected_dictionary, *current_value);
+    EXPECT_EQ(expected_dictionary, prefs_.GetValueDict(kPref));
 
     // Now we are leaving the scope of the update so we should be notified.
     observer_.Expect(kPref, &expected_dictionary);
   }
   Mock::VerifyAndClearExpectations(&observer_);
 
-  const base::Value* current_value = prefs_.GetDictionary(kPref);
-  ASSERT_TRUE(current_value);
-  EXPECT_EQ(expected_dictionary, *current_value);
+  EXPECT_EQ(expected_dictionary, prefs_.GetValueDict(kPref));
 }
 
 TEST_F(ScopedUserPrefUpdateTest, NeverTouchAnything) {
-  const base::Value* old_value = prefs_.GetDictionary(kPref);
+  const base::Value::Dict& old_value = prefs_.GetValueDict(kPref);
   EXPECT_CALL(observer_, OnPreferenceChanged(_)).Times(0);
   { DictionaryPrefUpdate update(&prefs_, kPref); }
-  const base::Value* new_value = prefs_.GetDictionary(kPref);
+  const base::Value::Dict& new_value = prefs_.GetValueDict(kPref);
   EXPECT_EQ(old_value, new_value);
   Mock::VerifyAndClearExpectations(&observer_);
 }
@@ -99,9 +95,9 @@ TEST_F(ScopedUserPrefUpdateTest, UpdatingDictionaryPrefWithDefaults) {
 
   std::string pref_name = "mypref";
   prefs_.registry()->RegisterDictionaryPref(pref_name, std::move(defaults));
-  EXPECT_EQ(2u, prefs_.GetDictionary(pref_name)->DictSize());
+  EXPECT_EQ(2u, prefs_.GetValueDict(pref_name).size());
 
   DictionaryPrefUpdate update(&prefs_, pref_name);
   update->SetStringKey("thirdkey", "value");
-  EXPECT_EQ(3u, prefs_.GetDictionary(pref_name)->DictSize());
+  EXPECT_EQ(3u, prefs_.GetValueDict(pref_name).size());
 }
