@@ -1989,6 +1989,26 @@ chromium-metrics-reviews@google.com.
     name="SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult"
     enum="SafeBrowsingTailoredSecurityNotificationResult"
     expires_after="2022-12-11">
+  <obsolete>
+    This metric was useful until 2022-07-29, when the experiment for
+    TailoredSecurityDesktopNotice began and values for NoBrowserAvailable and
+    NoWebContentsAvailable could also contain results from showing the disabled
+    modal (due to crbug/1348654).
+  </obsolete>
+  <owner>jacastro@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the result of trying to show the Chrome enhanced protection
+    opt-in/enabled notification to sync users. It is logged once each time
+    Chrome is informed that the account level enhanced protection bit has been
+    enabled.
+  </summary>
+</histogram>
+
+<histogram
+    name="SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2"
+    enum="SafeBrowsingTailoredSecurityNotificationResult"
+    expires_after="2022-12-11">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

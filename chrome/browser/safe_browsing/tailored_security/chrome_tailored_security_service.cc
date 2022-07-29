@@ -56,7 +56,7 @@ content::WebContents* GetWebContentsForProfile(Profile* profile) {
 void RecordEnabledNotificationResult(
     TailoredSecurityNotificationResult result) {
   base::UmaHistogramEnumeration(
-      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult",
+      "SafeBrowsing.TailoredSecurity.SyncPromptEnabledNotificationResult2",
       result);
 }
 
@@ -132,15 +132,19 @@ void ChromeTailoredSecurityService::ShowSyncNotification(bool is_enabled) {
   if (base::FeatureList::IsEnabled(kTailoredSecurityDesktopNotice)) {
     Browser* browser = chrome::FindBrowserWithProfile(profile_);
     if (!browser) {
-      RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kNoBrowserAvailable);
+      if (is_enabled) {
+        RecordEnabledNotificationResult(
+            TailoredSecurityNotificationResult::kNoBrowserAvailable);
+      }
       return;
     }
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     if (!web_contents) {
-      RecordEnabledNotificationResult(
-          TailoredSecurityNotificationResult::kNoWebContentsAvailable);
+      if (is_enabled) {
+        RecordEnabledNotificationResult(
+            TailoredSecurityNotificationResult::kNoWebContentsAvailable);
+      }
       return;
     }
     SetSafeBrowsingState(profile_->GetPrefs(),
