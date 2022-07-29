@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.text.format.Formatter;
 import android.widget.ImageView;
 
 import androidx.preference.PreferenceViewHolder;
@@ -21,6 +22,8 @@ import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 public class WebsiteGroupPreference extends ChromeImageViewPreference {
     private final SiteSettingsDelegate mSiteSettingsDelegate;
     private final WebsiteGroup mSiteGroup;
+
+    private static final String HTTP = "http";
 
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
@@ -38,6 +41,7 @@ public class WebsiteGroupPreference extends ChromeImageViewPreference {
         // favicon becomes available.
         setIcon(new ColorDrawable(Color.TRANSPARENT));
         setTitle(mSiteGroup.getTitle());
+        updateSummary();
     }
 
     @Override
@@ -59,6 +63,28 @@ public class WebsiteGroupPreference extends ChromeImageViewPreference {
     private void onFaviconAvailable(Drawable drawable) {
         if (drawable != null) {
             setIcon(drawable);
+        }
+    }
+
+    private void updateSummary() {
+        String summary = "";
+
+        long usage = mSiteGroup.getTotalUsage();
+        if (usage > 0) {
+            summary = Formatter.formatShortFileSize(getContext(), usage);
+        }
+
+        if (mSiteGroup.hasOneHttpOrigin()) {
+            if (summary.isEmpty()) {
+                summary = HTTP;
+            } else {
+                summary = String.format(
+                        getContext().getString(R.string.summary_with_one_bullet), HTTP, summary);
+            }
+        }
+
+        if (!summary.isEmpty()) {
+            setSummary(summary);
         }
     }
 }

@@ -155,6 +155,9 @@
   <message name="IDS_CLEAR_BROWSING_DATA_LINK" desc="Title of the button that will open the clear browsing data dialog.">
     Clear browsing data…
   </message>
+  <message name="IDS_SUMMARY_WITH_ONE_BULLET" desc="Used to generate a summary that consists of two parts, separated by a bullet.">
+    <ph name="FIRST_PART">%1$s<ex>http</ex></ph> • <ph name="SECOND_PART">%2$s<ex>10 MB</ex></ph>
+  </message>
 
   <!-- Site settings: Possible permission values for a single site -->
 

@@ -23,6 +23,8 @@ public class WebsiteGroup implements Serializable {
     private final String mDomainAndRegistry;
     // A list of origins associated with the eTLD+1.
     private final List<Website> mWebsites;
+    // Total storage taken up by all the stored websites.
+    private final long mTotalUsage;
 
     private static final String SCHEME_SUFFIX = "://";
 
@@ -68,6 +70,12 @@ public class WebsiteGroup implements Serializable {
     public WebsiteGroup(String domainAndRegistry, List<Website> websites) {
         mDomainAndRegistry = domainAndRegistry;
         mWebsites = websites;
+
+        long totalUsage = 0;
+        for (Website website : websites) {
+            totalUsage += website.getTotalUsage();
+        }
+        mTotalUsage = totalUsage;
     }
 
     public String getDomainAndRegistry() {
@@ -78,8 +86,18 @@ public class WebsiteGroup implements Serializable {
         return mWebsites;
     }
 
+    public long getTotalUsage() {
+        return mTotalUsage;
+    }
+
     public boolean hasOneOrigin() {
         return mWebsites.size() == 1;
+    }
+
+    public boolean hasOneHttpOrigin() {
+        return hasOneOrigin()
+                && mWebsites.get(0).getAddress().getOrigin().startsWith(
+                        UrlConstants.HTTP_URL_PREFIX);
     }
 
     /** Returns the title to be displayed in a user-friendly way. */
