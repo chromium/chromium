@@ -98,7 +98,8 @@ OTRWebStateObserver::OTRWebStateObserver(
 }
 
 OTRWebStateObserver::~OTRWebStateObserver() {
-  browser_state_manager_->GetBrowserStateInfoCache()->RemoveObserver(this);
+  // TearDown() must be called before destruction.
+  DCHECK(shutting_down_);
 }
 
 void OTRWebStateObserver::OnBrowserStateAdded(const base::FilePath& path) {
@@ -136,6 +137,13 @@ void OTRWebStateObserver::AddObserver(ObserverClient* client) {
 
 void OTRWebStateObserver::RemoveObserver(ObserverClient* client) {
   observer_clients_.RemoveObserver(client);
+}
+
+void OTRWebStateObserver::TearDown() {
+  shutting_down_ = true;
+  browser_state_manager_->GetBrowserStateInfoCache()->RemoveObserver(this);
+  browser_state_data_.clear();
+  browser_state_manager_ = nullptr;
 }
 
 void OTRWebStateObserver::OnWebStateListChanged(

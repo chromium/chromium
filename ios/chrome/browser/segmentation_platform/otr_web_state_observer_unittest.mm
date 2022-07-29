@@ -76,6 +76,7 @@ class OTRWebStateObserverTest : public PlatformTest {
 
     otr_browser_.reset();
     browser_.reset();
+    observer_->TearDown();
     observer_.reset();
     browser_state_manager_.reset();
   }
