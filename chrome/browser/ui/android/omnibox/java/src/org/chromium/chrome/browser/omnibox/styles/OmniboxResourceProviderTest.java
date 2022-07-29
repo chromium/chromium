@@ -12,14 +12,15 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import com.google.android.material.color.MaterialColors;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -35,13 +36,17 @@ import org.chromium.ui.base.TestActivity;
 public class OmniboxResourceProviderTest {
     private static final String TAG = "ORPTest";
 
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private Activity mActivity;
 
     private @ColorInt int mDefaultColor;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mDefaultColor = ChromeColors.getDefaultThemeColor(mActivity, false);
     }
 

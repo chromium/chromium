@@ -22,6 +22,8 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -32,7 +34,6 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
@@ -78,6 +79,8 @@ public final class MostVisitedTilesProcessorUnitTest {
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
     public @Rule TestRule mFeatures = new Features.JUnitProcessor();
+    public @Rule ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     private Activity mActivity;
     private PropertyModel mPropertyModel;
@@ -96,7 +99,7 @@ public final class MostVisitedTilesProcessorUnitTest {
 
         // Enable logs to be printed along with possible test failures.
         ShadowLog.stream = System.out;
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         doNothing()
                 .when(mFaviconFetcher)

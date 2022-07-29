@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -29,7 +30,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 import org.robolectric.shadows.ShadowLooper;
@@ -57,6 +57,8 @@ public final class FaviconFetcherUnitTest {
     private static final int SMALL_FAVICON_SIZE_PX = REGULAR_FAVICON_SIZE_PX / 2;
 
     public @Rule MockitoRule mockitoRule = MockitoJUnit.rule();
+    public @Rule ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     private Activity mActivity;
     private ArgumentCaptor<LargeIconCallback> mIconCallbackCaptor =
@@ -75,7 +77,7 @@ public final class FaviconFetcherUnitTest {
         // Enable logs to be printed along with possible test failures.
         ShadowLog.stream = System.out;
 
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         mFetcher = new FaviconFetcher(mActivity, () -> mLargeIconBridge);
         mFetcher.setRoundedIconGeneratorForTesting(mIconGenerator);

@@ -19,14 +19,16 @@ import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
@@ -39,6 +41,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class HeaderViewBinderUnitTest {
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     Activity mActivity;
     PropertyModel mModel;
 
@@ -51,8 +57,7 @@ public class HeaderViewBinderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
-        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         mHeaderView = mock(HeaderView.class,
                 Mockito.withSettings().useConstructor(mActivity).defaultAnswer(
