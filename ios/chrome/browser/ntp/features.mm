@@ -35,7 +35,8 @@ NSString* const kEnableFeedBackgroundRefreshForNextColdStart =
 
 const char kEnableFollowingFeedBackgroundRefresh[] =
     "EnableFollowingFeedBackgroundRefresh";
-
+const char kEnableAttemptFeedBackgroundRefresh[] =
+    "EnableAttemptFeedBackgroundRefresh";
 const char kEnableServerDrivenBackgroundRefreshSchedule[] =
     "EnableServerDrivenBackgroundRefreshSchedule";
 const char kEnableRecurringBackgroundRefreshSchedule[] =
@@ -60,11 +61,25 @@ bool IsFeedBackgroundRefreshEnabled() {
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
 }
 
+bool IsAttemptFeedBackgroundRefreshEnabled() {
+  if (!IsFeedBackgroundRefreshEnabled()) {
+    return false;
+  }
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableFeedBackgroundRefresh, kEnableAttemptFeedBackgroundRefresh,
+      /*default=*/false);
+}
+
 void SaveFeedBackgroundRefreshEnabledForNextColdStart() {
   DCHECK(base::FeatureList::GetInstance());
   [[NSUserDefaults standardUserDefaults]
       setBool:base::FeatureList::IsEnabled(kEnableFeedBackgroundRefresh)
        forKey:kEnableFeedBackgroundRefreshForNextColdStart];
+}
+
+bool IsFeedBackgroundRefreshCompletedNotificationEnabled() {
+  return IsFeedBackgroundRefreshEnabled() &&
+         experimental_flags::IsRefreshCompletedNotificationEnabled();
 }
 
 bool IsFollowingFeedBackgroundRefreshEnabled() {
@@ -92,6 +107,10 @@ double GetBackgroundRefreshIntervalInSeconds() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableFeedBackgroundRefresh, kBackgroundRefreshIntervalInSeconds,
       /*default=*/60 * 60);
+}
+
+double GetBackgroundRefreshIntervalOverrideInSeconds() {
+  return experimental_flags::GetBackgroundRefreshIntervalOverrideInSeconds();
 }
 
 double GetBackgroundRefreshMaxAgeInSeconds() {

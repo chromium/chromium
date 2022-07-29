@@ -48,9 +48,19 @@ bool IsWebChannelsEnabled();
 // buildflag is not defined.
 bool IsFeedBackgroundRefreshEnabled();
 
+// Whether feed background refresh is attempted, if background refresh is
+// enabled. Disabling this value allows for testing the background fetch
+// capability independent of the feed background refresh codepaths.
+bool IsAttemptFeedBackgroundRefreshEnabled();
+
 // Saves the current value for feature `kEnableFeedBackgroundRefresh`. This call
 // DCHECKs on the availability of `base::FeatureList`.
 void SaveFeedBackgroundRefreshEnabledForNextColdStart();
+
+// Returns true if the user should receive a local notification when a feed
+// background refresh is completed. Background refresh completion notifications
+// are only compiled into non-release versions.
+bool IsFeedBackgroundRefreshCompletedNotificationEnabled();
 
 // Whether the Following feed should also be refreshed in the background.
 bool IsFollowingFeedBackgroundRefreshEnabled();
@@ -62,8 +72,13 @@ bool IsServerDrivenBackgroundRefreshScheduleEnabled();
 // background refresh.
 bool IsRecurringBackgroundRefreshScheduleEnabled();
 
-// The earliest interval to refresh if server value is not used.
+// The earliest interval to refresh if server value is not used. This value is
+// an input into the DiscoverFeedService.
 double GetBackgroundRefreshIntervalInSeconds();
+
+// If greater than zero, this value should be used to completely override the
+// earliest begin date provided by the DiscoverFeedService.
+double GetBackgroundRefreshIntervalOverrideInSeconds();
 
 // Returns the background refresh max age in seconds.
 double GetBackgroundRefreshMaxAgeInSeconds();
