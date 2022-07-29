@@ -211,11 +211,7 @@ void AttemptRestartInternal(IgnoreUnloadHandlers ignore_unload_handlers) {
     AttemptExit();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-}  // namespace
-
-#if !BUILDFLAG(IS_ANDROID)
 void MarkAsCleanShutdown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Tracks profiles that have pending write of the exit type.
@@ -240,27 +236,6 @@ void MarkAsCleanShutdown() {
     }
   }
 }
-#endif
-
-void AttemptExitInternal(bool try_to_quit_application) {
-  // On Mac, the platform-specific part handles setting this.
-#if !BUILDFLAG(IS_MAC)
-  if (try_to_quit_application)
-    browser_shutdown::SetTryingToQuit(true);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  OnClosingAllBrowsers(true);
-#endif
-
-  g_browser_process->platform_part()->AttemptExit(try_to_quit_application);
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-void CloseAllBrowsersAndQuit() {
-  browser_shutdown::SetTryingToQuit(true);
-  CloseAllBrowsers();
-}
 
 void ShutdownIfNoBrowsers() {
   if (GetTotalBrowserCount() > 0)
@@ -278,6 +253,30 @@ void ShutdownIfNoBrowsers() {
 
   browser_shutdown::NotifyAndTerminate(true /* fast_path */);
   OnAppExiting();
+}
+
+#endif
+
+void AttemptExitInternal(bool try_to_quit_application) {
+  // On Mac, the platform-specific part handles setting this.
+#if !BUILDFLAG(IS_MAC)
+  if (try_to_quit_application)
+    browser_shutdown::SetTryingToQuit(true);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  OnClosingAllBrowsers(true);
+#endif
+
+  g_browser_process->platform_part()->AttemptExit(try_to_quit_application);
+}
+
+}  // namespace
+
+#if !BUILDFLAG(IS_ANDROID)
+void CloseAllBrowsersAndQuit() {
+  browser_shutdown::SetTryingToQuit(true);
+  CloseAllBrowsers();
 }
 
 void CloseAllBrowsers() {
