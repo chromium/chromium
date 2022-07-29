@@ -79,6 +79,10 @@ static_library("utility") {
     ]
   }
 
+  if (!is_ios && !is_android) {
+    deps += [ "//components/password_manager/services/password_strength:lib" ]
+  }
+
   if (is_mac) {
     deps += [ "//chrome/services/mac_notifications" ]
   }

@@ -362,7 +362,10 @@ static_library("browser") {
       "ui/weak_check_utility.cc",
       "ui/weak_check_utility.h",
     ]
-    deps += [ "//third_party/zxcvbn-cpp" ]
+    deps += [
+      "//components/password_manager/services/password_strength:service",
+      "//third_party/zxcvbn-cpp",
+    ]
   }
 
   if ((is_posix && !is_apple) || is_fuchsia) {
