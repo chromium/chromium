@@ -69,9 +69,6 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   DCHECK(sync_service_);
   password_sync_applied_setting_ =
       sync_util::IsPasswordSyncEnabled(sync_service_);
-  // Previously cached prefs are not needed anymore.
-  last_migration_version_setting_.reset();
-  last_migration_time_setting_.reset();
 }
 
 void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
@@ -86,39 +83,11 @@ void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
   password_sync_configured_setting_ = sync_util::IsPasswordSyncEnabled(sync);
 
   if (password_sync_configured_setting_ != password_sync_applied_setting_) {
-    UpdatePrefsToTriggerMigration();
+    prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
   } else {
-    RestoreMigrationPrefsFromCacheIfNeeded();
+    // The setting was changed back and forth, the migration is not needed.
+    prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
   }
-}
-
-void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
-    UpdatePrefsToTriggerMigration() {
-  // Cache old values.
-  last_migration_version_setting_ =
-      prefs_->GetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices);
-  last_migration_time_setting_ =
-      prefs_->GetDouble(prefs::kTimeOfLastMigrationAttempt);
-
-  // Set updated value.
-  prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 0);
-  prefs_->SetDouble(prefs::kTimeOfLastMigrationAttempt, 0.0);
-  prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, true);
-}
-
-void PasswordStoreBackendMigrationDecorator::PasswordSyncSettingsHelper::
-    RestoreMigrationPrefsFromCacheIfNeeded() {
-  // It's not possible to restore prefs if nothing is cached.
-  if (!last_migration_version_setting_.has_value() ||
-      !last_migration_time_setting_.has_value()) {
-    return;
-  }
-
-  prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
-                     last_migration_version_setting_.value());
-  prefs_->SetDouble(prefs::kTimeOfLastMigrationAttempt,
-                    last_migration_time_setting_.value());
-  prefs_->SetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange, false);
 }
 
 void PasswordStoreBackendMigrationDecorator::InitBackend(
@@ -147,8 +116,8 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
                                std::move(sync_enabled_or_disabled_cb),
                                std::move(completion));
 
-  // Only start the migration when launching the UPM which needs chrome-local
-  // data in the remote store. For shadow traffic, this doesn't matter.
+  // Attempt to start the migration only if the current experiment stage allows
+  // it and the user wasn't kicked out of the experiment.
   if (ShouldAttemptMigration(prefs_)) {
     migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
         built_in_backend_.get(), android_backend_.get(), prefs_);
@@ -282,7 +251,8 @@ void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
   sync_service->AddObserver(&sync_settings_helper_);
   active_backend_->OnSyncServiceInitialized(sync_service);
   if (migrator_) {
-    // The migrator exists only if prefs allow the migration.
+    // The migrator exists only if the current experiment stage allows it
+    // and the user wasn't kicked out of the experiment.
     DCHECK(ShouldAttemptMigration(prefs_));
     migrator_->OnSyncServiceInitialized(sync_service);
   }

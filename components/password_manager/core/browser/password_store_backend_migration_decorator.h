@@ -60,14 +60,6 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
     // syncer::SyncServiceObserver implementation.
     void OnStateChanged(syncer::SyncService* sync) override;
 
-    // Updates migration prefs to indicate that migration is needed because
-    // of password sync settings change and caches old pref values in case the
-    // user will change settings multiple times.
-    void UpdatePrefsToTriggerMigration();
-
-    // Restore prefs if the user changed the setting back and forth.
-    void RestoreMigrationPrefsFromCacheIfNeeded();
-
     // Pref service.
     const raw_ptr<PrefService> prefs_ = nullptr;
 
@@ -83,16 +75,6 @@ class PasswordStoreBackendMigrationDecorator : public PasswordStoreBackend {
     // |password_sync_configured_setting_| at the moment when the user is
     // changing sync settings. Updated when new settings take action.
     bool password_sync_applied_setting_ = false;
-
-    // Cached value of last migration version pref. May be used to restore the
-    // previously reset prefs when user changes settings multiple times before
-    // applying them.
-    absl::optional<int> last_migration_version_setting_;
-
-    // Cached value of last migration attempt time pref. May be used to restore
-    // the previously reset prefs when user changes settings multiple times
-    // before applying them.
-    absl::optional<double> last_migration_time_setting_;
   };
 
   // Implements PasswordStoreBackend interface.

@@ -129,17 +129,12 @@ class PasswordStoreBackendMigrationDecoratorTest : public testing::Test {
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncEnabled) {
   InitSyncService(/*is_password_sync_enabled=*/false);
-
-  // Set up pref to indicate that initial migration is finished.
-  prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-  prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt, 100);
+  EXPECT_FALSE(
+      prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 
   ChangeSyncSetting(/*is_password_sync_enabled=*/true);
 
-  // Since sync was enabled migration prefs should be reset.
-  EXPECT_EQ(0, prefs().GetInteger(
-                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
-  EXPECT_EQ(0.0, prefs().GetDouble(prefs::kTimeOfLastMigrationAttempt));
+  // Since sync was enabled the migration pref should be updated.
   EXPECT_EQ(true,
             prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 }
@@ -147,18 +142,12 @@ TEST_F(PasswordStoreBackendMigrationDecoratorTest,
 TEST_F(PasswordStoreBackendMigrationDecoratorTest,
        MigrationPreferenceClearedWhenSyncDisabled) {
   InitSyncService(/*is_password_sync_enabled=*/true);
-
-  // Set up pref to indicate that initial migration is finished.
-  prefs().SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices, 2);
-  prefs().SetDouble(prefs::kTimeOfLastMigrationAttempt, 100);
+  EXPECT_FALSE(
+      prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 
   ChangeSyncSetting(/*is_password_sync_enabled=*/false);
-  RunUntilIdle();
 
-  // Since sync was disabled migration prefs should be reset.
-  EXPECT_EQ(0, prefs().GetInteger(
-                   prefs::kCurrentMigrationVersionToGoogleMobileServices));
-  EXPECT_EQ(0.0, prefs().GetDouble(prefs::kTimeOfLastMigrationAttempt));
+  // Since sync was disabled the migration pref should be updated.
   EXPECT_EQ(true,
             prefs().GetBoolean(prefs::kRequiresMigrationAfterSyncStatusChange));
 }

@@ -3209,12 +3209,21 @@ chromium-metrics-reviews@google.com.
     migration is finished.
   </summary>
   <token key="Type">
-    <variant name="InitialMigration"
+    <variant name="InitialMigration" summary="(obsolete)"/>
+    <variant name="InitialMigrationForSyncUsers"
         summary="to migrate passwords from build-in backend to android
-                 backend"/>
-    <variant name="RollingMigration"
-        summary="to migrate passwords from android backend to build-in
-                 backend"/>
+                 backend for sync users after enrolling into the UPM
+                 experiment"/>
+    <variant name="MigrationForLocalUsers"
+        summary="to migrate passwords between android backend and build-in
+                 backend to ensure consistency for local users"/>
+    <variant name="NonSyncableDataMigrationToAndroidBackend"
+        summary="to migrate non-syncable data to the android backend when
+                 password sync gets enabled"/>
+    <variant name="NonSyncableDataMigrationToBuiltInBackend"
+        summary="to migrate non-syncable data to the built-in backend when
+                 password sync gets disabled"/>
+    <variant name="RollingMigration" summary="(obsolete)"/>
   </token>
 </histogram>
 
@@ -3223,12 +3232,21 @@ chromium-metrics-reviews@google.com.
   <owner>fhorschig@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
   <summary>
-    Records whether {Type} migration finished successfully. Recorded when the
-    {Type} migration is finished.
+    Records success of {Type}. Recorded when the migration is finished.
   </summary>
   <token key="Type">
-    <variant name="InitialMigration" summary="initial"/>
-    <variant name="RollingMigration" summary="rolling"/>
+    <variant name="InitialMigration" summary="(obsolete)"/>
+    <variant name="InitialMigration2"
+        summary="migrating passwords from build-in backend to android backend
+                 after enrolling into the UPM experiment"/>
+    <variant name="NonSyncableDataMigrationToAndroidBackend"
+        summary="migrating non-syncable data to the android backend when
+                 password sync gets enabled"/>
+    <variant name="NonSyncableDataMigrationToBuiltInBackend"
+        summary="migrating non-syncable data to the built-in backend when
+                 password sync gets disabled"/>
+    <variant name="RollingMigration"
+        summary="migrating passwords from android backend to build-in backend"/>
   </token>
 </histogram>
 
