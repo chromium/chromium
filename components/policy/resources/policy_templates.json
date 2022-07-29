@@ -10254,6 +10254,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable policy atomic groups',
+        },
+        {
+          'value': False,
+          'caption': 'Disable policy atomic groups',
+        },
+      ],
       'example_value': True,
       'id': 584,
       'caption': '''Enables the concept of policy atomic groups''',
@@ -10707,6 +10717,16 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable submission of documents to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>',
+        },
+        {
+          'value': False,
+          'caption': 'Disable submission of documents to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>',
+        },
+      ],
       'deprecated': True,
       'example_value': True,
       'id': 109,
@@ -10762,6 +10782,16 @@
         'dynamic_refresh': False,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Disable print preview',
+        },
+        {
+          'value': False,
+          'caption': 'Enable print preview',
+        },
+      ],
       'example_value': False,
       'id': 117,
       'caption': '''Disable Print Preview''',
@@ -10781,6 +10811,21 @@
         'dynamic_refresh': True,
         'per_profile': True,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Show headers and footers in print preview',
+        },
+        {
+          'value': False,
+          'caption': 'Hide headers and footers in print preview',
+        },
+        {
+          'value': None,
+          'caption': 'Allow the user to decide',
+        },
+      ],
+      'default': None,
       'example_value': False,
       'id': 480,
       'caption': '''Print Headers and Footers''',
@@ -10859,6 +10904,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow online <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks to be performed',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent online <ph name="OCSP_CRL_LABEL">OCSP/CRL</ph> checks from being performed',
+        },
+      ],
       'example_value': False,
       'id': 129,
       'caption': '''Enable online OCSP/CRL checks''',
@@ -10908,6 +10963,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow SHA-1 signed certificates issued by local trust anchors',
+        },
+        {
+          'value': False,
+          'caption': 'Disallow SHA-1 signed certificates',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 340,
@@ -10929,6 +10994,16 @@
         'dynamic_refresh': True,
         'per_profile': False,
       },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow certificates lacking a subjectAlternativeName extension when issued by local trust anchors',
+        },
+        {
+          'value': False,
+          'caption': 'Disallow certificates lacking a subjectAlternativeName extension',
+        },
+      ],
       'deprecated': True,
       'example_value': False,
       'id': 366,
