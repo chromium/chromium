@@ -68,6 +68,7 @@ generate_grd("build_grd") {
   input_files = [
     "index.html",
     "main.css",
+    "images/expand_arrow.svg",
   ]
   manifest_files =
       filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
