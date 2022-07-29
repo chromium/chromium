@@ -22,6 +22,7 @@ js_type_check("closure_compile") {
 
 js_library("projector_browser_proxy") {
   sources = [ "communication/projector_browser_proxy.js" ]
+  externs_list = [ "communication/projector_app.externs.js" ]
 }
 
 js_library("message_types") {
@@ -55,6 +56,7 @@ js_library("trusted_app_closure_compile") {
     "//ui/webui/resources/js:post_message_api_request_handler.m",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
+  externs_list = [ "communication/projector_app.externs.js" ]
 }
 
 js_library("untrusted_annotator_closure_compile") {
@@ -73,6 +75,7 @@ js_library("untrusted_app_closure_compile") {
     "//ui/webui/resources/js:post_message_api_client.m",
     "//ui/webui/resources/js:post_message_api_request_handler.m",
   ]
+  externs_list = [ "communication/projector_app.externs.js" ]
 }
 
 generate_grd("build_untrusted_grd") {
