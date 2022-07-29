@@ -44,6 +44,7 @@ namespace {
 
 constexpr char kPlayStorePackageName[] = "com.android.vending";
 constexpr char kArcGmsPackageName[] = "org.chromium.arc.gms";
+constexpr char kArcHostVpnPackageName[] = "org.chromium.arc.hostvpn";
 
 constexpr char kManagedProvisioningPackageName[] =
     "com.android.managedprovisioning";
@@ -554,9 +555,11 @@ bool ArcNotificationManager::ShouldIgnoreNotification(
 
   // (b/186419166) Ignore notifications from managed provisioning and ARC GMS
   // Proxy.
+  // (b/147256449) Ignore notifications from facade VPN app
   if (data->package_name.has_value() &&
       (*data->package_name == kManagedProvisioningPackageName ||
-       *data->package_name == kArcGmsPackageName)) {
+       *data->package_name == kArcGmsPackageName ||
+       *data->package_name == kArcHostVpnPackageName)) {
     return true;
   }
 
