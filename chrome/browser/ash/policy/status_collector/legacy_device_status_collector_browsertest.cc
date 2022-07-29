@@ -120,6 +120,8 @@ namespace {
 
 using ::ash::disks::DiskMountManager;
 using ::base::test::ScopedChromeOSVersionInfo;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Return;
 using ::testing::ReturnRef;
 namespace cros_healthd = ::chromeos::cros_healthd::mojom;
@@ -859,7 +861,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     std::vector<storage::MountPoints::MountPointInfo> external_mount_points;
     storage::ExternalMountPoints::GetSystemInstance()->AddMountPointInfosTo(
         &external_mount_points);
-    EXPECT_FALSE(external_mount_points.empty());
+    EXPECT_THAT(external_mount_points, Not(IsEmpty()));
 
     // DiskMountManager takes ownership of the MockDiskMountManager.
     DiskMountManager::InitializeForTesting(mock_disk_mount_manager.release());
@@ -1305,8 +1307,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, StateKeptInPref) {
 }
 
 TEST_F(LegacyDeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
-  EXPECT_TRUE(profile_pref_service_.GetDictionary(prefs::kUserActivityTimes)
-                  ->DictEmpty());
+  EXPECT_THAT(profile_pref_service_.GetValueDict(prefs::kUserActivityTimes),
+              IsEmpty());
 
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
@@ -1319,8 +1321,8 @@ TEST_F(LegacyDeviceStatusCollectorTest, ActivityNotWrittenToProfilePref) {
 
   // Nothing should be written to profile pref service, because it is only used
   // for consumer reporting.
-  EXPECT_TRUE(profile_pref_service_.GetDictionary(prefs::kUserActivityTimes)
-                  ->DictEmpty());
+  EXPECT_THAT(profile_pref_service_.GetValueDict(prefs::kUserActivityTimes),
+              IsEmpty());
 }
 
 TEST_F(LegacyDeviceStatusCollectorTest, MaxStoredPeriods) {
@@ -1809,7 +1811,7 @@ TEST_F(LegacyDeviceStatusCollectorTest, TestVolumeInfo) {
     info.set_storage_free(size++);
     expected_volume_info.push_back(info);
   }
-  EXPECT_FALSE(expected_volume_info.empty());
+  EXPECT_THAT(expected_volume_info, Not(IsEmpty()));
 
   auto options = CreateEmptyDeviceStatusCollectorOptions();
   options->volume_info_fetcher =

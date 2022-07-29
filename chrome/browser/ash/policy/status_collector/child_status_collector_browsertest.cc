@@ -75,6 +75,8 @@ namespace {
 namespace em = ::enterprise_management;
 
 using ::base::Time;
+using ::testing::IsEmpty;
+using ::testing::Not;
 using ::testing::Return;
 
 // Time delta representing midnight 00:00.
@@ -547,8 +549,8 @@ TEST_F(ChildStatusCollectorTest, ReportingActivityTimesIdleTransitions) {
 }
 
 TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
-  EXPECT_TRUE(
-      pref_service()->GetDictionary(prefs::kUserActivityTimes)->DictEmpty());
+  EXPECT_THAT(pref_service()->GetValueDict(prefs::kUserActivityTimes),
+              IsEmpty());
   task_environment_.AdvanceClock(kHour);
 
   DeviceStateTransitions test_states[] = {
@@ -564,8 +566,8 @@ TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
       DeviceStateTransitions::kLeaveSessionActive};
   SimulateStateChanges(test_states,
                        sizeof(test_states) / sizeof(DeviceStateTransitions));
-  EXPECT_FALSE(
-      pref_service()->GetDictionary(prefs::kUserActivityTimes)->DictEmpty());
+  EXPECT_THAT(pref_service()->GetValueDict(prefs::kUserActivityTimes),
+              Not(IsEmpty()));
 
   // Process the list a second time after restarting the collector. It should be
   // able to count the active periods found by the original collector, because
@@ -615,8 +617,8 @@ TEST_F(ChildStatusCollectorTest, BeforeDayStart) {
   Time initial_time =
       Time::Now().LocalMidnight() + base::Days(1) + base::Hours(4);
   FastForwardTo(initial_time);
-  EXPECT_TRUE(
-      pref_service()->GetDictionary(prefs::kUserActivityTimes)->DictEmpty());
+  EXPECT_THAT(pref_service()->GetValueDict(prefs::kUserActivityTimes),
+              IsEmpty());
 
   DeviceStateTransitions test_states[] = {
       DeviceStateTransitions::kEnterSessionActive,
