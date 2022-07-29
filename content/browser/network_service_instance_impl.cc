@@ -32,6 +32,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/buildflags.h"
 #include "content/browser/first_party_sets/first_party_sets_handler_impl.h"
 #include "content/browser/net/http_cache_backend_file_operations_factory.h"
 #include "content/browser/net/socket_broker_impl.h"
@@ -834,12 +835,14 @@ void CreateNetworkContextInNetworkService(
             .InitWithNewPipeAndPassReceiver());
   }
 
-#if BUILDFLAG(IS_ANDROID)
-
-  if (sandbox::policy::features::IsNetworkSandboxEnabled() &&
+#if BUILDFLAG(USE_SOCKET_BROKER)
+  if (GetContentClient()->browser()->ShouldSandboxNetworkService() &&
       !params->socket_broker) {
     params->socket_broker = g_client->BindSocketBroker();
   }
+#endif  // BUILDFLAG(USE_SOCKET_BROKER)
+
+#if BUILDFLAG(IS_ANDROID)
   // On Android, if a cookie_manager pending receiver was passed then migration
   // should not be attempted as the cookie file is already being accessed by the
   // browser instance.

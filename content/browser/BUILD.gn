@@ -23,6 +23,14 @@ import("//printing/buildflags/buildflags.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  use_socket_broker = is_android
+
+  flags = [ "USE_SOCKET_BROKER=$use_socket_broker" ]
+}
+
 source_set("browser") {
   # Only the public target should depend on this. All other targets (even
   # internal content ones) should depend on the public one.
@@ -50,6 +58,7 @@ source_set("browser") {
   ldflags = []
 
   deps = [
+    ":buildflags",
     "//base",
     "//base:base_static",
     "//base:clang_profiling_buildflags",
