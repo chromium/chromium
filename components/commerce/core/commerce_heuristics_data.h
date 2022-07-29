@@ -6,6 +6,7 @@
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_HEURISTICS_DATA_H_
 
 #include <string>
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -87,6 +88,9 @@ class CommerceHeuristicsData {
 
   // Get the cart extraction script.
   std::string GetCartProductExtractionScript();
+
+  // Get the time delay between discount fetches.
+  absl::optional<base::TimeDelta> GetDiscountFetchDelay();
 
  private:
   friend class CommerceHeuristicsDataTest;

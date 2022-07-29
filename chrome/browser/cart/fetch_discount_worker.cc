@@ -154,7 +154,7 @@ void FetchDiscountWorker::ReadyToFetch(
     }
   }
   if (!has_partner_merchant) {
-    Start(commerce::kDiscountFetchDelayParam.Get());
+    Start(commerce::GetDiscountFetchDelay());
     return;
   }
   backend_task_runner_->PostTask(
@@ -310,6 +310,6 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
           ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
           false)) {
     // Continue to work.
-    Start(commerce::kDiscountFetchDelayParam.Get());
+    Start(commerce::GetDiscountFetchDelay());
   }
 }

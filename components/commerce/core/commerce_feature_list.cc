@@ -248,4 +248,17 @@ bool isContextualConsentEnabled() {
          kContextualConsentShowOnSRP.Get();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+base::TimeDelta GetDiscountFetchDelay() {
+  auto delay_from_component =
+      commerce_heuristics::CommerceHeuristicsData::GetInstance()
+          .GetDiscountFetchDelay();
+  if (delay_from_component.has_value() &&
+      kDiscountFetchDelayParam.Get() ==
+          kDiscountFetchDelayParam.default_value) {
+    return *delay_from_component;
+  }
+  return kDiscountFetchDelayParam.Get();
+}
+#endif
 }  // namespace commerce
