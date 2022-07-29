@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "build/build_config.h"
 
@@ -45,6 +46,7 @@ struct PageCharacteristics {
   std::atomic<size_t> size;
   std::atomic<size_t> shift;
 };
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 extern PageCharacteristics page_characteristics;
 
 }  // namespace partition_alloc::internal
