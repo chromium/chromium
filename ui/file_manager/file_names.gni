@@ -341,6 +341,7 @@ generated_js_files = [
 
 # Test files:
 unittest_files = [
+  "file_manager/common/js/async_util_unittest.js",
   "file_manager/common/js/util_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/file_type_unittest.js",
