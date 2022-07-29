@@ -299,9 +299,9 @@ void ClearDictationOfflineNudgePref(const std::string& locale) {
 }
 
 absl::optional<bool> GetDictationOfflineNudgePref(const std::string& locale) {
-  const base::Value* offline_nudges = GetActiveUserPrefs()->GetDictionary(
+  const base::Value::Dict& offline_nudges = GetActiveUserPrefs()->GetValueDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
-  return offline_nudges->FindBoolPath(locale);
+  return offline_nudges.FindBool(locale);
 }
 
 void AssertSodaNotificationShownForDictation(
