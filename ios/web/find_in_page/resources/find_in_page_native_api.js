@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Section} from '//ios/web/find_in_page/resources/find_in_page.js';
+
 /**
  * Based on code from the Google iOS app.
  *
@@ -16,9 +18,9 @@
  */
 __gCrWeb.findInPage = {};
 
- // Store findInPage namespace object in a global __gCrWeb object referenced by
- // a string, so it does not get renamed by closure compiler during the
- // minification.
+// Store findInPage namespace object in a global __gCrWeb object referenced by
+// a string, so it does not get renamed by closure compiler during the
+// minification.
 __gCrWeb['findInPage'] = __gCrWeb.findInPage;
 
 /**
@@ -27,23 +29,6 @@ __gCrWeb['findInPage'] = __gCrWeb.findInPage;
  * @type {string}
  */
 let allText_ = '';
-
-/**
- * A Section contains the info of one TEXT node in the |allText_|. The node's
- * textContent is [begin, end) of |allText_|.
- */
-class Section {
-  /**
-   * @param {number} begin Beginning index of |node|.textContent in |allText_|.
-   * @param {number} end Ending index of |node|.textContent in |allText_|.
-   * @param {Node} node The TEXT Node of this section.
-   */
-  constructor(begin, end, node) {
-    this.begin = begin;
-    this.end = end;
-    this.node = node;
-  }
-}
 
 /**
  * All the sections_ in |allText_|.
@@ -323,14 +308,16 @@ let searchInProgress_ = false;
  * Whether or not search state variables are in a clean empty state.
  * @type {boolean}
  */
- let searchStateIsClean_ = true;
+let searchStateIsClean_ = true;
 
 /**
  * Node names that are not going to be processed.
  * @type {Object}
  */
-const IGNORE_NODE_NAMES = new Set(['SCRIPT', 'STYLE', 'EMBED',
-  'OBJECT', 'SELECT', 'TEXTAREA', 'IFRAME', 'NOSCRIPT']);
+const IGNORE_NODE_NAMES = new Set([
+  'SCRIPT', 'STYLE', 'EMBED', 'OBJECT', 'SELECT', 'TEXTAREA', 'IFRAME',
+  'NOSCRIPT'
+]);
 
 /**
  * Class name of CSS element that highlights matches with yellow.
@@ -367,9 +354,9 @@ const REGEX_ESCAPER = /([.?*+^$[\]\\(){}|-])/g;
  * currently selected match.
  */
 function getCurrentSelectedMatch_() {
-   if (selectedMatchIndex_ < 0) {
+  if (selectedMatchIndex_ < 0) {
     return null;
-   }
+  }
   return __gCrWeb.findInPage.matches[selectedMatchIndex_];
 };
 
@@ -403,12 +390,12 @@ class Timer {
   }
 }
 
- /**
-  * Looks for a phrase in the DOM.
-  * @param {string} string Phrase to look for like "ben franklin".
-  * @param {number} timeout Maximum time to run.
-  * @return {number} that represents the total matches found.
-  */
+/**
+ * Looks for a phrase in the DOM.
+ * @param {string} string Phrase to look for like "ben franklin".
+ * @param {number} timeout Maximum time to run.
+ * @return {number} that represents the total matches found.
+ */
 __gCrWeb.findInPage.findString = function(string, timeout) {
   // Enable findInPage module if hasn't been done yet.
   if (!__gCrWeb.findInPage.hasInitialized) {
@@ -486,8 +473,8 @@ __gCrWeb.findInPage.pumpSearch = function(timeout) {
 
     // Build up |allText_| and |sections_|.
     if (node.nodeType == 3 && node.parentNode) {
-      sections_.push(new Section(allText_.length, allText_.length +
-          node.textContent.length, node));
+      sections_.push(new Section(
+          allText_.length, allText_.length + node.textContent.length, node));
       allText_ += node.textContent.toLowerCase();
     }
 
@@ -520,8 +507,9 @@ __gCrWeb.findInPage.pumpSearch = function(timeout) {
       // Create all PartialMatches of current Match.
       while (true) {
         let section = sections_[sectionsIndex_];
-        partialMatches_.push(new PartialMatch(matchId_, Math.max(
-            section.begin, begin), Math.min(section.end, end)));
+        partialMatches_.push(new PartialMatch(
+            matchId_, Math.max(section.begin, begin),
+            Math.min(section.end, end)));
         // If current Match.end exceeds current Section.end, process current
         // Section and move to next Section.
         if (section.end < end) {
@@ -655,7 +643,7 @@ __gCrWeb.findInPage.selectAndScrollToVisibleMatch = function(index) {
     // There are no longer that many visible matches.
     // Select the last match if moving to previous match.
     // Select the first currently visible match if moving to next match.
-    index = index > selectedVisibleMatchIndex_ ? 0 : visibleMatchCount-1;
+    index = index > selectedVisibleMatchIndex_ ? 0 : visibleMatchCount - 1;
   }
 
   let total_match_index = 0;
@@ -689,16 +677,18 @@ __gCrWeb.findInPage.selectAndScrollToVisibleMatch = function(index) {
   if (match.nodes[0].previousSibling) {
     nodes.unshift([match.nodes[0].previousSibling.textContent]);
   }
-  if (match.nodes[match.nodes.length-1].nextSibling) {
-    nodes.push([match.nodes[match.nodes.length-1].nextSibling.textContent]);
+  if (match.nodes[match.nodes.length - 1].nextSibling) {
+    nodes.push([match.nodes[match.nodes.length - 1].nextSibling.textContent]);
   }
-  let contextString = nodes.map(function(node) {
-    if (node.textContent) {
-      return node.textContent;
-    } else {
-      return node;
-    }
-  }).join("");
+  let contextString = nodes
+                          .map(function(node) {
+                            if (node.textContent) {
+                              return node.textContent;
+                            } else {
+                              return node;
+                            }
+                          })
+                          .join('');
 
   return {
     matches: visibleMatchCount,
@@ -716,7 +706,7 @@ function scrollToCurrentlySelectedMatch_() {
     return;
   }
 
-  match.nodes[0].scrollIntoView({block: "center", inline: "center"});
+  match.nodes[0].scrollIntoView({block: 'center', inline: 'center'});
 };
 
 /**

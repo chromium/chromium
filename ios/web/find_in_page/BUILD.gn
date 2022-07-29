@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/public/js_messaging/compile_ts.gni")
 import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("find_in_page") {
@@ -31,11 +32,17 @@ source_set("find_in_page") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+compile_ts("compile_ts") {
+  sources = [ "resources/find_in_page.ts" ]
+}
+
 optimize_js("find_in_page_js") {
   visibility = [ ":find_in_page" ]
 
-  primary_script = "resources/find_in_page.js"
-  sources = [ "resources/find_in_page.js" ]
+  primary_script = "resources/find_in_page_native_api.js"
+  sources = [ "resources/find_in_page_native_api.js" ]
+
+  deps = [ ":compile_ts" ]
 }
 
 optimize_js("find_in_page_event_listeners_js") {

@@ -14,7 +14,7 @@
 #endif
 
 namespace {
-const char kScriptName[] = "find_in_page";
+const char kScriptName[] = "find_in_page_native_api";
 const char kEventListenersScriptName[] = "find_in_page_event_listeners";
 
 // Timeout for the find within JavaScript in milliseconds.
