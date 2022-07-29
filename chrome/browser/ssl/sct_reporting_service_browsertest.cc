@@ -331,15 +331,17 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
     auto http_response =
         std::make_unique<net::test_server::BasicHttpResponse>();
 
-    if (error_count_ > 0) {
-      http_response->set_code(net::HTTP_TOO_MANY_REQUESTS);
-      --error_count_;
-    } else {
-      http_response->set_code(net::HTTP_OK);
-    }
-
     if (request.relative_url.find("hashdance") == std::string::npos) {
       // Request is a report.
+
+      // Check if the server should just return an error for the full report
+      // request, otherwise just return OK.
+      if (error_count_ > 0) {
+        http_response->set_code(net::HTTP_TOO_MANY_REQUESTS);
+        --error_count_;
+      } else {
+        http_response->set_code(net::HTTP_OK);
+      }
       return http_response;
     }
 
@@ -422,7 +424,8 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
 
   base::OnceClosure requests_closure_;
 
-  // How many times the report server should return an error before succeeding.
+  // How many times the report server should return an error before succeeding,
+  // specific to full report requests.
   size_t error_count_ = 0;
 };
 
@@ -935,6 +938,34 @@ IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
       GetLastSeenReport().certificate_report(0).context().origin().hostname());
 
   // Check that the report count got incremented.
+  int report_count = g_browser_process->local_state()->GetInteger(
+      prefs::kSCTAuditingHashdanceReportCount);
+  EXPECT_EQ(report_count, 1);
+}
+
+// Test that report count isn't incremented when retrying a single audit report.
+// Regression test for crbug.com/1348313.
+IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
+                       HashdanceReportCountNotIncrementedOnRetry) {
+  // Don't succeed for max_retries+1, for the *full report sending*, but the
+  // hashdance lookup query will always succeed.
+  set_error_count(16);
+
+  // Visit an HTTPS page and wait for the report to be sent.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server()->GetURL("hashdance.test", "/")));
+
+  // Wait until the reporter completes 32 requests (16 lookup queries which
+  // succeed, and 16 full report requests which fail).
+  WaitForRequests(32);
+
+  // Check that 32 requests were seen and contains the expected details.
+  EXPECT_EQ(32u, requests_seen());
+  EXPECT_EQ(
+      "hashdance.test",
+      GetLastSeenReport().certificate_report(0).context().origin().hostname());
+
+  // Check that the report was only counted once towards the max-reports limit.
   int report_count = g_browser_process->local_state()->GetInteger(
       prefs::kSCTAuditingHashdanceReportCount);
   EXPECT_EQ(report_count, 1);

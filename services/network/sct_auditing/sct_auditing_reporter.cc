@@ -214,7 +214,8 @@ SCTAuditingReporter::SCTAuditingReporter(
     mojom::URLLoaderFactory* url_loader_factory,
     ReporterUpdatedCallback update_callback,
     ReporterDoneCallback done_callback,
-    std::unique_ptr<net::BackoffEntry> persisted_backoff_entry)
+    std::unique_ptr<net::BackoffEntry> persisted_backoff_entry,
+    bool counted_towards_report_limit)
     : owner_network_context_(owner_network_context),
       reporter_key_(reporter_key),
       report_(std::move(report)),
@@ -223,7 +224,8 @@ SCTAuditingReporter::SCTAuditingReporter(
       configuration_(std::move(configuration)),
       update_callback_(std::move(update_callback)),
       done_callback_(std::move(done_callback)),
-      max_retries_(kMaxRetries) {
+      max_retries_(kMaxRetries),
+      counted_towards_report_limit_(counted_towards_report_limit) {
   // Clone the URLLoaderFactory to avoid any dependencies on its lifetime. The
   // Reporter instance can maintain its own copy.
   // Relatively few Reporters are expected to exist at a time (due to sampling
@@ -266,16 +268,17 @@ void SCTAuditingReporter::Start() {
   }
 
   // Entrypoint for checking whether the max-reports limit has been reached.
-  // This should only get called once for the lifetime of the Reporter.
-  // TODO(crbug.com/1144205): Once reports are persisted to disk, the Reporter
-  // state should include whether it has been "counted" yet, otherwise if a
-  // Reporter gets persisted and restored many times it would cause the report
-  // cap to trigger. This can likely just be a boolean flag on the Reporter and
-  // the persisted state -- if `true`, this check (and incrementing the report
-  // count) can be skipped.
-  owner_network_context_->CanSendSCTAuditingReport(
-      base::BindOnce(&SCTAuditingReporter::OnCheckReportAllowedStatusComplete,
-                     weak_factory_.GetWeakPtr()));
+  // This should only get called once for the lifetime of the Reporter. If the
+  // report has already been counted towards the max-reports limit, we skip the
+  // check (and don't increment the report count later when trying to send the
+  // full report).
+  if (counted_towards_report_limit_) {
+    OnCheckReportAllowedStatusComplete(true);
+  } else {
+    owner_network_context_->CanSendSCTAuditingReport(
+        base::BindOnce(&SCTAuditingReporter::OnCheckReportAllowedStatusComplete,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 void SCTAuditingReporter::OnCheckReportAllowedStatusComplete(bool allowed) {
@@ -495,8 +498,16 @@ void SCTAuditingReporter::OnSendLookupQueryComplete(
   }
 
   // The server does not know about this SCT, and it should. Notify the
-  // embedder and start sending the full report.
-  owner_network_context_->OnNewSCTAuditingReportSent();
+  // embedder (ensuring we only do this once per report) and then start sending
+  // the full report.
+  if (!counted_towards_report_limit_) {
+    owner_network_context_->OnNewSCTAuditingReportSent();
+    // Mark this reporter as already counted towards the max report limit. This
+    // prevents counting the same report multiple times in case of retries (and
+    // retries across browser restarts with persisted reports).
+    counted_towards_report_limit_ = true;
+  }
+
   RecordLookupQueryResult(LookupQueryResult::kSCTSuffixNotFound);
   SendReport();
 }

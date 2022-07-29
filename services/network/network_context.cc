@@ -1583,6 +1583,14 @@ void NetworkContext::OnCTLogListUpdated(
 
 void NetworkContext::CanSendSCTAuditingReport(
     base::OnceCallback<void(bool)> callback) {
+  // If the NetworkContextClient hasn't been set yet or has disconnected for
+  // some reason, just return `false`. (One case where this could occur is when
+  // restarting SCTAuditingReporter instances loaded form disk at startup -- see
+  // crbug.com/1347180 for more details on that case.)
+  if (!client_) {
+    std::move(callback).Run(false);
+    return;
+  }
   client_->OnCanSendSCTAuditingReport(std::move(callback));
 }
 

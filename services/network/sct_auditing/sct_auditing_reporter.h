@@ -143,7 +143,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
       mojom::URLLoaderFactory* url_loader_factory,
       ReporterUpdatedCallback update_callback,
       ReporterDoneCallback done_callback,
-      std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr);
+      std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr,
+      bool counted_towards_report_limit = false);
   ~SCTAuditingReporter();
 
   SCTAuditingReporter(const SCTAuditingReporter&) = delete;
@@ -159,6 +160,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   const absl::optional<SCTHashdanceMetadata>& sct_hashdance_metadata() {
     return sct_hashdance_metadata_;
   }
+  bool counted_towards_report_limit() { return counted_towards_report_limit_; }
 
   static void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
 
@@ -194,6 +196,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
 
   int max_retries_;
+
+  // Whether the report has been counted towards the max-reports limit. This is
+  // used to determine whether to notify the embedder that a new report is being
+  // sent by the client, to avoid overcounting how many unique reports have been
+  // sent. (Without this flag, this could happen on retries if the hashdance
+  // lookup query succeeds but then the full report upload fails.)
+  bool counted_towards_report_limit_;
 
   base::WeakPtrFactory<SCTAuditingReporter> weak_factory_{this};
 };
