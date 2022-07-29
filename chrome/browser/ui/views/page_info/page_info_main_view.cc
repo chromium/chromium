@@ -144,9 +144,8 @@ void PageInfoMainView::EnsureCookieInfo() {
     const std::u16string& tooltip =
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
 
-    // Create the cookie button, leaving the secondary text blank since the
-    // cookie count is not yet known.
     if (base::FeatureList::IsEnabled(page_info::kPageInfoCookiesSubpage)) {
+      // Create a simple cookie button, that opens a cookies subpage.
       cookie_button_ = site_settings_view_->AddChildView(std::make_unique<
                                                          PageInfoHoverButton>(
           base::BindRepeating(&PageInfoNavigationHandler::OpenCookiesPage,
@@ -156,6 +155,8 @@ void PageInfoMainView::EnsureCookieInfo() {
           tooltip, std::u16string(),
           PageInfoViewFactory::GetOpenSubpageIcon()));
     } else {
+      // Create the cookie button, leaving the secondary text blank since the
+      // cookie count is not yet known.
       cookie_button_ = site_settings_view_->AddChildView(std::make_unique<
                                                          PageInfoHoverButton>(
           base::BindRepeating(

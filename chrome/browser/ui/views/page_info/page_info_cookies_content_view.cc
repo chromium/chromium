@@ -54,7 +54,36 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
                                          settings, &offset);
   cookies_description_label->SetText(text);
 
+  //  TODO(crbug.com/1346305): Remove after implementation of data flow.
+  EnsureCookieInfo();
+
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 PageInfoCookiesContentView::~PageInfoCookiesContentView() = default;
+
+void PageInfoCookiesContentView::EnsureCookieInfo() {
+  if (cookies_dialog_button_ == nullptr) {
+    // Get the icon.
+    PageInfo::PermissionInfo info;
+    info.type = ContentSettingsType::COOKIES;
+    info.setting = CONTENT_SETTING_ALLOW;
+    const ui::ImageModel icon = PageInfoViewFactory::GetPermissionIcon(info);
+
+    const std::u16string& tooltip =
+        l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_TOOLTIP);
+
+    // Create the cookie button, leaving the secondary text blank since the
+    // site count is not yet known.
+    // TODO(crbug.com/1346305): Change to correct final string.
+    cookies_dialog_button_ = AddChildView(std::make_unique<PageInfoHoverButton>(
+        base::BindRepeating(
+            [](PageInfoCookiesContentView* view) {
+              view->presenter_->OpenCookiesDialog();
+            },
+            this),
+        icon, IDS_PAGE_INFO_COOKIES, /*secondary_text=*/u"",
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
+        tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
+  }
+}
