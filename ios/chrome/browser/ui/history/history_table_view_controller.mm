@@ -469,6 +469,10 @@ const CGFloat kButtonHorizontalPadding = 30.0;
     [self hideScrim];
   }
 
+  if (text.length != 0) {
+    self.searchInProgress = YES;
+  }
+
   [self showHistoryMatchingQuery:text];
 }
 
