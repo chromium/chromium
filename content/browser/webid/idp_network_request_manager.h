@@ -178,6 +178,11 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                    DownloadCallback download_callback,
                    size_t max_download_size);
 
+  // Called when download initiated by DownloadUrl() completes.
+  void OnDownloadedUrl(std::unique_ptr<network::SimpleURLLoader> url_loader,
+                       DownloadCallback callback,
+                       std::unique_ptr<std::string> response_body);
+
   std::unique_ptr<network::SimpleURLLoader> CreateUncredentialedUrlLoader(
       const GURL& url,
       bool send_referrer,
@@ -195,6 +200,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   network::mojom::ClientSecurityStatePtr client_security_state_;
+
+  base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };
 
 }  // namespace content
