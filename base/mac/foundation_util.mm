@@ -28,8 +28,6 @@
 extern "C" {
 CFTypeID SecKeyGetTypeID();
 #if !BUILDFLAG(IS_IOS)
-CFTypeID SecACLGetTypeID();
-CFTypeID SecTrustedApplicationGetTypeID();
 // The NSFont/CTFont toll-free bridging is broken before 10.15.
 // http://www.openradar.me/15341349 rdar://15341349
 //
@@ -408,12 +406,10 @@ CFCastStrict<CTFontRef>(const CFTypeRef& cf_val) {
 #endif
 
 #if !BUILDFLAG(IS_IOS)
-CF_CAST_DEFN(SecACL)
 CF_CAST_DEFN(SecAccessControl)
 CF_CAST_DEFN(SecCertificate)
 CF_CAST_DEFN(SecKey)
 CF_CAST_DEFN(SecPolicy)
-CF_CAST_DEFN(SecTrustedApplication)
 #endif
 
 #undef CF_CAST_DEFN

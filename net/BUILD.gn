@@ -1467,6 +1467,11 @@ component("net") {
       "Security.framework",
       "SystemConfiguration.framework",
     ]
+
+    # TODO(crbug.com/1348251) Disable SecKeychain is deprecated errors.
+    if (target_os == "ios") {
+      cflags += [ "-Wno-deprecated-declarations" ]
+    }
   }
 
   if (is_ios) {
