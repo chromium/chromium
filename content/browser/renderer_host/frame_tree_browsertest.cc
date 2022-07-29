@@ -1169,6 +1169,29 @@ class FencedFrameTreeBrowserTest
     return web_contents()->GetPrimaryMainFrame();
   }
 
+  // Checking the count of NavigationEntries for fenced frame.
+  void CheckNavigationEntryCount(FrameTreeNode* root,
+                                 FrameTreeNode* fenced_frame,
+                                 int shadowdom_cnt,
+                                 int mparch_cnt) const {
+    // Wait for web content to stop loading.
+    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+    if (GetParam() ==
+        blink::features::FencedFramesImplementationType::kShadowDOM) {
+      // ShadowDOM fenced frames have the same NavigationController as the
+      // top-level frame, therefore checking `root->navigator().controller()`.
+      EXPECT_EQ(shadowdom_cnt, root->navigator().controller().GetEntryCount());
+      // Sanity check since root's and fenced_frame's controllers are the same.
+      EXPECT_EQ(root->navigator().controller().GetEntryCount(),
+                fenced_frame->navigator().controller().GetEntryCount());
+    } else {
+      // MPArch fenced frame has its own NavigationController so checking
+      // `fenced_frame->navigator().controller()`.
+      EXPECT_EQ(mparch_cnt,
+                fenced_frame->navigator().controller().GetEntryCount());
+    }
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::Lock requests_lock_;
@@ -2567,20 +2590,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL fenced_frame_url_1 =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
 
-  // ShadowDOM fenced frames have the same NavigationController as the top-level
-  // frame, therefore the count here is 1 because of the navigation of the
-  // top-level frame. MPArch fenced frame has its own NavigationController and
-  // the count is 1 due to the fenced frame's navigation based on `src`
-  // attribute.
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
-    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
-              fenced_frame->navigator().controller().GetEntryCount());
-  } else {
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-    EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
-  }
+  CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/1,
+                            /*mparch_cnt=*/1);
   EXPECT_EQ(fenced_frame_url_1,
             fenced_frame->current_frame_host()->GetLastCommittedURL());
 
@@ -2624,11 +2635,10 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   // MPArch fenced frame has its own NavigationController which is not retained
   // when the top-level page navigates. Therefore going back lands on the
   // initial navigation in the Fenced Frame.
+  CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/2,
+                            /*mparch_cnt=*/1);
   if (GetParam() ==
       blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ(2, root->navigator().controller().GetEntryCount());
-    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
-              fenced_frame->navigator().controller().GetEntryCount());
     if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
       EXPECT_EQ(fenced_frame_url_2,
                 fenced_frame->current_frame_host()->GetLastCommittedURL());
@@ -2636,8 +2646,6 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
       EXPECT_EQ(fenced_frame_url_1,
                 fenced_frame->current_frame_host()->GetLastCommittedURL());
   } else {
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-    EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
     EXPECT_EQ(fenced_frame_url_1,
               fenced_frame->current_frame_host()->GetLastCommittedURL());
   }
@@ -2746,19 +2754,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL fenced_frame_url_1 =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
 
-  // ShadowDOM fenced frames have the same NavigationController as the top-level
-  // frame, therefore checking `root->navigator().controller()` while MPArch
-  // fenced frame has its own NavigationController so checking
-  // `fenced_frame->navigator().controller()`.
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
-    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
-              fenced_frame->navigator().controller().GetEntryCount());
-  } else {
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-    EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
-  }
+  CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/1,
+                            /*mparch_cnt=*/1);
   EXPECT_EQ(fenced_frame_url_1,
             fenced_frame->current_frame_host()->GetLastCommittedURL());
   DisableBackForwardCacheForTesting(shell()->web_contents(),
@@ -2791,15 +2788,13 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   // MPArch fenced frame has its own NavigationController which is not retained
   // when the top-level page navigates. Therefore going back lands on the
   // initial fenced frame without any navigation.
+  CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/2,
+                            /*mparch_cnt=*/1);
   if (GetParam() ==
       blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ(2, root->navigator().controller().GetEntryCount());
-    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
-              fenced_frame->navigator().controller().GetEntryCount());
     EXPECT_EQ(fenced_frame_url_1,
               fenced_frame->current_frame_host()->GetLastCommittedURL());
   } else {
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_TRUE(
         !fenced_frame->navigator().controller().GetLastCommittedEntry() ||
         fenced_frame->navigator()
@@ -2833,19 +2828,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
   GURL fenced_frame_url_1 =
       https_server()->GetURL("a.test", "/fenced_frames/title1.html");
 
-  // ShadowDOM fenced frames have the same NavigationController as the top-level
-  // frame, therefore checking `root->navigator().controller()` while MPArch
-  // fenced frame has its own NavigationController so checking
-  // `fenced_frame->navigator().controller()`.
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ(1, root->navigator().controller().GetEntryCount());
-    EXPECT_EQ(root->navigator().controller().GetEntryCount(),
-              fenced_frame->navigator().controller().GetEntryCount());
-  } else {
-    EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
-    EXPECT_EQ(1, fenced_frame->navigator().controller().GetEntryCount());
-  }
+  CheckNavigationEntryCount(root, fenced_frame, /*shadowdom_cnt=*/1,
+                            /*mparch_cnt=*/1);
   EXPECT_EQ(fenced_frame_url_1,
             fenced_frame->current_frame_host()->GetLastCommittedURL());
 
