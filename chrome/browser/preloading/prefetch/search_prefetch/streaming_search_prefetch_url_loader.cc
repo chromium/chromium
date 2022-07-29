@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -133,6 +134,7 @@ void StreamingSearchPrefetchURLLoader::SetUpForwardingClient(
   DCHECK(!streaming_prefetch_request_);
   // Bind to the content/ navigation code.
   DCHECK(!receiver_.is_bound());
+  is_activated_ = true;
   if (network_url_loader_)
     network_url_loader_->SetPriority(resource_request.priority, -1);
 
@@ -191,6 +193,17 @@ void StreamingSearchPrefetchURLLoader::OnReceiveEarlyHints(
 void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body) {
+  bool can_be_served = CanServePrefetchRequest(head->headers);
+
+  if (is_activated_) {
+    std::string histogram_name =
+        "Omnibox.SearchPrefetch.ReceivedServableResponse.";
+    histogram_name.append(is_in_fallback_ ? "Fallback." : "Initial.");
+    histogram_name.append(
+        (navigation_prefetch_ ? "NavigationPrefetch" : "SuggestionPrefetch"));
+    base::UmaHistogramBoolean(histogram_name, can_be_served);
+  }
+
   // Once we are using the fallback path, just forward calls.
   if (is_in_fallback_) {
     DCHECK(!streaming_prefetch_request_);
@@ -198,8 +211,6 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
     forwarding_client_->OnReceiveResponse(std::move(head), std::move(body));
     return;
   }
-
-  bool can_be_served = CanServePrefetchRequest(head->headers);
 
   // Don't report errors for navigation prefetch.
   if (!navigation_prefetch_)

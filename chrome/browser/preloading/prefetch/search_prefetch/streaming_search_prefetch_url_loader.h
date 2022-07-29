@@ -222,6 +222,9 @@ class StreamingSearchPrefetchURLLoader : public network::mojom::URLLoader,
   // match when this is a navigation prefetch.
   GURL prefetch_url_;
 
+  // Whether this url loader was activated via the navigation stack.
+  bool is_activated_ = false;
+
   base::WeakPtrFactory<StreamingSearchPrefetchURLLoader> weak_factory_{this};
 };
 
