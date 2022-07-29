@@ -39,7 +39,11 @@ const CSVPassword::Label* NameToLabel(base::StringPiece name) {
 
           {"password", Label::kPassword},
       });
-  auto* it = kLabelMap.find(base::ToLowerASCII(name));
+
+  std::string trimmed_name;
+  // Trim leading/trailing whitespaces from |name|.
+  base::TrimString(name, " ", &trimmed_name);
+  auto* it = kLabelMap.find(base::ToLowerASCII(trimmed_name));
   return it != kLabelMap.end() ? &it->second : nullptr;
 }
 

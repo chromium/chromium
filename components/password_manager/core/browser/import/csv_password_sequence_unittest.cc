@@ -32,6 +32,14 @@ TEST(CSVPasswordSequenceTest, HeaderOnly) {
   EXPECT_EQ(seq.begin(), seq.end());
 }
 
+TEST(CSVPasswordSequenceTest, AllowSpacesInHeaderField) {
+  static constexpr char kHeader[] =
+      " Display Name ,  Login,Secret Question ,  Password,  URL,  Timestamp ";
+  CSVPasswordSequence seq(kHeader);
+  EXPECT_EQ(CSVPassword::Status::kOK, seq.result());
+  EXPECT_EQ(seq.begin(), seq.end());
+}
+
 TEST(CSVPasswordSequenceTest, MissingColumns) {
   static constexpr char kNoUrlCol[] =
       "Display Name,Login,Secret Question,Password,x,Timestamp\n"
