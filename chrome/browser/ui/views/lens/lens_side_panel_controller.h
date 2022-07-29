@@ -10,6 +10,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace content {
 struct OpenURLParams;
@@ -22,7 +24,8 @@ namespace lens {
 
 // Controller for the Lens side panel.
 class LensSidePanelController : public content::WebContentsObserver,
-                                public content::WebContentsDelegate {
+                                public content::WebContentsDelegate,
+                                public views::ViewObserver {
  public:
   LensSidePanelController(base::OnceClosure close_callback,
                           SidePanel* side_panel,
@@ -33,8 +36,14 @@ class LensSidePanelController : public content::WebContentsObserver,
 
   void LoadProgressChanged(double progress) override;
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
   // Opens the Lens side panel with the given Lens results URL.
   void OpenWithURL(const content::OpenURLParams& params);
+
+  // Loads the Lens website if the side panel view is ready with a width.
+  void MaybeLoadURLWithParams();
 
   // Returns whether the Lens side panel is currently showing.
   bool IsShowing() const;
@@ -67,6 +76,9 @@ class LensSidePanelController : public content::WebContentsObserver,
   raw_ptr<SidePanel> side_panel_;
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<lens::LensSidePanelView> side_panel_view_;
+
+  // Copy of the most recent URL params given to the controller.
+  std::unique_ptr<content::OpenURLParams> side_panel_url_params_;
 };
 
 }  // namespace lens
