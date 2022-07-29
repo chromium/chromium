@@ -7,8 +7,8 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 
 component("easy_unlock") {
-  output_name = "chromeos_easy_unlock"
-  defines = [ "IS_CHROMEOS_DBUS_EASY_UNLOCK_IMPL" ]
+  output_name = "ash_easy_unlock"
+  defines = [ "IS_ASH_DBUS_EASY_UNLOCK_IMPL" ]
   deps = [
     "//base",
     "//chromeos/dbus/common",

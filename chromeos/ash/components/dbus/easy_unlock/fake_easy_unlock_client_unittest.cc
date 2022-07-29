@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/easy_unlock/fake_easy_unlock_client.h"
 
 #include <string>
 
@@ -28,7 +28,7 @@ void RecordData(std::string* data_target, const std::string& data_source) {
 }
 
 TEST(FakeEasyUnlockClientTest, GenerateEcP256KeyPair) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   std::string private_key_1;
   std::string public_key_1;
@@ -49,42 +49,42 @@ TEST(FakeEasyUnlockClientTest, GenerateEcP256KeyPair) {
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair) {
-  ASSERT_TRUE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_TRUE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "{\"ec_p256_private_key\": 12}", "{\"ec_p256_public_key\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_KeysFromDiffrentPairs) {
-  ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_FALSE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "{\"ec_p256_private_key\": 12}", "{\"ec_p256_public_key\": 34}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_KeyOrderSwitched) {
-  ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_FALSE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "{\"ec_p256_public_key\": 34}", "{\"ec_p256_private_key\": 34}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PrivateKeyInvalidFormat) {
-  ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_FALSE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "\"ec_p256_private_key\": 12", "{\"ec_p256_public_key\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PublicKeyInvalidFormat) {
-  ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_FALSE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "{\"ec_p256_private_key\": 12}", "\"ec_p256_public_key\": 12"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PrivateKeyInvalidDictKey) {
-  ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_FALSE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "{\"invalid\": 12}", "{\"ec_p256_public_key\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PublicKeyInvalidDictKey) {
-  ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_FALSE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "{\"ec_p256_private_key\": 12}", "{\"invalid\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_InvalidDictValues) {
-  ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
+  ASSERT_FALSE(ash::FakeEasyUnlockClient::IsEcP256KeyPair(
       "{\"ec_p256_private_key\": \"12\"}", "{\"ec_p256_public_key\": \"12\"}"));
 }
 
@@ -92,7 +92,7 @@ TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_InvalidDictValues) {
 // key pairs from which private and public key used in the key agreement
 // originate.
 TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementSuccess) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   // (Fake) key pairs used in the test to generate fake shared keys.
   const std::string private_key_1 = "{\"ec_p256_private_key\": 32}";
@@ -136,7 +136,7 @@ TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementSuccess) {
 }
 
 TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyOrderSwitched) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   const std::string private_key = "{\"ec_p256_private_key\": 415}";
   const std::string public_key = "{\"ec_p256_public_key\": 345}";
@@ -148,7 +148,7 @@ TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyOrderSwitched) {
 }
 
 TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyDictKeyInvalid) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   const std::string private_key = "{\"ec_p256_private_key_invalid\": 415}";
   const std::string public_key = "{\"ec_p256_public_key_invalid\": 345}";
@@ -160,7 +160,7 @@ TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyDictKeyInvalid) {
 }
 
 TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyDictValueInvalid) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   const std::string private_key = "{\"ec_p256_private_key\": 415}";
   const std::string public_key = "{\"ec_p256_public_key\": \"345__\"}";
@@ -172,7 +172,7 @@ TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyDictValueInvalid) {
 }
 
 TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyFormatInvalid) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   const std::string private_key = "invalid";
   const std::string public_key = "{\"ec_p256_public_key\": 345}";
@@ -184,11 +184,11 @@ TEST(FakeEasyUnlockClientTest, ECDHKeyAgreementFailsIfKeyFormatInvalid) {
 }
 
 TEST(FakeEasyUnlockClientTest, CreateSecureMessage) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   std::string message;
 
-  chromeos::EasyUnlockClient::CreateSecureMessageOptions options;
+  ash::EasyUnlockClient::CreateSecureMessageOptions options;
   options.key = "KEY";
   options.associated_data = "ASSOCIATED_DATA";
   options.public_metadata = "PUBLIC_METADATA";
@@ -215,11 +215,11 @@ TEST(FakeEasyUnlockClientTest, CreateSecureMessage) {
 }
 
 TEST(FakeEasyUnlockClientTest, UnwrapSecureMessage) {
-  chromeos::FakeEasyUnlockClient client;
+  ash::FakeEasyUnlockClient client;
 
   std::string message;
 
-  chromeos::EasyUnlockClient::UnwrapSecureMessageOptions options;
+  ash::EasyUnlockClient::UnwrapSecureMessageOptions options;
   options.key = "KEY";
   options.associated_data = "ASSOCIATED_DATA";
   options.encryption_type = "ENCRYPTION_TYPE";

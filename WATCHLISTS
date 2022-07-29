@@ -1789,7 +1789,7 @@
                   '|chrome/browser/resources/chromeos/quick_unlock/'\
                   '|chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_smartlock'\
                   '|chrome/test/data/webui/settings/chromeos/multidevice_smartlock'\
-                  '|chromeos/dbus/easy_unlock/',
+                  '|chromeos/ash/components/dbus/easy_unlock/',
     },
     'smb': {
       'filepath': 'chrome/browser/ash/file_system_provider' \

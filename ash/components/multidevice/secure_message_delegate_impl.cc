@@ -7,7 +7,7 @@
 #include "ash/components/multidevice/logging/logging.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash::multidevice {
@@ -70,7 +70,7 @@ void SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
 SecureMessageDelegateImpl::Factory::~Factory() = default;
 
 SecureMessageDelegateImpl::SecureMessageDelegateImpl()
-    : dbus_client_(chromeos::EasyUnlockClient::Get()) {}
+    : dbus_client_(EasyUnlockClient::Get()) {}
 
 SecureMessageDelegateImpl::~SecureMessageDelegateImpl() {}
 
@@ -102,7 +102,7 @@ void SecureMessageDelegateImpl::CreateSecureMessage(
     return;
   }
 
-  chromeos::EasyUnlockClient::CreateSecureMessageOptions options;
+  EasyUnlockClient::CreateSecureMessageOptions options;
   options.key.assign(key);
 
   if (!create_options.associated_data.empty())
@@ -138,7 +138,7 @@ void SecureMessageDelegateImpl::UnwrapSecureMessage(
     return;
   }
 
-  chromeos::EasyUnlockClient::UnwrapSecureMessageOptions options;
+  EasyUnlockClient::UnwrapSecureMessageOptions options;
   options.key.assign(key);
 
   if (!unwrap_options.associated_data.empty())

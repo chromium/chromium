@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_EASY_UNLOCK_EASY_UNLOCK_CLIENT_H_
-#define CHROMEOS_DBUS_EASY_UNLOCK_EASY_UNLOCK_CLIENT_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_DBUS_EASY_UNLOCK_EASY_UNLOCK_CLIENT_H_
+#define CHROMEOS_ASH_COMPONENTS_DBUS_EASY_UNLOCK_EASY_UNLOCK_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/component_export.h"
 #include "chromeos/dbus/common/dbus_client.h"
 
-namespace chromeos {
+namespace ash {
 
 // Client for calling EasyUnlock dbus service. The service provides
 // methods used by Easy Unlock for establishing secure communication channel
@@ -24,7 +24,7 @@ namespace chromeos {
 // where OpenSSL is already supported.
 // TODO(tbarzic): Get rid of this client when Chrome switches from NSS to
 // OpenSSL (http://crbug.com/338888).
-class COMPONENT_EXPORT(CHROMEOS_DBUS_EASY_UNLOCK) EasyUnlockClient
+class COMPONENT_EXPORT(ASH_DBUS_EASY_UNLOCK) EasyUnlockClient
     : public DBusClient {
  public:
   // Callback for |GenerateEcP256KeyPair|. Carries the generated keys.
@@ -161,12 +161,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_EASY_UNLOCK) EasyUnlockClient
   ~EasyUnlockClient() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
-// source migration is finished.
-namespace ash {
-using ::chromeos::EasyUnlockClient;
-}
-
-#endif  // CHROMEOS_DBUS_EASY_UNLOCK_EASY_UNLOCK_CLIENT_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_DBUS_EASY_UNLOCK_EASY_UNLOCK_CLIENT_H_

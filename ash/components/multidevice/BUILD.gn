@@ -33,8 +33,8 @@ static_library("multidevice") {
     "//ash/services/device_sync/proto:util",
     "//base",
     "//base:i18n",
+    "//chromeos/ash/components/dbus/easy_unlock",
     "//chromeos/dbus",
-    "//chromeos/dbus/easy_unlock",
     "//components/prefs",
   ]
 

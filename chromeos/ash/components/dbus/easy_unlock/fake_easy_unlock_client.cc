@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/easy_unlock/fake_easy_unlock_client.h"
 
 #include <memory>
 #include <utility>
@@ -42,7 +42,7 @@ int ExtractKeyPairIndexFromKey(const std::string& key,
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // static
 bool FakeEasyUnlockClient::IsEcP256KeyPair(const std::string& private_key,
@@ -142,4 +142,4 @@ void FakeEasyUnlockClient::UnwrapSecureMessage(
       options.encryption_type.c_str(), options.signature_type.c_str()));
 }
 
-}  // namespace chromeos
+}  // namespace ash

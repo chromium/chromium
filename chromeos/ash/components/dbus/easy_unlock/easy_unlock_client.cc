@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -12,14 +12,14 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/easy_unlock/fake_easy_unlock_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -224,4 +224,4 @@ EasyUnlockClient::~EasyUnlockClient() {
   g_instance = nullptr;
 }
 
-}  // namespace chromeos
+}  // namespace ash

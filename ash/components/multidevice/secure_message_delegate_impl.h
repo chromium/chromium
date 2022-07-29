@@ -8,11 +8,11 @@
 #include "ash/components/multidevice/secure_message_delegate.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
-class EasyUnlockClient;
-}
+namespace ash {
 
-namespace ash::multidevice {
+class EasyUnlockClient;
+
+namespace multidevice {
 
 // Concrete SecureMessageDelegate implementation.
 // Note: Callbacks are guaranteed to *not* be invoked after
@@ -71,11 +71,12 @@ class SecureMessageDelegateImpl : public SecureMessageDelegate {
                                    const std::string& unwrap_result);
 
   // Not owned by this instance.
-  chromeos::EasyUnlockClient* dbus_client_;
+  EasyUnlockClient* dbus_client_;
 
   base::WeakPtrFactory<SecureMessageDelegateImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace ash::multidevice
+}  // namespace multidevice
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_MULTIDEVICE_SECURE_MESSAGE_DELEGATE_IMPL_H_
