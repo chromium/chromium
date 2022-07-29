@@ -37,8 +37,7 @@ STACK = '[stack]'
 _DEFAULT_JOBS=8
 _CHUNK_SIZE = 1000
 
-_BASE_APK = 'base.apk'
-_FALLBACK_SO = 'libchrome.so'
+_FALLBACK_SO = 'libmonochrome.so'
 
 # pylint: disable=line-too-long
 
@@ -164,14 +163,14 @@ def PrintDivider():
   print('-----------------------------------------------------\n')
 
 
-def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
+def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_so_file,
                           arch_defined, llvm_symbolizer, apks_directory,
                           pass_through):
   """Symbolize stacks on the fly as they are read from an input stream."""
 
-  if fallback_monochrome:
+  if fallback_so_file:
     global _FALLBACK_SO
-    _FALLBACK_SO = 'libmonochrome.so'
+    _FALLBACK_SO = fallback_so_file
   useful_lines = []
   so_dirs = []
   in_stack = False
@@ -210,13 +209,13 @@ def StreamingConvertTrace(_, load_vaddrs, more_info, fallback_monochrome,
     ConvertStreamingChunk()
 
 
-def ConvertTrace(lines, load_vaddrs, more_info, fallback_monochrome,
-                 arch_defined, llvm_symbolizer, apks_directory):
+def ConvertTrace(lines, load_vaddrs, more_info, fallback_so_file, arch_defined,
+                 llvm_symbolizer, apks_directory):
   """Convert strings containing native crash to a stack."""
 
-  if fallback_monochrome:
+  if fallback_so_file:
     global _FALLBACK_SO
-    _FALLBACK_SO = 'libmonochrome.so'
+    _FALLBACK_SO = fallback_so_file
   start = time.time()
 
   chunks = [lines[i: i+_CHUNK_SIZE] for i in range(0, len(lines), _CHUNK_SIZE)]
@@ -363,7 +362,7 @@ class PreProcessLog:
             # APK name with _FALLBACK_SO, unless an APKs directory was
             # explicitly specified (in which case, the correct .so should always
             # be identified, and using a fallback could be misleading).
-            line = line.replace('/' + _BASE_APK, '/' + _FALLBACK_SO)
+            line = line.replace('.apk', '.apk/' + _FALLBACK_SO)
             logging.debug("Can't detect shared library in APK, fallback to" +
                           " library " + _FALLBACK_SO)
         # For trace lines specifically, the address may need to be adjusted
