@@ -241,6 +241,10 @@ namespace autotestPrivate {
     DOMString? text;
     // HTML response returned from server.
     DOMString? htmlResponse;
+    // Open URL response returned from server.
+    DOMString? openUrl;
+    // Open Android app response returned from server.
+    DOMString? openAppResponse;
   };
   dictionary AssistantQueryStatus {
     // Indicates whether this might be a voice interaction.
