@@ -313,16 +313,6 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
     window.location.href = 'chrome://management';
   }
 
-  // <if expr="chromeos_ash">
-  private getUpdateOsSettingsLink_(): string {
-    // Note: This string contains raw HTML and thus requires i18nAdvanced().
-    // Since the i18n template syntax (e.g., $i18n{}) does not include an
-    // "advanced" version, it's not possible to inline this link directly in the
-    // HTML.
-    return this.i18nAdvanced('aboutUpdateOsSettingsLink');
-  }
-  // </if>
-
   private onProductLogoTap_() {
     this.$['product-logo'].animate(
         {

@@ -278,10 +278,6 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
     {"aboutGetHelpUsingChrome", IDS_SETTINGS_GET_HELP_USING_CHROME},
     {"aboutPageTitle", IDS_SETTINGS_ABOUT_PROGRAM},
     {"aboutProductTitle", IDS_PRODUCT_NAME},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"aboutUpdateOsSettingsLink",
-     IDS_SETTINGS_ABOUT_SEE_OS_SETTINGS_FOR_UPDATE_MESSAGE},
-#endif
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
