@@ -34,6 +34,19 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
                                 layout_provider->GetDistanceMetric(
                                     views::DISTANCE_RELATED_LABEL_HORIZONTAL);
 
+  // Text on cookies description label has an embedded link to cookies settings.
+  size_t offset;
+  auto settings_text_for_link =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
+  auto description_text = l10n_util::GetStringFUTF16(
+      IDS_PAGE_INFO_COOKIES_DESCRIPTION, settings_text_for_link, &offset);
+
+  gfx::Range link_range(offset, offset + settings_text_for_link.length());
+  views::StyledLabel::RangeStyleInfo link_style =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &PageInfoCookiesContentView::CookiesSettingsLinkClicked,
+          base::Unretained(this)));
+
   auto* cookies_description_label =
       AddChildView(std::make_unique<views::StyledLabel>());
 
@@ -41,18 +54,11 @@ PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
       views::kMarginsKey,
       gfx::Insets::TLBR(button_insets.top(), horizontal_offset,
                         button_insets.bottom(), horizontal_offset));
-
   cookies_description_label->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
-
   cookies_description_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-
-  size_t offset;
-  auto settings =
-      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
-  auto text = l10n_util::GetStringFUTF16(IDS_PAGE_INFO_COOKIES_DESCRIPTION,
-                                         settings, &offset);
-  cookies_description_label->SetText(text);
+  cookies_description_label->SetText(description_text);
+  cookies_description_label->AddStyleRange(link_range, link_style);
 
   //  TODO(crbug.com/1346305): Remove after implementation of data flow.
   EnsureCookieInfo();
@@ -86,4 +92,11 @@ void PageInfoCookiesContentView::EnsureCookieInfo() {
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_COOKIE_DIALOG,
         tooltip, std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   }
+}
+
+void PageInfoCookiesContentView::CookiesSettingsLinkClicked(
+    const ui::Event& event) {
+  // TODO(crbug.com/1346305): Add a new function to PageInfo for opening cookies
+  // settings.
+  presenter_->OpenSiteSettingsView();
 }
