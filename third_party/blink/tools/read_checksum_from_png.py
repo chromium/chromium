@@ -34,6 +34,6 @@ from blinkpy.common import read_checksum_from_png
 
 if '__main__' == __name__:
     for filename in sys.argv[1:]:
-        with open(filename, 'r') as filehandle:
-            print "%s: %s" % (read_checksum_from_png.read_checksum(filehandle),
-                              filename)
+        with open(filename, 'rb') as filehandle:
+            print("%s: %s" %
+                  (read_checksum_from_png.read_checksum(filehandle), filename))
