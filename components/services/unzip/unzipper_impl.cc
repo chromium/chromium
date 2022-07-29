@@ -282,7 +282,8 @@ void UnzipperImpl::GetExtractedInfo(base::File zip_file,
   if (!reader.OpenFromPlatformFile(zip_file.GetPlatformFile())) {
     LOG(ERROR) << "Cannot decode ZIP archive from file handle "
                << zip_file.GetPlatformFile();
-    unzip::mojom::InfoPtr info = unzip::mojom::Info::New(false, 0, false);
+    unzip::mojom::InfoPtr info =
+        unzip::mojom::Info::New(false, 0, false, false);
     std::move(callback).Run(std::move(info));
     return;
   }
@@ -290,6 +291,7 @@ void UnzipperImpl::GetExtractedInfo(base::File zip_file,
   int64_t size = 0;
   bool valid = true;
   bool has_encrypted_content = false;
+  bool uses_aes_encryption = false;
 
   // Iterate over file entries of the ZIP archive.
   while (const zip::ZipReader::Entry* const entry = reader.Next()) {
@@ -307,10 +309,13 @@ void UnzipperImpl::GetExtractedInfo(base::File zip_file,
     }
     if (entry->is_encrypted) {
       has_encrypted_content = true;
+      if (entry->uses_aes_encryption) {
+        uses_aes_encryption = true;
+      }
     }
   }
-  unzip::mojom::InfoPtr info =
-      unzip::mojom::Info::New(valid, size, has_encrypted_content);
+  unzip::mojom::InfoPtr info = unzip::mojom::Info::New(
+      valid, size, has_encrypted_content, uses_aes_encryption);
   std::move(callback).Run(std::move(info));
 }
 

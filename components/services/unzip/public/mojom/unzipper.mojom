@@ -24,6 +24,8 @@ struct Info {
   uint64 size;
   // Boolean set to true if the ZIP contains encrypted content.
   bool is_encrypted;
+  // Boolean set to true if the ZIP encrypted content uses AES.
+  bool uses_aes_encryption;
 };
 
 // UnzipFilter is used to call back into the caller to check if

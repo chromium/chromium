@@ -214,6 +214,11 @@ void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
     return;
   }
   if (have_encrypted_content_ && password_.empty()) {
+    if (uses_aes_encryption_) {
+      RecordUmaExtractStatus(ExtractStatus::kAesEncrypted);
+    } else {
+      RecordUmaExtractStatus(ExtractStatus::kPasswordError);
+    }
     progress_.state = State::kNeedPassword;
     Complete();
     return;
@@ -229,6 +234,8 @@ void ExtractIOTask::ZipInfoCallback(unzip::mojom::InfoPtr info) {
     progress_.total_bytes += info->size;
   }
   have_encrypted_content_ = have_encrypted_content_ || info->is_encrypted;
+  uses_aes_encryption_ = info->uses_aes_encryption;
+
   if (--sizingCount_ == 0) {
     // After getting the size of all the ZIPs, check if we have
     // enough available disk space, and if so, extract them.

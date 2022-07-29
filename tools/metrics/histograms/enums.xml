@@ -42504,10 +42504,11 @@ Called by update_permissions_policy_enum.py.-->
 
 <enum name="FileManagerExtractStatus">
   <int value="0" label="Success"/>
-  <int value="1" label="Cancelled"/>
-  <int value="2" label="Low Disk Space"/>
-  <int value="3" label="Bad Password"/>
-  <int value="4" label="Unknown Error"/>
+  <int value="1" label="Unknown Error"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Low Disk Space"/>
+  <int value="4" label="Bad Password"/>
+  <int value="5" label="AES encrypted"/>
 </enum>
 
 <enum name="FileManagerFormatFileSystemType">

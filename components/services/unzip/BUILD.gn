@@ -46,6 +46,7 @@ bundle_data("unit_tests_bundle_data") {
   visibility = [ ":unit_tests" ]
   testonly = true
   sources = [
+    "//components/test/data/unzip_service/DifferentEncryptions.zip",
     "//components/test/data/unzip_service/Duplicate Filenames.zip",
     "//components/test/data/unzip_service/SJIS 00.zip",
     "//components/test/data/unzip_service/SJIS 01.zip",

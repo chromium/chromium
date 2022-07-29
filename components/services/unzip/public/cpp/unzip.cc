@@ -259,7 +259,7 @@ void DoGetExtractedInfo(mojo::PendingRemote<mojom::Unzipper> unzipper,
                         const base::FilePath& zip_path,
                         GetExtractedInfoCallback result_callback) {
   base::File zip_file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  unzip::mojom::InfoPtr info = unzip::mojom::Info::New(false, 0, false);
+  unzip::mojom::InfoPtr info = unzip::mojom::Info::New(false, 0, false, false);
   if (!zip_file.IsValid()) {
     LOG(ERROR) << "Cannot open ZIP archive " << Redact(zip_path) << ": "
                << base::File::ErrorToString(zip_file.error_details());

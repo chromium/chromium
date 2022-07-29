@@ -332,5 +332,11 @@ TEST_F(UnzipTest, ExtractEncrypted) {
   EXPECT_EQ(5, CountFiles(unzip_dir_, &some_files_empty));
 }
 
+TEST_F(UnzipTest, DetectAESArchive) {
+  mojom::Info result =
+      DoGetExtractedInfo(GetArchivePath("DifferentEncryptions.zip"));
+  EXPECT_TRUE(result.uses_aes_encryption);
+}
+
 }  // namespace
 }  // namespace unzip

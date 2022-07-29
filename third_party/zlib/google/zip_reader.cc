@@ -237,6 +237,12 @@ bool ZipReader::OpenEntry() {
 
   // The file content of this entry is encrypted if flag bit 0 is set.
   entry_.is_encrypted = info.flag & 1;
+  if (entry_.is_encrypted) {
+    // Is the entry AES encrypted.
+    entry_.uses_aes_encryption = info.compression_method == 99;
+  } else {
+    entry_.uses_aes_encryption = false;
+  }
 
   // Construct the last modified time. The timezone info is not present in ZIP
   // archives, so we construct the time as UTC.

@@ -128,14 +128,17 @@ class ZipReader {
 
     // True if the entry is a directory.
     // False if the entry is a file.
-    bool is_directory;
+    bool is_directory = false;
 
     // True if the entry path cannot be converted to a safe relative path. This
     // happens if a file entry (not a directory) has a filename "." or "..".
-    bool is_unsafe;
+    bool is_unsafe = false;
 
     // True if the file content is encrypted.
-    bool is_encrypted;
+    bool is_encrypted = false;
+
+    // True if the encryption scheme is AES.
+    bool uses_aes_encryption = false;
 
     // Entry POSIX permissions (POSIX systems only).
     int posix_mode;
