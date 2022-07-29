@@ -10,6 +10,16 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "v8/include/v8-inspector.h"
 
+#include "crypto/secure_hash.h"
+#include "crypto/sha2.h"
+#include <fstream>
+
+#ifndef OS_WIN
+static const char DirectorySeparator = '/';
+#else
+static const char DirectorySeparator = '\\';
+#endif
+
 namespace v8 {
 
 extern void FunctionCallbackRecordReplaySetCommandCallback(const FunctionCallbackInfo<Value>& args);
@@ -32,7 +42,13 @@ const {
   notifyDriverOnConsoleAPICall,
   ignoreScript,
   dump,
+  getRecordingId,
+  sha256DigestHex,
+  writeToRecordingDirectory,
+  addRecordingEvent,
 } = __RECORD_REPLAY_ARGUMENTS__;
+
+const gSourceMapData = new Map();
 
 try {
 
@@ -108,7 +124,9 @@ initMessages();
 setCommandCallback(commandCallback);
 setClearPauseDataCallback(clearPauseDataCallback);
 addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
+addEventListener("Debugger.scriptParsed", registerSourceMap);
 sendMessage("Runtime.enable");
+sendMessage("Debugger.enable");
 
 const CommandCallbacks = {
   "Target.getCurrentMessageContents": Target_getCurrentMessageContents,
@@ -206,9 +224,8 @@ function Target_getCurrentMessageContents() {
   };
 }
 
-function Target_getSourceMapURL() {
-  // NYI
-  return {};
+function Target_getSourceMapURL({ sourceId }) {
+  return gSourceMapData.get(sourceId) || {};
 }
 
 function Target_getStepOffsets() {
@@ -768,6 +785,191 @@ function createProtocolScope(scopeId) {
   log(`Error: Initialization exception ${e}`);
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// sourcemap.js
+///////////////////////////////////////////////////////////////////////////////
+
+async function registerSourceMap(ev) {
+  if (!ev.sourceMapURL) {
+    return;
+  }
+
+  const { url: sourceURL, scriptId } = ev;
+
+  let sourceBaseURL;
+  if (typeof sourceURL === "string" && isValidBaseURL(sourceURL)) {
+    sourceBaseURL = sourceURL;
+  } else if (window?.location?.href && isValidBaseURL(window?.location?.href)) {
+    sourceBaseURL = window.location.href;
+  }
+
+  let sourceMapURL;
+  try {
+    sourceMapURL = new URL(ev.sourceMapURL, sourceBaseURL).toString();
+  } catch (err) {
+    log("Failed to process sourcemap url: " + err.message);
+    return;
+  }
+
+  // If the map was a data: URL or something along those lines, we want
+  // to resolve paths in the map relative to the overall base.
+  const sourceMapBaseURL =
+    isValidBaseURL(sourceMapURL) ? sourceMapURL : sourceBaseURL;
+
+  gSourceMapData.set(scriptId, {
+    url: sourceMapURL,
+    baseUrl: sourceMapBaseURL
+  });
+
+  if (sourceMapURL.startsWith("data:")) {
+    return;
+  }
+  let sourceMap;
+  try {
+    sourceMap = await fetchText(sourceMapURL);
+  } catch (err) {
+    log(`Failed to read sourcemap ${sourceMapURL}: ${err.message}`);
+  }
+  if (!sourceMap) {
+    return;
+  }
+
+  const script = sendMessage("Debugger.getScriptSource", { scriptId });
+
+  const recordingId = getRecordingId();
+  const id = String(Math.floor(Math.random() * 10000000000));
+  const name = `sourcemap-${id}.map`;
+  const path = await writeToRecordingDirectory(name, sourceMap);
+  await addRecordingEvent(JSON.stringify({
+    kind: "sourcemapAdded",
+    path,
+    recordingId,
+    id,
+    url: sourceMapURL,
+    baseURL: sourceMapBaseURL,
+    targetContentHash: typeof script?.scriptSource === "string"
+      ? makeAPIHash(script.scriptSource)
+      : undefined,
+    targetURLHash: sourceURL ? makeAPIHash(sourceURL) : undefined,
+    targetMapURLHash: makeAPIHash(sourceMapURL),
+  }));
+
+  const { sources } =
+    collectUnresolvedSourceMapResources(sourceMap, sourceMapURL, ev.url);
+
+  for (const { offset, url } of sources) {
+    let sourceContent;
+    try {
+      sourceContent = await fetchText(url);
+    } catch (err) {
+      log(`Failed to read original source ${url}: ${err.message}`);
+      continue;
+    }
+    const sourceId = String(Math.floor(Math.random() * 10000000000));
+    const name = `original-source-${id}-${sourceId}`;
+    const path = await writeToRecordingDirectory(name, sourceContent);
+    await addRecordingEvent(JSON.stringify({
+      kind: "originalSourceAdded",
+      path,
+      recordingId,
+      parentId: id,
+      parentOffset: offset,
+    }));
+  }
+}
+
+function isValidBaseURL(url) {
+  try {
+    new URL("", url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function fetchText(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Fetching ${url} failed with status code ${response.status} (${response.statusText})`);
+  }
+  return await response.text();
+}
+
+function makeAPIHash(content) {
+  assert(typeof content === "string");
+  const digestHex = sha256DigestHex(content);
+  return "sha256:" + digestHex;
+}
+
+function collectUnresolvedSourceMapResources(mapText, mapURL) {
+  let obj;
+  try {
+    obj = JSON.parse(mapText);
+    if (typeof obj !== "object" || !obj) {
+      return {
+        sources: [],
+      };
+    }
+  } catch (err) {
+    log(`Exception parsing sourcemap JSON (${mapURL})`);
+    return {
+      sources: [],
+    };
+  }
+
+  function logError(msg) {
+    log(`${msg} (${mapURL}:${sourceOffset})`);
+  }
+
+  const unresolvedSources = [];
+  let sourceOffset = 0;
+
+  if (obj.version !== 3) {
+    logError("Invalid sourcemap version");
+    return {
+      sources: [],
+    };
+  }
+
+  if (obj.sources != null) {
+    const { sourceRoot, sources, sourcesContent } = obj;
+
+    if (Array.isArray(sources)) {
+      for (let i = 0; i < sources.length; i++) {
+        const offset = sourceOffset++;
+
+        if (
+          !Array.isArray(sourcesContent) ||
+          typeof sourcesContent[i] !== "string"
+        ) {
+          let url = sources[i];
+          if (typeof sourceRoot === "string" && sourceRoot) {
+            url = sourceRoot.replace(/\/?/, "/") + url;
+          }
+          let sourceURL;
+          try {
+            sourceURL = new URL(url, mapURL).toString();
+          } catch {
+            logError("Unable to compute original source URL: " + url);
+            continue;
+          }
+
+          unresolvedSources.push({
+            offset,
+            url: sourceURL,
+          });
+        }
+      }
+    } else {
+      logError("Invalid sourcemap source list");
+    }
+  }
+
+  return {
+    sources: unresolvedSources,
+  };
+}
+
 )"""";
 
 static v8::Local<v8::String> ToV8String(v8::Isolate* isolate, const char* value) {
@@ -871,6 +1073,68 @@ static void SendCDPMessage(const v8::FunctionCallbackInfo<v8::Value>& args) {
   gInspectorSession->dispatchProtocolMessage(messageView);
 }
 
+static std::string GetRecordingDirectory() {
+  const char* recordingDir = getenv("RECORD_REPLAY_DIRECTORY");
+  if (recordingDir) {
+    return recordingDir;
+  }
+  const char* homeDir = getenv("HOME");
+  if (!homeDir) {
+    homeDir = getenv("USERPROFILE");
+  }
+  return std::string(homeDir) + DirectorySeparator + std::string(".replay");
+}
+
+static void GetRecordingId(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  v8::Isolate* isolate = args.GetIsolate();
+  args.GetReturnValue().Set(ToV8String(isolate, recordreplay::GetRecordingId()));
+}
+
+static void SHA256DigestHex(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() &&
+      "must be called with a single string");
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::String::Utf8Value content(isolate, args[0]);
+
+  std::unique_ptr<crypto::SecureHash> hasher =
+    crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  hasher->Update(*content, content.length());
+  uint8_t digest[crypto::kSHA256Length];
+  hasher->Finish(digest, crypto::kSHA256Length);
+  char* digestHex = new char[65];
+  for (int i = 0; i < 32; i++) {
+    sprintf(digestHex + i * 2, "%02x", digest[i]);
+  }
+
+  args.GetReturnValue().Set(ToV8String(isolate, digestHex));
+}
+
+static void WriteToRecordingDirectory(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 2 && args[0]->IsString() && args[1]->IsString() &&
+        "must be called with two strings");
+  v8::Isolate* isolate = args.GetIsolate();
+  v8::String::Utf8Value filename(isolate, args[0]);
+  v8::String::Utf8Value content(isolate, args[1]);
+
+  std::string path = GetRecordingDirectory() + DirectorySeparator + std::string(*filename);
+  std::ofstream stream(path);
+  stream << *content;
+  stream.close();
+
+  args.GetReturnValue().Set(ToV8String(isolate, path.c_str()));
+}
+
+static void AddRecordingEvent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  CHECK(args.Length() == 1 && args[0]->IsString() &&
+        "must be called with a single string");
+  v8::String::Utf8Value content(args.GetIsolate(), args[0]);
+
+  std::string filename = GetRecordingDirectory() + DirectorySeparator + std::string("recordings.log");
+  std::ofstream stream(filename.c_str(), std::ofstream::app);
+  stream << *content << "\n";
+  stream.close();
+}
+
 static void GetCurrentError(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 extern "C" void V8RecordReplayOnConsoleMessage(size_t bookmark);
@@ -943,6 +1207,14 @@ void SetupRecordReplayCommands(v8::Isolate* isolate) {
                       NotifyDriverOnConsoleAPICall);
   SetFunctionProperty(isolate, args, "dump",
                       DumpCallback);
+  SetFunctionProperty(isolate, args, "getRecordingId",
+                      GetRecordingId);
+  SetFunctionProperty(isolate, args, "sha256DigestHex",
+                      SHA256DigestHex);
+  SetFunctionProperty(isolate, args, "writeToRecordingDirectory",
+                      WriteToRecordingDirectory);
+  SetFunctionProperty(isolate, args, "addRecordingEvent",
+                      AddRecordingEvent);
 
   v8::Local<v8::String> source = ToV8String(isolate, gRecordReplayScript);
   v8::Local<v8::String> filename = ToV8String(isolate, "record-replay-internal");
