@@ -26,6 +26,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -1705,6 +1706,8 @@ LRESULT HWNDMessageHandler::OnCreate(CREATESTRUCT* create_struct) {
   }
 
   fullscreen_handler_->set_hwnd(hwnd());
+
+  base::win::AllowDarkModeForWindow(hwnd(), true);
 
   // This message initializes the window so that focus border are shown for
   // windows.

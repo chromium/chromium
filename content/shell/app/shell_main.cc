@@ -7,6 +7,7 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/dark_mode_support.h"
 #include "base/win/win_util.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -20,9 +21,12 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
 int main() {
   HINSTANCE instance = GetModuleHandle(NULL);
 #endif
-  // Load and pin user32.dll to avoid having to load it once tests start while
-  // on the main thread loop where blocking calls are disallowed.
+  // Load and pin user32.dll and uxtheme.dll to avoid having to load them once
+  // tests start while on the main thread loop where blocking calls are
+  // disallowed. This will also ensure the Windows dark mode support is enabled
+  // for the app if available.
   base::win::PinUser32();
+  base::win::AllowDarkModeForApp(true);
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};
   content::InitializeSandboxInfo(&sandbox_info);
   content::ShellMainDelegate delegate;

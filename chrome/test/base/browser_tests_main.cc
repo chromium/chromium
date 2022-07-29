@@ -12,6 +12,7 @@
 #include "ui/compositor/compositor_switches.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/win/dark_mode_support.h"
 #include "base/win/win_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -37,6 +38,10 @@ int main(int argc, char** argv) {
   base::win::PinUser32();
 
   base::win::EnableHighDPISupport();
+
+  // Like user32.dll above, some tests require uxtheme.dll to be loaded. This
+  // call will ensure uxtheme.dll is pinned early on startup.
+  base::win::IsDarkModeAvailable();
 #endif  // BUILDFLAG(IS_WIN)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();

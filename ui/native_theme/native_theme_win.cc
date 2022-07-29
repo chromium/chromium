@@ -18,6 +18,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/win/dark_mode_support.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/scoped_hdc.h"
 #include "base/win/scoped_select_object.h"
@@ -278,7 +279,9 @@ void NativeThemeWin::Paint(cc::PaintCanvas* canvas,
 
 NativeThemeWin::NativeThemeWin(bool configure_web_instance,
                                bool should_only_use_dark_colors)
-    : NativeTheme(should_only_use_dark_colors), color_change_listener_(this) {
+    : NativeTheme(should_only_use_dark_colors),
+      supports_windows_dark_mode_(base::win::IsDarkModeAvailable()),
+      color_change_listener_(this) {
   // If there's no sequenced task runner handle, we can't be called back for
   // dark mode changes. This generally happens in tests. As a result, ignore
   // dark mode in this case.
@@ -1529,7 +1532,9 @@ HANDLE NativeThemeWin::GetThemeHandle(ThemeName theme_name) const {
     handle = OpenThemeData(nullptr, L"Combobox");
     break;
   case SCROLLBAR:
-    handle = OpenThemeData(nullptr, L"Scrollbar");
+    handle = OpenThemeData(nullptr, supports_windows_dark_mode_
+                                        ? L"Explorer::Scrollbar"
+                                        : L"Scrollbar");
     break;
   case STATUS:
     handle = OpenThemeData(nullptr, L"Status");
@@ -1582,6 +1587,7 @@ void NativeThemeWin::UpdateDarkModeStatus() {
   }
   set_use_dark_colors(dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
+  CloseHandlesInternal();
   NotifyOnNativeThemeUpdated();
 }
 
