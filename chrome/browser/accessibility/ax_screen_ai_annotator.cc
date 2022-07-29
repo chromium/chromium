@@ -35,11 +35,25 @@ void AXScreenAIAnnotator::Run() {
   if (!native_view)
     return;
 
+// TODO(https://crbug.com/1278249): Add UMA for screenshot timing to ensure
+// the sync method is not blocking the browser process.
+#if BUILDFLAG(IS_MAC)
+  gfx::Image snapshot;
+  if (!ui::GrabViewSnapshot(native_view, gfx::Rect(web_contents->GetSize()),
+                            &snapshot)) {
+    VLOG(1) << "AxScreenAIAnnotator could not grab snapshot.";
+    return;
+  }
+
+  AXScreenAIAnnotator::OnScreenshotReceived(
+      web_contents->GetPrimaryMainFrame()->GetAXTreeID(), std::move(snapshot));
+#else
   ui::GrabViewSnapshotAsync(
       native_view, gfx::Rect(web_contents->GetSize()),
       base::BindOnce(&AXScreenAIAnnotator::OnScreenshotReceived,
                      weak_ptr_factory_.GetWeakPtr(),
                      web_contents->GetPrimaryMainFrame()->GetAXTreeID()));
+#endif
 }
 
 void AXScreenAIAnnotator::OnScreenshotReceived(const ui::AXTreeID& ax_tree_id,

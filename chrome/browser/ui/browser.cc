@@ -3172,4 +3172,11 @@ void Browser::RunScreenAIAnnotator() {
   }
   screen_ai_annotator_->Run();
 }
+
+void Browser::SetScreenAIAnnotatorForTesting(
+    std::unique_ptr<screen_ai::AXScreenAIAnnotator> annotator) {
+  DCHECK(!screen_ai_annotator_);
+  screen_ai_annotator_.swap(annotator);
+}
+
 #endif
