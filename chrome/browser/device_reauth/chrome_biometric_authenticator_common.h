@@ -1,0 +1,33 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_COMMON_H_
+#define CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_COMMON_H_
+
+#include "base/time/time.h"
+#include "components/device_reauth/biometric_authenticator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+// Used to care of the auth validity period for biometric authenticators in
+// chrome.
+class ChromeBiometricAuthenticatorCommon
+    : public device_reauth::BiometricAuthenticator {
+ public:
+  ChromeBiometricAuthenticatorCommon();
+
+ protected:
+  ~ChromeBiometricAuthenticatorCommon() override;
+
+  // Checks whether user needs to reauthenticate.
+  bool NeedsToAuthenticate();
+
+  // Records authentication time if authentication was successful.
+  bool RecordAuthenticationResult(bool success);
+
+ private:
+  // Time of last successful re-auth. nullopt if there hasn't been an auth yet.
+  absl::optional<base::TimeTicks> last_good_auth_timestamp_;
+};
+
+#endif  // CHROME_BROWSER_DEVICE_REAUTH_CHROME_BIOMETRIC_AUTHENTICATOR_COMMON_H_

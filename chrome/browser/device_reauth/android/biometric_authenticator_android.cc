@@ -34,8 +34,6 @@ using password_manager::UiCredential;
 
 namespace {
 
-constexpr unsigned int kAuthValidSeconds = 60;
-
 bool IsSuccessfulResult(BiometricAuthUIResult result) {
   return result == BiometricAuthUIResult::kSuccessWithUnknownMethod ||
          result == BiometricAuthUIResult::kSuccessWithBiometrics ||
@@ -128,9 +126,7 @@ void BiometricAuthenticatorAndroid::Authenticate(
 
   LogAuthRequester(requester);
 
-  if (use_last_valid_auth && last_good_auth_timestamp_.has_value() &&
-      base::TimeTicks::Now() - last_good_auth_timestamp_.value() <
-          base::Seconds(kAuthValidSeconds)) {
+  if (use_last_valid_auth && !NeedsToAuthenticate()) {
     LogAuthResult(requester, BiometricAuthFinalResult::kAuthStillValid);
     std::move(callback_).Run(/*success=*/true);
     requester_ = absl::nullopt;
@@ -173,7 +169,6 @@ BiometricAuthenticatorAndroid::CreateForTesting(
 
 void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(
     BiometricAuthUIResult ui_result) {
-  bool success = IsSuccessfulResult(ui_result);
   // OnAuthenticationCompleted is called aysnchronously and by the time it's
   // invoked Chrome can cancel the authentication via
   // BiometricAuthenticatorAndroid::Cancel which resets the callback_.
@@ -181,9 +176,7 @@ void BiometricAuthenticatorAndroid::OnAuthenticationCompleted(
     return;
   }
 
-  if (success) {
-    last_good_auth_timestamp_ = base::TimeTicks::Now();
-  }
+  bool success = RecordAuthenticationResult(IsSuccessfulResult(ui_result));
 
   LogAuthResult(requester_.value(), MapUIResultToFinal(ui_result));
   std::move(callback_).Run(success);

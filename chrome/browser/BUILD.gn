@@ -404,6 +404,8 @@ static_library("browser") {
     "data_use_measurement/chrome_data_use_measurement.h",
     "defaults.cc",
     "defaults.h",
+    "device_reauth/chrome_biometric_authenticator_common.cc",
+    "device_reauth/chrome_biometric_authenticator_common.h",
     "device_reauth/chrome_biometric_authenticator_factory.h",
     "dips/cookie_access_filter.cc",
     "dips/cookie_access_filter.h",
