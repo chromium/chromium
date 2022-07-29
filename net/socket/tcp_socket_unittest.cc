@@ -1020,7 +1020,7 @@ TEST_F(TCPSocketTest, BindToNetwork) {
   if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     GTEST_SKIP() << "Network handles are required to test BindToNetwork.";
 
-  const NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+  const handles::NetworkHandle wrong_network_handle = 65536;
   // Try binding to this IP to trigger the underlying BindToNetwork call.
   const IPEndPoint ip(IPAddress::IPv4Localhost(), 0);
   // TestCompletionCallback connect_callback;
@@ -1034,9 +1034,9 @@ TEST_F(TCPSocketTest, BindToNetwork) {
   EXPECT_NE(ERR_NOT_IMPLEMENTED, rv);
 
   // Connecting using an existing network should succeed.
-  const NetworkChangeNotifier::NetworkHandle network_handle =
+  const handles::NetworkHandle network_handle =
       NetworkChangeNotifier::GetDefaultNetwork();
-  if (network_handle != NetworkChangeNotifier::kInvalidNetworkHandle) {
+  if (network_handle != handles::kInvalidNetworkHandle) {
     TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
                                       nullptr, NetLogSource(),
                                       wrong_network_handle);

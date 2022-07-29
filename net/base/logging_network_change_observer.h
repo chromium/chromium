@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 
 namespace net {
 
@@ -41,14 +42,10 @@ class NET_EXPORT LoggingNetworkChangeObserver
   void OnNetworkChanged(NetworkChangeNotifier::ConnectionType type) override;
 
   // NetworkChangeNotifier::NetworkObserver implementation.
-  void OnNetworkConnected(
-      NetworkChangeNotifier::NetworkHandle network) override;
-  void OnNetworkDisconnected(
-      NetworkChangeNotifier::NetworkHandle network) override;
-  void OnNetworkSoonToDisconnect(
-      NetworkChangeNotifier::NetworkHandle network) override;
-  void OnNetworkMadeDefault(
-      NetworkChangeNotifier::NetworkHandle network) override;
+  void OnNetworkConnected(handles::NetworkHandle network) override;
+  void OnNetworkDisconnected(handles::NetworkHandle network) override;
+  void OnNetworkSoonToDisconnect(handles::NetworkHandle network) override;
+  void OnNetworkMadeDefault(handles::NetworkHandle network) override;
 
   raw_ptr<NetLog> net_log_;
 };

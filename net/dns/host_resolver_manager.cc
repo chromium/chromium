@@ -1016,7 +1016,7 @@ class HostResolverManager::ProcTask {
            scoped_refptr<base::TaskRunner> proc_task_runner,
            const NetLogWithSource& job_net_log,
            const base::TickClock* tick_clock,
-           NetworkChangeNotifier::NetworkHandle network)
+           handles::NetworkHandle network)
       : hostname_(std::move(hostname)),
         address_family_(address_family),
         flags_(flags),
@@ -1111,7 +1111,7 @@ class HostResolverManager::ProcTask {
       scoped_refptr<HostResolverProc> resolver_proc,
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
       AttemptCompletionCallback completion_callback,
-      NetworkChangeNotifier::NetworkHandle network) {
+      handles::NetworkHandle network) {
     AddressList results;
     int os_error = 0;
     int error = resolver_proc->Resolve(hostname, address_family, flags,
@@ -1210,7 +1210,7 @@ class HostResolverManager::ProcTask {
 
   raw_ptr<const base::TickClock> tick_clock_;
   // Network to perform DNS lookups for.
-  NetworkChangeNotifier::NetworkHandle network_;
+  handles::NetworkHandle network_;
 
   // Used to loop back from the blocking lookup attempt tasks as well as from
   // delayed retry tasks. Invalidate WeakPtrs on completion and cancellation to
@@ -2157,7 +2157,7 @@ struct HostResolverManager::JobKey {
     return key;
   }
 
-  NetworkChangeNotifier::NetworkHandle GetTargetNetwork() const {
+  handles::NetworkHandle GetTargetNetwork() const {
     return resolve_context->GetTargetNetwork();
   }
 };
@@ -2489,8 +2489,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   bool is_running() const { return job_running_; }
 
   bool HasTargetNetwork() const {
-    return key_.GetTargetNetwork() !=
-           NetworkChangeNotifier::kInvalidNetworkHandle;
+    return key_.GetTargetNetwork() != handles::kInvalidNetworkHandle;
   }
 
  private:
@@ -3113,14 +3112,14 @@ HostResolverManager::HostResolverManager(
     : HostResolverManager(PassKey(),
                           options,
                           system_dns_config_notifier,
-                          NetworkChangeNotifier::kInvalidNetworkHandle,
+                          handles::kInvalidNetworkHandle,
                           net_log) {}
 
 HostResolverManager::HostResolverManager(
     base::PassKey<HostResolverManager>,
     const HostResolver::ManagerOptions& options,
     SystemDnsConfigChangeNotifier* system_dns_config_notifier,
-    NetworkChangeNotifier::NetworkHandle target_network,
+    handles::NetworkHandle target_network,
     NetLog* net_log)
     : proc_params_(nullptr, options.max_system_retry_attempts),
       net_log_(net_log),
@@ -3188,7 +3187,7 @@ HostResolverManager::~HostResolverManager() {
   // OnJobComplete will not start any new jobs.
   jobs_.clear();
 
-  if (target_network_ == NetworkChangeNotifier::kInvalidNetworkHandle) {
+  if (target_network_ == handles::kInvalidNetworkHandle) {
     NetworkChangeNotifier::RemoveIPAddressObserver(this);
     NetworkChangeNotifier::RemoveConnectionTypeObserver(this);
   }
@@ -3200,7 +3199,7 @@ HostResolverManager::~HostResolverManager() {
 std::unique_ptr<HostResolverManager>
 HostResolverManager::CreateNetworkBoundHostResolverManager(
     const HostResolver::ManagerOptions& options,
-    NetworkChangeNotifier::NetworkHandle target_network,
+    handles::NetworkHandle target_network,
     NetLog* net_log) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
@@ -4080,9 +4079,9 @@ void HostResolverManager::GetEffectiveParametersForRequest(
 
 namespace {
 
-bool RequestWillUseWiFi(NetworkChangeNotifier::NetworkHandle network) {
+bool RequestWillUseWiFi(handles::NetworkHandle network) {
   NetworkChangeNotifier::ConnectionType connection_type;
-  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+  if (network == handles::kInvalidNetworkHandle)
     connection_type = NetworkChangeNotifier::GetConnectionType();
   else
     connection_type = NetworkChangeNotifier::GetNetworkConnectionType(network);

@@ -805,7 +805,7 @@ TEST_F(UDPSocketTest, ConnectUsingNetwork) {
   // server needs to be running here. The test only needs to call
   // ConnectUsingNetwork() and won't send any datagrams.
   const IPEndPoint fake_server_address(IPAddress::IPv4Localhost(), 8080);
-  const NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+  const handles::NetworkHandle wrong_network_handle = 65536;
 #if BUILDFLAG(IS_ANDROID)
   NetworkChangeNotifierFactoryAndroid ncn_factory;
   NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
@@ -830,9 +830,9 @@ TEST_F(UDPSocketTest, ConnectUsingNetwork) {
     // NetworkChangeNotifier returns a valid default network.
     UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr,
                            NetLogSource());
-    const NetworkChangeNotifier::NetworkHandle network_handle =
+    const handles::NetworkHandle network_handle =
         NetworkChangeNotifier::GetDefaultNetwork();
-    if (network_handle != NetworkChangeNotifier::kInvalidNetworkHandle) {
+    if (network_handle != handles::kInvalidNetworkHandle) {
       EXPECT_EQ(
           OK, socket.ConnectUsingNetwork(network_handle, fake_server_address));
       EXPECT_EQ(network_handle, socket.GetBoundNetwork());
@@ -1437,7 +1437,7 @@ TEST_F(UDPSocketTest, BindToNetwork) {
     GTEST_SKIP() << "Network handles are required to test BindToNetwork.";
 
   // Binding the socket to a not existing network should fail at connect time.
-  const NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+  const handles::NetworkHandle wrong_network_handle = 65536;
   UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource(),
                          wrong_network_handle);
   // Different Android versions might report different errors. Hence, just check
@@ -1448,9 +1448,9 @@ TEST_F(UDPSocketTest, BindToNetwork) {
   EXPECT_NE(wrong_network_handle, socket.GetBoundNetwork());
 
   // Binding the socket to an existing network should succeed.
-  const NetworkChangeNotifier::NetworkHandle network_handle =
+  const handles::NetworkHandle network_handle =
       NetworkChangeNotifier::GetDefaultNetwork();
-  if (network_handle != NetworkChangeNotifier::kInvalidNetworkHandle) {
+  if (network_handle != handles::kInvalidNetworkHandle) {
     UDPClientSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource(),
                            network_handle);
     EXPECT_EQ(OK, socket.Connect(fake_server_address));

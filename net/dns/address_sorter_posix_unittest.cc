@@ -108,7 +108,7 @@ class TestUDPClientSocket : public DatagramClientSocket {
     return ERR_NOT_IMPLEMENTED;
   }
 
-  int ConnectUsingNetwork(NetworkChangeNotifier::NetworkHandle network,
+  int ConnectUsingNetwork(handles::NetworkHandle network,
                           const IPEndPoint& address) override {
     NOTIMPLEMENTED();
     return ERR_NOT_IMPLEMENTED;
@@ -117,8 +117,8 @@ class TestUDPClientSocket : public DatagramClientSocket {
     NOTIMPLEMENTED();
     return ERR_NOT_IMPLEMENTED;
   }
-  NetworkChangeNotifier::NetworkHandle GetBoundNetwork() const override {
-    return NetworkChangeNotifier::kInvalidNetworkHandle;
+  handles::NetworkHandle GetBoundNetwork() const override {
+    return handles::kInvalidNetworkHandle;
   }
   void ApplySocketTag(const SocketTag& tag) override {}
   void SetMsgConfirm(bool confirm) override {}

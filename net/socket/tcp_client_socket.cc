@@ -36,7 +36,7 @@ TCPClientSocket::TCPClientSocket(
     NetworkQualityEstimator* network_quality_estimator,
     net::NetLog* net_log,
     const net::NetLogSource& source,
-    NetworkChangeNotifier::NetworkHandle network)
+    handles::NetworkHandle network)
     : TCPClientSocket(
           std::make_unique<TCPSocket>(std::move(socket_performance_watcher),
                                       net_log,
@@ -56,7 +56,7 @@ TCPClientSocket::TCPClientSocket(std::unique_ptr<TCPSocket> connected_socket,
                       // TODO(https://crbug.com/1123197: Pass non-null
                       // NetworkQualityEstimator
                       nullptr /* network_quality_estimator */,
-                      NetworkChangeNotifier::kInvalidNetworkHandle) {}
+                      handles::kInvalidNetworkHandle) {}
 
 TCPClientSocket::TCPClientSocket(
     std::unique_ptr<TCPSocket> unconnected_socket,
@@ -67,7 +67,7 @@ TCPClientSocket::TCPClientSocket(
                       -1 /* current_address_index */,
                       nullptr /* bind_address */,
                       network_quality_estimator,
-                      NetworkChangeNotifier::kInvalidNetworkHandle) {}
+                      handles::kInvalidNetworkHandle) {}
 
 TCPClientSocket::~TCPClientSocket() {
   Disconnect();
@@ -84,7 +84,7 @@ std::unique_ptr<TCPClientSocket> TCPClientSocket::CreateFromBoundSocket(
   return base::WrapUnique(new TCPClientSocket(
       std::move(bound_socket), addresses, -1 /* current_address_index */,
       std::make_unique<IPEndPoint>(bound_address), network_quality_estimator,
-      NetworkChangeNotifier::kInvalidNetworkHandle));
+      handles::kInvalidNetworkHandle));
 }
 
 int TCPClientSocket::Bind(const IPEndPoint& address) {
@@ -161,7 +161,7 @@ TCPClientSocket::TCPClientSocket(
     int current_address_index,
     std::unique_ptr<IPEndPoint> bind_address,
     NetworkQualityEstimator* network_quality_estimator,
-    NetworkChangeNotifier::NetworkHandle network)
+    handles::NetworkHandle network)
     : socket_(std::move(socket)),
       bind_address_(std::move(bind_address)),
       addresses_(addresses),
@@ -550,7 +550,7 @@ int TCPClientSocket::OpenSocket(AddressFamily family) {
   if (result != OK)
     return result;
 
-  if (network_ != NetworkChangeNotifier::kInvalidNetworkHandle) {
+  if (network_ != handles::kInvalidNetworkHandle) {
     result = socket_->BindToNetwork(network_);
     if (result != OK) {
       socket_->Close();

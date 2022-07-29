@@ -10,7 +10,7 @@
 namespace net {
 
 NetworkBindingClientSocketFactory::NetworkBindingClientSocketFactory(
-    NetworkChangeNotifier::NetworkHandle network)
+    handles::NetworkHandle network)
     : network_(network) {}
 
 std::unique_ptr<DatagramClientSocket>

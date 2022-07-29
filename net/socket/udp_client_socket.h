@@ -23,11 +23,11 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   // If `network` is specified, the socket will be bound to it. All data traffic
   // on the socket will be sent and received via `network`. Communication using
   // this socket will fail if `network` disconnects.
-  UDPClientSocket(DatagramSocket::BindType bind_type,
-                  net::NetLog* net_log,
-                  const net::NetLogSource& source,
-                  NetworkChangeNotifier::NetworkHandle network =
-                      NetworkChangeNotifier::kInvalidNetworkHandle);
+  UDPClientSocket(
+      DatagramSocket::BindType bind_type,
+      net::NetLog* net_log,
+      const net::NetLogSource& source,
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
 
   UDPClientSocket(const UDPClientSocket&) = delete;
   UDPClientSocket& operator=(const UDPClientSocket&) = delete;
@@ -36,10 +36,10 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
 
   // DatagramClientSocket implementation.
   int Connect(const IPEndPoint& address) override;
-  int ConnectUsingNetwork(NetworkChangeNotifier::NetworkHandle network,
+  int ConnectUsingNetwork(handles::NetworkHandle network,
                           const IPEndPoint& address) override;
   int ConnectUsingDefaultNetwork(const IPEndPoint& address) override;
-  NetworkChangeNotifier::NetworkHandle GetBoundNetwork() const override;
+  handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
   int Read(IOBuffer* buf,
            int buf_len,
@@ -86,8 +86,8 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
  private:
   UDPSocket socket_;
   // The network the socket is currently bound to.
-  NetworkChangeNotifier::NetworkHandle network_;
-  NetworkChangeNotifier::NetworkHandle connect_using_network_;
+  handles::NetworkHandle network_;
+  handles::NetworkHandle connect_using_network_;
 };
 
 }  // namespace net

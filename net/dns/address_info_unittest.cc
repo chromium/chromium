@@ -32,7 +32,7 @@ class MockAddrInfoGetter : public AddrInfoGetter {
       const std::string& host,
       const addrinfo* hints,
       int* out_os_error,
-      NetworkChangeNotifier::NetworkHandle network) override;
+      handles::NetworkHandle network) override;
 
  private:
   struct IpAndPort {
@@ -132,7 +132,7 @@ std::unique_ptr<addrinfo, FreeAddrInfoFunc> MockAddrInfoGetter::getaddrinfo(
     const std::string& host,
     const addrinfo* /* hints */,
     int* out_os_error,
-    NetworkChangeNotifier::NetworkHandle) {
+    handles::NetworkHandle) {
   // Presume success
   *out_os_error = 0;
 

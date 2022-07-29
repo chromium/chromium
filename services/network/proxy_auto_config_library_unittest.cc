@@ -139,7 +139,7 @@ class MockUDPSocket : public net::DatagramClientSocket {
     EXPECT_EQ(peer_ip_.ToString(), address.address().ToString());
     return connect_error_;
   }
-  int ConnectUsingNetwork(net::NetworkChangeNotifier::NetworkHandle network,
+  int ConnectUsingNetwork(net::handles::NetworkHandle network,
                           const net::IPEndPoint& address) override {
     ADD_FAILURE() << "Called ConnectUsingNetwork()";
     return net::ERR_UNEXPECTED;
@@ -148,7 +148,7 @@ class MockUDPSocket : public net::DatagramClientSocket {
     ADD_FAILURE() << "Called ConnectUsingDefaultNetwork()";
     return net::ERR_UNEXPECTED;
   }
-  net::NetworkChangeNotifier::NetworkHandle GetBoundNetwork() const override {
+  net::handles::NetworkHandle GetBoundNetwork() const override {
     ADD_FAILURE() << "Called GetBoundNetwork()";
     return network_;
   }
@@ -200,7 +200,7 @@ class MockUDPSocket : public net::DatagramClientSocket {
 
  private:
   net::NetLogWithSource net_log_;
-  net::NetworkChangeNotifier::NetworkHandle network_;
+  net::handles::NetworkHandle network_;
 
   net::IPAddress peer_ip_;
   net::IPAddress local_ip_;

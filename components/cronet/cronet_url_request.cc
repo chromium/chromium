@@ -56,19 +56,18 @@ int CalculateLoadFlags(int load_flags,
 
 }  // namespace
 
-CronetURLRequest::CronetURLRequest(
-    CronetContext* context,
-    std::unique_ptr<Callback> callback,
-    const GURL& url,
-    net::RequestPriority priority,
-    bool disable_cache,
-    bool disable_connection_migration,
-    bool traffic_stats_tag_set,
-    int32_t traffic_stats_tag,
-    bool traffic_stats_uid_set,
-    int32_t traffic_stats_uid,
-    net::Idempotency idempotency,
-    net::NetworkChangeNotifier::NetworkHandle network)
+CronetURLRequest::CronetURLRequest(CronetContext* context,
+                                   std::unique_ptr<Callback> callback,
+                                   const GURL& url,
+                                   net::RequestPriority priority,
+                                   bool disable_cache,
+                                   bool disable_connection_migration,
+                                   bool traffic_stats_tag_set,
+                                   int32_t traffic_stats_tag,
+                                   bool traffic_stats_uid_set,
+                                   int32_t traffic_stats_uid,
+                                   net::Idempotency idempotency,
+                                   net::handles::NetworkHandle network)
     : context_(context),
       network_tasks_(std::move(callback),
                      url,
@@ -183,7 +182,7 @@ CronetURLRequest::NetworkTasks::NetworkTasks(
     bool traffic_stats_uid_set,
     int32_t traffic_stats_uid,
     net::Idempotency idempotency,
-    net::NetworkChangeNotifier::NetworkHandle network)
+    net::handles::NetworkHandle network)
     : callback_(std::move(callback)),
       initial_url_(url),
       initial_priority_(priority),

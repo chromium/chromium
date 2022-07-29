@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_change_notifier.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -13,13 +14,13 @@ namespace net {
 UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
                                  net::NetLog* net_log,
                                  const net::NetLogSource& source,
-                                 NetworkChangeNotifier::NetworkHandle network)
+                                 handles::NetworkHandle network)
     : socket_(bind_type, net_log, source), connect_using_network_(network) {}
 
 UDPClientSocket::~UDPClientSocket() = default;
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
-  if (connect_using_network_ != NetworkChangeNotifier::kInvalidNetworkHandle)
+  if (connect_using_network_ != handles::kInvalidNetworkHandle)
     return ConnectUsingNetwork(connect_using_network_, address);
 
   int rv = socket_.Open(address.GetFamily());
@@ -28,9 +29,8 @@ int UDPClientSocket::Connect(const IPEndPoint& address) {
   return socket_.Connect(address);
 }
 
-int UDPClientSocket::ConnectUsingNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
-    const IPEndPoint& address) {
+int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
+                                         const IPEndPoint& address) {
   if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     return ERR_NOT_IMPLEMENTED;
   int rv = socket_.Open(address.GetFamily());
@@ -57,10 +57,10 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   // can change in between when we query it and when we bind to it.  This is
   // rare but should be accounted for.  Since changes of the default network
   // should not come in quick succession, we can simply try again.
-  NetworkChangeNotifier::NetworkHandle network;
+  handles::NetworkHandle network;
   for (int attempt = 0; attempt < 2; attempt++) {
     network = NetworkChangeNotifier::GetDefaultNetwork();
-    if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+    if (network == handles::kInvalidNetworkHandle)
       return ERR_INTERNET_DISCONNECTED;
     rv = socket_.BindToNetwork(network);
     // |network| may have disconnected between the call to GetDefaultNetwork()
@@ -75,7 +75,7 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   return socket_.Connect(address);
 }
 
-NetworkChangeNotifier::NetworkHandle UDPClientSocket::GetBoundNetwork() const {
+handles::NetworkHandle UDPClientSocket::GetBoundNetwork() const {
   return network_;
 }
 

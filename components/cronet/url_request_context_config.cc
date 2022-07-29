@@ -419,14 +419,13 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
     net::URLRequestContextBuilder* context_builder,
     net::HttpNetworkSessionParams* session_params,
     net::QuicParams* quic_params,
-    net::NetworkChangeNotifier::NetworkHandle bound_network) {
+    net::handles::NetworkHandle bound_network) {
   bool async_dns_enable = false;
   bool stale_dns_enable = false;
   bool host_resolver_rules_enable = false;
   bool disable_ipv6_on_wifi = false;
   bool nel_enable = false;
-  bool is_network_bound =
-      bound_network != net::NetworkChangeNotifier::kInvalidNetworkHandle;
+  bool is_network_bound = bound_network != net::handles::kInvalidNetworkHandle;
   absl::optional<net::HostResolver::HttpsSvcbOptions> https_svcb_options;
 
   StaleHostResolver::StaleOptions stale_dns_options;
@@ -853,7 +852,7 @@ void URLRequestContextConfig::SetContextBuilderExperimentalOptions(
 
 void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
     net::URLRequestContextBuilder* context_builder,
-    net::NetworkChangeNotifier::NetworkHandle bound_network) {
+    net::handles::NetworkHandle bound_network) {
   std::string config_cache;
   if (http_cache != DISABLED) {
     net::URLRequestContextBuilder::HttpCacheParams cache_params;

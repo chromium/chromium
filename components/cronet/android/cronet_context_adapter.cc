@@ -115,7 +115,7 @@ void CronetContextAdapter::ConfigureNetworkQualityEstimatorForTesting(
 }
 
 bool CronetContextAdapter::URLRequestContextExistsForTesting(
-    net::NetworkChangeNotifier::NetworkHandle network) {
+    net::handles::NetworkHandle network) {
   return context_->URLRequestContextExistsForTesting(network);  // IN-TEST
 }
 
@@ -191,7 +191,7 @@ void CronetContextAdapter::Destroy(JNIEnv* env,
 }
 
 net::URLRequestContext* CronetContextAdapter::GetURLRequestContext(
-    net::NetworkChangeNotifier::NetworkHandle network) {
+    net::handles::NetworkHandle network) {
   return context_->GetURLRequestContext(network);
 }
 

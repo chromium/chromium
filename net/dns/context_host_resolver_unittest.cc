@@ -772,19 +772,18 @@ TEST_F(ContextHostResolverTest, HostCacheInvalidation) {
 
 class NetworkBoundResolveContext : public ResolveContext {
  public:
-  NetworkBoundResolveContext(
-      URLRequestContext* url_request_context,
-      bool enable_caching,
-      NetworkChangeNotifier::NetworkHandle target_network)
+  NetworkBoundResolveContext(URLRequestContext* url_request_context,
+                             bool enable_caching,
+                             handles::NetworkHandle target_network)
       : ResolveContext(url_request_context, enable_caching),
         target_network_(target_network) {}
 
-  NetworkChangeNotifier::NetworkHandle GetTargetNetwork() const override {
+  handles::NetworkHandle GetTargetNetwork() const override {
     return target_network_;
   }
 
  private:
-  const NetworkChangeNotifier::NetworkHandle target_network_;
+  const handles::NetworkHandle target_network_;
 };
 
 // A mock HostResolverProc which returns different IP addresses based on the
@@ -802,7 +801,7 @@ class NetworkAwareHostResolverProc : public HostResolverProc {
               HostResolverFlags host_resolver_flags,
               AddressList* addrlist,
               int* os_error,
-              NetworkChangeNotifier::NetworkHandle network) override {
+              handles::NetworkHandle network) override {
     // Presume failure
     *os_error = 1;
     const auto* iter = kResults.find(network);
@@ -822,7 +821,7 @@ class NetworkAwareHostResolverProc : public HostResolverProc {
               AddressList* addrlist,
               int* os_error) override {
     return Resolve(host, address_family, host_resolver_flags, addrlist,
-                   os_error, NetworkChangeNotifier::kInvalidNetworkHandle);
+                   os_error, handles::kInvalidNetworkHandle);
   }
 
   struct IPv4 {
@@ -834,7 +833,7 @@ class NetworkAwareHostResolverProc : public HostResolverProc {
 
   static constexpr int kPort = 100;
   static constexpr auto kResults =
-      base::MakeFixedFlatMap<NetworkChangeNotifier::NetworkHandle, IPv4>(
+      base::MakeFixedFlatMap<handles::NetworkHandle, IPv4>(
           {{1, IPv4{1, 2, 3, 4}}, {2, IPv4{8, 8, 8, 8}}});
 
   static IPEndPoint ToIPEndPoint(const IPv4& ipv4) {
@@ -929,7 +928,7 @@ TEST_F(ContextHostResolverTest, NetworkBoundResolverCacheInvalidation) {
 
   // The actual network handle doesn't really matter, this test just wants to
   // check that all the pieces are in place and configured correctly.
-  constexpr NetworkChangeNotifier::NetworkHandle network = 2;
+  constexpr handles::NetworkHandle network = 2;
   manager_ = HostResolverManager::CreateNetworkBoundHostResolverManager(
       HostResolver::ManagerOptions(), network, nullptr /* net_log */);
   manager_->SetLastIPv6ProbeResultForTesting(true);

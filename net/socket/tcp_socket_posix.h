@@ -13,7 +13,7 @@
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/socket_performance_watcher.h"
@@ -177,7 +177,7 @@ class NET_EXPORT TCPSocketPosix {
   // Connect() and/or Bind(). This call will fail if `network` has disconnected.
   // Communication using this socket will fail if `network` disconnects.
   // Returns a net error code.
-  int BindToNetwork(NetworkChangeNotifier::NetworkHandle network);
+  int BindToNetwork(handles::NetworkHandle network);
 
  private:
   void AcceptCompleted(std::unique_ptr<TCPSocketPosix>* tcp_socket,

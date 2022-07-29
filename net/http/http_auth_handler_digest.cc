@@ -8,6 +8,7 @@
 
 #include "base/hash/md5.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"

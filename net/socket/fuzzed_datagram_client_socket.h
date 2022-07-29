@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -38,10 +38,10 @@ class FuzzedDatagramClientSocket : public DatagramClientSocket {
 
   // DatagramClientSocket implementation:
   int Connect(const IPEndPoint& address) override;
-  int ConnectUsingNetwork(NetworkChangeNotifier::NetworkHandle network,
+  int ConnectUsingNetwork(handles::NetworkHandle network,
                           const IPEndPoint& address) override;
   int ConnectUsingDefaultNetwork(const IPEndPoint& address) override;
-  NetworkChangeNotifier::NetworkHandle GetBoundNetwork() const override;
+  handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
 
   // DatagramSocket implementation:

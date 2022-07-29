@@ -11,7 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 
 namespace net {
 class URLRequest;
@@ -47,7 +47,7 @@ class TestUtil {
   static net::URLRequest* GetURLRequest(jlong jrequest_adapter);
 
   // Returns underlying network to URLRequestContext map.
-  static base::flat_map<net::NetworkChangeNotifier::NetworkHandle,
+  static base::flat_map<net::handles::NetworkHandle,
                         std::unique_ptr<net::URLRequestContext>>*
   GetURLRequestContexts(jlong jcontext_adapter);
 

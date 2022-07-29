@@ -209,6 +209,7 @@ component("net") {
     "base/network_delegate.h",
     "base/network_delegate_impl.cc",
     "base/network_delegate_impl.h",
+    "base/network_handle.h",
     "base/network_interfaces.cc",
     "base/network_interfaces.h",
     "base/network_isolation_key.cc",

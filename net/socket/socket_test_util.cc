@@ -1702,9 +1702,8 @@ int MockUDPClientSocket::Connect(const IPEndPoint& address) {
   return data_->connect_data().result;
 }
 
-int MockUDPClientSocket::ConnectUsingNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
-    const IPEndPoint& address) {
+int MockUDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
+                                             const IPEndPoint& address) {
   DCHECK(!connected_);
   if (!data_)
     return ERR_UNEXPECTED;
@@ -1724,8 +1723,7 @@ int MockUDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   return data_->connect_data().result;
 }
 
-NetworkChangeNotifier::NetworkHandle MockUDPClientSocket::GetBoundNetwork()
-    const {
+handles::NetworkHandle MockUDPClientSocket::GetBoundNetwork() const {
   return network_;
 }
 

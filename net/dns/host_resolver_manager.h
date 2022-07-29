@@ -27,6 +27,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/prioritized_dispatcher.h"
 #include "net/dns/dns_config.h"
@@ -135,7 +136,7 @@ class NET_EXPORT HostResolverManager
   static std::unique_ptr<HostResolverManager>
   CreateNetworkBoundHostResolverManager(
       const HostResolver::ManagerOptions& options,
-      NetworkChangeNotifier::NetworkHandle target_network,
+      handles::NetworkHandle target_network,
       NetLog* net_log);
 
   // |resolve_context| must have already been added (via
@@ -237,7 +238,7 @@ class NET_EXPORT HostResolverManager
 
   bool check_ipv6_on_wifi_for_testing() const { return check_ipv6_on_wifi_; }
 
-  NetworkChangeNotifier::NetworkHandle target_network_for_testing() const {
+  handles::NetworkHandle target_network_for_testing() const {
     return target_network_;
   }
 
@@ -249,7 +250,7 @@ class NET_EXPORT HostResolverManager
   HostResolverManager(base::PassKey<HostResolverManager>,
                       const HostResolver::ManagerOptions& options,
                       SystemDnsConfigChangeNotifier* system_dns_config_notifier,
-                      NetworkChangeNotifier::NetworkHandle target_network,
+                      handles::NetworkHandle target_network,
                       NetLog* net_log);
 
  protected:
@@ -482,7 +483,7 @@ class NET_EXPORT HostResolverManager
   void UpdateConnectionType(NetworkChangeNotifier::ConnectionType type);
 
   bool IsBoundToNetwork() const {
-    return target_network_ != NetworkChangeNotifier::kInvalidNetworkHandle;
+    return target_network_ != handles::kInvalidNetworkHandle;
   }
 
   // Returns |nullptr| if DoH probes are currently not allowed (due to
@@ -514,7 +515,7 @@ class NET_EXPORT HostResolverManager
 
   raw_ptr<SystemDnsConfigChangeNotifier> system_dns_config_notifier_;
 
-  NetworkChangeNotifier::NetworkHandle target_network_;
+  handles::NetworkHandle target_network_;
 
   // False if IPv6 should not be attempted and assumed unreachable when on a
   // WiFi connection. See https://crbug.com/696569 for further context.

@@ -20,14 +20,14 @@ bool IsErrorRelatedToConnectivity(int error_code) {
 }  // namespace
 
 QuicConnectivityMonitor::QuicConnectivityMonitor(
-    NetworkChangeNotifier::NetworkHandle default_network)
+    handles::NetworkHandle default_network)
     : default_network_(default_network) {}
 
 QuicConnectivityMonitor::~QuicConnectivityMonitor() = default;
 
 void QuicConnectivityMonitor::RecordConnectivityStatsToHistograms(
     const std::string& notification,
-    NetworkChangeNotifier::NetworkHandle affected_network) const {
+    handles::NetworkHandle affected_network) const {
   if (notification == "OnNetworkSoonToDisconnect" ||
       notification == "OnNetworkDisconnected") {
     // If the disconnected network is not the default network, ignore
@@ -106,13 +106,13 @@ size_t QuicConnectivityMonitor::GetCountForWriteErrorCode(
 }
 
 void QuicConnectivityMonitor::SetInitialDefaultNetwork(
-    NetworkChangeNotifier::NetworkHandle default_network) {
+    handles::NetworkHandle default_network) {
   default_network_ = default_network;
 }
 
 void QuicConnectivityMonitor::OnSessionPathDegrading(
     QuicChromiumClientSession* session,
-    NetworkChangeNotifier::NetworkHandle network) {
+    handles::NetworkHandle network) {
   if (network != default_network_)
     return;
 
@@ -136,7 +136,7 @@ void QuicConnectivityMonitor::OnSessionPathDegrading(
 
 void QuicConnectivityMonitor::OnSessionResumedPostPathDegrading(
     QuicChromiumClientSession* session,
-    NetworkChangeNotifier::NetworkHandle network) {
+    handles::NetworkHandle network) {
   if (network != default_network_)
     return;
 
@@ -154,7 +154,7 @@ void QuicConnectivityMonitor::OnSessionResumedPostPathDegrading(
 
 void QuicConnectivityMonitor::OnSessionEncounteringWriteError(
     QuicChromiumClientSession* session,
-    NetworkChangeNotifier::NetworkHandle network,
+    handles::NetworkHandle network,
     int error_code) {
   if (network != default_network_)
     return;
@@ -182,7 +182,7 @@ void QuicConnectivityMonitor::OnSessionEncounteringWriteError(
 
 void QuicConnectivityMonitor::OnSessionClosedAfterHandshake(
     QuicChromiumClientSession* session,
-    NetworkChangeNotifier::NetworkHandle network,
+    handles::NetworkHandle network,
     quic::ConnectionCloseSource source,
     quic::QuicErrorCode error_code) {
   if (network != default_network_)
@@ -206,7 +206,7 @@ void QuicConnectivityMonitor::OnSessionClosedAfterHandshake(
 
 void QuicConnectivityMonitor::OnSessionRegistered(
     QuicChromiumClientSession* session,
-    NetworkChangeNotifier::NetworkHandle network) {
+    handles::NetworkHandle network) {
   if (network != default_network_)
     return;
 
@@ -224,7 +224,7 @@ void QuicConnectivityMonitor::OnSessionRemoved(
 }
 
 void QuicConnectivityMonitor::OnDefaultNetworkUpdated(
-    NetworkChangeNotifier::NetworkHandle default_network) {
+    handles::NetworkHandle default_network) {
   default_network_ = default_network;
   active_sessions_.clear();
   degrading_sessions_.clear();
@@ -235,12 +235,12 @@ void QuicConnectivityMonitor::OnDefaultNetworkUpdated(
 }
 
 void QuicConnectivityMonitor::OnIPAddressChanged() {
-  // If NetworkHandle is supported, connectivity monitor will receive
+  // If handles::NetworkHandle is supported, connectivity monitor will receive
   // notifications via OnDefaultNetworkUpdated.
   if (NetworkChangeNotifier::AreNetworkHandlesSupported())
     return;
 
-  DCHECK_EQ(default_network_, NetworkChangeNotifier::kInvalidNetworkHandle);
+  DCHECK_EQ(default_network_, handles::kInvalidNetworkHandle);
   degrading_sessions_.clear();
   write_error_map_.clear();
 }

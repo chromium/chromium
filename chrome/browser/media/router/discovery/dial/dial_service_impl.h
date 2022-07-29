@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_service.h"
 #include "net/base/ip_address.h"
+#include "net/base/network_interfaces.h"
 #include "net/socket/udp_socket.h"
 
 namespace net {

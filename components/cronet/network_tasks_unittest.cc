@@ -119,23 +119,21 @@ class NetworkTasksTest : public testing::Test {
                            net::ProxyConfigWithAnnotation::CreateDirect())));
   }
 
-  void SpawnNetworkBoundURLRequestContext(
-      net::NetworkChangeNotifier::NetworkHandle network) {
+  void SpawnNetworkBoundURLRequestContext(net::handles::NetworkHandle network) {
     PostToNetworkThreadSync(base::BindLambdaForTesting([=]() {
       network_tasks_->SpawnNetworkBoundURLRequestContextForTesting(network);
     }));
   }
 
-  void CheckURLRequestContextExistence(
-      net::NetworkChangeNotifier::NetworkHandle network,
-      bool expected) {
+  void CheckURLRequestContextExistence(net::handles::NetworkHandle network,
+                                       bool expected) {
     PostToNetworkThreadSync(base::BindLambdaForTesting([=]() {
       EXPECT_EQ(expected,
                 network_tasks_->URLRequestContextExistsForTesting(network));
     }));
   }
 
-  void CreateURLRequest(net::NetworkChangeNotifier::NetworkHandle network) {
+  void CreateURLRequest(net::handles::NetworkHandle network) {
     PostToNetworkThreadSync(base::BindLambdaForTesting([&]() {
       auto* context = network_tasks_->GetURLRequestContext(network);
       url_request_ = context->CreateRequest(GURL("http://www.foo.com"),
@@ -150,8 +148,7 @@ class NetworkTasksTest : public testing::Test {
         base::BindLambdaForTesting([&]() { url_request_.reset(); }));
   }
 
-  void MaybeDestroyURLRequestContext(
-      net::NetworkChangeNotifier::NetworkHandle network) {
+  void MaybeDestroyURLRequestContext(net::handles::NetworkHandle network) {
     PostToNetworkThreadSync(base::BindLambdaForTesting(
         [&]() { network_tasks_->MaybeDestroyURLRequestContext(network); }));
   }
@@ -181,7 +178,7 @@ TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
     GTEST_SKIP() << "Network binding on Android requires an API level >= 23";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  constexpr net::NetworkChangeNotifier::NetworkHandle kNetwork = 1;
+  constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
   SpawnNetworkBoundURLRequestContext(kNetwork);
@@ -200,7 +197,7 @@ TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
     GTEST_SKIP() << "Network binding on Android requires an API level >= 23";
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  constexpr net::NetworkChangeNotifier::NetworkHandle kNetwork = 1;
+  constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
   SpawnNetworkBoundURLRequestContext(kNetwork);

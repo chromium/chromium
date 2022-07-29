@@ -32,7 +32,7 @@ namespace net {
 URLRequestContext::URLRequestContext(
     base::PassKey<URLRequestContextBuilder> pass_key)
     : url_requests_(std::make_unique<std::set<const URLRequest*>>()),
-      bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle) {}
+      bound_network_(handles::kInvalidNetworkHandle) {}
 
 URLRequestContext::~URLRequestContext() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

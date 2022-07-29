@@ -18,7 +18,7 @@
 #include "base/threading/thread.h"
 #include "components/cronet/cronet_context.h"
 #include "components/prefs/json_pref_store.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/network_quality_estimator.h"
@@ -64,8 +64,8 @@ class CronetContextAdapter : public CronetContext::Callback {
   bool IsOnNetworkThread() const;
 
   net::URLRequestContext* GetURLRequestContext(
-      net::NetworkChangeNotifier::NetworkHandle network =
-          net::NetworkChangeNotifier::kInvalidNetworkHandle);
+      net::handles::NetworkHandle network =
+          net::handles::kInvalidNetworkHandle);
 
   // TODO(xunjieli): Keep only one version of StartNetLog().
 

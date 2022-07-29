@@ -7,7 +7,7 @@
 
 #include "net/base/datagram_buffer.h"
 #include "net/base/net_export.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/socket/datagram_socket.h"
 #include "net/socket/socket.h"
 
@@ -30,7 +30,7 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
   // received via |network|. This call will fail if |network| has disconnected.
   // Communication using this socket will fail if |network| disconnects.
   // Returns a net error code.
-  virtual int ConnectUsingNetwork(NetworkChangeNotifier::NetworkHandle network,
+  virtual int ConnectUsingNetwork(handles::NetworkHandle network,
                                   const IPEndPoint& address) = 0;
 
   // Same as ConnectUsingNetwork, except that the current default network is
@@ -39,9 +39,9 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
 
   // Returns the network that either ConnectUsingNetwork() or
   // ConnectUsingDefaultNetwork() bound this socket to. Returns
-  // NetworkChangeNotifier::kInvalidNetworkHandle if not explicitly bound via
+  // handles::kInvalidNetworkHandle if not explicitly bound via
   // ConnectUsingNetwork() or ConnectUsingDefaultNetwork().
-  virtual NetworkChangeNotifier::NetworkHandle GetBoundNetwork() const = 0;
+  virtual handles::NetworkHandle GetBoundNetwork() const = 0;
 
   // Apply |tag| to this socket.
   virtual void ApplySocketTag(const SocketTag& tag) = 0;

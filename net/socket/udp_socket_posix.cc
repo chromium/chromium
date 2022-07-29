@@ -139,7 +139,7 @@ UDPSocketPosix::UDPSocketPosix(DatagramSocket::BindType bind_type,
       read_watcher_(this),
       write_watcher_(this),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::UDP_SOCKET)),
-      bound_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
+      bound_network_(handles::kInvalidNetworkHandle),
       always_update_bytes_received_(base::FeatureList::IsEnabled(
           features::kUdpSocketPosixAlwaysUpdateBytesReceived)) {
   net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
@@ -487,8 +487,7 @@ int UDPSocketPosix::Bind(const IPEndPoint& address) {
   return rv;
 }
 
-int UDPSocketPosix::BindToNetwork(
-    NetworkChangeNotifier::NetworkHandle network) {
+int UDPSocketPosix::BindToNetwork(handles::NetworkHandle network) {
   DCHECK_NE(socket_, kInvalidSocket);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!is_connected());

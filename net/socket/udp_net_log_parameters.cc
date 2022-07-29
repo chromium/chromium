@@ -28,12 +28,11 @@ base::Value NetLogUDPDataTransferParams(int byte_count,
   return base::Value(std::move(dict));
 }
 
-base::Value NetLogUDPConnectParams(
-    const IPEndPoint& address,
-    NetworkChangeNotifier::NetworkHandle network) {
+base::Value NetLogUDPConnectParams(const IPEndPoint& address,
+                                   handles::NetworkHandle network) {
   base::Value::Dict dict;
   dict.Set("address", address.ToString());
-  if (network != NetworkChangeNotifier::kInvalidNetworkHandle)
+  if (network != handles::kInvalidNetworkHandle)
     dict.Set("bound_to_network", static_cast<int>(network));
   return base::Value(std::move(dict));
 }
@@ -52,9 +51,8 @@ void NetLogUDPDataTransfer(const NetLogWithSource& net_log,
   });
 }
 
-base::Value CreateNetLogUDPConnectParams(
-    const IPEndPoint& address,
-    NetworkChangeNotifier::NetworkHandle network) {
+base::Value CreateNetLogUDPConnectParams(const IPEndPoint& address,
+                                         handles::NetworkHandle network) {
   return NetLogUDPConnectParams(address, network);
 }
 

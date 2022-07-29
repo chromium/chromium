@@ -182,8 +182,7 @@ int TCPSocketPosix::Open(AddressFamily family) {
   return rv;
 }
 
-int TCPSocketPosix::BindToNetwork(
-    NetworkChangeNotifier::NetworkHandle network) {
+int TCPSocketPosix::BindToNetwork(handles::NetworkHandle network) {
   DCHECK(IsValid());
   DCHECK(!IsConnected());
 #if BUILDFLAG(IS_ANDROID)

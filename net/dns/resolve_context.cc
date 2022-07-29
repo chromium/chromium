@@ -333,7 +333,7 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
     bool network_change) {
   // Network-bound ResolveContexts should never receive a cache invalidation due
   // to a network change.
-  DCHECK(GetTargetNetwork() == NetworkChangeNotifier::kInvalidNetworkHandle ||
+  DCHECK(GetTargetNetwork() == handles::kInvalidNetworkHandle ||
          !network_change);
   if (host_cache_)
     host_cache_->Invalidate();
@@ -380,9 +380,9 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
     NotifyDohStatusObserversOfUnavailable(network_change);
 }
 
-NetworkChangeNotifier::NetworkHandle ResolveContext::GetTargetNetwork() const {
+handles::NetworkHandle ResolveContext::GetTargetNetwork() const {
   if (!url_request_context())
-    return NetworkChangeNotifier::kInvalidNetworkHandle;
+    return handles::kInvalidNetworkHandle;
 
   return url_request_context()->bound_network();
 }

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 
 namespace net {
 
@@ -35,21 +36,21 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
   void GetCurrentConnectedNetworks(NetworkList* network_list) const override;
 
   // Delivers a MADE_DEFAULT notification to observers.
-  void NotifyNetworkMadeDefault(NetworkChangeNotifier::NetworkHandle network);
+  void NotifyNetworkMadeDefault(handles::NetworkHandle network);
 
   // Queues a MADE_DEFAULT notification to be delivered to observers
   // but does not spin the message loop to actually deliver it.
-  void QueueNetworkMadeDefault(NetworkChangeNotifier::NetworkHandle network);
+  void QueueNetworkMadeDefault(handles::NetworkHandle network);
 
   // Delivers a DISCONNECTED notification to observers.
-  void NotifyNetworkDisconnected(NetworkChangeNotifier::NetworkHandle network);
+  void NotifyNetworkDisconnected(handles::NetworkHandle network);
 
   // Queues a DISCONNECTED notification to be delivered to observers
   // but does not spin the message loop to actually deliver it.
-  void QueueNetworkDisconnected(NetworkChangeNotifier::NetworkHandle network);
+  void QueueNetworkDisconnected(handles::NetworkHandle network);
 
   // Delivers a CONNECTED notification to observers.
-  void NotifyNetworkConnected(NetworkChangeNotifier::NetworkHandle network);
+  void NotifyNetworkConnected(handles::NetworkHandle network);
 
   void SetConnectionTypeAndNotifyObservers(ConnectionType connection_type);
 

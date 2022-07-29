@@ -50,7 +50,7 @@ int FuzzedDatagramClientSocket::Connect(const IPEndPoint& address) {
 }
 
 int FuzzedDatagramClientSocket::ConnectUsingNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
+    handles::NetworkHandle network,
     const IPEndPoint& address) {
   CHECK(!connected_);
   return ERR_NOT_IMPLEMENTED;
@@ -62,9 +62,8 @@ int FuzzedDatagramClientSocket::FuzzedDatagramClientSocket::
   return ERR_NOT_IMPLEMENTED;
 }
 
-NetworkChangeNotifier::NetworkHandle
-FuzzedDatagramClientSocket::GetBoundNetwork() const {
-  return NetworkChangeNotifier::kInvalidNetworkHandle;
+handles::NetworkHandle FuzzedDatagramClientSocket::GetBoundNetwork() const {
+  return handles::kInvalidNetworkHandle;
 }
 
 void FuzzedDatagramClientSocket::ApplySocketTag(const SocketTag& tag) {}

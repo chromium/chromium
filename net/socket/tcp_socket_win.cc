@@ -1064,7 +1064,7 @@ void TCPSocketWin::ApplySocketTag(const SocketTag& tag) {
   CHECK(tag == SocketTag());
 }
 
-int TCPSocketWin::BindToNetwork(NetworkChangeNotifier::NetworkHandle network) {
+int TCPSocketWin::BindToNetwork(handles::NetworkHandle network) {
   NOTIMPLEMENTED();
   return ERR_NOT_IMPLEMENTED;
 }

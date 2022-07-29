@@ -66,7 +66,7 @@ TEST(NetworkLibraryTest, GetDnsSearchDomainsForNetwork) {
   EXPECT_TRUE(NetworkChangeNotifier::AreNetworkHandlesSupported());
 
   auto default_network_handle = NetworkChangeNotifier::GetDefaultNetwork();
-  if (default_network_handle == NetworkChangeNotifier::kInvalidNetworkHandle)
+  if (default_network_handle == handles::kInvalidNetworkHandle)
     GTEST_SKIP() << "Could not retrieve a working active network handle.";
 
   std::vector<IPEndPoint> dns_servers;
@@ -111,20 +111,18 @@ TEST(NetworkLibraryTest, BindToNetwork) {
         base::android::SDK_VERSION_LOLLIPOP) {
       EXPECT_TRUE(NetworkChangeNotifier::AreNetworkHandlesSupported());
       // Test successful binding.
-      NetworkChangeNotifier::NetworkHandle existing_network_handle =
+      handles::NetworkHandle existing_network_handle =
           NetworkChangeNotifier::GetDefaultNetwork();
-      if (existing_network_handle !=
-          NetworkChangeNotifier::kInvalidNetworkHandle) {
+      if (existing_network_handle != handles::kInvalidNetworkHandle) {
         EXPECT_EQ(OK, BindToNetwork(socket, existing_network_handle));
       }
       // Test invalid binding.
-      EXPECT_EQ(
-          ERR_INVALID_ARGUMENT,
-          BindToNetwork(socket, NetworkChangeNotifier::kInvalidNetworkHandle));
+      EXPECT_EQ(ERR_INVALID_ARGUMENT,
+                BindToNetwork(socket, handles::kInvalidNetworkHandle));
     }
 
-    // Attempt to bind to a not existing NetworkHandle.
-    constexpr NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+    // Attempt to bind to a not existing handles::NetworkHandle.
+    constexpr handles::NetworkHandle wrong_network_handle = 65536;
     int rv = BindToNetwork(socket, wrong_network_handle);
     if (base::android::BuildInfo::GetInstance()->sdk_int() <
         base::android::SDK_VERSION_LOLLIPOP) {
@@ -133,17 +131,17 @@ TEST(NetworkLibraryTest, BindToNetwork) {
                    base::android::SDK_VERSION_LOLLIPOP &&
                base::android::BuildInfo::GetInstance()->sdk_int() <
                    base::android::SDK_VERSION_MARSHMALLOW) {
-      // On Lollipop, we assume if the user has a NetworkHandle that they must
-      // have gotten it from a legitimate source, so if binding to the network
-      // fails it's assumed to be because the network went away so
+      // On Lollipop, we assume if the user has a handles::NetworkHandle that
+      // they must have gotten it from a legitimate source, so if binding to the
+      // network fails it's assumed to be because the network went away so
       // ERR_NETWORK_CHANGED is returned. In this test the network never existed
       // anyhow. ConnectivityService.MAX_NET_ID is 65535, so 65536 won't be
       // used.
       EXPECT_EQ(ERR_NETWORK_CHANGED, rv);
     } else if (base::android::BuildInfo::GetInstance()->sdk_int() >=
                base::android::SDK_VERSION_MARSHMALLOW) {
-      // On Marshmallow and newer releases, the NetworkHandle is munged by
-      // Network.getNetworkHandle() and 65536 isn't munged so it's rejected.
+      // On Marshmallow and newer releases, the handles::NetworkHandle is munged
+      // by Network.getNetworkHandle() and 65536 isn't munged so it's rejected.
       EXPECT_EQ(ERR_INVALID_ARGUMENT, rv);
     }
   }

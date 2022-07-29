@@ -30,6 +30,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_server.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_chromium_client_stream.h"
@@ -150,14 +151,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   class NET_EXPORT_PRIVATE ConnectivityObserver : public base::CheckedObserver {
    public:
     // Called when path degrading is detected on |network|.
-    virtual void OnSessionPathDegrading(
-        QuicChromiumClientSession* session,
-        NetworkChangeNotifier::NetworkHandle network) = 0;
+    virtual void OnSessionPathDegrading(QuicChromiumClientSession* session,
+                                        handles::NetworkHandle network) = 0;
 
     // Called when forward progress is made after path degrading on |network|.
     virtual void OnSessionResumedPostPathDegrading(
         QuicChromiumClientSession* session,
-        NetworkChangeNotifier::NetworkHandle network) = 0;
+        handles::NetworkHandle network) = 0;
 
     // Called when |session| encounters write error on |network|.
     // A write error may be caused by the change in the underlying network
@@ -165,22 +165,21 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // based on the |error_code|.
     virtual void OnSessionEncounteringWriteError(
         QuicChromiumClientSession* session,
-        NetworkChangeNotifier::NetworkHandle network,
+        handles::NetworkHandle network,
         int error_code) = 0;
 
     // Called when |session| is closed by |source| with |error_code|
     // and handshake has been confirmed.
     virtual void OnSessionClosedAfterHandshake(
         QuicChromiumClientSession* session,
-        NetworkChangeNotifier::NetworkHandle network,
+        handles::NetworkHandle network,
         quic::ConnectionCloseSource source,
         quic::QuicErrorCode error_code) = 0;
 
     // Called when |this| is registered to monitor the connectivity of the
     // |session|.
-    virtual void OnSessionRegistered(
-        QuicChromiumClientSession* session,
-        NetworkChangeNotifier::NetworkHandle network) = 0;
+    virtual void OnSessionRegistered(QuicChromiumClientSession* session,
+                                     handles::NetworkHandle network) = 0;
 
     // Called when |session| is removed.
     virtual void OnSessionRemoved(QuicChromiumClientSession* session) = 0;
@@ -435,13 +434,13 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     QuicChromiumPathValidationContext(
         const quic::QuicSocketAddress& self_address,
         const quic::QuicSocketAddress& peer_address,
-        NetworkChangeNotifier::NetworkHandle network,
+        handles::NetworkHandle network,
         std::unique_ptr<DatagramClientSocket> socket,
         std::unique_ptr<QuicChromiumPacketWriter> writer,
         std::unique_ptr<QuicChromiumPacketReader> reader);
     ~QuicChromiumPathValidationContext() override;
 
-    NetworkChangeNotifier::NetworkHandle network();
+    handles::NetworkHandle network();
     quic::QuicPacketWriter* WriterToUse() override;
 
     // Transfer the ownership from |this| to the caller.
@@ -450,7 +449,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     std::unique_ptr<QuicChromiumPacketReader> ReleaseReader();
 
    private:
-    NetworkChangeNotifier::NetworkHandle network_handle_;
+    handles::NetworkHandle network_handle_;
     std::unique_ptr<DatagramClientSocket> socket_;
     std::unique_ptr<QuicChromiumPacketWriter> writer_;
     std::unique_ptr<QuicChromiumPacketReader> reader_;
@@ -518,17 +517,17 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     void OnWriteUnblocked() override;
 
     void set_peer_address(const quic::QuicSocketAddress& peer_address);
-    void set_network(NetworkChangeNotifier::NetworkHandle network);
+    void set_network(handles::NetworkHandle network);
 
    private:
-    void NotifySessionProbeFailed(NetworkChangeNotifier::NetworkHandle network);
+    void NotifySessionProbeFailed(handles::NetworkHandle network);
 
     // |session_| owns |this| and should out live |this|.
     raw_ptr<QuicChromiumClientSession> session_;
     // |task_owner_| should out live |this|.
     raw_ptr<base::SequencedTaskRunner> task_runner_;
     // The path validation context of the most recent probing.
-    NetworkChangeNotifier::NetworkHandle network_;
+    handles::NetworkHandle network_;
     quic::QuicSocketAddress peer_address_;
     base::WeakPtrFactory<QuicChromiumPathValidationWriterDelegate>
         weak_factory_{this};
@@ -556,7 +555,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       bool require_confirmation,
       bool migrate_sesion_early_v2,
       bool migrate_session_on_network_change_v2,
-      NetworkChangeNotifier::NetworkHandle default_network,
+      handles::NetworkHandle default_network,
       quic::QuicTime::Delta retransmittable_on_wire_timeout,
       bool migrate_idle_session,
       bool allow_port_migration,
@@ -628,7 +627,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void OnWriteUnblocked() override;
 
   void OnConnectionMigrationProbeSucceeded(
-      NetworkChangeNotifier::NetworkHandle network,
+      handles::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
       std::unique_ptr<DatagramClientSocket> socket,
@@ -636,14 +635,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicChromiumPacketReader> reader);
 
   void OnPortMigrationProbeSucceeded(
-      NetworkChangeNotifier::NetworkHandle network,
+      handles::NetworkHandle network,
       const quic::QuicSocketAddress& peer_address,
       const quic::QuicSocketAddress& self_address,
       std::unique_ptr<DatagramClientSocket> socket,
       std::unique_ptr<QuicChromiumPacketWriter> writer,
       std::unique_ptr<QuicChromiumPacketReader> reader);
 
-  void OnProbeFailed(NetworkChangeNotifier::NetworkHandle network,
+  void OnProbeFailed(handles::NetworkHandle network,
                      const quic::QuicSocketAddress& peer_address);
 
   // quic::QuicSpdySession methods:
@@ -772,10 +771,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   void WriteToNewSocket();
 
   // Migrates session over to use |peer_address| and |network|.
-  // If |network| is kInvalidNetworkHandle, default network is used. If the
-  // migration fails and |close_session_on_error| is true, session will be
+  // If |network| is handles::kInvalidNetworkHandle, default network is used. If
+  // the migration fails and |close_session_on_error| is true, session will be
   // closed.
-  MigrationResult Migrate(NetworkChangeNotifier::NetworkHandle network,
+  MigrationResult Migrate(handles::NetworkHandle network,
                           IPEndPoint peer_address,
                           bool close_session_on_error);
 
@@ -796,16 +795,15 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Called when NetworkChangeNotifier notifies observers of a newly
   // connected network. Migrates this session to the newly connected
   // network if the session has a pending migration.
-  void OnNetworkConnected(NetworkChangeNotifier::NetworkHandle network);
+  void OnNetworkConnected(handles::NetworkHandle network);
 
   // Called when NetworkChangeNotifier broadcasts to observers of
   // |disconnected_network|.
-  void OnNetworkDisconnectedV2(
-      NetworkChangeNotifier::NetworkHandle disconnected_network);
+  void OnNetworkDisconnectedV2(handles::NetworkHandle disconnected_network);
 
   // Called when NetworkChangeNotifier broadcats to observers of a new default
   // network. Migrates this session to |new_network| if appropriate.
-  void OnNetworkMadeDefault(NetworkChangeNotifier::NetworkHandle new_network);
+  void OnNetworkMadeDefault(handles::NetworkHandle new_network);
 
   // Schedules a migration alarm to wait for a new network.
   void OnNoNewNetwork();
@@ -823,9 +821,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   const DatagramClientSocket* GetDefaultSocket() const;
 
   // Returns the network interface that is currently used to send packets.
-  // If NetworkHandle is not supported, always return
-  // NetworkChangeNotifier::kInvalidNetworkHandle.
-  NetworkChangeNotifier::NetworkHandle GetCurrentNetwork() const;
+  // If handles::NetworkHandle is not supported, always return
+  // handles::kInvalidNetworkHandle.
+  handles::NetworkHandle GetCurrentNetwork() const;
 
   bool IsAuthorized(const std::string& hostname) override;
 
@@ -896,12 +894,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Probe on <network, peer_address>.
   // If <network, peer_addres> is identical to the current path, the probe
   // is sent on a different port.
-  ProbingResult StartProbing(NetworkChangeNotifier::NetworkHandle network,
+  ProbingResult StartProbing(handles::NetworkHandle network,
                              const quic::QuicSocketAddress& peer_address);
 
   // Perform a few checks before StartProbing. If any of those checks fails,
   // StartProbing will be skipped.
-  ProbingResult MaybeStartProbing(NetworkChangeNotifier::NetworkHandle network,
+  ProbingResult MaybeStartProbing(handles::NetworkHandle network,
                                   const quic::QuicSocketAddress& peer_address);
 
   // Helper method to perform a few checks and initiate connection migration
@@ -920,7 +918,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   //    default network;
   //  - If now on the default network, cancel timer to migrate back to default
   //    network.
-  void MigrateNetworkImmediately(NetworkChangeNotifier::NetworkHandle network);
+  void MigrateNetworkImmediately(handles::NetworkHandle network);
 
   void StartMigrateBackToDefaultNetworkTimer(base::TimeDelta delay);
   void CancelMigrateBackToDefaultNetworkTimer();
@@ -1037,7 +1035,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   scoped_refptr<QuicChromiumPacketWriter::ReusableIOBuffer> packet_;
   // Stores the latest default network platform marks if migration is enabled.
   // Otherwise, stores the network interface that is used by the connection.
-  NetworkChangeNotifier::NetworkHandle default_network_;
+  handles::NetworkHandle default_network_;
   int retry_migrate_back_count_ = 0;
   base::OneShotTimer migrate_back_to_default_timer_;
   MigrationCause current_migration_cause_ = UNKNOWN_CAUSE;

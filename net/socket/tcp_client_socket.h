@@ -62,8 +62,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
       NetworkQualityEstimator* network_quality_estimator,
       net::NetLog* net_log,
       const net::NetLogSource& source,
-      NetworkChangeNotifier::NetworkHandle network =
-          NetworkChangeNotifier::kInvalidNetworkHandle);
+      handles::NetworkHandle network = handles::kInvalidNetworkHandle);
 
   // Adopts the given, connected socket and then acts as if Connect() had been
   // called. This function is used by TCPServerSocket and for testing.
@@ -146,13 +145,13 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   // address index in `addresses` of the server `socket` is connected to, or -1
   // if not connected. `bind_address`, if present, is the address `socket` is
   // bound to. `network` is the network the socket is required to be bound to,
-  // or NetworkChangeNotifier::kInvalidNetworkHandle if no binding is required.
+  // or handles::kInvalidNetworkHandle if no binding is required.
   TCPClientSocket(std::unique_ptr<TCPSocket> socket,
                   const AddressList& addresses,
                   int current_address_index,
                   std::unique_ptr<IPEndPoint> bind_address,
                   NetworkQualityEstimator* network_quality_estimator,
-                  NetworkChangeNotifier::NetworkHandle network);
+                  handles::NetworkHandle network);
 
   // A helper method shared by Read() and ReadIfReady(). If |read_if_ready| is
   // set to true, ReadIfReady() will be used instead of Read().
@@ -242,7 +241,7 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
 
   base::OneShotTimer connect_attempt_timer_;
 
-  NetworkChangeNotifier::NetworkHandle network_;
+  handles::NetworkHandle network_;
 
   base::WeakPtrFactory<TCPClientSocket> weak_ptr_factory_{this};
 };

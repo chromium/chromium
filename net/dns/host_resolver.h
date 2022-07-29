@@ -17,7 +17,7 @@
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
@@ -431,8 +431,7 @@ class NET_EXPORT HostResolver {
 
   virtual HostResolverManager* GetManagerForTesting();
   virtual const URLRequestContext* GetContextForTesting() const;
-  virtual NetworkChangeNotifier::NetworkHandle GetTargetNetworkForTesting()
-      const;
+  virtual handles::NetworkHandle GetTargetNetworkForTesting() const;
 
   // Creates a new HostResolver. |manager| must outlive the returned resolver.
   //
@@ -469,7 +468,7 @@ class NET_EXPORT HostResolver {
   // Only implemented for Android starting from Marshmallow.
   static std::unique_ptr<HostResolver> CreateStandaloneNetworkBoundResolver(
       NetLog* net_log,
-      NetworkChangeNotifier::NetworkHandle network,
+      handles::NetworkHandle network,
       absl::optional<ManagerOptions> options = absl::nullopt,
       base::StringPiece host_mapping_rules = "",
       bool enable_caching = true);

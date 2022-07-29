@@ -45,7 +45,7 @@ jboolean JNI_CronetTestUtil_URLRequestContextExistsForTesting(
 }
 
 // static
-base::flat_map<net::NetworkChangeNotifier::NetworkHandle,
+base::flat_map<net::handles::NetworkHandle,
                std::unique_ptr<net::URLRequestContext>>*
 TestUtil::GetURLRequestContexts(jlong jcontext_adapter) {
   CronetContextAdapter* context_adapter =

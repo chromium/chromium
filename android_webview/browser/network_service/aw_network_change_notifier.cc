@@ -33,12 +33,12 @@ void AwNetworkChangeNotifier::GetCurrentConnectedNetworks(
 
 net::NetworkChangeNotifier::ConnectionType
 AwNetworkChangeNotifier::GetCurrentNetworkConnectionType(
-    NetworkHandle network) const {
+    net::handles::NetworkHandle network) const {
   return delegate_->GetNetworkConnectionType(network);
 }
 
-net::NetworkChangeNotifier::NetworkHandle
-AwNetworkChangeNotifier::GetCurrentDefaultNetwork() const {
+net::handles::NetworkHandle AwNetworkChangeNotifier::GetCurrentDefaultNetwork()
+    const {
   return delegate_->GetCurrentDefaultNetwork();
 }
 
@@ -55,12 +55,14 @@ void AwNetworkChangeNotifier::OnMaxBandwidthChanged(
                                                              type);
 }
 
-void AwNetworkChangeNotifier::OnNetworkConnected(NetworkHandle network) {}
+void AwNetworkChangeNotifier::OnNetworkConnected(
+    net::handles::NetworkHandle network) {}
 void AwNetworkChangeNotifier::OnNetworkSoonToDisconnect(
-    NetworkHandle network) {}
+    net::handles::NetworkHandle network) {}
 void AwNetworkChangeNotifier::OnNetworkDisconnected(
-    NetworkHandle network) {}
-void AwNetworkChangeNotifier::OnNetworkMadeDefault(NetworkHandle network) {}
+    net::handles::NetworkHandle network) {}
+void AwNetworkChangeNotifier::OnNetworkMadeDefault(
+    net::handles::NetworkHandle network) {}
 
 void AwNetworkChangeNotifier::OnDefaultNetworkActive() {}
 

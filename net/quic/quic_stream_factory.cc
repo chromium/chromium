@@ -77,8 +77,6 @@
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
-using NetworkHandle = net::NetworkChangeNotifier::NetworkHandle;
-
 namespace net {
 
 namespace {
@@ -528,7 +526,7 @@ class QuicStreamFactory::Job {
   QuicChromiumClientSession* session_ = nullptr;
   // If connection migraiton is supported, |network_| denotes the network on
   // which |session_| is created.
-  NetworkChangeNotifier::NetworkHandle network_;
+  handles::NetworkHandle network_;
   CompletionOnceCallback host_resolution_callback_;
   CompletionOnceCallback callback_;
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
@@ -573,7 +571,7 @@ QuicStreamFactory::Job::Job(
       net_log_(
           NetLogWithSource::Make(net_log.net_log(),
                                  NetLogSourceType::QUIC_STREAM_FACTORY_JOB)),
-      network_(NetworkChangeNotifier::kInvalidNetworkHandle) {
+      network_(handles::kInvalidNetworkHandle) {
   DCHECK_EQ(quic_version.IsKnown(), !require_dns_https_alpn);
   net_log_.BeginEvent(NetLogEventType::QUIC_STREAM_FACTORY_JOB,
                       [&] { return NetLogQuicStreamFactoryJobParams(&key_); });
@@ -951,10 +949,9 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
         session_->error() == quic::QUIC_PACKET_WRITE_ERROR) {
       // Retry the connection on an alternate network if crypto handshake failed
       // with network idle time out or handshake time out.
-      DCHECK(network_ != NetworkChangeNotifier::kInvalidNetworkHandle);
+      DCHECK(network_ != handles::kInvalidNetworkHandle);
       network_ = factory_->FindAlternateNetwork(network_);
-      connection_retried_ =
-          network_ != NetworkChangeNotifier::kInvalidNetworkHandle;
+      connection_retried_ = network_ != handles::kInvalidNetworkHandle;
       UMA_HISTOGRAM_BOOLEAN(
           "Net.QuicStreamFactory.AttemptMigrationBeforeHandshake",
           connection_retried_);
@@ -995,7 +992,7 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
       base::UmaHistogramSparse(
           "Net.QuicStreamFactory.MigrationBeforeHandshakeFailedReason", -rv);
     }
-  } else if (network_ != NetworkChangeNotifier::kInvalidNetworkHandle &&
+  } else if (network_ != handles::kInvalidNetworkHandle &&
              network_ != factory_->default_network()) {
     UMA_HISTOGRAM_BOOLEAN("Net.QuicStreamFactory.ConnectionOnNonDefaultNetwork",
                           rv == OK);
@@ -1209,7 +1206,7 @@ QuicStreamFactory::QuicStreamFactory(
       yield_after_packets_(kQuicYieldAfterPacketsRead),
       yield_after_duration_(quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds)),
-      default_network_(NetworkChangeNotifier::kInvalidNetworkHandle),
+      default_network_(handles::kInvalidNetworkHandle),
       connectivity_monitor_(default_network_),
       ssl_config_service_(ssl_config_service),
       use_network_isolation_key_for_crypto_configs_(
@@ -1476,14 +1473,14 @@ void QuicStreamFactory::ClearCachedStatesInCryptoConfig(
 
 int QuicStreamFactory::ConfigureSocket(DatagramClientSocket* socket,
                                        IPEndPoint addr,
-                                       NetworkHandle network,
+                                       handles::NetworkHandle network,
                                        const SocketTag& socket_tag) {
   socket->UseNonBlockingIO();
 
   int rv;
   if (params_.migrate_sessions_on_network_change_v2) {
     // If caller leaves network unspecified, use current default network.
-    if (network == NetworkChangeNotifier::kInvalidNetworkHandle) {
+    if (network == handles::kInvalidNetworkHandle) {
       rv = socket->ConnectUsingDefaultNetwork(addr);
     } else {
       rv = socket->ConnectUsingNetwork(network, addr);
@@ -1540,16 +1537,16 @@ int QuicStreamFactory::ConfigureSocket(DatagramClientSocket* socket,
   return OK;
 }
 
-NetworkHandle QuicStreamFactory::FindAlternateNetwork(
-    NetworkHandle old_network) {
+handles::NetworkHandle QuicStreamFactory::FindAlternateNetwork(
+    handles::NetworkHandle old_network) {
   // Find a new network that sessions bound to |old_network| can be migrated to.
   NetworkChangeNotifier::NetworkList network_list;
   NetworkChangeNotifier::GetConnectedNetworks(&network_list);
-  for (NetworkHandle new_network : network_list) {
+  for (handles::NetworkHandle new_network : network_list) {
     if (new_network != old_network)
       return new_network;
   }
-  return NetworkChangeNotifier::kInvalidNetworkHandle;
+  return handles::kInvalidNetworkHandle;
 }
 
 std::unique_ptr<DatagramClientSocket> QuicStreamFactory::CreateSocket(
@@ -1563,8 +1560,8 @@ std::unique_ptr<DatagramClientSocket> QuicStreamFactory::CreateSocket(
 }
 
 void QuicStreamFactory::OnIPAddressChanged() {
-  CollectDataOnPlatformNotification(
-      NETWORK_IP_ADDRESS_CHANGED, NetworkChangeNotifier::kInvalidNetworkHandle);
+  CollectDataOnPlatformNotification(NETWORK_IP_ADDRESS_CHANGED,
+                                    handles::kInvalidNetworkHandle);
   // Do nothing if connection migration is turned on.
   if (params_.migrate_sessions_on_network_change_v2)
     return;
@@ -1580,7 +1577,7 @@ void QuicStreamFactory::OnIPAddressChanged() {
   }
 }
 
-void QuicStreamFactory::OnNetworkConnected(NetworkHandle network) {
+void QuicStreamFactory::OnNetworkConnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_CONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
     NetLogWithSource net_log = NetLogWithSource::Make(
@@ -1600,7 +1597,7 @@ void QuicStreamFactory::OnNetworkConnected(NetworkHandle network) {
   }
 }
 
-void QuicStreamFactory::OnNetworkDisconnected(NetworkHandle network) {
+void QuicStreamFactory::OnNetworkDisconnected(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_DISCONNECTED, network);
   if (params_.migrate_sessions_on_network_change_v2) {
     NetLogWithSource net_log = NetLogWithSource::Make(
@@ -1622,23 +1619,24 @@ void QuicStreamFactory::OnNetworkDisconnected(NetworkHandle network) {
 
 // This method is expected to only be called when migrating from Cellular to
 // WiFi on Android, and should always be preceded by OnNetworkMadeDefault().
-void QuicStreamFactory::OnNetworkSoonToDisconnect(NetworkHandle network) {
+void QuicStreamFactory::OnNetworkSoonToDisconnect(
+    handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_SOON_TO_DISCONNECT, network);
 }
 
-void QuicStreamFactory::OnNetworkMadeDefault(NetworkHandle network) {
+void QuicStreamFactory::OnNetworkMadeDefault(handles::NetworkHandle network) {
   CollectDataOnPlatformNotification(NETWORK_MADE_DEFAULT, network);
   connectivity_monitor_.OnDefaultNetworkUpdated(network);
 
   // Clear alternative services that were marked as broken until default network
   // changes.
   if (params_.retry_on_alternate_network_before_handshake &&
-      default_network_ != NetworkChangeNotifier::kInvalidNetworkHandle &&
+      default_network_ != handles::kInvalidNetworkHandle &&
       network != default_network_) {
     http_server_properties_->OnDefaultNetworkChanged();
   }
 
-  DCHECK_NE(NetworkChangeNotifier::kInvalidNetworkHandle, network);
+  DCHECK_NE(handles::kInvalidNetworkHandle, network);
   default_network_ = network;
 
   if (params_.migrate_sessions_on_network_change_v2) {
@@ -1801,33 +1799,32 @@ bool QuicStreamFactory::HasActiveJob(const QuicSessionKey& session_key) const {
   return base::Contains(active_jobs_, session_key);
 }
 
-int QuicStreamFactory::CreateSession(
-    const QuicSessionAliasKey& key,
-    quic::ParsedQuicVersion quic_version,
-    int cert_verify_flags,
-    bool require_confirmation,
-    const AddressList& address_list,
-    base::TimeTicks dns_resolution_start_time,
-    base::TimeTicks dns_resolution_end_time,
-    const NetLogWithSource& net_log,
-    QuicChromiumClientSession** session,
-    NetworkChangeNotifier::NetworkHandle* network) {
+int QuicStreamFactory::CreateSession(const QuicSessionAliasKey& key,
+                                     quic::ParsedQuicVersion quic_version,
+                                     int cert_verify_flags,
+                                     bool require_confirmation,
+                                     const AddressList& address_list,
+                                     base::TimeTicks dns_resolution_start_time,
+                                     base::TimeTicks dns_resolution_end_time,
+                                     const NetLogWithSource& net_log,
+                                     QuicChromiumClientSession** session,
+                                     handles::NetworkHandle* network) {
   TRACE_EVENT0(NetTracingCategory(), "QuicStreamFactory::CreateSession");
   IPEndPoint addr = *address_list.begin();
   const quic::QuicServerId& server_id = key.server_id();
   std::unique_ptr<DatagramClientSocket> socket(
       CreateSocket(net_log.net_log(), net_log.source()));
 
-  // Passing in kInvalidNetworkHandle binds socket to default network.
+  // Passing in handles::kInvalidNetworkHandle binds socket to default network.
   int rv = ConfigureSocket(socket.get(), addr, *network,
                            key.session_key().socket_tag());
   if (rv != OK)
     return rv;
 
   if (params_.migrate_sessions_on_network_change_v2 &&
-      *network == NetworkChangeNotifier::kInvalidNetworkHandle) {
+      *network == handles::kInvalidNetworkHandle) {
     *network = socket->GetBoundNetwork();
-    if (default_network_ == NetworkChangeNotifier::kInvalidNetworkHandle) {
+    if (default_network_ == handles::kInvalidNetworkHandle) {
       // QuicStreamFactory may miss the default network signal before its
       // creation, update |default_network_| when the first socket is bound
       // to the default network.
@@ -2284,7 +2281,7 @@ void QuicStreamFactory::OnAllCryptoClientRefReleased(
 
 void QuicStreamFactory::CollectDataOnPlatformNotification(
     enum QuicPlatformNotification notification,
-    NetworkChangeNotifier::NetworkHandle affected_network) const {
+    handles::NetworkHandle affected_network) const {
   UMA_HISTOGRAM_ENUMERATION("Net.QuicSession.PlatformNotification",
                             notification, NETWORK_NOTIFICATION_MAX);
   connectivity_monitor_.RecordConnectivityStatsToHistograms(

@@ -24,7 +24,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_socket.h"
 #include "net/socket/diff_serv_code_point.h"
@@ -167,7 +167,7 @@ class NET_EXPORT UDPSocketPosix {
   // fail if |network| has disconnected. Communication using this socket will
   // fail if |network| disconnects.
   // Returns a net error code.
-  int BindToNetwork(NetworkChangeNotifier::NetworkHandle network);
+  int BindToNetwork(handles::NetworkHandle network);
 
   // Connects the socket to connect with a certain |address|.
   // Should be called after Open().
@@ -614,7 +614,7 @@ class NET_EXPORT UDPSocketPosix {
   NetLogWithSource net_log_;
 
   // Network that this socket is bound to via BindToNetwork().
-  NetworkChangeNotifier::NetworkHandle bound_network_;
+  handles::NetworkHandle bound_network_;
 
   // Whether net::activity_monitor should be updated every time bytes are
   // received, without batching through |received_activity_monitor_|. This is

@@ -44,8 +44,8 @@ int HostResolverProc::Resolve(const std::string& host,
                               HostResolverFlags host_resolver_flags,
                               AddressList* addrlist,
                               int* os_error,
-                              NetworkChangeNotifier::NetworkHandle network) {
-  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+                              handles::NetworkHandle network) {
+  if (network == handles::kInvalidNetworkHandle)
     return Resolve(host, address_family, host_resolver_flags, addrlist,
                    os_error);
 
@@ -130,7 +130,7 @@ int SystemHostResolverCall(const std::string& host,
                            HostResolverFlags host_resolver_flags,
                            AddressList* addrlist,
                            int* os_error_opt,
-                           NetworkChangeNotifier::NetworkHandle network) {
+                           handles::NetworkHandle network) {
   // |host| should be a valid domain name. HostResolverImpl::Resolve has checks
   // to fail early if this is not the case.
   DCHECK(IsValidDNSDomain(host));
@@ -230,13 +230,12 @@ int SystemHostResolverCall(const std::string& host,
 
 SystemHostResolverProc::SystemHostResolverProc() : HostResolverProc(nullptr) {}
 
-int SystemHostResolverProc::Resolve(
-    const std::string& hostname,
-    AddressFamily address_family,
-    HostResolverFlags host_resolver_flags,
-    AddressList* addr_list,
-    int* os_error,
-    NetworkChangeNotifier::NetworkHandle network) {
+int SystemHostResolverProc::Resolve(const std::string& hostname,
+                                    AddressFamily address_family,
+                                    HostResolverFlags host_resolver_flags,
+                                    AddressList* addr_list,
+                                    int* os_error,
+                                    handles::NetworkHandle network) {
   return SystemHostResolverCall(hostname, address_family, host_resolver_flags,
                                 addr_list, os_error, network);
 }
@@ -247,7 +246,7 @@ int SystemHostResolverProc::Resolve(const std::string& hostname,
                                     AddressList* addr_list,
                                     int* os_error) {
   return Resolve(hostname, address_family, host_resolver_flags, addr_list,
-                 os_error, NetworkChangeNotifier::kInvalidNetworkHandle);
+                 os_error, handles::kInvalidNetworkHandle);
 }
 
 SystemHostResolverProc::~SystemHostResolverProc() = default;

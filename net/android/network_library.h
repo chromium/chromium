@@ -20,7 +20,7 @@
 #include "net/base/ip_endpoint.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_export.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/socket/socket_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -115,7 +115,7 @@ NET_EXPORT_PRIVATE bool GetDnsServersForNetwork(
     bool* dns_over_tls_active,
     std::string* dns_over_tls_hostname,
     std::vector<std::string>* search_suffixes,
-    NetworkChangeNotifier::NetworkHandle network);
+    handles::NetworkHandle network);
 
 // Reports to the framework that the current default network appears to have
 // connectivity issues. This may serve as a signal for the OS to consider
@@ -134,20 +134,18 @@ NET_EXPORT_PRIVATE void TagSocket(SocketDescriptor socket,
 // disconnected. Communication using this socket will fail if `network`
 // disconnects.
 // Returns a net error code.
-NET_EXPORT_PRIVATE int BindToNetwork(
-    SocketDescriptor socket,
-    NetworkChangeNotifier::NetworkHandle network);
+NET_EXPORT_PRIVATE int BindToNetwork(SocketDescriptor socket,
+                                     handles::NetworkHandle network);
 
 // Perform hostname resolution via the DNS servers associated with `network`.
 // All arguments are used identically as those passed to Android NDK API
 // android_getaddrinfofornetwork:
 // https://developer.android.com/ndk/reference/group/networking#group___networking_1ga0ae9e15612e6411855e295476a98ceee
-NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
-    const char* node,
-    const char* service,
-    const struct addrinfo* hints,
-    struct addrinfo** res);
+NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(handles::NetworkHandle network,
+                                             const char* node,
+                                             const char* service,
+                                             const struct addrinfo* hints,
+                                             struct addrinfo** res);
 
 }  // namespace net::android
 

@@ -37,7 +37,6 @@ class NetworkChangeNotifierDelegateAndroidObserver
  public:
   typedef NetworkChangeNotifier::ConnectionCost ConnectionCost;
   typedef NetworkChangeNotifier::ConnectionType ConnectionType;
-  typedef NetworkChangeNotifier::NetworkHandle NetworkHandle;
   typedef NetworkChangeNotifier::NetworkList NetworkList;
 
   NetworkChangeNotifierDelegateAndroidObserver() = default;
@@ -53,13 +52,13 @@ class NetworkChangeNotifierDelegateAndroidObserver
     max_bandwidth_notifications_count_++;
   }
 
-  void OnNetworkConnected(NetworkHandle network) override {}
+  void OnNetworkConnected(handles::NetworkHandle network) override {}
 
-  void OnNetworkSoonToDisconnect(NetworkHandle network) override {}
+  void OnNetworkSoonToDisconnect(handles::NetworkHandle network) override {}
 
-  void OnNetworkDisconnected(NetworkHandle network) override {}
+  void OnNetworkDisconnected(handles::NetworkHandle network) override {}
 
-  void OnNetworkMadeDefault(NetworkHandle network) override {}
+  void OnNetworkMadeDefault(handles::NetworkHandle network) override {}
 
   void OnDefaultNetworkActive() override {
     default_network_active_notifications_count_++;
@@ -136,8 +135,7 @@ class TestNetworkObserver : public NetworkChangeNotifier::NetworkObserver {
  public:
   TestNetworkObserver() { Clear(); }
 
-  void ExpectChange(ChangeType change,
-                    NetworkChangeNotifier::NetworkHandle network) {
+  void ExpectChange(ChangeType change, handles::NetworkHandle network) {
     EXPECT_EQ(last_change_type_, change);
     EXPECT_EQ(last_network_changed_, network);
     Clear();
@@ -146,30 +144,26 @@ class TestNetworkObserver : public NetworkChangeNotifier::NetworkObserver {
  private:
   void Clear() {
     last_change_type_ = NONE;
-    last_network_changed_ = NetworkChangeNotifier::kInvalidNetworkHandle;
+    last_network_changed_ = handles::kInvalidNetworkHandle;
   }
 
   // NetworkChangeNotifier::NetworkObserver implementation:
-  void OnNetworkConnected(
-      NetworkChangeNotifier::NetworkHandle network) override {
-    ExpectChange(NONE, NetworkChangeNotifier::kInvalidNetworkHandle);
+  void OnNetworkConnected(handles::NetworkHandle network) override {
+    ExpectChange(NONE, handles::kInvalidNetworkHandle);
     last_change_type_ = CONNECTED;
     last_network_changed_ = network;
   }
-  void OnNetworkSoonToDisconnect(
-      NetworkChangeNotifier::NetworkHandle network) override {
-    ExpectChange(NONE, NetworkChangeNotifier::kInvalidNetworkHandle);
+  void OnNetworkSoonToDisconnect(handles::NetworkHandle network) override {
+    ExpectChange(NONE, handles::kInvalidNetworkHandle);
     last_change_type_ = SOON_TO_DISCONNECT;
     last_network_changed_ = network;
   }
-  void OnNetworkDisconnected(
-      NetworkChangeNotifier::NetworkHandle network) override {
-    ExpectChange(NONE, NetworkChangeNotifier::kInvalidNetworkHandle);
+  void OnNetworkDisconnected(handles::NetworkHandle network) override {
+    ExpectChange(NONE, handles::kInvalidNetworkHandle);
     last_change_type_ = DISCONNECTED;
     last_network_changed_ = network;
   }
-  void OnNetworkMadeDefault(
-      NetworkChangeNotifier::NetworkHandle network) override {
+  void OnNetworkMadeDefault(handles::NetworkHandle network) override {
     // Cannot test for Clear()ed state as we receive CONNECTED immediately prior
     // to MADE_DEFAULT.
     last_change_type_ = MADE_DEFAULT;
@@ -177,7 +171,7 @@ class TestNetworkObserver : public NetworkChangeNotifier::NetworkObserver {
   }
 
   ChangeType last_change_type_;
-  NetworkChangeNotifier::NetworkHandle last_network_changed_;
+  handles::NetworkHandle last_network_changed_;
 };
 
 }  // namespace
@@ -246,7 +240,7 @@ class BaseNetworkChangeNotifierAndroidTest : public TestWithTaskEnvironment {
   }
 
   void FakeNetworkChange(ChangeType change,
-                         NetworkChangeNotifier::NetworkHandle network,
+                         handles::NetworkHandle network,
                          ConnectionType type) {
     switch (change) {
       case CONNECTED:
@@ -469,7 +463,7 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
   NetworkChangeNotifier::AddNetworkObserver(&network_observer);
 
   // Test empty values
-  EXPECT_EQ(NetworkChangeNotifier::kInvalidNetworkHandle,
+  EXPECT_EQ(handles::kInvalidNetworkHandle,
             NetworkChangeNotifier::GetDefaultNetwork());
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_UNKNOWN,
             NetworkChangeNotifier::GetNetworkConnectionType(100));
@@ -479,7 +473,7 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
   // Test connecting network
   FakeNetworkChange(CONNECTED, 100, NetworkChangeNotifier::CONNECTION_WIFI);
   network_observer.ExpectChange(CONNECTED, 100);
-  EXPECT_EQ(NetworkChangeNotifier::kInvalidNetworkHandle,
+  EXPECT_EQ(handles::kInvalidNetworkHandle,
             NetworkChangeNotifier::GetDefaultNetwork());
   // Test GetConnectedNetworks()
   NetworkChangeNotifier::GetConnectedNetworks(&network_list);
@@ -490,8 +484,7 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
             NetworkChangeNotifier::GetNetworkConnectionType(100));
   // Test deduplication of connecting signal
   FakeNetworkChange(CONNECTED, 100, NetworkChangeNotifier::CONNECTION_WIFI);
-  network_observer.ExpectChange(NONE,
-                                NetworkChangeNotifier::kInvalidNetworkHandle);
+  network_observer.ExpectChange(NONE, handles::kInvalidNetworkHandle);
   // Test connecting another network
   FakeNetworkChange(CONNECTED, 101, NetworkChangeNotifier::CONNECTION_3G);
   network_observer.ExpectChange(CONNECTED, 101);
@@ -519,12 +512,10 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
   EXPECT_EQ(101, network_list[0]);
   // Test deduplication of disconnecting signal
   FakeNetworkChange(DISCONNECTED, 100, NetworkChangeNotifier::CONNECTION_WIFI);
-  network_observer.ExpectChange(NONE,
-                                NetworkChangeNotifier::kInvalidNetworkHandle);
+  network_observer.ExpectChange(NONE, handles::kInvalidNetworkHandle);
   // Test delay of default network signal until connect signal
   FakeNetworkChange(MADE_DEFAULT, 100, NetworkChangeNotifier::CONNECTION_WIFI);
-  network_observer.ExpectChange(NONE,
-                                NetworkChangeNotifier::kInvalidNetworkHandle);
+  network_observer.ExpectChange(NONE, handles::kInvalidNetworkHandle);
   FakeNetworkChange(CONNECTED, 100, NetworkChangeNotifier::CONNECTION_WIFI);
   network_observer.ExpectChange(MADE_DEFAULT, 100);
   EXPECT_EQ(100, NetworkChangeNotifier::GetDefaultNetwork());
@@ -534,12 +525,10 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
   EXPECT_EQ(101, NetworkChangeNotifier::GetDefaultNetwork());
   // Test deduplication default signal
   FakeNetworkChange(MADE_DEFAULT, 101, NetworkChangeNotifier::CONNECTION_3G);
-  network_observer.ExpectChange(NONE,
-                                NetworkChangeNotifier::kInvalidNetworkHandle);
+  network_observer.ExpectChange(NONE, handles::kInvalidNetworkHandle);
   // Test that networks can change type
   FakeNetworkChange(CONNECTED, 101, NetworkChangeNotifier::CONNECTION_4G);
-  network_observer.ExpectChange(NONE,
-                                NetworkChangeNotifier::kInvalidNetworkHandle);
+  network_observer.ExpectChange(NONE, handles::kInvalidNetworkHandle);
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_4G,
             NetworkChangeNotifier::GetNetworkConnectionType(101));
   // Test purging the network list
@@ -553,7 +542,7 @@ TEST_F(NetworkChangeNotifierAndroidTest, NetworkCallbacks) {
   NetworkChangeNotifier::GetConnectedNetworks(&network_list);
   EXPECT_EQ(1u, network_list.size());
   EXPECT_EQ(100, network_list[0]);
-  EXPECT_EQ(NetworkChangeNotifier::kInvalidNetworkHandle,
+  EXPECT_EQ(handles::kInvalidNetworkHandle,
             NetworkChangeNotifier::GetDefaultNetwork());
 
   NetworkChangeNotifier::RemoveNetworkObserver(&network_observer);

@@ -55,8 +55,8 @@ class NetLog;
 struct NetworkTrafficAnnotationTag;
 class X509Certificate;
 
-const NetworkChangeNotifier::NetworkHandle kDefaultNetworkForTests = 1;
-const NetworkChangeNotifier::NetworkHandle kNewNetworkForTests = 2;
+const handles::NetworkHandle kDefaultNetworkForTests = 1;
+const handles::NetworkHandle kNewNetworkForTests = 2;
 
 enum {
   // A private network error code used by the socket test utility classes.
@@ -1000,10 +1000,10 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
 
   // DatagramClientSocket implementation.
   int Connect(const IPEndPoint& address) override;
-  int ConnectUsingNetwork(NetworkChangeNotifier::NetworkHandle network,
+  int ConnectUsingNetwork(handles::NetworkHandle network,
                           const IPEndPoint& address) override;
   int ConnectUsingDefaultNetwork(const IPEndPoint& address) override;
-  NetworkChangeNotifier::NetworkHandle GetBoundNetwork() const override;
+  handles::NetworkHandle GetBoundNetwork() const override;
   void ApplySocketTag(const SocketTag& tag) override;
   void SetMsgConfirm(bool confirm) override {}
 
@@ -1045,8 +1045,7 @@ class MockUDPClientSocket : public DatagramClientSocket, public AsyncSocket {
   IPEndPoint peer_addr_;
 
   // Network that the socket is bound to.
-  NetworkChangeNotifier::NetworkHandle network_ =
-      NetworkChangeNotifier::kInvalidNetworkHandle;
+  handles::NetworkHandle network_ = handles::kInvalidNetworkHandle;
 
   // While an asynchronous IO is pending, we save our user-buffer state.
   scoped_refptr<IOBuffer> pending_read_buf_ = nullptr;

@@ -310,7 +310,7 @@ void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
 }
 
 void URLRequestContextBuilder::BindToNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
+    handles::NetworkHandle network,
     absl::optional<HostResolver::ManagerOptions> options) {
 #if BUILDFLAG(IS_ANDROID)
   DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
@@ -358,7 +358,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     context->set_net_log(NetLog::Get());
   }
 
-  if (bound_network_ != NetworkChangeNotifier::kInvalidNetworkHandle) {
+  if (bound_network_ != handles::kInvalidNetworkHandle) {
     DCHECK(!client_socket_factory_raw_);
     DCHECK(!host_resolver_);
     DCHECK(!host_resolver_manager_);

@@ -30,8 +30,8 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "net/base/net_export.h"
-#include "net/base/network_change_notifier.h"
 #include "net/base/network_delegate.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_delegate.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/host_resolver.h"
@@ -360,7 +360,7 @@ class NET_EXPORT URLRequestContextBuilder {
   // * By design, QUIC connection migration will be turned off.
   // Only implemented for Android (API level > 23).
   void BindToNetwork(
-      NetworkChangeNotifier::NetworkHandle network,
+      handles::NetworkHandle network,
       absl::optional<HostResolver::ManagerOptions> options = absl::nullopt);
 
   // Creates a mostly self-contained URLRequestContext. May only be called once
@@ -418,8 +418,7 @@ class NET_EXPORT URLRequestContextBuilder {
   bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
   bool first_party_sets_enabled_ = false;
 
-  NetworkChangeNotifier::NetworkHandle bound_network_ =
-      NetworkChangeNotifier::kInvalidNetworkHandle;
+  handles::NetworkHandle bound_network_ = handles::kInvalidNetworkHandle;
   // Used only if the context is bound to a network to customize the
   // HostResolver created internally.
   HostResolver::ManagerOptions manager_options_;

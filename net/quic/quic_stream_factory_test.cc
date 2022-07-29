@@ -10997,7 +10997,7 @@ TEST_P(QuicStreamFactoryTest, ServerMigration) {
 
   const uint8_t kTestIpAddress[] = {1, 2, 3, 4};
   const uint16_t kTestPort = 123;
-  session->Migrate(NetworkChangeNotifier::kInvalidNetworkHandle,
+  session->Migrate(handles::kInvalidNetworkHandle,
                    IPEndPoint(IPAddress(kTestIpAddress), kTestPort), true);
 
   session->GetDefaultSocket()->GetPeerAddress(&ip);
@@ -11116,8 +11116,8 @@ TEST_P(QuicStreamFactoryTest, ServerMigrationNonMigratableStream) {
                                     callback_.callback()));
 
   // The specific network isn't important, we just want something !=
-  // kInvalidNetworkHandle to specify a non-default network.
-  constexpr NetworkChangeNotifier::NetworkHandle kNonDefaultNetwork = 1;
+  // handles::kInvalidNetworkHandle to specify a non-default network.
+  constexpr handles::NetworkHandle kNonDefaultNetwork = 1;
   constexpr uint8_t kTestIpAddress[] = {1, 2, 3, 4};
   constexpr uint16_t kTestPort = 123;
   session->Migrate(kNonDefaultNetwork,

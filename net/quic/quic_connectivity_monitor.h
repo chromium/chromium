@@ -8,7 +8,7 @@
 #include <set>
 
 #include "base/numerics/clamped_math.h"
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/quic/quic_chromium_client_session.h"
 
 namespace net {
@@ -17,13 +17,13 @@ namespace net {
 // default network interface.
 // Reset all raw observations (reported by sessions) when the default network
 // is changed, which happens either:
-// - via OnDefaultNetworkUpdated if NetworkHandle is supported on the platform;
+// - via OnDefaultNetworkUpdated if handles::NetworkHandle is supported on the
+// platform;
 // - via OnIPAddressChanged otherwise.
 class NET_EXPORT_PRIVATE QuicConnectivityMonitor
     : public QuicChromiumClientSession::ConnectivityObserver {
  public:
-  explicit QuicConnectivityMonitor(
-      NetworkChangeNotifier::NetworkHandle default_network);
+  explicit QuicConnectivityMonitor(handles::NetworkHandle default_network);
 
   QuicConnectivityMonitor(const QuicConnectivityMonitor&) = delete;
   QuicConnectivityMonitor& operator=(const QuicConnectivityMonitor&) = delete;
@@ -33,7 +33,7 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   // Records connectivity related stats to histograms.
   void RecordConnectivityStatsToHistograms(
       const std::string& platform_notification,
-      NetworkChangeNotifier::NetworkHandle affected_network) const;
+      handles::NetworkHandle affected_network) const;
 
   // Returns the number of sessions that are currently degrading on the default
   // network interface.
@@ -45,45 +45,39 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
 
   // Called to set up the initial default network, which happens when the
   // default network tracking is lost upon |this| creation.
-  void SetInitialDefaultNetwork(
-      NetworkChangeNotifier::NetworkHandle default_network);
+  void SetInitialDefaultNetwork(handles::NetworkHandle default_network);
 
-  // Called when NetworkHandle is supported and the default network interface
-  // used by the platform is updated.
-  void OnDefaultNetworkUpdated(
-      NetworkChangeNotifier::NetworkHandle default_network);
+  // Called when handles::NetworkHandle is supported and the default network
+  // interface used by the platform is updated.
+  void OnDefaultNetworkUpdated(handles::NetworkHandle default_network);
 
-  // Called when NetworkHandle is NOT supported and the IP address of the
-  // primary interface changes. This includes when the primary interface itself
-  // changes.
+  // Called when handles::NetworkHandle is NOT supported and the IP address of
+  // the primary interface changes. This includes when the primary interface
+  // itself changes.
   void OnIPAddressChanged();
 
   // Called when |session| is marked as going away due to IP address change.
   void OnSessionGoingAwayOnIPAddressChange(QuicChromiumClientSession* session);
 
   // QuicChromiumClientSession::ConnectivityObserver implementation.
-  void OnSessionPathDegrading(
-      QuicChromiumClientSession* session,
-      NetworkChangeNotifier::NetworkHandle network) override;
+  void OnSessionPathDegrading(QuicChromiumClientSession* session,
+                              handles::NetworkHandle network) override;
 
   void OnSessionResumedPostPathDegrading(
       QuicChromiumClientSession* session,
-      NetworkChangeNotifier::NetworkHandle network) override;
+      handles::NetworkHandle network) override;
 
-  void OnSessionEncounteringWriteError(
-      QuicChromiumClientSession* session,
-      NetworkChangeNotifier::NetworkHandle network,
-      int error_code) override;
+  void OnSessionEncounteringWriteError(QuicChromiumClientSession* session,
+                                       handles::NetworkHandle network,
+                                       int error_code) override;
 
-  void OnSessionClosedAfterHandshake(
-      QuicChromiumClientSession* session,
-      NetworkChangeNotifier::NetworkHandle network,
-      quic::ConnectionCloseSource source,
-      quic::QuicErrorCode error_code) override;
+  void OnSessionClosedAfterHandshake(QuicChromiumClientSession* session,
+                                     handles::NetworkHandle network,
+                                     quic::ConnectionCloseSource source,
+                                     quic::QuicErrorCode error_code) override;
 
-  void OnSessionRegistered(
-      QuicChromiumClientSession* session,
-      NetworkChangeNotifier::NetworkHandle network) override;
+  void OnSessionRegistered(QuicChromiumClientSession* session,
+                           handles::NetworkHandle network) override;
 
   void OnSessionRemoved(QuicChromiumClientSession* session) override;
 
@@ -95,9 +89,9 @@ class NET_EXPORT_PRIVATE QuicConnectivityMonitor
   // QUIC_PACKET_WRITE_ERROR/QUIC_TOO_MANY_RTOS by self.
   using QuicErrorCodeMap = base::flat_map<quic::QuicErrorCode, size_t>;
 
-  // If NetworkHandle is not supported, always set to
-  // NetworkChangeNotifier::kInvalidNetworkHandle.
-  NetworkChangeNotifier::NetworkHandle default_network_;
+  // If handles::NetworkHandle is not supported, always set to
+  // handles::kInvalidNetworkHandle.
+  handles::NetworkHandle default_network_;
   // Sessions that are currently degrading on the |default_network_|.
   std::set<QuicChromiumClientSession*> degrading_sessions_;
   // Sessions that are currently active on the |default_network_|.

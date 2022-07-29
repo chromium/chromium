@@ -20,6 +20,7 @@
 #include "net/base/address_list.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_change_notifier.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_util.h"
@@ -271,9 +272,8 @@ const URLRequestContext* HostResolver::GetContextForTesting() const {
   return nullptr;
 }
 
-NetworkChangeNotifier::NetworkHandle HostResolver::GetTargetNetworkForTesting()
-    const {
-  return NetworkChangeNotifier::kInvalidNetworkHandle;
+handles::NetworkHandle HostResolver::GetTargetNetworkForTesting() const {
+  return handles::kInvalidNetworkHandle;
 }
 
 // static
@@ -335,7 +335,7 @@ HostResolver::CreateStandaloneContextResolver(
 std::unique_ptr<HostResolver>
 HostResolver::CreateStandaloneNetworkBoundResolver(
     NetLog* net_log,
-    NetworkChangeNotifier::NetworkHandle target_network,
+    handles::NetworkHandle target_network,
     absl::optional<ManagerOptions> options,
     base::StringPiece host_mapping_rules,
     bool enable_caching) {

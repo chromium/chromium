@@ -90,9 +90,6 @@ class MockNetworkChangeNotifier : public NetworkChangeNotifier {
 
 // static
 bool NetworkChangeNotifier::test_notifications_only_ = false;
-// static
-const NetworkChangeNotifier::NetworkHandle
-    NetworkChangeNotifier::kInvalidNetworkHandle = -1;
 
 NetworkChangeNotifier::NetworkChangeCalculatorParams::
     NetworkChangeCalculatorParams() = default;
@@ -469,7 +466,8 @@ void NetworkChangeNotifier::GetConnectedNetworks(NetworkList* network_list) {
 
 // static
 NetworkChangeNotifier::ConnectionType
-NetworkChangeNotifier::GetNetworkConnectionType(NetworkHandle network) {
+NetworkChangeNotifier::GetNetworkConnectionType(
+    handles::NetworkHandle network) {
   DCHECK(AreNetworkHandlesSupported());
   return g_network_change_notifier
              ? g_network_change_notifier->GetCurrentNetworkConnectionType(
@@ -478,12 +476,11 @@ NetworkChangeNotifier::GetNetworkConnectionType(NetworkHandle network) {
 }
 
 // static
-NetworkChangeNotifier::NetworkHandle
-NetworkChangeNotifier::GetDefaultNetwork() {
+handles::NetworkHandle NetworkChangeNotifier::GetDefaultNetwork() {
   DCHECK(AreNetworkHandlesSupported());
   return g_network_change_notifier
              ? g_network_change_notifier->GetCurrentDefaultNetwork()
-             : kInvalidNetworkHandle;
+             : handles::kInvalidNetworkHandle;
 }
 
 // static
@@ -911,13 +908,12 @@ void NetworkChangeNotifier::GetCurrentConnectedNetworks(
 
 NetworkChangeNotifier::ConnectionType
 NetworkChangeNotifier::GetCurrentNetworkConnectionType(
-    NetworkHandle network) const {
+    handles::NetworkHandle network) const {
   return CONNECTION_UNKNOWN;
 }
 
-NetworkChangeNotifier::NetworkHandle
-NetworkChangeNotifier::GetCurrentDefaultNetwork() const {
-  return kInvalidNetworkHandle;
+handles::NetworkHandle NetworkChangeNotifier::GetCurrentDefaultNetwork() const {
+  return handles::kInvalidNetworkHandle;
 }
 
 SystemDnsConfigChangeNotifier*
@@ -978,7 +974,7 @@ void NetworkChangeNotifier::NotifyObserversOfDNSChange() {
 // static
 void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
     NetworkChangeType type,
-    NetworkHandle network) {
+    handles::NetworkHandle network) {
   if (g_network_change_notifier &&
       !NetworkChangeNotifier::test_notifications_only_) {
     g_network_change_notifier->NotifyObserversOfSpecificNetworkChangeImpl(
@@ -1045,7 +1041,7 @@ void NetworkChangeNotifier::NotifyObserversOfMaxBandwidthChangeImpl(
 
 void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChangeImpl(
     NetworkChangeType type,
-    NetworkHandle network) {
+    handles::NetworkHandle network) {
   switch (type) {
     case NetworkChangeType::kConnected:
       GetObserverList().network_observer_list_->Notify(

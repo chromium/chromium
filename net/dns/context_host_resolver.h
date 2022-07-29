@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
@@ -72,8 +73,7 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   void SetRequestContext(URLRequestContext* request_context) override;
   HostResolverManager* GetManagerForTesting() override;
   const URLRequestContext* GetContextForTesting() const override;
-  NetworkChangeNotifier::NetworkHandle GetTargetNetworkForTesting()
-      const override;
+  handles::NetworkHandle GetTargetNetworkForTesting() const override;
 
   // Returns the number of host cache entries that were restored, or 0 if there
   // is no cache.

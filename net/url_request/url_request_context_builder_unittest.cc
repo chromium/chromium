@@ -290,7 +290,7 @@ TEST_F(URLRequestContextBuilderTest, BindToNetworkFinalConfiguration) {
 
   // The actual network handle doesn't really matter, this test just wants to
   // check that all the pieces are in place and configured correctly.
-  constexpr NetworkChangeNotifier::NetworkHandle network = 2;
+  constexpr handles::NetworkHandle network = 2;
   auto scoped_mock_network_change_notifier =
       std::make_unique<test::ScopedMockNetworkChangeNotifier>();
   test::MockNetworkChangeNotifier* mock_ncn =
@@ -335,7 +335,7 @@ TEST_F(URLRequestContextBuilderTest, BindToNetworkCustomManagerOptions) {
 
   // The actual network handle doesn't really matter, this test just wants to
   // check that all the pieces are in place and configured correctly.
-  constexpr NetworkChangeNotifier::NetworkHandle network = 2;
+  constexpr handles::NetworkHandle network = 2;
   auto scoped_mock_network_change_notifier =
       std::make_unique<test::ScopedMockNetworkChangeNotifier>();
   test::MockNetworkChangeNotifier* mock_ncn =

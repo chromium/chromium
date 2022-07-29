@@ -25,6 +25,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_server.h"
 #include "net/cert/cert_database.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -315,18 +316,18 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   // Helper method that configures a DatagramClientSocket. Socket is
   // bound to the default network if the |network| param is
-  // NetworkChangeNotifier::kInvalidNetworkHandle.
+  // handles::kInvalidNetworkHandle.
   // Returns net_error code.
   int ConfigureSocket(DatagramClientSocket* socket,
                       IPEndPoint addr,
-                      NetworkChangeNotifier::NetworkHandle network,
+                      handles::NetworkHandle network,
                       const SocketTag& socket_tag);
 
   // Finds an alternative to |old_network| from the platform's list of connected
-  // networks. Returns NetworkChangeNotifier::kInvalidNetworkHandle if no
+  // networks. Returns handles::kInvalidNetworkHandle if no
   // alternative is found.
-  NetworkChangeNotifier::NetworkHandle FindAlternateNetwork(
-      NetworkChangeNotifier::NetworkHandle old_network);
+  handles::NetworkHandle FindAlternateNetwork(
+      handles::NetworkHandle old_network);
 
   // Creates a datagram socket. |source| is the NetLogSource for the entity
   // trying to create the socket, if it has one.
@@ -341,14 +342,10 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   void OnIPAddressChanged() override;
 
   // NetworkChangeNotifier::NetworkObserver methods:
-  void OnNetworkConnected(
-      NetworkChangeNotifier::NetworkHandle network) override;
-  void OnNetworkDisconnected(
-      NetworkChangeNotifier::NetworkHandle network) override;
-  void OnNetworkSoonToDisconnect(
-      NetworkChangeNotifier::NetworkHandle network) override;
-  void OnNetworkMadeDefault(
-      NetworkChangeNotifier::NetworkHandle network) override;
+  void OnNetworkConnected(handles::NetworkHandle network) override;
+  void OnNetworkDisconnected(handles::NetworkHandle network) override;
+  void OnNetworkSoonToDisconnect(handles::NetworkHandle network) override;
+  void OnNetworkMadeDefault(handles::NetworkHandle network) override;
 
   // CertDatabase::Observer methods:
 
@@ -380,9 +377,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
     push_delegate_ = push_delegate;
   }
 
-  NetworkChangeNotifier::NetworkHandle default_network() const {
-    return default_network_;
-  }
+  handles::NetworkHandle default_network() const { return default_network_; }
 
   // Returns the stored DNS aliases for the session key.
   const std::set<std::string>& GetDnsAliasesForSessionKey(
@@ -424,7 +419,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                     base::TimeTicks dns_resolution_end_time,
                     const NetLogWithSource& net_log,
                     QuicChromiumClientSession** session,
-                    NetworkChangeNotifier::NetworkHandle* network);
+                    handles::NetworkHandle* network);
   void ActivateSession(const QuicSessionAliasKey& key,
                        QuicChromiumClientSession* session,
                        std::set<std::string> dns_aliases);
@@ -506,7 +501,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // metrics from |connectivity_monitor_| and add to histograms.
   void CollectDataOnPlatformNotification(
       enum QuicPlatformNotification notification,
-      NetworkChangeNotifier::NetworkHandle affected_network) const;
+      handles::NetworkHandle affected_network) const;
 
   std::unique_ptr<QuicCryptoClientConfigHandle> GetCryptoConfigForTesting(
       const NetworkIsolationKey& network_isolation_key);
@@ -601,7 +596,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // If |migrate_sessions_early_v2_| is true, tracks the current default
   // network, and is updated OnNetworkMadeDefault.
   // Otherwise, always set to NetworkChangeNotifier::kInvalidNetwork.
-  NetworkChangeNotifier::NetworkHandle default_network_;
+  handles::NetworkHandle default_network_;
 
   // Local address of socket that was created in CreateSession.
   IPEndPoint local_address_;

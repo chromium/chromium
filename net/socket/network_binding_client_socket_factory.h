@@ -5,7 +5,7 @@
 #ifndef NET_SOCKET_NETWORK_BINDING_CLIENT_SOCKET_FACTORY_H_
 #define NET_SOCKET_NETWORK_BINDING_CLIENT_SOCKET_FACTORY_H_
 
-#include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/socket/client_socket_factory.h"
 
 namespace net {
@@ -13,8 +13,7 @@ namespace net {
 // A ClientSocketFactory to create sockets bound to `network`.
 class NetworkBindingClientSocketFactory : public ClientSocketFactory {
  public:
-  explicit NetworkBindingClientSocketFactory(
-      NetworkChangeNotifier::NetworkHandle network);
+  explicit NetworkBindingClientSocketFactory(handles::NetworkHandle network);
 
   NetworkBindingClientSocketFactory(const NetworkBindingClientSocketFactory&) =
       delete;
@@ -42,7 +41,7 @@ class NetworkBindingClientSocketFactory : public ClientSocketFactory {
       const SSLConfig& ssl_config) override;
 
  private:
-  NetworkChangeNotifier::NetworkHandle network_;
+  handles::NetworkHandle network_;
 };
 
 }  // namespace net

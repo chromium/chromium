@@ -192,7 +192,7 @@ bool GetDnsServersForNetwork(std::vector<IPEndPoint>* dns_servers,
                              bool* dns_over_tls_active,
                              std::string* dns_over_tls_hostname,
                              std::vector<std::string>* search_suffixes,
-                             NetworkChangeNotifier::NetworkHandle network) {
+                             handles::NetworkHandle network) {
   DCHECK_GE(base::android::BuildInfo::GetInstance()->sdk_int(),
             base::android::SDK_VERSION_P);
 
@@ -247,10 +247,9 @@ LollipopSetNetworkForSocket GetLollipopSetNetworkForSocket() {
 
 }  // namespace
 
-int BindToNetwork(SocketDescriptor socket,
-                  NetworkChangeNotifier::NetworkHandle network) {
+int BindToNetwork(SocketDescriptor socket, handles::NetworkHandle network) {
   DCHECK_NE(socket, kInvalidSocket);
-  if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+  if (network == handles::kInvalidNetworkHandle)
     return ERR_INVALID_ARGUMENT;
 
   // Android prior to Lollipop didn't have support for binding sockets to
@@ -306,13 +305,12 @@ MarshmallowGetAddrInfoForNetwork GetMarshmallowGetAddrInfoForNetwork() {
 
 }  // namespace
 
-NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
-    const char* node,
-    const char* service,
-    const struct addrinfo* hints,
-    struct addrinfo** res) {
-  if (network == NetworkChangeNotifier::kInvalidNetworkHandle) {
+NET_EXPORT_PRIVATE int GetAddrInfoForNetwork(handles::NetworkHandle network,
+                                             const char* node,
+                                             const char* service,
+                                             const struct addrinfo* hints,
+                                             struct addrinfo** res) {
+  if (network == handles::kInvalidNetworkHandle) {
     errno = EINVAL;
     return EAI_SYSTEM;
   }

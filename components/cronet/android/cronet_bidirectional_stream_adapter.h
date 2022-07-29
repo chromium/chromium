@@ -15,6 +15,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "net/base/network_handle.h"
 #include "net/http/bidirectional_stream.h"
 #include "net/third_party/quiche/src/quiche/spdy/core/spdy_header_block.h"
 
@@ -76,7 +77,7 @@ class CronetBidirectionalStreamAdapter
       int32_t traffic_stats_tag,
       bool traffic_stats_uid_set,
       int32_t traffic_stats_uid,
-      net::NetworkChangeNotifier::NetworkHandle network);
+      net::handles::NetworkHandle network);
 
   CronetBidirectionalStreamAdapter(const CronetBidirectionalStreamAdapter&) =
       delete;
@@ -181,9 +182,9 @@ class CronetBidirectionalStreamAdapter
   const bool traffic_stats_uid_set_;
   // UID to be applied to URLRequest.
   const int32_t traffic_stats_uid_;
-  // If not equal to net::NetworkChangeNotifier::kInvalidNetworkHandle, the
-  // network to be used to send this request.
-  const net::NetworkChangeNotifier::NetworkHandle network_;
+  // If not equal to net::handles::kInvalidNetworkHandle, the network to be used
+  // to send this request.
+  const net::handles::NetworkHandle network_;
 
   scoped_refptr<IOBufferWithByteBuffer> read_buffer_;
   std::unique_ptr<PendingWriteData> pending_write_data_;
