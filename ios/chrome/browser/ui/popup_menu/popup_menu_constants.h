@@ -90,5 +90,7 @@ extern NSString* const kToolsMenuFollow;
 extern NSString* const kToolsMenuUnfollow;
 // Clear Browsing Data item accessibility identifier.
 extern NSString* const kToolsMenuClearBrowsingData;
+// Share Chrome accessibility Identifier.
+extern NSString* const kToolsMenuShareChromeId;
 
 #endif  // IOS_CHROME_BROWSER_UI_POPUP_MENU_POPUP_MENU_CONSTANTS_H_

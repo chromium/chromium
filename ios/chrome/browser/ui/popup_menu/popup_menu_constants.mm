@@ -56,3 +56,4 @@ NSString* const kTextMenuEnterpriseInfo = @"kTextMenuEnterpriseInfo";
 NSString* const kToolsMenuFollow = @"kToolsMenuFollow";
 NSString* const kToolsMenuUnfollow = @"kToolsMenuUnfollow";
 NSString* const kToolsMenuClearBrowsingData = @"kToolsMenuClearBrowsingData";
+NSString* const kToolsMenuShareChromeId = @"kToolsMenuShareChromeId";

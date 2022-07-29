@@ -36,8 +36,10 @@
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
 #include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
@@ -220,6 +222,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
 @property(nonatomic, strong) OverflowMenuAction* settingsAction;
 @property(nonatomic, strong) OverflowMenuAction* reportIssueAction;
 @property(nonatomic, strong) OverflowMenuAction* helpAction;
+@property(nonatomic, strong) OverflowMenuAction* shareChromeAction;
 
 @end
 
@@ -643,6 +646,11 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                    [weakSelf openHelp];
                                  });
 
+    self.shareChromeAction =
+        CreateOverflowMenuAction(IDS_IOS_OVERFLOW_MENU_SHARE_CHROME,
+                                 kShareSymbol, YES, kToolsMenuShareChromeId, ^{
+                                   [weakSelf shareChromeApp];
+                                 });
   } else {
     self.reloadAction = CreateOverflowMenuAction(IDS_IOS_TOOLS_MENU_RELOAD,
                                                  @"overflow_menu_action_reload",
@@ -765,6 +773,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
                                                kToolsMenuHelpId, ^{
                                                  [weakSelf openHelp];
                                                });
+
+    self.shareChromeAction = CreateOverflowMenuAction(
+        IDS_IOS_OVERFLOW_MENU_SHARE_CHROME,
+        @"overflow_menu_action_share_chrome", kToolsMenuShareChromeId, ^{
+          [weakSelf shareChromeApp];
+        });
   }
 
   // The app actions vary based on page state, so they are set in
@@ -942,6 +956,10 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   }
 
   [helpActions addObject:self.helpAction];
+
+  if (IsNewOverflowMenuShareChromeActionEnabled()) {
+    [helpActions addObject:self.shareChromeAction];
+  }
 
   self.helpActionsGroup.actions = helpActions;
 
@@ -1425,6 +1443,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
   [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
   LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeAllTabs);
   [self.dispatcher showBookmarksManager];
+}
+
+// Dismisses the menu and opens share sheet to share Chrome's app store link
+- (void)shareChromeApp {
+  [self.popupMenuCommandsHandler dismissPopupMenuAnimated:YES];
+  [self.dispatcher shareChromeApp];
 }
 
 // Dismisses the menu and opens history.

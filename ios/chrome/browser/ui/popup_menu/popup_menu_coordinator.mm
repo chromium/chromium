@@ -364,10 +364,11 @@ enum class IOSOverflowMenuActionType {
     if (IsNewOverflowMenuEnabled()) {
       if (@available(iOS 15, *)) {
         self.overflowMenuMediator = [[OverflowMenuMediator alloc] init];
-        self.overflowMenuMediator.dispatcher = static_cast<
-            id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-               FindInPageCommands, TextZoomCommands>>(
-            self.browser->GetCommandDispatcher());
+        self.overflowMenuMediator.dispatcher =
+            static_cast<id<ActivityServiceCommands, ApplicationCommands,
+                           BrowserCommands, BrowserCoordinatorCommands,
+                           FindInPageCommands, TextZoomCommands>>(
+                self.browser->GetCommandDispatcher());
         self.overflowMenuMediator.bookmarksCommandsHandler = HandlerForProtocol(
             self.browser->GetCommandDispatcher(), BookmarksCommands);
         self.overflowMenuMediator.pageInfoCommandsHandler = HandlerForProtocol(
