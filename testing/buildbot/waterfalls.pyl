@@ -6522,6 +6522,17 @@
     'name': 'internal.chrome.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+      'linux-chrome-reclient': {
+        'additional_compile_targets': [
+           # same build target as linux-chrome even if it doesn't run the tests
+           'base_unittests',
+           'chrome',
+           'chrome/installer/linux',
+           'chrome_sizes',
+           'variations_smoke_tests',
+        ],
+        # no tests. stay compile only.
+      },
       'linux-finch-smoke-chrome': {
         'mixins': [
           'chrome-finch-swarming-pool',
