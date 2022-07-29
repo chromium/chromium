@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <signal.h>
 #include <cstdio>
 #include <iostream>
 #include <memory>
@@ -114,6 +115,11 @@ bool ConsumeSamplerName(const std::string& sampler_name,
     return true;
   }
   return false;
+}
+
+std::atomic<bool> should_quit_{false};
+void quit_signal_handler(int signal) {
+  should_quit_ = true;
 }
 
 int main(int argc, char** argv) {
@@ -330,6 +336,23 @@ int main(int argc, char** argv) {
                                             timeout);
   }
 
+  // Install signal handler for on-demand quitting.
+  struct sigaction new_action;
+  new_action.sa_handler = quit_signal_handler;
+  sigemptyset(&new_action.sa_mask);
+  new_action.sa_flags = 0;
+  sigaction(SIGTERM, &new_action, NULL);
+  sigaction(SIGINT, &new_action, NULL);
+
+  base::RepeatingTimer quit_timer;
+  quit_timer.Start(FROM_HERE, base::Seconds(1),
+                   BindRepeating(
+                       [](base::OnceClosure quit_closure) {
+                         if (should_quit_.load())
+                           std::move(quit_closure).Run();
+                       },
+                       run_loop.QuitClosure()));
+
   if (!event_source->Start(BindRepeating(
           [](power_sampler::SamplingController* controller,
              base::OnceClosure quit_closure) {
@@ -344,6 +367,8 @@ int main(int argc, char** argv) {
   controller.StartSession();
 
   run_loop.Run();
+
+  quit_timer.Stop();
 
   controller.EndSession();
 
