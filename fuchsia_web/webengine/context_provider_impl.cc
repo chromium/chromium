@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "fuchsia_web/webengine/fidl/chromium/internal/cpp/fidl.h"
 
 ContextProviderImpl::ContextProviderImpl() = default;
 
