@@ -1812,8 +1812,9 @@ class ContentSettingsWorkerModulesWithFencedFrameBrowserTest
   content::test::FencedFrameTestHelper fenced_frame_test_helper_;
 };
 
+// Flaky on multiple platforms: https://crbug.com/1348048
 IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesWithFencedFrameBrowserTest,
-                       WorkerImportModuleBlocked) {
+                       DISABLED_WorkerImportModuleBlocked) {
   const std::string script = base::StringPrintf(
       "import('%s')\n"
       "  .then(module => postMessage(module.msg), _ => postMessage('Failed'));",
