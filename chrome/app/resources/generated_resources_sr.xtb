@@ -2280,7 +2280,7 @@
 <translation id="3151562827395986343">Обришите историју, колачиће, кеш и друге ставке</translation>
 <translation id="3151616662954589507">Камера за селфије</translation>
 <translation id="3151786313568798007">Положај</translation>
-<translation id="3152356229013609796">Прегледајте и одбаците обавештења на телефону или одговорите на њих</translation>
+<translation id="3152356229013609796">да прегледа и одбаци обавештења на телефону или одговори на њих</translation>
 <translation id="3157387275655328056">Додај на листу за читање</translation>
 <translation id="3157931365184549694">Поново отвори</translation>
 <translation id="3158033540161634471">Подесите отисак прста</translation>
@@ -5662,7 +5662,7 @@
 <translation id="6555432686520421228">Уклоните све корисничке налоге и рестартујте <ph name="IDS_SHORT_PRODUCT_NAME" /> уређај да би био као нов.</translation>
 <translation id="6555604601707417276">Враћена је резервна копија Linux-а</translation>
 <translation id="6555810572223193255">Чишћење је тренутно недоступно</translation>
-<translation id="6556477848444788999">Овај PIN или лозинка штити податке на овом уређају <ph name="DEVICE_TYPE" />, укључујући сав садржај који стримујете са телефона.</translation>
+<translation id="6556477848444788999">Овај PIN или лозинка штити податке на овом <ph name="DEVICE_TYPE" />-у, укључујући сав садржај који стримујете са телефона.</translation>
 <translation id="6556866813142980365">Понови</translation>
 <translation id="6556903358015358733">Тема и позадина</translation>
 <translation id="6557290421156335491">Моје пречице</translation>

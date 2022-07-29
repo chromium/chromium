@@ -2280,7 +2280,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3151562827395986343">Obrišite istoriju, kolačiće, keš i druge stavke</translation>
 <translation id="3151616662954589507">Kamera za selfije</translation>
 <translation id="3151786313568798007">Položaj</translation>
-<translation id="3152356229013609796">Pregledajte i odbacite obaveštenja na telefonu ili odgovorite na njih</translation>
+<translation id="3152356229013609796">da pregleda i odbaci obaveštenja na telefonu ili odgovori na njih</translation>
 <translation id="3157387275655328056">Dodaj na listu za čitanje</translation>
 <translation id="3157931365184549694">Ponovo otvori</translation>
 <translation id="3158033540161634471">Podesite otisak prsta</translation>
@@ -5662,7 +5662,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6555432686520421228">Uklonite sve korisničke naloge i restartujte <ph name="IDS_SHORT_PRODUCT_NAME" /> uređaj da bi bio kao nov.</translation>
 <translation id="6555604601707417276">Vraćena je rezervna kopija Linux-a</translation>
 <translation id="6555810572223193255">Čišćenje je trenutno nedostupno</translation>
-<translation id="6556477848444788999">Ovaj PIN ili lozinka štiti podatke na ovom uređaju <ph name="DEVICE_TYPE" />, uključujući sav sadržaj koji strimujete sa telefona.</translation>
+<translation id="6556477848444788999">Ovaj PIN ili lozinka štiti podatke na ovom <ph name="DEVICE_TYPE" />-u, uključujući sav sadržaj koji strimujete sa telefona.</translation>
 <translation id="6556866813142980365">Ponovi</translation>
 <translation id="6556903358015358733">Tema i pozadina</translation>
 <translation id="6557290421156335491">Moje prečice</translation>
