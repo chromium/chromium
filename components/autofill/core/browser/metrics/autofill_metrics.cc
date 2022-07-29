@@ -3450,14 +3450,15 @@ void AutofillMetrics::LogPhoneNumberImportParsingResult(
 
 // static
 void AutofillMetrics::LogPhoneNumberGrammarMatched(int grammar_id,
-                                                   bool suffix_matched) {
-  // There are 18 phone number grammars.
-  DCHECK(0 <= grammar_id && grammar_id < 18);
-  // Add 1, because UmaHistogramExactLinear is 1-based. Thus, the maximum logged
-  // value becomes 2*17+1 + 1 = 36.
-  base::UmaHistogramExactLinear("Autofill.FieldPrediction.PhoneNumberGrammar",
-                                2 * grammar_id + suffix_matched + 1,
-                                /*exclusive_max=*/37);
+                                                   bool suffix_matched,
+                                                   int num_grammars) {
+  DCHECK(0 <= grammar_id && grammar_id < num_grammars);
+  int metric = 2 * grammar_id + suffix_matched;
+  int max_metric = 2 * (num_grammars - 1) + 1;
+  // Add 1 everywhere, because UmaHistogramExactLinear is 1-based.
+  base::UmaHistogramExactLinear(
+      "Autofill.FieldPrediction.PhoneNumberGrammarUsage", metric + 1,
+      /*exclusive_max=*/max_metric + 2);
 }
 
 void AutofillMetrics::LogVerificationStatusOfNameTokensOnProfileUsage(

@@ -93,13 +93,6 @@ const std::vector<PhoneField::PhoneGrammar>& PhoneField::GetPhoneGrammars() {
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_AREA_NOTEXT, FIELD_AREA_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
-      // Phone: \( <ac> \) <phone>
-      // TODO(crbug.com/1311937): This is a duplicate of the grammar above. It
-      // will be removed with `AutofillMetrics::LogPhoneNumberGrammarMatched()`,
-      // once collecting data on the grammar usages is complete.
-      {{REGEX_PHONE, FIELD_COUNTRY_CODE},
-       {REGEX_AREA_NOTEXT, FIELD_AREA_CODE},
-       {REGEX_PREFIX_SEPARATOR, FIELD_PHONE}},
       // Phone: <cc> - <ac> - <phone> - <suffix>
       {{REGEX_PHONE, FIELD_COUNTRY_CODE},
        {REGEX_PREFIX_SEPARATOR, FIELD_AREA_CODE},
@@ -290,7 +283,8 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
             /*is_country_code_field=*/false, "PHONE_SUFFIX_SEPARATOR",
             page_language, pattern_source);
   }
-  AutofillMetrics::LogPhoneNumberGrammarMatched(grammar_id, suffix_matched);
+  AutofillMetrics::LogPhoneNumberGrammarMatched(grammar_id, suffix_matched,
+                                                GetPhoneGrammars().size());
 
   // Now look for an extension.
   // The extension is not actually used, so this just eats the field so other

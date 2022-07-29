@@ -263,12 +263,12 @@ TEST_P(PhoneFieldTest, EmptyLabels) {
 // is emitted.
 TEST_P(PhoneFieldTest, GrammarMetrics) {
   // PHONE_HOME_WHOLE_NUMBER corresponds to the last grammar. We thus expect
-  // that 2*17 + 1 = 35 is logged.
+  // that 2*16 + 1 = 33 is logged.
   base::HistogramTester histogram_tester;
   RunParsingTest({{"text", u"Phone", u"phone", PHONE_HOME_WHOLE_NUMBER}});
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Autofill.FieldPrediction.PhoneNumberGrammar"),
-              BucketsAre(base::Bucket(35, 1)));
+                  "Autofill.FieldPrediction.PhoneNumberGrammarUsage"),
+              BucketsAre(base::Bucket(33, 1)));
 }
 
 TEST_P(PhoneFieldTest, TrunkPrefixTypes) {

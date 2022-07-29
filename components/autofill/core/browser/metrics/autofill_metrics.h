@@ -2081,7 +2081,11 @@ class AutofillMetrics {
   // Logs that local heuristics matched phone number fields using `grammar_id`.
   // `suffix_matched` indicates if the special case handling for phone number
   // suffixes was triggered.
-  static void LogPhoneNumberGrammarMatched(int grammar_id, bool suffix_matched);
+  // `num_grammars` indicates the total number of phone number grammars. It is
+  // not logged and used for validation.
+  static void LogPhoneNumberGrammarMatched(int grammar_id,
+                                           bool suffix_matched,
+                                           int num_grammars);
 
   // Logs when the virtual card metadata for one card have been updated.
   static void LogVirtualCardMetadataSynced(bool existing_card);

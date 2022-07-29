@@ -1208,8 +1208,8 @@ chromium-metrics-reviews@google.com.
   <summary>Number of fields in a form that Autofill encounters.</summary>
 </histogram>
 
-<histogram name="Autofill.FieldPrediction.PhoneNumberGrammar" units="Index"
-    expires_after="2022-08-01">
+<histogram name="Autofill.FieldPrediction.PhoneNumberGrammarUsage"
+    units="Index" expires_after="2022-11-01">
   <owner>fleimgruber@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
