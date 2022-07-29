@@ -813,6 +813,13 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          [weakSelf showCertificateDetails];
                                        }]];
 
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Evaluate JavaScript"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [weakSelf showEvaluateJavaScriptUI];
+                                       }]];
+
   if (self.downloadTask) {
     [alertController
         addAction:[UIAlertAction actionWithTitle:@"Cancel download"
@@ -844,6 +851,51 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
                                          style:UIAlertActionStyleCancel
                                        handler:nil]];
   [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)showEvaluateJavaScriptUI {
+  UIAlertController* alertController =
+      [UIAlertController alertControllerWithTitle:@"Evaluate JavaScript"
+                                          message:nil
+                                   preferredStyle:UIAlertControllerStyleAlert];
+  alertController.popoverPresentationController.sourceView = _menuButton;
+  alertController.popoverPresentationController.sourceRect =
+      CGRectMake(CGRectGetWidth(_menuButton.bounds) / 2,
+                 CGRectGetHeight(_menuButton.bounds), 1, 1);
+
+  [alertController
+      addTextFieldWithConfigurationHandler:^(UITextField* textField) {
+        textField.placeholder = @"alert('Hello')";
+      }];
+
+  __weak UIAlertController* weakAlertController = alertController;
+  __weak ShellViewController* weakSelf = self;
+  [alertController
+      addAction:[UIAlertAction
+                    actionWithTitle:@"Evaluate"
+                              style:UIAlertActionStyleDefault
+                            handler:^(UIAlertAction* action) {
+                              NSString* javascript =
+                                  weakAlertController.textFields[0].text;
+                              [weakSelf evaluateJavaScript:javascript];
+                            }]];
+
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+- (void)evaluateJavaScript:(NSString*)javascript {
+  [self.webView
+      evaluateJavaScript:javascript
+              completion:^(id result, BOOL success) {
+                NSString* formatString =
+                    success ? @"JavaScript evaluation finished with result: %@"
+                            : @"JavaScript evaluation FAILED with result: %@";
+                NSLog(formatString, result);
+              }];
 }
 
 - (void)resetTranslateSettings {

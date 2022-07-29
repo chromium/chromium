@@ -66,4 +66,7 @@
 // -[CWVWebView removeMessageHandlerForCommand] APIs.
 #define IOS_WEB_VIEW_SUPPORTS_MODERN_JS_MESSAGE_HANDLERS 1
 
+// Supports -[CWVWebView evaluateJavaScript:completion:].
+#define IOS_WEB_VIEW_SUPPORTS_MODERN_JS_EVALUATION 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

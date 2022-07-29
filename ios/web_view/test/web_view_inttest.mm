@@ -142,14 +142,14 @@ TEST_F(WebViewTest, EvaluateJavaScript) {
   GURL url = GetUrlForPageWithTitleAndBody("Title", "Body");
   ASSERT_TRUE(test::LoadUrl(web_view_, net::NSURLWithGURL(url)));
 
-  NSError* error = nil;
+  bool success;
   EXPECT_NSEQ(@"Body", test::EvaluateJavaScript(
-                           web_view_, @"document.body.textContent", &error));
-  EXPECT_NSEQ(nil, error);
+                           web_view_, @"document.body.textContent", &success));
+  EXPECT_TRUE(success);
 
   // Calls a function which doesn't exist.
-  test::EvaluateJavaScript(web_view_, @"hoge()", &error);
-  EXPECT_NSNE(nil, error);
+  test::EvaluateJavaScript(web_view_, @"hoge()", &success);
+  EXPECT_FALSE(success);
 }
 
 }  // namespace ios_web_view

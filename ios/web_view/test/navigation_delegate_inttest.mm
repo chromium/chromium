@@ -143,10 +143,10 @@ TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
   [(id)mock_delegate_ verify];
 
   // Same document navigations should not trigger the delegate methods.
-  NSError* error;
+  bool success;
   ASSERT_NSEQ(nil, test::EvaluateJavaScript(
-                       web_view_, @"history.pushState({}, \"\");", &error));
-  ASSERT_NSEQ(nil, error);
+                       web_view_, @"history.pushState({}, \"\");", &success));
+  EXPECT_TRUE(success);
 
   [(id)mock_delegate_ verify];
 }

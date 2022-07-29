@@ -82,7 +82,7 @@ class WebFrame : public base::SupportsUserData {
       base::OnceCallback<void(const base::Value*)> callback) = 0;
 
   using ExecuteJavaScriptCallbackWithError =
-      base::OnceCallback<void(const base::Value*, bool)>;
+      base::OnceCallback<void(const base::Value*, bool error)>;
   // Executes the given |script| and returns whether the script was run.
   // If the script is successfully executed, |callback| is called with
   // the result. Otherwise, |callback| is called with the bool. The

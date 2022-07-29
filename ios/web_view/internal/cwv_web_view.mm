@@ -33,6 +33,7 @@
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/favicon/favicon_url.h"
 #include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -81,19 +82,54 @@ namespace {
 // A key used in NSCoder to store the session storage object.
 NSString* const kSessionStorageKey = @"sessionStorage";
 
+// Converts base::Value expected to be a dictionary or list to NSDictionary or
+// NSArray, respectively.
+id NSObjectFromCollectionValue(const base::Value* value) {
+  DCHECK(value->is_dict() || value->is_list())
+      << "Incorrect value type: " << value->type();
+
+  std::string json;
+  const bool success = base::JSONWriter::Write(*value, &json);
+  DCHECK(success) << "Failed to convert base::Value to JSON";
+
+  NSData* json_data = [NSData dataWithBytes:json.c_str() length:json.length()];
+  id ns_object = [NSJSONSerialization JSONObjectWithData:json_data
+                                                 options:kNilOptions
+                                                   error:nil];
+  DCHECK(ns_object) << "Failed to convert JSON to Collection";
+  return ns_object;
+}
+
+// Converts base::Value to an appropriate Obj-C object.
+// |value| must not be null.
+id NSObjectFromValue(const base::Value* value) {
+  switch (value->type()) {
+    case base::Value::Type::NONE:
+      return nil;
+    case base::Value::Type::BOOLEAN:
+      return @(value->GetBool());
+    case base::Value::Type::INTEGER:
+      return @(value->GetInt());
+    case base::Value::Type::DOUBLE:
+      return @(value->GetDouble());
+    case base::Value::Type::STRING:
+      return base::SysUTF8ToNSString(value->GetString());
+    case base::Value::Type::BINARY:
+      // Unsupported.
+      return nil;
+    case base::Value::Type::DICT:
+    case base::Value::Type::LIST:
+      return NSObjectFromCollectionValue(value);
+  }
+  return nil;
+}
+
 // Converts base::Value expected to be a dictionary to NSDictionary.
 NSDictionary* NSDictionaryFromDictionaryValue(const base::Value& value) {
   DCHECK(value.is_dict()) << "Incorrect value type: " << value.type();
 
-  std::string json;
-  const bool success = base::JSONWriter::Write(value, &json);
-  DCHECK(success) << "Failed to convert base::Value to JSON";
-
-  NSData* json_data = [NSData dataWithBytes:json.c_str() length:json.length()];
   NSDictionary* ns_dictionary = base::mac::ObjCCastStrict<NSDictionary>(
-      [NSJSONSerialization JSONObjectWithData:json_data
-                                      options:kNilOptions
-                                        error:nil]);
+      NSObjectFromCollectionValue(&value));
   DCHECK(ns_dictionary) << "Failed to convert JSON to NSDictionary";
   return ns_dictionary;
 }
@@ -363,6 +399,32 @@ BOOL gChromeContextMenuEnabled = NO;
          completionHandler:(void (^)(id, NSError*))completionHandler {
   [_webState->GetJSInjectionReceiver() executeJavaScript:javaScriptString
                                        completionHandler:completionHandler];
+}
+
+- (void)evaluateJavaScript:(NSString*)javaScriptString
+                completion:(void (^)(id, BOOL))completion {
+  web::WebFrame* mainFrame = web::GetMainFrame(_webState.get());
+  if (!mainFrame) {
+    if (completion) {
+      completion(nil, NO);
+    }
+    return;
+  }
+
+  if (!completion) {
+    mainFrame->ExecuteJavaScript(base::SysNSStringToUTF16(javaScriptString));
+    return;
+  }
+
+  mainFrame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(javaScriptString),
+      base::BindOnce(^(const base::Value* result, bool error) {
+        id jsResult;
+        if (!error && result) {
+          jsResult = NSObjectFromValue(result);
+        }
+        completion(jsResult, !error);
+      }));
 }
 
 - (void)setUIDelegate:(id<CWVUIDelegate>)UIDelegate {

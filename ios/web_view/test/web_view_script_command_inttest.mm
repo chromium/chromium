@@ -63,9 +63,9 @@ TEST_F(WebViewScriptCommandTest, TestScriptCommand) {
   NSString* script =
       @"__gCrWeb.message.invokeOnHost("
       @"{'command': 'test.command1', 'key1': 'value1', 'key2': 42});";
-  NSError* script_error = nil;
-  test::EvaluateJavaScript(web_view_, script, &script_error);
-  ASSERT_NSEQ(nil, script_error);
+  bool success;
+  test::EvaluateJavaScript(web_view_, script, &success);
+  EXPECT_TRUE(success);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^{
@@ -103,9 +103,9 @@ TEST_F(WebViewScriptCommandTest, TestScriptCommandAfterStateRestoration) {
   NSString* script =
       @"__gCrWeb.message.invokeOnHost("
       @"{'command': 'test.command1', 'key1': 'value1', 'key2': 42});";
-  NSError* script_error = nil;
-  test::EvaluateJavaScript(web_view_, script, &script_error);
-  ASSERT_NSEQ(nil, script_error);
+  bool success;
+  test::EvaluateJavaScript(web_view_, script, &success);
+  ASSERT_TRUE(success);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForJSCompletionTimeout, ^{

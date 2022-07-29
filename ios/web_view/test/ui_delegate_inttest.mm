@@ -53,10 +53,13 @@ TEST_F(UIDelegateTest, CreateWebView) {
                  forNavigationAction:expected_navigation_action]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  NSError* error = nil;
-  EXPECT_NE(nil, test::EvaluateJavaScript(
-                     web_view_, @"open('http://example.com/')", &error));
-  EXPECT_EQ(nil, error);
+
+  bool success;
+  EXPECT_NE(nil,
+            test::EvaluateJavaScript(
+                web_view_, @"typeof open('http://example.com/') === 'object'",
+                &success));
+  EXPECT_TRUE(success);
 
   [(id)mock_delegate_ verify];
 }
@@ -75,9 +78,9 @@ TEST_F(UIDelegateTest, RunJavaScriptAlertPanel) {
                        completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  NSError* error = nil;
-  test::EvaluateJavaScript(web_view_, @"alert('message')", &error);
-  EXPECT_EQ(nil, error);
+  bool success;
+  test::EvaluateJavaScript(web_view_, @"alert('message')", &success);
+  EXPECT_TRUE(success);
 
   [(id)mock_delegate_ verify];
 }
@@ -97,10 +100,10 @@ TEST_F(UIDelegateTest, RunJavaScriptConfirmPanel) {
                          completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  NSError* error = nil;
+  bool success;
   EXPECT_NSEQ(@(YES), test::EvaluateJavaScript(web_view_, @"confirm('message')",
-                                               &error));
-  EXPECT_EQ(nil, error);
+                                               &success));
+  EXPECT_TRUE(success);
 
   [(id)mock_delegate_ verify];
 }
@@ -121,10 +124,11 @@ TEST_F(UIDelegateTest, RunJavaScriptTextInputPanel) {
                           completionHandler:mock_completion_handler]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  NSError* error = nil;
-  EXPECT_NSEQ(@"input", test::EvaluateJavaScript(
-                            web_view_, @"prompt('prompt', 'default')", &error));
-  EXPECT_EQ(nil, error);
+  bool success;
+  EXPECT_NSEQ(@"input",
+              test::EvaluateJavaScript(
+                  web_view_, @"prompt('prompt', 'default')", &success));
+  EXPECT_TRUE(success);
 
   [(id)mock_delegate_ verify];
 }

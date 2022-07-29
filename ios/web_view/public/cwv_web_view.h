@@ -246,8 +246,20 @@ CWV_EXPORT
 // To workaround the issue, you can use |var| instead, or an explicit reference
 // to window.xxx. This is because |let| and |const| are scoped by braces while
 // |var| isn't, and due to tricky behavior of WebKit in non-strict mode.
+// DEPRECATED. Use `evaluateJavaScript:completion:` instead.
 - (void)evaluateJavaScript:(NSString*)javaScriptString
          completionHandler:(void (^)(id, NSError*))completionHandler;
+
+// Evaluates a JavaScript string in the main frame of the page content world.
+// `completion` is invoked with the result of evaluating the script and a
+// boolean representing success (`YES`) or failure (`NO`) of the evaluation.
+//
+// Evaluation of `javaScriptString` will fail (and return NO to `completion`) if
+// there is no current internal representation of the main frame. This can occur
+// when the web view is navigating or if the current page content does not allow
+// JavaScript execution (ex: JS disabled or PDF content).
+- (void)evaluateJavaScript:(NSString*)javaScriptString
+                completion:(void (^)(id result, BOOL success))completion;
 
 // Registers a handler that will be called when a command matching
 // |commandPrefix| is received.

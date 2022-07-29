@@ -28,7 +28,9 @@ namespace test {
 
 // Waits until |script| is executed and synchronously returns the evaluation
 // result.
-id EvaluateJavaScript(CWVWebView* web_view, NSString* script, NSError** error);
+id EvaluateJavaScript(CWVWebView* web_view,
+                      NSString* script,
+                      bool* success = nullptr);
 
 // Waits for |web_view| to contain |text|. Returns false if the condition is not
 // met within a timeout.
