@@ -189,7 +189,11 @@ BrowserChildProcessHostImpl::~BrowserChildProcessHostImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   g_child_process_list.Get().remove(this);
 
-  if (!notify_child_connection_status_)
+  // Skip sending the disconnected notification if the connected notification
+  // was never sent. The only exception here is when the main browser process
+  // hosts the child, since InProcessUtilityThreadHelper still depends on this
+  // behavior to know when the utility service was shut down.
+  if (!launched_and_connected_ && !in_process_)
     return;
 
   for (auto& observer : g_browser_child_process_observers.Get())
@@ -256,6 +260,13 @@ void BrowserChildProcessHostImpl::SetMetricsName(
 
 void BrowserChildProcessHostImpl::SetProcess(base::Process process) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!in_process_);
+
+  // Only NaClProcessHost uses SetProcess(), and it always involve a legacy IPC
+  // channel. The channel is never connected at the time of the call, so
+  // NotifyProcessLaunchedAndConnected() never has to be invoked.
+  DCHECK(has_legacy_ipc_channel_ && !is_channel_connected_);
+
   data_.SetProcess(std::move(process));
 }
 
@@ -287,6 +298,8 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
     std::unique_ptr<ChildProcessLauncherFileData> file_data,
     bool terminate_on_shutdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!in_process_);
+
   const base::CommandLine& browser_command_line =
       *base::CommandLine::ForCurrentProcess();
   static const char* const kForwardSwitches[] = {
@@ -315,8 +328,6 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
 
   // Note that if this host has a legacy IPC Channel, we don't dispatch any
   // connection status notifications until we observe OnChannelConnected().
-  if (!has_legacy_ipc_channel_)
-    notify_child_connection_status_ = true;
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
   bool is_elevated = false;
 #if BUILDFLAG(IS_WIN)
@@ -380,7 +391,7 @@ void BrowserChildProcessHostImpl::OnChannelConnected(int32_t peer_pid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   DCHECK(has_legacy_ipc_channel_);
-  notify_child_connection_status_ = true;
+  is_channel_connected_ = true;
 
   delegate_->OnChannelConnected(peer_pid);
 
@@ -395,8 +406,10 @@ void BrowserChildProcessHostImpl::OnProcessConnected() {
   early_exit_watcher_.StopWatching();
 #endif
 
-  if (IsProcessLaunched())
+  if (IsProcessLaunched()) {
+    launched_and_connected_ = true;
     NotifyProcessLaunchedAndConnected(data_);
+  }
 }
 
 void BrowserChildProcessHostImpl::OnChannelError() {
@@ -430,7 +443,7 @@ void BrowserChildProcessHostImpl::OnChannelInitialized(IPC::Channel* channel) {
 
   // When using a legacy IPC Channel, we defer any notifications until the
   // Channel handshake is complete. See OnChannelConnected().
-  notify_child_connection_status_ = false;
+  is_channel_connected_ = false;
 }
 
 void BrowserChildProcessHostImpl::OnChildDisconnected() {
@@ -609,7 +622,6 @@ void BrowserChildProcessHostImpl::OnProcessLaunchFailed(int error_code) {
 
   for (auto& observer : g_browser_child_process_observers.Get())
     observer.BrowserChildProcessLaunchFailed(data_, info);
-  notify_child_connection_status_ = false;
   delete delegate_;  // Will delete us
 }
 
@@ -644,8 +656,10 @@ void BrowserChildProcessHostImpl::OnProcessLaunched() {
   data_.SetProcess(process.Duplicate());
   delegate_->OnProcessLaunched();
 
-  if (notify_child_connection_status_)
+  if (is_channel_connected_) {
+    launched_and_connected_ = true;
     NotifyProcessLaunchedAndConnected(data_);
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In ChromeOS, there are still child processes of NaCl modules, and they
@@ -706,9 +720,7 @@ void BrowserChildProcessHostImpl::RegisterCoordinatorClient(
 
 bool BrowserChildProcessHostImpl::IsProcessLaunched() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  return child_process_.get() && !child_process_->IsStarting() &&
-         child_process_->GetProcess().IsValid();
+  return data_.GetProcess().IsValid();
 }
 
 // static

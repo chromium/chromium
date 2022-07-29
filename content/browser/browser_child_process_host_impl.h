@@ -136,6 +136,7 @@ class BrowserChildProcessHostImpl
   BrowserChildProcessHostDelegate* delegate() const { return delegate_; }
 
   mojo::OutgoingInvitation* GetInProcessMojoInvitation() {
+    in_process_ = true;
     return &child_process_host_->GetMojoInvitation().value();
   }
 
@@ -218,8 +219,23 @@ class BrowserChildProcessHostImpl
   // transferred to the child process.
   base::WritableSharedMemoryRegion metrics_shared_region_;
 
+  // Indicates if the main browser process is used instead of a dedicated child
+  // process.
+  bool in_process_ = false;
+
+  // Indicates if legacy IPC is used to communicate with the child process. In
+  // this mode, the BrowserChildProcessHost waits for OnChannelConnected() to be
+  // called before sending the BrowserChildProcessLaunchedAndConnected
+  // notification.
   bool has_legacy_ipc_channel_ = false;
-  bool notify_child_connection_status_ = true;
+
+  // Indicates if the IPC channel is connected. Always true when not using
+  // legacy IPC.
+  bool is_channel_connected_ = true;
+
+  // Indicates if the BrowserChildProcessLaunchedAndConnected notification was
+  // sent for this instance.
+  bool launched_and_connected_ = false;
 
 #if BUILDFLAG(IS_ANDROID)
   // whether the child process can use pre-warmed up connection for better
