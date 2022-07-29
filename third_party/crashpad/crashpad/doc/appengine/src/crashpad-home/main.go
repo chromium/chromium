@@ -41,29 +41,29 @@ func init() {
 func handler(w http.ResponseWriter, r *http.Request) {
 	const (
 		baseURL             = "https://chromium.googlesource.com/crashpad/crashpad/+/"
-		masterBaseURL       = baseURL + "master/"
+		mainBaseURL         = baseURL + "main/"
 		generatedDocBaseURL = baseURL + "doc/doc/generated/?format=TEXT"
 		bugBaseURL          = "https://bugs.chromium.org/p/crashpad/"
 	)
 
 	redirectMap := map[string]string{
-		"/":                                masterBaseURL + "README.md",
+		"/":                                mainBaseURL + "README.md",
 		"/bug":                             bugBaseURL,
 		"/bug/":                            bugBaseURL,
 		"/bug/new":                         bugBaseURL + "issues/entry",
-		"/doc/developing.html":             masterBaseURL + "/doc/developing.md",
-		"/doc/status.html":                 masterBaseURL + "/doc/status.md",
-		"/index.html":                      masterBaseURL + "README.md",
-		"/man":                             masterBaseURL + "doc/man.md",
-		"/man/":                            masterBaseURL + "doc/man.md",
-		"/man/catch_exception_tool.html":   masterBaseURL + "tools/mac/catch_exception_tool.md",
-		"/man/crashpad_database_util.html": masterBaseURL + "tools/crashpad_database_util.md",
-		"/man/crashpad_handler.html":       masterBaseURL + "handler/crashpad_handler.md",
-		"/man/exception_port_tool.html":    masterBaseURL + "tools/mac/exception_port_tool.md",
-		"/man/generate_dump.html":          masterBaseURL + "tools/generate_dump.md",
-		"/man/index.html":                  masterBaseURL + "doc/man.md",
-		"/man/on_demand_service_tool.html": masterBaseURL + "tools/mac/on_demand_service_tool.md",
-		"/man/run_with_crashpad.html":      masterBaseURL + "tools/mac/run_with_crashpad.md",
+		"/doc/developing.html":             mainBaseURL + "/doc/developing.md",
+		"/doc/status.html":                 mainBaseURL + "/doc/status.md",
+		"/index.html":                      mainBaseURL + "README.md",
+		"/man":                             mainBaseURL + "doc/man.md",
+		"/man/":                            mainBaseURL + "doc/man.md",
+		"/man/catch_exception_tool.html":   mainBaseURL + "tools/mac/catch_exception_tool.md",
+		"/man/crashpad_database_util.html": mainBaseURL + "tools/crashpad_database_util.md",
+		"/man/crashpad_handler.html":       mainBaseURL + "handler/crashpad_handler.md",
+		"/man/exception_port_tool.html":    mainBaseURL + "tools/mac/exception_port_tool.md",
+		"/man/generate_dump.html":          mainBaseURL + "tools/generate_dump.md",
+		"/man/index.html":                  mainBaseURL + "doc/man.md",
+		"/man/on_demand_service_tool.html": mainBaseURL + "tools/mac/on_demand_service_tool.md",
+		"/man/run_with_crashpad.html":      mainBaseURL + "tools/mac/run_with_crashpad.md",
 	}
 
 	ctx := appengine.NewContext(r)

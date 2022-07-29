@@ -43,6 +43,10 @@ bool ScopedVMReadInternal::Read(const void* data, const size_t data_length) {
   vm_address_t page_region_address = trunc_page(data_address);
   vm_size_t page_region_size =
       round_page(data_address - page_region_address + data_length);
+  if (page_region_size < data_length) {
+    CRASHPAD_RAW_LOG("ScopedVMRead data_length overflow");
+    return false;
+  }
   kern_return_t kr = vm_read(mach_task_self(),
                              page_region_address,
                              page_region_size,

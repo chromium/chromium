@@ -30,6 +30,7 @@ TEST(ScopedVMReadTest, BasicFunctionality) {
   ASSERT_FALSE(vmread_bad.Read(reinterpret_cast<void*>(0x1000), 100));
   vm_address_t address = 1;
   ASSERT_FALSE(vmread_bad.Read(&address, 1000000000));
+  ASSERT_FALSE(vmread_bad.Read(&address, -1));
 
   // array
   constexpr char read_me[] = "read me";

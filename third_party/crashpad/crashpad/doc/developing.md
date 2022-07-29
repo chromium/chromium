@@ -28,7 +28,7 @@ other projects, Crashpad uses
 [mini_chromium](https://chromium.googlesource.com/chromium/mini_chromium/), a
 small, self-contained library that provides many of Chromium’s useful low-level
 base routines. [mini_chromium’s
-README](https://chromium.googlesource.com/chromium/mini_chromium/+/master/README.md)
+README](https://chromium.googlesource.com/chromium/mini_chromium/+/main/README.md)
 provides more detail.
 
 ## Prerequisites
@@ -153,7 +153,7 @@ suitable location. These instructions assume that it’s been expanded to
 
 Note that Chrome uses Android API level 21 for both 64-bit platforms and
 32-bit platforms. See Chrome’s
-[`build/config/android/config.gni`](https://chromium.googlesource.com/chromium/src/+/master/build/config/android/config.gni)
+[`build/config/android/config.gni`](https://chromium.googlesource.com/chromium/src/+/main/build/config/android/config.gni)
 which sets `android32_ndk_api_level` and `android64_ndk_api_level`.
 
 Set these gn args
@@ -241,7 +241,7 @@ $ ZIRCON_NODENAME=scare-brook-skip-dried python build/run_tests.py out/fuchsia
 ## Contributing
 
 Crashpad’s contribution process is very similar to [Chromium’s contribution
-process](https://chromium.googlesource.com/chromium/src/+/master/docs/contributing.md).
+process](https://chromium.googlesource.com/chromium/src/+/main/docs/contributing.md).
 
 ### Code Review
 
@@ -250,7 +250,7 @@ review is conducted on [Chromium’s
 Gerrit](https://chromium-review.googlesource.com/) system, and all code reviews
 must be sent to an appropriate reviewer, with a Cc sent to
 [crashpad-dev](https://groups.google.com/a/chromium.org/group/crashpad-dev). The
-[`codereview.settings`](https://chromium.googlesource.com/crashpad/crashpad/+/master/codereview.settings)
+[`codereview.settings`](https://chromium.googlesource.com/crashpad/crashpad/+/main/codereview.settings)
 file specifies this environment to `git-cl`.
 
 `git-cl` is part of the
@@ -259,7 +259,7 @@ no need to install it separately.
 
 ```
 $ cd ~/crashpad/crashpad
-$ git checkout -b work_branch origin/master
+$ git checkout -b work_branch origin/main
 …do some work…
 $ git add …
 $ git commit
@@ -280,7 +280,7 @@ patch set with `git cl upload` and let your reviewer know you’ve addressed the
 feedback.
 
 The most recently uploaded patch set on a review may be tested on a
-[trybot](https://chromium.googlesource.com/chromium/src/+/master/docs/infra/trybot_usage.md)
+[trybot](https://chromium.googlesource.com/chromium/src/+/main/docs/infra/trybot_usage.md)
 by running `git cl try` or by clicking the “CQ Dry Run” button in Gerrit. These
 set the “Commit-Queue: +1” label. This does not mean that the patch will be
 committed, but the trybot and commit queue share infrastructure and a Gerrit
@@ -292,7 +292,7 @@ Crashpad and Chromium committers.
 
 After code review is complete and “Code-Review: +1” has been received from all
 reviewers, the patch can be submitted to Crashpad’s [commit
-queue](https://chromium.googlesource.com/chromium/src/+/master/docs/infra/cq.md)
+queue](https://chromium.googlesource.com/chromium/src/+/main/docs/infra/cq.md)
 by clicking the “Submit to CQ” button in Gerrit. This sets the “Commit-Queue:
 +2” label, which tests the patch on trybots before landing it. Commit queue
 access is available to Crashpad and Chromium committers.
@@ -314,9 +314,9 @@ Agreement](https://cla.developers.google.com/about/google-individual) or
 [Corporate Contributor License
 Agreement](https://cla.developers.google.com/about/google-corporate) as
 appropriate before any submission can be accepted, and must be listed in the
-[`AUTHORS`](https://chromium.googlesource.com/crashpad/crashpad/+/master/AUTHORS)
+[`AUTHORS`](https://chromium.googlesource.com/crashpad/crashpad/+/main/AUTHORS)
 file. Contributors may be listed in the
-[`CONTRIBUTORS`](https://chromium.googlesource.com/crashpad/crashpad/+/master/CONTRIBUTORS)
+[`CONTRIBUTORS`](https://chromium.googlesource.com/crashpad/crashpad/+/main/CONTRIBUTORS)
 file.
 
 ## Buildbot

@@ -191,7 +191,7 @@ Report bugs at https://crashpad.chromium.org/bug/new.
 ## Copyright
 
 Copyright 2015 [The Crashpad
-Authors](https://chromium.googlesource.com/crashpad/crashpad/+/master/AUTHORS).
+Authors](https://chromium.googlesource.com/crashpad/crashpad/+/main/AUTHORS).
 
 ## License
 

@@ -38,8 +38,8 @@ local_branch="\
 $(${sed_ext} -e 's/(.*)\..*/\1/' <<< "${basename}").${$}.${RANDOM}"
 
 remote_name=origin
-remote_master_branch_name=master
-remote_master_branch="${remote_name}/${remote_master_branch_name}"
+remote_main_branch_name=main
+remote_main_branch="${remote_name}/${remote_main_branch_name}"
 remote_doc_branch_name=doc
 remote_doc_branch="${remote_name}/${remote_doc_branch_name}"
 
@@ -61,9 +61,9 @@ function cleanup() {
 
 trap cleanup EXIT
 
-master_hash=$(git rev-parse --short=12 "${remote_master_branch}")
-git merge "${remote_master_branch}" \
-    -m "Merge ${remote_master_branch_name} ${master_hash} into doc"
+main_hash=$(git rev-parse --short=12 "${remote_main_branch}")
+git merge "${remote_main_branch}" \
+    -m "Merge ${remote_main_branch_name} ${main_hash} into doc"
 
 dirty=y
 
@@ -74,7 +74,7 @@ git add -A doc/generated
 count="$(git diff --staged --numstat | wc -l)"
 if [[ $count -gt 0 ]]; then
   git commit \
-      -m "Update documentation to ${remote_master_branch_name} ${master_hash}"
+      -m "Update documentation to ${remote_main_branch_name} ${main_hash}"
   dirty=
 
   git push "${remote_name}" "HEAD:${remote_doc_branch_name}"
