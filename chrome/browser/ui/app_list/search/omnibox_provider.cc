@@ -198,14 +198,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       continue;
     }
 
-    if (!is_zero_state_input_ && IsAnswer(match) &&
-        !ShouldFilterAnswer(match, last_query_)) {
-      new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
-          profile_, list_controller_,
-          crosapi::CreateAnswerResult(match, controller_.get(), last_query_,
-                                      input_),
-          last_query_));
-    } else if (match.type == AutocompleteMatchType::OPEN_TAB) {
+    if (match.type == AutocompleteMatchType::OPEN_TAB) {
       DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(
           profile_, list_controller_,
@@ -213,7 +206,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
               match, controller_.get(), &favicon_cache_,
               BookmarkModelFactory::GetForBrowserContext(profile_), input_),
           last_tokenized_query_.value()));
-    } else {
+    } else if (!IsAnswer(match)) {
       // We can use an unretained pointer here since we own both the
       // autocomplete controller (which lives for the entirety of our lifetime)
       // and the results vector. Results are only externally-visible via the
@@ -228,6 +221,13 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
               match, controller_.get(), &favicon_cache_,
               BookmarkModelFactory::GetForBrowserContext(profile_), input_),
           last_query_, is_zero_state_input_));
+    } else if (!is_zero_state_input_ &&
+               !ShouldFilterAnswer(match, last_query_)) {
+      new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
+          profile_, list_controller_,
+          crosapi::CreateAnswerResult(match, controller_.get(), last_query_,
+                                      input_),
+          last_query_));
     }
   }
 
