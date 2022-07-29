@@ -843,25 +843,18 @@ content::WebContents* WebAppPublisherHelper::Launch(
 void WebAppPublisherHelper::LaunchAppWithFiles(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::FilePathsPtr file_paths) {
+    apps::LaunchSource launch_source,
+    std::vector<base::FilePath> file_paths) {
   if (IsShuttingDown()) {
     return;
   }
 
   DisplayMode display_mode = registrar().GetAppEffectiveDisplayMode(app_id);
   apps::AppLaunchParams params = apps::CreateAppIdLaunchParamsWithEventFlags(
-      app_id, event_flags,
-      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
-      display::kInvalidDisplayId,
+      app_id, event_flags, launch_source, display::kInvalidDisplayId,
       /*fallback_container=*/
       ConvertDisplayModeToAppLaunchContainer(display_mode));
-  if (file_paths) {
-    for (const auto& file_path : file_paths->file_paths) {
-      params.launch_files.push_back(file_path);
-    }
-  }
-
+  params.launch_files = std::move(file_paths);
   LaunchAppWithFilesCheckingUserPermission(app_id, std::move(params),
                                            base::DoNothing());
 }

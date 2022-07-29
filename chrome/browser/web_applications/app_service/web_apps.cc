@@ -144,6 +144,14 @@ void WebApps::Launch(const std::string& app_id,
                             std::move(window_info));
 }
 
+void WebApps::LaunchAppWithFiles(const std::string& app_id,
+                                 int32_t event_flags,
+                                 apps::LaunchSource launch_source,
+                                 std::vector<base::FilePath> file_paths) {
+  publisher_helper().LaunchAppWithFiles(app_id, event_flags, launch_source,
+                                        std::move(file_paths));
+}
+
 void WebApps::LaunchAppWithIntent(const std::string& app_id,
                                   int32_t event_flags,
                                   apps::IntentPtr intent,
@@ -192,8 +200,10 @@ void WebApps::LaunchAppWithFiles(const std::string& app_id,
                                  int32_t event_flags,
                                  apps::mojom::LaunchSource launch_source,
                                  apps::mojom::FilePathsPtr file_paths) {
-  publisher_helper().LaunchAppWithFiles(app_id, event_flags, launch_source,
-                                        std::move(file_paths));
+  publisher_helper().LaunchAppWithFiles(
+      app_id, event_flags,
+      apps::ConvertMojomLaunchSourceToLaunchSource(launch_source),
+      apps::ConvertMojomFilePathsToFilePaths(std::move(file_paths)));
 }
 
 void WebApps::LaunchAppWithIntent(const std::string& app_id,

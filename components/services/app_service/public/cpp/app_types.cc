@@ -475,4 +475,13 @@ apps::mojom::AppPtr ConvertAppToMojomApp(const AppPtr& app) {
   return mojom_app;
 }
 
+std::vector<base::FilePath> ConvertMojomFilePathsToFilePaths(
+    apps::mojom::FilePathsPtr mojom_file_paths) {
+  std::vector<base::FilePath> file_paths;
+  if (mojom_file_paths) {
+    file_paths = std::move(mojom_file_paths->file_paths);
+  }
+  return file_paths;
+}
+
 }  // namespace apps

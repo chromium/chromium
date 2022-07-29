@@ -263,6 +263,10 @@ AppPtr ConvertMojomAppToApp(const apps::mojom::AppPtr& mojom_app);
 COMPONENT_EXPORT(APP_TYPES)
 apps::mojom::AppPtr ConvertAppToMojomApp(const AppPtr& app);
 
+COMPONENT_EXPORT(APP_TYPES)
+std::vector<base::FilePath> ConvertMojomFilePathsToFilePaths(
+    apps::mojom::FilePathsPtr mojom_file_paths);
+
 }  // namespace apps
 
 #endif  // COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_TYPES_H_

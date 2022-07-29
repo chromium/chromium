@@ -212,8 +212,8 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
-                          apps::mojom::LaunchSource launch_source,
-                          apps::mojom::FilePathsPtr file_paths);
+                          apps::LaunchSource launch_source,
+                          std::vector<base::FilePath> file_paths);
 
   void LaunchAppWithIntent(const std::string& app_id,
                            int32_t event_flags,
