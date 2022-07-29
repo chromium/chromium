@@ -109,8 +109,11 @@ void AutofillPopupControllerImpl::Show(
 
   SetValues(suggestions);
 
-  bool just_created = false;
-  if (!view_) {
+  if (view_) {
+    if (selected_line_ && *selected_line_ >= GetLineCount())
+      selected_line_.reset();
+    OnSuggestionsChanged();
+  } else {
     view_ = AutofillPopupView::Create(GetWeakPtr());
 
     // It is possible to fail to create the popup, in this case
@@ -120,10 +123,7 @@ void AutofillPopupControllerImpl::Show(
       Hide(PopupHidingReason::kViewDestroyed);
       return;
     }
-    just_created = true;
-  }
 
-  if (just_created) {
 #if BUILDFLAG(IS_ANDROID)
     ManualFillingController::GetOrCreate(web_contents_)
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
@@ -144,11 +144,6 @@ void AutofillPopupControllerImpl::Show(
       // SetSelectedLine().
       SetSelectedLineHelper(0);
     }
-  } else {
-    if (selected_line_ && *selected_line_ >= GetLineCount())
-      selected_line_.reset();
-
-    OnSuggestionsChanged();
   }
   // TODO(crbug.com/1200766, crbug.com/1276850, crbug.com/1277218): `this` can
   // be destroyed synchronously at this point.
