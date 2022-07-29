@@ -23,34 +23,18 @@ void ContextProviderImpl::Create(
     return;
   }
 
-  // Request access to the component's outgoing service directory.
-  fidl::InterfaceRequest<fuchsia::io::Directory> services_request;
-  auto services = sys::ServiceDirectory::CreateWithRequest(&services_request);
-
-  // If there are DevToolsListeners active then set the remote-debugging option
-  // and create DevToolsPerContextListener channels to connect asynchronously
-  // to the instance.
-  const bool have_devtools_listeners = devtools_listeners_.size() > 0;
-  web_instance_host_.set_enable_remote_debug_mode(have_devtools_listeners);
-  if (have_devtools_listeners) {
-    chromium::internal::DevToolsConnectorPtr devtools_connector;
-    services->Connect(devtools_connector.NewRequest());
-    for (auto& devtools_listener : devtools_listeners_.ptrs()) {
-      fidl::InterfaceHandle<fuchsia::web::DevToolsPerContextListener> listener;
-      devtools_listener.get()->get()->OnContextDevToolsAvailable(
-          listener.NewRequest());
-      devtools_connector->ConnectPerContextListener(std::move(listener));
-    }
-  }
-
+  // Create the instance and request access to its outgoing service directory.
+  fidl::InterfaceHandle<fuchsia::io::Directory> services_handle;
   zx_status_t result =
       web_instance_host_.CreateInstanceForContextWithCopiedArgs(
-          std::move(params), std::move(services_request),
+          std::move(params), services_handle.NewRequest(),
           *base::CommandLine::ForCurrentProcess());
 
   if (result == ZX_OK) {
+    sys::ServiceDirectory services(services_handle.Bind());
+
     // Route the fuchsia.web.Context request to the new Component.
-    services->Connect(std::move(context_request));
+    services.Connect(std::move(context_request));
   } else {
     context_request.Close(result);
   }
@@ -60,9 +44,6 @@ void ContextProviderImpl::set_config_for_test(base::Value config) {
   web_instance_host_.set_config_for_test(std::move(config));  // IN-TEST
 }
 
-void ContextProviderImpl::EnableDevTools(
-    fidl::InterfaceHandle<fuchsia::web::DevToolsListener> listener,
-    EnableDevToolsCallback callback) {
-  devtools_listeners_.AddInterfacePtr(listener.Bind());
-  callback();
+fuchsia::web::Debug* ContextProviderImpl::debug_api() {
+  return web_instance_host_.debug_api();
 }

@@ -18,7 +18,6 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_switches.h"
-#include "fuchsia_web/webengine/fidl/chromium/internal/cpp/fidl.h"
 #include "fuchsia_web/webengine/switches.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
@@ -199,7 +198,7 @@ class UserModeController : public WebEngineDevToolsController {
 // the first Frame finishes loading its main document, so that the
 // DevToolsPerContextListeners can start interacting with it immediately.
 class DebugModeController : public WebEngineDevToolsController,
-                            public chromium::internal::DevToolsConnector {
+                            public fuchsia::web::Debug {
  public:
   DebugModeController()
       : DebugModeController(
@@ -231,8 +230,7 @@ class DebugModeController : public WebEngineDevToolsController,
  protected:
   explicit DebugModeController(net::IPEndPoint ip_endpoint)
       : ip_endpoint_(std::move(ip_endpoint)),
-        connector_binding_(base::ComponentContextForProcess()->outgoing().get(),
-                           this) {
+        binding_(base::ComponentContextForProcess()->outgoing().get(), this) {
     // Immediately start the service.
     StartRemoteDebuggingServer(
         base::BindOnce(&DebugModeController::OnDevToolsPortChanged,
@@ -249,28 +247,36 @@ class DebugModeController : public WebEngineDevToolsController,
   absl::optional<uint16_t> devtools_port_;
 
  private:
-  // chromium::internal::DevToolsConnector implementation.
-  void ConnectPerContextListener(
-      fuchsia::web::DevToolsPerContextListenerHandle listener_handle) override {
-    fuchsia::web::DevToolsPerContextListenerPtr listener;
-    listener.Bind(std::move(listener_handle));
+  // fuchsia::web::Debug implementation.
+  void EnableDevTools(
+      fidl::InterfaceHandle<fuchsia::web::DevToolsListener> listener_handle,
+      EnableDevToolsCallback callback) override {
+    // Each web-instance has a single DevTools "context", so create a new
+    // per-context channel, and pass it to |listener| immediately.
+    fuchsia::web::DevToolsPerContextListenerPtr context_listener;
+    auto listener = listener_handle.Bind();
+    listener->OnContextDevToolsAvailable(context_listener.NewRequest());
+
+    // Notify the per-context listener immediately, if the port is ready.
     if (frame_loaded_ && devtools_port_)
-      listener->OnHttpPortOpen(devtools_port_.value());
-    devtools_listeners_.AddInterfacePtr(std::move(listener));
+      context_listener->OnHttpPortOpen(devtools_port_.value());
+
+    devtools_listeners_.AddInterfacePtr(std::move(context_listener));
   }
 
   void MaybeSendRemoteDebuggingCallbacks() {
     if (!frame_loaded_ || !devtools_port_)
       return;
 
-    // If |devtools_port_| is valid then notify all listeners, otherwise
-    // disconnect them.
+    // If |devtools_port_| is zero then DevTools failed to initialize, and
+    // all listener connections should be closed to indicate failure.
     if (devtools_port_.value() == 0) {
       devtools_listeners_.CloseAll();
-    } else {
-      for (const auto& listener : devtools_listeners_.ptrs()) {
-        listener->get()->OnHttpPortOpen(devtools_port_.value());
-      }
+      return;
+    }
+
+    for (const auto& listener : devtools_listeners_.ptrs()) {
+      listener->get()->OnHttpPortOpen(devtools_port_.value());
     }
   }
 
@@ -281,8 +287,7 @@ class DebugModeController : public WebEngineDevToolsController,
   fidl::InterfacePtrSet<fuchsia::web::DevToolsPerContextListener>
       devtools_listeners_;
 
-  const base::ScopedServiceBinding<chromium::internal::DevToolsConnector>
-      connector_binding_;
+  const base::ScopedServiceBinding<fuchsia::web::Debug> binding_;
 };
 
 // "Mixed-mode" is used when both user and debug remote debugging are active at

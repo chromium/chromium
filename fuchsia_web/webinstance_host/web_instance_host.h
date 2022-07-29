@@ -12,6 +12,7 @@
 
 #include "base/command_line.h"
 #include "base/values.h"
+#include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
 
 // Helper class that allows web_instance Components to be launched based on
 // caller-supplied |CreateContextParams|.
@@ -48,11 +49,9 @@ class WebInstanceHost {
       fidl::InterfaceRequest<fuchsia::io::Directory> services_request,
       base::CommandLine extra_args);
 
-  // Enables/disables remote debugging mode in instances created by this host.
-  // This may be called at any time, and will not affect pre-existing instances.
-  void set_enable_remote_debug_mode(bool enable) {
-    enable_remote_debug_mode_ = enable;
-  }
+  // Exposes a fuchsia.web.Debug protocol implementation that can be used
+  // to receive notifications of DevTools debug ports for new web instances.
+  fuchsia::web::Debug* debug_api();
 
   // Sets a set of config-data to use when launching instances, instead of any
   // system-provided config-data. May be called at any time, and will not
@@ -78,8 +77,8 @@ class WebInstanceHost {
   fuchsia::sys::LauncherPtr isolated_environment_launcher_;
   fuchsia::sys::EnvironmentControllerPtr isolated_environment_controller_;
 
-  // If true then new instances will have remote debug mode enabled.
-  bool enable_remote_debug_mode_ = false;
+  // Implements the fuchsia.web.Debug API across all instances.
+  FuchsiaWebDebugProxy debug_proxy_;
 
   // If set, then the next created WebInstance will gain ownership of this
   // directory.

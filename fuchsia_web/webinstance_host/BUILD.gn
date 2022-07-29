@@ -24,7 +24,11 @@ source_set("webinstance_host") {
     # source_sets that have these deps.
     "//fuchsia_web/webengine:web_engine_integration_tests__exec",
   ]
-  sources = [ "web_instance_host.cc" ]
+  sources = [
+    "fuchsia_web_debug_proxy.cc",
+    "fuchsia_web_debug_proxy.h",
+    "web_instance_host.cc",
+  ]
   public = [ "web_instance_host.h" ]
   deps = [
     "//base",

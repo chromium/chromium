@@ -41,6 +41,7 @@
 #include "fuchsia_web/common/string_util.h"
 #include "fuchsia_web/webengine/features.h"
 #include "fuchsia_web/webengine/switches.h"
+#include "fuchsia_web/webinstance_host/fuchsia_web_debug_proxy.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "net/http/http_util.h"
@@ -660,10 +661,6 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
   HandleUnsafelyTreatInsecureOriginsAsSecureParam(&params, &launch_args);
   HandleCorsExemptHeadersParam(&params, &launch_args);
 
-  // Set the command-line flag to enable DevTools, if requested.
-  if (enable_remote_debug_mode_)
-    launch_args.AppendSwitch(switches::kEnableRemoteDebugMode);
-
   // In tests the ContextProvider is configured to log to stderr, so clone the
   // handle to allow web instances to also log there.
   if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -680,8 +677,23 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
     launch_info.flat_namespace->directories.push_back(tmp_dir_.TakeChannel());
   }
 
+  // Create a request for the new instance's service-directory.
+  fidl::InterfaceHandle<fuchsia::io::Directory> instance_services_handle;
+  launch_info.directory_request =
+      instance_services_handle.NewRequest().TakeChannel();
+  sys::ServiceDirectory instance_services(std::move(instance_services_handle));
+
+  // If one or more Debug protocol clients are active then enable debugging,
+  // and connect the instance to the fuchsia.web.Debug proxy.
+  if (debug_proxy_.has_clients()) {
+    launch_args.AppendSwitch(switches::kEnableRemoteDebugMode);
+    fidl::InterfaceHandle<fuchsia::web::Debug> debug_handle;
+    instance_services.Connect(debug_handle.NewRequest());
+    debug_proxy_.RegisterInstance(std::move(debug_handle));
+  }
+
   // Pass on the caller's service-directory request.
-  launch_info.directory_request = services_request.TakeChannel();
+  instance_services.CloneChannel(std::move(services_request));
 
   // Set |additional_services| to redirect requests for only those services
   // required for the specified |params|, to be satisfied by the caller-
@@ -703,6 +715,10 @@ zx_status_t WebInstanceHost::CreateInstanceForContextWithCopiedArgs(
                                                  nullptr /* controller */);
 
   return ZX_OK;
+}
+
+fuchsia::web::Debug* WebInstanceHost::debug_api() {
+  return &debug_proxy_;
 }
 
 fuchsia::sys::Launcher* WebInstanceHost::IsolatedEnvironmentLauncher() {

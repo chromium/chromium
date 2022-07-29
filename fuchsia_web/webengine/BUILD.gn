@@ -7,7 +7,6 @@ assert(is_fuchsia)
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/locales.gni")
 import("//testing/test.gni")
-import("//third_party/fuchsia-sdk/sdk/build/fidl_library.gni")
 import("//tools/grit/repack.gni")
 
 # Only allow use by targets in this directory unless explicitly specified.
@@ -83,12 +82,6 @@ source_set("web_engine_export_from_implementation") {
   public_configs = [ ":web_engine_implementation" ]
 }
 
-fidl_library("fidl") {
-  library_name = "chromium.internal"
-  sources = [ "fidl/dev_tools.fidl" ]
-  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web" ]
-}
-
 repack("web_engine_pak") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
@@ -148,7 +141,6 @@ component("web_engine_core") {
 
   deps = [
     ":context_provider",
-    ":fidl",
     ":switches",
     ":web_engine_export_from_implementation",
     "//base",
@@ -341,7 +333,6 @@ source_set("context_provider") {
     "context_provider_main.h",
   ]
   deps = [
-    ":fidl",
     ":web_engine_export_from_implementation",
     "//base",
     "//components/fuchsia_component_support",

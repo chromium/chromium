@@ -60,7 +60,7 @@ int ContextProviderMain() {
   base::ScopedServiceBinding<fuchsia::web::ContextProvider> binding(
       directory, &context_provider);
   base::ScopedServiceBinding<fuchsia::web::Debug> debug_binding(
-      directory->debug_dir(), &context_provider);
+      directory->debug_dir(), context_provider.debug_api());
 
   // Publish version information for this component to Inspect.
   sys::ComponentInspector inspect(base::ComponentContextForProcess());

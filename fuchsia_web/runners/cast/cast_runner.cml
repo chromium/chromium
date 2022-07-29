@@ -16,6 +16,7 @@
       protocol: [
         "chromium.cast.DataReset",
         "fuchsia.sys.Runner",
+        "fuchsia.web.Debug",
         "fuchsia.web.FrameHost",
       ]
     }
@@ -25,6 +26,7 @@
       protocol: [
         "chromium.cast.DataReset",
         "fuchsia.sys.Runner",
+        "fuchsia.web.Debug",
         "fuchsia.web.FrameHost",
       ],
       from: "self",

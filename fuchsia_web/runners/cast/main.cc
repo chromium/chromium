@@ -188,6 +188,13 @@ int main(int argc, char** argv) {
   const base::ScopedServiceBinding<chromium::cast::DataReset>
       data_reset_binding(outgoing_directory, &runner);
 
+  // Allow web containers to be debugged, by end-to-end tests.
+  // Only allow this under CFv2, which requires explicit capability routing.
+  absl::optional<base::ScopedServiceBinding<fuchsia::web::Debug>> debug_binding;
+  if (enable_cfv2) {
+    debug_binding.emplace(outgoing_directory, web_instance_host.debug_api());
+  }
+
   if (command_line->HasSwitch(kDisableVulkanForTestsSwitch)) {
     runner.set_disable_vulkan_for_test();  // IN-TEST
   }
