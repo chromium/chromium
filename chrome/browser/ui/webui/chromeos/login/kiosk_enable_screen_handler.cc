@@ -17,31 +17,13 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId KioskEnableScreenView::kScreenId;
-
 KioskEnableScreenHandler::KioskEnableScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.KioskEnableScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-KioskEnableScreenHandler::~KioskEnableScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+KioskEnableScreenHandler::~KioskEnableScreenHandler() = default;
 
 void KioskEnableScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
   ShowInWebUI();
-}
-
-void KioskEnableScreenHandler::SetScreen(KioskEnableScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-  screen_ = screen;
-  if (IsJavascriptAllowed() && screen_)
-    InitializeDeprecated();
 }
 
 void KioskEnableScreenHandler::DeclareLocalizedValues(
@@ -57,18 +39,8 @@ void KioskEnableScreenHandler::DeclareLocalizedValues(
   builder->Add("kioskEnableErrorMsg", IDS_KIOSK_ENABLE_SCREEN_ERROR);
 }
 
-void KioskEnableScreenHandler::InitializeDeprecated() {
-  if (!IsJavascriptAllowed() || !screen_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
-}
-
 void KioskEnableScreenHandler::ShowKioskEnabled(bool success) {
-  CallJS("login.KioskEnableScreen.onCompleted", success);
+  CallExternalAPI("onCompleted", success);
 }
 
 }  // namespace chromeos

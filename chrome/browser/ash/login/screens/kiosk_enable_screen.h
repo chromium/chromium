@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_KIOSK_ENABLE_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_KIOSK_ENABLE_SCREEN_H_
 
-#include <string>
-
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -19,7 +18,7 @@ namespace ash {
 // consumer kiosk mode.
 class KioskEnableScreen : public BaseScreen {
  public:
-  KioskEnableScreen(KioskEnableScreenView* view,
+  KioskEnableScreen(base::WeakPtr<KioskEnableScreenView> view,
                     const base::RepeatingClosure& exit_callback);
 
   KioskEnableScreen(const KioskEnableScreen&) = delete;
@@ -27,15 +26,11 @@ class KioskEnableScreen : public BaseScreen {
 
   ~KioskEnableScreen() override;
 
-  // This method is called, when view is being destroyed. Note, if Screen
-  // is destroyed earlier then it has to call SetScreen(nullptr).
-  void OnViewDestroyed(KioskEnableScreenView* view);
-
  private:
   // BaseScreen implementation:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   void HandleClose();
   void HandleEnable();
@@ -47,7 +42,7 @@ class KioskEnableScreen : public BaseScreen {
   void OnGetConsumerKioskAutoLaunchStatus(
       KioskAppManager::ConsumerKioskAutoLaunchStatus status);
 
-  KioskEnableScreenView* view_;
+  base::WeakPtr<KioskEnableScreenView> view_;
   base::RepeatingClosure exit_callback_;
 
   // True if machine's consumer kiosk mode is in a configurable state.

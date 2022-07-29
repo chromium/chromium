@@ -18,25 +18,15 @@ constexpr const char kEnable[] = "enable";
 }  // namespace
 
 KioskEnableScreen::KioskEnableScreen(
-    KioskEnableScreenView* view,
+    base::WeakPtr<KioskEnableScreenView> view,
     const base::RepeatingClosure& exit_callback)
     : BaseScreen(KioskEnableScreenView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
+      view_(std::move(view)),
       exit_callback_(exit_callback) {
   DCHECK(view_);
-  if (view_)
-    view_->SetScreen(this);
 }
 
-KioskEnableScreen::~KioskEnableScreen() {
-  if (view_)
-    view_->SetScreen(nullptr);
-}
-
-void KioskEnableScreen::OnViewDestroyed(KioskEnableScreenView* view) {
-  if (view_ == view)
-    view_ = nullptr;
-}
+KioskEnableScreen::~KioskEnableScreen() = default;
 
 void KioskEnableScreen::ShowImpl() {
   if (view_)
@@ -59,13 +49,14 @@ void KioskEnableScreen::OnGetConsumerKioskAutoLaunchStatus(
 
 void KioskEnableScreen::HideImpl() {}
 
-void KioskEnableScreen::OnUserActionDeprecated(const std::string& action_id) {
+void KioskEnableScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kClose)
     HandleClose();
   else if (action_id == kEnable)
     HandleEnable();
   else
-    BaseScreen::OnUserActionDeprecated(action_id);
+    BaseScreen::OnUserAction(args);
 }
 
 void KioskEnableScreen::HandleClose() {
@@ -84,7 +75,8 @@ void KioskEnableScreen::HandleEnable() {
 }
 
 void KioskEnableScreen::OnEnableConsumerKioskAutoLaunch(bool success) {
-  view_->ShowKioskEnabled(success);
+  if (view_)
+    view_->ShowKioskEnabled(success);
   if (!success) {
     LOG(WARNING) << "Consumer kiosk mode can't be enabled!";
   }
