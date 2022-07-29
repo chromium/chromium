@@ -18,6 +18,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ICON;
 
@@ -83,7 +84,8 @@ class TouchToFillMediator {
 
         sheetItems.add(new ListItem(TouchToFillProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
-                        .with(SINGLE_CREDENTIAL, credentials.size() == 1)
+                        .with(SINGLE_CREDENTIAL,
+                                credentials.size() + webAuthnCredentials.size() == 1)
                         .with(FORMATTED_URL,
                                 UrlFormatter.formatUrlForSecurityDisplay(
                                         url, SchemeDisplay.OMIT_HTTP_AND_HTTPS))
@@ -207,6 +209,7 @@ class TouchToFillMediator {
                 .with(WEBAUTHN_CREDENTIAL, credential)
                 .with(WEBAUTHN_ICON, resourceProvider.getWebAuthnIconId())
                 .with(ON_WEBAUTHN_CLICK_LISTENER, this::onSelectedWebAuthnCredential)
+                .with(SHOW_WEBAUTHN_SUBMIT_BUTTON, false)
                 .build();
     }
 }

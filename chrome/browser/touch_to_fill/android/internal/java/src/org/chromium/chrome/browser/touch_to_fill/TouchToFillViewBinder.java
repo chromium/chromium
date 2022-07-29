@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_ICON;
 import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
@@ -197,6 +198,8 @@ class TouchToFillViewBinder {
             usernameText.setText(credential.getUsername());
             TextView descriptionText = view.findViewById(R.id.display_name);
             descriptionText.setText(credential.getDisplayName());
+        } else if (propertyKey == SHOW_WEBAUTHN_SUBMIT_BUTTON) {
+            // Ignore.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -210,10 +213,15 @@ class TouchToFillViewBinder {
      */
     private static void bindFillButtonView(
             PropertyModel model, View view, PropertyKey propertyKey) {
-        Credential credential = model.get(CREDENTIAL);
         if (propertyKey == ON_CLICK_LISTENER) {
+            Credential credential = model.get(CREDENTIAL);
             view.setOnClickListener(
                     clickedView -> { model.get(ON_CLICK_LISTENER).onResult(credential); });
+        } else if (propertyKey == ON_WEBAUTHN_CLICK_LISTENER) {
+            WebAuthnCredential webauthn_credential = model.get(WEBAUTHN_CREDENTIAL);
+            view.setOnClickListener(clickedView -> {
+                model.get(ON_WEBAUTHN_CLICK_LISTENER).onResult(webauthn_credential);
+            });
         } else if (propertyKey == SHOW_SUBMIT_BUTTON) {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)) {
@@ -223,8 +231,18 @@ class TouchToFillViewBinder {
             } else {
                 buttonTitleText.setText(R.string.touch_to_fill_continue);
             }
+        } else if (propertyKey == SHOW_WEBAUTHN_SUBMIT_BUTTON) {
+            TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TOUCH_TO_FILL_PASSWORD_SUBMISSION)) {
+                buttonTitleText.setText(view.getContext().getString(
+                        model.get(SHOW_WEBAUTHN_SUBMIT_BUTTON) ? R.string.touch_to_fill_signin
+                                                               : R.string.touch_to_fill_continue));
+            } else {
+                buttonTitleText.setText(R.string.touch_to_fill_continue);
+            }
         } else if (propertyKey == FAVICON_OR_FALLBACK || propertyKey == FORMATTED_ORIGIN
-                || propertyKey == CREDENTIAL) {
+                || propertyKey == CREDENTIAL || propertyKey == WEBAUTHN_CREDENTIAL
+                || propertyKey == WEBAUTHN_ICON) {
             // Credential properties don't affect the button.
         } else {
             assert false : "Unhandled update to property:" + propertyKey;

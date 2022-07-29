@@ -29,6 +29,9 @@ import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.He
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ON_CLICK_MANAGE;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.VISIBLE;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.ON_WEBAUTHN_CLICK_LISTENER;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.SHOW_WEBAUTHN_SUBMIT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.WebAuthnCredentialProperties.WEBAUTHN_CREDENTIAL;
 
 import android.graphics.Bitmap;
 
@@ -53,6 +56,7 @@ import org.chromium.chrome.browser.touch_to_fill.TouchToFillComponent.UserAction
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.CredentialProperties.FaviconOrFallback;
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.favicon.IconType;
@@ -84,6 +88,8 @@ public class TouchToFillControllerTest {
             new Credential("Bob", "*****", "Bob", TEST_SUBDOMAIN_URL, true, false, 0);
     private static final Credential CARL =
             new Credential("Carl", "G3h3!m", "Carl", TEST_URL.getSpec(), false, false, 0);
+    private static final WebAuthnCredential DINO =
+            new WebAuthnCredential("dino@example.com", "Dino", "12345");
     private static final @Px int DESIRED_FAVICON_SIZE = 64;
 
     @Rule
@@ -176,6 +182,24 @@ public class TouchToFillControllerTest {
 
         assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
         assertThat(itemList.get(2).model.get(SHOW_SUBMIT_BUTTON), is(false));
+    }
+
+    @Test
+    public void testShowCredentialsWithSingleWebAuthnEntry() {
+        mMediator.showCredentials(
+                TEST_URL, true, Collections.emptyList(), Arrays.asList(DINO), false);
+        ListModel<MVCListAdapter.ListItem> itemList = mModel.get(SHEET_ITEMS);
+        assertThat(itemList.size(), is(3)); // Header + 1 credential + Button
+
+        assertThat(itemList.get(0).type, is(ItemType.HEADER));
+        assertThat(itemList.get(0).model.get(SINGLE_CREDENTIAL), is(true));
+
+        assertThat(itemList.get(1).type, is(ItemType.WEBAUTHN_CREDENTIAL));
+        assertThat(itemList.get(1).model.get(WEBAUTHN_CREDENTIAL), is(DINO));
+        assertNotNull(itemList.get(1).model.get(ON_WEBAUTHN_CLICK_LISTENER));
+
+        assertThat(itemList.get(2).type, is(ItemType.FILL_BUTTON));
+        assertThat(itemList.get(2).model.get(SHOW_WEBAUTHN_SUBMIT_BUTTON), is(false));
     }
 
     @Test
