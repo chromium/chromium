@@ -31,6 +31,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,6 +84,12 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
+    // Some policies default value might depend on features, enforce use of
+    // field trial testing config to avoid having unexpected results based on
+    // new feature flags coming from the server (e.g. on Chrome-branded CI
+    // bots).
+    variations::EnableTestingConfig();
+
     GetMockPolicyProvider()->SetDefaultReturns(
         true /* is_initialization_complete_return */,
         true /* is_first_policy_load_complete_return */);

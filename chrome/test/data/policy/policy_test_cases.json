@@ -6646,7 +6646,7 @@
       }
     ]
   },
-  "BuiltInDnsClientEnabled": {
+  "BuiltInDnsClientEnabled.FeatureDisabledByDefault": {
     "os": [
       "linux"
     ],
