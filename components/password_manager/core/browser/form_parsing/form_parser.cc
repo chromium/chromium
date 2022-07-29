@@ -423,6 +423,7 @@ void ParseUsingPredictions(std::vector<ProcessedField>* processed_fields,
     if (!current_field)
       continue;
     if (prediction.type == autofill::CREDIT_CARD_VERIFICATION_CODE ||
+        prediction.type == autofill::CREDIT_CARD_NUMBER ||
         prediction.type == autofill::NOT_PASSWORD) {
       current_field->server_hints_not_password = true;
     } else if (prediction.type == autofill::NOT_USERNAME) {

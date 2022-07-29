@@ -1800,8 +1800,7 @@ TEST(FormParserTest, CVC) {
       },
       {
           .description_for_logging = "Name of 'verification_type' matches the "
-                                     "CVC pattern, ignore that "
-                                     "one.",
+                                     "CVC pattern, ignore that one.",
           .fields =
               {
                   {.role = ElementRole::USERNAME, .form_control_type = "text"},
@@ -1823,6 +1822,68 @@ TEST(FormParserTest, CVC) {
                   {.role = ElementRole::CURRENT_PASSWORD,
                    .name = u"verification_type",
                    .form_control_type = "password"},
+              },
+          .fallback_only = true,
+      },
+  });
+}
+
+// The parser should avoid identifying Credit Card Number fields as passwords
+// if the server identifies the fields as CC Number fields. This should be
+// relatively safe as it should be unlikely that the server misclassifies a
+// field as a CC Number field.
+TEST(FormParserTest, CCNumber) {
+  CheckTestData({
+      {
+          .description_for_logging = "Server hints: CREDIT_CARD_NUMBER.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::CREDIT_CARD_NUMBER}},
+              },
+          .fallback_only = true,
+      },
+      {
+          .description_for_logging =
+              "Name of 'ccnumber' matches the CC Number regex pattern (but "
+              "there is no confirmation from the server), ignore that one.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME, .form_control_type = "text"},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .name = u"ccnumber",
+                   .form_control_type = "password"},
+              },
+          .fallback_only = false,
+      },
+      // The following describes the status quo for documentation purposes. It
+      // is probably not desirable. If we have high confidence in all credit
+      // card fields, the password manager should probably ignore those fields
+      // entirely.
+      {
+          .description_for_logging = "Example where CC Number and Expiration "
+                                     "date are both password fields.",
+          .fields =
+              {
+                  {.role = ElementRole::USERNAME,
+                   .name = u"cardholder",
+                   .form_control_type = "text",
+                   .prediction = {.type = autofill::CREDIT_CARD_NAME_FULL}},
+                  {.role = ElementRole::CURRENT_PASSWORD,
+                   .name = u"ccnumber",
+                   .form_control_type = "password",
+                   .prediction = {.type = autofill::CREDIT_CARD_NUMBER}},
+                  {.name = u"expiration",
+                   .form_control_type = "text",
+                   .prediction =
+                       {.type = autofill::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
+                  {.role = ElementRole::NEW_PASSWORD,
+                   .name = u"cvc",
+                   .form_control_type = "password",
+                   .prediction = {.type =
+                                      autofill::CREDIT_CARD_VERIFICATION_CODE}},
               },
           .fallback_only = true,
       },
