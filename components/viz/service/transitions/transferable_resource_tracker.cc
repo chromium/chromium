@@ -91,6 +91,7 @@ TransferableResourceTracker::ImportResource(
         output_copy.mailbox, GL_LINEAR, GL_TEXTURE_2D, output_copy.sync_token,
         output_copy.draw_data.size,
         /*is_overlay_candidate=*/false);
+    resource.color_space = output_copy.color_space;
 
     // Run the SingleReleaseCallback when no longer in use.
     if (output_copy.release_callback) {

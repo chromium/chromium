@@ -1045,6 +1045,17 @@
              "--enable-gpu-rasterization"]
   },
   {
+    "prefix": "document-transition-wide-gamut",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/document-transition",
+              "document-transition",
+              "inspector-protocol/css/css-get-styles-for-document-transition.js"],
+    "args": ["--enable-features=DocumentTransition",
+             "--enable-threaded-compositing",
+             "--enable-gpu-rasterization",
+             "--force-color-profile=display-p3-d65"]
+  },
+  {
     "prefix": "popup-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
