@@ -221,10 +221,10 @@ class StorageHandler::IndexedDBObserver
     auto found = storage_keys_.find(bucket_locator.storage_key);
     if (found == storage_keys_.end())
       return;
-    // TODO(https://crbug.com/1199077): Pass storage key instead once
-    // Chrome DevTools Protocol (CDP) supports it.
+
     owner_->NotifyIndexedDBListChanged(
-        bucket_locator.storage_key.origin().Serialize());
+        bucket_locator.storage_key.origin().Serialize(),
+        bucket_locator.storage_key.Serialize());
   }
 
   void OnIndexedDBContentChanged(
@@ -238,10 +238,10 @@ class StorageHandler::IndexedDBObserver
     auto found = storage_keys_.find(bucket_locator.storage_key);
     if (found == storage_keys_.end())
       return;
-    // TODO(https://crbug.com/1199077): Pass storage key instead once
-    // Chrome DevTools Protocol (CDP) supports it.
+
     owner_->NotifyIndexedDBContentChanged(
-        bucket_locator.storage_key.origin().Serialize(), database_name,
+        bucket_locator.storage_key.origin().Serialize(),
+        bucket_locator.storage_key.Serialize(), database_name,
         object_store_name);
   }
 
@@ -552,6 +552,20 @@ Response StorageHandler::TrackIndexedDBForOrigin(
   return Response::Success();
 }
 
+Response StorageHandler::TrackIndexedDBForStorageKey(
+    const std::string& storage_key) {
+  if (!storage_partition_)
+    return Response::InternalError();
+
+  absl::optional<blink::StorageKey> key =
+      blink::StorageKey::Deserialize(storage_key);
+  if (!key)
+    return Response::InvalidParams("Unable to deserialize storage key");
+
+  GetIndexedDBObserver()->TrackOrigin(*key);
+  return Response::Success();
+}
+
 Response StorageHandler::UntrackIndexedDBForOrigin(
     const std::string& origin_string) {
   if (!storage_partition_)
@@ -565,6 +579,20 @@ Response StorageHandler::UntrackIndexedDBForOrigin(
   // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
   // function once the Chrome DevTools Protocol (CDP) supports StorageKey.
   GetIndexedDBObserver()->UntrackOrigin(blink::StorageKey(origin));
+  return Response::Success();
+}
+
+Response StorageHandler::UntrackIndexedDBForStorageKey(
+    const std::string& storage_key) {
+  if (!storage_partition_)
+    return Response::InternalError();
+
+  absl::optional<blink::StorageKey> key =
+      blink::StorageKey::Deserialize(storage_key);
+  if (!key)
+    return Response::InvalidParams("Unable to deserialize storage key");
+
+  GetIndexedDBObserver()->UntrackOrigin(*key);
   return Response::Success();
 }
 
@@ -602,17 +630,21 @@ void StorageHandler::NotifyCacheStorageContentChanged(const std::string& origin,
   frontend_->CacheStorageContentUpdated(origin, name);
 }
 
-void StorageHandler::NotifyIndexedDBListChanged(const std::string& origin) {
+void StorageHandler::NotifyIndexedDBListChanged(
+    const std::string& origin,
+    const std::string& storage_key) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  frontend_->IndexedDBListUpdated(origin);
+  frontend_->IndexedDBListUpdated(origin, storage_key);
 }
 
 void StorageHandler::NotifyIndexedDBContentChanged(
     const std::string& origin,
+    const std::string& storage_key,
     const std::u16string& database_name,
     const std::u16string& object_store_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  frontend_->IndexedDBContentUpdated(origin, base::UTF16ToUTF8(database_name),
+  frontend_->IndexedDBContentUpdated(origin, storage_key,
+                                     base::UTF16ToUTF8(database_name),
                                      base::UTF16ToUTF8(object_store_name));
 }
 
