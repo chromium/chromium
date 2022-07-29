@@ -33,6 +33,7 @@ http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-exi
 http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
 http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
 http/tests/inspector-protocol/target/message-to-detached-session.js [ Skip ]
+http/tests/inspector-protocol/target/tab-target.js [ Skip ]
 http/tests/inspector-protocol/target/target-filter.js [ Skip ]
 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
 

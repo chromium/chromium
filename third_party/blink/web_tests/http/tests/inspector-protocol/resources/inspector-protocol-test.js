@@ -185,6 +185,10 @@ var TestRunner = class {
     })
   };
 
+  browserSession() {
+    return this._browserSession;
+  }
+
   browserP() {
     return this._browserSession.protocol;
   }

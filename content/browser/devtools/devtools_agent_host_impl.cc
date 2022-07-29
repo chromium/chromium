@@ -25,6 +25,7 @@
 #include "content/browser/devtools/service_worker_devtools_manager.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
+#include "content/browser/devtools/web_contents_devtools_agent_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
@@ -61,6 +62,7 @@ void SetDevToolsPipeHandler(std::unique_ptr<DevToolsPipeHandler> handler) {
 
 }  // namespace
 
+const char DevToolsAgentHost::kTypeTab[] = "tab";
 const char DevToolsAgentHost::kTypePage[] = "page";
 const char DevToolsAgentHost::kTypeFrame[] = "iframe";
 const char DevToolsAgentHost::kTypeDedicatedWorker[] = "worker";
@@ -101,6 +103,7 @@ DevToolsAgentHost::List DevToolsAgentHost::GetOrCreateAll() {
   // TODO(dgozman): we should add dedicated workers here, but clients are not
   // ready.
   RenderFrameDevToolsAgentHost::AddAllAgentHosts(&result);
+  WebContentsDevToolsAgentHost::AddAllAgentHosts(&result);
 
   AuctionWorkletDevToolsAgentHostManager::GetInstance().GetAll(&result);
 

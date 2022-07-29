@@ -20,3 +20,5 @@ per-file *tracing*=file://base/trace_event/OWNERS
 per-file interactive_test_utils_mac.mm=tapted@chromium.org
 
 per-file v8sh.py=file:v8/v8:main:/INFRA_OWNERS
+
+per-file *devtools*=file://chrome/browser/devtools/OWNERS

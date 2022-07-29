@@ -60,6 +60,18 @@ class TestClient: public DevToolsAgentHostClient {
   bool waiting_for_reply_;
 };
 
+DevToolsAgentHost::List ExtractPageOrFrameTargets(
+    DevToolsAgentHost::List list) {
+  DevToolsAgentHost::List result;
+  for (auto& entry : list) {
+    if (entry->GetType() == DevToolsAgentHost::kTypePage ||
+        entry->GetType() == DevToolsAgentHost::kTypeFrame) {
+      result.push_back(std::move(entry));
+    }
+  }
+  return result;
+}
+
 // Fails on Android, http://crbug.com/464993.
 #if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CrossSiteIframeAgentHost DISABLED_CrossSiteIframeAgentHost
@@ -77,7 +89,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
                             ->GetPrimaryFrameTree()
                             .root();
 
-  list = DevToolsAgentHost::GetOrCreateAll();
+  list = ExtractPageOrFrameTargets(DevToolsAgentHost::GetOrCreateAll());
   EXPECT_EQ(1U, list.size());
   EXPECT_EQ(DevToolsAgentHost::kTypePage, list[0]->GetType());
   EXPECT_EQ(main_url.spec(), list[0]->GetURL().spec());
@@ -87,7 +99,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   GURL http_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(child, http_url));
 
-  list = DevToolsAgentHost::GetOrCreateAll();
+  list = ExtractPageOrFrameTargets(DevToolsAgentHost::GetOrCreateAll());
   EXPECT_EQ(1U, list.size());
   EXPECT_EQ(DevToolsAgentHost::kTypePage, list[0]->GetType());
   EXPECT_EQ(main_url.spec(), list[0]->GetURL().spec());
@@ -99,7 +111,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   cross_site_url = cross_site_url.ReplaceComponents(replace_host);
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), cross_site_url));
 
-  list = DevToolsAgentHost::GetOrCreateAll();
+  list = ExtractPageOrFrameTargets(DevToolsAgentHost::GetOrCreateAll());
   EXPECT_EQ(2U, list.size());
   EXPECT_EQ(DevToolsAgentHost::kTypePage, list[0]->GetType());
   EXPECT_EQ(main_url.spec(), list[0]->GetURL().spec());
@@ -128,7 +140,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessDevToolsBrowserTest,
   // Load back same-site page into iframe.
   EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), http_url));
 
-  list = DevToolsAgentHost::GetOrCreateAll();
+  list = ExtractPageOrFrameTargets(DevToolsAgentHost::GetOrCreateAll());
   EXPECT_EQ(1U, list.size());
   EXPECT_EQ(DevToolsAgentHost::kTypePage, list[0]->GetType());
   EXPECT_EQ(main_url.spec(), list[0]->GetURL().spec());

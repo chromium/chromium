@@ -614,6 +614,11 @@ class TargetHandler::TargetFilter {
                                  .SetExclude(true)
                                  .SetType(DevToolsAgentHost::kTypeBrowser)
                                  .Build());
+    // - Exclude `tab`.
+    default_filter.push_back(protocol::Target::FilterEntry::Create()
+                                 .SetExclude(true)
+                                 .SetType(DevToolsAgentHost::kTypeTab)
+                                 .Build());
     // - Allow everything else.
     default_filter.push_back(protocol::Target::FilterEntry::Create().Build());
     return base::WrapUnique(new TargetFilter(std::move(default_filter)));

@@ -45,6 +45,7 @@ class ServiceWorkerContext;
 class CONTENT_EXPORT DevToolsAgentHost
     : public base::RefCounted<DevToolsAgentHost> {
  public:
+  static const char kTypeTab[];
   static const char kTypePage[];
   static const char kTypeFrame[];
   static const char kTypeDedicatedWorker[];

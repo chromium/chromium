@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -347,6 +348,8 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest,
       content::DevToolsAgentHost::GetOrCreateAll();
   scoped_refptr<content::DevToolsAgentHost> service_worker_host;
   for (const scoped_refptr<content::DevToolsAgentHost>& host : targets) {
+    if (host->GetType() != ChromeDevToolsManagerDelegate::kTypeBackgroundPage)
+      continue;
     if (host->GetURL() == BackgroundInfo::GetBackgroundURL(extension.get())) {
       EXPECT_FALSE(service_worker_host);
       service_worker_host = host;

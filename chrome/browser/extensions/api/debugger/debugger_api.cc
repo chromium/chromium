@@ -824,6 +824,11 @@ ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   base::Value::List result;
   Profile* profile = Profile::FromBrowserContext(browser_context());
   for (auto& host : list) {
+    // TODO(crbug.com/1348385): hide all Tab targets for now to avoid
+    // compatibility problems. Consider exposing them later when they're fully
+    // supported, and compatibility considerations are better understood.
+    if (host->GetType() == DevToolsAgentHost::kTypeTab)
+      continue;
     if (!ExtensionMayAttachToTargetProfile(
             profile, include_incognito_information(), *host)) {
       continue;

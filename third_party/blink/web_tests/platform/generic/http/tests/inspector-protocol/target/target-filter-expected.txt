@@ -78,6 +78,24 @@ type: all but frames [
         type : shared_worker
         url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
     }
+    [4] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+    }
+    [5] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+    }
 ]
 default filter [
     [0] : {
@@ -171,6 +189,24 @@ wildcard pattern [
         title : 
         type : shared_worker
         url : http://127.0.0.1:8000/inspector-protocol/fetch/resources/shared-worker.js
+    }
+    [5] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-test.html?test=http://127.0.0.1:8000/inspector-protocol/target/target-filter.js
+    }
+    [6] : {
+        attached : false
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : 127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+        type : tab
+        url : http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
     }
 ]
 Discovered targets with type = shared_worker [
