@@ -254,6 +254,14 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure);
 
+// Returns true if `result` as returned by FileAnalysisRequest is considered a
+// a failed result when attempting a cloud-based content analysis.
+bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result);
+
+// Returns true if `result` as returned by FileAnalysisRequest is considered a
+// a failed result when attempting a local content analysis.
+bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the single main profile, or nullptr if none is found.
 Profile* GetMainProfileLacros();

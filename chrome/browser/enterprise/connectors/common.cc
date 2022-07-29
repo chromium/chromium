@@ -366,6 +366,18 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
       /* file_count */ 1, state, download_item);
 }
 
+bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
+  return result != safe_browsing::BinaryUploadService::Result::SUCCESS;
+}
+
+bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
+  return result != safe_browsing::BinaryUploadService::Result::SUCCESS &&
+         result != safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE &&
+         result != safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED &&
+         result != safe_browsing::BinaryUploadService::Result::
+                       DLP_SCAN_UNSUPPORTED_FILE_TYPE;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 Profile* GetMainProfileLacros() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();

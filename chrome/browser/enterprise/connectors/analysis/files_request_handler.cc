@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -23,22 +24,6 @@ namespace {
 FilesRequestHandler::Factory* GetFactoryStorage() {
   static base::NoDestructor<FilesRequestHandler::Factory> factory;
   return factory.get();
-}
-
-// Returns true if `result` as returned by FileAnalysisRequest is considered a
-// a failed result when attempting a cloud-based content analysis.
-bool CloudResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
-  return result != safe_browsing::BinaryUploadService::Result::SUCCESS;
-}
-
-// Returns true if `result` as returned by FileAnalysisRequest is considered a
-// a failed result when attempting a local content analysis.
-bool LocalResultIsFailure(safe_browsing::BinaryUploadService::Result result) {
-  return result != safe_browsing::BinaryUploadService::Result::SUCCESS &&
-         result != safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE &&
-         result != safe_browsing::BinaryUploadService::Result::FILE_ENCRYPTED &&
-         result != safe_browsing::BinaryUploadService::Result::
-                       DLP_SCAN_UNSUPPORTED_FILE_TYPE;
 }
 
 }  // namespace

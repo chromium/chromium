@@ -11,6 +11,8 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_settings.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/content_analysis_sdk/src/browser/include/content_analysis/sdk/analysis_client.h"
@@ -98,7 +100,7 @@ void DoLocalContentAnalysis(
     safe_browsing::BinaryUploadService::Result result,
     safe_browsing::BinaryUploadService::Request::Data data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (result != safe_browsing::BinaryUploadService::Result::SUCCESS) {
+  if (LocalResultIsFailure(result)) {
     request->FinishRequest(result, ContentAnalysisResponse());
     return;
   }
