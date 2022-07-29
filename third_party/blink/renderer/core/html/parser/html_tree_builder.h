@@ -126,7 +126,7 @@ class HTMLTreeBuilder final : public GarbageCollected<HTMLTreeBuilder> {
     kAfterAfterBodyMode,
     kAfterAfterFramesetMode,
   };
-#ifndef DEBUG
+#ifndef NDEBUG
   static const char* ToString(InsertionMode);
 #endif
 
