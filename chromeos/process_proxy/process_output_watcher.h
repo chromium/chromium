@@ -23,8 +23,8 @@ enum ProcessOutputType {
   PROCESS_OUTPUT_TYPE_EXIT
 };
 
-using ProcessOutputCallback = base::RepeatingCallback<
-    void(ProcessOutputType, const std::string&, base::OnceClosure)>;
+using ProcessOutputCallback =
+    base::RepeatingCallback<void(ProcessOutputType, const std::string&)>;
 
 // Observes output on |out_fd| and invokes |callback| when some output is
 // detected. It assumes UTF8 output.
@@ -38,6 +38,10 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
   ~ProcessOutputWatcher();
 
   void Start();
+  void AckOutput();
+  base::WeakPtr<ProcessOutputWatcher> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
   // Called when |process_output_file_| is readable without blocking.
@@ -55,9 +59,7 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
 
   // Processes new |read_buffer_| state and notifies observer about new process
   // output.
-  void ReportOutput(ProcessOutputType type,
-                    size_t new_bytes_count,
-                    base::OnceClosure callback);
+  void ReportOutput(ProcessOutputType type, size_t new_bytes_count);
 
   char read_buffer_[4096];
   // Maximum read buffer content size.
@@ -71,6 +73,8 @@ class COMPONENT_EXPORT(CHROMEOS_PROCESS_PROXY) ProcessOutputWatcher {
 
   // Callback that will be invoked when some output is detected.
   ProcessOutputCallback on_read_callback_;
+  // Count of unacked outputs sent.
+  int unacked_outputs_ = 0;
 
   base::WeakPtrFactory<ProcessOutputWatcher> weak_factory_{this};
 };

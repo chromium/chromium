@@ -102,35 +102,31 @@ bool ProcessProxy::StartWatchingOutput(
 }
 
 void ProcessProxy::OnProcessOutput(ProcessOutputType type,
-                                   const std::string& output,
-                                   base::OnceClosure callback) {
+                                   const std::string& output) {
   if (!callback_runner_.get())
     return;
 
   callback_runner_->PostTask(
       FROM_HERE, base::BindOnce(&ProcessProxy::CallOnProcessOutputCallback,
-                                this, type, output, std::move(callback)));
+                                this, type, output));
 }
 
 void ProcessProxy::CallOnProcessOutputCallback(ProcessOutputType type,
-                                               const std::string& output,
-                                               base::OnceClosure callback) {
+                                               const std::string& output) {
   // We may receive some output even after Close was called (crosh process does
   // not have to quit instantly, or there may be some trailing data left in
   // output stream fds). In that case owner of the callback may be gone so we
   // don't want to send it anything. |callback_set_| is reset when this gets
   // closed.
   if (callback_set_) {
-    output_ack_callback_ = std::move(callback);
     callback_.Run(type, output);
   }
 }
 
 void ProcessProxy::AckOutput() {
-  if (output_ack_callback_) {
-    std::move(output_ack_callback_).Run();
-    output_ack_callback_.Reset();
-  }
+  watcher_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(&ProcessOutputWatcher::AckOutput,
+                                           output_watcher_->GetWeakPtr()));
 }
 
 void ProcessProxy::StopWatching() {
