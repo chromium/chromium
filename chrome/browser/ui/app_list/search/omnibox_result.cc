@@ -41,40 +41,16 @@ constexpr int kRichEntityPriority = 2;
 constexpr int kHistoryPriority = 1;
 constexpr int kDefaultPriority = 0;
 
-// Subtype for generic results.
-enum class Subtype {
-  kDomain,
-  kSearch,
-  kHistory,
-  kCalculator,
-};
-
-Subtype MatchTypeToSubtype(CrosApiSearchResult::OmniboxType type) {
+// crosapi OmniboxType to vector icon, used for app list.
+const gfx::VectorIcon& TypeToVectorIcon(CrosApiSearchResult::OmniboxType type) {
   switch (type) {
     case CrosApiSearchResult::OmniboxType::kDomain:
-      return Subtype::kDomain;
-    case CrosApiSearchResult::OmniboxType::kSearch:
-      return Subtype::kSearch;
-    case CrosApiSearchResult::OmniboxType::kHistory:
-      return Subtype::kHistory;
-    case CrosApiSearchResult::OmniboxType::kCalculator:
-      return Subtype::kCalculator;
-    default:
-      NOTREACHED();
-      return Subtype::kDomain;
-  }
-}
-
-// AutocompleteMatchType::Type to vector icon, used for app list.
-const gfx::VectorIcon& TypeToVectorIcon(CrosApiSearchResult::OmniboxType type) {
-  switch (MatchTypeToSubtype(type)) {
-    case Subtype::kDomain:
       return ash::kOmniboxGenericIcon;
-    case Subtype::kSearch:
+    case CrosApiSearchResult::OmniboxType::kSearch:
       return ash::kSearchIcon;
-    case Subtype::kHistory:
+    case CrosApiSearchResult::OmniboxType::kHistory:
       return ash::kHistoryIcon;
-    case Subtype::kCalculator:
+    case CrosApiSearchResult::OmniboxType::kCalculator:
       return ash::kEqualIcon;
     default:
       NOTREACHED();
