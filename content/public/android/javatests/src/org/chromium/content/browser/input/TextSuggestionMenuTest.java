@@ -146,6 +146,7 @@ public class TextSuggestionMenuTest {
 
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1348267")
     public void testApplySuggestion() throws InterruptedException, Throwable, TimeoutException {
         WebContents webContents = mRule.getWebContents();
 
