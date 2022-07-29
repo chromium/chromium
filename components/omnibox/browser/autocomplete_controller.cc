@@ -281,7 +281,8 @@ void AutocompleteController::GetMatchTypeAndExtendSubtypes(
 
 AutocompleteController::AutocompleteController(
     std::unique_ptr<AutocompleteProviderClient> provider_client,
-    int provider_types)
+    int provider_types,
+    bool is_cros_launcher)
     : provider_client_(std::move(provider_client)),
       bookmark_provider_(nullptr),
       document_provider_(nullptr),
@@ -293,6 +294,7 @@ AutocompleteController::AutocompleteController(
       stop_timer_duration_(OmniboxFieldTrial::StopTimerFieldTrialDuration()),
       done_(true),
       in_start_(false),
+      is_cros_launcher_(is_cros_launcher),
       search_service_worker_signal_sent_(false),
       template_url_service_(provider_client_->GetTemplateURLService()) {
   provider_types &= ~OmniboxFieldTrial::GetDisabledProviderTypes();
@@ -1271,11 +1273,10 @@ void AutocompleteController::SetStartStopTimerDurationForTesting(
 bool AutocompleteController::ShouldRunProvider(
     AutocompleteProvider* provider) const {
   if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-      input_.keyword_mode_entry_method() !=
-          metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID) {
-    // We're in keyword mode. Only a subset of providers are run when we're in a
-    // starter pack keyword mode. Try to grab the TemplateURL to determine if
-    // we're in starter pack mode and whether this provider should be run.
+      provider->InKeywordMode(input_)) {
+    // Only a subset of providers are run when we're in a starter pack keyword
+    // mode. Try to grab the TemplateURL to determine if we're in starter pack
+    // mode and whether this provider should be run.
     AutocompleteInput keyword_input = input_;
     const TemplateURL* keyword_turl =
         KeywordProvider::GetSubstitutingTemplateURLForInput(
@@ -1315,13 +1316,10 @@ bool AutocompleteController::ShouldRunProvider(
   }
 
   // Open Tab Provider should only be run for @tabs starter pack mode and in the
-  // CrOS launcher.  As a temporary condition, we don't run the open tab
-  // provider when IsSiteSearchStarterPackEnabled() is true, even though that
-  // could interfere with the launcher.
-  // TODO(crbug/1287313): This needs to be updated before running live
-  // experiments.
+  // CrOS launcher.  If we reach here, we're not in starter pack mode, so
+  // disable the Open Tab Provider unless we're in the CrOS launcher.
   if (provider->type() == AutocompleteProvider::TYPE_OPEN_TAB &&
-      OmniboxFieldTrial::IsSiteSearchStarterPackEnabled()) {
+      !is_cros_launcher_) {
     return false;
   }
 

@@ -32,7 +32,7 @@ SearchControllerLacros::SearchControllerLacros()
 
   autocomplete_controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile_),
-      ProviderTypes());
+      ProviderTypes(), /*is_cros_launcher=*/true);
   autocomplete_controller_->AddObserver(this);
 
   favicon_cache_ = std::make_unique<FaviconCache>(

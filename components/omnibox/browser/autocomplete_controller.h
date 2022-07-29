@@ -99,7 +99,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   // updated.
   AutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
-      int provider_types);
+      int provider_types,
+      bool is_cros_launcher = false);
   ~AutocompleteController() override;
   AutocompleteController(const AutocompleteController&) = delete;
   AutocompleteController& operator=(const AutocompleteController&) = delete;
@@ -397,6 +398,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   // notifications until Start() has been invoked on all providers. When this
   // boolean is true, we are definitely within the synchronous pass.
   bool in_start_;
+
+  // True if this instance of AutocompleteController is owned by the CrOS
+  // launcher. This is currently used to determine whether to enable the Open
+  // Tab provider always (CrOS launcher) or just in keyword mode (!launcher).
+  bool is_cros_launcher_;
 
   // Logs stability and timing metrics for updates.
   AutocompleteControllerMetrics metrics_{*this};

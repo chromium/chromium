@@ -119,15 +119,19 @@ OmniboxProvider::OmniboxProvider(Profile* profile,
                                  AppListControllerDelegate* list_controller)
     : profile_(profile),
       list_controller_(list_controller),
-      controller_(std::make_unique<AutocompleteController>(
-          std::make_unique<ChromeAutocompleteProviderClient>(profile),
-          ProviderTypes())),
       favicon_cache_(FaviconServiceFactory::GetForProfile(
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS),
                      HistoryServiceFactory::GetForProfile(
                          profile,
                          ServiceAccessType::EXPLICIT_ACCESS)) {
+  bool is_launcher_with_tab_search_enabled =
+      (ash::features::IsProductivityLauncherEnabled() &&
+       base::GetFieldTrialParamByFeatureAsBool(
+           ash::features::kProductivityLauncher, "enable_open_tab", true));
+  controller_ = std::make_unique<AutocompleteController>(
+      std::make_unique<ChromeAutocompleteProviderClient>(profile),
+      ProviderTypes(), is_launcher_with_tab_search_enabled),
   controller_->AddObserver(this);
 }
 
