@@ -39,6 +39,8 @@ class FingerprintStorage final
       public device::mojom::FingerprintObserver {
  public:
   static const int kMaximumUnlockAttempts = 5;
+  static constexpr base::TimeDelta kRecentUnlockAttemptsDelta =
+      base::Seconds(3);
 
   // Registers profile prefs.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
@@ -70,8 +72,8 @@ class FingerprintStorage final
   // Returns true if the user has fingerprint record registered.
   bool HasRecord() const;
 
-  // Add a fingerprint unlock attempt count.
-  void AddUnlockAttempt();
+  // Add a fingerprint unlock attempt count that happened at timestamp.
+  void AddUnlockAttempt(base::TimeTicks timestamp);
 
   // Reset the number of unlock attempts to 0.
   void ResetUnlockAttemptCount();
@@ -79,7 +81,14 @@ class FingerprintStorage final
   // Returns true if the user has exceeded fingerprint unlock attempts.
   bool ExceededUnlockAttempts() const;
 
+  // Returns the number of unlock attempts made before success, regardless of
+  // when they happened in time.
   int unlock_attempt_count() const { return unlock_attempt_count_; }
+
+  // Returns the number of recent unlock attempts made before success.
+  // Recent attempts are defined as happening within
+  // `kRecentUnlockAttemptsDelta` from each others.
+  int GetRecentUnlockAttemptCount(base::TimeTicks timestamp);
 
   // device::mojom::FingerprintObserver:
   void OnRestarted() override;
@@ -100,8 +109,15 @@ class FingerprintStorage final
   friend class QuickUnlockStorage;
 
   Profile* const profile_;
-  // Number of fingerprint unlock attempt.
+  // Number of fingerprint unlock attempts.
   int unlock_attempt_count_ = 0;
+
+  // Number of recent fingerprint unlock attempts, i.e. attempts happening
+  // within 3 seconds from each others.
+  int recent_unlock_attempt_count_ = 0;
+
+  // Timestamps of the last fingerprint unlock attempt.
+  base::TimeTicks last_unlock_attempt_timestamp_ = base::TimeTicks::UnixEpoch();
 
   mojo::Remote<device::mojom::Fingerprint> fp_service_;
 

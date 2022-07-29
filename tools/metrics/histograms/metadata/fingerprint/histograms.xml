@@ -245,6 +245,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess"
+    units="attempts" expires_after="2023-04-05">
+  <owner>agrandi@google.com</owner>
+  <owner>chromeos-fingerprint@google.com</owner>
+  <summary>
+    Counts the number of recent fingerprint attempts until successful screen
+    unlock. Recent attempts are defined as happening within 3 seconds from each
+    others. The goal is to count intentional attempt to unlock the device and
+    exclude incidental touches of the fingerprint sensor.
+  </summary>
+</histogram>
+
 <histogram name="Fingerprint.Unlock.RecordFormatVersion"
     enum="FingerprintRecordFormatVersion" expires_after="2023-04-05">
   <owner>hesling@chromium.org</owner>

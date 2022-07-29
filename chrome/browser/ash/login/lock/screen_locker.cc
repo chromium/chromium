@@ -27,6 +27,7 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -930,7 +931,8 @@ void ScreenLocker::OnFingerprintAuthFailure(const user_manager::User& user) {
   if (quick_unlock_storage &&
       quick_unlock_storage->IsFingerprintAuthenticationAvailable(
           quick_unlock::Purpose::kUnlock)) {
-    quick_unlock_storage->fingerprint_storage()->AddUnlockAttempt();
+    quick_unlock_storage->fingerprint_storage()->AddUnlockAttempt(
+        base::TimeTicks::Now());
     if (quick_unlock_storage->fingerprint_storage()->ExceededUnlockAttempts()) {
       VLOG(1) << "Fingerprint unlock is disabled because it reached maximum"
               << " unlock attempt.";

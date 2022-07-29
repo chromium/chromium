@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -88,6 +89,9 @@ void FingerprintStorage::RecordFingerprintUnlockResult(
   if (success) {
     base::UmaHistogramCounts100("Fingerprint.Unlock.AttemptsCountBeforeSuccess",
                                 unlock_attempt_count());
+    base::UmaHistogramCounts100(
+        "Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess",
+        GetRecentUnlockAttemptCount(base::TimeTicks::Now()));
   }
   feature_usage_metrics_service_->RecordUsage(success);
 }
@@ -102,16 +106,33 @@ bool FingerprintStorage::HasRecord() const {
              prefs::kQuickUnlockFingerprintRecord) != 0;
 }
 
-void FingerprintStorage::AddUnlockAttempt() {
+void FingerprintStorage::AddUnlockAttempt(base::TimeTicks timestamp) {
+  DCHECK_GE(timestamp, last_unlock_attempt_timestamp_);
+
   ++unlock_attempt_count_;
+  if (timestamp - last_unlock_attempt_timestamp_ < kRecentUnlockAttemptsDelta)
+    ++recent_unlock_attempt_count_;
+  else
+    recent_unlock_attempt_count_ = 1;
+  last_unlock_attempt_timestamp_ = timestamp;
 }
 
 void FingerprintStorage::ResetUnlockAttemptCount() {
   unlock_attempt_count_ = 0;
+  recent_unlock_attempt_count_ = 0;
 }
 
 bool FingerprintStorage::ExceededUnlockAttempts() const {
   return unlock_attempt_count() >= kMaximumUnlockAttempts;
+}
+
+int FingerprintStorage::GetRecentUnlockAttemptCount(base::TimeTicks timestamp) {
+  DCHECK_GE(timestamp, last_unlock_attempt_timestamp_);
+
+  if (timestamp - last_unlock_attempt_timestamp_ < kRecentUnlockAttemptsDelta)
+    return recent_unlock_attempt_count_;
+  else
+    return 0;
 }
 
 void FingerprintStorage::OnRestarted() {

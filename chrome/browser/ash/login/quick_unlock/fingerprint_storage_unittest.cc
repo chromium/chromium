@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
@@ -83,13 +84,91 @@ TEST_F(FingerprintStorageUnitTest, UnlockAttemptCount) {
 
   EXPECT_EQ(0, fingerprint_storage->unlock_attempt_count());
 
-  fingerprint_storage->AddUnlockAttempt();
-  fingerprint_storage->AddUnlockAttempt();
-  fingerprint_storage->AddUnlockAttempt();
+  fingerprint_storage->AddUnlockAttempt(base::TimeTicks::Now());
+  fingerprint_storage->AddUnlockAttempt(base::TimeTicks::Now());
+  fingerprint_storage->AddUnlockAttempt(base::TimeTicks::Now());
   EXPECT_EQ(3, fingerprint_storage->unlock_attempt_count());
 
   fingerprint_storage->ResetUnlockAttemptCount();
   EXPECT_EQ(0, fingerprint_storage->unlock_attempt_count());
+}
+
+// Verifies that initial repeated unlock attempt count is zero.
+TEST_F(FingerprintStorageUnitTest, InitialRecentUnlockAttemptCountIsZero) {
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
+
+  EXPECT_EQ(0, fingerprint_storage->GetRecentUnlockAttemptCount(
+                   base::TimeTicks::Now()));
+}
+
+// Verify that recent unlock attempts correctly increases unlock attempt count.
+TEST_F(FingerprintStorageUnitTest,
+       RecentUnlockAttemptCountIsOneAfterOneAttempt) {
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
+
+  base::TimeTicks test_start = base::TimeTicks::Now();
+  fingerprint_storage->AddUnlockAttempt(test_start);
+  EXPECT_EQ(1, fingerprint_storage->GetRecentUnlockAttemptCount(
+                   test_start + base::Seconds(2)));
+}
+
+// Verify that recent unlock attempts correctly increases unlock attempt count.
+TEST_F(FingerprintStorageUnitTest,
+       RecentUnlockAttemptCountIncreasesWithRepeatedAttempts) {
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
+
+  base::TimeTicks test_start = base::TimeTicks::Now();
+  fingerprint_storage->AddUnlockAttempt(test_start);
+  fingerprint_storage->AddUnlockAttempt(test_start + base::Seconds(1));
+  fingerprint_storage->AddUnlockAttempt(test_start + base::Seconds(2));
+  EXPECT_EQ(3, fingerprint_storage->GetRecentUnlockAttemptCount(
+                   test_start + base::Seconds(3)));
+}
+
+// Verify that recent unlock attempts is zero after explicit reset call
+TEST_F(FingerprintStorageUnitTest, RecentUnlockAttemptCountIsZeroAfterReset) {
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
+
+  base::TimeTicks test_start = base::TimeTicks::Now();
+  fingerprint_storage->AddUnlockAttempt(test_start);
+  ASSERT_EQ(1, fingerprint_storage->GetRecentUnlockAttemptCount(
+                   test_start + base::Seconds(1)));
+
+  fingerprint_storage->ResetUnlockAttemptCount();
+  EXPECT_EQ(0, fingerprint_storage->GetRecentUnlockAttemptCount(
+                   test_start + base::Seconds(2)));
+}
+
+// Verify that dated attempts are not counted in recent unlock attempt count.
+TEST_F(FingerprintStorageUnitTest,
+       RecentUnlockAttemptCountExcludesDatedAttempts) {
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
+
+  base::TimeTicks test_start = base::TimeTicks::Now();
+  fingerprint_storage->AddUnlockAttempt(test_start);
+  fingerprint_storage->AddUnlockAttempt(test_start + base::Seconds(1));
+  fingerprint_storage->AddUnlockAttempt(test_start + base::Seconds(2));
+  EXPECT_EQ(0, fingerprint_storage->GetRecentUnlockAttemptCount(
+                   test_start + base::Seconds(10)));
+}
+
+// Verify that dated attempts are not counted in recent unlock attempt count.
+TEST_F(FingerprintStorageUnitTest,
+       RecentUnlockAttemptCountExcludesSomeAttempts) {
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
+
+  base::TimeTicks test_start = base::TimeTicks::Now();
+  fingerprint_storage->AddUnlockAttempt(test_start);
+  fingerprint_storage->AddUnlockAttempt(test_start + base::Seconds(1));
+  fingerprint_storage->AddUnlockAttempt(test_start + base::Seconds(5));
+  EXPECT_EQ(1, fingerprint_storage->GetRecentUnlockAttemptCount(
+                   test_start + base::Seconds(7)));
 }
 
 // Verifies that authentication is not available when
@@ -117,7 +196,7 @@ TEST_F(FingerprintStorageUnitTest, AuthenticationUnAvailable) {
   // Too many authentication attempts make fingerprint authentication
   // unavailable.
   for (int i = 0; i < FingerprintStorage::kMaximumUnlockAttempts; ++i) {
-    fingerprint_storage->AddUnlockAttempt();
+    fingerprint_storage->AddUnlockAttempt(base::TimeTicks::Now());
   }
   EXPECT_FALSE(test_api.IsFingerprintAvailable());
   fingerprint_storage->ResetUnlockAttemptCount();

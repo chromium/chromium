@@ -429,6 +429,8 @@ constexpr char kFingerprintSuccessHistogramName[] =
     "Fingerprint.Unlock.AuthSuccessful";
 constexpr char kFingerprintAttemptsCountBeforeSuccessHistogramName[] =
     "Fingerprint.Unlock.AttemptsCountBeforeSuccess";
+constexpr char kFingerprintRecentAttemptsCountBeforeSuccessHistogramName[] =
+    "Fingerprint.Unlock.RecentAttemptsCountBeforeSuccess";
 constexpr char kFeatureUsageMetric[] = "ChromeOS.FeatureUsage.Fingerprint";
 
 // Verifies that fingerprint auth success is recorded correctly.
@@ -455,6 +457,8 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockEnrollTest, FeatureUsageMetrics) {
       static_cast<int>(quick_unlock::FingerprintUnlockResult::kSuccess), 1);
   histogram_tester.ExpectTotalCount(
       kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      kFingerprintRecentAttemptsCountBeforeSuccessHistogramName, 1);
   histogram_tester.ExpectBucketCount(
       kFeatureUsageMetric,
       static_cast<int>(
