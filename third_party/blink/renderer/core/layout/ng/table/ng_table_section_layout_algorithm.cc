@@ -42,14 +42,6 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
   LogicalOffset offset;
   bool is_first_non_collapsed_row = true;
 
-  auto ConsumeRemainingFragmentainerSpace = [&]() {
-    if (!ConstraintSpace().HasKnownFragmentainerBlockSize())
-      return;
-
-    offset.block_offset = std::max(
-        offset.block_offset, FragmentainerSpaceAtBfcStart(ConstraintSpace()));
-  };
-
   Vector<LayoutUnit> row_offsets = {LayoutUnit()};
   wtf_size_t actual_start_row_index = 0u;
 
@@ -67,7 +59,6 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
                  IsEarlyBreakTarget(*early_break_, container_builder_, row))) {
       container_builder_.AddBreakBeforeChild(row, kBreakAppealPerfect,
                                              /* is_forced_break */ false);
-      ConsumeRemainingFragmentainerSpace();
       break;
     }
 
@@ -105,10 +96,8 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
         return RelayoutAndBreakEarlier<NGTableSectionLayoutAlgorithm>(
             container_builder_.EarlyBreak());
       }
-      if (break_status == NGBreakStatus::kBrokeBefore) {
-        ConsumeRemainingFragmentainerSpace();
+      if (break_status == NGBreakStatus::kBrokeBefore)
         break;
-      }
       DCHECK_EQ(break_status, NGBreakStatus::kContinue);
     }
 

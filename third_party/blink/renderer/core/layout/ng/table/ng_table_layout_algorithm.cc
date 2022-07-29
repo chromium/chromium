@@ -906,6 +906,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
                                 cell_block_constraints, border_spacing);
 
   const NGBoxStrut border_padding = container_builder_.BorderPadding();
+  const bool has_collapsed_borders = table_borders.IsCollapsed();
 
   // The current layout position.
   LayoutUnit child_block_offset;
@@ -1057,7 +1058,8 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         // We need to reserve space for the repeated footer at the end of the
         // fragmentainer.
         pending_repeated_footer_block_size =
-            block_size + border_spacing.block_size;
+            block_size + border_spacing.block_size +
+            (has_collapsed_borders ? border_padding.block_end : LayoutUnit());
       }
     }
   }
@@ -1150,6 +1152,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         if (!IsResumingLayout(child_break_token))
           border_spacing_before_first_section = border_spacing.block_size;
         child_block_offset += BlockStartBorderPadding();
+
         // We need to lay the section out before we can tell whether it should
         // be preceded by border-spacing (if there is nothing inside, it should
         // be omitted).
@@ -1168,6 +1171,14 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
           // to make it repeatable. If this turns out to be wrong, because we
           // reach the end in this fragment, we need to abort and relayout.
           may_repeat_again = !is_known_to_be_last_table_box_;
+
+          // A header will share its collapsed border with the block-start of
+          // the table. However when repeated it will draw the whole border
+          // itself. We need to reserve additional space at the block-start for
+          // this additional border space.
+          if (has_collapsed_borders &&
+              !border_padding_sides_to_include.block_start)
+            child_block_offset += border_padding.block_start;
         }
       } else if (child == grouped_children.footer) {
         if (pending_repeated_footer_block_size) {

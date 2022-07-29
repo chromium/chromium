@@ -1735,6 +1735,12 @@ crbug.com/750992 [ Win ] external/wpt/css/css-writing-modes/sizing-orthog-vrl-in
 ### With LayoutNGFragmentItem enabled
 crbug.com/982194 [ Win10.20h2 ] fast/writing-mode/border-image-vertical-lr.html [ Failure Pass ]
 
+# Known issues with offsetTop/offsetLeft in a fragmented context, see crbug.com/1347984
+crbug.com/1347984 fragmentation/table-in-subpixel-fragmentainer.html [ Failure ]
+crbug.com/1347984 fragmentation/table-row-dimensions-break-freely.html [ Failure ]
+crbug.com/1347984 fragmentation/table-row-dimensions-with-thead.html [ Failure ]
+crbug.com/1347984 fragmentation/table-row-dimensions.html [ Failure ]
+
 ### Tests failing with LayoutNGFlexFragmentation enabled:
 crbug.com/660611 fast/multicol/flexbox/doubly-nested-with-zero-width-flexbox-and-forced-break-crash.html [ Skip ]
 
@@ -1748,21 +1754,7 @@ crbug.com/1078927 fragmentation/border-spacing-break-before-unbreakable-row.html
 crbug.com/1078927 fragmentation/fragmented-rowspan-alignment.html [ Failure ]
 crbug.com/1078927 fragmentation/fragmented-rowspan.html [ Failure ]
 crbug.com/1078927 fragmentation/no-repeating-table-header-after-sections.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-multiple-tables-caption-repeating-thead-tfoot-with-border-spacing-at-top-of-row-2.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-multiple-tables-caption-repeating-thead-tfoot-with-border-spacing-at-top-of-row-3.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-multiple-tables-caption-repeating-thead-tfoot-with-border-spacing-at-top-of-row-4.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-multiple-tables-caption-repeating-thead-tfoot-with-border-spacing-at-top-of-row.html [ Failure ]
 crbug.com/1335870 fragmentation/single-line-cells-multiple-tables-repeating-thead-with-border-spacing-at-top-of-row.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-cell-straddles-page.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-starts-middle-of-page-break-after-avoid.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-starts-middle-of-page-break-after-avoid-2.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-starts-middle-of-page-break-after-avoid-3.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-starts-middle-of-page-break-after-avoid.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-starts-middle-of-page.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-with-border-spacing-at-top-of-row.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-with-caption.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot-with-two-captions.html [ Failure ]
-crbug.com/1078927 fragmentation/single-line-cells-repeating-thead-tfoot.html [ Failure ]
 crbug.com/1078927 fragmentation/table-overlapping-rowspan.html [ Failure ]
 
 ### With LayoutNGPrinting enabled:

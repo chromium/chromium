@@ -2,6 +2,7 @@
 <style>
 table {
     border-collapse: collapse;
+    break-inside: avoid;
 }
 td, th {
     background-color: #ddd;
@@ -18,38 +19,29 @@ td, th {
         <tr><td class="header">Col 1</td><td class="header">Col 2</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
-        <tr><td style="height: 4px; vertical-align: top;"></td><td style="vertical-align: top;"></td></tr>
         <tr><td class="header">Ft 1</td><td class="header">Ft 2</td></tr>
     </table>
     <table style="padding-top: 1px;">
         <tr><td class="header">Col 1</td><td class="header">Col 2</td></tr>
-        <tr><td>
-            <div style="height: 52px; margin-top: -2px;">
+        <tr style="height: 53px; vertical-align: top;"><td>
             Te<br>
             Te<br>
-            </div>
           </td>
           <td>
-            <div style="height: 52px; margin-top: -2px;">
             xt<br>
             xt<br>
-            </div>
           </td></tr>
         <tr><td class="header">Ft 1</td><td class="header">Ft 2</td></tr>
     </table>
     <table style="padding-top: 1px;">
         <tr><td class="header">Col 1</td><td class="header">Col 2</td></tr>
-        <tr><td>
-            <div style="height: 40px; margin-top: -2px;">
+        <tr><td style="padding-top: 0;">
             Te<br>
             Te
-            </div>
           </td>
-          <td>
-            <div style="height: 40px; margin-top: -2px;">
+          <td style="padding-top: 0;">
             xt<br>
             xt
-            </div>
           </td></tr>
         <tr><td class="header">Ft 1</td><td class="header">Ft 2</td></tr>
     </table>
