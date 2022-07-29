@@ -529,33 +529,15 @@ class ShellUtil {
   // TODO(benwells): Attempt to undo any changes that were successfully made.
   // http://crbug.com/83970
   //
-  // shell_change: Defines whether to register as default browser at system
+  // shell_change: Defined whether to register as default browser at system
   //               level or user level. If value has ShellChange::SYSTEM_LEVEL
   //               we should be running as admin user.
   // chrome_exe: The chrome.exe path to register as default browser.
-  // elevate_if_not_admin: On Win7 if user is not admin, try to elevate for
+  // elevate_if_not_admin: On Vista if user is not admin, try to elevate for
   //                       Chrome registration.
   static bool MakeChromeDefault(int shell_change,
                                 const base::FilePath& chrome_exe,
                                 bool elevate_if_not_admin);
-
-  // Make Chrome the default browser. This function works by going through
-  // the url protocols and file associations that are related to general
-  // browsing, e.g. http, https, .html etc., and directly setting the relevant
-  // registry entries for each. If any of these fails the operation will return
-  // false to indicate failure, which is consistent with the return value of
-  // shell_integration::GetDefaultBrowser. This function will also return false
-  // if it can't set the default directly on the current platform.
-  //
-  // shell_change: Defines whether to register as default browser at system
-  //               level or user level. If value has ShellChange::SYSTEM_LEVEL
-  //               we should be running as admin user.
-  // chrome_exe: The chrome.exe path to register as default browser.
-  // elevate_if_not_admin: If user is not admin, try to elevate for
-  //                       Chrome registration.
-  static bool MakeChromeDefaultDirectly(int shell_change,
-                                        const base::FilePath& chrome_exe,
-                                        bool elevate_if_not_admin);
 
   // Opens the Apps & Features page in the Windows settings in branded builds.
   //
@@ -869,16 +851,6 @@ class ShellUtil {
       const std::vector<std::unique_ptr<RegistryEntry>>& entries,
       bool best_effort_no_rollback = false);
 
-  // Use IPinnedList3 to pin shortcut to taskbar on WIN10_RS5 and above.
-  // Returns true if pinning was successful.
-  static bool PinShortcut(const base::FilePath& shortcut);
-
-  // Returns true if `shortcut` is pinned, false if not, and nullopt if
-  // IPinnedList3 is not supported (e.g., pre WIN10_RS5). Do not to call
-  // this on the Browser UI thread since it calls CoCreateInstance, which can
-  // cause jank.
-  static absl::optional<bool> IsShortcutPinned(const base::FilePath& shortcut);
-
   static std::array<uint32_t, 4> ComputeHashForTesting(
       base::span<const uint8_t> input);
 
@@ -888,8 +860,15 @@ class ShellUtil {
       const std::wstring& prog_id,
       const std::wstring& datetime);
 
-  static std::wstring GetCurrentProgIdForTesting(
-      const base::FilePath& chrome_exe);
+  // Use IPinnedList3 to pin shortcut to taskbar on WIN10_RS5 and above.
+  // Returns true if pinning was successful.
+  static bool PinShortcut(const base::FilePath& shortcut);
+
+  // Returns true if `shortcut` is pinned, false if not, and nullopt if
+  // IPinnedList3 is not supported (e.g., pre WIN10_RS5). Do not to call
+  // this on the Browser UI thread since it calls CoCreateInstance, which can
+  // cause jank.
+  static absl::optional<bool> IsShortcutPinned(const base::FilePath& shortcut);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_SHELL_UTIL_H_
