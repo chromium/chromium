@@ -22900,6 +22900,9 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Whole User Profiles cleaned">
     Disk space was not above 1GB target, even after removing all possible users.
   </int>
+  <int value="3" label="No unmounted cryptohomes">
+    There are no unmounted cryptohomes to clean.
+  </int>
 </enum>
 
 <enum name="CryptohomeMigrationToGaiaId">
