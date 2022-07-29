@@ -158,6 +158,62 @@ bool WasInForeground(const PageLoadMetricsObserverDelegate& delegate) {
   return delegate.StartedInForeground() || delegate.GetTimeToFirstForeground();
 }
 
+absl::optional<base::TimeDelta> GetNonPrerenderingBackgroundStartTiming(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  switch (delegate.GetPrerenderingState()) {
+    case PrerenderingState::kNoPrerendering:
+      if (delegate.StartedInForeground()) {
+        return delegate.GetTimeToFirstBackground();
+      } else {
+        return base::Seconds(0);
+      }
+    case PrerenderingState::kInPrerendering:
+    case PrerenderingState::kActivatedNoActivationStart:
+      return absl::nullopt;
+    case PrerenderingState::kActivated:
+      if (delegate.GetVisibilityAtActivation() == PageVisibility::kForeground) {
+        return delegate.GetTimeToFirstBackground();
+      } else {
+        return timing.activation_start;
+      }
+  }
+}
+
+bool EventOccurredBeforeNonPrerenderingBackgroundStart(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event) {
+  // If background start is nullopt, it'll must be greater than already
+  // occurred event.
+  const base::TimeDelta bg_start =
+      GetNonPrerenderingBackgroundStartTiming(delegate, timing)
+          .value_or(base::TimeDelta::Max());
+  return event < bg_start;
+}
+
+base::TimeDelta CorrectEventAsNavigationOrActivationOrigined(
+    const PageLoadMetricsObserverDelegate& delegate,
+    const page_load_metrics::mojom::PageLoadTiming& timing,
+    const base::TimeDelta& event) {
+  base::TimeDelta zero = base::Seconds(0);
+
+  switch (delegate.GetPrerenderingState()) {
+    case PrerenderingState::kNoPrerendering:
+      return event;
+    case PrerenderingState::kInPrerendering:
+    case PrerenderingState::kActivatedNoActivationStart:
+      return zero;
+    case PrerenderingState::kActivated: {
+      absl::optional<base::TimeDelta> origin = timing.activation_start;
+      DCHECK(origin.has_value());
+
+      base::TimeDelta corrected = event - origin.value();
+      return corrected < zero ? zero : corrected;
+    }
+  }
+}
+
 PageAbortInfo GetPageAbortInfo(
     const PageLoadMetricsObserverDelegate& delegate) {
   if (IsBackgroundAbort(delegate)) {

@@ -222,6 +222,7 @@ PageLoadTracker::PageLoadTracker(
   if (navigation_handle->IsInPrerenderedMainFrame()) {
     DCHECK(!started_in_foreground_);
     DCHECK_EQ(ukm::kInvalidSourceId, source_id_);
+    prerendering_state_ = PrerenderingState::kInPrerendering;
     InvokeAndPruneObservers("PageLoadMetricsObserver::OnPrerenderStart",
                             base::BindRepeating(
                                 [](content::NavigationHandle* navigation_handle,
@@ -449,12 +450,17 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
 
 void PageLoadTracker::DidActivatePrerenderedPage(
     content::NavigationHandle* navigation_handle) {
+  DCHECK_EQ(prerendering_state_, PrerenderingState::kInPrerendering);
+
+  prerendering_state_ = PrerenderingState::kActivatedNoActivationStart;
   source_id_ = ukm::ConvertToSourceId(navigation_handle->GetNavigationId(),
                                       ukm::SourceIdType::NAVIGATION_ID);
 
   if (GetWebContents()->GetVisibility() == content::Visibility::VISIBLE) {
-    was_prerendered_then_activated_in_foreground_ = true;
+    visibility_at_activation_ = PageVisibility::kForeground;
     PageShown();
+  } else {
+    visibility_at_activation_ = PageVisibility::kBackground;
   }
 
   for (const auto& observer : observers_)
@@ -789,6 +795,15 @@ void PageLoadTracker::OnTimingChanged() {
   DCHECK(!last_dispatched_merged_page_timing_->Equals(
       metrics_update_dispatcher_.timing()));
 
+  const mojom::PageLoadTiming& new_timing = metrics_update_dispatcher_.timing();
+
+  if (new_timing.activation_start &&
+      !last_dispatched_merged_page_timing_->activation_start) {
+    DCHECK(prerendering_state_ ==
+           PrerenderingState::kActivatedNoActivationStart);
+    prerendering_state_ = PrerenderingState::kActivated;
+  }
+
   const mojom::PaintTimingPtr& paint_timing =
       metrics_update_dispatcher_.timing().paint_timing;
   largest_contentful_paint_handler_.RecordTiming(
@@ -801,9 +816,8 @@ void PageLoadTracker::OnTimingChanged() {
       nullptr /* subframe_rfh */);
 
   for (const auto& observer : observers_) {
-    DispatchObserverTimingCallbacks(observer.get(),
-                                    *last_dispatched_merged_page_timing_,
-                                    metrics_update_dispatcher_.timing());
+    DispatchObserverTimingCallbacks(
+        observer.get(), *last_dispatched_merged_page_timing_, new_timing);
   }
   last_dispatched_merged_page_timing_ =
       metrics_update_dispatcher_.timing().Clone();
@@ -983,8 +997,16 @@ bool PageLoadTracker::StartedInForeground() const {
   return started_in_foreground_;
 }
 
+PageVisibility PageLoadTracker::GetVisibilityAtActivation() const {
+  return visibility_at_activation_;
+}
+
 bool PageLoadTracker::WasPrerenderedThenActivatedInForeground() const {
-  return was_prerendered_then_activated_in_foreground_;
+  return GetVisibilityAtActivation() == PageVisibility::kForeground;
+}
+
+PrerenderingState PageLoadTracker::GetPrerenderingState() const {
+  return prerendering_state_;
 }
 
 const UserInitiatedInfo& PageLoadTracker::GetUserInitiatedInfo() const {

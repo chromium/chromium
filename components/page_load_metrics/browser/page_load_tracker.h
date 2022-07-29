@@ -238,9 +238,11 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   base::TimeTicks GetNavigationStart() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
+  PrerenderingState GetPrerenderingState() const override;
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
   bool StartedInForeground() const override;
+  PageVisibility GetVisibilityAtActivation() const override;
   bool WasPrerenderedThenActivatedInForeground() const override;
   const UserInitiatedInfo& GetUserInitiatedInfo() const override;
   const GURL& GetUrl() const override;
@@ -506,7 +508,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   absl::optional<base::TimeTicks> first_foreground_time_;
   std::vector<BackForwardCacheRestore> back_forward_cache_restores_;
   const bool started_in_foreground_;
-  bool was_prerendered_then_activated_in_foreground_ = false;
+  PrerenderingState prerendering_state_ = PrerenderingState::kNoPrerendering;
+  // Holds the page's visibility at activation.
+  PageVisibility visibility_at_activation_ = PageVisibility::kNotInitialized;
 
   mojom::PageLoadTimingPtr last_dispatched_merged_page_timing_;
   blink::MobileFriendliness latest_mobile_friendliness_;

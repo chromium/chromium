@@ -15,4 +15,17 @@ PageLoadMetricsObserverDelegate::BackForwardCacheRestore::
 PageLoadMetricsObserverDelegate::BackForwardCacheRestore::
     BackForwardCacheRestore(const BackForwardCacheRestore&) = default;
 
+bool PageLoadMetricsObserverDelegate::IsInPrerenderingBeforeActivationStart()
+    const {
+  switch (GetPrerenderingState()) {
+    case PrerenderingState::kNoPrerendering:
+      return false;
+    case PrerenderingState::kInPrerendering:
+    case PrerenderingState::kActivatedNoActivationStart:
+      return true;
+    case PrerenderingState::kActivated:
+      return false;
+  }
+}
+
 }  // namespace page_load_metrics

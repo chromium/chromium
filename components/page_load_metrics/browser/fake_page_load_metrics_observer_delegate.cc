@@ -11,7 +11,8 @@ FakePageLoadMetricsObserverDelegate::FakePageLoadMetricsObserverDelegate()
     : user_initiated_info_(UserInitiatedInfo::NotUserInitiated()),
       page_end_user_initiated_info_(UserInitiatedInfo::NotUserInitiated()),
       visibility_tracker_(base::DefaultTickClock::GetInstance(),
-                          /*is_shown=*/true) {}
+                          /*is_shown=*/true),
+      navigation_start_(base::TimeTicks::Now()) {}
 FakePageLoadMetricsObserverDelegate::~FakePageLoadMetricsObserverDelegate() =
     default;
 
@@ -22,17 +23,32 @@ content::WebContents* FakePageLoadMetricsObserverDelegate::GetWebContents()
 
 base::TimeTicks FakePageLoadMetricsObserverDelegate::GetNavigationStart()
     const {
-  return base::TimeTicks();
+  return navigation_start_;
 }
 
-absl::optional<base::TimeDelta>
-FakePageLoadMetricsObserverDelegate::GetTimeToFirstBackground() const {
-  return absl::optional<base::TimeDelta>();
+absl::optional<base::TimeDelta> TimeDiff(
+    const absl::optional<base::TimeTicks>& time,
+    const base::TimeTicks& origin) {
+  if (!time.has_value())
+    return absl::nullopt;
+
+  DCHECK_GE(time.value(), origin);
+  return time.value() - origin;
 }
 
 absl::optional<base::TimeDelta>
 FakePageLoadMetricsObserverDelegate::GetTimeToFirstForeground() const {
   return absl::optional<base::TimeDelta>();
+}
+
+absl::optional<base::TimeDelta>
+FakePageLoadMetricsObserverDelegate::GetTimeToFirstBackground() const {
+  return TimeDiff(first_background_time_, navigation_start_);
+}
+
+PrerenderingState FakePageLoadMetricsObserverDelegate::GetPrerenderingState()
+    const {
+  return prerendering_state_;
 }
 
 const PageLoadMetricsObserverDelegate::BackForwardCacheRestore&
@@ -42,12 +58,17 @@ FakePageLoadMetricsObserverDelegate::GetBackForwardCacheRestore(
 }
 
 bool FakePageLoadMetricsObserverDelegate::StartedInForeground() const {
-  return true;
+  return started_in_foreground_;
+}
+
+PageVisibility FakePageLoadMetricsObserverDelegate::GetVisibilityAtActivation()
+    const {
+  return visibility_at_activation_;
 }
 
 bool FakePageLoadMetricsObserverDelegate::
     WasPrerenderedThenActivatedInForeground() const {
-  return false;
+  return GetVisibilityAtActivation() == PageVisibility::kForeground;
 }
 
 const UserInitiatedInfo&

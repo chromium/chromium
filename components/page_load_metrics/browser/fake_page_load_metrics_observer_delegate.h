@@ -36,11 +36,13 @@ class FakePageLoadMetricsObserverDelegate
   base::TimeTicks GetNavigationStart() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstBackground() const override;
   absl::optional<base::TimeDelta> GetTimeToFirstForeground() const override;
+  PrerenderingState GetPrerenderingState() const override;
   // By default no BackForwardCacheRestores are present, tests can add them by
   // calling |AddBackForwardCacheRestore|.
   const BackForwardCacheRestore& GetBackForwardCacheRestore(
       size_t index) const override;
   bool StartedInForeground() const override;
+  PageVisibility GetVisibilityAtActivation() const override;
   bool WasPrerenderedThenActivatedInForeground() const override;
   const UserInitiatedInfo& GetUserInitiatedInfo() const override;
   const GURL& GetUrl() const override;
@@ -99,6 +101,11 @@ class FakePageLoadMetricsObserverDelegate
   ResourceTracker resource_tracker_;
   LargestContentfulPaintHandler largest_contentful_paint_handler_;
   LargestContentfulPaintHandler experimental_largest_contentful_paint_handler_;
+  base::TimeTicks navigation_start_;
+  absl::optional<base::TimeTicks> first_background_time_ = absl::nullopt;
+  bool started_in_foreground_ = true;
+  PrerenderingState prerendering_state_ = PrerenderingState::kNoPrerendering;
+  PageVisibility visibility_at_activation_ = PageVisibility::kNotInitialized;
 
   // This vector backs the |GetBackForwardCacheRestore| and
   // |GetMostRecentBackForwardCacheRestore| methods.
