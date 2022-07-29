@@ -368,7 +368,6 @@
 <translation id="1359923111303110318">可透過 Smart Lock 解鎖裝置。按下 Enter 鍵即可解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
 <translation id="1361655923249334273">未使用</translation>
-<translation id="1361872463926621533">啟動時播放音效</translation>
 <translation id="1362865166188278099">發生機械故障。請檢查印表機</translation>
 <translation id="1363585519747660921">請設定 USB 印表機</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
@@ -1334,6 +1333,7 @@
 <translation id="2241053333139545397">讀取及變更你在多個網站上的資料</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2242687258748107519">檔案資訊</translation>
+<translation id="2245296100676446525">開啟同步功能後，你就可以在這部裝置及任何其他保持同步的位置上取得你的書籤、密碼、歷史記錄等等。</translation>
 <translation id="2245603955208828424">使用方向鍵即可在各項目中逐個字母移動</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> 會在背景自動進行更新，為你提供最新功能並改善安全性。你可以前往「設定」查看更新偏好設定。</translation>
 <translation id="2246549592927364792">要取得 Google 提供的圖片說明嗎？</translation>
@@ -4024,7 +4024,6 @@
 <translation id="4829768588131278040">設定 PIN 碼</translation>
 <translation id="4830026649400230050">所有符合資格的下載內容都會轉送至貴機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
-<translation id="4830573902900904548">您的 <ph name="DEVICE_TYPE" /> 無法透過 <ph name="NETWORK_NAME" /> 連線至網際網路，請選擇其他網路。<ph name="LEARN_MORE_LINK_START" />瞭解詳情<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">在列印伺服器上找到 1 台印表機</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回 Google 搜尋嗎？</translation>
@@ -6788,7 +6787,6 @@
 <translation id="7576976045740938453">示範模式的帳戶發生問題。</translation>
 <translation id="7578137152457315135">指紋設定</translation>
 <translation id="7578692661782707876">請輸入確認碼。</translation>
-<translation id="7580671184200851182">透過所有喇叭播放相同的音效 (單聲道音訊)</translation>
 <translation id="7581007437437492586">須正確設定政策</translation>
 <translation id="7581462281756524039">清理工具</translation>
 <translation id="7582582252461552277">偏好使用這個網路</translation>

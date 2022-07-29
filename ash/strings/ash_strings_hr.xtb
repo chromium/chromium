@@ -84,6 +84,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1346748346194534595">Udesno</translation>
 <translation id="1351937230027495976">Sažmi izbornik</translation>
 <translation id="1364382257761975320">Da biste otključali Chromebook, upotrijebite otisak prsta</translation>
+<translation id="1365866993922957110">Dobivajte automatska ažuriranja</translation>
 <translation id="1372545819342940910">Spremi radnu površinu za kasnije</translation>
 <translation id="1383597849754832576">Preuzimanje govornih datoteka nije uspjelo. Pokušajte ponovo kasnije.</translation>
 <translation id="1383876407941801731">Traži</translation>
@@ -161,6 +162,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1830308660060964064">Otkvačena je stavka <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Asistent (učitavanje...)</translation>
 <translation id="1838895407229022812">Noćno je svjetlo isključeno.</translation>
+<translation id="1862380676329487333">Ažuriraj i odjavi se</translation>
 <translation id="1864454756846565995">USB-C uređaj (stražnji priključak)</translation>
 <translation id="1879018240766558464">Anonimni prozori trenutačno nisu podržani. Ostale će se aplikacije spremiti.</translation>
 <translation id="1882814835921407042">Nema mobilne mreže</translation>
@@ -561,6 +563,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="423685346499232137">Sadržaj se trenutačno ne može kopirati i zalijepiti</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
+<translation id="4247123849143712100">Ažuriraj i isključi</translation>
 <translation id="4250229828105606438">Snimka zaslona</translation>
 <translation id="425364040945105958">Nema SIM kartice</translation>
 <translation id="4261870227682513959">Prikaz postavki obavijesti. Obavijesti su isključene</translation>
@@ -920,6 +923,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> je upravljana sesija kojom upravlja <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Povezano: <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">PRIJEDLOZI APLIKACIJA</translation>
+<translation id="6359587239691116345">Preuzmite najnovije značajke i sigurnosna poboljšanja. Ako odbijete ovo ažuriranje, vaš uređaj možda više neće pravilno funkcionirati i možda ćete imati problema sa sigurnošću i izvedbom.</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
 <translation id="6381109794406942707">Da biste otključali uređaj, unesite PIN.</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK isključena</translation>
@@ -941,6 +945,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> zahtijeva da ažurirate svoj uređaj <ph name="DEVICE_TYPE" /> prije roka</translation>
 <translation id="649452524636452238">PIN za pametnu karticu</translation>
 <translation id="6495400115277918834">Pokrenuta je slika u slici, pritisnite Alt + Shift + V da biste fokusirali</translation>
+<translation id="6500896621837555595">Ažuriraj</translation>
 <translation id="6501401484702599040">Emitiranje zaslona na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Prekinuta je veza s kamerom, u tijeku je pokušaj ponovnog povezivanja.</translation>
 <translation id="6520517963145875092">Odaberite prozor za fotografiranje</translation>
@@ -1218,6 +1223,7 @@ Novo instaliranje</translation>
 <translation id="8054466585765276473">Izračun vremena baterije.</translation>
 <translation id="8061464966246066292">Visoki kontrast</translation>
 <translation id="8083540854303889870">Spremljeno za kasnije</translation>
+<translation id="8091387634532529612">Automatska ažuriranja</translation>
 <translation id="8098591350844501178">Zaustavi emitiranje zaslona na prijamniku <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Uklj., sve ap.</translation>
 <translation id="8120151603115102514">Telefon nema zaključan zaslon. Da biste otključali Chromebook, unesite zaporku.</translation>
@@ -1424,4 +1430,5 @@ Novo instaliranje</translation>
 <translation id="974545358917229949">Prikazuju se rezultati za upit <ph name="QUERY" /> (njih <ph name="RESULT_COUNT" />)</translation>
 <translation id="98515147261107953">Pejzaž</translation>
 <translation id="990277280839877440">Zatvoren je prozor <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">Preuzmite najnovije značajke i sigurnosna poboljšanja. Ažuriranja se odvijaju u pozadini.</translation>
 </translationbundle>

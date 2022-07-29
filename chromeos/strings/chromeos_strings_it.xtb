@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="3017079585324758401">Sfondo</translation>
+<translation id="302435934487327038">Installazione completata</translation>
 <translation id="3027578600144895987">Chiudi la videocamera</translation>
 <translation id="3031560714565892478">Il dispositivo è una videocamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,6 +665,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>
 <translation id="6643016212128521049">Cancella</translation>
+<translation id="6644568396961840069">Impossibile salvare il file. Prova a collegare un dispositivo di archiviazione esterno diverso oppure riprova più tardi.</translation>
 <translation id="6647510110698214773">Algoritmo di crittografia</translation>
 <translation id="6650062777702288430">Spostamento tra caratteri kana/alfanumerici</translation>
 <translation id="6657585470893396449">Password</translation>

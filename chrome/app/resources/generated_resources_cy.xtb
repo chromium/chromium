@@ -374,7 +374,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="1359923111303110318">Gellir datgloi eich dyfais gyda Smart Lock. Pwyswch Enter i ddatgloi.</translation>
 <translation id="1361164813881551742">Ychwanegu Eich Hun</translation>
 <translation id="1361655923249334273">Heb ei ddefnyddio</translation>
-<translation id="1361872463926621533">Chwarae sain wrth gychwyn</translation>
 <translation id="1362865166188278099">Problem fecanyddol. Gwiriwch yr argraffydd</translation>
 <translation id="1363585519747660921">Mae angen ffurfweddu'r argraffydd USB</translation>
 <translation id="1367951781824006909">Dewis ffeil</translation>
@@ -4044,7 +4043,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="4829768588131278040">Gosod PIN</translation>
 <translation id="4830026649400230050">Mae pob lawrlwythiad cymwys wedi'i lwybro i gyfrif <ph name="WEB_DRIVE" /> eich lleoliad.</translation>
 <translation id="4830502475412647084">Yn gosod diweddariad OS</translation>
-<translation id="4830573902900904548">Ni all eich <ph name="DEVICE_TYPE" /> gysylltu â'r Rhyngrwyd gan ddefnyddio <ph name="NETWORK_NAME" />. Dewiswch rwydwaith arall. <ph name="LEARN_MORE_LINK_START" />Dysgu rhagor<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Wedi dod o hyd i 1 argraffydd o'r gweinydd argraffu</translation>
 <translation id="4836504898754963407">Rheoli olion bysedd</translation>
 <translation id="4837128290434901661">Newid yn ôl i Google Search?</translation>
@@ -6818,7 +6816,6 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7576976045740938453">Bu problem gyda'r cyfrif modd demo.</translation>
 <translation id="7578137152457315135">Gosodiadau olion bysedd</translation>
 <translation id="7578692661782707876">Rhowch eich cod cadarnhad.</translation>
-<translation id="7580671184200851182">Chwarae'r un sain drwy'r holl seinyddion (mono audio)</translation>
 <translation id="7581007437437492586">Mae polisïau wedi'u ffurfweddu'n gywir</translation>
 <translation id="7581462281756524039">Offeryn glanhau</translation>
 <translation id="7582582252461552277">Hoffi'r rhwydwaith hwn</translation>

@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">YANGILASH</translation>
 <translation id="3009958530611748826">Saqlash uchun jild tanlang</translation>
 <translation id="3017079585324758401">Orqa fon</translation>
+<translation id="302435934487327038">Oʻrnatildi</translation>
 <translation id="3027578600144895987">Kamerani yopish</translation>
 <translation id="3031560714565892478">Qurilma — video kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -664,6 +665,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6618744767048954150">Bajarilmoqda</translation>
 <translation id="6620487321149975369">Chop etish vazifalari mustaqil olib tashlanmagucha tarix sahifasida chiqadi</translation>
 <translation id="6643016212128521049">Tozalash</translation>
+<translation id="6644568396961840069">Fayl saqlanmadi. Boshqa tashqi xotira omborini ulang yoki keyinroq qayta urining.</translation>
 <translation id="6647510110698214773">Shifrlash algoritmi</translation>
 <translation id="6650062777702288430">Kana/alfaraqamni almashtirish</translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -723,6 +725,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7180611975245234373">Yangilash</translation>
 <translation id="7212734716605298123">Tashqi qurilmalar uchun mikrodastur yangilanishi</translation>
 <translation id="7216409898977639127">Mobil tarmoq</translation>
+<translation id="725133483556299729">Emailni tanlang</translation>
 <translation id="7271040990581020067">Skaner hozir band. Keyinroq urining.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281209642468917121">Kamida 1 ta komponent tanlab, qayta urining yoki keyinroq kalibrlang</translation>

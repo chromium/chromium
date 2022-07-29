@@ -370,7 +370,6 @@
 <translation id="1359923111303110318">Smart Lock ഉപയോഗിച്ച് നിങ്ങളുടെ ഉപകരണം അൺലോക്ക് ചെയ്യാനാവും. അൺലോക്ക് ചെയ്യാൻ 'Enter' അമർത്തുക.</translation>
 <translation id="1361164813881551742">നേരിട്ട് ചേർക്കുക</translation>
 <translation id="1361655923249334273">ഉപയോഗിക്കാത്ത</translation>
-<translation id="1361872463926621533">ആരംഭിക്കുമ്പോൾ ശബ്‌ദം പ്ലേ ചെയ്യുക</translation>
 <translation id="1362865166188278099">മെക്കാനിക്കൽ പ്രശ്‌നം. പ്രിന്റർ പരിശോധിക്കുക</translation>
 <translation id="1363585519747660921">USB പ്രിൻ്ററിന് കോൺഫിഗറേഷൻ ആവശ്യമുണ്ട്</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
@@ -4023,7 +4022,6 @@
 <translation id="4829768588131278040">പിൻ നമ്പർ സജ്ജമാക്കുക</translation>
 <translation id="4830026649400230050">യോഗ്യമായ എല്ലാ ഡൗൺലോഡുകളും സ്ഥാപനത്തിന്റെ <ph name="WEB_DRIVE" /> അക്കൗണ്ടുകളിലേക്ക് റൂട്ട് ചെയ്യുന്നു.</translation>
 <translation id="4830502475412647084">OS അപ്‌ഡേറ്റ് ഇൻസ്‌റ്റാൾ ചെയ്യുന്നു</translation>
-<translation id="4830573902900904548"><ph name="NETWORK_NAME" /> ഉപയോഗിച്ച് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഇന്റർനെറ്റിൽ കണ‌ക്റ്റ് ചെയ്യാനാകുന്നില്ല. മറ്റൊരു നെറ്റ്‌വർക്ക് തിരഞ്ഞെടുക്കുക. <ph name="LEARN_MORE_LINK_START" />കൂടുതലറിയുക<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">പ്രിന്റ് സെർവറിൽ നിന്ന് ഒരു പ്രിന്റർ കണ്ടെത്തി</translation>
 <translation id="4836504898754963407">ഫിംഗർപ്രിന്റുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="4837128290434901661">തിരികെ Google Search-ലേക്ക് മാറ്റണോ?</translation>
@@ -6792,7 +6790,6 @@
 <translation id="7576976045740938453">ഡെമോ മോഡ് അക്കൗണ്ടിൽ ഒരു പ്രശ്‌നമുണ്ടായി.</translation>
 <translation id="7578137152457315135">ഫിംഗർപ്രിന്റ് ക്രമീകരണം</translation>
 <translation id="7578692661782707876">നിങ്ങളുടെ സ്ഥിരീകരണ കോഡ് നൽകുക.</translation>
-<translation id="7580671184200851182">എല്ലാ സ്‌പീക്കറുകളിലൂടെയും സമാനമായ ഓഡിയോ പ്ലേ ചെയ്യുക (മോണോ ഓഡിയോ)</translation>
 <translation id="7581007437437492586">നയങ്ങൾ ശരിയായി കോൺഫിഗർ ചെയ്യുക</translation>
 <translation id="7581462281756524039">ക്ലീൻഅപ്പ് ടൂൾ</translation>
 <translation id="7582582252461552277">ഈ നെറ്റ്‌വെർക്ക് തിരഞ്ഞെടുക്കുക</translation>

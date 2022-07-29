@@ -3145,6 +3145,13 @@ Als dit beleid is ingesteld, staat <ph name="PRODUCT_OS_NAME" /> gebruikers alle
 <translation id="4347908978527632940">Als beleid 'True' is en de gebruiker een gebruiker met beperkte rechten is, kunnen andere Android-apps de internetbeperkingen van de gebruiker opvragen via de contentprovider.
 
           Als het beleid 'False' of niet ingesteld is, retourneert de contentprovider geen informatie.</translation>
+<translation id="4357587374229381015">Hiermee wordt een naam voor de URL-parameter opgegeven die wordt gebruikt op de SAML IdP-inlogpagina om het gebruikersnaamveld automatisch in te vullen.
+
+      Het e-mailadres van de gebruiker voor het <ph name="PRODUCT_OS_NAME" />-profiel wordt gebruikt als waarde voor de URL-parameter. Zet deze instelling dus uit als gebruikers waarschijnlijk verschillende e-mailadressen gebruiken met SAML IdP.
+
+      Als je deze instelling niet instelt, moeten gebruikers hun gebruikersnaam zelf invullen op de SAML IdP-inlogpagina.
+
+      Dit beleid is van invloed op online verificatie op inlog- en vergrendelschermen.</translation>
 <translation id="4363057787588706121">Toestaan dat lijstbeleid van verschillende bronnen kan worden samengevoegd</translation>
 <translation id="4363101430102811068">Datalekdetectie voor ingevoerde gegevens aanzetten</translation>
 <translation id="436581050240847513">Apparaatnetwerkinterface rapporteren</translation>

@@ -370,7 +370,6 @@
 <translation id="1359923111303110318">உங்கள் சாதனத்தை Smart Lock மூலம் அன்லாக் செய்யலாம். அன்லாக் செய்ய Enterரை அழுத்தவும்.</translation>
 <translation id="1361164813881551742">கைமுறையாகச் சேர்</translation>
 <translation id="1361655923249334273">பயன்படுத்தாத</translation>
-<translation id="1361872463926621533">தொடக்கத்தில் ஒலியை இயக்கு</translation>
 <translation id="1362865166188278099">இயந்திரக் கோளாறு. பிரிண்டரைச் சரிபார்க்கவும்</translation>
 <translation id="1363585519747660921">USB பிரிண்டரை உள்ளமைக்க வேண்டும்</translation>
 <translation id="1367951781824006909">ஃபைலைத் தேர்வுசெய்க</translation>
@@ -4040,7 +4039,6 @@
 <translation id="4829768588131278040">பின்னை அமை</translation>
 <translation id="4830026649400230050">தகுதிபெறும் பதிவிறக்கங்கள் அனைத்தும் உங்கள் நிறுவனத்தின் <ph name="WEB_DRIVE" /> கணக்கில் சேமிக்கப்படும்.</translation>
 <translation id="4830502475412647084">OS புதுப்பிப்பை நிறுவுகிறது</translation>
-<translation id="4830573902900904548">உங்கள் <ph name="DEVICE_TYPE" /> ஆல் <ph name="NETWORK_NAME" /> மூலம் இணையத்துடன் இணைய முடியவில்லை. வேறு நெட்வொர்க்கைத் தேர்வுசெய்யவும். <ph name="LEARN_MORE_LINK_START" />மேலும் அறிக<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">பிரிண்ட் சேவையகத்தில் ஒரு பிரிண்டர் உள்ளது</translation>
 <translation id="4836504898754963407">கைரேகைகளை நிர்வகிக்கவும்</translation>
 <translation id="4837128290434901661">மீண்டும் Google Search என அமைக்கவா?</translation>
@@ -6808,7 +6806,6 @@
 <translation id="7576976045740938453">டெமோ பயன்முறைக் கணக்கில் ஒரு சிக்கல் ஏற்பட்டது.</translation>
 <translation id="7578137152457315135">கைரேகை அமைப்புகள்</translation>
 <translation id="7578692661782707876">உறுதிப்படுத்தல் குறியீட்டை உள்ளிடுக.</translation>
-<translation id="7580671184200851182">எல்லா ஸ்பீக்கர்களிலும் ஒரே ஆடியோவை இயக்கு (மோனோ ஆடியோ)</translation>
 <translation id="7581007437437492586">கொள்கைகள் சரியாக உள்ளமைக்கப்பட வேண்டும்</translation>
 <translation id="7581462281756524039">சுத்திகரிப்புக் கருவி</translation>
 <translation id="7582582252461552277">இந்த நெட்வொர்க்குக்கு முன்னுரிமை வழங்குக</translation>

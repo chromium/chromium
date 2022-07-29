@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3017079585324758401">Bakgrunn</translation>
+<translation id="302435934487327038">Installeringen er fullført</translation>
 <translation id="3027578600144895987">Lukk kameraet</translation>
 <translation id="3031560714565892478">Enheten er et videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,6 +665,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6620487321149975369">Utskriftsjobber vises i loggen med mindre de fjernes manuelt</translation>
 <translation id="6643016212128521049">Tøm</translation>
+<translation id="6644568396961840069">Filen kunne ikke lagres. Prøv å koble til en annen ekstern lagringsenhet, eller prøv igjen senere.</translation>
 <translation id="6647510110698214773">Algoritme for kryptering</translation>
 <translation id="6650062777702288430">Kana/alfanumerisk-bytte</translation>
 <translation id="6657585470893396449">Passord</translation>

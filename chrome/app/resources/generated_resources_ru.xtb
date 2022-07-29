@@ -371,7 +371,6 @@
 <translation id="1359923111303110318">Ваше устройство можно разблокировать с помощью Smart Lock. Для этого нажмите Ввод.</translation>
 <translation id="1361164813881551742">Добавить вручную</translation>
 <translation id="1361655923249334273">Не используется</translation>
-<translation id="1361872463926621533">Воспроизводить звук при запуске</translation>
 <translation id="1362865166188278099">Техническая проблема. Проверьте принтер.</translation>
 <translation id="1363585519747660921">Необходимо настроить USB-принтер</translation>
 <translation id="1367951781824006909">Выберите файл</translation>
@@ -4027,7 +4026,6 @@
 <translation id="4829768588131278040">Установить PIN-код</translation>
 <translation id="4830026649400230050">Все скачанные файлы хранятся в аккаунте сервиса "<ph name="WEB_DRIVE" />".</translation>
 <translation id="4830502475412647084">Обновление ОС</translation>
-<translation id="4830573902900904548">Устройству <ph name="DEVICE_TYPE" /> не удается подключиться к Интернету по сети <ph name="NETWORK_NAME" />. Выберите другую сеть. <ph name="LEARN_MORE_LINK_START" />Подробнее…<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">На сервере печати найден 1 принтер.</translation>
 <translation id="4836504898754963407">Управление отпечатками</translation>
 <translation id="4837128290434901661">Вернуться к Google Поиску?</translation>
@@ -6800,7 +6798,6 @@
 <translation id="7576976045740938453">Возникла проблема с демонстрационным режимом аккаунта.</translation>
 <translation id="7578137152457315135">Настройки аутентификации с помощью отпечатков пальцев</translation>
 <translation id="7578692661782707876">Введите свой код подтверждения.</translation>
-<translation id="7580671184200851182">Воспроизводить одно и то же аудио через все динамики (моноаудио)</translation>
 <translation id="7581007437437492586">Правила настроены верно.</translation>
 <translation id="7581462281756524039">Инструмент очистки</translation>
 <translation id="7582582252461552277">Предпочитать эту сеть</translation>

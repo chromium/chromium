@@ -84,6 +84,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1351937230027495976">Menu samenvouwen</translation>
 <translation id="1364382257761975320">Gebruik je vingerafdruk om je Chromebook te ontgrendelen</translation>
+<translation id="1365866993922957110">Automatische updates krijgen</translation>
 <translation id="1372545819342940910">Bureau opslaan voor later</translation>
 <translation id="1383597849754832576">Kan spraakbestanden niet downloaden. Probeer het later opnieuw.</translation>
 <translation id="1383876407941801731">Zoeken</translation>
@@ -161,6 +162,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> is losgemaakt</translation>
 <translation id="1836215606488044471">Assistent (laden...)</translation>
 <translation id="1838895407229022812">Nachtverlichting staat uit.</translation>
+<translation id="1862380676329487333">Updaten en uitloggen</translation>
 <translation id="1864454756846565995">USB-C-apparaat (poort aan achterkant)</translation>
 <translation id="1879018240766558464">Incognitovensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="1882814835921407042">Geen mobiel netwerk</translation>
@@ -561,6 +563,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="423685346499232137">Kan momenteel geen content kopiëren of plakken</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Instellingen openen</translation>
+<translation id="4247123849143712100">Updaten en uitzetten</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Geen simkaart</translation>
 <translation id="4261870227682513959">Instellingen voor meldingen bekijken. Meldingen staan uit</translation>
@@ -920,6 +923,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> gekoppeld</translation>
 <translation id="6351032674660237738">APP-SUGGESTIES</translation>
+<translation id="6359587239691116345">Krijg de nieuwste functies en beveiligingsverbeteringen. Als je deze update weigert, werkt je apparaat misschien niet meer goed en kun je beveiligings- en prestatieproblemen ondervinden.</translation>
 <translation id="6376931439017688372">Bluetooth staat aan</translation>
 <translation id="6381109794406942707">Geef je pincode op om het apparaat te ontgrendelen.</translation>
 <translation id="639644700271529076">CAPS LOCK staat uit</translation>
@@ -941,6 +945,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> vóór de deadline updatet</translation>
 <translation id="649452524636452238">Pincode van smartkaart</translation>
 <translation id="6495400115277918834">Scherm-in-scherm gestart, Alt+Shift+V om te focussen</translation>
+<translation id="6500896621837555595">Updaten</translation>
 <translation id="6501401484702599040">Scherm casten naar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Verbinding met camera verbroken. Er wordt geprobeerd opnieuw verbinding te maken.</translation>
 <translation id="6520517963145875092">Selecteer een venster om op te nemen</translation>
@@ -1215,6 +1220,7 @@ Nieuwe installatie</translation>
 <translation id="8054466585765276473">Accuduur berekenen.</translation>
 <translation id="8061464966246066292">Hoog contrast</translation>
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
+<translation id="8091387634532529612">Automatische updates</translation>
 <translation id="8098591350844501178">Schermcast naar <ph name="RECEIVER_NAME" /> stopzetten</translation>
 <translation id="8113423164597455979">Aan, alle apps</translation>
 <translation id="8120151603115102514">Je telefoon heeft geen vergrendelscherm. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
@@ -1421,4 +1427,5 @@ Nieuwe installatie</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Liggend</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> gesloten.</translation>
+<translation id="996204416024568215">Krijg de nieuwste functies en beveiligingsverbeteringen. Updates worden op de achtergrond uitgevoerd.</translation>
 </translationbundle>

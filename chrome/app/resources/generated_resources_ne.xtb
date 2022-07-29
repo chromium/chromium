@@ -366,7 +366,6 @@
 <translation id="1359923111303110318">तपाईंको यन्त्र Smart Lock प्रयोग गरी अनलक गर्न सकिन्छ। अनलक गर्न Enter थिच्नुहोस्।</translation>
 <translation id="1361164813881551742">म्यानुअल तरिकाले थप्नुहोस्</translation>
 <translation id="1361655923249334273">प्रयोग नगरिएको</translation>
-<translation id="1361872463926621533">सुरुवातमा ध्वनि प्ले गर्नुहोस्</translation>
 <translation id="1362865166188278099">मेकानिकल समस्या भयो। प्रिन्टर जाँच्नुहोस्</translation>
 <translation id="1363585519747660921">USB प्रिन्टरलाई कन्फिगर गर्नु पर्छ</translation>
 <translation id="1367951781824006909">एउटा फाइल रोज्नुहोस्</translation>
@@ -4022,7 +4021,6 @@
 <translation id="4829768588131278040">PIN सेटअप गर्नुहोस्</translation>
 <translation id="4830026649400230050">डाउनलोड गर्न मिल्ने सबै फाइलहरू तपाईंको सङ्गठनको <ph name="WEB_DRIVE" /> खातामा पठाइन्छ।</translation>
 <translation id="4830502475412647084">OS अद्यावधिक स्थापना गर्दै</translation>
-<translation id="4830573902900904548">तपाईँको <ph name="DEVICE_TYPE" /> <ph name="NETWORK_NAME" /> प्रयोग गरेर इन्टरनेटसँग जडान गर्न असमर्थ छ। कृपया अर्को नेटवर्क छनौट गर्नुहोस्। <ph name="LEARN_MORE_LINK_START" /> थप जान्नुहोस् <ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">प्रिन्ट सर्भरमा १ प्रिन्टर फेला पर्‍यो</translation>
 <translation id="4836504898754963407">फिंगरप्रिन्टहरूको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4837128290434901661">फेरि Google खोज प्रयोग गर्ने हो?</translation>
@@ -5026,6 +5024,7 @@
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - क्यामेरा वा माइक्रोफोन मार्फत रेकर्डिङ</translation>
 <translation id="583673505367439042">साइटहरूले तपाईंको डिभाइसमा भएका फाइल तथा फोल्डरहरू सम्पादन गर्ने अनुमति माग्न सक्छन्</translation>
 <translation id="583756221537636748">केस</translation>
+<translation id="5840658767386246331">Google मार्फत खोज्नुहोस्</translation>
 <translation id="5840680448799937675">फाइलहरू सधैँ अफलाइन सेयर गरिने छ</translation>
 <translation id="5841270259333717135">इथरनेट कन्फिगर गर्नुहोस्</translation>
 <translation id="5842497610951477805">ब्लुटुथ सक्षम</translation>
@@ -6515,6 +6514,7 @@
 <translation id="7307129035224081534">पज गरियो</translation>
 <translation id="7308643132139167865">वेबसाइटका भाषाहरू</translation>
 <translation id="7310598146671372464">लग इन गर्न सकिएन। सर्भरले Kerberos नामक तोकिएको इन्क्रिप्सनका प्रकारहरूलाई समर्थन गर्दैन। आफ्नो प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
+<translation id="7311089766378749632"><ph name="SITE_NAME" /> मा भएका सामग्री रिड गर्ने र ती सामग्री परिवर्तन गर्ने अनुमति मागिँदै छ</translation>
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="7320213904474460808">डिफल्ट नेटवर्क बनाउनुहोस्</translation>
 <translation id="7321545336522791733">सर्भर पहुँचयोग्य छैन</translation>
@@ -6786,7 +6786,6 @@
 <translation id="7576976045740938453">डेमो मोडको खातासम्बन्धी कुनै समस्या भयो।</translation>
 <translation id="7578137152457315135">फिंगरप्रिन्टका सेटिङ</translation>
 <translation id="7578692661782707876">कृपया आफ्नो पुष्टि कोड हाल्नुहोस्।</translation>
-<translation id="7580671184200851182">सबै स्पिकरहरू मार्फत उही अडियो प्ले गर्नुहोस् (मोनो अडियो)</translation>
 <translation id="7581007437437492586">नीतिहरू राम्ररी कन्फिगर गरिएको हुनु पर्छ</translation>
 <translation id="7581462281756524039">शुद्धिकरण उपकरण</translation>
 <translation id="7582582252461552277">यो नेटवर्कलाई रोज्नुहोस्</translation>
@@ -7107,6 +7106,7 @@
 <translation id="7869655448736341731">कुनै पनि प्रयोजनका लागि</translation>
 <translation id="7870730066603611552">सेटअप गरेपश्चात् सिंकसम्बन्धी विकल्पहरूको समीक्षा गर्नुहोस्</translation>
 <translation id="7870790288828963061">नयाँ संस्करणका कुनै पनि Kiosk एपहरू भेटिएन। अद्यावधिक गर्न कुनै चिज वाँकि छैन। कृपया USB स्टिक हटाउनुहोस्।</translation>
+<translation id="7871049986386271121">सधैँ यो साइटमा</translation>
 <translation id="7871109039747854576">उम्मेदवारहरूको सूचीलाई पृष्ठमा ल्याउन <ph name="COMMA" /> र <ph name="PERIOD" /> कुञ्जीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="787268756490971083">निष्क्रिय छ</translation>
 <translation id="7872758299142009420">एकभित्र अर्को गरी राखिएका अत्यन्त धेरै समूहहरू छन्: <ph name="ERROR_LINE" /></translation>
@@ -7705,6 +7705,7 @@
 <translation id="8438566539970814960">खोज तथा ब्राउजिङलाई अझ राम्रो बनाउनुहोस्</translation>
 <translation id="8439506636278576865">यस भाषामा पृष्ठहरू अनुवाद प्रस्ताव गर्नुहोस्</translation>
 <translation id="8440630305826533614">Linux का एपहरू</translation>
+<translation id="844063558976952706">सधैँ यो साइटमा</translation>
 <translation id="8443795068008423036">आफ्नो डिभाइस अप टु डेट छ भन्ने कुरा सुनिश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="8446884382197647889">थप जान्नुहोस्</translation>
 <translation id="8447409163267621480">Ctrl वा Alt कुञ्जी समावेश गर्नुहोस्</translation>

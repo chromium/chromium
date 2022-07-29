@@ -1004,6 +1004,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3676592649209844519">ID de dispositivo:</translation>
 <translation id="3677008721441257057">¿Quisiste decir &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">La solicitud no se pudo firmar</translation>
+<translation id="3678342917559046352">La extensión no es válida: Se esperaba que el valor fuera uno de los siguientes formatos: &lt;extension_id&gt; o &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">Abre la página en una nueva ventana de incógnito (Ctrl-mayúscula-N).</translation>
 <translation id="3681007416295224113">Información sobre el certificado</translation>
 <translation id="3701427423622901115">Se detectó el restablecimiento.</translation>
@@ -1343,6 +1344,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="464342062220857295">Buscar funciones</translation>
 <translation id="4644670975240021822">Orden inverso hacia abajo</translation>
 <translation id="4646534391647090355">Ir ahora</translation>
+<translation id="4648262692072505866">El hash debe tener el formato SHA-256.</translation>
 <translation id="4652266463001779298">No se permite.</translation>
 <translation id="4653167719759882810">Fusiones y adquisiciones</translation>
 <translation id="4658638640878098064">Grapa en la esquina superior izquierda</translation>
@@ -1452,6 +1454,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101"><ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para realizar una búsqueda</translation>
 <translation id="4930153903256238152">Gran capacidad</translation>
+<translation id="4936134414789135531">No se pudo encontrar el <ph name="VALUE_NAME" /> insertado.</translation>
 <translation id="4936675324097895694">Finanzas</translation>
 <translation id="4940163644868678279">Modo Incógnito en Chrome</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
@@ -1569,6 +1572,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">Bandeja 13</translation>
 <translation id="5216942107514965959">Última visita: hoy</translation>
+<translation id="5217759126664161410">El formato de protocolo no es válido.</translation>
 <translation id="5222812217790122047">Correo electrónico (obligatorio)</translation>
 <translation id="5228404122310299359">Suministros para fiestas y vacaciones</translation>
 <translation id="5229588705416009823">Juegos multijugador masivo</translation>
@@ -1641,6 +1645,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5398772614898833570">Anuncios bloqueados</translation>
 <translation id="5400836586163650660">Gris</translation>
 <translation id="540969355065856584">Este servidor no pudo demostrar que se trata de <ph name="DOMAIN" />; el certificado de seguridad no es válido en este momento. Esto puede deberse a una configuración incorrecta o a un ataque que intercepta tu conexión.</translation>
+<translation id="5412040515238827314">El formato no es válido: se esperaba una lista de patrones.</translation>
 <translation id="5412236728747081950">Este sitio obtiene tus intereses de Chrome para mostrarte anuncios más relevantes</translation>
 <translation id="541416427766103491">Apilador 4</translation>
 <translation id="5421136146218899937">Borrar datos de navegación...</translation>
@@ -1759,6 +1764,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5754400531489347219">Animales y mascotas</translation>
 <translation id="5759751709240058861">Usar y mover la cámara</translation>
 <translation id="5763042198335101085">Escribe una dirección de correo electrónico válida</translation>
+<translation id="5764725887548570807">El formato de origen no es válido.</translation>
 <translation id="5765072501007116331">Para ver los requisitos y métodos de entrega, selecciona una dirección</translation>
 <translation id="57689295674415555">¿No se completó el número de la tarjeta virtual?</translation>
 <translation id="5776313857861697733">Prioridad</translation>
@@ -1883,10 +1889,12 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6107012941649240045">Emitido a</translation>
 <translation id="610911394827799129">Es posible que tu cuenta de Google tenga otros formularios del historial de navegación en <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /></translation>
 <translation id="6116338172782435947">Ver el texto y las imágenes copiados en el portapapeles</translation>
+<translation id="6118782133429281336">La lista de origen está vacía.</translation>
 <translation id="6120179357481664955">¿Recuerdas tu ID de IUP?</translation>
 <translation id="6124432979022149706">Conectores de Chrome Enterprise</translation>
 <translation id="6127379762771434464">Se eliminó el elemento</translation>
 <translation id="6132161237766805930"><ph name="BEGIN_LINK" />Obtén más información sobre el modo Incógnito en Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">La extensión del archivo está vacía o es incorrecta.</translation>
 <translation id="6146055958333702838">Revisa los cables y reinicia los routers, módems u otros dispositivos
         de red que estés usando.</translation>
 <translation id="614940544461990577">Intenta:</translation>
@@ -2060,6 +2068,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="666259744093848177">(x86_64 translated)</translation>
 <translation id="6663846344464066639">Manos juntas</translation>
 <translation id="6665553082534466207">Perforación triple a la derecha</translation>
+<translation id="6668389483194953109">Se encontró el nombre del tamaño de papel "custom", pero la propiedad "custom_size" está vacía o no es válida.</translation>
 <translation id="6671697161687535275">¿Confirmas que quieres quitar la sugerencia de formulario de Chromium?</translation>
 <translation id="6683717648675961851">Publicaciones de empleo</translation>
 <translation id="6685834062052613830">Salir y completar la configuración</translation>
@@ -2073,6 +2082,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6696588630955820014">Botón Compartir esta pestaña: presiona Intro para compartir esta pestaña con el vínculo, creando un código QR, transmitiendo la pestaña y más</translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="6702919718839027939">Presente</translation>
+<translation id="6704458454638854812">Se estableció la propiedad "custom_size", se esperaba el nombre "custom".</translation>
 <translation id="6709133671862442373">Noticias</translation>
 <translation id="6709888928011386878">Instrumentos musicales</translation>
 <translation id="6710213216561001401">Anterior</translation>

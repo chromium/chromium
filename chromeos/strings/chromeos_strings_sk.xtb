@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">OBNOVIŤ</translation>
 <translation id="3009958530611748826">Vyberte priečinok na uloženie</translation>
 <translation id="3017079585324758401">Pozadie</translation>
+<translation id="302435934487327038">Inštalácia bola dokončená</translation>
 <translation id="3027578600144895987">Zavrieť kameru</translation>
 <translation id="3031560714565892478">Zariadenie je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,6 +665,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6618744767048954150">Beží</translation>
 <translation id="6620487321149975369">Tlačové úlohy sa budú zobrazovať v histórii, dokým ich neodstránite ručne</translation>
 <translation id="6643016212128521049">Vymazať</translation>
+<translation id="6644568396961840069">Súbor sa nepodarilo uložiť. Skúste pripojiť iné externé úložisko alebo to zopakujte neskôr.</translation>
 <translation id="6647510110698214773">Algoritmus šifrovania</translation>
 <translation id="6650062777702288430">Prepínanie písmen kana a alfanumerických znakov</translation>
 <translation id="6657585470893396449">Heslo</translation>

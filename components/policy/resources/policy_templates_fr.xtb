@@ -5139,6 +5139,15 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Si cette règle n'est pas configurée, aucune longueur maximale n'est appliquée.</translation>
 <translation id="6553143066970470539">Niveau de luminosité de l'écran (%)</translation>
+<translation id="6555557921186817432">Programmer un redémarrage automatique après l'installation des mises à jour de <ph name="PRODUCT_OS_NAME" />.
+
+      Lorsque cette règle est définie sur "True", un redémarrage automatique est requis après l'installation d'une mise à jour de <ph name="PRODUCT_OS_NAME" /> afin de terminer le processus. Ce redémarrage est programmé pour être effectué immédiatement, mais il peut être retardé de 24 heures maximum si l'appareil est en cours d'utilisation.
+
+      Lorsque cette règle est définie sur "False", aucun redémarrage automatique n'est prévu après l'installation des mises à jour de <ph name="PRODUCT_OS_NAME" />. Le processus de mise à jour se termine une fois que l'utilisateur redémarre son appareil.
+
+      Si vous la configurez, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
+
+      Remarque : Pour le moment, les redémarrages automatiques ne sont activés que lorsque l'écran de connexion est affiché ou qu'une session d'appli kiosque est en cours.</translation>
 <translation id="6559057113164934677">Interdire à tous les sites d'accéder à la caméra et au microphone</translation>
 <translation id="6559221564468029245">Si cette règle est activée ou qu'elle n'est pas configurée, l'utilisateur n'est pas considéré comme inactif pendant la lecture audio. Le délai d'inactivité ne peut ainsi pas être atteint, et l'action à effectuer en cas d'inactivité n'est pas appliquée. Toutefois, l'écran peut quand même s'assombrir, s'éteindre ou se verrouiller au terme des délais configurés, malgré l'activité audio.
 

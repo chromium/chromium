@@ -370,7 +370,6 @@
 <translation id="1359923111303110318">你可以用 Smart Lock 解鎖裝置。㩒 Enter 掣就可以解鎖。</translation>
 <translation id="1361164813881551742">手動新增</translation>
 <translation id="1361655923249334273">未使用</translation>
-<translation id="1361872463926621533">啟動時播放音效</translation>
 <translation id="1362865166188278099">發生機件故障。請檢查打印機</translation>
 <translation id="1363585519747660921">USB 列印機需要設定</translation>
 <translation id="1367951781824006909">選擇檔案</translation>
@@ -1082,6 +1081,7 @@
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1999115740519098545">起始螢幕</translation>
 <translation id="2000419248597011803">將部分 Cookie，以及網址列和搜尋框中的搜尋內容傳送至預設搜尋引擎</translation>
+<translation id="2001148512690747464"><ph name="PRIMARY_EMAIL" /> 未有儲存「快速配對」裝置</translation>
 <translation id="2002109485265116295">即時</translation>
 <translation id="2003130567827682533">如要啟用「<ph name="NAME" />」的流動網絡，請先連接 Wi-Fi 網絡</translation>
 <translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
@@ -1346,6 +1346,7 @@
 <translation id="2241053333139545397">讀取及變更您在多個網站上的資料</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2242687258748107519">檔案資料</translation>
+<translation id="2245296100676446525">開啟同步功能後，你就可以在這部裝置及任何其他保持同步的位置上取得你的書籤、密碼、歷史記錄等等。</translation>
 <translation id="2245603955208828424">使用方向鍵即可在各項目中逐個字母移動</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> 會在背景中自動更新，為您提供最新功能並改善安全性。您可在「設定」中查看更新偏好設定。</translation>
 <translation id="2246549592927364792">要從 Google 取得圖片說明嗎？</translation>
@@ -1790,6 +1791,7 @@
 <translation id="2642111877055905627">足球</translation>
 <translation id="2643698698624765890">如要管理擴充功能，只需按一下 [視窗] 選單中的 [擴充功能] 即可。</translation>
 <translation id="2645047101481282803">您的裝置由 <ph name="PROFILE_NAME" /> 管理</translation>
+<translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{已向此裝置匯入 1 個密碼}other{已向此裝置匯入 {NUM_PASSWORDS} 個密碼}}</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
 <translation id="2652129567809778422">選擇密碼</translation>
@@ -2967,6 +2969,7 @@
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3790417903123637354">發生錯誤，請稍後再試</translation>
 <translation id="379082410132524484">您的付款卡已過期</translation>
+<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> 個擴充程式</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：1 天前}other{Chrome 在您的電腦上找不到有害軟件 • 上次檢查時間：{NUM_DAYS} 天前}}</translation>
 <translation id="379500251094592809">如要使用「咫尺共享」功能，請確保兩部裝置都已解鎖並放在一起，且已開啟藍牙功能。如果要與未設定為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用「咫尺共享」分享設定 (按一下電腦右下角的時間欄位即可開啟狀態區，再從中啟用「咫尺共享」分享設定) <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">關閉</translation>
@@ -4041,7 +4044,6 @@
 <translation id="4829768588131278040">設定 PIN</translation>
 <translation id="4830026649400230050">所有符合資格的下載項目都會導向至您機構的「<ph name="WEB_DRIVE" />」帳戶。</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
-<translation id="4830573902900904548"><ph name="DEVICE_TYPE" /> 無法透過 <ph name="NETWORK_NAME" /> 連線至互聯網，請選擇其他網絡。<ph name="LEARN_MORE_LINK_START" />瞭解詳情<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">在列印伺服器中找到 1 部打印機</translation>
 <translation id="4836504898754963407">管理指紋</translation>
 <translation id="4837128290434901661">要改回使用「Google 搜尋」嗎？</translation>
@@ -4238,6 +4240,7 @@
 <translation id="5026874946691314267">不要再顯示這則通知</translation>
 <translation id="5027550639139316293">電郵憑證</translation>
 <translation id="5027562294707732951">新增擴充程式</translation>
+<translation id="5028202297152853903">「<ph name="DEVICE" />」將會由 <ph name="PRIMARY_EMAIL" /> 移除，並與此 Chromebook 取消配對。</translation>
 <translation id="5029568752722684782">清除副本</translation>
 <translation id="5029873138381728058">無法檢查虛擬機器</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
@@ -4755,6 +4758,7 @@
 <translation id="5542750926112347543">已封鎖來自 <ph name="DOMAIN" /> 的 Cookie</translation>
 <translation id="5542949973455282971">正在連線至 <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">正在檢查狀態…</translation>
+<translation id="5544482392629385159">第 <ph name="DEVICE_INDEX" /> 部裝置 (共 <ph name="DEVICE_COUNT" /> 部)，<ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">轉譯器</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{在群組中加入分頁}other{在群組中加入分頁}}</translation>
 <translation id="5545693483061321551">網站不能使用 Cookie 查看您在其他網站的瀏覽活動，例如放送個人化廣告。部分網站的功能可能會無法正常運作。</translation>
@@ -5554,6 +5558,7 @@
 <translation id="6333170995003625229">無法驗證您的電郵地址或密碼，請再試一次。</translation>
 <translation id="6335920438823100346">「<ph name="MANAGER" />」要求您備份資料並將此 Chromebook 回復原廠設定，才能啟動 Linux。</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> 已停用 ADB 偵錯。這會讓系統在 24 小時後重設您的 <ph name="DEVICE_TYPE" />。請備份您想保留的檔案。</translation>
+<translation id="6338402296920404442">請考慮刪除 <ph name="FILENAME" />，從而令其他使用此裝置的使用者無法見到您的密碼。</translation>
 <translation id="6338981933082930623">所有網站都可向您顯示任何廣告</translation>
 <translation id="6339668969738228384">為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的個人檔案</translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -6508,6 +6513,7 @@
 <translation id="7280877790564589615">已要求許可</translation>
 <translation id="7282547042039404307">流暢</translation>
 <translation id="7282992757463864530">資料列</translation>
+<translation id="728334460283296316">移除裝置</translation>
 <translation id="7283555985781738399">訪客模式</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{系統會記住此裝置，在 1 天內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {DAYS} 天內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
 <translation id="7284411326658527427">每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
@@ -6806,7 +6812,6 @@
 <translation id="7576976045740938453">示範模式帳戶發生問題。</translation>
 <translation id="7578137152457315135">指紋設定</translation>
 <translation id="7578692661782707876">請輸入您的確認碼。</translation>
-<translation id="7580671184200851182">透過所有喇叭播放相同的音效 (單聲道音效)</translation>
 <translation id="7581007437437492586">須正確設定政策</translation>
 <translation id="7581462281756524039">清理工具</translation>
 <translation id="7582582252461552277">偏好使用這個網絡</translation>
@@ -7628,6 +7633,7 @@
 <translation id="8338952601723052325">開發人員網站</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> 儲存在本機上的資料</translation>
 <translation id="833986336429795709">如要開啟此連結，請選擇應用程式</translation>
+<translation id="8340547030807793004">可以對　<ph name="DEVICE" />　執行嘅其他操作</translation>
 <translation id="8342221978608739536">沒有試過</translation>
 <translation id="8342861492835240085">選取相片集</translation>
 <translation id="8345848587667658367">您現可查看手機最近的相片、媒體、通知和應用程式</translation>
@@ -7804,6 +7810,8 @@
 <translation id="8531701051932785007">「強化安全瀏覽」功能已關閉</translation>
 <translation id="8534656636775144800">抱歉！嘗試加入網域時發生錯誤，請再試一次。</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
+<translation id="8536565869707961418">從 <ph name="PRIMARY_EMAIL" /> 移除「<ph name="DEVICE" />」。
+    裝置仍可在本機使用。</translation>
 <translation id="8536713137312218707">快速指令</translation>
 <translation id="8536956381488731905">按鍵音效</translation>
 <translation id="8539727552378197395">否 (限 Http)</translation>

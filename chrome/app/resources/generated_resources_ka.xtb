@@ -368,7 +368,6 @@
 <translation id="1359923111303110318">თქვენი მოწყობილობის განბლოკვა შესაძლებელია Smart Lock-ით. განსაბლოკად დააჭირეთ კლავიშს „Enter“.</translation>
 <translation id="1361164813881551742">ხელით დამატება</translation>
 <translation id="1361655923249334273">გამოუყენებელი</translation>
-<translation id="1361872463926621533">ხმის დაკვრა გაშვებისას</translation>
 <translation id="1362865166188278099">მექანიკური პრობლემაა. შეამოწმეთ პრინტერი</translation>
 <translation id="1363585519747660921">USB პრინტერი საჭიროებს კონფიგურაციას</translation>
 <translation id="1367951781824006909">აირჩიეთ ფაილი</translation>
@@ -4025,7 +4024,6 @@
 <translation id="4829768588131278040">PIN-კოდის დაყენება</translation>
 <translation id="4830026649400230050">კრიტერიუმების შესაბამისი ყველა ჩამოტვირთვა მისამართდება თქვენი ორგანიზაციის <ph name="WEB_DRIVE" /> ანგარიშში.</translation>
 <translation id="4830502475412647084">მიმდინარეობს ოპერაციული სისტემის განახლების ინსტალაცია</translation>
-<translation id="4830573902900904548">თქვენი <ph name="DEVICE_TYPE" /> ვერ უკავშირდება ინტერნეტს <ph name="NETWORK_NAME" />-ის მეშვეობით. გთხოვთ, აირჩიოთ სხვა ქსელი. <ph name="LEARN_MORE_LINK_START" />შეიტყვეთ მეტი<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">ბეჭდვის სერვერზე მოიძებნა 1 პრინტერი</translation>
 <translation id="4836504898754963407">თითის ანაბეჭდების მართვა</translation>
 <translation id="4837128290434901661">გსურთ Google Search-ზე დაბრუნება?</translation>
@@ -6792,7 +6790,6 @@
 <translation id="7576976045740938453">წარმოიქმნა დემო-რეჟიმის ანგარიშთან დაკავშირებული პრობლემა.</translation>
 <translation id="7578137152457315135">თითის ანაბეჭდის პარამეტრები</translation>
 <translation id="7578692661782707876">შეიყვანეთ დადასტურების კოდი.</translation>
-<translation id="7580671184200851182">ყველა დინამიკში ერთი და იგივე აუდიოს დაკვრა (მონო აუდიო)</translation>
 <translation id="7581007437437492586">წესები სწორად არის კონფიგურირებული</translation>
 <translation id="7581462281756524039">გასუფთავების ხელსაწყო</translation>
 <translation id="7582582252461552277">ეს ქსელი იყოს უპირატესი</translation>

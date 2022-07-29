@@ -84,6 +84,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1346748346194534595">Dreapta</translation>
 <translation id="1351937230027495976">Restrânge meniul</translation>
 <translation id="1364382257761975320">Pentru a debloca Chromebookul, folosește amprenta</translation>
+<translation id="1365866993922957110">Primește actualizări automate</translation>
 <translation id="1372545819342940910">Salvează desktopul pentru mai târziu</translation>
 <translation id="1383597849754832576">Nu se pot descărca fișierele de redare în scris a vorbirii. Încearcă din nou mai târziu.</translation>
 <translation id="1383876407941801731">Caută</translation>
@@ -161,6 +162,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1830308660060964064">Fixarea pentru <ph name="ITEM_TITLE" /> a fost anulată</translation>
 <translation id="1836215606488044471">Asistent (se încarcă...)</translation>
 <translation id="1838895407229022812">Lumina de noapte este dezactivată.</translation>
+<translation id="1862380676329487333">Actualizează și deconectează-te</translation>
 <translation id="1864454756846565995">Dispozitiv USB-C (portul din spate)</translation>
 <translation id="1879018240766558464">Ferestrele incognito nu sunt acceptate. Alte aplicații se vor salva.</translation>
 <translation id="1882814835921407042">Nu este disponibilă nicio rețea mobilă</translation>
@@ -561,6 +563,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="423685346499232137">Nu se poate copia sau insera conținut în acest moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Deschide setările</translation>
+<translation id="4247123849143712100">Actualizează și închide</translation>
 <translation id="4250229828105606438">Captură de ecran</translation>
 <translation id="425364040945105958">Niciun card SIM</translation>
 <translation id="4261870227682513959">Afișează setările pentru notificări. Notificările sunt dezactivate</translation>
@@ -920,6 +923,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> este o sesiune gestionată de <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> s-a conectat</translation>
 <translation id="6351032674660237738">SUGESTII DE APLICAȚII</translation>
+<translation id="6359587239691116345">Obține cele mai noi funcții și îmbunătățiri ale securității. Dacă refuzi această actualizare, este posibil ca dispozitivul să nu mai funcționeze corespunzător și să întâmpini probleme de securitate și de performanță.</translation>
 <translation id="6376931439017688372">Bluetooth este activat</translation>
 <translation id="6381109794406942707">Pentru a debloca dispozitivul, introdu codul PIN.</translation>
 <translation id="639644700271529076">Tasta CAPS LOCK este dezactivată</translation>
@@ -941,6 +945,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> solicită să actualizezi dispozitivul <ph name="DEVICE_TYPE" /> înainte de termenul limită</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
 <translation id="6495400115277918834">Picture-in-picture a început, apasă pe Alt+Shift+V pentru a focaliza</translation>
+<translation id="6500896621837555595">Actualizează</translation>
 <translation id="6501401484702599040">Se proiectează ecranul pe <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Conexiunea cu camera foto s-a întrerupt, se încearcă reconectarea.</translation>
 <translation id="6520517963145875092">Selectează o fereastră ca să o capturezi</translation>
@@ -1218,6 +1223,7 @@ Instalare nouă</translation>
 <translation id="8054466585765276473">Se calculează durata bateriei.</translation>
 <translation id="8061464966246066292">Contrast ridicat</translation>
 <translation id="8083540854303889870">Salvate pentru mai târziu</translation>
+<translation id="8091387634532529612">Actualizări automate</translation>
 <translation id="8098591350844501178">Nu mai proiecta ecranul pe dispozitivul <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Activat, toate</translation>
 <translation id="8120151603115102514">Telefonul nu are ecran de blocare. Pentru a debloca Chromebookul, introdu parola.</translation>
@@ -1424,4 +1430,5 @@ Instalare nouă</translation>
 <translation id="974545358917229949">Se afișează <ph name="RESULT_COUNT" /> rezultate pentru <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Peisaj</translation>
 <translation id="990277280839877440">Fereastra <ph name="WINDOW_TITILE" /> s-a închis.</translation>
+<translation id="996204416024568215">Obține cele mai noi funcții și îmbunătățiri ale securității. Actualizările au loc în fundal.</translation>
 </translationbundle>

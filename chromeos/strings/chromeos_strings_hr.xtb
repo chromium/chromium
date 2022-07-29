@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">OSVJEŽI</translation>
 <translation id="3009958530611748826">Odaberite mapu za spremanje</translation>
 <translation id="3017079585324758401">Pozadina</translation>
+<translation id="302435934487327038">Instaliranje dovršeno</translation>
 <translation id="3027578600144895987">Zatvorite kameru</translation>
 <translation id="3031560714565892478">Uređaj je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,6 +665,7 @@ Dodirnite mikrofon da biste mi dali glasovnu naredbu.</translation>
 <translation id="6618744767048954150">U tijeku</translation>
 <translation id="6620487321149975369">Zadaci ispisa prikazivat će se u povijesti ako se ne uklone ručno</translation>
 <translation id="6643016212128521049">Izbriši</translation>
+<translation id="6644568396961840069">Datoteka se ne može spremiti. Priključite neku drugu vanjsku pohranu ili pokušajte ponovo kasnije.</translation>
 <translation id="6647510110698214773">Algoritam šifriranja</translation>
 <translation id="6650062777702288430">Prekidač za kana/alfanumeričke znakove</translation>
 <translation id="6657585470893396449">Zaporka</translation>

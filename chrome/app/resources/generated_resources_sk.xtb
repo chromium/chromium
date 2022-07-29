@@ -370,7 +370,6 @@ Heslá si môžete kedykoľvek skontrolovať v službe <ph name="GOOGLE_PASSWOR
 <translation id="1359923111303110318">Zariadenie môžete odomykať pomocou funkcie Smart Lock. Odomknete ho stlačením tlačidla Enter.</translation>
 <translation id="1361164813881551742">Pridať ručne</translation>
 <translation id="1361655923249334273">Nepoužitý</translation>
-<translation id="1361872463926621533">Pri spustení prehrávať zvuk</translation>
 <translation id="1362865166188278099">Mechanický problém. Skontrolujte tlačiareň.</translation>
 <translation id="1363585519747660921">Je potrebné nakonfigurovať tlačiareň USB</translation>
 <translation id="1367951781824006909">Vybrať súbor</translation>
@@ -1336,6 +1335,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2241053333139545397">Čítanie a úprava údajov na rôznych weboch</translation>
 <translation id="2241634353105152135">Iba raz</translation>
 <translation id="2242687258748107519">Informácie o súbore</translation>
+<translation id="2245296100676446525">Zapnite synchronizáciu a získajte tak svoje záložky, heslá, históriu a ďalší obsah v tomto zariadení aj všetkých ostatných, ktoré synchronizujete.</translation>
 <translation id="2245603955208828424">Pomocou klávesov so šípkami prechádzajte položkami po písmenách</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> sa bude automaticky aktualizovať na pozadí. Budete tak získavať najnovšie funkcie a zlepšenia zabezpečenia. Predvoľby aktualizácie môžete skontrolovať v Nastaveniach.</translation>
 <translation id="2246549592927364792">Chcete získavať popisy obrázkov od Googlu?</translation>
@@ -4027,7 +4027,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="4829768588131278040">Nastaviť kód PIN</translation>
 <translation id="4830026649400230050">Všetky sťahovania spĺňajúce podmienky sú smerované do účtu <ph name="WEB_DRIVE" /> vašej organizácie.</translation>
 <translation id="4830502475412647084">Inštaluje sa aktualizácia operačného systému</translation>
-<translation id="4830573902900904548">Vaše zariadenie <ph name="DEVICE_TYPE" /> sa nedokáže pripojiť k internetu pomocou siete <ph name="NETWORK_NAME" />. Vyberte inú sieť. <ph name="LEARN_MORE_LINK_START" />Ďalšie informácie<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">Na tlačovom serveri bola nájdená jedna tlačiareň</translation>
 <translation id="4836504898754963407">Správa odtlačkov</translation>
 <translation id="4837128290434901661">Chcete prepnúť späť na Vyhľadávanie Google?</translation>
@@ -6798,7 +6797,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7576976045740938453">Vyskytol sa problém s účtom režimu ukážky.</translation>
 <translation id="7578137152457315135">Nastavenia odtlačku prsta</translation>
 <translation id="7578692661782707876">Zadajte potvrdzovací kód.</translation>
-<translation id="7580671184200851182">Prehrávajte rovnaký zvuk zo všetkých reproduktorov (monofónny zvuk)</translation>
 <translation id="7581007437437492586">Pravidlá sú nakonfigurované správne</translation>
 <translation id="7581462281756524039">Nástroj na čistenie</translation>
 <translation id="7582582252461552277">Preferovať túto sieť</translation>

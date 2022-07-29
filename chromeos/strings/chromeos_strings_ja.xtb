@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3017079585324758401">背景</translation>
+<translation id="302435934487327038">インストールが完了しました</translation>
 <translation id="3027578600144895987">カメラを閉じる</translation>
 <translation id="3031560714565892478">デバイスの種類はビデオカメラです。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,6 +665,7 @@
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
 <translation id="6643016212128521049">削除</translation>
+<translation id="6644568396961840069">ファイルを保存できませんでした。別の外部ストレージに接続するか、しばらくしてからもう一度お試しください。</translation>
 <translation id="6647510110698214773">暗号化アルゴリズム</translation>
 <translation id="6650062777702288430">かなと英数字の切り替え</translation>
 <translation id="6657585470893396449">パスワード</translation>

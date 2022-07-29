@@ -84,6 +84,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
 <translation id="1364382257761975320">For å låse opp Chromebooken, bruk fingeravtrykket</translation>
+<translation id="1365866993922957110">Få automatiske oppdateringer</translation>
 <translation id="1372545819342940910">Lagre skrivebordet til senere</translation>
 <translation id="1383597849754832576">Kan ikke laste ned talefiler. Prøv på nytt senere.</translation>
 <translation id="1383876407941801731">Søk</translation>
@@ -161,6 +162,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1830308660060964064">Løsnet <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Assistent (laster inn …)</translation>
 <translation id="1838895407229022812">Nattlys er av.</translation>
+<translation id="1862380676329487333">Oppdater og logg av</translation>
 <translation id="1864454756846565995">USB-C-enhet (porten på baksiden)</translation>
 <translation id="1879018240766558464">Inkognitovinduer støttes ikke for øyeblikket. Andre apper blir lagret.</translation>
 <translation id="1882814835921407042">Ingen mobilnettverk</translation>
@@ -561,6 +563,7 @@ Koble enheten til strøm.</translation>
 <translation id="423685346499232137">Kan ikke kopiere eller lime inn innhold akkurat nå</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>
+<translation id="4247123849143712100">Oppdater og slå av</translation>
 <translation id="4250229828105606438">Skjermdump</translation>
 <translation id="425364040945105958">Uten SIM-kort</translation>
 <translation id="4261870227682513959">Vis innstillinger for varsler. Varsler er av</translation>
@@ -920,6 +923,7 @@ Koble enheten til strøm.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en administrert økt som administreres av <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> er tilkoblet</translation>
 <translation id="6351032674660237738">APPFORSLAG</translation>
+<translation id="6359587239691116345">Få de nyeste funksjonene og sikkerhetsforbedringene. Hvis du avviser denne oppdateringen, kan det hende at enheten slutter å fungere som den skal, og du kan oppleve sikkerhets- og ytelsesproblemer.</translation>
 <translation id="6376931439017688372">Bluetooth er på</translation>
 <translation id="6381109794406942707">For å låse opp enheten, skriv inn PIN-koden.</translation>
 <translation id="639644700271529076">CAPS LOCK er av</translation>
@@ -941,6 +945,7 @@ Koble enheten til strøm.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> krever at du oppdaterer <ph name="DEVICE_TYPE" /> før tidsfristen</translation>
 <translation id="649452524636452238">PIN-koden til smartkortet</translation>
 <translation id="6495400115277918834">Bilde-i-bilde er startet – trykk på Alt + Shift + V for å fokusere</translation>
+<translation id="6500896621837555595">Oppdater</translation>
 <translation id="6501401484702599040">Caster skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Kameraet er borte. Prøver å koble til igjen.</translation>
 <translation id="6520517963145875092">Velg et vindu du vil ta bilde av</translation>
@@ -1218,6 +1223,7 @@ Nylig installert</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
 <translation id="8061464966246066292">Høy kontrast</translation>
 <translation id="8083540854303889870">Lagret for senere bruk</translation>
+<translation id="8091387634532529612">Automatiske oppdateringer</translation>
 <translation id="8098591350844501178">Slutt å caste skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">På, alle apper</translation>
 <translation id="8120151603115102514">Telefonen har ingen låseskjerm. For å låse opp Chromebooken, skriv inn passordet.</translation>
@@ -1424,4 +1430,5 @@ Nylig installert</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Liggende</translation>
 <translation id="990277280839877440">Vinduet <ph name="WINDOW_TITILE" /> er lukket.</translation>
+<translation id="996204416024568215">Få de nyeste funksjonene og sikkerhetsforbedringene. Oppdateringene skjer i bakgrunnen.</translation>
 </translationbundle>

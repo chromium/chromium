@@ -1223,6 +1223,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="4305666528087210886">Je bestand kan niet worden geopend</translation>
 <translation id="4306529830550717874">Adres opslaan?</translation>
 <translation id="4306812610847412719">klembord</translation>
+<translation id="4308567447483056043">Dit beleid wordt genegeerd omdat de gebruiker niet gelieerd is. Dit beleid kan alleen worden toegepast als de Chrome-browser en het Chrome-profiel door dezelfde organisatie worden beheerd via de Beheerdersconsole.</translation>
 <translation id="4310070645992025887">Je Trajecten doorzoeken</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkeren (standaard)</translation>

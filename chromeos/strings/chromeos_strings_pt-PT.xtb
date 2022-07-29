@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3017079585324758401">Fundo</translation>
+<translation id="302435934487327038">Instalação concluída</translation>
 <translation id="3027578600144895987">Fechar câmara</translation>
 <translation id="3031560714565892478">O dispositivo é uma câmara de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,6 +665,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6620487321149975369">As tarefas de impressão serão apresentadas no histórico, exceto se forem removidas manualmente.</translation>
 <translation id="6643016212128521049">Limpar</translation>
+<translation id="6644568396961840069">Não foi possível guardar o ficheiro. Experimente ligar um armazenamento externo diferente ou tente novamente mais tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de encriptação</translation>
 <translation id="6650062777702288430">Interruptor de teclado kana/alfanumérico</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>

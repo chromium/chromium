@@ -370,7 +370,6 @@
 <translation id="1359923111303110318">သင့်စက်ပစ္စည်းကို Smart Lock ဖြင့် လော့ခ်ဖွင့်နိုင်သည်။ လော့ခ်ဖွင့်ရန် Enter နှိပ်ပါ။</translation>
 <translation id="1361164813881551742">ကိုယ်တိုင်ထည့်ရန်</translation>
 <translation id="1361655923249334273">မသုံးခဲ့</translation>
-<translation id="1361872463926621533">အစပြုချိန်တွင် အသံဖွင့်ရန်</translation>
 <translation id="1362865166188278099">စက်ပြဿနာ။ ပရင်တာကိုစစ်ပါ</translation>
 <translation id="1363585519747660921">USB ပရင်တာအတွက် စီစဉ်သတ်မှတ်မှု လိုအပ်သည်</translation>
 <translation id="1367951781824006909">ဖိုင်ကို ရွေးရန်</translation>
@@ -4038,7 +4037,6 @@
 <translation id="4829768588131278040">ပင်နံပါတ်ကို သတ်မှတ်ရန်</translation>
 <translation id="4830026649400230050">အကျုံးဝင်သော ဒေါင်းလုဒ်အားလုံးကို သင့်အဖွဲ့အစည်း၏ <ph name="WEB_DRIVE" /> အကောင့်သို့ ပေးပို့သည်။</translation>
 <translation id="4830502475412647084">OS အပ်ဒိတ်ကို ထည့်သွင်းနေသည်</translation>
-<translation id="4830573902900904548">သင့် <ph name="DEVICE_TYPE" /> သည် <ph name="NETWORK_NAME" /> ကိုအသုံးပြုပြီ: အင်တာနက်သို့ ချိတ်ဆက်၍မရနိုင်ပါ။ ကျေးဇူးပြု၍ အခြားကွန်ရက်ကို ရွေးချယ်ပါ။ <ph name="LEARN_MORE_LINK_START" />ပိုမိုလေ့လာရန်<ph name="LEARN_MORE_LINK_END" /></translation>
 <translation id="4833683849865011483">ပရင်တာဆာဗာမှ ပရင်တာ ၁ ခုတွေ့သည်</translation>
 <translation id="4836504898754963407">လက်ဗွေရာများ စီမံရန်</translation>
 <translation id="4837128290434901661">Google Search သို့ ပြန်ပြောင်းမလား။</translation>
@@ -6803,7 +6801,6 @@
 <translation id="7576976045740938453">သရုပ်ပြမုဒ်အကောင့်တွင် ပြဿနာရှိနေသည်။</translation>
 <translation id="7578137152457315135">လက်ဗွေ ဆက်တင်များ</translation>
 <translation id="7578692661782707876">မှန်ကြောင်းအတည်ပြုကုဒ် ထည့်ပါ။</translation>
-<translation id="7580671184200851182">စပီကာများအားလုံးမှ တူညီသည့် အသံကိုဖွင့်ပါ (မိုနိုအသံ)</translation>
 <translation id="7581007437437492586">မူဝါဒများကို မှန်ကန်စွာ စီစဉ်သတ်မှတ်ထားရမည်</translation>
 <translation id="7581462281756524039">သန့်ရှင်းရေး ကိရိယာ</translation>
 <translation id="7582582252461552277">ဒီကွန်ရက်ကို ပိုနှစ်ခြိုက်</translation>
