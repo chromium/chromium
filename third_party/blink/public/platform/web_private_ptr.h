@@ -222,7 +222,11 @@ class PtrStorageImpl<T,
   void Release() { handle_.Clear(); }
 
  private:
-  BlinkPtrType handle_;
+  union {
+    BlinkPtrType handle_;
+    [[maybe_unused]] std::aligned_storage_t<kMaxWebPrivatePtrSize, alignof(T*)>
+        unused_;
+  };
 };
 
 template <typename T,
