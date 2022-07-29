@@ -98,6 +98,7 @@ public class MessageCardProviderMediatorUnitTest {
                 mMediator.messageReady(type, mIphMessageData);
                 break;
             case MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE:
+                when(mIncognitoReauthMessageData.getReviewActionProvider()).thenReturn(() -> {});
                 mMediator.messageReady(type, mIncognitoReauthMessageData);
                 break;
             default:

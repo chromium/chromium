@@ -137,6 +137,11 @@ public class TabSwitcherCoordinator
     private final ViewGroup mRootView;
     private TabContentManager mTabContentManager;
     private IncognitoReauthPromoMessageService mIncognitoReauthPromoMessageService;
+    /**
+     * TODO(crbug.com/1227656): Refactor this to pass a supplier instead to ensure we re-use the
+     * same instance of {@link IncognitoReauthManager} across the codebase.
+     */
+    private IncognitoReauthManager mIncognitoReauthManager;
 
     private final MenuOrKeyboardActionController
             .MenuOrKeyboardActionHandler mTabSwitcherMenuActionHandler =
@@ -437,11 +442,13 @@ public class TabSwitcherCoordinator
 
                 if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()
                         && mIncognitoReauthPromoMessageService == null) {
+                    mIncognitoReauthManager = new IncognitoReauthManager();
                     mIncognitoReauthPromoMessageService = new IncognitoReauthPromoMessageService(
                             MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE,
                             Profile.getLastUsedRegularProfile(), mActivity,
-                            SharedPreferencesManager.getInstance(), mSnackbarManager,
-                            TabUiFeatureUtilities::isTabToGtsAnimationEnabled);
+                            SharedPreferencesManager.getInstance(), mIncognitoReauthManager,
+                            mSnackbarManager, TabUiFeatureUtilities::isTabToGtsAnimationEnabled,
+                            mLifecycleDispatcher);
                     mMessageCardProviderCoordinator.subscribeMessageService(
                             mIncognitoReauthPromoMessageService);
                 }

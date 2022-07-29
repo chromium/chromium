@@ -1014,6 +1014,7 @@ robolectric_binary("chrome_junit_tests") {
     "//chrome/browser/dependency_injection:java",
     "//chrome/browser/device:java",
     "//chrome/browser/device:junit",
+    "//chrome/browser/device_reauth/android:java",
     "//chrome/browser/download/android:java",
     "//chrome/browser/download/android:junit_tests",
     "//chrome/browser/download/internal/android:junit",

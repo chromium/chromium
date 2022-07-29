@@ -20,8 +20,6 @@ public class IncognitoReauthPromoViewModel {
     /**
      * Create a {@link PropertyModel} for incognito re-auth promo card.
      *
-     * TODO(crbug.com/1227656): Build the property model to actually design the re-auth promo card.
-     *
      * @param context The {@link Context} to use.
      * @param uiDismissActionProvider The {@link MessageCardView.DismissActionProvider} to set.
      * @param data The {@link IncognitoReauthPromoMessageService.IncognitoReauthMessageData} to use.
@@ -46,6 +44,7 @@ public class IncognitoReauthPromoViewModel {
                 .with(MessageCardViewProperties.MESSAGE_TYPE,
                         MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE)
                 .with(MessageCardViewProperties.ACTION_TEXT, actionText)
+                .with(MessageCardViewProperties.UI_ACTION_PROVIDER, data.getReviewActionProvider())
                 .with(MessageCardViewProperties.DESCRIPTION_TEXT, descriptionText)
                 .with(MessageCardViewProperties.SECONDARY_ACTION_TEXT, dismissActionText)
                 .with(MessageCardViewProperties.SECONDARY_ACTION_BUTTON_CLICK_HANDLER,
