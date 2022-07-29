@@ -603,7 +603,12 @@ void ManagedNetworkConfigurationHandlerImpl::StartPolicyApplication(
 
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(userhash);
-  DCHECK(profile);
+  if (!profile) {
+    // The shill profile has been removed in the meantime. This could happen
+    // e.g. if the user session is exiting or the device is shutting down.
+    // See b/240237232 for context.
+    return;
+  }
 
   base::flat_set<std::string> modified_guids;
   policy_application_info.modified_policy_guids.swap(modified_guids);

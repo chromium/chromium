@@ -102,15 +102,6 @@ void ErrorCallback(const std::string& error_name) {
   ADD_FAILURE() << "Unexpected error: " << error_name;
 }
 
-class TestNetworkProfileHandler : public NetworkProfileHandler {
- public:
-  TestNetworkProfileHandler() { Init(); }
-
-  TestNetworkProfileHandler(const TestNetworkProfileHandler&) = delete;
-  TestNetworkProfileHandler& operator=(const TestNetworkProfileHandler&) =
-      delete;
-};
-
 class TestNetworkPolicyObserver : public NetworkPolicyObserver {
  public:
   TestNetworkPolicyObserver() = default;
@@ -768,6 +759,24 @@ TEST_F(ManagedNetworkConfigurationHandlerTest, UpdatePolicyBeforeFinished) {
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, policy_observer()->GetPoliciesAppliedCountAndReset());
+}
+
+// Regression test for b/240237232: A shill profile disappears before triggering
+// policy application and the actual policy application run.
+TEST_F(ManagedNetworkConfigurationHandlerTest,
+       ProfileDisappearsAfterPolicySet) {
+  InitializeStandardProfiles();
+  base::RunLoop().RunUntilIdle();
+
+  SetPolicy(::onc::ONC_SOURCE_USER_POLICY, kUser1, "policy/policy_wifi1.onc");
+
+  // Pretend that NetworkProfileHandler doesn't know the network profile
+  // anymore.
+  network_profile_handler_->OnPropertyChanged(
+      shill::kProfilesProperty, base::Value(base::Value::Type::LIST));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(0, policy_observer()->GetPoliciesAppliedCountAndReset());
 }
 
 TEST_F(ManagedNetworkConfigurationHandlerTest, SetPolicyManageUnmanaged) {
