@@ -4,9 +4,9 @@
 """Definitions of builders in the chromium builder group."""
 
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "sheriff_rotations")
+load("//lib/builders.star", "goma", "os", "reclient", "sheriff_rotations")
 load("//lib/branches.star", "branches")
-load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -117,8 +117,8 @@ ci.builder(
     cores = 8,
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CI,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -142,8 +142,8 @@ ci.builder(
     },
     tree_closing = True,
     goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = reclient.jobs.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
