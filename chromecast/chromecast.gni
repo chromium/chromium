@@ -19,10 +19,6 @@ declare_args() {
   is_cast_desktop_build =
       target_os == "linux" && (target_cpu == "x86" || target_cpu == "x64") &&
       enable_cast_receiver
-
-  # chromecast_branding is used to include or exclude Google-branded components.
-  # Set it to "public" for a Chromium build.
-  chromecast_branding = "public"
 }
 
 declare_args() {
