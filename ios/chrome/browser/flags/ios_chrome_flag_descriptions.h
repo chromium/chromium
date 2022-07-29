@@ -234,6 +234,11 @@ extern const char
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
+// Title and description for the flag to enable sign-out in Clear Browser Data
+// settings.
+extern const char kEnableCBDSignOutName[];
+extern const char kEnableCBDSignOutDescription[];
+
 // Title and description for the flag to enable the discover feed discofeed
 // endpoint.
 extern const char kEnableDiscoverFeedDiscoFeedEndpointName[];

@@ -72,6 +72,8 @@
 #error "This file requires ARC support."
 #endif
 
+const char kCBDSignOutOfChromeURL[] = "settings://CBDSignOutOfChrome";
+
 namespace {
 // Maximum number of times to show a notice about other forms of browsing
 // history.
@@ -387,8 +389,7 @@ static NSDictionary* imageNamesByItemTypes = @{
       IdentityManagerFactory::GetForBrowserState(self.browserState);
 
   const BOOL loggedIn =
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
   const TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForBrowserState(_browserState);
   const TemplateURL* defaultSearchEngine =
@@ -414,15 +415,20 @@ static NSDictionary* imageNamesByItemTypes = @{
   [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browserState);
-  if (syncService && syncService->IsSyncFeatureActive()) {
-    [model setFooter:[self footerClearSyncAndSavedSiteDataItem]
-        forSectionWithIdentifier:SectionIdentifierSavedSiteData];
-  } else {
-    [model setFooter:[self footerSavedSiteDataItem]
+  if (!base::FeatureList::IsEnabled(kEnableCBDSignOut)) {
+    if (syncService && syncService->IsSyncFeatureActive()) {
+      [model setFooter:[self footerClearSyncAndSavedSiteDataItem]
+          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
+    } else {
+      [model setFooter:[self footerSavedSiteDataItem]
+          forSectionWithIdentifier:SectionIdentifierSavedSiteData];
+    }
+  } else if (loggedIn) {
+    [model setFooter:[self signOutFooterItem]
         forSectionWithIdentifier:SectionIdentifierSavedSiteData];
   }
 
-  // If not signed in, no need to continue with profile syncing.
+  // If not syncing, no need to continue with profile syncing.
   if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
@@ -582,14 +588,16 @@ static NSDictionary* imageNamesByItemTypes = @{
   return [self
       footerItemWithType:ItemTypeFooterGoogleAccountAndMyActivity
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT_AND_HISTORY
-                     URL:kClearBrowsingDataMyActivityUrlInFooterURL];
+                     URL:kClearBrowsingDataMyActivityUrlInFooterURL
+       appendLocaleToURL:YES];
 }
 
 - (TableViewLinkHeaderFooterItem*)footerSavedSiteDataItem {
   return [self
       footerItemWithType:ItemTypeFooterSavedSiteData
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SAVED_SITE_DATA
-                     URL:kClearBrowsingDataLearnMoreURL];
+                     URL:kClearBrowsingDataLearnMoreURL
+       appendLocaleToURL:YES];
 }
 
 - (TableViewLinkHeaderFooterItem*)footerClearSyncAndSavedSiteDataItem {
@@ -597,20 +605,35 @@ static NSDictionary* imageNamesByItemTypes = @{
       footerItemWithType:ItemTypeFooterClearSyncAndSavedSiteData
                  titleID:
                      IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_CLEAR_SYNC_AND_SAVED_SITE_DATA
-                     URL:kClearBrowsingDataLearnMoreURL];
+                     URL:kClearBrowsingDataLearnMoreURL
+       appendLocaleToURL:YES];
 }
 
+- (TableViewLinkHeaderFooterItem*)signOutFooterItem {
+  return [self
+      footerItemWithType:ItemTypeFooterClearSyncAndSavedSiteData
+                 titleID:
+                     IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SIGN_OUT_EVERY_WEBSITE
+                     URL:kCBDSignOutOfChromeURL
+       appendLocaleToURL:NO];
+}
+
+// Creates item of type `itemType` with `titleMessageId`, containing a link to
+// `URL`. If appendLocaleToURL, the local is added to the URL.
 - (TableViewLinkHeaderFooterItem*)footerItemWithType:
                                       (ClearBrowsingDataItemType)itemType
                                              titleID:(int)titleMessageID
-                                                 URL:(const char[])URL {
+                                                 URL:(const char[])URL
+                                   appendLocaleToURL:(BOOL)appendLocaleToURL {
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:itemType];
   footerItem.text = l10n_util::GetNSString(titleMessageID);
-  footerItem.urls = @[ [[CrURL alloc]
-      initWithGURL:google_util::AppendGoogleLocaleParam(
-                       GURL(URL),
-                       GetApplicationContext()->GetApplicationLocale())] ];
+  GURL gurl = GURL(URL);
+  if (appendLocaleToURL) {
+    gurl = google_util::AppendGoogleLocaleParam(
+        gurl, GetApplicationContext()->GetApplicationLocale());
+  }
+  footerItem.urls = @[ [[CrURL alloc] initWithGURL:gurl] ];
   return footerItem;
 }
 

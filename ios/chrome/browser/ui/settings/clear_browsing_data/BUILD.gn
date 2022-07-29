@@ -47,6 +47,7 @@ source_set("clear_browsing_data") {
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
+    "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/collection_view",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",

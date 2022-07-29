@@ -18,7 +18,10 @@ class ChromeBrowserState;
 @protocol ClearBrowsingDataConsumer;
 @protocol CollectionViewFooterLinkDelegate;
 
-// Clear Browswing Data Section Identifiers.
+// Only used in this folder to offer the user to log out
+extern const char kCBDSignOutOfChromeURL[];
+
+// Clear Browsing Data Section Identifiers.
 enum ClearBrowsingDataSectionIdentifier {
   // Section holding types of data that can be cleared.
   SectionIdentifierDataTypes = kSectionIdentifierEnumZero,

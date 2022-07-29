@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/ui/elements/chrome_activity_overlay_coordinator.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -44,8 +46,9 @@
 #endif
 
 @interface ClearBrowsingDataTableViewController () <
-    TableViewLinkHeaderFooterItemDelegate,
     ClearBrowsingDataConsumer,
+    SignoutActionSheetCoordinatorDelegate,
+    TableViewLinkHeaderFooterItemDelegate,
     UIGestureRecognizerDelegate>
 
 // TODO(crbug.com/850699): remove direct dependency and replace with
@@ -79,17 +82,13 @@
 
 @end
 
-@implementation ClearBrowsingDataTableViewController
-@synthesize actionSheetCoordinator = _actionSheetCoordinator;
-@synthesize alertCoordinator = _alertCoordinator;
-@synthesize browserState = _browserState;
-@synthesize browser = _browser;
-@synthesize clearBrowsingDataBarButton = _clearBrowsingDataBarButton;
-@synthesize dataManager = _dataManager;
+@implementation ClearBrowsingDataTableViewController {
+  // Modal alert for sign out.
+  SignoutActionSheetCoordinator* _signoutCoordinator;
+}
 @synthesize dispatcher = _dispatcher;
 @synthesize delegate = _delegate;
-@synthesize suppressTableViewUpdates = _suppressTableViewUpdates;
-
+@synthesize clearBrowsingDataBarButton = _clearBrowsingDataBarButton;
 #pragma mark - ViewController Lifecycle.
 
 - (instancetype)initWithBrowser:(Browser*)browser {
@@ -309,6 +308,14 @@
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
+  if (url.gurl == GURL(kCBDSignOutOfChromeURL)) {
+    DCHECK(base::FeatureList::IsEnabled(kEnableCBDSignOut));
+    // TODO(crbug.com/1341654): Log a user action indicating that the user
+    // clicked on the sign out link from the footer. Remove the action
+    // indicating that this came from signin > signout.
+    [self showSignOutWithItemView:view];
+    return;
+  }
   NSString* baseURL =
       [NSString stringWithCString:(url.gurl.host() + url.gurl.path()).c_str()
                          encoding:[NSString defaultCStringEncoding]];
@@ -453,6 +460,18 @@
   return !self.overlayCoordinator.started;
 }
 
+#pragma mark - SignoutActionSheetCoordinatorDelegate
+
+- (void)signoutActionSheetCoordinatorPreventUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [self preventUserInteraction];
+}
+
+- (void)signoutActionSheetCoordinatorAllowUserInteraction:
+    (SignoutActionSheetCoordinator*)coordinator {
+  [self allowUserInteraction];
+}
+
 #pragma mark - Private Helpers
 
 - (void)showClearBrowsingDataAlertController:(id)sender {
@@ -489,6 +508,31 @@
     }
   }
   return NO;
+}
+
+- (void)showSignOutWithItemView:(UIView*)itemView {
+  if (_signoutCoordinator) {
+    // An action is already in progress, ignore user's request.
+    return;
+  }
+  _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
+      initWithBaseViewController:self
+                         browser:_browser
+                            rect:itemView.frame
+                            view:itemView];
+  __weak ClearBrowsingDataTableViewController* weakSelf = self;
+  _signoutCoordinator.completion = ^(BOOL success) {
+    [weakSelf handleAuthenticationOperationDidFinish];
+  };
+  _signoutCoordinator.delegate = self;
+  [_signoutCoordinator start];
+}
+
+// Stops the signout coordinator.
+- (void)handleAuthenticationOperationDidFinish {
+  DCHECK(_signoutCoordinator);
+  [_signoutCoordinator stop];
+  _signoutCoordinator = nil;
 }
 
 @end

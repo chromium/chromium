@@ -94,4 +94,7 @@ extern const base::Feature kCalendarExperienceKit;
 // Feature flag to enable Apple Calendar event in experience kit.
 extern const base::Feature kEnableExpKitAppleCalendar;
 
+// Feature flag to enable sign-out from Chrome Browsing Data.
+extern const base::Feature kEnableCBDSignOut;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

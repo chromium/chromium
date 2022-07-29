@@ -256,6 +256,10 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
+const char kEnableCBDSignOutName[] = "Enable Clear Browsing Data Sign-out";
+const char kEnableCBDSignOutDescription[] =
+    "Offer signed-in user to sign-out from Clear Browsing Data settings.";
+
 const char kEnableDiscoverFeedDiscoFeedEndpointName[] =
     "Enable discover feed discofeed";
 const char kEnableDiscoverFeedDiscoFeedEndpointDescription[] =

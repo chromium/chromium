@@ -1692,7 +1692,7 @@
   },
   {
     "name": "enable-cbd-sign-out",
-    "owners": [ "triploblastic", "chrome-signin-team" ],
+    "owners": [ "triploblastic", "chrome-signin-team", "arthurmilchior"],
     "expiry_milestone":120
   },
   {
