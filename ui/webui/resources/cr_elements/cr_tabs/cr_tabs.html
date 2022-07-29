@@ -96,6 +96,12 @@
           background: var(--cr-tabs-selected-color, var(--google-blue-300));
         }
       }
+
+      @media (forced-colors: active) {
+        .tab-indicator {
+          background: SelectedItem;
+        }
+      }
     </style>
     <template is="dom-repeat" items="[[tabNames]]">
       <div
