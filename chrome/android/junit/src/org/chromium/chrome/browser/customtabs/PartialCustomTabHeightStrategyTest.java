@@ -121,6 +121,8 @@ public class PartialCustomTabHeightStrategyTest {
     private ViewGroup mContentFrame;
     @Mock
     private ViewGroup mCoordinatorLayout;
+    @Mock
+    private View mDragBar;
 
     private List<WindowManager.LayoutParams> mAttributeResults;
     private DisplayMetrics mRealMetrics;
@@ -137,6 +139,7 @@ public class PartialCustomTabHeightStrategyTest {
         when(mActivity.getWindowManager()).thenReturn(mWindowManager);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view_stub)).thenReturn(mHandleViewStub);
         when(mActivity.findViewById(R.id.custom_tabs_handle_view)).thenReturn(mHandleView);
+        when(mActivity.findViewById(R.id.drag_bar)).thenReturn(mDragBar);
         when(mActivity.findViewById(R.id.coordinator)).thenReturn(mCoordinatorLayout);
         when(mActivity.findViewById(android.R.id.content)).thenReturn(mContentFrame);
         when(mHandleView.getLayoutParams()).thenReturn(mLayoutParams);
@@ -339,6 +342,27 @@ public class PartialCustomTabHeightStrategyTest {
 
         assertEquals(0, strategy.getNavbarHeightForTesting());
         verify(mNavbar, times(1)).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void showDragHandleOnPortraitMode() {
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(800);
+        verify(mDragBar).setVisibility(View.VISIBLE);
+        clearInvocations(mDragBar);
+
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        strategy.onConfigurationChanged(mConfiguration);
+        verify(mDragBar).setVisibility(View.GONE);
+        clearInvocations(mDragBar);
+
+        mConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        strategy.onConfigurationChanged(mConfiguration);
+        verify(mDragBar).setVisibility(View.VISIBLE);
+        clearInvocations(mDragBar);
+
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
+        strategy.onConfigurationChanged(mConfiguration);
+        verify(mDragBar).setVisibility(View.GONE);
     }
 
     @Test

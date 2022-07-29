@@ -94,7 +94,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final Integer mNavigationBarDividerColor;
     private final OnResizedCallback mOnResizedCallback;
     private final AnimatorListener mSpinnerFadeoutAnimatorListener;
-    private final int mHandleHeight;
+    private final int mCachedHandleHeight;
     private @Px int mInitialHeight;
     private ValueAnimator mAnimator;
     private int mShadowOffset;
@@ -291,7 +291,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mNavigationBarColor = navigationBarColor;
         mNavigationBarDividerColor = navigationBarDividerColor;
         mDrawOutlineShadow = SysUtils.isLowEndDevice();
-        mHandleHeight =
+        mCachedHandleHeight =
                 mActivity.getResources().getDimensionPixelSize(R.dimen.custom_tabs_handle_height);
         mSpinnerFadeoutAnimatorListener = new AnimatorListener() {
             @Override
@@ -395,6 +395,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mToolbarColor = toolbar.getBackground().getColor();
         roundCorners(coordinatorView, toolbar, toolbarCornerRadius);
         toolbar.setHandleStrategy(new PartialCustomTabHandleStrategy(mActivity));
+        updateDragBarVisibility();
     }
 
     // ConfigurationChangedObserver implementation.
@@ -513,6 +514,13 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // See b/223536648.
         attributes.y = Math.max(maxExpandedY, mDisplayHeight - height);
         mActivity.getWindow().setAttributes(attributes);
+
+        updateDragBarVisibility();
+    }
+
+    private void updateDragBarVisibility() {
+        View dragBar = mActivity.findViewById(R.id.drag_bar);
+        if (dragBar != null) dragBar.setVisibility(isFullHeight() ? View.GONE : View.VISIBLE);
     }
 
     private void updateShadowOffset() {
@@ -530,8 +538,12 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // Make enough room for the handle View.
         ViewGroup.MarginLayoutParams mlp =
                 (ViewGroup.MarginLayoutParams) mToolbarCoordinator.getLayoutParams();
-        mlp.setMargins(0, mHandleHeight + mShadowOffset, 0, 0);
+        mlp.setMargins(0, getHandleHeight() + mShadowOffset, 0, 0);
         mToolbarCoordinator.requestLayout();
+    }
+
+    private int getHandleHeight() {
+        return isFullHeight() ? 0 : mCachedHandleHeight;
     }
 
     private boolean isFullHeight() {
@@ -596,7 +608,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
             // Toolbar should not be hidden by spinner screen.
             ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(MATCH_PARENT, 0);
-            lp.setMargins(0, mToolbarView.getHeight() + mHandleHeight + mShadowOffset, 0, 0);
+            lp.setMargins(0, mToolbarView.getHeight() + getHandleHeight() + mShadowOffset, 0, 0);
             mSpinner = new CircularProgressDrawable(mActivity);
             mSpinner.setStyle(CircularProgressDrawable.LARGE);
             mSpinnerView.setImageDrawable(mSpinner);
@@ -636,7 +648,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         // TODO(jinsukkim):
         //   - Remove the shadow when in full-height so there won't be a gap beneath the status bar.
         int windowPos = mActivity.getWindow().getAttributes().y;
-        lp.height = mDisplayHeight - windowPos - mHandleHeight - mShadowOffset - mNavbarHeight;
+        lp.height = mDisplayHeight - windowPos - getHandleHeight() - mShadowOffset - mNavbarHeight;
         mCoordinatorLayout.setLayoutParams(lp);
         if (oldHeight >= 0 && lp.height != oldHeight) mOnResizedCallback.onResized(lp.height);
     }
@@ -682,7 +694,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     // rendered over it due to Window#FLAGS_LAYOUT_NO_LIMITS would be shown.
     private void setNavbarOffset() {
         if (mCoordinatorLayout == null) return;
-        int offset = mCoordinatorLayout.getLayoutParams().height + mHandleHeight + mShadowOffset;
+        int offset =
+                mCoordinatorLayout.getLayoutParams().height + getHandleHeight() + mShadowOffset;
         mNavbar.setTranslationY(offset);
     }
 
