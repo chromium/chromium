@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/test/browser_test.h"
@@ -23,9 +24,64 @@
 #include "printing/units.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace headless {
+
+namespace {
+
+// Utility class to render the specified PDF page into a bitmap and
+// inspect the resulting pixels.
+class PDFPageBitmap {
+ public:
+  static constexpr int kColorChannels = 4;
+  static constexpr int kDpi = 300;
+
+  PDFPageBitmap() = default;
+  ~PDFPageBitmap() = default;
+
+  void Render(base::span<const uint8_t> pdf_span, int page_index) {
+    absl::optional<gfx::SizeF> page_size_in_points =
+        chrome_pdf::GetPDFPageSizeByIndex(pdf_span, page_index);
+    ASSERT_TRUE(page_size_in_points.has_value());
+
+    gfx::SizeF page_size_in_pixels =
+        gfx::ScaleSize(page_size_in_points.value(),
+                       static_cast<float>(kDpi) / printing::kPointsPerInch);
+
+    gfx::Rect page_rect(gfx::ToCeiledSize(page_size_in_pixels));
+
+    constexpr chrome_pdf::RenderOptions options = {
+        .stretch_to_bounds = false,
+        .keep_aspect_ratio = true,
+        .autorotate = true,
+        .use_color = true,
+        .render_device_type = chrome_pdf::RenderDeviceType::kPrinter,
+    };
+
+    bitmap_size_ = page_rect.size();
+    bitmap_data_.resize(kColorChannels * bitmap_size_.GetArea());
+    ASSERT_TRUE(chrome_pdf::RenderPDFPageToBitmap(
+        pdf_span, page_index, bitmap_data_.data(), bitmap_size_,
+        gfx::Size(kDpi, kDpi), options));
+  }
+
+  uint32_t GetPixelRGB(int x, int y) {
+    int pixel_index =
+        bitmap_size_.width() * y * kColorChannels + x * kColorChannels;
+    return bitmap_data_[pixel_index + 0]             // B
+           | (bitmap_data_[pixel_index + 1] << 8)    // G
+           | (bitmap_data_[pixel_index + 2] << 16);  // R
+  }
+
+ protected:
+  std::vector<uint8_t> bitmap_data_;
+  gfx::Size bitmap_size_;
+};
+
+}  // namespace
 
 class HeadlessPDFPagesBrowserTest : public HeadlessAsyncDevTooledBrowserTest {
  public:
@@ -296,6 +352,37 @@ INSTANTIATE_TEST_SUITE_P(All,
                                          std::make_tuple("abc", -1)));
 
 HEADLESS_ASYNC_DEVTOOLED_TEST_P(HeadlessPDFPageRangesBrowserTest);
+
+class HeadlessPDFOOPIFBrowserTest : public HeadlessPDFBrowserTestBase {
+ public:
+  const char* GetUrl() override { return "/oopif.html"; }
+
+  std::unique_ptr<page::PrintToPDFParams> GetPrintToPDFParams() override {
+    return page::PrintToPDFParams::Builder()
+        .SetPrintBackground(true)
+        .SetPaperHeight(10)
+        .SetPaperWidth(15)
+        .SetMarginTop(0)
+        .SetMarginBottom(0)
+        .SetMarginLeft(0)
+        .SetMarginRight(0)
+        .Build();
+  }
+
+  void OnPDFReady(base::span<const uint8_t> pdf_span, int num_pages) override {
+    EXPECT_THAT(num_pages, testing::Eq(1));
+
+    PDFPageBitmap page_image;
+    page_image.Render(pdf_span, 0);
+
+    // Expect red iframe pixel at 1 inch into the page.
+    EXPECT_EQ(page_image.GetPixelRGB(1 * PDFPageBitmap::kDpi,
+                                     1 * PDFPageBitmap::kDpi),
+              0xFF0000u);
+  }
+};
+
+HEADLESS_ASYNC_DEVTOOLED_TEST_F(HeadlessPDFOOPIFBrowserTest);
 
 #if BUILDFLAG(ENABLE_TAGGED_PDF)
 
