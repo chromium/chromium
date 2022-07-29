@@ -1212,7 +1212,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
     execution_timeout = 6 * time.hour,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     use_clang_coverage = True,
     # Target luci-chromium-ci-bionic-us-central1-b-ssd-16-*.
     os = os.LINUX_DEFAULT,

@@ -13,4 +13,3 @@ luci.realm(
         # Other roles are inherited from @root which grants them to group:all.
     ],
 )
-

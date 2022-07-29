@@ -304,7 +304,6 @@ try_.builder(
     name = "linux-wayland-rel-reclient",
     mirrors = builder_config.copy_from("linux-wayland-rel"),
     reclient_instance = reclient.instance.DEFAULT_UNTRUSTED,
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
     tryjob = try_.job(
         experiment_percentage = 1,
     ),
