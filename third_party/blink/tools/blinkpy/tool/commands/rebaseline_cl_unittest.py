@@ -356,8 +356,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
     def test_execute_with_test_name_file(self):
         fs = self.mac_port.host.filesystem
         test_name_file = fs.mktemp()
-        file = fs.open_text_file_for_writing(test_name_file)
-        file.write(
+        fs.write_text_file(
+            test_name_file,
             textwrap.dedent('''
             one/flaky-fail.html
               one/missing.html
@@ -383,8 +383,8 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
     def test_execute_with_test_name_file_resultDB(self):
         fs = self.mac_port.host.filesystem
         test_name_file = fs.mktemp()
-        file = fs.open_text_file_for_writing(test_name_file)
-        file.write(
+        fs.write_text_file(
+            test_name_file,
             textwrap.dedent('''
             one/missing.html
               two/missing.html
