@@ -61,8 +61,7 @@ bool GetProcCmdline(pid_t pid, std::vector<std::string>* proc_cmd_line_args) {
 }  // namespace
 
 ProcessIterator::ProcessIterator(const ProcessFilter* filter)
-    : filter_(filter) {
-  procfs_dir_ = opendir(internal::kProcDir);
+    : procfs_dir_(opendir(internal::kProcDir)), filter_(filter) {
   if (!procfs_dir_) {
     // On Android, SELinux may prevent reading /proc. See
     // https://crbug.com/581517 for details.
@@ -70,12 +69,7 @@ ProcessIterator::ProcessIterator(const ProcessFilter* filter)
   }
 }
 
-ProcessIterator::~ProcessIterator() {
-  if (procfs_dir_) {
-    closedir(procfs_dir_);
-    procfs_dir_ = nullptr;
-  }
-}
+ProcessIterator::~ProcessIterator() = default;
 
 bool ProcessIterator::CheckForNextProcess() {
   // TODO(port): skip processes owned by different UID
@@ -95,7 +89,7 @@ bool ProcessIterator::CheckForNextProcess() {
   int skipped = 0;
   const int kSkipLimit = 200;
   while (skipped < kSkipLimit) {
-    dirent* slot = readdir(procfs_dir_);
+    dirent* slot = readdir(procfs_dir_.get());
     // all done looking through /proc?
     if (!slot)
       return false;

@@ -117,8 +117,14 @@ class BASE_EXPORT ProcessIterator {
 #elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
   std::vector<kinfo_proc> kinfo_procs_;
   size_t index_of_kinfo_proc_;
-#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  raw_ptr<DIR, DanglingUntriaged> procfs_dir_;
+#elif BUILDFLAG(IS_POSIX)
+  struct DIRClose {
+    inline void operator()(DIR* x) const {
+      if (x)
+        closedir(x);
+    }
+  };
+  std::unique_ptr<DIR, DIRClose> procfs_dir_;
 #endif
   ProcessEntry entry_;
   raw_ptr<const ProcessFilter> filter_;
