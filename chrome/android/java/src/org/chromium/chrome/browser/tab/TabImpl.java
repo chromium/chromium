@@ -498,11 +498,23 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
                 throw new RuntimeException("Tab.loadUrl called when no native side exists");
             }
 
-            // Request desktop sites for large screen tablets if necessary.
-            params.setOverrideUserAgent(calculateUserAgentOverrideOption());
+            // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
+            // FixupURL explicitly says not to use it on URLs coming from untrustworthy
+            // sources, like other apps. Once migrations of Java code to GURL are complete
+            // and incoming URLs are converted to GURLs at their source, we can make
+            // decisions of whether or not to fix up GURLs on a case-by-case basis based
+            // on trustworthiness of the incoming URL.
+            GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
+            // Request desktop sites if necessary.
+            if (fixedUrl.isValid()) {
+                params.setOverrideUserAgent(calculateUserAgentOverrideOption(fixedUrl));
+            } else {
+                // Fall back to the Url in webContents for site level setting.
+                params.setOverrideUserAgent(calculateUserAgentOverrideOption(null));
+            }
 
             @TabLoadStatus
-            int result = loadUrlInternal(params);
+            int result = loadUrlInternal(params, fixedUrl);
 
             for (TabObserver observer : mObservers) {
                 observer.onLoadUrl(this, params, result);
@@ -513,16 +525,9 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
-    private @TabLoadStatus int loadUrlInternal(LoadUrlParams params) {
+    private @TabLoadStatus int loadUrlInternal(LoadUrlParams params, GURL fixedUrl) {
         if (mWebContents == null) return TabLoadStatus.PAGE_LOAD_FAILED;
 
-        // TODO(https://crbug.com/783819): Don't fix up all URLs. Documentation on
-        // FixupURL explicitly says not to use it on URLs coming from untrustworthy
-        // sources, like other apps. Once migrations of Java code to GURL are complete
-        // and incoming URLs are converted to GURLs at their source, we can make
-        // decisions of whether or not to fix up GURLs on a case-by-case basis based
-        // on trustworthiness of the incoming URL.
-        GURL fixedUrl = UrlFormatter.fixupUrl(params.getUrl());
         if (!fixedUrl.isValid()) return TabLoadStatus.PAGE_LOAD_FAILED;
 
         // Record UMA "ShowHistory" here. That way it'll pick up both user
@@ -1365,7 +1370,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
             mWebContents.setImportance(mImportance);
 
             ContentUtils.setUserAgentOverride(mWebContents,
-                    calculateUserAgentOverrideOption() == UserAgentOverrideOption.TRUE);
+                    calculateUserAgentOverrideOption(null) == UserAgentOverrideOption.TRUE);
 
             mContentView.addOnAttachStateChangeListener(mAttachStateChangeListener);
             updateInteractableState();
@@ -1637,7 +1642,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         }
     }
 
-    private @UserAgentOverrideOption int calculateUserAgentOverrideOption() {
+    private @UserAgentOverrideOption int calculateUserAgentOverrideOption(@Nullable GURL url) {
         WebContents webContents = getWebContents();
         boolean currentRequestDesktopSite = TabUtils.isUsingDesktopUserAgent(webContents);
         @TabUserAgent
@@ -1652,8 +1657,11 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         }
 
         Profile profile = IncognitoUtils.getProfileFromWindowAndroid(mWindowAndroid, isIncognito());
+        if (url == null && webContents != null) {
+            url = webContents.getVisibleUrl();
+        }
         boolean shouldRequestDesktopSite =
-                TabUtils.readRequestDesktopSiteContentSettings(profile, webContents);
+                TabUtils.readRequestDesktopSiteContentSettings(profile, url);
         if (shouldRequestDesktopSite != currentRequestDesktopSite) {
             // The user is not forcing any mode and we determined that we need to
             // change, therefore we are using TRUE or FALSE option. On Android TRUE mean
@@ -1672,7 +1680,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     }
 
     private void switchUserAgentIfNeeded(int caller) {
-        if (calculateUserAgentOverrideOption() == UserAgentOverrideOption.INHERIT
+        if (calculateUserAgentOverrideOption(null) == UserAgentOverrideOption.INHERIT
                 || getWebContents() == null) {
             return;
         }

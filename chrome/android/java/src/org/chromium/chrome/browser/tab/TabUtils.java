@@ -187,14 +187,13 @@ public class TabUtils {
     /**
      * Read Request Desktop Site ContentSettings.
      * @param profile The profile used to retrieve ContentSettings.
-     * @param webContents The webContents used to retrieve Url for site level setting.
+     * @param url The Url used to retrieve site level ContentSettings.
      * @return Whether Request Desktop Site is enabled in ContentSettings.
      */
     public static boolean readRequestDesktopSiteContentSettings(
-            Profile profile, WebContents webContents) {
+            Profile profile, @Nullable GURL url) {
         if (ContentFeatureList.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
-            return webContents != null
-                    && TabUtils.isDesktopSiteEnabled(profile, webContents.getVisibleUrl());
+            return url != null && TabUtils.isDesktopSiteEnabled(profile, url);
         } else {
             return TabUtils.isDesktopSiteGlobalEnabled(profile);
         }

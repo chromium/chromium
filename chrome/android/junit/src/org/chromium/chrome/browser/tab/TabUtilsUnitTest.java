@@ -40,6 +40,9 @@ import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
+import org.chromium.url.ShadowGURL;
 
 /**
  * Unit tests for {@link TabUtils}.
@@ -47,7 +50,7 @@ import org.chromium.content_public.browser.WebContents;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {TabUtilsUnitTest.ShadowProfile.class,
-                TabUtilsUnitTest.ShadowCriticalPersistedTabData.class})
+                TabUtilsUnitTest.ShadowCriticalPersistedTabData.class, ShadowGURL.class})
 public class TabUtilsUnitTest {
     /**
      * A fake {@link Profile} used to reduce dependency.
@@ -292,35 +295,37 @@ public class TabUtilsUnitTest {
     @Test
     public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionDisabled() {
         enableDesktopSiteException(false);
+        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
 
         // Global setting is Mobile.
         mRdsDefault = false;
         Assert.assertFalse("The result should match RDS global setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
 
         // Global setting is Desktop.
         mRdsDefault = true;
         Assert.assertTrue("The result should match RDS global setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
     }
 
     @Test
     public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionEnabled() {
         enableDesktopSiteException(true);
+        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
 
         // Site level setting is Mobile.
         mRdsException = ContentSettingValues.BLOCK;
-        Assert.assertFalse("The result should be false when there is no webContents",
+        Assert.assertFalse("The result should be false when there is no url",
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
         Assert.assertFalse("The result should match RDS site level setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
 
         // Site level setting is Desktop.
         mRdsException = ContentSettingValues.ALLOW;
-        Assert.assertFalse("The result should be false when there is no webContents",
+        Assert.assertFalse("The result should be false when there is no url",
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
         Assert.assertTrue("The result should match RDS site level setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, mWebContents));
+                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
     }
 
     private void enableDesktopSiteException(boolean enable) {
