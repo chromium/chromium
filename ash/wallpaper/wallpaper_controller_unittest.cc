@@ -3671,7 +3671,9 @@ TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaper) {
   EXPECT_EQ(expected, client_.get_fetch_daily_refresh_wallpaper_param());
 }
 
-TEST_F(WallpaperControllerTest, UpdateDailyRefreshWallpaperCalledOnLogin) {
+// Disabled due to flakes; see crbug/1320991.
+TEST_F(WallpaperControllerTest,
+       DISABLED_UpdateDailyRefreshWallpaperCalledOnLogin) {
   SimulateUserLogin(account_id_1);
 
   WallpaperInfo info = WallpaperInfo(OnlineWallpaperParams(
