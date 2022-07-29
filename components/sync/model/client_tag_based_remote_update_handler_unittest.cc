@@ -132,6 +132,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteCreation) {
   ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1));
   EXPECT_EQ(1u, db()->data_count());
   EXPECT_EQ(1u, db()->metadata_count());
+  EXPECT_EQ(0u, bridge()->trimmed_specifics_change_count());
 
   const EntityData& data = db()->GetData(kKey1);
   EXPECT_FALSE(data.id.empty());
@@ -189,6 +190,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ASSERT_EQ(1U, ProcessorEntityCount());
   ASSERT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(1U, db()->metadata_change_count());
+  ASSERT_EQ(1U, bridge()->trimmed_specifics_change_count());
 
   // Redundant update should not clear trimmed specifics.
   UpdateResponseData update2 = GenerateUpdate(kKey1, kValue1);
@@ -196,6 +198,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ProcessSingleUpdate(std::move(update2));
   EXPECT_EQ(1U, db()->data_change_count());
   EXPECT_EQ(2U, db()->metadata_change_count());
+  ASSERT_EQ(2U, bridge()->trimmed_specifics_change_count());
   EXPECT_EQ(kUnknownField, db()->GetMetadata(kKey1)
                                .possibly_trimmed_base_specifics()
                                .unknown_fields());
@@ -239,6 +242,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteUpdates) {
   ASSERT_EQ(1U, ProcessorEntityCount());
   ASSERT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(1U, db()->metadata_change_count());
+  ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
 
   // Should update both data and metadata.
   ProcessSingleUpdate(GenerateUpdate(kKey1, kValue2));
@@ -289,6 +293,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ASSERT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(1U, db()->metadata_change_count());
   ASSERT_EQ(1U, db()->GetMetadata(kKey1).server_version());
+  ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
 
   // Mark local entity as changed.
   entity_tracker()->IncrementSequenceNumberForAllExcept({});
@@ -301,6 +306,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   ProcessSingleUpdate(std::move(update));
 
   EXPECT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(0U, bridge()->trimmed_specifics_change_count());
   EXPECT_EQ(2U, db()->GetMetadata(kKey1).server_version());
   EXPECT_EQ(1U, ProcessorEntityCount());
   EXPECT_FALSE(entity_tracker()->HasLocalChanges());

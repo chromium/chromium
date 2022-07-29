@@ -501,6 +501,34 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
               ElementsAre(Pointee(form)));
 }
 
+// Regression test for crbug.com/1346576.
+IN_PROC_BROWSER_TEST_F(
+    TwoClientPasswordsSyncTest,
+    MatchingDeletionsConflictDoesNotInvokeTrimmingEntitySpecifics) {
+  // Add a password and wait until it is synced on both clients.
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  PasswordForm form = CreateTestPasswordForm(0);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  ASSERT_EQ(GetPasswordCount(0), 1);
+
+  // Simulate Client 1 going offline.
+  GetClient(1)->StopSyncServiceWithoutClearingData();
+
+  // Remove the password from both clients to simulate a conflict with matching
+  // remote and local deletion after Client 1 comes back online.
+  GetProfilePasswordStoreInterface(0)->RemoveLogin(form);
+  GetProfilePasswordStoreInterface(1)->RemoveLogin(form);
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  ASSERT_EQ(GetPasswordCount(0), 0);
+
+  // Simulate Client 1 coming back online. Checks that the client does not crash
+  // due to trimming entity specifics for caching for a deleted entity (without
+  // a password field).
+  ASSERT_TRUE(GetClient(1)->StartSyncService());
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+}
+
 class TwoClientPasswordsSyncTestWithNotes : public SyncTest {
  public:
   TwoClientPasswordsSyncTestWithNotes() : SyncTest(TWO_CLIENT) {

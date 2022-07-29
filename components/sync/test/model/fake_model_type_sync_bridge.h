@@ -160,6 +160,9 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
 
   const Store& db() const { return *db_; }
   Store* mutable_db() { return db_.get(); }
+  size_t trimmed_specifics_change_count() const {
+    return trimmed_specifics_change_count_;
+  }
 
  protected:
   // Contains all of the data and metadata state.
@@ -202,6 +205,8 @@ class FakeModelTypeSyncBridge : public ModelTypeSyncBridge {
   // |supports_get_storage_key_| == false (otherwise the storage key gets
   // inferred deterministically from specifics).
   int last_generated_storage_key_ = 0;
+
+  mutable size_t trimmed_specifics_change_count_ = 0;
 };
 
 }  // namespace syncer

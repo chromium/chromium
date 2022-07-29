@@ -374,6 +374,7 @@ sync_pb::EntitySpecifics FakeModelTypeSyncBridge::TrimRemoteSpecificsForCaching(
 
   // Keep top-level unknown fields for testing without specific data type
   // trimming (e.g. in processor unit tests).
+  trimmed_specifics_change_count_++;
   sync_pb::EntitySpecifics trimmed_specifics;
   *trimmed_specifics.mutable_unknown_fields() =
       entity_specifics.unknown_fields();
