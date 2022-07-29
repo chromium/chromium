@@ -76,7 +76,7 @@ class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
       dictionaries_value.Append(dict);
     }
     EXPECT_EQ(dictionaries_value,
-              *menu()->GetPrefs()->GetList(
+              menu()->GetPrefs()->GetValueList(
                   spellcheck::prefs::kSpellCheckDictionaries));
   }
 
