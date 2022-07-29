@@ -3,12 +3,57 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_info/page_info_cookies_content_view.h"
+#include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
+
+namespace views {
+class StyledLabel;
+}  // namespace views
 
 PageInfoCookiesContentView::PageInfoCookiesContentView(PageInfo* presenter)
     : presenter_(presenter) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+
+  // The top and bottom margins should be the same as for buttons shown below.
+  const auto button_insets = layout_provider->GetInsetsMetric(
+      ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON);
+
+  // The left and right margins should align with the title labels inside other
+  // buttons in this subpage (as if there was place for an icon).
+  const int horizontal_offset = button_insets.left() +
+                                GetLayoutConstant(PAGE_INFO_ICON_SIZE) +
+                                layout_provider->GetDistanceMetric(
+                                    views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+
+  auto* cookies_description_label =
+      AddChildView(std::make_unique<views::StyledLabel>());
+
+  cookies_description_label->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(button_insets.top(), horizontal_offset,
+                        button_insets.bottom(), horizontal_offset));
+
+  cookies_description_label->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_COOKIES_DESCRIPTION_LABEL);
+
+  cookies_description_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+
+  size_t offset;
+  auto settings =
+      l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_SETTINGS_LINK);
+  auto text = l10n_util::GetStringFUTF16(IDS_PAGE_INFO_COOKIES_DESCRIPTION,
+                                         settings, &offset);
+  cookies_description_label->SetText(text);
+
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
