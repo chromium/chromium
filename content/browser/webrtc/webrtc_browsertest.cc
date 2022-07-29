@@ -60,14 +60,7 @@ class MAYBE_WebRtcBrowserTest : public WebRtcContentBrowserTestBase {
   }
 };
 
-// https://crbug.com/1346488 Flaky on linux-lacros-rel and mac-rel
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_CanSetupAudioAndVideoCall DISABLED_CanSetupAudioAndVideoCall
-#else
-#define MAYBE_CanSetupAudioAndVideoCall CanSetupAudioAndVideoCall
-#endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       MAYBE_CanSetupAudioAndVideoCall) {
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
 }
 
@@ -94,8 +87,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 
 // These tests will make a complete PeerConnection-based call and verify that
 // video is playing for the call.
+// https://crbug.com/1346488 Flaky on linux-lacros-rel
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CanSetupDefaultVideoCall DISABLED_CanSetupDefaultVideoCall
+#else
+#define MAYBE_CanSetupDefaultVideoCall CanSetupDefaultVideoCall
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       CanSetupDefaultVideoCall) {
+                       MAYBE_CanSetupDefaultVideoCall) {
   MakeTypicalPeerConnectionCall(
       "callAndExpectResolution({video: true}, 640, 480);");
 }
