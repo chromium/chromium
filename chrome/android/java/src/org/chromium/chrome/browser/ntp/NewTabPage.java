@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,6 +80,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -159,7 +161,8 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     private final Supplier<Toolbar> mToolbarSupplier;
     private final TabModelSelector mTabModelSelector;
 
-    private final SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
+    @Nullable
+    private SearchResumptionModuleCoordinator mSearchResumptionModuleCoordinator;
 
     @Override
     public void onControlsOffsetChanged(int topOffset, int topControlsMinHeightOffset,
@@ -424,10 +427,20 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         initializeMainView(activity, windowAndroid, snackbarManager, uma, isInNightMode,
                 shareDelegateSupplier, crowButtonDelegate, url);
 
-        mSearchResumptionModuleCoordinator =
-                SearchResumptionModuleUtils.mayCreateSearchResumptionModule(mNewTabPageLayout,
-                        mTabModelSelector.getCurrentModel(), mTab, profile,
-                        R.id.search_resumption_module_container_stub);
+        // It is possible that the NewTabPage is created when the Tab model hasn't been initialized.
+        // For example, the user changes theme when a NTP is showing, which leads to the recreation
+        // of the ChromeTabbedActivity and showing the NTP as the last visited Tab.
+        if (mTabModelSelector.isTabStateInitialized()) {
+            mayCreateSearchResumptionModule(profile);
+        } else {
+            mTabModelSelector.addObserver(new TabModelSelectorObserver() {
+                @Override
+                public void onTabStateInitialized() {
+                    mayCreateSearchResumptionModule(profile);
+                    mTabModelSelector.removeObserver(this);
+                }
+            });
+        }
 
         getView().addOnAttachStateChangeListener(new View.OnAttachStateChangeListener() {
             @Override
@@ -1002,5 +1015,12 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
                        R.dimen.ntp_logo_margin_top)
                            : mNewTabPageLayout.getResources().getDimensionPixelSize(
                                    R.dimen.ntp_logo_margin_bottom);
+    }
+
+    private void mayCreateSearchResumptionModule(Profile profile) {
+        mSearchResumptionModuleCoordinator =
+                SearchResumptionModuleUtils.mayCreateSearchResumptionModule(mNewTabPageLayout,
+                        mTabModelSelector.getCurrentModel(), mTab, profile,
+                        R.id.search_resumption_module_container_stub);
     }
 }
