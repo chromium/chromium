@@ -668,6 +668,8 @@ source_set("ash") {
     "bruschetta/bruschetta_service.h",
     "bruschetta/bruschetta_service_factory.cc",
     "bruschetta/bruschetta_service_factory.h",
+    "bruschetta/bruschetta_terminal_provider.cc",
+    "bruschetta/bruschetta_terminal_provider.h",
     "bruschetta/bruschetta_util.cc",
     "bruschetta/bruschetta_util.h",
     "camera_mic/vm_camera_mic_manager.cc",

@@ -44,7 +44,10 @@ extern const char kGuestOsContainers[];
 extern const char kContainerOsVersionKey[];
 extern const char kContainerOsPrettyNameKey[];
 extern const char kContainerColorKey[];
+// Whether or not this guest should show up in the terminal app.
 extern const char kTerminalSupportedKey[];
+// The display name to use in the terminal.
+extern const char kTerminalLabel[];
 
 // Terminal
 // Dictionary of terminal UI settings such as font style, colors, etc.

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
@@ -31,6 +32,7 @@ static const base::NoDestructor<std::vector<std::string>> kPropertiesAllowList{{
     prefs::kContainerOsPrettyNameKey,
     prefs::kContainerColorKey,
     prefs::kTerminalSupportedKey,
+    prefs::kTerminalLabel,
 }};
 
 }  // namespace
@@ -186,6 +188,8 @@ void UpdateContainerPref(Profile* profile,
   if (it != updater->GetListDeprecated().end()) {
     if (base::Contains(*kPropertiesAllowList, key)) {
       it->SetKey(key, std::move(value));
+    } else {
+      LOG(ERROR) << "Ignoring disallowed property: " << key;
     }
   }
 }

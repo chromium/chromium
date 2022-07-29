@@ -6,9 +6,11 @@
 
 #include <memory>
 #include "base/memory/weak_ptr.h"
+#include "bruschetta_terminal_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 
@@ -26,6 +28,10 @@ BruschettaService::BruschettaService(Profile* profile) {
   guest_os::GuestOsService::GetForProfile(profile)
       ->MountProviderRegistry()
       ->Register(std::make_unique<BruschettaMountProvider>(profile, alpha_id));
+  guest_os::GuestOsService::GetForProfile(profile)
+      ->TerminalProviderRegistry()
+      ->Register(
+          std::make_unique<BruschettaTerminalProvider>(profile, alpha_id));
 }
 
 BruschettaService::~BruschettaService() = default;

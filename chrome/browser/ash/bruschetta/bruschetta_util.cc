@@ -7,5 +7,6 @@
 namespace bruschetta {
 
 const char kBruschettaVmName[] = "bru";
+const char kBruschettaDisplayName[] = "Bruschetta";
 
 }  // namespace bruschetta

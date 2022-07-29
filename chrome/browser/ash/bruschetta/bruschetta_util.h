@@ -8,6 +8,7 @@
 namespace bruschetta {
 
 extern const char kBruschettaVmName[];
+extern const char kBruschettaDisplayName[];
 
 }  // namespace bruschetta
 

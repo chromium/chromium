@@ -78,6 +78,8 @@ GuestOsTerminalProviderRegistry::Id GuestOsTerminalProviderRegistry::Register(
   AddContainerToPrefs(profile_, provider->GuestId(), {});
   UpdateContainerPref(profile_, provider->GuestId(),
                       prefs::kTerminalSupportedKey, base::Value(true));
+  UpdateContainerPref(profile_, provider->GuestId(), prefs::kTerminalLabel,
+                      base::Value(provider->Label()));
   providers_[id] = std::move(provider);
 
   return id;

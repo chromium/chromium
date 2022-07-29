@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
@@ -23,7 +24,7 @@ Profile* BruschettaMountProvider::profile() {
 }
 
 std::string BruschettaMountProvider::DisplayName() {
-  return "Bruschetta";
+  return kBruschettaDisplayName;
 }
 
 guest_os::GuestId BruschettaMountProvider::GuestId() {
