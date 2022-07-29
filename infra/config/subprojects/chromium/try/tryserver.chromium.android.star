@@ -285,6 +285,9 @@ try_.orchestrator_builder(
     use_java_coverage = True,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
+    experiments = {
+        "enable_weetbix_queries": 50,
+    },
 )
 
 try_.compilator_builder(
