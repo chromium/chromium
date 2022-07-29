@@ -62,6 +62,8 @@ class CONTENT_EXPORT PreloadingAttempt {
   // sets the PreloadingTriggeringOutcome to kFailure.
   virtual void SetFailureReason(PreloadingFailureReason failure_reason) = 0;
 
+  virtual base::WeakPtr<PreloadingAttempt> GetWeakPtr() = 0;
+
  protected:
   virtual ~PreloadingAttempt() = default;
 };

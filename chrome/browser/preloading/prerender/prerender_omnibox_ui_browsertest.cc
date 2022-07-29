@@ -33,6 +33,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/search_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -58,6 +59,15 @@ namespace {
 
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 using ukm::builders::Preloading_Attempt;
+using ukm::builders::Preloading_Prediction;
+
+content::PreloadingFailureReason ToPreloadingFailureReason(
+    PrerenderPredictionStatus status) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(
+          content::PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
 
 class AutocompleteActionPredictorObserverImpl
     : public predictors::AutocompleteActionPredictor::Observer {
@@ -612,6 +622,17 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
     model->SetUserSelectedDefaultSearchProvider(template_url);
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    // This test suite only tests for Default Search Engine prerendering.
+    attempt_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            content::PreloadingType::kPrerender,
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kDefaultSearchEngine));
+    prediction_entry_builder_ =
+        std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kDefaultSearchEngine));
   }
 
   void SetUp() override {
@@ -758,6 +779,10 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     // After receiving `input`, the controller should ask suggestion service for
     // search suggestion.
     autocomplete_controller->Start(input);
+
+    // Wait until Autocomplete is done running.
+    ui_test_utils::WaitForAutocompleteDone(browser());
+    EXPECT_TRUE(autocomplete_controller->done());
   }
 
   int InputSearchQueryAndWaitForTrigger(base::StringPiece search_query,
@@ -770,6 +795,20 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     registry_observer.WaitForTrigger(expected_url);
     int host_id = prerender_helper().GetHostForUrl(expected_url);
     return host_id;
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_entry_builder_;
+  }
+
+  const content::test::PreloadingPredictionUkmEntryBuilder&
+  prediction_entry_builder() {
+    return *prediction_entry_builder_;
   }
 
  private:
@@ -799,6 +838,11 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
   net::test_server::EmbeddedTestServer search_suggest_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
+  std::unique_ptr<content::test::PreloadingPredictionUkmEntryBuilder>
+      prediction_entry_builder_;
 };
 
 // Tests the basic functionality of prerendering a search suggestion with search
@@ -867,6 +911,45 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   EXPECT_EQ(0, prerender_helper().GetRequestCount(
                    GetActiveWebContents()->GetLastCommittedURL()));
 
+  {
+    // Check that we store one entry corresponding to the prerender prediction
+    // and attempt.
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Prediction::kEntryName,
+        content::test::kPreloadingPredictionUkmMetrics);
+    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+
+    // Check that we log the correct metrics for successful prerender
+    // activation.
+    std::vector<UkmEntry> expected_prediction_entries = {
+        prediction_entry_builder().BuildEntry(ukm_source_id,
+                                              /*confidence=*/80,
+                                              /*accurate_prediction=*/true),
+    };
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+    EXPECT_THAT(prediction_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_prediction_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               prediction_ukm_entries, expected_prediction_entries);
+  }
+
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
       PrerenderPredictionStatus::kHitFinished, 1);
@@ -916,6 +999,39 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id);
   EXPECT_TRUE(IsPrerenderingNavigation());
+  base::RunLoop().RunUntilIdle();
+
+  {
+    // Check that we store two entries corresponding to both the prererendering
+    // attempts.
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 2u);
+
+    // Check that we log the correct metrics for successful prerender
+    // activation and for duplicate attempt to the same prerender URL.
+    std::vector<UkmEntry> expected_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kDuplicate,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
 
   // Wait until the history is updated.
   EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),
@@ -971,6 +1087,38 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
   ASSERT_NE(prerender_match, std::end(autocomplete_controller->result()));
   SelectAutocompleteMatchAndWaitForActivation(*prerender_match, host_id2);
   EXPECT_TRUE(IsPrerenderingNavigation());
+
+  {
+    // Check that we store two entries corresponding to both the prererendering
+    // attempts.
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 2u);
+
+    // Check that we log the correct metrics for successful prerender
+    // activation with suggestions to the different prerender URLs.
+    std::vector<UkmEntry> expected_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
+            /*accurate=*/false),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
 
   // Wait until the history is updated.
   EXPECT_EQ(true, content::EvalJs(GetActiveWebContents()->GetPrimaryMainFrame(),

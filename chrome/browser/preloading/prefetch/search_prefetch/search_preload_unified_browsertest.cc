@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -29,11 +30,15 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
@@ -49,6 +54,18 @@
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
+
+using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
+using ukm::builders::Preloading_Attempt;
+using ukm::builders::Preloading_Prediction;
+
+content::PreloadingFailureReason ToPreloadingFailureReason(
+    PrerenderPredictionStatus status) {
+  return static_cast<content::PreloadingFailureReason>(
+      static_cast<int>(status) +
+      static_cast<int>(
+          content::PreloadingFailureReason::kPreloadingFailureReasonCommonEnd));
+}
 
 // Sets up testing context for the search preloading features: search prefetch
 // and search prerender.
@@ -116,6 +133,16 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
     model->SetUserSelectedDefaultSearchProvider(template_url);
+    test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_entry_builder_ =
+        std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+            content::PreloadingType::kPrerender,
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kDefaultSearchEngine));
+    prediction_entry_builder_ =
+        std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
+            ToPreloadingPredictor(
+                ChromePreloadingPredictor::kDefaultSearchEngine));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleSearchRequest(
@@ -153,6 +180,20 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
 
   content::WebContents* GetActiveWebContents() {
     return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return test_ukm_recorder_.get();
+  }
+
+  const content::test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_entry_builder_;
+  }
+
+  const content::test::PreloadingPredictionUkmEntryBuilder&
+  prediction_entry_builder() {
+    return *prediction_entry_builder_;
   }
 
  protected:
@@ -440,6 +481,12 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest {
   base::OnceClosure monitor_callback_ GUARDED_BY(response_queue_lock_);
   base::Lock response_queue_lock_;
 
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
+  std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
+      attempt_entry_builder_;
+  std::unique_ptr<content::test::PreloadingPredictionUkmEntryBuilder>
+      prediction_entry_builder_;
+
   content::test::PrerenderTestHelper prerender_helper_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -502,6 +549,44 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   // so no more sample should be recorded.
   histogram_tester.ExpectTotalCount(
       "Omnibox.SearchPrefetch.PrefetchServingReason", 1);
+  {
+    // Check that we store one entry corresponding to the prerender prediction
+    // and attempt with prefetch hints.
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto attempt_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    auto prediction_ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Prediction::kEntryName,
+        content::test::kPreloadingPredictionUkmMetrics);
+    EXPECT_EQ(attempt_ukm_entries.size(), 1u);
+    EXPECT_EQ(prediction_ukm_entries.size(), 1u);
+
+    // Prerender should succeed and should be used for the next navigation.
+    std::vector<UkmEntry> expected_prediction_entries = {
+        prediction_entry_builder().BuildEntry(ukm_source_id,
+                                              /*confidence=*/80,
+                                              /*accurate_prediction=*/true),
+    };
+    std::vector<UkmEntry> expected_attempt_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(attempt_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_attempt_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               attempt_ukm_entries, expected_attempt_entries);
+    EXPECT_THAT(prediction_ukm_entries,
+                testing::UnorderedElementsAreArray(expected_prediction_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(
+               prediction_ukm_entries, expected_prediction_entries);
+  }
+
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
 }
@@ -559,6 +644,29 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "Omnibox.SearchPrefetch.PrefetchFinalStatus.SuggestionPrefetch",
       SearchPrefetchStatus::kPrerenderActivated, 1);
+
+  {
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 1u);
+
+    // Prerender should succeed and should be used for the next navigation.
+    std::vector<UkmEntry> expected_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kSuccess,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
 
   // No prerender requests went through network.
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
@@ -684,6 +792,33 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
       PrerenderPredictionStatus::kCancelled, 1);
+
+  // Navigate away to flush the metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), expected_prerender_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 1u);
+
+    // Prerender shouldn't be used for the next navigation as it will be deleted
+    // when suggestions change.
+    std::vector<UkmEntry> expected_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            ToPreloadingFailureReason(PrerenderPredictionStatus::kCancelled),
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
 }
 
 // Tests the activated prerendered page records navigation timings correctly.
@@ -759,6 +894,8 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                        NavigationFailsAfterPrefetchServedTheResponse) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
+
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   set_service_deferral_type(DeferralType::kDeferBody);
@@ -795,6 +932,35 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 
   // 5. The prerender will be destroyed because of the failing request.
   prerender_observer.WaitForDestroyed();
+
+  // Navigate away to flush the metrics.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kNavigatedUrl));
+
+  {
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 1u);
+
+    // DispatchDelayedResponseTask will dispatch DidFailLoadWithError resulting
+    // in prerender cancelling with status 123 i.e., =>
+    // PrerenderHost::FinalStatus::DidFailLoad.
+    std::vector<UkmEntry> expected_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kFailure,
+            static_cast<content::PreloadingFailureReason>(123),
+            /*accurate=*/false),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
+
   // Prerender should not retry the request.
   EXPECT_EQ(0, prerender_helper().GetRequestCount(expected_prerender_url));
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
@@ -805,6 +971,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, DoNotRefetchSameTerms) {
   base::HistogramTester histogram_tester;
   const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  const GURL kNavigatedUrl = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(GetActiveWebContents());
   ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
   SetUpContext();
@@ -843,9 +1010,130 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, DoNotRefetchSameTerms) {
   EXPECT_TRUE(prefetch_status.has_value());
   EXPECT_EQ(prefetch_status.value(), SearchPrefetchStatus::kPrerendered);
 
+  // Navigate away to flush the metrics.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kNavigatedUrl));
+  {
+    // Check that we log the correct PreloadingEligibility metrics when
+    // prerender is consumed.
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 2u);
+
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    std::vector<UkmEntry> expected_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kAllowed,
+            content::PreloadingTriggeringOutcome::kReady,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id,
+            ToPreloadingEligibility(
+                ChromePreloadingEligibility::kPrerenderConsumed),
+            content::PreloadingHoldbackStatus::kUnspecified,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/false),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
+
   histogram_tester.ExpectBucketCount(
       "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kAttemptedQueryRecently, 1);
+}
+
+class SearchPreloadUnifiedHoldbackBrowserTest
+    : public SearchPreloadUnifiedBrowserTest {
+ public:
+  SearchPreloadUnifiedHoldbackBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {
+            {features::kSupportSearchSuggestionForPrerender2,
+             {{"implementation_type", "use_prefetch"}}},
+            {kSearchPrefetchServicePrefetching,
+             {{"max_attempts_per_caching_duration", "3"},
+              {"cache_size", "4"},
+              {"device_memory_threshold_MB", "0"}}},
+            {features::kPrerender2Holdback, {{}}},
+        },
+        /*disabled_features=*/{kSearchPrefetchBlockBeforeHeaders});
+  }
+  ~SearchPreloadUnifiedHoldbackBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that we log correct metrics for Prerender holdback in case of Search
+// Prerender.
+IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedHoldbackBrowserTest,
+                       PrerenderUnifiedHoldbackTest) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  SetUpContext();
+
+  std::string search_query_1 = "pre";
+  std::string prerender_query = "prerender";
+  GURL expected_prefetch_url =
+      GetSearchUrl(prerender_query, UrlType::kPrefetch);
+  GURL expected_prerender_url =
+      GetSearchUrl(prerender_query, UrlType::kPrerender);
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *GetActiveWebContents());
+
+  ChangeAutocompleteResult(search_query_1, prerender_query,
+                           PrerenderHint::kDisabled, PrefetchHint::kEnabled);
+
+  // Wait until prefetch request succeeds.
+  absl::optional<SearchPrefetchStatus> prefetch_status =
+      search_prefetch_service()->GetSearchPrefetchStatusForTesting(
+          base::ASCIIToUTF16(prerender_query));
+  EXPECT_TRUE(prefetch_status.has_value());
+  WaitUntilStatusChangesTo(
+      base::ASCIIToUTF16(prerender_query),
+      {SearchPrefetchStatus::kCanBeServed, SearchPrefetchStatus::kComplete});
+  std::string search_query_2 = "prer";
+  ChangeAutocompleteResult(search_query_2, prerender_query,
+                           PrerenderHint::kEnabled, PrefetchHint::kEnabled);
+
+  // The suggestion service should hint `expected_prefetch_url`, and
+  // prerendering for this url should start.
+  registry_observer.WaitForTrigger(expected_prerender_url);
+
+  // Navigate to flush the metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(GetActiveWebContents(), expected_prerender_url));
+  {
+    ukm::SourceId ukm_source_id =
+        GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+    auto ukm_entries = test_ukm_recorder()->GetEntries(
+        Preloading_Attempt::kEntryName,
+        content::test::kPreloadingAttemptUkmMetrics);
+    EXPECT_EQ(ukm_entries.size(), 1u);
+
+    // Prerender should be under holdback and not succeed.
+    std::vector<UkmEntry> expected_entries = {
+        attempt_entry_builder().BuildEntry(
+            ukm_source_id, content::PreloadingEligibility::kEligible,
+            content::PreloadingHoldbackStatus::kHoldback,
+            content::PreloadingTriggeringOutcome::kUnspecified,
+            content::PreloadingFailureReason::kUnspecified,
+            /*accurate=*/true),
+    };
+    EXPECT_THAT(ukm_entries,
+                testing::UnorderedElementsAreArray(expected_entries))
+        << content::test::ActualVsExpectedUkmEntriesToString(ukm_entries,
+                                                             expected_entries);
+  }
 }
 
 // Disables BFCache for testing back forward navigation can reuse the HTTP

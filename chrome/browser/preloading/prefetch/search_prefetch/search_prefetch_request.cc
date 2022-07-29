@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/prefetch/prefetch_headers.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,6 +25,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/client_hints.h"
 #include "content/public/browser/frame_accept_header.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/url_loader_throttles.h"
 #include "content/public/browser/web_contents.h"
@@ -307,7 +309,8 @@ void SearchPrefetchRequest::CancelPrefetch() {
 
 void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
     PrerenderManager& prerender_manager,
-    const GURL& prerender_url) {
+    const GURL& prerender_url,
+    content::PreloadingAttempt& attempt) {
   // Prerendering is supposed to be requested after prefetch received a servable
   // response and take over the prefetched main resource response. When
   // prerendering is requested while prefetching is still running, it has to
@@ -321,6 +324,8 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
       // Case1: This request has been canceled before it starts sending network
       // requests (see `StartPrefetchRequest`), so prerender should not be
       // triggered.
+      attempt.SetEligibility(ToPreloadingEligibility(
+          ChromePreloadingEligibility::kPrefetchNotStarted));
       return;
     case SearchPrefetchStatus::kInFlight:
     case SearchPrefetchStatus::kCanBeServed:
@@ -332,11 +337,15 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
       // Case N: The prefetch request failed, or has failed. Prerender cannot
       // reuse the response and will fail for sure, so this does not start
       // prerendering.
+      attempt.SetEligibility(ToPreloadingEligibility(
+          ChromePreloadingEligibility::kPrefetchFailed));
       return;
     case SearchPrefetchStatus::kPrerendered:
     case SearchPrefetchStatus::kPrerenderedAndClicked:
       // Case 4: Prerender has started and taken the response away. No action is
       // needed.
+      attempt.SetEligibility(ToPreloadingEligibility(
+          ChromePreloadingEligibility::kPrerenderConsumed));
       return;
     case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
     case SearchPrefetchStatus::kPrerenderActivated:
@@ -347,14 +356,15 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
   // needed.
   prerender_url_ = prerender_url;
   prerender_manager_ = prerender_manager.GetWeakPtr();
+  prerender_preloading_attempt_ = attempt.GetWeakPtr();
 
   if (servable_response_code_received_) {
     // Case 3, 4: This can start prerendering because it has received a
     // response.
     // TODO(https://crbug.com/1295170): Do not start prerendering if this
     // request is about to expire.
-    prerender_manager_->StartPrerenderSearchResult(prefetch_search_terms_,
-                                                   prerender_url);
+    prerender_manager_->StartPrerenderSearchResult(
+        prefetch_search_terms_, prerender_url, prerender_preloading_attempt_);
   }
 }
 
@@ -376,9 +386,10 @@ void SearchPrefetchRequest::OnServableResponseCodeReceived() {
     // Start prerender asynchronously, so that the request can prepare the data
     // pipe completely.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
-                                  prerender_manager_, prefetch_search_terms_,
-                                  prerender_url_));
+        FROM_HERE,
+        base::BindOnce(&PrerenderManager::StartPrerenderSearchResult,
+                       prerender_manager_, prefetch_search_terms_,
+                       prerender_url_, prerender_preloading_attempt_));
   }
 }
 
@@ -401,6 +412,7 @@ void SearchPrefetchRequest::MarkPrefetchAsPrerenderActivated() {
 
 void SearchPrefetchRequest::ResetPrerenderUpgrader() {
   prerender_manager_ = nullptr;
+  prerender_preloading_attempt_ = nullptr;
   prerender_url_ = GURL();
 }
 
@@ -465,6 +477,7 @@ void SearchPrefetchRequest::StopPrerender() {
   if (prerender_manager_) {
     prerender_manager_->StopPrerenderSearchResult(prefetch_search_terms_);
     prerender_manager_ = nullptr;
+    prerender_preloading_attempt_ = nullptr;
     prerender_url_ = GURL();
   }
 }

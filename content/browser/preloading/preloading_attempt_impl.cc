@@ -98,6 +98,10 @@ void PreloadingAttemptImpl::SetFailureReason(PreloadingFailureReason reason) {
   failure_reason_ = reason;
 }
 
+base::WeakPtr<PreloadingAttempt> PreloadingAttemptImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 PreloadingAttemptImpl::PreloadingAttemptImpl(
     PreloadingPredictor predictor,
     PreloadingType preloading_type,

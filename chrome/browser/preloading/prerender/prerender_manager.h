@@ -63,8 +63,10 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `search_terms` differs from the ongoing one's.
-  void StartPrerenderSearchResult(const std::u16string& search_terms,
-                                  const GURL& prerendering_url);
+  void StartPrerenderSearchResult(
+      const std::u16string& search_terms,
+      const GURL& prerendering_url,
+      base::WeakPtr<content::PreloadingAttempt> attempt);
 
   // Cancels the prerender that is prerendering the given `search_terms`.
   // TODO(https://crbug.com/1295170): Use the creator's address to identify the
@@ -111,11 +113,16 @@ class PrerenderManager : public content::WebContentsObserver,
   // finds the callers' intentions changed. The number of concurrence search
   // prerender is limited to 1, so it is needed to cancel the old one in order
   // to start a new one. Returns true if this finds the caller wants to
-  // prerender another search result.
-  bool ResetSearchPrerenderTaskIfNecessary(const std::u16string& search_terms);
+  // prerender another search result. Here `attempt` represents the
+  // PreloadingAttempt corresponding to this prerender attempt to log metrics.
+  bool ResetSearchPrerenderTaskIfNecessary(
+      const std::u16string& search_terms,
+      base::WeakPtr<content::PreloadingAttempt> attempt);
 
-  void StartPrerenderSearchResultInternal(const std::u16string& search_terms,
-                                          const GURL& prerendering_url);
+  void StartPrerenderSearchResultInternal(
+      const std::u16string& search_terms,
+      const GURL& prerendering_url,
+      base::WeakPtr<content::PreloadingAttempt> attempt);
 
   // Stops search prefetch from being upgraded to prerender.
   void UnregisterSearchPrerender();

@@ -17,6 +17,7 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/prefetch/pref_names.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/cache_alias_search_prefetch_url_loader.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -36,6 +37,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/preloading_data.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -502,12 +504,35 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
   if (!web_contents)
     return;
   for (const auto& match : result) {
+    // Return early if neither prefetch nor prerender are enabled for the match.
+    if (!ShouldPrefetch(match))
+      continue;
+
+    // In the case of Default Search Engine Prediction, the confidence depends
+    // on the type of preloading. For prerender requests, the confidence is
+    // comparatively higher than the prefetch to avoid the impact of wrong
+    // predictions. We set confidence as 80 for prerender matches and 60 for
+    // prefetch as an approximate number to differentiate both these cases.
+    int64_t confidence = BaseSearchProvider::ShouldPrerender(match) ? 80 : 60;
+    auto* preloading_data =
+        content::PreloadingData::GetOrCreateForWebContents(web_contents);
+    std::u16string search_terms;
+    default_search->ExtractSearchTermsFromURL(
+        match.destination_url, template_url_service->search_terms_data(),
+        &search_terms);
+
+    content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
+        &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
+
+    // Create PreloadingPrediction for this match.
+    preloading_data->AddPreloadingPrediction(
+        ToPreloadingPredictor(ChromePreloadingPredictor::kDefaultSearchEngine),
+        confidence, std::move(same_url_matcher));
+
     if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
         prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled()) {
-      if (!ShouldPrefetch(match))
-        continue;
-      CoordinatePrefetchWithPrerender(match, web_contents,
-                                      template_url_service);
+      CoordinatePrefetchWithPrerender(match, web_contents, template_url_service,
+                                      search_terms);
       continue;
     }
 
@@ -741,7 +766,8 @@ void SearchPrefetchService::ObserveTemplateURLService(
 void SearchPrefetchService::CoordinatePrefetchWithPrerender(
     const AutocompleteMatch& match,
     content::WebContents* web_contents,
-    TemplateURLService* template_url_service) {
+    TemplateURLService* template_url_service,
+    std::u16string search_terms) {
   DCHECK(web_contents);
   GURL prefetch_url = GetPreloadURLFromMatch(
       match, template_url_service, /*attach_prefetch_information=*/true);
@@ -749,21 +775,37 @@ void SearchPrefetchService::CoordinatePrefetchWithPrerender(
   if (!BaseSearchProvider::ShouldPrerender(match))
     return;
 
-  if (auto prefetch_request_iter =
-          prefetches_.find(match.search_terms_args->search_terms);
-      prefetch_request_iter != prefetches_.end()) {
-    PrerenderManager::CreateForWebContents(web_contents);
-    auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
-    DCHECK(prerender_manager);
+  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
+      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents));
 
-    // Prerender URL needs not to contain the prefetch information to help
-    // servers to recognize prefetch traffic, because it should not send network
-    // requests.
-    GURL prerender_url = GetPreloadURLFromMatch(
-        match, template_url_service, /*attach_prefetch_information=*/false);
-    prefetch_request_iter->second->MaybeStartPrerenderSearchResult(
-        *prerender_manager, prerender_url);
+  // Create new PreloadingAttempt and pass all the values corresponding to
+  // this prerendering attempt.
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents);
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          ToPreloadingPredictor(
+              ChromePreloadingPredictor::kDefaultSearchEngine),
+          content::PreloadingType::kPrerender, same_url_matcher);
+
+  auto prefetch_request_iter =
+      prefetches_.find(match.search_terms_args->search_terms);
+  if (prefetch_request_iter == prefetches_.end()) {
+    preloading_attempt->SetEligibility(ToPreloadingEligibility(
+        ChromePreloadingEligibility::kPrefetchNotStarted));
+    return;
   }
+
+  PrerenderManager::CreateForWebContents(web_contents);
+  auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+  DCHECK(prerender_manager);
+
+  // Prerender URL need not contain the prefetch information to help servers to
+  // recognize prefetch traffic, because it should not send network requests.
+  GURL prerender_url = GetPreloadURLFromMatch(
+      match, template_url_service, /*attach_prefetch_information=*/false);
+  prefetch_request_iter->second->MaybeStartPrerenderSearchResult(
+      *prerender_manager, prerender_url, *preloading_attempt);
 }
 
 std::map<std::u16string, std::unique_ptr<SearchPrefetchRequest>>::iterator

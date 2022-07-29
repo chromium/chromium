@@ -23,6 +23,7 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
   void SetTriggeringOutcome(
       PreloadingTriggeringOutcome triggering_outcome) override;
   void SetFailureReason(PreloadingFailureReason reason) override;
+  base::WeakPtr<PreloadingAttempt> GetWeakPtr() override;
 
   // Records both UKMs Preloading_Attempt and
   // Preloading_Attempt_PreviousPrimaryPage. Metrics for both these are same.
@@ -78,6 +79,8 @@ class CONTENT_EXPORT PreloadingAttemptImpl : public PreloadingAttempt {
 
   // Set to true if this PreloadingAttempt was used for the next navigation.
   bool is_accurate_triggering_ = false;
+
+  base::WeakPtrFactory<PreloadingAttemptImpl> weak_factory_{this};
 };
 
 // Used when DCHECK_STATE_TRANSITION triggers.

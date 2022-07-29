@@ -16,6 +16,9 @@ class PrerenderManager;
 class Profile;
 class SearchPrefetchURLLoader;
 class StreamingSearchPrefetchURLLoader;
+namespace content {
+class PreloadingAttempt;
+}  // namespace content
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -100,7 +103,8 @@ class SearchPrefetchRequest {
   // Called when SearchPrefetchService receives the hint that this prefetch
   // request can be upgraded to a prerender attempt.
   void MaybeStartPrerenderSearchResult(PrerenderManager& prerender_manager,
-                                       const GURL& prerender_url);
+                                       const GURL& prerender_url,
+                                       content::PreloadingAttempt& attempt);
 
   // Called when the prefetch encounters an error.
   void ErrorEncountered();
@@ -201,6 +205,11 @@ class SearchPrefetchRequest {
   // Once set, this request will trigger search prerender upon receiving success
   // response.
   base::WeakPtr<PrerenderManager> prerender_manager_;
+
+  // Once set, this PreloadingAttempt corresponding to prerender attempt will be
+  // passed to log various metrics. We store WeakPtr as prerender can be deleted
+  // before we receive a prefetch response or the prerender is not created.
+  base::WeakPtr<content::PreloadingAttempt> prerender_preloading_attempt_;
 
   base::raw_ptr<Profile> profile_;
 };

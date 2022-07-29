@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
@@ -69,49 +70,6 @@ bool IsJavascriptDisabled(content::WebContents& web_contents, const GURL& url) {
                                    CONTENT_SETTING_BLOCK);
 }
 
-TemplateURLService* GetTemplateURLServiceFromWebContents(
-    content::WebContents& web_contents) {
-  if (Profile* profile =
-          Profile::FromBrowserContext(web_contents.GetBrowserContext())) {
-    return TemplateURLServiceFactory::GetForProfile(profile);
-  }
-  return nullptr;
-}
-
-std::u16string ExtractSearchTermsFromURL(
-    const TemplateURLService* const template_url_service,
-    const GURL& url) {
-  // Can be nullptr in unit tests.
-  if (!template_url_service) {
-    return std::u16string();
-  }
-  auto* default_search_provider =
-      template_url_service->GetDefaultSearchProvider();
-  DCHECK(default_search_provider);
-  std::u16string matched_search_terms;
-  default_search_provider->ExtractSearchTermsFromURL(
-      url, template_url_service->search_terms_data(), &matched_search_terms);
-  return matched_search_terms;
-}
-
-std::u16string ExtractSearchTermsFromURL(content::WebContents& web_contents,
-                                         const GURL& url) {
-  const TemplateURLService* const template_url_service =
-      GetTemplateURLServiceFromWebContents(web_contents);
-  return ExtractSearchTermsFromURL(template_url_service, url);
-}
-
-// Returns true when the two given URLs are considered as navigating to the same
-// search term.
-bool IsSearchDestinationMatch(const std::u16string& prerendered_search_terms,
-                              content::WebContents& web_contents,
-                              const GURL& navigation_url) {
-  DCHECK(!prerendered_search_terms.empty());
-  std::u16string matched_search_terms =
-      ExtractSearchTermsFromURL(web_contents, navigation_url);
-  return matched_search_terms == prerendered_search_terms;
-}
-
 // Prerendered pages are considered stale after a fixed duration.
 // TODO(https://crbug.com/1295170): Use the search prefetch setting for now. The
 // timedelta should be calculated by SearchPrefetchService after search
@@ -131,6 +89,17 @@ GURL RemoveParameterFromUrl(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
+void CheckAndSetPrerenderHoldbackStatus(
+    content::PreloadingAttempt* preloading_attempt) {
+  if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
+    preloading_attempt->SetHoldbackStatus(
+        content::PreloadingHoldbackStatus::kHoldback);
+  } else {
+    preloading_attempt->SetHoldbackStatus(
+        content::PreloadingHoldbackStatus::kAllowed);
+  }
+}
+
 }  // namespace
 
 PrerenderManager::~PrerenderManager() = default;
@@ -139,9 +108,11 @@ class PrerenderManager::SearchPrerenderTask {
  public:
   SearchPrerenderTask(
       const std::u16string& search_terms,
-      std::unique_ptr<content::PrerenderHandle> search_prerender_handle)
+      std::unique_ptr<content::PrerenderHandle> search_prerender_handle,
+      base::WeakPtr<content::PreloadingAttempt> preloading_attempt)
       : search_prerender_handle_(std::move(search_prerender_handle)),
-        prerendered_search_terms_(search_terms) {
+        prerendered_search_terms_(search_terms),
+        preloading_attempt_(preloading_attempt) {
     expiry_timer_.Start(FROM_HERE, GetSearchPrerenderExpiryDuration(),
                         base::BindOnce(&SearchPrerenderTask::OnTimerTriggered,
                                        base::Unretained(this)));
@@ -154,9 +125,35 @@ class PrerenderManager::SearchPrerenderTask {
     // ChromeOmniboxClient::OnURLOpenedFromOmnibox() if there is no started
     // prerender.
     DCHECK_NE(prediction_status_, PrerenderPredictionStatus::kNotStarted);
+    SetFailureReason(prediction_status_);
     base::UmaHistogramEnumeration(
         internal::kHistogramPrerenderPredictionStatusDefaultSearchEngine,
         prediction_status_);
+  }
+
+  content::PreloadingFailureReason ToPreloadingFailureReason(
+      PrerenderPredictionStatus status) {
+    return static_cast<content::PreloadingFailureReason>(
+        static_cast<int>(status) +
+        static_cast<int>(content::PreloadingFailureReason::
+                             kPreloadingFailureReasonCommonEnd));
+  }
+
+  void SetFailureReason(PrerenderPredictionStatus status) {
+    if (!preloading_attempt_)
+      return;
+    switch (status) {
+      case PrerenderPredictionStatus::kNotStarted:
+      case PrerenderPredictionStatus::kCancelled:
+        preloading_attempt_->SetFailureReason(
+            ToPreloadingFailureReason(status));
+        return;
+      case PrerenderPredictionStatus::kUnused:
+      case PrerenderPredictionStatus::kHitFinished:
+        // Only set failure reasons for failing cases. kUnused and kHitFinished
+        // are not considered prerender failures.
+        return;
+    }
   }
 
   // Not copyable or movable.
@@ -267,7 +264,10 @@ class PrerenderManager::SearchPrerenderTask {
  private:
   // Called by OneShotTimer. Will cancel the ongoing prerender to ensure the
   // content displayed to users is up-to-date.
-  void OnTimerTriggered() { search_prerender_handle_.reset(); }
+  void OnTimerTriggered() {
+    SetFailureReason(prediction_status_);
+    search_prerender_handle_.reset();
+  }
 
   std::unique_ptr<content::PrerenderHandle> search_prerender_handle_;
 
@@ -286,6 +286,9 @@ class PrerenderManager::SearchPrerenderTask {
 
   // Stores the search term that `search_prerender_handle_` is prerendering.
   const std::u16string prerendered_search_terms_;
+
+  // Stores the PreloadingAttempt corresponding to Prerender to log metrics.
+  base::WeakPtr<content::PreloadingAttempt> preloading_attempt_;
 };
 
 void PrerenderManager::DidStartNavigation(
@@ -344,13 +347,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
 
       // Check and set the PreloadingHoldbackStatus before setting the
       // TriggeringOutcome.
-      if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
-        preloading_attempt.SetHoldbackStatus(
-            content::PreloadingHoldbackStatus::kHoldback);
-      } else {
-        preloading_attempt.SetHoldbackStatus(
-            content::PreloadingHoldbackStatus::kAllowed);
-      }
+      CheckAndSetPrerenderHoldbackStatus(&preloading_attempt);
       preloading_attempt.SetTriggeringOutcome(
           PreloadingTriggeringOutcome::kDuplicate);
       return direct_url_input_prerender_handle_->GetWeakPtr();
@@ -377,21 +374,37 @@ PrerenderManager::StartPrerenderDirectUrlInput(
 void PrerenderManager::StartPrerenderSearchSuggestion(
     const AutocompleteMatch& match) {
   DCHECK(AutocompleteMatch::IsSearchType(match.type));
-
-  // Since search pages require Javascirpt to perform the basic prerender
-  // loading logic, do not prerender a search result if Javascript is disabled.
-  if (IsJavascriptDisabled(*web_contents(), match.destination_url)) {
-    return;
-  }
-
   TemplateURLRef::SearchTermsArgs& search_terms_args =
       *(match.search_terms_args);
   const std::u16string& search_terms = search_terms_args.search_terms;
 
+  content::PreloadingURLMatchCallback same_url_matcher = base::BindRepeating(
+      &IsSearchDestinationMatch, search_terms, std::ref(*web_contents()));
+  auto* preloading_data =
+      content::PreloadingData::GetOrCreateForWebContents(web_contents());
+
+  // Create new PreloadingAttempt and pass all the values corresponding to
+  // this prerendering attempt.
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          ToPreloadingPredictor(
+              ChromePreloadingPredictor::kDefaultSearchEngine),
+          content::PreloadingType::kPrerender, same_url_matcher);
+
   // If the caller does not want to prerender a new result, this does not need
   // to do anything.
-  if (!ResetSearchPrerenderTaskIfNecessary(search_terms))
+  if (!ResetSearchPrerenderTaskIfNecessary(search_terms,
+                                           preloading_attempt->GetWeakPtr())) {
     return;
+  }
+
+  // Since search pages require Javascript to perform the basic prerender
+  // loading logic, do not prerender a search result if Javascript is disabled.
+  if (IsJavascriptDisabled(*web_contents(), match.destination_url)) {
+    preloading_attempt->SetEligibility(
+        content::PreloadingEligibility::kJavascriptDisabled);
+    return;
+  }
 
   GURL prerender_url = match.destination_url;
   // Skip changing the prerender URL in tests as they may not have Profile or
@@ -427,19 +440,22 @@ void PrerenderManager::StartPrerenderSearchSuggestion(
     DCHECK(!search_terms_args.is_prefetch);
   }
 
-  StartPrerenderSearchResultInternal(search_terms, prerender_url);
+  StartPrerenderSearchResultInternal(search_terms, prerender_url,
+                                     preloading_attempt->GetWeakPtr());
 }
 
 void PrerenderManager::StartPrerenderSearchResult(
     const std::u16string& search_terms,
-    const GURL& prerendering_url) {
+    const GURL& prerendering_url,
+    base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
   DCHECK(prerender_utils::SearchPrefetchUpgradeToPrerenderIsEnabled());
 
   // If the caller does not want to prerender a new result, this does not need
   // to do anything.
-  if (!ResetSearchPrerenderTaskIfNecessary(search_terms))
+  if (!ResetSearchPrerenderTaskIfNecessary(search_terms, preloading_attempt))
     return;
-  StartPrerenderSearchResultInternal(search_terms, prerendering_url);
+  StartPrerenderSearchResultInternal(search_terms, prerendering_url,
+                                     preloading_attempt);
 }
 
 void PrerenderManager::StopPrerenderSearchResult(
@@ -517,7 +533,8 @@ void PrerenderManager::ResetPrerenderHandlesOnPrimaryPageChanged(
 }
 
 bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
-    const std::u16string& search_terms) {
+    const std::u16string& search_terms,
+    base::WeakPtr<content::PreloadingAttempt> preloading_attempt) {
   if (!search_prerender_task_)
     return true;
 
@@ -525,6 +542,18 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
   // TODO(https://crbug.com/1278634): re-prerender the search result if the
   // prerendered content has been removed.
   if (search_prerender_task_->prerendered_search_terms() == search_terms) {
+    // In case a prerender is already present for the URL, prerendering is
+    // eligible but mark triggering outcome as a duplicate.
+    if (preloading_attempt) {
+      preloading_attempt->SetEligibility(
+          content::PreloadingEligibility::kEligible);
+
+      // Check and set the PreloadingHoldbackStatus before setting the
+      // TriggeringOutcome.
+      CheckAndSetPrerenderHoldbackStatus(preloading_attempt.get());
+      preloading_attempt->SetTriggeringOutcome(
+          PreloadingTriggeringOutcome::kDuplicate);
+    }
     return false;
   }
   search_prerender_task_->set_prediction_status(
@@ -535,26 +564,25 @@ bool PrerenderManager::ResetSearchPrerenderTaskIfNecessary(
 
 void PrerenderManager::StartPrerenderSearchResultInternal(
     const std::u16string& search_terms,
-    const GURL& prerendering_url) {
+    const GURL& prerendering_url,
+    base::WeakPtr<content::PreloadingAttempt> attempt) {
   // web_contents() owns the instance that stores this callback, so it is safe
   // to call std::ref.
   base::RepeatingCallback<bool(const GURL&)> url_match_predicate =
       base::BindRepeating(&IsSearchDestinationMatch, search_terms,
                           std::ref(*web_contents()));
 
-  // TODO(crbug.com/1325073): Integrate DSE Prerender logging with Preloading
-  // APIs.
   std::unique_ptr<content::PrerenderHandle> prerender_handle =
       web_contents()->StartPrerendering(
           prerendering_url, content::PrerenderTriggerType::kEmbedder,
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          nullptr, std::move(url_match_predicate));
+          /*preloading_attempt=*/attempt.get(), std::move(url_match_predicate));
 
   if (prerender_handle) {
     search_prerender_task_ = std::make_unique<SearchPrerenderTask>(
-        search_terms, std::move(prerender_handle));
+        search_terms, std::move(prerender_handle), attempt);
   }
 }
 
