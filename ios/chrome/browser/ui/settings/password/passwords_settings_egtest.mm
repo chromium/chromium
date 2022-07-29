@@ -2120,7 +2120,8 @@ id<GREYMatcher> EditDoneButton() {
 
 // Tests that the favicons for the password managers metrics are logged
 // properly when there are passwords with a favicon.
-- (void)testLogFaviconsForPasswordsMetrics {
+// TODO(crbug.com/1348585): Fix to re-enable.
+- (void)DISABLED_testLogFaviconsForPasswordsMetrics {
   // Sign-in and synced user.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
