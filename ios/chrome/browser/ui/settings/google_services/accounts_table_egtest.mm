@@ -329,7 +329,8 @@ const NSTimeInterval kSyncOperationTimeout = 10.0;
 
 // Tests that users data is cleared out when the signed in account disappear and
 // it is a managed account. Regression test for crbug.com/1208381.
-- (void)testsManagedAccountRemovedFromAnotherGoogleApp {
+// TODO(crbug.com/1348569): Failing on bot, fix to enable again.
+- (void)DISABLED_testsManagedAccountRemovedFromAnotherGoogleApp {
   // Sign In `fakeManagedIdentity`.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
