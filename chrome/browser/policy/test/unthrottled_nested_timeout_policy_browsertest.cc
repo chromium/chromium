@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTestUnthrottledNestedTimeout, DisablePolicy) {
   EXPECT_FALSE(profile->GetPrefs()->GetBoolean(
       policy::policy_prefs::kUnthrottledNestedTimeoutEnabled));
 
-  content::DOMMessageQueue message_queue;
+  content::DOMMessageQueue message_queue(web_contents);
   content::ExecuteScriptAsync(web_contents, kSetTimeoutNestedScriptText);
   std::string message;
   EXPECT_TRUE(message_queue.WaitForMessage(&message));

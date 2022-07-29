@@ -41,7 +41,8 @@ class EventPathPolicyTest
     const GURL url(embedded_test_server()->GetURL("/empty.html"));
     ASSERT_TRUE(NavigateToUrl(url, this));
 
-    content::DOMMessageQueue message_queue;
+    content::DOMMessageQueue message_queue(
+        chrome_test_utils::GetActiveWebContents(this));
     content::ExecuteScriptAsync(
         chrome_test_utils::GetActiveWebContents(this),
         "window.domAutomationController.send('path' in Event.prototype)");
