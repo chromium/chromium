@@ -4,7 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
-import("//build/util/version.gni")
+import("//chrome/version.gni")
 import("//remoting/remoting_enable.gni")
 import("//remoting/remoting_locales.gni")
 import("//remoting/remoting_options.gni")

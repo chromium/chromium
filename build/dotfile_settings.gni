@@ -39,6 +39,5 @@ build_dotfile_settings = {
     "//build/toolchain/win/toolchain.gni",
     "//build/toolchain/zos/BUILD.gn",
     "//build/util/branding.gni",
-    "//build/util/version.gni",
   ]
 }

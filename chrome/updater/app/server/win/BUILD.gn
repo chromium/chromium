@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/win/midl.gni")
-import("//build/util/version.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/version.gni")
 
 # These GUIDs must depend on branding only.
 branding_only_placeholder_guids = [

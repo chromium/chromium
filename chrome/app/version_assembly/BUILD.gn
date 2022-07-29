@@ -4,7 +4,7 @@
 
 import("//build/config/win/manifest.gni")
 import("//build/util/process_version.gni")
-import("//build/util/version.gni")
+import("//chrome/version.gni")
 
 version_assembly_output_file = "$target_gen_dir/version_assembly.manifest"
 

@@ -4,8 +4,8 @@
 
 import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
-import("//build/util/version.gni")
 import("//chrome/android/modules/chrome_feature_module_tmpl.gni")
+import("//chrome/version.gni")
 import("//components/module_installer/android/module_desc_java.gni")
 
 # Instantiates a Chrome-specific app bundle.

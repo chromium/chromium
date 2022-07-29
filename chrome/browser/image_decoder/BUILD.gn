@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/util/version.gni")
+import("//chrome/version.gni")
 
 source_set("image_decoder") {
   deps = [
