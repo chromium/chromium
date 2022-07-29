@@ -601,6 +601,10 @@ void ChromeAuthenticatorRequestDelegate::ShouldReturnAttestation(
     const device::FidoAuthenticator* authenticator,
     bool is_enterprise_attestation,
     base::OnceCallback<void(bool)> callback) {
+  if (disable_ui_ && IsVirtualEnvironmentEnabled()) {
+    std::move(callback).Run(true);
+    return;
+  }
   if (IsWebAuthnRPIDListedInSecurityKeyPermitAttestationPolicy(
           GetBrowserContext(), relying_party_id)) {
     // Enterprise attestations should have been approved already and not reach

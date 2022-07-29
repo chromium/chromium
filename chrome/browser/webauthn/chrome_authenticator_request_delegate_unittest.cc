@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -20,15 +19,15 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/test/web_contents_tester.h"
 #include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
-#include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/test_callback_receiver.h"
+#include "device/fido/virtual_ctap2_device.h"
+#include "device/fido/virtual_fido_device_authenticator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -42,6 +41,8 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace {
+
+static constexpr char kRelyingPartyID[] = "example.com";
 
 class ChromeAuthenticatorRequestDelegateTest
     : public ChromeRenderViewHostTestHarness {};
@@ -369,6 +370,22 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, MaybeGetRelyingPartyIdOverride) {
   }
 }
 
+// Tests that attestation is returned if the virtual environment is enabled and
+// the UI is disabled.
+// Regression test for crbug.com/1342458
+TEST_F(ChromeAuthenticatorRequestDelegateTest, VirtualEnvironmentAttestation) {
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.DisableUI();
+  delegate.SetVirtualEnvironment(true);
+  device::VirtualFidoDeviceAuthenticator authenticator(
+      std::make_unique<device::VirtualCtap2Device>());
+  device::test::ValueCallbackReceiver<bool> cb;
+  delegate.ShouldReturnAttestation(kRelyingPartyID, &authenticator,
+                                   /*is_enterprise_attestation=*/false,
+                                   cb.callback());
+  EXPECT_TRUE(cb.value());
+}
+
 #if BUILDFLAG(IS_MAC)
 std::string TouchIdMetadataSecret(ChromeWebAuthenticationDelegate& delegate,
                                   content::BrowserContext* browser_context) {
@@ -408,8 +425,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest,
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)
-
-static constexpr char kRelyingPartyID[] = "example.com";
 
 // Tests that ShouldReturnAttestation() returns with true if |authenticator|
 // is the Windows native WebAuthn API with WEBAUTHN_API_VERSION_2 or higher,
