@@ -10,6 +10,7 @@
 
 #include "components/autofill/ios/browser/autofill_driver_ios_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_client_ios_bridge.h"
@@ -24,7 +25,6 @@ class WebViewAutofillClientIOS;
 
 namespace ios_web_view {
 class WebViewPasswordManagerClient;
-class WebViewPasswordManagerDriver;
 }  // namespace ios_web_view
 
 namespace password_manager {
@@ -56,8 +56,7 @@ class WebState;
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
     passwordManagerDriver:
-        (std::unique_ptr<ios_web_view::WebViewPasswordManagerDriver>)
-            passwordManagerDriver
+        (std::unique_ptr<IOSPasswordManagerDriver>)passwordManagerDriver
        passwordController:(SharedPasswordController*)passwordController
         applicationLocale:(const std::string&)applicationLocale
     NS_DESIGNATED_INITIALIZER;

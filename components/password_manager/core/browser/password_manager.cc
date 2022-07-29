@@ -454,7 +454,7 @@ void PasswordManager::UpdateFormManagers() {
   for (PasswordManagerDriver* driver : drivers) {
     // GetPasswordAutofillManager() is returning nullptr in iOS Chrome, since
     // PasswordAutofillManager is not instantiated on iOS Chrome.
-    // See //ios/chrome/browser/passwords/ios_chrome_password_manager_driver.mm
+    // See //components/password_manager/ios/ios_password_manager_driver.mm
     if (driver->GetPasswordAutofillManager()) {
       driver->GetPasswordAutofillManager()->DeleteFillData();
     }

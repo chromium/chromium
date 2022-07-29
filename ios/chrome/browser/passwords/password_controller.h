@@ -10,12 +10,12 @@
 #include <memory>
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/password_manager/ios/password_manager_client_bridge.h"
 #import "components/password_manager/ios/password_manager_driver_bridge.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_manager_client.h"
-#import "ios/chrome/browser/passwords/ios_chrome_password_manager_driver.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 
 @protocol ApplicationCommands;

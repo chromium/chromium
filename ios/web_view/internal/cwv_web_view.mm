@@ -18,6 +18,7 @@
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/url_formatter/elide_url.h"
@@ -56,7 +57,6 @@
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
 #import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
-#import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
 #import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_client_factory.h"
 #import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
@@ -690,9 +690,6 @@ BOOL gChromeContextMenuEnabled = NO;
           _webState.get(), _configuration.browserState);
   auto passwordManager = std::make_unique<password_manager::PasswordManager>(
       passwordManagerClient.get());
-  auto passwordManagerDriver =
-      std::make_unique<ios_web_view::WebViewPasswordManagerDriver>(
-          passwordManager.get());
 
   PasswordFormHelper* formHelper =
       [[PasswordFormHelper alloc] initWithWebState:_webState.get()];
@@ -703,6 +700,9 @@ BOOL gChromeContextMenuEnabled = NO;
                                                  manager:passwordManager.get()
                                               formHelper:formHelper
                                         suggestionHelper:suggestionHelper];
+
+  auto passwordManagerDriver = std::make_unique<IOSPasswordManagerDriver>(
+      passwordController, passwordManager.get());
 
   return [[CWVAutofillController alloc]
            initWithWebState:_webState.get()

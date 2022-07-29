@@ -187,8 +187,6 @@ source_set("web_view_sources") {
     "internal/passwords/web_view_password_feature_manager.mm",
     "internal/passwords/web_view_password_manager_client.h",
     "internal/passwords/web_view_password_manager_client.mm",
-    "internal/passwords/web_view_password_manager_driver.h",
-    "internal/passwords/web_view_password_manager_driver.mm",
     "internal/passwords/web_view_password_manager_log_router_factory.h",
     "internal/passwords/web_view_password_manager_log_router_factory.mm",
     "internal/passwords/web_view_password_requirements_service_factory.h",

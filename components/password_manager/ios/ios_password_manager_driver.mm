@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 
 #include <string>
 
 #include "components/autofill/core/common/password_form_fill_data.h"
-#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -17,30 +17,29 @@
 using password_manager::PasswordAutofillManager;
 using password_manager::PasswordManager;
 
-namespace ios_web_view {
-
-WebViewPasswordManagerDriver::WebViewPasswordManagerDriver(
+IOSPasswordManagerDriver::IOSPasswordManagerDriver(
+    id<PasswordManagerDriverBridge> bridge,
     password_manager::PasswordManager* password_manager)
-    : password_manager_(password_manager) {}
+    : bridge_(bridge), password_manager_(password_manager) {}
 
-WebViewPasswordManagerDriver::~WebViewPasswordManagerDriver() = default;
+IOSPasswordManagerDriver::~IOSPasswordManagerDriver() = default;
 
-int WebViewPasswordManagerDriver::GetId() const {
+int IOSPasswordManagerDriver::GetId() const {
   // There is only one driver per tab on iOS so returning 0 is fine.
   return 0;
 }
 
-void WebViewPasswordManagerDriver::FillPasswordForm(
+void IOSPasswordManagerDriver::FillPasswordForm(
     const autofill::PasswordFormFillData& form_data) {
   [bridge_ fillPasswordForm:form_data completionHandler:nil];
 }
 
-void WebViewPasswordManagerDriver::InformNoSavedCredentials(
+void IOSPasswordManagerDriver::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
   [bridge_ onNoSavedCredentials];
 }
 
-void WebViewPasswordManagerDriver::FormEligibleForGenerationFound(
+void IOSPasswordManagerDriver::FormEligibleForGenerationFound(
     const autofill::PasswordFormGenerationData& form) {
   if (GetPasswordGenerationHelper() &&
       GetPasswordGenerationHelper()->IsGenerationEnabled(
@@ -49,55 +48,55 @@ void WebViewPasswordManagerDriver::FormEligibleForGenerationFound(
   }
 }
 
-void WebViewPasswordManagerDriver::GeneratedPasswordAccepted(
+void IOSPasswordManagerDriver::GeneratedPasswordAccepted(
     const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
-void WebViewPasswordManagerDriver::FillSuggestion(
+void IOSPasswordManagerDriver::FillSuggestion(const std::u16string& username,
+                                              const std::u16string& password) {
+  NOTIMPLEMENTED();
+}
+
+void IOSPasswordManagerDriver::PreviewSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
   NOTIMPLEMENTED();
 }
 
-void WebViewPasswordManagerDriver::PreviewSuggestion(
-    const std::u16string& username,
-    const std::u16string& password) {
-  NOTIMPLEMENTED();
-}
-
-void WebViewPasswordManagerDriver::ClearPreviewedForm() {
+void IOSPasswordManagerDriver::ClearPreviewedForm() {
   NOTIMPLEMENTED();
 }
 
 password_manager::PasswordGenerationFrameHelper*
-WebViewPasswordManagerDriver::GetPasswordGenerationHelper() {
+IOSPasswordManagerDriver::GetPasswordGenerationHelper() {
   return [bridge_ passwordGenerationHelper];
 }
 
-PasswordManager* WebViewPasswordManagerDriver::GetPasswordManager() {
+PasswordManager* IOSPasswordManagerDriver::GetPasswordManager() {
   return password_manager_;
 }
 
 PasswordAutofillManager*
-WebViewPasswordManagerDriver::GetPasswordAutofillManager() {
+IOSPasswordManagerDriver::GetPasswordAutofillManager() {
+  // TODO(crbug.com/341877): Use PasswordAutofillManager to implement password
+  // autofill on iOS.
   return nullptr;
 }
 
-bool WebViewPasswordManagerDriver::IsInPrimaryMainFrame() const {
+bool IOSPasswordManagerDriver::IsInPrimaryMainFrame() const {
   // On IOS only processing of password forms in main frame is implemented.
   return true;
 }
 
-bool WebViewPasswordManagerDriver::CanShowAutofillUi() const {
+bool IOSPasswordManagerDriver::CanShowAutofillUi() const {
   return true;
 }
 
-::ui::AXTreeID WebViewPasswordManagerDriver::GetAxTreeId() const {
+::ui::AXTreeID IOSPasswordManagerDriver::GetAxTreeId() const {
   return {};
 }
 
-const GURL& WebViewPasswordManagerDriver::GetLastCommittedURL() const {
+const GURL& IOSPasswordManagerDriver::GetLastCommittedURL() const {
   return bridge_.lastCommittedURL;
 }
-}  // namespace ios_web_view

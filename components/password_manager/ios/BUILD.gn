@@ -30,6 +30,8 @@ component("ios") {
   ]
 
   sources = [
+    "ios_password_manager_driver.h",
+    "ios_password_manager_driver.mm",
     "password_form_helper.h",
     "password_form_helper.mm",
     "password_generation_provider.h",

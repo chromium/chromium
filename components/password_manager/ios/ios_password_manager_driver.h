@@ -1,9 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_MANAGER_DRIVER_H_
-#define IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_MANAGER_DRIVER_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_
+#define COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_
 
 #include <vector>
 
@@ -20,19 +20,17 @@ class PasswordManager;
 }  // namespace password_manager
 
 // An iOS implementation of password_manager::PasswordManagerDriver.
-class IOSChromePasswordManagerDriver
+class IOSPasswordManagerDriver
     : public password_manager::PasswordManagerDriver {
  public:
-  explicit IOSChromePasswordManagerDriver(
+  explicit IOSPasswordManagerDriver(
       id<PasswordManagerDriverBridge> bridge,
       password_manager::PasswordManager* password_manager);
 
-  IOSChromePasswordManagerDriver(const IOSChromePasswordManagerDriver&) =
-      delete;
-  IOSChromePasswordManagerDriver& operator=(
-      const IOSChromePasswordManagerDriver&) = delete;
+  IOSPasswordManagerDriver(const IOSPasswordManagerDriver&) = delete;
+  IOSPasswordManagerDriver& operator=(const IOSPasswordManagerDriver&) = delete;
 
-  ~IOSChromePasswordManagerDriver() override;
+  ~IOSPasswordManagerDriver() override;
 
   // password_manager::PasswordManagerDriver implementation.
   int GetId() const override;
@@ -63,4 +61,4 @@ class IOSChromePasswordManagerDriver
   password_manager::PasswordManager* password_manager_;
 };
 
-#endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_MANAGER_DRIVER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_IOS_IOS_PASSWORD_MANAGER_DRIVER_H_

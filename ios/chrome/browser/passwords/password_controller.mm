@@ -201,7 +201,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
               formHelper:formHelper
         suggestionHelper:suggestionHelper];
     _sharedPasswordController.delegate = self;
-    _passwordManagerDriver.reset(new IOSChromePasswordManagerDriver(
+    _passwordManagerDriver.reset(new IOSPasswordManagerDriver(
         _sharedPasswordController, _passwordManager.get()));
   }
   return self;

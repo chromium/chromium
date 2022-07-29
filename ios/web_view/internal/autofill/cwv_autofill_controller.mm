@@ -25,6 +25,7 @@
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/web/public/js_messaging/web_frame.h"
@@ -45,7 +46,6 @@
 #include "ios/web_view/internal/autofill/web_view_strike_database_factory.h"
 #import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
-#import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/public/cwv_autofill_controller_delegate.h"
@@ -77,8 +77,7 @@ using UserDecision =
   std::unique_ptr<password_manager::PasswordManager> _passwordManager;
   std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>
       _passwordManagerClient;
-  std::unique_ptr<ios_web_view::WebViewPasswordManagerDriver>
-      _passwordManagerDriver;
+  std::unique_ptr<IOSPasswordManagerDriver> _passwordManagerDriver;
   SharedPasswordController* _passwordController;
 
   // The current credit card saver. Can be nil if no save attempt is pending.
@@ -112,8 +111,7 @@ using UserDecision =
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
     passwordManagerDriver:
-        (std::unique_ptr<ios_web_view::WebViewPasswordManagerDriver>)
-            passwordManagerDriver
+        (std::unique_ptr<IOSPasswordManagerDriver>)passwordManagerDriver
        passwordController:(SharedPasswordController*)passwordController
         applicationLocale:(const std::string&)applicationLocale {
   self = [super init];
@@ -141,7 +139,6 @@ using UserDecision =
     _passwordManagerClient->set_bridge(self);
     _passwordManager = std::move(passwordManager);
     _passwordManagerDriver = std::move(passwordManagerDriver);
-    _passwordManagerDriver->set_bridge(passwordController);
     _passwordController = passwordController;
     _passwordController.delegate = self;
 
