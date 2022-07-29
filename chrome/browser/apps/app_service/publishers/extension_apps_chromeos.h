@@ -51,8 +51,6 @@ class PublisherHost;
 // there are 2 ExtensionAppsChromeOs publishers for browser extensions and
 // Chrome apps(including hosted apps) separately.
 //
-// In the future, desktop PWAs will be migrated to a new system.
-//
 // See components/services/app_service/README.md.
 class ExtensionAppsChromeOs : public ExtensionAppsBase,
                               public extensions::AppWindowRegistry::Observer,
