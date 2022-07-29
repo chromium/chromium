@@ -1311,12 +1311,6 @@ TEST_F(CartServiceTest, TestNoShowConsentWithoutFeature) {
   run_loop.Run();
 }
 
-// Tests discount is disabled without feature param.
-TEST_F(CartServiceTest, TestDiscountDisabledWithoutFeature) {
-  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
-  ASSERT_FALSE(service_->IsCartDiscountEnabled());
-}
-
 // Tests acknowledging discount consent is reflected in profile pref.
 TEST_F(CartServiceTest, TestAcknowledgeDiscountConsent) {
   ASSERT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
@@ -1333,6 +1327,29 @@ TEST_F(CartServiceTest, TestAcknowledgeDiscountConsent) {
   ASSERT_FALSE(profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountEnabled));
   ASSERT_TRUE(
       profile_->GetPrefs()->GetBoolean(prefs::kCartDiscountAcknowledged));
+}
+
+class CartServiceNoDiscountTest : public CartServiceTest {
+ public:
+  // Features need to be initialized before CartServiceTest::SetUp runs, in
+  // order to avoid tsan data race error on FeatureList.
+  CartServiceNoDiscountTest() {
+    features_.InitAndEnableFeatureWithParameters(
+        ntp_features::kNtpChromeCartModule,
+        {{ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam,
+          "false"}});
+  }
+
+  void TearDown() override {
+    // Set the feature to default disabled state after test.
+    profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, false);
+  }
+};
+
+// Tests discount is disabled without feature param.
+TEST_F(CartServiceNoDiscountTest, TestDiscountDisabledWithoutFeature) {
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
+  ASSERT_FALSE(service_->IsCartDiscountEnabled());
 }
 
 class MockCartDiscountLinkFetcher : public CartDiscountLinkFetcher {
