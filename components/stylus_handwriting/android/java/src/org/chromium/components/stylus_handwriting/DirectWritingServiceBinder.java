@@ -85,8 +85,10 @@ class DirectWritingServiceBinder {
         List<String> fingerprints = PackageUtils.getCertificateSHA256FingerprintForPackage(
                 context.getPackageManager(), DirectWritingConstants.SERVICE_PKG_NAME);
         if (fingerprints == null || fingerprints.size() > 1
-                || !fingerprints.get(0).equals(
-                        DirectWritingConstants.SERVICE_PKG_SHA_256_FINGERPRINT)) {
+                || !(fingerprints.get(0).equals(
+                             DirectWritingConstants.SERVICE_PKG_SHA_256_FINGERPRINT_RELEASE)
+                        || fingerprints.get(0).equals(
+                                DirectWritingConstants.SERVICE_PKG_SHA_256_FINGERPRINT_DEBUG))) {
             Log.e(TAG, "Don't connect to service due to package fingerprint mismatch");
             return;
         }
