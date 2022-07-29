@@ -1692,8 +1692,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   list.Append("http://foo.com");
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("https://bar.com", base::TimeToValue(base::Time::Now()));
@@ -1706,8 +1705,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);
   EXPECT_TRUE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   EXPECT_TRUE(
       prefs->GetValueDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -1716,8 +1714,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   // Re-add foo.com and bar.com to stored isolated origins.
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
@@ -1730,8 +1727,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
                                 constants::DATA_TYPE_SITE_DATA, false);
   EXPECT_TRUE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   EXPECT_TRUE(
       prefs->GetValueDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -1740,8 +1736,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   // Re-add foo.com and bar.com.
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
@@ -1752,8 +1747,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_ISOLATED_ORIGINS, false);
   EXPECT_TRUE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   EXPECT_TRUE(
       prefs->GetValueDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
@@ -1762,8 +1756,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
   // Re-add foo.com and bar.com.
   prefs->Set(site_isolation::prefs::kUserTriggeredIsolatedOrigins, list);
   EXPECT_FALSE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   prefs->Set(site_isolation::prefs::kWebTriggeredIsolatedOrigins, dict);
   EXPECT_FALSE(
@@ -1776,8 +1769,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePersistentIsolatedOrigins) {
       base::Time(), base::Time::Max(),
       constants::DATA_TYPE_HISTORY | constants::DATA_TYPE_SITE_DATA, false);
   EXPECT_TRUE(
-      prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
-          ->GetListDeprecated()
+      prefs->GetValueList(site_isolation::prefs::kUserTriggeredIsolatedOrigins)
           .empty());
   EXPECT_TRUE(
       prefs->GetValueDict(site_isolation::prefs::kWebTriggeredIsolatedOrigins)
