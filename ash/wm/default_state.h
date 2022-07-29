@@ -52,10 +52,9 @@ class DefaultState : public BaseState {
   // Enters next state. This is used when the state moves from one to another
   // within the same desktop mode. Uses `snap_ratio` for the next state type if
   // provided.
-  void EnterToNextState(
-      WindowState* window_state,
-      chromeos::WindowStateType next_state_type,
-      absl::optional<WindowSnapWMEvent::SnapRatio> snap_ratio);
+  void EnterToNextState(WindowState* window_state,
+                        chromeos::WindowStateType next_state_type,
+                        absl::optional<float> snap_ratio);
 
   // Reenters the current state. This is called when migrating from
   // previous desktop mode, and the window's state needs to re-construct the

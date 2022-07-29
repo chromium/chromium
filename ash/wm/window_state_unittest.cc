@@ -497,7 +497,7 @@ TEST_F(WindowStateTest, UpdateSnapWidthRatioTest) {
   // Another cycle snap left event will restore window state to normal.
   window_state->OnWMEvent(&cycle_snap_primary);
   EXPECT_EQ(WindowStateType::kNormal, window_state->GetStateType());
-  EXPECT_FALSE(window_state->snap_ratio());
+  EXPECT_TRUE(window_state->snap_ratio());
 
   // Another cycle snap left event will snap window and reset snapped width
   // ratio.

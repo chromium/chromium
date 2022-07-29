@@ -729,6 +729,37 @@ TEST_F(WorkspaceWindowResizerTest, ResizeSnapped) {
   }
 }
 
+// Verifies the behavior of resizing and restoring a side snapped window.
+TEST_F(WorkspaceWindowResizerTest, ResizeRestoreSnappedWindow) {
+  WindowState* window_state = WindowState::Get(window_.get());
+  AllowSnap(window_.get());
+
+  const gfx::Rect kInitialBounds(100, 100, 100, 100);
+  window_->SetBounds(kInitialBounds);
+  window_->Show();
+
+  // Snap the window to the left.
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_event);
+  gfx::Rect snapped_bounds = window_->bounds();
+
+  // Resize the snapped window to make it wider.
+  std::unique_ptr<WindowResizer> resizer =
+      CreateResizerForTest(window_.get(), gfx::Point(), HTRIGHT);
+  resizer->Drag(CalculateDragPoint(*resizer, 10, 0), 0);
+  resizer->CompleteDrag();
+  EXPECT_EQ(WindowStateType::kPrimarySnapped, window_state->GetStateType());
+  snapped_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, -10));
+  EXPECT_EQ(snapped_bounds.ToString(), window_->bounds().ToString());
+  EXPECT_EQ(kInitialBounds, window_state->GetRestoreBoundsInParent());
+
+  // Minimize then restore the window and expect the resized snapped bounds to
+  // be restored.
+  window_state->Minimize();
+  window_state->Restore();
+  EXPECT_EQ(snapped_bounds.ToString(), window_->bounds().ToString());
+}
+
 // Verifies windows are correctly restacked when reordering multiple windows.
 TEST_F(WorkspaceWindowResizerTest, RestackAttached) {
   window_->SetBounds(gfx::Rect(0, 0, 200, 300));

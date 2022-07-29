@@ -458,7 +458,9 @@ void WindowState::OnWMEvent(const WMEvent* event) {
 
   current_state_->OnWMEvent(this, event);
 
-  MaybeUpdateSnapRatio(event);
+  if (event->IsSnapEvent() || event->IsBoundsEvent()) {
+    UpdateSnapRatio();
+  }
 
   PersistentDesksBarController* bar_controller =
       Shell::Get()->persistent_desks_bar_controller();
@@ -564,27 +566,10 @@ std::unique_ptr<WindowState::State> WindowState::SetStateObject(
   return old_object;
 }
 
-void WindowState::MaybeUpdateSnapRatio(const WMEvent* event) {
-  if (!IsSnapped()) {
-    snap_ratio_.reset();
+void WindowState::UpdateSnapRatio() {
+  if (!IsSnapped())
     return;
-  }
-
-  const WMEventType type = event->type();
-  // Initializes |snap_ratio_| whenever |event| is snapping event.
-  if (type == WM_EVENT_SNAP_PRIMARY || type == WM_EVENT_SNAP_SECONDARY ||
-      type == WM_EVENT_CYCLE_SNAP_PRIMARY ||
-      type == WM_EVENT_CYCLE_SNAP_SECONDARY) {
-    // Since |MaybeUpdateSnapRatio()| is called post WMEvent taking effect,
-    // |window_|'s bounds is in a correct state for ratio update.
-    snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
-    return;
-  }
-
-  // |snap_ratio_| under snapped state may change due to bounds event.
-  if (event->IsBoundsEvent()) {
-    snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
-  }
+  snap_ratio_ = absl::make_optional(GetCurrentSnapRatio(window_));
 }
 
 void WindowState::SetPreAutoManageWindowBounds(const gfx::Rect& bounds) {

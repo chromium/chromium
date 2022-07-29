@@ -253,7 +253,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // Calculates the new divider position to move |divider_position_| to, such
   // that the primary window will occupy |snap_ratio| of the screen, and the
   // secondary window will occupy the rest.
-  int GetDividerPosition(float snap_ratio) const;
+  int GetDividerPosition(SnapPosition snap_position, float snap_ratio) const;
 
   // Returns true during the divider snap animation.
   bool IsDividerAnimating() const;

@@ -935,6 +935,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
   // if the user dragged the window via the caption area because doing this
   // is slightly less confusing.
   if (window_state()->IsSnapped()) {
+    window_state()->UpdateSnapRatio();
     if (details().window_component == HTCAPTION ||
         !AreBoundsValidSnappedBounds(GetTarget())) {
       // Set the window to WindowStateType::kNormal but keep the

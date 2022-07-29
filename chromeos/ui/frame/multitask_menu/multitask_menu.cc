@@ -132,8 +132,11 @@ void MultitaskMenu::SplitButtonPressed(SnapDirection snap) {
 }
 
 void MultitaskMenu::PartialButtonPressed(SnapDirection snap) {
-  SnapController::Get()->CommitSnap(parent_window(), snap,
-                                    chromeos::SnapRatio::kTwoThirdSnapRatio);
+  SnapController::Get()->CommitSnap(
+      parent_window(), snap,
+      snap == SnapDirection::kPrimary
+          ? chromeos::SnapRatio::kTwoThirdSnapRatio
+          : chromeos::SnapRatio::kOneThirdSnapRatio);
   HideBubble();
 }
 

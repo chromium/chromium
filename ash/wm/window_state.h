@@ -256,8 +256,10 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // by this object and the returned object will be owned by the caller.
   std::unique_ptr<State> SetStateObject(std::unique_ptr<State> new_state);
 
-  // Updates |snap_ratio_| iff |event| is a snapping event or bounds event.
-  void MaybeUpdateSnapRatio(const WMEvent* event);
+  // Updates |snap_ratio_| with the current snapped window to screen ratio.
+  // Should be called by snap events and bound events, or when resizing a
+  // snapped window.
+  void UpdateSnapRatio();
   absl::optional<float> snap_ratio() const { return snap_ratio_; }
 
   // True if the window should be unminimized to the restore bounds, as

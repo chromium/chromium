@@ -1073,8 +1073,9 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   // mode to `GetSnappedWindowBounds()` in window_positioning_utils.cc.
   const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
   const int work_area_size = GetDividerEndPosition();
-  int divider_position = divider_position_ < 0 ? GetDividerPosition(snap_ratio)
-                                               : divider_position_;
+  int divider_position = divider_position_ < 0
+                             ? GetDividerPosition(snap_position, snap_ratio)
+                             : divider_position_;
 
   // Edit `divider_position` if window restore is currently restoring a snapped
   // window; take into account the snap percentage saved by the window. Only do
@@ -1169,11 +1170,16 @@ bool SplitViewController::ShouldUseWindowBoundsDuringFastResize() {
 }
 
 int SplitViewController::GetDefaultDividerPosition() const {
-  return GetDividerPosition(kDefaultPositionRatio);
+  return GetDividerPosition(SnapPosition::LEFT, kDefaultPositionRatio);
 }
 
-int SplitViewController::GetDividerPosition(float snap_ratio) const {
-  int next_divider_position = GetDividerEndPosition() * snap_ratio;
+int SplitViewController::GetDividerPosition(SnapPosition snap_position,
+                                            float snap_ratio) const {
+  int divider_end_position = GetDividerEndPosition();
+  int snap_width = divider_end_position * snap_ratio;
+  int next_divider_position = snap_position == SnapPosition::LEFT
+                                  ? snap_width
+                                  : divider_end_position - snap_width;
   if (split_view_type_ == SplitViewType::kTabletType)
     next_divider_position -= kSplitviewDividerShortSideLength / 2;
   return next_divider_position;
