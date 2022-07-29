@@ -86,6 +86,7 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
   // Divergence between iOS and other platforms: today the sign-in promo UI only
   // supports the case where there are already accounts on the device.
   BOOL can_send_tab_to_self =
+      !browser_state->IsOffTheRecord() && accountManagerService &&
       accountManagerService->HasIdentities() &&
       send_tab_to_self::GetEntryPointDisplayReason(
           finalURLToShare,
