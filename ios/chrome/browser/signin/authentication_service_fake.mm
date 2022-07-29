@@ -87,8 +87,11 @@ bool AuthenticationServiceFake::HasPrimaryIdentityManaged(
   if (!GetPrimaryIdentity(consent_level)) {
     return false;
   }
-  return
-      [primary_identity_.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix];
+  return [ios::GetManagedEmailSuffixes()
+             indexOfObjectPassingTest:^BOOL(NSString* suffix, NSUInteger idx,
+                                            BOOL* stop) {
+               return [primary_identity_.userEmail hasSuffix:suffix];
+             }] != NSNotFound;
 }
 
 std::unique_ptr<KeyedService>

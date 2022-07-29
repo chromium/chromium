@@ -86,7 +86,9 @@ bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
                                std::string* out) {
   return net::GetValueForKeyInQuery(request.GetURL(), "oauth_token", out) ||
          GetTokenFromAuthorization(
-             request, dm_protocol::kServiceTokenAuthHeaderPrefix, out);
+             request, dm_protocol::kServiceTokenAuthHeaderPrefix, out) ||
+         GetTokenFromAuthorization(request,
+                                   dm_protocol::kOAuthTokenHeaderPrefix, out);
 }
 
 std::unique_ptr<HttpResponse> CreateHttpResponse(net::HttpStatusCode code,

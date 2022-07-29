@@ -41,9 +41,20 @@ using chrome_test_util::IdentityCellMatcherForEmail;
 
 namespace {
 
+// Returns YES if the email is considered as managed.
+BOOL IsEmailManaged(NSString* email) {
+  return [ios::GetManagedEmailSuffixes()
+             indexOfObjectPassingTest:^BOOL(NSString* suffix, NSUInteger idx,
+                                            BOOL* stop) {
+               return [email hasSuffix:suffix];
+             }] != NSNotFound;
+}
+
 // Closes the managed account dialog, if `fakeIdentity` is a managed account.
 void CloseSigninManagedAccountDialogIfAny(FakeChromeIdentity* fakeIdentity) {
-  if (![fakeIdentity.userEmail hasSuffix:ios::kManagedIdentityEmailSuffix]) {
+  if (!IsEmailManaged(fakeIdentity.userEmail)) {
+    // Don't expect a managed account dialog when the account isn't considered
+    // managed.
     return;
   }
   // Synchronization off due to an infinite spinner, in the user consent view,

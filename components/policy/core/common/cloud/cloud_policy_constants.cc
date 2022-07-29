@@ -33,6 +33,7 @@ const char kAuthHeader[] = "Authorization";
 const char kServiceTokenAuthHeaderPrefix[] = "GoogleLogin auth=";
 const char kDMTokenAuthHeaderPrefix[] = "GoogleDMToken token=";
 const char kEnrollmentTokenAuthHeaderPrefix[] = "GoogleEnrollmentToken token=";
+const char kOAuthTokenHeaderPrefix[] = "OAuth";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";

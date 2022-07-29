@@ -44,6 +44,14 @@
 // stores data.
 + (void)clearCloudPolicyDirectory;
 
+// Returns YES if there is user policy data in the current BrowserState.
++ (BOOL)hasUserPolicyDataInCurrentBrowserState;
+
+// Returns YES if in the user policy store of the current BrowserState the
+// policy with name `policyName` and of type integer is set to `expectedValue`.
++ (BOOL)hasUserPolicyInCurrentBrowserState:(NSString*)policyName
+                          withIntegerValue:(int)expectedValue;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_POLICY_POLICY_APP_INTERFACE_H_

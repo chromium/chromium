@@ -326,7 +326,8 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
   // avoid breaking the other platforms with unexpected issues.
   if (oauth_token_ && !oauth_token_->empty()) {
     rr->headers.SetHeader(dm_protocol::kAuthHeader,
-                          base::StrCat({"OAuth ", *oauth_token_}));
+                          base::StrCat({dm_protocol::kOAuthTokenHeaderPrefix,
+                                        " ", *oauth_token_}));
   }
 #endif
 

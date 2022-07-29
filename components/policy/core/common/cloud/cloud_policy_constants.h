@@ -31,6 +31,7 @@ POLICY_EXPORT extern const char kAuthHeader[];
 POLICY_EXPORT extern const char kServiceTokenAuthHeaderPrefix[];
 POLICY_EXPORT extern const char kDMTokenAuthHeaderPrefix[];
 POLICY_EXPORT extern const char kEnrollmentTokenAuthHeaderPrefix[];
+POLICY_EXPORT extern const char kOAuthTokenHeaderPrefix[];
 
 // String extern constants for the device and app type we report to the server.
 POLICY_EXPORT extern const char kValueAppType[];

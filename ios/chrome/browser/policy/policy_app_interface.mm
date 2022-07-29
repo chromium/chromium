@@ -203,4 +203,30 @@ absl::optional<base::Value> DeserializeValue(NSString* json_value) {
       }));
 }
 
++ (BOOL)hasUserPolicyDataInCurrentBrowserState {
+  policy::UserCloudPolicyManager* manager =
+      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+  DCHECK(manager);
+
+  policy::CloudPolicyStore* store = manager->core()->store();
+  DCHECK(store);
+
+  return store->has_policy() && store->is_managed();
+}
+
++ (BOOL)hasUserPolicyInCurrentBrowserState:(NSString*)policyName
+                          withIntegerValue:(int)expectedValue {
+  policy::UserCloudPolicyManager* manager =
+      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+  DCHECK(manager);
+
+  policy::CloudPolicyStore* store = manager->core()->store();
+  DCHECK(store);
+
+  const base::Value* value = store->policy_map().GetValue(
+      base::SysNSStringToUTF8(policyName), base::Value::Type::INTEGER);
+
+  return value && value->GetInt() == expectedValue;
+}
+
 @end
