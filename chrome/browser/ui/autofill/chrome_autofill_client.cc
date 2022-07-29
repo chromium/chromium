@@ -1003,16 +1003,22 @@ void ChromeAutofillClient::PrimaryMainFrameWasResized(bool width_changed) {
 #endif
 
   HideAutofillPopup(PopupHidingReason::kWidgetChanged);
+  // Do not need to hide the Touch To Fill surface, since it is an overlay UI
+  // which doesn't depend on frame size.
 }
 
 void ChromeAutofillClient::WebContentsDestroyed() {
   HideAutofillPopup(PopupHidingReason::kTabGone);
+  if (IsTouchToFillCreditCardSupported())
+    HideTouchToFillCreditCard();
 }
 
 void ChromeAutofillClient::OnWebContentsLostFocus(
     content::RenderWidgetHost* render_widget_host) {
   has_focus_ = false;
   HideAutofillPopup(PopupHidingReason::kFocusChanged);
+  // Should not hide the Touch To Fill surface, since it is an overlay UI
+  // which takes the focus.
 }
 
 void ChromeAutofillClient::OnWebContentsFocused(
@@ -1027,6 +1033,7 @@ void ChromeAutofillClient::OnWebContentsFocused(
 void ChromeAutofillClient::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   HideAutofillPopup(PopupHidingReason::kContentAreaMoved);
+  // Touch To Fill is not supported on Desktop.
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

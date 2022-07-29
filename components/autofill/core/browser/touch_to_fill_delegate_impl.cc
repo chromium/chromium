@@ -66,8 +66,7 @@ bool TouchToFillDelegateImpl::IsShowingTouchToFill() {
   return ttf_credit_card_state_ == TouchToFillState::kIsShowing;
 }
 
-// TODO(crbug.com/1247698): Review |HideAutofillPopup| invocations and maybe
-// also trigger |HideTouchToFillCreditCard|.
+// TODO(crbug.com/1348538): Create a central point for TTF hiding decision.
 void TouchToFillDelegateImpl::HideTouchToFill() {
   if (IsShowingTouchToFill()) {
     manager_->client()->HideTouchToFillCreditCard();

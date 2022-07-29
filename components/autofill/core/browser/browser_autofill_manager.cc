@@ -1690,6 +1690,8 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
 
 void BrowserAutofillManager::OnDidEndTextFieldEditingImpl() {
   external_delegate_->DidEndTextFieldEditing();
+  // Should not hide the Touch To Fill surface, since it is an overlay UI
+  // which ends editing.
 }
 
 bool BrowserAutofillManager::IsAutofillEnabled() const {

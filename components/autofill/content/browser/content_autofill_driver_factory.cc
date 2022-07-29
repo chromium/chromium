@@ -208,8 +208,11 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
        navigation_handle->HasSubframeNavigationEntryCommitted())) {
     if (auto* driver =
             DriverForFrame(navigation_handle->GetRenderFrameHost())) {
-      if (!navigation_handle->IsInPrerenderedMainFrame())
+      if (!navigation_handle->IsInPrerenderedMainFrame()) {
         client_->HideAutofillPopup(PopupHidingReason::kNavigation);
+        if (client_->IsTouchToFillCreditCardSupported())
+          client_->HideTouchToFillCreditCard();
+      }
       driver->DidNavigateFrame(navigation_handle);
     }
   }
@@ -217,8 +220,11 @@ void ContentAutofillDriverFactory::DidFinishNavigation(
 
 void ContentAutofillDriverFactory::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
+  if (visibility == content::Visibility::HIDDEN) {
     client_->HideAutofillPopup(PopupHidingReason::kTabGone);
+    if (client_->IsTouchToFillCreditCardSupported())
+      client_->HideTouchToFillCreditCard();
+  }
 }
 
 }  // namespace autofill

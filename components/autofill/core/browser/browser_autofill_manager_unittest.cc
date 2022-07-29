@@ -9503,6 +9503,14 @@ TEST_F(BrowserAutofillManagerTest, HideAutofillPopupAndTouchToFillOnHidePopup) {
   browser_autofill_manager_->OnHidePopup();
 }
 
+// Tests that only Autofill popup is hidden on editing end, but not TTF.
+TEST_F(BrowserAutofillManagerTest, OnDidEndTextFieldEditing) {
+  EXPECT_CALL(autofill_client_,
+              HideAutofillPopup(PopupHidingReason::kEndEditing));
+  EXPECT_CALL(*touch_to_fill_delegate_, HideTouchToFill).Times(0);
+  browser_autofill_manager_->OnDidEndTextFieldEditing();
+}
+
 // Tests that Autofill suggestions are not shown if TTF is eligible and shown.
 TEST_F(BrowserAutofillManagerTest, AutofillSuggestionsOrTouchToFill) {
   FormData form;
