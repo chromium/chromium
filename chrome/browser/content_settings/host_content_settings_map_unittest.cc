@@ -1099,10 +1099,10 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 
   HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  const base::Value* all_settings_dictionary =
-      prefs->Get(GetPrefName(ContentSettingsType::COOKIES));
-  EXPECT_FALSE(all_settings_dictionary->FindDictKey("[*.]\xC4\x87ira.com,*"));
-  EXPECT_TRUE(all_settings_dictionary->FindDictKey("[*.]xn--ira-ppa.com,*"));
+  const base::Value::Dict& all_settings_dictionary =
+      prefs->GetValueDict(GetPrefName(ContentSettingsType::COOKIES));
+  EXPECT_FALSE(all_settings_dictionary.FindDict("[*.]\xC4\x87ira.com,*"));
+  EXPECT_TRUE(all_settings_dictionary.FindDict("[*.]xn--ira-ppa.com,*"));
 }
 
 // If both Unicode and its punycode pattern exist, make sure we don't touch the
@@ -1125,10 +1125,10 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeAndPunycode) {
   // Initialize the content map.
   HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  const base::Value* content_setting_prefs =
-      profile.GetPrefs()->Get(GetPrefName(ContentSettingsType::COOKIES));
+  const base::Value& content_setting_prefs =
+      profile.GetPrefs()->GetValue(GetPrefName(ContentSettingsType::COOKIES));
   std::string prefs_as_json;
-  base::JSONWriter::Write(*content_setting_prefs, &prefs_as_json);
+  base::JSONWriter::Write(content_setting_prefs, &prefs_as_json);
   EXPECT_STREQ("{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}",
                prefs_as_json.c_str());
 }
@@ -1370,9 +1370,10 @@ TEST_F(HostContentSettingsMapTest, GuestProfile) {
             host_content_settings_map->GetContentSetting(
                 host, host, ContentSettingsType::COOKIES));
 
-  const base::Value* all_settings_dictionary =
-      profile->GetPrefs()->Get(GetPrefName(ContentSettingsType::COOKIES));
-  EXPECT_TRUE(all_settings_dictionary->DictEmpty());
+  const base::Value::Dict& all_settings_dictionary =
+      profile->GetPrefs()->GetValueDict(
+          GetPrefName(ContentSettingsType::COOKIES));
+  EXPECT_TRUE(all_settings_dictionary.empty());
 }
 
 // Default settings should not be modifiable for Guest profile (there is no UI
