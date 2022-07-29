@@ -67,8 +67,7 @@ class InstallLimiterShouldDeferInstallTest
 
 TEST_P(InstallLimiterShouldDeferInstallTest, ShouldDeferInstall) {
   const std::vector<std::string> screensaver_ids = {
-      extension_misc::kScreensaverAppId, extension_misc::kScreensaverAtlasAppId,
-      extension_misc::kScreensaverKraneZdksAppId};
+      extension_misc::kScreensaverAppId, extension_misc::kNewAttractLoopAppId};
 
   ash::DemoModeTestHelper demo_mode_test_helper;
   if (GetParam() != ash::DemoSession::DemoModeConfig::kNone)
