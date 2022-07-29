@@ -40,12 +40,12 @@ class GuestOsTerminalProviderRegistry {
   // Returns the provider with the specified `id`. Returns nullptr if the
   // provider doesn't exist. Convenience method which converts std::string to
   // Id for you.
-  GuestOsTerminalProvider* Get(std::string id) const;
+  GuestOsTerminalProvider* Get(const std::string& id) const;
 
   // Returns the provider with the specified `id`. Returns nullptr if the
   // provider doesn't exist. Searches the registry for the first provider for
   // the specified guest.
-  GuestOsTerminalProvider* Get(guest_os::GuestId id) const;
+  GuestOsTerminalProvider* Get(const guest_os::GuestId& id) const;
 
   // Registers a new provider with the registry. The registry takes ownership of
   // the provider, holding on to it until it's unregistered. Returns the id of

@@ -4,8 +4,11 @@
 
 #include <memory>
 
+#include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/crostini/crostini_browser_test_util.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/browser.h"
@@ -39,6 +42,7 @@ class TerminalPrivateBrowserTest : public CrostiniBrowserTestBase {
                /*world_id=*/1);
     EXPECT_EQ(eval_result.value.GetString(), expected);
   }
+  ash::ScopedTestingCrosSettings cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenTerminalProcessChecks) {
@@ -51,12 +55,13 @@ IN_PROC_BROWSER_TEST_F(TerminalPrivateBrowserTest, OpenTerminalProcessChecks) {
       resolve(lastError ? lastError.message : "success");
     })}))";
 
-  // 'vmshell not allowed' when crostini is not allowed.
-  fake_crostini_features_.set_could_be_allowed(true);
-  fake_crostini_features_.set_is_allowed_now(false);
+  // 'vmshell not allowed' when VMs are not allowed.
+  cros_settings_.device_settings()->SetBoolean(ash::kVirtualMachinesAllowed,
+                                               false);
   ExpectJsResult(script, "vmshell not allowed");
 
-  fake_crostini_features_.set_is_allowed_now(true);
+  cros_settings_.device_settings()->SetBoolean(ash::kVirtualMachinesAllowed,
+                                               true);
   ExpectJsResult(script, "success");
 
   // openTerminalProcess not defined.

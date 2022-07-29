@@ -25,6 +25,14 @@ class CrostiniTerminalProvider : public guest_os::GuestOsTerminalProvider {
 
   std::string PrepareCwd(storage::FileSystemURL path) override;
 
+  std::unique_ptr<extensions::StartupStatus> CreateStartupStatus(
+      std::unique_ptr<extensions::StartupStatusPrinter> printer) override;
+
+  void EnsureRunning(
+      extensions::StartupStatus* startup_status,
+      base::OnceCallback<void(bool success, std::string failure_reason)>
+          callback) override;
+
  private:
   Profile* profile_;
   guest_os::GuestId container_id_;

@@ -28,13 +28,17 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_runner_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crostini/crostini_features.h"
-#include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
+#include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -75,8 +79,6 @@ namespace AckOutput = extensions::api::terminal_private::AckOutput;
 namespace OpenWindow = extensions::api::terminal_private::OpenWindow;
 namespace GetPrefs = extensions::api::terminal_private::GetPrefs;
 namespace SetPrefs = extensions::api::terminal_private::SetPrefs;
-
-using crostini::mojom::InstallerState;
 
 namespace {
 
@@ -299,11 +301,10 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
                   base::CommandLine(base::FilePath(kStubbedCroshCommand)));
     }
   } else if (process_name == kVmShellName) {
-    // Ensure crostini is allowed before starting terminal.
-    Profile* profile = Profile::FromBrowserContext(browser_context());
-    if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile))
+    // Ensure vms are allowed before starting terminal.
+    if (!virtual_machines::AreVirtualMachinesAllowedByPolicy()) {
       return RespondNow(Error("vmshell not allowed"));
-
+    }
     // command=vmshell: ensure --owner_id, --vm_name, --target_container, --cwd
     // are set, and the specified vm/container is running.
     base::CommandLine cmdline((base::FilePath(kVmShellCommand)));
@@ -321,25 +322,47 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
                   crostini::kCrostiniDefaultContainerName);
     GetSwitch(params_args, &cmdline, kSwitchCurrentWorkingDir, "");
     std::string startup_id = params_args.GetSwitchValueASCII(kSwitchStartupId);
-    container_id_ = std::make_unique<guest_os::GuestId>(
-        crostini::kCrostiniDefaultVmType, vm_name, container_name);
-    VLOG(1) << "Starting " << *container_id_
+    guest_id_ = std::make_unique<guest_os::GuestId>(guest_os::VmType::UNKNOWN,
+                                                    vm_name, container_name);
+    VLOG(1) << "Starting " << *guest_id_
             << ", cmdline=" << cmdline.GetCommandLineString();
 
-    auto* mgr = crostini::CrostiniManager::GetForProfile(profile);
-    bool verbose = !mgr->GetContainerInfo(*container_id_).has_value();
-    startup_status_ = std::make_unique<CrostiniStartupStatus>(
+    Profile* profile = Profile::FromBrowserContext(browser_context());
+    auto* service = guest_os::GuestOsService::GetForProfile(profile);
+    guest_os::GuestOsTerminalProvider* provider = nullptr;
+    if (service) {
+      provider = service->TerminalProviderRegistry()->Get(*guest_id_);
+    }
+    auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile);
+    bool verbose = !(tracker && tracker->GetInfo(*guest_id_).has_value());
+    auto status_printer = std::make_unique<StartupStatusPrinter>(
         base::BindRepeating(&NotifyProcessOutput, browser_context(), startup_id,
                             api::terminal_private::ToString(
                                 api::terminal_private::OUTPUT_TYPE_STDOUT)),
         verbose);
-    startup_status_->ShowProgressAtInterval();
-    mgr->RestartCrostini(
-        *container_id_,
-        base::BindOnce(
-            &TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted,
-            this, user_id_hash, std::move(cmdline)),
-        startup_status_.get());
+    if (provider) {
+      startup_status_ =
+          provider->CreateStartupStatus(std::move(status_printer));
+      startup_status_->StartShowingSpinner();
+      provider->EnsureRunning(
+          startup_status_.get(),
+          base::BindOnce(
+              &TerminalPrivateOpenTerminalProcessFunction::OnGuestRunning, this,
+              user_id_hash, std::move(cmdline)));
+    } else {
+      // Don't recognise the guest. Options include:
+      // * It doesn't exist but the terminal app thinks it does e.g. out-of-sync
+      //   prefs, race between uninstalling and launching terminal.
+      // * We're installing Bruschetta, and it's using the terminal to finish
+      //   installing. We don't show Bruschetta until it's installed, but it's
+      //   running and users need to connect to it.
+      // Given this, try and connect directly to it, if it succeeds, great, if
+      // it fails, then report failure to the user.
+      startup_status_ =
+          std::make_unique<StartupStatus>(std::move(status_printer), 2);
+      startup_status_->StartShowingSpinner();
+      OpenVmshellProcess(user_id_hash, std::move(cmdline));
+    }
   } else {
     // command=[unrecognized].
     return RespondNow(Error("Invalid process name: " + process_name));
@@ -347,25 +370,24 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
   return RespondLater();
 }
 
-void TerminalPrivateOpenTerminalProcessFunction::OnCrostiniRestarted(
+void TerminalPrivateOpenTerminalProcessFunction::OnGuestRunning(
     const std::string& user_id_hash,
     base::CommandLine cmdline,
-    crostini::CrostiniResult result) {
-  startup_status_->OnCrostiniRestarted(result);
-  if (result == crostini::CrostiniResult::SUCCESS) {
+    bool success,
+    std::string failure_reason) {
+  if (success) {
     OpenVmshellProcess(user_id_hash, std::move(cmdline));
   } else {
-    const std::string msg =
-        base::StringPrintf("Error starting crostini for terminal: %d (%s)",
-                           result, CrostiniResultString(result));
-    LOG(ERROR) << msg;
-    Respond(Error(msg));
+    startup_status_->OnFinished(success, failure_reason);
+    LOG(ERROR) << failure_reason;
+    Respond(Error(failure_reason));
   }
 }
 
 void TerminalPrivateOpenTerminalProcessFunction::OpenVmshellProcess(
     const std::string& user_id_hash,
     base::CommandLine cmdline) {
+  startup_status_->OnConnectingToVsh();
   const std::string cwd = cmdline.GetSwitchValueASCII(kSwitchCurrentWorkingDir);
 
   if (!base::StartsWith(cwd, kCwdTerminalIdPrefix)) {
@@ -380,8 +402,8 @@ void TerminalPrivateOpenTerminalProcessFunction::OpenVmshellProcess(
 
   // Lookup container shell pid from cicierone to use for cwd.
   vm_tools::cicerone::GetVshSessionRequest request;
-  request.set_vm_name(container_id_->vm_name);
-  request.set_container_name(container_id_->container_name);
+  request.set_vm_name(guest_id_->vm_name);
+  request.set_container_name(guest_id_->container_name);
   request.set_owner_id(crostini::CryptohomeIdForProfile(
       Profile::FromBrowserContext(browser_context())));
   request.set_host_vsh_pid(host_pid);
@@ -444,9 +466,8 @@ void TerminalPrivateOpenTerminalProcessFunction::RespondOnUIThread(
     bool success,
     const std::string& terminal_id) {
   if (startup_status_) {
-    startup_status_->OnCrostiniConnected(
-        success ? crostini::CrostiniResult::SUCCESS
-                : crostini::CrostiniResult::VSH_CONNECT_FAILED);
+    startup_status_->OnFinished(
+        success, success ? "" : "Error connecting shell to guest");
   }
   auto* contents = GetSenderWebContents();
   if (!contents) {

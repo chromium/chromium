@@ -5,46 +5,52 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TERMINAL_CROSTINI_STARTUP_STATUS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TERMINAL_CROSTINI_STARTUP_STATUS_H_
 
+#include <memory>
 #include <string>
 
-#include "base/bind.h"
-#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_simple_types.h"
-#include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 
 namespace extensions {
 
-// Displays startup status to the crostini terminal.
-class CrostiniStartupStatus
-    : public crostini::CrostiniManager::RestartObserver {
+class StartupStatusPrinter {
  public:
-  CrostiniStartupStatus(base::RepeatingCallback<void(const std::string&)> print,
-                        bool verbose);
-  ~CrostiniStartupStatus() override;
+  explicit StartupStatusPrinter(
+      base::RepeatingCallback<void(const std::string& output)> print,
+      bool verbose);
+  ~StartupStatusPrinter();
 
-  // Updates the progress spinner every 300ms.
-  void ShowProgressAtInterval();
+  // Starts showing the progress indicator.
+  void StartShowingSpinner();
 
-  // Called when startup is complete.
-  void OnCrostiniRestarted(crostini::CrostiniResult result);
-  void OnCrostiniConnected(crostini::CrostiniResult result);
+  // Updates the output for a new stage named `stage_name` and number
+  // `stage_index`. If `succeeded` is true, indicates that the last stage has
+  // completed successfully and we're now in the end-state.
+  void PrintStage(int stage_index, const std::string& stage_name);
+
+  // Displays an error message to the user.
+  void PrintError(const std::string& output);
+
+  // Displays a successful connection message to the user.
+  void PrintSucceeded();
+
+  // Sets the max stage number.
+  void set_max_stage(int max_stage) {
+    DCHECK(!progress_initialized_);
+    max_stage_ = max_stage;
+  }
+
+  base::WeakPtr<StartupStatusPrinter> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(CrostiniStartupStatusTest, TestNotVerbose);
-  FRIEND_TEST_ALL_PREFIXES(CrostiniStartupStatusTest, TestVerbose);
-
-  // crostini::CrostiniManager::RestartObserver
-  void OnStageStarted(crostini::mojom::InstallerState stage) override;
-  void OnContainerDownloading(int32_t download_percent) override;
-
   void Print(const std::string& output);
   void InitializeProgress();
   void PrintProgress();
-  void PrintStage(const char* color, const std::string& output);
-  void PrintAfterStage(const char* color, const std::string& output);
+  void PrintStageWithColor(int stage_index,
+                           const char* color,
+                           const std::string& stage_name);
 
   base::RepeatingCallback<void(const std::string& output)> print_;
   const bool verbose_;
@@ -52,9 +58,24 @@ class CrostiniStartupStatus
   int spinner_index_ = 0;
   int stage_index_ = 1;
   int end_of_line_index_ = 0;
+  int max_stage_ = -1;
   std::unique_ptr<base::RepeatingTimer> show_progress_timer_;
+  base::WeakPtrFactory<StartupStatusPrinter> weak_factory_{this};
+};
 
-  base::WeakPtrFactory<CrostiniStartupStatus> weak_factory_{this};
+class StartupStatus {
+ public:
+  explicit StartupStatus(std::unique_ptr<StartupStatusPrinter> printer,
+                         int max_stage);
+  virtual ~StartupStatus();
+  void OnConnectingToVsh();
+  void OnFinished(bool success, const std::string& failure_reason);
+  void StartShowingSpinner();
+  StartupStatusPrinter* printer() { return printer_.get(); }
+
+ private:
+  std::unique_ptr<StartupStatusPrinter> printer_;
+  const int max_stage_;
 };
 
 }  // namespace extensions

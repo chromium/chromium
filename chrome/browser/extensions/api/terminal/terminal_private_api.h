@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
@@ -23,7 +22,7 @@ struct GuestId;
 
 namespace extensions {
 
-class CrostiniStartupStatus;
+class StartupStatus;
 
 class TerminalPrivateAPI : public BrowserContextKeyedAPI {
  public:
@@ -66,10 +65,10 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
       std::unique_ptr<std::vector<std::string>> args);
 
  private:
-  void OnCrostiniRestarted(
-      const std::string& user_id_hash,
-      base::CommandLine cmdline,
-      crostini::CrostiniResult result);
+  void OnGuestRunning(const std::string& user_id_hash,
+                      base::CommandLine cmdline,
+                      bool success,
+                      std::string failure_reason);
 
   void OpenVmshellProcess(const std::string& user_id_hash,
                           base::CommandLine cmdline);
@@ -94,8 +93,8 @@ class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
                                 base::CommandLine cmdline,
                                 const std::string& user_id_hash);
   void RespondOnUIThread(bool success, const std::string& terminal_id);
-  std::unique_ptr<CrostiniStartupStatus> startup_status_;
-  std::unique_ptr<guest_os::GuestId> container_id_;
+  std::unique_ptr<StartupStatus> startup_status_;
+  std::unique_ptr<guest_os::GuestId> guest_id_;
 };
 
 // Opens new vmshell process. Returns the new terminal id.

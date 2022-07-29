@@ -42,7 +42,7 @@ GuestOsTerminalProvider* GuestOsTerminalProviderRegistry::Get(Id id) const {
 }
 
 GuestOsTerminalProvider* GuestOsTerminalProviderRegistry::Get(
-    std::string id) const {
+    const std::string& id) const {
   int output;
   if (!base::StringToInt(id, &output)) {
     return nullptr;
@@ -51,7 +51,7 @@ GuestOsTerminalProvider* GuestOsTerminalProviderRegistry::Get(
 }
 
 GuestOsTerminalProvider* GuestOsTerminalProviderRegistry::Get(
-    guest_os::GuestId id) const {
+    const guest_os::GuestId& id) const {
   for (const auto& pair : providers_) {
     if (pair.second->GuestId() == id) {
       return pair.second.get();

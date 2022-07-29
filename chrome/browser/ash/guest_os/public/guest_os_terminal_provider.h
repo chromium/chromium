@@ -7,6 +7,7 @@
 
 #include <string>
 #include "chrome/browser/ash/guest_os/guest_id.h"
+#include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace guest_os {
@@ -22,9 +23,7 @@ class GuestOsTerminalProvider {
   // Human-friendly localised display label.
   virtual std::string Label() = 0;
 
-  // TODO(b/233287586): While we're migrating, some Crostini-specific code still
-  // needs a guest_os::GuestId. Eventually this should always be nullopt and
-  // then removed.
+  // The id of the guest this provider is for.
   virtual guest_os::GuestId GuestId() = 0;
 
   // Checks if recovery is required before being able to launch. If so, launches
@@ -35,6 +34,21 @@ class GuestOsTerminalProvider {
   // Sets up `url` to be the initial working directory of a terminal session,
   // returning the path inside the guest.
   virtual std::string PrepareCwd(storage::FileSystemURL path) = 0;
+
+  // Creates a StartupStatus which will send progress messages to the terminal
+  // via the provided printer. Must pass this status to EnsureRunning.
+  virtual std::unique_ptr<extensions::StartupStatus> CreateStartupStatus(
+      std::unique_ptr<extensions::StartupStatusPrinter> printer) = 0;
+
+  // Ensure the guest is running and ready for vsh connections. Calls `callback`
+  // once done, setting `success` appropriately and on failure will stick a
+  // human-readable error reason in `failure_reason`. Will use `startup_status`
+  // to emit progress messages, this `startup_status` must be the same one
+  // created by CreateStartupStatus.
+  virtual void EnsureRunning(
+      extensions::StartupStatus* startup_status,
+      base::OnceCallback<void(bool success, std::string failure_reason)>
+          callback) = 0;
 };
 
 }  // namespace guest_os

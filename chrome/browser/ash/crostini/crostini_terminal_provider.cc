@@ -4,13 +4,71 @@
 
 #include "chrome/browser/ash/crostini/crostini_terminal_provider.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/crostini/crostini_types.mojom-shared.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
+#include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace crostini {
+using mojom::InstallerState;
+
+namespace {
+const int kMaxStage = static_cast<int>(InstallerState::kStartContainer) + 1;
+}  // namespace
+
+// Displays startup status to the crostini terminal.
+class CrostiniStartupStatus : public crostini::CrostiniManager::RestartObserver,
+                              public extensions::StartupStatus {
+ public:
+  explicit CrostiniStartupStatus(
+      std::unique_ptr<extensions::StartupStatusPrinter> printer)
+      : StartupStatus(std::move(printer), kMaxStage) {}
+  ~CrostiniStartupStatus() override = default;
+
+  // crostini::CrostiniManager::RestartObserver
+  void OnStageStarted(crostini::mojom::InstallerState stage) override {
+    int stage_index = static_cast<int>(stage);
+    static base::NoDestructor<base::flat_map<InstallerState, std::string>>
+        kStartStrings({
+            {InstallerState::kStart,
+             l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_STATUS_START)},
+            {InstallerState::kInstallImageLoader,
+             l10n_util::GetStringUTF8(
+                 IDS_CROSTINI_TERMINAL_STATUS_INSTALL_IMAGE_LOADER)},
+            {InstallerState::kCreateDiskImage,
+             l10n_util::GetStringUTF8(
+                 IDS_CROSTINI_TERMINAL_STATUS_CREATE_DISK_IMAGE)},
+            {InstallerState::kStartTerminaVm,
+             l10n_util::GetStringUTF8(
+                 IDS_CROSTINI_TERMINAL_STATUS_START_TERMINA_VM)},
+            {InstallerState::kStartLxd,
+             l10n_util::GetStringUTF8(IDS_CROSTINI_TERMINAL_STATUS_START_LXD)},
+            {InstallerState::kCreateContainer,
+             l10n_util::GetStringUTF8(
+                 IDS_CROSTINI_TERMINAL_STATUS_CREATE_CONTAINER)},
+            {InstallerState::kSetupContainer,
+             l10n_util::GetStringUTF8(
+                 IDS_CROSTINI_TERMINAL_STATUS_SETUP_CONTAINER)},
+            {InstallerState::kStartContainer,
+             l10n_util::GetStringUTF8(
+                 IDS_CROSTINI_TERMINAL_STATUS_START_CONTAINER)},
+        });
+    // Our count of stages should match the number of stages we can actually
+    // reach. kMaxStage is inclusive because we leave it at that as the special
+    // post-restart state while vsh is connecting.
+    // This is a DCHECK instead of static_assert because I can't figure
+    // out how to check the size of a flatmap in a constexpr way.
+    DCHECK(kStartStrings->size() == kMaxStage);
+    const std::string& stage_string = (*kStartStrings)[stage];
+    printer()->PrintStage(stage_index, stage_string);
+  }
+};
 
 CrostiniTerminalProvider::CrostiniTerminalProvider(
     Profile* profile,
@@ -70,6 +128,38 @@ std::string CrostiniTerminalProvider::PrepareCwd(storage::FileSystemURL url) {
   CrostiniManager::GetForProfile(profile_)->RestartCrostiniWithOptions(
       container_id_, std::move(options), base::DoNothing());
   return cwd;
+}
+
+std::unique_ptr<extensions::StartupStatus>
+CrostiniTerminalProvider::CreateStartupStatus(
+    std::unique_ptr<extensions::StartupStatusPrinter> printer) {
+  return std::make_unique<CrostiniStartupStatus>(std::move(printer));
+}
+
+void CrostiniTerminalProvider::EnsureRunning(
+    extensions::StartupStatus* startup_status,
+    base::OnceCallback<void(bool success, std::string failure_reason)>
+        callback) {
+  CrostiniManager::GetForProfile(profile_)->RestartCrostini(
+      container_id_,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool, std::string)> callback,
+             CrostiniResult result) {
+            if (result == CrostiniResult::SUCCESS) {
+              std::move(callback).Run(true, "");
+            } else {
+              crostini::RecordAppLaunchResultHistogram(
+                  crostini::CrostiniAppLaunchAppType::kTerminal, result);
+              std::move(callback).Run(
+                  false, base::StringPrintf(
+                             "Error starting crostini for terminal: %d (%s)",
+                             result, CrostiniResultString(result)));
+            }
+          },
+          std::move(callback)),
+      // Downcast is safe because terminal_private_api.cc will only call us with
+      // the startup status we created in CreateStartupStatus.
+      static_cast<CrostiniStartupStatus*>(startup_status));
 }
 
 }  // namespace crostini
