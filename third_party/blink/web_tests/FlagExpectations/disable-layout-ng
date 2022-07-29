@@ -1248,6 +1248,7 @@ crbug.com/1016759 paint/invalidation/svg/animated-path-inside-transformed-html.x
 # display-locking
 crbug.com/591099 wpt_internal/display-lock/css-content-visibility/matchable/content-visibility-matchable-005.html [ Failure ]
 wpt_internal/display-lock/css-content-visibility/hiddenuntilfound/hidden-until-found-005.html [ Failure ]
+crbug.com/1348475 external/wpt/css/css-contain/content-visibility/content-visibility-023.html [ Pass Crash ]
 
 # 10/02/2019 Mark tests as failing. Mostly shapes, slight image differences
 external/wpt/css/CSS2/text/white-space-bidirectionality-001.xht [ Failure ]
