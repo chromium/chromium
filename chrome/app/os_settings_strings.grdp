@@ -2037,6 +2037,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ANDROID_APPS_LABEL" desc="The text associated with the primary section setting.">
     Google Play Store
   </message>
+  <message name="IDS_SETTINGS_ANDROID_APPS_ENABLE_BUTTON_ROLE" desc="Role description of the button which starts the Google Play Store Terms of Service screen. Spoken aloud by screen readers when the Turn On button is focused">
+    Turn on Google Play Store
+  </message>
   <message name="IDS_SETTINGS_ANDROID_APPS_MANAGE_APPS" desc="Label for launching Android apps settings.">
     Manage Android preferences
   </message>

@@ -547,6 +547,8 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE},
       {"arcvmSharedUsbDevicesDescription",
        IDS_SETTINGS_APPS_ARC_VM_SHARED_USB_DEVICES_DESCRIPTION},
+      {"androidAppsEnableButtonRole",
+       IDS_SETTINGS_ANDROID_APPS_ENABLE_BUTTON_ROLE},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddLocalizedString("androidAppsPageTitle",
