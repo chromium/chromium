@@ -81,6 +81,9 @@ class UpdateServiceImpl : public UpdateService {
   // Pops `tasks_`, and calls TaskStart.
   void TaskDone();
 
+  // Installs applications in the wake task based on the ForceInstalls policy.
+  void ForceInstall(StateChangeCallback state_update, Callback callback);
+
   bool IsUpdateDisabledByPolicy(const std::string& app_id,
                                 Priority priority,
                                 bool is_install,

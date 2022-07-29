@@ -22,6 +22,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -300,9 +301,11 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
                                      base::MakeRefCounted<UpdateUsageStatsTask>(
                                          GetUpdaterScope(), persisted_data_)));
 
-  // TODO(crbug.com/1347562): download and install applications based on the
-  // force installs policy.
-
+  new_tasks.push_back(base::BindOnce(
+      &CheckForUpdatesTask::Run,
+      base::MakeRefCounted<CheckForUpdatesTask>(
+          config_, base::BindOnce(&UpdateServiceImpl::ForceInstall, this,
+                                  base::DoNothing()))));
   new_tasks.push_back(
       base::BindOnce(&CheckForUpdatesTask::Run,
                      base::MakeRefCounted<CheckForUpdatesTask>(
@@ -337,6 +340,49 @@ void UpdateServiceImpl::TaskDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   tasks_.pop();
   TaskStart();
+}
+
+void UpdateServiceImpl::ForceInstall(StateChangeCallback state_update,
+                                     Callback callback) {
+  VLOG(1) << __func__;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::vector<std::string> force_install_apps;
+  if (!config_->GetPolicyService()->GetForceInstallApps(nullptr,
+                                                        &force_install_apps)) {
+    base::BindPostTask(main_task_runner_, std::move(callback))
+        .Run(UpdateService::Result::kSuccess);
+    return;
+  }
+  DCHECK(!force_install_apps.empty());
+
+  std::vector<std::string> installed_app_ids = persisted_data_->GetAppIds();
+  std::sort(force_install_apps.begin(), force_install_apps.end());
+  std::sort(installed_app_ids.begin(), installed_app_ids.end());
+
+  std::vector<std::string> app_ids_to_install;
+  std::set_difference(force_install_apps.begin(), force_install_apps.end(),
+                      installed_app_ids.begin(), installed_app_ids.end(),
+                      std::back_inserter(app_ids_to_install));
+  if (app_ids_to_install.empty()) {
+    base::BindPostTask(main_task_runner_, std::move(callback))
+        .Run(UpdateService::Result::kSuccess);
+    return;
+  }
+
+  VLOG(1) << __func__ << ": app_ids_to_install: "
+          << base::JoinString(app_ids_to_install, " ");
+
+  const Priority priority = Priority::kBackground;
+  ShouldBlockUpdateForMeteredNetwork(
+      priority,
+      base::BindOnce(
+          &UpdateServiceImpl::OnShouldBlockUpdateForMeteredNetwork, this,
+          state_update, std::move(callback),
+          base::MakeFlatMap<std::string, std::string>(
+              app_ids_to_install, {},
+              [](const auto& app_id) { return std::make_pair(app_id, ""); }),
+          priority, UpdateService::PolicySameVersionUpdate::kNotAllowed));
 }
 
 void UpdateServiceImpl::UpdateAll(StateChangeCallback state_update,

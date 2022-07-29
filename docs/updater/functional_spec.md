@@ -897,6 +897,5 @@ For each application that needs to be deployed via the updater, the policy for
 that application can be set to either `Force installs (system wide)` or `Force
 installs (per user)`.
 
-The updater is then expected to download and install the application on all
-machines where the policy is deployed, and where the application is not already
-installed.
+The updater then downloads and installs the application on all machines where
+the policy is deployed, and where the application is not already installed.

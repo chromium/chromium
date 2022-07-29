@@ -32,6 +32,7 @@
 #include "chrome/updater/test/integration_test_commands.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/test/server.h"
+#include "chrome/updater/test_scope.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
@@ -500,6 +501,33 @@ TEST_F(IntegrationTest, UpdateApp) {
   Uninstall();
   Clean();
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(IntegrationTest, ForceInstallApp) {
+  ScopedServer test_server(test_commands_);
+  Install();
+
+  base::Value::Dict group_policies;
+  group_policies.Set("Installtest1", GetTestScope() == UpdaterScope::kSystem
+                                         ? kPolicyForceInstallMachine
+                                         : kPolicyForceInstallUser);
+  SetGroupPolicies(group_policies);
+
+  const std::string kAppId("test1");
+  base::Version v0point1("0.1");
+  base::Version v1("1");
+  ExpectUpdateSequence(&test_server, kAppId, "", base::Version("0.0.0.0"),
+                       v0point1);
+  ExpectUpdateSequence(&test_server, kAppId, "", v0point1, v1);
+  RunWake(0);
+
+  WaitForUpdaterExit();
+  ExpectAppVersion(kAppId, v1);
+
+  Uninstall();
+  Clean();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, MultipleWakesOneNetRequest) {
   ScopedServer test_server(test_commands_);
