@@ -157,7 +157,13 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
                                      multidevice_setup_client,
                                      connection_manager_.get(),
                                      std::move(camera_roll_download_manager))
-                               : nullptr) {}
+                               : nullptr),
+      feature_setup_response_processor_(
+          features::IsPhoneHubFeatureSetupErrorHandlingEnabled()
+              ? std::make_unique<FeatureSetupResponseProcessor>(
+                    message_receiver_.get(),
+                    multidevice_feature_access_manager_.get())
+              : nullptr) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
@@ -232,6 +238,7 @@ void PhoneHubManagerImpl::GetHostLastSeenTimestamp(
 // NOTE: These should be destroyed in the opposite order of how these objects
 // are initialized in the constructor.
 void PhoneHubManagerImpl::Shutdown() {
+  feature_setup_response_processor_.reset();
   camera_roll_manager_.reset();
   invalid_connection_disconnector_.reset();
   multidevice_setup_state_updater_.reset();

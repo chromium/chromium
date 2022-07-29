@@ -847,6 +847,72 @@ suite('Multidevice', () => {
       });
 
   test(
+      'Test Camera Roll, Notifications setup flow, notifications rejected',
+      async () => {
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: true,
+          showNotifications: true,
+          showAppStreaming: false,
+          combinedSetupSupported: true,
+        });
+        flush();
+
+        assertTrue(!!dialogBody.querySelector('#start-setup-description'));
+        assertTrue(!!buttonContainer.querySelector('#learnMore'));
+        assertTrue(!!buttonContainer.querySelector('#cancelButton'));
+        assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
+        assertFalse(!!buttonContainer.querySelector('#doneButton'));
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+        buttonContainer.querySelector('#getStartedButton').click();
+        assertEquals(
+            browserProxy.getCallCount('attemptCombinedFeatureSetup'), 1);
+        assertArrayEquals(
+            [true, true],
+            browserProxy.getArgs('attemptCombinedFeatureSetup')[0]);
+        assertTrue(
+            isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_COMBINED));
+
+        simulateCombinedStatusChanged(
+            PermissionsSetupStatus
+                .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
+        assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+        assertTrue(!!buttonContainer.querySelector('#learnMore'));
+        assertTrue(!!buttonContainer.querySelector('#cancelButton'));
+        assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
+        assertTrue(!!buttonContainer.querySelector('#doneButton'));
+        assertTrue(buttonContainer.querySelector('#doneButton').disabled);
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+        assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
+
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: false,
+          showNotifications: true,
+          showAppStreaming: false,
+          combinedSetupSupported: true,
+        });
+        flush();
+
+        simulateCombinedStatusChanged(
+            PermissionsSetupStatus.CAMERA_ROLL_GRANTED_NOTIFICATION_REJECTED);
+        assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+        assertFalse(!!buttonContainer.querySelector('#learnMore'));
+        assertFalse(!!buttonContainer.querySelector('#cancelButton'));
+        assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
+        assertTrue(!!buttonContainer.querySelector('#doneButton'));
+        assertFalse(buttonContainer.querySelector('#doneButton').disabled);
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+
+        // Only Camera Roll is enabled.
+        assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
+
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
+        buttonContainer.querySelector('#doneButton').click();
+        assertFalse(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
+      });
+
+  test(
       'Test Camera Roll, Notifications and apps setup success flow',
       async () => {
         // Simulate all features are granted by the user
@@ -1117,6 +1183,99 @@ suite('Multidevice', () => {
         // The apps feature become enabled when the status becomes
         // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
         assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
+
+        assertTrue(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
+        buttonContainer.querySelector('#doneButton').click();
+        assertFalse(
+            permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);
+      });
+
+  test(
+      'Test all setup flow user granted others rejected cameraRoll permission',
+      async () => {
+        // Simulate user grants app permission only
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: true,
+          showNotifications: true,
+          showAppStreaming: true,
+          combinedSetupSupported: true,
+        });
+        flush();
+
+        assertTrue(!!dialogBody.querySelector('#start-setup-description'));
+        assertTrue(!!buttonContainer.querySelector('#learnMore'));
+        assertTrue(!!buttonContainer.querySelector('#cancelButton'));
+        assertTrue(!!buttonContainer.querySelector('#getStartedButton'));
+        assertFalse(!!buttonContainer.querySelector('#doneButton'));
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+        buttonContainer.querySelector('#getStartedButton').click();
+        assertEquals(
+            browserProxy.getCallCount('attemptCombinedFeatureSetup'), 1);
+        assertArrayEquals(
+            [true, true],
+            browserProxy.getArgs('attemptCombinedFeatureSetup')[0]);
+        assertTrue(
+            isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_COMBINED));
+
+        simulateCombinedStatusChanged(
+            PermissionsSetupStatus
+                .SENT_MESSAGE_TO_PHONE_AND_WAITING_FOR_RESPONSE);
+        assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+        assertTrue(!!buttonContainer.querySelector('#learnMore'));
+        assertTrue(!!buttonContainer.querySelector('#cancelButton'));
+        assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
+        assertTrue(!!buttonContainer.querySelector('#doneButton'));
+        assertTrue(buttonContainer.querySelector('#doneButton').disabled);
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+        assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 0);
+
+        // Because user rejected, Camera Roll and Notification permissions not
+        // granted.
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: true,
+          showNotifications: false,
+          showAppStreaming: true,
+          combinedSetupSupported: true,
+        });
+        flush();
+
+        simulateCombinedStatusChanged(
+            PermissionsSetupStatus.CAMERA_ROLL_REJECTED_NOTIFICATION_GRANTED);
+        assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+        assertFalse(!!buttonContainer.querySelector('#learnMore'));
+        assertTrue(!!buttonContainer.querySelector('#cancelButton'));
+        assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
+        assertFalse(!!buttonContainer.querySelector('#doneButton'));
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+
+        // Should not enabled phone hub camera roll and notification feature
+        assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 1);
+
+        assertEquals(browserProxy.getCallCount('attemptAppsSetup'), 1);
+        assertTrue(isExpectedFlowState(SetupFlowStatus.WAIT_FOR_PHONE_APPS));
+
+        permissionsSetupDialog.setProperties({
+          showCameraRoll: true,
+          showNotifications: false,
+          showAppStreaming: false,
+          combinedSetupSupported: true,
+        });
+        flush();
+
+        simulateAppsStatusChanged(
+            PermissionsSetupStatus.COMPLETED_SUCCESSFULLY);
+        assertFalse(!!dialogBody.querySelector('#start-setup-description'));
+        assertFalse(!!buttonContainer.querySelector('#learnMore'));
+        assertFalse(!!buttonContainer.querySelector('#cancelButton'));
+        assertFalse(!!buttonContainer.querySelector('#getStartedButton'));
+        assertTrue(!!buttonContainer.querySelector('#doneButton'));
+        assertFalse(buttonContainer.querySelector('#doneButton').disabled);
+        assertFalse(!!buttonContainer.querySelector('#tryAgainButton'));
+
+        // The apps feature become enabled when the status becomes
+        // PermissionsSetupStatus.COMPLETED_SUCCESSFULLY.
+        assertEquals(browserProxy.getCallCount('setFeatureEnabledState'), 2);
 
         assertTrue(
             permissionsSetupDialog.shadowRoot.querySelector('#dialog').open);

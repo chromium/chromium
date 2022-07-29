@@ -30,6 +30,10 @@ class MessageReceiver {
     virtual void OnPhoneStatusUpdateReceived(
         proto::PhoneStatusUpdate phone_status_update) {}
 
+    // Called when the remote feature setup is finished on the remote pohone.
+    virtual void OnFeatureSetupResponseReceived(
+        proto::FeatureSetupResponse feature_setup_response) {}
+
     // Called when the remote phone sends the list of camera roll items that
     // should be displayed via FetchCameraRollItemsResponse.
     virtual void OnFetchCameraRollItemsResponseReceived(
@@ -55,6 +59,7 @@ class MessageReceiver {
       proto::PhoneStatusSnapshot phone_status_snapshot);
   void NotifyPhoneStatusUpdateReceived(
       proto::PhoneStatusUpdate phone_status_update);
+  void NotifyFeatureSetupResponseReceived(proto::FeatureSetupResponse response);
   void NotifyFetchCameraRollItemsResponseReceived(
       const proto::FetchCameraRollItemsResponse& response);
   void NotifyFetchCameraRollItemDataResponseReceived(

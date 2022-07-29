@@ -2192,6 +2192,10 @@ bool IsPhoneHubMonochromeNotificationIconsEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubMonochromeNotificationIcons);
 }
 
+bool IsPhoneHubFeatureSetupErrorHandlingEnabled() {
+  return base::FeatureList::IsEnabled(kPhoneHubFeatureSetupErrorHandling);
+}
+
 bool IsPerformantSplitViewResizingEnabled() {
   return base::FeatureList::IsEnabled(kPerformantSplitViewResizing);
 }

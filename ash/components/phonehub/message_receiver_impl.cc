@@ -40,6 +40,8 @@ std::string GetMessageTypeName(proto::MessageType message_type) {
       return "FETCH_CAMERA_ROLL_ITEMS_RESPONSE";
     case proto::MessageType::FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE:
       return "FETCH_CAMERA_ROLL_ITEM_DATA_RESPONSE";
+    case proto::MessageType::FEATURE_SETUP_RESPONSE:
+      return "FEATURE_SETUP_RESPONSE";
     default:
       return "UNKOWN_MESSAGE";
   }
@@ -96,6 +98,18 @@ void MessageReceiverImpl::OnMessageReceived(const std::string& payload) {
     }
     NotifyPhoneStatusUpdateReceived(update_proto);
     return;
+  }
+
+  if (features::IsPhoneHubFeatureSetupErrorHandlingEnabled() &&
+      message_type == proto::MessageType::FEATURE_SETUP_RESPONSE) {
+    proto::FeatureSetupResponse response;
+    // Serialized proto is after the first two bytes of |payload|.
+    if (!response.ParseFromString(payload.substr(2))) {
+      PA_LOG(ERROR) << "OnMessageReceived() could not deserialize the "
+                    << "FeatureSetupResponse proto message.";
+      return;
+    }
+    NotifyFeatureSetupResponseReceived(response);
   }
 
   if (features::IsPhoneHubCameraRollEnabled() &&

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/components/phonehub/feature_setup_response_processor.h"
 #include "ash/components/phonehub/phone_hub_manager.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -111,6 +112,8 @@ class PhoneHubManagerImpl : public PhoneHubManager, public KeyedService {
   std::unique_ptr<InvalidConnectionDisconnector>
       invalid_connection_disconnector_;
   std::unique_ptr<CameraRollManager> camera_roll_manager_;
+  std::unique_ptr<FeatureSetupResponseProcessor>
+      feature_setup_response_processor_;
 };
 
 }  // namespace phonehub
