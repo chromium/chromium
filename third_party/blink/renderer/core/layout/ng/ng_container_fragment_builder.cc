@@ -47,14 +47,9 @@ void NGContainerFragmentBuilder::PropagateChildData(
     LogicalOffset relative_offset,
     const NGInlineContainer<LogicalOffset>* inline_container,
     absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
-  if (adjustment_for_oof_propagation &&
-      child.NeedsOOFPositionedInfoPropagation()) {
-    PropagateOOFPositionedInfo(child, child_offset, relative_offset,
-                               /* offset_adjustment */ LogicalOffset(),
-                               inline_container,
-                               *adjustment_for_oof_propagation);
-  }
-
+  // Set the child's `anchor-name` before propagating its descendants', so
+  // that ancestors have precedence over their descendants. Descendants' anchors
+  // are propagated in |PropagateOOFPositionedInfo| below.
   if (child.IsBox()) {
     if (const AtomicString& anchor_name = child.Style().AnchorName();
         !anchor_name.IsNull()) {
@@ -66,6 +61,14 @@ void NGContainerFragmentBuilder::PropagateChildData(
                           child.Size().ConvertToLogical(GetWritingMode())},
               &child});
     }
+  }
+
+  if (adjustment_for_oof_propagation &&
+      child.NeedsOOFPositionedInfoPropagation()) {
+    PropagateOOFPositionedInfo(child, child_offset, relative_offset,
+                               /* offset_adjustment */ LogicalOffset(),
+                               inline_container,
+                               *adjustment_for_oof_propagation);
   }
 
   // We only need to report if inflow or floating elements depend on the

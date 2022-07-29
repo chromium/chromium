@@ -63,7 +63,6 @@ void NGLogicalAnchorQuery::Set(const AtomicString& name,
       reference.fragment->GetLayoutObject()) {
     // If this is the same name on a different |LayoutObject|, ignore it.
     // This logic assumes that callers call this function in the correct order.
-    // TODO(crbug.com/1309178): Should we overwrite or ignore? Needs tests.
     return;
   }
 
