@@ -22,8 +22,8 @@ class SidePanelEntryObserver;
 class SidePanelEntry final {
  public:
   // Note this order matches that of the combobox options in the side panel.
-  // If adding a new Id here, you must also update id_to_histogram_name_map_
-  // below.
+  // If adding a new Id here, you must also update id_to_histogram_name_map
+  // in side_panel_util.cc and SidePanelEntry in browser/histograms.xml.
   enum class Id {
     // Global Entries
     kReadingList,
@@ -35,7 +35,8 @@ class SidePanelEntry final {
     // Contextual Entries
     kSideSearch,
     kLens,
-    kAssistant
+    kAssistant,
+    kAboutThisSite,
   };
 
   SidePanelEntry(Id id,

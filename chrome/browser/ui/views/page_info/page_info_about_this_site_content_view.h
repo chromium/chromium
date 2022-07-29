@@ -29,7 +29,6 @@ class PageInfoAboutThisSiteContentView : public views::View, public PageInfoUI {
   [[nodiscard]] std::unique_ptr<views::View> CreateSourceLabel(
       const page_info::proto::SiteInfo& info);
   void SourceLinkClicked(const ui::Event& event);
-  void MoreAboutButtonClicked(const ui::Event& event);
 
   raw_ptr<PageInfo> presenter_;
   raw_ptr<ChromePageInfoUiDelegate> ui_delegate_;

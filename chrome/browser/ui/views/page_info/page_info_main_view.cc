@@ -578,10 +578,14 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   if (base::FeatureList::IsEnabled(page_info::kPageInfoAboutThisSiteMoreInfo)) {
     about_this_site_button = about_this_site_section->AddChildView(
         std::make_unique<PageInfoHoverButton>(
-            // TODO(crbug.com/1318000): Open side-panel instead.
             base::BindRepeating(
-                &ChromePageInfoUiDelegate::OpenMoreAboutThisPageUrl,
-                base::Unretained(ui_delegate_), GURL(info.more_about().url())),
+                [](PageInfoMainView* view, GURL more_info_url,
+                   const ui::Event& event) {
+                  view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
+                                                               event);
+                  view->GetWidget()->Close();
+                },
+                this, GURL(info.more_about().url())),
             PageInfoViewFactory::GetAboutThisPageIcon(),
             IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE, std::u16string(),
             PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON,

@@ -87,10 +87,3 @@ void PageInfoAboutThisSiteContentView::SourceLinkClicked(
   ui_delegate_->AboutThisSiteSourceClicked(
       GURL(info_.description().source().url()), event);
 }
-
-void PageInfoAboutThisSiteContentView::MoreAboutButtonClicked(
-    const ui::Event& event) {
-  presenter_->RecordPageInfoAction(
-      PageInfo::PageInfoAction::PAGE_INFO_ABOUT_THIS_SITE_MORE_ABOUT_CLICKED);
-  ui_delegate_->OpenMoreAboutThisPageUrl(GURL(info_.more_about().url()), event);
-}

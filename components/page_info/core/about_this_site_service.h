@@ -23,6 +23,9 @@ namespace proto {
 class SiteInfo;
 }
 
+static const char AboutThisSiteRenderModeParameterName[] = "ilrm";
+static const char AboutThisSiteRenderModeParameterValue[] = "minimal";
+
 // Provides "About this site" information for a web site. It includes short
 // description about the website (from external source, usually from Wikipedia),
 // when the website was first indexed and other data if available.

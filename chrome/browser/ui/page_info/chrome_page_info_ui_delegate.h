@@ -9,9 +9,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info_ui_delegate.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
+#endif
 
 class Profile;
 
@@ -39,6 +42,7 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // If "allow" option is not available, return the reason why.
   std::u16string GetAutomaticallyBlockedReason(ContentSettingsType type);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns "About this site" info for the active page.
   absl::optional<page_info::proto::SiteInfo> GetAboutThisSiteInfo();
 
@@ -48,7 +52,6 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   // Handles opening the "More about this page" URL in a new tab.
   void OpenMoreAboutThisPageUrl(const GURL& url, const ui::Event& event);
 
-#if !BUILDFLAG(IS_ANDROID)
   // If PageInfo should show a link to the site or app's settings page, this
   // will return true and set the params to the appropriate resource IDs (IDS_*).
   // Otherwise, it will return false.
