@@ -2035,8 +2035,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
   EXPECT_TRUE(bucket->decommitted_slot_spans_head);
 }
 
-// Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST)
 
 INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
                          PartitionAllocDeathTest,
@@ -2125,8 +2124,9 @@ TEST_P(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
                "Passed DoReturnNullTest");
 }
 
-#endif  // !defined(ARCH_CPU_64_BITS) || (BUILDFLAG(IS_POSIX) &&
-        // !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)))
+#endif  // !BUILDFLAG(IS_WIN) && (!defined(ARCH_CPU_64_BITS) ||
+        // (BUILDFLAG(IS_POSIX) && !(BUILDFLAG(IS_APPLE) ||
+        // BUILDFLAG(IS_ANDROID))))
 
 // Make sure that malloc(-1) dies.
 // In the past, we had an integer overflow that would alias malloc(-1) to
@@ -2251,7 +2251,8 @@ TEST_P(PartitionAllocTest, MTEProtectsFreedPtr) {
       },
       testing::KilledBySignal(SIGSEGV), "");
 }
-#endif
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)) &&
+        // defined(ARCH_CPU_ARM64)
 
 // These tests rely on precise layout. They handle cookie, not ref-count.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_SHADOW_ENTRY)
@@ -2337,7 +2338,7 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
 #endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
 
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 // Tests that |PartitionDumpStats| and |PartitionDumpStats| run without
 // crashing and return non-zero values when memory is allocated.
@@ -4140,8 +4141,7 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
   allocator.root()->FreeNoHooks(ptr2);
 }
 
-// Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST)
 #if !defined(OFFICIAL_BUILD) || !defined(NDEBUG)
 
 TEST_P(PartitionAllocDeathTest, CheckTriggered) {
@@ -4153,7 +4153,7 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 }
 
 #endif  // !defined(OFFICIAL_BUILD) && !defined(NDEBUG)
-#endif  // defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#endif  // defined(GTEST_HAS_DEATH_TEST)
 
 // Not on chromecast, since gtest considers extra output from itself as a test
 // failure:

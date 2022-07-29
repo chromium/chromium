@@ -575,16 +575,15 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceFromNonScannablePartition) {
   TestDanglingReferenceNotVisited(*this, value, value_root);
 }
 
-// Death tests misbehave on Android, http://crbug.com/643760.
-#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID)
+#if defined(GTEST_HAS_DEATH_TEST)
 #if PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
 TEST_F(PartitionAllocPCScanTest, DoubleFree) {
   auto* list = List<1>::Create(root());
   List<1>::Destroy(root(), list);
   EXPECT_DEATH(List<1>::Destroy(root(), list), "");
 }
-#endif
-#endif
+#endif  // defined(GTEST_HAS_DEATH_TEST)
+#endif  // PA_STARSCAN_EAGER_DOUBLE_FREE_DETECTION_ENABLED
 
 namespace {
 template <typename SourceList, typename ValueList>
