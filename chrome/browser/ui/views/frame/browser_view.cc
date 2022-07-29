@@ -2351,8 +2351,16 @@ bool BrowserView::IsToolbarVisible() const {
   // This Mac-only preference disables display of the toolbar in fullscreen mode
   // so we need to take it into account when determining if the toolbar is
   // visible - especially as pertains to anchoring views.
-  if (IsFullscreen() && !browser()->profile()->GetPrefs()->GetBoolean(
-                            prefs::kShowFullscreenToolbar)) {
+  bool show_fullscreen_toolbar = true;
+  if (web_app::AppBrowserController::IsWebApp(browser())) {
+    const web_app::AppBrowserController* controller =
+        browser()->app_controller();
+    show_fullscreen_toolbar = controller->AlwaysShowToolbarInFullscreen();
+  } else {
+    show_fullscreen_toolbar = browser()->profile()->GetPrefs()->GetBoolean(
+        prefs::kShowFullscreenToolbar);
+  }
+  if (IsFullscreen() && !show_fullscreen_toolbar) {
     return false;
   }
 #endif

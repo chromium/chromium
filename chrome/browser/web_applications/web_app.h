@@ -296,6 +296,11 @@ class WebApp {
     return tab_strip_;
   }
 
+  // Only used on Mac.
+  bool always_show_toolbar_in_fullscreen() const {
+    return always_show_toolbar_in_fullscreen_;
+  }
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -398,6 +403,10 @@ class WebApp {
 
   bool RemoveInstallUrlForSource(WebAppManagement::Type type, GURL install_url);
 
+  // Only used on Mac, determines if the toolbar should be permanently shown
+  // when in fullscreen.
+  void SetAlwaysShowToolbarInFullscreen(bool show);
+
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   bool operator!=(const WebApp&) const;
@@ -493,12 +502,18 @@ class WebApp {
 
   absl::optional<blink::Manifest::TabStrip> tab_strip_;
 
+  // Only used on Mac.
+  bool always_show_toolbar_in_fullscreen_ = true;
+
   // New fields must be added to:
   //  - |operator==|
   //  - AsDebugValue()
   //  - WebAppDatabase::CreateWebApp()
   //  - WebAppDatabase::CreateWebAppProto()
   //  - CreateRandomWebApp()
+  //  - WebAppTest.EmptyAppAsDebugValue
+  //  - WebAppTest.SampleAppAsDebugValue
+  //  - web_app.proto
   // If parsed from manifest, also add to:
   //  - ManifestUpdateTask::IsUpdateNeededForManifest()
   //  - SetWebAppManifestFields()

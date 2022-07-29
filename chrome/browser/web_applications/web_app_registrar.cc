@@ -493,6 +493,20 @@ GURL WebAppRegistrar::GetAppNewTabUrl(const AppId& app_id) const {
   return GetAppStartUrl(app_id);
 }
 
+#if BUILDFLAG(IS_MAC)
+bool WebAppRegistrar::AlwaysShowToolbarInFullscreen(const AppId& app_id) const {
+  auto* web_app = GetAppById(app_id);
+  return web_app ? web_app->always_show_toolbar_in_fullscreen() : true;
+}
+
+void WebAppRegistrar::NotifyAlwaysShowToolbarInFullscreenChanged(
+    const AppId& app_id,
+    bool show) {
+  for (AppRegistrarObserver& observer : observers_)
+    observer.OnAlwaysShowToolbarInFullscreenChanged(app_id, show);
+}
+#endif
+
 const WebApp* WebAppRegistrar::GetAppById(const AppId& app_id) const {
   if (registry_profile_being_deleted_)
     return nullptr;

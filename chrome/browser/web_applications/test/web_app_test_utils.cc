@@ -593,6 +593,8 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
     app->SetTabStrip(std::move(tab_strip));
   }
 
+  app->SetAlwaysShowToolbarInFullscreen(random.next_bool());
+
   return app;
 }
 

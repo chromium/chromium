@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_utils.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -62,16 +63,24 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
-  show_fullscreen_toolbar_.Init(
-      prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
-      base::BindRepeating(&BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
-                          base::Unretained(this)));
+  if (web_app::AppBrowserController::IsWebApp(browser_view->browser())) {
+    auto* provider =
+        web_app::WebAppProvider::GetForWebApps(browser_view->GetProfile());
+    always_show_toolbar_in_fullscreen_observation_.Observe(
+        &provider->registrar());
+  } else {
+    show_fullscreen_toolbar_.Init(
+        prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
+        base::BindRepeating(
+            &BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
+            base::Unretained(this)));
+  }
   if (!base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
     fullscreen_toolbar_controller_.reset(
         [[FullscreenToolbarController alloc] initWithBrowserView:browser_view]);
     [fullscreen_toolbar_controller_
         setToolbarStyle:GetUserPreferredToolbarStyle(
-                            *show_fullscreen_toolbar_)];
+                            AlwaysShowToolbarInFullscreen())];
   }
 
   if (browser_view->GetIsWebAppType()) {
@@ -212,7 +221,7 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     browser_view()->HideDownloadShelf();
     new_style = FullscreenToolbarStyle::TOOLBAR_NONE;
   } else {
-    new_style = GetUserPreferredToolbarStyle(*show_fullscreen_toolbar_);
+    new_style = GetUserPreferredToolbarStyle(AlwaysShowToolbarInFullscreen());
     browser_view()->UnhideDownloadShelf();
   }
   [fullscreen_toolbar_controller_ setToolbarStyle:new_style];
@@ -232,6 +241,15 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI() {
     // requires a re-layout when in fullscreen and shown.
     if (web_app_frame_toolbar() && !ShouldHideTopUIForFullscreen())
       InvalidateLayout();
+  }
+}
+
+void BrowserNonClientFrameViewMac::OnAlwaysShowToolbarInFullscreenChanged(
+    const web_app::AppId& app_id,
+    bool show) {
+  if (web_app::AppBrowserController::IsForWebApp(browser_view()->browser(),
+                                                 app_id)) {
+    UpdateFullscreenTopUI();
   }
 }
 
@@ -598,4 +616,14 @@ void BrowserNonClientFrameViewMac::AddRoutingForWindowControlsOverlayViews() {
           this, web_app_frame_toolbar(),
           remote_cocoa::mojom::WindowControlsOverlayNSViewType::
               kWebAppFrameToolbar);
+}
+
+bool BrowserNonClientFrameViewMac::AlwaysShowToolbarInFullscreen() const {
+  if (web_app::AppBrowserController::IsWebApp(browser_view()->browser())) {
+    web_app::AppBrowserController* controller =
+        browser_view()->browser()->app_controller();
+    return controller->AlwaysShowToolbarInFullscreen();
+  } else {
+    return *show_fullscreen_toolbar_;
+  }
 }

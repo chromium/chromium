@@ -103,6 +103,11 @@ class WebAppBrowserController : public AppBrowserController,
   bool ShouldShowCustomTabBar() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_MAC)
+  bool AlwaysShowToolbarInFullscreen() const override;
+  void ToggleAlwaysShowToolbarInFullscreen() override;
+#endif
+
   // WebAppInstallManagerObserver:
   void OnWebAppUninstalled(const AppId& app_id) override;
   void OnWebAppInstallManagerDestroyed() override;

@@ -149,6 +149,12 @@ class AppBrowserController
   // Determines whether the specified url is 'inside' the app |this| controls.
   virtual bool IsUrlInAppScope(const GURL& url) const = 0;
 
+#if BUILDFLAG(IS_MAC)
+  // Whether the toolbar should always be shown when in fullscreen mode.
+  virtual bool AlwaysShowToolbarInFullscreen() const;
+  virtual void ToggleAlwaysShowToolbarInFullscreen();
+#endif
+
   // Safe downcast:
   virtual WebAppBrowserController* AsWebAppBrowserController();
 

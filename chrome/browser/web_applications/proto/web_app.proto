@@ -346,4 +346,8 @@ message WebAppProto {
   // Contains customisations to the web app tab strip. Only present when the
   // display_mode is tabbed.
   optional proto.TabStrip tab_strip = 57;
+
+  // Only used on Mac OS, stores whether the app should always show the
+  // toolbar when in fullscreen mode.
+  optional bool always_show_toolbar_in_fullscreen = 58;
 }

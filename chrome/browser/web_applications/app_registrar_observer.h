@@ -63,6 +63,9 @@ class AppRegistrarObserver : public base::CheckedObserver {
   // this event is also fired during browser startup after the policy has been
   // applied.
   virtual void OnWebAppSettingsPolicyChanged() {}
+
+  virtual void OnAlwaysShowToolbarInFullscreenChanged(const AppId& app_id,
+                                                      bool show) {}
 };
 
 }  // namespace web_app

@@ -420,6 +420,20 @@ void WebAppSyncBridge::RemoveDisallowedLaunchProtocol(
   registrar_->NotifyWebAppProtocolSettingsChanged();
 }
 
+#if BUILDFLAG(IS_MAC)
+void WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen(const AppId& app_id,
+                                                        bool show) {
+  if (!registrar_->IsInstalled(app_id))
+    return;
+  {
+    ScopedRegistryUpdate(this)
+        ->UpdateApp(app_id)
+        ->SetAlwaysShowToolbarInFullscreen(show);
+  }
+  registrar_->NotifyAlwaysShowToolbarInFullscreenChanged(app_id, show);
+}
+#endif
+
 void WebAppSyncBridge::SetAppFileHandlerApprovalState(const AppId& app_id,
                                                       ApiApprovalState state) {
   {

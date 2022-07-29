@@ -12,6 +12,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/prefs/pref_member.h"
 
 namespace views {
@@ -23,7 +25,8 @@ class Label;
 class CaptionButtonPlaceholderContainer;
 class WindowControlsOverlayInputRoutingMac;
 
-class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
+class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
+                                     public web_app::AppRegistrarObserver {
  public:
   // Mac implementation of BrowserNonClientFrameView.
   BrowserNonClientFrameViewMac(BrowserFrame* frame, BrowserView* browser_view);
@@ -63,6 +66,10 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
   // views::View:
   gfx::Size GetMinimumSize() const override;
   void AddedToWidget() override;
+
+  // web_app::AppRegistrarObserver
+  void OnAlwaysShowToolbarInFullscreenChanged(const web_app::AppId& app_id,
+                                              bool show) override;
 
  protected:
   // views::View:
@@ -112,8 +119,17 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
   // toolbar style is changed.
   void ToggleWebAppFrameToolbarViewVisibility();
 
+  // Returns the current value of the "always show toolbar in fullscreen"
+  // preference, either reading the value from the kShowFullscreenToolbar
+  // preference or if this is a window for an app, from the settings for that
+  // app.
+  bool AlwaysShowToolbarInFullscreen() const;
+
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
+  base::ScopedObservation<web_app::WebAppRegistrar,
+                          web_app::AppRegistrarObserver>
+      always_show_toolbar_in_fullscreen_observation_{this};
 
   raw_ptr<views::Label> window_title_ = nullptr;
 

@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
@@ -231,9 +232,15 @@ void BrowserFrameMac::ValidateUserInterfaceItem(
       break;
     }
     case IDC_TOGGLE_FULLSCREEN_TOOLBAR: {
-      PrefService* prefs = browser->profile()->GetPrefs();
-      result->new_toggle_state =
-          prefs->GetBoolean(prefs::kShowFullscreenToolbar);
+      web_app::AppBrowserController* app_controller = browser->app_controller();
+      if (app_controller) {
+        result->new_toggle_state =
+            app_controller->AlwaysShowToolbarInFullscreen();
+      } else {
+        PrefService* prefs = browser->profile()->GetPrefs();
+        result->new_toggle_state =
+            prefs->GetBoolean(prefs::kShowFullscreenToolbar);
+      }
       break;
     }
     case IDC_SHOW_FULL_URLS: {

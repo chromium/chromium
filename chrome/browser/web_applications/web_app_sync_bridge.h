@@ -10,6 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -130,6 +131,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                                    const std::string& protocol_scheme);
   void RemoveDisallowedLaunchProtocol(const AppId& app_id,
                                       const std::string& protocol_scheme);
+
+#if BUILDFLAG(IS_MAC)
+  void SetAlwaysShowToolbarInFullscreen(const AppId& app_id, bool show);
+#endif
 
   // An access to read-only registry. Does an upcast to read-only type.
   const WebAppRegistrar& registrar() const { return *registrar_; }

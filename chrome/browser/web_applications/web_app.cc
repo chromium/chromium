@@ -434,6 +434,10 @@ bool WebApp::RemoveInstallUrlForSource(WebAppManagement::Type type,
   return removed;
 }
 
+void WebApp::SetAlwaysShowToolbarInFullscreen(bool show) {
+  always_show_toolbar_in_fullscreen_ = show;
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -558,7 +562,8 @@ bool WebApp::operator==(const WebApp& other) const {
         app.app_size_in_bytes_,
         app.data_size_in_bytes_,
         app.management_to_external_config_map_,
-        app.tab_strip_
+        app.tab_strip_,
+        app.always_show_toolbar_in_fullscreen_
         // clang-format on
     );
   };
@@ -868,6 +873,9 @@ base::Value WebApp::AsDebugValue() const {
   } else {
     root.SetKey("tab_strip", base::Value());
   }
+
+  root.SetBoolKey("always_show_toolbar_in_fullscreen",
+                  always_show_toolbar_in_fullscreen_);
 
   return root;
 }

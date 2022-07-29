@@ -387,6 +387,14 @@ GURL AppBrowserController::GetAppNewTabUrl() const {
   return GetAppStartUrl();
 }
 
+#if BUILDFLAG(IS_MAC)
+bool AppBrowserController::AlwaysShowToolbarInFullscreen() const {
+  return true;
+}
+
+void AppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {}
+#endif
+
 void AppBrowserController::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,

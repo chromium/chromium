@@ -21,6 +21,8 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_manager.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
+#include "chrome/browser/web_applications/commands/callback_command.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -175,6 +177,25 @@ const ash::SystemWebAppDelegate* WebAppBrowserController::system_app() const {
   return system_app_;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC)
+bool WebAppBrowserController::AlwaysShowToolbarInFullscreen() const {
+  // Reading this setting synchronously rather than going through the command
+  // manager greatly simplifies where this is read. This should be fine, since
+  // this is only persisted in the web app db.
+  return registrar().AlwaysShowToolbarInFullscreen(app_id());
+}
+
+void WebAppBrowserController::ToggleAlwaysShowToolbarInFullscreen() {
+  // base::Unretained is safe as the command manager won't execute the command
+  // if the provider no longer exists.
+  provider_.command_manager().ScheduleCommand(std::make_unique<CallbackCommand>(
+      WebAppCommandLock::CreateForAppLock({app_id()}),
+      base::BindOnce(&WebAppSyncBridge::SetAlwaysShowToolbarInFullscreen,
+                     base::Unretained(&provider_.sync_bridge()), app_id(),
+                     !registrar().AlwaysShowToolbarInFullscreen(app_id()))));
+}
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::ShouldShowCustomTabBar() const {

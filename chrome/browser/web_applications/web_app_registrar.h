@@ -323,6 +323,12 @@ class WebAppRegistrar : public ProfileManagerObserver {
 
   GURL GetAppNewTabUrl(const AppId& app_id) const;
 
+#if BUILDFLAG(IS_MAC)
+  bool AlwaysShowToolbarInFullscreen(const AppId& app_id) const;
+  void NotifyAlwaysShowToolbarInFullscreenChanged(const AppId& app_id,
+                                                  bool show);
+#endif
+
   void AddObserver(AppRegistrarObserver* observer);
   void RemoveObserver(AppRegistrarObserver* observer);
 
