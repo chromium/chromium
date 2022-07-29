@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -226,6 +227,8 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
     const std::string& activity_name,
     const std::string& intent,
     int32_t session_id) {
+  base::AutoReset<int> auto_reset(&task_id_being_created_, task_id);
+
   DCHECK(task_id_to_arc_app_window_info_.find(task_id) ==
          task_id_to_arc_app_window_info_.end());
 
@@ -254,9 +257,10 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
   }
 
   // Hide from shelf if there already is some task representing the window.
-  if (GetTaskIdSharingLogicalWindow(task_id) != arc::kNoTaskId)
+  if (GetTaskIdSharingLogicalWindow(task_id) != arc::kNoTaskId) {
     task_id_to_arc_app_window_info_[task_id]->set_window_hidden_from_shelf(
         true);
+  }
 
   // Hide any activities created from the ARC Payment activitity from the shelf
   // (they become overlays of TWA apps already on the shelf)
@@ -272,8 +276,15 @@ void AppServiceAppWindowArcTracker::OnTaskCreated(
   // control over it.
   AttachControllerToTask(task_id);
 
-  aura::Window* const window =
-      task_id_to_arc_app_window_info_[task_id]->window();
+  // TODO(crbug.com/1276603): Investigate why `task_id_to_arc_app_window_info_`
+  // doesn't have the `task_id` or why it->second is null.
+  auto task_id_it = task_id_to_arc_app_window_info_.find(task_id);
+  if (task_id_it == task_id_to_arc_app_window_info_.end() ||
+      !task_id_it->second) {
+    return;
+  }
+
+  aura::Window* const window = task_id_it->second->window();
   if (!window)
     return;
 
@@ -316,6 +327,9 @@ void AppServiceAppWindowArcTracker::OnTaskDescriptionChanged(
 }
 
 void AppServiceAppWindowArcTracker::OnTaskDestroyed(int32_t task_id) {
+  // Update crbug.com/1276603 with crash stack if this CHECK fires.
+  CHECK_NE(task_id_being_created_, task_id);
+
   auto it = task_id_to_arc_app_window_info_.find(task_id);
   if (it == task_id_to_arc_app_window_info_.end())
     return;
@@ -514,8 +528,13 @@ void AppServiceAppWindowArcTracker::CheckAndAttachControllers() {
 }
 
 void AppServiceAppWindowArcTracker::AttachControllerToTask(int task_id) {
-  ArcAppWindowInfo* const app_window_info =
-      task_id_to_arc_app_window_info_[task_id].get();
+  // TODO(crbug.com/1276603): Investigate why `task_id_to_arc_app_window_info_`
+  // doesn't have the `task_id` or why it->second is null.
+  auto it = task_id_to_arc_app_window_info_.find(task_id);
+  if (it == task_id_to_arc_app_window_info_.end() || !it->second)
+    return;
+
+  ArcAppWindowInfo* const app_window_info = it->second.get();
   if (app_window_info->task_hidden_from_shelf())
     return;
 

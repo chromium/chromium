@@ -160,6 +160,11 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
   int active_task_id_ = arc::kNoTaskId;
   int active_session_id_ = arc::kNoTaskId;
 
+  // TODO(crbug.com/1276603): A temp variable used to investigate whether
+  // OnTaskDestroyed is called in the middle of OnTaskCreated. This can be
+  // removed if we have the result.
+  int task_id_being_created_ = arc::kNoTaskId;
+
   base::WeakPtrFactory<AppServiceAppWindowArcTracker> weak_ptr_factory_{this};
 };
 
