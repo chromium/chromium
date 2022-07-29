@@ -6387,8 +6387,8 @@
   },
   {
     "name": "use-winrt-midi-api",
-    "owners": [ "toyoshim" ],
-    "expiry_milestone": 100
+    "owners": [ "toyoshim", "mjwilson", "deviceapi-team@google.com" ],
+    "expiry_milestone": 110
   },
   {
     "name": "use-xps-for-printing",
