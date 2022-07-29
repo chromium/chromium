@@ -90,6 +90,7 @@
 #include "chrome/browser/android/preferences/autofill/autofill_profile_bridge.h"
 #include "chrome/browser/android/signin/signin_bridge.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_logger_android.h"
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
@@ -690,8 +691,9 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
   // Don't show TTF surface while Autofill Assistant's UI is shown.
   if (IsAutofillAssistantShowing())
     return false;
-  // TODO(crbug.com/1247698): Show Touch To Fill surface.
-  return true;
+
+  return touch_to_fill_credit_card_controller_.Show(
+      std::make_unique<TouchToFillCreditCardViewImpl>(), delegate);
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();
@@ -701,7 +703,7 @@ bool ChromeAutofillClient::ShowTouchToFillCreditCard(
 
 void ChromeAutofillClient::HideTouchToFillCreditCard() {
 #if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/1247698): Hide Touch To Fill surface.
+  touch_to_fill_credit_card_controller_.Hide();
 #else
   // Touch To Fill is not supported on Desktop.
   NOTREACHED();

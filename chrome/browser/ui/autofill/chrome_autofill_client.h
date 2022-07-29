@@ -29,6 +29,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/android/save_update_address_profile_flow_manager.h"
+#include "chrome/browser/touch_to_fill/payments/touch_to_fill_credit_card_controller.h"
 #include "chrome/browser/ui/android/autofill/save_card_message_controller_android.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_controller_impl.h"
@@ -256,6 +257,7 @@ class ChromeAutofillClient
   CardNameFixFlowControllerImpl card_name_fix_flow_controller_;
   SaveCardMessageControllerAndroid save_card_message_controller_android_;
   SaveUpdateAddressProfileFlowManager save_update_address_profile_flow_manager_;
+  TouchToFillCreditCardController touch_to_fill_credit_card_controller_;
 #endif
   CardUnmaskPromptControllerImpl unmask_controller_;
   AutofillErrorDialogControllerImpl autofill_error_dialog_controller_;
