@@ -77,8 +77,6 @@ void LayoutFrameSet::Paint(const PaintInfo& paint_info) const {
 
 void LayoutFrameSet::GridAxis::Resize(int size) {
   sizes_.resize(size);
-  deltas_.resize(size);
-  deltas_.Fill(0);
 
   // To track edges for resizability and borders, we need to be (size + 1). This
   // is because a parent frameset may ask us for information about our left/top/
@@ -91,8 +89,11 @@ void LayoutFrameSet::GridAxis::Resize(int size) {
 
 void LayoutFrameSet::LayOutAxis(GridAxis& axis,
                                 const Vector<HTMLDimension>& grid,
+                                const Vector<int>& deltas,
                                 int available_len) {
   NOT_DESTROYED();
+  DCHECK_EQ(axis.sizes_.size(), deltas.size());
+
   available_len = max(available_len, 0);
 
   int* grid_layout = axis.sizes_.data();
@@ -282,16 +283,15 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
 
   // now we have the final layout, distribute the delta over it
   bool worked = true;
-  const int* grid_delta = axis.deltas_.data();
   for (int i = 0; i < grid_len; ++i) {
-    if (grid_layout[i] && grid_layout[i] + grid_delta[i] <= 0)
+    if (grid_layout[i] && grid_layout[i] + deltas[i] <= 0)
       worked = false;
-    grid_layout[i] += grid_delta[i];
+    grid_layout[i] += deltas[i];
   }
   // if the deltas broke something, undo them
   if (!worked) {
     for (int i = 0; i < grid_len; ++i)
-      grid_layout[i] -= grid_delta[i];
+      grid_layout[i] -= deltas[i];
   }
 }
 
@@ -387,16 +387,22 @@ void LayoutFrameSet::UpdateLayout() {
 
   unsigned cols = FrameSet()->TotalCols();
   unsigned rows = FrameSet()->TotalRows();
+  Vector<int>& rows_deltas = rows_.deltas_;
+  Vector<int>& cols_deltas = cols_.deltas_;
 
   if (rows_.sizes_.size() != rows || cols_.sizes_.size() != cols) {
     rows_.Resize(rows);
+    rows_deltas.resize(rows);
+    rows_deltas.Fill(0);
     cols_.Resize(cols);
+    cols_deltas.resize(cols);
+    cols_deltas.Fill(0);
   }
 
   LayoutUnit border_thickness(FrameSet()->Border());
-  LayOutAxis(rows_, FrameSet()->RowLengths(),
+  LayOutAxis(rows_, FrameSet()->RowLengths(), rows_deltas,
              (Size().Height() - (rows - 1) * border_thickness).ToInt());
-  LayOutAxis(cols_, FrameSet()->ColLengths(),
+  LayOutAxis(cols_, FrameSet()->ColLengths(), cols_deltas,
              (Size().Width() - (cols - 1) * border_thickness).ToInt());
 
   PositionFrames();

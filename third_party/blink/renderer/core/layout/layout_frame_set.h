@@ -163,7 +163,10 @@ class LayoutFrameSet final : public LayoutBox {
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
   CursorDirective GetCursor(const PhysicalOffset&, ui::Cursor&) const override;
 
-  void LayOutAxis(GridAxis&, const Vector<HTMLDimension>&, int available_space);
+  void LayOutAxis(GridAxis&,
+                  const Vector<HTMLDimension>&,
+                  const Vector<int>& deltas,
+                  int available_space);
   void ComputeEdgeInfo();
   void FillFromEdgeInfo(const FrameEdgeInfo&, int r, int c);
   void PositionFrames();
