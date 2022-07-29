@@ -31718,7 +31718,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
           },
         },
       },
-      'future_on': ['webview_android'],
+      'supported_on': ['webview_android:105-'],
       'features': { 'dynamic_refresh': True, 'per_profile': False,},
       'example_value': [
         {
@@ -31738,7 +31738,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
 
       If there is no valid app installed to handle authentication url on the device, navigation will continue in <ph name="WEBVIEW_PRODUCT_NAME">Android WebView</ph>.
 
-      Valid authentication url should have the scheme <ph name="HTTP_PROTOCOL">http</ph>/<ph name="HTTPS_PROTOCOL">https</ph> and should not contain wildcards.
+      Authentication URL pattern has to be formatted according to https://www.chromium.org/administrators/url-blocklist-filter-format.
       '''
     },
     {
