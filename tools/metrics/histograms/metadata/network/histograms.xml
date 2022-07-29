@@ -426,7 +426,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Network.Cellular.ESim.Policy.ServiceAtLogin.Count"
     units="units" expires_after="2023-01-15">
   <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-connectivit@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
   <owner>jiajunz@google.com</owner>
   <summary>
     Tracks how many managed eSIM profiles are installed on the devices after a
@@ -547,8 +547,12 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Cellular.ESim.ServiceAtLogin.Count" units="units"
     expires_after="2023-01-15">
+  <obsolete>
+    Removed as of 07/2022. This is has been replaced with a new metric that adds
+    information on whether sim locking is allowed or not.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
-  <owner>cros-connectivit@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Tracks how many eSIM profiles are installed on the devices after a primary
     user login.
@@ -698,6 +702,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Cellular.PSim.ServiceAtLogin.Count" units="units"
     expires_after="2023-01-15">
+  <obsolete>
+    Removed as of 07/2022. This is has been replaced with a new metric that adds
+    information on whether sim locking is allowed or not.
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -736,6 +744,34 @@ chromium-metrics-reviews@google.com.
     Tracks the number of times an PSim cellular network is connected as the only
     network, or with other network or not connected at all.
   </summary>
+</histogram>
+
+<histogram name="Network.Cellular.{AllowSIMLock}.ESim.ServiceAtLogin.Count"
+    units="units" expires_after="2023-01-15">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks how many eSIM profiles are installed on the devices after a primary
+    user login.
+  </summary>
+  <token key="AllowSIMLock">
+    <variant name="Restricted"/>
+    <variant name="Unrestricted"/>
+  </token>
+</histogram>
+
+<histogram name="Network.Cellular.{AllowSIMLock}.PSim.ServiceAtLogin.Count"
+    units="units" expires_after="2023-01-15">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks how many pSIM networks are available on the device after a primary
+    user login.
+  </summary>
+  <token key="AllowSIMLock">
+    <variant name="Restricted"/>
+    <variant name="Unrestricted"/>
+  </token>
 </histogram>
 
 <histogram name="Network.Cellular.{SimType}.CellularSetup.{Result}.Duration"

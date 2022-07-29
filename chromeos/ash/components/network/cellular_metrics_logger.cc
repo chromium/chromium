@@ -444,9 +444,12 @@ CellularMetricsLogger::~CellularMetricsLogger() {
 void CellularMetricsLogger::Init(
     NetworkStateHandler* network_state_handler,
     NetworkConnectionHandler* network_connection_handler,
-    CellularESimProfileHandler* cellular_esim_profile_handler) {
+    CellularESimProfileHandler* cellular_esim_profile_handler,
+    ManagedNetworkConfigurationHandler* managed_network_configuration_handler) {
   network_state_handler_ = network_state_handler;
   cellular_esim_profile_handler_ = cellular_esim_profile_handler;
+  managed_network_configuration_handler_ =
+      managed_network_configuration_handler;
   network_state_handler_observer_.Observe(network_state_handler_);
 
   if (network_connection_handler) {
@@ -839,10 +842,21 @@ void CellularMetricsLogger::CheckForCellularServiceCountMetric() {
         esim_policy_profiles++;
     }
   }
-  UMA_HISTOGRAM_COUNTS_100("Network.Cellular.PSim.ServiceAtLogin.Count",
-                           psim_networks);
-  UMA_HISTOGRAM_COUNTS_100("Network.Cellular.ESim.ServiceAtLogin.Count",
-                           esim_profiles);
+
+  if (managed_network_configuration_handler_->AllowCellularSimLock()) {
+    UMA_HISTOGRAM_COUNTS_100(
+        "Network.Cellular.Unrestricted.PSim.ServiceAtLogin.Count",
+        psim_networks);
+    UMA_HISTOGRAM_COUNTS_100(
+        "Network.Cellular.Unrestricted.ESim.ServiceAtLogin.Count",
+        esim_profiles);
+  } else {
+    UMA_HISTOGRAM_COUNTS_100(
+        "Network.Cellular.Restricted.PSim.ServiceAtLogin.Count", psim_networks);
+    UMA_HISTOGRAM_COUNTS_100(
+        "Network.Cellular.Restricted.ESim.ServiceAtLogin.Count", esim_profiles);
+  }
+
   UMA_HISTOGRAM_COUNTS_100("Network.Cellular.ESim.Policy.ServiceAtLogin.Count",
                            esim_policy_profiles);
   is_service_count_logged_ = true;

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_observer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration
 #include "chromeos/ash/components/network/network_state.h"
@@ -75,6 +76,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   static const char kSimLockNotificationEventHistogram[];
   static const char kSimLockNotificationLockType[];
 
+  // The amount of time after cellular device is added to device list,
+  // after which cellular device is considered initialized.
+  static const base::TimeDelta kInitializationTimeout;
+
   // PIN operations that are tracked by metrics.
   enum class SimPinOperation {
     kRequireLock = 0,
@@ -122,7 +127,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
 
   void Init(NetworkStateHandler* network_state_handler,
             NetworkConnectionHandler* network_connection_handler,
-            CellularESimProfileHandler* cellular_esim_profile_handler);
+            CellularESimProfileHandler* cellular_esim_profile_handler,
+            ManagedNetworkConfigurationHandler*
+                managed_network_configuration_handler);
 
   // LoginState::Observer:
   void LoggedInStateChanged() override;
@@ -150,8 +157,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
                            UserInitiatedConnectionResult);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularESimProfileStatusAtLoginTest);
-  FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
-                           CellularServiceAtLoginTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest, CellularUsageCountTest);
   FRIEND_TEST_ALL_PREFIXES(CellularMetricsLoggerTest,
                            CellularUsageCountDongleTest);
@@ -168,10 +173,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
                            UnblockPinOnUnmanagedDevice);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, UnblockPinOnManagedDevice);
   FRIEND_TEST_ALL_PREFIXES(NetworkDeviceHandlerTest, ChangePin);
-
-  // The amount of time after cellular device is added to device list,
-  // after which cellular device is considered initialized.
-  static const base::TimeDelta kInitializationTimeout;
 
   // The amount of time after a disconnect request within which any
   // disconnections are considered user initiated.
@@ -407,6 +408,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularMetricsLogger
   base::ScopedObservation<chromeos::NetworkStateHandler,
                           chromeos::NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
+
+  ManagedNetworkConfigurationHandler* managed_network_configuration_handler_ =
+      nullptr;
 
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
 

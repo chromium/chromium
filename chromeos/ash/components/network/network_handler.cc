@@ -132,7 +132,8 @@ void NetworkHandler::Init() {
       managed_network_configuration_handler_.get());
   cellular_metrics_logger_->Init(network_state_handler_.get(),
                                  network_connection_handler_.get(),
-                                 cellular_esim_profile_handler_.get());
+                                 cellular_esim_profile_handler_.get(),
+                                 managed_network_configuration_handler_.get());
   connection_info_metrics_logger_->Init(network_state_handler_.get(),
                                         network_connection_handler_.get());
   vpn_network_metrics_helper_->Init(network_configuration_handler_.get());

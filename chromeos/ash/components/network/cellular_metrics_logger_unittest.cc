@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/feature_usage/feature_usage_metrics.h"
 #include "chromeos/ash/components/network/cellular_esim_profile.h"
 #include "chromeos/ash/components/network/cellular_inhibitor.h"
+#include "chromeos/ash/components/network/mock_managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
@@ -51,10 +52,14 @@ const char kESimUsageCountHistogram[] = "Network.Cellular.ESim.Usage.Count";
 const char kESimPolicyUsageCountHistogram[] =
     "Network.Cellular.ESim.Policy.Usage.Count";
 
-const char kPSimServiceAtLoginHistogram[] =
-    "Network.Cellular.PSim.ServiceAtLogin.Count";
-const char kESimServiceAtLoginHistogram[] =
-    "Network.Cellular.ESim.ServiceAtLogin.Count";
+const char kUnrestrictedPSimServiceAtLoginHistogram[] =
+    "Network.Cellular.Unrestricted.PSim.ServiceAtLogin.Count";
+const char kUnrestrictedESimServiceAtLoginHistogram[] =
+    "Network.Cellular.Unrestricted.ESim.ServiceAtLogin.Count";
+const char kRestrictedPSimServiceAtLoginHistogram[] =
+    "Network.Cellular.Restricted.PSim.ServiceAtLogin.Count";
+const char kRestrictedESimServiceAtLoginHistogram[] =
+    "Network.Cellular.Restricted.ESim.ServiceAtLogin.Count";
 const char kESimPolicyServiceAtLoginHistogram[] =
     "Network.Cellular.ESim.Policy.ServiceAtLogin.Count";
 
@@ -93,6 +98,8 @@ class CellularMetricsLoggerTest : public testing::Test {
     LoginState::Initialize();
 
     cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
+    mock_managed_network_configuration_manager_ = base::WrapUnique(
+        new testing::NiceMock<ash::MockManagedNetworkConfigurationHandler>);
     cellular_esim_profile_handler_ =
         std::make_unique<TestCellularESimProfileHandler>();
 
@@ -110,7 +117,8 @@ class CellularMetricsLoggerTest : public testing::Test {
     cellular_metrics_logger_->Init(
         network_state_test_helper_.network_state_handler(),
         /* network_connection_handler */ nullptr,
-        cellular_esim_profile_handler_.get());
+        cellular_esim_profile_handler_.get(),
+        mock_managed_network_configuration_manager_.get());
 
     histogram_tester_->ExpectTotalCount(kESimFeatureUsageMetric, 0);
     task_environment_.FastForwardBy(
@@ -234,6 +242,18 @@ class CellularMetricsLoggerTest : public testing::Test {
     return cellular_metrics_logger_.get();
   }
 
+  void ValidateServiceCount(size_t restricted_count,
+                            size_t unrestricted_count) {
+    histogram_tester_->ExpectTotalCount(kRestrictedESimServiceAtLoginHistogram,
+                                        restricted_count);
+    histogram_tester_->ExpectTotalCount(kRestrictedPSimServiceAtLoginHistogram,
+                                        restricted_count);
+    histogram_tester_->ExpectTotalCount(
+        kUnrestrictedESimServiceAtLoginHistogram, unrestricted_count);
+    histogram_tester_->ExpectTotalCount(
+        kUnrestrictedPSimServiceAtLoginHistogram, unrestricted_count);
+  }
+
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   NetworkStateTestHelper network_state_test_helper_{
@@ -242,6 +262,8 @@ class CellularMetricsLoggerTest : public testing::Test {
   std::unique_ptr<TestCellularESimProfileHandler>
       cellular_esim_profile_handler_;
   std::unique_ptr<CellularMetricsLogger> cellular_metrics_logger_;
+  std::unique_ptr<ash::MockManagedNetworkConfigurationHandler>
+      mock_managed_network_configuration_manager_;
 };
 
 TEST_F(CellularMetricsLoggerTest, ActiveProfileExists) {
@@ -253,25 +275,40 @@ TEST_F(CellularMetricsLoggerTest, ActiveProfileExists) {
       static_cast<int>(feature_usage::FeatureUsageMetrics::Event::kEnabled), 1);
 }
 
+TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginWithRestrictedSimLock) {
+  SetUpMetricsLogger();
+  ON_CALL(*mock_managed_network_configuration_manager_, AllowCellularSimLock())
+      .WillByDefault(testing::Return(false));
+
+  LoginState::Get()->SetLoggedInState(
+      LoginState::LoggedInState::LOGGED_IN_ACTIVE,
+      LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
+  InitCellular();
+  task_environment_.FastForwardBy(
+      CellularMetricsLogger::kInitializationTimeout);
+
+  ValidateServiceCount(1, 0);
+}
+
 TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
   SetUpMetricsLogger();
+  ON_CALL(*mock_managed_network_configuration_manager_, AllowCellularSimLock())
+      .WillByDefault(testing::Return(true));
+
   // Should defer logging when there are no cellular networks.
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
-  histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 0);
-  histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 0);
+  ValidateServiceCount(0, 0);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 0);
 
   // Should wait until initialization timeout before logging status.
   InitCellular();
-  histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 0);
-  histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 0);
+  ValidateServiceCount(0, 0);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 0);
   task_environment_.FastForwardBy(
       CellularMetricsLogger::kInitializationTimeout);
-  histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 1);
-  histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 1);
+  ValidateServiceCount(0, 1);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 1);
 
   // Should log immediately when networks are already initialized.
@@ -281,16 +318,14 @@ TEST_F(CellularMetricsLoggerTest, CellularServiceAtLoginTest) {
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_OWNER);
-  histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 2);
-  histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 2);
+  ValidateServiceCount(0, 2);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 2);
 
   // Should not log when the logged in user is neither owner nor regular.
   LoginState::Get()->SetLoggedInState(
       LoginState::LoggedInState::LOGGED_IN_ACTIVE,
       LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
-  histogram_tester_->ExpectTotalCount(kESimServiceAtLoginHistogram, 2);
-  histogram_tester_->ExpectTotalCount(kPSimServiceAtLoginHistogram, 2);
+  ValidateServiceCount(0, 2);
   histogram_tester_->ExpectTotalCount(kESimPolicyServiceAtLoginHistogram, 2);
 }
 
