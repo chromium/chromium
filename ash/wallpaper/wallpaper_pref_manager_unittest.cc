@@ -33,6 +33,8 @@ using testing::Lt;
 constexpr char kUser1[] = "user1@test.com";
 const AccountId account_id_1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
 
+constexpr char kFakeGooglePhotosPhotoId[] = "fake_photo";
+
 WallpaperInfo InfoWithType(WallpaperType type) {
   return WallpaperInfo(std::string(), WALLPAPER_LAYOUT_CENTER_CROPPED, type,
                        base::Time::Now());
@@ -91,6 +93,7 @@ void PutWallpaperInfoInPrefs(AccountId account_id,
                              WallpaperInfo info,
                              PrefService* pref_service,
                              const std::string& pref_name) {
+  DCHECK(pref_service);
   DictionaryPrefUpdate wallpaper_update(pref_service, pref_name);
   base::Value wallpaper_info_dict = CreateWallpaperInfoDict(info);
   wallpaper_update->SetKey(account_id.GetUserEmail(),
@@ -100,9 +103,10 @@ void PutWallpaperInfoInPrefs(AccountId account_id,
 void AssertWallpaperInfoInPrefs(const PrefService* pref_service,
                                 const char pref_name[],
                                 AccountId account_id,
-                                WallpaperInfo info) {
+                                const WallpaperInfo& info) {
   const base::Value::Dict* stored_info_dict =
       pref_service->GetValueDict(pref_name).FindDict(account_id.GetUserEmail());
+  DCHECK(stored_info_dict);
   base::Value expected_info_dict = CreateWallpaperInfoDict(info);
   EXPECT_EQ(expected_info_dict, *stored_info_dict);
 }
@@ -235,10 +239,31 @@ TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoLocal) {
                              account_id_1, info);
 }
 
+TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoLocalFromGooglePhotos) {
+  WallpaperInfo info(
+      GooglePhotosWallpaperParams{account_id_1, kFakeGooglePhotosPhotoId,
+                                  /*daily_refresh_enabled=*/false,
+                                  WallpaperLayout::WALLPAPER_LAYOUT_STRETCH,
+                                  /*preview_mode=*/false, "dedup_key"});
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+  AssertWallpaperInfoInPrefs(GetLocalPrefService(), prefs::kUserWallpaperInfo,
+                             account_id_1, info);
+}
+
 TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoSynced) {
   profile_helper_->RegisterPrefsForAccount(account_id_1);
 
   WallpaperInfo info = InfoWithType(WallpaperType::kOnline);
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+  AssertWallpaperInfoInPrefs(
+      profile_helper_->GetUserPrefServiceSyncable(account_id_1),
+      prefs::kSyncableWallpaperInfo, account_id_1, info);
+}
+
+TEST_F(WallpaperPrefManagerTest, SetWallpaperInfoSyncedFromGooglePhotos) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kOnceGooglePhotos);
   EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
   AssertWallpaperInfoInPrefs(
       profile_helper_->GetUserPrefServiceSyncable(account_id_1),

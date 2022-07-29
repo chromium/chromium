@@ -102,6 +102,9 @@ class ASH_EXPORT WallpaperControllerImpl
   static std::unique_ptr<WallpaperControllerImpl> Create(
       PrefService* local_state);
 
+  static void SetWallpaperPrefManagerForTesting(
+      std::unique_ptr<WallpaperPrefManager> pref_manager);
+
   // Prefer to use to obtain an new instance unless injecting non-production
   // members i.e. in tests.
   explicit WallpaperControllerImpl(
@@ -200,11 +203,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // state is not available).
   bool SetUserWallpaperInfo(const AccountId& account_id,
                             const WallpaperInfo& info);
-
-  // Gets wallpaper info of |account_id| from local state, or memory if the user
-  // is ephemeral. Returns false if wallpaper info is not found.
-  bool GetUserWallpaperInfo(const AccountId& account_id,
-                            WallpaperInfo* info) const;
 
   // Gets encoded wallpaper from cache. Returns true if success.
   bool GetWallpaperFromCache(const AccountId& account_id,
@@ -390,6 +388,11 @@ class ASH_EXPORT WallpaperControllerImpl
     gfx::ImageSkia image;
     base::FilePath file_path;
   };
+
+  // Gets wallpaper info of |account_id| from local state, or memory if the user
+  // is ephemeral. Returns false if wallpaper info is not found.
+  bool GetUserWallpaperInfo(const AccountId& account_id,
+                            WallpaperInfo* info) const;
 
   // Update a Wallpaper for |root_window|.
   void UpdateWallpaperForRootWindow(aura::Window* root_window,

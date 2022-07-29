@@ -100,6 +100,9 @@ namespace ash {
 
 namespace {
 
+// Global to hold a WallpaperPrefManager for testing in `Create`.
+std::unique_ptr<WallpaperPrefManager> g_test_pref_manager;
+
 // The file name of the policy wallpaper.
 constexpr char kPolicyWallpaperFile[] = "policy-controlled.jpeg";
 
@@ -657,9 +660,21 @@ std::unique_ptr<WallpaperControllerImpl> WallpaperControllerImpl::Create(
     PrefService* local_state) {
   auto online_wallpaper_variant_fetcher =
       std::make_unique<OnlineWallpaperVariantInfoFetcher>();
+  if (g_test_pref_manager) {
+    return std::make_unique<WallpaperControllerImpl>(
+        std::move(g_test_pref_manager),
+        std::move(online_wallpaper_variant_fetcher));
+  }
+
   auto pref_manager = WallpaperPrefManager::Create(local_state);
   return std::make_unique<WallpaperControllerImpl>(
       std::move(pref_manager), std::move(online_wallpaper_variant_fetcher));
+}
+
+// static
+void WallpaperControllerImpl::SetWallpaperPrefManagerForTesting(
+    std::unique_ptr<WallpaperPrefManager> pref_manager) {
+  g_test_pref_manager.swap(pref_manager);
 }
 
 WallpaperControllerImpl::WallpaperControllerImpl(
