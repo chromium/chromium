@@ -717,12 +717,9 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
   // If Lacros comes here with an internal os:// redirect scheme to Ash, and Ash
-  // does not accept the URL, we convert it into a Lacros chrome:// url instead.
-  // This will most likely end in a 404 inside the Lacros browser. Note that we
-  // do not want to create a "404 SWA application".
+  // does not accept the URL, we convert it into a blocked url instead.
   if (crosapi::gurl_os_handler_utils::IsAshOsUrl(params->url)) {
-    params->url =
-        crosapi::gurl_os_handler_utils::GetChromeUrlFromSystemUrl(params->url);
+    params->url = GURL(content::kBlockedURL);
   }
 #endif
 

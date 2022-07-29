@@ -204,10 +204,10 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTestChromeOS, OsSchemeRedirectFail) {
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
   Navigate(&params);
 
-  // A new 404 page should be shown in the browser.
+  // A new blocked page should be shown in the browser.
   EXPECT_EQ(browser(), params.browser);
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
-  EXPECT_EQ(GURL("chrome://foobar"),
+  EXPECT_EQ(GURL(content::kBlockedURL),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
