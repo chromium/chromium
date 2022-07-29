@@ -22,6 +22,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.services.ServiceNames;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
@@ -188,6 +189,8 @@ public class ComponentsProviderService extends Service {
 
         cleanupOlderFiles();
         maybeScheduleComponentUpdateService();
+
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.COMPONENTS_PROVIDER_SERVICE);
     }
 
     private void cleanupOlderFiles() {

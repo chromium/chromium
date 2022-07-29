@@ -17,6 +17,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord.RecordType;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.base.task.PostTask;
@@ -146,6 +147,7 @@ public final class MetricsBridgeService extends Service {
                 Log.e(TAG, "Failed reading proto log file", e);
             }
         });
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.METRICS_BRIDGE_SERVICE);
     }
 
     public MetricsBridgeService() {

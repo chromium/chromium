@@ -102406,6 +102406,18 @@ Called by update_scheduler_enums.py.-->
   <int value="8" label="Night mode off, light theme yes"/>
 </enum>
 
+<enum name="WebViewNonembeddedService">
+  <int value="0" label="AwMinidumpUploadJobService"/>
+  <int value="1" label="AwVariationsSeedFetcher"/>
+  <int value="2" label="ComponentsProviderService"/>
+  <int value="3" label="CrashReceiverService.class"/>
+  <int value="4" label="DeveloperUiService"/>
+  <int value="5" label="MetricsBridgeService"/>
+  <int value="6" label="MetricsUploadService"/>
+  <int value="7" label="SafeModeService"/>
+  <int value="8" label="VariationsSeedServer"/>
+</enum>
+
 <enum name="WebViewOpenWebScreenPortion">
   <obsolete>
     Deprecated in March 2022.

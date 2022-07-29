@@ -16,6 +16,7 @@ import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.common.crash.CrashUploadUtil;
 import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.Log;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
@@ -186,6 +187,11 @@ public class CrashReceiverService extends Service {
                 }
             }
         }
+    }
+
+    @Override
+    public void onCreate() {
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.CRASH_RECEIVER_SERVICE);
     }
 
     @Override

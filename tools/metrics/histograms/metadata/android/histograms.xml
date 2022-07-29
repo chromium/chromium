@@ -4229,6 +4229,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Nonembedded.FirstServiceInProcess"
+    enum="WebViewNonembeddedService" expires_after="2022-12-11">
+  <owner>hazems@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the first nonembedded WebView Service to run in the nonembedded
+    &quot;:webview_service&quot; process. This excludes ContentProviders because
+    they are always created during the process startup. This is recorded when
+    the service is created (when `onCreate` is called). Also see
+    &quot;Android.WebView.Nonembedded.IsFreshServiceProcessLaunched&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.Nonembedded.IsFreshServiceProcessLaunched"
+    enum="Boolean" expires_after="2022-12-11">
+  <owner>hazems@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Captures if the service is the first service to be created in the process or
+    not. It helps to see how often the nonembedded &quot;:webview_service&quot;
+    process is reused for multiple services. This excludes ContentProviders
+    because they are always created during the process startup. This is recorded
+    when any nonembedded service is created (when `onCreate` is called). Also
+    see &quot;Android.WebView.Nonembedded.FirstServiceInProcess&quot;.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.NonEmbeddedMetrics.HistogramRecordAge"
     units="minutes" expires_after="2022-12-11">
   <owner>hazems@chromium.org</owner>

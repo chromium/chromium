@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -223,6 +224,11 @@ public class AwVariationsSeedFetcher extends JobService {
                 Log.e(TAG, "Failed to write variations SharedPreferences to disk");
             }
         }
+    }
+
+    @Override
+    public void onCreate() {
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.AW_VARIATIONS_SEED_FETCHER);
     }
 
     @Override

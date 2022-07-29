@@ -10,6 +10,7 @@ import android.os.IBinder;
 
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.IMetricsUploadService;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 
 /**
  * Service that receives UMA metrics logs from embedded WebView instances and send them to GMS-core
@@ -25,6 +26,11 @@ public class MetricsUploadService extends Service {
             PlatformServiceBridge.getInstance().logMetricsBlocking(serializedLog);
         }
     };
+
+    @Override
+    public void onCreate() {
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.METRICS_UPLOAD_SERVICE);
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
