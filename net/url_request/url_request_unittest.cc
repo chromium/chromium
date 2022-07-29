@@ -9112,7 +9112,16 @@ class FailingHttpTransactionFactory : public HttpTransactionFactory {
 // This currently only happens when in suspend mode and there's no cache, but
 // just use a special HttpTransactionFactory, to avoid depending on those
 // behaviors.
-TEST_F(URLRequestTestHTTP, NetworkCancelAfterCreateTransactionFailsTest) {
+//
+// Flaky crash: https://crbug.com/1348418
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_NetworkCancelAfterCreateTransactionFailsTest \
+  DISABLED_NetworkCancelAfterCreateTransactionFailsTest
+#else
+#define MAYBE_NetworkCancelAfterCreateTransactionFailsTest \
+  NetworkCancelAfterCreateTransactionFailsTest
+#endif
+TEST_F(URLRequestTestHTTP, MAYBE_NetworkCancelAfterCreateTransactionFailsTest) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   context_builder->SetCreateHttpTransactionFactoryCallback(
       base::BindOnce([](HttpNetworkSession* session) {
