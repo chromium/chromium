@@ -50,12 +50,12 @@ function runTest() {
         for (let i = 0; i < 33; i++) {
             window.setTimeout(() => {
                 document.getElementById('link' + i).focus();
-            }, 10 * i);
+            }, 250 + (2 * i));
         }
 
         // Wait to allow the asynchronous accessibility code that's
         // covered by traceEventsToMeasure to have a chance to run.
-        setTimeout(runTest, 1500);
+        setTimeout(runTest, 2500);
     }
 }
 
