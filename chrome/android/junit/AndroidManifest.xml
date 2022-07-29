@@ -11,6 +11,7 @@
     package="org.chromium.chrome">
 
   <application android:theme="@style/Theme.AppCompat.Light">
+    <activity android:name="androidx.fragment.app.FragmentActivity" />
     <activity android:name="org.chromium.ui.base.TestActivity"
               android:theme="@style/Theme.Chromium.Activity"/>
     <activity android:name="org.chromium.chrome.browser.ChromeTabbedActivity"

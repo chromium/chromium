@@ -18,14 +18,15 @@ import android.graphics.Bitmap;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
@@ -44,6 +45,10 @@ import java.lang.ref.WeakReference;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ScreenshotCoordinatorTest {
+    @Rule
+    public ActivityScenarioRule<FragmentActivity> mActivityScenarioRule =
+        new ActivityScenarioRule<>(FragmentActivity.class);
+
     // clang-format on
     @Mock
     private ChromeOptionShareCallback mChromeOptionShareCallback;
@@ -96,7 +101,7 @@ public class ScreenshotCoordinatorTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.setupActivity(FragmentActivity.class);
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
 
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
