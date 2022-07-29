@@ -147,7 +147,7 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
     // If the password changes, the password issues aren't valid
     // any more. Make sure they are cleared before storing the new form.
     new_form_with_correct_password_issues.password_issues.clear();
-  } else if (new_form.username_element != old_primary_key.username_element) {
+  } else if (new_form.username_value != old_primary_key.username_value) {
     // If the username changed then the phished and leaked issues aren't valid
     // any more. Make sure they are erased before storing the new form.
     new_form_with_correct_password_issues.password_issues.erase(
