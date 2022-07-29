@@ -83,6 +83,7 @@ extern const base::Feature kNtpRealboxTailSuggest;
 extern const base::Feature kOmniboxFuzzyUrlSuggestions;
 extern const base::Feature kOmniboxRemoveSuggestionHeaderCapitalization;
 extern const base::Feature kOmniboxRemoveSuggestionHeaderChevron;
+extern const base::Feature kOmniboxMostVisitedTilesOnSrp;
 extern const base::Feature kStrippedGurlOptimization;
 
 // Omnibox UI - these affect the UI or function of the location bar (not the

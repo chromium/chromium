@@ -319,7 +319,19 @@ class ParameterizedMostVisitedSitesProviderTest
     : public MostVisitedSitesProviderTest,
       public ::testing::WithParamInterface<bool> {
   void SetUp() override {
-    features_.InitWithFeatureState(omnibox::kMostVisitedTiles, GetParam());
+    std::vector<base::Feature> enabled_features;
+    std::vector<base::Feature> disabled_features;
+
+    bool isEnabled = GetParam();
+    if (isEnabled) {
+      enabled_features.push_back(omnibox::kMostVisitedTiles);
+      enabled_features.push_back(omnibox::kOmniboxMostVisitedTilesOnSrp);
+    } else {
+      disabled_features.push_back(omnibox::kMostVisitedTiles);
+      disabled_features.push_back(omnibox::kOmniboxMostVisitedTilesOnSrp);
+    }
+
+    features_.InitWithFeatures(enabled_features, disabled_features);
     MostVisitedSitesProviderTest::SetUp();
   }
 };
@@ -353,6 +365,13 @@ TEST_P(ParameterizedMostVisitedSitesProviderTest,
   EXPECT_TRUE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
           WEB_URL, WEB_URL, OEP::OTHER, OFT::DELETED_PERMANENT_TEXT)));
+
+  // Offer MV sites when the User searched for a query and focus on omnibox.
+  EXPECT_EQ(
+      GetParam(),
+      provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
+          WEB_URL, WEB_URL, OEP::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+          OFT::ON_FOCUS)));
 }
 
 TEST_P(ParameterizedMostVisitedSitesProviderTest, TestCreateMostVisitedMatch) {

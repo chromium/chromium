@@ -1103,6 +1103,9 @@ extern const char kOmniboxFocusTriggersSRPZeroSuggestDescription[];
 extern const char kOmniboxFocusTriggersContextualWebZeroSuggestName[];
 extern const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[];
 
+extern const char kOmniboxMostVisitedTilesOnSrpName[];
+extern const char kOmniboxMostVisitedTilesOnSrpDescription[];
+
 extern const char kOmniboxShortBookmarkSuggestionsName[];
 extern const char kOmniboxShortBookmarkSuggestionsDescription[];
 

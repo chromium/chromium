@@ -55654,6 +55654,7 @@ from previous Chrome versions.
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
   <int value="-2008272679" label="disable-webrtc-hw-encoding"/>
+  <int value="-2007947679" label="OmniboxMostVisitedTilesOnSrp:disabled"/>
   <int value="-2005089558" label="BackgroundVideoTrackOptimization:disabled"/>
   <int value="-2004882388" label="AutofillPruneSuggestions:enabled"/>
   <int value="-2004231189" label="AppNotificationStatusMessaging:disabled"/>
@@ -56277,6 +56278,7 @@ from previous Chrome versions.
   <int value="-1620230777" label="StylusBatteryStatus:enabled"/>
   <int value="-1620046590" label="UseMediaHistoryStore:enabled"/>
   <int value="-1619757314" label="touch-scrolling-mode"/>
+  <int value="-1619437172" label="OmniboxMostVisitedTilesOnSrp:enabled"/>
   <int value="-1619146163" label="OverrideSitePrefsForHrefTranslate:disabled"/>
   <int value="-1618707999" label="enable-webfonts-intervention-v2"/>
   <int value="-1618030555" label="ArcAccountRestrictions:enabled"/>

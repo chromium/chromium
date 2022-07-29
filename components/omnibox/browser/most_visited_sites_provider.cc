@@ -203,11 +203,21 @@ bool MostVisitedSitesProvider::AllowMostVisitedSitesSuggestions(
   if (client_->IsOffTheRecord())
     return false;
 
+  // This code guards cases when flag is disabled. Upon post-launch cleanup
+  // we just delete this
+  if (!base::FeatureList::IsEnabled(omnibox::kOmniboxMostVisitedTilesOnSrp) &&
+      (page_class == metrics::OmniboxEventProto::
+                         SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT)) {
+    return false;
+  }
+
   // Check whether current context is one that supports MV tiles.
   // Any context other than those listed below will be rejected.
   if (page_class != metrics::OmniboxEventProto::OTHER &&
       page_class != metrics::OmniboxEventProto::ANDROID_SEARCH_WIDGET &&
-      page_class != metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET) {
+      page_class != metrics::OmniboxEventProto::ANDROID_SHORTCUTS_WIDGET &&
+      page_class != metrics::OmniboxEventProto::
+                        SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT) {
     return false;
   }
 

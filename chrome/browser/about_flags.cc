@@ -5153,6 +5153,11 @@ const FeatureEntry kFeatureEntries[] = {
          kOmniboxRemoveSuggestionHeaderChevronVariations,
          "OmniboxRemoveSuggestionHeaderChevron")},
 
+    {"omnibox-most-visited-tiles-on-srp",
+     flag_descriptions::kOmniboxMostVisitedTilesOnSrpName,
+     flag_descriptions::kOmniboxMostVisitedTilesOnSrpDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxMostVisitedTilesOnSrp)},
+
     {"omnibox-most-visited-tiles-title-wrap-around",
      flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundName,
      flag_descriptions::kOmniboxMostVisitedTilesTitleWrapAroundDescription,

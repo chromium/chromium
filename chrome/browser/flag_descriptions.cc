@@ -1978,6 +1978,12 @@ const char kOmniboxFocusTriggersContextualWebZeroSuggestDescription[] =
     "current URL. Will only work if user is signed-in and syncing, or is "
     "otherwise eligible to send the current page URL to the suggest server.";
 
+const char kOmniboxMostVisitedTilesOnSrpName[] =
+    "Omnibox Most Visited Tiles on Search Results Page";
+const char kOmniboxMostVisitedTilesOnSrpDescription[] =
+    "Offer most visited website tiles when the User is on the Search Results "
+    "Page.";
+
 const char kOmniboxShortBookmarkSuggestionsName[] =
     "Omnibox short bookmark suggestions";
 const char kOmniboxShortBookmarkSuggestionsDescription[] =
