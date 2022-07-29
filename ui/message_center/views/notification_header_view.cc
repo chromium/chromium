@@ -276,20 +276,20 @@ void NotificationHeaderView::SetProgress(int progress) {
   summary_text_view_->SetText(l10n_util::GetStringFUTF16Int(
       IDS_MESSAGE_CENTER_NOTIFICATION_PROGRESS_PERCENTAGE, progress));
   has_progress_ = true;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::SetSummaryText(const std::u16string& text) {
   summary_text_view_->SetText(text);
   has_progress_ = false;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::SetOverflowIndicator(int count) {
   summary_text_view_->SetText(l10n_util::GetStringFUTF16Int(
       IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
   has_progress_ = false;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -317,7 +317,7 @@ void NotificationHeaderView::SetTimestamp(base::Time timestamp) {
 
   timestamp_view_->SetText(relative_time);
   timestamp_ = timestamp;
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 
   // Unretained is safe as the timer cancels the task on destruction.
   timestamp_update_timer_.Start(
@@ -334,7 +334,7 @@ void NotificationHeaderView::SetDetailViewsVisible(bool visible) {
   else
     timestamp_update_timer_.Stop();
 
-  UpdateSummaryTextVisibility();
+  UpdateSummaryTextAndTimestampVisibility();
 }
 
 void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
@@ -381,7 +381,7 @@ void NotificationHeaderView::SetAppIconVisible(bool visible) {
 }
 
 void NotificationHeaderView::SetTimestampVisible(bool visible) {
-  timestamp_divider_->SetVisible(visible);
+  timestamp_divider_->SetVisible(!is_in_group_child_notification_ && visible);
   timestamp_view_->SetVisible(visible);
 }
 
@@ -398,6 +398,20 @@ void NotificationHeaderView::SetIsInAshNotificationView(
   SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeightInAsh));
 }
 
+void NotificationHeaderView::SetIsInGroupChildNotification(
+    bool is_in_group_child_notification) {
+  if (is_in_group_child_notification_ == is_in_group_child_notification)
+    return;
+  is_in_group_child_notification_ = is_in_group_child_notification;
+
+  app_name_view_->SetVisible(!is_in_group_child_notification_);
+  app_icon_view_->SetVisible(!is_in_ash_notification_ &&
+                             !is_in_group_child_notification_);
+  expand_button_->SetVisible(!is_in_ash_notification_ &&
+                             !is_in_group_child_notification_);
+  UpdateSummaryTextAndTimestampVisibility();
+}
+
 const std::u16string& NotificationHeaderView::app_name_for_testing() const {
   return app_name_view_->GetText();
 }
@@ -406,14 +420,14 @@ gfx::ImageSkia NotificationHeaderView::app_icon_for_testing() const {
   return app_icon_view_->GetImage();
 }
 
-void NotificationHeaderView::UpdateSummaryTextVisibility() {
-  const bool summary_visible = !summary_text_view_->GetText().empty();
+void NotificationHeaderView::UpdateSummaryTextAndTimestampVisibility() {
+  const bool summary_visible = !is_in_group_child_notification_ &&
+                               !summary_text_view_->GetText().empty();
   summary_text_divider_->SetVisible(summary_visible);
   summary_text_view_->SetVisible(summary_visible);
 
   const bool timestamp_visible = !has_progress_ && timestamp_;
-  timestamp_divider_->SetVisible(timestamp_visible);
-  timestamp_view_->SetVisible(timestamp_visible);
+  SetTimestampVisible(timestamp_visible);
 
   // TODO(crbug.com/991492): this should not be necessary.
   detail_views_->InvalidateLayout();

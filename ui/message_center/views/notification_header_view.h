@@ -79,6 +79,9 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   void SetIsInAshNotificationView(bool is_in_ash_notification);
 
+  // The header only shows timestamp if it is in a group child notification.
+  void SetIsInGroupChildNotification(bool is_in_group_child_notification);
+
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
@@ -105,9 +108,11 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationHeaderViewTest, SettingsMode);
+  FRIEND_TEST_ALL_PREFIXES(NotificationHeaderViewTest,
+                           GroupChildNotificationVisibility);
 
   // Update visibility for both |summary_text_view_| and |timestamp_view_|.
-  void UpdateSummaryTextVisibility();
+  void UpdateSummaryTextAndTimestampVisibility();
 
   void UpdateColors();
 
@@ -134,6 +139,9 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
 
   // Whether this view is used for an ash notification view.
   bool is_in_ash_notification_ = false;
+
+  // Whether this view is used for a group child notification.
+  bool is_in_group_child_notification_ = false;
 };
 
 BEGIN_VIEW_BUILDER(MESSAGE_CENTER_EXPORT, NotificationHeaderView, views::Button)

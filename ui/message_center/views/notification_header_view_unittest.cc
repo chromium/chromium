@@ -230,6 +230,48 @@ TEST_F(NotificationHeaderViewTest, AppIconAndExpandButtonNotVisible) {
   EXPECT_FALSE(notification_header_view->expand_button()->GetVisible());
 }
 
+TEST_F(NotificationHeaderViewTest, GroupChildNotificationVisibility) {
+  notification_header_view_->SetSummaryText(u"summary");
+  notification_header_view_->SetTimestamp(base::Time::Now());
+
+  EXPECT_TRUE(
+      notification_header_view_->app_icon_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->expand_button()->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->summary_text_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->summary_text_divider_->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->timestamp_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->timestamp_divider_->GetVisible());
+
+  // For group child notification, all the views except `timestamp_view_` should
+  // not be visible.
+  notification_header_view_->SetIsInGroupChildNotification(
+      /*is_in_group_child_notification=*/true);
+  EXPECT_FALSE(
+      notification_header_view_->app_icon_view_for_testing()->GetVisible());
+  EXPECT_FALSE(notification_header_view_->expand_button()->GetVisible());
+  EXPECT_FALSE(
+      notification_header_view_->summary_text_for_testing()->GetVisible());
+  EXPECT_FALSE(notification_header_view_->summary_text_divider_->GetVisible());
+  EXPECT_FALSE(notification_header_view_->timestamp_divider_->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->timestamp_view_for_testing()->GetVisible());
+
+  // Switching back.
+  notification_header_view_->SetIsInGroupChildNotification(
+      /*is_in_group_child_notification=*/false);
+  EXPECT_TRUE(
+      notification_header_view_->app_icon_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->expand_button()->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->summary_text_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->summary_text_divider_->GetVisible());
+  EXPECT_TRUE(
+      notification_header_view_->timestamp_view_for_testing()->GetVisible());
+  EXPECT_TRUE(notification_header_view_->timestamp_divider_->GetVisible());
+}
+
 TEST_F(NotificationHeaderViewTest, MetadataTest) {
   views::test::TestViewMetadata(notification_header_view_);
 }

@@ -184,16 +184,18 @@ views::Builder<views::BoxLayoutView> CreateCollapsedSummaryBuilder(
       .SetBetweenChildSpacing(ash::kGroupedCollapsedSummaryLabelSpacing)
       .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
       .SetVisible(false)
-      .AddChild(
-          views::Builder<views::Label>()
-              .SetText(notification.title())
-              .SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
-                                         message_center::kTitleFontSize,
-                                         gfx::Font::Weight::MEDIUM)))
+      .AddChild(views::Builder<views::Label>()
+                    .SetText(notification.title())
+                    .SetFontList(gfx::FontList(
+                        {kGoogleSansFont}, gfx::Font::NORMAL, kTitleLabelSize,
+                        gfx::Font::Weight::MEDIUM)))
       .AddChild(views::Builder<views::Label>()
                     .SetText(notification.message())
                     .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
-                    .SetTextStyle(views::style::STYLE_SECONDARY));
+                    .SetTextStyle(views::style::STYLE_SECONDARY)
+                    .SetFontList(gfx::FontList(
+                        {kGoogleSansFont}, gfx::Font::NORMAL, kMessageLabelSize,
+                        gfx::Font::Weight::MEDIUM)));
 }
 
 views::Builder<ash::AshNotificationView::GroupedNotificationsContainer>
@@ -904,15 +906,11 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
   // are collapsed.
   bool use_expanded_padding = expanded || is_grouped_parent_view_;
 
-  bool is_single_expanded_notification =
-      !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
-  header_row()->SetVisible(is_grouped_parent_view_ ||
-                           (is_single_expanded_notification));
+  header_row()->SetVisible(is_grouped_parent_view_ || expanded);
   header_row()->SetTimestampVisible(!is_grouped_parent_view_ || !expanded);
 
   if (title_row_) {
-    title_row_->UpdateVisibility(is_grouped_child_view_ ||
-                                 (IsExpandable() && !expanded));
+    title_row_->UpdateVisibility(IsExpandable() && !expanded);
     title_row_->title_view()->SetMaxLines(
         expanded ? kTitleLabelExpandedMaxLines : kTitleLabelCollapsedMaxLines);
     title_row_->title_view()->SetMaximumWidth(GetExpandedTitleLabelWidth());
@@ -994,7 +992,7 @@ void AshNotificationView::UpdateWithNotification(
   if (is_grouped_child_view_ && !is_nested())
     SetIsNested();
 
-  header_row()->SetVisible(!is_grouped_child_view_);
+  header_row()->SetIsInGroupChildNotification(is_grouped_child_view_);
   UpdateMessageLabelInExpandedState(notification);
 
   NotificationViewBase::UpdateWithNotification(notification);
