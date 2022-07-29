@@ -144,11 +144,10 @@ bool IsClientInSampleImpl(PrefService* local_state) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Callback to update the metrics reporting state when the Chrome OS metrics
 // reporting setting changes.
-void OnCrosMetricsReportingSettingChange() {
+void OnCrosMetricsReportingSettingChange(
+    ChangeMetricsReportingStateCalledFrom called_from) {
   bool enable_metrics = ash::StatsReportingController::Get()->IsEnabled();
-  ChangeMetricsReportingState(
-      enable_metrics,
-      ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange);
+  ChangeMetricsReportingState(enable_metrics, called_from);
 
   // TODO(crbug.com/1234538): This call ensures that structured metrics' state
   // is deleted when the reporting state is disabled. Long-term this should
@@ -243,11 +242,14 @@ bool ChromeMetricsServicesManagerClient::GetSamplingRatePerMille(int* rate) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeMetricsServicesManagerClient::OnCrosSettingsCreated() {
+  // Listen for changes to metrics reporting state.
   reporting_setting_subscription_ =
-      ash::StatsReportingController::Get()->AddObserver(
-          base::BindRepeating(&OnCrosMetricsReportingSettingChange));
+      ash::StatsReportingController::Get()->AddObserver(base::BindRepeating(
+          &OnCrosMetricsReportingSettingChange,
+          ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange));
   // Invoke the callback once initially to set the metrics reporting state.
-  OnCrosMetricsReportingSettingChange();
+  OnCrosMetricsReportingSettingChange(
+      ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsCreated);
 }
 #endif
 

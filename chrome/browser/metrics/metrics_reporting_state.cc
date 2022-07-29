@@ -117,9 +117,14 @@ void ChangeMetricsReportingStateWithReply(
   // Chrome OS manages metrics settings externally and changes to reporting
   // should be propagated to metrics service regardless if the policy is managed
   // or not.
-  if (IsMetricsReportingPolicyManaged() &&
-      called_from !=
-          ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange) {
+  // TODO(crbug/1346321): Possibly change |is_chrome_os| to use
+  // BUILDFLAG(IS_CHROMEOS_ASH).
+  bool is_chrome_os =
+      (called_from ==
+       ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsChange) ||
+      (called_from ==
+       ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsCreated);
+  if (IsMetricsReportingPolicyManaged() && !is_chrome_os) {
     if (!callback_fn.is_null()) {
       const bool metrics_enabled =
           ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
@@ -145,6 +150,15 @@ void ChangeMetricsReportingStateWithReply(
 void UpdateMetricsPrefsOnPermissionChange(
     bool metrics_enabled,
     ChangeMetricsReportingStateCalledFrom called_from) {
+  // On Chrome OS settings creation, nothing should be performed (the metrics
+  // service is simply being initialized). Otherwise, for users who have
+  // metrics reporting disabled, their client ID and low entropy sources would
+  // be cleared on each log in. For users who have metrics reporting enabled,
+  // their stability metrics and histogram data would be cleared.
+  if (called_from ==
+      ChangeMetricsReportingStateCalledFrom::kCrosMetricsSettingsCreated) {
+    return;
+  }
   if (metrics_enabled) {
     // When a user opts in to the metrics reporting service, the previously
     // collected data should be cleared to ensure that nothing is reported

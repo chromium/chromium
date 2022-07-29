@@ -23,6 +23,10 @@ enum class ChangeMetricsReportingStateCalledFrom {
   // Called from Chrome OS settings change. Chrome OS manages settings
   // externally and metrics service listens for changes.
   kCrosMetricsSettingsChange,
+
+  // Called from Chrome OS on settings creation/initialization. This happens
+  // once on each log in.
+  kCrosMetricsSettingsCreated,
 };
 
 // Changes metrics reporting state without caring about the success of the
