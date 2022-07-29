@@ -13,14 +13,35 @@ import '../../css/common.css.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {createExternallyResolvablePromise, ExternallyResolvablePromise, isEmptyArray, isNonEmptyArray} from '../../common/utils.js';
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {isNonEmptyArray} from '../utils.js';
 
 import {getTemplate} from './google_photos_collection_element.html.js';
 import {fetchGooglePhotosAlbums, fetchGooglePhotosPhotos, initializeGooglePhotosData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
+
+/** A Promise<T> which can be externally |resolve()|-ed. */
+type ExternallyResolvablePromise<T> = Promise<T>&{resolve: (result: T) => void};
+
+/** Creates a Promise<T> which can be externally |resolve()|-ed. */
+function createExternallyResolvablePromise<T>():
+    ExternallyResolvablePromise<T> {
+  let externalResolver: (result: T) => void;
+  const promise = new Promise<T>(resolve => {
+                    externalResolver = resolve;
+                  }) as ExternallyResolvablePromise<T>;
+  promise.resolve = externalResolver!;
+  return promise;
+}
+
+/**
+ * Checks if argument is an array with zero length.
+ */
+function isEmptyArray(maybeArray: unknown): maybeArray is[] {
+  return Array.isArray(maybeArray) && maybeArray.length === 0;
+}
 
 /** Enumeration of supported tabs. */
 enum Tab {

@@ -16,16 +16,16 @@ import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-li
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getLoadingPlaceholders, getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent, normalizeKeyForRTL} from '../../common/utils.js';
 import {dismissErrorAction, setErrorAction} from '../personalization_actions.js';
 import {CurrentWallpaper, GooglePhotosPhoto, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStateError} from '../personalization_state.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from '../utils.js';
+import {getNumberOfGridItemsPerRow, isNonEmptyArray, isSelectionEvent} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
 import {recordWallpaperGooglePhotosSourceUMA, WallpaperGooglePhotosSource} from './google_photos_metrics_logger.js';
 import {getTemplate} from './google_photos_photos_element.html.js';
+import {getLoadingPlaceholders, isGooglePhotosPhoto, isImageAMatchForKey, isImageEqualToSelected} from './utils.js';
 import {fetchGooglePhotosPhotos, selectWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 
@@ -49,6 +49,21 @@ function getPlaceholders(): GooglePhotosPhotosRow[] {
     row.push({...placeholder, index: i});
   });
   return placeholders;
+}
+
+/**
+ * Normalizes the given |key| for RTL.
+ */
+export function normalizeKeyForRTL(key: string, isRTL: boolean): string {
+  if (isRTL) {
+    if (key === 'ArrowLeft') {
+      return 'ArrowRight';
+    }
+    if (key === 'ArrowRight') {
+      return 'ArrowLeft';
+    }
+  }
+  return key;
 }
 
 /** A single |GooglePhotosPhoto| coupled with its numerical index. */

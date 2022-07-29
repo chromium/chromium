@@ -10,10 +10,9 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {isNonEmptyArray, isSelectionEvent} from '../../common/utils.js';
 import {DefaultUserImage, UserImage} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {decodeString16} from '../utils.js';
+import {decodeString16, isNonEmptyArray, isSelectionEvent} from '../utils.js';
 
 import {AvatarCamera, AvatarCameraMode} from './avatar_camera_element.js';
 import {getTemplate} from './avatar_list_element.html.js';

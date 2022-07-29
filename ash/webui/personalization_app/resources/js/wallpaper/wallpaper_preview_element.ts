@@ -16,12 +16,12 @@ import '../../css/cros_button_style.css.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {getLocalStorageAttribution, isNonEmptyArray} from '../../common/utils.js';
 import {CurrentWallpaper, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
+import {isNonEmptyArray} from '../utils.js';
 
+import {getLocalStorageAttribution, hasHttpScheme, removeHighResolutionSuffix} from './utils.js';
 import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 

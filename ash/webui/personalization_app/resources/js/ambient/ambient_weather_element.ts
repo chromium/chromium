@@ -14,14 +14,11 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 
 import {TemperatureUnit} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {inBetween} from '../utils.js';
 
 import {setTemperatureUnit} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {getTemplate} from './ambient_weather_element.html.js';
-
-export function inBetween(num: number, minValue: number, maxValue: number) {
-  return minValue <= num && num <= maxValue;
-}
 
 export class AmbientWeatherUnit extends WithPersonalizationStore {
   static get is() {

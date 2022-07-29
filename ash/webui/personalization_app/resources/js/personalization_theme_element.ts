@@ -18,13 +18,12 @@ import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_butto
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {isSelectionEvent} from '../common/utils.js';
-
 import {WithPersonalizationStore} from './personalization_store.js';
 import {getTemplate} from './personalization_theme_element.html.js';
 import {initializeData, setColorModeAutoSchedule, setColorModePref} from './theme/theme_controller.js';
 import {getThemeProvider} from './theme/theme_interface_provider.js';
 import {ThemeObserver} from './theme/theme_observer.js';
+import {isSelectionEvent} from './utils.js';
 
 export interface PersonalizationThemeElement {
   $: {

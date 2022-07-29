@@ -12,9 +12,9 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
-import {isSelectionEvent} from '../../common/utils.js';
 import {AnimationTheme} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
+import {isSelectionEvent} from '../utils.js';
 
 import {setAnimationTheme} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';

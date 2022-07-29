@@ -12,15 +12,15 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {isSelectionEvent} from '../../common/utils.js';
 import {TopicSource} from '../personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getTopicSourceName} from '../utils.js';
+import {isSelectionEvent} from '../utils.js';
 
 import {setTopicSource} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {getTemplate} from './topic_source_item_element.html.js';
+import {getTopicSourceName} from './utils.js';
 
 export class TopicSourceItem extends WithPersonalizationStore {
   static get is() {

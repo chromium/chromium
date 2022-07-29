@@ -5,13 +5,14 @@
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {isNonEmptyArray} from '../../common/utils.js';
 import {GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {PersonalizationStore} from '../personalization_store.js';
-import {appendMaxResolutionSuffix, isDefaultImage, isFilePath, isGooglePhotosPhoto, isImageEqualToSelected, isWallpaperImage} from '../utils.js';
+import {isNonEmptyArray} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
+import {isDefaultImage, isFilePath, isGooglePhotosPhoto, isImageEqualToSelected, isWallpaperImage} from './utils.js';
 import * as action from './wallpaper_actions.js';
 
 /**
@@ -60,6 +61,15 @@ async function fetchAllImagesForCollections(
   await Promise.all(collections.map(
       collection =>
           fetchAndDispatchCollectionImages(provider, store, collection)));
+}
+
+/**
+ * Appends a suffix to request wallpaper images with the longest of width or
+ * height being 512 pixels. This should ensure that the wallpaper image is
+ * large enough to cover a grid item but not significantly more so.
+ */
+function appendMaxResolutionSuffix(value: Url): Url {
+  return {...value, url: value.url + '=s512'};
 }
 
 /**

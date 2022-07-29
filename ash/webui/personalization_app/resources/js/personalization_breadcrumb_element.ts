@@ -21,13 +21,18 @@ import '../css/cros_button_style.css.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {isNonEmptyArray} from '../common/utils.js';
-
 import {GooglePhotosAlbum, TopicSource, WallpaperCollection} from './personalization_app.mojom-webui.js';
 import {getTemplate} from './personalization_breadcrumb_element.html.js';
 import {isPathValid, isPersonalizationHubEnabled, Paths, PersonalizationRouter} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
-import {inBetween, isNonEmptyString} from './utils.js';
+import {inBetween, isNonEmptyArray} from './utils.js';
+
+/**
+ * Checks if argument is a string with non-zero length.
+ */
+function isNonEmptyString(maybeString: unknown): maybeString is string {
+  return typeof maybeString === 'string' && maybeString.length > 0;
+}
 
 /** Event interface for dom-repeat. */
 interface RepeaterEvent extends CustomEvent {

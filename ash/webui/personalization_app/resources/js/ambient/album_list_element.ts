@@ -12,12 +12,12 @@ import '../../css/common.css.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getCountText, isSelectionEvent} from '../../common/utils.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {isRecentHighlightsAlbum} from '../utils.js';
+import {getCountText, isSelectionEvent} from '../utils.js';
 
 import {getTemplate} from './album_list_element.html.js';
+import {isRecentHighlightsAlbum} from './utils.js';
 
 export interface AlbumList {
   $: {grid: IronListElement};

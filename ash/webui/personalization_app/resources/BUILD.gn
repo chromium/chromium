@@ -21,14 +21,13 @@ preprocess_folder = "preprocessed"
 # polymer based ts files, `css_wrapper_files` are Polymer css files,
 # `static_resource_files` are non-js files, e.g. image, html, css
 non_web_component_files = [
-  "common/utils.ts",
-
   "js/ambient/ambient_actions.ts",
   "js/ambient/ambient_controller.ts",
   "js/ambient/ambient_interface_provider.ts",
   "js/ambient/ambient_observer.ts",
   "js/ambient/ambient_reducers.ts",
   "js/ambient/ambient_state.ts",
+  "js/ambient/utils.ts",
   "js/keyboard_backlight/keyboard_backlight_actions.ts",
   "js/keyboard_backlight/keyboard_backlight_controller.ts",
   "js/keyboard_backlight/keyboard_backlight_interface_provider.ts",
@@ -59,6 +58,7 @@ non_web_component_files = [
   "js/utils.ts",
   "js/wallpaper/constants.ts",
   "js/wallpaper/google_photos_metrics_logger.ts",
+  "js/wallpaper/utils.ts",
   "js/wallpaper/wallpaper_actions.ts",
   "js/wallpaper/wallpaper_controller.ts",
   "js/wallpaper/wallpaper_interface_provider.ts",

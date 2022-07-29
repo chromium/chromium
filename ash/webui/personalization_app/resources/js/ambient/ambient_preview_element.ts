@@ -16,18 +16,26 @@ import '../../css/cros_button_style.css.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {isNonEmptyArray} from '../../common/utils.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {AmbientModeAlbum, TopicSource} from '../personalization_app.mojom-webui.js';
 import {logAmbientModeOptInUMA} from '../personalization_metrics_logger.js';
 import {Paths, PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getPhotoCount, getTopicSourceName, replaceResolutionSuffix} from '../utils.js';
+import {isNonEmptyArray} from '../utils.js';
 
 import {setAmbientModeEnabled} from './ambient_controller.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
 import {AmbientObserver} from './ambient_observer.js';
 import {getTemplate} from './ambient_preview_element.html.js';
+import {getPhotoCount, getTopicSourceName} from './utils.js';
+
+/**
+ * Removes the resolution suffix at the end of an image (from character '=' to
+ * the end) and replace it with a new resolution suffix.
+ */
+function replaceResolutionSuffix(url: string, resolution: string): string {
+  return url.replace(/=w[\w-]+$/, resolution);
+}
 
 export class AmbientPreview extends WithPersonalizationStore {
   static get is() {
