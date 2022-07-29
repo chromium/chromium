@@ -113,9 +113,9 @@ class AppInstallEventLogManagerWrapperTest : public testing::Test {
 
   void VerifyLogFileAndPrefsNotCleared() {
     EXPECT_TRUE(base::PathExists(log_file_path_));
-    EXPECT_EQ(app_list_, *profile_.GetPrefs()->GetList(
+    EXPECT_EQ(app_list_, profile_.GetPrefs()->GetValueList(
                              arc::prefs::kArcPushInstallAppsRequested));
-    EXPECT_EQ(app_list_, *profile_.GetPrefs()->GetList(
+    EXPECT_EQ(app_list_, profile_.GetPrefs()->GetValueList(
                              arc::prefs::kArcPushInstallAppsPending));
   }
 
