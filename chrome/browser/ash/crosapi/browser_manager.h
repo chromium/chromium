@@ -479,6 +479,13 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // shutdown window.
   void OnMojoDisconnected();
 
+  // This may be called synchronously by the BrowserManager following a
+  // Terminate() signal during shutdown, or following a call to
+  // OnMojoDisconnected(). This posts a shutdown blocking task that waits for
+  // lacros-chrome to cleanly exit for `timeout` duration before forcefully
+  // killing the process.
+  void HandleLacrosChromeTermination(base::TimeDelta timeout);
+
   // Called when lacros-chrome is terminated and successfully wait(2)ed.
   void OnLacrosChromeTerminated();
 

@@ -344,12 +344,11 @@ std::string GetXdgRuntimeDir() {
   return "/run/chrome";
 }
 
-void TerminateLacrosChrome(base::Process process) {
+void TerminateLacrosChrome(base::Process process, base::TimeDelta timeout) {
   // Here, lacros-chrome process may crashed, or be in the shutdown procedure.
   // Give some amount of time for the collection. In most cases,
   // this wait captures the process termination.
-  constexpr base::TimeDelta kGracefulShutdownTimeout = base::Seconds(5);
-  if (process.WaitForExitWithTimeout(kGracefulShutdownTimeout, nullptr))
+  if (process.WaitForExitWithTimeout(timeout, nullptr))
     return;
 
   // Here, the process is not yet terminated.
@@ -521,7 +520,7 @@ BrowserManager::~BrowserManager() {
 
   // Try to kill the lacros-chrome binary.
   if (lacros_process_.IsValid())
-    lacros_process_.Terminate(/*ignored=*/0, /*wait=*/false);
+    lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
 
   DCHECK_EQ(g_instance, this);
   g_instance = nullptr;
@@ -852,10 +851,18 @@ void BrowserManager::Shutdown() {
   if (!lacros_process_.IsValid())
     return;
 
-  // Signal the the lacros process to terminate. This will result in mojo
-  // disconnecting and a callback into `OnMojoDisconnected()`. This will post a
-  // task that waits for a successful lacros-chrome exit on a separate thread.
-  lacros_process_.Terminate(/*ignored=*/0, /*wait=*/false);
+  // Signal the lacros process to terminate. We then immediately call into
+  // HandleLacrosChromeTermination() to synchronously post a shutdown blocking
+  // task that waits for lacros-chrome to cleanly exit. Terminate() will
+  // eventually result in a callback into OnMojoDisconnected(), however this
+  // resolves asynchronously and there is a risk that ash exits before this is
+  // called.
+  LOG(WARNING) << "Ash-chrome shutdown initiated. Terminating lacros-chrome";
+  lacros_process_.Terminate(/*exit_code=*/0, /*wait=*/false);
+
+  // Wait 3s for lacros-chrome to terminate to align with the timeout set by
+  // session_manager.
+  HandleLacrosChromeTermination(base::Seconds(3));
 }
 
 void BrowserManager::SetState(State state) {
@@ -1269,16 +1276,29 @@ void BrowserManager::OnCoreDestruction(policy::CloudPolicyCore* core) {
 }
 
 void BrowserManager::OnMojoDisconnected() {
-  DCHECK(state_ == State::STARTING || state_ == State::RUNNING);
-  DCHECK(lacros_process_.IsValid());
   LOG(WARNING)
       << "Mojo to lacros-chrome is disconnected. Terminating lacros-chrome";
+  HandleLacrosChromeTermination(base::Seconds(5));
+}
+
+void BrowserManager::HandleLacrosChromeTermination(base::TimeDelta timeout) {
+  // This may be called following a synchronous termination in `Shutdown()` or
+  // when the mojo pipe with the lacros-chrome process has disconnected. Early
+  // return if already handling lacros-chrome termination.
+  if (!lacros_process_.IsValid())
+    return;
+
+  DCHECK(state_ == State::STARTING || state_ == State::RUNNING);
+  DCHECK(lacros_process_.IsValid());
 
   browser_service_.reset();
   crosapi_id_.reset();
   base::ThreadPool::PostTaskAndReply(
-      FROM_HERE, {base::WithBaseSyncPrimitives()},
-      base::BindOnce(&TerminateLacrosChrome, std::move(lacros_process_)),
+      FROM_HERE,
+      {base::WithBaseSyncPrimitives(),
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&TerminateLacrosChrome, std::move(lacros_process_),
+                     timeout),
       base::BindOnce(&BrowserManager::OnLacrosChromeTerminated,
                      weak_factory_.GetWeakPtr()));
 
