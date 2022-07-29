@@ -7,7 +7,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "storage/browser/quota/quota_client_type.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
@@ -29,21 +28,12 @@ void CacheStorageQuotaClient::GetBucketUsage(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  // Skip non-default buckets until Storage Buckets are supported for
-  // CacheStorage.
-  // TODO(crbug.com/1218097): Integrate CacheStorage with StorageBuckets.
-  if (!bucket.is_default) {
-    std::move(callback).Run(0);
-    return;
-  }
-
   if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
     std::move(callback).Run(0);
     return;
   }
 
-  cache_manager_->GetStorageKeyUsage(bucket.storage_key, owner_,
-                                     std::move(callback));
+  cache_manager_->GetBucketUsage(bucket, owner_, std::move(callback));
 }
 
 void CacheStorageQuotaClient::GetStorageKeysForType(
@@ -61,21 +51,12 @@ void CacheStorageQuotaClient::DeleteBucketData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  // Skip non-default buckets until Storage Buckets are supported for
-  // CacheStorage.
-  // TODO(crbug.com/1218097): Integrate CacheStorage with StorageBuckets.
-  if (!bucket.is_default) {
-    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
-    return;
-  }
-
   if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
 
-  cache_manager_->DeleteStorageKeyData(bucket.storage_key, owner_,
-                                       std::move(callback));
+  cache_manager_->DeleteBucketData(bucket, owner_, std::move(callback));
 }
 
 void CacheStorageQuotaClient::PerformStorageCleanup(

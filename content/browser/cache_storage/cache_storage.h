@@ -31,7 +31,6 @@
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/quota_manager.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -56,7 +55,7 @@ FORWARD_DECLARE_TEST(CacheStorageManagerTest, TestErrorInitializingCache);
 
 // TODO(jkarlin): Constrain the total bytes used per storage key.
 
-// CacheStorage holds the set of caches for a given StorageKey. It is
+// CacheStorage holds the set of caches for a given BucketLocator. It is
 // owned by the CacheStorageManager. This class expects to be run
 // on the IO thread. The asynchronous methods are executed serially.
 class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
@@ -76,7 +75,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
       base::OnceCallback<void(std::vector<std::string> cache_names)>;
 
   static const char kIndexFileName[];
-  static const char kCacheStorage[];
 
   CacheStorage(const base::FilePath& origin_path,
                bool memory_only,
@@ -85,7 +83,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
                scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
                scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
                CacheStorageManager* cache_storage_manager,
-               const blink::StorageKey& storage_key,
+               const storage::BucketLocator& bucket_locator,
                storage::mojom::CacheStorageOwner owner);
 
   CacheStorage(const CacheStorage&) = delete;
@@ -194,9 +192,6 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   static CacheStorage* From(const CacheStorageHandle& handle) {
     return static_cast<CacheStorage*>(handle.value());
   }
-
-  // The immutable StorageKey of the CacheStorage.
-  const blink::StorageKey storage_key() const { return storage_key_; }
 
  protected:
   // Virtual for testing
@@ -330,15 +325,15 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
-  // The StorageKey that this CacheStorage is associated with.
-  const blink::StorageKey storage_key_;
+  // The `BucketLocator` that this CacheStorage is associated with.
+  const storage::BucketLocator bucket_locator_;
 
   // Whether or not we've loaded the list of cache names into memory.
   bool initialized_ = false;
   bool initializing_ = false;
 
   // True if the backend is supposed to reside in memory only.
-  bool memory_only_;
+  const bool memory_only_;
 
   // The pending operation scheduler.
   std::unique_ptr<CacheStorageScheduler> scheduler_;
@@ -370,7 +365,7 @@ class CONTENT_EXPORT CacheStorage : public CacheStorageCacheObserver {
   scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;
 
   // The owner that this CacheStorage is associated with.
-  storage::mojom::CacheStorageOwner owner_;
+  const storage::mojom::CacheStorageOwner owner_;
 
   CacheStorageSchedulerId init_id_ = -1;
 

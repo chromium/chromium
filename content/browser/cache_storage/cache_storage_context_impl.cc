@@ -78,12 +78,17 @@ void CacheStorageContextImpl::Init(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
+  DCHECK(!dispatcher_host_);
+  dispatcher_host_ =
+      std::make_unique<CacheStorageDispatcherHost>(this, quota_manager_proxy_);
+
   DCHECK(!cache_manager_);
   cache_manager_ = CacheStorageManager::Create(
       user_data_directory, std::move(cache_task_runner),
       base::SequencedTaskRunnerHandle::Get(), quota_manager_proxy_,
       base::MakeRefCounted<BlobStorageContextWrapper>(
-          std::move(blob_storage_context)));
+          std::move(blob_storage_context)),
+      dispatcher_host_->AsWeakPtr());
 
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<CacheStorageQuotaClient>(
@@ -161,8 +166,6 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
       result.ok() ? absl::make_optional(result->ToBucketLocator())
                   : absl::nullopt;
 
-  if (!dispatcher_host_)
-    dispatcher_host_ = std::make_unique<CacheStorageDispatcherHost>(this);
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
                                 std::move(coep_reporter), storage_key, bucket,
                                 owner, std::move(receiver));

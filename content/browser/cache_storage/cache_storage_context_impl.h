@@ -16,7 +16,7 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
-#include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
 
@@ -33,7 +34,6 @@ class SequencedTaskRunner;
 }
 
 namespace storage {
-class QuotaManagerProxy;
 struct BucketInfo;
 }
 
@@ -86,6 +86,11 @@ class CONTENT_EXPORT CacheStorageContextImpl
   scoped_refptr<CacheStorageManager> cache_manager() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return cache_manager_;
+  }
+
+  const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return quota_manager_proxy_;
   }
 
   bool is_incognito() const { return is_incognito_; }
