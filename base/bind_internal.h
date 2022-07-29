@@ -91,13 +91,16 @@ class UnretainedWrapper {
  public:
   explicit UnretainedWrapper(T* o) : ptr_(o) {}
 
-  // Trick to only instantiate this constructor if it is used. Otherwise,
+  // Trick to only instantiate these constructors if they are used. Otherwise,
   // instantiating UnretainedWrapper with a T that is not supported by
   // raw_ptr would trigger raw_ptr<T>'s static_assert.
   template <typename U = T, typename I>
   // Avoids having a raw_ptr<T> -> T* -> raw_ptr<T> round trip, which
   // would trigger the raw_ptr error detector if T* was dangling.
   explicit UnretainedWrapper(const raw_ptr<U, I>& o) : ptr_(o) {}
+  template <typename U = T, typename I>
+  explicit UnretainedWrapper(raw_ptr<U, I>&& o) : ptr_(std::move(o)) {}
+
   T* get() const { return ptr_; }
 
  private:
@@ -158,6 +161,7 @@ template <typename T, typename I, bool b>
 class UnretainedRefWrapper<raw_ref<T, I>, b> {
  public:
   explicit UnretainedRefWrapper(const raw_ref<T, I>& ref) : ref_(ref) {}
+  explicit UnretainedRefWrapper(raw_ref<T, I>&& ref) : ref_(std::move(ref)) {}
   T& get() const { return *ref_; }
 
  private:
