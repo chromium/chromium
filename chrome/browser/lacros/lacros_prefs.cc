@@ -25,11 +25,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
-  // Ordinarily, this preference is registered by Ash, but it is used by
-  // browser settings. It could reasonably move to a browser-specific
-  // location with suitable #ifdefs.
-  registry->RegisterBooleanPref(::prefs::kSettingsShowOSBanner, true);
-
   // The preferences on external storages are used in imageWriterPrivate
   // extension api implementation code, which are supported in Lacros.
   disks::prefs::RegisterProfilePrefs(registry);

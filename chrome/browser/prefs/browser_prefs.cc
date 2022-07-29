@@ -790,6 +790,11 @@ const char kPrivacySandboxApisEnabledV2Init[] =
 const char kExtensionToolbar[] = "extensions.toolbar";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 07/2022.
+const char kSettingsShowOSBanner[] = "settings.cros.show_os_banner";
+#endif
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1045,6 +1050,10 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 07/2022
   registry->RegisterListPref(kExtensionToolbar);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kSettingsShowOSBanner, false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2037,6 +2046,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Added 07/2022.
   profile_prefs->ClearPref(kExtensionToolbar);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 07/2022.
+  profile_prefs->ClearPref(kSettingsShowOSBanner);
 #endif
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.

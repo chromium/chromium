@@ -820,16 +820,6 @@ void AddLanguagesStrings(content::WebUIDataSource* html_source,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-void AddChromeOSSettingsStrings(content::WebUIDataSource* html_source) {
-  html_source->AddString(
-      "osSettingsBannerText",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_OS_SETTINGS_BANNER,
-          base::ASCIIToUTF16(chrome::kChromeUIOSSettingsURL)));
-}
-#endif
-
 void AddOnStartupStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"onStartup", IDS_SETTINGS_ON_STARTUP},
@@ -3125,9 +3115,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
   AddSearchStrings(html_source);
   AddSiteSettingsStrings(html_source, profile);
 
-#if BUILDFLAG(IS_CHROMEOS)
-  AddChromeOSSettingsStrings(html_source);
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
   AddDefaultBrowserStrings(html_source);
   AddImportDataStrings(html_source);
 #endif

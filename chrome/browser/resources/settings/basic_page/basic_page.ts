@@ -22,9 +22,6 @@ import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_styles.css.js';
-// <if expr="chromeos_ash or chromeos_lacros">
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-// </if>
 
 // <if expr="not chromeos_ash and not chromeos_lacros">
 import '../default_browser_page/default_browser_page.js';
@@ -54,23 +51,6 @@ import {LanguageHelper, LanguagesModel} from '../languages_page/languages_types.
 // </if>
 
 import {getTemplate} from './basic_page.html.js';
-
-// <if expr="chromeos_ash or chromeos_lacros">
-const OS_BANNER_INTERACTION_METRIC_NAME =
-    'ChromeOS.Settings.OsBannerInteraction';
-
-/**
- * These values are persisted to logs and should not be renumbered or re-used.
- * See tools/metrics/histograms/enums.xml.
- * @enum {number}
- */
-const CrosSettingsOsBannerInteraction = {
-  NotShown: 0,
-  Shown: 1,
-  Clicked: 2,
-  Closed: 3,
-};
-// </if>
 
 // TODO(crbug.com/1234307): Remove when RouteObserverMixin is converted to
 // TypeScript.
@@ -107,7 +87,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
        */
-       languages: {
+      languages: {
         type: Object,
         notify: true,
       },
@@ -181,14 +161,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         value: false,
       },
 
-      // <if expr="chromeos_ash or chromeos_lacros">
-      showOSSettingsBanner_: {
-        type: Boolean,
-        computed: 'computeShowOSSettingsBanner_(' +
-            'prefs.settings.cros.show_os_banner.value, currentRoute_)',
-      },
-      // </if>
-
       currentRoute_: Object,
 
       /**
@@ -217,11 +189,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   advancedToggleExpanded: boolean;
   private hasExpandedSection_: boolean;
   private showResetProfileBanner_: boolean;
-
-  // <if expr="chromeos_ash or chromeos_lacros">
-  private showOSSettingsBanner_: boolean;
-  private osBannerShowMetricRecorded_: boolean = false;
-  // </if>
 
   private currentRoute_: Route;
   private advancedTogglingInProgress_: boolean;
@@ -358,48 +325,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
       };
     });
   }
-
-  // <if expr="chromeos_ash or chromeos_lacros">
-  private computeShowOSSettingsBanner_(): boolean|undefined {
-    // this.prefs is implicitly used by this.getPref() below.
-    if (!this.prefs || !this.currentRoute_) {
-      return;
-    }
-    const showPref = this.getPref('settings.cros.show_os_banner').value;
-
-    // Banner only shows on the main page because direct navigations to a
-    // sub-page are unlikely to be due to a user looking for an OS setting.
-    const show = showPref && !this.currentRoute_.isSubpage();
-
-    // Record the show metric once. We can't record the metric in attached()
-    // because prefs might not be ready yet.
-    if (!this.osBannerShowMetricRecorded_) {
-      chrome.metricsPrivate.recordEnumerationValue(
-          OS_BANNER_INTERACTION_METRIC_NAME,
-          show ? CrosSettingsOsBannerInteraction.Shown :
-                 CrosSettingsOsBannerInteraction.NotShown,
-          Object.keys(CrosSettingsOsBannerInteraction).length);
-      this.osBannerShowMetricRecorded_ = true;
-    }
-    return show;
-  }
-
-  private onOSSettingsBannerClick_() {
-    // The label has a link that opens the page, so just record the metric.
-    chrome.metricsPrivate.recordEnumerationValue(
-        OS_BANNER_INTERACTION_METRIC_NAME,
-        CrosSettingsOsBannerInteraction.Clicked,
-        Object.keys(CrosSettingsOsBannerInteraction).length);
-  }
-
-  private onOSSettingsBannerClosed_() {
-    this.setPrefValue('settings.cros.show_os_banner', false);
-    chrome.metricsPrivate.recordEnumerationValue(
-        OS_BANNER_INTERACTION_METRIC_NAME,
-        CrosSettingsOsBannerInteraction.Closed,
-        Object.keys(CrosSettingsOsBannerInteraction).length);
-  }
-  // </if>
 
   // <if expr="chromeos_ash">
   private onOpenChromeOSLanguagesSettingsClick_() {

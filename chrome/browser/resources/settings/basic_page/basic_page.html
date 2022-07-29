@@ -1,15 +1,8 @@
-    <style include="cr-shared-style settings-page-styles cr-hidden-style iron-flex settings-shared">
+    <style include="cr-shared-style settings-page-styles cr-hidden-style iron-flex">
       :host([is-subpage-animating]) {
         /* Prevent an unwanted horizontal scrollbar when transitioning back from
          * a sub-page. */
         overflow: hidden;
-      }
-
-      #osSettingsBanner {
-        background-color: var(--cr-card-background-color);
-        border-radius: var(--cr-card-border-radius);
-        box-shadow: var(--cr-card-shadow);
-        margin-top: 21px;
       }
 
       :host(:not([in-search-mode])) settings-section:not([active]) {
@@ -23,20 +16,6 @@
           <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">
           </settings-reset-profile-banner>
         </template>
-<if expr="chromeos_ash or chromeos_lacros">
-        <template is="dom-if" if="[[showOSSettingsBanner_]]">
-          <div id="osSettingsBanner" class="cr-row first">
-            <div class="flex cr-padded-text"
-                on-click="onOSSettingsBannerClick_">
-              $i18nRaw{osSettingsBannerText}
-            </div>
-            <cr-icon-button class="icon-clear"
-                title="$i18n{close}"
-                on-click="onOSSettingsBannerClosed_">
-            </cr-icon-button>
-          </div>
-        </template>
-</if>
         <template is="dom-if" if="[[showPage_(pageVisibility.people)]]" restamp>
           <settings-section page-title="$i18n{peoplePageTitle}"
               section="people">

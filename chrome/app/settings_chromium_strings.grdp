@@ -93,15 +93,6 @@
     </message>
   </if>
 
-  <!-- Main Page -->
-  <if expr="chromeos_ash or chromeos_lacros">
-    <!-- No target="_blank" because OS settings opens its own window. -->
-    <message name="IDS_SETTINGS_OS_SETTINGS_BANNER" desc="Banner displayed in browser settings page that links to OS settings.">
-      If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://google.com/</ex>"&gt;</ph>
-      ChromiumOS settings<ph name="LINK_END">&lt;/a&gt;</ph>
-    </message>
-  </if>
-
   <!-- Privacy Page -->
   <message name="IDS_SETTINGS_SPELLING_PREF_DESC" desc="Description of using a web serviced to help resolve spelling errors. It is important to convey that what the user types will be sent to Google.">
     To fix spelling errors, Chromium sends the text you type in text fields to Google
