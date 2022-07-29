@@ -16,6 +16,8 @@ source_set("public") {
     "field_trial_register.h",
     "input_context.cc",
     "input_context.h",
+    "input_delegate.cc",
+    "input_delegate.h",
     "local_state_helper.h",
     "model_provider.cc",
     "model_provider.h",

@@ -12,12 +12,12 @@
 #include "components/segmentation_platform/internal/execution/model_executor_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_list_query_processor.h"
-#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/scheduler/model_execution_scheduler_impl.h"
 #include "components/segmentation_platform/internal/segmentation_ukm_helper.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
+#include "components/segmentation_platform/public/input_delegate.h"
 
 namespace segmentation_platform {
 

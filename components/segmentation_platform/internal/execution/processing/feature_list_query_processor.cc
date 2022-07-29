@@ -13,12 +13,12 @@
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/execution/processing/custom_input_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
-#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
 #include "components/segmentation_platform/internal/execution/processing/sql_feature_processor.h"
 #include "components/segmentation_platform/internal/execution/processing/uma_feature_processor.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
+#include "components/segmentation_platform/public/input_delegate.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform::processing {

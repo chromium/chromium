@@ -4,7 +4,7 @@
 
 #include "components/segmentation_platform/internal/execution/processing/mock_feature_list_query_processor.h"
 
-#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
+#include "components/segmentation_platform/public/input_delegate.h"
 
 namespace segmentation_platform::processing {
 

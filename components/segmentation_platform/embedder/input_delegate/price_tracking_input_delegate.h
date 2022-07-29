@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_INPUT_DELEGATE_PRICE_TRACKING_INPUT_DELEGATE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_INPUT_DELEGATE_PRICE_TRACKING_INPUT_DELEGATE_H_
 
-#include "components/segmentation_platform/internal/execution/processing/input_delegate.h"
+#include "components/segmentation_platform/public/input_delegate.h"
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"

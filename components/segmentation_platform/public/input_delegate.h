@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_INPUT_DELEGATE_H_
-#define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_INPUT_DELEGATE_H_
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_INPUT_DELEGATE_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_INPUT_DELEGATE_H_
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/types/processed_value.h"
 
 namespace segmentation_platform::processing {
 
@@ -57,4 +57,4 @@ class InputDelegateHolder {
 
 }  // namespace segmentation_platform::processing
 
-#endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_EXECUTION_PROCESSING_INPUT_DELEGATE_H_
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_INPUT_DELEGATE_H_
