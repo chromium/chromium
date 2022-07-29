@@ -367,6 +367,7 @@ extern const char kOsUIEmojiPickerURL[];
 extern const char kOsUIGpuURL[];
 extern const char kOsUIHistogramsURL[];
 extern const char kOsUIInvalidationsURL[];
+extern const char kOsUILauncherInternalsURL[];
 extern const char kOsUILockScreenNetworkURL[];
 extern const char kOsUINetExportURL[];
 extern const char kOsUIMultiDeviceInternalsURL[];

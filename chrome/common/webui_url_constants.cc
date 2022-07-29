@@ -395,6 +395,7 @@ const char kOsUIEmojiPickerURL[] = "os://emoji-picker";
 const char kOsUIGpuURL[] = "os://gpu";
 const char kOsUIHistogramsURL[] = "os://histograms";
 const char kOsUIInvalidationsURL[] = "os://invalidations";
+const char kOsUILauncherInternalsURL[] = "os://launcher-internals";
 const char kOsUILockScreenNetworkURL[] = "os://lock-network";
 const char kOsUIMultiDeviceInternalsURL[] = "os://multidevice-internals";
 const char kOsUINearbyInternalsURL[] = "os://nearby-internals";
