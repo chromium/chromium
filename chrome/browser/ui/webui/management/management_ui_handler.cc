@@ -41,6 +41,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/policy/networking/policy_cert_service.h"
+#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
+#include "chrome/browser/ui/webui/webui_util.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/settings/cros_settings_names.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -57,10 +63,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/proxy/proxy_config_handler.h"
@@ -160,7 +163,7 @@ enum class ReportingType {
   kUserActivity
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kManagementLogUploadEnabled[] = "managementLogUploadEnabled";
 const char kManagementReportActivityTimes[] = "managementReportActivityTimes";
 const char kManagementReportDeviceAudioStatus[] =
@@ -190,7 +193,7 @@ const char kManagementCrostiniContainerConfiguration[] =
 const char kAccountManagedInfo[] = "accountManagedInfo";
 const char kDeviceManagedInfo[] = "deviceManagedInfo";
 const char kOverview[] = "overview";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 const char kCustomerLogo[] = "customerLogo";
 
@@ -202,20 +205,11 @@ bool IsProfileManaged(Profile* profile) {
   return profile->GetProfilePolicyConnector()->IsManaged();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
 bool IsDeviceManaged() {
   return webui::IsEnterpriseManaged();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-bool IsBrowserManaged() {
-  return g_browser_process->browser_policy_connector()
-      ->HasMachineLevelPolicies();
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 enum class DeviceReportingType {
   kSupervisedUser,
@@ -236,6 +230,17 @@ enum class DeviceReportingType {
   kCRDSessions,
   kPeripherals,
 };
+
+#else
+
+bool IsBrowserManaged() {
+  return g_browser_process->browser_policy_connector()
+      ->HasMachineLevelPolicies();
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Corresponds to DeviceReportingType in management_browser_proxy.js
 std::string ToJSDeviceReportingType(const DeviceReportingType& type) {
@@ -287,6 +292,134 @@ void AddDeviceReportingElement(base::Value::List* report_sources,
   data.Set("messageId", base::Value(message_id));
   data.Set("reportingType", base::Value(ToJSDeviceReportingType(type)));
   report_sources->Append(std::move(data));
+}
+
+const policy::DlpRulesManager* GetDlpRulesManager() {
+  return policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+}
+
+// If you are adding a privacy note, please also add it to
+// go/chrome-policy-privacy-note-mappings.
+void AddDeviceReportingInfo(base::Value::List* report_sources,
+                            const policy::StatusCollector* collector,
+                            const policy::SystemLogUploader* uploader,
+                            Profile* profile) {
+  if (!collector || !profile || !uploader)
+    return;
+
+  // Elements appear on the page in the order they are added.
+  if (collector->IsReportingActivityTimes() ||
+      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
+    AddDeviceReportingElement(report_sources, kManagementReportActivityTimes,
+                              DeviceReportingType::kDeviceActivity);
+  } else {
+    if (collector->IsReportingUsers()) {
+      AddDeviceReportingElement(report_sources, kManagementReportUsers,
+                                DeviceReportingType::kSupervisedUser);
+    }
+  }
+  if (collector->IsReportingNetworkData() ||
+      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
+    AddDeviceReportingElement(report_sources, kManagementReportNetworkData,
+                              DeviceReportingType::kDevice);
+  }
+  if (collector->IsReportingHardwareData()) {
+    AddDeviceReportingElement(report_sources, kManagementReportHardwareData,
+                              DeviceReportingType::kDeviceStatistics);
+  }
+  if (collector->IsReportingCrashReportInfo()) {
+    AddDeviceReportingElement(report_sources, kManagementReportCrashReports,
+                              DeviceReportingType::kCrashReport);
+  }
+  if (collector->IsReportingAppInfoAndActivity()) {
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportAppInfoAndActivity,
+                              DeviceReportingType::kAppInfoAndActivity);
+  }
+  if (uploader->upload_enabled()) {
+    AddDeviceReportingElement(report_sources, kManagementLogUploadEnabled,
+                              DeviceReportingType::kLogs);
+  }
+
+  bool report_audio_status = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
+                                            &report_audio_status);
+  if (report_audio_status) {
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportDeviceAudioStatus,
+                              DeviceReportingType::kDevice);
+  }
+
+  bool report_device_peripherals = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePeripherals,
+                                            &report_device_peripherals);
+  if (report_device_peripherals) {
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportDevicePeripherals,
+                              DeviceReportingType::kPeripherals);
+  }
+
+  bool report_print_jobs = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePrintJobs,
+                                            &report_print_jobs);
+  if (report_print_jobs) {
+    AddDeviceReportingElement(report_sources, kManagementReportPrintJobs,
+                              DeviceReportingType::kPrintJobs);
+  }
+
+  bool report_print_username = profile->GetPrefs()->GetBoolean(
+      prefs::kPrintingSendUsernameAndFilenameEnabled);
+  if (report_print_username && !report_print_jobs) {
+    AddDeviceReportingElement(report_sources, kManagementPrinting,
+                              DeviceReportingType::kPrint);
+  }
+
+  if (GetDlpRulesManager() && GetDlpRulesManager()->IsReportingEnabled()) {
+    AddDeviceReportingElement(report_sources, kManagementReportDlpEvents,
+                              DeviceReportingType::kDlpEvents);
+  }
+
+  if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
+    if (!profile->GetPrefs()
+             ->GetFilePath(crostini::prefs::kCrostiniAnsiblePlaybookFilePath)
+             .empty()) {
+      AddDeviceReportingElement(report_sources,
+                                kManagementCrostiniContainerConfiguration,
+                                DeviceReportingType::kCrostini);
+    } else if (profile->GetPrefs()->GetBoolean(
+                   crostini::prefs::kReportCrostiniUsageEnabled)) {
+      AddDeviceReportingElement(report_sources, kManagementCrostini,
+                                DeviceReportingType::kCrostini);
+    }
+  }
+
+  if (g_browser_process->local_state()->GetBoolean(
+          enterprise_reporting::kCloudReportingEnabled)) {
+    AddDeviceReportingElement(report_sources,
+                              kManagementExtensionReportUsername,
+                              DeviceReportingType::kUsername);
+    AddDeviceReportingElement(report_sources, kManagementReportExtensions,
+                              DeviceReportingType::kExtensions);
+    AddDeviceReportingElement(report_sources,
+                              kManagementReportAndroidApplications,
+                              DeviceReportingType::kAndroidApplication);
+  }
+
+  bool report_login_logout = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceLoginLogout,
+                                            &report_login_logout);
+  if (report_login_logout) {
+    AddDeviceReportingElement(report_sources, kManagementReportLoginLogout,
+                              DeviceReportingType::kLoginLogout);
+  }
+
+  bool report_crd_sessions = false;
+  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportCRDSessions,
+                                            &report_crd_sessions);
+  if (report_crd_sessions) {
+    AddDeviceReportingElement(report_sources, kManagementReportCRDSessions,
+                              DeviceReportingType::kCRDSessions);
+  }
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -369,6 +502,20 @@ std::string GetAccountManager(Profile* profile) {
 ManagementUIHandler::ManagementUIHandler() {
   reporting_extension_ids_ = {kOnPremReportingExtensionStableId,
                               kOnPremReportingExtensionBetaId};
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  // Get device report sources.
+  if (service->IsAvailable<crosapi::mojom::DeviceSettingsService>() &&
+      service->GetInterfaceVersion(
+          crosapi::mojom::DeviceSettingsService::Uuid_) >=
+          static_cast<int>(crosapi::mojom::DeviceSettingsService::
+                               kGetDeviceReportSourcesMinVersion)) {
+    service->GetRemote<crosapi::mojom::DeviceSettingsService>()
+        ->GetDeviceReportSources(
+            base::BindOnce(&ManagementUIHandler::OnGotDeviceReportSources,
+                           weak_factory_.GetWeakPtr()));
+  }
+#endif
 }
 
 ManagementUIHandler::~ManagementUIHandler() {
@@ -385,12 +532,12 @@ void ManagementUIHandler::InitializeInternal(content::WebUI* web_ui,
                                              Profile* profile) {
   auto handler = std::make_unique<ManagementUIHandler>();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   handler->account_managed_ = IsProfileManaged(profile);
   handler->device_managed_ = IsDeviceManaged();
 #else
   handler->account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   web_ui->AddMessageHandler(std::move(handler));
 }
@@ -404,7 +551,7 @@ void ManagementUIHandler::RegisterMessages() {
       "getExtensions",
       base::BindRepeating(&ManagementUIHandler::HandleGetExtensions,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   web_ui()->RegisterMessageCallback(
       "getLocalTrustRootsInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetLocalTrustRootsInfo,
@@ -418,7 +565,7 @@ void ManagementUIHandler::RegisterMessages() {
       base::BindRepeating(
           &ManagementUIHandler::HandleGetPluginVmDataCollectionStatus,
           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   web_ui()->RegisterMessageCallback(
       "getThreatProtectionInfo",
       base::BindRepeating(&ManagementUIHandler::HandleGetThreatProtectionInfo,
@@ -549,135 +696,6 @@ ManagementUIHandler::GetDeviceCloudPolicyManager() const {
   return connector->GetDeviceCloudPolicyManager();
 }
 
-const policy::DlpRulesManager* ManagementUIHandler::GetDlpRulesManager() const {
-  return policy::DlpRulesManagerFactory::GetForPrimaryProfile();
-}
-
-// If you are adding a privacy note, please also add it to
-// go/chrome-policy-privacy-note-mappings.
-void ManagementUIHandler::AddDeviceReportingInfo(
-    base::Value::List* report_sources,
-    const policy::StatusCollector* collector,
-    const policy::SystemLogUploader* uploader,
-    Profile* profile) const {
-  if (!collector || !profile || !uploader)
-    return;
-
-  // Elements appear on the page in the order they are added.
-  if (collector->IsReportingActivityTimes() ||
-      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
-    AddDeviceReportingElement(report_sources, kManagementReportActivityTimes,
-                              DeviceReportingType::kDeviceActivity);
-  } else {
-    if (collector->IsReportingUsers()) {
-      AddDeviceReportingElement(report_sources, kManagementReportUsers,
-                                DeviceReportingType::kSupervisedUser);
-    }
-  }
-  if (collector->IsReportingNetworkData() ||
-      profile->GetPrefs()->GetBoolean(::prefs::kInsightsExtensionEnabled)) {
-    AddDeviceReportingElement(report_sources, kManagementReportNetworkData,
-                              DeviceReportingType::kDevice);
-  }
-  if (collector->IsReportingHardwareData()) {
-    AddDeviceReportingElement(report_sources, kManagementReportHardwareData,
-                              DeviceReportingType::kDeviceStatistics);
-  }
-  if (collector->IsReportingCrashReportInfo()) {
-    AddDeviceReportingElement(report_sources, kManagementReportCrashReports,
-                              DeviceReportingType::kCrashReport);
-  }
-  if (collector->IsReportingAppInfoAndActivity()) {
-    AddDeviceReportingElement(report_sources,
-                              kManagementReportAppInfoAndActivity,
-                              DeviceReportingType::kAppInfoAndActivity);
-  }
-  if (uploader->upload_enabled()) {
-    AddDeviceReportingElement(report_sources, kManagementLogUploadEnabled,
-                              DeviceReportingType::kLogs);
-  }
-
-  bool report_audio_status = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceAudioStatus,
-                                            &report_audio_status);
-  if (report_audio_status) {
-    AddDeviceReportingElement(report_sources,
-                              kManagementReportDeviceAudioStatus,
-                              DeviceReportingType::kDevice);
-  }
-
-  bool report_device_peripherals = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePeripherals,
-                                            &report_device_peripherals);
-  if (report_device_peripherals) {
-    AddDeviceReportingElement(report_sources,
-                              kManagementReportDevicePeripherals,
-                              DeviceReportingType::kPeripherals);
-  }
-
-  bool report_print_jobs = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDevicePrintJobs,
-                                            &report_print_jobs);
-  if (report_print_jobs) {
-    AddDeviceReportingElement(report_sources, kManagementReportPrintJobs,
-                              DeviceReportingType::kPrintJobs);
-  }
-
-  bool report_print_username = profile->GetPrefs()->GetBoolean(
-      prefs::kPrintingSendUsernameAndFilenameEnabled);
-  if (report_print_username && !report_print_jobs) {
-    AddDeviceReportingElement(report_sources, kManagementPrinting,
-                              DeviceReportingType::kPrint);
-  }
-
-  if (GetDlpRulesManager() && GetDlpRulesManager()->IsReportingEnabled()) {
-    AddDeviceReportingElement(report_sources, kManagementReportDlpEvents,
-                              DeviceReportingType::kDlpEvents);
-  }
-
-  if (crostini::CrostiniFeatures::Get()->IsAllowedNow(profile)) {
-    if (!profile->GetPrefs()
-             ->GetFilePath(crostini::prefs::kCrostiniAnsiblePlaybookFilePath)
-             .empty()) {
-      AddDeviceReportingElement(report_sources,
-                                kManagementCrostiniContainerConfiguration,
-                                DeviceReportingType::kCrostini);
-    } else if (profile->GetPrefs()->GetBoolean(
-                   crostini::prefs::kReportCrostiniUsageEnabled)) {
-      AddDeviceReportingElement(report_sources, kManagementCrostini,
-                                DeviceReportingType::kCrostini);
-    }
-  }
-
-  if (g_browser_process->local_state()->GetBoolean(
-          enterprise_reporting::kCloudReportingEnabled)) {
-    AddDeviceReportingElement(report_sources,
-                              kManagementExtensionReportUsername,
-                              DeviceReportingType::kUsername);
-    AddDeviceReportingElement(report_sources, kManagementReportExtensions,
-                              DeviceReportingType::kExtensions);
-    AddDeviceReportingElement(report_sources,
-                              kManagementReportAndroidApplications,
-                              DeviceReportingType::kAndroidApplication);
-  }
-
-  bool report_login_logout = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportDeviceLoginLogout,
-                                            &report_login_logout);
-  if (report_login_logout) {
-    AddDeviceReportingElement(report_sources, kManagementReportLoginLogout,
-                              DeviceReportingType::kLoginLogout);
-  }
-
-  bool report_crd_sessions = false;
-  chromeos::CrosSettings::Get()->GetBoolean(ash::kReportCRDSessions,
-                                            &report_crd_sessions);
-  if (report_crd_sessions) {
-    AddDeviceReportingElement(report_sources, kManagementReportCRDSessions,
-                              DeviceReportingType::kCRDSessions);
-  }
-}
-
 bool ManagementUIHandler::IsUpdateRequiredEol() const {
   const policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
@@ -731,7 +749,42 @@ void ManagementUIHandler::AddProxyServerPrivacyDisclosure(
   }
   response->Set("showProxyServerPrivacyDisclosure", showProxyDisclosure);
 }
-#endif
+
+// static
+base::Value::List ManagementUIHandler::GetDeviceReportingInfo(
+    const policy::DeviceCloudPolicyManagerAsh* manager,
+    Profile* profile) {
+  base::Value::List report_sources;
+  policy::StatusUploader* uploader = nullptr;
+  policy::SystemLogUploader* syslog_uploader = nullptr;
+  policy::StatusCollector* collector = nullptr;
+  if (manager) {
+    uploader = manager->GetStatusUploader();
+    syslog_uploader = manager->GetSystemLogUploader();
+    if (uploader)
+      collector = uploader->status_collector();
+  }
+  AddDeviceReportingInfo(&report_sources, collector, syslog_uploader, profile);
+  return report_sources;
+}
+
+// static
+void ManagementUIHandler::AddDlpDeviceReportingElementForTesting(
+    base::Value::List* report_sources,
+    const std::string& message_id) {
+  AddDeviceReportingElement(report_sources, message_id,
+                            DeviceReportingType::kDlpEvents);
+}
+
+// static
+void ManagementUIHandler::AddDeviceReportingInfoForTesting(
+    base::Value::List* report_sources,
+    const policy::StatusCollector* collector,
+    const policy::SystemLogUploader* uploader,
+    Profile* profile) {
+  AddDeviceReportingInfo(report_sources, collector, uploader, profile);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
   base::Value::Dict response;
@@ -969,7 +1022,7 @@ const std::string ManagementUIHandler::GetDeviceManager() const {
 
 void ManagementUIHandler::GetManagementStatus(Profile* profile,
                                               base::Value::Dict* status) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   status->Set(kDeviceManagedInfo, base::Value());
   status->Set(kAccountManagedInfo, base::Value());
   status->Set(kOverview, base::Value());
@@ -978,6 +1031,7 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
                                IDS_MANAGEMENT_DEVICE_NOT_MANAGED)));
     return;
   }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::string account_manager = GetAccountManager(profile);
   auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
   auto* primary_profile =
@@ -995,6 +1049,7 @@ void ManagementUIHandler::GetManagementStatus(Profile* profile,
       status, device_managed_, account_managed_ || primary_user_managed,
       device_manager, account_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
@@ -1014,7 +1069,16 @@ void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
   ResolveJavascriptCallback(args[0] /* callback_id */, powerful_extensions);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ManagementUIHandler::OnGotDeviceReportSources(
+    base::Value::List report_sources,
+    bool plugin_vm_data_collection_enabled) {
+  report_sources_ = std::move(report_sources);
+  plugin_vm_data_collection_enabled_ = plugin_vm_data_collection_enabled;
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
@@ -1032,39 +1096,34 @@ void ManagementUIHandler::HandleGetLocalTrustRootsInfo(
 
 void ManagementUIHandler::HandleGetDeviceReportingInfo(
     const base::Value::List& args) {
-  base::Value::List report_sources;
   AllowJavascript();
-
-  const policy::DeviceCloudPolicyManagerAsh* manager =
-      GetDeviceCloudPolicyManager();
-  policy::StatusUploader* uploader = nullptr;
-  policy::SystemLogUploader* syslog_uploader = nullptr;
-  policy::StatusCollector* collector = nullptr;
-  if (manager) {
-    uploader = manager->GetStatusUploader();
-    syslog_uploader = manager->GetSystemLogUploader();
-    if (uploader)
-      collector = uploader->status_collector();
-  }
-  AddDeviceReportingInfo(&report_sources, collector, syslog_uploader,
-                         Profile::FromWebUI(web_ui()));
-
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::Value::List report_sources = GetDeviceReportingInfo(
+      GetDeviceCloudPolicyManager(), Profile::FromWebUI(web_ui()));
   ResolveJavascriptCallback(args[0] /* callback_id */,
                             base::Value(std::move(report_sources)));
+#else
+  ResolveJavascriptCallback(args[0] /* callback_id */,
+                            base::Value(report_sources_.Clone()));
+#endif
 }
 
 void ManagementUIHandler::HandleGetPluginVmDataCollectionStatus(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Value plugin_vm_data_collection_enabled(
       Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
           plugin_vm::prefs::kPluginVmDataCollectionAllowed));
+#else
+  base::Value plugin_vm_data_collection_enabled(
+      plugin_vm_data_collection_enabled_);
+#endif
   AllowJavascript();
   ResolveJavascriptCallback(args[0] /* callback_id */,
                             plugin_vm_data_collection_enabled);
 }
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ManagementUIHandler::HandleGetContextualManagedData(
     const base::Value::List& args) {
@@ -1142,7 +1201,7 @@ void ManagementUIHandler::OnExtensionUnloaded(
 void ManagementUIHandler::UpdateManagedState() {
   auto* profile = Profile::FromWebUI(web_ui());
   bool managed_state_changed = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   managed_state_changed |= account_managed_ != IsProfileManaged(profile);
   managed_state_changed |= device_managed_ != IsDeviceManaged();
   account_managed_ = IsProfileManaged(profile);
@@ -1151,7 +1210,7 @@ void ManagementUIHandler::UpdateManagedState() {
   managed_state_changed |=
       account_managed_ != (IsProfileManaged(profile) || IsBrowserManaged());
   account_managed_ = IsProfileManaged(profile) || IsBrowserManaged();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   if (managed_state_changed)
     FireWebUIListener("managed_data_changed");

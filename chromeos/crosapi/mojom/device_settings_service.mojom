@@ -82,4 +82,12 @@ interface DeviceSettingsService {
   [MinVersion=1]
   GetDevicePolicyDeprecated@1() => (mojo_base.mojom.Value device_policy,
                                     mojo_base.mojom.Value legend_data);
+
+  // Returns the reporting sources by the device and whether the plugin_vm
+  // data collection is enabled.
+  // TODO(igorcov@): Investigate if it's reasonable to include the
+  // |plugin_vm_data_collection_enabled| into the |report_sources|.
+  [MinVersion=3]
+  GetDeviceReportSources@3() => (mojo_base.mojom.ListValue report_sources,
+                                 bool plugin_vm_data_collection_enabled);
 };

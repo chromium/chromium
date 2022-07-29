@@ -24,7 +24,7 @@
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Constants defining the IDs for the localized strings sent to the page as
 // load time data.
 extern const char kManagementLogUploadEnabled[];
@@ -47,7 +47,7 @@ extern const char kManagementReportExtensions[];
 extern const char kManagementReportAndroidApplications[];
 extern const char kManagementOnFileTransferEvent[];
 extern const char kManagementOnFileTransferVisibleData[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 extern const char kOnPremReportingExtensionStableId[];
 extern const char kOnPremReportingExtensionBetaId[];
@@ -99,7 +99,6 @@ class Extension;
 
 namespace policy {
 class DeviceCloudPolicyManagerAsh;
-class DlpRulesManager;
 class PolicyService;
 class StatusCollector;
 class SystemLogUploader;
@@ -132,6 +131,21 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Returns the list of device reporting items for a given profile.
+  static base::Value::List GetDeviceReportingInfo(
+      const policy::DeviceCloudPolicyManagerAsh* manager,
+      Profile* profile);
+  static void AddDlpDeviceReportingElementForTesting(
+      base::Value::List* report_sources,
+      const std::string& message_id);
+  static void AddDeviceReportingInfoForTesting(
+      base::Value::List* report_sources,
+      const policy::StatusCollector* collector,
+      const policy::SystemLogUploader* uploader,
+      Profile* profile);
+#endif
+
  protected:
   // Protected for testing.
   static void InitializeInternal(content::WebUI* web_ui,
@@ -149,11 +163,6 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   virtual const std::string GetDeviceManager() const;
   virtual const policy::DeviceCloudPolicyManagerAsh*
   GetDeviceCloudPolicyManager() const;
-  virtual const policy::DlpRulesManager* GetDlpRulesManager() const;
-  void AddDeviceReportingInfo(base::Value::List* report_sources,
-                              const policy::StatusCollector* collector,
-                              const policy::SystemLogUploader* uploader,
-                              Profile* profile) const;
   // Virtual for testing
   virtual bool IsUpdateRequiredEol() const;
   // Adds device return instructions for a managed user as an update is required
@@ -169,11 +178,16 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
  private:
   void GetManagementStatus(Profile* profile, base::Value::Dict* status) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void HandleGetDeviceReportingInfo(const base::Value::List& args);
   void HandleGetPluginVmDataCollectionStatus(const base::Value::List& args);
   void HandleGetLocalTrustRootsInfo(const base::Value::List& args);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnGotDeviceReportSources(base::Value::List report_sources,
+                                bool plugin_vm_data_collection_enabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   void HandleGetExtensions(const base::Value::List& args);
   void HandleGetContextualManagedData(const base::Value::List& args);
@@ -223,6 +237,12 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   GURL logo_url_;
   std::string fetched_image_;
   std::unique_ptr<BitmapFetcher> icon_fetcher_;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::Value::List report_sources_;
+  bool plugin_vm_data_collection_enabled_;
+  base::WeakPtrFactory<ManagementUIHandler> weak_factory_{this};
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_HANDLER_H_

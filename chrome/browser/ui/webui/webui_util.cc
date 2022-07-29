@@ -19,6 +19,8 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "base/enterprise_util.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS)
@@ -71,6 +73,8 @@ bool IsEnterpriseManaged() {
   return connector->IsDeviceEnterpriseManaged();
 #elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return base::IsManagedDevice();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsDeviceEnterprisedManaged();
 #else
   return false;
 #endif

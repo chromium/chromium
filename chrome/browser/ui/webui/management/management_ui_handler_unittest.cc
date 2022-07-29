@@ -96,6 +96,10 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using testing::_;
 using testing::AnyNumber;
 using testing::AssertionFailure;
@@ -196,17 +200,9 @@ class TestManagementUIHandler : public ManagementUIHandler {
  public:
   TestManagementUIHandler() = default;
   explicit TestManagementUIHandler(policy::PolicyService* policy_service)
-      : policy_service_(policy_service) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    dlp_rules_manager_ = new policy::MockDlpRulesManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
+      : policy_service_(policy_service) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ~TestManagementUIHandler() override { delete dlp_rules_manager_; }
-#else
   ~TestManagementUIHandler() override = default;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   void EnableUpdateRequiredEolInfo(bool enable) {
     update_required_eol_ = enable;
@@ -239,20 +235,7 @@ class TestManagementUIHandler : public ManagementUIHandler {
               (const, override));
   bool IsUpdateRequiredEol() const override { return update_required_eol_; }
 
-  base::Value GetDeviceReportingInfo(
-      const TestDeviceCloudPolicyManagerAsh* manager,
-      const TestDeviceStatusCollector* collector,
-      const policy::SystemLogUploader* uploader,
-      Profile* profile) {
-    base::Value::List report_sources;
-    AddDeviceReportingInfo(&report_sources, collector, uploader, profile);
-    return base::Value(std::move(report_sources));
-  }
-
   const std::string GetDeviceManager() const override { return device_domain; }
-  const policy::DlpRulesManager* GetDlpRulesManager() const override {
-    return dlp_rules_manager_;
-  }
   void SetDeviceDomain(const std::string& domain) { device_domain = domain; }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -260,9 +243,6 @@ class TestManagementUIHandler : public ManagementUIHandler {
   raw_ptr<policy::PolicyService> policy_service_ = nullptr;
   bool update_required_eol_ = false;
   std::string device_domain = "devicedomain.com";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::DlpRulesManager* dlp_rules_manager_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 // We need to use a different base class for ChromeOS and non ChromeOS case.
@@ -278,10 +258,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ManagementUIHandlerTests()
       : TestingBaseClass(),
-        handler_(&policy_service_),
         device_domain_(u"devicedomain.com"),
         task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
-        state_keys_broker_(&session_manager_client_) {
+        state_keys_broker_(&session_manager_client_),
+        handler_(&policy_service_) {
     ON_CALL(policy_service_, GetPolicies(_))
         .WillByDefault(ReturnRef(empty_policy_map_));
   }
@@ -474,12 +454,14 @@ class ManagementUIHandlerTests : public TestingBaseClass {
         /*task_runner=*/task_runner_);
     ON_CALL(testing::Const(handler_), GetDeviceCloudPolicyManager())
         .WillByDefault(Return(manager_.get()));
-    EXPECT_CALL(*static_cast<const policy::MockDlpRulesManager*>(
-                    handler_.GetDlpRulesManager()),
-                IsReportingEnabled)
-        .WillRepeatedly(testing::Return(GetTestConfig().report_dlp_events));
-    return handler_.GetDeviceReportingInfo(manager_.get(), &status_collector,
-                                           &system_log_uploader, GetProfile());
+    base::Value::List result;
+    ManagementUIHandler::AddDeviceReportingInfoForTesting(
+        &result, &status_collector, &system_log_uploader, GetProfile());
+    if (GetTestConfig().report_dlp_events) {
+      ManagementUIHandler::AddDlpDeviceReportingElementForTesting(
+          &result, kManagementReportDlpEvents);
+    }
+    return base::Value(std::move(result));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -582,7 +564,6 @@ class ManagementUIHandlerTests : public TestingBaseClass {
 
  protected:
   TestConfig setup_config_;
-  TestManagementUIHandler handler_;
   policy::MockPolicyService policy_service_;
   policy::PolicyMap empty_policy_map_;
   std::u16string device_domain_;
@@ -602,6 +583,11 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  TestManagementUIHandler handler_;
 };
 
 AssertionResult MessagesToBeEQ(const char* infolist_expr,
@@ -1013,10 +999,10 @@ TEST_F(ManagementUIHandlerTests, NoDeviceReportingInfo) {
   GetTestConfig().managed_account = false;
   SetUpProfileAndHandler();
 
-  base::Value info =
-      handler_.GetDeviceReportingInfo(nullptr, nullptr, nullptr, GetProfile());
+  base::Value::List info =
+      ManagementUIHandler::GetDeviceReportingInfo(nullptr, GetProfile());
 
-  EXPECT_EQ(info.GetListDeprecated().size(), 0u);
+  EXPECT_EQ(info.size(), 0u);
 }
 
 TEST_F(ManagementUIHandlerTests, AllEnabledDeviceReportingInfo) {

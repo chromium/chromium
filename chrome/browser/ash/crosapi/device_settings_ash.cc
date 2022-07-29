@@ -8,12 +8,18 @@
 
 #include "base/values.h"
 #include "chrome/browser/ash/crosapi/crosapi_util.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/status_provider/device_cloud_policy_status_provider_chromeos.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace crosapi {
@@ -76,6 +82,28 @@ void DeviceSettingsAsh::GetDevicePolicyDeprecated(
   base::Value::Dict status = provider.GetStatus();
   std::move(callback).Run(base::Value(client->GetChromePolicies()),
                           base::Value(std::move(status)));
+}
+
+void DeviceSettingsAsh::GetDeviceReportSources(
+    GetDeviceReportSourcesCallback callback) {
+  const policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (!connector->IsDeviceEnterpriseManaged()) {
+    std::move(callback).Run(base::Value::List(),
+                            /*plugin_vm_data_collection_enabled=*/false);
+    return;
+  }
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+  base::Value::List report_sources =
+      ManagementUIHandler::GetDeviceReportingInfo(
+          connector->GetDeviceCloudPolicyManager(), profile);
+  bool plugin_vm_data_collection_enabled = profile->GetPrefs()->GetBoolean(
+      plugin_vm::prefs::kPluginVmDataCollectionAllowed);
+  std::move(callback).Run(std::move(report_sources),
+                          plugin_vm_data_collection_enabled);
 }
 
 }  // namespace crosapi

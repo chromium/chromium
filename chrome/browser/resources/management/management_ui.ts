@@ -20,7 +20,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {getTemplate} from './management_ui.html.js';
 
 import {BrowserReportingResponse, Extension, ManagementBrowserProxy, ManagementBrowserProxyImpl, ReportingType, ThreatProtectionInfo} from './management_browser_proxy.js';
-// <if expr="chromeos_ash">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {DeviceReportingResponse, DeviceReportingType} from './management_browser_proxy.js';
 // </if>
 
@@ -59,7 +59,7 @@ class ManagementUiElement extends ManagementUiElementBase {
 
       managedWebsitesSubtitle_: String,
 
-      // <if expr="chromeos_ash">
+      // <if expr="chromeos_ash or chromeos_lacros">
       /**
        * List of messages related to device reporting.
        */
@@ -95,7 +95,7 @@ class ManagementUiElement extends ManagementUiElementBase {
   private managedWebsites_: string[]|null;
   private managedWebsitesSubtitle_: string;
 
-  // <if expr="chromeos_ash">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private deviceReportingInfo_: DeviceReportingResponse[]|null;
   private localTrustRoots_: string;
   private customerLogo_: string;
@@ -132,7 +132,7 @@ class ManagementUiElement extends ManagementUiElementBase {
         (reportingInfo: BrowserReportingResponse[]) =>
             this.onBrowserReportingInfoReceived_(reportingInfo));
 
-    // <if expr="chromeos_ash">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.addWebUIListener(
         'plugin-vm-data-collection-updated',
         (enabled: boolean) => this.pluginVmDataCollectionEnabled_ = enabled);
@@ -148,7 +148,7 @@ class ManagementUiElement extends ManagementUiElementBase {
 
     this.getExtensions_();
     this.getManagedWebsites_();
-    // <if expr="chromeos_ash">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.getDeviceReportingInfo_();
     this.getPluginVmDataCollectionStatus_();
     this.getLocalTrustRootsInfo_();
@@ -211,7 +211,7 @@ class ManagementUiElement extends ManagementUiElementBase {
         this.threatProtectionInfo_.info.length > 0;
   }
 
-  // <if expr="chromeos_ash">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private getLocalTrustRootsInfo_() {
     this.browserProxy_!.getLocalTrustRootsInfo().then(trustRootsConfigured => {
       this.localTrustRoots_ = trustRootsConfigured ?
