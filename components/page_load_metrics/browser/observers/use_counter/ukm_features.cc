@@ -246,6 +246,8 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kClientHintsMetaEquivDelegateCH,
           WebFeature::kAuthorizationCoveredByWildcard,
           WebFeature::kImageAd,
+          WebFeature::kLinkRelPrefetchAsDocumentSameOrigin,
+          WebFeature::kLinkRelPrefetchAsDocumentCrossOrigin,
       }));
   return *opt_in_features;
 }
