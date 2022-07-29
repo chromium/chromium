@@ -465,7 +465,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   PlayState UpdatePlayState_ComputePlayState(bool is_flinging,
                                              bool can_auto_suspend,
                                              bool is_suspended,
-                                             bool is_backgrounded);
+                                             bool is_backgrounded,
+                                             bool is_in_picture_in_picture);
   void SetDelegateState(DelegateState new_state, bool is_idle);
   void SetMemoryReportingState(bool is_memory_reporting_enabled);
   void SetSuspendState(bool is_suspended);

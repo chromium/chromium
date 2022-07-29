@@ -829,6 +829,7 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
   }
 
   SetPersistentState(display_type == DisplayType::kPictureInPicture);
+  UpdatePlayState();
 }
 
 void WebMediaPlayerImpl::DoLoad(LoadType load_type,
@@ -3066,7 +3067,8 @@ void WebMediaPlayerImpl::UpdatePlayState() {
   bool is_suspended = pipeline_controller_->IsSuspended();
   bool is_backgrounded = IsBackgroundSuspendEnabled(this) && IsHidden();
   PlayState state = UpdatePlayState_ComputePlayState(
-      is_flinging_, can_auto_suspend, is_suspended, is_backgrounded);
+      is_flinging_, can_auto_suspend, is_suspended, is_backgrounded,
+      IsInPictureInPicture());
   SetDelegateState(state.delegate_state, state.is_idle);
   SetMemoryReportingState(state.is_memory_reporting_enabled);
   SetSuspendState(state.is_suspended || pending_suspend_resume_cycle_);
@@ -3183,10 +3185,12 @@ void WebMediaPlayerImpl::SetSuspendState(bool is_suspended) {
 }
 
 WebMediaPlayerImpl::PlayState
-WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(bool is_flinging,
-                                                     bool can_auto_suspend,
-                                                     bool is_suspended,
-                                                     bool is_backgrounded) {
+WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(
+    bool is_flinging,
+    bool can_auto_suspend,
+    bool is_suspended,
+    bool is_backgrounded,
+    bool is_in_picture_in_picture) {
   PlayState result;
 
   bool must_suspend = was_suspended_for_frame_closed_;
@@ -3209,8 +3213,8 @@ WebMediaPlayerImpl::UpdatePlayState_ComputePlayState(bool is_flinging,
 
   // Background suspend is only enabled for paused players.
   // In the case of players with audio the session should be kept.
-  bool background_suspended =
-      can_auto_suspend && is_backgrounded && paused_ && have_future_data;
+  bool background_suspended = can_auto_suspend && is_backgrounded && paused_ &&
+                              have_future_data && !is_in_picture_in_picture;
 
   // Idle suspension is allowed prior to kReadyStateHaveMetadata since there
   // exist mechanisms to exit the idle state when the player is capable of
