@@ -908,6 +908,13 @@
          {}
         ]
        ],
+       "chrome-bug-1346969-crash.html": [
+        "37c74cf8cb1c9f78544fea655b1e071bb14296ae",
+        [
+         null,
+         {}
+        ]
+       ],
        "chrome-quotes-crash.html": [
         "363f96fd02e1bc63d70ccda56dff2b9f935448ed",
         [
@@ -232848,6 +232855,206 @@
         ]
        },
        "filters": {
+        "canvas-fillStyle-opacity.html": [
+         "b5f9d98b8990fd45e77c35244d0559acbaae2afa",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-opacity-expected.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               0,
+               14000
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "canvas-filter-opacity-alpha-and-fillStyle.html": [
+         "24c97d62ece8b309aa395e1a0e8e98c1b2a972c4",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-filter-opacity-alpha-and-fillStyle-expected.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               0,
+               10000
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "canvas-filter-opacity.html": [
+         "cb2fc018af1365b4e448adb2471dab070dd40c8f",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-opacity-expected.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               0,
+               14000
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "canvas-filter-shadow-and-properties-blur.html": [
+         "ab3699906dd1ac61add105def1a4b5102ca327ff",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-filter-shadow-and-properties-blur-expected.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               13
+              ],
+              [
+               0,
+               25600
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "canvas-filter-shadow-and-properties.html": [
+         "2057b95c3e8cf0997072556bb7b0ca6c31e1061c",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-filter-shadow-and-properties-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas-filter-shadow.html": [
+         "ddc6c89ee554148a485983745034cb7195e5cd37",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-filter-shadow-expected.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "canvas-globalAlpha.html": [
+         "6d7bbcd03d240ea6b2442799935b23c3756295eb",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-opacity-expected.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               0,
+               14000
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "canvas-opacity-blend-modes.html": [
+         "a2d513eb6235a43493519d151685e47cdf05b2f8",
+         [
+          null,
+          [
+           [
+            "/html/canvas/element/manual/filters/canvas-opacity-blend-modes-expected.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               2
+              ],
+              [
+               0,
+               390000
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
         "tentative": {
          "canvas-filter-object-blur.html": [
           "957d73de2fcb649771d92b1770330a3ec56eff3f",
@@ -307741,6 +307948,30 @@
         ]
        },
        "filters": {
+        "canvas-filter-opacity-alpha-and-fillStyle-expected.html": [
+         "f87794f0b7f15cc2e0b42e21cdda887f05a4daa8",
+         []
+        ],
+        "canvas-filter-shadow-and-properties-blur-expected.html": [
+         "1f218b4bd252cdde7703c6f22f587504ac6e44d1",
+         []
+        ],
+        "canvas-filter-shadow-and-properties-expected.html": [
+         "294a219b70875f4e95d71a28ca805ece0025b4b6",
+         []
+        ],
+        "canvas-filter-shadow-expected.html": [
+         "04bc6392ccecc6d240436745615fe0affff545e5",
+         []
+        ],
+        "canvas-opacity-blend-modes-expected.html": [
+         "3eb75819818a8d9aa4ee0f9f1c15cab08a3b7613",
+         []
+        ],
+        "canvas-opacity-expected.html": [
+         "caf6b53ce39f2fa61c43b35f6c91c6954e7350d6",
+         []
+        ],
         "tentative": {
          "canvas-filter-object-blur-expected.html": [
           "ae8911b2de39e593c2ef262ed9cd5eaa70b5bf0c",
@@ -342044,6 +342275,39 @@
      [
       null,
       {}
+     ]
+    ],
+    "blob-composite-blob-reads.any.js": [
+     "7d043ebdf2942acafdec3cf231116759fc965edc",
+     [
+      "IndexedDB/blob-composite-blob-reads.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDB-backed composite blobs maintain coherency"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/blob-composite-blob-reads.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "IDB-backed composite blobs maintain coherency"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
      ]
     ],
     "blob-contenttype.any.js": [
