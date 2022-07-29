@@ -1316,7 +1316,7 @@
 
     // Trigonometic functions
     "sin",
-    // "cos",
+    "cos",
     // "tan" - already declared for color value
     // "atan",
     // "atan2",

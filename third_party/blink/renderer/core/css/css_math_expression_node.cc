@@ -467,6 +467,11 @@ CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
       value = sin(ValueAsRadian(operands[0], error));
       break;
     }
+    case CSSValueID::kCos: {
+      DCHECK_EQ(operands.size(), 1u);
+      value = cos(ValueAsRadian(operands[0], error));
+      break;
+    }
     default:
       return nullptr;
   }
@@ -1179,6 +1184,7 @@ class CSSMathExpressionNodeParser {
         return true;
       // TODO(crbug.com/1190444): Add other trigonometric functions
       case CSSValueID::kSin:
+      case CSSValueID::kCos:
         return RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled();
       case CSSValueID::kAnchor:
       case CSSValueID::kAnchorSize:
@@ -1280,6 +1286,7 @@ class CSSMathExpressionNodeParser {
         max_argument_count = 3;
         break;
       case CSSValueID::kSin:
+      case CSSValueID::kCos:
         DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
         max_argument_count = 1;
         min_argument_count = 1;
@@ -1322,6 +1329,7 @@ class CSSMathExpressionNodeParser {
         return CSSMathExpressionOperation::CreateComparisonFunction(
             std::move(nodes), CSSMathOperator::kClamp);
       case CSSValueID::kSin:
+      case CSSValueID::kCos:
         DCHECK(RuntimeEnabledFeatures::CSSTrigonometricFunctionsEnabled());
         return CSSMathExpressionOperation::
             CreateTrigonometricFunctionSimplified(std::move(nodes),
