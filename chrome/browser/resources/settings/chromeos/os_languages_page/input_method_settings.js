@@ -15,16 +15,23 @@ export const SettingsType = {
   BASIC_SETTINGS: 5,
   ENGLISH_SOUTH_AFRICA_SETTINGS: 6,
   SUGGESTION_SETTINGS: 7,
+  PK_DIACRITICS_SETTINGS: 8,
 };
 
 /**
  * @param {boolean} predictiveWritingEnabled .
+ * @param {boolean} physicalKeyboardDiacriticsEnabled .
  * @return {Object<string,!Array<!SettingsType>>}
  */
-export function getInputMethodSettings(predictiveWritingEnabled) {
-  const usEnglishSettings = predictiveWritingEnabled ?
-      [SettingsType.LATIN_SETTINGS, SettingsType.SUGGESTION_SETTINGS] :
-      [SettingsType.LATIN_SETTINGS];
+export function getInputMethodSettings(
+    predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled) {
+  const usEnglishSettings = [SettingsType.LATIN_SETTINGS];
+  if (predictiveWritingEnabled) {
+    usEnglishSettings.push(SettingsType.SUGGESTION_SETTINGS);
+  }
+  if (physicalKeyboardDiacriticsEnabled) {
+    usEnglishSettings.push(SettingsType.PK_DIACRITICS_SETTINGS);
+  }
   return {
     // NOTE: Please group by SettingsType, and keep entries sorted
     // alphabetically

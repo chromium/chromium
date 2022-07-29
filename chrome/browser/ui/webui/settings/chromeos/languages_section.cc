@@ -199,6 +199,8 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_AUTO_CORRECTION},
       {"inputMethodOptionsPredictiveWriting",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_PREDICTIVE_WRITING},
+      {"inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpress",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_DIACRITICS_ON_PHYSICAL_KEYBOARD_LONGPRESS},
       {"inputMethodOptionsXkbLayout",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_XKB_LAYOUT},
       {"inputMethodOptionsZhuyinKeyboardLayout",
@@ -247,6 +249,10 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->AddBoolean("allowPredictiveWriting",
                           IsPredictiveWritingAllowed());
+  html_source->AddBoolean(
+      "allowDiacriticsOnPhysicalKeyboardLongpress",
+      base::FeatureList::IsEnabled(
+          ::chromeos::features::kDiacriticsOnPhysicalKeyboardLongpress));
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {

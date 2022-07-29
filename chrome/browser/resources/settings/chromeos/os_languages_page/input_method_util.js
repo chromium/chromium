@@ -60,6 +60,8 @@ export const OptionType = {
       'physicalKeyboardEnableCapitalization',
   PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
       'physicalKeyboardEnablePredictiveWriting',
+  PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
+      'physicalKeyboardEnableDiacriticsOnLongpress',
   VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL: 'virtualKeyboardAutoCorrectionLevel',
   VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION: 'virtualKeyboardEnableCapitalization',
   XKB_LAYOUT: 'xkbLayout',
@@ -109,6 +111,7 @@ export const OPTION_DEFAULT = {
   [OptionType.PHYSICAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 0,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING]: true,
+  [OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS]: false,
   [OptionType.VIRTUAL_KEYBOARD_AUTO_CORRECTION_LEVEL]: 1,
   [OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION]: true,
   [OptionType.XKB_LAYOUT]: 'US',
@@ -268,6 +271,11 @@ const Settings = {
     optionNames:
         [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING}],
   }],
+  [SettingsType.PK_DIACRITICS_SETTINGS]: [{
+    title: SettingsHeaders.PHYSICAL_KEYBOARD,
+    optionNames:
+        [{name: OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS}],
+  }],
 };
 
 /**
@@ -282,15 +290,18 @@ export function getFirstPartyInputMethodEngineId(id) {
 /**
  * @param {string} id Input method ID.
  * @param {boolean} predictiveWritingEnabled .
+ * @param {boolean} physicalKeyboardDiacriticsEnabled .
  * @return {boolean} true if the input method's options page is implemented.
  */
-export function hasOptionsPageInSettings(id, predictiveWritingEnabled) {
+export function hasOptionsPageInSettings(
+    id, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled) {
   if (!isFirstPartyInputMethodId_(id)) {
     return false;
   }
   const engineId = getFirstPartyInputMethodEngineId(id);
 
-  const inputMethodSettings = getInputMethodSettings(predictiveWritingEnabled);
+  const inputMethodSettings = getInputMethodSettings(
+      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled);
   return !!inputMethodSettings[engineId];
 }
 
@@ -298,14 +309,17 @@ export function hasOptionsPageInSettings(id, predictiveWritingEnabled) {
  * Generates options to be displayed in the options page, grouped by sections.
  * @param {string} engineId Input method engine ID.
  * @param {boolean} predictiveWritingEnabled .
+ * @param {boolean} physicalKeyboardDiacriticsEnabled .
  * @return {!Array<!{title: string, optionNames:
  *     !Array<OptionType>}>} the options to be
  *     displayed.
  */
-export function generateOptions(engineId, predictiveWritingEnabled) {
+export function generateOptions(
+    engineId, predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled) {
   const options = [];
 
-  const inputMethodSettings = getInputMethodSettings(predictiveWritingEnabled);
+  const inputMethodSettings = getInputMethodSettings(
+      predictiveWritingEnabled, physicalKeyboardDiacriticsEnabled);
   const engineSettings = inputMethodSettings[engineId];
   if (engineSettings) {
     const pushedOptions = {};
@@ -345,6 +359,7 @@ export function getOptionUiType(option) {
     case OptionType.ENABLE_SOUND_ON_KEYPRESS:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_CAPITALIZATION:
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
+    case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
     case OptionType.VIRTUAL_KEYBOARD_ENABLE_CAPITALIZATION:
     case OptionType.KOREAN_ENABLE_SYLLABLE_INPUT:
     case OptionType.PINYIN_CHINESE_PUNCTUATION:
@@ -420,6 +435,8 @@ export function getOptionLabelName(option) {
       return 'inputMethodOptionsEnableCapitalization';
     case OptionType.PHYSICAL_KEYBOARD_ENABLE_PREDICTIVE_WRITING:
       return 'inputMethodOptionsPredictiveWriting';
+    case OptionType.PHYSICAL_KEYBOARD_ENABLE_DIACRITICS_ON_LONGPRESS:
+      return 'inputMethodOptionsDiacriticsOnPhysicalKeyboardLongpress';
     case OptionType.PINYIN_CHINESE_PUNCTUATION:
       return 'inputMethodOptionsPinyinChinesePunctuation';
     case OptionType.PINYIN_DEFAULT_CHINESE:
@@ -564,11 +581,11 @@ export function getOptionUrl(option) {
   return undefined;
 }
 
-  /**
-   * @param {string} id Input method ID.
-   * @return {boolean} true if |id| is a first party input method ID.
-   * @private
-   */
-  function isFirstPartyInputMethodId_(id) {
-    return id.startsWith(FIRST_PARTY_INPUT_METHOD_ID_PREFIX);
-  }
+/**
+ * @param {string} id Input method ID.
+ * @return {boolean} true if |id| is a first party input method ID.
+ * @private
+ */
+function isFirstPartyInputMethodId_(id) {
+  return id.startsWith(FIRST_PARTY_INPUT_METHOD_ID_PREFIX);
+}

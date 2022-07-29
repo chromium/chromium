@@ -136,7 +136,8 @@ class SettingsInputMethodOptionsPageElement extends
    */
   populateOptionSections_() {
     const options = generateOptions(
-        this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'));
+        this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
+        loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress'));
     const prefValue = this.getPref(this.PREFS_PATH).value;
     const prefix = this.getPrefsPrefix_();
     const currentSettings = prefix in prefValue ? prefValue[prefix] : {};
