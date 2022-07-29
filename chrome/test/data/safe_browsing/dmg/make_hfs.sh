@@ -60,7 +60,9 @@ ln -s fourth/fifth/random symlink-random
 
 popd  # second
 
-echo "Poop" > "${UNICODE_FILENAME}"
+# ditto has some logic to decide if it's worth compressing a file. 10,000 copies
+# seems to be enough to trigger that logic consistently.
+python3 -c "print('Poop'*10001)" > "${UNICODE_FILENAME}"
 ditto --hfsCompression "${UNICODE_FILENAME}" goat-output.txt
 
 popd  # first

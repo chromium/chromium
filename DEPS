@@ -762,7 +762,7 @@ deps = {
     'packages': [
       {
         'package': 'chromium/chrome/test/data/safe_browsing/dmg',
-        'version': 'a543ae3f0b3e67dd5a1c75f63317231a1d242912',
+        'version': '03TLfNQgc59nHmyWtYWJfFaUrEW8QDJJzXwm-672m-QC',
       },
     ],
     'condition': 'checkout_mac',
