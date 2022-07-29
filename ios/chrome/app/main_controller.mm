@@ -110,6 +110,7 @@
 #import "ios/chrome/browser/ui/first_run/welcome_to_chrome_view_controller.h"
 #import "ios/chrome/browser/ui/main/browser_view_wrangler.h"
 #import "ios/chrome/browser/ui/main/scene_delegate.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/webui/chrome_web_ui_ios_controller_factory.h"
@@ -269,7 +270,9 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 }  // namespace
 
-@interface MainController () <PrefObserverDelegate, BlockingSceneCommands> {
+@interface MainController () <PrefObserverDelegate,
+                              BlockingSceneCommands,
+                              SceneStateObserver> {
   IBOutlet UIWindow* _window;
 
   // The object that drives the Chrome startup/shutdown logic.
@@ -630,6 +633,10 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 #pragma mark - AppStateObserver
 
+- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
+  [sceneState addObserver:self];
+}
+
 // Called when the first scene becomes active.
 - (void)appState:(AppState*)appState
     firstSceneHasInitializedUI:(SceneState*)sceneState {
@@ -669,11 +676,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
     case InitStageEnterprise:
       break;
     case InitStageBrowserObjectsForUI:
-      // When adding a new initialization flow, consider setting
-      // `_appState.userInteracted` at the appropriate time.
-      DCHECK(_appState.userInteracted);
-      [self startUpBrowserForegroundInitialization];
-      [appState queueTransitionToNextInitStage];
+      [self maybeContinueForegroundInitialization];
       break;
     case InitStageNormalUI:
       // Scene controllers use this stage to create the normal UI if needed.
@@ -696,6 +699,22 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
   [self.appState addAgent:[[CredentialProviderAppAgent alloc] init]];
 #endif
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (level == SceneActivationLevelUnattached) {
+    [sceneState removeObserver:self];
+  } else if (level > SceneActivationLevelBackground) {
+    // Stop observing all scenes since we only needed to know when the app
+    // (first scene) is about to go to the foreground.
+    for (SceneState* scene in _appState.connectedScenes) {
+      [scene removeObserver:self];
+    }
+    [self maybeContinueForegroundInitialization];
+  }
 }
 
 #pragma mark - Property implementation.
@@ -802,6 +821,17 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 }
 
 #pragma mark - Startup tasks
+
+// Continues foreground initialization iff both the init stage and activation
+// level are ready.
+- (void)maybeContinueForegroundInitialization {
+  if (self.appState.foregroundScenes.count > 0 &&
+      self.appState.initStage == InitStageBrowserObjectsForUI) {
+    DCHECK(self.appState.userInteracted);
+    [self startUpBrowserForegroundInitialization];
+    [self.appState queueTransitionToNextInitStage];
+  }
+}
 
 - (void)sendQueuedFeedback {
   [[DeferredInitializationRunner sharedInstance]
