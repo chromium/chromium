@@ -2185,9 +2185,10 @@ void ShelfView::ShelfItemRemoved(int model_index, const ShelfItem& old_item) {
     // The first animation fades out the view. When done we'll animate the rest
     // of the views to their target location.
     bounds_animator_->AnimateViewTo(view.get(), view->bounds());
+    auto* const view_ptr = view.get();
     bounds_animator_->SetAnimationDelegate(
-        view.get(), std::unique_ptr<gfx::AnimationDelegate>(
-                        new FadeOutAnimationDelegate(this, std::move(view))));
+        view_ptr,
+        std::make_unique<FadeOutAnimationDelegate>(this, std::move(view)));
   } else {
     // Ensures that |view| is not used after destruction.
     StopAnimatingViewIfAny(view.get());
