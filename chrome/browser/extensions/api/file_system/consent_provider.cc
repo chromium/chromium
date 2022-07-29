@@ -9,12 +9,12 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
-#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/views/extensions/request_file_system_dialog_view.h"
-#include "components/user_manager/user_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
@@ -25,6 +25,10 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/app_id.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 namespace extensions {
 
 namespace {
@@ -32,7 +36,9 @@ namespace {
 // List of allowlisted component apps and extensions by their ids for
 // chrome.fileSystem.requestFileSystem.
 const char* const kRequestFileSystemComponentAllowlist[] = {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     file_manager::kFileManagerAppId, file_manager::kImageLoaderExtensionId,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(henryhsu,b/110126438): Remove this extension id, and add it only
     // for tests.
     "pkplfbidichfdicaijlchgnapepdginl"  // Testing extensions.
@@ -114,7 +120,7 @@ void ConsentProvider::RequestConsent(content::RenderFrameHost* host,
   // If it's a kiosk app running in manual-launch kiosk session, then show the
   // confirmation dialog.
   if (KioskModeInfo::IsKioskOnly(&extension) &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp()) {
+      profiles::IsChromeAppKioskSession()) {
     delegate_->ShowDialog(
         host, extension.id(), extension.name(), volume_id, volume_label,
         writable, base::BindOnce(&DialogResultToConsent, std::move(callback)));
@@ -130,7 +136,7 @@ bool ConsentProvider::IsGrantable(const Extension& extension) {
 
   const bool is_running_in_kiosk_session =
       KioskModeInfo::IsKioskOnly(&extension) &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
+      profiles::IsChromeAppKioskSession();
 
   return is_allowlisted_component || is_running_in_kiosk_session;
 }
