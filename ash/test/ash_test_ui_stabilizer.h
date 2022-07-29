@@ -27,8 +27,6 @@ class AshTestUiStabilizer {
   // constant to avoid flakiness in pixel tests.
   void StabilizeUi(const gfx::Size& wallpaper_size);
 
-  const AccountId& account_id() const { return account_id_; }
-
  private:
   // Ensures that the system UI is under the dark mode if the dark/light feature
   // is enabled.
@@ -44,15 +42,6 @@ class AshTestUiStabilizer {
   // Used for setting the locale and the time zone.
   const base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
   const base::test::ScopedRestoreDefaultTimezone time_zone_;
-
-  const AccountId account_id_;
-
-  // The temporary data directories for wallpaper setting.
-  base::ScopedTempDir user_data_dir_;
-  base::ScopedTempDir online_wallpaper_dir_;
-  base::ScopedTempDir custom_wallpaper_dir_;
-
-  TestWallpaperControllerClient client_;
 };
 
 }  // namespace ash

@@ -17,13 +17,6 @@ namespace ash {
 
 namespace {
 
-// The fake user account only used for pixel tests.
-constexpr char kUserForPixelTest[] = "user1@test.com";
-
-// The fake file ids for wallpaper setting in pixel tests.
-constexpr char kFakeFileId[] = "file-hash";
-constexpr char kWallpaperFileName[] = "test-file";
-
 // The color of the default wallpaper in pixel tests.
 constexpr SkColor kWallPaperColor = SK_ColorMAGENTA;
 
@@ -44,9 +37,7 @@ gfx::ImageSkia CreateImage(const gfx::Size& image_size, SkColor color) {
 
 AshTestUiStabilizer::AshTestUiStabilizer()
     : scoped_locale_(base::test::ScopedRestoreICUDefaultLocale(kLocale)),
-      time_zone_(base::test::ScopedRestoreDefaultTimezone(kTimeZone)),
-      account_id_(
-          AccountId::FromUserEmailGaiaId(kUserForPixelTest, "test-hash")) {}
+      time_zone_(base::test::ScopedRestoreDefaultTimezone(kTimeZone)) {}
 
 AshTestUiStabilizer::~AshTestUiStabilizer() = default;
 
@@ -68,22 +59,17 @@ void AshTestUiStabilizer::MaybeSetDarkMode() {
 }
 
 void AshTestUiStabilizer::SetWallPaper(const gfx::Size& wallpaper_size) {
-  ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
-  ASSERT_TRUE(online_wallpaper_dir_.CreateUniqueTempDir());
-  ASSERT_TRUE(custom_wallpaper_dir_.CreateUniqueTempDir());
-
   auto* controller = Shell::Get()->wallpaper_controller();
-  controller->Init(user_data_dir_.GetPath(), online_wallpaper_dir_.GetPath(),
-                   custom_wallpaper_dir_.GetPath(),
-                   /*device_policy_wallpaper=*/base::FilePath());
   controller->set_wallpaper_reload_no_delay_for_test();
-  controller->SetClient(&client_);
-  client_.set_fake_files_id_for_account_id(account_id_, kFakeFileId);
 
   gfx::ImageSkia wallpaper_image = CreateImage(wallpaper_size, kWallPaperColor);
-  controller->SetCustomWallpaper(account_id_, kWallpaperFileName,
-                                 WALLPAPER_LAYOUT_STRETCH, wallpaper_image,
-                                 /*preview_mode=*/false);
+  controller->ShowWallpaperImage(
+      wallpaper_image,
+      WallpaperInfo{/*in_location=*/std::string(),
+                    /*in_layout=*/WALLPAPER_LAYOUT_STRETCH,
+                    /*in_type=*/WallpaperType::kDefault,
+                    /*in_date=*/base::Time::Now().LocalMidnight()},
+      /*preview_mode=*/false, /*always_on_top=*/false);
 }
 
 void AshTestUiStabilizer::SetBatteryState() {

@@ -368,8 +368,6 @@ void AshTestHelper::SetUp(InitParams init_params) {
       ECLidAngleDriverStatus::NOT_SUPPORTED);
 
   if (init_params.is_pixel_test) {
-    SimulateUserLogin(ui_stabilizer_->account_id());
-
     const gfx::Size primary_display_size =
         display::Screen::GetScreen()
             ->GetDisplayNearestWindow(Shell::GetPrimaryRootWindow())

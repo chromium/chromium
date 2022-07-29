@@ -331,10 +331,6 @@ void AshTestBase::PrepareForPixelDiffTest() {
   CHECK(!setup_called_);
 
   is_pixel_test_ = true;
-
-  // In pixel tests, a fake user account is used to set the wallpaper.
-  // Therefore, do not start the session by default.
-  start_session_ = false;
 }
 
 void AshTestBase::SetUserPref(const std::string& user_email,
