@@ -1289,6 +1289,8 @@ source_set("ash") {
     "input_method/ui/completion_suggestion_view.h",
     "input_method/ui/grammar_suggestion_window.cc",
     "input_method/ui/grammar_suggestion_window.h",
+    "input_method/ui/indexed_suggestion_candidate_button.cc",
+    "input_method/ui/indexed_suggestion_candidate_button.h",
     "input_method/ui/infolist_window.cc",
     "input_method/ui/infolist_window.h",
     "input_method/ui/input_method_menu_item.cc",

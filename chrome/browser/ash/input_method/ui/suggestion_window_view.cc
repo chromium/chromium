@@ -58,8 +58,8 @@ bool ShouldHighlight(const views::Button& button) {
 void SetHighlighted(views::View& view, bool highlighted) {
   if (!!view.background() != highlighted) {
     view.SetBackground(highlighted
-                           ? views::CreateSolidBackground(
-                                 ResolveSemanticColor(kButtonHighlightColor))
+                           ? views::CreateRoundedRectBackground(
+                                 ResolveSemanticColor(kButtonHighlightColor), 2)
                            : nullptr);
   }
 }
@@ -88,7 +88,7 @@ SuggestionWindowView::CreateNonClientFrameView(views::Widget* widget) {
 }
 
 void SuggestionWindowView::Show(const SuggestionDetails& details) {
-  ResizeCandidateArea(0);
+  ResizeCandidateArea({});
 
   completion_view_->SetVisible(true);
   completion_view_->SetView(details);
@@ -104,13 +104,9 @@ void SuggestionWindowView::ShowMultipleCandidates(
     const ash::input_method::AssistiveWindowProperties& properties) {
   const std::vector<std::u16string>& candidates = properties.candidates;
   completion_view_->SetVisible(false);
-  ResizeCandidateArea(candidates.size());
-  for (size_t i = 0; i < candidates.size(); ++i) {
-    auto* const candidate = static_cast<views::LabelButton*>(
-        multiple_candidate_area_->children()[i]);
-    candidate->SetText(candidates[i]);
-  }
-
+  ResizeCandidateArea(
+      candidates,
+      properties.type == ui::ime::AssistiveWindowType::kEmojiSuggestion);
   learn_more_button_->SetVisible(properties.show_setting_link);
 
   MakeVisible();
@@ -123,12 +119,12 @@ void SuggestionWindowView::SetButtonHighlighted(
     if (completion_view_->GetVisible()) {
       completion_view_->SetHighlighted(highlighted);
     } else {
-      const views::View::Views& candidates =
+      const views::View::Views& candidate_buttons =
           multiple_candidate_area_->children();
-      if (button.index < candidates.size()) {
-        SetCandidateHighlighted(
-            static_cast<views::LabelButton*>(candidates[button.index]),
-            highlighted);
+      if (button.index < candidate_buttons.size()) {
+        SetCandidateHighlighted(static_cast<IndexedSuggestionCandidateButton*>(
+                                    candidate_buttons[button.index]),
+                                highlighted);
       }
     }
   } else if (button.id == ButtonId::kSmartInputsSettingLink) {
@@ -178,13 +174,17 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   set_margins(gfx::Insets());
 
   views::BoxLayout::Orientation layout_orientation;
+  int multiple_candidate_area_padding = 0;
   switch (orientation) {
     case Orientation::kVertical: {
       layout_orientation = views::BoxLayout::Orientation::kVertical;
+      // TODO(jhtin): remove this when emoji uses horizontal layout.
+      multiple_candidate_area_padding = 0;
       break;
     }
     case Orientation::kHorizontal: {
       layout_orientation = views::BoxLayout::Orientation::kHorizontal;
+      multiple_candidate_area_padding = 4;
       break;
     }
     default: {
@@ -203,8 +203,10 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
                                 .index = 0})));
   completion_view_->SetVisible(false);
   multiple_candidate_area_ = AddChildView(std::make_unique<views::View>());
-  multiple_candidate_area_->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(layout_orientation));
+
+  multiple_candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      layout_orientation, gfx::Insets(multiple_candidate_area_padding),
+      /* between_child_spacing=*/multiple_candidate_area_padding));
   multiple_candidate_area_->SetVisible(false);
 
   setting_link_ = AddChildView(std::make_unique<views::Link>(
@@ -249,28 +251,31 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
 
 SuggestionWindowView::~SuggestionWindowView() = default;
 
-void SuggestionWindowView::ResizeCandidateArea(size_t size) {
+void SuggestionWindowView::ResizeCandidateArea(
+    const std::vector<std::u16string>& new_candidates,
+    bool use_legacy_candidate) {
   const views::View::Views& candidates = multiple_candidate_area_->children();
-  while (candidates.size() > size) {
+  while (candidates.size()) {
     subscriptions_.erase(
         multiple_candidate_area_->RemoveChildViewT(candidates.back()).get());
   }
 
-  for (size_t index = candidates.size(); index < size; ++index) {
-    // TODO(b/217560706): Separate this into a CandidateView that will follow
-    // specs and contain an index.
+  for (size_t index = 0; index < new_candidates.size(); ++index) {
     auto* const candidate = multiple_candidate_area_->AddChildView(
-        std::make_unique<views::LabelButton>(
+        std::make_unique<IndexedSuggestionCandidateButton>(
             base::BindRepeating(
                 &AssistiveDelegate::AssistiveWindowButtonClicked,
                 base::Unretained(delegate_),
                 AssistiveWindowButton{.id = ui::ime::ButtonId::kSuggestion,
                                       .index = index}),
-            u""));
-    candidate->SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(6, 10)));
+            /* candidate_text=*/new_candidates[index],
+            // Label indexes start from "1", hence we increment index by one.
+            /* index_text=*/base::FormatNumber(index + 1),
+            use_legacy_candidate));
 
     auto subscription = candidate->AddStateChangedCallback(base::BindRepeating(
-        [](SuggestionWindowView* window, views::LabelButton* button) {
+        [](SuggestionWindowView* window,
+           IndexedSuggestionCandidateButton* button) {
           window->SetCandidateHighlighted(button, ShouldHighlight(*button));
         },
         base::Unretained(this), base::Unretained(candidate)));
@@ -283,15 +288,17 @@ void SuggestionWindowView::MakeVisible() {
   SizeToContents();
 }
 
-void SuggestionWindowView::SetCandidateHighlighted(views::LabelButton* view,
-                                                   bool highlighted) {
+void SuggestionWindowView::SetCandidateHighlighted(
+    IndexedSuggestionCandidateButton* view,
+    bool highlighted) {
   // Clear all highlights if any exists.
-  for (auto* candidate : multiple_candidate_area_->children()) {
-    SetHighlighted(*candidate, false);
+  for (auto* candidate_button : multiple_candidate_area_->children()) {
+    static_cast<IndexedSuggestionCandidateButton*>(candidate_button)
+        ->SetHighlight(false);
   }
 
   if (highlighted)
-    SetHighlighted(*view, highlighted);
+    view->SetHighlight(highlighted);
 }
 
 BEGIN_METADATA(SuggestionWindowView, views::BubbleDialogDelegateView)

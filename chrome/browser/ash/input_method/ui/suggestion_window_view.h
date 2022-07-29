@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/ash/input_method/ui/indexed_suggestion_candidate_button.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_accessibility_label.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/chromeos/ui_chromeos_export.h"
@@ -92,13 +93,15 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
 
   // Sets the number of candidates (i.e. the number of children of
   // |candidate_area_|) to |size|.
-  void ResizeCandidateArea(size_t size);
+  void ResizeCandidateArea(const std::vector<std::u16string>& new_candidates,
+                           bool use_legacy_candidate = false);
 
   void MakeVisible();
 
   // Sets |candidate|'s highlight state to |highlighted|. At most one candidate
   // will be highlighted at any given time.
-  void SetCandidateHighlighted(views::LabelButton* candidate, bool highlighted);
+  void SetCandidateHighlighted(IndexedSuggestionCandidateButton* candidate,
+                               bool highlighted);
 
   // The delegate to handle events from this class.
   AssistiveDelegate* const delegate_;
