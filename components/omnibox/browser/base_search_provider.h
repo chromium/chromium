@@ -29,10 +29,6 @@ class SearchTermsData;
 class SuggestionDeletionHandler;
 class TemplateURL;
 
-namespace base {
-class Value;
-}
-
 // Base functionality for receiving suggestions from a search engine.
 // This class is abstract and should only be used as a base for other
 // autocomplete providers utilizing its functionality.
@@ -210,8 +206,8 @@ class BaseSearchProvider : public AutocompleteProvider {
   void SetDeletionURL(const std::string& deletion_url,
                       AutocompleteMatch* match);
 
-  // Creates an AutocompleteMatch from |result| to search for the query in
-  // |result|. Adds the created match to |map|; if such a match
+  // Creates an AutocompleteMatch from |result| and |input| to search for the
+  // query in |result|. Adds the created match to |map|; if such a match
   // already exists, whichever one has lower relevance is eliminated.
   // |metadata| and |accepted_suggestion| are used for generating an
   // AutocompleteMatch.
@@ -221,29 +217,13 @@ class BaseSearchProvider : public AutocompleteProvider {
   // NOTE: Any result containing a deletion URL is always marked deletable.
   void AddMatchToMap(const SearchSuggestionParser::SuggestResult& result,
                      const std::string& metadata,
+                     const AutocompleteInput& input,
+                     const TemplateURL* template_url,
+                     const SearchTermsData& search_terms_data,
                      int accepted_suggestion,
                      bool mark_as_deletable,
                      bool in_keyword_mode,
                      MatchMap* map);
-
-  // Parses results from the suggest server and updates the appropriate suggest
-  // and navigation result lists in |results|. |default_result_relevance| is
-  // the relevance to use if it was not explicitly set by the server.
-  // |is_keyword_result| indicates whether the response was received from the
-  // keyword provider.
-  // Returns whether the appropriate result list members were updated.
-  bool ParseSuggestResults(const base::Value& root_val,
-                           int default_result_relevance,
-                           bool is_keyword_result,
-                           SearchSuggestionParser::Results* results);
-
-  // Returns the TemplateURL corresponding to the keyword or default
-  // provider based on the value of |is_keyword|.
-  virtual const TemplateURL* GetTemplateURL(bool is_keyword) const = 0;
-
-  // Returns the AutocompleteInput for keyword provider or default provider
-  // based on the value of |is_keyword|.
-  virtual const AutocompleteInput GetInput(bool is_keyword) const = 0;
 
   // Returns whether the destination URL corresponding to the given |result|
   // should contain command-line-specified query params.

@@ -40,8 +40,6 @@ class TestBaseSearchProvider : public BaseSearchProvider {
   TestBaseSearchProvider(const TestBaseSearchProvider&) = delete;
   TestBaseSearchProvider& operator=(const TestBaseSearchProvider&) = delete;
   MOCK_CONST_METHOD1(AddProviderInfo, void(ProvidersInfo* provider_info));
-  MOCK_CONST_METHOD1(GetTemplateURL, const TemplateURL*(bool is_keyword));
-  MOCK_CONST_METHOD1(GetInput, const AutocompleteInput(bool is_keyword));
   MOCK_CONST_METHOD1(ShouldAppendExtraParams,
                      bool(const SearchSuggestionParser::SuggestResult& result));
   MOCK_METHOD1(RecordDeletionResult, void(bool success));
@@ -50,16 +48,16 @@ class TestBaseSearchProvider : public BaseSearchProvider {
                void(const AutocompleteInput& input, bool minimal_changes));
   void AddMatchToMap(const SearchSuggestionParser::SuggestResult& result,
                      const std::string& metadata,
+                     const AutocompleteInput& input,
+                     const TemplateURL* template_url,
+                     const SearchTermsData& search_terms_data,
                      int accepted_suggestion,
                      bool mark_as_deletable,
                      bool in_keyword_mode,
                      MatchMap* map) {
-    BaseSearchProvider::AddMatchToMap(result,
-                                      metadata,
-                                      accepted_suggestion,
-                                      mark_as_deletable,
-                                      in_keyword_mode,
-                                      map);
+    BaseSearchProvider::AddMatchToMap(result, metadata, input, template_url,
+                                      search_terms_data, accepted_suggestion,
+                                      mark_as_deletable, in_keyword_mode, map);
   }
 
   void AddMatch(const AutocompleteMatch& match) {
@@ -101,19 +99,15 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
   SuggestionAnswer answer;
   answer.set_type(2334);
 
-  EXPECT_CALL(*provider_, GetInput(_))
-      .WillRepeatedly(Return(AutocompleteInput()));
-  EXPECT_CALL(*provider_, GetTemplateURL(_))
-      .WillRepeatedly(Return(template_url.get()));
-
   SearchSuggestionParser::SuggestResult more_relevant(
       query, AutocompleteMatchType::SEARCH_HISTORY,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/1300, /*relevance_from_server=*/true,
       /*input_text=*/query);
   provider_->AddMatchToMap(
-      more_relevant, std::string(), TemplateURLRef::NO_SUGGESTION_CHOSEN,
-      false, false, &map);
+      more_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
 
   SearchSuggestionParser::SuggestResult less_relevant(
       query, AutocompleteMatchType::SEARCH_SUGGEST,
@@ -122,8 +116,9 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
       /*input_text=*/query);
   less_relevant.SetAnswer(answer);
   provider_->AddMatchToMap(
-      less_relevant, std::string(), TemplateURLRef::NO_SUGGESTION_CHOSEN,
-      false, false, &map);
+      less_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
 
   ASSERT_EQ(1U, map.size());
   AutocompleteMatch match = map.begin()->second;
@@ -149,11 +144,13 @@ TEST_F(BaseSearchProviderTest, PreserveAnswersWhenDeduplicating) {
       /*input_text=*/query);
   more_relevant.SetAnswer(answer2);
   provider_->AddMatchToMap(
-      more_relevant, std::string(), TemplateURLRef::NO_SUGGESTION_CHOSEN,
-      false, false, &map);
+      more_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
   provider_->AddMatchToMap(
-      less_relevant, std::string(), TemplateURLRef::NO_SUGGESTION_CHOSEN,
-      false, false, &map);
+      less_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
   ASSERT_EQ(1U, map.size());
   match = map.begin()->second;
   ASSERT_EQ(1U, match.duplicate_matches.size());
@@ -176,11 +173,6 @@ TEST_F(BaseSearchProviderTest, MatchTailSuggestionProperly) {
   AutocompleteInput autocomplete_input(
       u"weather", 7, metrics::OmniboxEventProto::BLANK, TestSchemeClassifier());
 
-  EXPECT_CALL(*provider_, GetInput(_))
-      .WillRepeatedly(Return(autocomplete_input));
-  EXPECT_CALL(*provider_, GetTemplateURL(_))
-      .WillRepeatedly(Return(template_url.get()));
-
   std::u16string query = u"angeles now";
   std::u16string suggestion = u"weather los " + query;
   SearchSuggestionParser::SuggestResult suggest_result(
@@ -201,9 +193,10 @@ TEST_F(BaseSearchProviderTest, MatchTailSuggestionProperly) {
       /*input_text=*/query);
 
   TestBaseSearchProvider::MatchMap map;
-  provider_->AddMatchToMap(suggest_result, std::string(),
-                           TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false,
-                           &map);
+  provider_->AddMatchToMap(
+      suggest_result, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
 
   ASSERT_EQ(1UL, map.size());
   const auto& entry = *(map.begin());
@@ -223,28 +216,25 @@ TEST_F(BaseSearchProviderTest, DeleteDuplicateMatch) {
   TestBaseSearchProvider::MatchMap map;
   std::u16string query = u"site.com";
 
-  EXPECT_CALL(*provider_, GetInput(_))
-      .WillRepeatedly(Return(AutocompleteInput()));
-  EXPECT_CALL(*provider_, GetTemplateURL(_))
-      .WillRepeatedly(Return(template_url.get()));
-
   SearchSuggestionParser::SuggestResult more_relevant(
       query, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
-  provider_->AddMatchToMap(more_relevant, std::string(),
-                           TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false,
-                           &map);
+  provider_->AddMatchToMap(
+      more_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, false, false, &map);
 
   SearchSuggestionParser::SuggestResult less_relevant(
       query, AutocompleteMatchType::SEARCH_HISTORY,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/735, /*relevance_from_server=*/true,
       /*input_text=*/query);
-  provider_->AddMatchToMap(less_relevant, std::string(),
-                           TemplateURLRef::NO_SUGGESTION_CHOSEN, true, false,
-                           &map);
+  provider_->AddMatchToMap(
+      less_relevant, std::string(), AutocompleteInput(), template_url.get(),
+      client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN, true, false, &map);
 
   ASSERT_EQ(1U, map.size());
   ASSERT_TRUE(provider_->matches().empty());
@@ -289,27 +279,26 @@ TEST_F(BaseSearchProviderTest, PrerenderDefaultMatch) {
   TestBaseSearchProvider::MatchMap map;
   std::u16string query = u"prerender";
 
-  EXPECT_CALL(*provider_, GetInput(_))
-      .WillRepeatedly(Return(AutocompleteInput()));
-  EXPECT_CALL(*provider_, GetTemplateURL(_))
-      .WillRepeatedly(Return(template_url.get()));
-
   SearchSuggestionParser::SuggestResult default_suggestion(
       query, AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
       /*subtypes=*/{}, /*from_keyword=*/false,
       /*relevance=*/850, /*relevance_from_server=*/true,
       /*input_text=*/query);
-  provider_->AddMatchToMap(default_suggestion, std::string(),
-                           TemplateURLRef::NO_SUGGESTION_CHOSEN,
-                           /*mark_as_deletable=*/false,
-                           /*in_keyword_mode=*/false, &map);
+  provider_->AddMatchToMap(
+      default_suggestion, std::string(), AutocompleteInput(),
+      template_url.get(), client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN,
+      /*mark_as_deletable=*/false,
+      /*in_keyword_mode=*/false, &map);
 
   SearchSuggestionParser::SuggestResult prerender_suggestion =
       BuildPrerenderSuggestion(query);
-  provider_->AddMatchToMap(prerender_suggestion, std::string(),
-                           TemplateURLRef::NO_SUGGESTION_CHOSEN,
-                           /*mark_as_deletable=*/false,
-                           /*in_keyword_mode=*/false, &map);
+  provider_->AddMatchToMap(
+      prerender_suggestion, std::string(), AutocompleteInput(),
+      template_url.get(), client_->GetTemplateURLService()->search_terms_data(),
+      TemplateURLRef::NO_SUGGESTION_CHOSEN,
+      /*mark_as_deletable=*/false,
+      /*in_keyword_mode=*/false, &map);
 
   ASSERT_EQ(1U, map.size());
   ASSERT_TRUE(provider_->matches().empty());

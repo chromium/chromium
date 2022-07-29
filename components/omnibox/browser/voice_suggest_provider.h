@@ -37,8 +37,6 @@ class VoiceSuggestProvider : public BaseSearchProvider {
  private:
   // BaseSearchProvider:
   ~VoiceSuggestProvider() override;
-  const TemplateURL* GetTemplateURL(bool is_keyword) const override;
-  const AutocompleteInput GetInput(bool is_keyword) const override;
   bool ShouldAppendExtraParams(
       const SearchSuggestionParser::SuggestResult& result) const override;
   void RecordDeletionResult(bool success) override;
@@ -53,11 +51,6 @@ class VoiceSuggestProvider : public BaseSearchProvider {
   // Duplicate voice matches will be deduplicated automatically to the higher
   // ranked match.
   std::vector<std::pair<float, std::u16string>> voice_matches_;
-
-  // A pointer to the current AutocompleteInput, retained during the active
-  // stage of operation only. Used by the BaseSearchProvider to construct the
-  // final AutocompleteMatch objects.
-  raw_ptr<const AutocompleteInput> autocomplete_input_{};
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_VOICE_SUGGEST_PROVIDER_H_

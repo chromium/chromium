@@ -172,14 +172,20 @@ class SearchProvider : public BaseSearchProvider,
             bool due_to_user_inactivity) override;
 
   // BaseSearchProvider:
-  const TemplateURL* GetTemplateURL(bool is_keyword) const override;
-  const AutocompleteInput GetInput(bool is_keyword) const override;
   bool ShouldAppendExtraParams(
       const SearchSuggestionParser::SuggestResult& result) const override;
   void RecordDeletionResult(bool success) override;
 
   // TemplateURLServiceObserver:
   void OnTemplateURLServiceChanged() override;
+
+  // Returns the TemplateURL corresponding to the keyword or default
+  // provider based on the value of |is_keyword|.
+  const TemplateURL* GetTemplateURL(bool is_keyword) const;
+
+  // Returns the AutocompleteInput for keyword provider or default provider
+  // based on the value of |is_keyword|.
+  const AutocompleteInput GetInput(bool is_keyword) const;
 
   // Called back from SimpleURLLoader.
   void OnURLLoadComplete(const network::SimpleURLLoader* source,

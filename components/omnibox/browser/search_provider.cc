@@ -353,15 +353,6 @@ void SearchProvider::Stop(bool clear_cached_results,
     ClearAllResults();
 }
 
-const TemplateURL* SearchProvider::GetTemplateURL(bool is_keyword) const {
-  return is_keyword ? providers_.GetKeywordProviderURL()
-                    : providers_.GetDefaultProviderURL();
-}
-
-const AutocompleteInput SearchProvider::GetInput(bool is_keyword) const {
-  return is_keyword ? keyword_input_ : input_;
-}
-
 bool SearchProvider::ShouldAppendExtraParams(
     const SearchSuggestionParser::SuggestResult& result) const {
   return !result.from_keyword() || providers_.default_provider().empty();
@@ -420,6 +411,15 @@ void SearchProvider::OnTemplateURLServiceChanged() {
   NotifyListeners(true);  // always pretend something changed
 }
 
+const TemplateURL* SearchProvider::GetTemplateURL(bool is_keyword) const {
+  return is_keyword ? providers_.GetKeywordProviderURL()
+                    : providers_.GetDefaultProviderURL();
+}
+
+const AutocompleteInput SearchProvider::GetInput(bool is_keyword) const {
+  return is_keyword ? keyword_input_ : input_;
+}
+
 void SearchProvider::OnURLLoadComplete(
     const network::SimpleURLLoader* source,
     std::unique_ptr<std::string> response_body) {
@@ -451,8 +451,16 @@ void SearchProvider::OnURLLoadComplete(
     if (data) {
       SearchSuggestionParser::Results* results =
           is_keyword ? &keyword_results_ : &default_results_;
-      results_updated = ParseSuggestResults(*data, -1, is_keyword, results);
+      results_updated = SearchSuggestionParser::ParseSuggestResults(
+          *data, GetInput(is_keyword), client()->GetSchemeClassifier(), -1,
+          is_keyword, results);
       if (results_updated) {
+        if (!field_trial_triggered()) {
+          set_field_trial_triggered(results->field_trial_triggered);
+        }
+        if (!field_trial_triggered_in_session()) {
+          set_field_trial_triggered_in_session(results->field_trial_triggered);
+        }
         SortResults(is_keyword, results);
         PrefetchImages(results);
       }
@@ -1073,8 +1081,11 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
         /*input_text=*/trimmed_verbatim);
     if (has_answer)
       verbatim.SetAnswer(answer);
-    AddMatchToMap(verbatim, std::string(), did_not_accept_default_suggestion,
-                  false, keyword_url != nullptr, &map);
+    AddMatchToMap(verbatim, std::string(), GetInput(verbatim.from_keyword()),
+                  GetTemplateURL(verbatim.from_keyword()),
+                  client()->GetTemplateURLService()->search_terms_data(),
+                  did_not_accept_default_suggestion, false,
+                  keyword_url != nullptr, &map);
   }
   if (!keyword_input_.text().empty()) {
     // We only create the verbatim search query match for a keyword
@@ -1098,6 +1109,9 @@ void SearchProvider::ConvertResultsToAutocompleteMatches() {
             keyword_relevance_from_server,
             /*input_text=*/trimmed_verbatim);
         AddMatchToMap(verbatim, std::string(),
+                      GetInput(verbatim.from_keyword()),
+                      GetTemplateURL(verbatim.from_keyword()),
+                      client()->GetTemplateURLService()->search_terms_data(),
                       did_not_accept_keyword_suggestion, false, true, &map);
       }
     }
@@ -1227,7 +1241,10 @@ void SearchProvider::AddTransformedHistoryResultsToMap(
     MatchMap* map) {
   for (auto i(transformed_results.begin()); i != transformed_results.end();
        ++i) {
-    AddMatchToMap(*i, std::string(), did_not_accept_suggestion, true,
+    AddMatchToMap(*i, std::string(), GetInput(i->from_keyword()),
+                  GetTemplateURL(i->from_keyword()),
+                  client()->GetTemplateURLService()->search_terms_data(),
+                  did_not_accept_suggestion, true,
                   providers_.GetKeywordProviderURL() != nullptr, map);
   }
 }
@@ -1387,8 +1404,10 @@ void SearchProvider::AddSuggestResultsToMap(
     const std::string& metadata,
     MatchMap* map) {
   for (size_t i = 0; i < results.size(); ++i) {
-    AddMatchToMap(results[i], metadata, i, false,
-                  providers_.GetKeywordProviderURL() != nullptr, map);
+    AddMatchToMap(results[i], metadata, GetInput(results[i].from_keyword()),
+                  GetTemplateURL(results[i].from_keyword()),
+                  client()->GetTemplateURLService()->search_terms_data(), i,
+                  false, providers_.GetKeywordProviderURL() != nullptr, map);
   }
 }
 

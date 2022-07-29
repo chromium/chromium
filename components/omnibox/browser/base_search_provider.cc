@@ -514,14 +514,15 @@ void BaseSearchProvider::SetDeletionURL(const std::string& deletion_url,
 void BaseSearchProvider::AddMatchToMap(
     const SearchSuggestionParser::SuggestResult& result,
     const std::string& metadata,
+    const AutocompleteInput& input,
+    const TemplateURL* template_url,
+    const SearchTermsData& search_terms_data,
     int accepted_suggestion,
     bool mark_as_deletable,
     bool in_keyword_mode,
     MatchMap* map) {
   AutocompleteMatch match = CreateSearchSuggestion(
-      this, GetInput(result.from_keyword()), in_keyword_mode, result,
-      GetTemplateURL(result.from_keyword()),
-      client_->GetTemplateURLService()->search_terms_data(),
+      this, input, in_keyword_mode, result, template_url, search_terms_data,
       accepted_suggestion, ShouldAppendExtraParams(result));
   if (!match.destination_url.is_valid())
     return;
@@ -600,21 +601,6 @@ void BaseSearchProvider::AddMatchToMap(
       more_relevant_match.answer = less_relevant_match.answer;
     }
   }
-}
-
-bool BaseSearchProvider::ParseSuggestResults(
-    const base::Value& root_val,
-    int default_result_relevance,
-    bool is_keyword_result,
-    SearchSuggestionParser::Results* results) {
-  if (!SearchSuggestionParser::ParseSuggestResults(
-          root_val, GetInput(is_keyword_result), client_->GetSchemeClassifier(),
-          default_result_relevance, is_keyword_result, results))
-    return false;
-
-  field_trial_triggered_ |= results->field_trial_triggered;
-  field_trial_triggered_in_session_ |= results->field_trial_triggered;
-  return true;
 }
 
 void BaseSearchProvider::DeleteMatchFromMatches(

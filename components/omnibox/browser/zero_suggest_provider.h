@@ -114,8 +114,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   ZeroSuggestProvider& operator=(const ZeroSuggestProvider&) = delete;
 
   // BaseSearchProvider:
-  const TemplateURL* GetTemplateURL(bool is_keyword) const override;
-  const AutocompleteInput GetInput(bool is_keyword) const override;
   bool ShouldAppendExtraParams(
       const SearchSuggestionParser::SuggestResult& result) const override;
   void RecordDeletionResult(bool success) override;
@@ -137,29 +135,6 @@ class ZeroSuggestProvider : public BaseSearchProvider {
                                  const network::SimpleURLLoader* source,
                                  std::unique_ptr<std::string> response_body);
 
-  // Called in OnURLLoadComplete() or OnPrefetchURLLoadComplete() when the
-  // remote response is received with the input for which the request was made.
-  //
-  // Populates |results| with the response if it can be successfully parsed for
-  // |input|; and stores the response json in the user prefs, if applicable to
-  // |result_type|. Returns true if the response can be successfully parsed.
-  static bool StoreRemoteResponse(const std::string& response_json,
-                                  const AutocompleteProviderClient* client,
-                                  const AutocompleteInput& input,
-                                  ResultType result_type,
-                                  bool is_prefetch,
-                                  SearchSuggestionParser::Results* results);
-
-  // Called in Start() with an input ensured to be appropriate for zero-suggest.
-  //
-  // Returns true if the response stored in the user prefs is applicable to
-  // |result_type| and can be successfully parsed for |input|. If so, populates
-  // |results| with the stored response.
-  static bool ReadStoredResponse(const AutocompleteProviderClient* client,
-                                 const AutocompleteInput& input,
-                                 ResultType result_type,
-                                 SearchSuggestionParser::Results* results);
-
   // Returns an AutocompleteMatch for a navigational suggestion |navigation|.
   AutocompleteMatch NavigationToMatch(
       const SearchSuggestionParser::NavigationResult& navigation);
@@ -168,22 +143,17 @@ class ZeroSuggestProvider : public BaseSearchProvider {
   // where |matches_| are empty; or in OnURLLoadComplete() with |results|
   // populated from the remote response, where |matches_| may not be empty.
   //
-  // Uses |results| to populate |matches_| and its associated metadata. Also
-  // logs how many results were received. Note that an empty result set will
-  // clear |matches_|.
+  // Uses |results| and |input| to populate |matches_| and its associated
+  // metadata. Also logs how many results were received. Note that an empty
+  // result set will clear |matches_|.
   void ConvertSuggestResultsToAutocompleteMatches(
-      const SearchSuggestionParser::Results& results);
+      const SearchSuggestionParser::Results& results,
+      const AutocompleteInput& input);
 
   // The result type that is currently being retrieved and processed for
   // non-prefetch requests.
   // Set in Start() and used in Stop() for logging purposes.
   ResultType result_type_running_{NONE};
-
-  // The input for which suggestions are being retrieved and processed for both
-  // prefetch and non-prefetch requests.
-  // Set in Start() and StartPrefetch() and used in GetInput() for parsing the
-  // response.
-  AutocompleteInput input_;
 
   // Loader used to retrieve results for non-prefetch requests.
   std::unique_ptr<network::SimpleURLLoader> loader_;

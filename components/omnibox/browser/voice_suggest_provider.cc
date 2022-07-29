@@ -36,8 +36,6 @@ VoiceSuggestProvider::~VoiceSuggestProvider() = default;
 
 void VoiceSuggestProvider::Start(const AutocompleteInput& input,
                                  bool minimal_changes) {
-  autocomplete_input_ = &input;
-
   MatchMap map;
   int index = 0;
   for (const auto& score_and_suggestion_pair : voice_matches_) {
@@ -51,7 +49,10 @@ void VoiceSuggestProvider::Start(const AutocompleteInput& input,
             AutocompleteMatchType::VOICE_SUGGEST, {}, false,
             ConfidenceScoreToSuggestionScore(score_and_suggestion_pair.first),
             false, {}),
-        {}, index, false, false, &map);
+        {}, input,
+        client()->GetTemplateURLService()->GetDefaultSearchProvider(),
+        client()->GetTemplateURLService()->search_terms_data(), index, false,
+        false, &map);
     ++index;
 
     // Stop if the first voice suggestion has a high relevance score suggesting
@@ -64,19 +65,6 @@ void VoiceSuggestProvider::Start(const AutocompleteInput& input,
   for (auto& match_pair : map) {
     matches_.push_back(std::move(match_pair.second));
   }
-
-  autocomplete_input_ = nullptr;
-}
-
-const TemplateURL* VoiceSuggestProvider::GetTemplateURL(bool is_keyword) const {
-  DCHECK(!is_keyword);
-  return client()->GetTemplateURLService()->GetDefaultSearchProvider();
-}
-
-const AutocompleteInput VoiceSuggestProvider::GetInput(bool is_keyword) const {
-  DCHECK(!is_keyword);
-  DCHECK(autocomplete_input_);
-  return *autocomplete_input_;
 }
 
 bool VoiceSuggestProvider::ShouldAppendExtraParams(
