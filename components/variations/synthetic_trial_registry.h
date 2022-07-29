@@ -105,11 +105,10 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   // recorded. The values passed in must not correspond to any real field trial
   // in the code.
   //
-  // The registered trials are not persisted to disk and will not be applied
-  // after a restart.
+  // Synthetic trials are not automatically re-registered after a restart.
   //
-  // Note: Should not be used to replace trials that were
-  // registered with RegisterExternalExperiments().
+  // Note: Should not be used to replace trials that were registered with
+  // RegisterExternalExperiments().
   void RegisterSyntheticFieldTrial(const SyntheticTrialGroup& trial_group);
 
   // Returns the study name corresponding to |experiment_id| from the allowlist
