@@ -223,6 +223,13 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowExistingTabGroups) {
   EXPECT_EQ(3u, menu_1.GetItemCount());
   EXPECT_EQ(3u, menu_2.GetItemCount());
 
+  EXPECT_FALSE(ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
+      model_1, 0, delegate_1.get()));
+  EXPECT_TRUE(ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
+      model_1, 1, delegate_1.get()));
+  EXPECT_TRUE(ExistingTabGroupSubMenuModel::ShouldShowSubmenu(
+      model_2, 0, delegate_1.get()));
+
   new_browser.get()->tab_strip_model()->CloseAllTabs();
   new_browser.reset();
 }
