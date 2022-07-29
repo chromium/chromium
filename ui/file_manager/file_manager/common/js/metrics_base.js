@@ -158,21 +158,20 @@ metricsBase.recordInterval = name => {
  *
  * @param {string} name Unique interval name.
  * @param {number} numFiles The number of files in this current directory.
- * @param {string} rootType The label of the root the directory belongs to.
  * @param {!Array<number>} buckets Array of numbers that correspond to a bucket
  *    value, this will be suffixed to |name| when recorded.
  * @param {number=} tolerance Allowed tolerance for |value| to coalesce into a
  *    bucket.
  */
 metricsBase.recordDirectoryListLoadWithTolerance =
-    (name, numFiles, rootType, buckets, tolerance) => {
+    (name, numFiles, buckets, tolerance) => {
       if (name in metricsBase.intervals) {
         for (const bucketValue of buckets) {
           const toleranceMargin = bucketValue * tolerance;
           if (numFiles >= (bucketValue - toleranceMargin) &&
               numFiles <= (bucketValue + toleranceMargin)) {
             metricsBase.recordTime(
-                `${name}.${rootType}.${bucketValue}`,
+                `${name}.${bucketValue}`,
                 Date.now() - metricsBase.intervals[name]);
             return;
           }

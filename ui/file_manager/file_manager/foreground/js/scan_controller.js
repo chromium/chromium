@@ -79,7 +79,13 @@ export class ScanController {
           'scan-started', this.directoryModel_.getCurrentDirName());
     }
 
-    metrics.startInterval('DirectoryListLoad');
+    const volumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+    if (volumeInfo &&
+        (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
+         volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
+      metrics.startInterval(
+          `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`);
+    }
 
     this.listContainer_.startBatchUpdates();
     this.scanInProgress_ = true;
@@ -126,10 +132,11 @@ export class ScanController {
       if (volumeInfo &&
           (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS ||
            volumeInfo.volumeType === VolumeManagerCommon.VolumeType.MY_FILES)) {
+        const metricName =
+            `DirectoryListLoad.${VolumeManagerCommon.RootType.MY_FILES}`;
         metrics.recordDirectoryListLoadWithTolerance(
-            'DirectoryListLoad', this.directoryModel_.getFileList().length,
-            VolumeManagerCommon.RootType.MY_FILES, [10, 100, 1000],
-            /*tolerance=*/ 0.2);
+            metricName, this.directoryModel_.getFileList().length,
+            [10, 100, 1000], /*tolerance=*/ 0.2);
       }
     }
   }

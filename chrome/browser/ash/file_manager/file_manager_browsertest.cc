@@ -2025,7 +2025,8 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestCase("metricsRecordEnum"),
                       TestCase("metricsRecordEnum").FilesSwa(),
                       TestCase("metricsOpenSwa").FilesSwa(),
-                      TestCase("metricsRecordDirectoryListLoad")));
+                      TestCase("metricsRecordDirectoryListLoad"),
+                      TestCase("metricsRecordUpdateAvailableApps")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     Breadcrumbs, /* breadcrumbs.js */

@@ -11,7 +11,7 @@ import {FILE_MANAGER_EXTENSIONS_ID} from './test_data.js';
 /**
  * Fake task.
  */
-class FakeTask {
+export class FakeTask {
   /**
    * @param {boolean} isDefault Whether the task is default or not.
    * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor Task
