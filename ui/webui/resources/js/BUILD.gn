@@ -164,31 +164,34 @@ group("closure_compile") {
 js_type_check("js_resources") {
   uses_legacy_modules = true
   deps = [
-    ":action_link",
     ":assert",
     ":cr",
-    ":event_tracker",
-    ":i18n_template_no_process",
     ":load_time_data",
-    ":parse_html_subset",
     ":promise_resolver",
     ":util",
     ":webui_resource_test",
   ]
+
   if (is_ios) {
     deps += [ "ios:web_ui" ]
   }
 
   if (is_chromeos_ash) {
     deps += [
+      ":action_link",
+      ":event_tracker",
       ":i18n_behavior",
+      ":i18n_template_no_process",
       ":list_property_update_behavior",
+      ":parse_html_subset",
       ":web_ui_listener_behavior",
     ]
   }
 }
 
-js_library("action_link") {
+if (is_chromeos_ash) {
+  js_library("action_link") {
+  }
 }
 
 js_library("assert") {
@@ -202,15 +205,14 @@ js_library("cr") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
-js_library("event_tracker") {
-  deps = [ ":cr" ]
-}
-
-js_library("i18n_template_no_process") {
-  deps = [ ":load_time_data" ]
-}
-
 if (is_chromeos_ash) {
+  js_library("event_tracker") {
+    deps = [ ":cr" ]
+  }
+
+  js_library("i18n_template_no_process") {
+    deps = [ ":load_time_data" ]
+  }
   js_library("i18n_behavior") {
     deps = [
       ":load_time_data",
@@ -227,7 +229,9 @@ js_library("load_time_data") {
   extra_deps = [ ":unmodulize" ]
 }
 
-js_library("parse_html_subset") {
+if (is_chromeos_ash) {
+  js_library("parse_html_subset") {
+  }
 }
 
 js_library("promise_resolver") {

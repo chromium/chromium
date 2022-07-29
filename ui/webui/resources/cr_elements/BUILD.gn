@@ -193,7 +193,6 @@ if (include_polymer) {
       "cr_input:closure_compile",
       "cr_lottie:closure_compile",
       "cr_radio_button:closure_compile",
-      "cr_radio_group:closure_compile",
       "cr_toggle:closure_compile",
       "policy:closure_compile",
 
@@ -218,6 +217,7 @@ if (include_polymer) {
       deps += [
         "cr_button:closure_compile",
         "cr_expand_button:closure_compile",
+        "cr_radio_group:closure_compile",
       ]
     }
   }

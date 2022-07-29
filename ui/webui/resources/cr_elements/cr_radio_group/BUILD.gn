@@ -2,19 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/polymer/polymer.gni")
 
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [ ":cr_radio_group" ]
-}
+if (is_chromeos_ash) {
+  js_type_check("closure_compile") {
+    uses_legacy_modules = true
+    deps = [ ":cr_radio_group" ]
+  }
 
-js_library("cr_radio_group") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button",
-    "//ui/webui/resources/js:event_tracker",
-  ]
+  js_library("cr_radio_group") {
+    deps = [
+      "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button",
+      "//ui/webui/resources/js:event_tracker",
+    ]
+  }
 }
 
 # Targets for auto-generating and typechecking Polymer 3 JS modules
