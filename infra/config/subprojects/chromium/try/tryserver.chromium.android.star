@@ -286,7 +286,7 @@ try_.orchestrator_builder(
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
     experiments = {
-        "enable_weetbix_queries": 50,
+        "enable_weetbix_queries": 100,
     },
 )
 
