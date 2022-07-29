@@ -1540,7 +1540,7 @@ const base::Feature kUseBluetoothSystemInAsh{"UseBluetoothSystemInAsh",
 // When enabled, the login shelf view is placed in its own widget instead of
 // sharing the shelf widget with other components.
 const base::Feature kUseLoginShelfWidget{"UseLoginShelfWidget",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
