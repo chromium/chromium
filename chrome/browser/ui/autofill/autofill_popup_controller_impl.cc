@@ -98,6 +98,10 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
+  // TODO(crbug.com/1341374, crbug.com/1277218): Why can `this` be deleted
+  // synchronously?
+  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
+
   if (IsMouseLocked()) {
     Hide(PopupHidingReason::kMouseLocked);
     return;
@@ -126,6 +130,11 @@ void AutofillPopupControllerImpl::Show(
                                    !suggestions.empty());
 #endif
     view_->Show();
+    // TODO(crbug.com/1055981): `this| can be destroyed synchronously at this
+    // point.
+    if (!weak_this)
+      return;
+
     // We only fire the event when a new popup shows. We do not fire the
     // event when suggestions changed.
     FireControlsChangedEvent(true);
@@ -141,6 +150,11 @@ void AutofillPopupControllerImpl::Show(
 
     OnSuggestionsChanged();
   }
+  // TODO(crbug.com/1200766, crbug.com/1276850, crbug.com/1277218): `this` can
+  // be destroyed synchronously at this point.
+  if (!weak_this)
+    return;
+
   absl::visit(
       [&](auto* driver) {
         driver->SetKeyPressHandler(base::BindRepeating(
@@ -150,7 +164,7 @@ void AutofillPopupControllerImpl::Show(
                const content::NativeWebKeyboardEvent& event) {
               return weak_this && weak_this->HandleKeyPressEvent(event);
             },
-            GetWeakPtr()));
+            weak_this));
       },
       GetDriver());
 
