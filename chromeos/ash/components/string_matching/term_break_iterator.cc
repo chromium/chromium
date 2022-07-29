@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
@@ -63,7 +64,7 @@ TermBreakIterator::State TermBreakIterator::GetNewState(char16_t ch) {
   const bool is_lower = !!u_isULowercase(ch);
 
   if (is_upper && is_lower) {
-    NOTREACHED() << "Invalid state for ch=" << ch;
+    NOTREACHED() << "Invalid state for ch=" << std::u16string(1, ch);
     return STATE_CHAR;
   }
 

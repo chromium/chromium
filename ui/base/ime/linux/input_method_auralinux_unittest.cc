@@ -269,7 +269,7 @@ class TextInputClientForTesting : public DummyTextInputClient {
 
   void InsertChar(const ui::KeyEvent& event) override {
     std::stringstream ss;
-    ss << event.GetCharacter();
+    ss << static_cast<uint16_t>(event.GetCharacter());
     TestResult::GetInstance()->RecordAction(u"keypress:" +
                                             base::ASCIIToUTF16(ss.str()));
   }
