@@ -86,6 +86,7 @@
 #include "components/component_updater/component_updater_command_line_config_policy.h"
 #include "components/component_updater/component_updater_switches.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/contextual_search/core/browser/contextual_search_field_trial.h"
 #include "components/contextual_search/core/browser/public.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
@@ -3372,7 +3373,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"contextual-search-debug", flag_descriptions::kContextualSearchDebugName,
      flag_descriptions::kContextualSearchDebugDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kContextualSearchDebug)},
+     FEATURE_VALUE_TYPE(kContextualSearchDebug)},
     {"contextual-search-force-caption",
      flag_descriptions::kContextualSearchForceCaptionName,
      flag_descriptions::kContextualSearchForceCaptionDescription, kOsAndroid,

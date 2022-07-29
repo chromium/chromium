@@ -10,6 +10,10 @@ static_library("browser") {
   sources = [
     "contextual_search_context.cc",
     "contextual_search_context.h",
+    "contextual_search_delegate.cc",
+    "contextual_search_delegate.h",
+    "contextual_search_field_trial.cc",
+    "contextual_search_field_trial.h",
     "public.cc",
     "public.h",
     "resolved_search_term.cc",
@@ -18,10 +22,18 @@ static_library("browser") {
   deps = [
     "//base",
     "//components/contextual_search:buildflags",
-    "//components/prefs:prefs",
+    "//components/contextual_search/core/proto:client_discourse_context_proto",
+    "//components/search_engines",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
-    "//url:url",
+    "//components/variations",
+    "//components/variations/net",
+    "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common",
+    "//url",
   ]
 }
 
@@ -29,4 +41,26 @@ if (is_android) {
   java_cpp_enum("quick_action_category_enum_javagen") {
     sources = [ "resolved_search_term.h" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "contextual_search_delegate_unittest.cc",
+    "contextual_search_field_trial_unittest.cc",
+  ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//components/contextual_search/core/proto:client_discourse_context_proto",
+    "//components/search_engines",
+    "//components/variations:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

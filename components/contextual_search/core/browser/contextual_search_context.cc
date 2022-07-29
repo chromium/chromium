@@ -8,17 +8,6 @@
 #include "components/translate/core/language_detection/language_detection_util.h"
 
 ContextualSearchContext::ContextualSearchContext() = default;
-
-ContextualSearchContext::ContextualSearchContext(
-    const std::string& home_country,
-    const GURL& page_url,
-    const std::string& encoding)
-    : can_resolve_(true),
-      can_send_base_page_url_(true),
-      home_country_(home_country),
-      base_page_url_(page_url),
-      base_page_encoding_(encoding) {}
-
 ContextualSearchContext::~ContextualSearchContext() = default;
 
 void ContextualSearchContext::SetResolveProperties(

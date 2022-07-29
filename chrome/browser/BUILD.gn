@@ -2589,10 +2589,6 @@ static_library("browser") {
       "android/content/content_utils.cc",
       "android/context_menu/context_menu_native_delegate_impl.cc",
       "android/context_menu/context_menu_native_delegate_impl.h",
-      "android/contextualsearch/contextual_search_delegate.cc",
-      "android/contextualsearch/contextual_search_delegate.h",
-      "android/contextualsearch/contextual_search_field_trial.cc",
-      "android/contextualsearch/contextual_search_field_trial.h",
       "android/contextualsearch/contextual_search_manager.cc",
       "android/contextualsearch/contextual_search_manager.h",
       "android/contextualsearch/contextual_search_tab_helper.cc",
@@ -3288,7 +3284,6 @@ static_library("browser") {
       "//components/image_fetcher/core",
     ]
     deps += [
-      ":client_discourse_context_proto",
       ":delta_file_proto",
       ":explore_sites_proto",
       ":profile_token",
@@ -7719,10 +7714,6 @@ static_library("browser") {
 }
 
 if (is_android) {
-  proto_library("client_discourse_context_proto") {
-    sources = [ "android/proto/client_discourse_context.proto" ]
-  }
-
   proto_library("delta_file_proto") {
     sources = [ "android/proto/delta_file.proto" ]
   }

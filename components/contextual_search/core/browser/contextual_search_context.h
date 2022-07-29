@@ -21,10 +21,6 @@ struct ContextualSearchContext {
   };
 
   ContextualSearchContext();
-  // Constructor for tests.
-  ContextualSearchContext(const std::string& home_country,
-                          const GURL& page_url,
-                          const std::string& encoding);
 
   ContextualSearchContext(const ContextualSearchContext&) = delete;
   ContextualSearchContext& operator=(const ContextualSearchContext&) = delete;

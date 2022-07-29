@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_MANAGER_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_MANAGER_H_
 
+#include <jni.h>
+
 #include <stddef.h>
 
+#include "base/android/jni_android.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
+#include "components/contextual_search/core/browser/contextual_search_delegate.h"
 
 // Manages the native extraction and request logic for Contextual Search,
 // and interacts with the Java ContextualSearchManager for UX.
