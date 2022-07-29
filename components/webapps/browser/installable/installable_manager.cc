@@ -16,6 +16,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/security_state/core/security_state.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/constants.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -186,7 +188,7 @@ bool ShouldRejectDisplayMode(blink::mojom::DisplayMode display_mode) {
            (display_mode == blink::mojom::DisplayMode::kBorderless &&
             base::FeatureList::IsEnabled(blink::features::kWebAppBorderless)) ||
            (display_mode == blink::mojom::DisplayMode::kTabbed &&
-            base::FeatureList::IsEnabled(features::kDesktopPWAsTabStrip)));
+            base::FeatureList::IsEnabled(::features::kDesktopPWAsTabStrip)));
 }
 
 void OnDidCompleteGetAllErrors(
@@ -602,7 +604,12 @@ void InstallableManager::WorkOnTask() {
                           IconUsage::kPrimary);
   } else if (params.fetch_screenshots && !screenshots_downloading_ &&
              !is_screenshots_fetch_complete_) {
-    CheckAndFetchScreenshots();
+    if (base::FeatureList::IsEnabled(
+            webapps::features::kDesktopPWAsDetailedInstallDialog)) {
+      CheckAndFetchScreenshots();
+    } else {
+      CheckAndFetchScreenshots(/*check_platform=*/false);
+    }
   } else if (params.has_worker && !worker_->fetched) {
     CheckServiceWorker();
   } else if (params.valid_splash_icon && params.prefer_maskable_icon &&
@@ -887,7 +894,7 @@ void InstallableManager::OnIconFetched(const GURL icon_url,
   WorkOnTask();
 }
 
-void InstallableManager::CheckAndFetchScreenshots() {
+void InstallableManager::CheckAndFetchScreenshots(bool check_platform) {
   DCHECK(!blink::IsEmptyManifest(manifest()));
   DCHECK(!is_screenshots_fetch_complete_);
 
@@ -896,32 +903,50 @@ void InstallableManager::CheckAndFetchScreenshots() {
   int num_of_screenshots = 0;
 
   for (const auto& url : manifest().screenshots) {
-    if (++num_of_screenshots > kMaximumNumOfScreenshots)
-      break;
-    // A screenshot URL that's in the map is already taken care of.
-    if (downloaded_screenshots_.count(url.src) > 0)
+#if BUILDFLAG(IS_ANDROID)
+    auto reject_platform = blink::mojom::ManifestScreenshot::Platform::kWide;
+#else
+    auto reject_platform = blink::mojom::ManifestScreenshot::Platform::kNarrow;
+#endif  // BUILDFLAG(IS_ANDROID)
+    if (check_platform && url->platform == reject_platform)
       continue;
 
-    int ideal_size_in_px = url.sizes.empty() ? kMinimumScreenshotSizeInPx
-                                             : std::max(url.sizes[0].width(),
-                                                        url.sizes[0].height());
+    if (++num_of_screenshots > kMaximumNumOfScreenshots)
+      break;
+
+    // A screenshot URL that's in the map is already taken care of.
+    if (downloaded_screenshots_.count(url->image.src) > 0)
+      continue;
+
+    int ideal_size_in_px = url->image.sizes.empty()
+                               ? kMinimumScreenshotSizeInPx
+                               : std::max(url->image.sizes[0].width(),
+                                          url->image.sizes[0].height());
     // Do not pass in a maximum icon size so that screenshots larger than
     // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
     // `ManifestIconDownloader::Download`. Screenshots with size larger than
     // kMaximumScreenshotSizeInPx get filtered out by OnScreenshotFetched.
     bool can_download = content::ManifestIconDownloader::Download(
-        GetWebContents(), url.src, ideal_size_in_px, kMinimumScreenshotSizeInPx,
+        GetWebContents(), url->image.src, ideal_size_in_px,
+        kMinimumScreenshotSizeInPx,
         /*maximum_icon_size_in_px=*/0,
         base::BindOnce(&InstallableManager::OnScreenshotFetched,
-                       weak_factory_.GetWeakPtr(), url.src),
+                       weak_factory_.GetWeakPtr(), url->image.src),
         /*square_only=*/false);
     if (can_download)
       ++screenshots_downloading_;
   }
 
   if (!screenshots_downloading_) {
-    is_screenshots_fetch_complete_ = true;
-    WorkOnTask();
+    // If there is no screenshot that matches all the criteria, populate again
+    // without checking platform to fallback to screenshots with mismatching
+    // platform instead of showing nothing.
+    if (screenshots_.size() == 0 && check_platform) {
+      CheckAndFetchScreenshots(/*check_platform=*/false);
+    } else {
+      is_screenshots_fetch_complete_ = true;
+      WorkOnTask();
+    }
   }
 }
 
@@ -943,7 +968,7 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
       if (++num_of_screenshots > kMaximumNumOfScreenshots)
         break;
 
-      auto iter = downloaded_screenshots_.find(url.src);
+      auto iter = downloaded_screenshots_.find(url->image.src);
       if (iter == downloaded_screenshots_.end())
         continue;
 
@@ -953,7 +978,6 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
         continue;
       }
 
-      // TODO(crbug.com/1146450): Filter out screenshots by platform.
       // Screenshots must have the same aspect ratio. Cross-multiplying
       // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for instance).
       if (screenshots_.size() &&
@@ -971,6 +995,7 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
 
       screenshots_.push_back(screenshot);
     }
+
     downloaded_screenshots_.clear();
     is_screenshots_fetch_complete_ = true;
 

@@ -40,7 +40,7 @@ struct Manifest {
 
   array<ManifestImageResource> icons;
 
-  array<ManifestImageResource> screenshots;
+  array<ManifestScreenshot> screenshots;
 
   array<ManifestShortcutItem> shortcuts;
 
@@ -169,6 +169,22 @@ struct ManifestImageResource {
   // Never empty. Defaults to a vector with a single value, IconPurpose::ANY,
   // if not explicitly specified in the manifest.
   array<Purpose> purpose;
+};
+
+// Structure representing a screenshot as per the Manifest specification, see:
+// https://www.w3.org/TR/manifest-app-info/#screenshots-member. This includes
+// a ImageResource with some additional members.
+struct ManifestScreenshot {
+  enum Platform {
+    kUnknown = 0,
+    kWide,
+    kNarrow,
+  };
+
+  ManifestImageResource image;
+
+  // The distribution platform for which a given screenshot applies.
+  Platform platform;
 };
 
 // Structure representing a share target file.

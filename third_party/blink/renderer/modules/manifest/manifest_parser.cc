@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/modules/manifest/manifest_uma_util.h"
 #include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
+#include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -661,19 +663,69 @@ ManifestParser::ParseIconPurpose(const JSONObject* icon) {
   return purposes;
 }
 
-Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseIcons(
-    const JSONObject* object) {
-  return ParseImageResource("icons", object);
+mojom::blink::ManifestScreenshot::Platform
+ManifestParser::ParseScreenshotPlatform(const JSONObject* screenshot) {
+  absl::optional<String> platform_str =
+      ParseString(screenshot, "platform", Trim(false));
+
+  if (!platform_str.has_value()) {
+    return mojom::blink::ManifestScreenshot::Platform::kUnknown;
+  }
+
+  String platform = platform_str.value();
+
+  if (EqualIgnoringASCIICase(platform, "wide")) {
+    return mojom::blink::ManifestScreenshot::Platform::kWide;
+  } else if (EqualIgnoringASCIICase(platform, "narrow")) {
+    return mojom::blink::ManifestScreenshot::Platform::kNarrow;
+  }
+
+  AddErrorInfo(
+      "property 'platform' on screenshots has an invalid value, ignoring it.");
+
+  return mojom::blink::ManifestScreenshot::Platform::kUnknown;
 }
 
-Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseScreenshots(
+Vector<mojom::blink::ManifestImageResourcePtr> ManifestParser::ParseIcons(
     const JSONObject* object) {
-  return ParseImageResource("screenshots", object);
+  return ParseImageResourceArray("icons", object);
+}
+
+Vector<mojom::blink::ManifestScreenshotPtr> ManifestParser::ParseScreenshots(
+    const JSONObject* object) {
+  Vector<mojom::blink::ManifestScreenshotPtr> screenshots;
+  JSONValue* json_value = object->Get("screenshots");
+  if (!json_value)
+    return screenshots;
+
+  JSONArray* screenshots_list = object->GetArray("screenshots");
+  if (!screenshots_list) {
+    AddErrorInfo("property 'screenshots' ignored, type array expected.");
+    return screenshots;
+  }
+
+  for (wtf_size_t i = 0; i < screenshots_list->size(); ++i) {
+    JSONObject* screenshot_object = JSONObject::Cast(screenshots_list->at(i));
+    if (!screenshot_object)
+      continue;
+
+    auto screenshot = mojom::blink::ManifestScreenshot::New();
+    auto image = ParseImageResource(screenshot_object);
+    if (!image.has_value())
+      continue;
+
+    screenshot->image = std::move(*image);
+    screenshot->platform = ParseScreenshotPlatform(screenshot_object);
+
+    screenshots.push_back(std::move(screenshot));
+  }
+
+  return screenshots;
 }
 
 Vector<mojom::blink::ManifestImageResourcePtr>
-ManifestParser::ParseImageResource(const String& key,
-                                   const JSONObject* object) {
+ManifestParser::ParseImageResourceArray(const String& key,
+                                        const JSONObject* object) {
   Vector<mojom::blink::ManifestImageResourcePtr> icons;
   JSONValue* json_value = object->Get(key);
   if (!json_value)
@@ -686,28 +738,34 @@ ManifestParser::ParseImageResource(const String& key,
   }
 
   for (wtf_size_t i = 0; i < icons_list->size(); ++i) {
-    JSONObject* icon_object = JSONObject::Cast(icons_list->at(i));
-    if (!icon_object)
-      continue;
-
-    auto icon = mojom::blink::ManifestImageResource::New();
-    icon->src = ParseIconSrc(icon_object);
-    // An icon MUST have a valid src. If it does not, it MUST be ignored.
-    if (!icon->src.IsValid())
-      continue;
-
-    icon->type = ParseIconType(icon_object);
-    icon->sizes = ParseIconSizes(icon_object);
-    auto purpose = ParseIconPurpose(icon_object);
-    if (!purpose)
-      continue;
-
-    icon->purpose = std::move(*purpose);
-
-    icons.push_back(std::move(icon));
+    auto icon = ParseImageResource(icons_list->at(i));
+    if (icon.has_value())
+      icons.push_back(std::move(*icon));
   }
 
   return icons;
+}
+
+absl::optional<mojom::blink::ManifestImageResourcePtr>
+ManifestParser::ParseImageResource(const JSONValue* object) {
+  const JSONObject* icon_object = JSONObject::Cast(object);
+  if (!icon_object)
+    return absl::nullopt;
+
+  auto icon = mojom::blink::ManifestImageResource::New();
+  icon->src = ParseIconSrc(icon_object);
+  // An icon MUST have a valid src. If it does not, it MUST be ignored.
+  if (!icon->src.IsValid())
+    return absl::nullopt;
+
+  icon->type = ParseIconType(icon_object);
+  icon->sizes = ParseIconSizes(icon_object);
+  auto purpose = ParseIconPurpose(icon_object);
+  if (!purpose)
+    return absl::nullopt;
+
+  icon->purpose = std::move(*purpose);
+  return icon;
 }
 
 String ManifestParser::ParseShortcutName(const JSONObject* shortcut) {

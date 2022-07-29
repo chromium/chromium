@@ -13,6 +13,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -1147,7 +1148,8 @@ TEST_F(ManifestParserTest, ScreenshotsParseRules) {
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
-    EXPECT_EQ(screenshots[0]->src.GetString(), "http://foo.com/manifest.json");
+    EXPECT_EQ(screenshots[0]->image->src.GetString(),
+              "http://foo.com/manifest.json");
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
   }
@@ -1160,9 +1162,67 @@ TEST_F(ManifestParserTest, ScreenshotsParseRules) {
 
     auto& screenshots = manifest->screenshots;
     EXPECT_EQ(screenshots.size(), 1u);
-    EXPECT_EQ(screenshots[0]->src.GetString(), "http://foo.com/foo.jpg");
+    EXPECT_EQ(screenshots[0]->image->src.GetString(), "http://foo.com/foo.jpg");
     EXPECT_FALSE(IsManifestEmpty(manifest));
     EXPECT_EQ(0u, GetErrorCount());
+  }
+}
+
+TEST_F(ManifestParserTest, ScreenshotPlatformParseRules) {
+  // Smoke test.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "screenshots": [{ "src": "foo.jpg", "platform": "narrow" }] })");
+    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->platform,
+              mojom::blink::ManifestScreenshot::Platform::kNarrow);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Unspecified.
+  {
+    auto& manifest =
+        ParseManifest(R"({ "screenshots": [{ "src": "foo.jpg"}] })");
+    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->platform,
+              mojom::blink::ManifestScreenshot::Platform::kUnknown);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(0u, GetErrorCount());
+  }
+
+  // Invalid type.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "screenshots": [{ "src": "foo.jpg", "platform": 1}] })");
+    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->platform,
+              mojom::blink::ManifestScreenshot::Platform::kUnknown);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(1u, GetErrorCount());
+  }
+
+  // Unrecognized string.
+  {
+    auto& manifest = ParseManifest(
+        R"({ "screenshots": [{ "src": "foo.jpg", "platform": "windows"}] })");
+    EXPECT_FALSE(manifest->screenshots.IsEmpty());
+
+    auto& screenshots = manifest->screenshots;
+    EXPECT_EQ(screenshots.size(), 1u);
+    EXPECT_EQ(screenshots[0]->platform,
+              mojom::blink::ManifestScreenshot::Platform::kUnknown);
+    EXPECT_FALSE(IsManifestEmpty(manifest));
+    EXPECT_EQ(1u, GetErrorCount());
   }
 }
 

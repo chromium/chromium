@@ -149,7 +149,7 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
   // Set the screenshots urls based on the screenshots in the manifest, if any.
   screenshot_urls.clear();
   for (const auto& screenshot : manifest.screenshots)
-    screenshot_urls.push_back(screenshot.src);
+    screenshot_urls.push_back(screenshot->image.src);
 
   if (manifest.share_target) {
     share_target = ShareTarget();

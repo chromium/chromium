@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 
 #include <memory>
@@ -258,6 +259,11 @@ class NestedCallbackTester {
 
 class InstallableManagerBrowserTest : public InProcessBrowserTest {
  public:
+  InstallableManagerBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        webapps::features::kDesktopPWAsDetailedInstallDialog);
+  }
+
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "chrome/test/data/banners");
@@ -341,6 +347,9 @@ class InstallableManagerBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
     return result;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class InstallableManagerAllowlistOriginBrowserTest
@@ -1937,8 +1946,49 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckScreenshots) {
   NavigateAndRunInstallableManager(
       browser(), tester.get(), params,
       GetURLOfPageWithServiceWorkerAndManifest(
-          "/banners/manifest_bottom_sheet_install.json"));
+          "/banners/manifest_with_screenshots.json"));
 
+  run_loop.Run();
+
+  EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));
+  EXPECT_FALSE(tester->manifest_url().is_empty());
+
+  EXPECT_FALSE(tester->valid_manifest());
+  EXPECT_EQ(1u, tester->screenshots().size());
+  // Corresponding platform should filter out the screenshot with mismatched
+  // platform.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_LT(tester->screenshots()[0].width(),
+            tester->screenshots()[0].height());
+#else
+  EXPECT_GT(tester->screenshots()[0].width(),
+            tester->screenshots()[0].height());
+#endif
+  EXPECT_EQ(std::vector<InstallableStatusCode>{}, tester->errors());
+}
+
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       CheckScreenshotsPlatform) {
+  base::RunLoop run_loop;
+  std::unique_ptr<CallbackTester> tester(
+      new CallbackTester(run_loop.QuitClosure()));
+
+  InstallableParams params = GetManifestParams();
+  params.fetch_screenshots = true;
+
+  // Check if only screenshots with mismatched platform are available, they are
+  // still used.
+#if BUILDFLAG(IS_ANDROID)
+  NavigateAndRunInstallableManager(
+      browser(), tester.get(), params,
+      GetURLOfPageWithServiceWorkerAndManifest(
+          "/banners/manifest_with_only_wide_screenshots.json"));
+#else
+  NavigateAndRunInstallableManager(
+      browser(), tester.get(), params,
+      GetURLOfPageWithServiceWorkerAndManifest(
+          "/banners/manifest_with_only_narrow_screenshots.json"));
+#endif
   run_loop.Run();
 
   EXPECT_FALSE(blink::IsEmptyManifest(tester->manifest()));

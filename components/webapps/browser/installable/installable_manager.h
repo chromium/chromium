@@ -241,8 +241,10 @@ class InstallableManager
                              IconUsage usage);
   void OnIconFetched(GURL icon_url, IconUsage usage, const SkBitmap& bitmap);
 
-  void CheckAndFetchScreenshots();
+  void CheckAndFetchScreenshots(bool check_platform = true);
+
   void OnScreenshotFetched(GURL screenshot_url, const SkBitmap& bitmap);
+  void PopulateScreenshots(bool check_platform);
 
   // content::ServiceWorkerContextObserver overrides
   void OnRegistrationCompleted(const GURL& pattern) override;

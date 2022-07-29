@@ -10,6 +10,7 @@
 #include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -216,16 +217,24 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* object);
 
   // Parses the 'screenshots' field of a Manifest, as defined in:
-  // https://w3c.github.io/manifest/#screenshots-member
+  // https://www.w3.org/TR/manifest-app-info/#screenshots-member
   // Returns a vector of ManifestImageResourcePtr with the successfully parsed
   // screenshots, if any. An empty vector if the field was not present or empty.
-  Vector<mojom::blink::ManifestImageResourcePtr> ParseScreenshots(
+  Vector<mojom::blink::ManifestScreenshotPtr> ParseScreenshots(
       const JSONObject* object);
 
+  // Parse the 'platform' field of 'screenshots' as defined in:
+  // https://www.w3.org/TR/manifest-app-info/#platform-member
+  mojom::blink::ManifestScreenshot::Platform ParseScreenshotPlatform(
+      const JSONObject* screenshot);
+
   // A helper function for parsing ImageResources under |key| in the manifest.
-  Vector<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
+  Vector<mojom::blink::ManifestImageResourcePtr> ParseImageResourceArray(
       const String& key,
       const JSONObject* object);
+
+  absl::optional<mojom::blink::ManifestImageResourcePtr> ParseImageResource(
+      const JSONValue* object);
 
   // Parses the 'name' field of a shortcut, as defined in:
   // https://w3c.github.io/manifest/#shortcuts-member
