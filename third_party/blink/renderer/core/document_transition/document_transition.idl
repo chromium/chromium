@@ -14,8 +14,22 @@
   // transition. Animations are started when this callback returns.
   // The returned promise is resolved when all animations for this transition
   // are finished.
+  //
+  // Note that this is deprecated in favor of `finished` and `prepare`. This
+  // function is roughly equivalent to the following:
+  // transition.start(params) {
+  //   transition.prepare(params)
+  //   return transition.finished
+  // }
   [CallWith=ScriptState, RaisesException] Promise<void> start(optional DocumentTransitionCallback callback);
 
   // Abandons the transition.
   [CallWith=ScriptState, RaisesException] void abandon();
+
+  // A promise that is available after the prepare call, which is resolved when
+  // the corresponding transition is finished.
+  readonly attribute Promise<void> finished;
+
+  // Prepare and begin a transition.
+  [CallWith=ScriptState, RaisesException] Promise<void> prepare(optional DocumentTransitionCallback callback);
 };
