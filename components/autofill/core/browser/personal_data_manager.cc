@@ -2164,15 +2164,7 @@ void PersonalDataManager::NotifyPersonalDataObserver() {
   }
 }
 
-void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback)) {
-    return;
-  }
-  for (PersonalDataManagerObserver& observer : observers_)
-    observer.OnCreditCardSaved(
-        /*should_show_sign_in_promo_if_applicable=*/is_local_card);
-}
+void PersonalDataManager::OnCreditCardSaved(bool is_local_card) {}
 
 void PersonalDataManager::ConvertWalletAddressesAndUpdateWalletCards() {
   // If the full Sync feature isn't enabled, then do NOT convert any Wallet

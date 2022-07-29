@@ -474,11 +474,6 @@
     "expiry_milestone": 112
   },
   {
-    "name": "autofill-enable-toolbar-status-chip",
-    "owners": [ "siyua" ],
-    "expiry_milestone": 109
-  },
-  {
     "name": "autofill-enable-unmask-card-request-set-instrument-id",
     "owners": [ "jsaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 109
@@ -1624,11 +1619,6 @@
     // This flag is heavily used by the testing team that can't easily use the
     // commandline, especially in India.
     "expiry_milestone": -1
-  },
-  {
-    "name": "enable-autofill-credit-card-upload-feedback",
-    "owners": [ "siyua", "payments-autofill-team@google.com" ],
-    "expiry_milestone": 106
   },
   {
     "name": "enable-autofill-manual-fallback",

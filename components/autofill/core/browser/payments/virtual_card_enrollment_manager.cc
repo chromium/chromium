@@ -358,24 +358,10 @@ void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
   // GetDetailsForEnrollmentResponseDetails were already received, then we
   // received it from the UploadCardResponseDetails. Thus, we can skip making
   // another GetDetailsForEnrollmentRequest and go straight to showing the
-  // bubble if the avatar animation is complete.
+  // bubble.
   if (state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
           VirtualCardEnrollmentSource::kUpstream &&
       enroll_response_details_received_) {
-#if !BUILDFLAG(IS_ANDROID)
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableToolbarStatusChip) &&
-        base::FeatureList::IsEnabled(
-            features::kAutofillCreditCardUploadFeedback) &&
-        !avatar_animation_complete_) {
-      // If status chip and upload feedback is enabled, we need to make sure
-      // we wait for the upload card animation to complete before showing the
-      // virtual card enroll bubble, or else we will have a conflict and the
-      // virtual card enroll bubble will not show.
-      return;
-    }
-#endif
-
     // We are about to show the virtual card enroll bubble, so make sure the
     // card art image is set to then display in the bubble.
     EnsureCardArtImageIsSetBeforeShowingUI();
@@ -446,22 +432,6 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
   // valid GetDetailsForEnrollmentResponseDetails here.
   DCHECK(IsValidGetDetailsForEnrollmentResponseDetails(response));
   SetGetDetailsForEnrollmentResponseDetails(response);
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableToolbarStatusChip) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback) &&
-      state_.virtual_card_enrollment_fields.virtual_card_enrollment_source ==
-          VirtualCardEnrollmentSource::kUpstream &&
-      !avatar_animation_complete_) {
-    // If status chip and upload feedback is enabled, we need to make sure
-    // we wait for the upload card animation to complete before showing the
-    // virtual card enroll bubble, or else we will have a conflict and the
-    // virtual card enroll bubble will not show.
-    return;
-  }
-#endif
 
   // We are about to show the UI for virtual card enrollment, so make sure the
   // card art image is set to then display in the bubble.

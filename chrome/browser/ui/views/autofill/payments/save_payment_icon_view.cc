@@ -29,11 +29,6 @@ SavePaymentIconView::SavePaymentIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate) {
   SetID(VIEW_ID_SAVE_CREDIT_CARD_BUTTON);
-
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback)) {
-    InstallLoadingIndicator();
-  }
   SetUpForInOutAnimation();
 }
 

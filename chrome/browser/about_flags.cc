@@ -5977,12 +5977,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(commerce::kShoppingList)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"autofill-enable-toolbar-status-chip",
-     flag_descriptions::kAutofillEnableToolbarStatusChipName,
-     flag_descriptions::kAutofillEnableToolbarStatusChipDescription,
-     kOsMac | kOsWin | kOsLinux | kOsLacros | kOsFuchsia,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableToolbarStatusChip)},
-
     {"unsafely-treat-insecure-origin-as-secure",
      flag_descriptions::kTreatInsecureOriginAsSecureName,
      flag_descriptions::kTreatInsecureOriginAsSecureDescription, kOsAll,
@@ -6616,12 +6610,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"ev-details-in-page-info", flag_descriptions::kEvDetailsInPageInfoName,
      flag_descriptions::kEvDetailsInPageInfoDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kEvDetailsInPageInfo)},
-
-    {"enable-autofill-credit-card-upload-feedback",
-     flag_descriptions::kEnableAutofillCreditCardUploadFeedbackName,
-     flag_descriptions::kEnableAutofillCreditCardUploadFeedbackDescription,
-     kOsWin | kOsMac | kOsLinux | kOsLacros | kOsFuchsia,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillCreditCardUploadFeedback)},
 
     {"font-access", flag_descriptions::kFontAccessAPIName,
      flag_descriptions::kFontAccessAPIDescription, kOsDesktop,

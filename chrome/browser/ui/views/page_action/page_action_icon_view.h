@@ -84,6 +84,12 @@ class PageActionIconView : public IconLabelBubbleView {
 
   void ExecuteForTesting();
 
+  // Creates and updates the loading indicator.
+  // TODO(crbug.com/964127): Ideally this should be lazily initialized in
+  // SetIsLoading(), but local card migration icon has a weird behavior that
+  // doing so will cause the indicator being invisible. Investigate and fix.
+  void InstallLoadingIndicatorForTesting();
+
   PageActionIconLoadingIndicatorView* loading_indicator_for_testing() {
     return loading_indicator_;
   }
@@ -149,12 +155,6 @@ class PageActionIconView : public IconLabelBubbleView {
   // Updates the icon image after some state has changed.
   virtual void UpdateIconImage();
 
-  // Creates and updates the loading indicator.
-  // TODO(crbug.com/964127): Ideally this should be lazily initialized in
-  // SetIsLoading(), but local card migration icon has a weird behavior that
-  // doing so will cause the indicator being invisible. Investigate and fix.
-  void InstallLoadingIndicator();
-
   // Set if the page action icon is in the loading state.
   void SetIsLoading(bool is_loading);
 
@@ -170,6 +170,8 @@ class PageActionIconView : public IconLabelBubbleView {
 
  private:
   void UpdateBorder();
+
+  void InstallLoadingIndicator();
 
   // What color to paint the icon with.
   SkColor icon_color_ = gfx::kPlaceholderColor;

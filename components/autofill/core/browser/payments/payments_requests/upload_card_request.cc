@@ -163,10 +163,6 @@ void UploadCardRequest::ParseResponse(const base::Value& response) {
     if (base::FeatureList::IsEnabled(
             features::
                 kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse) &&
-        !base::FeatureList::IsEnabled(
-            features::kAutofillEnableToolbarStatusChip) &&
-        !base::FeatureList::IsEnabled(
-            features::kAutofillCreditCardUploadFeedback) &&
         upload_card_response_details_.virtual_card_enrollment_state ==
             CreditCard::VirtualCardEnrollmentState::UNENROLLED_AND_ELIGIBLE) {
       const auto* virtual_card_enrollment_data =

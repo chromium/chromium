@@ -433,6 +433,8 @@ class PersonalDataManager : public KeyedService,
   // Notifies observers that the waiting should be stopped.
   void NotifyPersonalDataObserver();
 
+  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
+  // to be added again. In the new proposal, we may not need to go through PDM.
   // Called when at least one (can be multiple) card was saved. |is_local_card|
   // indicates if the card is saved to local storage.
   void OnCreditCardSaved(bool is_local_card);

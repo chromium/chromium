@@ -84,17 +84,28 @@ class SaveCardBubbleControllerImpl
   // just saved and links the user to manage their other cards.
   void ShowBubbleForManageCardsForTesting(const CreditCard& card);
 
-  // Update the icon when card is successfully saved. This will dismiss the icon
-  // and trigger a highlight animation of the avatar button.
+  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
+  // to be added again. In the new proposal, we may not show feedback via icons
+  // so the functions updating the icon may need to be renamed or removed.
+  // Update the icon when card is successfully saved. This
+  // will dismiss the icon and trigger a highlight animation of the avatar
+  // button.
   void UpdateIconForSaveCardSuccess();
 
+  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
+  // to be added again. In the new proposal, we may not show feedback via icons
+  // so the functions updating the icon may need to be renamed or removed.
   // Updates the save card icon when credit card upload failed. This will only
   // update the icon image and stop icon from animating. The actual bubble will
   // be shown when users click on the icon.
   void UpdateIconForSaveCardFailure();
 
-  // For testing. Sets up the controller for showing the
-  // save card failure bubble.
+  // TODO(crbug.com/1337392): Revisit the function when card upload feedback is
+  // to be added again. In the new proposal, we may not show feedback via a
+  // failure bubble so the functions showing the bubble may need to be renamed
+  // or removed.
+  // For testing. Sets up the controller for showing the save card failure
+  // bubble.
   void ShowBubbleForSaveCardFailureForTesting();
 
   void ReshowBubble();

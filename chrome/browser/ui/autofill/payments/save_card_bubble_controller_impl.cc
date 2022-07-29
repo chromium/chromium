@@ -417,25 +417,9 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
   // |closed_reason|.
   if (closed_reason == PaymentsBubbleClosedReason::kAccepted) {
     if (current_bubble_type_ == BubbleType::LOCAL_SAVE) {
-      current_bubble_type_ = base::FeatureList::IsEnabled(
-                                 features::kAutofillCreditCardUploadFeedback)
-                                 ? BubbleType::INACTIVE
-                                 : BubbleType::MANAGE_CARDS;
+      current_bubble_type_ = BubbleType::MANAGE_CARDS;
     } else if (current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillCreditCardUploadFeedback)) {
-        current_bubble_type_ = BubbleType::UPLOAD_IN_PROGRESS;
-
-        // Log this metric here since for each bubble, the bubble state will
-        // only be changed to UPLOAD_IN_PROGRESS once.
-        // SavePaymentIconView::Update is not guaranteed to be called only once
-        // so logging in any functions related to it is not reliable.
-        AutofillMetrics::LogCreditCardUploadFeedbackMetric(
-            AutofillMetrics::
-                CREDIT_CARD_UPLOAD_FEEDBACK_LOADING_ANIMATION_SHOWN);
-      } else {
-        current_bubble_type_ = BubbleType::INACTIVE;
-      }
+      current_bubble_type_ = BubbleType::INACTIVE;
     } else {
       DCHECK_EQ(current_bubble_type_, BubbleType::MANAGE_CARDS);
       current_bubble_type_ = BubbleType::INACTIVE;
@@ -474,10 +458,6 @@ std::u16string SaveCardBubbleControllerImpl::GetSavePaymentIconTooltipText()
   switch (current_bubble_type_) {
     case BubbleType::LOCAL_SAVE:
     case BubbleType::UPLOAD_SAVE:
-    // TODO(crbug.com/932818): With |kAutofillCreditCardUploadFeedback| being
-    // enabled, sign in promo will not be shown from the credit card icon, and
-    // there will not be manage cards bubble. These two will be cleaned up in
-    // the future.
     case BubbleType::MANAGE_CARDS:
       return l10n_util::GetStringUTF16(IDS_TOOLTIP_SAVE_CREDIT_CARD);
     case BubbleType::UPLOAD_IN_PROGRESS:
@@ -494,11 +474,7 @@ bool SaveCardBubbleControllerImpl::ShouldShowSavingCardAnimation() const {
 }
 
 bool SaveCardBubbleControllerImpl::ShouldShowCardSavedLabelAnimation() const {
-  // If experiment is on, does not show the "Card Saved" animation but instead
-  // hides the icon.
-  return !base::FeatureList::IsEnabled(
-             features::kAutofillCreditCardUploadFeedback) &&
-         should_show_card_saved_label_animation_;
+  return should_show_card_saved_label_animation_;
 }
 
 bool SaveCardBubbleControllerImpl::ShouldShowSaveFailureBadge() const {

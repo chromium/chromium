@@ -6078,24 +6078,6 @@
             ]
         }
     ],
-    "MyChromeEverywhere": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillCreditCardUploadFeedback",
-                        "AutofillEnableToolbarStatusChip"
-                    ]
-                }
-            ]
-        }
-    ],
     "NaviOnboarding2": [
         {
             "platforms": [

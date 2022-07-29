@@ -20,7 +20,6 @@ namespace features {
 extern const base::Feature kAutofillAlwaysReturnCloudTokenizedCard;
 extern const base::Feature kAutofillAutoTriggerManualFallbackForCards;
 extern const base::Feature kAutofillCreditCardAuthentication;
-extern const base::Feature kAutofillCreditCardUploadFeedback;
 extern const base::Feature
     kAutofillEnableGetDetailsForEnrollParsingInUploadCardResponse;
 extern const base::Feature kAutofillEnableFIDOProgressDialog;
@@ -30,7 +29,6 @@ extern const base::Feature kAutofillEnableOffersInClankKeyboardAccessory;
 extern const base::Feature kAutofillEnableRemadeDownstreamMetrics;
 extern const base::Feature kAutofillEnableSendingBcnInGetUploadDetails;
 extern const base::Feature kAutofillEnableStickyManualFallbackForCards;
-extern const base::Feature kAutofillEnableToolbarStatusChip;
 extern const base::Feature kAutofillEnableUnmaskCardRequestSetInstrumentId;
 extern const base::Feature kAutofillEnableUpdateVirtualCardEnrollment;
 extern const base::Feature kAutofillEnableVirtualCard;

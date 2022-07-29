@@ -352,7 +352,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
         {DialogEvent::OFFERED_LOCAL_SAVE, DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
     WaitForObservedEvent();
-    WaitForAnimationToEnd();
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                     ->GetVisible());
   }
@@ -366,7 +365,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
          DialogEvent::OFFERED_UPLOAD_SAVE, DialogEvent::BUBBLE_SHOWN});
     SubmitForm();
     WaitForObservedEvent();
-    WaitForAnimationToEnd();
     EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
                     ->GetVisible());
     EXPECT_TRUE(
@@ -606,7 +604,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
   }
 
   void ClickOnView(views::View* view) {
-    DCHECK(view);
+    CHECK(view);
     ui::MouseEvent pressed(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                            ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                            ui::EF_LEFT_MOUSE_BUTTON);
@@ -648,7 +646,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   views::View* FindViewInBubbleById(DialogViewId view_id) {
     SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
-    DCHECK(save_card_bubble_views);
+    CHECK(save_card_bubble_views);
 
     views::View* specified_view =
         save_card_bubble_views->GetViewByID(static_cast<int>(view_id));
@@ -677,17 +675,17 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   void ClickOnCancelButton() {
     SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
-    DCHECK(save_card_bubble_views);
+    CHECK(save_card_bubble_views);
     ClickOnDialogViewWithIdAndWait(DialogViewId::CANCEL_BUTTON);
-    DCHECK(!GetSaveCardBubbleViews());
+    CHECK(!GetSaveCardBubbleViews());
   }
 
   void ClickOnCloseButton() {
     SaveCardBubbleViews* save_card_bubble_views = GetSaveCardBubbleViews();
-    DCHECK(save_card_bubble_views);
+    CHECK(save_card_bubble_views);
     ClickOnDialogViewAndWait(save_card_bubble_views->GetBubbleFrameView()
                                  ->GetCloseButtonForTesting());
-    DCHECK(!GetSaveCardBubbleViews());
+    CHECK(!GetSaveCardBubbleViews());
   }
 
   SaveCardBubbleViews* GetSaveCardBubbleViews() {
@@ -708,14 +706,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     PageActionIconView* icon =
         browser_view->toolbar_button_provider()->GetPageActionIconView(
             PageActionIconType::kSaveCard);
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableToolbarStatusChip)) {
-      DCHECK(
-          browser_view->toolbar()->toolbar_account_icon_container()->Contains(
-              icon));
-    } else {
-      DCHECK(browser_view->GetLocationBarView()->Contains(icon));
-    }
+    CHECK(browser_view->GetLocationBarView()->Contains(icon));
     return static_cast<SavePaymentIconView*>(icon);
   }
 
@@ -727,16 +718,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     SaveCardBubbleControllerImpl* save_card_bubble_controller_impl =
         static_cast<SaveCardBubbleControllerImpl*>(
             SaveCardBubbleController::GetOrCreate(GetActiveWebContents()));
-    DCHECK(save_card_bubble_controller_impl);
+    CHECK(save_card_bubble_controller_impl);
     save_card_bubble_controller_impl->SetEventObserverForTesting(this);
-  }
-
-  void ReduceAnimationTime() {
-    GetSaveCardIconView()->ReduceAnimationTimeForTesting();
-    auto* const animating_layout = GetAnimatingLayoutManager();
-    if (animating_layout) {
-      animating_layout->SetAnimationDuration(base::Milliseconds(1));
-    }
   }
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence) {
@@ -746,12 +729,6 @@ class SaveCardBubbleViewsFullFormBrowserTest
 
   void WaitForObservedEvent() { event_waiter_->Wait(); }
 
-  void WaitForAnimationToEnd() {
-    auto* const animating_layout = GetAnimatingLayoutManager();
-    if (animating_layout)
-      views::test::WaitForAnimatingLayoutManager(animating_layout);
-  }
-
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -759,45 +736,9 @@ class SaveCardBubbleViewsFullFormBrowserTest
   raw_ptr<CreditCardSaveManager> credit_card_save_manager_ = nullptr;
 
  private:
-  views::AnimatingLayoutManager* GetAnimatingLayoutManager() {
-    if (!base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableToolbarStatusChip)) {
-      return nullptr;
-    }
-
-    return views::test::GetAnimatingLayoutManager(
-        BrowserView::GetBrowserViewForBrowser(GetBrowser(0))
-            ->toolbar()
-            ->toolbar_account_icon_container());
-  }
-
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
-};
-
-// TODO(crbug.com/932818): Remove this class after experiment flag is cleaned
-// up. Otherwise we need it because the toolbar is init-ed before each test is
-// set up. Thus need to enable the feature in the general browsertest SetUp().
-class SaveCardBubbleViewsFullFormBrowserTestForStatusChip
-    : public SaveCardBubbleViewsFullFormBrowserTest {
- protected:
-  SaveCardBubbleViewsFullFormBrowserTestForStatusChip()
-      : SaveCardBubbleViewsFullFormBrowserTest() {}
-  ~SaveCardBubbleViewsFullFormBrowserTestForStatusChip() override {}
-
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAutofillCreditCardUploadFeedback,
-                              features::kAutofillEnableToolbarStatusChip,
-                              features::kAutofillUpstream},
-        /*disabled_features=*/{});
-
-    SaveCardBubbleViewsFullFormBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests the local save bubble. Ensures that clicking the [No thanks] button
@@ -844,14 +785,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 class SaveCardBubbleViewsFullFormBrowserTestSettings
     : public SaveCardBubbleViewsFullFormBrowserTest {
  public:
-  SaveCardBubbleViewsFullFormBrowserTestSettings() {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillCreditCardUploadFeedback,
-                               features::kAutofillEnableToolbarStatusChip});
-#endif
-  }
+  SaveCardBubbleViewsFullFormBrowserTestSettings() = default;
 
   void SetUpOnMainThread() override {
     SaveCardBubbleViewsFullFormBrowserTest::SetUpOnMainThread();
@@ -859,7 +793,7 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
     // OpenSettingsFromManageCardsPrompt() tries to retrieve the PhoneHubManager
     // keyed service, whose factory implementation relies on ChromeOS having a
     // single profile, and consequently a single service instance. Creating a
-    // service for both browser()->profile() and GetProfile(0) hits a DCHECK,
+    // service for both browser()->profile() and GetProfile(0) hits a CHECK,
     // so prevent this by disabling the feature.
     GetProfile(0)->GetPrefs()->SetBoolean(
         ash::multidevice_setup::kPhoneHubAllowedPrefName, false);
@@ -869,7 +803,6 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
   void OpenSettingsFromManageCardsPrompt() {
     FillForm();
     SubmitFormAndWaitForCardLocalSaveBubble();
-    ReduceAnimationTime();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
@@ -1899,7 +1832,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
        ++i) {
     FillForm();
     SubmitFormAndWaitForCardLocalSaveBubble();
-    ReduceAnimationTime();
 
     base::HistogramTester histogram_tester;
     ResetEventWaiterForSequence({DialogEvent::STRIKE_CHANGE_COMPLETE});
@@ -1922,7 +1854,6 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   FillForm();
   SubmitForm();
   WaitForObservedEvent();
-  WaitForAnimationToEnd();
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 
@@ -1967,7 +1898,6 @@ IN_PROC_BROWSER_TEST_F(
        ++i) {
     FillForm();
     SubmitFormAndWaitForCardUploadSaveBubble();
-    ReduceAnimationTime();
 
     base::HistogramTester histogram_tester;
 
@@ -1994,7 +1924,6 @@ IN_PROC_BROWSER_TEST_F(
   FillForm();
   SubmitForm();
   WaitForObservedEvent();
-  WaitForAnimationToEnd();
   EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
   EXPECT_FALSE(GetSaveCardBubbleViews());
 
@@ -2063,253 +1992,9 @@ IN_PROC_BROWSER_TEST_F(
             card.NetworkAndLastFourDigits());
 }
 
-// TODO(crbug.com/932818): Remove the condition once the experiment is enabled
-// on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Ensures that the credit card icon will show in status chip.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-                       CreditCardIconShownInStatusChip) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-  EXPECT_TRUE(GetSaveCardIconView());
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-}
-
-// Disabled on Linux due to crashes; https://crbug.com/1216300.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ClickingOnCreditCardIconInStatusChipReshowsBubble \
-    DISABLED_ClickingOnCreditCardIconInStatusChipReshowsBubble
-#else
-#define MAYBE_ClickingOnCreditCardIconInStatusChipReshowsBubble \
-    ClickingOnCreditCardIconInStatusChipReshowsBubble
-#endif
-// Ensures that the clicking on the credit card icon will reshow bubble.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-                       MAYBE_ClickingOnCreditCardIconInStatusChipReshowsBubble) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-  ClickOnCloseButton();
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
-
-  EXPECT_TRUE(GetSaveCardBubbleViews());
-  EXPECT_TRUE(GetSaveCardBubbleViews()->GetVisible());
-}
-
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/823543): Widget activation doesn't work on Mac.
-#define MAYBE_ActivateFirstInactiveBubbleForAccessibility \
-  DISABLED_ActivateFirstInactiveBubbleForAccessibility
-#else
-#define MAYBE_ActivateFirstInactiveBubbleForAccessibility \
-  ActivateFirstInactiveBubbleForAccessibility
-#endif
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-                       MAYBE_ActivateFirstInactiveBubbleForAccessibility) {
-  BrowserView* browser_view =
-      BrowserView::GetBrowserViewForBrowser(GetBrowser(0));
-  ToolbarView* toolbar_view = browser_view->toolbar();
-  EXPECT_FALSE(toolbar_view->toolbar_account_icon_container()
-                   ->page_action_icon_controller()
-                   ->ActivateFirstInactiveBubbleForAccessibility());
-
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  // Ensures the bubble's widget is visible, but inactive. Active widgets are
-  // focused by accessibility, so not of concern.
-  views::Widget* widget = GetSaveCardBubbleViews()->GetWidget();
-  widget->Deactivate();
-  widget->ShowInactive();
-  EXPECT_TRUE(widget->IsVisible());
-  EXPECT_FALSE(widget->IsActive());
-
-  EXPECT_TRUE(toolbar_view->toolbar_account_icon_container()
-                  ->page_action_icon_controller()
-                  ->ActivateFirstInactiveBubbleForAccessibility());
-
-  // Ensure the bubble's widget refreshed appropriately.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_TRUE(widget->IsVisible());
-  EXPECT_TRUE(widget->IsActive());
-}
-
-// Ensures the credit card icon updates its visibility when switching between
-// tabs.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-                       IconAndBubbleVisibilityAfterTabSwitching) {
-  FillForm();
-  SubmitFormAndWaitForCardLocalSaveBubble();
-
-  // Ensures flow is triggered, and bubble and icon view are visible.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_TRUE(GetSaveCardBubbleViews()->GetVisible());
-
-  ASSERT_TRUE(AddTabAtIndexToBrowser(GetBrowser(0), 1, GURL("about:blank"),
-                                     ui::PAGE_TRANSITION_TYPED,
-                                     /*check_navigation_success=*/true));
-  TabStripModel* tab_model = GetBrowser(0)->tab_strip_model();
-  tab_model->ActivateTabAt(
-      1, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  WaitForAnimationToEnd();
-
-  // Ensures bubble and icon go away if user navigates to another tab.
-  EXPECT_FALSE(GetSaveCardIconView()->GetVisible());
-  EXPECT_FALSE(GetSaveCardBubbleViews());
-
-  tab_model->ActivateTabAt(
-      0, TabStripUserGestureDetails(
-             TabStripUserGestureDetails::GestureType::kOther));
-  WaitForAnimationToEnd();
-
-  // If the user navigates back, shows only the icon not the bubble.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_FALSE(GetSaveCardBubbleViews());
-}
-
-// Ensures the card saving throbber animation in the status chip behaves
-// correctly during credit card upload process. Also ensures the credit card
-// icon goes away when upload succeeds.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-                       Feedback_Success) {
-  base::HistogramTester histogram_tester;
-  // Start sync.
-  ASSERT_TRUE(SetupSync());
-
-  FillForm();
-  SubmitFormAndWaitForCardUploadSaveBubble();
-
-  // Ensures icon is visible and animation is not.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_FALSE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
-
-  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Ensures icon and the animation are visible.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_TRUE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
-
-  SetUploadCardRpcPaymentsSucceeds();
-  ResetEventWaiterForSequence({DialogEvent::RECEIVED_UPLOAD_CARD_RESPONSE,
-                               DialogEvent::SHOW_CARD_SAVED_FEEDBACK});
-  WaitForObservedEvent();
-
-  // Ensures icon is not visible.
-  EXPECT_FALSE(GetSaveCardIconView()->GetVisible());
-
-  // UMA should have been logged.
-  histogram_tester.ExpectTotalCount("Autofill.CreditCardUploadFeedback", 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_LOADING_ANIMATION_SHOWN, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_ICON_SHOWN, 0);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN, 0);
-}
-
-// Ensures the card saving throbber animation in the status chip behaves
-// correctly during credit card upload process. Also ensures the credit card
-// icon and the save card failure bubble behave correctly when upload failed.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForStatusChip,
-                       Feedback_Failure) {
-  base::HistogramTester histogram_tester;
-  // Start sync.
-  ASSERT_TRUE(SetupSync());
-
-  FillForm();
-  SubmitFormAndWaitForCardUploadSaveBubble();
-
-  // Ensures icon is visible and animation is not.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_FALSE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
-
-  ResetEventWaiterForSequence({DialogEvent::SENT_UPLOAD_CARD_REQUEST});
-  ClickOnDialogViewWithIdAndWait(DialogViewId::OK_BUTTON);
-  WaitForObservedEvent();
-
-  // Ensures icon and the animation are visible.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_TRUE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
-
-  SetUploadCardRpcPaymentsFails();
-  ResetEventWaiterForSequence({DialogEvent::RECEIVED_UPLOAD_CARD_RESPONSE,
-                               DialogEvent::STRIKE_CHANGE_COMPLETE,
-                               DialogEvent::ICON_SHOWN,
-                               DialogEvent::SHOW_CARD_SAVED_FEEDBACK});
-  WaitForObservedEvent();
-
-  // Ensures icon is visible and the animation is not animating.
-  EXPECT_TRUE(GetSaveCardIconView()->GetVisible());
-  EXPECT_FALSE(
-      GetSaveCardIconView()->loading_indicator_for_testing()->GetAnimating());
-
-  // UMA should have been logged.
-  histogram_tester.ExpectTotalCount("Autofill.CreditCardUploadFeedback", 2);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_LOADING_ANIMATION_SHOWN, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_ICON_SHOWN, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN, 0);
-
-  // Click on the icon.
-  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
-  WaitForObservedEvent();
-
-  // UMA should have been logged.
-  histogram_tester.ExpectTotalCount("Autofill.CreditCardUploadFeedback", 3);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_LOADING_ANIMATION_SHOWN, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_ICON_SHOWN, 1);
-  histogram_tester.ExpectBucketCount(
-      "Autofill.CreditCardUploadFeedback",
-      AutofillMetrics::CREDIT_CARD_UPLOAD_FEEDBACK_FAILURE_BUBBLE_SHOWN, 1);
-}
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-// TODO(crbug.com/932818): Remove this once the experiment is fully launched.
-class SaveCardBubbleViewsFullFormBrowserTestForManageCard
-    : public SaveCardBubbleViewsFullFormBrowserTest {
- protected:
-  SaveCardBubbleViewsFullFormBrowserTestForManageCard()
-      : SaveCardBubbleViewsFullFormBrowserTest() {}
-  ~SaveCardBubbleViewsFullFormBrowserTestForManageCard() override {}
-
-  void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{features::kAutofillCreditCardUploadFeedback,
-                               features::kAutofillEnableToolbarStatusChip});
-
-    SaveCardBubbleViewsFullFormBrowserTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Tests the local save bubble. Ensures that clicking the [Save] button
 // successfully causes the bubble to go away.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        Local_ClickingSaveClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
@@ -2331,11 +2016,10 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
 
 // Tests the manage cards bubble. Ensures that it shows up by clicking the
 // credit card icon.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        Local_ClickingIconShowsManageCards) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
-  ReduceAnimationTime();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
@@ -2361,11 +2045,10 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
 
 // Tests the manage cards bubble. Ensures that clicking the [Done]
 // button closes the bubble.
-IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
+IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
                        Local_ManageCardsDoneButtonClosesBubble) {
   FillForm();
   SubmitFormAndWaitForCardLocalSaveBubble();
-  ReduceAnimationTime();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});

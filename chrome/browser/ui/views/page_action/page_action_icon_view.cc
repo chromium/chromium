@@ -98,6 +98,10 @@ void PageActionIconView::ExecuteForTesting() {
   OnExecuting(EXECUTE_SOURCE_MOUSE);
 }
 
+void PageActionIconView::InstallLoadingIndicatorForTesting() {
+  InstallLoadingIndicator();
+}
+
 void PageActionIconView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   const std::u16string name_text = GetTextForTooltipAndAccessibleName();
@@ -252,15 +256,6 @@ void PageActionIconView::UpdateIconImage() {
     SetImageModel(ui::ImageModel::FromImageSkia(image));
 }
 
-void PageActionIconView::InstallLoadingIndicator() {
-  if (loading_indicator_)
-    return;
-
-  loading_indicator_ =
-      AddChildView(std::make_unique<PageActionIconLoadingIndicatorView>(this));
-  loading_indicator_->SetVisible(false);
-}
-
 void PageActionIconView::SetIsLoading(bool is_loading) {
   if (loading_indicator_)
     loading_indicator_->SetAnimating(is_loading);
@@ -274,6 +269,15 @@ void PageActionIconView::UpdateBorder() {
   const gfx::Insets new_insets = delegate_->GetPageActionIconInsets(this);
   if (new_insets != GetInsets())
     SetBorder(views::CreateEmptyBorder(new_insets));
+}
+
+void PageActionIconView::InstallLoadingIndicator() {
+  if (loading_indicator_)
+    return;
+
+  loading_indicator_ =
+      AddChildView(std::make_unique<PageActionIconLoadingIndicatorView>(this));
+  loading_indicator_->SetVisible(false);
 }
 
 BEGIN_METADATA(PageActionIconView, IconLabelBubbleView)

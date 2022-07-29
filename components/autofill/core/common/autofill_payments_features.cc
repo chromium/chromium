@@ -47,12 +47,6 @@ const base::Feature kAutofillCreditCardAuthentication{
 #endif
 };
 
-// When enabled, if credit card upload succeeded, the avatar icon will show a
-// highlight otherwise, the credit card icon image will be updated and if user
-// clicks on the icon, a save card failure bubble will pop up.
-const base::Feature kAutofillCreditCardUploadFeedback{
-    "AutofillCreditCardUploadFeedback", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // When enabled, the GetDetailsForEnrollResponseDetails in the
 // UploadCardResponseDetails will be parsed, which will allow the Virtual Card
 // Enrollment flow to skip making a new GetDetailsForEnroll request. This is an
@@ -100,11 +94,6 @@ const base::Feature kAutofillEnableSendingBcnInGetUploadDetails{
 const base::Feature kAutofillEnableStickyManualFallbackForCards{
     "AutofillEnableStickyManualFallbackForCards",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-// When enabled, Autofill data related icons will be shown in the status
-// chip in toolbar along with the avatar toolbar button.
-const base::Feature kAutofillEnableToolbarStatusChip{
-    "AutofillEnableToolbarStatusChip", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, UnmaskCardRequest will set instrument id, which is Chrome-side
 // field for non-legacy ID.

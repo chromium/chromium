@@ -21,6 +21,10 @@ class SaveUPIBubbleController;
 class VirtualCardManualFallbackBubbleController;
 class VirtualCardEnrollBubbleController;
 
+// TODO(crbug.com/1337392): consider removing this class and give the logic back
+// to each bubble's controller. This class serves also the avatar button /
+// personal data manager observer for saving feedback. If we end up not doing it
+// the same way, this class may be unnecessary.
 // Responsible for receiving calls from controllers and showing autofill
 // bubbles.
 class AutofillBubbleHandler {

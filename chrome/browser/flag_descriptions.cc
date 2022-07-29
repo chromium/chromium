@@ -413,12 +413,6 @@ const char kAutofillEnableStickyManualFallbackForCardsDescription[] =
     "When enabled, if the user interacts with the manual fallback bottom "
     "sheet, it'll remain sticky until the user dismisses it.";
 
-const char kAutofillEnableToolbarStatusChipName[] =
-    "Move Autofill omnibox icons next to the profile avatar icon";
-const char kAutofillEnableToolbarStatusChipDescription[] =
-    "When enabled, Autofill data related icon will be shown in the status "
-    "chip next to the profile avatar icon in the toolbar.";
-
 const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[] =
     "When enabled, sets non-legacy instrument ID in UnmaskCardRequest";
 const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[] =
@@ -859,13 +853,6 @@ const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[] =
 const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterDescription[] =
     "When enabled, a footer indicating user's e-mail address will appear at "
     "the bottom of SaveCardInfoBar.";
-
-const char kEnableAutofillCreditCardUploadFeedbackName[] =
-    "Enable feedback for credit card upload flow";
-const char kEnableAutofillCreditCardUploadFeedbackDescription[] =
-    "When enabled, if credit card upload succeeds, the avatar button will "
-    "show a highlight, otherwise the icon will be updated and if it is "
-    "clicked, the save card failure bubble will be shown.";
 
 const char kEnableExperimentalCookieFeaturesName[] =
     "Enable experimental cookie features";

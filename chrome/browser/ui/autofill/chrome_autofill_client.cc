@@ -612,23 +612,7 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
 #endif
 }
 
-void ChromeAutofillClient::CreditCardUploadCompleted(bool card_saved) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(siyua@): Placeholder for Clank Notification.
-#else
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback)) {
-    return;
-  }
-
-  // Do lazy initialization of SaveCardBubbleControllerImpl.
-  SaveCardBubbleControllerImpl::CreateForWebContents(web_contents());
-  SaveCardBubbleControllerImpl* controller =
-      SaveCardBubbleControllerImpl::FromWebContents(web_contents());
-  card_saved ? controller->UpdateIconForSaveCardSuccess()
-             : controller->UpdateIconForSaveCardFailure();
-#endif
-}
+void ChromeAutofillClient::CreditCardUploadCompleted(bool card_saved) {}
 
 void ChromeAutofillClient::ConfirmCreditCardFillAssist(
     const CreditCard& card,

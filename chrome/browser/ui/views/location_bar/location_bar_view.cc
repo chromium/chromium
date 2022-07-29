@@ -309,10 +309,7 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kQRCodeGenerator);
     if (base::FeatureList::IsEnabled(kWebOTPCrossDevice))
       params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
-    if (!base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableToolbarStatusChip)) {
-      params.types_enabled.push_back(PageActionIconType::kManagePasswords);
-    }
+    params.types_enabled.push_back(PageActionIconType::kManagePasswords);
     if (!apps::features::LinkCapturingUiUpdateEnabled())
       params.types_enabled.push_back(PageActionIconType::kIntentPicker);
     params.types_enabled.push_back(PageActionIconType::kPwaInstall);
@@ -330,20 +327,17 @@ void LocationBarView::Init() {
   }
   // Add icons only when feature is not enabled. Otherwise icons will
   // be added to the ToolbarPageActionIconContainerView.
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableToolbarStatusChip)) {
-    params.types_enabled.push_back(PageActionIconType::kSaveCard);
-    params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
-    params.types_enabled.push_back(
-        PageActionIconType::kVirtualCardManualFallback);
-    params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
+  params.types_enabled.push_back(PageActionIconType::kSaveCard);
+  params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
+  params.types_enabled.push_back(
+      PageActionIconType::kVirtualCardManualFallback);
+  params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
 
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillAddressProfileSavePrompt)) {
-      // TODO(crbug.com/1167060): Place this in the proper order upon having
-      // final mocks.
-      params.types_enabled.push_back(PageActionIconType::kSaveAutofillAddress);
-    }
+  if (base::FeatureList::IsEnabled(
+          autofill::features::kAutofillAddressProfileSavePrompt)) {
+    // TODO(crbug.com/1167060): Place this in the proper order upon having
+    // final mocks.
+    params.types_enabled.push_back(PageActionIconType::kSaveAutofillAddress);
   }
   if (browser_) {
     if (sharing_hub::HasPageAction(profile_, is_popup_mode_))

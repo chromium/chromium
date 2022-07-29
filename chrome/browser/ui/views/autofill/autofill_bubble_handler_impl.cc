@@ -260,19 +260,10 @@ AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowVirtualCardEnrollBubble(
   return bubble;
 }
 
-void AutofillBubbleHandlerImpl::OnPasswordSaved() {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillCreditCardUploadFeedback)) {
-    ShowAvatarHighlightAnimation();
-  }
-}
+void AutofillBubbleHandlerImpl::OnPasswordSaved() {}
 
 void AutofillBubbleHandlerImpl::OnCreditCardSaved(
-    bool should_show_sign_in_promo_if_applicable) {
-  should_show_sign_in_promo_if_applicable_ =
-      should_show_sign_in_promo_if_applicable;
-  ShowAvatarHighlightAnimation();
-}
+    bool should_show_sign_in_promo_if_applicable) {}
 
 void AutofillBubbleHandlerImpl::OnAvatarHighlightAnimationFinished() {
   if (should_show_sign_in_promo_if_applicable_) {

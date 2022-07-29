@@ -230,9 +230,6 @@ extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
 extern const char kAutofillEnableStickyManualFallbackForCardsName[];
 extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 
-extern const char kAutofillEnableToolbarStatusChipName[];
-extern const char kAutofillEnableToolbarStatusChipDescription[];
-
 extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[];
 extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[];
 
@@ -478,9 +475,6 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 
 extern const char kEnableAutofillCreditCardAuthenticationName[];
 extern const char kEnableAutofillCreditCardAuthenticationDescription[];
-
-extern const char kEnableAutofillCreditCardUploadFeedbackName[];
-extern const char kEnableAutofillCreditCardUploadFeedbackDescription[];
 
 extern const char
     kEnableAutofillInfoBarAccountIndicationFooterForSingleAccountUsersName[];
