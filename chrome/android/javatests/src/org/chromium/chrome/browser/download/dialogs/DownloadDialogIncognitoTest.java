@@ -122,23 +122,23 @@ public class DownloadDialogIncognitoTest {
 
     @Test
     @LargeTest
-    public void testMixedContentDownloadForOffTheRecordProfile() throws Exception {
-        // Showing a mixed content download dialog with an off-the-record profile.
-        showMixedContentDialog(/*isOffTheRecord=*/true);
+    public void testMixedContentDownloadDownloadDoNotShowIncognitoWarning() throws Exception {
+        // Showing a mixed content download dialog with a regular profile.
+        showMixedContentDialog();
 
-        // Verify the Incognito warning message is shown.
-        waitForWarningVisibilityToBe(VISIBLE);
+        // Verify the Incognito warning message is NOT shown.
+        waitForWarningVisibilityToBe(GONE);
 
-        // Accept the dialog and verify the callback is called with true.
-        onView(withId(R.id.positive_button)).perform(ViewActions.click());
-        verify(mResultCallback).onResult(true);
+        // Dismiss the dialog and verify the callback is called with false.
+        onView(withId(R.id.negative_button)).perform(ViewActions.click());
+        verify(mResultCallback).onResult(false);
     }
 
     @Test
     @LargeTest
-    public void testMixedContentDownloadDownloadForRegularProfile() throws Exception {
-        // Showing a mixed content download dialog with a regular profile.
-        showMixedContentDialog(/*isOffTheRecord=*/false);
+    public void testDangerousContentDownloadDoNotShowIncognitoWarning() throws Exception {
+        // Showing a dengarious content download dialog with a regular profile.
+        showDangerousContentDialog();
 
         // Verify the Incognito warning message is NOT shown.
         waitForWarningVisibilityToBe(GONE);
@@ -156,11 +156,19 @@ public class DownloadDialogIncognitoTest {
         });
     }
 
-    private void showMixedContentDialog(boolean isOffTheRecord) {
+    private void showMixedContentDialog() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Context mContext = mActivityTestRule.getActivity().getApplicationContext();
-            new MixedContentDownloadDialog().show(mContext, mModalDialogManager, FILE_NAME,
-                    TOTAL_BYTES, isOffTheRecord, mResultCallback);
+            new MixedContentDownloadDialog().show(
+                    mContext, mModalDialogManager, FILE_NAME, TOTAL_BYTES, mResultCallback);
+        });
+    }
+
+    private void showDangerousContentDialog() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Context mContext = mActivityTestRule.getActivity().getApplicationContext();
+            new DangerousDownloadDialog().show(mContext, mModalDialogManager, FILE_NAME,
+                    TOTAL_BYTES, ICON_ID, mResultCallback);
         });
     }
 

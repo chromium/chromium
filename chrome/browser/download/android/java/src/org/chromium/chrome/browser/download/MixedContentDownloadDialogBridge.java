@@ -40,8 +40,8 @@ public class MixedContentDownloadDialogBridge {
      * @param callbackId Native callback Id to invoke.
      */
     @CalledByNative
-    private void showDialog(WindowAndroid windowAndroid, String fileName, long totalBytes,
-            boolean isOffTheRecord, long callbackId) {
+    private void showDialog(
+            WindowAndroid windowAndroid, String fileName, long totalBytes, long callbackId) {
         Activity activity = windowAndroid.getActivity().get();
         if (activity == null) {
             onConfirmed(callbackId, false);
@@ -50,7 +50,7 @@ public class MixedContentDownloadDialogBridge {
 
         new MixedContentDownloadDialog().show(activity,
                 ((ModalDialogManagerHolder) activity).getModalDialogManager(), fileName, totalBytes,
-                isOffTheRecord, (accepted) -> { onConfirmed(callbackId, accepted); });
+                (accepted) -> { onConfirmed(callbackId, accepted); });
     }
 
     @CalledByNative

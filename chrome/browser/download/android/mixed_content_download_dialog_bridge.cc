@@ -15,9 +15,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/browser/download/android/jni_headers/MixedContentDownloadDialogBridge_jni.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -58,16 +56,11 @@ void MixedContentDownloadDialogBridge::CreateDialog(
       new MixedContentDialogCallback(std::move(callback)));
   validator_.AddJavaCallback(callback_id);
 
-  content::BrowserContext* browser_context =
-      content::DownloadItemUtils::GetBrowserContext(download);
-  bool isOffTheRecord =
-      Profile::FromBrowserContext(browser_context)->IsOffTheRecord();
-
   Java_MixedContentDownloadDialogBridge_showDialog(
       env, java_object_, window_android->GetJavaObject(),
       base::android::ConvertUTF16ToJavaString(
           env, base::UTF8ToUTF16(base_name.value())),
-      download->GetTotalBytes(), isOffTheRecord, callback_id);
+      download->GetTotalBytes(), callback_id);
 }
 
 void MixedContentDownloadDialogBridge::OnConfirmed(JNIEnv* env,

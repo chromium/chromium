@@ -48,7 +48,7 @@ public class MixedContentDownloadDialog {
      *         false otherwise.
      */
     public void show(Context context, ModalDialogManager modalDialogManager, String fileName,
-            long totalBytes, boolean isOffTheRecord, Callback<Boolean> callback) {
+            long totalBytes, Callback<Boolean> callback) {
         String message = totalBytes > 0
                 ? fileName + " (" + DownloadUtils.getStringForBytes(context, totalBytes) + ")"
                 : fileName;
@@ -101,11 +101,6 @@ public class MixedContentDownloadDialog {
                         .with(ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_OUTLINE_NEGATIVE_OUTLINE)
                         .build();
-
-        if (DownloadDialogUtils.shouldShowIncognitoWarning(isOffTheRecord)) {
-            propertyModel.set(ModalDialogProperties.MESSAGE_PARAGRAPH_2,
-                    context.getResources().getString(R.string.download_location_incognito_warning));
-        }
 
         modalDialogManager.showDialog(propertyModel, ModalDialogManager.ModalDialogType.TAB);
         recordMixedContentDownloadDialogEvent(MixedContentDownloadDialogEvent.SHOW);
