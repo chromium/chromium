@@ -97,7 +97,8 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
 
   void CommitBuffer(const gfx::Rect& damage, float buffer_scale) {
     buffer_manager_->CommitBuffer(widget_, buffer_id_, /*frame_id*/ buffer_id_,
-                                  gfx::Rect(size_), buffer_scale, damage);
+                                  gfx::Rect(size_), gfx::RoundedCornersF(),
+                                  buffer_scale, damage);
   }
 
   void OnUse() {

@@ -123,6 +123,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                     uint32_t frame_id,
                     uint32_t buffer_id,
                     const gfx::Rect& bounds_rect,
+                    const gfx::RoundedCornersF& corners,
                     float surface_scale_factor,
                     const gfx::Rect& damage_region);
   // Send overlay configurations for a frame to a WaylandWindow identified by
