@@ -24,17 +24,48 @@
     padding-inline-end: 12px;
     --iron-icon-fill-color: var(--cros-text-color-secondary);
   }
+
+  .help-content-offline-details {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 16px;
+  }
+
+  .help-content-offline-text {
+    color: var(--cros-text-color-secondary);
+    line-height: 18px;
+    max-width: 200px;
+    text-align: center;
+  }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+  query-matches="{{isDarkModeEnabled_}}">
+</iron-media-query>
 <div id="helpContentContainer">
-  <h2 class="help-content-label">[[getLabel_(searchResult)]]</h2>
-  <dom-repeat items="[[searchResult.contentList]]">
-    <template>
-      <div class="help-item">
-        <a href="[[getUrl_(item)]]" target="_blank">
-          <iron-icon icon="[[getIcon_(item.contentType)]]" class="help-item-icon"></iron-icon>
-          <span>[[getTitle_(item)]]</span>
-        </a>
+  <h2 class="help-content-label">[[getLabel_(searchResult, isOnline_)]]</h2>
+  <template is="dom-if" if="[[!isOnline_]]">
+    <div class="help-content-offline-details">
+      <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]" 
+           alt="[[i18n('helpContentOfflineAltText')]]">
+      <div class="help-content-offline-text">
+        [[i18n('helpContentOfflineMessage')]]
       </div>
-    </template>
-  </dom-repeat>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isOnline_]]">
+    <dom-repeat items="[[searchResult.contentList]]">
+      <template>
+        <div class="help-item">
+          <a href="[[getUrl_(item)]]" target="_blank">
+            <iron-icon 
+              icon="[[getIcon_(item.contentType)]]" 
+              class="help-item-icon"></iron-icon>
+            <span>[[getTitle_(item)]]</span>
+          </a>
+        </div>
+      </template>
+    </dom-repeat>
+  </template>
 </div>

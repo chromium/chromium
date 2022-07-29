@@ -5,6 +5,7 @@
 import './help_resources_icons.js';
 import './strings.m.js';
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 
 import {mojoString16ToString} from '//resources/ash/common/mojo_utils.js';
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
@@ -47,7 +48,11 @@ export class HelpContentElement extends HelpContentElementBase {
   }
 
   static get properties() {
-    return {searchResult: {type: SearchResult}};
+    return {
+      searchResult: {type: SearchResult},
+      isDarkModeEnabled_: {type: Boolean},
+      isOnline_: {type: Boolean},
+    };
   }
 
   constructor() {
@@ -61,6 +66,25 @@ export class HelpContentElement extends HelpContentElementBase {
       isQueryEmpty: true,
       isPopularContent: true,
     };
+
+    /** @type {boolean} */
+    this.isDarkModeEnabled_ = false;
+
+    /** @type {boolean} */
+    this.isOnline_ = navigator.onLine;
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    window.addEventListener('online', () => {
+      this.isOnline_ = true;
+    });
+
+    window.addEventListener('offline', () => {
+      this.isOnline_ = false;
+    });
   }
 
   /**
@@ -70,6 +94,9 @@ export class HelpContentElement extends HelpContentElementBase {
    * @protected
    */
   getLabel_(searchResult) {
+    if (!this.isOnline_) {
+      return this.i18n('popularHelpContent');
+    }
     if (!searchResult.isPopularContent) {
       return this.i18n('suggestedHelpContent');
     }
@@ -116,6 +143,19 @@ export class HelpContentElement extends HelpContentElementBase {
    */
   getTitle_(helpContent) {
     return mojoString16ToString(helpContent.title);
+  }
+
+  /**
+   * Gets the relative source path to the "help content is offline" illustration
+   * @return {string}
+   * @protected
+   */
+  getOfflineIllustrationSrc_() {
+    if (this.isDarkModeEnabled_) {
+      return 'illustrations/network_unavailable_darkmode.svg';
+    } else {
+      return 'illustrations/network_unavailable_lightmode.svg';
+    }
   }
 }
 

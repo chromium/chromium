@@ -53,6 +53,10 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       // The help content strings are needed for browser tests.
       {"suggestedHelpContent", IDS_FEEDBACK_TOOL_SUGGESTED_HELP_CONTENT},
       {"popularHelpContent", IDS_FEEDBACK_TOOL_POPULAR_HELP_CONTENT},
+      {"helpContentOfflineMessage",
+       IDS_FEEDBACK_TOOL_HELP_CONTENT_OFFLINE_MESSAGE},
+      {"helpContentOfflineAltText",
+       IDS_FEEDBACK_TOOL_HELP_CONTENT_OFFLINE_ALT_TEXT},
       {"noMatchedResults", IDS_FEEDBACK_TOOL_NO_MATCHED_RESULTS},
       {"attachFilesLabel", IDS_FEEDBACK_TOOL_ATTACH_FILES_LABEL},
       {"attachScreenshotLabel", IDS_FEEDBACK_TOOL_SCREENSHOT_LABEL},

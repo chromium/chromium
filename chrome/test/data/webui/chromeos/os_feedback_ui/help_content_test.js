@@ -7,7 +7,7 @@ import {HelpContentList, HelpContentType, SearchResult} from 'chrome://os-feedba
 import {HelpContentElement} from 'chrome://os-feedback/help_content.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks} from '../../test_util.js';
+import {flushTasks, isVisible} from '../../test_util.js';
 
 export function helpContentTestSuite() {
   /** @type {?HelpContentElement} */
@@ -91,6 +91,18 @@ export function helpContentTestSuite() {
     assertEquals(
         'https://support.google.com/chromebook/?q=forum', helpLinks[1].href);
     verifyIconName(helpLinks[1], fakePopularHelpContentList[1].contentType);
+  }
+
+  function goOffline() {
+    // Simulate going offline.
+    window.dispatchEvent(new CustomEvent('offline'));
+    return flushTasks();
+  }
+
+  function goOnline() {
+    // Simulate going online.
+    window.dispatchEvent(new CustomEvent('online'));
+    return flushTasks();
   }
 
   /**
@@ -181,5 +193,78 @@ export function helpContentTestSuite() {
         'No suggested content. See top help content.', title.textContent);
 
     verifyPopularHelpContent();
+  });
+
+  /**
+   * Test that the offline-only elements render when offline, and that the
+   * online-only elements render when online.
+   */
+  test('OfflineMessage', async () => {
+    await initializeHelpContentElement(
+        fakePopularHelpContentList, /* isQueryEmpty= */ true,
+        /* isPopularContent= */ true);
+
+    await goOffline();
+
+    // Offline-only content should exist in the DOM when offline.
+    assertTrue(isVisible(getElement('.help-content-offline-details')));
+
+    // Online-only content should *not* exist in the DOM when offline.
+    assertFalse(isVisible(getElement('.help-item-icon')));
+
+    await goOnline();
+
+    // Offline-only content should *not* exist in the DOM when online.
+    assertFalse(isVisible(getElement('.help-content-offline-details')));
+
+    // Online-only content should exist in the DOM when online.
+    assertTrue(isVisible(getElement('.help-item-icon')));
+  });
+
+  /**
+   * Test that the help content title shows the correct text when the query
+   * doesn't match and the device goes offline.
+   */
+  test('OfflineTitleWhenNoMatches', async () => {
+    // Initialize element with no query matches.
+    await initializeHelpContentElement(
+        fakePopularHelpContentList, /* isQueryEmpty= */ false,
+        /* isPopularContent= */ true);
+
+    // Verify the title is what we expect when there are no matches.
+    let title = getElement('.help-content-label');
+    assertTrue(!!title);
+    assertEquals(
+        'No suggested content. See top help content.', title.textContent);
+
+    await goOffline();
+
+    title = getElement('.help-content-label');
+    // When offline, we expect the title to always be "Top help content".
+    assertTrue(!!title);
+    assertEquals('Top help content', title.textContent);
+  });
+
+  /**
+   * Test that the help content title shows the correct text when we previously
+   * were displaying suggested help content and the device goes offline.
+   */
+  test('OfflineTitleWhenSuggestedContentExists', async () => {
+    // Initialize element with no query matches.
+    await initializeHelpContentElement(
+        fakePopularHelpContentList, /* isQueryEmpty= */ false,
+        /* isPopularContent= */ false);
+
+    // Verify the title is what we expect when there are suggested matches.
+    let title = getElement('.help-content-label');
+    assertTrue(!!title);
+    assertEquals('Suggested help content', title.textContent);
+
+    await goOffline();
+
+    title = getElement('.help-content-label');
+    // When offline, we expect the title to always be "Top help content".
+    assertTrue(!!title);
+    assertEquals('Top help content', title.textContent);
   });
 }
