@@ -12,6 +12,7 @@
   </outputs>
   <release seq="1">
     <includes>
+      <part file="auth_factor_config_resources.grdp" />
       <part file="cellular_resources.grdp" />
       <part file="human_presence_resources.grdp" />
       <part file="multidevice_resources.grdp" />

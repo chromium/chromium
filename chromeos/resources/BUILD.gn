@@ -23,7 +23,6 @@ grit("resources") {
   ]
 
   deps = [
-    "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_js",
     "//chromeos/language/public/mojom:mojom_js",
     "//chromeos/services/bluetooth_config/public/mojom:mojom_js",
 
