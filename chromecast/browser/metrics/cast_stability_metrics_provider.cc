@@ -18,8 +18,6 @@
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/browser/navigation_controller.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace chromecast {
@@ -50,17 +48,14 @@ CastStabilityMetricsProvider::CastStabilityMetricsProvider(
   DCHECK(pref_service_);
 }
 
+CastStabilityMetricsProvider::~CastStabilityMetricsProvider() {}
+
 void CastStabilityMetricsProvider::OnRecordingEnabled() {
-  registrar_.Add(this,
-                 content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllSources());
-  registrar_.Add(this,
-                 content::NOTIFICATION_RENDER_WIDGET_HOST_HANG,
-                 content::NotificationService::AllSources());
+  logging_enabled_ = true;
 }
 
 void CastStabilityMetricsProvider::OnRecordingDisabled() {
-  registrar_.RemoveAll();
+  logging_enabled_ = false;
 }
 
 void CastStabilityMetricsProvider::LogExternalCrash(
@@ -79,34 +74,30 @@ void CastStabilityMetricsProvider::LogExternalCrash(
   metrics_service_->OnApplicationNotIdle();
 }
 
-void CastStabilityMetricsProvider::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  switch (type) {
-    case content::NOTIFICATION_RENDERER_PROCESS_CLOSED: {
-      content::ChildProcessTerminationInfo* termination_info =
-          content::Details<content::ChildProcessTerminationInfo>(details).ptr();
-      content::RenderProcessHost* host =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      LogRendererCrash(host, termination_info->status,
-                       termination_info->exit_code);
-      break;
-    }
+void CastStabilityMetricsProvider::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  if (!scoped_observations_.IsObservingSource(host))
+    scoped_observations_.AddObservation(host);
+}
 
-    case content::NOTIFICATION_RENDER_WIDGET_HOST_HANG:
-      break;
+void CastStabilityMetricsProvider::RenderProcessExited(
+    content::RenderProcessHost* host,
+    const content::ChildProcessTerminationInfo& info) {
+  LogRendererCrash(host, info.status, info.exit_code);
+}
 
-    default:
-      NOTREACHED();
-      break;
-  }
+void CastStabilityMetricsProvider::RenderProcessHostDestroyed(
+    content::RenderProcessHost* host) {
+  scoped_observations_.RemoveObservation(host);
 }
 
 void CastStabilityMetricsProvider::LogRendererCrash(
     content::RenderProcessHost* host,
     base::TerminationStatus status,
     int exit_code) {
+  if (!logging_enabled_)
+    return;
+
   if (status == base::TERMINATION_STATUS_PROCESS_CRASHED ||
       status == base::TERMINATION_STATUS_ABNORMAL_TERMINATION) {
     ::metrics::StabilityMetricsHelper::RecordStabilityEvent(

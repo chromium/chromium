@@ -6,9 +6,11 @@
 #define CHROMECAST_BROWSER_METRICS_CAST_STABILITY_METRICS_PROVIDER_H_
 
 #include "base/process/kill.h"
+#include "base/scoped_multi_source_observation.h"
 #include "components/metrics/metrics_provider.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_process_host_observer.h"
 
 class PrefService;
 
@@ -25,8 +27,10 @@ namespace metrics {
 
 // Responsible for gathering and logging stability-related metrics. Loosely
 // based on the ContentStabilityMetricsProvider in components/metrics/content.
-class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
-                                     public content::NotificationObserver {
+class CastStabilityMetricsProvider
+    : public ::metrics::MetricsProvider,
+      public content::RenderProcessHostObserver,
+      public content::RenderProcessHostCreationObserver {
  public:
   CastStabilityMetricsProvider(::metrics::MetricsService* metrics_service,
                                PrefService* pref_service);
@@ -35,7 +39,7 @@ class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
   CastStabilityMetricsProvider& operator=(const CastStabilityMetricsProvider&) =
       delete;
 
-  ~CastStabilityMetricsProvider() override = default;
+  ~CastStabilityMetricsProvider() override;
 
   // metrics::MetricsProvider implementation:
   void OnRecordingEnabled() override;
@@ -44,12 +48,16 @@ class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
   // Logs an external crash, presumably from the ExternalMetrics service.
   void LogExternalCrash(const std::string& crash_type);
 
- private:
-  // content::NotificationObserver implementation:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // content::RenderProcessHostCreationObserver:
+  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
+  // content::RenderProcessHostObserver:
+  void RenderProcessExited(
+      content::RenderProcessHost* host,
+      const content::ChildProcessTerminationInfo& info) override;
+  void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
+
+ private:
   // Records a renderer process crash.
   void LogRendererCrash(content::RenderProcessHost* host,
                         base::TerminationStatus status,
@@ -58,8 +66,9 @@ class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
   // Increments the specified pref by 1.
   void IncrementPrefValue(const char* path);
 
-  // Registrar for receiving stability-related notifications.
-  content::NotificationRegistrar registrar_;
+  base::ScopedMultiSourceObservation<content::RenderProcessHost,
+                                     content::RenderProcessHostObserver>
+      scoped_observations_{this};
 
   // Reference to the current MetricsService. Raw pointer is safe, since
   // MetricsService is responsible for the lifetime of
@@ -67,6 +76,8 @@ class CastStabilityMetricsProvider : public ::metrics::MetricsProvider,
   ::metrics::MetricsService* metrics_service_;
 
   PrefService* const pref_service_;
+
+  bool logging_enabled_ = false;
 };
 
 }  // namespace metrics
