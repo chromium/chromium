@@ -16,18 +16,12 @@ namespace {
 // Status values which are considered "final" - i.e., once the status of an
 // operation changes to one of these values, the operation has completed. These
 // status values indicate either a success or a fatal error.
-constexpr std::array<CombinedAccessSetupOperation::Status, 8>
+constexpr std::array<CombinedAccessSetupOperation::Status, 4>
     kOperationFinishedStatus{
         CombinedAccessSetupOperation::Status::kTimedOutConnecting,
         CombinedAccessSetupOperation::Status::kConnectionDisconnected,
         CombinedAccessSetupOperation::Status::kCompletedSuccessfully,
         CombinedAccessSetupOperation::Status::kProhibitedFromProvidingAccess,
-        CombinedAccessSetupOperation::Status::kCompletedUserRejectedAllAccess,
-        CombinedAccessSetupOperation::Status::kOperationFailedOrCancelled,
-        CombinedAccessSetupOperation::Status::
-            kCameraRollGrantedNotificationRejected,
-        CombinedAccessSetupOperation::Status::
-            kCameraRollRejectedNotificationGranted,
     };
 
 }  // namespace
@@ -78,22 +72,6 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case CombinedAccessSetupOperation::Status::kProhibitedFromProvidingAccess:
       stream << "[Prohibited from providing access]";
-      break;
-    case CombinedAccessSetupOperation::Status::kCompletedUserRejectedAllAccess:
-      stream << "[User rejected to grant access]";
-      break;
-    case CombinedAccessSetupOperation::Status::kOperationFailedOrCancelled:
-      stream << "[Operation failed or cancelled]";
-      break;
-    case CombinedAccessSetupOperation::Status::
-        kCameraRollGrantedNotificationRejected:
-      stream << "[User granted access to Camera Roll but rejected access to "
-                "notification]";
-      break;
-    case CombinedAccessSetupOperation::Status::
-        kCameraRollRejectedNotificationGranted:
-      stream << "[User rejected access to Camera Roll but granted access to "
-                "notification]";
       break;
   }
 

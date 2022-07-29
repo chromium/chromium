@@ -157,13 +157,7 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
                                      multidevice_setup_client,
                                      connection_manager_.get(),
                                      std::move(camera_roll_download_manager))
-                               : nullptr),
-      feature_setup_response_processor_(
-          features::IsPhoneHubFeatureSetupErrorHandlingEnabled()
-              ? std::make_unique<FeatureSetupResponseProcessor>(
-                    message_receiver_.get(),
-                    multidevice_feature_access_manager_.get())
-              : nullptr) {}
+                               : nullptr) {}
 
 PhoneHubManagerImpl::~PhoneHubManagerImpl() = default;
 
@@ -262,7 +256,6 @@ void PhoneHubManagerImpl::Shutdown() {
   user_action_recorder_.reset();
   feature_status_provider_.reset();
   connection_manager_.reset();
-  feature_setup_response_processor_.reset();
 }
 
 }  // namespace phonehub

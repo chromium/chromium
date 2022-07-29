@@ -56,19 +56,7 @@ class CombinedAccessSetupOperation {
     // the user could be using a Work Profile).
     kProhibitedFromProvidingAccess = 6,
 
-    // The user rejected all access during setup.
-    kCompletedUserRejectedAllAccess = 7,
-
-    // The setup was interrupted.
-    kOperationFailedOrCancelled = 8,
-
-    // Only camera roll access is granted.
-    kCameraRollGrantedNotificationRejected = 9,
-
-    // Only notification access is granted.
-    kCameraRollRejectedNotificationGranted = 10,
-
-    kMaxValue = kCameraRollRejectedNotificationGranted
+    kMaxValue = kProhibitedFromProvidingAccess
   };
 
   // Returns true if the provided status is the final one for this operation,

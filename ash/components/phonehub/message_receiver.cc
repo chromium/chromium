@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ash/components/phonehub/message_receiver.h"
-#include "ash/components/phonehub/proto/phonehub_api.pb.h"
 
 namespace ash {
 namespace phonehub {
@@ -29,12 +28,6 @@ void MessageReceiver::NotifyPhoneStatusUpdateReceived(
     proto::PhoneStatusUpdate phone_status_update) {
   for (auto& observer : observer_list_)
     observer.OnPhoneStatusUpdateReceived(phone_status_update);
-}
-
-void MessageReceiver::NotifyFeatureSetupResponseReceived(
-    proto::FeatureSetupResponse response) {
-  for (auto& observer : observer_list_)
-    observer.OnFeatureSetupResponseReceived(response);
 }
 
 void MessageReceiver::NotifyFetchCameraRollItemsResponseReceived(

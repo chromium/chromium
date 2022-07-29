@@ -16,7 +16,6 @@ class FakeMessageReceiver : public MessageReceiver {
   FakeMessageReceiver() = default;
   ~FakeMessageReceiver() override = default;
 
-  using MessageReceiver::NotifyFeatureSetupResponseReceived;
   using MessageReceiver::NotifyFetchCameraRollItemDataResponseReceived;
   using MessageReceiver::NotifyFetchCameraRollItemsResponseReceived;
   using MessageReceiver::NotifyPhoneStatusSnapshotReceived;

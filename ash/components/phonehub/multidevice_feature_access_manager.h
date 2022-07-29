@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "ash/components/phonehub/combined_access_setup_operation.h"
-#include "ash/components/phonehub/feature_setup_response_processor.h"
 #include "ash/components/phonehub/notification_access_setup_operation.h"
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "base/containers/flat_map.h"
@@ -172,7 +171,6 @@ class MultideviceFeatureAccessManager {
  private:
   friend class MultideviceFeatureAccessManagerImplTest;
   friend class PhoneStatusProcessor;
-  friend class FeatureSetupResponseProcessor;
 
   // Sets the internal AccessStatus but does not send a request for
   // a new status to the remote phone device.
