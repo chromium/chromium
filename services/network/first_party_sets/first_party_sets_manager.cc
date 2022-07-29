@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/circular_deque.h"
-#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -276,68 +275,6 @@ FirstPartySetsManager::OwnersResult FirstPartySetsManager::FindOwnersInternal(
     }
   }
   return sites_to_owners;
-}
-
-absl::optional<FirstPartySetsManager::SetsByOwner> FirstPartySetsManager::Sets(
-    const FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(FirstPartySetsManager::SetsByOwner)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!sets_.has_value()) {
-    EnqueuePendingQuery(base::BindOnce(
-        &FirstPartySetsManager::SetsAndInvoke, weak_factory_.GetWeakPtr(),
-        fps_context_config, std::move(callback), base::TimeTicks::Now()));
-    return absl::nullopt;
-  }
-
-  return SetsInternal(fps_context_config);
-}
-
-void FirstPartySetsManager::SetsAndInvoke(
-    const FirstPartySetsContextConfig& fps_context_config,
-    base::OnceCallback<void(FirstPartySetsManager::SetsByOwner)> callback,
-    base::TimeTicks enqueued_at) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
-
-  UMA_HISTOGRAM_TIMES("Cookie.FirstPartySets.EnqueueingDelay.Sets",
-                      base::TimeTicks::Now() - enqueued_at);
-
-  std::move(callback).Run(SetsInternal(fps_context_config));
-}
-
-FirstPartySetsManager::SetsByOwner FirstPartySetsManager::SetsInternal(
-    const FirstPartySetsContextConfig& fps_context_config) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
-
-  if (!fps_context_config.is_enabled() || !is_enabled())
-    return {};
-
-  FirstPartySetsManager::SetsByOwner sets;
-  // Go over `sets_` to add entries that are not modified by the customizations.
-  for (const auto& pair : *sets_) {
-    const net::SchemefulSite& member = pair.first;
-    const net::SchemefulSite& owner = pair.second;
-    if (!base::Contains(fps_context_config.customizations(), member)) {
-      auto set = sets.emplace(owner, std::set<net::SchemefulSite>()).first;
-      set->second.insert(member);
-    }
-  }
-
-  // Then go over the customizations to add entries that are not deleted.
-  for (const auto& pair : fps_context_config.customizations()) {
-    const net::SchemefulSite& member = pair.first;
-    const absl::optional<net::SchemefulSite>& owner = pair.second;
-    if (owner.has_value()) {
-      auto set =
-          sets.emplace(std::move(owner.value()), std::set<net::SchemefulSite>())
-              .first;
-      set->second.insert(member);
-    }
-  }
-
-  return sets;
 }
 
 void FirstPartySetsManager::InvokePendingQueries() {

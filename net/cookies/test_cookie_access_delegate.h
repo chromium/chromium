@@ -55,11 +55,6 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const base::flat_set<SchemefulSite>& sites,
       base::OnceCallback<void(base::flat_map<SchemefulSite, SchemefulSite>)>
           callback) const override;
-  absl::optional<base::flat_map<SchemefulSite, std::set<SchemefulSite>>>
-  RetrieveFirstPartySets(
-      base::OnceCallback<void(
-          base::flat_map<SchemefulSite, std::set<SchemefulSite>>)> callback)
-      const override;
 
   // Sets the expected return value for any cookie whose Domain
   // matches |cookie_domain|. Pass the value of |cookie.Domain()| and any

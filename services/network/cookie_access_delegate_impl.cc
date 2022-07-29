@@ -96,13 +96,4 @@ CookieAccessDelegateImpl::FindFirstPartySetOwners(
                                                        std::move(callback));
 }
 
-absl::optional<FirstPartySetsAccessDelegate::SetsByOwner>
-CookieAccessDelegateImpl::RetrieveFirstPartySets(
-    base::OnceCallback<void(FirstPartySetsAccessDelegate::SetsByOwner)>
-        callback) const {
-  if (!first_party_sets_access_delegate_)
-    return {{}};
-  return first_party_sets_access_delegate_->Sets(std::move(callback));
-}
-
 }  // namespace network

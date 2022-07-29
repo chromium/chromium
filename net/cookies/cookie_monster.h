@@ -688,10 +688,8 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // First-Party Sets presents a potentially asynchronous interface, these stats
   // may be collected asynchronously w.r.t. the rest of the stats collected by
   // `RecordPeriodicStats`.
-  // TODO(https://crbug.com/1266014): don't assume that the sets can all fit in
-  // memory at once.
   void RecordPeriodicFirstPartySetsStats(
-      base::flat_map<SchemefulSite, std::set<SchemefulSite>> sets) const;
+      base::flat_map<SchemefulSite, SchemefulSite> sets) const;
 
   // Defers the callback until the full coookie database has been loaded. If
   // it's already been loaded, runs the callback synchronously.

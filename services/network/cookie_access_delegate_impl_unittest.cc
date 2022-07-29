@@ -63,10 +63,6 @@ TEST_F(CookieAccessDelegateImplTest, NullFirstPartySetsManager) {
           {site},
           base::BindOnce([](FirstPartySetsManager::OwnersResult) { FAIL(); })),
       Optional(IsEmpty()));
-
-  EXPECT_THAT(delegate().RetrieveFirstPartySets(base::BindOnce(
-                  [](FirstPartySetsManager::SetsByOwner) { FAIL(); })),
-              Optional(IsEmpty()));
 }
 
 }  // namespace

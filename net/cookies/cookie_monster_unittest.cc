@@ -5337,8 +5337,11 @@ TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
   base::HistogramTester histogram_tester;
   EXPECT_TRUE(cm()->DoRecordPeriodicStatsForTesting());
   EXPECT_THAT(histogram_tester.GetAllSamples("Cookie.PerFirstPartySetCount"),
-              testing::ElementsAre(base::Bucket(2 /* min */, 1 /* samples */),
-                                   base::Bucket(3 /* min */, 1 /* samples */)));
+              testing::ElementsAre(  //
+                                     // owner2.test & member3.test
+                  base::Bucket(2 /* min */, 1 /* samples */),
+                  // owner1.test, member1.test, & member2.test
+                  base::Bucket(3 /* min */, 1 /* samples */)));
 }
 
 TEST_F(CookieMonsterTest, GetAllCookiesForURLNonce) {

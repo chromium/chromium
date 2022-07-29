@@ -101,14 +101,6 @@ TestCookieAccessDelegate::FindFirstPartySetOwners(
       mapping, std::move(callback));
 }
 
-absl::optional<base::flat_map<SchemefulSite, std::set<SchemefulSite>>>
-TestCookieAccessDelegate::RetrieveFirstPartySets(
-    base::OnceCallback<
-        void(base::flat_map<SchemefulSite, std::set<SchemefulSite>>)> callback)
-    const {
-  return RunMaybeAsync(first_party_sets_, std::move(callback));
-}
-
 template <class T>
 absl::optional<T> TestCookieAccessDelegate::RunMaybeAsync(
     T result,

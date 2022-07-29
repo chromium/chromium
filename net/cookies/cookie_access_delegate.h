@@ -108,19 +108,6 @@ class NET_EXPORT CookieAccessDelegate {
       const CookieAccessDelegate* delegate,
       const CookiePartitionKey& cookie_partition_key,
       base::OnceCallback<void(CookiePartitionKey)> callback);
-
-  // Computes the First-Party Sets.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] virtual absl::optional<
-      base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>>
-  RetrieveFirstPartySets(
-      base::OnceCallback<void(
-          base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>)>
-          callback) const = 0;
 };
 
 }  // namespace net

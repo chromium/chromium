@@ -11,7 +11,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "net/base/schemeful_site.h"
-#include "net/base/test_completion_callback.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
@@ -45,13 +44,6 @@ class FirstPartySetsManagerTest : public ::testing::Test {
   void SetCompleteSets(
       const base::flat_map<net::SchemefulSite, net::SchemefulSite>& content) {
     manager_.SetCompleteSets(content);
-  }
-
-  FirstPartySetsManager::SetsByOwner SetsAndWait() {
-    base::test::TestFuture<FirstPartySetsManager::SetsByOwner> future;
-    absl::optional<FirstPartySetsManager::SetsByOwner> result =
-        manager_.Sets(fps_context_config_, future.GetCallback());
-    return result.has_value() ? result.value() : future.Get();
   }
 
   net::FirstPartySetMetadata ComputeMetadataAndWait(
@@ -115,7 +107,11 @@ TEST_F(FirstPartySetsManagerDisabledTest, SetCompleteSets) {
                    {net::SchemefulSite(GURL("https://example.test")),
                     net::SchemefulSite(GURL("https://example.test"))}});
 
-  EXPECT_THAT(SetsAndWait(), IsEmpty());
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://aaaa.test")),
+                  net::SchemefulSite(GURL("https://example.test")),
+              }),
+              IsEmpty());
 }
 
 TEST_F(FirstPartySetsManagerDisabledTest, FindOwners) {
@@ -188,26 +184,11 @@ TEST_F(FirstPartySetsManagerDisabledTest, FindOwner) {
       FindOwnerAndWait(net::SchemefulSite(GURL("https://member.test"))));
 }
 
-TEST_F(FirstPartySetsManagerDisabledTest, Sets_IsEmpty) {
-  SetFirstPartySetsContextConfig(
-      true, {{net::SchemefulSite(GURL("https://aaaa.test")),
-              {net::SchemefulSite(GURL("https://example.test"))}},
-             {net::SchemefulSite(GURL("https://example.test")),
-              {net::SchemefulSite(GURL("https://example.test"))}}});
-
-  EXPECT_THAT(SetsAndWait(), IsEmpty());
-}
-
 class FirstPartySetsEnabledTest : public FirstPartySetsManagerTest {
  public:
   FirstPartySetsEnabledTest()
       : FirstPartySetsManagerTest(/*enabled=*/true, /*context_enabled=*/true) {}
 };
-
-TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {
-  SetCompleteSets({});
-  EXPECT_THAT(SetsAndWait(), IsEmpty());
-}
 
 TEST_F(FirstPartySetsEnabledTest, SetCompleteSets) {
   SetCompleteSets(base::flat_map<net::SchemefulSite, net::SchemefulSite>(
@@ -216,23 +197,30 @@ TEST_F(FirstPartySetsEnabledTest, SetCompleteSets) {
        {net::SchemefulSite(GURL("https://example.test")),
         net::SchemefulSite(GURL("https://example.test"))}}));
 
-  EXPECT_THAT(SetsAndWait(),
-              UnorderedElementsAre(Pair(
-                  SerializesTo("https://example.test"),
-                  UnorderedElementsAre(SerializesTo("https://example.test"),
-                                       SerializesTo("https://aaaa.test")))));
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://aaaa.test")),
+                  net::SchemefulSite(GURL("https://example.test")),
+              }),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://aaaa.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 TEST_F(FirstPartySetsEnabledTest, SetCompleteSets_Idempotent) {
   SetCompleteSets({});
-  EXPECT_THAT(SetsAndWait(), IsEmpty());
+  EXPECT_THAT(FindOwnersAndWait({}), IsEmpty());
 
   // The second call to SetCompleteSets should have no effect.
   SetCompleteSets({{net::SchemefulSite(GURL("https://aaaa.test")),
                     net::SchemefulSite(GURL("https://example.test"))},
                    {net::SchemefulSite(GURL("https://example.test")),
                     net::SchemefulSite(GURL("https://example.test"))}});
-  EXPECT_THAT(SetsAndWait(), IsEmpty());
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://aaaa.test")),
+                  net::SchemefulSite(GURL("https://example.test")),
+              }),
+              IsEmpty());
 }
 
 // Test fixture that allows precise control over when the instance gets FPS
@@ -326,24 +314,6 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_FindOwners) {
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://foo.test"))));
-}
-
-TEST_F(AsyncPopulatedFirstPartySetsManagerTest, QueryBeforeReady_Sets) {
-  base::test::TestFuture<FirstPartySetsManager::SetsByOwner> future;
-  EXPECT_FALSE(manager().Sets(fps_context_config(), future.GetCallback()));
-
-  Populate();
-
-  EXPECT_THAT(
-      future.Get(),
-      UnorderedElementsAre(
-          Pair(SerializesTo("https://example.test"),
-               UnorderedElementsAre(SerializesTo("https://example.test"),
-                                    SerializesTo("https://member1.test"),
-                                    SerializesTo("https://member3.test"))),
-          Pair(SerializesTo("https://foo.test"),
-               UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                    SerializesTo("https://member2.test")))));
 }
 
 class PopulatedFirstPartySetsManagerTest
@@ -936,19 +906,6 @@ TEST_F(PopulatedFirstPartySetsManagerTest, FindOwners) {
                                         SerializesTo("https://foo.test"))));
 }
 
-TEST_F(PopulatedFirstPartySetsManagerTest, Sets_NonEmpty) {
-  EXPECT_THAT(
-      SetsAndWait(),
-      UnorderedElementsAre(
-          Pair(SerializesTo("https://example.test"),
-               UnorderedElementsAre(SerializesTo("https://example.test"),
-                                    SerializesTo("https://member1.test"),
-                                    SerializesTo("https://member3.test"))),
-          Pair(SerializesTo("https://foo.test"),
-               UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                    SerializesTo("https://member2.test")))));
-}
-
 class DisabledContextFirstPartySetsManagerTest
     : public PopulatedFirstPartySetsManagerTest {
  public:
@@ -977,10 +934,6 @@ TEST_F(DisabledContextFirstPartySetsManagerTest, FindOwner) {
       FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))));
   EXPECT_FALSE(
       FindOwnerAndWait(net::SchemefulSite(GURL("https://member.test"))));
-}
-
-TEST_F(DisabledContextFirstPartySetsManagerTest, Sets_IsEmpty) {
-  EXPECT_THAT(SetsAndWait(), IsEmpty());
 }
 
 TEST_F(DisabledContextFirstPartySetsManagerTest, ComputeMetadata) {
@@ -1180,7 +1133,7 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwner_AdditionMemberIsOwner) {
             net::SchemefulSite(GURL("https://foo.test")));
 }
 
-TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_NoIntersection) {
+TEST_F(OverrideSetsFirstPartySetsManagerTest, NoIntersection) {
   SetFirstPartySetsContextConfig(
       true, {
                 {net::SchemefulSite(GURL("https://member3.test")),
@@ -1190,21 +1143,28 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_NoIntersection) {
                  {net::SchemefulSite(GURL("https://foo.test"))}},
             });
 
-  EXPECT_THAT(
-      SetsAndWait(),
-      UnorderedElementsAre(
-          Pair(SerializesTo("https://example.test"),
-               UnorderedElementsAre(SerializesTo("https://example.test"),
-                                    SerializesTo("https://member1.test"),
-                                    SerializesTo("https://member2.test"))),
-          Pair(SerializesTo("https://foo.test"),
-               UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                    SerializesTo("https://member3.test")))));
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://foo.test")),
+                  net::SchemefulSite(GURL("https://example.test")),
+                  net::SchemefulSite(GURL("https://member1.test")),
+                  net::SchemefulSite(GURL("https://member2.test")),
+                  net::SchemefulSite(GURL("https://member3.test")),
+              }),
+              UnorderedElementsAre(Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member3.test"),
+                                        SerializesTo("https://foo.test"))));
 }
 
 // The member of a override set is also a member of an existing set as a
 // replacement.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_ReplacesExistingMember) {
+TEST_F(OverrideSetsFirstPartySetsManagerTest, ReplacesExistingMember) {
   // The owner of the existing set is mapped to nullopt since it gets removed
   // after its member is replaced to an override set and it becomes a singleton.
   SetFirstPartySetsContextConfig(
@@ -1219,16 +1179,21 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_ReplacesExistingMember) {
            {net::SchemefulSite(GURL("https://foo.test"))}},
       });
 
-  EXPECT_THAT(SetsAndWait(),
-              UnorderedElementsAre(Pair(
-                  SerializesTo("https://foo.test"),
-                  UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                       SerializesTo("https://member1.test")))));
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://foo.test")),
+                  net::SchemefulSite(GURL("https://example.test")),
+                  net::SchemefulSite(GURL("https://member1.test")),
+                  net::SchemefulSite(GURL("https://member2.test")),
+              }),
+              UnorderedElementsAre(Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://foo.test"))));
 }
 
 // The owner of a override set is also an owner of an existing set as a
 // replacement.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_ReplacesExistingOwner) {
+TEST_F(OverrideSetsFirstPartySetsManagerTest, ReplacesExistingOwner) {
   // The member of the existing set is mapped to nullopt since it gets removed
   // after its owner is replaced to an override set and it becomes a singleton.
   SetFirstPartySetsContextConfig(
@@ -1243,16 +1208,21 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_ReplacesExistingOwner) {
            {net::SchemefulSite(GURL("https://example.test"))}},
       });
 
-  EXPECT_THAT(SetsAndWait(),
-              UnorderedElementsAre(Pair(
-                  SerializesTo("https://example.test"),
-                  UnorderedElementsAre(SerializesTo("https://example.test"),
-                                       SerializesTo("https://member3.test")))));
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://example.test")),
+                  net::SchemefulSite(GURL("https://member1.test")),
+                  net::SchemefulSite(GURL("https://member2.test")),
+                  net::SchemefulSite(GURL("https://member3.test")),
+              }),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member3.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 // The owner of an override set is also an owner of an existing set as an
 // addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_AdditionMutualOwner) {
+TEST_F(OverrideSetsFirstPartySetsManagerTest, AdditionMutualOwner) {
   SetFirstPartySetsContextConfig(
       true, {
                 {net::SchemefulSite(GURL("https://member3.test")),
@@ -1262,17 +1232,24 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_AdditionMutualOwner) {
                  {net::SchemefulSite(GURL("https://example.test"))}},
             });
 
-  EXPECT_THAT(SetsAndWait(),
-              UnorderedElementsAre(Pair(
-                  SerializesTo("https://example.test"),
-                  UnorderedElementsAre(SerializesTo("https://example.test"),
-                                       SerializesTo("https://member1.test"),
-                                       SerializesTo("https://member2.test"),
-                                       SerializesTo("https://member3.test")))));
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://example.test")),
+                  net::SchemefulSite(GURL("https://member1.test")),
+                  net::SchemefulSite(GURL("https://member2.test")),
+                  net::SchemefulSite(GURL("https://member3.test")),
+              }),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member3.test"),
+                                        SerializesTo("https://example.test"))));
 }
 
 // The owner of a override set is a member of an existing set as an addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_AdditionOwnerIsMember) {
+TEST_F(OverrideSetsFirstPartySetsManagerTest, AdditionOwnerIsMember) {
   // All the sites in the existing set are reparented to the new owner.
   SetFirstPartySetsContextConfig(
       true, {
@@ -1287,18 +1264,25 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_AdditionOwnerIsMember) {
                  {net::SchemefulSite(GURL("https://member1.test"))}},
             });
 
-  EXPECT_THAT(SetsAndWait(),
-              UnorderedElementsAre(Pair(
-                  SerializesTo("https://member1.test"),
-                  UnorderedElementsAre(SerializesTo("https://member1.test"),
-                                       SerializesTo("https://example.test"),
-                                       SerializesTo("https://member2.test"),
-                                       SerializesTo("https://member3.test")))));
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://example.test")),
+                  net::SchemefulSite(GURL("https://member1.test")),
+                  net::SchemefulSite(GURL("https://member2.test")),
+                  net::SchemefulSite(GURL("https://member3.test")),
+              }),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://member1.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://member1.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://member1.test")),
+                                   Pair(SerializesTo("https://member3.test"),
+                                        SerializesTo("https://member1.test"))));
 }
 
 // The member of a override set is also an owner of an existing set as an
 // addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_AdditionMemberIsOwner) {
+TEST_F(OverrideSetsFirstPartySetsManagerTest, AdditionMemberIsOwner) {
   // The member of the existing set for that owner is reparented to the new
   // owner as addition.
   SetFirstPartySetsContextConfig(
@@ -1314,13 +1298,20 @@ TEST_F(OverrideSetsFirstPartySetsManagerTest, Sets_AdditionMemberIsOwner) {
                  {net::SchemefulSite(GURL("https://foo.test"))}},
             });
 
-  EXPECT_THAT(SetsAndWait(),
-              UnorderedElementsAre(Pair(
-                  SerializesTo("https://foo.test"),
-                  UnorderedElementsAre(SerializesTo("https://foo.test"),
-                                       SerializesTo("https://example.test"),
-                                       SerializesTo("https://member1.test"),
-                                       SerializesTo("https://member2.test")))));
+  EXPECT_THAT(FindOwnersAndWait({
+                  net::SchemefulSite(GURL("https://foo.test")),
+                  net::SchemefulSite(GURL("https://example.test")),
+                  net::SchemefulSite(GURL("https://member1.test")),
+                  net::SchemefulSite(GURL("https://member2.test")),
+              }),
+              UnorderedElementsAre(Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test"))));
 }
 
 }  // namespace network

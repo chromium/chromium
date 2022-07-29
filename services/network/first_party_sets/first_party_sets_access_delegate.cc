@@ -65,24 +65,6 @@ FirstPartySetsAccessDelegate::ComputeMetadata(
                                    context_config_, std::move(callback));
 }
 
-absl::optional<FirstPartySetsAccessDelegate::SetsByOwner>
-FirstPartySetsAccessDelegate::Sets(
-    base::OnceCallback<void(FirstPartySetsAccessDelegate::SetsByOwner)>
-        callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (pending_queries_) {
-    // base::Unretained() is safe because `this` owns `pending_queries_` and
-    // `pending_queries_` will not run the enqueued callbacks after `this` is
-    // destroyed.
-    EnqueuePendingQuery(
-        base::BindOnce(&FirstPartySetsAccessDelegate::SetsAndInvoke,
-                       base::Unretained(this), std::move(callback)));
-    return absl::nullopt;
-  }
-
-  return manager_->Sets(context_config_, std::move(callback));
-}
-
 absl::optional<FirstPartySetsAccessDelegate::OwnerResult>
 FirstPartySetsAccessDelegate::FindOwner(
     const net::SchemefulSite& site,
@@ -135,21 +117,6 @@ void FirstPartySetsAccessDelegate::ComputeMetadataAndInvoke(
       manager_->ComputeMetadata(site, base::OptionalOrNullptr(top_frame_site),
                                 party_context, context_config_,
                                 std::move(callbacks.first));
-
-  if (sync_result.has_value())
-    std::move(callbacks.second).Run(std::move(sync_result.value()));
-}
-
-void FirstPartySetsAccessDelegate::SetsAndInvoke(
-    base::OnceCallback<void(FirstPartySetsAccessDelegate::SetsByOwner)>
-        callback) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::pair<base::OnceCallback<void(FirstPartySetsAccessDelegate::SetsByOwner)>,
-            base::OnceCallback<void(FirstPartySetsAccessDelegate::SetsByOwner)>>
-      callbacks = base::SplitOnceCallback(std::move(callback));
-
-  absl::optional<FirstPartySetsAccessDelegate::SetsByOwner> sync_result =
-      manager_->Sets(context_config_, std::move(callbacks.first));
 
   if (sync_result.has_value())
     std::move(callbacks.second).Run(std::move(sync_result.value()));

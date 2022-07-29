@@ -72,10 +72,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieAccessDelegateImpl
       const base::flat_set<net::SchemefulSite>& sites,
       base::OnceCallback<void(FirstPartySetsAccessDelegate::OwnersResult)>
           callback) const override;
-  [[nodiscard]] absl::optional<FirstPartySetsAccessDelegate::SetsByOwner>
-  RetrieveFirstPartySets(
-      base::OnceCallback<void(FirstPartySetsAccessDelegate::SetsByOwner)>
-          callback) const override;
 
  private:
   const mojom::CookieAccessDelegateType type_;

@@ -28,8 +28,6 @@ namespace network {
 // answers queries about First-Party Sets after they've been loaded.
 class FirstPartySetsManager {
  public:
-  using SetsByOwner =
-      base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>;
   using OwnerResult = absl::optional<net::SchemefulSite>;
   using OwnersResult = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
   using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
@@ -57,17 +55,6 @@ class FirstPartySetsManager {
       const std::set<net::SchemefulSite>& party_context,
       const FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
-
-  // Computes a mapping from owner to set members. For convenience of iteration,
-  // the members of the set includes the owner.
-  //
-  // This may return a result synchronously, or asynchronously invoke `callback`
-  // with the result. The callback will be invoked iff the return value is
-  // nullopt; i.e. a result will be provided via return value or callback, but
-  // not both, and not neither.
-  [[nodiscard]] absl::optional<SetsByOwner> Sets(
-      const FirstPartySetsContextConfig& fps_context_config,
-      base::OnceCallback<void(SetsByOwner)> callback);
 
   // Stores the First-Party Sets data.
   //
@@ -175,17 +162,6 @@ class FirstPartySetsManager {
   // initialized.
   OwnersResult FindOwnersInternal(
       const base::flat_set<net::SchemefulSite>& sites,
-      const FirstPartySetsContextConfig& fps_context_config) const;
-
-  // Same as `Sets`, but plumbs the result into the callback. Must only be
-  // called once the instance is fully initialized.
-  void SetsAndInvoke(const FirstPartySetsContextConfig& fps_context_config,
-                     base::OnceCallback<void(SetsByOwner)> callback,
-                     base::TimeTicks enqueued_at) const;
-
-  // Synchronous version of `Sets`, to be run only once the instance is
-  // initialized.
-  SetsByOwner SetsInternal(
       const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Enqueues a query to be answered once the instance is fully initialized.
