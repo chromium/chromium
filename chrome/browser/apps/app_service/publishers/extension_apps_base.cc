@@ -501,6 +501,22 @@ void ExtensionAppsBase::Launch(const std::string& app_id,
   LaunchImpl(std::move(params));
 }
 
+void ExtensionAppsBase::LaunchAppWithFiles(
+    const std::string& app_id,
+    int32_t event_flags,
+    LaunchSource launch_source,
+    std::vector<base::FilePath> file_paths) {
+  const auto* extension = MaybeGetExtension(app_id);
+  AppLaunchParams params(
+      app_id,
+      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile_),
+                                     extension),
+      ui::DispositionFromEventFlags(event_flags), launch_source,
+      display::kDefaultDisplayId);
+  params.launch_files = std::move(file_paths);
+  LaunchImpl(std::move(params));
+}
+
 void ExtensionAppsBase::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,

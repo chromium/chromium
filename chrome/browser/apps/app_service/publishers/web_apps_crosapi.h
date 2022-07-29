@@ -83,6 +83,10 @@ class WebAppsCrosapi : public KeyedService,
               int32_t event_flags,
               LaunchSource launch_source,
               WindowInfoPtr window_info) override;
+  void LaunchAppWithFiles(const std::string& app_id,
+                          int32_t event_flags,
+                          LaunchSource launch_source,
+                          std::vector<base::FilePath> file_paths) override;
   void LaunchAppWithIntent(const std::string& app_id,
                            int32_t event_flags,
                            IntentPtr intent,

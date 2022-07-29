@@ -105,6 +105,22 @@ void WebAppsCrosapi::Launch(const std::string& app_id,
       base::DoNothing());
 }
 
+void WebAppsCrosapi::LaunchAppWithFiles(
+    const std::string& app_id,
+    int32_t event_flags,
+    LaunchSource launch_source,
+    std::vector<base::FilePath> file_paths) {
+  if (!LogIfNotConnected(FROM_HERE)) {
+    return;
+  }
+
+  auto params = CreateCrosapiLaunchParamsWithEventFlags(
+      proxy_, app_id, event_flags, launch_source, display::kInvalidDisplayId);
+  params->intent =
+      apps_util::CreateCrosapiIntentForViewFiles(std::move(file_paths));
+  controller_->Launch(std::move(params), base::DoNothing());
+}
+
 void WebAppsCrosapi::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,

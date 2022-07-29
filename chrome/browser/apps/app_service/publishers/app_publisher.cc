@@ -44,6 +44,13 @@ void AppPublisher::RegisterPublisher(AppType app_type) {
 }
 #endif
 
+void AppPublisher::LaunchAppWithFiles(const std::string& app_id,
+                                      int32_t event_flags,
+                                      LaunchSource launch_source,
+                                      std::vector<base::FilePath> file_paths) {
+  NOTIMPLEMENTED();
+}
+
 void AppPublisher::LaunchAppWithIntent(
     const std::string& app_id,
     int32_t event_flags,

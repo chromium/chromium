@@ -99,7 +99,7 @@ class WebApps : public apps::PublisherBase,
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
                           apps::LaunchSource launch_source,
-                          std::vector<base::FilePath> file_paths);
+                          std::vector<base::FilePath> file_paths) override;
   void LaunchAppWithIntent(const std::string& app_id,
                            int32_t event_flags,
                            apps::IntentPtr intent,
