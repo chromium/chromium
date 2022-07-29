@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
+#include "chrome/browser/extensions/api/terminal/startup_status.h"
 
 #include <memory>
 #include <vector>
@@ -12,7 +12,7 @@
 
 namespace extensions {
 
-class CrostiniStartupStatusTest : public testing::Test {
+class StartupStatusTest : public testing::Test {
  protected:
   void Print(const std::string& output) {
     output_.emplace_back(std::move(output));
@@ -20,15 +20,14 @@ class CrostiniStartupStatusTest : public testing::Test {
 
   std::unique_ptr<StartupStatusPrinter> NewStatusPrinter(bool verbose) {
     return std::make_unique<StartupStatusPrinter>(
-        base::BindRepeating(&CrostiniStartupStatusTest::Print,
-                            base::Unretained(this)),
+        base::BindRepeating(&StartupStatusTest::Print, base::Unretained(this)),
         verbose);
   }
 
   std::vector<std::string> output_;
 };
 
-TEST_F(CrostiniStartupStatusTest, TestNotVerbose) {
+TEST_F(StartupStatusTest, TestNotVerbose) {
   auto status_printer = NewStatusPrinter(false);
   status_printer->set_max_stage(10);
   status_printer->PrintStage(0, "Starting Stage");
@@ -54,7 +53,7 @@ TEST_F(CrostiniStartupStatusTest, TestNotVerbose) {
   EXPECT_EQ(output_[4], "\r\x1b[K\x1b[0m\x1b[?25h");
 }
 
-TEST_F(CrostiniStartupStatusTest, TestVerbose) {
+TEST_F(StartupStatusTest, TestVerbose) {
   auto status_printer = NewStatusPrinter(true);
   status_printer->set_max_stage(10);
   status_printer->PrintStage(0, "Starting Stage");
@@ -83,7 +82,7 @@ TEST_F(CrostiniStartupStatusTest, TestVerbose) {
   EXPECT_EQ(output_[5], "\r\x1b[K\x1b[0m\x1b[?25h");
 }
 
-TEST_F(CrostiniStartupStatusTest, TestError) {
+TEST_F(StartupStatusTest, TestError) {
   auto status_printer = NewStatusPrinter(false);
   status_printer->set_max_stage(10);
   status_printer->PrintStage(1, "First Stage");

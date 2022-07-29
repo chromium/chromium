@@ -40,7 +40,7 @@
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/guest_os/virtual_machines/virtual_machines_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
+#include "chrome/browser/extensions/api/terminal/startup_status.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"

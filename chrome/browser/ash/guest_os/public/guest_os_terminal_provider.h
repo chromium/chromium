@@ -7,7 +7,7 @@
 
 #include <string>
 #include "chrome/browser/ash/guest_os/guest_id.h"
-#include "chrome/browser/extensions/api/terminal/crostini_startup_status.h"
+#include "chrome/browser/extensions/api/terminal/startup_status.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace guest_os {

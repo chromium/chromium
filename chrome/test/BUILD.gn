@@ -7066,7 +7066,7 @@ test("unit_tests") {
       "../browser/enterprise/connectors/analysis/source_destination_test_util.h",
       "../browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_service_unittest.cc",
       "../browser/enterprise/reporting/android_app_info_generator_unittest.cc",
-      "../browser/extensions/api/terminal/crostini_startup_status_unittest.cc",
+      "../browser/extensions/api/terminal/startup_status_unittest.cc",
       "../browser/google/google_brand_code_map_chromeos_unittest.cc",
       "../browser/lifetime/application_lifetime_chromeos_unittest.cc",
       "../browser/media/webrtc/chrome_screen_enumerator_unittest.cc",
