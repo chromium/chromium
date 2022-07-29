@@ -1453,9 +1453,15 @@ void SimpleEntryImpl::CreationOperationComplete(
 
   net_log_.AddEvent(end_event_type);
 
+  const bool created = in_results->created;
+
+  // We need to release `in_results` before going out of scope, because
+  // `operation_runner` destruction might call a close operation, that will
+  // ultimately release `in_results->sync_entry`, and thus leading to having a
+  // dangling pointer here.
+  in_results = nullptr;
   if (result_state == SimpleEntryOperation::ENTRY_NEEDS_CALLBACK) {
-    ReturnEntryToCallerAsync(!in_results->created,
-                             std::move(completion_callback));
+    ReturnEntryToCallerAsync(!created, std::move(completion_callback));
   }
 }
 
