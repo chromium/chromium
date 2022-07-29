@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.search_resumption;
 
+import android.text.TextUtils;
 import android.view.ViewGroup;
 
 import androidx.annotation.IntDef;
@@ -15,6 +16,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.SuggestionResult;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.Tab;
@@ -63,16 +65,17 @@ public class SearchResumptionModuleUtils {
     }
 
     @VisibleForTesting
-    static final String TAB_EXPIRATION_TIME_PARAM = "tab_expiration_time";
-    @VisibleForTesting
     static final String UMA_MODULE_SHOW = "NewTabPage.SearchResumptionModule.Show";
     @VisibleForTesting
     static final String UMA_MODULE_NOT_SHOW = "NewTabPage.SearchResumptionModule.NotShow";
+
+    static final String UMA_MODULE_SHOW_CACHED = "NewTabPage.SearchResumptionModule.Show.Cached";
+    static final String TAB_EXPIRATION_TIME_PARAM = "tab_expiration_time";
     static final String ACTION_CLICK = "SearchResumptionModule.NTP.Click";
     static final String ACTION_COLLAPSE = "SearchResumptionModule.NTP.Collapse";
     static final String ACTION_EXPAND = "SearchResumptionModule.NTP.Expand";
     static final String USE_NEW_SERVICE_PARAM = "use_new_service";
-    private static final int LAST_TAB_EXPIRATION_TIME_SECONDS = 3600; // 1 Hour
+    static final int LAST_TAB_EXPIRATION_TIME_SECONDS = 3600; // 1 Hour
 
     /**
      * Creates a {@link SearchResumptionModuleCoordinator} if we are currently allowed to and
@@ -104,8 +107,8 @@ public class SearchResumptionModuleUtils {
 
         if (!isTabToTrackValid(tabToTrack)) return null;
 
-        return new SearchResumptionModuleCoordinator(
-                parent, tabToTrack, currentTab, profile, moduleContainerStubId);
+        return new SearchResumptionModuleCoordinator(parent, tabToTrack, currentTab, profile,
+                moduleContainerStubId, mayGetCachedResults(currentTab, tabToTrack));
     }
 
     /**
@@ -141,11 +144,6 @@ public class SearchResumptionModuleUtils {
             recordModuleNotShownReason(ModuleNotShownReason.NOT_SYNC);
             return false;
         }
-
-        // If the currentTab is shown due to such as tapping the back button, we don't show the
-        // search resumption module again.
-        if (currentTab.canGoForward()) return false;
-
         return true;
     }
 
@@ -175,13 +173,35 @@ public class SearchResumptionModuleUtils {
         }
     }
 
+    @VisibleForTesting
+    static SuggestionResult mayGetCachedResults(Tab currentTab, Tab tabToTrack) {
+        SuggestionResult cachedSuggestions = null;
+        if (currentTab.canGoForward()) {
+            // If the NTP is created due to any back operation, i.e., its Tab has navigated before,
+            // only show the search resumption module if it has been shown before and the last
+            // visited Tab hasn't changed. This prevents showing cached suggestions if the previous
+            // tracking Tab has been deleted.
+            cachedSuggestions =
+                    SearchResumptionUserData.getInstance().getCachedSuggestions(currentTab);
+            if (cachedSuggestions == null
+                    || !TextUtils.equals(cachedSuggestions.getLastUrlToTrack().getSpec(),
+                            tabToTrack.getUrl().getSpec())) {
+                SearchResumptionModuleUtils.recordModuleNotShownReason(
+                        ModuleNotShownReason.TAB_CHANGED);
+                return null;
+            }
+        }
+        return cachedSuggestions;
+    }
+
     /**
      * Records histogram when the search resumption module is shown.
+     * @param cached: Whether cached suggestions are shown.
      */
-    static void recordModuleShown() {
+    static void recordModuleShown(boolean cached) {
         boolean isCollapsed = SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.SEARCH_RESUMPTION_MODULE_COLLAPSE_ON_NTP, false);
-        RecordHistogram.recordEnumeratedHistogram(UMA_MODULE_SHOW,
+        RecordHistogram.recordEnumeratedHistogram(cached ? UMA_MODULE_SHOW_CACHED : UMA_MODULE_SHOW,
                 isCollapsed ? ModuleShowStatus.COLLAPSED : ModuleShowStatus.EXPANDED,
                 ModuleShowStatus.NUM_ENTRIES);
     }
