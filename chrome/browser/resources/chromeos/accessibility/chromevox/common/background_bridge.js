@@ -7,6 +7,7 @@
  * panel, etc.) to communicate with the background.
  */
 
+import {BridgeConstants} from './bridge_constants.js';
 import {BridgeHelper} from './bridge_helper.js';
 
 export const BackgroundBridge = {};

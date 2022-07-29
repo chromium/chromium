@@ -7,6 +7,8 @@
  * passing between renderers.
  */
 
+import {BridgeAction, BridgeTarget} from './bridge_constants.js';
+
 /** @typedef {!Object<BridgeAction|string, Function>}*/
 let TargetHandlers;
 export class BridgeHelper {

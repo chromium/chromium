@@ -5,6 +5,7 @@
 /**
  * @fileoverview Sends Braille commands to the Braille API.
  */
+import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 import {ChromeVoxState} from '../chromevox_state.js';
 import {LogStore} from '../logging/log_store.js';

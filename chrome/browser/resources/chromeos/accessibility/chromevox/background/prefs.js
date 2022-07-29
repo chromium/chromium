@@ -7,6 +7,7 @@
  * the background context (background page or options page).
  *
  */
+import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 
 import {ConsoleTts} from './console_tts.js';

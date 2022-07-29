@@ -8,7 +8,6 @@
  */
 
 goog.require('BaseLog');
-goog.require('BridgeConstants');
 goog.require('EventLog');
 goog.require('LogType');
 goog.require('SpeechLog');

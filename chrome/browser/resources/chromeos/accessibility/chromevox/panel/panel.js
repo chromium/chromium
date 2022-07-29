@@ -8,6 +8,7 @@
 import {EventGenerator} from '../../common/event_generator.js';
 import {BackgroundBridge} from '../common/background_bridge.js';
 import {BrailleCommandData} from '../common/braille/braille_command_data.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {CommandStore} from '../common/command_store.js';
 import {EventSourceType} from '../common/event_source_type.js';

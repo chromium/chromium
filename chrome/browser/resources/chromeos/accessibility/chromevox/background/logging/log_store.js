@@ -6,6 +6,7 @@
  * @fileoverview Store ChromeVox log.
  */
 
+import {BridgeConstants} from '../../common/bridge_constants.js';
 import {BridgeHelper} from '../../common/bridge_helper.js';
 
 export class LogStore {

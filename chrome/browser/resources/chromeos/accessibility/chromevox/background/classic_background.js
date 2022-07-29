@@ -6,6 +6,7 @@
  * @fileoverview Script that runs on the background page.
  */
 import {AbstractTts} from '../common/abstract_tts.js';
+import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 import {CompositeTts} from '../common/composite_tts.js';
 import {ExtensionBridge} from '../common/extension_bridge.js';

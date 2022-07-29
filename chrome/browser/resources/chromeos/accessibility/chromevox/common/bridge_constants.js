@@ -5,22 +5,20 @@
 /**
  * @fileoverview Enums for BridgeHelper functions.
  */
-goog.provide('BridgeAction');
-goog.provide('BridgeActions');
-goog.provide('BridgeConstants');
-goog.provide('BridgeTarget');
 
 /**
  * The class that a message is being sent to.
  * @typedef {string}
  */
-BridgeTarget;
+export let BridgeTarget;
 
 /**
  * @typedef {{ TARGET: string,
  *             Action: !Object}}
  */
 let BridgeEntry;
+
+export const BridgeConstants = {};
 
 /** @public {!BridgeEntry} */
 BridgeConstants.BrailleBackground = {
@@ -150,18 +148,9 @@ BridgeConstants.UserActionMonitor = {
 
 /**
  * The action that the message is requesting be performed.
- * @typedef {BridgeConstants.BrailleBackground.Action |
- *           BridgeConstants.BrailleCommandHandler.Action |
- *           BridgeConstants.ChromeVoxBackground.Action |
- *           BridgeConstants.ChromeVoxPrefs.Action |
- *           BridgeConstants.ChromeVoxState.Action |
- *           BridgeConstants.CommandHandler.Action |
- *           BridgeConstants.EventSourceState.Action |
- *           BridgeConstants.EventStreamLogger.Action |
- *           BridgeConstants.GestureCommandHandler.Action |
- *           BridgeConstants.LogStore.Action |
- *           BridgeConstants.Panel.Action |
- *           BridgeConstants.PanelBackground.Action |
- *           BridgeConstants.UserActionMonitor.Action}
+ *
+ * This used to be the actions in BridgeConstants, but the module
+ * system appears to be confusing the closure compiler and JsDoc.
+ * @typedef {string}
  */
-BridgeAction;
+export let BridgeAction;
