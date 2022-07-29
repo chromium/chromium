@@ -2790,22 +2790,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.primaryToolbarCoordinator updateToolbar];
 }
 
-// TODO(crbug.com/1329086): Move pageload logic to a TabEventsMediator
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
-  // If there is no first responder, try to make the webview or the NTP first
-  // responder to have it answer keyboard commands (e.g. space bar to scroll).
-  if (!GetFirstResponder() && self.currentWebState) {
-    NewTabPageTabHelper* NTPHelper =
-        NewTabPageTabHelper::FromWebState(webState);
-    if (NTPHelper && NTPHelper->IsActive()) {
-      UIViewController* viewController = self.ntpCoordinator.viewController;
-      [viewController becomeFirstResponder];
-    } else {
-      [self.currentWebState->GetWebViewProxy() becomeFirstResponder];
-    }
-  }
-}
-
 #pragma mark - OmniboxPopupPresenterDelegate methods.
 
 - (UIView*)popupParentViewForPresenter:(OmniboxPopupPresenter*)presenter {

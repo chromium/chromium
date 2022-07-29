@@ -507,6 +507,7 @@ namespace {
 #pragma mark - Properties
 
 - (UIViewController*)viewController {
+  // TODO(crbug.com/1348459): Stop lazy loading in NTPCoordinator.
   [self start];
   if (self.browser->GetBrowserState()->IsOffTheRecord()) {
     return self.incognitoViewController;

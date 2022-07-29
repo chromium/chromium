@@ -55,6 +55,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
+#import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
@@ -211,6 +212,9 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
 
 // Mediator for tab lifecylce.
 @property(nonatomic, strong) TabLifecycleMediator* tabLifecycleMediator;
+
+// Mediator for tab events.
+@property(nonatomic, strong) TabEventsMediator* tabEventsMediator;
 
 // =================================================
 // Child Coordinators, listed in alphabetical order.
@@ -412,6 +416,7 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
   [self uninstallDelegatesForBrowserState];
   [self uninstallDelegatesForBrowser];
   [self uninstallDelegatesForAllWebStates];
+  [self.tabEventsMediator disconnect];
   [self.tabLifecycleMediator disconnect];
   self.viewController.commandDispatcher = nil;
   [self.dispatcher stopDispatchingToTarget:self];
@@ -1036,6 +1041,10 @@ const char kChromeAppStoreUrl[] = "https://apps.apple.com/app/id535886823";
                        delegate:browserViewController
       snapshotGeneratorDelegate:self
                    dependencies:dependencies];
+
+  self.tabEventsMediator = [[TabEventsMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()
+            ntpCoordinator:_ntpCoordinator];
 
   self.viewController.reauthHandler =
       HandlerForProtocol(self.dispatcher, IncognitoReauthCommands);
