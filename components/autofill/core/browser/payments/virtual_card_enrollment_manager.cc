@@ -77,6 +77,7 @@ void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
       ShouldBlockVirtualCardEnrollment(
           base::NumberToString(credit_card.instrument_id()),
           virtual_card_enrollment_source)) {
+    Reset();
     return;
   }
 
@@ -192,8 +193,9 @@ bool VirtualCardEnrollmentManager::ShouldBlockVirtualCardEnrollment(
     const std::string& instrument_id,
     VirtualCardEnrollmentSource virtual_card_enrollment_source) const {
   if (virtual_card_enrollment_source ==
-      VirtualCardEnrollmentSource::kSettingsPage)
+      VirtualCardEnrollmentSource::kSettingsPage) {
     return false;
+  }
 
   if (!GetVirtualCardEnrollmentStrikeDatabase())
     return false;
@@ -528,6 +530,7 @@ void VirtualCardEnrollmentManager::EnsureCardArtImageIsSetBeforeShowingUI() {
 void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
     const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source) {
+  // Reset here to override currently pending enrollment.
   Reset();
 
   DCHECK_NE(virtual_card_enrollment_source, VirtualCardEnrollmentSource::kNone);

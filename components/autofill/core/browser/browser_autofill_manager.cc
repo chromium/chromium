@@ -1676,6 +1676,10 @@ void BrowserAutofillManager::OnCreditCardFetched(CreditCardFetchResult result,
         card_art_image ? *card_art_image : gfx::Image());
   }
 
+  // After a server card is fetched, save its instrument id.
+  client()->GetFormDataImporter()->SetFetchedCardInstrumentId(
+      credit_card->instrument_id());
+
   FillCreditCardFormImpl(credit_card_form_, credit_card_field_, *credit_card,
                          cvc, credit_card_query_id_);
   if (credit_card->record_type() == CreditCard::FULL_SERVER_CARD ||

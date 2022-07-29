@@ -783,6 +783,8 @@ class BrowserAutofillManager : public AutofillManager,
   friend class FormStructureBrowserTest;
   friend class GetMatchingTypesTest;
   friend class CreditCardAccessoryControllerTest;
+  FRIEND_TEST_ALL_PREFIXES(BrowserAutofillManagerTest,
+                           OnCreditCardFetched_StoreInstrumentId);
 };
 
 }  // namespace autofill

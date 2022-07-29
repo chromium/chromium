@@ -403,13 +403,14 @@ class BrowserAutofillManagerTest : public testing::Test {
         new TestCreditCardSaveManager(autofill_driver_.get(), &autofill_client_,
                                       payments_client_, &personal_data());
     credit_card_save_manager->SetCreditCardUploadEnabled(true);
-    TestFormDataImporter* test_form_data_importer = new TestFormDataImporter(
-        &autofill_client_, payments_client_,
-        std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager),
-        &personal_data(), "en-US");
+    auto test_form_data_importer =
+        std::make_unique<autofill::TestFormDataImporter>(
+            &autofill_client_, payments_client_,
+            std::unique_ptr<CreditCardSaveManager>(credit_card_save_manager),
+            &personal_data(), "en-US");
+    test_form_data_importer_ = test_form_data_importer.get();
     autofill_client_.set_test_form_data_importer(
-        std::unique_ptr<autofill::TestFormDataImporter>(
-            test_form_data_importer));
+        std::move(test_form_data_importer));
     browser_autofill_manager_ = std::make_unique<TestBrowserAutofillManager>(
         autofill_driver_.get(), &autofill_client_);
 
@@ -779,6 +780,7 @@ class BrowserAutofillManagerTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TestStrikeDatabase> strike_database_;
   raw_ptr<payments::TestPaymentsClient> payments_client_;
+  raw_ptr<TestFormDataImporter> test_form_data_importer_;
 
  private:
   int ToHistogramSample(AutofillMetrics::CardUploadDecisionMetric metric) {
@@ -2370,6 +2372,26 @@ TEST_F(BrowserAutofillManagerTest,
           std::string("Amex  ") + test::ObfuscatedCardDigitsAsUTF8("0005"),
           std::string(), kAmericanExpressCard,
           browser_autofill_manager_->GetPackedCreditCardID(1)));
+}
+
+TEST_F(BrowserAutofillManagerTest, OnCreditCardFetched_StoreInstrumentId) {
+  FormData form;
+  CreateTestCreditCardFormData(&form, true, false);
+  std::vector<FormData> forms(1, form);
+  FormsSeen(forms);
+  CreditCard credit_card = test::GetMaskedServerCard();
+  browser_autofill_manager_->FillOrPreviewCreditCardForm(
+      mojom::RendererFormDataAction::kFill, kDefaultPageID, form,
+      form.fields[0], &credit_card);
+
+  browser_autofill_manager_->OnCreditCardFetched(
+      CreditCardFetchResult::kSuccess, &credit_card,
+      /*cvc=*/u"123");
+
+  ASSERT_TRUE(
+      test_form_data_importer_->fetched_card_instrument_id().has_value());
+  EXPECT_EQ(test_form_data_importer_->fetched_card_instrument_id().value(),
+            credit_card.instrument_id());
 }
 
 // Test that we return profile and credit card suggestions for combined forms.

@@ -94,6 +94,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
 
   void ClearMultiStepImportCandidates() { multistep_importer_.Clear(); }
 
+  // See comment for |fetched_card_instrument_id_|.
+  void SetFetchedCardInstrumentId(int64_t instrument_id);
+
   // PersonalDataManagerObserver
   void OnBrowsingHistoryCleared(
       const history::DeletionInfo& deletion_info) override;
@@ -112,6 +115,12 @@ class FormDataImporter : public PersonalDataManagerObserver {
     local_card_migration_manager_ = std::move(local_card_migration_manager);
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+  // The instrument id of the card that has been most recently retrieved via
+  // Autofill Downstream (card retrieval from server). This can be used to
+  // decide whether the card submitted is the same card retrieved. This field is
+  // optional and is set when an Autofill Downstream has happened.
+  absl::optional<int64_t> fetched_card_instrument_id_;
 
  private:
   // Defines a candidate for address profile import.
@@ -302,6 +311,9 @@ class FormDataImporter : public PersonalDataManagerObserver {
   FRIEND_TEST_ALL_PREFIXES(AutofillMergeTest, MergeProfiles);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
                            ProcessCreditCardImportCandidate_EmptyCreditCard);
+  FRIEND_TEST_ALL_PREFIXES(
+      FormDataImporterNonParameterizedTest,
+      ProcessCreditCardImportCandidate_VirtualCardEligible);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterNonParameterizedTest,
                            ShouldOfferUploadCardOrLocalCardSave);
   FRIEND_TEST_ALL_PREFIXES(FormDataImporterTest,
