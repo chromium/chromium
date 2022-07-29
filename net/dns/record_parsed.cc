@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "net/dns/dns_response.h"
 #include "net/dns/https_record_rdata.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/record_rdata.h"
 
 namespace net {

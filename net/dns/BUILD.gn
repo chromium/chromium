@@ -71,6 +71,7 @@ source_set("dns") {
     "mapped_host_resolver.cc",
     "nsswitch_reader.cc",
     "nsswitch_reader.h",
+    "opt_record_rdata.cc",
     "record_parsed.cc",
     "record_rdata.cc",
     "resolve_context.cc",
@@ -312,6 +313,7 @@ source_set("dns_client") {
     "dns_response.h",
     "dns_transaction.h",
     "https_record_rdata.h",
+    "opt_record_rdata.h",
     "record_parsed.h",
     "record_rdata.h",
   ]
@@ -400,6 +402,7 @@ source_set("tests") {
     "httpssvc_metrics_unittest.cc",
     "mapped_host_resolver_unittest.cc",
     "nsswitch_reader_unittest.cc",
+    "opt_record_rdata_unittest.cc",
     "record_parsed_unittest.cc",
     "record_rdata_unittest.cc",
     "resolve_context_unittest.cc",
