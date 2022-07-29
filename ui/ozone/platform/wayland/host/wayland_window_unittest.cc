@@ -3612,7 +3612,8 @@ TEST_P(WaylandWindowTest, DISABLED_BlockingTouchDownUp_NoCrash) {
 
 // Make sure that changing focus during dispatch will not re-dispatch the event
 // to the newly focused window. (crbug.com/1339082);
-TEST_P(WaylandWindowTest, ChangeFocusDuringDispatch) {
+// Flaky: https://crbug.com/1348046
+TEST_P(WaylandWindowTest, DISABLED_ChangeFocusDuringDispatch) {
   MockPlatformWindowDelegate other_delegate;
   gfx::AcceleratedWidget other_widget = gfx::kNullAcceleratedWidget;
   EXPECT_CALL(other_delegate, OnAcceleratedWidgetAvailable(_))
