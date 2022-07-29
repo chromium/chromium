@@ -10,7 +10,8 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.Promise;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -43,11 +44,35 @@ public class SigninFirstRunCoordinator {
          */
         void recordFreProgressHistogram(@MobileFreProgress int state);
 
+        /** Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. **/
+        void recordNativePolicyAndChildStatusLoadedHistogram();
+
+        /** Records MobileFre.FromLaunch.NativeInitialized histogram. **/
+        void recordNativeInitializedHistogram();
+
         /**
          * Show an informational web page. The page doesn't show navigation control.
          * @param url Resource id for the URL of the web page.
          */
         void showInfoPage(@StringRes int url);
+
+        /**
+         * The supplier that supplies whether reading policy value is necessary.
+         * See {@link PolicyLoadListener} for details.
+         */
+        OneshotSupplier<Boolean> getPolicyLoadListener();
+
+        /**
+         * Returns the supplier that supplies child account status.
+         */
+        OneshotSupplier<Boolean> getChildAccountStatusSupplier();
+
+        /**
+         * Returns the promise that provides information about native initialization. Callers can
+         * use {@link Promise#isFulfilled()} to check whether the native has already been
+         * initialized.
+         */
+        Promise<Void> getNativeInitializationPromise();
     }
 
     private final SigninFirstRunMediator mMediator;
@@ -104,16 +129,6 @@ public class SigninFirstRunCoordinator {
             mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(
                     mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
         }
-    }
-
-    /**
-     * Notifies that native is loaded, policies are available if any exists and child account
-     * status is fetched.
-     * @param hasPolicies whether policies are found on device.
-     */
-    public void onNativePolicyAndChildStatusLoaded(boolean hasPolicies) {
-        ThreadUtils.assertOnUiThread();
-        mMediator.onNativeAndPolicyLoaded(hasPolicies);
     }
 
     public void onAccountSelected(String accountName) {

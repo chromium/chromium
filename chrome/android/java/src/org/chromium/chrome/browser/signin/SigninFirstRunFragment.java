@@ -17,14 +17,14 @@ import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.Promise;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
@@ -39,9 +39,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
  */
@@ -50,29 +47,12 @@ public class SigninFirstRunFragment
     @VisibleForTesting
     static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
-    /**
-     * Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only.
-     * See {@code LoadPoint} in tools/metrics/histograms/enums.xml.
-     */
-    @VisibleForTesting
-    @IntDef({LoadPoint.NATIVE_INITIALIZATION, LoadPoint.POLICY_LOAD, LoadPoint.CHILD_STATUS_LOAD,
-            LoadPoint.MAX})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface LoadPoint {
-        int NATIVE_INITIALIZATION = 0;
-        int POLICY_LOAD = 1;
-        int CHILD_STATUS_LOAD = 2;
-        int MAX = 3;
-    }
-
     // Used as a view holder for the current orientation of the device.
     private FrameLayout mFragmentView;
     private ModalDialogManager mModalDialogManager;
     private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
     private SigninFirstRunCoordinator mSigninFirstRunCoordinator;
-    private @LoadPoint int mSlowestLoadPoint;
     private boolean mExitFirstRunCalled;
-    private boolean mNativePolicyAndChildStatusLoaded;
 
     public SigninFirstRunFragment() {}
 
@@ -83,10 +63,6 @@ public class SigninFirstRunFragment
         mSigninFirstRunCoordinator = new SigninFirstRunCoordinator(requireContext(),
                 mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance());
 
-        getPageDelegate().getNativeInitializationPromise().then(result -> { onNativeLoaded(); });
-        getPageDelegate().getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
-        getPageDelegate().getChildAccountStatusSupplier().onAvailable(
-                ignored -> onChildAccountStatusAvailable());
         if (getPageDelegate().isLaunchedFromCct()) {
             mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
                     getPageDelegate().getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
@@ -190,8 +166,38 @@ public class SigninFirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
+    public void recordNativePolicyAndChildStatusLoadedHistogram() {
+        getPageDelegate().recordNativePolicyAndChildStatusLoadedHistogram();
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public void recordNativeInitializedHistogram() {
+        getPageDelegate().recordNativeInitializedHistogram();
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
     public void showInfoPage(@StringRes int url) {
         getPageDelegate().showInfoPage(url);
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public OneshotSupplier<Boolean> getPolicyLoadListener() {
+        return getPageDelegate().getPolicyLoadListener();
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public OneshotSupplier<Boolean> getChildAccountStatusSupplier() {
+        return getPageDelegate().getChildAccountStatusSupplier();
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public Promise<Void> getNativeInitializationPromise() {
+        return getPageDelegate().getNativeInitializationPromise();
     }
 
     @MainThread
@@ -203,48 +209,6 @@ public class SigninFirstRunFragment
                 getPageDelegate().acceptTermsOfService(false);
                 getPageDelegate().exitFirstRun();
             }, FirstRunUtils.getSkipTosExitDelayMs());
-        }
-    }
-
-    private void onNativeLoaded() {
-        // This may happen when the native initialized supplier in FirstRunActivity calls back after
-        // the fragment has been detached from the activity. See https://crbug.com/1294998.
-        if (getPageDelegate() == null) return;
-
-        mSlowestLoadPoint = LoadPoint.NATIVE_INITIALIZATION;
-        getPageDelegate().recordNativeInitializedHistogram();
-        notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded();
-    }
-
-    private void onChildAccountStatusAvailable() {
-        mSlowestLoadPoint = LoadPoint.CHILD_STATUS_LOAD;
-        notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded();
-    }
-
-    private void onPolicyLoad() {
-        mSlowestLoadPoint = LoadPoint.POLICY_LOAD;
-        notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded();
-    }
-
-    /**
-     * Notifies the coordinator that native, policies and child account status has been loaded.
-     * This method may be called multiple times after all 3 wait conditions have been satisfied.
-     */
-    private void notifyCoordinatorWhenNativePolicyAndChildStatusAreLoaded() {
-        // This may happen when the native initialized supplier in FirstRunActivity calls back after
-        // the fragment has been detached from the activity. See https://crbug.com/1294998.
-        if (getPageDelegate() == null) return;
-
-        if (getPageDelegate().getNativeInitializationPromise().isFulfilled()
-                && getPageDelegate().getChildAccountStatusSupplier().get() != null
-                && getPageDelegate().getPolicyLoadListener().get() != null
-                && !mNativePolicyAndChildStatusLoaded) {
-            mNativePolicyAndChildStatusLoaded = true;
-            mSigninFirstRunCoordinator.onNativePolicyAndChildStatusLoaded(
-                    getPageDelegate().getPolicyLoadListener().get());
-            getPageDelegate().recordNativePolicyAndChildStatusLoadedHistogram();
-            RecordHistogram.recordEnumeratedHistogram(
-                    "MobileFre.SlowestLoadPoint", mSlowestLoadPoint, LoadPoint.MAX);
         }
     }
 
