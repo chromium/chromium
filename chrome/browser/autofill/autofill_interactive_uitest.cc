@@ -1106,7 +1106,7 @@ class AutofillInteractiveTestBase : public AutofillUiTest {
         element_id.c_str(), value.c_str());
     ASSERT_TRUE(content::ExecJs(GetWebContents(), script));
 
-    content::DOMMessageQueue msg_queue;
+    content::DOMMessageQueue msg_queue(GetWebContents());
     for (char16_t character : value) {
       ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
       const ui::PrintableCodeEntry* code_entry = base::ranges::find_if(
