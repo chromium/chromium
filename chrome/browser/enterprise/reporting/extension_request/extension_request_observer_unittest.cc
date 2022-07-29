@@ -133,8 +133,8 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
     size_t number_of_existing_requests =
         profile()
             ->GetPrefs()
-            ->GetDictionary(prefs::kCloudExtensionRequestIds)
-            ->DictSize();
+            ->GetValueDict(prefs::kCloudExtensionRequestIds)
+            .size();
 
     // Close the notification
     base::RunLoop close_run_loop;
@@ -213,8 +213,8 @@ TEST_F(ExtensionRequestObserverTest, NotificationClosedWithoutUserConfirmed) {
   EXPECT_EQ(pending_list.size(),
             profile()
                 ->GetPrefs()
-                ->GetDictionary(prefs::kCloudExtensionRequestIds)
-                ->DictSize());
+                ->GetValueDict(prefs::kCloudExtensionRequestIds)
+                .size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
@@ -270,8 +270,8 @@ TEST_F(ExtensionRequestObserverTest, ExtensionRequestPolicyToggle) {
   EXPECT_EQ(pending_list.size(),
             profile()
                 ->GetPrefs()
-                ->GetDictionary(prefs::kCloudExtensionRequestIds)
-                ->DictSize());
+                ->GetValueDict(prefs::kCloudExtensionRequestIds)
+                .size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
