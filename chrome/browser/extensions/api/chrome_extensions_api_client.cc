@@ -66,6 +66,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
+#include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/api/media_perception_private/media_perception_api_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
 #endif
@@ -388,8 +389,13 @@ MetricsPrivateDelegate* ChromeExtensionsAPIClient::GetMetricsPrivateDelegate() {
 }
 
 FileSystemDelegate* ChromeExtensionsAPIClient::GetFileSystemDelegate() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegateAsh;
+#else
+  using ChromeFileSystemDelegate_Use = ChromeFileSystemDelegate;
+#endif
   if (!file_system_delegate_)
-    file_system_delegate_ = std::make_unique<ChromeFileSystemDelegate>();
+    file_system_delegate_ = std::make_unique<ChromeFileSystemDelegate_Use>();
   return file_system_delegate_.get();
 }
 

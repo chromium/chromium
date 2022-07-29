@@ -1087,6 +1087,8 @@ static_library("extensions") {
       "api/file_handlers/non_native_file_system_delegate_chromeos.h",
       "api/file_manager/file_browser_handler_api_ash.cc",
       "api/file_manager/file_browser_handler_api_ash.h",
+      "api/file_system/chrome_file_system_delegate_ash.cc",
+      "api/file_system/chrome_file_system_delegate_ash.h",
       "api/image_writer_private/operation_chromeos.cc",
       "api/image_writer_private/removable_storage_provider_chromeos.cc",
       "api/input_ime/input_ime_api.cc",

@@ -8,18 +8,35 @@
 #include "extensions/browser/api/file_system/file_system_delegate.h"
 
 #include <memory>
+#include <vector>
 
+#include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "extensions/browser/extension_function.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/api/file_system/consent_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace extensions {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace file_system_api {
 
-// Dispatches an event about a mounted or unmounted volume in the system to
-// each extension which can request it.
-void DispatchVolumeListChangeEvent(content::BrowserContext* browser_context);
+extern const char kConsentImpossible[];
+extern const char kNotSupportedOnNonKioskSessionError[];
+extern const char kRequiresFileSystemWriteError[];
+extern const char kSecurityError[];
+extern const char kVolumeNotFoundError[];
+
+// Returns error message, or null if none.
+const char* ConsentResultToError(ConsentProvider::Consent result);
 
 }  // namespace file_system_api
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -50,7 +50,7 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/file_system_provider_metrics_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
-#include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate.h"
+#include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -1037,7 +1037,7 @@ void EventRouter::OnVolumeMounted(chromeos::MountError error_code,
   // TODO(mtomasz): Move VolumeManager and part of the event router outside of
   // file_manager, so there is no dependency between File System API and the
   // file_manager code.
-  extensions::file_system_api::DispatchVolumeListChangeEvent(profile_);
+  extensions::file_system_api::DispatchVolumeListChangeEventAsh(profile_);
 }
 
 void EventRouter::OnVolumeUnmounted(chromeos::MountError error_code,
@@ -1050,7 +1050,7 @@ void EventRouter::OnVolumeUnmounted(chromeos::MountError error_code,
   // TODO(mtomasz): Move VolumeManager and part of the event router outside of
   // file_manager, so there is no dependency between File System API and the
   // file_manager code.
-  extensions::file_system_api::DispatchVolumeListChangeEvent(profile_);
+  extensions::file_system_api::DispatchVolumeListChangeEventAsh(profile_);
 }
 
 void EventRouter::DispatchMountCompletedEvent(
