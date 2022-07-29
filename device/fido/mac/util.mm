@@ -43,23 +43,26 @@ namespace {
 
 // Returns the signature counter to use in the authenticatorData.
 std::array<uint8_t, 4> MakeSignatureCounter(
-    CredentialMetadata::Version version) {
+    CredentialMetadata::SignCounter counter_type) {
   // For current credentials, the counter is fixed at 0.
-  if (version >= CredentialMetadata::Version::kV2) {
-    return {0, 0, 0, 0};
+  switch (counter_type) {
+    case CredentialMetadata::SignCounter::kTimestamp: {
+      // Legacy credentials use a timestamp-based counter. RPs expect a non-zero
+      // counter to be increasing with each assertion, so we can't fix the
+      // counter at 0 for old credentials. Because of the conversion to a 32-bit
+      // unsigned integer, the counter will overflow in the year 2108.
+      uint32_t sign_counter =
+          static_cast<uint32_t>(base::Time::Now().ToDoubleT());
+      return std::array<uint8_t, 4>{
+          static_cast<uint8_t>((sign_counter >> 24) & 0xff),
+          static_cast<uint8_t>((sign_counter >> 16) & 0xff),
+          static_cast<uint8_t>((sign_counter >> 8) & 0xff),
+          static_cast<uint8_t>(sign_counter & 0xff),
+      };
+    }
+    case CredentialMetadata::SignCounter::kZero:
+      return {0, 0, 0, 0};
   }
-
-  // Legacy credentials use a timestamp-based counter. RPs expect a non-zero
-  // counter to be increasing with each assertion, so we can't fix the counter
-  // at 0 for old credentials. Because of the conversion to a 32-bit unsigned
-  // integer, the counter will overflow in the year 2108.
-  uint32_t sign_counter = static_cast<uint32_t>(base::Time::Now().ToDoubleT());
-  return std::array<uint8_t, 4>{
-      static_cast<uint8_t>((sign_counter >> 24) & 0xff),
-      static_cast<uint8_t>((sign_counter >> 16) & 0xff),
-      static_cast<uint8_t>((sign_counter >> 8) & 0xff),
-      static_cast<uint8_t>(sign_counter & 0xff),
-  };
 }
 
 }  // namespace
@@ -85,7 +88,7 @@ absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
 }
 
 AuthenticatorData MakeAuthenticatorData(
-    CredentialMetadata::Version version,
+    CredentialMetadata::SignCounter counter_type,
     const std::string& rp_id,
     absl::optional<AttestedCredentialData> attested_credential_data) {
   const uint8_t flags =
@@ -95,7 +98,7 @@ AuthenticatorData MakeAuthenticatorData(
            ? static_cast<uint8_t>(AuthenticatorData::Flag::kAttestation)
            : 0);
   return AuthenticatorData(fido_parsing_utils::CreateSHA256Hash(rp_id), flags,
-                           MakeSignatureCounter(version),
+                           MakeSignatureCounter(counter_type),
                            std::move(attested_credential_data));
 }
 

@@ -39,7 +39,7 @@ absl::optional<AttestedCredentialData> MakeAttestedCredentialData(
 // which may be |absl::nullopt| in GetAssertion operations.
 COMPONENT_EXPORT(DEVICE_FIDO)
 AuthenticatorData MakeAuthenticatorData(
-    CredentialMetadata::Version version,
+    CredentialMetadata::SignCounter counter_type,
     const std::string& rp_id,
     absl::optional<AttestedCredentialData> attested_credential_data);
 

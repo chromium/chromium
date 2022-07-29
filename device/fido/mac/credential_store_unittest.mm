@@ -41,6 +41,16 @@ class CredentialStoreTest : public testing::Test {
     return InsertCredentialsForRp(kRpId, count);
   }
 
+  Credential InsertLegacyCredential(CredentialMetadata::Version version,
+                                    std::vector<uint8_t> user_id) {
+    PublicKeyCredentialUserEntity user = kUser;
+    user.id = std::move(user_id);
+    return store_
+        .CreateCredential(kRpId, std::move(user),
+                          TouchIdCredentialStore::kNonDiscoverable)
+        ->first;
+  }
+
   std::vector<Credential> InsertCredentialsForRp(const std::string& rp_id,
                                                  uint8_t count) {
     std::vector<Credential> result;
@@ -67,10 +77,15 @@ TEST_F(CredentialStoreTest, CreateCredential) {
                                         TouchIdCredentialStore::kDiscoverable);
   ASSERT_TRUE(result) << "CreateCredential failed";
   Credential credential = std::move(result->first);
-  EXPECT_EQ(credential.credential_id.size(), 59u);
+  EXPECT_EQ(credential.credential_id.size(), 32u);
   EXPECT_NE(credential.private_key, nullptr);
   base::ScopedCFTypeRef<SecKeyRef> public_key = std::move(result->second);
   EXPECT_NE(public_key, nullptr);
+  EXPECT_EQ(
+      credential.metadata,
+      CredentialMetadata(CredentialMetadata::Version::kCurrent, kUser.id,
+                         *kUser.name, *kUser.display_name, /*is_resident=*/true,
+                         CredentialMetadata::SignCounter::kZero));
 }
 
 // FindCredentialsFromCredentialDescriptorList should find an inserted
@@ -104,6 +119,26 @@ TEST_F(CredentialStoreTest,
       store_.FindCredentialsFromCredentialDescriptorList(
           kRpId, std::vector<PublicKeyCredentialDescriptor>());
   EXPECT_TRUE(found && found->empty());
+}
+
+// FindCredentialsFromCredentialDescriptorList should correctly return legacy
+// credentials with IDs that have an old metadata version.
+TEST_F(CredentialStoreTest,
+       FindCredentialsFromCredentialDescriptorList_LegacyCredentials) {
+  std::vector<Credential> credentials;
+  for (const auto version :
+       {CredentialMetadata::Version::kV0, CredentialMetadata::Version::kV1,
+        CredentialMetadata::Version::kV2}) {
+    credentials.emplace_back(InsertLegacyCredential(
+        version,
+        /*user_id=*/std::vector<uint8_t>({static_cast<uint8_t>(version)})));
+  }
+
+  absl::optional<std::list<Credential>> found =
+      store_.FindCredentialsFromCredentialDescriptorList(
+          kRpId, AsDescriptors(credentials));
+  ASSERT_TRUE(found);
+  EXPECT_THAT(*found, UnorderedElementsAreArray(credentials));
 }
 
 // FindResidentCredentials should only return discoverable credentials.

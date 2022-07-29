@@ -108,35 +108,35 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
 
   // Generate the new key pair.
   absl::optional<std::pair<Credential, base::ScopedCFTypeRef<SecKeyRef>>>
-      credential = credential_store_->CreateCredential(
+      credential_result = credential_store_->CreateCredential(
           request_.rp.id, request_.user,
           request_.resident_key_required
               ? TouchIdCredentialStore::kDiscoverable
               : TouchIdCredentialStore::kNonDiscoverable);
-  if (!credential) {
+  if (!credential_result) {
     FIDO_LOG(ERROR) << "CreateCredential() failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                              absl::nullopt);
     return;
   }
+  auto [credential, sec_key_ref] = std::move(*credential_result);
 
   // Create attestation object. There is no separate attestation key pair, so
   // we perform self-attestation.
   absl::optional<AttestedCredentialData> attested_credential_data =
-      MakeAttestedCredentialData(credential->first.credential_id,
-                                 SecKeyRefToECPublicKey(credential->second));
+      MakeAttestedCredentialData(credential.credential_id,
+                                 SecKeyRefToECPublicKey(sec_key_ref));
   if (!attested_credential_data) {
     FIDO_LOG(ERROR) << "MakeAttestedCredentialData failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,
                              absl::nullopt);
     return;
   }
-  AuthenticatorData authenticator_data =
-      MakeAuthenticatorData(CredentialMetadata::kCurrentVersion, request_.rp.id,
-                            std::move(*attested_credential_data));
-  absl::optional<std::vector<uint8_t>> signature =
-      GenerateSignature(authenticator_data, request_.client_data_hash,
-                        credential->first.private_key);
+  AuthenticatorData authenticator_data = MakeAuthenticatorData(
+      credential.metadata.sign_counter_type, request_.rp.id,
+      std::move(*attested_credential_data));
+  absl::optional<std::vector<uint8_t>> signature = GenerateSignature(
+      authenticator_data, request_.client_data_hash, credential.private_key);
   if (!signature) {
     FIDO_LOG(ERROR) << "MakeSignature failed";
     std::move(callback_).Run(CtapDeviceResponseCode::kCtap2ErrOther,

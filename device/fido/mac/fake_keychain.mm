@@ -33,8 +33,8 @@ base::ScopedCFTypeRef<SecKeyRef> FakeKeychain::KeyCreateRandomKey(
   DCHECK(base::mac::GetValueFromDictionary<CFStringRef>(params, kSecAttrLabel));
   DCHECK(base::mac::GetValueFromDictionary<CFDataRef>(
       params, kSecAttrApplicationLabel));
-  DCHECK(base::mac::GetValueFromDictionary<CFStringRef>(
-      params, kSecAttrApplicationTag));
+  DCHECK(base::mac::GetValueFromDictionary<CFDataRef>(params,
+                                                      kSecAttrApplicationTag));
   DCHECK_EQ(
       base::mac::GetValueFromDictionary<CFStringRef>(params, kSecAttrTokenID),
       kSecAttrTokenIDSecureEnclave);

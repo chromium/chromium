@@ -149,11 +149,13 @@ CredentialMetadata CredentialMetadata::FromPublicKeyCredentialUserEntity(
     const PublicKeyCredentialUserEntity& user,
     bool is_resident) {
   return CredentialMetadata(
-      /*version=*/CredentialMetadata::kCurrentVersion,
+      /*version=*/CredentialMetadata::Version::kCurrent,
       /*user_id=*/user.id,
       /*user_name=*/user.name.value_or(""),
       /*user_display_name=*/user.display_name.value_or(""),
-      /*is_resident=*/is_resident);
+      /*is_resident=*/is_resident,
+      // All new credentials use zero counters:
+      CredentialMetadata::SignCounter::kZero);
 }
 
 PublicKeyCredentialUserEntity
@@ -172,17 +174,30 @@ CredentialMetadata::CredentialMetadata(Version version,
                                        std::vector<uint8_t> user_id,
                                        std::string user_name,
                                        std::string user_display_name,
-                                       bool is_resident)
+                                       bool is_resident,
+                                       SignCounter counter_type)
     : version(version),
-      user_id(user_id),
-      user_name(user_name),
-      user_display_name(user_display_name),
-      is_resident(is_resident) {}
+      user_id(std::move(user_id)),
+      user_name(std::move(user_name)),
+      user_display_name(std::move(user_display_name)),
+      is_resident(is_resident),
+      sign_counter_type(counter_type) {}
+
 CredentialMetadata::CredentialMetadata(const CredentialMetadata&) = default;
 CredentialMetadata::CredentialMetadata(CredentialMetadata&&) = default;
+CredentialMetadata& CredentialMetadata::operator=(const CredentialMetadata&) =
+    default;
 CredentialMetadata& CredentialMetadata::operator=(CredentialMetadata&&) =
     default;
 CredentialMetadata::~CredentialMetadata() = default;
+
+bool CredentialMetadata::operator==(const CredentialMetadata& other) const {
+  return version == other.version && user_id == other.user_id &&
+         user_name == other.user_name &&
+         user_display_name == other.user_display_name &&
+         is_resident == other.is_resident &&
+         sign_counter_type == other.sign_counter_type;
+}
 
 std::string GenerateCredentialMetadataSecret() {
   static constexpr size_t kSecretSize = 32u;
@@ -207,12 +222,13 @@ static std::string MaybeTruncateWithTrailingEllipsis(const std::string& in) {
   return out;
 }
 
-std::vector<uint8_t> SealCredentialId(const std::string& secret,
-                                      const std::string& rp_id,
-                                      const CredentialMetadata& metadata) {
+std::vector<uint8_t> SealCredentialMetadata(
+    const std::string& secret,
+    const std::string& rp_id,
+    const CredentialMetadata& metadata) {
   // We only encrypt the most recent CredentialMetadata scheme. Backwards
   // compatibility only needs to be maintained for decryption.
-  DCHECK_EQ(metadata.version, CredentialMetadata::kCurrentVersion);
+  DCHECK_EQ(metadata.version, CredentialMetadata::Version::kCurrent);
 
   // CBOR-encode the CredentialMetadata. Then AES-GCM encrypt, and authenticate
   // with the RP ID.
@@ -225,15 +241,17 @@ std::vector<uint8_t> SealCredentialId(const std::string& secret,
       cbor::Value(MaybeTruncateWithTrailingEllipsis(metadata.user_display_name),
                   cbor::Value::Type::BYTE_STRING));
   cbor_metadata.emplace_back(cbor::Value(metadata.is_resident));
+  cbor_metadata.emplace_back(
+      cbor::Value(static_cast<uint8_t>(metadata.sign_counter_type)));
   absl::optional<std::vector<uint8_t>> pt =
       cbor::Writer::Write(cbor::Value(std::move(cbor_metadata)));
   DCHECK(pt);
 
   std::vector<uint8_t> nonce(kNonceLength);
   RAND_bytes(nonce.data(), nonce.size());  // RAND_bytes always returns 1.
-  const std::vector<uint8_t> ct =
-      Cryptor(secret).Seal(Cryptor::Algorithm::kAes256Gcm, nonce, *pt,
-                           MakeAad(CredentialMetadata::kCurrentVersion, rp_id));
+  const std::vector<uint8_t> ct = Cryptor(secret).Seal(
+      Cryptor::Algorithm::kAes256Gcm, nonce, *pt,
+      MakeAad(CredentialMetadata::Version::kCurrent, rp_id));
 
   // The Credential ID is the concatenation of nonce and ciphertext.
   nonce.insert(nonce.end(), ct.begin(), ct.end());
@@ -303,21 +321,26 @@ static absl::optional<CredentialMetadata> UnsealLegacyCredentialId(
       /*user_id=*/user_id,
       /*user_name=*/std::string(user_name),
       /*user_display_name=*/std::string(user_display_name),
-      /*is_resident=*/is_resident);
+      /*is_resident=*/is_resident,
+      // V0 and V1 credentials implicitly use a timestamp counter.
+      CredentialMetadata::SignCounter::kTimestamp);
 }
 
-static absl::optional<CredentialMetadata> UnsealV2CredentialId(
+static absl::optional<CredentialMetadata> UnsealV2OrV3CredentialMetadata(
+    CredentialMetadata::Version version,
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id) {
+  DCHECK(version == CredentialMetadata::Version::kV2 ||
+         version == CredentialMetadata::Version::kV3);
+
   if (credential_id.size() <= kNonceLength) {
     return absl::nullopt;
   }
 
   absl::optional<std::vector<uint8_t>> plaintext = Cryptor(secret).Unseal(
       Cryptor::Algorithm::kAes256Gcm, credential_id.subspan(0, kNonceLength),
-      credential_id.subspan(kNonceLength),
-      MakeAad(CredentialMetadata::Version::kV2, rp_id));
+      credential_id.subspan(kNonceLength), MakeAad(version, rp_id));
   if (!plaintext) {
     return absl::nullopt;
   }
@@ -328,28 +351,60 @@ static absl::optional<CredentialMetadata> UnsealV2CredentialId(
     return absl::nullopt;
   }
   const cbor::Value::ArrayValue& array = maybe_array->GetArray();
-  if (array.size() != 4 || !array[0].is_bytestring() ||
+  if (array.size() < 4 || !array[0].is_bytestring() ||
       !array[1].is_bytestring() || !array[2].is_bytestring() ||
       !array[3].is_bool()) {
     return absl::nullopt;
   }
+  if (version == CredentialMetadata::Version::kV2) {
+    if (array.size() != 4) {
+      return absl::nullopt;
+    }
+    return CredentialMetadata(
+        CredentialMetadata::Version::kV2, array[0].GetBytestring(),
+        std::string(array[1].GetBytestringAsString()),
+        std::string(array[2].GetBytestringAsString()), array[3].GetBool(),
+        // V2 credentials implicitly use a zero counter.
+        CredentialMetadata::SignCounter::kZero);
+  }
+
+  DCHECK_EQ(version, CredentialMetadata::Version::kV3);
+  if (array.size() != 5) {
+    return absl::nullopt;
+  }
+  // Decode SignCounter enum:
+  const int64_t counter_type = array[4].GetUnsigned();
+  if (counter_type < 1) {
+    return absl::nullopt;
+  }
   return CredentialMetadata(
-      CredentialMetadata::Version::kV2, array[0].GetBytestring(),
+      CredentialMetadata::Version::kV3, array[0].GetBytestring(),
       std::string(array[1].GetBytestringAsString()),
-      std::string(array[2].GetBytestringAsString()), array[3].GetBool());
+      std::string(array[2].GetBytestringAsString()), array[3].GetBool(),
+      CredentialMetadata::SignCounter(counter_type));
 }
 
-absl::optional<CredentialMetadata> UnsealCredentialId(
+absl::optional<CredentialMetadata> UnsealMetadataFromLegacyCredentialId(
     const std::string& secret,
     const std::string& rp_id,
     base::span<const uint8_t> credential_id) {
   // Trial decrypt under V2 first, and if that fails try again with V0/V1.
   absl::optional<CredentialMetadata> credential_metadata =
-      UnsealV2CredentialId(secret, rp_id, credential_id);
+      UnsealV2OrV3CredentialMetadata(CredentialMetadata::Version::kV2, secret,
+                                     rp_id, credential_id);
   if (credential_metadata) {
     return credential_metadata;
   }
   return UnsealLegacyCredentialId(secret, rp_id, credential_id);
+}
+
+absl::optional<CredentialMetadata> UnsealMetadataFromApplicationTag(
+    const std::string& secret,
+    const std::string& rp_id,
+    base::span<const uint8_t> application_tag) {
+  // kSecAttrApplicationTag only stores V3 metadata.
+  return UnsealV2OrV3CredentialMetadata(CredentialMetadata::Version::kV3,
+                                        secret, rp_id, application_tag);
 }
 
 std::string EncodeRpIdAndUserIdDeprecated(const std::string& secret,
@@ -374,8 +429,10 @@ std::string EncodeRpId(const std::string& secret, const std::string& rp_id) {
       Cryptor(secret).Seal(Cryptor::Algorithm::kAes256GcmSiv, fixed_zero_nonce,
                            pt, /*authenticated_data=*/{});
 
-  // The keychain field that stores the encrypted RP ID only accepts NSString
-  // (not NSData), so we HexEncode to ensure the result is UTF-8-decodable.
+  // HexEncode to ensure that the result is valid UTF-8. Values of keychain
+  // field that stores the encrypted RP ID (kSecAttrLabel) are CFStringRef. The
+  // expected encoding is undocumented but must be UTF-8 (see `_ImportKey()` in
+  // https://opensource.apple.com/source/libsecurity_keychain/libsecurity_keychain-55050.2/lib/SecItem.cpp).
   return base::HexEncode(ct.data(), ct.size());
 }
 
@@ -403,25 +460,27 @@ std::vector<uint8_t> SealLegacyCredentialIdForTestingOnly(
     const std::string& user_name,
     const std::string& user_display_name,
     bool is_resident) {
-  DCHECK_LT(version, CredentialMetadata::Version::kV2);
+  DCHECK_LT(version, CredentialMetadata::Version::kV3);
 
-  //    | version  |    nonce   | AEAD(pt=CBOR(metadata), |
-  //    | (1 byte) | (12 bytes) |      nonce=nonce,          |
-  //    |          |            |      ad=(version, rpID))   |
-  std::vector<uint8_t> result(13);
-  result[0] = static_cast<uint8_t>(version);
-  base::span<uint8_t> nonce(result.data() + 1, 12);
+  std::vector<uint8_t> result;
+  if (version < CredentialMetadata::Version::kV2) {
+    result.push_back(static_cast<uint8_t>(version));
+  }
+  auto nonce_begin = result.insert(result.end(), 12, 0);
+  base::span<uint8_t> nonce(nonce_begin, result.end());
+  DCHECK_EQ(nonce.size(), 12u);
   RAND_bytes(nonce.data(), nonce.size());  // RAND_bytes always returns 1.
 
-  // Legacy IDs don't include the version in the plaintext. Only V1 includes the
-  // `is_resident` bit.
+  // Only V1 includes the `is_resident` bit. `sign_counter_type=kTimestamp` was
+  // implicit before V3 and thus not encoded.
   cbor::Value::ArrayValue cbor_metadata;
   cbor_metadata.emplace_back(cbor::Value(user_id));
   cbor_metadata.emplace_back(
       cbor::Value(user_name, cbor::Value::Type::BYTE_STRING));
   cbor_metadata.emplace_back(
       cbor::Value(user_display_name, cbor::Value::Type::BYTE_STRING));
-  if (version == CredentialMetadata::Version::kV1) {
+  DCHECK(version > CredentialMetadata::Version::kV0 || !is_resident);
+  if (version > CredentialMetadata::Version::kV0) {
     cbor_metadata.emplace_back(cbor::Value(is_resident));
   }
   absl::optional<std::vector<uint8_t>> pt =

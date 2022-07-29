@@ -8310,8 +8310,7 @@ class TouchIdAuthenticatorImplTest : public AuthenticatorImplTest {
 
   void ResetVirtualDevice() override {}
 
-  std::vector<std::pair<Credential, CredentialMetadata>> GetCredentials(
-      const std::string& rp_id) {
+  std::vector<Credential> GetCredentials(const std::string& rp_id) {
     return device::fido::mac::TouchIdCredentialStore::FindCredentialsForTesting(
         config_, rp_id);
   }
@@ -8352,7 +8351,7 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential) {
             AuthenticatorStatus::SUCCESS);
   auto credentials = GetCredentials(kTestRelyingPartyId);
   EXPECT_EQ(credentials.size(), 1u);
-  const CredentialMetadata& metadata = credentials.at(0).second;
+  const CredentialMetadata& metadata = credentials.at(0).metadata;
   EXPECT_FALSE(metadata.is_resident);
   auto expected_user = GetTestPublicKeyCredentialUserEntity();
   expected_user.icon_url =
@@ -8374,8 +8373,7 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Resident) {
             AuthenticatorStatus::SUCCESS);
   auto credentials = GetCredentials(kTestRelyingPartyId);
   EXPECT_EQ(credentials.size(), 1u);
-  const CredentialMetadata& metadata = credentials.at(0).second;
-  EXPECT_TRUE(metadata.is_resident);
+  EXPECT_TRUE(credentials.at(0).metadata.is_resident);
 }
 
 TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Eviction) {
@@ -8388,11 +8386,11 @@ TEST_F(TouchIdAuthenticatorImplTest, MakeCredential_Eviction) {
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
   const std::vector<uint8_t> credential_id =
-      GetCredentials(kTestRelyingPartyId).at(0).first.credential_id;
+      GetCredentials(kTestRelyingPartyId).at(0).credential_id;
   touch_id_test_environment_.SimulateTouchIdPromptSuccess();
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(GetCredentials(kTestRelyingPartyId).size(), 1u);
-  EXPECT_NE(GetCredentials(kTestRelyingPartyId).at(0).first.credential_id,
+  EXPECT_NE(GetCredentials(kTestRelyingPartyId).at(0).credential_id,
             credential_id);
 
   // A resident credential will overwrite the non-resident one.
