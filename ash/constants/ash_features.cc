@@ -1013,6 +1013,10 @@ const base::Feature kLockScreenNotifications{"LockScreenNotifications",
 const base::Feature kLockScreenMediaControls{"LockScreenMediaControls",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Feature to allow MAC address randomization to be enabled for WiFi networks.
+const base::Feature kMacAddressRandomization{"MacAddressRandomization",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables the redesigned managed device info UI in the system tray.
 const base::Feature kManagedDeviceUIRedesign{"ManagedDeviceUIRedesign",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
@@ -2061,6 +2065,10 @@ bool IsLockScreenInlineReplyEnabled() {
 
 bool IsLockScreenNotificationsEnabled() {
   return base::FeatureList::IsEnabled(kLockScreenNotifications);
+}
+
+bool IsMacAddressRandomizationEnabled() {
+  return base::FeatureList::IsEnabled(kMacAddressRandomization);
 }
 
 bool IsManagedDeviceUIRedesignEnabled() {

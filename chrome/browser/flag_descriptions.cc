@@ -5840,6 +5840,11 @@ const char kLauncherPulsingBlocksRefreshName[] =
 const char kLauncherPulsingBlocksRefreshDescription[] =
     "Show the new pulsing blocks' UI in launcher during initial apps sync.";
 
+const char kMacAddressRandomizationName[] = "MAC address randomization";
+const char kMacAddressRandomizationDescription[] =
+    "Feature to allow MAC address randomization to be enabled for WiFi "
+    "networks.";
+
 // Prefer keeping this section sorted to adding new definitions down here.
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

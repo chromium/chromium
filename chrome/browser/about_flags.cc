@@ -7334,6 +7334,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"mac-address-randomization",
+     flag_descriptions::kMacAddressRandomizationName,
+     flag_descriptions::kMacAddressRandomizationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kMacAddressRandomization)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"categorical-search", flag_descriptions::kCategoricalSearchName,
      flag_descriptions::kCategoricalSearchDescription, kOsCrOS,
      FEATURE_WITH_PARAMS_VALUE_TYPE(app_list_features::kCategoricalSearch,

@@ -4165,6 +4165,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "mac-address-randomization",
+    "owners": [ "chadduffin", "cros-connectivity@google.com"],
+    "expiry_milestone": 113
+  },
+  {
     "name": "mac-syscall-sandbox",
     "owners": [ "rsesek@google.com" ],
     "expiry_milestone": 88

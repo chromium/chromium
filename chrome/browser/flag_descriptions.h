@@ -3351,6 +3351,9 @@ extern const char kLauncherHideContinueSectionDescription[];
 extern const char kLauncherPulsingBlocksRefreshName[];
 extern const char kLauncherPulsingBlocksRefreshDescription[];
 
+extern const char kMacAddressRandomizationName[];
+extern const char kMacAddressRandomizationDescription[];
+
 // Prefer keeping this section sorted to adding new declarations down here.
 
 #endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
