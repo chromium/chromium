@@ -22,13 +22,23 @@ CallbackFunctionBase::CallbackFunctionBase(
   // Set |callback_relevant_script_state_| iff the creation context and the
   // incumbent context are the same origin-domain. Otherwise, leave it as
   // nullptr.
-  v8::MaybeLocal<v8::Context> creation_context =
-      callback_function->GetCreationContext();
-  if (BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
-          incumbent_script_state_->GetContext(), creation_context,
-          BindingSecurityForPlatform::ErrorReportOption::kDoNotReport)) {
-    callback_relevant_script_state_ =
-        ScriptState::From(creation_context.ToLocalChecked());
+  if (callback_function->IsFunction()) {
+    // If the callback object is a function, it's guaranteed to be the same
+    // origin at least, and very likely to be the same origin-domain. Even if
+    // it's not the same origin-domain, it's already been possible for the
+    // callsite to run arbitrary script in the context. No need to protect it.
+    // This is an optimization faster than ShouldAllowAccessToV8Context below.
+    callback_relevant_script_state_ = ScriptState::From(
+        callback_function->GetCreationContext().ToLocalChecked());
+  } else {
+    v8::MaybeLocal<v8::Context> creation_context =
+        callback_function->GetCreationContext();
+    if (BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
+            incumbent_script_state_->GetContext(), creation_context,
+            BindingSecurityForPlatform::ErrorReportOption::kDoNotReport)) {
+      callback_relevant_script_state_ =
+          ScriptState::From(creation_context.ToLocalChecked());
+    }
   }
 }
 
