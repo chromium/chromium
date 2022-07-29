@@ -837,7 +837,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3240791268468473923">S'ha obert el full de credencials no coincidents de credencials de pagament segur</translation>
 <translation id="324180406144491771">Els enllaços de "<ph name="HOST_NAME" />" estan bloquejats</translation>
 <translation id="3248611290851046188">Aquest lloc web defineix interessos que altres llocs web poden utilitzar per mostrar-te anuncis. També obté els teus interessos de Chrome per mostrar-te anuncis més rellevants.</translation>
-<translation id="3249151924975132674">Préstecs estudiantils i finançament d'estudis universitaris</translation>
+<translation id="3249151924975132674">Crèdits d'estudi i finançament universitari</translation>
 <translation id="3249845759089040423">Atrevida</translation>
 <translation id="3250640885957938546">Publicitat i màrqueting</translation>
 <translation id="3252266817569339921">Francès</translation>
@@ -1606,7 +1606,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5307166000025436103">Vàlid</translation>
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5308689395849655368">La creació d'informes de bloqueig està desactivada.</translation>
-<translation id="5310178588836736698">Vehicles 4x4</translation>
+<translation id="5310178588836736698">Vehicles tot terreny</translation>
 <translation id="5314967030527622926">Creador de fullets</translation>
 <translation id="5316812925700871227">Gira en sentit antihorari</translation>
 <translation id="5317780077021120954">Desa</translation>
@@ -2010,7 +2010,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6521745193039995384">No activa</translation>
 <translation id="6529173248185917884">Setè corró</translation>
 <translation id="6529602333819889595">&amp;Refés la supressió</translation>
-<translation id="6535751101619004418">Divises i canvi de moneda estrangera</translation>
+<translation id="6535751101619004418">Monedes i canvi de divisa</translation>
 <translation id="6540534463546766581">Fons d'inversió</translation>
 <translation id="6545864417968258051">Cerca de dispositius Bluetooth</translation>
 <translation id="6547208576736763147">Encunyació doble a l'esquerra</translation>
@@ -2567,7 +2567,7 @@ Detalls addicionals:
 <translation id="8052898407431791827">S'ha copiat al porta-retalls</translation>
 <translation id="8055534648776115597">Formació professional i continuada</translation>
 <translation id="8057711352706143257"><ph name="SOFTWARE_NAME" /> no s'ha configurat correctament. Normalment el problema se soluciona desinstal·lant <ph name="SOFTWARE_NAME" />. <ph name="FURTHER_EXPLANATION" /></translation>
-<translation id="8058009102480785916">Producció d'aliments</translation>
+<translation id="8058009102480785916">Producció alimentària</translation>
 <translation id="8067872629359326442">Acabes d'introduir la contrasenya en un lloc web enganyós. Chromium pot ajudar-te. Per canviar la contrasenya i notificar a Google que el compte pot estar en perill, fes clic a Protegeix el compte.</translation>
 <translation id="8070439594494267500">Icona de l'aplicació</translation>
 <translation id="8074253406171541171">10x13 (sobre)</translation>
@@ -2926,7 +2926,7 @@ Detalls addicionals:
 <translation id="9117930699067497412">Fresca</translation>
 <translation id="9118692854637641831"><ph name="HISTORY_CLUSTERS_SEARCH_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per reprendre el recorregut i veure activitat rellevant a l'historial de Chrome</translation>
 <translation id="9119042192571987207">Penjat</translation>
-<translation id="9122954576417194280">Comerç de mercaderies i futurs</translation>
+<translation id="9122954576417194280">Comerç de matèries primeres i futurs</translation>
 <translation id="9128016270925453879">Les polítiques s'han carregat</translation>
 <translation id="9128870381267983090">Connecta't a la xarxa</translation>
 <translation id="9131119348384879525">Vols capturar el contingut confidencial?</translation>

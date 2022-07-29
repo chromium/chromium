@@ -435,7 +435,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3542066395059568317">Aparecerán recomendaciones para que puedas seguir donde lo dejaste. Puedes hacer clic con el botón derecho para quitar las recomendaciones.</translation>
 <translation id="3552189655002856821">La conexión Wi‑Fi está desactivada</translation>
 <translation id="3554637740840164787">Se ha fijado <ph name="ITEM_TITLE" /></translation>
-<translation id="3563775809269155755">Habilitar punto de acceso</translation>
+<translation id="3563775809269155755">Compartir Internet</translation>
 <translation id="3566240529365775567">Abierto hace un momento</translation>
 <translation id="3571734092741541777">Configurar</translation>
 <translation id="3573179567135747900">Cambiar de nuevo por "<ph name="FROM_LOCALE" />" (requiere reiniciar)</translation>
@@ -673,7 +673,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4881695831933465202">Abrir</translation>
 <translation id="4889868803215848840">Proporciona comentarios opcionales para mejorar las sugerencias:</translation>
 <translation id="4890187583552566966">Tu administrador ha inhabilitado el Asistente de Google.</translation>
-<translation id="4890408602550914571">Comprueba que tengas el teléfono cerca y que el Bluetooth esté activado.</translation>
+<translation id="4890408602550914571">Asegúrate de que tengas el teléfono cerca y de que el Bluetooth esté activado</translation>
 <translation id="4895488851634969361">La batería está llena.</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
@@ -704,7 +704,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5071064518267176975">Una aplicación quiere usar el micrófono</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
-<translation id="509790653408515442">Cuando emitas las aplicaciones de tu teléfono, aparecerán aquí</translation>
+<translation id="509790653408515442">Cuando proyectes las aplicaciones de tu teléfono, aparecerán aquí</translation>
 <translation id="5098537242461068432">Se han vuelto a abrir el escritorio y las ventanas</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar mes siguiente</translation>

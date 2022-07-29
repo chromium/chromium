@@ -134,7 +134,7 @@
 <translation id="1126809382673880764">Не штити вас од опасних веб-сајтова, преузимања и додатака. У другим Google услугама, као што су Gmail и Претрага, и даље ћете имати заштиту помоћу Безбедног прегледања када је доступна.</translation>
 <translation id="1128090040635299943">Linux се тренутно конфигурише. Конфигурисање ће потрајати пар минута.</translation>
 <translation id="1128591060186966949">Измена претраживача</translation>
-<translation id="1129420403709586868">Прегледајте слике и медијски садржај са телефона</translation>
+<translation id="1129420403709586868">да прегледа слике и медијски садржај са телефона</translation>
 <translation id="1129850422003387628">Управљајте апликацијама</translation>
 <translation id="113050636487300043">Одаберите име и тему боја да бисте разликовали профиле</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – део групе <ph name="GROUP_NAME" /></translation>
@@ -2302,7 +2302,7 @@
 <translation id="3151539355209957474">Време почетка</translation>
 <translation id="3151562827395986343">Обришите историју, колачиће, кеш и друге ставке</translation>
 <translation id="3151786313568798007">Положај</translation>
-<translation id="3152356229013609796">Прегледајте и одбаците обавештења на телефону или одговорите на њих</translation>
+<translation id="3152356229013609796">да прегледа и одбаци обавештења на телефону или одговори на њих</translation>
 <translation id="3157387275655328056">Додај на листу за читање</translation>
 <translation id="3157931365184549694">Поново отвори</translation>
 <translation id="3158033540161634471">Подесите отисак прста</translation>
@@ -5697,7 +5697,7 @@
 <translation id="6555432686520421228">Уклоните све корисничке налоге и рестартујте <ph name="IDS_SHORT_PRODUCT_NAME" /> уређај да би био као нов.</translation>
 <translation id="6555604601707417276">Враћена је резервна копија Linux-а</translation>
 <translation id="6555810572223193255">Чишћење је тренутно недоступно</translation>
-<translation id="6556477848444788999">Овај PIN или лозинка штити податке на овом уређају <ph name="DEVICE_TYPE" />, укључујући сав садржај који стримујете са телефона.</translation>
+<translation id="6556477848444788999">Овај PIN или лозинка штити податке на овом <ph name="DEVICE_TYPE" />-у, укључујући сав садржај који стримујете са телефона.</translation>
 <translation id="6556866813142980365">Понови</translation>
 <translation id="6556903358015358733">Тема и позадина</translation>
 <translation id="6557290421156335491">Моје пречице</translation>
@@ -7207,7 +7207,7 @@
 <translation id="8037357227543935929">Питај (подразумевано)</translation>
 <translation id="803771048473350947">Датотека</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
-<translation id="8041267120753677077">Стримујте апликације на телефону</translation>
+<translation id="8041267120753677077">да стримује апликације на телефону</translation>
 <translation id="8042142357103597104">Непрозирност текста</translation>
 <translation id="8042331986490021244">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не реагује.</translation>

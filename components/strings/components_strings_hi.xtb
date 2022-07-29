@@ -353,7 +353,7 @@
 <translation id="1807246157184219062">हल्का</translation>
 <translation id="1807528111851433570">स्टार्ट शीट</translation>
 <translation id="1812527064848182527">लैंडस्केप</translation>
-<translation id="1813414402673211292">ब्राउज़िंग डेटा साफ़ करें</translation>
+<translation id="1813414402673211292">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="182139138257690338">अपने-आप होने वाले डाउनलोड</translation>
 <translation id="1821930232296380041">अमान्य अनुरोध या अनुरोध पैरामीटर</translation>
 <translation id="1822540298136254167">आप किन वेबसाइटों पर जाते हैं और उन पर कितना समय देते हैं</translation>
@@ -977,7 +977,7 @@
 <translation id="361438452008624280">सूची एंट्री "<ph name="LANGUAGE_ID" />": अनजान या काम नहीं करने वाली भाषा.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab और फिर Enter दबाएं</translation>
 <translation id="3615877443314183785">खत्म होने की मान्य तारीख डालें</translation>
-<translation id="36224234498066874">ब्राउज़िंग डेटा साफ़ करें...</translation>
+<translation id="36224234498066874">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
 <translation id="3630155396527302611">अगर वह नेटवर्क एक्सेस करने की अनुमति पाए हुए प्रोग्राम के रूप में पहले से ही सूची में शामिल है, तो
       उसे सूची से हटाने और फिर से जोड़ने की कोशिश करें.</translation>
@@ -1648,7 +1648,7 @@
 <translation id="540969355065856584">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाण पत्र इस समय मान्य नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="5412236728747081950">यह साइट आपकी दिलचस्पी के बारे में Chrome से पता करती है, ताकि आपको ज़्यादा काम के विज्ञापन दिखा सके</translation>
 <translation id="541416427766103491">स्टैकर 4</translation>
-<translation id="5421136146218899937">ब्राउज़िंग डेटा साफ़ करें...</translation>
+<translation id="5421136146218899937">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> वेबसाइट आपको सूचनाएं भेजना चाहती है</translation>
 <translation id="5428105026674456456">स्पैनिश</translation>
 <translation id="5430298929874300616">बुकमार्क निकालें</translation>
@@ -2560,7 +2560,7 @@
 <translation id="8009225694047762179">पासवर्ड संभालें</translation>
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{इस कार्ड और इसके बिलिंग पते को सेव किया जाएगा. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप इसका इस्तेमाल कर पाएंगे.}one{ये कार्ड और इनके बिलिंग पते सेव किए जाएंगे. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप उनका इस्तेमाल कर पाएंगे.}other{ये कार्ड और इनके बिलिंग पते सेव किए जाएंगे. <ph name="USER_EMAIL" /> में साइन इन रहने पर आप उनका इस्तेमाल कर पाएंगे.}}</translation>
 <translation id="8025119109950072390">इस साइट पर मौजूद हमलावर आपको धोखा देकर आपसे कुछ जोखिम वाला काम करा सकते हैं, जैसे सॉफ़्टवेयर इंस्टॉल करना या आपकी व्यक्तिगत जानकारी (उदाहरण के लिए, पासवर्ड, फ़ोन नंबर या क्रेडिट कार्ड) के बारे में बताना.</translation>
-<translation id="8026334261755873520">ब्राउज़िंग डेटा साफ़ करें</translation>
+<translation id="8026334261755873520">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="8027077570865220386">ट्रे 15</translation>
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms में जल्दी से नया फ़ॉर्म बनाने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="8028960012888758725">जॉब के बाद ट्रिम करें</translation>

@@ -2393,7 +2393,7 @@
 <translation id="3254516606912442756">تشخیص خودکار منطقه زمانی غیرفعال شده است</translation>
 <translation id="3254715652085014625">‏برنامه Chrome را در تلفن Android باز کنید و به «تنظیمات &gt; گذرواژه‌ها &gt; استفاده از تلفن به‌عنوان کلید امنیتی» بروید، و دستورالعمل‌های مربوطه را دنبال کنید.</translation>
 <translation id="3255355328033513170">همه داده‌های ذخیره‌شده توسط <ph name="SITE_GROUP_NAME" /> و سایت‌های زیرمجموعه آن حذف خواهند شد. این مورد کوکی‌ها را شامل می‌شود. از سیستم این سایت‌ها (ازجمله در برگه‌های باز) خارج خواهید شد.</translation>
-<translation id="3257733480216378006"><ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> مجاز شود؟</translation>
+<translation id="3257733480216378006">به <ph name="EXTENSIONS_REQUESTING_ACCESS_COUNT" /> اجازه داده شود؟</translation>
 <translation id="3259723213051400722">لطفاً دوباره امتحان کنید.</translation>
 <translation id="3261268979727295785">بعد از تکمیل راه‌اندازی، می‌توانید کنترل‌های والدین را برای فرزندان بزرگ‌تر اضافه کنید. می‌توانید اطلاعات را در کنترل‌های والدین در برنامه «کاوش» پیدا کنید.</translation>
 <translation id="3262986719682892278">بسیار بزرگ است</translation>
@@ -6784,7 +6784,7 @@
 <translation id="7635048370253485243">سرپرستتان آن را پین کرده است</translation>
 <translation id="7636919061354591437">نصب در این دستگاه</translation>
 <translation id="7637593984496473097">فضای دیسک کافی نیست</translation>
-<translation id="7639914187072011620">‏نشانی وب هدایت SAML از سرور واکشی نشد</translation>
+<translation id="7639914187072011620">‏نشانی وب هدایتگر SAML از سرور واکشی نشد</translation>
 <translation id="764017888128728"><ph name="PASSWORD_MANAGER_BRAND" /> شما را به‌صورت خودکار در سایت‌های واجد شرایط با گذرواژه‌هایی که ذخیره کرده‌اید ثبت ورود می‌کند.</translation>
 <translation id="7641513591566880111">نام نمایه جدید</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> اضافه شد</translation>
