@@ -82,6 +82,11 @@ class AsyncDestroyVideoDecoder final : public VideoDecoder {
     return wrapped_decoder_->GetMaxDecodeRequests();
   }
 
+  bool FramesHoldExternalResources() const override {
+    DCHECK(wrapped_decoder_);
+    return wrapped_decoder_->FramesHoldExternalResources();
+  }
+
  private:
   std::unique_ptr<T> wrapped_decoder_;
 };
