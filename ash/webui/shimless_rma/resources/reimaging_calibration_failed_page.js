@@ -17,7 +17,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 import {ComponentTypeToId} from './data.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {CalibrationComponentStatus, CalibrationStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
-import {enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
+import {disableNextButton, enableNextButton, executeThenTransitionState} from './shimless_rma_util.js';
 
 /**
  * @fileoverview
@@ -74,7 +74,10 @@ export class ReimagingCalibrationFailedPage extends
   }
 
   static get observers() {
-    return ['updateIsFirstClickableComponent_(componentCheckboxes_.*)'];
+    return [
+      'updateIsFirstClickableComponent_(componentCheckboxes_.*)',
+      'updateNextButtonAvailability_(componentCheckboxes_.*)',
+    ];
   }
 
   constructor() {
@@ -104,7 +107,6 @@ export class ReimagingCalibrationFailedPage extends
   ready() {
     super.ready();
     this.getInitialComponentsList_();
-    enableNextButton(this);
 
     // Hide the gradient when the list is scrolled to the end.
     this.shadowRoot.querySelector('.scroll-container')
@@ -215,6 +217,15 @@ export class ReimagingCalibrationFailedPage extends
       component.isFirstClickableComponent =
           (component === firstClickableComponent) ? true : false;
     });
+  }
+
+  /** @private */
+  updateNextButtonAvailability_() {
+    if (this.componentCheckboxes_.some(component => component.checked)) {
+      enableNextButton(this);
+    } else {
+      disableNextButton(this);
+    }
   }
 }
 

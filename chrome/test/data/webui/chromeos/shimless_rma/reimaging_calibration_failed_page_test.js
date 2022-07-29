@@ -269,4 +269,37 @@ export function reimagingCalibrationFailedPageTest() {
     assertFalse(
         component.shadowRoot.querySelector('#failedComponentsDialog').open);
   });
+
+  test('NextButtonIsOnlyEnabledIfAtLeastOneComponentIsSelected', async () => {
+    await initializeCalibrationPage(fakeCalibrationComponentsWithFails);
+
+    let disableNextButtonEventFired = false;
+    let disableNextButton = false;
+
+    const componentLidAccelerometerButton =
+        component.shadowRoot.querySelector('#componentLidAccelerometer')
+            .shadowRoot.querySelector('#componentButton');
+
+    const disableHandler = (event) => {
+      disableNextButtonEventFired = true;
+      disableNextButton = event.detail;
+    };
+
+    component.addEventListener('disable-next-button', disableHandler);
+
+    // If a component is selected, enable the next button.
+    componentLidAccelerometerButton.click();
+    await flushTasks();
+    assertTrue(disableNextButtonEventFired);
+    assertFalse(disableNextButton);
+
+    // If no components are selected, disable the next button.
+    disableNextButtonEventFired = false;
+    componentLidAccelerometerButton.click();
+    await flushTasks();
+    assertTrue(disableNextButtonEventFired);
+    assertTrue(disableNextButton);
+
+    component.removeEventListener('disable-next-button', disableHandler);
+  });
 }
