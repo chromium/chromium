@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html>
 <meta charset=utf-8 />
-<meta name="timeout" content="long">
 <title>Event Timing: interactionId-tap.</title>
-<button id='test'>Tap</button>
+<button id='testButtonId'>Tap</button>
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/resources/testdriver.js></script>
@@ -13,25 +12,25 @@
 
 <script>
   let observedEntries = [];
-  let map = new Map();
-      const events = ['pointerdown', 'pointerup'];
+  const map = new Map();
+  const events = ['pointerdown', 'pointerup'];
 
-  async_test(function (t) {
+  promise_test(async t => {
     assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported.');
 
-    new PerformanceObserver(t.step_func(entryList => {
-      observedEntries = observedEntries.concat(entryList.getEntries().filter(filterAndAddToMap(events, map)));
+    const observerPromise = new Promise(resolve => {
+      new PerformanceObserver(entryList => {
+        observedEntries = observedEntries.concat(entryList.getEntries().filter(filterAndAddToMap(events, map)));
+        if (observedEntries.length >= 2)
+          resolve();
+      }).observe({ type: "event" });
+    });
 
-      if (observedEntries.length < 2)
-        return;
-
-      events.forEach(e => assert_greater_than(map.get(e), 0, 'Should have a non-trivial interactionId for ' + e + ' event'));
-      assert_equals(map.get('pointerdown'), map.get('pointerup'), 'The pointerdown and the pointerup should have the same interactionId');
-      t.done();
-    })).observe({ type: "event" });
-
-    addListenersAndTap(document.getElementById('test'), events);
+    await addListenersAndTap(document.getElementById('testButtonId'), events);
+    await observerPromise;
+    events.forEach(e => assert_greater_than(map.get(e), 0, 'Should have a non-trivial interactionId for ' + e + ' event'));
+    assert_equals(map.get('pointerdown'), map.get('pointerup'), 'The pointerdown and the pointerup should have the same interactionId');
   }, "Event Timing: compare event timing interactionId for tap.");
-</script>
 
+</script>
 </html>
