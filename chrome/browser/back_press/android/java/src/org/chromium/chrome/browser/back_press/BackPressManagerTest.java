@@ -50,11 +50,14 @@ public class BackPressManagerTest {
     @Test
     @SmallTest
     public void testBasic() {
-        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM, 0);
+        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM,
+                BackPressManager.sMetricsMap.get(BackPressHandler.Type.FIND_TOOLBAR));
+
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { manager.addHandler(h1, 0); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR); });
 
         manager.getCallback().handleOnBackPressed();
 

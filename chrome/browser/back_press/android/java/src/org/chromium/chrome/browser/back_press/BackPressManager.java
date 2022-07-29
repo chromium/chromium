@@ -8,6 +8,8 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.collect.ImmutableMap;
+
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -21,10 +23,34 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.Type;
  * In order to register a Handler:
  * 1. Implement {@link BackPressHandler}.
  * 2. Add a new {@link Type} which implies the order of intercepting.
- * 3. Call {@link #addHandler(BackPressHandler, int)} to register the implementer of
+ * 3. Add a new value in {@link #sMetricsMap} which stands for the histograms.
+ * 4. Call {@link #addHandler(BackPressHandler, int)} to register the implementer of
  * {@link BackPressHandler} with the new defined {@link Type}.
  */
 public class BackPressManager {
+    @VisibleForTesting
+    static final ImmutableMap<Integer, Integer> sMetricsMap =
+            new ImmutableMap.Builder()
+                    .put(Type.TEXT_BUBBLE, 0)
+                    .put(Type.VR_DELEGATE, 1)
+                    .put(Type.AR_DELEGATE, 2)
+                    .put(Type.SCENE_OVERLAY, 3)
+                    .put(Type.START_SURFACE_MEDIATOR, 4)
+                    .put(Type.SELECTION_POPUP, 5)
+                    .put(Type.MANUAL_FILLING, 6)
+                    .put(Type.FULLSCREEN, 7)
+                    .put(Type.BOTTOM_SHEET, 8)
+                    .put(Type.TAB_MODAL_HANDLER, 9)
+                    .put(Type.TAB_SWITCHER_TO_BROWSING, 10)
+                    .put(Type.CLOSE_WATCHER, 11)
+                    .put(Type.TOOLBAR_TAB_CONTROLLER, 12)
+                    .put(Type.TAB_RETURN_TO_CHROME_START_SURFACE, 13)
+                    .put(Type.SHOW_READING_LIST, 14)
+                    .put(Type.MINIMIZE_APP_AND_CLOSE_TAB, 15)
+                    .put(Type.FIND_TOOLBAR, 16)
+                    // Add new one here.
+                    .build();
+
     private final OnBackPressedCallback mCallback = new OnBackPressedCallback(false) {
         @Override
         public void handleOnBackPressed() {
@@ -53,7 +79,7 @@ public class BackPressManager {
      * @param type The {@link Type} which consumes the back press event.
      */
     public static void record(@Type int type) {
-        RecordHistogram.recordEnumeratedHistogram(HISTOGRAM, type, Type.NUM_TYPES);
+        RecordHistogram.recordEnumeratedHistogram(HISTOGRAM, sMetricsMap.get(type), Type.NUM_TYPES);
     }
 
     /**

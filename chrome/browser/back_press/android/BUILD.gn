@@ -18,6 +18,7 @@ android_library("java") {
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/android:content_full_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -56,6 +57,7 @@ android_library("unit_device_javatests") {
     "//chrome/browser/tabmodel:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:com_google_guava_guava_android_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/androidx:androidx_activity_activity_java",
     "//third_party/androidx:androidx_test_runner_java",
