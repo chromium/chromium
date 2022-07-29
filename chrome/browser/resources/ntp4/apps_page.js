@@ -9,11 +9,12 @@ import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handl
 import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
 import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, appendParam, findAncestorByClass} from 'chrome://resources/js/util.m.js';
+import {$, appendParam} from 'chrome://resources/js/util.m.js';
 
 import {AppInfo} from './app_info.js';
 import {getAppsPageIndex, getCardSlider} from './new_tab.js';
 import {getCurrentlyDraggingTile, setCurrentDropEffect, TilePage} from './tile_page.js';
+import {findAncestorByClass} from './util.js';
 
 
 

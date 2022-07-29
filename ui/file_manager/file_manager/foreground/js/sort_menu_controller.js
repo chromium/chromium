@@ -4,7 +4,7 @@
 
 import '../elements/files_toggle_ripple.js';
 
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {util} from '../../common/js/util.js';
 
 import {FileListModel} from './file_list_model.js';
 import {MultiMenuButton} from './ui/multi_menu_button.js';
@@ -24,16 +24,16 @@ export class SortMenuController {
 
     /** @private @const {!HTMLElement} */
     this.sortByNameButton_ =
-        queryRequiredElement('#sort-menu-sort-by-name', sortButton.menu);
+        util.queryRequiredElement('#sort-menu-sort-by-name', sortButton.menu);
     /** @private @const {!HTMLElement} */
     this.sortBySizeButton_ =
-        queryRequiredElement('#sort-menu-sort-by-size', sortButton.menu);
+        util.queryRequiredElement('#sort-menu-sort-by-size', sortButton.menu);
     /** @private @const {!HTMLElement} */
     this.sortByTypeButton_ =
-        queryRequiredElement('#sort-menu-sort-by-type', sortButton.menu);
+        util.queryRequiredElement('#sort-menu-sort-by-type', sortButton.menu);
     /** @private @const {!HTMLElement} */
     this.sortByDateButton_ =
-        queryRequiredElement('#sort-menu-sort-by-date', sortButton.menu);
+        util.queryRequiredElement('#sort-menu-sort-by-date', sortButton.menu);
 
     sortButton.addEventListener('menushow', this.updateCheckmark_.bind(this));
     sortButton.addEventListener('menuhide', this.onHideSortMenu_.bind(this));

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {str, util} from '../../common/js/util.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -41,7 +40,7 @@ export class EmptyFolderController {
     /**
      * @private {!HTMLElement}
      */
-    this.label_ = queryRequiredElement('.label', emptyFolder);
+    this.label_ = util.queryRequiredElement('.label', emptyFolder);
 
     /**
      * @private {boolean}

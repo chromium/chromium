@@ -5,7 +5,6 @@
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {getDirectory, getDisallowedTransfers, startIOTask} from '../../common/js/api.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -174,14 +173,14 @@ export class FileTransferController {
      * @const
      */
     this.copyCommand_ = /** @type {!Command} */ (
-        queryRequiredElement('command#copy', assert(this.document_.body)));
+        util.queryRequiredElement('command#copy', assert(this.document_.body)));
 
     /**
      * @private {!Command}
      * @const
      */
     this.cutCommand_ = /** @type {!Command} */ (
-        queryRequiredElement('command#cut', assert(this.document_.body)));
+        util.queryRequiredElement('command#cut', assert(this.document_.body)));
 
     /**
      * @private {DirectoryEntry|FilesAppDirEntry}

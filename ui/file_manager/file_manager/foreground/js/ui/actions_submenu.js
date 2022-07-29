@@ -5,7 +5,6 @@
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
 import {Menu} from 'chrome://resources/js/cr/ui/menu.js';
 import {MenuItem} from 'chrome://resources/js/cr/ui/menu_item.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {util} from '../../../common/js/util.js';
 import {ActionsModel} from '../actions_model.js';
@@ -24,7 +23,7 @@ export class ActionsSubmenu {
      * @const
      */
     this.separator_ = /** @type {!MenuItem} */
-        (queryRequiredElement('#actions-separator', this.menu_));
+        (util.queryRequiredElement('#actions-separator', this.menu_));
 
     /**
      * @private {!Array<!MenuItem>}

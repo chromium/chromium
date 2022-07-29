@@ -7,13 +7,13 @@ import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
 import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {MockDirectoryEntry, MockFileEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
 import {importerHistoryInterfaces} from '../../externs/background/import_history.js';
@@ -153,7 +153,7 @@ export function setUp() {
 
   // Setup FileTable.
   const table =
-      /** @type {!FileTable} */ (queryRequiredElement('#detail-table'));
+      /** @type {!FileTable} */ (util.queryRequiredElement('#detail-table'));
   FileTable.decorate(
       table, metadataModel, volumeManager, historyLoader, a11y,
       true /* fullPage */);
@@ -161,12 +161,13 @@ export function setUp() {
   table.list.dataModel = dataModel;
 
   // Setup FileGrid.
-  const grid = /** @type {!FileGrid} */ (queryRequiredElement('#file-grid'));
+  const grid =
+      /** @type {!FileGrid} */ (util.queryRequiredElement('#file-grid'));
   FileGrid.decorate(grid, metadataModel, volumeManager, historyLoader, a11y);
 
   // Setup the ListContainer and its dependencies
   listContainer = new ListContainer(
-      queryRequiredElement('#list-container'), table, grid,
+      util.queryRequiredElement('#list-container'), table, grid,
       DialogType.FULL_PAGE);
   listContainer.dataModel = dataModel;
   listContainer.selectionModel = new ListSelectionModel();
@@ -174,7 +175,8 @@ export function setUp() {
 
   // Setup DirectoryTree elements.
   directoryTree =
-      /** @type {!DirectoryTree} */ (queryRequiredElement('#directory-tree'));
+      /** @type {!DirectoryTree} */ (
+          util.queryRequiredElement('#directory-tree'));
 
   const filesToast =
       /** @type {!FilesToast} */ (document.querySelector('files-toast'));

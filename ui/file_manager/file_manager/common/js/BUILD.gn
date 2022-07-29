@@ -371,7 +371,6 @@ js_library("util") {
     "//ui/file_manager/file_manager/externs:volume_manager",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
   ]
 

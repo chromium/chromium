@@ -8,10 +8,11 @@ import {toCssPx} from 'chrome://resources/js/cr/ui.m.js';
 import {DragWrapper, DragWrapperDelegate} from 'chrome://resources/js/cr/ui/drag_wrapper.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$, findAncestorByClass, isRTL} from 'chrome://resources/js/util.m.js';
+import {$, isRTL} from 'chrome://resources/js/util.m.js';
 
 import {App} from './apps_page.js';
 import {enterRearrangeMode, getCardSlider, leaveRearrangeMode} from './new_tab.js';
+import {findAncestorByClass} from './util.js';
 
 // We can't pass the currently dragging tile via dataTransfer because of
 // http://crbug.com/31037

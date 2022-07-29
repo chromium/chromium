@@ -4,7 +4,7 @@
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-import {getRequiredElement, queryRequiredElement} from 'chrome://resources/js/util.m.js';
+import {getRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {importer} from '../../common/js/importer_common.js';
 import {metrics} from '../../common/js/metrics.js';
@@ -554,7 +554,7 @@ importer.ClickSource = {
 importer.RuntimeCommandWidget = class {
   constructor() {
     /** @private @const {!HTMLElement} */
-    this.detailsPanel_ = queryRequiredElement('#cloud-import-details');
+    this.detailsPanel_ = util.queryRequiredElement('#cloud-import-details');
     this.detailsPanel_.addEventListener(
         'transitionend', this.onDetailsTransitionEnd_.bind(this), false);
 
@@ -574,61 +574,63 @@ importer.RuntimeCommandWidget = class {
 
     /** @private @const {!HTMLElement} */
     this.mainButton_ =
-        queryRequiredElement('#cloud-import-button', this.comboButton_);
+        util.queryRequiredElement('#cloud-import-button', this.comboButton_);
     this.mainButton_.onclick =
         this.onButtonClicked_.bind(this, importer.ClickSource.MAIN);
 
     /** @private @const {!PaperRipple}*/
     this.mainButtonRipple_ =
-        /** @type {!PaperRipple} */ (
-            queryRequiredElement('.ripples > paper-ripple', this.comboButton_));
+        /** @type {!PaperRipple} */ (util.queryRequiredElement(
+            '.ripples > paper-ripple', this.comboButton_));
 
     /** @private @const {!HTMLElement} */
-    this.sideButton_ =
-        queryRequiredElement('#cloud-import-details-button', this.comboButton_);
+    this.sideButton_ = util.queryRequiredElement(
+        '#cloud-import-details-button', this.comboButton_);
     this.sideButton_.onclick =
         this.onButtonClicked_.bind(this, importer.ClickSource.SIDE);
 
     /** @private @const {!FilesToggleRippleElement} */
     this.sideButtonRipple_ =
-        /** @type {!FilesToggleRippleElement} */ (queryRequiredElement(
+        /** @type {!FilesToggleRippleElement} */ (util.queryRequiredElement(
             '.ripples > files-toggle-ripple', this.comboButton_));
 
     /** @private @const {!HTMLElement} */
     this.importButton_ =
-        queryRequiredElement('#cloud-import-details cr-button.import');
+        util.queryRequiredElement('#cloud-import-details cr-button.import');
     this.importButton_.onclick =
         this.onButtonClicked_.bind(this, importer.ClickSource.IMPORT);
 
     /** @private @const {!HTMLElement} */
     this.cancelButton_ =
-        queryRequiredElement('#cloud-import-details cr-button.cancel');
+        util.queryRequiredElement('#cloud-import-details cr-button.cancel');
     this.cancelButton_.onclick =
         this.onButtonClicked_.bind(this, importer.ClickSource.CANCEL);
 
     /** @private @const {!HTMLElement} */
     this.statusContent_ =
-        queryRequiredElement('#cloud-import-details .status .content');
+        util.queryRequiredElement('#cloud-import-details .status .content');
     this.statusContent_.onclick =
         this.onButtonClicked_.bind(this, importer.ClickSource.DESTINATION);
 
     /** @private @const {!HTMLElement} */
-    this.toolbarIcon_ = queryRequiredElement('#cloud-import-button iron-icon');
+    this.toolbarIcon_ =
+        util.queryRequiredElement('#cloud-import-button iron-icon');
 
     /** @private @const {!HTMLElement} */
     this.statusIcon_ =
-        queryRequiredElement('#cloud-import-details .status iron-icon');
+        util.queryRequiredElement('#cloud-import-details .status iron-icon');
 
     /** @private @const {!HTMLElement} */
-    this.detailsBanner_ = queryRequiredElement('#cloud-import-details .banner');
+    this.detailsBanner_ =
+        util.queryRequiredElement('#cloud-import-details .banner');
 
     /** @private @const {!HTMLElement} */
     this.progressContainer_ =
-        queryRequiredElement('#cloud-import-details .progress');
+        util.queryRequiredElement('#cloud-import-details .progress');
 
     /** @private @const {!HTMLElement} */
     this.progressBar_ =
-        queryRequiredElement('#cloud-import-details .progress .value');
+        util.queryRequiredElement('#cloud-import-details .progress .value');
 
     /** @private {function(!importer.ClickSource)} */
     this.clickListener_;
@@ -637,7 +639,7 @@ importer.RuntimeCommandWidget = class {
 
     /** @private @const{number} */
     this.cloudImportButtonTabIndex_ =
-        queryRequiredElement('#cloud-import-button').tabIndex;
+        util.queryRequiredElement('#cloud-import-button').tabIndex;
   }
 
   /**

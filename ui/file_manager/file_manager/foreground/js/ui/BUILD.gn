@@ -134,7 +134,6 @@ js_library("actions_submenu") {
   deps = [
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:actions_model",
-    "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:command",
     "//ui/webui/resources/js/cr/ui:menu",
     "//ui/webui/resources/js/cr/ui:menu_item",
@@ -204,7 +203,6 @@ js_library("dialog_footer") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_list_model",
     "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -379,7 +377,6 @@ js_library("file_manager_ui") {
     "//ui/file_manager/file_manager/foreground/js:launch_param",
     "//ui/file_manager/file_manager/foreground/js:providers_model",
     "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:ui.m",
     "//ui/webui/resources/js/cr/ui:context_menu_handler",
     "//ui/webui/resources/js/cr/ui:menu",
@@ -519,7 +516,6 @@ js_library("gear_menu") {
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
   ]
 }
 
@@ -557,7 +553,6 @@ js_library("list_container") {
     "//ui/file_manager/file_manager/foreground/js:list_thumbnail_loader",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr/ui:list.m",
     "//ui/webui/resources/js/cr/ui:list_item.m",
     "//ui/webui/resources/js/cr/ui:list_selection_model.m",
@@ -643,7 +638,6 @@ js_library("search_box") {
     "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
     "//ui/webui/resources/js/cr:event_target.m",
     "//ui/webui/resources/js/cr/ui:list_item.m",
   ]

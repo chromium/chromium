@@ -18,21 +18,6 @@
   return el ? assertInstanceof(el, HTMLElement) : null;
 }
 
-// TODO(devlin): This should return SVGElement, but closure compiler is missing
-// those externs.
-/**
- * Alias for document.getElementById. Found elements must be SVGElements.
- * @param {string} id The ID of the element to find.
- * @return {Element} The found element or null if not found.
- */
-/* #export */ function getSVGElement(id) {
-  // Disable getElementById restriction here, since it is not suitable for SVG
-  // elements.
-  // eslint-disable-next-line no-restricted-properties
-  const el = document.getElementById(id);
-  return el ? assertInstanceof(el, Element) : null;
-}
-
 /**
  * @return {?Element} The currently focused element (including elements that are
  *     behind a shadow root), or null if nothing is focused.
@@ -69,17 +54,6 @@
 // </if>
 
 /**
- * @param {Node} el A node to search for ancestors with |className|.
- * @param {string} className A class to search for.
- * @return {Element} A node with class of |className| or null if none is found.
- */
-/* #export */ function findAncestorByClass(el, className) {
-  return /** @type {Element} */ (findAncestor(el, function(el) {
-    return el.classList && el.classList.contains(className);
-  }));
-}
-
-/**
  * Return the first ancestor for which the {@code predicate} returns true.
  * @param {Node} node The node to check.
  * @param {function(Node):boolean} predicate The function that tests the
@@ -96,32 +70,6 @@
                                                               node.parentNode;
   }
   return node;
-}
-
-/**
- * Disables text selection and dragging, with optional callbacks to specify
- * overrides.
- * @param {function(Event):boolean=} allowSelectStart Unless this function
- *    is defined and returns true, the onselectionstart event will be
- *    suppressed.
- * @param {function(Event):boolean=} allowDragStart Unless this function
- *    is defined and returns true, the ondragstart event will be suppressed.
- */
-/* #export */ function disableTextSelectAndDrag(
-    allowSelectStart, allowDragStart) {
-  // Disable text selection.
-  document.onselectstart = function(e) {
-    if (!(allowSelectStart && allowSelectStart.call(this, e))) {
-      e.preventDefault();
-    }
-  };
-
-  // Disable dragging.
-  document.ondragstart = function(e) {
-    if (!(allowDragStart && allowDragStart.call(this, e))) {
-      e.preventDefault();
-    }
-  };
 }
 
 /**
@@ -142,21 +90,6 @@
 /* #export */ function getRequiredElement(id) {
   return assertInstanceof(
       $(id), HTMLElement, 'Missing required element: ' + id);
-}
-
-/**
- * Query an element that's known to exist by a selector. We use this instead of
- * just calling querySelector and not checking the result because this lets us
- * satisfy the JSCompiler type system.
- * @param {string} selectors CSS selectors to query the element.
- * @param {(!Document|!DocumentFragment|!Element)=} context An optional
- *     context object for querySelector.
- * @return {!HTMLElement} the Element.
- */
-/* #export */ function queryRequiredElement(selectors, context) {
-  const element = (context || document).querySelector(selectors);
-  return assertInstanceof(
-      element, HTMLElement, 'Missing required element: ' + selectors);
 }
 
 /**
@@ -219,46 +152,6 @@
 }
 
 /**
- * Alias for document.scrollTop getter.
- * @param {!HTMLDocument} doc The document node where information will be
- *     queried from.
- * @return {number} The Y document scroll offset.
- */
-/* #export */ function scrollTopForDocument(doc) {
-  return doc.documentElement.scrollTop || doc.body.scrollTop;
-}
-
-/**
- * Alias for document.scrollTop setter.
- * @param {!HTMLDocument} doc The document node where information will be
- *     queried from.
- * @param {number} value The target Y scroll offset.
- */
-/* #export */ function setScrollTopForDocument(doc, value) {
-  doc.documentElement.scrollTop = doc.body.scrollTop = value;
-}
-
-/**
- * Alias for document.scrollLeft getter.
- * @param {!HTMLDocument} doc The document node where information will be
- *     queried from.
- * @return {number} The X document scroll offset.
- */
-/* #export */ function scrollLeftForDocument(doc) {
-  return doc.documentElement.scrollLeft || doc.body.scrollLeft;
-}
-
-/**
- * Alias for document.scrollLeft setter.
- * @param {!HTMLDocument} doc The document node where information will be
- *     queried from.
- * @param {number} value The target X scroll offset.
- */
-/* #export */ function setScrollLeftForDocument(doc, value) {
-  doc.documentElement.scrollLeft = doc.body.scrollLeft = value;
-}
-
-/**
  * Replaces '&', '<', '>', '"', and ''' characters with their HTML encoding.
  * @param {string} original The original string.
  * @return {string} The string with all the characters mentioned above replaced.
@@ -269,22 +162,6 @@
       .replace(/>/g, '&gt;')
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#39;');
-}
-
-/**
- * Shortens the provided string (if necessary) to a string of length at most
- * |maxLength|.
- * @param {string} original The original string.
- * @param {number} maxLength The maximum length allowed for the string.
- * @return {string} The original string if its length does not exceed
- *     |maxLength|. Otherwise the first |maxLength| - 1 characters with '...'
- *     appended.
- */
-/* #export */ function elide(original, maxLength) {
-  if (original.length <= maxLength) {
-    return original;
-  }
-  return original.substring(0, maxLength - 1) + '\u2026';
 }
 
 /**

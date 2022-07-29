@@ -8,10 +8,9 @@
  * which allows finer-grained control over introducing dependencies.
  */
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {EntryLocation} from '../../externs/entry_location.js';
 import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
@@ -286,6 +285,21 @@ util.createChild = (parent, opt_className, opt_tag) => {
 };
 
 /**
+ * Query an element that's known to exist by a selector. We use this instead of
+ * just calling querySelector and not checking the result because this lets us
+ * satisfy the JSCompiler type system.
+ * @param {string} selectors CSS selectors to query the element.
+ * @param {(!Document|!DocumentFragment|!Element)=} context An optional
+ *     context object for querySelector.
+ * @return {!HTMLElement} the Element.
+ */
+util.queryRequiredElement = (selectors, context) => {
+  const element = (context || document).querySelector(selectors);
+  return assertInstanceof(
+      element, HTMLElement, 'Missing required element: ' + selectors);
+};
+
+/**
  * Obtains the element that should exist, decorates it with given type, and
  * returns it.
  * @param {string} query Query for the element.
@@ -294,7 +308,7 @@ util.createChild = (parent, opt_className, opt_tag) => {
  * @return {!T} Decorated element.
  */
 util.queryDecoratedElement = (query, type) => {
-  const element = queryRequiredElement(query);
+  const element = util.queryRequiredElement(query);
   decorate(element, type);
   return element;
 };

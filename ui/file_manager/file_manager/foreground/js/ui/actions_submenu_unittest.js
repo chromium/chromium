@@ -15,12 +15,6 @@ let menu = null;
 let submenu = null;
 let separator = null;
 
-function queryRequiredElement(selectors, opt_context) {
-  const element = (opt_context || document).querySelector(selectors);
-  return assertInstanceof(
-      element, HTMLElement, 'Missing required element: ' + selectors);
-}
-
 export function setUp() {
   document.body.innerHTML = `
       <command id="share" label="Share"></command>
@@ -33,7 +27,7 @@ export function setUp() {
       <hr id="actions-separator" hidden>
       </cr-menu>`;
   menu = util.queryDecoratedElement('#menu', Menu);
-  separator = queryRequiredElement('#actions-separator', menu);
+  separator = util.queryRequiredElement('#actions-separator', menu);
   submenu = new ActionsSubmenu(menu);
 }
 

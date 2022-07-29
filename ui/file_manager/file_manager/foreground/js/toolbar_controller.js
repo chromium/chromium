@@ -4,7 +4,6 @@
 
 import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {Command} from 'chrome://resources/js/cr/ui/command.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -48,82 +47,84 @@ export class ToolbarController {
      * @const
      */
     this.cancelSelectionButton_ =
-        queryRequiredElement('#cancel-selection-button', this.toolbar_);
+        util.queryRequiredElement('#cancel-selection-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
-    this.cancelSelectionButtonWrapper_ =
-        queryRequiredElement('#cancel-selection-button-wrapper', this.toolbar_);
+    this.cancelSelectionButtonWrapper_ = util.queryRequiredElement(
+        '#cancel-selection-button-wrapper', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
     this.filesSelectedLabel_ =
-        queryRequiredElement('#files-selected-label', this.toolbar_);
+        util.queryRequiredElement('#files-selected-label', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
-    this.deleteButton_ = queryRequiredElement('#delete-button', this.toolbar_);
+    this.deleteButton_ =
+        util.queryRequiredElement('#delete-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
     this.moveToTrashButton_ =
-        queryRequiredElement('#move-to-trash-button', this.toolbar_);
+        util.queryRequiredElement('#move-to-trash-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
     this.restoreFromTrashButton_ =
-        queryRequiredElement('#restore-from-trash-button', this.toolbar_);
+        util.queryRequiredElement('#restore-from-trash-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
     this.emptyTrashButton_ =
-        queryRequiredElement('#empty-trash-button', this.toolbar_);
+        util.queryRequiredElement('#empty-trash-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
     this.sharesheetButton_ =
-        queryRequiredElement('#sharesheet-button', this.toolbar_);
+        util.queryRequiredElement('#sharesheet-button', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
     this.readOnlyIndicator_ =
-        queryRequiredElement('#read-only-indicator', this.toolbar_);
+        util.queryRequiredElement('#read-only-indicator', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
     this.pinnedToggleWrapper_ =
-        queryRequiredElement('#pinned-toggle-wrapper', this.toolbar_);
+        util.queryRequiredElement('#pinned-toggle-wrapper', this.toolbar_);
 
     /**
      * @private {!HTMLElement}
      * @const
      */
-    this.pinnedToggle_ = queryRequiredElement('#pinned-toggle', this.toolbar_);
+    this.pinnedToggle_ =
+        util.queryRequiredElement('#pinned-toggle', this.toolbar_);
 
     /**
      * @private {!Command}
      * @const
      */
     this.deleteCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#delete', assert(this.toolbar_.ownerDocument.body)),
         Command);
 
@@ -132,7 +133,7 @@ export class ToolbarController {
      * @const
      */
     this.moveToTrashCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#move-to-trash', assert(this.toolbar_.ownerDocument.body)),
         Command);
 
@@ -141,7 +142,7 @@ export class ToolbarController {
      * @const
      */
     this.restoreFromTrashCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#restore-from-trash', assert(this.toolbar_.ownerDocument.body)),
         Command);
 
@@ -150,7 +151,7 @@ export class ToolbarController {
      * @const
      */
     this.emptyTrashCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#empty-trash', assert(this.toolbar_.ownerDocument.body)),
         Command);
 
@@ -159,7 +160,7 @@ export class ToolbarController {
      * @const
      */
     this.refreshCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#refresh', assert(this.toolbar_.ownerDocument.body)),
         Command);
 
@@ -168,7 +169,7 @@ export class ToolbarController {
      * @const
      */
     this.newFolderCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#new-folder', assert(this.toolbar_.ownerDocument.body)),
         Command);
 
@@ -177,7 +178,7 @@ export class ToolbarController {
      * @const
      */
     this.invokeSharesheetCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#invoke-sharesheet', assert(this.toolbar_.ownerDocument.body)),
         Command);
 
@@ -186,7 +187,7 @@ export class ToolbarController {
      * @const
      */
     this.togglePinnedCommand_ = assertInstanceof(
-        queryRequiredElement(
+        util.queryRequiredElement(
             '#toggle-pinned', assert(this.toolbar_.ownerDocument.body)),
         Command);
 

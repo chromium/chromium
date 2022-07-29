@@ -4,7 +4,6 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {str, strf, util} from '../../../common/js/util.js';
 
@@ -23,13 +22,14 @@ export class GearMenu {
      * @const
      */
     this.syncButton = /** @type {!HTMLMenuItemElement} */
-        (queryRequiredElement('#gear-menu-drive-sync-settings', element));
+        (util.queryRequiredElement('#gear-menu-drive-sync-settings', element));
 
     /**
      * @type {!HTMLElement}
      * @const
      */
-    this.volumeSpaceInfo = queryRequiredElement('#volume-space-info', element);
+    this.volumeSpaceInfo =
+        util.queryRequiredElement('#volume-space-info', element);
 
     /**
      * @type {!HTMLElement}
@@ -37,7 +37,7 @@ export class GearMenu {
      * @private
      */
     this.volumeSpaceInfoSeparator_ =
-        queryRequiredElement('#volume-space-info-separator', element);
+        util.queryRequiredElement('#volume-space-info-separator', element);
 
     /**
      * @type {!HTMLElement}
@@ -45,7 +45,7 @@ export class GearMenu {
      * @private
      */
     this.volumeSpaceInfoLabel_ =
-        queryRequiredElement('#volume-space-info-label', element);
+        util.queryRequiredElement('#volume-space-info-label', element);
 
     /**
      * @type {!HTMLElement}
@@ -53,7 +53,7 @@ export class GearMenu {
      * @private
      */
     this.volumeSpaceInnerBar_ =
-        queryRequiredElement('#volume-space-info-bar', element);
+        util.queryRequiredElement('#volume-space-info-bar', element);
 
     /**
      * @type {!HTMLElement}
@@ -69,7 +69,7 @@ export class GearMenu {
      * @private
      */
     this.volumeSpaceWarning_ =
-        queryRequiredElement('#volume-space-info-warning', element);
+        util.queryRequiredElement('#volume-space-info-warning', element);
 
     /**
      * @type {!HTMLElement}
@@ -77,7 +77,7 @@ export class GearMenu {
      * @private
      */
     this.providersMenuItem_ =
-        queryRequiredElement('#gear-menu-providers', element);
+        util.queryRequiredElement('#gear-menu-providers', element);
 
     /**
      * Promise to be resolved with volume space info.

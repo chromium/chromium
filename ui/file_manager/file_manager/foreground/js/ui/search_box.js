@@ -8,7 +8,6 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
-import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
 
 import {FileType} from '../../../common/js/file_type.js';
 import {metrics} from '../../../common/js/metrics.js';
@@ -59,8 +58,8 @@ export class SearchBox extends EventTarget {
      * @const
      */
     this.searchButtonToggleRipple_ =
-        /** @type {!FilesToggleRippleElement} */ (
-            queryRequiredElement('files-toggle-ripple', this.searchButton));
+        /** @type {!FilesToggleRippleElement} */ (util.queryRequiredElement(
+            'files-toggle-ripple', this.searchButton));
 
     /**
      * Text input of the search box.
