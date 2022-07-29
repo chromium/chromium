@@ -649,7 +649,7 @@ def main():
 
   reached_offsets = instrumented_processor.GetReachedOffsetsFromDump(dumps)
   if args.offsets_output:
-    with file(args.offsets_output, 'w') as f:
+    with open(args.offsets_output, 'w') as f:
       f.write('\n'.join(map(str, reached_offsets)))
   logging.info('Reached Offsets = %d', len(reached_offsets))
 

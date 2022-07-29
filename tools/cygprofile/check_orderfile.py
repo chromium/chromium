@@ -72,8 +72,9 @@ def main():
 
   symbol_infos = symbol_extractor.SymbolInfosFromBinary(binary_filename)
 
-  if not _VerifySymbolOrder([sym.strip() for sym in file(orderfile_filename)],
-                            symbol_infos, options.threshold):
+  if not _VerifySymbolOrder(
+      [sym.strip() for sym in open(orderfile_filename, 'r')], symbol_infos,
+      options.threshold):
     return 1
   return 0
 
