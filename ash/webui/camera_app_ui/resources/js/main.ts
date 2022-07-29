@@ -194,11 +194,7 @@ export class App {
       this.cameraManager.registerCameraUI({
         onUpdateConfig: () => {
           if (localStorage.getBool(LocalStorageKey.DOC_MODE_DIALOG_SHOWN) ||
-              !state.get(Mode.SCAN) ||
-              // TODO(b/238403258): Remove this line after
-              // camera.CCAUIDocumentScanning.manual_crop is able to close the
-              // dialog.
-              appWindow !== null) {
+              !state.get(Mode.SCAN)) {
             return;
           }
           localStorage.set(LocalStorageKey.DOC_MODE_DIALOG_SHOWN, true);
