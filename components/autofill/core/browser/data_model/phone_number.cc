@@ -348,12 +348,14 @@ bool PhoneNumber::PhoneCombineHelper::SetInfo(const AutofillType& type,
     return true;
   }
 
-  if (storable_type == PHONE_HOME_CITY_CODE) {
+  if (storable_type == PHONE_HOME_CITY_CODE ||
+      storable_type == PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX) {
     city_ = value;
     return true;
   }
 
-  if (storable_type == PHONE_HOME_CITY_AND_NUMBER) {
+  if (storable_type == PHONE_HOME_CITY_AND_NUMBER ||
+      storable_type == PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX) {
     phone_ = value;
     return true;
   }
