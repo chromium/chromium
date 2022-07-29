@@ -76,6 +76,10 @@ try_.builder(
 )
 
 try_.builder(
+    name = "gen-webview-try",
+)
+
+try_.builder(
     name = "gen-win-try",
     os = os.WINDOWS_10,
 )

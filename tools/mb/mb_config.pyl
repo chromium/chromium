@@ -585,6 +585,7 @@
       'codesearch-gen-chromium-lacros': 'codesearch_gen_chromium_lacros_bot',
       'codesearch-gen-chromium-linux': 'codesearch_gen_chromium_bot',
       'codesearch-gen-chromium-mac': 'codesearch_gen_chromium_mac_bot',
+      'codesearch-gen-chromium-webview': 'codesearch_gen_chromium_webview_bot',
       'codesearch-gen-chromium-win': 'codesearch_gen_chromium_bot',
     },
 
@@ -1076,6 +1077,7 @@
       'gen-lacros-try': 'codesearch_gen_chromium_lacros_bot',
       'gen-linux-try': 'codesearch_gen_chromium_bot',
       'gen-mac-try': 'codesearch_gen_chromium_mac_bot',
+      'gen-webview-try': 'codesearch_gen_chromium_webview_bot',
       'gen-win-try': 'codesearch_gen_chromium_bot',
     },
 
@@ -2383,6 +2385,10 @@
 
     'codesearch_gen_chromium_mac_bot': [
       'codesearch', 'mac',
+    ],
+
+    'codesearch_gen_chromium_webview_bot': [
+      'codesearch', 'android_without_codecs', 'static', 'goma',
     ],
 
     'dawn_tests_asan_release_bot_dcheck_always_on_reclient': [
