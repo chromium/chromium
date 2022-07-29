@@ -6932,9 +6932,6 @@ crbug.com/1273409 [ Mac11-arm64 ] fast/canvas/OffscreenCanvas-2d-drawImage.html 
 crbug.com/1273409 [ Linux ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 crbug.com/1273409 [ Win10.20h2 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Failure Pass ]
 
-# Temporarily allow pass or failure while new WebRTC stats are added and rolled into Chromium.
-crbug.com/webrtc/14147 external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
-
 # Sheriff 2022-06-08
 crbug.com/1229084 [ Linux ] external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
 crbug.com/1229084 [ Win ] external/wpt/storage-access-api/requestStorageAccess.sub.window.html [ Failure Pass ]
