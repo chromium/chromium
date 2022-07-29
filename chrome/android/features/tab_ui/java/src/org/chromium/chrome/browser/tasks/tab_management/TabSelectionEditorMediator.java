@@ -158,6 +158,8 @@ class TabSelectionEditorMediator
         mModel.set(TabSelectionEditorProperties.TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
         mModel.set(TabSelectionEditorProperties.TOOLBAR_GROUP_TEXT_TINT, toolbarTintColorList);
         mModel.set(TabSelectionEditorProperties.TOOLBAR_GROUP_BUTTON_TINT, toolbarTintColorList);
+
+        // TODO(ckitagawa): Forward tints to TabSelectionEditorAction property model.
     }
 
     /**

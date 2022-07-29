@@ -84,6 +84,9 @@ class TabSelectionEditorCoordinator {
                 int actionButtonEnablingThreshold,
                 @Nullable TabSelectionEditorNavigationProvider navigationProvider);
 
+        // TODO(ckitagawa): Create a method to pass a list of TabSelectionEditorActions as an
+        // alternative configuration which get bound in the mediator.
+
         /**
          * @return Whether the TabSelectionEditor is visible.
          */
@@ -180,6 +183,12 @@ class TabSelectionEditorCoordinator {
 
             mTabSelectionEditorLayoutChangeProcessor = PropertyModelChangeProcessor.create(
                     mModel, mTabSelectionEditorLayout, TabSelectionEditorLayoutBinder::bind, false);
+
+            // TODO(ckitagawa): Create an empty PropertyListModel here and pass to the mediator.
+            // Instantiate a TabSelectionEditorMenu wrapping the menu from the
+            // TabSelectionEditorLayout's toolbar. Ensure onMenuItemClick and
+            // onSelectionStateChanged events are forwarded. The mediator will
+            // bind the TabSelectionEditorActions in the new configure call.
 
             mTabSelectionEditorMediator = new TabSelectionEditorMediator(mContext,
                     mTabModelSelector, this::resetWithListOfTabs, mModel, mSelectionDelegate);
