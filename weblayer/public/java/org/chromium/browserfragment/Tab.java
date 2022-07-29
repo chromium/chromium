@@ -31,4 +31,14 @@ public class Tab {
         } catch (RemoteException e) {
         }
     }
+
+    /**
+     * Sets this tab to active.
+     */
+    public void setActive() {
+        try {
+            mTabProxy.setActive();
+        } catch (RemoteException e) {
+        }
+    }
 }

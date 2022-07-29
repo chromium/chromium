@@ -38,4 +38,12 @@ class TabProxy extends ITabProxy.Stub {
                     Uri.parse(uri), navigateParamsBuilder.build());
         });
     }
+
+    @Override
+    public void setActive() {
+        mHandler.post(() -> {
+            Tab tab = getTab();
+            tab.getBrowser().setActiveTab(tab);
+        });
+    }
 }

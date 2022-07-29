@@ -181,6 +181,7 @@ android_aidl("browserfragment_aidl") {
     "org/chromium/browserfragment/interfaces/IBrowserFragmentDelegateClient.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxCallback.aidl",
     "org/chromium/browserfragment/interfaces/IBrowserSandboxService.aidl",
+    "org/chromium/browserfragment/interfaces/ITabObserverDelegate.aidl",
     "org/chromium/browserfragment/interfaces/ITabProxy.aidl",
   ]
 }
@@ -196,11 +197,14 @@ android_library("browserfragment_java") {
     "org/chromium/browserfragment/BrowserFragment.java",
     "org/chromium/browserfragment/Tab.java",
     "org/chromium/browserfragment/TabManager.java",
+    "org/chromium/browserfragment/TabObserver.java",
+    "org/chromium/browserfragment/TabObserverDelegate.java",
   ]
 
   resources_package = "org.chromium.browserfragment"
   deps = [
     ":browserfragment_interfaces_java",
+    "//base:base_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",

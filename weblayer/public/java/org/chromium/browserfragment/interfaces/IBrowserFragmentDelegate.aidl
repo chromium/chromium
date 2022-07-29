@@ -6,6 +6,7 @@ package org.chromium.browserfragment.interfaces;
 
 import android.os.Bundle;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
 interface IBrowserFragmentDelegate {
@@ -26,4 +27,5 @@ interface IBrowserFragmentDelegate {
 
     // Tab operations.
     ITabProxy getActiveTab() = 14;
+    void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 15;
 }

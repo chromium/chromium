@@ -7,4 +7,5 @@ package org.chromium.browserfragment.interfaces;
 interface ITabProxy {
   // TODO(swestphal): Move this to the navigationController when we expose one.
   void navigate(in String url) = 1;
+  void setActive() = 2;
 }

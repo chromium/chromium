@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegate;
 import org.chromium.browserfragment.interfaces.IBrowserFragmentDelegateClient;
+import org.chromium.browserfragment.interfaces.ITabObserverDelegate;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
 /**
@@ -26,7 +27,7 @@ import org.chromium.browserfragment.interfaces.ITabProxy;
 class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     private static final String DEFAULT_PROFILE = "DefaultProfile";
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private Context mContext;
     private WebLayer mWebLayer;
@@ -141,5 +142,10 @@ class BrowserFragmentDelegate extends IBrowserFragmentDelegate.Stub {
     @Override
     public void onPause() {
         mHandler.post(() -> mFragment.onPause());
+    }
+
+    @Override
+    public void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) {
+        mTabDelegate.setObserver(tabObserverDelegate);
     }
 }

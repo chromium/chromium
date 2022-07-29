@@ -32,6 +32,7 @@ public class BrowserFragment extends Fragment {
     private SurfaceView mSurfaceView;
     private Browser mBrowser;
     private IBrowserFragmentDelegate mDelegate;
+    private final TabObserverDelegate mTabObserverDelegate = new TabObserverDelegate();
     private ListenableFuture<TabManager> mFutureTabManager;
     private CallbackToFutureAdapter.Completer<TabManager> mTabManagerCompleter;
 
@@ -61,6 +62,8 @@ public class BrowserFragment extends Fragment {
         mBrowser = browser;
         mDelegate = delegate;
         mDelegate.setClient(mClient);
+        mDelegate.setTabObserverDelegate(mTabObserverDelegate);
+
         mFutureTabManager = CallbackToFutureAdapter.getFuture(completer -> {
             mTabManagerCompleter = completer;
             // Debug string.
@@ -184,5 +187,27 @@ public class BrowserFragment extends Fragment {
     @NonNull
     public ListenableFuture<TabManager> getTabManager() {
         return mFutureTabManager;
+    }
+
+    /**
+     * Register a tab observer and returns if successful.
+     *
+     * @param tabObserver The TabObserver.
+     *
+     * @return true if observer was added to the list of observers.
+     */
+    public boolean registerTabObserver(@NonNull TabObserver tabObserver) {
+        return mTabObserverDelegate.registerObserver(tabObserver);
+    }
+
+    /**
+     * Unregister a tab observer and returns if successful.
+     *
+     * @param tabObserver The TabObserver to remove.
+     *
+     * @return true if observer was removed from the list of observers.
+     */
+    public boolean unregisterTabObserver(@NonNull TabObserver tabObserver) {
+        return mTabObserverDelegate.unregisterObserver(tabObserver);
     }
 }
