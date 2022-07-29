@@ -1,10 +1,4 @@
 <style include="os-feedback-shared">
-  #legalHelpPageUrl,
-  #privacyPolicyUrl,
-  #termsOfServiceUrl {
-    text-decoration: none;
-  }
-
   #privacyNote {
     color: var(--cros-color-secondary);
     font-size: 13px;
@@ -44,6 +38,7 @@
 
   #screenshotCheckLabel {
     flex: 1;
+    margin-inline-end: 12px;
   }
 
   #screenshotContainer > button {
@@ -80,6 +75,7 @@
   }
 
   .md-select {
+    --md-select-side-padding: 16px;
     height: 32px;
     width: 248px;
   }
@@ -103,10 +99,6 @@
     color: var(--cros-text-color-disabled);
   }
 
-  #sysInfoCheckboxLabel {
-    line-height: 20px;
-  }
-
   #screenshotCheckbox {
     margin-inline-end: 10px;
     margin-inline-start: 12px;
@@ -114,7 +106,6 @@
 
   #screenshotCheckLabel {
     font-weight: 400;
-    line-height: 20px;
   }
 
   #imageButton {
@@ -137,6 +128,7 @@
 
   label {
     color: var(--cros-text-color-primary);
+    line-height: 20px;
   }
 </style>
 <div id="container">
