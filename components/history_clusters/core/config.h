@@ -119,11 +119,11 @@ struct Config {
 
   // If enabled, adds the keywords of categories for detected entities to a
   // cluster.
-  bool keyword_filter_on_categories = true;
+  bool keyword_filter_on_categories = false;
 
   // If enabled, adds the keywords of detected entities from noisy visits to a
   // cluster.
-  bool keyword_filter_on_noisy_visits = true;
+  bool keyword_filter_on_noisy_visits = false;
 
   // If enabled, adds the search terms of the visits that have them.
   bool keyword_filter_on_search_terms = false;
