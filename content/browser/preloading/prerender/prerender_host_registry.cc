@@ -144,8 +144,7 @@ int PrerenderHostRegistry::CreateAndStartHost(
       attempt->SetEligibility(PreloadingEligibility::kEligible);
 
     // Check for the HoldbackStatus after checking the eligibility.
-    if (base::GetFieldTrialParamByFeatureAsBool(blink::features::kPrerender2,
-                                                "prerender_holdback", false)) {
+    if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
       if (attempt)
         attempt->SetHoldbackStatus(PreloadingHoldbackStatus::kHoldback);
       return RenderFrameHost::kNoFrameTreeNodeId;

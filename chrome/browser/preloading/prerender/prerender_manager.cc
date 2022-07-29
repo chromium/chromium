@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -343,8 +344,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
 
       // Check and set the PreloadingHoldbackStatus before setting the
       // TriggeringOutcome.
-      if (base::GetFieldTrialParamByFeatureAsBool(
-              blink::features::kPrerender2, "prerender_holdback", false)) {
+      if (base::FeatureList::IsEnabled(features::kPrerender2Holdback)) {
         preloading_attempt.SetHoldbackStatus(
             content::PreloadingHoldbackStatus::kHoldback);
       } else {

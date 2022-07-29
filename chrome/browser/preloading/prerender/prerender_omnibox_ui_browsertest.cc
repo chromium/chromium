@@ -41,6 +41,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
@@ -422,10 +423,11 @@ class PrerenderPreloaderHoldbackBrowserTest
     : public PrerenderOmniboxUIBrowserTest {
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2, {{"prerender_holdback", "true"}}},
-         {features::kOmniboxTriggerForPrerender2, {{}}}},
-        {/* disabled_features */});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{blink::features::kPrerender2,
+                              features::kOmniboxTriggerForPrerender2,
+                              features::kPrerender2Holdback},
+        /* disabled_features=*/{});
   }
   ~PrerenderPreloaderHoldbackBrowserTest() override = default;
 

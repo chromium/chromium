@@ -6406,7 +6406,8 @@ class PrerenderPreloaderHoldbackBrowserTest : public PrerenderBrowserTest {
  public:
   PrerenderPreloaderHoldbackBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{blink::features::kPrerender2, {{"prerender_holdback", "true"}}}},
+        {{blink::features::kPrerender2, {{}}},
+         {features::kPrerender2Holdback, {{}}}},
         {/* disabled_features */});
   }
   ~PrerenderPreloaderHoldbackBrowserTest() override = default;
