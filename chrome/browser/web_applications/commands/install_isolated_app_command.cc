@@ -16,6 +16,7 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -30,9 +31,16 @@ InstallIsolatedAppCommand::InstallIsolatedAppCommand(
           base::flat_set<AppId>{"some random app id"})),
       url_(url),
       url_loader_(url_loader),
-      data_retriever_(std::make_unique<WebAppDataRetriever>()),
-      callback_(std::move(callback)) {
+      data_retriever_(std::make_unique<WebAppDataRetriever>()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+
+  DCHECK(!callback.is_null());
+
+  callback_ = base::BindOnce([](InstallIsolatedAppCommandResult result) {
+                webapps::InstallableMetrics::TrackInstallResult(
+                    result == InstallIsolatedAppCommandResult::kOk);
+                return result;
+              }).Then(std::move(callback));
 
   weak_this_ = weak_factory_.GetWeakPtr();
 }

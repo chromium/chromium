@@ -2,14 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/web_applications/commands/install_isolated_app_command.h"
+
+#include <memory>
+#include <sstream>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/test/fake_data_retriever.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -241,6 +244,98 @@ TEST_F(InstallIsolatedAppCommandTest,
   EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
                              std::move(fake_data_retriever)),
               Not(IsInstallationOk()));
+}
+
+using InstallIsolatedAppCommandMetricsTest = InstallIsolatedAppCommandTest;
+
+TEST_F(InstallIsolatedAppCommandMetricsTest,
+       ReportSuccessWhenFinishedSuccessfully) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  base::HistogramTester histogram_tester_;
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
+              IsInstallationOk());
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+              base::BucketsAre(base::Bucket(true, 1)));
+}
+
+TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenURLIsInvalid) {
+  SetPrepareForLoadResultLoaded();
+
+  base::HistogramTester histogram_tester_;
+
+  EXPECT_THAT(ExecuteCommand("some definetely invalid url"),
+              Not(IsInstallationOk()));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+              base::BucketsAre(base::Bucket(false, 1)));
+}
+
+TEST_F(InstallIsolatedAppCommandMetricsTest, ReportErrorWhenUrlLoaderFails) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectFailureForURL("http://test-url-example.com");
+
+  base::HistogramTester histogram_tester_;
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com"),
+              Not(IsInstallationOk()));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+              base::BucketsAre(base::Bucket(false, 1)));
+}
+
+TEST_F(InstallIsolatedAppCommandMetricsTest,
+       ReportFailureWhenAppIsNotInstallable) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      std::make_unique<FakeDataRetriever>();
+
+  auto manifest = blink::mojom::Manifest::New();
+  fake_data_retriever->SetManifest(
+      std::move(manifest),
+      /*is_installable=*/false,
+      /*manifest_url=*/
+      GURL{"http://test-url-example.com/manifest.json"});
+
+  base::HistogramTester histogram_tester_;
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              Not(IsInstallationOk()));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+              base::BucketsAre(base::Bucket(false, 1)));
+}
+
+TEST_F(InstallIsolatedAppCommandMetricsTest, ReportFailureWhenManifestIsNull) {
+  SetPrepareForLoadResultLoaded();
+
+  ExpectLoadedForURL("http://test-url-example.com");
+
+  std::unique_ptr<FakeDataRetriever> fake_data_retriever =
+      std::make_unique<FakeDataRetriever>();
+
+  fake_data_retriever->SetManifest(
+      /*manifest=*/nullptr,
+      /*is_installable=*/true,
+      /*manifest_url=*/CreateDefaultManifestURL());
+
+  base::HistogramTester histogram_tester_;
+
+  EXPECT_THAT(ExecuteCommand("http://test-url-example.com",
+                             std::move(fake_data_retriever)),
+              Not(IsInstallationOk()));
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples("WebApp.Install.Result"),
+              base::BucketsAre(base::Bucket(false, 1)));
 }
 
 }  // namespace
