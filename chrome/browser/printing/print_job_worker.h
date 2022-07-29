@@ -50,22 +50,26 @@ class PrintJobWorker {
 
   /* The following functions may only be called before calling SetPrintJob(). */
 
+  // Initializes the default print settings. Must be called on the UI thread.
   void GetDefaultSettings(SettingsCallback callback);
 
-  // Initializes the print settings. A Print... dialog box will be shown to ask
-  // the user their preference.
-  // `is_scripted` should be true for calls coming straight from window.print().
+  // Initializes the print settings. Must be called on the UI thread. A Print...
+  // dialog box will be shown to ask the user their preference. `is_scripted`
+  // should be true for calls coming straight from window.print().
   void GetSettingsFromUser(uint32_t document_page_count,
                            bool has_selection,
                            mojom::MarginType margin_type,
                            bool is_scripted,
                            SettingsCallback callback);
 
-  // Set the new print settings from a dictionary value.
-  void SetSettings(base::Value::Dict new_settings, SettingsCallback callback);
+  // Set the new print settings from a dictionary value. Must be called on the
+  // UI thread.
+  virtual void SetSettings(base::Value::Dict new_settings,
+                           SettingsCallback callback);
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // Set the new print settings from a POD type.
+  // Set the new print settings from a POD type. Must be called on the UI
+  // thread.
   void SetSettingsFromPOD(std::unique_ptr<printing::PrintSettings> new_settings,
                           SettingsCallback callback);
 #endif
@@ -136,21 +140,22 @@ class PrintJobWorker {
   // Reports settings back to `callback`.
   void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
-  // Helper functions to invoke the desired way of getting system print
-  // settings.
-  virtual void InvokeUseDefaultSettings(SettingsCallback callback);
-  virtual void InvokeGetSettingsWithUI(uint32_t document_page_count,
-                                       bool has_selection,
-                                       bool is_scripted,
-                                       SettingsCallback callback);
-
-  // Called on the UI thread to update the print settings.
-  virtual void UpdatePrintSettings(base::Value::Dict new_settings,
-                                   SettingsCallback callback);
-
   // Discards the current document, the current page and cancels the printing
   // context.
   virtual void OnFailure();
+
+  // Asks the user for print settings. Must be called on the UI thread.
+  // Required on Mac and Linux. Windows can display UI from non-main threads,
+  // but sticks with this for consistency.
+  virtual void GetSettingsWithUI(uint32_t document_page_count,
+                                 bool has_selection,
+                                 bool is_scripted,
+                                 SettingsCallback callback);
+
+  // Use the default settings. When using GTK+ or Mac, this can still end up
+  // displaying a dialog. So this needs to happen from the UI thread on these
+  // systems.
+  virtual void UseDefaultSettings(SettingsCallback callback);
 
   PrintingContext* printing_context() { return printing_context_.get(); }
   PrintedDocument* document() { return document_.get(); }
@@ -168,25 +173,12 @@ class PrintJobWorker {
   bool OnNewPageHelperGdi();
 #endif  // BUILDFLAG(IS_WIN)
 
-  // Asks the user for print settings. Must be called on the UI thread.
-  // Required on Mac and Linux. Windows can display UI from non-main threads,
-  // but sticks with this for consistency.
-  void GetSettingsWithUI(uint32_t document_page_count,
-                         bool has_selection,
-                         bool is_scripted,
-                         SettingsCallback callback);
-
 #if BUILDFLAG(IS_CHROMEOS)
   // Called on the UI thread to update the print settings.
   void UpdatePrintSettingsFromPOD(
       std::unique_ptr<printing::PrintSettings> new_settings,
       SettingsCallback callback);
 #endif
-
-  // Use the default settings. When using GTK+ or Mac, this can still end up
-  // displaying a dialog. So this needs to happen from the UI thread on these
-  // systems.
-  void UseDefaultSettings(SettingsCallback callback);
 
   // Printing context delegate.
   const std::unique_ptr<PrintingContext::Delegate> printing_context_delegate_;

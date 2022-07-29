@@ -122,13 +122,9 @@ void PrinterQuery::GetDefaultSettings(base::OnceClosure callback,
   // Real work is done in PrintJobWorker::GetDefaultSettings().
   is_print_dialog_box_shown_ = false;
   // `this` is owned by `callback`, so `base::Unretained()` is safe.
-  worker_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJobWorker::GetDefaultSettings,
-                     base::Unretained(worker_.get()),
-                     base::BindOnce(&PrinterQuery::PostSettingsDone,
-                                    base::Unretained(this), std::move(callback),
-                                    is_modifiable)));
+  worker_->GetDefaultSettings(
+      base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
+                     std::move(callback), is_modifiable));
 }
 
 void PrinterQuery::GetSettingsFromUser(uint32_t expected_page_count,
@@ -145,14 +141,10 @@ void PrinterQuery::GetSettingsFromUser(uint32_t expected_page_count,
   // Real work is done in PrintJobWorker::GetSettingsFromUser().
   is_print_dialog_box_shown_ = true;
   // `this` is owned by `callback`, so `base::Unretained()` is safe.
-  worker_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJobWorker::GetSettingsFromUser,
-                     base::Unretained(worker_.get()), expected_page_count,
-                     has_selection, margin_type, is_scripted,
-                     base::BindOnce(&PrinterQuery::PostSettingsDone,
-                                    base::Unretained(this), std::move(callback),
-                                    is_modifiable)));
+  worker_->GetSettingsFromUser(
+      expected_page_count, has_selection, margin_type, is_scripted,
+      base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
+                     std::move(callback), is_modifiable));
 }
 
 void PrinterQuery::SetSettings(base::Value::Dict new_settings,
@@ -161,13 +153,11 @@ void PrinterQuery::SetSettings(base::Value::Dict new_settings,
 
   StartWorker();
   // `this` is owned by `callback`, so `base::Unretained()` is safe.
-  worker_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJobWorker::SetSettings,
-                     base::Unretained(worker_.get()), std::move(new_settings),
-                     base::BindOnce(&PrinterQuery::PostSettingsDone,
-                                    base::Unretained(this), std::move(callback),
-                                    /*maybe_is_modifiable=*/absl::nullopt)));
+  worker_->SetSettings(
+      std::move(new_settings),
+      base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
+                     std::move(callback),
+                     /*maybe_is_modifiable=*/absl::nullopt));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -178,13 +168,11 @@ void PrinterQuery::SetSettingsFromPOD(
 
   StartWorker();
   // `this` is owned by `callback`, so `base::Unretained()` is safe.
-  worker_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJobWorker::SetSettingsFromPOD,
-                     base::Unretained(worker_.get()), std::move(new_settings),
-                     base::BindOnce(&PrinterQuery::PostSettingsDone,
-                                    base::Unretained(this), std::move(callback),
-                                    /*maybe_is_modifiable=*/absl::nullopt)));
+  worker_->SetSettingsFromPOD(
+      std::move(new_settings),
+      base::BindOnce(&PrinterQuery::PostSettingsDone, base::Unretained(this),
+                     std::move(callback),
+                     /*maybe_is_modifiable=*/absl::nullopt));
 }
 #endif
 

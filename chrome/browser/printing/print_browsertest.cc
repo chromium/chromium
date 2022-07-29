@@ -100,8 +100,8 @@ namespace printing {
 using testing::_;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
-using OnDidInvokeUseDefaultSettingsCallback = base::RepeatingCallback<void()>;
-using OnDidInvokeGetSettingsWithUICallback = base::RepeatingCallback<void()>;
+using OnUseDefaultSettingsCallback = base::RepeatingCallback<void()>;
+using OnGetSettingsWithUICallback = base::RepeatingCallback<void()>;
 
 using ErrorCheckCallback =
     base::RepeatingCallback<void(mojom::ResultCode result)>;
@@ -128,9 +128,8 @@ using OnStopCallback = base::RepeatingCallback<void()>;
 
 // Callbacks to run for overrides in `TestPrintJobWorker`.
 struct TestPrintCallbacks {
-  OnDidInvokeUseDefaultSettingsCallback
-      did_invoke_use_default_settings_callback;
-  OnDidInvokeGetSettingsWithUICallback did_invoke_get_settings_with_ui_callback;
+  OnUseDefaultSettingsCallback did_use_default_settings_callback;
+  OnGetSettingsWithUICallback did_get_settings_with_ui_callback;
   OnStopCallback did_stop_callback;
 };
 
@@ -2312,20 +2311,20 @@ class TestPrintJobWorker : public PrintJobWorker {
   ~TestPrintJobWorker() override = default;
 
  private:
-  void InvokeUseDefaultSettings(SettingsCallback callback) override {
+  void UseDefaultSettings(SettingsCallback callback) override {
     DVLOG(1) << "Observed: invoke use default settings";
-    PrintJobWorker::InvokeUseDefaultSettings(std::move(callback));
-    callbacks_->did_invoke_use_default_settings_callback.Run();
+    PrintJobWorker::UseDefaultSettings(std::move(callback));
+    callbacks_->did_use_default_settings_callback.Run();
   }
 
-  void InvokeGetSettingsWithUI(uint32_t document_page_count,
-                               bool has_selection,
-                               bool is_scripted,
-                               SettingsCallback callback) override {
+  void GetSettingsWithUI(uint32_t document_page_count,
+                         bool has_selection,
+                         bool is_scripted,
+                         SettingsCallback callback) override {
     DVLOG(1) << "Observed: invoke get settings with UI";
-    PrintJobWorker::InvokeGetSettingsWithUI(document_page_count, has_selection,
-                                            is_scripted, std::move(callback));
-    callbacks_->did_invoke_get_settings_with_ui_callback.Run();
+    PrintJobWorker::GetSettingsWithUI(document_page_count, has_selection,
+                                      is_scripted, std::move(callback));
+    callbacks_->did_get_settings_with_ui_callback.Run();
   }
 
   void Stop() override {
@@ -2484,14 +2483,14 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
           &SystemAccessProcessPrintBrowserTestBase::OnDidStop,
           base::Unretained(this));
     } else {
-      test_print_callbacks_.did_invoke_use_default_settings_callback =
-          base::BindRepeating(&SystemAccessProcessPrintBrowserTestBase::
-                                  OnDidInvokeUseDefaultSettings,
-                              base::Unretained(this));
-      test_print_callbacks_.did_invoke_get_settings_with_ui_callback =
-          base::BindRepeating(&SystemAccessProcessPrintBrowserTestBase::
-                                  OnDidInvokeGetSettingsWithUI,
-                              base::Unretained(this));
+      test_print_callbacks_.did_use_default_settings_callback =
+          base::BindRepeating(
+              &SystemAccessProcessPrintBrowserTestBase::OnUseDefaultSettings,
+              base::Unretained(this));
+      test_print_callbacks_.did_get_settings_with_ui_callback =
+          base::BindRepeating(
+              &SystemAccessProcessPrintBrowserTestBase::OnGetSettingsWithUI,
+              base::Unretained(this));
       test_print_callbacks_.did_stop_callback = base::BindRepeating(
           &SystemAccessProcessPrintBrowserTestBase::OnDidStop,
           base::Unretained(this));
@@ -2629,13 +2628,9 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
         /*cause_errors=*/true);
   }
 
-  bool did_invoke_use_default_settings() const {
-    return did_invoke_use_default_settings_;
-  }
+  bool did_use_default_settings() const { return did_use_default_settings_; }
 
-  bool did_invoke_get_settings_with_ui() const {
-    return did_invoke_get_settings_with_ui_;
-  }
+  bool did_get_settings_with_ui() const { return did_get_settings_with_ui_; }
 
   bool print_backend_service_use_detected() const {
     return print_backend_service_use_detected_;
@@ -2780,14 +2775,14 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
   }
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
 
-  void OnDidInvokeUseDefaultSettings() {
-    did_invoke_use_default_settings_ = true;
+  void OnUseDefaultSettings() {
+    did_use_default_settings_ = true;
     PrintBackendServiceDetectionCheck();
     CheckForQuit();
   }
 
-  void OnDidInvokeGetSettingsWithUI() {
-    did_invoke_get_settings_with_ui_ = true;
+  void OnGetSettingsWithUI() {
+    did_get_settings_with_ui_ = true;
     PrintBackendServiceDetectionCheck();
     CheckForQuit();
   }
@@ -2881,8 +2876,8 @@ class SystemAccessProcessPrintBrowserTestBase : public PrintBrowserTest {
   TestPrintCallbacks test_print_callbacks_;
   TestPrintOopCallbacks test_print_oop_callbacks_;
   CreatePrintJobWorkerCallback test_create_print_job_worker_callback_;
-  bool did_invoke_use_default_settings_ = false;
-  bool did_invoke_get_settings_with_ui_ = false;
+  bool did_use_default_settings_ = false;
+  bool did_get_settings_with_ui_ = false;
   bool print_backend_service_use_detected_ = false;
   bool simulate_spooling_memory_errors_ = false;
   mojo::Remote<mojom::PrintBackendService> test_remote_;
@@ -3369,8 +3364,8 @@ IN_PROC_BROWSER_TEST_F(SystemAccessProcessInBrowserPrintBrowserTest,
 
   WaitUntilCallbackReceived();
 
-  EXPECT_TRUE(did_invoke_use_default_settings());
-  EXPECT_TRUE(did_invoke_get_settings_with_ui());
+  EXPECT_TRUE(did_use_default_settings());
+  EXPECT_TRUE(did_get_settings_with_ui());
   EXPECT_TRUE(stop_invoked());
 
   // `PrintBackendService` should never be used when printing in-browser.

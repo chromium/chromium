@@ -299,23 +299,17 @@ void PrintJobWorkerOop::OnDocumentDone() {
   // PrintBackend service.
 }
 
-void PrintJobWorkerOop::InvokeUseDefaultSettings(SettingsCallback callback) {
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJobWorkerOop::SendUseDefaultSettings,
-                     ui_weak_factory_.GetWeakPtr(), std::move(callback)));
+void PrintJobWorkerOop::UseDefaultSettings(SettingsCallback callback) {
+  SendUseDefaultSettings(std::move(callback));
 }
 
-void PrintJobWorkerOop::InvokeGetSettingsWithUI(uint32_t document_page_count,
-                                                bool has_selection,
-                                                bool is_scripted,
-                                                SettingsCallback callback) {
+void PrintJobWorkerOop::GetSettingsWithUI(uint32_t document_page_count,
+                                          bool has_selection,
+                                          bool is_scripted,
+                                          SettingsCallback callback) {
 #if BUILDFLAG(IS_WIN)
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PrintJobWorkerOop::SendAskUserForSettings,
-                     ui_weak_factory_.GetWeakPtr(), document_page_count,
-                     has_selection, is_scripted, std::move(callback)));
+  SendAskUserForSettings(document_page_count, has_selection, is_scripted,
+                         std::move(callback));
 #else
   // Invoke the browser version of getting settings with the system UI:
   //   - macOS:  It is impossible to invoke a system dialog UI from a service
@@ -326,13 +320,13 @@ void PrintJobWorkerOop::InvokeGetSettingsWithUI(uint32_t document_page_count,
   //       browser process.
   //   - Other platforms don't have a system print UI or do not use OOP
   //     printing, so this does not matter.
-  PrintJobWorker::InvokeGetSettingsWithUI(document_page_count, has_selection,
-                                          is_scripted, std::move(callback));
+  PrintJobWorker::GetSettingsWithUI(document_page_count, has_selection,
+                                    is_scripted, std::move(callback));
 #endif
 }
 
-void PrintJobWorkerOop::UpdatePrintSettings(base::Value::Dict new_settings,
-                                            SettingsCallback callback) {
+void PrintJobWorkerOop::SetSettings(base::Value::Dict new_settings,
+                                    SettingsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Do not take a const reference, as `new_settings` will be modified below.
