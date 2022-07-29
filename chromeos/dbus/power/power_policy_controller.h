@@ -122,17 +122,17 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerPolicyController
     int adaptive_charging_hold_percent = -1;
   };
 
-  // Converts |base::DictionaryValue| to |std::vector<PeakShiftDayConfig>| and
+  // Converts |base::Value::Dict| to |std::vector<PeakShiftDayConfig>| and
   // returns true if there are no missing fields and errors.
   static bool GetPeakShiftDayConfigs(
-      const base::DictionaryValue& value,
+      const base::Value::Dict& value,
       std::vector<PeakShiftDayConfig>* configs_out);
 
-  // Converts |base::DictionaryValue| to
+  // Converts |base::Value::Dict| to
   // |std::vector<AdvancedBatteryChargeModeDayConfig>| and returns true if there
   // are no missing fields and errors.
   static bool GetAdvancedBatteryChargeModeDayConfigs(
-      const base::DictionaryValue& value,
+      const base::Value::Dict& value,
       std::vector<AdvancedBatteryChargeModeDayConfig>* configs_out);
 
   // Saves appropriate value to |mode_out| and returns true if there is mapping

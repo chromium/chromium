@@ -145,18 +145,17 @@ const char PowerPolicyController::kPrefsReason[] = "Prefs";
 
 // static
 bool PowerPolicyController::GetPeakShiftDayConfigs(
-    const base::DictionaryValue& value,
+    const base::Value::Dict& value,
     std::vector<PeakShiftDayConfig>* configs_out) {
   DCHECK(configs_out);
   configs_out->clear();
 
-  const base::Value* entries =
-      value.FindKeyOfType({"entries"}, base::Value::Type::LIST);
+  const base::Value::List* entries = value.FindList({"entries"});
   if (!entries) {
     return false;
   }
 
-  for (const base::Value& item : entries->GetListDeprecated()) {
+  for (const base::Value& item : *entries) {
     const base::Value* week_day_value =
         item.FindKeyOfType({"day"}, base::Value::Type::STRING);
     const base::Value* start_time_hour =
@@ -200,18 +199,17 @@ bool PowerPolicyController::GetPeakShiftDayConfigs(
 
 // static
 bool PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
-    const base::DictionaryValue& value,
+    const base::Value::Dict& value,
     std::vector<AdvancedBatteryChargeModeDayConfig>* configs_out) {
   DCHECK(configs_out);
   configs_out->clear();
 
-  const base::Value* entries =
-      value.FindKeyOfType({"entries"}, base::Value::Type::LIST);
+  const base::Value::List* entries = value.FindList({"entries"});
   if (!entries) {
     return false;
   }
 
-  for (const base::Value& item : entries->GetListDeprecated()) {
+  for (const base::Value& item : *entries) {
     const base::Value* week_day_value =
         item.FindKeyOfType({"day"}, base::Value::Type::STRING);
     const base::Value* charge_start_time_hour = item.FindPathOfType(

@@ -366,12 +366,10 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       local_state_->IsManagedPreference(
           prefs::kPowerPeakShiftBatteryThreshold) &&
       local_state_->IsManagedPreference(prefs::kPowerPeakShiftDayConfig)) {
-    const base::DictionaryValue* configs_value =
-        &base::Value::AsDictionaryValue(
-            *local_state_->GetDictionary(prefs::kPowerPeakShiftDayConfig));
-    DCHECK(configs_value);
+    const base::Value::Dict& configs_value =
+        local_state_->GetValueDict(prefs::kPowerPeakShiftDayConfig);
     std::vector<PeakShiftDayConfig> configs;
-    if (chromeos::PowerPolicyController::GetPeakShiftDayConfigs(*configs_value,
+    if (chromeos::PowerPolicyController::GetPeakShiftDayConfigs(configs_value,
                                                                 &configs)) {
       values.peak_shift_enabled = true;
       values.peak_shift_battery_threshold =
@@ -379,7 +377,7 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
       values.peak_shift_day_configs = std::move(configs);
     } else {
       LOG(WARNING) << "Invalid Peak Shift day configs format: "
-                   << *configs_value;
+                   << configs_value;
     }
   }
 
@@ -388,18 +386,17 @@ void PowerPrefs::UpdatePowerPolicyFromPrefs() {
           prefs::kAdvancedBatteryChargeModeEnabled) &&
       local_state_->IsManagedPreference(
           prefs::kAdvancedBatteryChargeModeDayConfig)) {
-    const base::Value* configs_value =
-        local_state_->GetDictionary(prefs::kAdvancedBatteryChargeModeDayConfig);
-    DCHECK(configs_value);
+    const base::Value::Dict& configs_value =
+        local_state_->GetValueDict(prefs::kAdvancedBatteryChargeModeDayConfig);
     std::vector<AdvancedBatteryChargeModeDayConfig> configs;
     if (chromeos::PowerPolicyController::GetAdvancedBatteryChargeModeDayConfigs(
-            base::Value::AsDictionaryValue(*configs_value), &configs)) {
+            configs_value, &configs)) {
       values.advanced_battery_charge_mode_enabled = true;
       values.advanced_battery_charge_mode_day_configs = std::move(configs);
     } else {
       LOG(WARNING)
           << "Invalid Advanced Battery Charge Mode day configs format: "
-          << *configs_value;
+          << configs_value;
     }
   }
 
