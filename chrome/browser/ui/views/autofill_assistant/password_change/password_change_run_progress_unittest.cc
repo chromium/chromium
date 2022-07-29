@@ -24,15 +24,23 @@ class PasswordChangeRunProgressTest : public views::ViewsTestBase {
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();
+    widget_ = CreateTestWidget();
     password_change_run_progress_ =
-        std::make_unique<PasswordChangeRunProgress>();
+        widget_->SetContentsView(std::make_unique<PasswordChangeRunProgress>());
   }
   PasswordChangeRunProgress* get_password_change_run_progress() {
-    return password_change_run_progress_.get();
+    return password_change_run_progress_;
+  }
+
+  void TearDown() override {
+    widget_.reset();
+    views::ViewsTestBase::TearDown();
   }
 
  private:
-  std::unique_ptr<PasswordChangeRunProgress> password_change_run_progress_;
+  raw_ptr<PasswordChangeRunProgress> password_change_run_progress_;
+  // Widget to anchor the view and retrieve a color provider from.
+  std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(PasswordChangeRunProgressTest, SetProgress) {

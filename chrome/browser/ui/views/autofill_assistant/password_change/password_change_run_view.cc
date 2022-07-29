@@ -107,8 +107,6 @@ void PasswordChangeRunView::CreateView() {
   // colapse with the ones insde `PasswordChangeRunProgress`.
   password_change_run_progress_ = AddChildView(
       std::make_unique<PasswordChangeRunProgress>(/*childrenIDsOffset=*/20));
-  password_change_run_progress_->SetProgressBarBackgrounColor(
-      GetColorProvider()->GetColor(ui::kColorIconDisabled));
 
   title_container_ = AddChildView(
       views::Builder<views::View>()
