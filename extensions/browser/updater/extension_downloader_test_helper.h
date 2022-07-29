@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_types.h"
@@ -73,6 +74,27 @@ class MockExtensionDownloaderDelegate
 
  private:
   base::RepeatingClosure quit_closure_;
+};
+
+class MockExtensionCache : public ExtensionCache {
+ public:
+  MockExtensionCache();
+  ~MockExtensionCache() override;
+
+  void Start(base::OnceClosure callback) override;
+  void Shutdown(base::OnceClosure callback) override;
+  MOCK_METHOD1(AllowCaching, void(const ExtensionId&));
+  MOCK_METHOD4(GetExtension,
+               bool(const ExtensionId&,
+                    const std::string& expected_hash,
+                    base::FilePath* path,
+                    std::string* version));
+  MOCK_METHOD5(PutExtension,
+               void(const ExtensionId&,
+                    const std::string& hash,
+                    const base::FilePath& path,
+                    const std::string& version,
+                    PutExtensionCallback callback));
 };
 
 // Creates ExtensionDownloader for tests, with mocked delegate and

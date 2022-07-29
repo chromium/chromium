@@ -88,6 +88,17 @@ void MockExtensionDownloaderDelegate::DelegateTo(
           delegate, &ExtensionDownloaderDelegate::GetExtensionExistingVersion));
 }
 
+MockExtensionCache::MockExtensionCache() = default;
+MockExtensionCache::~MockExtensionCache() = default;
+
+void MockExtensionCache::Start(base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
+void MockExtensionCache::Shutdown(base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
 ExtensionDownloaderTestHelper::ExtensionDownloaderTestHelper()
     : test_shared_url_loader_factory_(
           base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(

@@ -636,34 +636,31 @@ void ExtensionDownloader::ReportManifestFetchFailure(
 
 bool ExtensionDownloader::TryFetchingExtensionsFromCache(
     ManifestFetchData* fetch_data) {
-#if DCHECK_IS_ON()
-  // Ensure that IDs in `fetch_data`'s associated tasks are unique. Should be
-  // true given the way how we associate tasks to the fetch data: fetch data
-  // won't accept a duplicate ID and we won't add a task if extension ID wasn't
-  // added.
-  {
-    ExtensionIdSet ids;
-    for (const ExtensionDownloaderTask& task :
-         fetch_data->GetAssociatedTasks()) {
-      DCHECK(ids.insert(task.id).second)
-          << "ManifestFetchData has tasks with duplicate IDs!";
-    }
-  }
-#endif
   ExtensionIdSet extensions_fetched_from_cache;
   std::vector<ExtensionDownloaderTask> tasks_left;
+  std::map<ExtensionId, absl::optional<base::FilePath>> cache_results;
   for (ExtensionDownloaderTask& task : fetch_data->TakeAssociatedTasks()) {
-    // Extension is fetched here only in cases when we fail to fetch the update
-    // manifest or parsing of update manifest failed. In such cases, we don't
-    // have expected version and expected hash. Thus, passing empty hash and
-    // version would not be a problem as we only check for the expected hash and
-    // version if we have them.
-    absl::optional<base::FilePath> cached_crx_path =
-        GetCachedExtension(task.id, /*hash not fetched*/ "",
-                           /*version not fetched*/ base::Version(),
-                           /*manifest_fetch_failed*/ true);
+    // In case when there are multiple requests for the same extension ID (they
+    // could appear in the same fetch due to merging same URLs) ask the cache
+    // only once.
+    if (cache_results.count(task.id) == 0u) {
+      // Extension is fetched here only in cases when we fail to fetch the
+      // update manifest or parsing of update manifest failed. In such cases, we
+      // don't have expected version and expected hash. Thus, passing empty hash
+      // and version would not be a problem as we only check for the expected
+      // hash and version if we have them.
+      cache_results.emplace(
+          task.id, GetCachedExtension(task.id, /*hash not fetched*/ "",
+                                      /*version not fetched*/ base::Version(),
+                                      /*manifest_fetch_failed*/ true));
+    }
+    absl::optional<base::FilePath>& cached_crx_path = cache_results[task.id];
     if (cached_crx_path) {
       const ExtensionId id = task.id;
+      // TODO(https://crbug.com/981891#c30) The finished downloading stage will
+      // be reported only once for all download requests for that extension.
+      // Change this when the tracker will care about different requests, not
+      // about extension ID in general.
       delegate_->OnExtensionDownloadStageChanged(
           id, ExtensionDownloaderDelegate::Stage::FINISHED);
       auto extension_fetch_data(std::make_unique<ExtensionFetch>(

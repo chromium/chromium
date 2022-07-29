@@ -790,4 +790,43 @@ TEST_F(ExtensionDownloaderTest, TestExtensionURLMerged) {
   EXPECT_EQ(number_of_fetches, 1);
 }
 
+// Tests how the downloader uses the cache when there is no network.
+TEST_F(ExtensionDownloaderTest, TestMultipleCacheAccess) {
+  ExtensionDownloaderTestHelper helper;
+
+  // Two tasks for the same extension ID will end up in two different but
+  // completely identical manifest fetches in the downloader, so when we'll ask
+  // the cache about the extension after network fetch failure, they should be
+  // merged into one fetch and cache should be queried only once.
+  ExtensionDownloaderTask task1 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task1.install_location = mojom::ManifestLocation::kExternalPolicyDownload;
+  task1.request_id = 1;
+  ExtensionDownloaderTask task2 = CreateDownloaderTask(
+      kTestExtensionId, extension_urls::GetWebstoreUpdateUrl());
+  task2.install_location = mojom::ManifestLocation::kExternalPolicyDownload;
+  task2.request_id = 2;
+
+  helper.test_url_loader_factory().SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        network::mojom::URLResponseHeadPtr response_head(
+            network::CreateURLResponseHead(net::HTTP_OK));
+        helper.test_url_loader_factory().AddResponse(
+            request.url, std::move(response_head), "" /* content*/,
+            network::URLLoaderCompletionStatus(net::ERR_INTERNET_DISCONNECTED));
+      }));
+
+  MockExtensionCache mock_cache;
+
+  EXPECT_CALL(mock_cache, GetExtension(kTestExtensionId, _, _, _)).Times(1);
+
+  helper.downloader().AddPendingExtension(std::move(task1));
+  helper.downloader().AddPendingExtension(std::move(task2));
+  helper.downloader().StartAllPending(&mock_cache);
+
+  content::RunAllTasksUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(&mock_cache);
+}
+
 }  // namespace extensions
