@@ -113,12 +113,10 @@ bool GetWallpaperInfo(const AccountId& account_id,
   if (!pref_service)
     return false;
 
-  const base::Value* users_dict = pref_service->GetDictionary(pref_name);
-  if (!users_dict || !users_dict->is_dict())
-    return false;
+  const base::Value::Dict& users_dict = pref_service->GetValueDict(pref_name);
 
   const base::Value::Dict* info_dict =
-      users_dict->GetDict().FindDict(account_id.GetUserEmail());
+      users_dict.FindDict(account_id.GetUserEmail());
   if (!info_dict)
     return false;
 
@@ -441,14 +439,9 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     if (info.location.empty())
       return absl::nullopt;
 
-    const base::Value* k_mean_colors =
-        local_state_->GetDictionary(prefs::kWallpaperMeanColors);
-    if (!k_mean_colors)
-      return kInvalidWallpaperColor;
-    const auto* k_mean_colors_dict = k_mean_colors->GetIfDict();
-    if (!k_mean_colors_dict)
-      return kInvalidWallpaperColor;
-    auto* k_mean_color_value = k_mean_colors_dict->Find(info.location);
+    const base::Value::Dict& k_mean_colors =
+        local_state_->GetValueDict(prefs::kWallpaperMeanColors);
+    auto* k_mean_color_value = k_mean_colors.Find(info.location);
     if (!k_mean_color_value)
       return absl::nullopt;
     return static_cast<SkColor>(k_mean_color_value->GetDouble());
@@ -489,14 +482,10 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
     if (!local_state_)
       return false;
 
-    const base::Value::Dict* dict =
-        local_state_->GetDictionary(prefs::kRecentDailyGooglePhotosWallpapers)
-            ->GetIfDict();
-    if (!dict)
-      return false;
+    const base::Value::Dict& dict =
+        local_state_->GetValueDict(prefs::kRecentDailyGooglePhotosWallpapers);
 
-    const base::Value::List* id_list =
-        dict->FindList(account_id.GetUserEmail());
+    const base::Value::List* id_list = dict.FindList(account_id.GetUserEmail());
     if (!id_list)
       return false;
 
