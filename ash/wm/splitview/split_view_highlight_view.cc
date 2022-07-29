@@ -6,8 +6,7 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/shell.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "base/i18n/rtl.h"
 #include "ui/compositor/layer.h"
@@ -62,13 +61,12 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
     : is_right_or_bottom_(is_right_or_bottom) {
   SetPaintToLayer(ui::LAYER_TEXTURED);
   SetBackground(views::CreateRoundedRectBackground(
-      DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor),
+      AshColorProvider::Get()->GetBackgroundColor(),
       kHighlightScreenRoundRectRadius));
   layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF{kHighlightScreenRoundRectRadius});
   layer()->SetIsFastRoundedCorner(true);
-  // TODO(crbug/1249666): Add border highlight that supports dark/light mode.
 }
 
 SplitViewHighlightView::~SplitViewHighlightView() = default;
@@ -76,7 +74,7 @@ SplitViewHighlightView::~SplitViewHighlightView() = default;
 void SplitViewHighlightView::OnThemeChanged() {
   views::View::OnThemeChanged();
   background()->SetNativeControlColor(
-      DeprecatedGetBackgroundColor(kSplitviewHighlightViewBackgroundColor));
+      AshColorProvider::Get()->GetBackgroundColor());
   if (chromeos::features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
         kHighlightScreenRoundRectRadius,
@@ -187,10 +185,8 @@ void SplitViewHighlightView::OnWindowDraggingStateChanged(
     return;
   }
 
-  background()->SetNativeControlColor(DeprecatedGetBackgroundColor(
-      can_dragged_window_be_snapped
-          ? kSplitviewHighlightViewBackgroundColor
-          : kSplitviewHighlightViewBackgroundCannotSnapColor));
+  background()->SetNativeControlColor(
+      AshColorProvider::Get()->GetBackgroundColor());
   if (chromeos::features::IsDarkLightModeEnabled()) {
     SetBorder(std::make_unique<views::HighlightBorder>(
         kHighlightScreenRoundRectRadius,

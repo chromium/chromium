@@ -226,9 +226,8 @@ class SplitViewDragIndicators::RotatedImageLabelView : public views::View {
     // TODO(crbug/1258983): Add blur background. This requires fixing a bug
     // that `SetRoundedCornerRadius()` does not work with transform or find a
     // solution to work around.
-    label_->SetEnabledColor(DeprecatedGetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary,
-        kSplitviewLabelEnabledColor));
+    label_->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kTextColorPrimary));
     label_->SetBackgroundColor(AshColorProvider::Get()->GetBaseLayerColor(
         AshColorProvider::BaseLayerType::kTransparent80));
     label_->SetFontList(views::Label::GetDefaultFontList().Derive(

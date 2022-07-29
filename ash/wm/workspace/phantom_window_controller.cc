@@ -6,14 +6,11 @@
 
 #include <math.h>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/default_color_constants.h"
-#include "ash/style/default_colors.h"
 #include "ash/wm/window_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -222,14 +219,13 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   phantom_view->SetPaintToLayer();
   phantom_view->layer()->SetFillsBoundsOpaquely(false);
   phantom_view->SetBackground(views::CreateRoundedRectBackground(
-      DeprecatedGetShieldLayerColor(
-          AshColorProvider::ShieldLayerType::kShield20,
-          kSplitviewPhantomWindowColor),
+      AshColorProvider::Get()->GetShieldLayerColor(
+          AshColorProvider::ShieldLayerType::kShield20),
       kPhantomWindowCornerRadius));
   phantom_view->SetBorder(std::make_unique<views::HighlightBorder>(
       kPhantomWindowCornerRadius,
       views::HighlightBorder::Type::kHighlightBorder1,
-      /*use_light_colors=*/!features::IsDarkLightModeEnabled()));
+      /*use_light_colors=*/false));
 
   return phantom_widget;
 }

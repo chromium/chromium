@@ -8,21 +8,6 @@
 
 namespace ash {
 
-SkColor DeprecatedGetShieldLayerColor(AshColorProvider::ShieldLayerType type,
-                                      SkColor default_color) {
-  if (!features::IsDarkLightModeEnabled())
-    return default_color;
-
-  return AshColorProvider::Get()->GetShieldLayerColor(type);
-}
-
-SkColor DeprecatedGetBackgroundColor(SkColor default_color) {
-  if (!features::IsDarkLightModeEnabled())
-    return default_color;
-
-  return AshColorProvider::Get()->GetBackgroundColor();
-}
-
 SkColor DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType type,
                                     SkColor default_color) {
   if (!features::IsDarkLightModeEnabled())
