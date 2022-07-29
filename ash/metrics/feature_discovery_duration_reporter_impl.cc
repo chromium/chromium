@@ -157,7 +157,7 @@ void FeatureDiscoveryDurationReporterImpl::MaybeFinishObservation(
     return;
 
   const base::Value::Dict& observed_features =
-      active_pref_service_->GetDictionary(kObservedFeatures)->GetDict();
+      active_pref_service_->GetValueDict(kObservedFeatures);
   const char* const feature_name = FindMappedName(feature);
   const base::Value::Dict* feature_pref_data =
       observed_features.Find(feature_name)->GetIfDict();
