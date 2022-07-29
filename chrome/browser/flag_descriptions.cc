@@ -952,12 +952,6 @@ const char kDesktopPWAsSubAppsDescription[] =
     "Prototype implementation of: "
     "https://github.com/ivansandrk/multi-apps/blob/main/explainer.md";
 
-const char kDesktopPWAsUrlHandlingName[] = "Desktop PWA URL handling";
-const char kDesktopPWAsUrlHandlingDescription[] =
-    "Enable web app manifests to declare URL handling behavior. Prototype "
-    "implementation of: "
-    "https://github.com/WICG/pwa-url-handler/blob/main/explainer.md";
-
 const char kDesktopPWAsWindowControlsOverlayName[] =
     "Desktop PWA Window Controls Overlay";
 const char kDesktopPWAsWindowControlsOverlayDescription[] =
