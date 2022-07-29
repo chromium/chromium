@@ -61,6 +61,7 @@ void DeviceSettingsAsh::GetDevicePolicy(GetDevicePolicyCallback callback) {
   auto client = std::make_unique<policy::ChromePolicyConversionsClient>(
       ProfileManager::GetActiveUserProfile());
   client->EnableUserPolicies(false);
+  client->EnableConvertValues(true);
   DeviceCloudPolicyStatusProviderChromeOS provider(connector);
   base::Value::Dict status = provider.GetStatus();
   std::move(callback).Run(client->GetChromePolicies(), std::move(status));
