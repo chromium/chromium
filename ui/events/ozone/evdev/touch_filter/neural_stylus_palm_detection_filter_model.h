@@ -41,8 +41,6 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // Minimum count of samples for a stroke to be considered as a neighbor.
   uint32_t neighbor_min_sample_count = 0;
 
-  uint32_t max_sequence_start_count_for_inference = 0;
-
   bool include_sequence_count_in_strokes = false;
 
   // If this number is positive, short strokes with a touch major greater than

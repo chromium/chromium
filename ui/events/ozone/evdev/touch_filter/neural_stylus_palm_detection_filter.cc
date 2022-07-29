@@ -263,8 +263,7 @@ bool NeuralStylusPalmDetectionFilter::ShouldDecideStroke(
     return false;
 
   // Only inference at start.
-  if (stroke.samples_seen() >
-      config.max_sequence_start_count_for_inference + config.max_sample_count)
+  if (stroke.samples_seen() > config.max_sample_count)
     return false;
   return true;
 }
