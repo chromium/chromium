@@ -134,6 +134,14 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
           std::make_unique<NGTableFragmentData::CollapsedBordersGeometry>(
               *table_collapsed_borders_geometry));
     }
+  } else if (physical_fragment.IsTableNGSection()) {
+    if (const auto section_start_row_index =
+            physical_fragment.TableSectionStartRowIndex()) {
+      Vector<LayoutUnit> section_row_offsets =
+          *physical_fragment.TableSectionRowOffsets();
+      container_builder_.SetTableSectionCollapsedBordersGeometry(
+          *section_start_row_index, std::move(section_row_offsets));
+    }
   }
 
   if (physical_fragment.IsGridNG()) {
