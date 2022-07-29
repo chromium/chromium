@@ -52,6 +52,12 @@ class SettingsAudioElement extends SettingsAudioElementBase {
       audioSystemProperties_: {
         type: Object,
       },
+
+      /** @protected */
+      isOutputMuted_: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -79,6 +85,19 @@ class SettingsAudioElement extends SettingsAudioElementBase {
    */
   onPropertiesUpdated(properties) {
     this.audioSystemProperties_ = properties;
+
+    // TODO(crbug.com/1092970): Create and show managed by policy badge if
+    // kMutedByPolicy.
+    this.isOutputMuted_ =
+        this.audioSystemProperties_.outputMuteState !== MuteState.kNotMuted;
+  }
+
+  /**
+   * @public
+   * @return {boolean}
+   */
+  getIsOutputMutedForTest() {
+    return this.isOutputMuted_;
   }
 
   /** @protected */
@@ -88,8 +107,11 @@ class SettingsAudioElement extends SettingsAudioElementBase {
             .bindNewPipeAndPassRemote());
   }
 
-  // TODO(crbug.com/1092970): Create onCrSliderChanged method for setting output
-  // volume.
+  // TODO(crbug.com/1092970): Create onCrSliderChanged_ method for setting
+  // output volume.
+
+  // TODO(crbug.com/1092970): Create onOutputMuteTap_ method for setting output
+  // mute state.
 
   /**
    * @protected

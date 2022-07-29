@@ -715,13 +715,6 @@ suite('SettingsDevicePage', function() {
     let crosAudioConfig;
 
     // Static test audio system properties.
-    const mutedByPolicyFakeAudioSystemProperties = {
-      outputVolumePercent: 75,
-
-      /** @type {!MuteState} */
-      outputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedByPolicy,
-    };
-
     const maxVolumePercentFakeAudioSystemProperties = {
       outputVolumePercent: 100,
 
@@ -734,6 +727,27 @@ suite('SettingsDevicePage', function() {
 
       /** @type {!MuteState} */
       outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+    };
+
+    const notMutedFakeAudioSystemProperties = {
+      outputVolumePercent: 75,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kNotMuted,
+    };
+
+    const mutedByUserFakeAudioSystemProperties = {
+      outputVolumePercent: 75,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedByUser,
+    };
+
+    const mutedByPolicyFakeAudioSystemProperties = {
+      outputVolumePercent: 75,
+
+      /** @type {!MuteState} */
+      outputMuteState: crosAudioConfigMojomWebui.MuteState.kMutedByPolicy,
     };
 
     setup(async function() {
@@ -752,9 +766,7 @@ suite('SettingsDevicePage', function() {
           });
     });
 
-    test('output slider mojo test', async function() {
-      await flushTasks();
-
+    test('output volume mojo test', async function() {
       const outputVolumeSlider =
           audioPage.shadowRoot.querySelector('#outputVolumeSlider');
 
@@ -762,7 +774,6 @@ suite('SettingsDevicePage', function() {
       assertEquals(
           defaultFakeAudioSystemProperties.outputVolumePercent,
           outputVolumeSlider.value);
-      assertFalse(outputVolumeSlider.disabled);
 
       // Test max volume case.
       crosAudioConfig.setAudioSystemProperties(
@@ -771,7 +782,6 @@ suite('SettingsDevicePage', function() {
       assertEquals(
           maxVolumePercentFakeAudioSystemProperties.outputVolumePercent,
           outputVolumeSlider.value);
-      assertFalse(outputVolumeSlider.disabled);
 
       // Test min volume case.
       crosAudioConfig.setAudioSystemProperties(
@@ -780,15 +790,28 @@ suite('SettingsDevicePage', function() {
       assertEquals(
           minVolumePercentFakeAudioSystemProperties.outputVolumePercent,
           outputVolumeSlider.value);
+    });
+
+    test('output mute mojo test', async function() {
+      const outputVolumeSlider =
+          audioPage.shadowRoot.querySelector('#outputVolumeSlider');
+
+      // Test default properties.
+      assertFalse(audioPage.getIsOutputMutedForTest());
       assertFalse(outputVolumeSlider.disabled);
 
-      // Test kMutedByPolicy case.
+      // Test muted by user case.
+      crosAudioConfig.setAudioSystemProperties(
+          mutedByUserFakeAudioSystemProperties);
+      await flushTasks();
+      assertTrue(audioPage.getIsOutputMutedForTest());
+      assertFalse(outputVolumeSlider.disabled);
+
+      // Test muted by policy case.
       crosAudioConfig.setAudioSystemProperties(
           mutedByPolicyFakeAudioSystemProperties);
       await flushTasks();
-      assertEquals(
-          mutedByPolicyFakeAudioSystemProperties.outputVolumePercent,
-          outputVolumeSlider.value);
+      assertTrue(audioPage.getIsOutputMutedForTest());
       assertTrue(outputVolumeSlider.disabled);
     });
   });

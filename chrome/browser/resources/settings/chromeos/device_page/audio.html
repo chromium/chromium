@@ -1,4 +1,18 @@
 <style include="settings-shared">
+  .audio-mute-button {
+    margin-inline-end: var(--settings-control-label-spacing);
+  }
+
+  .audio-mute-button-container {
+    border-inline-end: 1px solid var(--cros-app-shield-color);
+    margin-inline-end: var(--settings-control-label-spacing);
+  }
+
+  .audio-output-options-container {
+    display: flex;
+    flex-direction: row;
+  }
+
   .audio-output-slider {
     width: 100px;
   }
@@ -25,6 +39,30 @@
     padding-inline-end: 0;
     padding-inline-start: 0;
   }
+
+  :host([is-output-muted_]) #outputVolumeSlider {
+    --cr-slider-active-color: var(--cros-slider-color-inactive);
+    --cr-slider-container-color: var(--cros-slider-track-color-inactive);
+    --cr-slider-knob-color-rgb: var(--cros-color-primary-rgb);
+  }
+
+  :host([is-output-muted_]) #audioOutputMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-prominent);
+    background-color: var(--cros-ripple-color-prominent);
+  }
+
+  :host([is-output-muted_]) #audioOutputMuteButton:hover {
+    --cr-icon-button-fill-color: var(--cros-color-prominent);
+    background-color: var(--cros-highlight-color);
+  }
+
+  :host(:not([is-output-muted_])) #audioOutputMuteButton {
+    --cr-icon-button-fill-color: var(--cros-color-primary);
+  }
+
+  :host(:not([is-output-muted_])) #audioOutputMuteButton:hover {
+    --cr-icon-button-fill-color: var(--cros-color-primary);
+  }
 </style>
 
 <!-- Output section -->
@@ -36,22 +74,31 @@
         <div class="start settings-box-text" id="audioOutputVolumeLabel">
           $i18n{audioVolumeTitle}
         </div>
-        <div class="audio-slider-wrapper" id="audioOutputSliderWrapper">
-          <iron-icon id="audioOutputSliderVolumeDownIcon"
-              icon="settings:volume-down">
-          </iron-icon>
-          <cr-slider class="audio-output-slider"
-              id ="outputVolumeSlider"
-              min="0"
-              max="100"
-              disabled="[[isOutputVolumeSliderDisabled_(
-                  audioSystemProperties_.outputMuteState
-                )]]"
-              value="[[audioSystemProperties_.outputVolumePercent]]">
-          </cr-slider>
-          <iron-icon id="audioOutputSliderVolumeUpIcon"
-              icon="settings:volume-up">
-          </iron-icon>
+        <!-- TODO(crbug.com/1092970): Update to new UI once approved. -->
+        <div class="audio-output-options-container">
+          <div class="audio-mute-button-container">
+            <cr-icon-button class="audio-mute-button"
+                id="audioOutputMuteButton" iron-icon="settings:volume-up-off">
+            </cr-icon-button>
+          </div>
+          <div class="audio-slider-wrapper" id="audioOutputSliderWrapper">
+            <!-- TODO(crbug.com/1092970): Change icons to buttons. -->
+            <iron-icon id="audioOutputSliderVolumeDownIcon"
+                icon="settings:volume-down">
+            </iron-icon>
+            <cr-slider class="audio-output-slider"
+                id ="outputVolumeSlider"
+                min="0"
+                max="100"
+                disabled="[[isOutputVolumeSliderDisabled_(
+                    audioSystemProperties_.outputMuteState
+                  )]]"
+                value="[[audioSystemProperties_.outputVolumePercent]]">
+            </cr-slider>
+            <iron-icon id="audioOutputSliderVolumeUpIcon"
+                icon="settings:volume-up">
+            </iron-icon>
+          </div>
         </div>
       </div>
     </div>
