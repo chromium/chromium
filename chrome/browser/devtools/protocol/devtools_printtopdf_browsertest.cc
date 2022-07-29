@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/printing/browser/print_manager_utils.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -29,16 +30,20 @@ using DevToolsProtocolTest = DevToolsProtocolTestBase;
 
 namespace {
 
-class PrintToPdfProtocolTest : public DevToolsProtocolTest {
+class PrintToPdfProtocolTest : public DevToolsProtocolTest,
+                               public testing::WithParamInterface<bool> {
  protected:
   static constexpr double kPaperWidth = 10;
   static constexpr double kPaperHeight = 15;
   static constexpr int kColorChannels = 4;
   static constexpr int kDpi = 300;
 
+  bool headless() const { return GetParam(); };
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevToolsProtocolTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII("headless", "chrome");
+    if (headless())
+      command_line->AppendSwitchASCII("headless", "chrome");
   }
 
   void PreRunTestOnMainThread() override {
@@ -161,7 +166,11 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest {
   gfx::Size bitmap_size_;
 };
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfBackground) {
+INSTANTIATE_TEST_SUITE_P(HeadfulOrHeadless,
+                         PrintToPdfProtocolTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfBackground) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
   Attach();
@@ -184,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfBackground) {
   EXPECT_EQ(GetPixelRGB(bitmap_width() / 2, bitmap_height() / 2), 0xff0000u);
 }
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfMargins) {
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfMargins) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
   Attach();
@@ -210,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfMargins) {
   EXPECT_EQ(GetPixelRGB(bitmap_width() / 2, bitmap_height() / 2), 0xff0000u);
 }
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfHeaderFooter) {
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfHeaderFooter) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
   Attach();
@@ -286,7 +295,11 @@ class PrintToPdfScaleTest : public PrintToPdfProtocolTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfScaleTest, PrintToPdfScaleArea) {
+INSTANTIATE_TEST_SUITE_P(HeadfulOrHeadless,
+                         PrintToPdfScaleTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfScaleTest, PrintToPdfScaleArea) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
   Attach();
@@ -315,7 +328,11 @@ class PrintToPdfPaperOrientationTest : public PrintToPdfProtocolTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfPaperOrientationTest,
+INSTANTIATE_TEST_SUITE_P(HeadfulOrHeadless,
+                         PrintToPdfPaperOrientationTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfPaperOrientationTest,
                        PrintToPdfPaperOrientation) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
@@ -361,7 +378,11 @@ class PrintToPdfPagesTest : public PrintToPdfProtocolTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfPagesTest, PrintToPdfPageRanges) {
+INSTANTIATE_TEST_SUITE_P(HeadfulOrHeadless,
+                         PrintToPdfPagesTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(PrintToPdfPagesTest, PrintToPdfPageRanges) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
   Attach();
@@ -401,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(PrintToPdfPagesTest, PrintToPdfPageRanges) {
               testing::Eq("Page range exceeds page count"));
 }
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfPagesTest, PrintToPdfCssPageSize) {
+IN_PROC_BROWSER_TEST_P(PrintToPdfPagesTest, PrintToPdfCssPageSize) {
   NavigateToURLBlockUntilNavigationsComplete(
       "/print_to_pdf/css_page_size.html");
 
@@ -421,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(PrintToPdfPagesTest, PrintToPdfCssPageSize) {
   EXPECT_GT(pdf_num_pages_, kExpectedTotalPages);
 }
 
-IN_PROC_BROWSER_TEST_F(PrintToPdfProtocolTest, PrintToPdfAsStream) {
+IN_PROC_BROWSER_TEST_P(PrintToPdfProtocolTest, PrintToPdfAsStream) {
   NavigateToURLBlockUntilNavigationsComplete("/print_to_pdf/basic.html");
 
   Attach();

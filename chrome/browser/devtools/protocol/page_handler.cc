@@ -14,14 +14,28 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "components/printing/browser/print_to_pdf/pdf_print_utils.h"
-#endif
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#include "chrome/browser/printing/pdf_nup_converter_client.h"
+#include "chrome/browser/printing/print_view_manager.h"
+#else
+#include "chrome/browser/printing/print_view_manager_basic.h"
+#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(ENABLE_PRINTING)
+
 template <typename T>
 absl::optional<T> OptionalFromMaybe(const protocol::Maybe<T>& maybe) {
   return maybe.isJust() ? absl::optional<T>(maybe.fromJust()) : absl::nullopt;
 }
+
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+using ActivePrintManager = printing::PrintViewManager;
+#else
+using ActivePrintManager = printing::PrintViewManagerBasic;
 #endif
+
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
                          content::WebContents* web_contents,
@@ -219,6 +233,10 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
       transfer_mode.fromMaybe("") ==
       protocol::Page::PrintToPDF::TransferModeEnum::ReturnAsStream;
 
+  // First check if headless printer manager is active and use it if so.
+  // Note that headless mode uses alternae print manager that shortcuts
+  // most of the regular print manager calls providing only the PrintToPDF
+  // functionality.
   if (auto* print_manager = headless::HeadlessPrintManager::FromWebContents(
           web_contents_.get())) {
     print_manager->PrintToPdf(
@@ -228,14 +246,26 @@ void PageHandler::PrintToPDF(protocol::Maybe<bool> landscape,
         base::BindOnce(&PageHandler::OnPDFCreated,
                        weak_ptr_factory_.GetWeakPtr(), return_as_stream,
                        std::move(callback)));
-  } else {
-    callback->sendFailure(
-        protocol::Response::ServerError("Printing is not available"));
+    return;
   }
-#else
-  callback->sendFailure(
-      protocol::Response::ServerError("Printing is not enabled"));
+
+  // Try the regular print manager. See printing::InitializePrinting()
+  // for details.
+  if (auto* print_manager =
+          ActivePrintManager::FromWebContents(web_contents_.get())) {
+    print_manager->PrintToPdf(
+        web_contents_->GetPrimaryMainFrame(), page_ranges.fromMaybe(""),
+        std::move(absl::get<printing::mojom::PrintPagesParamsPtr>(
+            print_pages_params)),
+        base::BindOnce(&PageHandler::OnPDFCreated,
+                       weak_ptr_factory_.GetWeakPtr(), return_as_stream,
+                       std::move(callback)));
+    return;
+  }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
+
+  callback->sendFailure(
+      protocol::Response::ServerError("Printing is not available"));
 }
 
 void PageHandler::GetAppId(std::unique_ptr<GetAppIdCallback> callback) {

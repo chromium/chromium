@@ -1205,6 +1205,9 @@ void PrintRenderFrameHelper::DisablePreview() {
 
 const mojo::AssociatedRemote<mojom::PrintManagerHost>&
 PrintRenderFrameHelper::GetPrintManagerHost() {
+  // We should not make calls back to the host while handling PrintWithParams().
+  DCHECK(!print_with_params_callback_);
+
   if (!print_manager_host_) {
     render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
         &print_manager_host_);
@@ -2231,8 +2234,10 @@ void PrintRenderFrameHelper::PrintPages() {
 
   // TODO(vitalybuka): should be page_count or valid pages from params.pages.
   // See http://crbug.com/161576
-  GetPrintManagerHost()->DidGetPrintedPagesCount(
-      print_pages_params_->params->document_cookie, page_count);
+  if (!print_with_params_callback_) {
+    GetPrintManagerHost()->DidGetPrintedPagesCount(
+        print_pages_params_->params->document_cookie, page_count);
+  }
 
   std::vector<uint32_t> pages_to_print =
       PageNumber::GetPages(print_pages_params_->pages, page_count);
