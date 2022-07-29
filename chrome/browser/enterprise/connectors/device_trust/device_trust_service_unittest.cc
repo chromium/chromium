@@ -107,10 +107,6 @@ class DeviceTrustServiceTest
                        base::Value(base::Value::List()));
   }
 
-  const base::Value* GetPolicyUrls() {
-    return prefs_.GetList(kContextAwareAccessSignalsAllowlistPref);
-  }
-
   std::unique_ptr<DeviceTrustService> CreateService() {
     connector_ = std::make_unique<DeviceTrustConnectorService>(&prefs_);
 
