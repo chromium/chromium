@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.text.TextUtils;
 import android.transition.AutoTransition;
+import android.transition.Scene;
 import android.transition.Transition;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
@@ -52,6 +53,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -509,11 +511,10 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             mContentManager.startLoadingItems();
         }
 
-        Transition tabSafeTransition = new AutoTransition();
-        tabSafeTransition.excludeTarget(TabLayout.class, /* exclude= */ true);
-        TransitionManager.beginDelayedTransition(mRootView, tabSafeTransition);
-        mRootView.removeAllViews();
-        mRootView.addView(mContentView);
+        Transition transition = new AutoTransition();
+        transition.addTarget(SelectableItemView.class);
+        Scene scene = new Scene(mRootView, mContentView);
+        TransitionManager.go(scene, transition);
     }
 
     /**

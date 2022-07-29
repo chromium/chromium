@@ -19,6 +19,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.Browser;
+import android.transition.TransitionManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -645,6 +646,7 @@ public class HistoryUITest {
         Assert.assertFalse(journeysTab.isSelected());
 
         toggle.selectTab(journeysTab);
+        TransitionManager.endTransitions(mHistoryManager.getView());
         ViewGroup activityContentView = mHistoryClustersCoordinator.getActivityContentView();
         Assert.assertEquals(mHistoryManager.getView().getChildAt(0), activityContentView);
         promise.fulfill(HistoryClustersResult.emptyResult());

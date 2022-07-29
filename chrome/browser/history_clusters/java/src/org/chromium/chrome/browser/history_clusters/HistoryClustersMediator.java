@@ -97,7 +97,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private ListItem mToggleItem;
     private ListItem mPrivacyDisclaimerItem;
     private ListItem mClearBrowsingDataItem;
-    private QueryState mQueryState = QueryState.forQueryless();
+    private QueryState mQueryState;
     private final HistoryClustersMetricsLogger mMetricsLogger;
     private Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
     private Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
@@ -185,6 +185,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     void setQueryState(QueryState queryState) {
+        if (mQueryState != null && !mQueryState.isSearching() && !queryState.isSearching()) {
+            return;
+        }
+
         mQueryState = queryState;
         mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, queryState);
         if (!queryState.isSearching()) {
@@ -451,7 +455,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     }
 
     private void ensureHeaders() {
-        if (mQueryState.isSearching()) {
+        if (mQueryState != null && mQueryState.isSearching()) {
             return;
         }
 
