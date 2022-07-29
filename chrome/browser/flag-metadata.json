@@ -2645,6 +2645,10 @@
     "owners": [ "mattwalliser", "jasonsun", "cros-cameraroll@google.com" ],
     "expiry_milestone": 106
   },
+  { "name": "enable-phone-hub-feature-setup-error-handling",
+    "owners": ["pushi", "jonmann", "chromeos-cross-device-eng@google.com" ],
+    "expiry_milestone": 110
+  },
   {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],

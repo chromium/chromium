@@ -1182,6 +1182,11 @@ const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kPhoneHubCameraRoll{"PhoneHubCameraRoll",
                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable PhoneHub features setup error handling, which handles different
+// setup response from remote phone device.
+const base::Feature kPhoneHubFeatureSetupErrorHandling{
+    "PhoneHubFeatureSetupErrorHandling", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables the incoming/ongoing call notification feature in Phone Hub.
 const base::Feature kPhoneHubCallNotification{
     "PhoneHubCallNotification", base::FEATURE_DISABLED_BY_DEFAULT};

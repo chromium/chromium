@@ -480,6 +480,8 @@ extern const base::Feature kPersonalizationHub;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHub;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kPhoneHubCameraRoll;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kPhoneHubFeatureSetupErrorHandling;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPhoneHubCallNotification;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kPhoneHubMonochromeNotificationIcons;

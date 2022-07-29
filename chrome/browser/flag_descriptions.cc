@@ -5527,6 +5527,13 @@ const char kPhoneHubCameraRollDescription[] =
     "Enables the Camera Roll feature in Phone Hub, which allows users to "
     "access recent photos and videos taken on a connected Android device.";
 
+const char kPhoneHubFeatureSetupErrorHandlingName[] =
+    "Error handling during Phone Hub feature setup";
+const char kPhoneHubFeatureSetupErrorHandlingDescription[] =
+    "Enable the error handling during Phone Hub feature setup. It allows"
+    "users to see result on Chromebook when the setup failed on connected"
+    "remote phone device.";
+
 const char kProductivityLauncherName[] =
     "Productivity experiment: App Launcher";
 const char kProductivityLauncherDescription[] =
