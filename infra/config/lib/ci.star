@@ -297,8 +297,3 @@ ci = struct(
         TREE_CLOSING_NOTIFIERS = ["gpu-tree-closer-email"],
     ),
 )
-
-rbe_instance = struct(
-    DEFAULT = "rbe-chromium-trusted",
-    GVISOR_SHADOW = "rbe-chromium-gvisor-shadow",
-)

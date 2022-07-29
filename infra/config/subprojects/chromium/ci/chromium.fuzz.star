@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 """Definitions of builders in the chromium.fuzz builder group."""
 
-load("//lib/builders.star", "goma", "os", "xcode")
-load("//lib/ci.star", "ci", "rbe_instance")
+load("//lib/builders.star", "goma", "os", "reclient", "xcode")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
 ci.defaults.set(
@@ -62,7 +62,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -87,7 +87,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -112,7 +112,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -159,7 +159,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -173,7 +173,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -215,7 +215,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -229,7 +229,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -243,7 +243,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
@@ -257,7 +257,7 @@ ci.builder(
     ),
     goma_backend = None,
     reclient_jobs = 250,
-    reclient_instance = rbe_instance.DEFAULT,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
 )
 
 ci.builder(
