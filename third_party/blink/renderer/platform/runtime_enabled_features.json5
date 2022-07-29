@@ -1171,6 +1171,10 @@
       status: "stable",
     },
     {
+      name: "HighlightPointerEvents",
+      depends_on: ["HighlightAPI"],
+    },
+    {
       name: "HrefTranslate",
       depends_on: ["TranslateService"],
       origin_trial_feature_name: "HrefTranslate",

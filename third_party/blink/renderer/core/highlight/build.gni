@@ -7,6 +7,8 @@ blink_core_sources_highlight = [
   "css_highlight_registry.h",
   "highlight.cc",
   "highlight.h",
+  "highlight_pointer_event.cc",
+  "highlight_pointer_event.h",
   "highlight_registry.cc",
   "highlight_registry.h",
   "highlight_registry_map_entry.h",

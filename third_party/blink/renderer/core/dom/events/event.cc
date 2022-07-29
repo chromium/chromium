@@ -195,6 +195,10 @@ bool Event::IsPointerEvent() const {
   return false;
 }
 
+bool Event::IsHighlightPointerEvent() const {
+  return false;
+}
+
 bool Event::IsInputEvent() const {
   return false;
 }

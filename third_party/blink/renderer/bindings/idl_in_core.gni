@@ -334,6 +334,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/geometry/dom_rect_read_only.idl",
           "//third_party/blink/renderer/core/highlight/css_highlight_registry.idl",
           "//third_party/blink/renderer/core/highlight/highlight.idl",
+          "//third_party/blink/renderer/core/highlight/highlight_pointer_event.idl",
           "//third_party/blink/renderer/core/highlight/highlight_registry.idl",
           "//third_party/blink/renderer/core/html/assigned_nodes_options.idl",
           "//third_party/blink/renderer/core/html/canvas/baselines.idl",

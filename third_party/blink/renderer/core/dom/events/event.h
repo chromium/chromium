@@ -220,6 +220,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   virtual bool IsGestureEvent() const;
   virtual bool IsWheelEvent() const;
   virtual bool IsPointerEvent() const;
+  virtual bool IsHighlightPointerEvent() const;
   virtual bool IsInputEvent() const;
   virtual bool IsCompositionEvent() const;
 
