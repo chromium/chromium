@@ -257,9 +257,14 @@ WebAppLaunchProcess::EnsureBrowser() {
 
 Browser* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
   if (params_.container == apps::LaunchContainer::kLaunchContainerTab) {
+    // If launching the app in the current tab, find the most recently used
+    // browser for the current profile, rather than limiting the search to
+    // windows on whatever screen we would want to open new windows.
     return chrome::FindTabbedBrowser(
         &profile_, /*match_original_profiles=*/false,
-        display::Screen::GetScreen()->GetDisplayForNewWindows().id());
+        params_.disposition == WindowOpenDisposition::CURRENT_TAB
+            ? display::kInvalidDisplayId
+            : display::Screen::GetScreen()->GetDisplayForNewWindows().id());
   }
 
   if (!provider_.registrar().IsTabbedWindowModeEnabled(params_.app_id) &&
