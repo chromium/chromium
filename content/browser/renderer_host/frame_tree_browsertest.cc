@@ -4698,7 +4698,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
   EXPECT_EQ(1U, root->child_count());
   EXPECT_FALSE(root->child_at(0)->anonymous());
   EXPECT_EQ(false, EvalJs(root->child_at(0)->current_frame_host(),
-                          "window.isAnonymouslyFramed"));
+                          "window.anonymouslyFramed"));
 
   // Setting the attribute on the iframe element makes the iframe anonymous.
   EXPECT_TRUE(ExecJs(root,
@@ -4708,7 +4708,7 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
   EXPECT_EQ(2U, root->child_count());
   EXPECT_TRUE(root->child_at(1)->anonymous());
   EXPECT_EQ(true, EvalJs(root->child_at(1)->current_frame_host(),
-                         "window.isAnonymouslyFramed"));
+                         "window.anonymouslyFramed"));
 
   // Setting the attribute via javascript works.
   EXPECT_TRUE(ExecJs(root,
@@ -4718,17 +4718,17 @@ IN_PROC_BROWSER_TEST_F(FrameTreeAnonymousIframeBrowserTest,
   EXPECT_EQ(3U, root->child_count());
   EXPECT_TRUE(root->child_at(2)->anonymous());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
-                         "window.isAnonymouslyFramed"));
+                         "window.anonymouslyFramed"));
 
   EXPECT_TRUE(ExecJs(root, "g.anonymous = false;"));
   EXPECT_FALSE(root->child_at(2)->anonymous());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
-                         "window.isAnonymouslyFramed"));
+                         "window.anonymouslyFramed"));
 
   EXPECT_TRUE(ExecJs(root, "g.anonymous = true;"));
   EXPECT_TRUE(root->child_at(2)->anonymous());
   EXPECT_EQ(true, EvalJs(root->child_at(2)->current_frame_host(),
-                         "window.isAnonymouslyFramed"));
+                         "window.anonymouslyFramed"));
 }
 
 // This is fenced frames test class differs on from FencedFrameTreeBrowserTest,

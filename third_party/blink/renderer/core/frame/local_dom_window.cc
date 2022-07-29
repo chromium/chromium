@@ -2292,7 +2292,7 @@ void LocalDOMWindow::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {
   BackForwardCacheBufferLimitTracker::Get().DidBufferBytes(num_bytes);
 }
 
-bool LocalDOMWindow::isAnonymouslyFramed() const {
+bool LocalDOMWindow::anonymouslyFramed() const {
   return GetExecutionContext()
       ->GetPolicyContainer()
       ->GetPolicies()

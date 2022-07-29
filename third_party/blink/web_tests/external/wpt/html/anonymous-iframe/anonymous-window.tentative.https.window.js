@@ -15,7 +15,7 @@ promise_test_parallel(async t => {
   // Wait for navigation to complete.
   await new Promise(resolve => iframe.onload = resolve);
   assert_true(iframe.anonymous);
-  assert_true(iframe.contentWindow.isAnonymouslyFramed);
+  assert_true(iframe.contentWindow.anonymouslyFramed);
   assert_equals(undefined, iframe.contentWindow.modified);
 }, "Anonymous (false => true) => window not reused.");
 
@@ -30,7 +30,7 @@ promise_test_parallel(async t => {
   // Wait for navigation to complete.
   await new Promise(resolve => iframe.onload = resolve);
   assert_false(iframe.anonymous);
-  assert_false(iframe.contentWindow.isAnonymouslyFramed);
+  assert_false(iframe.contentWindow.anonymouslyFramed);
   assert_equals(undefined, iframe.contentWindow.modified);
 }, "Anonymous (true => false) => window not reused.");
 
@@ -45,6 +45,6 @@ promise_test_parallel(async t => {
   // Wait for navigation to complete.
   await new Promise(resolve => iframe.onload = resolve);
   assert_true(iframe.anonymous);
-  assert_true(iframe.contentWindow.isAnonymouslyFramed);
+  assert_true(iframe.contentWindow.anonymouslyFramed);
   assert_true(iframe.contentWindow.modified);
 }, "Anonymous (true => true) => window reused.");

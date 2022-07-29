@@ -1,3 +1,3 @@
 test(t => {
-  assert_false('isAnonymouslyFramed' in window);
+  assert_false('anonymouslyFramed' in window);
 }, 'Anonymous iframe is disabled by default');

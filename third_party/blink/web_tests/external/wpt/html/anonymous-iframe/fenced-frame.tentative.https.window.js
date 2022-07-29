@@ -32,8 +32,8 @@ promise_test(async test => {
 
   // 3. Expect it not to be considered anonymous.
   send(frame_fenced, `
-    send("${msg_queue}", window.isAnonymouslyFramed);
+    send("${msg_queue}", window.anonymouslyFramed);
   `);
   assert_equals(await receive(msg_queue), "false",
-    "Check window.isAnonymouslyFramed in FencedFrame");
+    "Check window.anonymouslyFramed in FencedFrame");
 }, 'FencedFrame within an AnonymousIframe is not anonymous')

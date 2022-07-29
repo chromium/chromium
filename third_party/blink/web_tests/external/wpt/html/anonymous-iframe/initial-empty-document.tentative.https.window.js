@@ -15,7 +15,7 @@ promise_test_parallel(async t => {
   const child = document.createElement("iframe");
   parent.contentDocument.body.appendChild(child);
   assert_false(child.anonymous);
-  assert_true(child.contentWindow.isAnonymouslyFramed);
+  assert_true(child.contentWindow.anonymouslyFramed);
 }, "Initial empty document inherits from parent's document.");
 
 promise_test_parallel(async t => {
@@ -30,5 +30,5 @@ promise_test_parallel(async t => {
   child.anonymous = true;
   parent.contentDocument.body.appendChild(child);
   assert_true(child.anonymous);
-  assert_true(child.contentWindow.isAnonymouslyFramed);
+  assert_true(child.contentWindow.anonymouslyFramed);
 }, "Initial empty document inherits from its's iframe's anonymous attribute.");
