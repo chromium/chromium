@@ -138,6 +138,14 @@ enum ScreenLockState {
   SCREEN_LOCK_ON = 2;
 }
 
+enum FeatureSetupResult {
+  RESULT_NOT_ATTEMPTED = 0;
+  RESULT_PERMISSION_GRANTED = 1;
+  RESULT_ERROR_USER_REJECT = 2;
+  RESULT_ERROR_ACTION_TIMEOUT = 3;
+  RESULT_ERROR_ACTION_CANCELED = 4;
+}
+
 // Information about access to the camera roll feature on a connected Android
 // device
 message CameraRollAccessState {
@@ -342,7 +350,10 @@ message FeatureSetupRequest {
   bool camera_roll_setup_requested = 2;
 }
 
-message FeatureSetupResponse {}
+message FeatureSetupResponse {
+  FeatureSetupResult notification_setup_result = 1;
+  FeatureSetupResult camera_roll_setup_result = 2;
+}
 
 // When adding new fields to this message, update CameraRollItem#operator==
 // Located in ash/components/phonehub/camera_roll_item.cc.
