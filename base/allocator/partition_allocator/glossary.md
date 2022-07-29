@@ -9,6 +9,12 @@ each term depends mainly upon previously defined ones.
 * **Partition**: A heap that is separated and protected both from other
   partitions and from non-PartitionAlloc memory. Each partition holds
   multiple buckets.
+
+*** promo
+**NOTE**: In code (and comments), "partition," "root," and even
+"allocator" are all conceptually the same thing.
+***
+
 * **Bucket**: A collection of regions in a partition that contains
   similar-sized objects. For example, one bucket may hold objects of
   size (224,&nbsp;256], another (256,&nbsp;320], etc. Bucket size
@@ -35,6 +41,9 @@ Buckets consist of slot spans, organized as linked lists (see below).
   which are also commonly 2MiB. These have to be fully committed /
   uncommitted in memory, whereas super pages can be partially committed
   with system page granularity.
+* **Extent**: An extent is a run of consecutive super pages (belonging
+  to a single partition). Extents are to super pages what slot spans are
+  to slots (see below).
 
 ## Slots and Spans
 
