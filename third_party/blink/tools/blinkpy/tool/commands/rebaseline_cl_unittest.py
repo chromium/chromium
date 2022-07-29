@@ -599,7 +599,7 @@ class RebaselineCLTest(BaseTestCase, LoggingTestCase):
         self.assertEqual(exit_code, 0)
         self.assertLog([
             'INFO: Finished try jobs found for all try bots.\n',
-            'WARNING: No retry summary available for "MOCK Try Win".\n',
+            'WARNING: No retry summary available for ("MOCK Try Win", "blink_web_tests").\n',
             'INFO: Rebaselining one/flaky-fail.html\n',
             'INFO: Rebaselining one/missing.html\n',
             'INFO: Rebaselining one/slow-fail.html\n',

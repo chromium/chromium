@@ -476,12 +476,15 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         tests = sorted(
             r.test_name() for r in unexpected_results
             if r.is_missing_baseline() or r.has_non_reftest_mismatch())
+        if not tests:
+            # no need to fetch retry summary in this case
+            return []
 
         test_suite = re.sub('\s*\(.*\)$', '', web_test_results.step_name())
         new_failures = self._fetch_tests_with_new_failures(build, test_suite)
         if new_failures is None:
-            _log.warning('No retry summary available for "%s".',
-                         build.builder_name)
+            _log.warning('No retry summary available for ("%s", "%s").',
+                         build.builder_name, test_suite)
         else:
             tests = [t for t in tests if t in new_failures]
         return tests
