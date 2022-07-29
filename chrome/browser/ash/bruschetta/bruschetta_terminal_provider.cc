@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/bruschetta/bruschetta_terminal_provider.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
@@ -59,8 +60,13 @@ void BruschettaTerminalProvider::EnsureRunning(
       ->EnsureRunning(base::BindOnce(
           [](base::OnceCallback<void(bool, std::string)> callback,
              BruschettaResult result) {
-            std::move(callback).Run(result == BruschettaResult::kSuccess,
-                                    "Error starting Bruschetta");
+            bool success = (result == BruschettaResult::kSuccess);
+            std::move(callback).Run(
+                success,
+                success ? ""
+                        : base::StringPrintf(
+                              "Error starting bruschetta for terminal: %d (%s)",
+                              result, BruschettaResultString(result)));
           },
           std::move(callback)));
 }

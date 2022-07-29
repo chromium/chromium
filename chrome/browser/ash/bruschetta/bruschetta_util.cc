@@ -9,4 +9,20 @@ namespace bruschetta {
 const char kBruschettaVmName[] = "bru";
 const char kBruschettaDisplayName[] = "Bruschetta";
 
+const char* BruschettaResultString(const BruschettaResult res) {
+#define ENTRY(name)            \
+  case BruschettaResult::name: \
+    return #name
+  switch (res) {
+    ENTRY(kUnknown);
+    ENTRY(kSuccess);
+    ENTRY(kDlcInstallError);
+    ENTRY(kBiosNotAccessible);
+    ENTRY(kStartVmFailed);
+    ENTRY(kTimeout);
+  }
+#undef ENTRY
+  return "unknown code";
+}
+
 }  // namespace bruschetta

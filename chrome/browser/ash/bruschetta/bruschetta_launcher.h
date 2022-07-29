@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
@@ -18,15 +19,6 @@
 class Profile;
 
 namespace bruschetta {
-
-enum class BruschettaResult {
-  kUnknown,
-  kSuccess,
-  kDlcInstallError,
-  kBiosNotAccessible,
-  kStartVmFailed,
-  kTimeout,
-};
 
 // Launches Bruschetta. One instance per VM.
 class BruschettaLauncher {
