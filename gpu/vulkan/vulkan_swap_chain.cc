@@ -58,6 +58,7 @@ bool VulkanSwapChain::Initialize(
     uint32_t min_image_count,
     VkImageUsageFlags image_usage_flags,
     VkSurfaceTransformFlagBitsKHR pre_transform,
+    VkCompositeAlphaFlagBitsKHR composite_alpha,
     std::unique_ptr<VulkanSwapChain> old_swap_chain) {
   base::AutoLock auto_lock(lock_);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -70,7 +71,7 @@ bool VulkanSwapChain::Initialize(
   device_queue_->GetFenceHelper()->ProcessCleanupTasks();
   return InitializeSwapChain(surface, surface_format, image_size,
                              min_image_count, image_usage_flags, pre_transform,
-                             std::move(old_swap_chain)) &&
+                             composite_alpha, std::move(old_swap_chain)) &&
          InitializeSwapImages(surface_format) && AcquireNextImage();
 }
 
@@ -164,6 +165,7 @@ bool VulkanSwapChain::InitializeSwapChain(
     uint32_t min_image_count,
     VkImageUsageFlags image_usage_flags,
     VkSurfaceTransformFlagBitsKHR pre_transform,
+    VkCompositeAlphaFlagBitsKHR composite_alpha,
     std::unique_ptr<VulkanSwapChain> old_swap_chain) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -183,7 +185,7 @@ bool VulkanSwapChain::InitializeSwapChain(
       .imageUsage = image_usage_flags,
       .imageSharingMode = VK_SHARING_MODE_EXCLUSIVE,
       .preTransform = pre_transform,
-      .compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      .compositeAlpha = composite_alpha,
       .presentMode = VK_PRESENT_MODE_FIFO_KHR,
       .clipped = VK_TRUE,
       .oldSwapchain = VK_NULL_HANDLE,

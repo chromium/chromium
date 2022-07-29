@@ -112,6 +112,9 @@ class COMPONENT_EXPORT(VULKAN) VulkanSurface {
   // Swap chain pre-transform.
   gfx::OverlayTransform transform_ = gfx::OVERLAY_TRANSFORM_INVALID;
 
+  VkCompositeAlphaFlagBitsKHR composite_alpha_ =
+      VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
+
   std::unique_ptr<VulkanSwapChain> swap_chain_;
 
   base::WeakPtrFactory<VulkanSurface> weak_ptr_factory_{this};

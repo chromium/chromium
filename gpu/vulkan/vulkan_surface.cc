@@ -320,13 +320,28 @@ bool VulkanSurface::CreateSwapChain(const gfx::Size& size,
   image_size_ = image_size;
   transform_ = transform;
 
+  const VkCompositeAlphaFlagBitsKHR kCompositeAlphaBits[] = {
+      VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR,
+      VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR,
+      VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR,
+      VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR,
+  };
+
+  for (auto composite_alpha_bit : kCompositeAlphaBits) {
+    if (surface_caps.supportedCompositeAlpha & composite_alpha_bit) {
+      composite_alpha_ = composite_alpha_bit;
+      break;
+    }
+  }
+
   auto swap_chain =
       std::make_unique<VulkanSwapChain>(acquire_next_image_timeout_ns_);
   // Create swap chain.
   auto min_image_count = std::max(surface_caps.minImageCount, kMinImageCount);
   if (!swap_chain->Initialize(device_queue_, surface_, surface_format_,
                               image_size_, min_image_count, image_usage_flags_,
-                              vk_transform, std::move(swap_chain_))) {
+                              vk_transform, composite_alpha_,
+                              std::move(swap_chain_))) {
     return false;
   }
 
