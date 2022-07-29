@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/infobars/overlays/permissions_overlay_tab_helper.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -41,7 +40,6 @@ class PermissionsOverlayTabHelperTest : public PlatformTest {
 
   ~PermissionsOverlayTabHelperTest() override {
     InfoBarManagerImpl::FromWebState(&web_state_)->ShutDown();
-    // Observer should be removed before |scoped_feature_list_| is reset.
     web_state_.RemoveObserver(
         PermissionsOverlayTabHelper::FromWebState(&web_state_));
   }
@@ -70,7 +68,6 @@ class PermissionsOverlayTabHelperTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   web::FakeWebState web_state_;
 };
 

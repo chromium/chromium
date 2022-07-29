@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/reload_type.h"
@@ -117,7 +116,6 @@ class PermissionsInttest : public WebTestWithWebController {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<ScopedBlockSwizzler> swizzler_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
   testing::NiceMock<WebStateObserverMock> observer_;
