@@ -150,11 +150,11 @@ base::CallbackListSubscription ChildAccountService::ObserveGoogleAuthState(
   return google_auth_state_observers_.Add(callback);
 }
 
-bool ChildAccountService::SetActive(bool active) {
+void ChildAccountService::SetActive(bool active) {
   if (!profile_->IsChild() && !active_)
-    return false;
+    return;
   if (active_ == active)
-    return true;
+    return;
   active_ = active;
 
   if (active_) {
@@ -178,8 +178,6 @@ bool ChildAccountService::SetActive(bool active) {
 
     CancelFetchingFamilyInfo();
   }
-
-  return true;
 }
 
 void ChildAccountService::SetIsChildAccount(bool is_child_account) {

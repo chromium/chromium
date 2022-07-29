@@ -81,9 +81,8 @@ class SupervisedUserService : public KeyedService,
   class Delegate {
    public:
     virtual ~Delegate() {}
-    // Returns true to indicate that the delegate handled the (de)activation, or
-    // false to indicate that the SupervisedUserService itself should handle it.
-    virtual bool SetActive(bool active) = 0;
+    // Allows the delegate to handle the (de)activation in a custom way.
+    virtual void SetActive(bool active) = 0;
   };
 
   // These enum values represent the source from which the supervised user's

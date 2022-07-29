@@ -75,7 +75,7 @@ class ChildAccountService : public KeyedService,
   explicit ChildAccountService(Profile* profile);
 
   // SupervisedUserService::Delegate implementation.
-  bool SetActive(bool active) override;
+  void SetActive(bool active) override;
 
   // Sets whether the signed-in account is a child account.
   void SetIsChildAccount(bool is_child_account);
