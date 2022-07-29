@@ -3246,6 +3246,21 @@
             ]
         }
     ],
+    "DelayToolbarUpdateOnLoadStarted": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20220628",
+                    "enable_features": [
+                        "DelayToolbarUpdateOnLoadStarted"
+                    ]
+                }
+            ]
+        }
+    ],
     "DeprioritizeTimersUntilDOMContentLoadedExperiment": [
         {
             "platforms": [
