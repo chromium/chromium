@@ -77,8 +77,9 @@ struct SearchResult {
 
   // The image url of the result, if any. Used to download the result image.
   url.mojom.Url? image_url@7;
-  // Favicon of the result, if one had already been cached.
-  gfx.mojom.ImageSkia? cached_favicon@8;
+  // Favicon of the result, if available. The presence or absence of this field
+  // is what defines a result as a "favicon-type result".
+  gfx.mojom.ImageSkia? favicon@8;
   // Handle through which to receive asynchronously-fetched data about this
   // search result.
   [MinVersion=5] pending_receiver<SearchResultConsumer>? receiver@21;
@@ -115,7 +116,7 @@ struct SearchResult {
   enum OmniboxType {
     [Default] kUnset = 0,
     kRichImage = 1,
-    kFavicon = 2,
+    kFaviconDeprecated = 2,
     kBookmark = 3,
     kDomain = 4,
     kSearch = 5,

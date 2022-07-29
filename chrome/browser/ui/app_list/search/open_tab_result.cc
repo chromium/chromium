@@ -119,10 +119,9 @@ void OpenTabResult::UpdateText() {
 }
 
 void OpenTabResult::UpdateIcon() {
-  // Use the favicon if it was in the cache.
-  if (search_result_->omnibox_type ==
-      CrosApiSearchResult::OmniboxType::kFavicon) {
-    SetIcon(IconInfo(search_result_->cached_favicon, kFaviconDimension));
+  // Use a favicon if one is available.
+  if (!search_result_->favicon.isNull()) {
+    SetIcon(IconInfo(search_result_->favicon, kFaviconDimension));
     return;
   }
 
@@ -142,6 +141,7 @@ void OpenTabResult::SetGenericIcon() {
 void OpenTabResult::OnFaviconReceived(const gfx::ImageSkia& icon) {
   // By contract, this is never called with an empty `icon`.
   DCHECK(!icon.isNull());
+  search_result_->favicon = icon;
   SetIcon(IconInfo(icon, kFaviconDimension));
 }
 

@@ -58,7 +58,7 @@ class OpenTabResult : public ChromeSearchResult,
 
   Profile* const profile_;
   AppListControllerDelegate* const list_controller_;
-  const crosapi::mojom::SearchResultPtr search_result_;
+  crosapi::mojom::SearchResultPtr search_result_;
   const absl::optional<std::string> drive_id_;
   const std::u16string description_;
   // Whether this open tab result uses a generic backup icon.

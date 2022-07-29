@@ -87,7 +87,7 @@ class OmniboxResult : public ChromeSearchResult,
 
   Profile* const profile_;
   AppListControllerDelegate* const list_controller_;
-  const crosapi::mojom::SearchResultPtr search_result_;
+  crosapi::mojom::SearchResultPtr search_result_;
   const base::RepeatingClosure remove_closure_;
   const std::u16string query_;
   const bool is_zero_suggestion_;

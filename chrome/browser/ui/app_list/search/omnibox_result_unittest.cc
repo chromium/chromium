@@ -363,6 +363,14 @@ TEST_F(OmniboxResultTest, Favicon) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(ImageSkiasEqual(TestIcon(), result->icon().icon));
+
+  // A subsequent result with the same favicon should use the cached result.
+  const auto next_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::HISTORY_URL);
+  EXPECT_TRUE(ImageSkiasEqual(TestIcon(), next_result->icon().icon));
+
+  // Favicon shouldn't overwrite metrics type.
+  EXPECT_EQ(ash::OMNIBOX_RECENTLY_VISITED_WEBSITE, next_result->metrics_type());
 }
 
 // Test that the attached media (e.g. sun icon for weather results) is used as

@@ -217,6 +217,7 @@ void OmniboxResult::OnColorModeChanged(bool dark_mode_enabled) {
 void OmniboxResult::OnFaviconReceived(const gfx::ImageSkia& icon) {
   // By contract, this is never called with an empty |icon|.
   DCHECK(!icon.isNull());
+  search_result_->favicon = icon;
   SetIcon(IconInfo(icon, kFaviconDimension));
 }
 
@@ -229,9 +230,8 @@ void OmniboxResult::UpdateIcon() {
   // Use a favicon if eligible. In the event that a favicon becomes available
   // asynchronously, it will be sent to us over Mojo and we will update our
   // icon.
-  if (search_result_->omnibox_type ==
-      CrosApiSearchResult::OmniboxType::kFavicon) {
-    SetIcon(IconInfo(search_result_->cached_favicon, kFaviconDimension));
+  if (!search_result_->favicon.isNull()) {
+    SetIcon(IconInfo(search_result_->favicon, kFaviconDimension));
     return;
   }
 

@@ -306,7 +306,7 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
     result->omnibox_type = SearchResult::OmniboxType::kRichImage;
     result->image_url = match.image_url;
   } else {
-    // This may not be the final type. Favicons and bookmarks take precedence.
+    // This may not be the final type. Bookmarks take precedence.
     result->omnibox_type = MatchTypeToOmniboxType(match.type);
 
     // Set the favicon if this result is eligible.
@@ -327,15 +327,13 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
 
       const auto icon = favicon_cache->GetFaviconForPageUrl(
           match.destination_url, std::move(emit_favicon));
-      if (!icon.IsEmpty()) {
-        result->omnibox_type = SearchResult::OmniboxType::kFavicon;
-        result->cached_favicon = icon.AsImageSkia();
-      }
+      if (!icon.IsEmpty())
+        result->favicon = icon.AsImageSkia();
     }
 
     // Otherwise, set the bookmark type if this result is eligible.
-    if (result->omnibox_type != SearchResult::OmniboxType::kFavicon &&
-        bookmark_model && bookmark_model->IsBookmarked(match.destination_url)) {
+    if (result->favicon.isNull() && bookmark_model &&
+        bookmark_model->IsBookmarked(match.destination_url)) {
       result->omnibox_type = SearchResult::OmniboxType::kBookmark;
       result->metrics_type = SearchResult::MetricsType::kBookmark;
     }
