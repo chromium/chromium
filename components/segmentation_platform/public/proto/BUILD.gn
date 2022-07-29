@@ -10,7 +10,12 @@ if (is_android) {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "segmentation_platform.proto" ]
+  sources = [
+    "aggregation.proto",
+    "model_metadata.proto",
+    "segmentation_platform.proto",
+    "types.proto",
+  ]
 }
 
 if (is_android) {

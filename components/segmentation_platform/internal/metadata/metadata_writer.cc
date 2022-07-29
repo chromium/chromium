@@ -5,7 +5,7 @@
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
 
 #include "base/metrics/metrics_hashes.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 

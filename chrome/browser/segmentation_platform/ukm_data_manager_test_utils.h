@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 

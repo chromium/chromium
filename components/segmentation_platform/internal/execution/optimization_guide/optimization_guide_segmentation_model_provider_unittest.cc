@@ -8,7 +8,7 @@
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform {

@@ -7,7 +7,7 @@ option optimize_for = LITE_RUNTIME;
 
 package segmentation_platform.proto;
 
-import "components/segmentation_platform/internal/proto/model_metadata.proto";
+import "components/segmentation_platform/public/proto/model_metadata.proto";
 import "components/segmentation_platform/public/proto/segmentation_platform.proto";
 
 // Result from the model evaluation for a given segment.

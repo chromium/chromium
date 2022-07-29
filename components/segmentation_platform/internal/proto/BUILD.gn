@@ -7,12 +7,9 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [
-    "aggregation.proto",
-    "model_metadata.proto",
     "model_prediction.proto",
     "signal.proto",
     "signal_storage_config.proto",
-    "types.proto",
   ]
 
   link_deps = [ "//components/segmentation_platform/public/proto" ]

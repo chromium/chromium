@@ -25,12 +25,12 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/segmentation_platform/embedder/input_delegate/price_tracking_input_delegate.h"
 #include "components/segmentation_platform/internal/dummy_segmentation_platform_service.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/ukm_data_manager.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 

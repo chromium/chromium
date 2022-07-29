@@ -7,8 +7,8 @@ option optimize_for = LITE_RUNTIME;
 
 package segmentation_platform.proto;
 
-import "components/segmentation_platform/internal/proto/aggregation.proto";
-import "components/segmentation_platform/internal/proto/types.proto";
+import "components/segmentation_platform/public/proto/aggregation.proto";
+import "components/segmentation_platform/public/proto/types.proto";
 
 // The version is used to verify if the metadata provided by the server is
 // supported in current version of the code. Update the version number for any

@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
-#include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
+#include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace segmentation_platform {
 

@@ -7,7 +7,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/task_environment.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
-#include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

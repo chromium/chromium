@@ -7,7 +7,7 @@ option optimize_for = LITE_RUNTIME;
 
 package segmentation_platform.proto;
 
-import "components/segmentation_platform/internal/proto/types.proto";
+import "components/segmentation_platform/public/proto/types.proto";
 
 // Contains storage related information about a particular signal useful for
 // determining eligibility for model evaluation and DB cleanups.

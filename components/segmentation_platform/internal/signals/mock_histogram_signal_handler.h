@@ -7,7 +7,7 @@
 
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 
-#include "components/segmentation_platform/internal/proto/types.pb.h"
+#include "components/segmentation_platform/public/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace segmentation_platform {
