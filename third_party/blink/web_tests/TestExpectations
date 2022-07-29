@@ -7095,3 +7095,7 @@ crbug.com/1348275 [ Mac12-arm64 ] virtual/scroll-unification/fast/scrolling/iner
 
 # Sheriff 2022-07-29 - Flaky failure.
 crbug.com/1348118 [ Mac11-arm64 ] wpt_internal/navigation-api/ordering-and-transition/navigate-cross-document-double.html [ Failure Pass Timeout ]
+
+crbug.com/1348447 [ Linux ] external/wpt/IndexedDB/blob-composite-blob-reads.any.worker.html [ Failure Pass Timeout ]
+crbug.com/1348447 [ Linux ] external/wpt/IndexedDB/blob-composite-blob-reads.any.html [ Failure Pass Timeout ]
+crbug.com/1348447 [ Linux ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/blob-composite-blob-reads.any.worker.html [ Failure Pass Timeout ]
