@@ -1,48 +1,70 @@
-<style>
+<style include="cr-hidden-style">
   :host {
     position: absolute;
     z-index: 1;
   }
 
-  .arrow {
+  /* HelpBubblePosition.ABOVE */
+  :host([position='0']) {
+    transform: translateY(-100%);
+  }
+
+  /* HelpBubblePosition.BELOW */
+  :host([position='1']) {
+    transform: none;
+  }
+
+  /* HelpBubblePosition.LEFT */
+  :host([position='2']) {
+    transform: translate(-100%, -50%);
+  }
+
+  /* HelpBubblePosition.RIGHT */
+  :host([position='3']) {
+    transform: translateY(-50%);
+  }
+
+  #arrow {
+    --help-bubble-arrow-size: 16px;
+    --help-bubble-arrow-offset: calc(var(--help-bubble-arrow-size) / 2);
     background-color: var(--help-bubble-background);
-    height: 16px;
+    height: var(--help-bubble-arrow-size);
     position: absolute;
     transform: rotate(-45deg);
-    width: 16px;
+    width: var(--help-bubble-arrow-size);
     z-index: -1;
   }
 
   /* Turns the arrow direction downwards, when the bubble is placed above
    * the anchor element */
-  :host([position=above]) .arrow {
+  #arrow.above {
     border-bottom-left-radius: 2px;
-    bottom: -8px;
-    left: calc(50% - 8px);
+    bottom: calc(0 - var(--help-bubble-arrow-offset));
+    left: calc(50% - var(--help-bubble-arrow-offset));
   }
 
   /* Turns the arrow direction upwards, when the bubble is placed below
    * the anchor element */
-  :host([position=below]) .arrow {
+  #arrow.below {
     border-top-right-radius: 2px;
-    left: calc(50% - 8px);
-    top: -8px;
+    left: calc(50% - var(--help-bubble-arrow-offset));
+    top: calc(0 - var(--help-bubble-arrow-offset));
   }
 
   /* Turns the arrow direction to the right, when the bubble is placed to the
    * left of the anchor element */
-  :host([position=left]) .arrow {
+  #arrow.left {
     border-bottom-right-radius: 2px;
-    right: -8px;
-    top: calc(50% - 8px);
+    right: calc(0 - var(--help-bubble-arrow-offset));
+    top: calc(50% - var(--help-bubble-arrow-offset));
   }
 
   /* Turns the arrow direction to the left, when the bubble is placed to the
    * right of the anchor element */
-  :host([position=right]) .arrow {
+  #arrow.right {
     border-top-left-radius: 2px;
-    left: -8px;
-    top: calc(50% - 8px);
+    left: calc(0 - var(--help-bubble-arrow-offset));
+    top: calc(50% - var(--help-bubble-arrow-offset));
   }
 
   #topContainer {
@@ -50,16 +72,41 @@
     display: flex;
   }
 
-  #body {
+  #progress {
+    display: inline-block;
+    flex: auto;
+  }
+
+  #progress div {
+    --help-bubble-progress-size: 8px;
+    border: 1px solid var(--help-bubble-text-color);
+    border-radius: 50%;
+    display: inline-block;
+    height: var(--help-bubble-progress-size);
+    margin-bottom: var(--help-bubble-element-spacing);
+    margin-inline-end: var(--help-bubble-element-spacing);
+    margin-top: 4px;
+    width: var(--help-bubble-progress-size);
+  }
+
+  .total-progress {
+    background-color: var(--help-bubble-text-color);
+  }
+
+  div.body {
     flex: auto;
     font-size: 14px;
   }
 
-  #title {
+  div.title {
     flex: auto;
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 8px;
+  }
+
+  div.hidden {
+    display: none;
   }
 
   /* Note: help bubbles have the same color treatment in both light and dark
@@ -68,6 +115,7 @@
 
    .help-bubble {
     --help-bubble-background: var(--google-blue-700);
+    --help-bubble-element-spacing: 8px;
     --help-bubble-text-color: var(--google-grey-200);
     background-color: var(--help-bubble-background);
     border-radius: 8px;
@@ -103,8 +151,8 @@
   cr-button {
     --text-color: var(--help-bubble-text-color);
     border-color: var(--help-bubble-text-color);
-    margin-inline-start: 8px;
-    margin-top: 8px;
+    margin-inline-start: var(--help-bubble-element-spacing);
+    margin-top: var(--help-bubble-element-spacing);
   }
 
   cr-button:focus {
@@ -127,12 +175,39 @@
 <div class="help-bubble">
   <div id="topContainer">
     <cr-icon-button id="close" iron-icon="cr:close"
-        aria-label="[[closeText]]" on-click="dismiss_">
+        aria-label$="[[closeText]]" on-click="dismiss_">
     </cr-icon-button>
-    <div id="title"></div>
-    <div id="body"></div>
+    <div id="progress" hidden$="[[!progress]]">
+      <template is="dom-repeat" items="[[progressData_]]">
+        <div class$="[[getProgressClass_(index)]]"></div>
+      </template>
+    </div>
+    <div class="title"
+         hidden$="[[!shouldShowTitleInTopContainer_(progress, titleText)]]">
+      [[titleText]]
+    </div>
+    <div class="body"
+         hidden$="[[!shouldShowBodyInTopContainer_(progress, titleText)]]">
+      [[bodyText]]
+    </div>
   </div>
-  <div id="main"></div>
-  <div id="buttons"></div>
-  <div class="arrow"></div>
+  <div id="main">
+    <div class="title"
+         hidden$="[[!shouldShowTitleInMain_(progress, titleText)]]">
+      [[titleText]]
+    </div>
+    <div class="body"
+         hidden$="[[!shouldShowBodyInMain_(progress, titleText)]]">
+      [[bodyText]]
+    </div>
+  </div>
+  <div id="buttons" hidden$="[[!buttons.length]]">
+    <template is="dom-repeat" items="[[buttons]]" sort="buttonSortFunc_">
+      <cr-button id$="[[getButtonId_(itemsIndex)]]"
+          tabindex$="[[getButtonTabIndex_(itemsIndex, item.isDefault)]]"
+          class$="[[getButtonClass_(item.isDefault)]]"
+          on-click="onButtonClick_">[[item.text]]</cr-button>
+    </template>
+  </div>
+  <div id="arrow" class$="[[getArrowClass_(position)]]"></div>
 </div>

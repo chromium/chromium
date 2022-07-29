@@ -369,18 +369,18 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertTrue(isVisible(bubble));
   });
 
-  const secondParams: HelpBubbleParams = new HelpBubbleParams();
-  secondParams.nativeIdentifier = TITLE_NATIVE_ID;
-  secondParams.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
-  secondParams.position = HelpBubblePosition.BELOW;
-  secondParams.bodyText = 'This is another help bubble.';
-  secondParams.titleText = 'This is a title';
-  secondParams.buttons = [];
+  const paramsWithTitle: HelpBubbleParams = new HelpBubbleParams();
+  paramsWithTitle.nativeIdentifier = TITLE_NATIVE_ID;
+  paramsWithTitle.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+  paramsWithTitle.position = HelpBubblePosition.BELOW;
+  paramsWithTitle.bodyText = 'This is another help bubble.';
+  paramsWithTitle.titleText = 'This is a title';
+  paramsWithTitle.buttons = [];
 
   test('help bubble mixin shows multiple bubbles', async () => {
     testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
     await waitAfterNextRender(container);
-    testProxy.getCallbackRouterRemote().showHelpBubble(secondParams);
+    testProxy.getCallbackRouterRemote().showHelpBubble(paramsWithTitle);
     await waitAfterNextRender(container);
     assertTrue(container.isHelpBubbleShowing());
     const bubble1 = container.getHelpBubbleFor('title');
@@ -396,7 +396,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
   test('help bubble mixin shows bubbles with and without title', async () => {
     testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
     await waitAfterNextRender(container);
-    testProxy.getCallbackRouterRemote().showHelpBubble(secondParams);
+    testProxy.getCallbackRouterRemote().showHelpBubble(paramsWithTitle);
     await waitAfterNextRender(container);
     assertTrue(container.isHelpBubbleShowing());
     const titleBubble = container.getHelpBubbleFor('title')!;
@@ -405,13 +405,37 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     // correctly is present in help_bubble_test.ts, so it is sufficient to
     // verify that the property is set correctly.
     assertEquals('', paragraphBubble.titleText);
-    assertEquals(secondParams.titleText, titleBubble.titleText);
+    assertEquals(paramsWithTitle.titleText, titleBubble.titleText);
   });
+
+  const paramsWithProgress: HelpBubbleParams = new HelpBubbleParams();
+  paramsWithProgress.nativeIdentifier = LIST_NATIVE_ID;
+  paramsWithProgress.closeButtonAltText = CLOSE_BUTTON_ALT_TEXT;
+  paramsWithProgress.position = HelpBubblePosition.BELOW;
+  paramsWithProgress.bodyText = 'This is another help bubble.';
+  paramsWithProgress.progress = {current: 1, total: 3};
+  paramsWithProgress.buttons = [];
+
+  test(
+      'help bubble mixin shows bubbles with and without progress', async () => {
+        testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
+        await waitAfterNextRender(container);
+        testProxy.getCallbackRouterRemote().showHelpBubble(paramsWithProgress);
+        await waitAfterNextRender(container);
+        assertTrue(container.isHelpBubbleShowing());
+        const paragraphBubble = container.getHelpBubbleFor('p1')!;
+        const progressBubble = container.getHelpBubbleFor('bulletList')!;
+        // Testing that setting `progress` will cause the progress to display
+        // correctly is present in help_bubble_test.ts, so it is sufficient to
+        // verify that the property is set correctly.
+        assertFalse(!!paragraphBubble.progress);
+        assertDeepEquals({current: 1, total: 3}, progressBubble.progress);
+      });
 
   test('help bubble mixin hides multiple bubbles', async () => {
     testProxy.getCallbackRouterRemote().showHelpBubble(defaultParams);
     await waitAfterNextRender(container);
-    testProxy.getCallbackRouterRemote().showHelpBubble(secondParams);
+    testProxy.getCallbackRouterRemote().showHelpBubble(paramsWithTitle);
     await waitAfterNextRender(container);
 
     testProxy.getCallbackRouterRemote().hideHelpBubble(
@@ -424,7 +448,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
     assertEquals(null, container.getHelpBubbleFor('p1'));
 
     testProxy.getCallbackRouterRemote().hideHelpBubble(
-        secondParams.nativeIdentifier);
+        paramsWithTitle.nativeIdentifier);
     await waitAfterNextRender(container);
     assertFalse(container.isHelpBubbleShowing());
     assertEquals(null, container.getHelpBubbleFor('title'));
@@ -463,6 +487,7 @@ suite('CrComponentsHelpBubbleMixinTest', () => {
 
   test('help bubble mixin sends action button clicked event', async () => {
     container.showHelpBubble('p1', buttonParams);
+    await waitAfterNextRender(container);
 
     // Click one of the action buttons.
     const button =

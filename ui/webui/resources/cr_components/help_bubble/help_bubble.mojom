@@ -28,6 +28,12 @@ struct HelpBubbleButtonParams {
   bool is_default = false;
 };
 
+// Progress indicator for tutorial bubbles.
+struct Progress {
+  uint8 current;
+  uint8 total;
+};
+
 // Simplified version of user_education::HelpBubbleParams.
 struct HelpBubbleParams {
   // Holds the name of the ElementIdentifier used to identify the help bubble's
@@ -39,6 +45,7 @@ struct HelpBubbleParams {
   string? title_text;
   string body_text;
   string close_button_alt_text;
+  Progress? progress;
   array<HelpBubbleButtonParams> buttons;
 };
 

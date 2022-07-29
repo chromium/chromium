@@ -10,17 +10,17 @@
  */
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 
 import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {assert, assertNotReached} from '//resources/js/assert_ts.js';
 import {isWindows} from '//resources/js/cr.m.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './help_bubble.html.js';
-import {HelpBubblePosition} from './help_bubble.mojom-webui.js';
+import {HelpBubbleButtonParams, HelpBubblePosition, Progress} from './help_bubble.mojom-webui.js';
 
 const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 
@@ -36,11 +36,11 @@ export type HelpBubbleDismissedEvent = CustomEvent<{
 
 export interface HelpBubbleElement {
   $: {
-    body: HTMLElement,
+    arrow: HTMLElement,
     buttons: HTMLElement,
     close: CrIconButtonElement,
     main: HTMLElement,
-    title: HTMLElement,
+    progress: HTMLElement,
     topContainer: HTMLElement,
   };
 }
@@ -61,7 +61,14 @@ export class HelpBubbleElement extends PolymerElement {
         value: '',
         reflectToAttribute: true,
       },
+
       closeText: String,
+
+      position: {
+        type: HelpBubblePosition,
+        value: HelpBubblePosition.BELOW,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -70,33 +77,30 @@ export class HelpBubbleElement extends PolymerElement {
   titleText: string;
   closeText: string;
   position: HelpBubblePosition;
-  buttons: string[] = [];
-  defaultButtonIndex: number;
+  buttons: HelpBubbleButtonParams[] = [];
+  progress: Progress|null = null;
 
   /**
    * HTMLElement corresponding to |this.anchorId|.
    */
   private anchorElement_: HTMLElement|null = null;
 
-  private buttonEventTracker_: EventTracker = new EventTracker();
+  /**
+   * Backing data for the dom-repeat that generates progress indicators.
+   * The elements are placeholders only.
+   */
+  private progressData_: void[] = [];
 
   /**
    * Shows the bubble.
    */
   show() {
-    // If there is no title, the body element should be in the top container
-    // with the close button, else it should be in the main container.
-    if (this.titleText) {
-      this.$.title.style.display = 'block';
-      this.$.title.innerText = this.titleText;
-      this.$.main.appendChild(this.$.body);
+    // Set up the progress track.
+    if (this.progress) {
+      this.progressData_ = new Array(this.progress.total);
     } else {
-      this.$.title.style.display = 'none';
-      this.$.topContainer.appendChild(this.$.body);
+      this.progressData_ = [];
     }
-    this.$.body.innerText = this.bodyText;
-
-    this.addButtons_();
 
     this.anchorElement_ =
         this.parentElement!.querySelector<HTMLElement>(`#${this.anchorId}`)!;
@@ -122,7 +126,6 @@ export class HelpBubbleElement extends PolymerElement {
    * bubble will go away on hide.
    */
   hide() {
-    this.removeButtons_();
     this.style.display = 'none';
     this.setAttribute('aria-hidden', 'true');
     this.setAnchorHighlight_(false);
@@ -141,12 +144,8 @@ export class HelpBubbleElement extends PolymerElement {
    * Returns the button with the given `buttonIndex`, or null if not found.
    */
   getButtonForTesting(buttonIndex: number): CrButtonElement|null {
-    for (const button of this.$.buttons.children) {
-      if (button.id === ACTION_BUTTON_ID_PREFIX + buttonIndex) {
-        return button as CrButtonElement;
-      }
-    }
-    return null;
+    return this.$.buttons.querySelector<CrButtonElement>(
+        `[id="${ACTION_BUTTON_ID_PREFIX + buttonIndex}"]`);
   }
 
   /**
@@ -167,71 +166,85 @@ export class HelpBubbleElement extends PolymerElement {
     }));
   }
 
-  private onButtonClicked_(buttonIndex: number, _e: Event) {
+  private getProgressClass_(index: number): string {
+    return index < this.progress!.current ? 'current-progress' :
+                                            'total-progress';
+  }
+
+  private shouldShowTitleInTopContainer_(
+      progress: Progress|null, titleText: string): boolean {
+    return !!titleText && !progress;
+  }
+
+  private shouldShowTitleInMain_(progress: Progress|null, titleText: string):
+      boolean {
+    return !!titleText && !!progress;
+  }
+
+  private shouldShowBodyInTopContainer_(
+      progress: Progress|null, titleText: string): boolean {
+    return !progress && !titleText;
+  }
+
+  private shouldShowBodyInMain_(progress: Progress|null, titleText: string):
+      boolean {
+    return !!progress || !!titleText;
+  }
+
+  private onButtonClick_(e: DomRepeatEvent<HelpBubbleButtonParams>) {
     assert(
         this.anchorId,
         'Action button clicked: expected help bubble to have an anchor.');
+    // There is no access to the model index here due to limitations of
+    // dom-repeat. However, the index is stored in the node's identifier.
+    const index: number = parseInt(
+        (e.target as Element).id.substring(ACTION_BUTTON_ID_PREFIX.length));
     this.dispatchEvent(new CustomEvent(HELP_BUBBLE_DISMISSED_EVENT, {
       detail: {
         anchorId: this.anchorId,
         fromActionButton: true,
-        buttonIndex: buttonIndex,
+        buttonIndex: index,
       },
     }));
   }
 
-  /**
-   * Removes button elements and listeners, if any are present.
-   */
-  private removeButtons_() {
-    while (this.$.buttons.firstChild) {
-      this.buttonEventTracker_.remove(this.$.buttons.firstChild, 'click');
-      this.$.buttons.removeChild(this.$.buttons.firstChild);
-    }
+  private getButtonId_(index: number): string {
+    return ACTION_BUTTON_ID_PREFIX + index;
   }
 
-  /**
-   * Adds any buttons required by `this.buttons` with their on-click listeners.
-   */
-  private addButtons_() {
-    assert(
-        !this.$.buttons.firstChild,
-        'Add buttons: expected button list to be empty.');
+  private getButtonClass_(isDefault: boolean): string {
+    return isDefault ? 'default-button' : '';
+  }
 
-    // If there are no buttons to add, hide the container and return.
-    if (!this.buttons.length) {
-      return;
+  private getButtonTabIndex_(index: number, isDefault: boolean): number {
+    return isDefault ? 1 : index + 2;
+  }
+
+  private buttonSortFunc_(
+      button1: HelpBubbleButtonParams,
+      button2: HelpBubbleButtonParams): number {
+    // Default button is leading on Windows, trailing on other platforms.
+    if (button1.isDefault) {
+      return isWindows ? -1 : 1;
     }
-
-    let defaultButton: HTMLElement|null = null;
-    for (let i: number = 0; i < this.buttons.length; ++i) {
-      const button = document.createElement('cr-button');
-      button.innerText = this.buttons[i];
-      button.id = ACTION_BUTTON_ID_PREFIX + i;
-      this.buttonEventTracker_.add(
-          button, 'click', this.onButtonClicked_.bind(this, i));
-      if (i === this.defaultButtonIndex) {
-        defaultButton = button;
-        // Default button should always be first in tab order.
-        button.tabIndex = 1;
-        button.classList.add('default-button');
-      } else {
-        // Tab index for non-default buttons starts at 2, since default button
-        // gets 1.
-        button.tabIndex = i + 2;
-        this.$.buttons.appendChild(button);
-      }
+    if (button2.isDefault) {
+      return isWindows ? 1 : -1;
     }
+    return 0;
+  }
 
-    // Place the default button in the correct order; either leading or
-    // trailing based on platform.
-    if (defaultButton) {
-      if (HelpBubbleElement.isDefaultButtonLeading() &&
-          this.$.buttons.firstChild) {
-        this.$.buttons.insertBefore(defaultButton, this.$.buttons.firstChild);
-      } else {
-        this.$.buttons.appendChild(defaultButton);
-      }
+  private getArrowClass_(position: HelpBubblePosition): string {
+    switch (position) {
+      case HelpBubblePosition.ABOVE:
+        return 'above';
+      case HelpBubblePosition.BELOW:
+        return 'below';
+      case HelpBubblePosition.LEFT:
+        return 'left';
+      case HelpBubblePosition.RIGHT:
+        return 'right';
+      default:
+        assertNotReached('Unknown help bubble position: ' + position);
     }
   }
 
@@ -244,44 +257,44 @@ export class HelpBubbleElement extends PolymerElement {
         this.anchorElement_, 'Update position: expected valid anchor element.');
 
     // Inclusive of 8px visible arrow and 8px margin.
-    const offset = 16;
     const parentRect = this.offsetParent!.getBoundingClientRect();
     const anchorRect = this.anchorElement_.getBoundingClientRect();
     const anchorLeft = anchorRect.left - parentRect.left;
+    const anchorHorizontalCenter = anchorLeft + anchorRect.width / 2;
     const anchorTop = anchorRect.top - parentRect.top;
+    const ARROW_OFFSET = 16;
+    const LEFT_MARGIN = 8;
+    const HELP_BUBBLE_WIDTH = 362;
 
     let helpLeft: string = '';
     let helpTop: string = '';
-    let helpTransform: string = '';
 
     switch (this.position) {
       case HelpBubblePosition.ABOVE:
         // Anchor the help bubble to the top center of the anchor element.
-        helpTop = `${anchorTop - offset}px`;
-        helpLeft = `${anchorLeft + anchorRect.width / 2}px`;
-        // Horizontally center the help bubble.
-        helpTransform = 'translate(-50%, -100%)';
+        helpTop = `${anchorTop - ARROW_OFFSET}px`;
+        helpLeft = `${
+            Math.max(
+                LEFT_MARGIN,
+                anchorHorizontalCenter - HELP_BUBBLE_WIDTH / 2)}px`;
         break;
       case HelpBubblePosition.BELOW:
         // Anchor the help bubble to the bottom center of the anchor element.
-        helpTop = `${anchorTop + anchorRect.height + offset}px`;
-        helpLeft = `${anchorLeft + anchorRect.width / 2}px`;
-        // Horizontally center the help bubble.
-        helpTransform = 'translateX(-50%)';
+        helpTop = `${anchorTop + anchorRect.height + ARROW_OFFSET}px`;
+        helpLeft = `${
+            Math.max(
+                LEFT_MARGIN,
+                anchorHorizontalCenter - HELP_BUBBLE_WIDTH / 2)}px`;
         break;
       case HelpBubblePosition.LEFT:
         // Anchor the help bubble to the center left of the anchor element.
         helpTop = `${anchorTop + anchorRect.height / 2}px`;
-        helpLeft = `${anchorLeft - offset}px`;
-        // Vertically center the help bubble.
-        helpTransform = 'translate(-100%, -50%)';
+        helpLeft = `${anchorLeft - ARROW_OFFSET}px`;
         break;
       case HelpBubblePosition.RIGHT:
         // Anchor the help bubble to the center right of the anchor element.
         helpTop = `${anchorTop + anchorRect.height / 2}px`;
-        helpLeft = `${anchorLeft + anchorRect.width + offset}px`;
-        // Vertically center the help bubble.
-        helpTransform = 'translateY(-50%)';
+        helpLeft = `${anchorLeft + anchorRect.width + ARROW_OFFSET}px`;
         break;
       default:
         assertNotReached();
@@ -289,7 +302,6 @@ export class HelpBubbleElement extends PolymerElement {
 
     this.style.top = helpTop;
     this.style.left = helpLeft;
-    this.style.transform = helpTransform;
   }
 
   /**

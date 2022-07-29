@@ -92,6 +92,11 @@ MATCHER_P(MatchesHelpBubbleParams, expected, "") {
   EXPECT_EQ(expected->native_identifier, arg->native_identifier);
   EXPECT_EQ(expected->position, arg->position);
   EXPECT_EQ(expected->title_text, arg->title_text);
+  EXPECT_EQ(!!expected->progress, !!arg->progress);
+  if (expected->progress && arg->progress) {
+    EXPECT_EQ(expected->progress->current, arg->progress->current);
+    EXPECT_EQ(expected->progress->total, arg->progress->total);
+  }
 
   EXPECT_EQ(expected->buttons.size(), arg->buttons.size());
   if (expected->buttons.size() == arg->buttons.size()) {
@@ -235,6 +240,59 @@ TEST_F(HelpBubbleHandlerTest, ShowHelpBubble) {
       HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
   EXPECT_TRUE(help_bubble->Close());
   EXPECT_CALL(test_handler_->mock(), HideHelpBubble).Times(0);
+
+  EXPECT_FALSE(help_bubble->is_open());
+}
+
+TEST_F(HelpBubbleHandlerTest, ShowHelpBubbleWithButtonsAndProgress) {
+  handler()->HelpBubbleAnchorVisibilityChanged(
+      kHelpBubbleHandlerTestElementIdentifier.GetName(), true);
+  auto* const element =
+      ui::ElementTracker::GetElementTracker()->GetUniqueElement(
+          kHelpBubbleHandlerTestElementIdentifier, test_handler_->context());
+  ASSERT_NE(nullptr, element);
+  HelpBubbleParams params;
+  params.body_text = u"Help bubble body.";
+  params.close_button_alt_text = u"Close button alt text.";
+  params.arrow = HelpBubbleArrow::kTopCenter;
+  params.progress = std::make_pair(1, 3);
+
+  HelpBubbleButtonParams button;
+  button.is_default = true;
+  button.text = u"button1";
+  params.buttons.emplace_back(std::move(button));
+
+  // Check the parameters passed to the ShowHelpBubble mojo method.
+  help_bubble::mojom::HelpBubbleParamsPtr expected =
+      help_bubble::mojom::HelpBubbleParams::New();
+  expected->native_identifier = element->identifier().GetName();
+  expected->body_text = base::UTF16ToUTF8(params.body_text);
+  expected->close_button_alt_text =
+      base::UTF16ToUTF8(params.close_button_alt_text);
+  expected->position = help_bubble::mojom::HelpBubblePosition::BELOW;
+
+  auto expected_button = help_bubble::mojom::HelpBubbleButtonParams::New();
+  expected_button->text = "button1";
+  expected_button->is_default = true;
+  expected->buttons.emplace_back(std::move(expected_button));
+
+  auto expected_progress = help_bubble::mojom::Progress::New();
+  expected_progress->current = 1;
+  expected_progress->total = 3;
+  expected->progress = std::move(expected_progress);
+
+  EXPECT_CALL(test_handler_->mock(),
+              ShowHelpBubble(MatchesHelpBubbleParams(expected.get())));
+  auto help_bubble = help_bubble_factory_registry_.CreateHelpBubble(
+      element, std::move(params));
+
+  EXPECT_TRUE(help_bubble);
+  EXPECT_TRUE(help_bubble->is_open());
+
+  EXPECT_CALL(
+      test_handler_->mock(),
+      HideHelpBubble(kHelpBubbleHandlerTestElementIdentifier.GetName()));
+  EXPECT_TRUE(help_bubble->Close());
 
   EXPECT_FALSE(help_bubble->is_open());
 }
