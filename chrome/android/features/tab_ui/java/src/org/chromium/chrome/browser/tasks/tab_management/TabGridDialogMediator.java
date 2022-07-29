@@ -44,6 +44,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -53,7 +54,8 @@ import java.util.List;
  * with the components' coordinator as well as managing the business logic
  * for dialog show/hide.
  */
-public class TabGridDialogMediator implements SnackbarManager.SnackbarController {
+public class TabGridDialogMediator
+        implements SnackbarManager.SnackbarController, TabGridDialogView.VisibilityListener {
     /**
      * Defines an interface for a {@link TabGridDialogMediator} to control dialog.
      */
@@ -226,6 +228,9 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             RecordUserAction.record("TabGridDialog.Exit");
         };
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, this);
+        }
     }
 
     public void initWithNative(@Nullable TabSelectionEditorCoordinator
@@ -313,7 +318,20 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
         if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
             mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
         }
+        if (mModel.get(TabGridPanelProperties.VISIBILITY_LISTENER) != null) {
+            // If visibility listener is registered, listener will handle controller invocations for
+            // hide. hide view first. Listener will reset tabs on #finishedHiding.
+            mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+        } else {
+            mDialogController.resetWithListOfTabs(null);
+        }
+    }
+
+    // @TabGridDialogView.VisibilityListener
+    @Override
+    public void finishedHidingDialogView() {
         mDialogController.resetWithListOfTabs(null);
+        mDialogController.postHiding();
     }
 
     void onReset(@Nullable List<Tab> tabs) {
@@ -337,7 +355,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             mModel.set(TabGridPanelProperties.SCRIMVIEW_CLICK_RUNNABLE, mScrimClickRunnable);
             mDialogController.prepareDialog();
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
-        } else {
+        } else if (mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE)) {
             mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
             mDialogController.postHiding();
         }

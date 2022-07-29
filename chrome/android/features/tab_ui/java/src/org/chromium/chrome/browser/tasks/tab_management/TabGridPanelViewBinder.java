@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelPrope
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_TEXT_ON_FOCUS_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.TITLE_TEXT_WATCHER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.UNGROUP_BAR_STATUS;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.VISIBILITY_LISTENER;
 
 import android.view.View;
 import android.widget.FrameLayout;
@@ -91,6 +92,8 @@ class TabGridPanelViewBinder {
             } else {
                 viewHolder.dialogView.hideDialog();
             }
+        } else if (VISIBILITY_LISTENER == propertyKey) {
+            viewHolder.dialogView.setVisibilityListener(model.get(VISIBILITY_LISTENER));
         } else if (ANIMATION_SOURCE_VIEW == propertyKey) {
             viewHolder.dialogView.setupDialogAnimation(model.get(ANIMATION_SOURCE_VIEW));
         } else if (UNGROUP_BAR_STATUS == propertyKey) {

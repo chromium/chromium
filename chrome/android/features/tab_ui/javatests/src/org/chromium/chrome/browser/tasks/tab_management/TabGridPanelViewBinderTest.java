@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogView.VisibilityListener;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -454,6 +455,18 @@ public class TabGridPanelViewBinderTest extends BlankUiTestActivityTestCase {
         mModel.set(TabGridPanelProperties.IS_TITLE_TEXT_FOCUSED, false);
 
         Assert.assertFalse(mTitleTextView.isFocused());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetVisibilityListener() {
+        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, new VisibilityListener() {
+            @Override
+            public void finishedHidingDialogView() {}
+        });
+
+        Assert.assertNotNull(mTabGridDialogView.getVisibilityListenerForTesting());
     }
 
     @Override

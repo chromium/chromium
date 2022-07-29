@@ -66,6 +66,16 @@ public class TabGridDialogView extends FrameLayout {
         int NUM_ENTRIES = 3;
     }
 
+    /**
+     * An interface to listen to visibility related changes on this {@link TabGridDialogView}.
+     */
+    interface VisibilityListener {
+        /**
+         * Called when the animation to hide the tab grid dialog is finished.
+         */
+        void finishedHidingDialogView();
+    }
+
     private final Context mContext;
     private final int mToolbarHeight;
     private final float mTabGridCardPadding;
@@ -81,6 +91,7 @@ public class TabGridDialogView extends FrameLayout {
     private ScrimCoordinator mScrimCoordinator;
     private FrameLayout.LayoutParams mContainerParams;
     private ViewTreeObserver.OnGlobalLayoutListener mParentGlobalLayoutListener;
+    private VisibilityListener mVisibilityListener;
     private Animator mCurrentDialogAnimator;
     private Animator mCurrentUngroupBarAnimator;
     private AnimatorSet mBasicFadeInAnimation;
@@ -218,6 +229,9 @@ public class TabGridDialogView extends FrameLayout {
                 mCurrentDialogAnimator = null;
                 mDialogContainerView.clearFocus();
                 restoreBackgroundViewAccessibilityImportance();
+                if (mVisibilityListener != null) {
+                    mVisibilityListener.finishedHidingDialogView();
+                }
             }
         };
 
@@ -288,6 +302,10 @@ public class TabGridDialogView extends FrameLayout {
                     importance == null ? IMPORTANT_FOR_ACCESSIBILITY_AUTO : importance);
         }
         mAccessibilityImportanceMap.clear();
+    }
+
+    void setVisibilityListener(VisibilityListener visibilityListener) {
+        mVisibilityListener = visibilityListener;
     }
 
     void setupDialogAnimation(View sourceView) {
@@ -876,5 +894,10 @@ public class TabGridDialogView extends FrameLayout {
     @VisibleForTesting
     ScrimCoordinator getScrimCoordinatorForTesting() {
         return mScrimCoordinator;
+    }
+
+    @VisibleForTesting
+    VisibilityListener getVisibilityListenerForTesting() {
+        return mVisibilityListener;
     }
 }

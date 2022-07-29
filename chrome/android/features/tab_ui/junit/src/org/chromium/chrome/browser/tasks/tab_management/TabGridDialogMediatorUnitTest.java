@@ -19,6 +19,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -698,6 +699,22 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    public void hideDialog_WithVisibilityListener_BasicAnimation() {
+        // Mock that the animation source view is null, and the dialog is showing.
+        mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
+        // Set visibility listener.
+        mModel.set(TabGridPanelProperties.VISIBILITY_LISTENER, mMediator);
+
+        mMediator.hideDialog(false);
+
+        // Animation source view should not be specified.
+        assertThat(mModel.get(TabGridPanelProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
+        verifyZeroInteractions(mDialogController);
+    }
+
+    @Test
     public void hideDialog_ZoomOutAnimation() {
         // Mock that the animation source view is null, and the dialog is showing.
         mModel.set(TabGridPanelProperties.ANIMATION_SOURCE_VIEW, null);
@@ -846,12 +863,29 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void hideDialog_onReset() {
+    public void onReset_hideDialog() {
         mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, true);
 
         mMediator.onReset(null);
 
         assertThat(mModel.get(TabGridPanelProperties.IS_DIALOG_VISIBLE), equalTo(false));
+        verify(mDialogController).postHiding();
+    }
+
+    @Test
+    public void onReset_DialogNotVisible_NoOp() {
+        mModel.set(TabGridPanelProperties.IS_DIALOG_VISIBLE, false);
+
+        mMediator.onReset(null);
+
+        verifyZeroInteractions(mDialogController);
+    }
+
+    @Test
+    public void finishedHiding() {
+        mMediator.finishedHidingDialogView();
+
+        verify(mDialogController).resetWithListOfTabs(null);
         verify(mDialogController).postHiding();
     }
 
