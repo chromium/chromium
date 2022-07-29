@@ -82,7 +82,8 @@ class ModeKeyedModel(collections.OrderedDict, Submodel):
                 value = self._CreateValue(value_obj[mode])
                 if mode == 'default':
                     mode = Modes.DEFAULT
-                assert mode in Modes.ALL and mode not in self[name]
+                assert mode in Modes.ALL, f"Invalid mode '{mode}' used in definition for '{name}'"
+                assert mode not in self[name], f"{mode} mode for '{name}' defined multiple times"
                 self[name][mode] = value
         else:
             self[name][Modes.DEFAULT] = self._CreateValue(value_obj)
