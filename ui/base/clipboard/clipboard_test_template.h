@@ -1103,9 +1103,8 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
       ui::ClipboardFormatType::DataTransferEndpointDataType(),
       /* data_dst = */ nullptr, &actual_json);
 
-  EXPECT_EQ(
-      R"({"endpoint_type":"url","url":"https://www.google.com/","url_origin":"https://www.google.com"})",
-      actual_json);
+  EXPECT_EQ(R"({"endpoint_type":"url","url":"https://www.google.com/"})",
+            actual_json);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());

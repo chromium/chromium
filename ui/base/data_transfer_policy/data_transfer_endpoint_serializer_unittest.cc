@@ -15,7 +15,7 @@ namespace {
 
 constexpr char kExampleUrl[] = "https://www.google.com";
 constexpr char kExampleJsonUrlType[] =
-    R"({"endpoint_type":"url","url":"https://www.google.com/","url_origin":"https://www.google.com"})";
+    R"({"endpoint_type":"url","url":"https://www.google.com/"})";
 constexpr char kExampleJsonUrlTypeNoUrl[] = R"({"endpoint_type":"url"})";
 
 #if BUILDFLAG(IS_CHROMEOS)
