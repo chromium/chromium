@@ -72,7 +72,7 @@ const char kAllowedConnectionTypesForUpdate[] =
     "cros.system.allowedConnectionTypesForUpdate";
 
 // The first constant refers to the user setting editable in the UI. The second
-// refers to the timezone policy. This seperation is necessary to allow the user
+// refers to the timezone policy. This separation is necessary to allow the user
 // to temporarily change the timezone for the current session and reset it to
 // the policy's value on logout.
 const char kSystemTimezone[] = "cros.system.timezone";
@@ -409,7 +409,7 @@ const char kDeviceShowNumericKeyboardForPassword[] =
 // A boolean pref that matches enable-per-user-time-zone chrome://flags value.
 const char kPerUserTimezoneEnabled[] = "cros.flags.per_user_timezone_enabled";
 
-// A boolean pref that matches enable-fine-graned-time-zone-detection
+// A boolean pref that matches enable-fine-grained-time-zone-detection
 // chrome://flags value.
 const char kFineGrainedTimeZoneResolveEnabled[] =
     "cros.flags.fine_grained_time_zone_detection_enabled";
@@ -479,12 +479,6 @@ const char kDeviceHostnameTemplate[] = "cros.network.hostname_template";
 // A boolean pref that indicates whether running virtual machines on Chrome OS
 // is allowed.
 const char kVirtualMachinesAllowed[] = "cros.device.virtual_machines_allowed";
-
-// An enum specifying the authentication type for newly added users which log in
-// via SAML. See the SamlLoginAuthenticationTypeProto proto message for the list
-// of possible values.
-const char kSamlLoginAuthenticationType[] =
-    "cros.device.saml_login_authentication_type";
 
 // A list of time intervals during which the admin has disallowed automatic
 // update checks.

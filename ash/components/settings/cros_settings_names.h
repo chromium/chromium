@@ -258,9 +258,6 @@ extern const char kDeviceHostnameUserConfigurable[];
 COMPONENT_EXPORT(ASH_SETTINGS) extern const char kVirtualMachinesAllowed[];
 
 COMPONENT_EXPORT(ASH_SETTINGS)
-extern const char kSamlLoginAuthenticationType[];
-
-COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kDeviceAutoUpdateTimeRestrictions[];
 
 COMPONENT_EXPORT(ASH_SETTINGS)

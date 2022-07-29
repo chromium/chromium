@@ -515,17 +515,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_saml_login_authentication_type()) {
-    const em::SamlLoginAuthenticationTypeProto& container(
-        policy.saml_login_authentication_type());
-    if (container.has_saml_login_authentication_type()) {
-      policies->Set(
-          key::kDeviceSamlLoginAuthenticationType, POLICY_LEVEL_MANDATORY,
-          POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-          base::Value(container.saml_login_authentication_type()), nullptr);
-    }
-  }
-
   if (policy.has_device_reboot_on_user_signout()) {
     const em::DeviceRebootOnUserSignoutProto& container(
         policy.device_reboot_on_user_signout());

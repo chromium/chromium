@@ -13201,9 +13201,6 @@
   "DeviceCrostiniArcAdbSideloadingAllowed": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
-  "DeviceSamlLoginAuthenticationType": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
-  },
   "DeviceScheduledUpdateCheck": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

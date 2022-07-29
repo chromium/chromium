@@ -161,7 +161,6 @@ const char* const kKnownSettings[] = {
     kReportRunningKioskApp,
     kReportUploadFrequency,
     kRevenEnableDeviceHWDataUsage,
-    kSamlLoginAuthenticationType,
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
     kStatsReportingPref,
@@ -553,14 +552,6 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
     new_values_cache->SetBoolean(
         kDeviceShowNumericKeyboardForPassword,
         policy.device_show_numeric_keyboard_for_password().value());
-  }
-
-  if (policy.has_saml_login_authentication_type() &&
-      policy.saml_login_authentication_type()
-          .has_saml_login_authentication_type()) {
-    new_values_cache->SetInteger(kSamlLoginAuthenticationType,
-                                 policy.saml_login_authentication_type()
-                                     .saml_login_authentication_type());
   }
 
   if (policy.has_device_web_based_attestation_allowed_urls()) {
@@ -1550,7 +1541,7 @@ const base::Value* DeviceSettingsProvider::Get(const std::string& path) const {
     NOTREACHED() << "Trying to get non cros setting.";
   }
 
-  return NULL;
+  return nullptr;
 }
 
 DeviceSettingsProvider::TrustedStatus

@@ -936,7 +936,6 @@
         'DeviceWallpaperImage',
         'DeviceEphemeralUsersEnabled',
         'LoginAuthenticationBehavior',
-        'DeviceSamlLoginAuthenticationType',
         'DeviceTransferSAMLCookies',
         'LoginVideoCaptureAllowedUrls',
         'DeviceStartUpFlags',
@@ -21855,43 +21854,6 @@
       ''',
     },
     {
-      'name': 'DeviceSamlLoginAuthenticationType',
-      'owners': ['file://components/policy/resources/OWNERS', 'emaxx@chromium.org'],
-      'type': 'int-enum',
-      'schema': {
-        'type': 'integer',
-        'enum': [ 0, 1 ],
-      },
-      'items': [
-        {
-          'name': 'Default',
-          'value': 0,
-          'caption': '''Default configuration''',
-        },
-        {
-          'name': 'ClientCertificate',
-          'value': 1,
-          'caption': '''Authentication based on client certificates''',
-        },
-      ],
-      'future_on': ['chrome_os'],
-      'device_only': True,
-      'features': {
-        'dynamic_refresh': True,
-      },
-      'example_value': 0,
-      'id': 438,
-      'caption': '''SAML login authentication type''',
-      'tags': ['system-security'],
-      'desc': '''Configures the type of authentication for SAML logins.
-
-      When this policy is unset or set to Default (value 0), the behavior of SAML logins is determined by the browser depending on other factors. In the most basic scenario, the user authentication and the protection of the cached user data are based on passwords manually entered by users.
-
-      When this policy is set to ClientCertificate (value 1), client certificate authentication is used for newly added users which log in via SAML. No passwords are used for such users, and their cached local data is protected using corresponding cryptographic keys. For instance, this setting allows configuring smart card based user authentication (note that smart card middleware apps have to be installed via the DeviceLoginScreenExtensions policy).
-
-      This policy affects only users who authenticate using SAML.''',
-    },
-    {
       'name': 'ChromeCleanupEnabled',
       'owners': ['proberge@chromium.org'],
       'type': 'main',
@@ -32232,7 +32194,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceLoginScreenInputMethods': 'login_screen_input_methods.login_screen_input_methods',
     'DeviceLoginScreenSystemInfoEnforced': 'device_login_screen_system_info_enforced.value',
     'DeviceShowNumericKeyboardForPassword' : 'device_show_numeric_keyboard_for_password.value',
-    'DeviceSamlLoginAuthenticationType': 'saml_login_authentication_type.saml_login_authentication_type',
     'DeviceDataRoamingEnabled': 'data_roaming_enabled.data_roaming_enabled',
     'AllowKioskAppControlChromeVersion': 'allow_kiosk_app_control_chrome_version.allow_kiosk_app_control_chrome_version',
     'DevicePolicyRefreshRate': 'device_policy_refresh_rate.device_policy_refresh_rate',
@@ -32773,7 +32734,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
       'name': 'SAML',
       'caption': '''SAML''',
       'policies': [
-        'DeviceSamlLoginAuthenticationType',
         'DeviceTransferSAMLCookies',
       ],
     },
@@ -32944,7 +32904,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
   'highest_id_currently_used': 998,
   'highest_atomic_group_id_currently_used': 43

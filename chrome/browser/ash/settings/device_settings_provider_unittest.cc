@@ -285,16 +285,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
-  // Helper routine to set the DeviceSamlLoginAuthenticationType policy.
-  void SetSamlLoginAuthenticationType(
-      em::SamlLoginAuthenticationTypeProto::Type value) {
-    em::SamlLoginAuthenticationTypeProto* proto =
-        device_policy_->payload().mutable_saml_login_authentication_type();
-    proto->set_saml_login_authentication_type(value);
-    BuildAndInstallDevicePolicy();
-  }
-
-  // Helper routine that sets the device DeviceAutoUpdateTimeRestricitons policy
+  // Helper routine that sets the device DeviceAutoUpdateTimeRestrictions policy
   void SetDeviceAutoUpdateTimeRestrictions(const std::string& json_string) {
     em::AutoUpdateSettingsProto* proto =
         device_policy_->payload().mutable_auto_update_settings();
@@ -853,25 +844,7 @@ TEST_F(DeviceSettingsProviderTest, DecodeLogUploadSettings) {
   VerifyLogUploadSettings(false);
 }
 
-TEST_F(DeviceSettingsProviderTest, SamlLoginAuthenticationType) {
-  using PolicyProto = em::SamlLoginAuthenticationTypeProto;
-
-  VerifyPolicyValue(kSamlLoginAuthenticationType, nullptr);
-
-  {
-    SetSamlLoginAuthenticationType(PolicyProto::TYPE_DEFAULT);
-    base::Value expected_value(PolicyProto::TYPE_DEFAULT);
-    VerifyPolicyValue(kSamlLoginAuthenticationType, &expected_value);
-  }
-
-  {
-    SetSamlLoginAuthenticationType(PolicyProto::TYPE_CLIENT_CERTIFICATE);
-    base::Value expected_value(PolicyProto::TYPE_CLIENT_CERTIFICATE);
-    VerifyPolicyValue(kSamlLoginAuthenticationType, &expected_value);
-  }
-}
-
-// Test invalid cases
+// Test invalid cases.
 TEST_F(DeviceSettingsProviderTest, DeviceAutoUpdateTimeRestrictionsEmpty) {
   // Policy should not be set by default
   VerifyPolicyValue(kDeviceAutoUpdateTimeRestrictions, nullptr);
@@ -1021,7 +994,7 @@ TEST_F(DeviceSettingsProviderTest,
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePowerwashAllowed) {
-  // Policy should be set to true by default
+  // Policy should be set to true by default.
   base::Value default_value(true);
   VerifyPolicyValue(kDevicePowerwashAllowed, &default_value);
 
@@ -1033,7 +1006,7 @@ TEST_F(DeviceSettingsProviderTest, DevicePowerwashAllowed) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceLoginScreenSystemInfoEnforced) {
-  // Policy should not be set by default
+  // Policy should not be set by default.
   VerifyPolicyValue(kDeviceLoginScreenSystemInfoEnforced, nullptr);
 
   SetSystemInfoEnforced(true);
@@ -1046,7 +1019,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceLoginScreenSystemInfoEnforced) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceShowNumericKeyboardForPassword) {
-  // Policy should not be set by default
+  // Policy should not be set by default.
   VerifyPolicyValue(kDeviceShowNumericKeyboardForPassword, nullptr);
 
   SetShowNumericKeyboardForPassword(true);
@@ -1059,12 +1032,12 @@ TEST_F(DeviceSettingsProviderTest, DeviceShowNumericKeyboardForPassword) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_empty) {
-  // Policy should be ACCESS_MODE_ALL by default
+  // Policy should be ACCESS_MODE_ALL by default.
   base::Value default_value(em::DevicePrintersAccessModeProto::ACCESS_MODE_ALL);
   VerifyPolicyValue(kDevicePrintersAccessMode, &default_value);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_accessmode) {
+TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_allowlist) {
   SetDevicePrinterAccessMode(
       em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
   BuildAndInstallDevicePolicy();
@@ -1088,7 +1061,7 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_blocklist) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_empty) {
-  // Policy should not be set by default
+  // Policy should not be set by default.
   VerifyPolicyValue(kDevicePrintersAllowlist, nullptr);
 }
 
@@ -1277,7 +1250,7 @@ TEST_F(DeviceSettingsProviderTest, KioskCRXManifestUpdateURLIgnoredEnabled) {
             *provider_->Get(kKioskCRXManifestUpdateURLIgnored));
 }
 
-TEST_F(DeviceSettingsProviderTest, KioskCRXManigestUpdateURLIngoredDisabled) {
+TEST_F(DeviceSettingsProviderTest, KioskCRXManifestUpdateURLIgnoredDisabled) {
   device_policy_->payload()
       .mutable_kiosk_crx_manifest_update_url_ignored()
       ->set_value(false);

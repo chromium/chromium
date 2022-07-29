@@ -1410,18 +1410,6 @@ message DeviceAuthDataCacheLifetimeProto {
   optional int32 lifetime_hours = 1;
 }
 
-// Setting to control the authentication type for newly added users which log in
-// via SAML.
-message SamlLoginAuthenticationTypeProto {
-  enum Type {
-    TYPE_DEFAULT = 0;             // Implementation-defined default config.
-    TYPE_CLIENT_CERTIFICATE = 1;  // Client certificate authentication.
-    // Next ID to use: 2
-  }
-
-  optional Type saml_login_authentication_type = 1 [default = TYPE_DEFAULT];
-}
-
 // Setting that controls whether unaffiliated users are allowed to run Crostini
 // (true by default)
 message DeviceUnaffiliatedCrostiniAllowedProto {
@@ -1702,7 +1690,7 @@ message EncryptedReportingPipelineConfigurationProto {
 }
 
 message ChromeDeviceSettingsProto {
-  reserved 61, 90;
+  reserved 61, 71, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
   optional UserWhitelistProto user_whitelist = 2;
   optional GuestModeEnabledProto guest_mode_enabled = 3;
@@ -1791,7 +1779,6 @@ message ChromeDeviceSettingsProto {
   optional VirtualMachinesAllowedProto virtual_machines_allowed = 69;
   optional DeviceMachinePasswordChangeRateProto
       device_machine_password_change_rate = 70;
-  optional SamlLoginAuthenticationTypeProto saml_login_authentication_type = 71;
   optional DeviceUnaffiliatedCrostiniAllowedProto
       device_unaffiliated_crostini_allowed = 72;
   optional DeviceWiFiFastTransitionEnabledProto
