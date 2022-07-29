@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-
 #include <algorithm>
 #include <iterator>
 #include <map>
@@ -962,6 +961,7 @@ bool content::IsNSRange(id value) {
     return nil;
 
   const AXRange range = GetSelectedRange(*_owner);
+
   // If the selection is not collapsed, then there is no visible caret.
   if (!range.IsCollapsed())
     return nil;
@@ -975,10 +975,20 @@ bool content::IsNSRange(id value) {
          "is a valid selection focus inside the current object.";
   const std::vector<int> lineStarts =
       _owner->GetIntListAttribute(ax::mojom::IntListAttribute::kLineStarts);
+
+  // Find the text offset that starts the next line after the current caret
+  // position, then subtract 1 to get the current line number.
   auto iterator =
-      std::lower_bound(lineStarts.begin(), lineStarts.end(),
+      std::upper_bound(lineStarts.begin(), lineStarts.end(),
                        caretPosition->AsTextPosition()->text_offset());
-  return @(std::distance(lineStarts.begin(), iterator));
+
+  // If the caret is on a single line and the line is empty, then
+  // the iterator will be equal to lineStarts.begin() because the lineStarts
+  // vector will be empty. The line number should be 0 in this case.
+  if (iterator == lineStarts.begin())
+    return @(0);
+
+  return @(std::distance(lineStarts.begin(), std::prev(iterator)));
 }
 
 - (NSString*)language {

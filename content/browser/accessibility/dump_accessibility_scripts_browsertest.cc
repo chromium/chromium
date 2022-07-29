@@ -292,6 +292,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXHighestEditableAncestor) {
   RunTypedTest<kMacAttributes>("ax-highest-editable-ancestor.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
+                       AXInsertionPointLineNumber) {
+  RunTypedTest<kMacAttributes>("ax-insertion-point-line-number.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXInvalid) {
   RunTypedTest<kMacAttributes>("ax-invalid.html");
 }
