@@ -2996,7 +2996,8 @@ bool RenderFrameHostImpl::AccessibilityIsMainFrame() {
 
 WebContentsAccessibility*
 RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
-  RenderWidgetHostViewBase* view = GetViewForAccessibility();
+  DCHECK(AccessibilityIsMainFrame());
+  auto* view = static_cast<RenderWidgetHostViewBase*>(GetView());
   if (!view)
     return nullptr;
   return view->GetWebContentsAccessibility();
@@ -6288,13 +6289,6 @@ void RenderFrameHostImpl::ForwardResourceTimingToParent(
     proxy->GetAssociatedRemoteFrame()->AddResourceTimingFromChild(
         std::move(timing));
   }
-}
-
-RenderWidgetHostViewBase* RenderFrameHostImpl::GetViewForAccessibility() {
-  return static_cast<RenderWidgetHostViewBase*>(
-      is_main_frame()
-          ? render_view_host_->GetWidget()->GetView()
-          : GetMainFrame()->render_view_host_->GetWidget()->GetView());
 }
 
 bool RenderFrameHostImpl::Reload() {

@@ -240,7 +240,6 @@ class RenderFrameProxyHost;
 class RenderProcessHost;
 class RenderViewHostImpl;
 class RenderWidgetHostView;
-class RenderWidgetHostViewBase;
 class ServiceWorkerContainerHost;
 class SiteInfo;
 class SpeechSynthesisImpl;
@@ -3026,11 +3025,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // will be a nullptr when the url is not the savable URLs or valid.
   void GetSavableResourceLinksCallback(
       blink::mojom::GetSavableResourceLinksReplyPtr reply);
-
-  // Returns the RenderWidgetHostView used for accessibility. For subframes,
-  // this function will return the platform view on the main frame; for main
-  // frames, it will return the current frame's view.
-  RenderWidgetHostViewBase* GetViewForAccessibility();
 
   // Returns a raw pointer to the last Web Bluetooth Service associated with the
   // frame, or nullptr otherwise. Used for testing purposes only (see

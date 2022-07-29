@@ -22,14 +22,13 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
     return new BrowserAccessibilityManagerAndroid(initial_tree, nullptr,
                                                   nullptr);
 
-  WebContentsAccessibilityAndroid* wcax =
-      static_cast<WebContentsAccessibilityAndroid*>(
-          delegate->AccessibilityGetWebContentsAccessibility());
+  WebContentsAccessibilityAndroid* wcax = nullptr;
+  if (delegate->AccessibilityIsMainFrame()) {
+    wcax = static_cast<WebContentsAccessibilityAndroid*>(
+        delegate->AccessibilityGetWebContentsAccessibility());
+  }
   return new BrowserAccessibilityManagerAndroid(
-      initial_tree,
-      wcax && delegate->AccessibilityIsMainFrame() ? wcax->GetWeakPtr()
-                                                   : nullptr,
-      delegate);
+      initial_tree, wcax ? wcax->GetWeakPtr() : nullptr, delegate);
 }
 
 // static
