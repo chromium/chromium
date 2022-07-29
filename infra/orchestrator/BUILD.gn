@@ -18,6 +18,10 @@ group("orchestrator_all") {
     ":standard_isolated_script_merge_py",
   ]
 
+  if (is_android) {
+    data_deps += [ "//build/android:test_result_presentations_py" ]
+  }
+
   data = [
     # Various merge/collect scripts will likely need a venv specified in
     # the root vpython spec files.
@@ -35,10 +39,7 @@ group("orchestrator_all") {
 
   if (use_jacoco_coverage) {
     data += [ "//third_party/jacoco/lib/jacococli.jar" ]
-    data_deps += [
-      "//build/android:test_result_presentations_py",
-      "//third_party/jdk:java_data",
-    ]
+    data_deps += [ "//third_party/jdk:java_data" ]
   }
   write_runtime_deps = "$root_out_dir/orchestrator_all.runtime_deps"
 }
