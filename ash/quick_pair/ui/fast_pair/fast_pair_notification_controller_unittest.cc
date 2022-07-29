@@ -37,6 +37,8 @@ const char kFastPairPairingNotificationId[] =
     "cros_fast_pair_pairing_notification_id";
 const char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
+const char kFastPairDiscoverySubsequentNotificationId[] =
+    "cros_fast_pair_discovery_subsequent_notification_id";
 
 class TestMessageCenter : public message_center::FakeMessageCenter {
  public:
@@ -611,6 +613,104 @@ TEST_F(FastPairNotificationControllerTest, ShowAssociateAccount_RemovedByOS) {
       kFastPairAssociateAccountNotificationId));
   test_message_center_.RemoveNotification(
       /*id=*/kFastPairDiscoveryGuestNotificationId, /*by_user=*/false);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowSubsequentDiscoveryNotification_ConnectClicked) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_connect_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  EXPECT_CALL(on_connect_clicked, Run).Times(1);
+  EXPECT_CALL(on_learn_more_clicked, Run).Times(0);
+
+  fast_pair_notification_controller_->ShowSubsequentDiscoveryNotification(
+      kTestDeviceName, kTestEmail,
+      /*device_image=*/gfx::Image(), on_connect_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*button_index=*/0);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowSubsequentDiscoveryNotification_LearnMoreClicked) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoveryUserNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_connect_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  EXPECT_CALL(on_connect_clicked, Run).Times(0);
+  EXPECT_CALL(on_learn_more_clicked, Run).Times(1);
+
+  fast_pair_notification_controller_->ShowSubsequentDiscoveryNotification(
+      kTestDeviceName, kTestEmail,
+      /*device_image=*/gfx::Image(), on_connect_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.ClickOnNotificationButton(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*button_index=*/1);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowSubsequentDiscoveryNotification_RemovedByUser) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_connect_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  EXPECT_CALL(on_connect_clicked, Run).Times(0);
+  EXPECT_CALL(on_learn_more_clicked, Run).Times(0);
+  EXPECT_CALL(on_close, Run).Times(1);
+
+  fast_pair_notification_controller_->ShowSubsequentDiscoveryNotification(
+      kTestDeviceName, kTestEmail,
+      /*device_image=*/gfx::Image(), on_connect_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.RemoveNotification(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*by_user=*/true);
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(FastPairNotificationControllerTest,
+       ShowSubsequentDiscoveryNotification_RemovedByOS) {
+  EXPECT_FALSE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+
+  base::MockCallback<base::OnceCallback<void(bool)>> on_close;
+  base::MockCallback<base::RepeatingClosure> on_connect_clicked;
+  base::MockCallback<base::RepeatingClosure> on_learn_more_clicked;
+  EXPECT_CALL(on_connect_clicked, Run).Times(0);
+  EXPECT_CALL(on_learn_more_clicked, Run).Times(0);
+  EXPECT_CALL(on_close, Run).Times(1);
+
+  fast_pair_notification_controller_->ShowSubsequentDiscoveryNotification(
+      kTestDeviceName, kTestEmail,
+      /*device_image=*/gfx::Image(), on_connect_clicked.Get(),
+      on_learn_more_clicked.Get(), on_close.Get());
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(test_message_center_.FindVisibleNotificationById(
+      kFastPairDiscoverySubsequentNotificationId));
+  test_message_center_.RemoveNotification(
+      /*id=*/kFastPairDiscoverySubsequentNotificationId, /*by_user=*/false);
   base::RunLoop().RunUntilIdle();
 }
 

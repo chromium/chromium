@@ -39,6 +39,8 @@ const char kFastPairPairingNotificationId[] =
     "cros_fast_pair_pairing_notification_id";
 const char kFastPairAssociateAccountNotificationId[] =
     "cros_fast_pair_associate_account_notification_id";
+const char kFastPairDiscoverySubsequentNotificationId[] =
+    "cros_fast_pair_discovery_subsequent_notification_id";
 
 // Values outside of the range (e.g. -1) will show an infinite loading
 // progress bar.
@@ -231,6 +233,48 @@ void FastPairNotificationController::ShowGuestDiscoveryNotification(
       IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_TITLE, device_name));
   discovery_notification->set_message(l10n_util::GetStringFUTF16(
       IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_MESSAGE, device_name));
+
+  message_center::ButtonInfo connect_button(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_CONNECT_BUTTON));
+  message_center::ButtonInfo learn_more_button(
+      l10n_util::GetStringUTF16(IDS_FAST_PAIR_LEARN_MORE_BUTTON));
+  discovery_notification->set_buttons({connect_button, learn_more_button});
+
+  discovery_notification->set_delegate(
+      base::MakeRefCounted<NotificationDelegate>(
+          /*on_primary_click=*/on_connect_clicked,
+          /*on_close=*/std::move(on_close),
+          /*on_secondary_click=*/on_learn_more_clicked,
+          /*expire_notification_timer=*/&expire_notification_timer_));
+  discovery_notification->set_image(device_image);
+
+  // Start timer for how long to show the notification before removing the
+  // notification. After the timeout period, we will remove the notification
+  // from the Message Center.
+  expire_notification_timer_.Start(
+      FROM_HERE, kNotificationTimeout,
+      base::BindOnce(&FastPairNotificationController::RemoveNotifications,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  message_center_->AddNotification(std::move(discovery_notification));
+}
+
+void FastPairNotificationController::ShowSubsequentDiscoveryNotification(
+    const std::u16string& device_name,
+    const std::u16string& email_address,
+    gfx::Image device_image,
+    base::RepeatingClosure on_connect_clicked,
+    base::RepeatingClosure on_learn_more_clicked,
+    base::OnceCallback<void(bool)> on_close) {
+  std::unique_ptr<message_center::Notification> discovery_notification =
+      CreateNotification(kFastPairDiscoverySubsequentNotificationId,
+                         message_center::SystemNotificationWarningLevel::NORMAL,
+                         message_center_);
+  discovery_notification->set_title(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_TITLE, device_name));
+  discovery_notification->set_message(l10n_util::GetStringFUTF16(
+      IDS_FAST_PAIR_DISCOVERY_NOTIFICATION_SUBSEQUENT, device_name,
+      email_address));
 
   message_center::ButtonInfo connect_button(
       l10n_util::GetStringUTF16(IDS_FAST_PAIR_CONNECT_BUTTON));
