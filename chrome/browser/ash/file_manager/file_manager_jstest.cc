@@ -167,10 +167,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileTypeFiltersController) {
   RunTestURL("foreground/js/file_type_filters_controller_unittest.js");
 }
 
-IN_PROC_BROWSER_TEST_F(FileManagerJsTest, AsyncUtil) {
-  RunTestURL("common/js/async_util_unittest.js");
-}
-
 IN_PROC_BROWSER_TEST_F(FileManagerJsTest, FileType) {
   RunTestURL("common/js/file_type_unittest.js");
 }
