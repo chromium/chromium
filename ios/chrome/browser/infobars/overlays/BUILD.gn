@@ -43,7 +43,6 @@ source_set("overlays") {
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/overlays/public/infobar_modal/permissions",
     "//ios/chrome/browser/passwords:infobar_delegates",
-    "//ios/web/common",
     "//ios/web/public",
   ]
 }
@@ -141,7 +140,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test:test_support",
-    "//ios/web/common",
     "//ios/web/public/permissions",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",

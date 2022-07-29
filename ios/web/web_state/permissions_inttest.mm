@@ -5,7 +5,6 @@
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "ios/testing/scoped_block_swizzler.h"
-#include "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/navigation/reload_type.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -94,10 +93,6 @@ class PermissionsInttest : public WebTestWithWebController {
   void SetUp() override {
     WebTestWithWebState::SetUp();
     if (@available(iOS 15.0, *)) {
-      // Turn on media permissions feature.
-      scoped_feature_list_.InitWithFeatures(
-          {features::kMediaPermissionsControl}, {});
-
       // Switch actual objects to fakes/mocks for testing purposes.
       handler_ = [[FakeCRWWKUIHandler alloc] init];
       handler_.delegate = (id<CRWWKUIHandlerDelegate>)web_controller();

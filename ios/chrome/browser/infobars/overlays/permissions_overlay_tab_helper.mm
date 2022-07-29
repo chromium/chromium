@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 #import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue_util.h"
-#import "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,15 +27,13 @@ PermissionsOverlayTabHelper::PermissionsOverlayTabHelper(
     web::WebState* web_state)
     : web_state_(web_state) {
   if (@available(iOS 15.0, *)) {
-    if (web::features::IsMediaPermissionsControlEnabled()) {
-      DCHECK(web_state);
-      permissions_to_state_ =
-          [web_state->GetStatesForAllPermissions() mutableCopy];
-      banner_queue_ = OverlayRequestQueue::FromWebState(
-          web_state, OverlayModality::kInfobarBanner);
-      inserter_ = InfobarOverlayRequestInserter::FromWebState(web_state);
-      web_state_->AddObserver(this);
-    }
+    DCHECK(web_state);
+    permissions_to_state_ =
+        [web_state->GetStatesForAllPermissions() mutableCopy];
+    banner_queue_ = OverlayRequestQueue::FromWebState(
+        web_state, OverlayModality::kInfobarBanner);
+    inserter_ = InfobarOverlayRequestInserter::FromWebState(web_state);
+    web_state_->AddObserver(this);
   }
 }
 
@@ -92,9 +89,7 @@ void PermissionsOverlayTabHelper::PermissionStateChanged(
 void PermissionsOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   DCHECK(banner_queue_);
-  if (web::features::IsMediaPermissionsControlEnabled()) {
-    web_state_->RemoveObserver(this);
-  }
+  web_state_->RemoveObserver(this);
   web_state_ = nullptr;
   banner_queue_ = nullptr;
   inserter_ = nullptr;

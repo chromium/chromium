@@ -472,13 +472,9 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
         @"serverTrust" : @"webViewSecurityFeaturesDidChange",
         @"hasOnlySecureContent" : @"webViewSecurityFeaturesDidChange",
         @"title" : @"webViewTitleDidChange",
+        @"cameraCaptureState" : @"webViewCameraCaptureStateDidChange",
+        @"microphoneCaptureState" : @"webViewMicrophoneCaptureStateDidChange",
       }];
-  if (web::features::IsMediaPermissionsControlEnabled()) {
-    [observers addEntriesFromDictionary:@{
-      @"cameraCaptureState" : @"webViewCameraCaptureStateDidChange",
-      @"microphoneCaptureState" : @"webViewMicrophoneCaptureStateDidChange",
-    }];
-  }
 
   if (@available(iOS 16.0, *)) {
     if (base::FeatureList::IsEnabled(web::features::kEnableFullscreenAPI)) {

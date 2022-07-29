@@ -6,7 +6,6 @@
 
 #include "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/permissions/permission_info.h"
-#include "ios/web/common/features.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,10 +18,6 @@
 // Tests for Permissions mediator for the page info.
 class PageInfoPermissionsTest : public PlatformTest {
  protected:
-  PageInfoPermissionsTest() {
-    feature_list_.InitAndEnableFeature(web::features::kMediaPermissionsControl);
-  }
-
   ~PageInfoPermissionsTest() override {
     if (@available(iOS 15.0, *)) {
       [mediator_ disconnect];

@@ -3930,11 +3930,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "ios-media-permissions-control",
-    "owners": ["ginnyhuang","bling-flags@google.com"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "ios-password-manager-cross-origin-iframe-support",
     "owners": ["theocristea@google.com", "kazinova@google.com", "vsemeniuk@google.com", "chrome-password-manager-team@google.com"],
     "expiry_milestone": 111

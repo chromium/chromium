@@ -49,9 +49,6 @@ const base::Feature kIOSSharedHighlightingColorChange{
 const base::Feature kSynthesizedRestoreSession{
     "SynthesizedRestoreSession", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kMediaPermissionsControl{"MediaPermissionsControl",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 extern const base::Feature kEnableFullscreenAPI{
     "EnableFullscreenAPI", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -68,13 +65,6 @@ bool ShouldTakeScreenshotOnNonHTMLContent() {
     return !base::FeatureList::IsEnabled(kDisableNonHTMLScreenshotOnIOS15);
   }
   return true;
-}
-
-bool IsMediaPermissionsControlEnabled() {
-  if (@available(iOS 15, *)) {
-    return base::FeatureList::IsEnabled(kMediaPermissionsControl);
-  }
-  return false;
 }
 
 bool IsLoadSimulatedRequestAPIEnabled() {
