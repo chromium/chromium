@@ -186,6 +186,7 @@ generate_grd("build_grd") {
     "file_manager/images/files/ui/arrow_right.svg",
     "file_manager/images/files/ui/state_banner_icon.svg",
     "file_manager/images/files/ui/warning_banner_icon.svg",
+    "file_manager/images/files/ui/error_banner_icon.svg",
     "file_manager/images/files/ui/menu_ng.svg",
 
     "image_loader/background.rollup.js",

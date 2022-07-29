@@ -115,6 +115,12 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
      */
     this.sizeStats_ = {};
 
+    /**
+     * Mocked out drive quota metadata to return when testing.
+     * @private {!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined}
+     */
+    this.driveQuotaMetadata_ = undefined;
+
     /** @suppress {const} */
     window.chrome = window.chrome || {};
 
@@ -136,6 +142,10 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
     /** @suppress {const} */
     window.chrome.fileManagerPrivate.getSizeStats =
         this.getSizeStats_.bind(this);
+
+    /** @suppress {const} */
+    window.chrome.fileManagerPrivate.getDriveQuotaMetadata =
+        this.getDriveQuotaMetadata_.bind(this);
 
     this.dispatchOnDirectoryChanged =
         this.dispatchOnDirectoryChanged.bind(this);
@@ -197,6 +207,33 @@ export class MockChromeFileManagerPrivateDirectoryChanged {
    */
   unsetVolumeSizeStats(volumeId) {
     delete this.sizeStats_[volumeId];
+  }
+
+  /**
+   * Returns the stubbed out drive quota metadata for a directory change.
+   * @param {!function((!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined))}
+   *     callback
+   * @private
+   */
+  getDriveQuotaMetadata_(callback) {
+    callback(this.driveQuotaMetadata_);
+  }
+
+  /**
+   * Sets the drive quota metadata to be returned when testing.
+   * @param {(!chrome.fileManagerPrivate.DriveQuotaMetadata|undefined)}
+   *     driveQuotaMetadata
+   */
+  setDriveQuotaMetadata(driveQuotaMetadata) {
+    this.driveQuotaMetadata_ = driveQuotaMetadata;
+  }
+
+  /**
+   * Set the drive quota metadata to undefined to emulate getDriveQuotaMetadata_
+   * returning back undefined.
+   */
+  unsetDriveQuotaMetadata() {
+    this.driveQuotaMetadata_ = undefined;
   }
 
   /**

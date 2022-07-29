@@ -36,6 +36,10 @@ namespace {
 const char kGoogleDriveBuyStorageUrl[] =
     "https://www.google.com/settings/storage";
 
+// Location of the page to manage Google Drive storage.
+const char kGoogleDriveManageStorageUrl[] =
+    "https://drive.google.com/drive/u/0/quota";
+
 // Location of the overview page about Google Drive.
 const char kGoogleDriveOverviewUrl[] =
     "https://support.google.com/chromebook/?p=filemanager_drive";
@@ -949,6 +953,7 @@ base::Value::Dict GetFileManagerStrings() {
            base::StringPrintf(kHelpURLFormat, kFilesAppHelpNumber));
 
   dict.Set("GOOGLE_DRIVE_BUY_STORAGE_URL", kGoogleDriveBuyStorageUrl);
+  dict.Set("GOOGLE_DRIVE_MANAGE_STORAGE_URL", kGoogleDriveManageStorageUrl);
   dict.Set("GOOGLE_DRIVE_ERROR_HELP_URL",
            base::StringPrintf(kHelpURLFormat, kGoogleDriveErrorHelpNumber));
   dict.Set("GOOGLE_DRIVE_HELP_URL", kGoogleDriveHelpUrl);

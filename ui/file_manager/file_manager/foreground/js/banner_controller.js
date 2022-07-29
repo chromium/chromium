@@ -4,7 +4,7 @@
 
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 
-import {getSizeStats} from '../../common/js/api.js';
+import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
 import {AsyncUtil} from '../../common/js/async_util.js';
 import {util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
@@ -17,8 +17,10 @@ import {VolumeManager} from '../../externs/volume_manager.js';
 
 import {constants} from './constants.js';
 import {DirectoryModel} from './directory_model.js';
-import {TAG_NAME as DriveLowSpaceBanner} from './ui/banners/drive_low_space_banner.js';
+import {TAG_NAME as DriveLowIndividualSpaceBanner} from './ui/banners/drive_low_individual_space_banner.js';
 import {TAG_NAME as DriveOfflinePinningBannerTagName} from './ui/banners/drive_offline_pinning_banner.js';
+import {TAG_NAME as DriveOutOfIndividualSpaceBanner} from './ui/banners/drive_out_of_individual_space_banner.js';
+import {TAG_NAME as DriveOutOfOrganizationSpaceBanner} from './ui/banners/drive_out_of_organization_space_banner.js';
 import {TAG_NAME as DriveWelcomeBannerTagName} from './ui/banners/drive_welcome_banner.js';
 import {TAG_NAME as HoldingSpaceWelcomeBannerTagName} from './ui/banners/holding_space_welcome_banner.js';
 import {TAG_NAME as InvalidUSBFileSystemBanner} from './ui/banners/invalid_usb_filesystem_banner.js';
@@ -149,6 +151,13 @@ export class BannerController extends EventTarget {
     this.volumeSizeStats_ = {};
 
     /**
+     * Maintains a cache of the user's Google Drive quota and associated
+     * metadata.
+     * @private {?chrome.fileManagerPrivate.DriveQuotaMetadata|undefined}
+     */
+    this.driveQuotaMetadata_ = null;
+
+    /**
      * The directory model is maintained to get the current volume and also to
      * listen to the directory-changed event.
      * @private {!DirectoryModel}
@@ -221,7 +230,7 @@ export class BannerController extends EventTarget {
      * The volumeId that is pending a volume size update, updateVolumeSizeStats_
      * will remove the volumeId once updated. This is cleared when the debounced
      * version of updateVolumeSizeStats_ executes.
-     * @private {!Set<string>}
+     * @private {!Set<VolumeInfo>}
      */
     this.pendingVolumeSizeUpdates_ = new Set();
 
@@ -262,7 +271,9 @@ export class BannerController extends EventTarget {
       // denotes the priority of the banner, 0th index is highest priority.
       this.setWarningBannersInOrder([
         LocalDiskLowSpaceBannerTagName,
-        DriveLowSpaceBanner,
+        DriveOutOfOrganizationSpaceBanner,
+        DriveOutOfIndividualSpaceBanner,
+        DriveLowIndividualSpaceBanner,
       ]);
       this.setEducationalBannersInOrder([
         DriveWelcomeBannerTagName,
@@ -303,9 +314,26 @@ export class BannerController extends EventTarget {
       // the Drive banner only if the volume stats are available. The general
       // volume available handler will run before this ensuring the minimum
       // ratio has been met.
-      this.registerCustomBannerFilter_(DriveLowSpaceBanner, {
-        shouldShow: () => !!this.volumeSizeStats_[this.currentVolume_.volumeId],
-        context: () => this.volumeSizeStats_[this.currentVolume_.volumeId],
+      this.registerCustomBannerFilter_(DriveLowIndividualSpaceBanner, {
+        shouldShow: () => this.driveQuotaMetadata_ &&
+            this.driveQuotaMetadata_.usedUserBytes <
+                this.driveQuotaMetadata_.totalUserBytes &&
+            this.driveQuotaMetadata_.totalUserBytes >= 0,  // not unlimited
+        context: () => this.driveQuotaMetadata_,
+      });
+
+      this.registerCustomBannerFilter_(DriveOutOfIndividualSpaceBanner, {
+        shouldShow: () => this.driveQuotaMetadata_ &&
+            this.driveQuotaMetadata_.usedUserBytes >=
+                this.driveQuotaMetadata_.totalUserBytes &&
+            this.driveQuotaMetadata_.totalUserBytes >= 0,  // not unlimited
+        context: () => ({}),
+      });
+
+      this.registerCustomBannerFilter_(DriveOutOfOrganizationSpaceBanner, {
+        shouldShow: () => this.driveQuotaMetadata_ &&
+            this.driveQuotaMetadata_.organizationLimitExceeded,
+        context: () => this.driveQuotaMetadata_,
       });
 
       // Register a custom filter that checks if the removable device has an
@@ -370,7 +398,7 @@ export class BannerController extends EventTarget {
     if (this.currentVolume_ && previousVolume &&
         previousVolume.volumeId !== this.currentVolume_.volumeId &&
         this.volumeSizeObservers_[this.currentVolume_.volumeType]) {
-      this.pendingVolumeSizeUpdates_.add(this.currentVolume_.volumeId);
+      this.pendingVolumeSizeUpdates_.add(this.currentVolume_);
       this.updateVolumeSizeStatsDebounced_.runImmediately();
     }
 
@@ -778,7 +806,7 @@ export class BannerController extends EventTarget {
     if (!eventVolumeInfo || !eventVolumeInfo.volumeId) {
       return;
     }
-    this.pendingVolumeSizeUpdates_.add(eventVolumeInfo.volumeId);
+    this.pendingVolumeSizeUpdates_.add(eventVolumeInfo);
     this.updateVolumeSizeStatsDebounced_.run();
   }
 
@@ -817,7 +845,23 @@ export class BannerController extends EventTarget {
     if (this.pendingVolumeSizeUpdates_.size === 0) {
       return;
     }
-    for (const volumeId of this.pendingVolumeSizeUpdates_) {
+    for (const {volumeType, volumeId} of this.pendingVolumeSizeUpdates_) {
+      if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+        try {
+          this.driveQuotaMetadata_ = await getDriveQuotaMetadata();
+          if (this.driveQuotaMetadata_) {
+            this.volumeSizeStats_[volumeId] = {
+              totalSize: this.driveQuotaMetadata_.totalUserBytes,
+              remainingSize: this.driveQuotaMetadata_.totalUserBytes -
+                  this.driveQuotaMetadata_.usedUserBytes,
+            };
+          }
+        } catch (e) {
+          console.warn('Error getting drive quota metadata', e);
+        }
+        continue;
+      }
+
       try {
         const sizeStats = await getSizeStats(volumeId);
         if (!sizeStats || sizeStats.totalSize === 0) {

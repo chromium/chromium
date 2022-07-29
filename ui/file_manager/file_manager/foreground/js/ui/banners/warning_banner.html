@@ -19,7 +19,8 @@
   }
 
   .warning-icon {
-    background-image: url(../../../images/files/ui/warning_banner_icon.svg);
+    background-image: var(--icon-src,
+      url(../../../images/files/ui/warning_banner_icon.svg));
     background-size: 32px 32px;
     flex: none;
     height: 32px;
@@ -41,8 +42,7 @@
     padding-inline-start: 40px;
   }
 
-  ::slotted(cr-button),
-  #dismiss-button {
+  ::slotted(cr-button) {
     --active-bg: var(--cros-button-background-color-secondary-hover);
     --hover-bg-color: var(--cros-button-background-color-secondary-hover);
     --ink-color: rgba(var(--cros-button-ripple-color-secondary-rgb), var(--cros-button-secondary-ripple-opacity));
@@ -56,8 +56,7 @@
     position: relative;
   }
 
-  :host-context(.focus-outline-visible) ::slotted(cr-button:focus),
-  :host-context(.focus-outline-visible) #dismiss-button:focus {
+  :host-context(.focus-outline-visible) ::slotted(cr-button:focus) {
     outline: 2px solid var(--cros-focus-ring-color);
     outline-offset: 2px;
   }
@@ -71,10 +70,6 @@
   </div>
   <div class="button-group">
     <slot name="extra-button"></slot>
-    <slot name="dismiss-button">
-      <cr-button id="dismiss-button">
-        $i18n{DRIVE_WELCOME_DISMISS}
-      </cr-button>
-    </slot>
+    <slot name="dismiss-button"></slot>
   </div>
 </div>

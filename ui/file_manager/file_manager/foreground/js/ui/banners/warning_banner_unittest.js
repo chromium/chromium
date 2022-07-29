@@ -40,29 +40,6 @@ export async function testDismissHandlerEmitsEvent(done) {
 }
 
 /**
- * Test that the default dismiss button from the warning banner successfully
- * emits the BANNER_DISMISSED event if no dismiss button has been supplied.
- */
-export async function testDefaultDismissButtonEmitsEvent(done) {
-  const html = `<warning-banner>
-      <span slot="text">Banner text</span>
-      <button slot="extra-button" href="http://test.com">
-        Test Banner
-      </button>
-    </warning-banner>
-    `;
-  document.body.innerHTML = html;
-  warningBanner = /** @type{!WarningBanner} */ (
-      document.body.querySelector('warning-banner'));
-
-  const handler = () => {
-    done();
-  };
-  warningBanner.addEventListener(Banner.Event.BANNER_DISMISSED, handler);
-  warningBanner.shadowRoot.querySelector('#dismiss-button').click();
-}
-
-/**
  * Test that the additional button can be set and the link is visited when the
  * button is clicked.
  */

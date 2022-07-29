@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,25 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {strf, util} from '../../../../common/js/util.js';
 import {VolumeManagerCommon} from '../../../../common/js/volume_manager_types.js';
 import {Banner} from '../../../../externs/banner.js';
+
 import {WarningBanner} from './warning_banner.js';
 
 /**
  * The custom element tag name.
  * @type {string}
  */
-export const TAG_NAME = 'drive-low-space-banner';
+export const TAG_NAME = 'drive-individual-low-space-banner';
 
 /** @const {!HTMLTemplateElement} */
 const htmlTemplate = html`{__html_template__}`;
 
 /**
  * A banner that shows a warning when the remaining space on a Google Drive goes
- * below 10%. This is only shown if the user has navigated to the My drive under
+ * below 20%. This is only shown if the user has navigated to the My drive under
  * the Google Drive root excluding other directories such as Computers or
  * Shared drives.
  */
-export class DriveLowSpaceBanner extends WarningBanner {
+export class DriveLowIndividualSpaceBanner extends WarningBanner {
   /**
    * Returns the HTML template for this banner.
    * @returns {!Node}
@@ -34,13 +35,13 @@ export class DriveLowSpaceBanner extends WarningBanner {
   }
 
   /**
-   * Show the banner when the Drive volume has gone below 10% remaining space.
+   * Show the banner when the Drive volume has gone below 20% remaining space.
    * @returns {!Banner.DiskThresholdMinRatio}
    */
   diskThreshold() {
     return {
       type: VolumeManagerCommon.VolumeType.DRIVE,
-      minRatio: 0.1,
+      minRatio: 0.2,
     };
   }
 
@@ -59,22 +60,22 @@ export class DriveLowSpaceBanner extends WarningBanner {
 
   /**
    * When the custom filter shows this banner in the controller, it passes the
-   * context to the banner. The remainingSize key contains the available space
-   * left for this user to display via the banner.
-   * @param {!Object} context chrome.fileManagerPrivate.MountPointSizeStats
+   * context to the banner.
+   * @param {!Object} context chrome.fileManagerPrivate.DriveQuotaMetadata
    */
   onFilteredContext(context) {
-    if (!context || context.remainingSize == null ||
-        context.totalSize == null) {
-      console.warn('Context not supplied or missing remainingSize');
+    if (!context || context.totalUserBytes == null ||
+        context.usedUserBytes == null) {
+      console.warn('Context not supplied or missing data');
       return;
     }
-    const text = this.shadowRoot.querySelector('span[slot="text"]');
-    text.innerText = strf(
+    this.shadowRoot.querySelector('span[slot="text"]').innerText = strf(
         'DRIVE_INDIVIDUAL_QUOTA_LOW',
-        Math.ceil(context.remainingSize / context.totalSize * 100),
-        util.bytesToString(context.totalSize));
+        Math.ceil(
+            (context.totalUserBytes - context.usedUserBytes) /
+            context.totalUserBytes * 100),
+        util.bytesToString(context.totalUserBytes));
   }
 }
 
-customElements.define(TAG_NAME, DriveLowSpaceBanner);
+customElements.define(TAG_NAME, DriveLowIndividualSpaceBanner);
