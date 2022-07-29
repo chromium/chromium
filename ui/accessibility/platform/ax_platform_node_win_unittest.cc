@@ -5806,7 +5806,12 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   child6.role = ax::mojom::Role::kDialog;
   root.child_ids.push_back(child6.id);
 
-  Init(root, child1, child2, child3, child4, child5, child6);
+  AXNodeData child7;
+  child7.id = 8;
+  child7.role = ax::mojom::Role::kGraphicsObject;
+  root.child_ids.push_back(child7.id);
+
+  Init(root, child1, child2, child3, child4, child5, child6, child7);
 
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child1.id),
@@ -5826,6 +5831,9 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child6.id),
       UIA_ControlTypePropertyId, int{UIA_WindowControlTypeId});
+  EXPECT_UIA_INT_EQ(
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child7.id),
+      UIA_ControlTypePropertyId, int{UIA_GroupControlTypeId});
 }
 
 TEST_F(AXPlatformNodeWinTest, UIALandmarkType) {

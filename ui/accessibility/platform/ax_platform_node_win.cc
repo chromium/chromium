@@ -1023,8 +1023,8 @@ AXPlatformNodeWin::UIARoleProperties AXPlatformNodeWin::GetUIARoleProperties() {
               L"document"};
 
     case ax::mojom::Role::kGraphicsObject:
-      return {UIALocalizationStrategy::kSupply, UIA_PaneControlTypeId,
-              L"region"};
+      return {UIALocalizationStrategy::kSupply, UIA_GroupControlTypeId,
+              L"group"};
 
     case ax::mojom::Role::kGraphicsSymbol:
       return {UIALocalizationStrategy::kSupply, UIA_ImageControlTypeId, L"img"};
