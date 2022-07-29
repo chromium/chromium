@@ -17,6 +17,7 @@ import android.app.Activity;
 import android.util.Base64;
 import android.view.View;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -77,6 +78,9 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
     FeedLauncher mFeedLauncher;
@@ -120,7 +124,7 @@ public final class WebFeedFollowIntroControllerTest {
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
         // Required for resolving an attribute used in AppMenuItemText.
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);

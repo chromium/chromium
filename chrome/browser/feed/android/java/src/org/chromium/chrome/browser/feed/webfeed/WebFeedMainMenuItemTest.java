@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
@@ -29,7 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
@@ -70,6 +70,9 @@ public final class WebFeedMainMenuItemTest {
 
     @Rule
     public JniMocker mJniMocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     private Activity mActivity;
     @Mock
@@ -110,7 +113,7 @@ public final class WebFeedMainMenuItemTest {
         doReturn(false).when(mTab).isShowingErrorPage();
 
         // Required for resolving an attribute used in AppMenuItemText.
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         // Add requests for web feed information to mWaitingMetadataCallbacks.
         doAnswer(invocation -> {
