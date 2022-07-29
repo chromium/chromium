@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("ts_library") {
@@ -134,6 +135,18 @@ template("ts_library") {
       "/tools/typescript/definitions/*|" +
           rebase_path("//tools/typescript/definitions/*", target_gen_dir),
     ]
+
+    if (is_chromeos_ash) {
+      path_mappings += [
+        "chrome://resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+        "//resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+      ]
+    }
+
     args += [ "--path_mappings" ] + path_mappings
     if (defined(invoker.path_mappings)) {
       args += invoker.path_mappings

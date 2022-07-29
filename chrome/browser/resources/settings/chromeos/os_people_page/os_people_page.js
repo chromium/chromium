@@ -26,7 +26,7 @@ import './lock_screen_password_prompt_dialog.js';
 import './users_page.js';
 import './os_sync_controls.js';
 
-import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos/cr_picture/png.js';
+import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';

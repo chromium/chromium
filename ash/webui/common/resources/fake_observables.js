@@ -145,7 +145,7 @@ export class FakeObservables {
   /**
    * Supply the callback for observing methodName.
    * @param {string} methodName
-   * @param {!function(!T)} callback
+   * @param {!Function} callback
    */
   observe(methodName, callback) {
     this.getObservable_(methodName).addObserver(callback);

@@ -8,6 +8,7 @@ import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/css_to_wrapper.gni")
 import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_definitions.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 assert(is_chromeos_ash)
@@ -15,7 +16,10 @@ assert(is_chromeos_ash)
 preprocessed_dir = "preprocessed"
 preprocessed_manifest = "preprocessed_manifest.json"
 
-polymer_element_files = [
+web_component_files = [
+  "cr_picture/cr_camera.js",
+  "cr_picture/cr_picture_list.js",
+  "cr_picture/cr_picture_pane.js",
   "keyboard_diagram.js",
   "keyboard_key.js",
   "navigation_selector.js",
@@ -23,14 +27,21 @@ polymer_element_files = [
   "page_toolbar.js",
 ]
 
+non_web_component_files = [
+  "cr_picture/cr_picture_types.js",
+  "cr_picture/png.js",
+  "cr_picture/webcam_utils.js",
+]
+
 icons_html_files = [
   "keyboard_icons.html",
   "navigation_icons.html",
+  "cr_picture/icons.html",
 ]
 
 # Files that are passed as input to html_to_wrapper().
 html_files = []
-foreach(f, polymer_element_files) {
+foreach(f, web_component_files) {
   html_files += [ string_replace(f, ".js", ".html") ]
 }
 
@@ -52,7 +63,8 @@ preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/$preprocessed_manifest"
-  in_files = polymer_element_files + icons_html_files + html_files + css_files
+  in_files = non_web_component_files + web_component_files + icons_html_files +
+             html_files + css_files
 }
 
 html_to_wrapper("html_wrapper_files") {
@@ -99,7 +111,38 @@ generate_grd("build_grdp") {
   resource_path_prefix = "ash/common"
 }
 
-js_type_check("closure_compile_module") {
+generate_definitions_js_files = [
+  "cr_picture/cr_camera.html.js",
+  "cr_picture/cr_camera.js",
+  "cr_picture/cr_picture_list.html.js",
+  "cr_picture/cr_picture_list.js",
+  "cr_picture/cr_picture_pane.html.js",
+  "cr_picture/cr_picture_pane.js",
+  "cr_picture/cr_picture_types.js",
+  "cr_picture/icons.html.js",
+  "cr_picture/png.js",
+  "cr_picture/webcam_utils.js",
+]
+
+ts_definitions("generate_definitions") {
+  root_dir = "$target_gen_dir/$preprocessed_dir"
+  out_dir = "$target_gen_dir/$preprocessed_dir"
+  js_files = generate_definitions_js_files
+  extra_deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+    ":preprocess",
+  ]
+}
+
+group("closure_compile") {
+  deps = [
+    ":closure_compile_local",
+    "cr_picture:closure_compile_module",
+  ]
+}
+
+js_type_check("closure_compile_local") {
   is_polymer3 = true
   deps = [
     ":fake_method_resolver",

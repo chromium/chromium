@@ -7,8 +7,8 @@
  * 'cr-camera' is a Polymer element used to take a picture from the
  * user webcam to use as a Chrome OS profile picture.
  */
-import '../../shared_style_css.m.js';
-import '../../cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/shared_style_css.m.js';
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './icons.html.js';

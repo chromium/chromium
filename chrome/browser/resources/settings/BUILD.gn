@@ -175,6 +175,14 @@ ts_library("build_ts") {
     ":preprocess",
     ":preprocess_generated",
   ]
+
+  if (is_chromeos_ash) {
+    # TODO(crbug.com/1013466): Browser Settings should not depend on ash/webui/
+    # code. The codepath needing this (in people_page.ts) should be removed when
+    # the SplitSettings effort makes progress (unclear status as of this
+    # writing, unfortunately).
+    extra_deps += [ "//ash/webui/common/resources:generate_definitions" ]
+  }
 }
 
 generate_grd("build_grd") {

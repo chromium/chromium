@@ -23,7 +23,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 // <if expr="chromeos_ash">
-import {convertImageSequenceToPng} from 'chrome://resources/cr_elements/chromeos/cr_picture/png.js';
+import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_picture/png.js';
 // </if>
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {isChromeOS} from 'chrome://resources/js/cr.m.js';

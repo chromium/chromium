@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("optimize_webui") {
@@ -48,7 +49,19 @@ template("optimize_webui") {
     resources_path =
         rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/",
                     root_build_dir)
-    external_paths = [
+
+    external_paths = []
+    if (is_chromeos_ash) {
+      ash_resources_path =
+          rebase_path("$root_gen_dir/ash/webui/common/resources/preprocessed/",
+                      root_build_dir)
+      external_paths += [
+        "chrome://resources/ash/common/|$ash_resources_path",
+        "//resources/ash/common/|$ash_resources_path",
+      ]
+    }
+
+    external_paths += [
       "chrome://resources/polymer/v3_0/|$polymer_path",
       "chrome://resources/|$resources_path",
 
@@ -56,6 +69,7 @@ template("optimize_webui") {
       "//resources/polymer/v3_0/|$polymer_path",
       "//resources/|$resources_path",
     ]
+
     if (defined(invoker.external_paths)) {
       external_paths += invoker.external_paths
     }

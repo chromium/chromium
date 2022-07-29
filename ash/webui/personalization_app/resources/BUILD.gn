@@ -211,7 +211,7 @@ ts_library("build_ts") {
     ":copy_mojo_to_js",
     ":preprocess",
     ":preprocess_generated",
-    "//ui/webui/resources:generate_definitions",
+    "//ash/webui/common/resources:generate_definitions",
   ]
 }
 

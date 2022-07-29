@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 strict_error_checking_closure_args = [
   "jscomp_error=accessControls",
   "jscomp_error=checkTypes",
@@ -53,6 +55,15 @@ js_modules_args = [
   "browser_resolver_prefix_replacements=\"chrome://resources/=./\"",
   "browser_resolver_prefix_replacements=\"//resources/=./\"",
 ]
+
+if (is_chromeos_ash) {
+  js_modules_args += [
+    "js_module_root=../../ash/webui/common/resources/",
+    "js_module_root=gen/ash/webui/common/resources/",
+    "browser_resolver_prefix_replacements=\"chrome://resources/ash/common/=./\"",
+    "browser_resolver_prefix_replacements=\"//resources/ash/common/=./\"",
+  ]
+}
 
 mojom_js_args = [
   "js_module_root=" +

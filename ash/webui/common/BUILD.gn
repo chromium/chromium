@@ -23,5 +23,5 @@ static_library("keyboard_diagram_strings") {
 }
 
 group("closure_compile") {
-  deps = [ "resources:closure_compile_module" ]
+  deps = [ "resources:closure_compile" ]
 }

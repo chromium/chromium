@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import * as webcamUtils from 'chrome://resources/cr_elements/chromeos/cr_picture/webcam_utils.js';
+import * as webcamUtils from 'chrome://resources/ash/common/cr_picture/webcam_utils.js';
 
 /**
  * @fileoverview methods to make it easier to mock out functions for testing.
