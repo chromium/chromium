@@ -6,8 +6,7 @@ implemented as a JavaScript layer translating between BiDi and CDP, running
 inside a Chrome tab.
 
 Current status can be checked here:
-[Chromium BiDi progress](https://docs.google.com/spreadsheets/d/1acM-kHlubpwnW1mFboS9hePawq3u1kf21oQzD16q-Ao/edit?usp=sharing&resourcekey=0-PuLHQYLmDJUOXH_mFO-QiA)
-.
+[Chromium BiDi progress](https://docs.google.com/spreadsheets/d/1acM-kHlubpwnW1mFboS9hePawq3u1kf21oQzD16q-Ao/edit?usp=sharing&resourcekey=0-PuLHQYLmDJUOXH_mFO-QiA).
 
 # Setup
 
@@ -19,13 +18,13 @@ npm install
 
 # Starting the Server
 
-This will run the server on port 8080:
+This will run the server on port `8080`:
 
 ```sh
 npm run server
 ```
 
-Use the `PORT=...` environment variable or `--port=...` argument to run it on
+Use the `PORT=` environment variable or `--port=` argument to run it on
 another port:
 
 ```sh
@@ -147,8 +146,7 @@ run WPT tests:
 #### 1. Check out WPT
 
 ```sh
-git submodule init
-git submodule update
+git submodule update --init
 ```
 
 #### 2. Go to the WPT folder
