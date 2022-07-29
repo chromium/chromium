@@ -72897,6 +72897,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="22" label="PAGE_ENTITIES"/>
   <int value="23" label="HISTORY_CLUSTERS"/>
   <int value="24" label="THANK_CREATOR_ELIGIBLE"/>
+  <int value="25" label="IBAN_AUTOFILL_BLOCKED"/>
 </enum>
 
 <enum name="OptOutBlacklistReason">

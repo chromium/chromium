@@ -67,6 +67,8 @@ std::string GetStringNameForOptimizationType(
       return "HistoryClusters";
     case proto::OptimizationType::THANK_CREATOR_ELIGIBLE:
       return "ThankCreatorEligible";
+    case proto::OptimizationType::IBAN_AUTOFILL_BLOCKED:
+      return "IBANAutofillBlocked";
   }
 
   // The returned string is used to record histograms for the optimization type.

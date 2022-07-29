@@ -163,6 +163,9 @@ enum OptimizationType {
   HISTORY_CLUSTERS = 23;
   // Determines if a page is eligible for 'Thank creator' functionality.
   THANK_CREATOR_ELIGIBLE = 24;
+  // This optimization provides information about hosts that are blocked for
+  // IBAN autofill.
+  IBAN_AUTOFILL_BLOCKED = 25;
 }
 
 // Presents semantics for how page load URLs should be matched.
