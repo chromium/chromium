@@ -9079,6 +9079,25 @@
             ]
         }
     ],
+    "UnifiedSidePanel": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UnifiedSidePanel"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseHtmlAttributeNameLookup": [
         {
             "platforms": [

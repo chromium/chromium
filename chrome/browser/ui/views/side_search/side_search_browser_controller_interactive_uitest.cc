@@ -36,10 +36,12 @@ class SideSearchBrowserControllerTest
     const bool enable_dse_support = GetParam();
     if (enable_dse_support) {
       scoped_feature_list_.InitWithFeatures(
-          {features::kSideSearch, features::kSideSearchDSESupport}, {});
+          {features::kSideSearch, features::kSideSearchDSESupport},
+          {features::kUnifiedSidePanel});
     } else {
-      scoped_feature_list_.InitWithFeatures({features::kSideSearch},
-                                            {features::kSideSearchDSESupport});
+      scoped_feature_list_.InitWithFeatures(
+          {features::kSideSearch},
+          {features::kSideSearchDSESupport, features::kUnifiedSidePanel});
     }
     InProcessBrowserTest::SetUp();
   }
@@ -461,7 +463,8 @@ class SideSearchIconViewTest : public SideSearchBrowserTest {
   // SideSearchBrowserTest:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSideSearch, features::kSideSearchDSESupport}, {});
+        {features::kSideSearch, features::kSideSearchDSESupport},
+        {features::kUnifiedSidePanel});
     SideSearchBrowserTest::SetUp();
   }
 
@@ -527,7 +530,7 @@ class SideSearchDSEClobberingTest : public SideSearchBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {features::kSideSearch, features::kSideSearchDSESupport,
          features::kSidePanelImprovedClobbering},
-        {});
+        {features::kUnifiedSidePanel});
     SideSearchBrowserTest::SetUp();
   }
 
