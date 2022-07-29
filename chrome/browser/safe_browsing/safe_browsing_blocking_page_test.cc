@@ -145,6 +145,7 @@ const char kEmptyPage[] = "/empty.html";
 const char kHTTPSPage[] = "/ssl/google.html";
 const char kMaliciousPage[] = "/safe_browsing/malware.html";
 const char kCrossSiteMaliciousPage[] = "/safe_browsing/malware2.html";
+const char kCrossSiteMaliciousEmbedPage[] = "/safe_browsing/malware4.html";
 const char kPageWithCrossOriginMaliciousIframe[] =
     "/safe_browsing/malware3.html";
 const char kCrossOriginMaliciousIframeHost[] = "malware.test";
@@ -533,6 +534,16 @@ class SafeBrowsingBlockingPageBrowserTest
     static_cast<FakeSafeBrowsingDatabaseManager*>(
         service->database_manager().get())
         ->AddDangerousUrl(url, threat_type);
+  }
+
+  void SetURLThreatPatternType(const GURL& url,
+                               ThreatPatternType threat_pattern_type) {
+    TestSafeBrowsingService* service = factory_.test_safe_browsing_service();
+    ASSERT_TRUE(service);
+
+    static_cast<FakeSafeBrowsingDatabaseManager*>(
+        service->database_manager().get())
+        ->AddDangerousUrlPattern(url, threat_pattern_type);
   }
 
   void ClearBadURL(const GURL& url) {
@@ -1868,6 +1879,49 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
   WaitForReady(browser());
   AssertNoInterstitial(true);
   EXPECT_EQ(bad_url, contents->GetLastCommittedURL());
+}
+
+// Regression test for https://crbug.com/1333623.
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       EmbedElementMalwareLandingInterstitial) {
+  GURL url = embedded_test_server()->GetURL(kCrossSiteMaliciousEmbedPage);
+  GURL embed_url = embedded_test_server()->GetURL(kMaliciousIframe);
+  SetURLThreatType(embed_url, SB_THREAT_TYPE_URL_MALWARE);
+  SetURLThreatPatternType(embed_url, ThreatPatternType::MALWARE_LANDING);
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  base::RunLoop().RunUntilIdle();
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(
+      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
+  // Show an interstitial when the malware landing page is loaded as an <embed>
+  // element, because it can cause similar harm as <iframe>.
+  EXPECT_TRUE(IsShowingInterstitial(contents));
+}
+
+IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageBrowserTest,
+                       JsElementInterstitial) {
+  SBThreatType threat_type = GetThreatType();
+  GURL url = embedded_test_server()->GetURL(kMaliciousJsPage);
+  GURL js_url = embedded_test_server()->GetURL(kMaliciousJs);
+  SetURLThreatType(js_url, threat_type);
+  if (threat_type == SB_THREAT_TYPE_URL_MALWARE) {
+    SetURLThreatPatternType(js_url, ThreatPatternType::MALWARE_LANDING);
+  }
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  base::RunLoop().RunUntilIdle();
+  WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(
+      content::WaitForRenderFrameReady(contents->GetPrimaryMainFrame()));
+  if (threat_type == SB_THREAT_TYPE_URL_MALWARE ||
+      threat_type == SB_THREAT_TYPE_URL_UNWANTED) {
+    // Do not show an interstitial when the malware landing page or UwS landing
+    // page is loaded as a subresource to avoid false positives.
+    EXPECT_FALSE(IsShowingInterstitial(contents));
+  } else {
+    EXPECT_TRUE(IsShowingInterstitial(contents));
+  }
 }
 
 class SafeBrowsingBlockingPageDelayedWarningBrowserTest

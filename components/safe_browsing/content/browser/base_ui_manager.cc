@@ -21,6 +21,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 using content::BrowserThread;
 using content::NavigationEntry;
@@ -207,12 +208,19 @@ content::WebContents* GetEmbeddingWebContentsForInterstitial(
 
 void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (resource.is_subresource && !resource.is_subframe) {
+  bool is_frame = resource.is_subframe ||
+                  resource.request_destination ==
+                      network::mojom::RequestDestination::kEmbed ||
+                  resource.request_destination ==
+                      network::mojom::RequestDestination::kObject;
+  if (resource.is_subresource && !is_frame) {
     // Sites tagged as serving Unwanted Software should only show a warning for
-    // main-frame or sub-frame resource. Similar warning restrictions should be
-    // applied to malware sites tagged as "landing sites" (see "Types of
-    // Malware sites" under
-    // https://developers.google.com/safe-browsing/developers_guide_v3#UserWarnings).
+    // main-frame or frame-like (subframe, embed, object) resource. Similar
+    // warning restrictions should be applied to malware sites tagged as
+    // "landing sites" (see "Types of Malware sites" under
+    // https://developers.google.com/safe-browsing/v4/metadata#malware-sites).
+    // This is to avoid false positives on benign sites that load resources
+    // from landing sites.
     if (resource.threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
         (resource.threat_type == SB_THREAT_TYPE_URL_MALWARE &&
          resource.threat_metadata.threat_pattern_type ==

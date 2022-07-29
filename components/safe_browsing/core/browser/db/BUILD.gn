@@ -79,6 +79,7 @@ static_library("test_database_manager") {
   ]
   deps = [
     ":database_manager",
+    ":util",
     ":v4_protocol_manager_util",
     "//base:base",
     "//net",
