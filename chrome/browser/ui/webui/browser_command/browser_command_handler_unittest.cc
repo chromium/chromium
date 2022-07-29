@@ -21,6 +21,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/tutorial_identifier.h"
 #include "components/user_education/common/tutorial_registry.h"
 #include "components/user_education/common/tutorial_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -127,6 +128,8 @@ class MockTutorialService : public TestTutorialService {
                     ui::ElementContext,
                     base::OnceClosure,
                     base::OnceClosure));
+  MOCK_METHOD2(LogStartedFromWhatsNewPage,
+               void(user_education::TutorialIdentifier, bool));
 };
 
 class MockCommandHandler : public TestCommandHandler {
@@ -426,7 +429,9 @@ TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
   // The StartTabGroupTutorial command should start the tab group tutorial.
   ClickInfoPtr info = ClickInfo::New();
   EXPECT_CALL(service, StartTutorial(kTabGroupTutorialId, kTestContext1,
-                                     testing::_, testing::_));
+                                     testing::_, testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(service, LogStartedFromWhatsNewPage(kTabGroupTutorialId, true));
   EXPECT_TRUE(ExecuteCommand(Command::kStartTabGroupTutorial, std::move(info)));
 }
 

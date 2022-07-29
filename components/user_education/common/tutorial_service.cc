@@ -77,6 +77,16 @@ void TutorialService::LogIPHLinkClicked(TutorialIdentifier id,
     description->histograms->RecordIphLinkClicked(iph_link_was_clicked);
 }
 
+void TutorialService::LogStartedFromWhatsNewPage(TutorialIdentifier id,
+                                                 bool success) {
+  TutorialDescription* description =
+      tutorial_registry_->GetTutorialDescription(id);
+  CHECK(description);
+
+  if (description->histograms)
+    description->histograms->RecordStartedFromWhatsNewPage(success);
+}
+
 bool TutorialService::RestartTutorial() {
   DCHECK(running_tutorial_ && running_tutorial_creation_params_);
   base::AutoReset<bool> resetter(&is_restarting_, true);

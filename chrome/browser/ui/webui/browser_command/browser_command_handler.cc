@@ -178,7 +178,10 @@ void BrowserCommandHandler::StartTabGroupTutorial() {
   if (!context)
     return;
 
-  tutorial_service->StartTutorial(kTabGroupTutorialId, context);
+  bool started_tutorial =
+      tutorial_service->StartTutorial(kTabGroupTutorialId, context);
+  tutorial_service->LogStartedFromWhatsNewPage(kTabGroupTutorialId,
+                                               started_tutorial);
 }
 
 void BrowserCommandHandler::OpenFeedbackForm() {

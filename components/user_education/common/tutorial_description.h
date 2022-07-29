@@ -40,6 +40,10 @@ class TutorialHistograms {
   // Records whether, when an IPH offered the tutorial, the user opted into
   // seeing the tutorial or not.
   virtual void RecordIphLinkClicked(bool value) = 0;
+
+  // Records whether, when an IPH offered the tutorial, the user opted into
+  // seeing the tutorial or not.
+  virtual void RecordStartedFromWhatsNewPage(bool value) = 0;
 };
 
 namespace internal {
@@ -55,8 +59,10 @@ class TutorialHistogramsImpl : public TutorialHistograms {
                         ".Completion"),
         aborted_name_(kTutorialHistogramPrefix + histogram_name_ +
                       ".AbortStep"),
-        link_clicked_name_(kTutorialHistogramPrefix + histogram_name_ +
-                           ".IPHLinkClicked"),
+        iph_link_clicked_name_(kTutorialHistogramPrefix + histogram_name_ +
+                               ".IPHLinkClicked"),
+        whats_new_page_name_(kTutorialHistogramPrefix + histogram_name_ +
+                             ".StartedFromWhatsNewPage"),
         max_steps_(max_steps) {}
   ~TutorialHistogramsImpl() override = default;
 
@@ -70,14 +76,19 @@ class TutorialHistogramsImpl : public TutorialHistograms {
   }
 
   void RecordIphLinkClicked(bool value) override {
-    UMA_HISTOGRAM_BOOLEAN(link_clicked_name_, value);
+    UMA_HISTOGRAM_BOOLEAN(iph_link_clicked_name_, value);
+  }
+
+  void RecordStartedFromWhatsNewPage(bool value) override {
+    UMA_HISTOGRAM_BOOLEAN(whats_new_page_name_, value);
   }
 
  private:
   const std::string histogram_name_;
   const std::string completed_name_;
   const std::string aborted_name_;
-  const std::string link_clicked_name_;
+  const std::string iph_link_clicked_name_;
+  const std::string whats_new_page_name_;
   const int max_steps_;
 };
 

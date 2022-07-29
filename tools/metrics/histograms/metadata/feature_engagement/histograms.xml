@@ -465,6 +465,18 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
+<histogram name="Tutorial{TutorialID}.StartedFromWhatsNewPage"
+    enum="BooleanSuccess" expires_after="2022-12-31">
+  <owner>dpenning@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    The count of successful starts of the tutorial when {TutorialID} button is
+    clicked on the whats new page (called by the Tutorial BrowserCommand). A
+    false value correlates to a failure to start the tutorial.
+  </summary>
+  <token key="TutorialID" variants="TutorialID"/>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

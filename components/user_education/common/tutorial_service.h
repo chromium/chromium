@@ -55,6 +55,8 @@ class TutorialService {
       AbortedCallback aborted_callback = base::DoNothing());
 
   void LogIPHLinkClicked(TutorialIdentifier id, bool iph_link_was_clicked);
+  virtual void LogStartedFromWhatsNewPage(TutorialIdentifier id,
+                                          bool iph_link_was_clicked);
 
   // Uses the stored tutorial creation params to restart a tutorial. Replaces
   // the current_tutorial with a newly generated tutorial.
