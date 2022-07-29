@@ -60,14 +60,15 @@ void DisplayPerBucketData(
   size_t total_memory = 0;
   for (const auto& pair : live_allocs) {
     total_memory += pair.second;
-    const auto index = BucketIndexLookup::GetIndex(pair.second);
+    // We use the "denser" (i.e. default) bucket distribution here so we can see
+    // how allocations currently happen in chrome.
+    const auto index = BucketIndexLookup::GetIndexForDenserBuckets(pair.second);
     alloc_size[index] += pair.second;
     alloc_nums[index]++;
   }
 
   base::File f(base::FilePath(kTmpDumpName),
-               base::File::FLAG_CREATE | base::File::FLAG_CREATE_ALWAYS |
-                   base::File::FLAG_WRITE);
+               base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   for (size_t i = 0; i < kNumBuckets; i++) {
     const auto bucket_size = lookup.bucket_sizes()[i];
     const size_t fragmentation =
@@ -129,6 +130,11 @@ int main(int argc, char** argv) {
   auto alloc_info = std::make_unique<AllocInfo>();
   reader.ReadMemory(registry_address, sizeof(AllocInfo),
                     reinterpret_cast<char*>(alloc_info.get()));
+
+  // If this check fails, it means we have overflowed our circular buffer before
+  // we had time to start this script. Either the circular buffer needs to be
+  // bigger, or the script needs to be started sooner.
+  CHECK_LT(alloc_info->index.load(), kAllocInfoSize);
 
   size_t old_index = 0;
   size_t new_index = alloc_info->index;

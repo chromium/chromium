@@ -91,7 +91,9 @@ template <typename Z>
 static constexpr bool offset_type =
     std::is_integral_v<Z> && sizeof(Z) <= sizeof(ptrdiff_t);
 
-static constexpr size_t kAllocInfoSize = 1 << 20;
+// We want this size to be big enough that we have time to start up other
+// scripts _before_ we wrap around.
+static constexpr size_t kAllocInfoSize = 1 << 24;
 
 struct AllocInfo {
   std::atomic<size_t> index{0};

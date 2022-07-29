@@ -341,7 +341,7 @@ buildflag_header("partition_alloc_buildflags") {
   _record_alloc_info = false
 
   # TODO(crbug.com/1151236): Need to refactor the following buildflags.
-  # The buildflags (expect RECORD_ALLOC_INFO) are used by both chrome and
+  # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
   # partition alloc. For partition alloc,
   # gen/base/allocator/partition_allocator/partition_alloc_buildflags.h
   # defines and partition alloc includes the header file. For chrome,
