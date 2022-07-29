@@ -1803,7 +1803,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 Supplier<Boolean> tabSwitcherDialogVisibilitySupplier =
                         isTabSwitcherOnlyRefactorEnabled
                         ? mTabSwitcherSupplier.get().getTabGridDialogVisibilitySupplier()
-                        : mStartSurfaceSupplier == null
+                        : (mStartSurfaceSupplier == null || !mStartSurfaceSupplier.hasValue())
                         ? null
                         : mStartSurfaceSupplier.get().getTabGridDialogVisibilitySupplier();
 
