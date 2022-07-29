@@ -99,12 +99,12 @@ TEST_F(AppSessionTest, WebKioskTracksBrowserCreation) {
 
   WebKioskTracksBrowserCreationTest();
 
-  const base::Value* value = local_state()->GetDictionary(prefs::kKioskMetrics);
-  ASSERT_TRUE(value);
-  const base::Value* sessions_list =
-      value->FindListKey(kKioskSessionLastDayList);
+  const base::Value::Dict& dict =
+      local_state()->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::List* sessions_list =
+      dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
-  EXPECT_EQ(1, sessions_list->GetIfList()->size());
+  EXPECT_EQ(1, sessions_list->size());
 
   histogram.ExpectBucketCount(kKioskSessionStateHistogram,
                               KioskSessionState::kWebStarted, 1);
@@ -152,15 +152,15 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
 
   WebKioskTracksBrowserCreationTest();
 
-  const base::Value* value = local_state()->GetDictionary(prefs::kKioskMetrics);
-  ASSERT_TRUE(value);
-  const base::Value* sessions_list =
-      value->FindListKey(kKioskSessionLastDayList);
+  const base::Value::Dict& dict =
+      local_state()->GetValueDict(prefs::kKioskMetrics);
+  const base::Value::List* sessions_list =
+      dict.FindList(kKioskSessionLastDayList);
   ASSERT_TRUE(sessions_list);
   // There should be only two kiosk sessions on the list:
   // the one that happened right before the current one and the current one.
-  EXPECT_EQ(2, sessions_list->GetIfList()->size());
-  for (const auto& time : *sessions_list->GetIfList()) {
+  EXPECT_EQ(2, sessions_list->size());
+  for (const auto& time : *sessions_list) {
     EXPECT_LE(base::Time::Now() - base::ValueToTime(time).value(),
               base::Days(1));
   }
