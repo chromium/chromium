@@ -770,7 +770,12 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
   // process, if that process is locked to a single origin. This is a regression
   // test for http://crbug.com/600441.
   for (const Extension* extension : installed_extensions) {
-    content::DOMMessageQueue queue;
+    ExtensionHost* host =
+        ProcessManager::Get(profile())->GetBackgroundHostForExtension(
+            extension->id());
+    ASSERT_TRUE(host);
+    content::DOMMessageQueue queue(host->host_contents());
+
     ExecuteScriptInBackgroundPageNoWait(
         extension->id(),
         "document.cookie = 'extension_cookie';"

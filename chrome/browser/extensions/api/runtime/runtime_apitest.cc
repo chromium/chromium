@@ -498,7 +498,11 @@ IN_PROC_BROWSER_TEST_P(BackgroundPageOnlyRuntimeApiTest,
   }
 
   {
-    content::DOMMessageQueue message_queue;
+    ExtensionHost* host = ProcessManager::Get(browser()->profile())
+                              ->GetBackgroundHostForExtension(extension->id());
+    ASSERT_TRUE(host);
+    content::DOMMessageQueue message_queue(host->host_contents());
+
     static constexpr char kScript[] = R"(
         const foundWindows = chrome.extension.getViews({type: 'tab'});
         domAutomationController.send(foundWindows.length);
