@@ -167,7 +167,6 @@
 <translation id="1877026089748256423">Chrome 版本過舊</translation>
 <translation id="1883903952484604915">我的檔案</translation>
 <translation id="189358972401248634">其他語言</translation>
-<translation id="1894023287452300670">追蹤這個地區的價格</translation>
 <translation id="1900260903084164610">選擇繼續即表示您同意《<ph name="BEGIN_TOS_LINK" />服務條款<ph name="END_TOS_LINK" />》。</translation>
 <translation id="1904580727789512086">系統會將你造訪的網址儲存到 Google 帳戶</translation>
 <translation id="1910950723001426294">分享選項清單已關閉。</translation>
@@ -271,6 +270,7 @@
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2497852260688568942">你的管理員停用了同步功能</translation>
 <translation id="250020030759455918">你將可在 Chrome 中查看 <ph name="SITE_NAME" /> 登入狀態、瀏覽資料和網站資料</translation>
+<translation id="2507178219579379057">Chrome 會探索如何防範垃圾內容和詐欺行為，以及限制網站之間分享資訊的方法。Chrome 還會<ph name="BEGIN_LINK" />推測你的興趣喜好<ph name="END_LINK" />，讓網站能夠顯示廣告。你可以前往設定管理自己的興趣喜好。</translation>
 <translation id="2513403576141822879">如需更多隱私權、安全性和資料收集的相關設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">掃描</translation>
 <translation id="2523184218357549926">將你造訪的網頁網址傳送給 Google</translation>
