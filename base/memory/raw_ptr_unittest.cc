@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/dangling_raw_ptr_checks.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr_asan_service.h"
@@ -1436,6 +1437,63 @@ TEST(BackupRefPtrImpl, QuarantinedBytes) {
   EXPECT_EQ(allocator.root()->total_count_of_brp_quarantined_slots.load(
                 std::memory_order_relaxed),
             0U);
+}
+
+void RunBackupRefPtrImplAdvanceTest(
+    partition_alloc::PartitionAllocator& allocator,
+    size_t requested_size) {
+  raw_ptr<char> ptr =
+      static_cast<char*>(allocator.root()->Alloc(requested_size, ""));
+
+  ptr += 123;
+  ptr -= 123;
+  ptr += requested_size / 2;
+  ptr += requested_size / 2;  // end-of-allocation address is ok
+  EXPECT_DEATH_IF_SUPPORTED(ptr += 1, "");
+  EXPECT_DEATH_IF_SUPPORTED(++ptr, "");
+  ptr -= requested_size / 2;
+  ptr -= requested_size / 2;
+  EXPECT_DEATH_IF_SUPPORTED(ptr -= 1, "");
+  EXPECT_DEATH_IF_SUPPORTED(--ptr, "");
+
+  allocator.root()->Free(ptr);
+}
+
+TEST(BackupRefPtrImpl, Advance) {
+  // TODO(bartekn): Avoid using PartitionAlloc API directly. Switch to
+  // new/delete once PartitionAlloc Everywhere is fully enabled.
+  partition_alloc::PartitionAllocGlobalInit(HandleOOM);
+  partition_alloc::PartitionAllocator allocator;
+  allocator.init(kOpts);
+
+  // This requires some internal PartitionAlloc knowledge, but for the test to
+  // work well the allocation + extras have to fill out the entire slot. That's
+  // because PartitionAlloc doesn't know exact allocation size and bases the
+  // guards on the slot size.
+  //
+  // A power of two is a safe choice for a slot size, then adjust it for extras.
+  size_t slot_size = 512;
+  size_t requested_size =
+      allocator.root()->AdjustSizeForExtrasSubtract(slot_size);
+  // Verify that we're indeed fillin up the slot.
+  ASSERT_EQ(
+      requested_size,
+      allocator.root()->AllocationCapacityFromRequestedSize(requested_size));
+  RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
+
+  // We don't have the same worry for single-slot spans, as PartitionAlloc knows
+  // exactly where the allocation ends.
+  size_t raw_size = 300003;
+  ASSERT_GT(raw_size, partition_alloc::internal::MaxRegularSlotSpanSize());
+  ASSERT_LE(raw_size, partition_alloc::internal::kMaxBucketed);
+  requested_size = allocator.root()->AdjustSizeForExtrasSubtract(slot_size);
+  RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
+
+  // Same for direct map.
+  raw_size = 1001001;
+  ASSERT_GT(raw_size, partition_alloc::internal::kMaxBucketed);
+  requested_size = allocator.root()->AdjustSizeForExtrasSubtract(slot_size);
+  RunBackupRefPtrImplAdvanceTest(allocator, requested_size);
 }
 
 #if defined(PA_REF_COUNT_CHECK_COOKIE)

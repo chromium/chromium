@@ -458,14 +458,43 @@ struct BackupRefPtrImpl {
             typename Z,
             typename = std::enable_if_t<offset_type<Z>, void>>
   static ALWAYS_INLINE T* Advance(T* wrapped_ptr, Z delta_elems) {
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+    // First check if the new address lands within the same allocation
+    // (end-of-allocation address is ok too). It has a non-trivial cost, but
+    // it's cheaper and more secure than the previous implementation that
+    // rewrapped the pointer (wrapped the new pointer and unwrapped the old
+    // one).
     uintptr_t address = partition_alloc::UntagPtr(wrapped_ptr);
     if (IsSupportedAndNotNull(address))
       CHECK(IsValidDelta(address, delta_elems * static_cast<Z>(sizeof(T))));
+    return wrapped_ptr + delta_elems;
+#else
+    // In the "before allocation" mode, on 32-bit, we can run into a problem
+    // that the end-of-allocation address could fall out of "GigaCage", if this
+    // is the last slot of the super page, thus pointing to the guard page. This
+    // mean the ref-count won't be decreased when the pointer is released
+    // (leak).
+    //
+    // We could possibly solve it in a few different ways:
+    // - Add the trailing guard page to "GigaCage", but we'd have to think very
+    //   hard if this doesn't create another hole.
+    // - Add an address adjustment to "GigaCage" check, similar as the one in
+    //   PartitionAllocGetSlotStartInBRPPool(), but that seems fragile, not to
+    //   mention adding an extra instruction to an inlined hot path.
+    // - Let the leak happen, since it should a very rare condition.
+    // - Go back to the previous solution of rewrapping the pointer, but that
+    //   had an issue of losing protection in case the pointer ever gets shifter
+    //   before the end of allocation.
+    //
+    // We decided to cross that bridge once we get there... if we ever get
+    // there. Currently there are no plans to switch back to the "before
+    // allocation" mode.
+    //
+    // This problem doesn't exist in the "previous slot" mode, or any mode that
+    // involves putting extras after the allocation, because the
+    // end-of-allocation address belongs to the same slot.
+    static_assert(false);
 #endif
-    T* new_wrapped_ptr = WrapRawPtr(wrapped_ptr + delta_elems);
-    ReleaseWrappedPtr(wrapped_ptr);
-    return new_wrapped_ptr;
   }
 
   // Returns a copy of a wrapped pointer, without making an assertion on whether
