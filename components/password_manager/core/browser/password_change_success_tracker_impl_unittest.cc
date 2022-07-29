@@ -316,10 +316,11 @@ TEST(PasswordChangeSuccessTrackerImpl, DeletedOutdatedEventRecords) {
       password_manager::prefs::kPasswordChangeSuccessTrackerFlows,
       std::move(flows));
 
-  const base::Value* value = pref_service_.Get(
-      password_manager::prefs::kPasswordChangeSuccessTrackerFlows);
-  ASSERT_TRUE(value);
-  EXPECT_EQ(value->GetList().size(), 2u);
+  {
+    const base::Value::List& value = pref_service_.GetValueList(
+        password_manager::prefs::kPasswordChangeSuccessTrackerFlows);
+    EXPECT_EQ(value.size(), 2u);
+  }
 
   std::unique_ptr<PasswordChangeSuccessTracker>
       password_change_success_tracker_ =
@@ -331,10 +332,11 @@ TEST(PasswordChangeSuccessTrackerImpl, DeletedOutdatedEventRecords) {
   ASSERT_TRUE(version);
   EXPECT_EQ(version.value(), PasswordChangeSuccessTrackerImpl::kTrackerVersion);
 
-  value = pref_service_.Get(
-      password_manager::prefs::kPasswordChangeSuccessTrackerFlows);
-  ASSERT_TRUE(value);
-  EXPECT_EQ(value->GetList().size(), 0u);
+  {
+    const base::Value::List& value = pref_service_.GetValueList(
+        password_manager::prefs::kPasswordChangeSuccessTrackerFlows);
+    EXPECT_TRUE(value.empty());
+  }
 }
 
 TEST_F(PasswordChangeSuccessTrackerImplTest,
