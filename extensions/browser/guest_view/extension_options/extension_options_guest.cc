@@ -18,22 +18,17 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/result_codes.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_constants.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest_delegate.h"
-#include "extensions/browser/view_type_utils.h"
 #include "extensions/common/api/extension_options_internal.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
-#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/strings/grit/extensions_strings.h"
-#include "ipc/ipc_message_macros.h"
 
 using content::WebContents;
 using guest_view::GuestViewBase;
@@ -65,14 +60,6 @@ void ExtensionOptionsGuest::CreateWebContents(
       create_params.FindString(extensionoptions::kExtensionId);
 
   if (!extension_id || !crx_file::id_util::IdIsValid(*extension_id)) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  std::string embedder_extension_id = GetOwnerSiteURL().host();
-  if (crx_file::id_util::IdIsValid(embedder_extension_id) &&
-      *extension_id != embedder_extension_id) {
-    // Extensions cannot embed other extensions' options pages.
     std::move(callback).Run(nullptr);
     return;
   }
