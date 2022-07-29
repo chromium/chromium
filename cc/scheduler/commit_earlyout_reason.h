@@ -32,7 +32,7 @@ inline const char* CommitEarlyOutReasonToString(CommitEarlyOutReason reason) {
   return "???";
 }
 
-inline bool CommitEarlyOutHandledCommit(CommitEarlyOutReason reason) {
+inline bool MainFrameAppliedDeltas(CommitEarlyOutReason reason) {
   return reason == CommitEarlyOutReason::FINISHED_NO_UPDATES;
 }
 

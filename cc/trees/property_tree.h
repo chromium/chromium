@@ -538,7 +538,7 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
 
   // Applies deltas sent in the previous main frame onto the impl thread state.
   // Should only be called on the impl thread side PropertyTrees.
-  void ApplySentScrollDeltasFromAbortedCommit();
+  void ApplySentScrollDeltasFromAbortedCommit(bool main_frame_applied_deltas);
 
   // Pushes scroll updates from the ScrollTree on the main thread onto the
   // impl thread associated state.

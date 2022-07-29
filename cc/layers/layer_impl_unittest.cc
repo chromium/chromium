@@ -417,7 +417,8 @@ TEST_F(LayerImplScrollTest, ApplySentScrollsNoListener) {
                    scroll_tree(layer())->GetScrollOffsetBaseForTesting(
                        layer()->element_id()));
 
-  scroll_tree(layer())->ApplySentScrollDeltasFromAbortedCommit();
+  scroll_tree(layer())->ApplySentScrollDeltasFromAbortedCommit(
+      /*main_frame_applied_deltas=*/true);
 
   EXPECT_POINTF_EQ(scroll_offset + scroll_delta, CurrentScrollOffset(layer()));
   EXPECT_VECTOR2DF_EQ(scroll_delta - sent_scroll_delta, ScrollDelta(layer()));

@@ -5,7 +5,10 @@
 #ifndef CC_BASE_SYNCED_PROPERTY_H_
 #define CC_BASE_SYNCED_PROPERTY_H_
 
+#include <utility>
+
 #include "base/memory/ref_counted.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -39,8 +42,7 @@ class SyncedProperty : public base::RefCounted<SyncedProperty<T>> {
   // Sets the value on the impl thread, due to an impl-thread-originating
   // action.  Returns true if this had any effect.  This will remain
   // impl-thread-only information at first, and will get pulled back to the main
-  // thread on the next call of PullDeltaToMainThread (which happens right
-  // before the commit).
+  // thread on the next call of PullDeltaForMainThread.
   bool SetCurrent(BaseT current) {
     DeltaT delta = T::DeltaBetweenBases(current, active_base_);
     if (active_delta_ == delta)
@@ -57,16 +59,27 @@ class SyncedProperty : public base::RefCounted<SyncedProperty<T>> {
   // Returns the latest active tree delta and also makes a note that this value
   // was sent to the main thread.
   DeltaT PullDeltaForMainThread() {
-    reflected_delta_in_main_tree_ = PendingDelta();
-    return reflected_delta_in_main_tree_;
+    DCHECK(!next_reflected_delta_in_main_tree_.has_value());
+    DeltaT result = UnsentDelta();
+    if (reflected_delta_in_main_tree_.has_value()) {
+      next_reflected_delta_in_main_tree_.emplace(result);
+    } else {
+      reflected_delta_in_main_tree_.emplace(result);
+    }
+    return result;
   }
 
   // Push the latest value from the main thread onto pending tree-associated
   // state. Returns true if pushing the value results in different values
   // between the main layer tree and the pending tree.
   bool PushMainToPending(BaseT main_thread_value) {
-    reflected_delta_in_pending_tree_ = reflected_delta_in_main_tree_;
-    reflected_delta_in_main_tree_ = T::IdentityDelta();
+    DCHECK(reflected_delta_in_main_tree_.has_value() ||
+           !next_reflected_delta_in_main_tree_.has_value());
+    reflected_delta_in_pending_tree_ =
+        reflected_delta_in_main_tree_.value_or(T::IdentityDelta());
+    reflected_delta_in_main_tree_ =
+        std::move(next_reflected_delta_in_main_tree_);
+    next_reflected_delta_in_main_tree_.reset();
     pending_base_ = main_thread_value;
 
     return Current(false) != main_thread_value;
@@ -97,16 +110,52 @@ class SyncedProperty : public base::RefCounted<SyncedProperty<T>> {
            active_value_before_push != current_active_value;
   }
 
-  // This simulates the consequences of the sent value getting committed and
-  // activated.
-  void AbortCommit() {
-    pending_base_ = T::ApplyDelta(pending_base_, reflected_delta_in_main_tree_);
-    active_base_ = T::ApplyDelta(active_base_, reflected_delta_in_main_tree_);
-    active_delta_ =
-        T::DeltaBetweenDeltas(active_delta_, reflected_delta_in_main_tree_);
-    reflected_delta_in_main_tree_ = T::IdentityDelta();
+  void AbortCommit(bool main_frame_applied_deltas) {
+    // Finish processing the delta that was sent to the main thread, and reset
+    // the corresponding the delta_in_main_tree_ variable. If
+    // main_frame_applied_deltas is true, we send the delta on to the active
+    // tree just as would happen for a successful commit. Otherwise, we treat
+    // the delta as never having been sent to the main thread and just drop it.
+    if (next_reflected_delta_in_main_tree_.has_value()) {
+      // If next_reflected_delta_in_main_tree_ is populated, we know two things:
+      //   - This abort corresponds to next_reflected_delta_in_main_tree_,
+      //     because we only send a "next" BeginMainFrame if the previous one
+      //     has already signaled "ready to commit".
+      //   - The previous main frame has not yet run commit. If it had, then
+      //     PushMainToPending would have promoted
+      //     next_reflected_delta_in_main_tree_ to reflected_delta_in_main_tree_
+      //     and next_reflected_delta_in_main_tree_ would be empty.
+      // In this case, if the main thread processed the delta from this aborted
+      // commit we can simply add the delta to reflected_delta_in_main_tree_.
+      if (main_frame_applied_deltas) {
+        reflected_delta_in_main_tree_ =
+            T::CombineDeltas(reflected_delta_in_main_tree_.value(),
+                             next_reflected_delta_in_main_tree_.value());
+      }
+      next_reflected_delta_in_main_tree_.reset();
+    } else {
+      // There is no "next" main frame, this abort was for the primary.
+      if (main_frame_applied_deltas) {
+        DeltaT delta =
+            reflected_delta_in_main_tree_.value_or(T::IdentityDelta());
+        // This simulates the consequences of the sent value getting committed
+        // and activated.
+        pending_base_ = T::ApplyDelta(pending_base_, delta);
+        active_base_ = T::ApplyDelta(active_base_, delta);
+        active_delta_ = T::DeltaBetweenDeltas(active_delta_, delta);
+      }
+      reflected_delta_in_main_tree_.reset();
+    }
   }
 
+  // Values sent to the main thread and not yet resolved in the pending or
+  // active tree.
+  const absl::optional<DeltaT>& reflected_delta_in_main_tree() const {
+    return reflected_delta_in_main_tree_;
+  }
+  const absl::optional<DeltaT>& next_reflected_delta_in_main_tree() const {
+    return next_reflected_delta_in_main_tree_;
+  }
   // Values as last pushed to the pending or active tree respectively, with no
   // impl-thread delta applied.
   BaseT PendingBase() const { return pending_base_; }
@@ -122,6 +171,12 @@ class SyncedProperty : public base::RefCounted<SyncedProperty<T>> {
                                  reflected_delta_in_pending_tree_);
   }
 
+  DeltaT UnsentDelta() const {
+    return T::DeltaBetweenDeltas(
+        PendingDelta(),
+        reflected_delta_in_main_tree_.value_or(T::IdentityDelta()));
+  }
+
   void set_clobber_active_value() { clobber_active_value_ = true; }
 
  private:
@@ -134,9 +189,13 @@ class SyncedProperty : public base::RefCounted<SyncedProperty<T>> {
   BaseT active_base_ = T::IdentityBase();
   // The difference between |active_base_| and the user-perceived value.
   DeltaT active_delta_ = T::IdentityDelta();
-  // The value sent to the main thread on the last BeginMainFrame.  This is
-  // always identity outside of the BeginMainFrame to (aborted)commit interval.
-  DeltaT reflected_delta_in_main_tree_ = T::IdentityDelta();
+  // A value sent to the main thread on a BeginMainFrame, but not yet applied to
+  // the resulting pending tree.
+  absl::optional<DeltaT> reflected_delta_in_main_tree_;
+  // A value sent to the main thread on a BeginMainFrame at a time when
+  // reflected_delta_in_main_tree_ is populated. This is used when a main frame
+  // is sent to the main thread before the previous one has committed.
+  absl::optional<DeltaT> next_reflected_delta_in_main_tree_;
   // The value that was sent to the main thread for BeginMainFrame for the
   // current pending tree.  This is always identity outside of the
   // BeginMainFrame to activation interval.
@@ -164,6 +223,7 @@ class AdditionGroup {
   static BaseT ApplyDelta(BaseT v, DeltaT delta) { return v + delta; }
   static DeltaT DeltaBetweenBases(BaseT v1, BaseT v2) { return v1 - v2; }
   static DeltaT DeltaBetweenDeltas(DeltaT d1, DeltaT d2) { return d1 - d2; }
+  static DeltaT CombineDeltas(DeltaT d1, DeltaT d2) { return d1 + d2; }
 };
 
 class ScaleGroup {
@@ -175,6 +235,7 @@ class ScaleGroup {
   static float ApplyDelta(float v, float delta) { return v * delta; }
   static float DeltaBetweenBases(float v1, float v2) { return v1 / v2; }
   static float DeltaBetweenDeltas(float d1, float d2) { return d1 / d2; }
+  static float CombineDeltas(float d1, float d2) { return d1 * d2; }
 };
 
 }  // namespace cc

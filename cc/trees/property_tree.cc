@@ -1704,10 +1704,15 @@ void ScrollTree::PushScrollUpdatesFromMainThread(
   for (auto map_entry = synced_scroll_offset_map_.begin();
        map_entry != synced_scroll_offset_map_.end();) {
     ElementId id = map_entry->first;
-    if (main_scroll_offset_map.find(id) == main_scroll_offset_map.end())
+    if (main_scroll_offset_map.find(id) == main_scroll_offset_map.end()) {
+      // This SyncedScrollOffset might still be used to send a delta from the
+      // active tree to the main thread, so we need to clear out the delta that
+      // was sent to the main thread for this commit.
+      map_entry->second->PushMainToPending(map_entry->second->Current(true));
       map_entry = synced_scroll_offset_map_.erase(map_entry);
-    else
+    } else {
       map_entry++;
+    }
   }
 
   for (auto map_entry : main_scroll_offset_map) {
@@ -1763,10 +1768,11 @@ void ScrollTree::PushScrollUpdatesFromPendingTree(
   }
 }
 
-void ScrollTree::ApplySentScrollDeltasFromAbortedCommit() {
+void ScrollTree::ApplySentScrollDeltasFromAbortedCommit(
+    bool main_frame_applied_deltas) {
   DCHECK(property_trees()->is_active());
   for (auto& map_entry : synced_scroll_offset_map_)
-    map_entry.second->AbortCommit();
+    map_entry.second->AbortCommit(main_frame_applied_deltas);
 }
 
 void ScrollTree::SetBaseScrollOffset(ElementId id,

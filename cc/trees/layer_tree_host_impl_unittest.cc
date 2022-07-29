@@ -138,6 +138,11 @@ struct TestFrameData : public LayerTreeHostImpl::FrameData {
   }
 };
 
+void ClearMainThreadDeltasForTesting(LayerTreeHostImpl* host) {
+  host->active_tree()->ApplySentScrollAndScaleDeltasFromAbortedCommit(
+      /*main_frame_applied_deltas=*/false);
+}
+
 }  // namespace
 
 class LayerTreeHostImplTest : public testing::Test,
@@ -358,6 +363,21 @@ class LayerTreeHostImplTest : public testing::Test,
   gfx::Size DipSizeToPixelSize(const gfx::Size& size) {
     return gfx::ScaleToRoundedSize(
         size, host_impl_->active_tree()->device_scale_factor());
+  }
+
+  void PushScrollOffsetsToPendingTree(
+      const base::flat_map<ElementId, gfx::PointF>& offsets) {
+    PropertyTrees property_trees(*host_impl_);
+    for (auto& entry : offsets) {
+      property_trees.scroll_tree_mutable().SetBaseScrollOffset(entry.first,
+                                                               entry.second);
+    }
+    host_impl_->sync_tree()
+        ->property_trees()
+        ->scroll_tree_mutable()
+        .PushScrollUpdatesFromMainThread(
+            property_trees, host_impl_->sync_tree(),
+            host_impl_->settings().commit_fractional_scroll_deltas);
   }
 
   static void ExpectClearedScrollDeltasRecursive(LayerImpl* root) {
@@ -1095,8 +1115,6 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDeltaTreeButNoChanges) {
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDeltaRepeatedScrolls) {
   gfx::PointF scroll_offset(20, 30);
-  gfx::Vector2dF scroll_delta(11, -15);
-
   auto* root = SetupDefaultRootLayer(gfx::Size(110, 110));
   root->SetHitTestable(true);
   CreateScrollNode(root, gfx::Size(10, 10));
@@ -1106,25 +1124,121 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDeltaRepeatedScrolls) {
       .UpdateScrollOffsetBaseForTesting(root->element_id(), scroll_offset);
   UpdateDrawProperties(host_impl_->active_tree());
 
-  std::unique_ptr<CompositorCommitData> commit_data;
-
+  gfx::Vector2dF scroll_delta(11, -15);
+  std::unique_ptr<CompositorCommitData> commit_data1;
   root->ScrollBy(scroll_delta);
-  commit_data = host_impl_->ProcessCompositorDeltas();
-  ASSERT_EQ(commit_data->scrolls.size(), 1u);
+  commit_data1 = host_impl_->ProcessCompositorDeltas();
+  ASSERT_EQ(commit_data1->scrolls.size(), 1u);
   EXPECT_TRUE(
-      ScrollInfoContains(*commit_data, root->element_id(), scroll_delta));
+      ScrollInfoContains(*commit_data1, root->element_id(), scroll_delta));
+
+  std::unique_ptr<CompositorCommitData> commit_data2;
+  gfx::Vector2dF scroll_delta2(-5, 27);
+  root->ScrollBy(scroll_delta2);
+  commit_data2 = host_impl_->ProcessCompositorDeltas();
+  ASSERT_EQ(commit_data2->scrolls.size(), 1u);
+  EXPECT_TRUE(
+      ScrollInfoContains(*commit_data2, root->element_id(), scroll_delta2));
+
+  // Simulate first commit by pushing base scroll offsets to pending tree
+  PushScrollOffsetsToPendingTree(
+      {{root->element_id(), gfx::PointAtOffsetFromOrigin(scroll_delta)}});
+  EXPECT_EQ(host_impl_->sync_tree()
+                ->property_trees()
+                ->scroll_tree()
+                .GetScrollOffsetDeltaForTesting(root->element_id()),
+            scroll_delta2);
+
+  // Simulate second commit by pushing base scroll offsets to pending tree
+  PushScrollOffsetsToPendingTree(
+      {{root->element_id(), gfx::PointAtOffsetFromOrigin(scroll_delta2)}});
+  EXPECT_EQ(host_impl_->sync_tree()
+                ->property_trees()
+                ->scroll_tree()
+                .GetScrollOffsetDeltaForTesting(root->element_id()),
+            gfx::Vector2dF(0, 0));
+}
+
+TEST_P(ScrollUnifiedLayerTreeHostImplTest, SyncedScrollAbortedCommit) {
+  LayerTreeSettings settings = DefaultSettings();
+  settings.commit_to_active_tree = false;
+  CreateHostImpl(settings, CreateLayerTreeFrameSink());
+  CreatePendingTree();
+  gfx::PointF scroll_offset(20, 30);
+  auto* root = SetupDefaultRootLayer(gfx::Size(110, 110));
+  auto& scroll_tree =
+      root->layer_tree_impl()->property_trees()->scroll_tree_mutable();
+  root->SetHitTestable(true);
+
+  // SyncedProperty should be created on the pending tree and then pushed to the
+  // active tree, to avoid bifurcation. Simulate commit by pushing base scroll
+  // offsets to pending tree.
+  PushScrollOffsetsToPendingTree({{root->element_id(), gfx::PointF(0, 0)}});
+  host_impl_->active_tree()
+      ->property_trees()
+      ->scroll_tree_mutable()
+      .PushScrollUpdatesFromPendingTree(
+          host_impl_->pending_tree()->property_trees(),
+          host_impl_->active_tree());
+
+  CreateScrollNode(root, gfx::Size(10, 10));
+  auto* synced_scroll = scroll_tree.GetSyncedScrollOffset(root->element_id());
+  ASSERT_TRUE(synced_scroll);
+  scroll_tree.UpdateScrollOffsetBaseForTesting(root->element_id(),
+                                               scroll_offset);
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  gfx::Vector2dF scroll_delta(11, -15);
+  root->ScrollBy(scroll_delta);
+  EXPECT_EQ(scroll_delta, synced_scroll->UnsentDelta());
+  host_impl_->ProcessCompositorDeltas();
+  EXPECT_TRUE(synced_scroll->reflected_delta_in_main_tree().has_value());
+  EXPECT_FALSE(synced_scroll->next_reflected_delta_in_main_tree().has_value());
+  EXPECT_EQ(scroll_delta,
+            synced_scroll->reflected_delta_in_main_tree().value());
 
   gfx::Vector2dF scroll_delta2(-5, 27);
   root->ScrollBy(scroll_delta2);
-  commit_data = host_impl_->ProcessCompositorDeltas();
-  ASSERT_EQ(commit_data->scrolls.size(), 1u);
-  EXPECT_TRUE(ScrollInfoContains(*commit_data, root->element_id(),
-                                 scroll_delta + scroll_delta2));
+  EXPECT_EQ(scroll_delta2, synced_scroll->UnsentDelta());
+  host_impl_->ProcessCompositorDeltas();
+  EXPECT_TRUE(synced_scroll->reflected_delta_in_main_tree().has_value());
+  EXPECT_TRUE(synced_scroll->next_reflected_delta_in_main_tree().has_value());
+  EXPECT_EQ(scroll_delta,
+            synced_scroll->reflected_delta_in_main_tree().value());
+  EXPECT_EQ(scroll_delta2,
+            synced_scroll->next_reflected_delta_in_main_tree().value());
 
-  root->ScrollBy(gfx::Vector2d());
-  commit_data = host_impl_->ProcessCompositorDeltas();
-  EXPECT_TRUE(ScrollInfoContains(*commit_data, root->element_id(),
-                                 scroll_delta + scroll_delta2));
+  // Simulate aborting the second main frame. Scroll deltas applied by the
+  // second frame should be combined with delta from first frame.
+  root->layer_tree_impl()->ApplySentScrollAndScaleDeltasFromAbortedCommit(
+      /*main_frame_applied_deltas=*/true);
+  EXPECT_TRUE(synced_scroll->reflected_delta_in_main_tree().has_value());
+  EXPECT_FALSE(synced_scroll->next_reflected_delta_in_main_tree().has_value());
+  EXPECT_EQ(scroll_delta + scroll_delta2,
+            synced_scroll->reflected_delta_in_main_tree().value());
+
+  // Send a third main frame, pipelined behind the first.
+  gfx::Vector2dF scroll_delta3(-2, -13);
+  root->ScrollBy(scroll_delta3);
+  EXPECT_EQ(scroll_delta3, synced_scroll->UnsentDelta());
+  host_impl_->ProcessCompositorDeltas();
+  EXPECT_TRUE(synced_scroll->reflected_delta_in_main_tree().has_value());
+  EXPECT_TRUE(synced_scroll->next_reflected_delta_in_main_tree().has_value());
+  EXPECT_EQ(scroll_delta + scroll_delta2,
+            synced_scroll->reflected_delta_in_main_tree().value());
+  EXPECT_EQ(scroll_delta3,
+            synced_scroll->next_reflected_delta_in_main_tree().value());
+
+  // Simulate commit of the first frame
+  PushScrollOffsetsToPendingTree(
+      {{root->element_id(), scroll_offset + scroll_delta + scroll_delta2}});
+  EXPECT_EQ(scroll_offset + scroll_delta + scroll_delta2,
+            synced_scroll->PendingBase());
+  EXPECT_EQ(scroll_delta3, synced_scroll->PendingDelta());
+  EXPECT_TRUE(synced_scroll->reflected_delta_in_main_tree().has_value());
+  EXPECT_FALSE(synced_scroll->next_reflected_delta_in_main_tree().has_value());
+  EXPECT_EQ(scroll_delta3,
+            synced_scroll->reflected_delta_in_main_tree().value());
 }
 
 TEST_F(CommitToPendingTreeLayerTreeHostImplTest,
@@ -3602,6 +3716,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ImplPinchZoom) {
     EXPECT_EQ(commit_data->page_scale_delta, page_scale_delta);
 
     EXPECT_EQ(gfx::PointF(75.0, 75.0), MaxScrollOffset(scroll_layer));
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   // Scrolling after a pinch gesture should always be in local space.  The
@@ -4193,6 +4308,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
     std::unique_ptr<CompositorCommitData> commit_data =
         host_impl_->ProcessCompositorDeltas();
     EXPECT_EQ(commit_data->page_scale_delta, page_scale_delta);
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   // Zoom-in clamping
@@ -4216,6 +4332,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
     std::unique_ptr<CompositorCommitData> commit_data =
         host_impl_->ProcessCompositorDeltas();
     EXPECT_EQ(commit_data->page_scale_delta, max_page_scale);
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   // Zoom-out clamping
@@ -4227,6 +4344,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
         ->property_trees()
         ->scroll_tree_mutable()
         .CollectScrollDeltasForTesting();
+    ClearMainThreadDeltasForTesting(host_impl_.get());
     scroll_layer->layer_tree_impl()
         ->property_trees()
         ->scroll_tree_mutable()
@@ -4249,6 +4367,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
     EXPECT_EQ(commit_data->page_scale_delta, min_page_scale);
 
     EXPECT_TRUE(commit_data->scrolls.empty());
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   // Two-finger panning should not happen based on pinch events only
@@ -4260,6 +4379,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
         ->property_trees()
         ->scroll_tree_mutable()
         .CollectScrollDeltasForTesting();
+    ClearMainThreadDeltasForTesting(host_impl_.get());
     scroll_layer->layer_tree_impl()
         ->property_trees()
         ->scroll_tree_mutable()
@@ -4283,6 +4403,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
         host_impl_->ProcessCompositorDeltas();
     EXPECT_EQ(commit_data->page_scale_delta, page_scale_delta);
     EXPECT_TRUE(commit_data->scrolls.empty());
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   // Two-finger panning should work with interleaved scroll events
@@ -4294,6 +4415,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
         ->property_trees()
         ->scroll_tree_mutable()
         .CollectScrollDeltasForTesting();
+    ClearMainThreadDeltasForTesting(host_impl_.get());
     scroll_layer->layer_tree_impl()
         ->property_trees()
         ->scroll_tree_mutable()
@@ -4322,6 +4444,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
     EXPECT_EQ(commit_data->page_scale_delta, page_scale_delta);
     EXPECT_TRUE(ScrollInfoContains(*commit_data, scroll_layer->element_id(),
                                    gfx::Vector2dF(-10, -10)));
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   // Two-finger panning should work when starting fully zoomed out.
@@ -4332,6 +4455,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
         ->property_trees()
         ->scroll_tree_mutable()
         .CollectScrollDeltasForTesting();
+    ClearMainThreadDeltasForTesting(host_impl_.get());
     scroll_layer->layer_tree_impl()
         ->property_trees()
         ->scroll_tree_mutable()
@@ -4383,6 +4507,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SyncSubpixelScrollDelta) {
       ->property_trees()
       ->scroll_tree_mutable()
       .CollectScrollDeltasForTesting();
+  ClearMainThreadDeltasForTesting(host_impl_.get());
   scroll_layer->layer_tree_impl()
       ->property_trees()
       ->scroll_tree_mutable()
@@ -4435,6 +4560,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       ->property_trees()
       ->scroll_tree_mutable()
       .CollectScrollDeltasForTesting();
+  ClearMainThreadDeltasForTesting(host_impl_.get());
   scroll_layer->layer_tree_impl()
       ->property_trees()
       ->scroll_tree_mutable()
@@ -4530,6 +4656,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
     std::unique_ptr<CompositorCommitData> commit_data =
         host_impl_->ProcessCompositorDeltas();
     EXPECT_EQ(commit_data->page_scale_delta, 1);
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   start_time += base::Seconds(10);
@@ -4661,6 +4788,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PageScaleAnimation) {
     EXPECT_EQ(commit_data->page_scale_delta, 2);
     EXPECT_TRUE(ScrollInfoContains(*commit_data, scroll_layer->element_id(),
                                    gfx::Vector2dF(-50, -50)));
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 
   start_time += base::Seconds(10);
@@ -8424,16 +8552,19 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithoutBubbling) {
   UpdateDrawProperties(host_impl_->active_tree());
   host_impl_->active_tree()->DidBecomeActive();
 
+  gfx::PointF grand_child_base(0, 2);
+  gfx::Vector2dF grand_child_delta;
   grand_child_layer->layer_tree_impl()
       ->property_trees()
       ->scroll_tree_mutable()
       .UpdateScrollOffsetBaseForTesting(grand_child_layer->element_id(),
-                                        gfx::PointF(0, 2));
+                                        grand_child_base);
+  gfx::PointF child_base(0, 3);
+  gfx::Vector2dF child_delta;
   child_layer->layer_tree_impl()
       ->property_trees()
       ->scroll_tree_mutable()
-      .UpdateScrollOffsetBaseForTesting(child_layer->element_id(),
-                                        gfx::PointF(0, 3));
+      .UpdateScrollOffsetBaseForTesting(child_layer->element_id(), child_base);
 
   DrawFrame();
   {
@@ -8455,12 +8586,19 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithoutBubbling) {
         host_impl_->ProcessCompositorDeltas();
 
     // The grand child should have scrolled up to its limit.
+    grand_child_delta = gfx::Vector2dF(0, -2);
     EXPECT_TRUE(ScrollInfoContains(*commit_data.get(),
                                    grand_child_layer->element_id(),
-                                   gfx::Vector2dF(0, -2)));
+                                   grand_child_delta));
 
     // The child should not have scrolled.
     ExpectNone(*commit_data.get(), child_layer->element_id());
+
+    grand_child_base += grand_child_delta;
+    child_base += child_delta;
+    PushScrollOffsetsToPendingTree(
+        {{child_layer->element_id(), child_base},
+         {grand_child_layer->element_id(), grand_child_base}});
 
     // The next time we scroll we should only scroll the parent.
     scroll_delta = gfx::Vector2d(0, -3);
@@ -8481,16 +8619,23 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithoutBubbling) {
               child_layer->scroll_tree_index());
     GetInputHandler().ScrollEnd();
 
+    ClearMainThreadDeltasForTesting(host_impl_.get());
     commit_data = host_impl_->ProcessCompositorDeltas();
 
     // The child should have scrolled up to its limit.
-    EXPECT_TRUE(ScrollInfoContains(
-        *commit_data.get(), child_layer->element_id(), gfx::Vector2dF(0, -3)));
+    child_delta = gfx::Vector2dF(0, -3);
+    EXPECT_TRUE(ScrollInfoContains(*commit_data.get(),
+                                   child_layer->element_id(), child_delta));
 
     // The grand child should not have scrolled.
-    EXPECT_TRUE(ScrollInfoContains(*commit_data.get(),
-                                   grand_child_layer->element_id(),
-                                   gfx::Vector2dF(0, -2)));
+    grand_child_delta = gfx::Vector2dF();
+    ExpectNone(*commit_data.get(), grand_child_layer->element_id());
+
+    child_base += child_delta;
+    grand_child_base += grand_child_delta;
+    PushScrollOffsetsToPendingTree(
+        {{grand_child_layer->element_id(), grand_child_base},
+         {child_layer->element_id(), child_base}});
 
     // After scrolling the parent, another scroll on the opposite direction
     // should still scroll the child.
@@ -8512,16 +8657,24 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithoutBubbling) {
               grand_child_layer->scroll_tree_index());
     GetInputHandler().ScrollEnd();
 
+    ClearMainThreadDeltasForTesting(host_impl_.get());
     commit_data = host_impl_->ProcessCompositorDeltas();
 
     // The grand child should have scrolled.
+    grand_child_delta = gfx::Vector2dF(0, 7);
     EXPECT_TRUE(ScrollInfoContains(*commit_data.get(),
                                    grand_child_layer->element_id(),
-                                   gfx::Vector2dF(0, 5)));
+                                   grand_child_delta));
 
     // The child should not have scrolled.
-    EXPECT_TRUE(ScrollInfoContains(
-        *commit_data.get(), child_layer->element_id(), gfx::Vector2dF(0, -3)));
+    child_delta = gfx::Vector2dF();
+    ExpectNone(*commit_data.get(), child_layer->element_id());
+
+    grand_child_base += grand_child_delta;
+    child_base += child_delta;
+    PushScrollOffsetsToPendingTree(
+        {{grand_child_layer->element_id(), grand_child_base},
+         {child_layer->element_id(), child_base}});
 
     // Scrolling should be adjusted from viewport space.
     host_impl_->active_tree()->PushPageScaleFromMainThread(2, 2, 2);
@@ -8543,12 +8696,13 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollWithoutBubbling) {
             .get());
     GetInputHandler().ScrollEnd();
 
+    ClearMainThreadDeltasForTesting(host_impl_.get());
     commit_data = host_impl_->ProcessCompositorDeltas();
 
-    // Should have scrolled by half the amount in layer space (5 - 2/2)
+    // Should have scrolled by half the amount in layer space (-2/2)
     EXPECT_TRUE(ScrollInfoContains(*commit_data.get(),
                                    grand_child_layer->element_id(),
-                                   gfx::Vector2dF(0, 4)));
+                                   gfx::Vector2dF(0, -1)));
   }
 }
 
@@ -8691,6 +8845,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAxisAlignedRotatedLayer) {
   EXPECT_TRUE(ScrollInfoContains(*commit_data.get(), scroll_layer->element_id(),
                                  gfx::Vector2dF(0, gesture_scroll_delta.x())));
 
+  // Push scrolls to pending tree
+  PushScrollOffsetsToPendingTree(
+      {{scroll_layer->element_id(), gfx::PointF(10, 0)}});
+
   // Reset and scroll down with the wheel.
   SetScrollOffsetDelta(scroll_layer, gfx::Vector2dF());
   gfx::Vector2dF wheel_scroll_delta(0, 10);
@@ -8773,6 +8931,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollNonAxisAlignedRotatedLayer) {
     // The root scroll layer should not have scrolled, because the input delta
     // was close to the layer's axis of movement.
     EXPECT_EQ(commit_data->scrolls.size(), 1u);
+
+    PushScrollOffsetsToPendingTree(
+        {{child_scroll_id,
+          gfx::PointAtOffsetFromOrigin(expected_scroll_delta)}});
   }
   {
     // Now reset and scroll the same amount horizontally.
@@ -8804,6 +8966,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollNonAxisAlignedRotatedLayer) {
 
     // The root scroll layer shouldn't have scrolled.
     ExpectNone(*commit_data.get(), scroll_layer->element_id());
+
+    PushScrollOffsetsToPendingTree(
+        {{child_scroll_id,
+          gfx::PointAtOffsetFromOrigin(expected_scroll_delta)}});
   }
 }
 
@@ -8883,6 +9049,11 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollPerspectiveTransformedLayer) {
     // The root scroll layer should not have scrolled, because the input delta
     // was close to the layer's axis of movement.
     EXPECT_EQ(commit_data->scrolls.size(), 1u);
+
+    PushScrollOffsetsToPendingTree(
+        {{child->element_id(),
+          gfx::PointAtOffsetFromOrigin(expected_scroll_deltas[i])}});
+    ClearMainThreadDeltasForTesting(host_impl_.get());
   }
 }
 
@@ -8918,6 +9089,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollScaledLayer) {
       host_impl_->ProcessCompositorDeltas();
   EXPECT_TRUE(ScrollInfoContains(*commit_data.get(), scroll_layer->element_id(),
                                  gfx::Vector2dF(0, scroll_delta.y() / scale)));
+  PushScrollOffsetsToPendingTree(
+      {{scroll_layer->element_id(), gfx::PointAtOffsetFromOrigin(gfx::Vector2dF(
+                                        0, scroll_delta.y() / scale))}});
 
   // Reset and scroll down with the wheel.
   SetScrollOffsetDelta(scroll_layer, gfx::Vector2dF());

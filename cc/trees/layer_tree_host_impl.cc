@@ -567,8 +567,10 @@ void LayerTreeHostImpl::BeginMainFrameAborted(
   // If the begin frame data was handled, then scroll and scale set was applied
   // by the main thread, so the active tree needs to be updated as if these sent
   // values were applied and committed.
-  if (CommitEarlyOutHandledCommit(reason)) {
-    active_tree_->ApplySentScrollAndScaleDeltasFromAbortedCommit();
+  bool main_frame_applied_deltas = MainFrameAppliedDeltas(reason);
+  active_tree_->ApplySentScrollAndScaleDeltasFromAbortedCommit(
+      main_frame_applied_deltas);
+  if (main_frame_applied_deltas) {
     if (pending_tree_) {
       pending_tree_->AppendSwapPromises(std::move(swap_promises));
     } else {
