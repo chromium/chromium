@@ -14,7 +14,7 @@
 namespace media {
 
 // Helper class for Checking whether a video can be processed in any given
-// DXVI_FORMAT.
+// DXGI_FORMAT.
 class MEDIA_GPU_EXPORT FormatSupportChecker {
  public:
   // |device| may be null, mostly for tests.

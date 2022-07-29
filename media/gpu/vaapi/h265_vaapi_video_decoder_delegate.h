@@ -62,6 +62,7 @@ class H265VaapiVideoDecoderDelegate : public H265Decoder::H265Accelerator,
   void Reset() override;
   Status SetStream(base::span<const uint8_t> stream,
                    const DecryptConfig* decrypt_config) override;
+  bool IsChromaSamplingSupported(VideoChromaSampling chroma_sampling) override;
 
  private:
   void FillVAPicture(VAPictureHEVC* va_pic, scoped_refptr<H265Picture> pic);

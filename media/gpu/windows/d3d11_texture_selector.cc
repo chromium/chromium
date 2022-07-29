@@ -40,6 +40,31 @@ bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
   return true;
 }
 
+const char* DxgiFormatToString(DXGI_FORMAT format) {
+  switch (format) {
+    case DXGI_FORMAT_Y416:
+      return "Y416";
+    case DXGI_FORMAT_Y216:
+      return "Y216";
+    case DXGI_FORMAT_P016:
+      return "P016";
+    case DXGI_FORMAT_NV12:
+      return "NV12";
+    case DXGI_FORMAT_P010:
+      return "P010";
+    case DXGI_FORMAT_Y210:
+      return "Y210";
+    case DXGI_FORMAT_AYUV:
+      return "AYUV";
+    case DXGI_FORMAT_Y410:
+      return "Y410";
+    case DXGI_FORMAT_YUY2:
+      return "YUY2";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 // static
 std::unique_ptr<TextureSelector> TextureSelector::Create(
     const gpu::GpuPreferences& gpu_preferences,
@@ -84,8 +109,14 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
       }
       break;
     }
-    case DXGI_FORMAT_P010: {
-      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing P010";
+    case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_Y416:
+    case DXGI_FORMAT_Y216:
+    case DXGI_FORMAT_P016:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_Y210: {
+      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
+                                 << DxgiFormatToString(decoder_output_format);
       if (hdr_output_mode == HDRMode::kSDROnly &&
           supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;

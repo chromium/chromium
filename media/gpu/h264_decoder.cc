@@ -1668,6 +1668,12 @@ uint8_t H264Decoder::GetBitDepth() const {
   return bit_depth_;
 }
 
+VideoChromaSampling H264Decoder::GetChromaSampling() const {
+  // H264 decoder does not rely on chroma sampling format for creating
+  // or reconfiguring decoder, so return an unknown format.
+  return VideoChromaSampling::kUnknown;
+}
+
 size_t H264Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return GetNumReferenceFrames() + kPicsInPipeline;

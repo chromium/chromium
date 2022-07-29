@@ -43,10 +43,11 @@ class D3D11DecoderConfiguratorUnittest : public ::testing::Test {
     prefs.enable_zero_copy_dxgi_video = zero_copy_enabled;
     gpu::GpuDriverBugWorkarounds workarounds;
     workarounds.disable_dxgi_zero_copy_video = false;
+    VideoChromaSampling chroma_sampling = VideoChromaSampling::k420;
     auto media_log = std::make_unique<NullMediaLog>();
-    return D3D11DecoderConfigurator::Create(prefs, workarounds, config,
-                                            bit_depth, media_log.get(),
-                                            false /*use_shared_handle*/);
+    return D3D11DecoderConfigurator::Create(
+        prefs, workarounds, config, bit_depth, chroma_sampling, media_log.get(),
+        false /*use_shared_handle*/);
   }
 };
 

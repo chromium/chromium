@@ -37,6 +37,7 @@ class MEDIA_GPU_EXPORT D3D11DecoderConfigurator {
       const gpu::GpuDriverBugWorkarounds& workarounds,
       const VideoDecoderConfig& config,
       uint8_t bit_depth,
+      VideoChromaSampling chroma_sampling,
       MediaLog* media_log,
       bool use_shared_handle);
 

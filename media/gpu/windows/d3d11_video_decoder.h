@@ -23,6 +23,7 @@
 #include "media/base/status.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_decoder.h"
+#include "media/base/video_types.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
@@ -311,6 +312,10 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoder : public VideoDecoder,
   // The currently configured bit depth for the decoder. When this changes we
   // need to recreate the decoder.
   uint8_t bit_depth_ = 8u;
+
+  // The currently configured chroma sampling format on the accelerator. When
+  // this changes we need to recreate the decoder.
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::k420;
 
   base::WeakPtrFactory<D3D11VideoDecoder> weak_factory_{this};
 };

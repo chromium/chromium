@@ -92,6 +92,13 @@ scoped_refptr<H265Picture> D3D11H265Accelerator::CreateH265Picture() {
   return base::MakeRefCounted<D3D11H265Picture>(picture);
 }
 
+bool D3D11H265Accelerator::IsChromaSamplingSupported(
+    VideoChromaSampling chroma_sampling) {
+  return chroma_sampling == VideoChromaSampling::k420 ||
+         chroma_sampling == VideoChromaSampling::k422 ||
+         chroma_sampling == VideoChromaSampling::k444;
+}
+
 DecoderStatus D3D11H265Accelerator::SubmitFrameMetadata(
     const H265SPS* sps,
     const H265PPS* pps,
@@ -191,58 +198,59 @@ bool D3D11H265Accelerator::RetrieveBitstreamBuffer() {
 }
 
 void D3D11H265Accelerator::FillPicParamsWithConstants(
-    DXVA_PicParams_HEVC* pic) {
+    DXVA_PicParams_HEVC_Rext* pic) {
   // According to DXVA spec section 2.2, this optional 1-bit flag
   // has no meaning when used for CurrPic so always configure to 0.
-  pic->CurrPic.AssociatedFlag = 0;
+  pic->main.CurrPic.AssociatedFlag = 0;
 
   // num_tile_columns_minus1 and num_tile_rows_minus1 will only
   // be set if tiles are enabled. Set to 0 by default.
-  pic->num_tile_columns_minus1 = 0;
-  pic->num_tile_rows_minus1 = 0;
+  pic->main.num_tile_columns_minus1 = 0;
+  pic->main.num_tile_rows_minus1 = 0;
 
   // Host decoder may set this to 1 if sps_max_num_reorder_pics is 0,
   // but there is no requirement that NoPicReorderingFlag must be
   // derived from it. So we always set it to 0 here.
-  pic->NoPicReorderingFlag = 0;
+  pic->main.NoPicReorderingFlag = 0;
 
   // Must be set to 0 in absence of indication whether B slices are used
   // or not, and it does not affect the decoding process.
-  pic->NoBiPredFlag = 0;
+  pic->main.NoBiPredFlag = 0;
 
   // Shall be set to 0 and accelerators shall ignore its value.
-  pic->ReservedBits1 = 0;
+  pic->main.ReservedBits1 = 0;
 
   // Bit field added to enable DWORD alignment and should be set to 0.
-  pic->ReservedBits2 = 0;
+  pic->main.ReservedBits2 = 0;
 
   // Should always be set to 0.
-  pic->ReservedBits3 = 0;
+  pic->main.ReservedBits3 = 0;
 
   // Should be set to 0 and ignored by accelerators
-  pic->ReservedBits4 = 0;
+  pic->main.ReservedBits4 = 0;
 
   // Should always be set to 0.
-  pic->ReservedBits5 = 0;
+  pic->main.ReservedBits5 = 0;
 
   // Should always be set to 0.
-  pic->ReservedBits6 = 0;
+  pic->main.ReservedBits6 = 0;
 
   // Should always be set to 0.
-  pic->ReservedBits7 = 0;
+  pic->main.ReservedBits7 = 0;
 }
 
 #define ARG_SEL(_1, _2, NAME, ...) NAME
-#define SPS_TO_PP1(a) pic_param->a = sps->a;
-#define SPS_TO_PP2(a, b) pic_param->a = sps->b;
+#define SPS_TO_PP1(a) (pic_param->main).a = sps->a;
+#define SPS_TO_PPEXT(a) pic_param->a = sps->a;
+#define SPS_TO_PP2(a, b) (pic_param->main).a = sps->b;
 #define SPS_TO_PP(...) ARG_SEL(__VA_ARGS__, SPS_TO_PP2, SPS_TO_PP1)(__VA_ARGS__)
-void D3D11H265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC* pic_param,
+void D3D11H265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC_Rext* pic_param,
                                             const H265SPS* sps) {
   // Refer to formula 7-14 and 7-16 of HEVC spec.
   int min_cb_log2_size_y = sps->log2_min_luma_coding_block_size_minus3 + 3;
-  pic_param->PicWidthInMinCbsY =
+  (pic_param->main).PicWidthInMinCbsY =
       sps->pic_width_in_luma_samples >> min_cb_log2_size_y;
-  pic_param->PicHeightInMinCbsY =
+  (pic_param->main).PicHeightInMinCbsY =
       sps->pic_height_in_luma_samples >> min_cb_log2_size_y;
   // wFormatAndSequenceInfoFlags from SPS
   SPS_TO_PP(chroma_format_idc);
@@ -251,6 +259,9 @@ void D3D11H265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC* pic_param,
   SPS_TO_PP(bit_depth_chroma_minus8);
   SPS_TO_PP(log2_max_pic_order_cnt_lsb_minus4);
 
+  if (sps->profile_tier_level.general_profile_idc == 4) {
+    is_rext_ = true;
+  }
   // HEVC DXVA spec does not clearly state which slot
   // in sps->sps_max_dec_pic_buffering_minus1 should
   // be used here. However section A4.1 of HEVC spec
@@ -258,7 +269,7 @@ void D3D11H265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC* pic_param,
   // indicating the maximum DPB size if level is not
   // 8.5.
   int highest_tid = sps->sps_max_sub_layers_minus1;
-  pic_param->sps_max_dec_pic_buffering_minus1 =
+  (pic_param->main).sps_max_dec_pic_buffering_minus1 =
       sps->sps_max_dec_pic_buffering_minus1[highest_tid];
 
   SPS_TO_PP(log2_min_luma_coding_block_size_minus3);
@@ -291,15 +302,29 @@ void D3D11H265Accelerator::PicParamsFromSPS(DXVA_PicParams_HEVC* pic_param,
   SPS_TO_PP(long_term_ref_pics_present_flag);
   SPS_TO_PP(sps_temporal_mvp_enabled_flag);
   SPS_TO_PP(strong_intra_smoothing_enabled_flag);
+
+  if (sps->sps_range_extension_flag) {
+    SPS_TO_PPEXT(transform_skip_rotation_enabled_flag);
+    SPS_TO_PPEXT(transform_skip_context_enabled_flag);
+    SPS_TO_PPEXT(implicit_rdpcm_enabled_flag);
+    SPS_TO_PPEXT(explicit_rdpcm_enabled_flag);
+    SPS_TO_PPEXT(extended_precision_processing_flag);
+    SPS_TO_PPEXT(intra_smoothing_disabled_flag);
+    SPS_TO_PPEXT(high_precision_offsets_enabled_flag);
+    SPS_TO_PPEXT(persistent_rice_adaptation_enabled_flag);
+    SPS_TO_PPEXT(cabac_bypass_alignment_enabled_flag);
+  }
 }
 #undef SPS_TO_PP
+#undef SPS_TO_PPEXT
 #undef SPS_TO_PP2
 #undef SPS_TO_PP1
 
-#define PPS_TO_PP1(a) pic_param->a = pps->a;
-#define PPS_TO_PP2(a, b) pic_param->a = pps->b;
+#define PPS_TO_PPEXT(a) pic_param->a = pps->a;
+#define PPS_TO_PP1(a) (pic_param->main).a = pps->a;
+#define PPS_TO_PP2(a, b) (pic_param->main).a = pps->b;
 #define PPS_TO_PP(...) ARG_SEL(__VA_ARGS__, PPS_TO_PP2, PPS_TO_PP1)(__VA_ARGS__)
-void D3D11H265Accelerator::PicParamsFromPPS(DXVA_PicParams_HEVC* pic_param,
+void D3D11H265Accelerator::PicParamsFromPPS(DXVA_PicParams_HEVC_Rext* pic_param,
                                             const H265PPS* pps) {
   PPS_TO_PP(num_ref_idx_l0_default_active_minus1);
   PPS_TO_PP(num_ref_idx_l1_default_active_minus1);
@@ -350,57 +375,75 @@ void D3D11H265Accelerator::PicParamsFromPPS(DXVA_PicParams_HEVC* pic_param,
   PPS_TO_PP(pps_tc_offset_div2);
   PPS_TO_PP(log2_parallel_merge_level_minus2);
 
+  if (pps->pps_range_extension_flag) {
+    PPS_TO_PPEXT(cross_component_prediction_enabled_flag);
+    PPS_TO_PPEXT(chroma_qp_offset_list_enabled_flag);
+    if (pps->chroma_qp_offset_list_enabled_flag) {
+      PPS_TO_PPEXT(diff_cu_chroma_qp_offset_depth);
+      PPS_TO_PPEXT(chroma_qp_offset_list_len_minus1);
+      for (int i = 0; i <= pps->chroma_qp_offset_list_len_minus1; i++) {
+        PPS_TO_PPEXT(cb_qp_offset_list[i]);
+        PPS_TO_PPEXT(cr_qp_offset_list[i]);
+      }
+    }
+    PPS_TO_PPEXT(log2_sao_offset_scale_luma);
+    PPS_TO_PPEXT(log2_sao_offset_scale_chroma);
+    if (pps->transform_skip_enabled_flag) {
+      PPS_TO_PPEXT(log2_max_transform_skip_block_size_minus2);
+    }
+  }
   return;
 }
+#undef PPS_TO_PPEXT
 #undef PPS_TO_PP
 #undef PPS_TO_PP2
 #undef PPS_TO_PP1
 #undef ARG_SEL
 
 void D3D11H265Accelerator::PicParamsFromSliceHeader(
-    DXVA_PicParams_HEVC* pic_param,
+    DXVA_PicParams_HEVC_Rext* pic_param,
     const H265SPS* sps,
     const H265SliceHeader* slice_hdr) {
   // IDR_W_RADL and IDR_N_LP NALUs do not contain st_rps in slice header.
   // Otherwise if short_term_ref_pic_set_sps_flag is 1, host decoder
   // shall set ucNumDeltaPocsOfRefRpsIdx to 0.
   if (slice_hdr->short_term_ref_pic_set_sps_flag || !slice_hdr->st_rps_bits) {
-    pic_param->ucNumDeltaPocsOfRefRpsIdx = 0;
-    pic_param->wNumBitsForShortTermRPSInSlice = 0;
+    pic_param->main.ucNumDeltaPocsOfRefRpsIdx = 0;
+    pic_param->main.wNumBitsForShortTermRPSInSlice = 0;
   } else {
-    pic_param->ucNumDeltaPocsOfRefRpsIdx =
+    pic_param->main.ucNumDeltaPocsOfRefRpsIdx =
         slice_hdr->GetStRefPicSet(sps).num_delta_pocs;
-    pic_param->wNumBitsForShortTermRPSInSlice = slice_hdr->st_rps_bits;
+    pic_param->main.wNumBitsForShortTermRPSInSlice = slice_hdr->st_rps_bits;
   }
-  pic_param->IrapPicFlag = slice_hdr->irap_pic;
+  pic_param->main.IrapPicFlag = slice_hdr->irap_pic;
   auto nal_unit_type = slice_hdr->nal_unit_type;
-  pic_param->IdrPicFlag = (nal_unit_type == H265NALU::IDR_W_RADL ||
-                           nal_unit_type == H265NALU::IDR_N_LP);
-  pic_param->IntraPicFlag = slice_hdr->irap_pic;
+  pic_param->main.IdrPicFlag = (nal_unit_type == H265NALU::IDR_W_RADL ||
+                                nal_unit_type == H265NALU::IDR_N_LP);
+  pic_param->main.IntraPicFlag = slice_hdr->irap_pic;
 }
 
-void D3D11H265Accelerator::PicParamsFromPic(DXVA_PicParams_HEVC* pic_param,
+void D3D11H265Accelerator::PicParamsFromPic(DXVA_PicParams_HEVC_Rext* pic_param,
                                             D3D11H265Picture* pic) {
-  pic_param->CurrPicOrderCntVal = pic->pic_order_cnt_val_;
-  pic_param->CurrPic.Index7Bits = pic->picture_index_;
+  pic_param->main.CurrPicOrderCntVal = pic->pic_order_cnt_val_;
+  pic_param->main.CurrPic.Index7Bits = pic->picture_index_;
 }
 
 bool D3D11H265Accelerator::PicParamsFromRefLists(
-    DXVA_PicParams_HEVC* pic_param,
+    DXVA_PicParams_HEVC_Rext* pic_param,
     const H265Picture::Vector& ref_pic_set_lt_curr,
     const H265Picture::Vector& ref_pic_set_st_curr_after,
     const H265Picture::Vector& ref_pic_set_st_curr_before) {
   constexpr int kDxvaInvalidRefPicIndex = 0xFF;
   constexpr unsigned kStLtRpsSize = 8;
 
-  std::fill_n(pic_param->RefPicSetStCurrBefore, kStLtRpsSize,
+  std::fill_n(pic_param->main.RefPicSetStCurrBefore, kStLtRpsSize,
               kDxvaInvalidRefPicIndex);
-  std::fill_n(pic_param->RefPicSetStCurrAfter, kStLtRpsSize,
+  std::fill_n(pic_param->main.RefPicSetStCurrAfter, kStLtRpsSize,
               kDxvaInvalidRefPicIndex);
-  std::fill_n(pic_param->RefPicSetLtCurr, kStLtRpsSize,
+  std::fill_n(pic_param->main.RefPicSetLtCurr, kStLtRpsSize,
               kDxvaInvalidRefPicIndex);
   std::copy(ref_frame_pocs_, ref_frame_pocs_ + kMaxRefPicListSize - 1,
-            pic_param->PicOrderCntValList);
+            pic_param->main.PicOrderCntValList);
 
   size_t idx = 0;
   for (auto& it : ref_pic_set_st_curr_before) {
@@ -416,7 +459,7 @@ bool D3D11H265Accelerator::PicParamsFromRefLists(
       DLOG(ERROR) << "Invalid RefPicSetStCurrBefore size.";
       return false;
     }
-    pic_param->RefPicSetStCurrBefore[idx++] = poc_index;
+    pic_param->main.RefPicSetStCurrBefore[idx++] = poc_index;
   }
   idx = 0;
   for (auto& it : ref_pic_set_st_curr_after) {
@@ -432,7 +475,7 @@ bool D3D11H265Accelerator::PicParamsFromRefLists(
       DLOG(ERROR) << "Invalid RefPicSetStCurrAfter size.";
       return false;
     }
-    pic_param->RefPicSetStCurrAfter[idx++] = poc_index;
+    pic_param->main.RefPicSetStCurrAfter[idx++] = poc_index;
   }
   idx = 0;
   for (auto& it : ref_pic_set_lt_curr) {
@@ -448,7 +491,7 @@ bool D3D11H265Accelerator::PicParamsFromRefLists(
       DLOG(ERROR) << "Invalid RefPicSetLtCurr size.";
       return false;
     }
-    pic_param->RefPicSetLtCurr[idx++] = poc_index;
+    pic_param->main.RefPicSetLtCurr[idx++] = poc_index;
   }
 
   return true;
@@ -467,7 +510,7 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
-  DXVA_PicParams_HEVC pic_param = {};
+  DXVA_PicParams_HEVC_Rext pic_param = {};
 
   D3D11H265Picture* d3d11_pic = pic->AsD3D11H265Picture();
   if (!d3d11_pic) {
@@ -479,7 +522,8 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
   PicParamsFromPPS(&pic_param, pps);
   PicParamsFromSliceHeader(&pic_param, sps, slice_hdr);
   PicParamsFromPic(&pic_param, d3d11_pic);
-  memcpy(pic_param.RefPicList, ref_frame_list_, sizeof pic_param.RefPicList);
+  memcpy(pic_param.main.RefPicList, ref_frame_list_,
+         sizeof pic_param.main.RefPicList);
 
   if (!PicParamsFromRefLists(&pic_param, ref_pic_set_lt_curr,
                              ref_pic_set_st_curr_after,
@@ -487,7 +531,8 @@ DecoderStatus D3D11H265Accelerator::SubmitSlice(
     return DecoderStatus::kFail;
   }
 
-  pic_param.StatusReportFeedbackNumber = current_status_report_feedback_num_++;
+  pic_param.main.StatusReportFeedbackNumber =
+      current_status_report_feedback_num_++;
 
   UINT buffer_size;
   void* buffer;
@@ -679,7 +724,11 @@ bool D3D11H265Accelerator::SubmitSliceData() {
   VideoContextWrapper::VideoBufferWrapper buffers[4] = {};
   buffers[0].BufferType = D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS;
   buffers[0].DataOffset = 0;
-  buffers[0].DataSize = sizeof(DXVA_PicParams_HEVC);
+  if (is_rext_) {
+    buffers[0].DataSize = sizeof(DXVA_PicParams_HEVC_Rext);
+  } else {
+    buffers[0].DataSize = sizeof(DXVA_PicParams_HEVC);
+  }
   buffers[1].BufferType = D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL;
   buffers[1].DataOffset = 0;
   buffers[1].DataSize = sizeof(slice_info_[0]) * slice_info_.size();

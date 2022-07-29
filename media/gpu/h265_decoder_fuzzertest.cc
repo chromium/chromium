@@ -7,6 +7,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_types.h"
 #include "media/gpu/h265_decoder.h"
 
 namespace {
@@ -57,6 +58,9 @@ class FakeH265Accelerator : public media::H265Decoder::H265Accelerator {
   Status SetStream(base::span<const uint8_t> stream,
                    const media::DecryptConfig* decrypt_config) override {
     return Status::kOk;
+  }
+  bool IsChromaSamplingSupported(media::VideoChromaSampling format) override {
+    return format == media::VideoChromaSampling::k420;
   }
 };
 

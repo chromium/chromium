@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
@@ -267,6 +268,22 @@ VideoColorSpace H265SPS::GetColorSpace() const {
       vui_parameters.matrix_coeffs,
       vui_parameters.video_full_range_flag ? gfx::ColorSpace::RangeID::FULL
                                            : gfx::ColorSpace::RangeID::LIMITED);
+}
+
+VideoChromaSampling H265SPS::GetChromaSampling() const {
+  switch (chroma_format_idc) {
+    case 0:
+      return VideoChromaSampling::k400;
+    case 1:
+      return VideoChromaSampling::k420;
+    case 2:
+      return VideoChromaSampling::k422;
+    case 3:
+      return VideoChromaSampling::k444;
+    default:
+      NOTREACHED();
+      return VideoChromaSampling::kUnknown;
+  }
 }
 
 bool H265SliceHeader::IsISlice() const {

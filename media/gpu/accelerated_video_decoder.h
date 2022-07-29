@@ -10,6 +10,7 @@
 
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
+#include "media/base/video_types.h"
 #include "media/gpu/media_gpu_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -72,14 +73,16 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   // we need a new set of them, or when an error occurs.
   [[nodiscard]] virtual DecodeResult Decode() = 0;
 
-  // Return dimensions/visible rectangle/profile/bit depth/required number of
-  // pictures that client should be ready to provide for the decoder to function
-  // properly (of which up to GetNumReferenceFrames() might be needed for
-  // internal decoding). To be used after Decode() returns kConfigChange.
+  // Return dimensions/visible rectangle/profile/bit depth/chroma sampling
+  // format/required number of pictures that client should be ready to provide
+  // for the decoder to function properly (of which up to
+  // GetNumReferenceFrames() might be needed for internal decoding). To be used
+  // after Decode() returns kConfigChange.
   virtual gfx::Size GetPicSize() const = 0;
   virtual gfx::Rect GetVisibleRect() const = 0;
   virtual VideoCodecProfile GetProfile() const = 0;
   virtual uint8_t GetBitDepth() const = 0;
+  virtual VideoChromaSampling GetChromaSampling() const = 0;
   virtual size_t GetRequiredNumOfPictures() const = 0;
   virtual size_t GetNumReferenceFrames() const = 0;
 

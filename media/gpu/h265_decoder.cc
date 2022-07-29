@@ -72,11 +72,6 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
       return false;
   }
 }
-
-bool IsYUV420Sequence(const H265SPS& sps) {
-  // Spec 6.2
-  return sps.chroma_format_idc == 1;
-}
 }  // namespace
 
 H265Decoder::H265Accelerator::H265Accelerator() = default;
@@ -392,6 +387,10 @@ uint8_t H265Decoder::GetBitDepth() const {
   return bit_depth_;
 }
 
+VideoChromaSampling H265Decoder::GetChromaSampling() const {
+  return chroma_sampling_;
+}
+
 size_t H265Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return GetNumReferenceFrames() + kPicsInPipeline;
@@ -422,7 +421,9 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
     DVLOG(2) << "New visible rect: " << new_visible_rect.ToString();
     visible_rect_ = new_visible_rect;
   }
-  if (!IsYUV420Sequence(*sps)) {
+
+  VideoChromaSampling new_chroma_sampling = sps->GetChromaSampling();
+  if (!accelerator_->IsChromaSamplingSupported(new_chroma_sampling)) {
     DVLOG(1) << "Only YUV 4:2:0 is supported";
     return false;
   }
@@ -441,18 +442,23 @@ bool H265Decoder::ProcessPPS(int pps_id, bool* need_new_buffers) {
              << ", profile=" << GetProfileName(new_profile);
     return false;
   }
+
   if (pic_size_ != new_pic_size || dpb_.max_num_pics() != sps->max_dpb_size ||
-      profile_ != new_profile || bit_depth_ != new_bit_depth) {
+      profile_ != new_profile || bit_depth_ != new_bit_depth ||
+      chroma_sampling_ != new_chroma_sampling) {
     if (!Flush())
       return false;
     DVLOG(1) << "Codec profile: " << GetProfileName(new_profile)
              << ", level(x30): " << sps->profile_tier_level.general_level_idc
              << ", DPB size: " << sps->max_dpb_size
              << ", Picture size: " << new_pic_size.ToString()
-             << ", bit_depth: " << base::strict_cast<int>(new_bit_depth);
+             << ", bit_depth: " << base::strict_cast<int>(new_bit_depth)
+             << ", chroma_sampling_format: "
+             << VideoChromaSamplingToString(new_chroma_sampling);
     profile_ = new_profile;
     bit_depth_ = new_bit_depth;
     pic_size_ = new_pic_size;
+    chroma_sampling_ = new_chroma_sampling;
     dpb_.set_max_num_pics(sps->max_dpb_size);
     if (need_new_buffers)
       *need_new_buffers = true;

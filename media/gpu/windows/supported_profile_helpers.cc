@@ -230,6 +230,16 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
             video_device.Get(), profile_id, kModernResolutions);
         continue;
       }
+      // For range extensions only test main10_422 with P010, and apply
+      // the same resolution range to main420 & main10_YUV420. Ideally we
+      // should be also testing against NV12 & Y210 for YUV422, and Y410 for
+      // YUV444 8/10/12 bit.
+      if (profile_id == DXVA_ModeHEVC_VLD_Main422_10_Intel) {
+        supported_resolutions[HEVCPROFILE_REXT] =
+            GetResolutionsForGUID(video_device.Get(), profile_id,
+                                  kModernResolutions, DXGI_FORMAT_P010);
+        continue;
+      }
       if (profile_id == D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10) {
         supported_resolutions[HEVCPROFILE_MAIN10] =
             GetResolutionsForGUID(video_device.Get(), profile_id,

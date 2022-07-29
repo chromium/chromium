@@ -186,6 +186,12 @@ uint8_t VP8Decoder::GetBitDepth() const {
   return 8u;
 }
 
+VideoChromaSampling VP8Decoder::GetChromaSampling() const {
+  // VP8 decoder currently does not rely on chroma sampling format for
+  // creating/reconfiguring decoder, so return an unknown format.
+  return VideoChromaSampling::kUnknown;
+}
+
 size_t VP8Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return kNumVp8ReferenceBuffers + kPicsInPipeline;

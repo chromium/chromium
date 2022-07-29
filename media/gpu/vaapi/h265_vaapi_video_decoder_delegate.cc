@@ -59,6 +59,11 @@ scoped_refptr<H265Picture> H265VaapiVideoDecoderDelegate::CreateH265Picture() {
   return new VaapiH265Picture(std::move(va_surface));
 }
 
+bool H265VaapiVideoDecoderDelegate::IsChromaSamplingSupported(
+    VideoChromaSampling chroma_sampling) {
+  return chroma_sampling == VideoChromaSampling::k420;
+}
+
 DecodeStatus H265VaapiVideoDecoderDelegate::SubmitFrameMetadata(
     const H265SPS* sps,
     const H265PPS* pps,

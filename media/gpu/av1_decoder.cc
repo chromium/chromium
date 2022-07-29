@@ -510,6 +510,12 @@ uint8_t AV1Decoder::GetBitDepth() const {
   return bit_depth_;
 }
 
+VideoChromaSampling AV1Decoder::GetChromaSampling() const {
+  // AV1 decoder does not rely on chroma sampling format for creating or
+  // reconfiguring decoder, so return an unknown format.
+  return VideoChromaSampling::kUnknown;
+}
+
 size_t AV1Decoder::GetRequiredNumOfPictures() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;

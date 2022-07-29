@@ -27,6 +27,11 @@ bool SupportsFormat(DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
     case DXGI_FORMAT_NV12:
     case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_P016:
+    case DXGI_FORMAT_Y216:
+    case DXGI_FORMAT_Y416:
     case DXGI_FORMAT_B8G8R8A8_UNORM:
     case DXGI_FORMAT_R10G10B10A2_UNORM:
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
@@ -38,8 +43,14 @@ bool SupportsFormat(DXGI_FORMAT dxgi_format) {
 
 size_t NumPlanes(DXGI_FORMAT dxgi_format) {
   switch (dxgi_format) {
+    case DXGI_FORMAT_Y210:
+    case DXGI_FORMAT_Y410:
+    case DXGI_FORMAT_Y216:
+    case DXGI_FORMAT_Y416:
+      return 3;
     case DXGI_FORMAT_NV12:
     case DXGI_FORMAT_P010:
+    case DXGI_FORMAT_P016:
       return 2;
     case DXGI_FORMAT_B8G8R8A8_UNORM:
     case DXGI_FORMAT_R10G10B10A2_UNORM:

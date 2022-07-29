@@ -16,6 +16,7 @@
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_color_space.h"
+#include "media/base/video_types.h"
 #include "media/video/h264_bit_reader.h"
 #include "media/video/h264_parser.h"
 #include "media/video/h265_nalu_parser.h"
@@ -218,6 +219,7 @@ struct MEDIA_EXPORT H265SPS {
   gfx::Size GetCodedSize() const;
   gfx::Rect GetVisibleRect() const;
   VideoColorSpace GetColorSpace() const;
+  VideoChromaSampling GetChromaSampling() const;
 };
 
 struct MEDIA_EXPORT H265PPS {

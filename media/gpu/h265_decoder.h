@@ -150,6 +150,10 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
     // kNotSupported.
     virtual Status SetStream(base::span<const uint8_t> stream,
                              const DecryptConfig* decrypt_config);
+
+    // Indicates whether the accelerator supports bitstreams with
+    // specific chroma subsampling format.
+    virtual bool IsChromaSamplingSupported(VideoChromaSampling format) = 0;
   };
 
   H265Decoder(std::unique_ptr<H265Accelerator> accelerator,
@@ -170,6 +174,7 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   gfx::Rect GetVisibleRect() const override;
   VideoCodecProfile GetProfile() const override;
   uint8_t GetBitDepth() const override;
+  VideoChromaSampling GetChromaSampling() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -329,6 +334,8 @@ class MEDIA_GPU_EXPORT H265Decoder final : public AcceleratedVideoDecoder {
   VideoCodecProfile profile_;
   // Bit depth of input bitstream.
   uint8_t bit_depth_ = 0;
+  // Chroma sampling format of input bitstream
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
 
   const std::unique_ptr<H265Accelerator> accelerator_;
 };

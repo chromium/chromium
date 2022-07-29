@@ -90,6 +90,21 @@ std::string VideoPixelFormatToString(VideoPixelFormat format) {
   return "";
 }
 
+std::string VideoChromaSamplingToString(VideoChromaSampling chroma_sampling) {
+  switch (chroma_sampling) {
+    case VideoChromaSampling::kUnknown:
+      return "unknown chroma sampling";
+    case VideoChromaSampling::k400:
+      return "4:0:0";
+    case VideoChromaSampling::k420:
+      return "4:2:0";
+    case VideoChromaSampling::k444:
+      return "4:4:4";
+    case VideoChromaSampling::k422:
+      return "4:2:2";
+  }
+}
+
 std::ostream& operator<<(std::ostream& os, VideoPixelFormat format) {
   os << VideoPixelFormatToString(format);
   return os;

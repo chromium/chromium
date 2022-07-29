@@ -213,13 +213,15 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
 
 D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   // By default we assume outputs are 8-bit for SDR color spaces and 10 bit for
-  // HDR color spaces (or VP9.2, or HEVC Main10) with HBD capable codecs (the
-  // decoder doesn't support H264PROFILE_HIGH10PROFILE). We'll get a config
-  // change once we know the real bit depth if this turns out to be wrong.
+  // HDR color spaces (or VP9.2, or HEVC Main10, or HEVC Rext) with HBD capable
+  // codecs (the decoder doesn't support H264PROFILE_HIGH10PROFILE). We'll get
+  // a config change once we know the real bit depth if this turns out to be
+  // wrong.
   bit_depth_ =
       accelerated_video_decoder_
           ? accelerated_video_decoder_->GetBitDepth()
           : (config_.profile() == VP9PROFILE_PROFILE2 ||
+                     config_.profile() == HEVCPROFILE_REXT ||
                      config_.profile() == HEVCPROFILE_MAIN10 ||
                      (config_.color_space_info().ToGfxColorSpace().IsHDR() &&
                       config_.codec() != VideoCodec::kH264)
@@ -231,8 +233,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
 
   // TODO: supported check?
   decoder_configurator_ = D3D11DecoderConfigurator::Create(
-      gpu_preferences_, gpu_workarounds_, config_, bit_depth_, media_log_.get(),
-      use_shared_handle);
+      gpu_preferences_, gpu_workarounds_, config_, bit_depth_, chroma_sampling_,
+      media_log_.get(), use_shared_handle);
   if (!decoder_configurator_)
     return D3D11Status::Codes::kDecoderUnsupportedProfile;
 
@@ -293,6 +295,7 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
       break;
     }
   }
+
   if (!found)
     return D3D11Status::Codes::kDecoderUnsupportedConfig;
 
@@ -626,20 +629,26 @@ void D3D11VideoDecoder::DoDecode() {
       const auto new_bit_depth = accelerated_video_decoder_->GetBitDepth();
       const auto new_profile = accelerated_video_decoder_->GetProfile();
       const auto new_coded_size = accelerated_video_decoder_->GetPicSize();
+      const auto new_chroma_sampling =
+          accelerated_video_decoder_->GetChromaSampling();
       if (new_profile == config_.profile() &&
           new_coded_size == config_.coded_size() &&
-          new_bit_depth == bit_depth_ && !picture_buffers_.size()) {
+          new_bit_depth == bit_depth_ && !picture_buffers_.size() &&
+          new_chroma_sampling == chroma_sampling_) {
         continue;
       }
 
       // Update the config.
       MEDIA_LOG(INFO, media_log_)
           << "D3D11VideoDecoder config change: profile: "
-          << static_cast<int>(new_profile) << " coded_size: ("
-          << new_coded_size.width() << ", " << new_coded_size.height() << ")";
+          << static_cast<int>(new_profile) << " chroma_sampling_format: "
+          << VideoChromaSamplingToString(new_chroma_sampling)
+          << " coded_size: (" << new_coded_size.width() << ", "
+          << new_coded_size.height() << ")";
       profile_ = new_profile;
       config_.set_profile(profile_);
       config_.set_coded_size(new_coded_size);
+      chroma_sampling_ = new_chroma_sampling;
 
       // Replace the decoder, and clear any picture buffers we have.  It's okay
       // if we don't have any picture buffer yet; this might be before the

@@ -408,6 +408,12 @@ uint8_t VP9Decoder::GetBitDepth() const {
   return bit_depth_;
 }
 
+VideoChromaSampling VP9Decoder::GetChromaSampling() const {
+  // VP9 decoder currently does not rely on chroma sampling format for
+  // creating/reconfiguring decoder, so return an unknown format.
+  return VideoChromaSampling::kUnknown;
+}
+
 size_t VP9Decoder::GetRequiredNumOfPictures() const {
   constexpr size_t kPicsInPipeline = limits::kMaxVideoFrames + 1;
   return kPicsInPipeline + GetNumReferenceFrames();

@@ -118,7 +118,9 @@ class MockH265Accelerator : public H265Decoder::H265Accelerator {
   MOCK_METHOD2(SetStream,
                Status(base::span<const uint8_t> stream,
                       const DecryptConfig* decrypt_config));
-
+  bool IsChromaSamplingSupported(VideoChromaSampling format) override {
+    return format == VideoChromaSampling::k420;
+  }
   void Reset() override {}
 };
 
