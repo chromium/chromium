@@ -18,9 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/cookie_constants.h"
 #include "net/cookies/first_party_set_metadata.h"
-#include "net/cookies/same_party_context.h"
 #include "services/network/first_party_sets/first_party_sets_context_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -145,21 +143,6 @@ class FirstPartySetsManager {
       const std::set<net::SchemefulSite>& party_context,
       const FirstPartySetsContextConfig& fps_context_config,
       bool infer_singleton_sets) const;
-
-  // Computes the "type" of the context. I.e., categorizes contexts based on
-  // whether the top frame site and resource URL are same-party; whether the top
-  // frame site was ignored; whether the `party_context` is same-party with
-  // everything else; etc.
-  //
-  // Since this metric may be used to inform decisions based on actual usage
-  // patterns of sites on the web, this infers singleton sets. That is, it
-  // treats sites that do not belong to a First-Party Set as belonging to an
-  // implictly-declared singleton First-Party Set.
-  net::FirstPartySetsContextType ComputeContextType(
-      const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context,
-      const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Same as `FindOwner`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.

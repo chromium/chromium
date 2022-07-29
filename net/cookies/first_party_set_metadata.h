@@ -22,11 +22,9 @@ class NET_EXPORT FirstPartySetMetadata {
   // `frame_owner` and `top_frame_owner` must live for the duration of the ctor;
   // nullptr indicates that there's no First-Party Set that's associated with
   // the current frame or the top frame, respectively, in the given context.
-  FirstPartySetMetadata(
-      const SamePartyContext& context,
-      const SchemefulSite* frame_owner,
-      const SchemefulSite* top_frame_owner,
-      FirstPartySetsContextType first_party_sets_context_type);
+  FirstPartySetMetadata(const SamePartyContext& context,
+                        const SchemefulSite* frame_owner,
+                        const SchemefulSite* top_frame_owner);
 
   FirstPartySetMetadata(FirstPartySetMetadata&&);
   FirstPartySetMetadata& operator=(FirstPartySetMetadata&&);
@@ -46,16 +44,10 @@ class NET_EXPORT FirstPartySetMetadata {
     return top_frame_owner_;
   }
 
-  FirstPartySetsContextType first_party_sets_context_type() const {
-    return first_party_sets_context_type_;
-  }
-
  private:
   SamePartyContext context_ = SamePartyContext();
   absl::optional<SchemefulSite> frame_owner_ = absl::nullopt;
   absl::optional<SchemefulSite> top_frame_owner_ = absl::nullopt;
-  FirstPartySetsContextType first_party_sets_context_type_ =
-      FirstPartySetsContextType::kUnknown;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

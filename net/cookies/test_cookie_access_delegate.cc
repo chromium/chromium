@@ -61,8 +61,7 @@ TestCookieAccessDelegate::ComputeFirstPartySetMetadataMaybeAsync(
       FirstPartySetMetadata(
           SamePartyContext(),
           base::OptionalOrNullptr(FindFirstPartySetOwnerSync(site)),
-          base::OptionalOrNullptr(top_frame_owner),
-          FirstPartySetsContextType::kUnknown),
+          base::OptionalOrNullptr(top_frame_owner)),
       std::move(callback));
 }
 

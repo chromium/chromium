@@ -42969,19 +42969,6 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="User left the page before first contentful paint"/>
 </enum>
 
-<enum name="FirstPartySetsContextType">
-  <int value="0" label="Unknown context type"/>
-  <int value="1" label="Top frame was empty; rest of context was mixed"/>
-  <int value="2" label="Top frame was empty; rest of context was homogeneous"/>
-  <int value="3" label="Top frame and resource URL were cross-party"/>
-  <int value="4"
-      label="Top frame and resource URL were same-party; rest of context was
-             mixed"/>
-  <int value="5"
-      label="Homogeneous (top frame, resource URL, and party-context were
-             same-party)"/>
-</enum>
-
 <enum name="FirstPartySetsDatabaseInitStatus">
   <int value="0" label="Unattempted"/>
   <int value="1" label="Success"/>

@@ -293,8 +293,7 @@ TEST_F(AsyncPopulatedFirstPartySetsManagerTest,
 
     EXPECT_EQ(future.Get(),
               net::FirstPartySetMetadata(
-                  net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                  net::FirstPartySetsContextType::kHomogeneous));
+                  net::SamePartyContext(Type::kSameParty), &owner, &owner));
   }
 }
 
@@ -793,87 +792,71 @@ TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata) {
 
   // Works as usual for sites that are in First-Party sets.
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {member}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &owner, &owner));
   EXPECT_EQ(ComputeMetadataAndWait(owner, &member, {member}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &owner, &owner));
   EXPECT_EQ(ComputeMetadataAndWait(member, &owner, {member}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &owner, &owner));
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {owner}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &owner, &owner));
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {member, owner}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &owner, &owner));
 
   // Works if the site is provided with WSS scheme instead of HTTPS.
   EXPECT_EQ(ComputeMetadataAndWait(wss_member, &member, {member, owner}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &owner, &owner,
-                net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &owner, &owner));
 
   EXPECT_EQ(ComputeMetadataAndWait(nonmember, &member, {member}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr, &owner,
-                net::FirstPartySetsContextType::kTopResourceMismatch));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
+                                       nullptr, &owner));
   EXPECT_EQ(ComputeMetadataAndWait(member, &nonmember, {member}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), &owner, nullptr,
-                net::FirstPartySetsContextType::kTopResourceMismatch));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
+                                       &owner, nullptr));
   EXPECT_EQ(ComputeMetadataAndWait(wss_nonmember, &wss_member, {member, owner}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr, &owner,
-                net::FirstPartySetsContextType::kTopResourceMismatch));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
+                                       nullptr, &owner));
 
   // Top&resource differs from Ancestors.
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {nonmember}),
             net::FirstPartySetMetadata(
                 net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                       Type::kSameParty),
-                &owner, &owner,
-                net::FirstPartySetsContextType::kTopResourceMatchMixed));
+                &owner, &owner));
 
   // Metrics values infer singleton sets when appropriate.
-  EXPECT_EQ(
-      ComputeMetadataAndWait(nonmember, &nonmember, {nonmember}),
-      net::FirstPartySetMetadata(
-          net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
-                                Type::kSameParty),
-          nullptr, nullptr, net::FirstPartySetsContextType::kHomogeneous));
+  EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {nonmember}),
+            net::FirstPartySetMetadata(
+                net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
+                                      Type::kSameParty),
+                nullptr, nullptr));
   EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember1, {nonmember}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr, nullptr,
-                net::FirstPartySetsContextType::kTopResourceMismatch));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
+                                       nullptr, nullptr));
   EXPECT_EQ(ComputeMetadataAndWait(nonmember1, &nonmember, {nonmember}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty), nullptr, nullptr,
-                net::FirstPartySetsContextType::kTopResourceMismatch));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
+                                       nullptr, nullptr));
   EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {nonmember1}),
             net::FirstPartySetMetadata(
                 net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                       Type::kSameParty),
-                nullptr, nullptr,
-                net::FirstPartySetsContextType::kTopResourceMatchMixed));
+                nullptr, nullptr));
 
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {member, nonmember}),
             net::FirstPartySetMetadata(
                 net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                       Type::kSameParty),
-                &owner, &owner,
-                net::FirstPartySetsContextType::kTopResourceMatchMixed));
+                &owner, &owner));
   EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {member, nonmember}),
             net::FirstPartySetMetadata(
                 net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
                                       Type::kSameParty),
-                nullptr, nullptr,
-                net::FirstPartySetsContextType::kTopResourceMatchMixed));
+                nullptr, nullptr));
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest, FindOwner) {
@@ -964,73 +947,6 @@ TEST_F(PopulatedFirstPartySetsManagerTest, Sets_NonEmpty) {
           Pair(SerializesTo("https://foo.test"),
                UnorderedElementsAre(SerializesTo("https://foo.test"),
                                     SerializesTo("https://member2.test")))));
-}
-
-TEST_F(PopulatedFirstPartySetsManagerTest, ComputeContextType) {
-  // ComputeContextType assumes that the instance is fully initialized, so we
-  // wait for that before proceeding.
-  SetsAndWait();
-
-  net::SchemefulSite example(GURL("https://example.test"));
-  net::SchemefulSite member1(GURL("https://member1.test"));
-  net::SchemefulSite foo(GURL("https://foo.test"));
-
-  std::set<net::SchemefulSite> homogeneous_context({
-      example,
-      member1,
-  });
-  std::set<net::SchemefulSite> mixed_context({
-      example,
-      net::SchemefulSite(GURL("https://nonmember.test")),
-  });
-  net::SchemefulSite singleton(GURL("https://implicit-singleton.test"));
-
-  EXPECT_EQ(
-      net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-      manager().ComputeContextType(example, nullptr, {}, fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-            manager().ComputeContextType(example, nullptr, homogeneous_context,
-                                         fps_context_config()));
-
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopFrameIgnoredMixed,
-            manager().ComputeContextType(example, nullptr, mixed_context,
-                                         fps_context_config()));
-
-  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            manager().ComputeContextType(example, &member1, {},
-                                         fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            manager().ComputeContextType(example, &member1, homogeneous_context,
-                                         fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kHomogeneous,
-            manager().ComputeContextType(singleton, &singleton, {singleton},
-                                         fps_context_config()));
-
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(example, &member1, {foo},
-                                         fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(example, &member1, mixed_context,
-                                         fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(example, &member1, {singleton},
-                                         fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMatchMixed,
-            manager().ComputeContextType(singleton, &singleton, mixed_context,
-                                         fps_context_config()));
-
-  EXPECT_EQ(
-      net::FirstPartySetsContextType::kTopResourceMismatch,
-      manager().ComputeContextType(example, &foo, {}, fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            manager().ComputeContextType(example, &foo, homogeneous_context,
-                                         fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            manager().ComputeContextType(example, &foo, mixed_context,
-                                         fps_context_config()));
-  EXPECT_EQ(net::FirstPartySetsContextType::kTopResourceMismatch,
-            manager().ComputeContextType(example, &singleton, mixed_context,
-                                         fps_context_config()));
 }
 
 class DisabledContextFirstPartySetsManagerTest

@@ -620,10 +620,6 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
       same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.FirstPartySetsContextType.HTTP.Read",
-      first_party_set_metadata_.first_party_sets_context_type());
-
   cookie_store->GetCookieListWithOptionsAsync(
       request_->url(), options,
       CookiePartitionKeyCollection::FromOptional(cookie_partition_key_.value()),
@@ -859,10 +855,6 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   CookieOptions options = CreateCookieOptions(
       same_site_context, first_party_set_metadata_.context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.FirstPartySetsContextType.HTTP.Write",
-      first_party_set_metadata_.first_party_sets_context_type());
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.

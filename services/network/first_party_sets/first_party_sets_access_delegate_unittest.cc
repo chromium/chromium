@@ -232,9 +232,8 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest,
   delegate_remote()->NotifyReady(mojom::FirstPartySetsReadyEvent::New());
 
   EXPECT_EQ(future.Get(),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &kSet1Owner,
-                &kSet1Owner, net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &kSet1Owner, &kSet1Owner));
 }
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, QueryBeforeReady_Sets) {
@@ -291,9 +290,8 @@ TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_ComputeMetadata) {
   }));
 
   EXPECT_EQ(future.Get(),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &kSet3Owner,
-                &kSet3Owner, net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &kSet3Owner, &kSet3Owner));
 }
 
 TEST_F(AsyncFirstPartySetsAccessDelegateTest, OverrideSets_Sets) {
@@ -364,9 +362,8 @@ class SyncFirstPartySetsAccessDelegateTest
 
 TEST_F(SyncFirstPartySetsAccessDelegateTest, ComputeMetadata) {
   EXPECT_EQ(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1, {kSet1Member1}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kSameParty), &kSet1Owner,
-                &kSet1Owner, net::FirstPartySetsContextType::kHomogeneous));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kSameParty),
+                                       &kSet1Owner, &kSet1Owner));
 }
 
 TEST_F(SyncFirstPartySetsAccessDelegateTest, Sets) {

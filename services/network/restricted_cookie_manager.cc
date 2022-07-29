@@ -84,10 +84,6 @@ net::CookieOptions MakeOptionsForSet(
   options.set_is_in_nontrivial_first_party_set(
       first_party_set_metadata.frame_owner().has_value());
 
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.FirstPartySetsContextType.JS.Write",
-      first_party_set_metadata.first_party_sets_context_type());
-
   return options;
 }
 
@@ -123,10 +119,6 @@ net::CookieOptions MakeOptionsForGet(
   }
   options.set_is_in_nontrivial_first_party_set(
       first_party_set_metadata.frame_owner().has_value());
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Cookie.FirstPartySetsContextType.JS.Read",
-      first_party_set_metadata.first_party_sets_context_type());
 
   return options;
 }

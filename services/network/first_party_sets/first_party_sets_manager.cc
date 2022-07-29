@@ -19,12 +19,9 @@
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
-#include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/cookie_constants.h"
-#include "net/cookies/cookie_util.h"
 #include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -146,10 +143,6 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
       "Cookie.FirstPartySets.ComputeContext.Latency", timer.Elapsed(),
       base::Microseconds(1), base::Milliseconds(100), 50);
 
-  net::FirstPartySetsContextType first_party_sets_context_type =
-      ComputeContextType(site, top_frame_site, party_context,
-                         fps_context_config);
-
   FirstPartySetsManager::OwnerResult top_frame_owner =
       top_frame_site ? FindOwnerInternal(*top_frame_site, fps_context_config,
                                          /*infer_singleton_sets=*/false)
@@ -159,39 +152,7 @@ net::FirstPartySetMetadata FirstPartySetsManager::ComputeMetadataInternal(
       context,
       base::OptionalOrNullptr(FindOwnerInternal(
           site, fps_context_config, /*infer_singleton_sets=*/false)),
-      base::OptionalOrNullptr(top_frame_owner), first_party_sets_context_type);
-}
-
-net::FirstPartySetsContextType FirstPartySetsManager::ComputeContextType(
-    const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
-    const std::set<net::SchemefulSite>& party_context,
-    const FirstPartySetsContextConfig& fps_context_config) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(sets_.has_value());
-  constexpr bool infer_singleton_sets = true;
-  const FirstPartySetsManager::OwnerResult site_owner =
-      FindOwnerInternal(site, fps_context_config, infer_singleton_sets);
-  // Note: the `party_context` consists of the intermediate frames (for frame
-  // requests) or intermediate frames and current frame for subresource
-  // requests.
-  const bool is_homogeneous = base::ranges::all_of(
-      party_context, [&](const net::SchemefulSite& middle_site) {
-        return *FindOwnerInternal(middle_site, fps_context_config,
-                                  infer_singleton_sets) == *site_owner;
-      });
-  if (top_frame_site == nullptr) {
-    return is_homogeneous
-               ? net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous
-               : net::FirstPartySetsContextType::kTopFrameIgnoredMixed;
-  }
-  if (*FindOwnerInternal(*top_frame_site, fps_context_config,
-                         infer_singleton_sets) != *site_owner)
-    return net::FirstPartySetsContextType::kTopResourceMismatch;
-
-  return is_homogeneous
-             ? net::FirstPartySetsContextType::kHomogeneous
-             : net::FirstPartySetsContextType::kTopResourceMatchMixed;
+      base::OptionalOrNullptr(top_frame_owner));
 }
 
 const FirstPartySetsManager::OwnerResult

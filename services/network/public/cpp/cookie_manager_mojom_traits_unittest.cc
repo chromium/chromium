@@ -578,23 +578,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeInfo) {
   EXPECT_EQ(original.cause, copied.cause);
 }
 
-TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetsContextType) {
-  for (auto type : {
-           net::FirstPartySetsContextType::kUnknown,
-           net::FirstPartySetsContextType::kTopFrameIgnoredMixed,
-           net::FirstPartySetsContextType::kTopFrameIgnoredHomogeneous,
-           net::FirstPartySetsContextType::kTopResourceMismatch,
-           net::FirstPartySetsContextType::kTopResourceMatchMixed,
-           net::FirstPartySetsContextType::kHomogeneous,
-       }) {
-    net::FirstPartySetsContextType roundtrip;
-    ASSERT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::FirstPartySetsContextType>(
-            type, roundtrip));
-    EXPECT_EQ(type, roundtrip);
-  }
-}
-
 TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetMetadata) {
   net::SchemefulSite frame_owner(GURL("https://frame.test"));
   net::SchemefulSite top_frame_owner(GURL("https://top_frame.test"));
@@ -604,8 +587,7 @@ TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetMetadata) {
     // properly.
     return net::FirstPartySetMetadata(
         net::SamePartyContext(net::SamePartyContext::Type::kSameParty),
-        &frame_owner, &top_frame_owner,
-        net::FirstPartySetsContextType::kHomogeneous);
+        &frame_owner, &top_frame_owner);
   };
 
   net::FirstPartySetMetadata original = make_metadata();
@@ -618,8 +600,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_FirstPartySetMetadata) {
             net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
   EXPECT_EQ(round_tripped.frame_owner(), frame_owner);
   EXPECT_EQ(round_tripped.top_frame_owner(), top_frame_owner);
-  EXPECT_EQ(round_tripped.first_party_sets_context_type(),
-            net::FirstPartySetsContextType::kHomogeneous);
 
   EXPECT_EQ(round_tripped, make_metadata());
 }
