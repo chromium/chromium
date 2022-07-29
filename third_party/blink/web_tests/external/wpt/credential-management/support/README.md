@@ -34,7 +34,7 @@ per engine:
 
 ## FedCM Testing
 
-`fedcm-helper.js` exposes `fedcm_test` which is a specialized
+`fedcm-mojojs-helper.js` exposes `fedcm_test` which is a specialized
 `promise_test` which comes pre-setup with the appropriate mocking infrastructure
 to emulate platform federated auth backend. The mock is passed to the test
 function as the second parameter.
@@ -42,7 +42,7 @@ function as the second parameter.
 Example usage:
 ```
 <script type="module">
-  import {fedcm_test} from './support/fedcm-helper.js';
+  import {fedcm_test} from './support/fedcm-mojojs-helper.js';
 
   fedcm_test(async (t, mock) => {
     mock.returnToken("a_token");
