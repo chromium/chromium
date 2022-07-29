@@ -135,6 +135,59 @@ TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
   EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
 }
 
+TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidth) {
+  // Set side panel to right-aligned
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, true);
+  coordinator_->Toggle();
+  const int starting_width = 500;
+  browser_view()->right_aligned_side_panel()->SetPanelWidth(starting_width);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+
+  const int increment = 50;
+  browser_view()->right_aligned_side_panel()->OnResize(increment, true);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width - increment);
+
+  // Set side panel to left-aligned
+  browser_view()->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kSidePanelHorizontalAlignment, false);
+  browser_view()->right_aligned_side_panel()->SetPanelWidth(starting_width);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+
+  browser_view()->right_aligned_side_panel()->OnResize(increment, true);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width + increment);
+}
+
+TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
+  coordinator_->Toggle();
+  const int starting_width = 500;
+  browser_view()->right_aligned_side_panel()->SetPanelWidth(starting_width);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            starting_width);
+
+  // Use an increment large enough to hit side panel and browser contents
+  // minimum width constraints.
+  const int large_increment = 1000000000;
+  browser_view()->right_aligned_side_panel()->OnResize(large_increment, true);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
+            browser_view()->right_aligned_side_panel()->GetMinimumWidth());
+
+  browser_view()->right_aligned_side_panel()->OnResize(-large_increment, true);
+  browser_view()->Layout();
+  EXPECT_EQ(browser_view()->contents_web_view()->width(),
+            BrowserViewLayout::kMainWebContentsMinimumWidth);
+}
+
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
   browser_view()->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kSidePanelHorizontalAlignment, true);

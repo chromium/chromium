@@ -47,6 +47,10 @@ class BrowserViewLayout : public views::LayoutManager {
   // not specified). This value is used for the main browser window only, not
   // for popups.
   static constexpr int kMainBrowserContentsMinimumWidth = 500;
+  // The minimum width for the web contents area. This applies to web contents
+  // only, rather than the full browser contents which includes the side panel
+  // and other surfaces.
+  static constexpr int kMainWebContentsMinimumWidth = 150;
 
   // |browser_view| may be null in tests.
   BrowserViewLayout(std::unique_ptr<BrowserViewLayoutDelegate> delegate,

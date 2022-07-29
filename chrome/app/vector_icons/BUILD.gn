@@ -46,6 +46,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "default_touch_favicon_mask.icon",
     "download_in_progress.icon",
     "download_toolbar_button.icon",
+    "drag_handle.icon",
     "eol.icon",
     "extension_crashed.icon",
     "eye.icon",

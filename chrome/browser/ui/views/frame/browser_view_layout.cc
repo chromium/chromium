@@ -75,6 +75,7 @@ bool IsSideSearchRightAligned() {
 }  // namespace
 
 constexpr int BrowserViewLayout::kMainBrowserContentsMinimumWidth;
+constexpr int BrowserViewLayout::kMainWebContentsMinimumWidth;
 
 class BrowserViewLayout::WebContentsModalDialogHostViews
     : public WebContentsModalDialogHost {
@@ -614,12 +615,6 @@ void BrowserViewLayout::LayoutSidePanelView(
   if (!side_panel || !side_panel->GetVisible())
     return;
 
-  // Side panel occupies some of the container's space. The side panel should
-  // never occupy more space than is available in the content window.
-  gfx::Rect side_panel_bounds = contents_container_bounds;
-  side_panel_bounds.set_width(std::min(side_panel->GetPreferredSize().width(),
-                                       contents_container_bounds.width()));
-
   DCHECK(side_panel == right_aligned_side_panel_ ||
          side_panel == side_search_side_panel_ ||
          side_panel == lens_side_panel_);
@@ -631,6 +626,17 @@ void BrowserViewLayout::LayoutSidePanelView(
                        : left_aligned_side_panel_separator_.get();
 
   DCHECK(side_panel_separator);
+
+  // Side panel occupies some of the container's space. The side panel should
+  // never occupy more space than is available in the content window, and
+  // should never force the web contents to be smaller than its intended
+  // minimum.
+  gfx::Rect side_panel_bounds = contents_container_bounds;
+  side_panel_bounds.set_width(std::min(
+      side_panel->GetPreferredSize().width(),
+      contents_container_bounds.width() - kMainWebContentsMinimumWidth -
+          side_panel_separator->GetPreferredSize().width()));
+
   // Shrink container bounds to fit the side panel.
   contents_container_bounds.set_width(
       contents_container_bounds.width() - side_panel_bounds.width() -

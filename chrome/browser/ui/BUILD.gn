@@ -4868,6 +4868,8 @@ static_library("ui") {
       "views/side_panel/side_panel_registry.cc",
       "views/side_panel/side_panel_registry.h",
       "views/side_panel/side_panel_registry_observer.h",
+      "views/side_panel/side_panel_resize_area.cc",
+      "views/side_panel/side_panel_resize_area.h",
       "views/side_panel/side_panel_util.cc",
       "views/side_panel/side_panel_util.h",
       "views/side_panel/side_panel_view_state_observer.h",
