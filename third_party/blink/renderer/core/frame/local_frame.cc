@@ -1311,6 +1311,9 @@ void LocalFrame::SetPageAndTextZoomFactors(float page_zoom_factor,
   }
 
   if (page_zoom_changed) {
+#if !BUILDFLAG(IS_ANDROID)
+    MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
+#endif
     document->LayoutViewportWasResized();
     document->MediaQueryAffectingValueChanged(MediaValueChange::kOther);
   }
@@ -2816,6 +2819,7 @@ void LocalFrame::UpdateWindowControlsOverlay(
       (window_controls_overlay_rect != window_controls_overlay_rect_);
   is_window_controls_overlay_visible_ = !window_controls_overlay_rect.IsEmpty();
   window_controls_overlay_rect_ = window_controls_overlay_rect;
+  window_controls_overlay_rect_in_dips_ = bounding_rect_in_dips;
 
   DocumentStyleEnvironmentVariables& vars =
       GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
@@ -3263,6 +3267,16 @@ void LocalFrame::SetTitlebarAreaDocumentStyleEnvironmentVariables() const {
                    StyleEnvironmentVariables::FormatPx(
                        window_controls_overlay_rect_.height()));
 }
-#endif
+
+void LocalFrame::MaybeUpdateWindowControlsOverlayWithNewZoomLevel() {
+  // |window_controls_overlay_rect_| is only set for local root.
+  if (!is_window_controls_overlay_visible_ || !IsLocalRoot())
+    return;
+
+  DCHECK(!window_controls_overlay_rect_in_dips_.IsEmpty());
+
+  UpdateWindowControlsOverlay(window_controls_overlay_rect_in_dips_);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink
