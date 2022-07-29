@@ -181,15 +181,16 @@ class EuiccStatusUploaderTest : public testing::Test {
     cloud_policy_client_.SetStatus(success);
   }
 
-  const base::Value* GetStoredPref() {
-    return local_state_.Get(EuiccStatusUploader::kLastUploadedEuiccStatusPref);
+  const base::Value& GetStoredPref() {
+    return local_state_.GetValue(
+        EuiccStatusUploader::kLastUploadedEuiccStatusPref);
   }
 
   std::string GetStoredPrefString() {
-    const base::Value* last_uploaded_pref = GetStoredPref();
+    const base::Value& last_uploaded_pref = GetStoredPref();
     std::string result;
     JSONStringValueSerializer sz(&result);
-    sz.Serialize(*last_uploaded_pref);
+    sz.Serialize(last_uploaded_pref);
     return result;
   }
 
@@ -236,7 +237,7 @@ class EuiccStatusUploaderTest : public testing::Test {
   void ValidateUploadedStatus(const std::string& expected_status_str,
                               bool clear_profile_list) {
     base::Value expected_status = base::test::ParseJson(expected_status_str);
-    EXPECT_EQ(expected_status, *GetStoredPref());
+    EXPECT_EQ(expected_status, GetStoredPref());
     EXPECT_TRUE(cloud_policy_client_.GetLastRequest());
     EXPECT_TRUE(
         RequestsAreEqual(*EuiccStatusUploader::ConstructRequestFromStatus(
