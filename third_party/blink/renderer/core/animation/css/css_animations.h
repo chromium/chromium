@@ -303,7 +303,6 @@ class CORE_EXPORT CSSAnimations final {
 
     const Element& TransitionTarget() const { return *transition_target_; }
     EventTarget* GetEventTarget() const;
-    PseudoId GetPseudoId() const { return transition_target_->GetPseudoId(); }
     Document& GetDocument() const { return transition_target_->GetDocument(); }
 
     Member<Element> transition_target_;

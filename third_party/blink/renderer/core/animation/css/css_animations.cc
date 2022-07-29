@@ -1774,8 +1774,8 @@ void CSSAnimations::AnimationEventDelegate::MaybeDispatch(
     const AtomicString& event_name,
     const AnimationTimeDelta& elapsed_time) {
   if (animation_target_->GetDocument().HasListenerType(listener_type)) {
-    String pseudo_element_name = PseudoElement::PseudoElementNameForEvents(
-        animation_target_->GetPseudoId());
+    String pseudo_element_name =
+        PseudoElement::PseudoElementNameForEvents(animation_target_);
     AnimationEvent* event = AnimationEvent::Create(
         event_name, name_, elapsed_time, pseudo_element_name);
     event->SetTarget(GetEventTarget());
@@ -1950,7 +1950,7 @@ void CSSAnimations::TransitionEventDelegate::EnqueueEvent(
           ? property_.CustomPropertyName()
           : property_.GetCSSProperty().GetPropertyNameString();
   String pseudo_element =
-      PseudoElement::PseudoElementNameForEvents(GetPseudoId());
+      PseudoElement::PseudoElementNameForEvents(transition_target_);
   TransitionEvent* event = TransitionEvent::Create(
       type, property_name, elapsed_time, pseudo_element);
   event->SetTarget(GetEventTarget());
