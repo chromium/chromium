@@ -473,6 +473,41 @@ public class CouponPersistedTabDataTest {
         helper.waitForCallback(count);
     }
 
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testCOPTDPrefetchingSuccessfulResponse() {
+        MockTab tab = new MockTab(1, false);
+        mockEndpointResponse(MOCK_ENDPOINT_RESPONSE_STRING_AMOUNT);
+        tab.setIsInitialized(true);
+        tab.setGurlOverrideForTesting(VALID_URL_1);
+
+        CouponPersistedTabData coptd = new CouponPersistedTabData(tab);
+        coptd.prefetchOnNewNavigation(tab);
+
+        Assert.assertEquals(EXPECTED_NAME_GENERAL_CASE_AMOUNT, coptd.getCoupon().couponName);
+        Assert.assertEquals(EXPECTED_CODE_GENERAL_CASE_AMOUNT, coptd.getCoupon().promoCode);
+        Assert.assertEquals(
+                EXPECTED_ANNOTATION_GENERAL_CASE_AMOUNT, coptd.getCouponAnnotationText());
+        Assert.assertTrue(coptd.mIsTabSaveEnabledSupplier.get());
+    }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testCOPTDPrefetchingNoResponse() {
+        MockTab tab = new MockTab(1, false);
+        mockEndpointResponse(EMPTY_ENDPOINT_RESPONSE);
+        tab.setIsInitialized(true);
+        tab.setGurlOverrideForTesting(VALID_URL_1);
+
+        CouponPersistedTabData coptd = new CouponPersistedTabData(tab);
+        coptd.prefetchOnNewNavigation(tab);
+
+        Assert.assertNull(coptd.getCoupon());
+        Assert.assertFalse(coptd.mIsTabSaveEnabledSupplier.get());
+    }
+
     private void mockEndpointResponse(String response) {
         doAnswer(new Answer<Void>() {
             @Override

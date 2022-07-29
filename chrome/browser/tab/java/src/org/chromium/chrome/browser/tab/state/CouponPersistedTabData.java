@@ -340,17 +340,7 @@ public class CouponPersistedTabData extends PersistedTabData {
     @Nullable
     private static CouponPersistedTabData build(Tab tab, String responseString) {
         Coupon coupon;
-        try {
-            JSONObject jsonObject = new JSONObject(responseString);
-            JSONArray discountsArray = jsonObject.optJSONArray(DISCOUNTS_ARRAY);
-            coupon = getCouponFromJSON(discountsArray);
-        } catch (JSONException e) {
-            Log.e(TAG, "Error parsing JSON: %s", e.getMessage());
-            return null;
-        } catch (Exception e) {
-            Log.i(TAG, "Exception occurred while building COPTD: s%", e.getMessage());
-            return null;
-        }
+        coupon = getCouponFromJSON(responseString);
         if (coupon == null || !coupon.hasCoupon()) {
             return null;
         }
@@ -359,13 +349,15 @@ public class CouponPersistedTabData extends PersistedTabData {
         return res;
     }
 
-    private static Coupon getCouponFromJSON(JSONArray discountsArray) {
+    private static Coupon getCouponFromJSON(String jsonString) {
         String name;
         String promoCode;
         String currencyCode;
         Coupon.DiscountType type;
         long units;
         try {
+            JSONObject jsonObject = new JSONObject(jsonString);
+            JSONArray discountsArray = jsonObject.optJSONArray(DISCOUNTS_ARRAY);
             JSONObject discountInfo =
                     discountsArray.optJSONObject(0).optJSONObject(DISCOUNT_INFO_OBJECT);
             name = discountInfo.optString(LONG_TITLE_STRING);
@@ -383,10 +375,19 @@ public class CouponPersistedTabData extends PersistedTabData {
                 currencyCode = amountOff.optString(CURRENCY_CODE_STRING);
                 units = Long.parseLong(amountOff.optString(UNITS_STRING));
             }
+        } catch (JSONException e) {
+            Log.e(TAG, "Error converting response to JSON: %s", e.getMessage());
+            return null;
         } catch (NullPointerException e) {
             // Can occur if value mapped by name does not exist when using optJSONObject because
             // null object will be returned.
-            Log.e(TAG, "Error parsing JSON while building coupon: %s", e.getMessage());
+            Log.e(TAG,
+                    "NullPointerException occurred while"
+                            + " building coupon from JSON: %s",
+                    e.getMessage());
+            return null;
+        } catch (Exception e) {
+            Log.i(TAG, "Exception occurred while building COPTD: %s", e.getMessage());
             return null;
         }
         return new Coupon(name, promoCode, currencyCode, units, type);
@@ -416,7 +417,7 @@ public class CouponPersistedTabData extends PersistedTabData {
                     return;
                 }
                 resetCoupon();
-                prefetchOnNewNavigation(tab, navigationHandle);
+                prefetchOnNewNavigation(tab);
             }
         };
         tab.addObserver(mUrlUpdatedObserver);
@@ -442,8 +443,20 @@ public class CouponPersistedTabData extends PersistedTabData {
         mIsTabSaveEnabledSupplier.set(false);
     }
 
-    // TODO(crbug.com/1337120): Implement prefetching for CouponPersistedTabData
-    private void prefetchOnNewNavigation(Tab tab, NavigationHandle navigationHandle) {}
+    @VisibleForTesting
+    protected void prefetchOnNewNavigation(Tab tab) {
+        EndpointFetcher.fetchUsingOAuth(
+                (endpointResponse)
+                        -> {
+                    mCoupon = getCouponFromJSON(endpointResponse.getResponseString());
+                    if (mCoupon != null) {
+                        enableSaving();
+                    }
+                },
+                Profile.getLastUsedRegularProfile(), PERSISTED_TAB_DATA_ID,
+                String.format(Locale.US, ENDPOINT, tab.getUrl().getSpec()), HTTPS_METHOD,
+                CONTENT_TYPE, SCOPES, EMPTY_POST_DATA, TIMEOUT_MS, TRAFFIC_ANNOTATION);
+    }
 
     @VisibleForTesting
     public EmptyTabObserver getUrlUpdatedObserverForTesting() {
