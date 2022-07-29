@@ -89,15 +89,38 @@ class HTMLFrameSetElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void WillRecalcStyle(const StyleRecalcChange) override;
 
+  class ResizeAxis {
+    DISALLOW_NEW();
+
+   public:
+    ResizeAxis() = default;
+    ResizeAxis(const ResizeAxis&) = delete;
+    ResizeAxis& operator=(const ResizeAxis&) = delete;
+
+    // Returns true if a split is being resized now.
+    bool IsResizingSplit() const { return split_being_resized_ != kNoSplit; }
+
+    static constexpr int kNoSplit = -1;
+
+    int split_being_resized_ = kNoSplit;
+    int split_resize_offset_;
+  };
+
   bool UserResize(const MouseEvent& event);
   void SetIsResizing(bool is_resizing);
-  void StartResizing(LayoutFrameSet::GridAxis& axis, int position);
-  void ContinueResizing(LayoutFrameSet::GridAxis& axis, int position);
+  void StartResizing(LayoutFrameSet::GridAxis& axis,
+                     int position,
+                     ResizeAxis& resize_axis);
+  void ContinueResizing(LayoutFrameSet::GridAxis& axis,
+                        int position,
+                        ResizeAxis& resize_axis);
   int SplitPosition(const LayoutFrameSet::GridAxis& axis, int split) const;
   int HitTestSplit(const LayoutFrameSet::GridAxis& axis, int position) const;
 
   Vector<HTMLDimension> row_lengths_;
   Vector<HTMLDimension> col_lengths_;
+  ResizeAxis resize_rows_;
+  ResizeAxis resize_cols_;
 
   int border_;
   bool border_set_;

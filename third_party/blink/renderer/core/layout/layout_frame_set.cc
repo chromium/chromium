@@ -60,8 +60,9 @@ void LayoutFrameSet::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
+// TODO(crbug.com/1347700) Move this to ResizeAxis.
 bool LayoutFrameSet::GridAxis::CanResizeSplitAt(int split_index) const {
-  return split_index != kNoSplit && !prevent_resize_[split_index];
+  return split_index != -1 /* kNoSplit */ && !prevent_resize_[split_index];
 }
 
 HTMLFrameSetElement* LayoutFrameSet::FrameSet() const {
