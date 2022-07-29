@@ -599,8 +599,15 @@ bool AssistiveSuggester::TrySuggestWithSurroundingText(
 
 void AssistiveSuggester::AcceptSuggestion(size_t index) {
   if (current_suggester_ && current_suggester_->AcceptSuggestion(index)) {
-    RecordAssistiveSuccess(current_suggester_->GetProposeActionType());
-    current_suggester_ = nullptr;
+    // Handle a race condition where the current suggester_ is set to nullptr by
+    // a simultaneous event (such as a mouse click causing a onBlur()
+    // event).
+    // TODO(b/240534923): Figure out how to record metrics when
+    // current_suggester_ is set to nullptr prematurely by a different event.
+    if (current_suggester_) {
+      RecordAssistiveSuccess(current_suggester_->GetProposeActionType());
+      current_suggester_ = nullptr;
+    }
   }
 }
 
