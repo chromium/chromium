@@ -63,6 +63,7 @@
 #include "ios/web_view/internal/web_view_browser_state.h"
 #include "ios/web_view/internal/web_view_global_state_util.h"
 #import "ios/web_view/internal/web_view_java_script_dialog_presenter.h"
+#import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_state_policy_decider.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/public/cwv_preview_element_info.h"
@@ -84,6 +85,21 @@ NSString* const kSessionStorageKey = @"sessionStorage";
 NSDictionary* NSDictionaryFromDictionaryValue(const base::Value& value) {
   DCHECK(value.is_dict()) << "Incorrect value type: " << value.type();
 
+  std::string json;
+  const bool success = base::JSONWriter::Write(value, &json);
+  DCHECK(success) << "Failed to convert base::Value to JSON";
+
+  NSData* json_data = [NSData dataWithBytes:json.c_str() length:json.length()];
+  NSDictionary* ns_dictionary = base::mac::ObjCCastStrict<NSDictionary>(
+      [NSJSONSerialization JSONObjectWithData:json_data
+                                      options:kNilOptions
+                                        error:nil]);
+  DCHECK(ns_dictionary) << "Failed to convert JSON to NSDictionary";
+  return ns_dictionary;
+}
+
+// Converts base::Value::Dict to NSDictionary.
+NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
   std::string json;
   const bool success = base::JSONWriter::Write(value, &json);
   DCHECK(success) << "Failed to convert base::Value to JSON";
@@ -609,6 +625,22 @@ BOOL gChromeContextMenuEnabled = NO;
 - (void)removeScriptCommandHandlerForCommandPrefix:(NSString*)commandPrefix {
   std::string stdCommandPrefix = base::SysNSStringToUTF8(commandPrefix);
   _scriptCommandCallbacks.erase(stdCommandPrefix);
+}
+
+- (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
+               forCommand:(NSString*)nsCommand {
+  DCHECK(handler);
+  std::string command = base::SysNSStringToUTF8(nsCommand);
+  WebViewMessageHandlerJavaScriptFeature::GetInstance()->RegisterHandler(
+      command, base::BindRepeating(^(const base::Value::Dict& payload) {
+        handler(NSDictionaryFromDictValue(payload));
+      }));
+}
+
+- (void)removeMessageHandlerForCommand:(NSString*)nsCommand {
+  std::string command = base::SysNSStringToUTF8(nsCommand);
+  WebViewMessageHandlerJavaScriptFeature::GetInstance()->UnregisterHandler(
+      command);
 }
 
 #pragma mark - Translation

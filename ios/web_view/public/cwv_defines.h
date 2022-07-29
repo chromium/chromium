@@ -62,4 +62,8 @@
 // Supports -[CWVNavigationDelegate handleUnsafeURLWithHandler:].
 #define IOS_WEB_VIEW_SUPPORTS_CWV_UNSAFE_URL_HANDLER 1
 
+// Supports -[CWVWebView addMessageHandler:forCommand:] and
+// -[CWVWebView removeMessageHandlerForCommand] APIs.
+#define IOS_WEB_VIEW_SUPPORTS_MODERN_JS_MESSAGE_HANDLERS 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

@@ -36,6 +36,7 @@
 #import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/internal/web_view_early_page_script_provider.h"
+#import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_main_parts.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/public/cwv_web_view.h"
@@ -114,7 +115,8 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
   return {autofill::AutofillJavaScriptFeature::GetInstance(),
           autofill::FormHandlersJavaScriptFeature::GetInstance(),
           autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
-          password_manager::PasswordManagerJavaScriptFeature::GetInstance()};
+          password_manager::PasswordManagerJavaScriptFeature::GetInstance(),
+          WebViewMessageHandlerJavaScriptFeature::GetInstance()};
 }
 
 NSString* WebViewWebClient::GetDocumentStartScriptForMainFrame(
