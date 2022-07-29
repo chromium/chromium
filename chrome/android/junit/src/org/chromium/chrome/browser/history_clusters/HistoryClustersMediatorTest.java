@@ -29,6 +29,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import org.hamcrest.BaseMatcher;
@@ -53,6 +54,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryCluster.MatchPosition;
+import org.chromium.chrome.browser.history_clusters.HistoryClusterView.ClusterViewAccessibilityState;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -287,9 +289,12 @@ public class HistoryClustersMediatorTest {
         ListItem clusterItem = mModelList.get(0);
         assertEquals(clusterItem.type, ItemType.CLUSTER);
         PropertyModel clusterModel = clusterItem.model;
-        assertTrue(clusterModel.getAllSetProperties().containsAll(Arrays.asList(
+        assertTrue(clusterModel.getAllSetProperties().containsAll(ImmutableList.of(
+                HistoryClustersItemProperties.ACCESSIBILITY_STATE,
                 HistoryClustersItemProperties.CLICK_HANDLER, HistoryClustersItemProperties.LABEL,
                 HistoryClustersItemProperties.END_BUTTON_DRAWABLE)));
+        assertEquals(ClusterViewAccessibilityState.COLLAPSIBLE,
+                clusterModel.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
         assertEquals(shadowOf(clusterModel.get(HistoryClustersItemProperties.END_BUTTON_DRAWABLE))
                              .getCreatedFromResId(),
                 R.drawable.ic_expand_more_black_24dp);
@@ -455,11 +460,15 @@ public class HistoryClustersMediatorTest {
         assertEquals(mModelList.indexOf(visitItemsToHide.get(0)), -1);
         assertEquals(mModelList.indexOf(visitItemsToHide.get(1)), -1);
         assertEquals(2, mModelList.size());
+        assertEquals(ClusterViewAccessibilityState.EXPANDABLE,
+                clusterModel.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
 
         mMediator.showCluster(clusterModel, visitItemsToHide, 1);
         assertEquals(mModelList.indexOf(visitItemsToHide.get(0)), 1);
         assertEquals(mModelList.indexOf(visitItemsToHide.get(1)), 2);
         assertEquals(4, mModelList.size());
+        assertEquals(ClusterViewAccessibilityState.COLLAPSIBLE,
+                clusterModel.get(HistoryClustersItemProperties.ACCESSIBILITY_STATE));
     }
 
     @Test
