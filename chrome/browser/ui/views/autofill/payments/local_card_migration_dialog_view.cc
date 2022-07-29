@@ -341,7 +341,8 @@ class LocalCardMigrationOfferView : public views::View {
     legal_message_container->SetHorizontalScrollBarMode(
         views::ScrollView::ScrollBarMode::kDisabled);
     legal_message_container->SetContents(std::make_unique<LegalMessageView>(
-        controller->GetLegalMessageLines(),
+        controller->GetLegalMessageLines(), /*user_email=*/absl::nullopt,
+        /*user_avatar=*/absl::nullopt,
         base::BindRepeating(
             &LocalCardMigrationDialogController::OnLegalMessageLinkClicked,
             base::Unretained(controller_))));

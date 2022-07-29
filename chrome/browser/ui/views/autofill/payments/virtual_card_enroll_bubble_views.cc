@@ -205,14 +205,16 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
 
   DCHECK(!google_legal_message.empty());
   legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-      google_legal_message,
+      google_legal_message, /*user_email=*/absl::nullopt,
+      /*user_avatar=*/absl::nullopt,
       base::BindRepeating(
           &VirtualCardEnrollBubbleViews::GoogleLegalMessageClicked,
           base::Unretained(this))));
 
   if (!issuser_legal_message.empty()) {
     legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-        issuser_legal_message,
+        issuser_legal_message, /*user_email=*/absl::nullopt,
+        /*user_avatar=*/absl::nullopt,
         base::BindRepeating(
             &VirtualCardEnrollBubbleViews::IssuerLegalMessageClicked,
             base::Unretained(this))));

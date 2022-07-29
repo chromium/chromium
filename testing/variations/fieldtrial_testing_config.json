@@ -1393,6 +1393,15 @@
                     "enable_features": [
                         "AutofillSaveCardUiExperiment"
                     ]
+                },
+                {
+                    "name": "EnabledCurrentWithUserAvatarAndEmail",
+                    "params": {
+                        "autofill_save_card_ui_experiment_selector_in_number": "3"
+                    },
+                    "enable_features": [
+                        "AutofillSaveCardUiExperiment"
+                    ]
                 }
             ]
         }

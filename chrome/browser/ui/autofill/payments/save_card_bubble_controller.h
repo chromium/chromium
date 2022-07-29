@@ -56,7 +56,7 @@ class SaveCardBubbleController {
   virtual std::u16string GetDeclineButtonText() const = 0;
 
   // Returns the account info of the signed-in user.
-  virtual const AccountInfo& GetAccountInfo() const = 0;
+  virtual const AccountInfo& GetAccountInfo() = 0;
 
   // Returns the profile.
   virtual Profile* GetProfile() const = 0;

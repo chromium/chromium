@@ -33,6 +33,9 @@ enum class BubbleType {
 
 // The type of experiment running for the save card ui.
 enum SaveCardUiExperiment {
+  // Show the text for default/current image.
+  DEFAULT = 0,
+
   // Show the text for faster and protected image.
   FASTER_AND_PROTECTED = 1,
 
