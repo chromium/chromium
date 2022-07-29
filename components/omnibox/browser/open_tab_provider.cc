@@ -5,18 +5,66 @@
 #include "components/omnibox/browser/open_tab_provider.h"
 
 #include "base/i18n/case_conversion.h"
-#include "base/strings/string_split.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/tab_matcher.h"
+#include "components/query_parser/query_parser.h"
+#include "components/search_engines/template_url.h"
 #include "components/url_formatter/url_formatter.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "content/public/browser/web_contents.h"
 #endif
+
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+int Score(const query_parser::QueryNodeVector& input_query_nodes,
+          const std::u16string& title) {
+  // TODO(crbug/1287313) Currently only scores title matches. Should also score,
+  //  or at least allow (without boosting the score), URL matches.
+  //  Otherwise inputs like 'newtab' or 'stackoverflow' won't match, as the
+  //  respective titles contain whitespace. And not matching URLs is
+  //  inconsistent with every (or almost every?) other provider.
+
+  // TODO(crbug/1287313): The bookmark provider also uses on `query_parser` and
+  //  `ScoringFunctor` to compute its scores. However, it uses normalized match
+  //  titles. (see `Normalize()` in
+  //  components/bookmarks/browser/titled_url_index.cc) IDK its purpose, but we
+  //  should either verify it's unnecessary here, or do likewise here.
+
+  // Extract query words from the title.
+  const std::u16string lower_title = base::i18n::ToLower(title);
+  query_parser::QueryWordVector title_words;
+  query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
+
+  // Find matches in the title.
+  query_parser::Snippet::MatchPositions title_matches;
+  if (!base::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
+        return query_node->HasMatchIn(title_words, &title_matches);
+      })) {
+    // All input terms must be included in the title.
+    return 0;
+  }
+
+  // Score the matches. `kMaxScore` is chosen based on a reasonable upper bound
+  // for title length of 100. The exact scores don't matter, but using a max
+  // score proportional the max title length squared will avoid suggestions with
+  // different float scores being rounded to the same integer score.
+  const int kMaxScore = 100 * 100;
+  double title_factor = for_each(title_matches.begin(), title_matches.end(),
+                                 ScoringFunctor(lower_title.length()))
+                            .ScoringFactor();
+  return title_factor / (lower_title.length() + 10) * kMaxScore;
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+}  // namespace
 
 OpenTabProvider::OpenTabProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_OPEN_TAB),
@@ -33,17 +81,20 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
-  AutocompleteInput adjusted_input =
+  const auto [adjusted_input, template_url] =
       KeywordProvider::AdjustInputForStarterPackEngines(
           input, client_->GetTemplateURLService());
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Preprocess the query into lowercase terms.
+  // Preprocess the query into query nodes.
   const auto adjusted_input_text = std::u16string(
       base::TrimWhitespace(base::i18n::ToLower(adjusted_input.text()),
                            base::TrimPositions::TRIM_ALL));
-  std::vector<std::u16string> query_terms =
-      String16VectorFromString16(adjusted_input_text, nullptr);
+  query_parser::QueryNodeVector input_query_nodes;
+  query_parser::QueryParser::ParseQueryNodes(
+      adjusted_input_text,
+      query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH,
+      &input_query_nodes);
 
   // Perform basic substring matching on the query terms.
   for (auto* web_contents : client_->GetTabMatcher().GetOpenTabs()) {
@@ -51,14 +102,10 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
     if (!url.is_valid()) {
       continue;
     }
-
-    const std::u16string title = base::i18n::ToLower(web_contents->GetTitle());
-    for (const std::u16string& query_term : query_terms) {
-      if (title.find(query_term) != std::string::npos) {
-        matches_.push_back(
-            CreateOpenTabMatch(adjusted_input, web_contents->GetTitle(), url));
-        break;
-      }
+    int score = Score(input_query_nodes, web_contents->GetTitle());
+    if (score > 0) {
+      matches_.push_back(CreateOpenTabMatch(
+          adjusted_input, web_contents->GetTitle(), url, score, template_url));
     }
   }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -67,16 +114,13 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
 AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
     const AutocompleteInput& input,
     const std::u16string& title,
-    const GURL& url) {
+    const GURL& url,
+    int score,
+    const TemplateURL* template_url) {
   DCHECK(url.is_valid());
 
-  // TODO(crbug.com/1293702): All open tab results are given a default score.
-  // Currently, the only user of the Open Tab Provider is the ChromeOS launcher,
-  // which performs further scoring using the ChromeOS tokenized string match
-  // library.
-  constexpr int kOpenTabScore = 1000;
-  AutocompleteMatch match(this, kOpenTabScore,
-                          /*deletable=*/false, AutocompleteMatchType::OPEN_TAB);
+  AutocompleteMatch match(this, score, /*deletable=*/false,
+                          AutocompleteMatchType::OPEN_TAB);
 
   match.destination_url = url;
   match.fill_into_edit = base::UTF8ToUTF16(url.spec());
@@ -84,6 +128,13 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   // Setting this ensures that the result deduplication doesn't prioritize
   // another default match over an open tab result.
   match.allowed_to_be_default_match = true;
+
+  // If the input was in the @tabs keyword scope, set the `keyword` and
+  // `transition` appropriately to avoid popping the user out of keyword mode.
+  if (template_url) {
+    match.keyword = template_url->keyword();
+    match.transition = ui::PAGE_TRANSITION_KEYWORD;
+  }
 
   // For display in the suggestion UI, elide all optional parts. The user has
   // already opened these URLs so there's no need for them to make nuanced

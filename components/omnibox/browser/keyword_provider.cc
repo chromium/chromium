@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/cxx20_erase.h"
@@ -181,24 +182,30 @@ const TemplateURL* KeywordProvider::GetSubstitutingTemplateURLForInput(
 }
 
 // static
-AutocompleteInput KeywordProvider::AdjustInputForStarterPackEngines(
+std::pair<AutocompleteInput, const TemplateURL*>
+KeywordProvider::AdjustInputForStarterPackEngines(
     const AutocompleteInput& input,
     TemplateURLService* model) {
   DCHECK(model);
 
-  // If we're in a starter pack scope, we want to run the provider with only
-  // the user text AFTER the keyword.  i.e. if the input is "@history text",
+  // If the feature is disabled, or not in keyword mode, then `input` is
+  // definitely not in a starter pack scope, so early exit.
+  if (!OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() ||
+      !input.prefer_keyword()) {
+    return {input, nullptr};
+  }
+
+  // If in a starter pack scope, should run the provider with only
+  // the user text AFTER the keyword.  E.g. if the input is "@history text",
   // set the autocomplete input to just "text".
   AutocompleteInput keyword_input = input;
   const TemplateURL* keyword_provider =
       KeywordProvider::GetSubstitutingTemplateURLForInput(model,
                                                           &keyword_input);
-  if (OmniboxFieldTrial::IsSiteSearchStarterPackEnabled() &&
-      input.prefer_keyword() && keyword_provider &&
-      keyword_provider->starter_pack_id() > 0) {
-    return keyword_input;
-  }
-  return input;
+  if (keyword_provider && keyword_provider->starter_pack_id() > 0)
+    return {keyword_input, keyword_provider};
+
+  return {input, nullptr};
 }
 
 std::u16string KeywordProvider::GetKeywordForText(

@@ -47,7 +47,8 @@ void BookmarkProvider::Start(const AutocompleteInput& input,
   // engine.
   const AutocompleteInput adjusted_input =
       KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client_->GetTemplateURLService());
+          input, client_->GetTemplateURLService())
+          .first;
 
   DoAutocomplete(adjusted_input);
 }

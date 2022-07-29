@@ -58,7 +58,8 @@ void HistoryQuickProvider::Start(const AutocompleteInput& input,
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   autocomplete_input_ = KeywordProvider::AdjustInputForStarterPackEngines(
-      input, client()->GetTemplateURLService());
+                            input, client()->GetTemplateURLService())
+                            .first;
 
   // TODO(pkasting): We should just block here until this loads.  Any time
   // someone unloads the history backend, we'll get inconsistent inline

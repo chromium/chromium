@@ -425,7 +425,8 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // engine.
   AutocompleteInput autocomplete_input =
       KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService());
+          input, client()->GetTemplateURLService())
+          .first;
 
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.

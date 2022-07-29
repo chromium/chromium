@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
@@ -84,12 +85,13 @@ class KeywordProvider : public AutocompleteProvider {
       TemplateURLService* model,
       AutocompleteInput* input);
 
-  // Returns an AutocompleteInput with the keyword stripped if we're in keyword
-  // mode for a starter pack engine. i.e. for "@History text", input is adjusted
-  // to just be "text".  Otherwise, input is untouched and returned as is.
-  static AutocompleteInput AdjustInputForStarterPackEngines(
-      const AutocompleteInput& input,
-      TemplateURLService* model);
+  // If the keyword mode for a starter pack engine, returns `input` with the
+  // keyword stripped and the starter pack's `TemplateURL`. E.g. for "@History
+  // text", the input 'text' and the history `TemplateURL` are
+  // returned. Otherwise, returns `input` untouched and `nullptr`.
+  static std::pair<AutocompleteInput, const TemplateURL*>
+  AdjustInputForStarterPackEngines(const AutocompleteInput& input,
+                                   TemplateURLService* model);
 
   // If |text| corresponds (in the sense of
   // TemplateURLModel::CleanUserInputKeyword()) to an enabled, substituting

@@ -10,6 +10,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "components/search_engines/template_url.h"
 
 // This provider matches user input against open tabs. It is *not* included as a
 // default provider.
@@ -27,7 +28,9 @@ class OpenTabProvider : public AutocompleteProvider {
 
   AutocompleteMatch CreateOpenTabMatch(const AutocompleteInput& input,
                                        const std::u16string& title,
-                                       const GURL& url);
+                                       const GURL& url,
+                                       int score,
+                                       const TemplateURL* template_url);
 
   raw_ptr<AutocompleteProviderClient> client_;
 };
