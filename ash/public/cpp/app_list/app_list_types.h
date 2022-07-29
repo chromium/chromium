@@ -700,9 +700,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // Whether this is searched from Omnibox.
   bool is_omnibox_search = false;
 
-  // Whether this result is installing.
-  bool is_installing = false;
-
   // Whether this result is a recommendation.
   bool is_recommendation = false;
 
@@ -722,10 +719,6 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // Flag indicating whether the `badge_icon` should be painted atop a circle
   // background image.
   bool use_badge_icon_background = false;
-
-  // If set to true, whether or not to send visibility updates through to to
-  // the chrome side when this result is set visible/invisible.
-  bool notify_visibility_change = false;
 };
 
 // A struct holding a search result id and its corresponding position index that

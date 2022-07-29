@@ -212,32 +212,6 @@ int SearchResultTileItemListView::DoUpdate() {
     playstore_impression_timer_.Stop();
   }
 
-  // notify visibility changes, if needed.
-  std::set<std::string> actual_added_ids =
-      base::STLSetDifference<std::set<std::string>>(result_id_added,
-                                                    result_id_removed);
-
-  SearchModel* const search_model = AppListModelProvider::Get()->search_model();
-  for (const std::string& added_id : actual_added_ids) {
-    SearchResult* added = search_model->FindSearchResult(added_id);
-    if (added != nullptr && added->notify_visibility_change()) {
-      view_delegate()->OnSearchResultVisibilityChanged(added->id(), shown());
-    }
-  }
-  if (shown() != false) {
-    std::set<std::string> actual_removed_ids =
-        base::STLSetDifference<std::set<std::string>>(result_id_removed,
-                                                      result_id_added);
-    // we only notify removed items if we're in the middle of showing.
-    for (const std::string& removed_id : actual_removed_ids) {
-      SearchResult* removed = search_model->FindSearchResult(removed_id);
-      if (removed != nullptr && removed->notify_visibility_change()) {
-        view_delegate()->OnSearchResultVisibilityChanged(removed->id(),
-                                                         false /*=shown*/);
-      }
-    }
-  }
-
   return display_results.size();
 }
 
@@ -361,9 +335,6 @@ void SearchResultTileItemListView::OnShownChanged() {
     if (result == nullptr) {
       continue;
     }
-    if (result->notify_visibility_change()) {
-      view_delegate()->OnSearchResultVisibilityChanged(result->id(), shown());
-    }
   }
 }
 
@@ -382,10 +353,6 @@ void SearchResultTileItemListView::VisibilityChanged(View* starting_from,
     SearchResult* result = tile_view->result();
     if (result == nullptr) {
       continue;
-    }
-    if (result->notify_visibility_change()) {
-      view_delegate()->OnSearchResultVisibilityChanged(result->id(),
-                                                       false /*=visible*/);
     }
   }
 }
