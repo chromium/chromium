@@ -445,20 +445,6 @@ if (is_win || is_mac || is_linux) {
     output = "$target_gen_dir/updater_branding.h"
   }
 
-  source_set("updater_tests_support") {
-    testonly = true
-
-    sources = [
-      "unittest_util.cc",
-      "unittest_util.h",
-    ]
-
-    deps = [
-      ":base",
-      "//base",
-    ]
-  }
-
   source_set("browser_sources") {
     sources = [
       "//chrome/updater/constants.cc",
@@ -606,6 +592,8 @@ if (is_win || is_mac || is_linux) {
       "test/server.cc",
       "test/server.h",
       "test_scope.h",
+      "unittest_util.cc",
+      "unittest_util.h",
       "unittest_util_unittest.cc",
       "update_service_unittest.cc",
       "update_usage_stats_task_unittest.cc",
@@ -618,7 +606,6 @@ if (is_win || is_mac || is_linux) {
       ":base",
       ":branding_header",
       ":constants_test",
-      ":updater_tests_support",
       ":version_header",
       "//base",
       "//base/test:test_support",

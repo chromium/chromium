@@ -34,7 +34,7 @@ void DMResponseValidatorTests::GetCachedInfoWithPublicKey(
     CachedPolicyInfo& cached_info) const {
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          true /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/true, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kSignNormally);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -61,7 +61,7 @@ DMResponseValidatorTests::GetDMResponseWithOmahaPolicy(
 TEST_F(DMResponseValidatorTests, ValidationOKWithoutPublicKey) {
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          true /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/true, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kSignNormally);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -80,7 +80,7 @@ TEST_F(DMResponseValidatorTests, ValidationOKWithoutPublicKey) {
 TEST_F(DMResponseValidatorTests, ValidationOKWithPublicKey) {
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          false /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/false, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kSignNormally);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -100,7 +100,7 @@ TEST_F(DMResponseValidatorTests, ValidationOKWithPublicKey) {
 TEST_F(DMResponseValidatorTests, UnexpectedDMToken) {
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          true /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/true, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kSignNormally);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -120,7 +120,7 @@ TEST_F(DMResponseValidatorTests, UnexpectedDMToken) {
 TEST_F(DMResponseValidatorTests, UnexpectedDeviceID) {
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          true /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/true, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kSignNormally);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -142,7 +142,7 @@ TEST_F(DMResponseValidatorTests, NoCachedPublicKey) {
   // request.
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          false /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/false, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kSignNormally);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -163,7 +163,7 @@ TEST_F(DMResponseValidatorTests, BadSignedPublicKey) {
   // Validation should fail if the public key is not signed properly.
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          true /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/true, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kSignNormally);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -186,7 +186,7 @@ TEST_F(DMResponseValidatorTests, BadSignedPolicyData) {
   // Validation should fail if policy data is not signed properly.
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
-          true /* first_request */, false /* rotate_to_new_key */,
+          /*first_request=*/true, /*rotate_to_new_key=*/false,
           DMPolicyBuilderForTesting::SigningOption::kTamperDataSignature);
 
   EXPECT_EQ(dm_response->policy_response().responses_size(), 1);
@@ -217,7 +217,7 @@ TEST_F(DMResponseValidatorTests, OmahaPolicyWithBadValues) {
   omaha_settings.set_update_default(edm::MANUAL_UPDATES_ONLY);
 
   edm::ApplicationSettings app;
-  app.set_app_guid(kChromeAppId);
+  app.set_app_guid(test::kChromeAppId);
 
   app.set_install(edm::INSTALL_DISABLED);
   app.set_update(edm::AUTOMATIC_UPDATES_ONLY);

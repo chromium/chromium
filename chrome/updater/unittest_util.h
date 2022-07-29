@@ -5,19 +5,10 @@
 #ifndef CHROME_UPDATER_UNITTEST_UTIL_H_
 #define CHROME_UPDATER_UNITTEST_UTIL_H_
 
-#include "chrome/updater/update_service.h"
-
-namespace updater {
+namespace updater::test {
 
 extern const char kChromeAppId[];
 
-bool operator==(const UpdateService::UpdateState& lhs,
-                const UpdateService::UpdateState& rhs);
-inline bool operator!=(const UpdateService::UpdateState& lhs,
-                       const UpdateService::UpdateState& rhs) {
-  return !(lhs == rhs);
-}
-
-}  // namespace updater
+}  // namespace updater::test
 
 #endif  // CHROME_UPDATER_UNITTEST_UTIL_H_

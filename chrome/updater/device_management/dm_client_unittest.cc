@@ -245,7 +245,7 @@ class DMPolicyFetchRequestCallbackHandler : public DMRequestCallbackHandler {
       EXPECT_EQ(omaha_settings->proxy_mode(), "pac_script");
       const ::wireless_android_enterprise_devicemanagement::ApplicationSettings&
           chrome_settings = omaha_settings->application_settings()[0];
-      EXPECT_EQ(chrome_settings.app_guid(), kChromeAppId);
+      EXPECT_EQ(chrome_settings.app_guid(), test::kChromeAppId);
       EXPECT_EQ(chrome_settings.update(),
                 ::wireless_android_enterprise_devicemanagement::
                     AUTOMATIC_UPDATES_ONLY);
