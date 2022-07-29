@@ -521,10 +521,9 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   // TODO(apaseltiner): Propagate the element instead of passing nullptr.
   const auto attribution_reporting_eligibility =
       element_->HasAttributionsrcAttribute() &&
-              CanRegisterAttributionInContext(
-                  context_window->GetFrame(), /*element=*/nullptr,
-                  /*request_id=*/absl::nullopt,
-                  AttributionSrcLoader::RegisterContext::kResource)
+              CanRegisterAttributionInContext(context_window->GetFrame(),
+                                              /*element=*/nullptr,
+                                              /*request_id=*/absl::nullopt)
           ? ScriptFetchOptions::AttributionReportingEligibility::kEligible
           : ScriptFetchOptions::AttributionReportingEligibility::kIneligible;
 

@@ -1192,12 +1192,11 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
 
-  can_register_attribution = CanRegisterAttributionInContext(
-      document->Loader()->GetFrame(),
-      /*element=*/nullptr,
-      /*request_id=*/absl::nullopt,
-      AttributionSrcLoader::RegisterContext::kAttributionSrc,
-      /*log_issues=*/false);
+  can_register_attribution =
+      CanRegisterAttributionInContext(document->Loader()->GetFrame(),
+                                      /*element=*/nullptr,
+                                      /*request_id=*/absl::nullopt,
+                                      /*log_issues=*/false);
 }
 
 }  // namespace blink

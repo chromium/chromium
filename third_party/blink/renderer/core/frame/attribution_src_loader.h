@@ -31,11 +31,6 @@ struct Impression;
 class CORE_EXPORT AttributionSrcLoader
     : public GarbageCollected<AttributionSrcLoader> {
  public:
-  enum class RegisterContext {
-    kAttributionSrc,
-    kResource,
-  };
-
   static constexpr const char* kAttributionEligibleEventSource = "event-source";
   static constexpr const char* kAttributionEligibleNavigationSource =
       "navigation-source";
@@ -84,8 +79,7 @@ class CORE_EXPORT AttributionSrcLoader
 
   // Returns whether the attribution is allowed to be registered. Devtool issue
   // might be reported if it's not allowed.
-  bool UrlCanRegisterAttribution(RegisterContext context,
-                                 const KURL& url,
+  bool UrlCanRegisterAttribution(const KURL& url,
                                  HTMLElement* element,
                                  absl::optional<uint64_t> request_id);
 
@@ -108,7 +102,6 @@ CORE_EXPORT bool CanRegisterAttributionInContext(
     LocalFrame* frame,
     HTMLElement* element,
     absl::optional<uint64_t> request_id,
-    AttributionSrcLoader::RegisterContext context,
     bool log_issues = true);
 
 }  // namespace blink

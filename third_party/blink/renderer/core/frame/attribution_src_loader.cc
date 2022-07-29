@@ -80,12 +80,10 @@ void LogAuditIssue(ExecutionContext* execution_context,
 
 }  // namespace
 
-bool CanRegisterAttributionInContext(
-    LocalFrame* frame,
-    HTMLElement* element,
-    absl::optional<uint64_t> request_id,
-    AttributionSrcLoader::RegisterContext context,
-    bool log_issues) {
+bool CanRegisterAttributionInContext(LocalFrame* frame,
+                                     HTMLElement* element,
+                                     absl::optional<uint64_t> request_id,
+                                     bool log_issues) {
   DCHECK(frame);
 
   LocalDOMWindow* window = frame->DomWindow();
@@ -252,8 +250,8 @@ AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
   if (!src_url.ProtocolIsInHTTPFamily())
     return nullptr;
 
-  if (!UrlCanRegisterAttribution(RegisterContext::kAttributionSrc, src_url,
-                                 element, /*request_id=*/absl::nullopt)) {
+  if (!UrlCanRegisterAttribution(src_url, element,
+                                 /*request_id=*/absl::nullopt)) {
     return nullptr;
   }
 
@@ -320,17 +318,14 @@ AttributionSrcLoader::ResourceClient* AttributionSrcLoader::DoRegistration(
 }
 
 bool AttributionSrcLoader::UrlCanRegisterAttribution(
-    RegisterContext context,
     const KURL& url,
     HTMLElement* element,
     absl::optional<uint64_t> request_id) {
   LocalDOMWindow* window = local_frame_->DomWindow();
   DCHECK(window);
 
-  if (!CanRegisterAttributionInContext(local_frame_, element, request_id,
-                                       context)) {
+  if (!CanRegisterAttributionInContext(local_frame_, element, request_id))
     return false;
-  }
 
   scoped_refptr<const SecurityOrigin> reporting_origin =
       SecurityOrigin::Create(url);
@@ -379,8 +374,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
   const uint64_t request_id = request.InspectorId();
 
-  if (!UrlCanRegisterAttribution(RegisterContext::kResource,
-                                 response.CurrentRequestUrl(),
+  if (!UrlCanRegisterAttribution(response.CurrentRequestUrl(),
                                  /*element=*/nullptr, request_id)) {
     return false;
   }

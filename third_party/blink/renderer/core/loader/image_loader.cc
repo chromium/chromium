@@ -504,10 +504,9 @@ void ImageLoader::DoUpdateFromElement(
 
     if (IsA<HTMLImageElement>(GetElement()) &&
         GetElement()->FastHasAttribute(html_names::kAttributionsrcAttr) &&
-        CanRegisterAttributionInContext(
-            frame, To<HTMLImageElement>(GetElement()),
-            /*request_id=*/absl::nullopt,
-            AttributionSrcLoader::RegisterContext::kResource)) {
+        CanRegisterAttributionInContext(frame,
+                                        To<HTMLImageElement>(GetElement()),
+                                        /*request_id=*/absl::nullopt)) {
       resource_request.SetHttpHeaderField(
           http_names::kAttributionReportingEligible,
           kAttributionEligibleEventSourceAndTrigger);

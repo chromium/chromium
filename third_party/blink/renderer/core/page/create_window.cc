@@ -226,10 +226,9 @@ WebWindowFeatures GetWindowFeaturesFromString(const String& feature_string,
       // If the impression could not be set, or if the value was empty, mark
       // attribution eligibility by adding an impression.
       if (!window_features.impression &&
-          CanRegisterAttributionInContext(
-              dom_window->GetFrame(), /*element=*/nullptr,
-              /*request_id=*/absl::nullopt,
-              AttributionSrcLoader::RegisterContext::kAttributionSrc)) {
+          CanRegisterAttributionInContext(dom_window->GetFrame(),
+                                          /*element=*/nullptr,
+                                          /*request_id=*/absl::nullopt)) {
         window_features.impression = blink::Impression();
       }
     }
