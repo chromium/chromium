@@ -1781,7 +1781,6 @@ crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-operations.https.html [ 
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-offer.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-setRemoteDescription-rollback.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/webrtc/RTCRtpTransceiver-setCodecPreferences.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/protocol/rtp-clockrate.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/webrtc/protocol/rtp-demuxing.html [ Failure ]
 crbug.com/1050754 external/wpt/webrtc/protocol/video-codecs.https.html [ Failure ]
