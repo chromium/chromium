@@ -196,7 +196,6 @@ public class CastWebContentsComponent {
             filter.addDataAuthority(instanceUri.getAuthority(), null);
             filter.addDataPath(instanceUri.getPath(), PatternMatcher.PATTERN_LITERAL);
             filter.addAction(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
-            filter.addAction(CastWebContentsIntentUtils.ACTION_KEY_EVENT);
             filter.addAction(CastWebContentsIntentUtils.ACTION_ON_VISIBILITY_CHANGE);
             return new LocalBroadcastReceiverScope(filter, this ::onReceiveIntent);
         });

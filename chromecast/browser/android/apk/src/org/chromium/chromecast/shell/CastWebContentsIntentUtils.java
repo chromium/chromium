@@ -28,12 +28,6 @@ public class CastWebContentsIntentUtils {
     private static final boolean DEBUG = true;
 
     /**
-     * Action type of intent from Android to cast app to notify a physical key down event.
-     */
-    static final String ACTION_KEY_EVENT =
-            "com.google.android.apps.castshell.intent.action.KEY_EVENT";
-
-    /**
      * Action type of intent from Android to cast app to notify the stop event of
      * CastWebContentsActivity.
      */
@@ -164,11 +158,6 @@ public class CastWebContentsIntentUtils {
         return intent;
     }
 
-    // Used by intent of ACTION_KEY_EVENT
-    public static int getKeyCode(Intent in) {
-        return in.getIntExtra(INTENT_EXTRA_KEY_CODE, 0);
-    }
-
     // Used by intent of ACTION_ON_VISIBILITY_CHANGE
     @VisibilityType
     public static int getVisibilityType(Intent in) {
@@ -187,10 +176,6 @@ public class CastWebContentsIntentUtils {
 
     public static boolean isIntentOfActivityStopped(Intent in) {
         return in.getAction().equals(ACTION_ACTIVITY_STOPPED);
-    }
-
-    public static boolean isIntentOfKeyEvent(Intent in) {
-        return in.getAction().equals(ACTION_KEY_EVENT);
     }
 
     public static boolean isIntentOfVisibilityChange(Intent in) {
