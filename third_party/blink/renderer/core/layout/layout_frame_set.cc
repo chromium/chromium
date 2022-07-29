@@ -281,7 +281,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
 
   // now we have the final layout, distribute the delta over it
   bool worked = true;
-  int* grid_delta = axis.deltas_.data();
+  const int* grid_delta = axis.deltas_.data();
   for (int i = 0; i < grid_len; ++i) {
     if (grid_layout[i] && grid_layout[i] + grid_delta[i] <= 0)
       worked = false;
@@ -291,7 +291,6 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
   if (!worked) {
     for (int i = 0; i < grid_len; ++i)
       grid_layout[i] -= grid_delta[i];
-    axis.deltas_.Fill(0);
   }
 }
 
