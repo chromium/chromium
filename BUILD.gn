@@ -1215,10 +1215,6 @@ if (!is_ios) {
       "//testing/scripts/run_isolated_script_test.py",
       "//testing/xvfb.py",
       "//third_party/blink/tools/",
-      "//third_party/blink/web_tests/VirtualTestSuites",
-      "//third_party/blink/web_tests/external/WPT_BASE_MANIFEST_8.json",
-      "//third_party/blink/web_tests/external/wpt/common/",
-      "//third_party/blink/web_tests/external/wpt/resources/",
       "//third_party/blink/web_tests/resources/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
       "//third_party/test_fonts/test_fonts/",
@@ -1540,7 +1536,10 @@ if (!is_ios) {
       "//third_party/webgpu-cts",
     ]
     data = [
+      "//third_party/blink/web_tests/external/wpt/common/",
+      "//third_party/blink/web_tests/external/wpt/resources/",
       "//third_party/blink/web_tests/FlagSpecificConfig",
+      "//third_party/blink/web_tests/VirtualTestSuites",
       "//third_party/blink/web_tests/WebGPUExpectations",
       "//third_party/blink/web_tests/wpt_internal/",
       "//third_party/webgpu-cts/scripts/",
