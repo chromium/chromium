@@ -130,6 +130,7 @@ public class OmniboxPedalsRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @DisabledTest(message = "crbug.com/1348691")
     public void testRunChromeSafetyCheckPedal() throws IOException, InterruptedException {
         List<AutocompleteMatch> suggestionsList = new ArrayList<>();
         suggestionsList.add(
