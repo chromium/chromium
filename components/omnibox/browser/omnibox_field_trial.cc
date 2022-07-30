@@ -907,6 +907,11 @@ const base::FeatureParam<bool> kRichAutocompletionShowAdditionalText(
     "RichAutocompletionAutocompleteShowAdditionalText",
     true);
 
+const base::FeatureParam<bool> kRichAutocompletionAdditionalTextWithParenthesis(
+    &omnibox::kRichAutocompletion,
+    "RichAutocompletionAdditionalTextWithParenthesis",
+    false);
+
 const base::FeatureParam<bool> kRichAutocompletionAutocompleteShortcutText(
     &omnibox::kRichAutocompletion,
     "RichAutocompletionAutocompleteShortcutText",
