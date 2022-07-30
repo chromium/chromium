@@ -267,15 +267,6 @@ public class CastWebContentsComponent {
         sendIntentSync(CastWebContentsIntentUtils.enableTouchInput(mSessionId, enabled));
     }
 
-    public void setHostContext(int interactionId, String conversationId) {
-        if (DEBUG) {
-            Log.d(TAG, "setInteractionid interactionId=%s; conversationID=%s", interactionId,
-                    conversationId);
-        }
-        sendIntentSync(CastWebContentsIntentUtils.setHostContext(
-                mSessionId, interactionId, conversationId));
-    }
-
     public static void onComponentClosed(String sessionId) {
         if (DEBUG) Log.d(TAG, "onComponentClosed");
         sendIntentSync(CastWebContentsIntentUtils.onActivityStopped(sessionId));

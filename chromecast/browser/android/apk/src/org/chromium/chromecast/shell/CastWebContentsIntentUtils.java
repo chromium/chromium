@@ -42,31 +42,11 @@ public class CastWebContentsIntentUtils {
             "com.google.android.apps.castshell.intent.action.ON_VISIBILITY_CHANGE";
 
     /**
-     * Action type of intent from cast app to android to request for a visibility priority change.
-     */
-    public static final String ACTION_REQUEST_VISIBILITY_PRIORITY =
-            "com.google.android.apps.castshell.intent.action.REQUEST_VISIBILITY_PRIORITY";
-
-    /**
-     * Action type of intent from cast app to android to request to move the cast view out of
-     * screen.
-     */
-    public static final String ACTION_REQUEST_MOVE_OUT =
-            "com.google.android.apps.castshell.intent.action.REQUEST_MOVE_OUT";
-
-    /**
      * Action type of intent from CastWebContentsComponent to notify CastWebContentsActivity that
      * touch should be enabled.
      */
     public static final String ACTION_ENABLE_TOUCH_INPUT =
             "com.google.android.apps.castshell.intent.action.ENABLE_TOUCH_INPUT";
-
-    /**
-     * Action type of intent from CastWebContentsComponent to set interaction ID and conversation ID
-     * to cast window host.
-     */
-    public static final String ACTION_SET_HOST_CONTEXT =
-            "com.google.android.apps.castshell.intent.action.SET_HOST_CONTEXT";
 
     /** Key of extra value in an intent, the value is a URI of cast://webcontents/<instanceId> */
     static final String INTENT_EXTRA_URI = "content_uri";
@@ -113,20 +93,6 @@ public class CastWebContentsIntentUtils {
     private static final String INTENT_EXTRA_VISIBILITY_TYPE =
             "com.google.android.apps.castshell.intent.extra.VISIBILITY_TYPE";
 
-    /**
-     * Key of extra value of the intent ACTION_SET_HOST_CONTEXT, value is an int of
-     * interaction ID.
-     */
-    private static final String INTENT_EXTRA_INTERACTION_ID =
-            "com.google.android.apps.castshell.intent.extra.INTERACTION_ID";
-
-    /**
-     * Key of extra value of the intent ACTION_SET_HOST_CONTEXT, value is a string of
-     * conversation ID.
-     */
-    private static final String INTENT_EXTRA_CONVERSATION_ID =
-            "com.google.android.apps.castshell.intent.extra.CONVERSATION_ID";
-
     @VisibilityType
     static final int VISIBITY_TYPE_UNKNOWN = VisibilityType.UNKNOWN;
     @VisibilityType
@@ -162,16 +128,6 @@ public class CastWebContentsIntentUtils {
     @VisibilityType
     public static int getVisibilityType(Intent in) {
         return in.getIntExtra(INTENT_EXTRA_VISIBILITY_TYPE, 0);
-    }
-
-    // Used by intent of ACTION_SET_HOST_CONTEXT
-    public static int getInteractionId(Intent in) {
-        return in.getIntExtra(INTENT_EXTRA_INTERACTION_ID, 0);
-    }
-
-    // Used by intent of ACTION_SET_HOST_CONTEXT
-    public static String getConversationId(Intent in) {
-        return in.getStringExtra(INTENT_EXTRA_CONVERSATION_ID);
     }
 
     public static boolean isIntentOfActivityStopped(Intent in) {
@@ -285,20 +241,6 @@ public class CastWebContentsIntentUtils {
     public static Intent onWebContentStopped(Uri uri) {
         Intent intent = new Intent(CastIntents.ACTION_ON_WEB_CONTENT_STOPPED);
         intent.putExtra(INTENT_EXTRA_URI, uri.toString());
-        return intent;
-    }
-
-    // CastWebContentsComponent -> CastWindowManager
-    public static Intent setHostContext(
-            String instanceId, int interactionId, String conversationId) {
-        if (DEBUG) {
-            Log.d(TAG, "setInteractionid interactionId=%s; conversationID=%s", interactionId,
-                    conversationId);
-        }
-        Intent intent = new Intent(ACTION_SET_HOST_CONTEXT);
-        intent.putExtra(INTENT_EXTRA_URI, getInstanceUri(instanceId).toString());
-        intent.putExtra(INTENT_EXTRA_INTERACTION_ID, interactionId);
-        intent.putExtra(INTENT_EXTRA_CONVERSATION_ID, conversationId);
         return intent;
     }
 

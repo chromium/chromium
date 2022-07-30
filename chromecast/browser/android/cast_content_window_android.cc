@@ -9,7 +9,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/logging.h"
 #include "chromecast/browser/jni_headers/CastContentWindowAndroid_jni.h"
 #include "content/public/browser/web_contents.h"
 
@@ -30,9 +29,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
       env, native_window, enable_touch_input, is_remote_control_mode,
       turn_on_screen, ConvertUTF8ToJavaString(env, session_id));
 }
-
-constexpr char kContextInteractionId[] = "interactionId";
-constexpr char kContextConversationId[] = "conversationId";
 
 }  // namespace
 
@@ -98,20 +94,7 @@ void CastContentWindowAndroid::RequestVisibility(
 void CastContentWindowAndroid::SetActivityContext(
     base::Value activity_context) {}
 
-void CastContentWindowAndroid::SetHostContext(base::Value host_context) {
-  auto* found_interaction_id = host_context.FindKey(kContextInteractionId);
-  auto* found_conversation_id = host_context.FindKey(kContextConversationId);
-  if (found_interaction_id && found_conversation_id) {
-    int interaction_id = found_interaction_id->GetInt();
-    std::string& conversation_id = found_conversation_id->GetString();
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_CastContentWindowAndroid_setHostContext(
-        env, java_window_, static_cast<int>(interaction_id),
-        ConvertUTF8ToJavaString(env, conversation_id));
-  } else {
-    LOG(ERROR) << "Interaction ID or Conversation ID is not found";
-  }
-}
+void CastContentWindowAndroid::SetHostContext(base::Value host_context) {}
 
 void CastContentWindowAndroid::RequestMoveOut() {}
 
