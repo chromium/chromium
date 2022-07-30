@@ -88,7 +88,6 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   void UpdateSearchBoxBorder() override;
   void SetupAssistantButton() override;
   void SetupCloseButton() override;
-  void SetupBackButton() override;
   void RecordSearchBoxActivationHistogram(ui::EventType event_type) override;
   void OnSearchBoxActiveChanged(bool active) override;
   void UpdateSearchBoxFocusPaint() override;

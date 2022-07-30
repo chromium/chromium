@@ -121,7 +121,6 @@ aggregate_vector_icons("ash_vector_icons") {
     "ksv_overview.icon",
     "ksv_privacy_screen_toggle.icon",
     "ksv_reload.icon",
-    "ksv_search_back.icon",
     "ksv_search_bar.icon",
     "ksv_search_close.icon",
     "ksv_search_no_result_dark.icon",

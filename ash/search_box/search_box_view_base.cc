@@ -398,11 +398,6 @@ SearchBoxViewBase::SearchBoxViewBase(SearchBoxViewDelegate* delegate)
   search_box_->SetFontList(font_list);
   search_box_->SetCursorEnabled(is_search_box_active_);
 
-  back_button_ =
-      content_container_->AddChildView(std::make_unique<SearchBoxImageButton>(
-          base::BindRepeating(&SearchBoxViewDelegate::BackButtonPressed,
-                              base::Unretained(delegate_))));
-
   text_container_ = content_container_->AddChildView(
       std::make_unique<views::BoxLayoutView>());
   text_container_->SetCrossAxisAlignment(
@@ -494,7 +489,6 @@ void SearchBoxViewBase::Init(const InitParams& params) {
   UpdateSearchBoxBorder();
   UpdatePlaceholderTextStyle();
   SetupAssistantButton();
-  SetupBackButton();
   SetupCloseButton();
 }
 
@@ -511,10 +505,6 @@ gfx::Rect SearchBoxViewBase::GetViewBoundsForSearchBoxContentsBounds(
 
 views::ImageButton* SearchBoxViewBase::assistant_button() {
   return static_cast<views::ImageButton*>(assistant_button_);
-}
-
-views::ImageButton* SearchBoxViewBase::back_button() {
-  return static_cast<views::ImageButton*>(back_button_);
 }
 
 views::ImageButton* SearchBoxViewBase::close_button() {
@@ -542,12 +532,6 @@ void SearchBoxViewBase::MaybeSetAutocompleteGhostText(
     category_ghost_text_->SetText(category);
     category_separator_label_->SetVisible(!category.empty());
   }
-}
-
-void SearchBoxViewBase::ShowBackOrGoogleIcon(bool show_back_button) {
-  search_icon_->SetVisible(!show_back_button);
-  back_button_->SetVisible(show_back_button);
-  content_container_->Layout();
 }
 
 void SearchBoxViewBase::SetSearchBoxActive(bool active,

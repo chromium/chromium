@@ -189,7 +189,6 @@ TEST_F(KeyboardShortcutViewTest, FocusOnSearchBox) {
 
   // Press a key should enter search mode.
   KeyPress(ui::VKEY_A, /*should_insert=*/true);
-  EXPECT_FALSE(GetSearchBoxView()->back_button()->GetVisible());
   EXPECT_TRUE(GetSearchBoxView()->close_button()->GetVisible());
   EXPECT_FALSE(GetSearchBoxView()->search_box()->GetText().empty());
 

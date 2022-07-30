@@ -4750,9 +4750,6 @@ Here are some things you can try to get started.
       <message name="IDS_APP_LIST_APP_KEYBOARD_MOVE_TO_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback after keyboard moving an app into a folder, which describes the folder name the app has been moved to.">
         <ph name="MOVED_APP_NAME">$1<ex>App Name</ex></ph> moved to folder <ph name="FOLDER_NAME">$2<ex>Folder Name</ex></ph>.
       </message>
-      <message name="IDS_APP_LIST_BACK" desc="The name of the button that goes to the previous screen in the launcher.">
-        Back
-      </message>
       <message name="IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER" desc="The placeholder text for app list folder name.">
         Unnamed
       </message>

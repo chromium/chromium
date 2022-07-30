@@ -35,7 +35,6 @@ template("ash_test_resources") {
     output = "$root_build_dir/${target_name}.pak"
 
     sources = [
-      "$root_gen_dir/ash/app_list/resources/app_list_resources_${percent}_percent.pak",
       "$root_gen_dir/ash/login/resources/login_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_${percent}_percent.pak",
       "$root_gen_dir/ui/resources/ui_resources_${percent}_percent.pak",
@@ -54,7 +53,6 @@ template("ash_test_resources") {
     }
 
     deps = [
-      "//ash/app_list/resources",
       "//ash/login/resources",
       "//mojo/public/js:resources",
       "//ui/chromeos/resources",

@@ -397,11 +397,6 @@ void KeyboardShortcutView::QueryChanged(ash::SearchBoxViewBase* sender) {
                      base::Unretained(this), sender->search_box()->GetText()));
 }
 
-void KeyboardShortcutView::BackButtonPressed() {
-  search_box_view_->ClearSearch();
-  search_box_view_->SetSearchBoxActive(false, ui::ET_UNKNOWN);
-}
-
 void KeyboardShortcutView::CloseButtonPressed() {
   // After clicking search box close button focus the search box text field.
   search_box_view_->search_box()->RequestFocus();

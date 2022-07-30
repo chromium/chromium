@@ -76,9 +76,6 @@ void KSVSearchBoxView::OnKeyEvent(ui::KeyEvent* event) {
 void KSVSearchBoxView::OnThemeChanged() {
   ash::SearchBoxViewBase::OnThemeChanged();
 
-  back_button()->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(ash::kKsvSearchBackIcon, GetBackButtonColor()));
   close_button()->SetImage(
       views::ImageButton::STATE_NORMAL,
       gfx::CreateVectorIcon(ash::kKsvSearchCloseIcon, GetCloseButtonColor()));
@@ -130,22 +127,6 @@ void KSVSearchBoxView::SetupCloseButton() {
   close->SetVisible(false);
 }
 
-void KSVSearchBoxView::SetupBackButton() {
-  views::ImageButton* back = back_button();
-  back->SetHasInkDropActionOnClick(true);
-  back->SetImage(
-      views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(ash::kKsvSearchBackIcon, GetBackButtonColor()));
-  back->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
-  back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  back->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  const std::u16string back_button_label(
-      l10n_util::GetStringUTF16(IDS_KSV_BACK_ACCESSIBILITY_NAME));
-  back->SetAccessibleName(back_button_label);
-  back->SetTooltipText(back_button_label);
-  back->SetVisible(false);
-}
-
 void KSVSearchBoxView::UpdatePlaceholderTextStyle() {
   SetPlaceholderTextAttributes();
 }
@@ -168,10 +149,6 @@ SkColor KSVSearchBoxView::GetBackgroundColor() {
   return ShouldUseFocusedColors()
              ? gfx::kGoogleGrey100
              : ash::AppListColorProvider::Get()->GetSearchBoxBackgroundColor();
-}
-
-SkColor KSVSearchBoxView::GetBackButtonColor() {
-  return ShouldUseDarkThemeColors() ? gfx::kGoogleBlue300 : gfx::kGoogleBlue500;
 }
 
 SkColor KSVSearchBoxView::GetBorderColor() {
