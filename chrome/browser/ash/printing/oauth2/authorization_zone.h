@@ -88,6 +88,10 @@ class AuthorizationZone {
   virtual void MarkEndpointAccessTokenAsExpired(
       const chromeos::Uri& ipp_endpoint,
       const std::string& endpoint_access_token) = 0;
+  // This method must be called when the Authorization Zone becomes untrusted.
+  // The method cancels all existing sessions and calls all pending callbacks
+  // in the object with status StatusCode::kUnknownAuthorizationServer.
+  virtual void MarkAuthorizationZoneAsUntrusted() = 0;
 
  protected:
   AuthorizationZone() = default;

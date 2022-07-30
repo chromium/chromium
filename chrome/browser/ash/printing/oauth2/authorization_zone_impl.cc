@@ -347,6 +347,34 @@ void AuthorizationZoneImpl::AuthorizationProcedure() {
   waiting_authorizations_.clear();
 }
 
+void AuthorizationZoneImpl::MarkAuthorizationZoneAsUntrusted() {
+  const std::string msg = "Authorization Server marked as untrusted";
+
+  pending_authorizations_.clear();
+
+  // This method will call all callbacks from `waiting_authorizations_` and
+  // empty it.
+  OnInitializeCallback(StatusCode::kUnknownAuthorizationServer, msg);
+
+  // Clear `sessions_`.
+  for (std::unique_ptr<AuthorizationServerSession>& session : sessions_) {
+    std::vector<StatusCallback> callbacks = session->TakeWaitingList();
+    for (StatusCallback& callback : callbacks) {
+      std::move(callback).Run(StatusCode::kUnknownAuthorizationServer, msg);
+    }
+  }
+  sessions_.clear();
+
+  // Clear `ipp_endpoints_`.
+  for (auto& [_, ipp_endpoint] : ipp_endpoints_) {
+    std::vector<StatusCallback> callbacks = ipp_endpoint->TakeWaitingList();
+    for (StatusCallback& callback : callbacks) {
+      std::move(callback).Run(StatusCode::kUnknownAuthorizationServer, msg);
+    }
+  }
+  ipp_endpoints_.clear();
+}
+
 void AuthorizationZoneImpl::OnInitializeCallback(StatusCode status,
                                                  const std::string& data) {
   if (status == StatusCode::kOK) {

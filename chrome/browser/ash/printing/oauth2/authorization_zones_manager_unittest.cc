@@ -43,6 +43,7 @@ class MockAuthorizationZone : public AuthorizationZone {
               (const chromeos::Uri& ipp_endpoint,
                const std::string& endpoint_access_token),
               (override));
+  MOCK_METHOD(void, MarkAuthorizationZoneAsUntrusted, (), (override));
 };
 
 class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
@@ -166,7 +167,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
       AuthorizationZonesManager::Create(&profile_);
 };
 
-TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, UnknownAuthServer) {
+TEST_F(PrintingOAuth2AuthorizationZonesManagerTest, UntrustedAuthServer) {
   GURL url("https://ala.ma.kota/albo/psa");
   GURL redirect_url("https://abc:123/def?ghi=jkl");
   chromeos::Uri ipp_endpoint("https://printer");

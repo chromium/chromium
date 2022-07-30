@@ -119,7 +119,7 @@ class AuthorizationZonesManagerImpl
   }
 
   // Returns a pointer to the corresponding element in `servers_` or nullptr if
-  // `auth_server` is unknown.
+  // `auth_server` is untrusted.
   AuthorizationZone* GetAuthorizationZone(const GURL& auth_server) {
     auto it_server = servers_.find(auth_server);
     if (it_server == servers_.end()) {

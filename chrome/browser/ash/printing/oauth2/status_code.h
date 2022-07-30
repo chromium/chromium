@@ -25,7 +25,8 @@ enum class StatusCode {
   // The client is not registered to the server and the server does not support
   // dynamic registration (as described in rfc7591).
   kClientNotRegistered,
-  // The server is unknown (not trusted).
+  // The server is untrusted.
+  // TODO(b:240799350) - replace Unknown with Untrusted.
   kUnknownAuthorizationServer,
   // The server denied the request.
   kAccessDenied,

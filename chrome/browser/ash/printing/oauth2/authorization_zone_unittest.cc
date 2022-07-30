@@ -462,6 +462,54 @@ TEST_F(PrintingOAuth2AuthorizationZoneTest, ParallelFirstTokenRequests) {
   EXPECT_EQ(crs[0].status, printing::oauth2::StatusCode::kAuthorizationNeeded);
 }
 
+TEST_F(PrintingOAuth2AuthorizationZoneTest, CancellationDuringInitialization) {
+  CreateAuthorizationZone("clientID");
+  CallbackResult cr_0;
+  CallbackResult cr_1;
+
+  // Try to start two sessions and cancel before the first response from the
+  // server returns.
+  authorization_zone_->InitAuthorization("scope0", BindResult(cr_0));
+  authorization_zone_->InitAuthorization("scope1", BindResult(cr_1));
+  authorization_zone_->MarkAuthorizationZoneAsUntrusted();
+  EXPECT_EQ(cr_0.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr_1.status, StatusCode::kUnknownAuthorizationServer);
+
+  // Response from the server should not trigger anything.
+  ProcessMetadataRequest();
+  EXPECT_EQ(cr_0.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr_1.status, StatusCode::kUnknownAuthorizationServer);
+}
+
+TEST_F(PrintingOAuth2AuthorizationZoneTest, CancelExistingSessions) {
+  CreateAuthorizationZone("clientID");
+  CallbackResult cr_0;
+  CallbackResult cr_1;
+
+  // Start two sessions and send request for the first access token.
+  authorization_zone_->InitAuthorization("scope0", BindResult(cr_0));
+  authorization_zone_->InitAuthorization("scope1", BindResult(cr_1));
+  ProcessMetadataRequest();
+  ASSERT_EQ(cr_0.status, printing::oauth2::StatusCode::kOK);
+  ASSERT_EQ(cr_1.status, printing::oauth2::StatusCode::kOK);
+  auto auth_url_0 = SimulateAuthorization(cr_0.data, "auth_code_0", "scope0");
+  auto auth_url_1 = SimulateAuthorization(cr_1.data, "auth_code_1", "scope1");
+  authorization_zone_->FinishAuthorization(GURL(auth_url_0), BindResult(cr_0));
+  authorization_zone_->FinishAuthorization(GURL(auth_url_1), BindResult(cr_1));
+
+  // Get the access token for the first session and ask for an endpoint access
+  // token.
+  ProcessFirstTokenRequest("auth_code_0", "acc_token_0", "ref_token_0");
+  ASSERT_EQ(cr_0.status, printing::oauth2::StatusCode::kOK);
+  authorization_zone_->GetEndpointAccessToken(chromeos::Uri("ipp://printer0"),
+                                              "scope0", BindResult(cr_0));
+
+  // Cancel the zone. All pending callbacks should return.
+  authorization_zone_->MarkAuthorizationZoneAsUntrusted();
+  EXPECT_EQ(cr_0.status, StatusCode::kUnknownAuthorizationServer);
+  EXPECT_EQ(cr_1.status, StatusCode::kUnknownAuthorizationServer);
+}
+
 TEST_F(PrintingOAuth2AuthorizationZoneTest, PrefixInErrorMessage) {
   CallbackResult cr;
   CreateAuthorizationZone("");

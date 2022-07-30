@@ -49,17 +49,15 @@ class AuthorizationZoneImpl : public AuthorizationZone {
   // AuthorizationZone interface.
   void InitAuthorization(const std::string& scope,
                          StatusCallback callback) override;
-  // AuthorizationZone interface.
   void FinishAuthorization(const GURL& redirect_url,
                            StatusCallback callback) override;
-  // AuthorizationZone interface.
   void GetEndpointAccessToken(const chromeos::Uri& ipp_endpoint,
                               const std::string& scope,
                               StatusCallback callback) override;
-  // AuthorizationZone interface.
   void MarkEndpointAccessTokenAsExpired(
       const chromeos::Uri& ipp_endpoint,
       const std::string& endpoint_access_token) override;
+  void MarkAuthorizationZoneAsUntrusted() override;
 
  private:
   // This method processes (and removes) all elements from
