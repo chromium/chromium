@@ -40,6 +40,9 @@ class WebUIBubbleManager : public views::WidgetObserver {
   bool bubble_using_cached_web_contents() const {
     return bubble_using_cached_web_contents_;
   }
+
+  // Creates the persistent renderer process if the feature is enabled.
+  virtual void MaybeInitPersistentRenderer() = 0;
   virtual base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       const absl::optional<gfx::Rect>& anchor) = 0;
 
@@ -100,7 +103,10 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
       : anchor_view_(anchor_view),
         profile_(profile),
         webui_url_(webui_url),
-        task_manager_string_id_(task_manager_string_id) {
+        task_manager_string_id_(task_manager_string_id) {}
+  ~WebUIBubbleManagerT() override = default;
+
+  void MaybeInitPersistentRenderer() override {
     if (base::FeatureList::IsEnabled(
             features::kWebUIBubblePerProfilePersistence)) {
       auto* service =
@@ -111,7 +117,6 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
       }
     }
   }
-  ~WebUIBubbleManagerT() override = default;
 
   base::WeakPtr<WebUIBubbleDialogView> CreateWebUIBubbleDialog(
       const absl::optional<gfx::Rect>& anchor) override {
@@ -128,6 +133,7 @@ class WebUIBubbleManagerT : public WebUIBubbleManager {
 
       // If using per-profile WebContents persistence get the associated
       // BubbleContentsWrapper from the BubbleContentsWrapperService.
+      MaybeInitPersistentRenderer();
       contents_wrapper = service->GetBubbleContentsWrapperFromURL(webui_url_);
       DCHECK(contents_wrapper);
 
