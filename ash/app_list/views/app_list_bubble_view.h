@@ -102,6 +102,7 @@ class ASH_EXPORT AppListBubbleView : public views::View,
   // SearchBoxViewDelegate:
   void QueryChanged(SearchBoxViewBase* sender) override;
   void AssistantButtonPressed() override;
+  void BackButtonPressed() override {}
   void CloseButtonPressed() override;
   void ActiveChanged(SearchBoxViewBase* sender) override {}
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override;

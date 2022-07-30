@@ -494,6 +494,20 @@ void SearchBoxView::SetupCloseButton() {
   close->SetTooltipText(close_button_label);
 }
 
+void SearchBoxView::SetupBackButton() {
+  views::ImageButton* back = back_button();
+  ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+  back->SetImage(views::ImageButton::STATE_NORMAL,
+                 rb.GetImageSkiaNamed(IDR_APP_LIST_FOLDER_BACK_NORMAL));
+  back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
+  back->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+  back->SetVisible(false);
+  std::u16string back_button_label(
+      l10n_util::GetStringUTF16(IDS_APP_LIST_BACK));
+  back->SetAccessibleName(back_button_label);
+  back->SetTooltipText(back_button_label);
+}
+
 void SearchBoxView::RecordSearchBoxActivationHistogram(
     ui::EventType event_type) {
   ActivationSource activation_type;

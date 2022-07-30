@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
+  <outputs>
+    <output filename="grit/app_list_resources.h" type="rc_header" context="default_100_percent">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="app_list_resources_100_percent.pak" type="data_package" context="default_100_percent" />
+    <output filename="app_list_resources_200_percent.pak" type="data_package" context="default_200_percent" />
+    <output filename="app_list_resources_300_percent.pak" type="data_package" context="default_300_percent" />
+  </outputs>
+  <release seq="1">
+    <structures fallback_to_low_resolution="true">
+      <!-- KEEP THESE IN ALPHABETICAL ORDER!  DO NOT ADD TO RANDOM PLACES JUST
+           BECAUSE YOUR RESOURCES ARE FUNCTIONALLY RELATED OR FALL UNDER THE
+           SAME CONDITIONALS. -->
+      <structure type="chrome_scaled_image" name="IDR_APP_LIST_FOLDER_BACK_NORMAL" file="common/app_list_folder_back_normal.png" />
+    </structures>
+  </release>
+</grit>

@@ -81,6 +81,7 @@ class SearchBoxViewBase : public views::View,
       const gfx::Rect& rect) const;
 
   views::ImageButton* assistant_button();
+  views::ImageButton* back_button();
   views::ImageButton* close_button();
   views::ImageView* search_icon();
   views::Textfield* search_box() { return search_box_; }
@@ -89,6 +90,9 @@ class SearchBoxViewBase : public views::View,
   // autocomplete.
   void MaybeSetAutocompleteGhostText(const std::u16string& title,
                                      const std::u16string& category);
+
+  // Swaps the google icon with the back button.
+  void ShowBackOrGoogleIcon(bool show_back_button);
 
   // Setting the search box active left aligns the placeholder text, changes
   // the color of the placeholder text, and enables cursor blink. Setting the
@@ -193,6 +197,7 @@ class SearchBoxViewBase : public views::View,
   // Setup button's image, accessible name, and tooltip text etc.
   virtual void SetupAssistantButton() {}
   virtual void SetupCloseButton() {}
+  virtual void SetupBackButton() {}
 
   // Records in histograms the activation of the searchbox.
   virtual void RecordSearchBoxActivationHistogram(ui::EventType event_type) {}
@@ -206,6 +211,7 @@ class SearchBoxViewBase : public views::View,
   views::BoxLayoutView* content_container_;
   SearchIconImageView* search_icon_ = nullptr;
   SearchBoxImageButton* assistant_button_ = nullptr;
+  SearchBoxImageButton* back_button_ = nullptr;
   SearchBoxImageButton* close_button_ = nullptr;
   views::BoxLayoutView* text_container_ = nullptr;
 

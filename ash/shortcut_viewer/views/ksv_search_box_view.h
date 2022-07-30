@@ -37,12 +37,14 @@ class KSVSearchBoxView : public ash::SearchBoxViewBase {
   // SearchBoxViewBase:
   void UpdateSearchBoxBorder() override;
   void SetupCloseButton() override;
+  void SetupBackButton() override;
   void UpdatePlaceholderTextStyle() override;
 
  private:
   void SetPlaceholderTextAttributes();
 
   SkColor GetBackgroundColor();
+  SkColor GetBackButtonColor();
   SkColor GetBorderColor();
   SkColor GetCloseButtonColor();
   SkColor GetPlaceholderTextColor();
