@@ -28,6 +28,6 @@ git pull
 headOfMain=`git whatchanged --grep="Updating trunk VERSION" --format="%H" -1 | head -n 1`
 
 # M vs. M-1
-~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health --attempts=40
+~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedReleaseMinusOne --exp-commit=$headOfRelease --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health_pgo --attempts=40
 # Main
 ~/depot_tools/pinpoint experiment-telemetry-start --base-commit=$pinnedMain --exp-commit=$headOfMain --presets-file ~/chromium/src/tools/perf/chrome-health-presets.yaml --preset=chrome_health_pgo --attempts=40
