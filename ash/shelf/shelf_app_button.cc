@@ -408,20 +408,7 @@ void ShelfAppButton::SetImage(const gfx::ImageSkia& image) {
   }
   icon_image_ = image;
 
-  const int icon_size = shelf_view_->GetButtonIconSize() * icon_scale_;
-
-  // Resize the image maintaining our aspect ratio.
-  float aspect_ratio = static_cast<float>(icon_image_.width()) /
-                       static_cast<float>(icon_image_.height());
-  int height = icon_size;
-  int width = static_cast<int>(aspect_ratio * height);
-  if (width > icon_size) {
-    width = icon_size;
-    height = static_cast<int>(width / aspect_ratio);
-  }
-
-  const gfx::Size preferred_size(width, height);
-
+  gfx::Size preferred_size = GetPreferredIconSize();
   if (image.size() == preferred_size) {
     SetShadowedImage(image);
     return;
@@ -433,6 +420,15 @@ void ShelfAppButton::SetImage(const gfx::ImageSkia& image) {
 
 gfx::ImageSkia ShelfAppButton::GetImage() const {
   return icon_view_->GetImage();
+}
+
+gfx::ImageSkia ShelfAppButton::GetIconImage() const {
+  const gfx::Size preferred_size = GetPreferredSize();
+  if (icon_image_.size() == preferred_size)
+    return icon_image_;
+
+  return gfx::ImageSkiaOperations::CreateResizedImage(
+      icon_image_, skia::ImageOperations::RESIZE_BEST, GetPreferredIconSize());
 }
 
 void ShelfAppButton::AddState(State state) {
@@ -719,7 +715,6 @@ gfx::Rect ShelfAppButton::GetIconViewBounds(const gfx::Rect& button_bounds,
 
   // Expand bounds to include shadows.
   gfx::Insets insets_shadows = gfx::ShadowValue::GetMargin(icon_shadows_);
-  // insets_shadows = insets_shadows.Scale(icon_scale);
   // Center icon with respect to the secondary axis.
   if (is_horizontal_shelf)
     x_offset = std::max(0.0f, button_bounds.width() - icon_width + 1) / 2;
@@ -947,6 +942,22 @@ gfx::Transform ShelfAppButton::GetScaleTransform(float icon_scale) {
   gfx::RectF target_bounds(
       GetMirroredRect(GetIconViewBounds(GetContentsBounds(), icon_scale)));
   return gfx::TransformBetweenRects(target_bounds, pre_scaling_bounds);
+}
+
+gfx::Size ShelfAppButton::GetPreferredIconSize() const {
+  const int icon_size = shelf_view_->GetButtonIconSize() * icon_scale_;
+
+  // Resize the image maintaining our aspect ratio.
+  float aspect_ratio = static_cast<float>(icon_image_.width()) /
+                       static_cast<float>(icon_image_.height());
+  int height = icon_size;
+  int width = static_cast<int>(aspect_ratio * height);
+  if (width > icon_size) {
+    width = icon_size;
+    height = static_cast<int>(width / aspect_ratio);
+  }
+
+  return gfx::Size(width, height);
 }
 
 void ShelfAppButton::ScaleAppIcon(bool scale_up) {

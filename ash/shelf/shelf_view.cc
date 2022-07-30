@@ -1519,8 +1519,8 @@ void ShelfView::PrepareForDrag(Pointer pointer, const ui::LocatedEvent& event) {
                              ? 1.0f
                              : kDragAndDropProxyScale;
     drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
-        root_window, drag_view_->GetImage(), screen_location, gfx::Vector2d(),
-        scale_factor, /*use_blurred_background=*/false);
+        root_window, drag_view_->GetIconImage(), screen_location,
+        gfx::Vector2d(), scale_factor, /*use_blurred_background=*/false);
 
     if (pointer == MOUSE) {
       haptics_util::PlayHapticTouchpadEffect(
@@ -1658,7 +1658,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
     if (GetBoundsForDragInsertInScreen().Contains(screen_location)) {
       if (!is_active_drag_and_drop_host_) {
         drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
-            root_window, drag_view_->GetImage(), screen_location,
+            root_window, drag_view_->GetIconImage(), screen_location,
             /*cursor_offset_from_center=*/gfx::Vector2d(),
             /*scale_factor=*/1.0f,
             /*use_blurred_background=*/false);
@@ -1692,7 +1692,7 @@ void ShelfView::HandleRipOffDrag(const ui::LocatedEvent& event) {
       const gfx::Point center = drag_view_->GetLocalBounds().CenterPoint();
       const gfx::Vector2d cursor_offset_from_center = drag_origin_ - center;
       drag_icon_proxy_ = std::make_unique<AppDragIconProxy>(
-          root_window, drag_view_->GetImage(), screen_location,
+          root_window, drag_view_->GetIconImage(), screen_location,
           cursor_offset_from_center, /*scale_factor=*/1.0f,
           /*use_blurred_background=*/false);
       delegate_->CancelScrollForItemDrag();

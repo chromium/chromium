@@ -8,6 +8,7 @@
 
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/system_shadow.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
@@ -20,6 +21,15 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+constexpr SystemShadow::Type kShadowType = SystemShadow::Type::kElevation12;
+
+// For all app icons, there is an intended transparent ring around the visible
+// icon that makes the icon looks smaller than its actual size. The shadow is
+// needed to resize to align with the visual icon. Note that this constant is
+// the same as `kBackgroundCircleScale` in
+// chrome/browser/apps/icon_standardizer.cc
+constexpr float kShadowScaleFactor = 176.f / 192.f;
 
 AppDragIconProxy::AppDragIconProxy(
     aura::Window* root_window,
@@ -36,6 +46,7 @@ AppDragIconProxy::AppDragIconProxy(
   drag_image->SetImage(icon);
 
   gfx::Size size = drag_image->GetPreferredSize();
+
   size.set_width(std::round(size.width() * scale_factor));
   size.set_height(std::round(size.height() * scale_factor));
 
@@ -51,6 +62,19 @@ AppDragIconProxy::AppDragIconProxy(
   // setting blur radius.
   drag_image->SetPaintToLayer();
   drag_image->layer()->SetFillsBoundsOpaquely(false);
+
+  // Create the shadow layer.
+  gfx::Size shadow_size = gfx::ScaleToFlooredSize(size, kShadowScaleFactor);
+  gfx::Point shadow_offset((size.width() - shadow_size.width()) / 2,
+                           (size.height() - shadow_size.height()) / 2);
+  shadow_ = SystemShadow::CreateShadowOnTextureLayer(kShadowType);
+  shadow_->SetRoundedCornerRadius(shadow_size.width() / 2);
+  auto* shadow_layer = shadow_->GetLayer();
+  auto* image_layer = drag_image->layer();
+
+  image_layer->Add(shadow_layer);
+  image_layer->StackAtBottom(shadow_layer);
+  shadow_->SetContentBounds(gfx::Rect(shadow_offset, shadow_size));
 
   if (use_blurred_background) {
     const float radius = size.width() / 2.0f;

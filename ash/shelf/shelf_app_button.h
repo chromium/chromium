@@ -74,6 +74,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
   // Retrieve the image to show proxy operations.
   gfx::ImageSkia GetImage() const;
 
+  // Gets the resized `icon_image_` without the shadow.
+  gfx::ImageSkia GetIconImage() const;
+
   // |state| is or'd into the current state.
   void AddState(State state);
   void ClearState(State state);
@@ -161,6 +164,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   // Invoked when |ripple_activation_timer_| fires to activate the ink drop.
   void OnRippleTimer();
+
+  // Calculates the preferred size of the icon.
+  gfx::Size GetPreferredIconSize() const;
 
   // Scales up app icon if |scale_up| is true, otherwise scales it back to
   // normal size.

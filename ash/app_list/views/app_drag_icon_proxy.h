@@ -5,6 +5,7 @@
 #ifndef ASH_APP_LIST_VIEWS_APP_DRAG_ICON_PROXY_H_
 #define ASH_APP_LIST_VIEWS_APP_DRAG_ICON_PROXY_H_
 
+#include <memory>
 #include "base/callback.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -25,6 +26,7 @@ class Layer;
 }  // namespace ui
 
 namespace ash {
+class SystemShadow;
 
 // Manages the drag image shown while an app is being dragged in app list or
 // shelf. It creates a DragImageView widget in a window container used for
@@ -82,6 +84,8 @@ class AppDragIconProxy : public ui::ImplicitAnimationObserver {
   // Whether close animation (see `AnimateToBoundsAndCloseWidget()`) is in
   // progress.
   bool closing_widget_ = false;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   // The widget used to display the drag image.
   views::UniqueWidgetPtr drag_image_widget_;
