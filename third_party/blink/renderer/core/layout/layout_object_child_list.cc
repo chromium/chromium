@@ -233,11 +233,8 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
     new_child->RegisterSubtreeChangeListenerOnDescendants(true);
 
   if (UNLIKELY(!new_child->IsLayoutNGObject())) {
-    if (owner->ForceLegacyLayout()) {
+    if (owner->ForceLegacyLayoutForChildren()) {
       new_child->SetForceLegacyLayout();
-    } else if (const auto* element = DynamicTo<Element>(new_child->GetNode())) {
-      if (element->ShouldForceLegacyLayout())
-        new_child->SetForceLegacyLayout();
     }
   }
 

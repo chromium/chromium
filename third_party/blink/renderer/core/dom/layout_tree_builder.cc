@@ -170,9 +170,10 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
   if (nullable_wrapper_style)
     style = nullable_wrapper_style.get();
 
-  LegacyLayout legacy_layout = layout_object_parent->ForceLegacyLayout()
-                                   ? LegacyLayout::kForce
-                                   : LegacyLayout::kAuto;
+  LegacyLayout legacy_layout =
+      layout_object_parent->ForceLegacyLayoutForChildren()
+          ? LegacyLayout::kForce
+          : LegacyLayout::kAuto;
   LayoutText* new_layout_object =
       node_->CreateTextLayoutObject(*style, legacy_layout);
   if (!layout_object_parent->IsChildAllowed(new_layout_object, *style)) {
