@@ -514,6 +514,8 @@ extern const base::Feature kProjectorUpdateIndexableText;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kProjectorUseOAuthForGetVideoInfo;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kProjectorLocalPlayback;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickDim;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kQuickSettingsNetworkRevamp;
@@ -815,6 +817,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorAppDebugMode();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorExcludeTranscriptEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorTutorialVideoViewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorCustomThumbnailEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsProjectorLocalPlaybackEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsProjectorManagedUserIgnorePolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

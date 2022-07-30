@@ -1277,6 +1277,11 @@ const base::Feature kProjectorUseOAuthForGetVideoInfo(
     "ProjectorUseOAuthForGetVideoInfo",
     base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls whether to allow viewing screencast with local playback URL when
+// screencast is being transcoded.
+const base::Feature kProjectorLocalPlayback("ProjectorLocalPlayback",
+                                            base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether the quick dim prototype is enabled.
 const base::Feature kQuickDim{"QuickDim", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -2283,6 +2288,10 @@ bool IsProjectorUpdateIndexableTextEnabled() {
 
 bool IsProjectorUseOAuthForGetVideoInfoEnabled() {
   return base::FeatureList::IsEnabled(kProjectorUseOAuthForGetVideoInfo);
+}
+
+bool IsProjectorLocalPlaybackEnabled() {
+  return base::FeatureList::IsEnabled(kProjectorLocalPlayback);
 }
 
 bool IsQuickDimEnabled() {

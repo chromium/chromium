@@ -35,6 +35,8 @@ void ChromeUntrustedProjectorUIDelegate::PopulateLoadTimeData(
   source->AddBoolean(
       "isUseOAuthForGetVideoInfoEnabled",
       ash::features::IsProjectorUseOAuthForGetVideoInfoEnabled());
+  source->AddBoolean("isLocalPlaybackEnabled",
+                     ash::features::IsProjectorLocalPlaybackEnabled());
   source->AddString("appLocale", g_browser_process->GetApplicationLocale());
 }
 
