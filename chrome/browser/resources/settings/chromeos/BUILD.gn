@@ -7,17 +7,19 @@ import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 import("../../tools/optimize_webui.gni")
 import("./os_settings.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos_ash, "ChromeOS Settings is ChromeOS only")
 
 # root_gen_dir is "gen"
 # target_gen_dir is "gen/chrome/browser/resources/settings/chromeos"
 
 preprocessed_folder = "preprocessed"
+preprocessed_ts_folder = "preprocessed_ts"
 web_components_manifest = "web_components_manifest.json"
 non_web_component_files_manifest = "non_web_component_files_manifest.json"
 browser_settings_tsc_manifest = "browser_settings_tsc_manifest.json"
@@ -27,7 +29,7 @@ external_mojo_manifest = "external_mojo_manifest.json"
 if (optimize_webui) {
   build_manifest_v3 = "build_v3_manifest.json"
 
-  optimize_webui("build_polymer3") {
+  optimize_webui("optimize_bundle") {
     host = "os-settings"
     input = rebase_path("$target_gen_dir/$preprocessed_folder", root_build_dir)
     js_module_in_files = [
@@ -42,6 +44,7 @@ if (optimize_webui) {
     out_manifest = "$target_gen_dir/$build_manifest_v3"
 
     deps = [
+      ":build_ts",
       ":preprocess_browser_settings_tsc",
       ":preprocess_mojo_webui",
       ":preprocess_non_web_component_files",
@@ -93,6 +96,42 @@ if (optimize_webui) {
       "os_apps_page/app_notification_handler.mojom-lite.js",
     ]
   }
+}
+
+# TypeScript Build Configuration
+# TODO(crbug/1315757) Gradually remove JS files from preprocess_web_components
+# and preprocess_non_web_component_files, and add them as input files here.
+# Eventually, ts_library() will be the only build path for all JS/TS files.
+# Any JS file in passed into this build rule is elligble to be converted to TS.
+ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":preprocess_ts_non_web_component_files",
+    ":preprocess_ts_web_components",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  root_dir = "$target_gen_dir/$preprocessed_ts_folder"
+  in_files = ts_non_web_component_files + ts_web_component_files
+  out_dir = "$target_gen_dir/$preprocessed_folder"
+}
+
+preprocess_if_expr("preprocess_ts_non_web_component_files") {
+  defines = chrome_grit_defines
+  in_folder = "../"
+  in_files = ts_non_web_component_files
+  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
+}
+
+preprocess_if_expr("preprocess_ts_web_components") {
+  defines = chrome_grit_defines
+  deps = [ ":generate_web_components" ]
+  in_folder = get_path_info("../", "gen_dir")
+  in_files = ts_web_component_files
+  out_folder = "$target_gen_dir/$preprocessed_ts_folder"
 }
 
 # Preprocess all WebUI mojom files, which are bundled in optimized builds.
@@ -264,7 +303,7 @@ generate_grd("build_grd") {
   ]
 
   if (optimize_webui) {
-    deps += [ ":build_polymer3" ]
+    deps += [ ":optimize_bundle" ]
     manifest_files += [ "$target_gen_dir/$build_manifest_v3" ]
     input_files += [ "../../nearby_share/shared/nearby_shared_icons.html" ]
     resource_path_rewrites += [
@@ -276,6 +315,7 @@ generate_grd("build_grd") {
     ]
   } else {
     deps += [
+      ":build_ts",
       ":preprocess_browser_settings_tsc",
       ":preprocess_mojo_webui",
       ":preprocess_non_web_component_files",
@@ -289,6 +329,7 @@ generate_grd("build_grd") {
       "$target_gen_dir/$non_web_component_files_manifest",
       "$target_gen_dir/$browser_settings_tsc_manifest",
       "$target_gen_dir/$mojo_webui_manifest",
+      "$target_gen_dir/build_ts.manifest",
     ]
     resource_path_rewrites += [ "chromeos/os_settings.html|os_settings.html" ]
   }
@@ -300,20 +341,8 @@ preprocess_if_expr("preprocess_non_web_component_files") {
   out_folder = "$target_gen_dir/$preprocessed_folder"
   out_manifest = "$target_gen_dir/$non_web_component_files_manifest"
   in_files = [
-    "chromeos/deep_linking_behavior.js",
-    "chromeos/metrics_recorder.js",
-    "chromeos/os_settings_routes.js",
-    "chromeos/route_origin_behavior.js",
-    "chromeos/combined_search_handler.js",
-    "chromeos/personalization_search_handler.js",
-    "chromeos/settings_search_handler.js",
-    "chromeos/os_route.js",
-    "chromeos/os_page_visibility.js",
     "chromeos/os_people_page/lock_state_behavior.js",
     "chromeos/os_people_page/os_sync_browser_proxy.js",
-    "chromeos/pref_to_setting_metric_converter.js",
-    "chromeos/ensure_lazy_loaded.js",
-    "chromeos/lazy_load.js",
     "chromeos/crostini_page/crostini_browser_proxy.js",
     "chromeos/date_time_page/date_time_types.js",
     "chromeos/date_time_page/timezone_browser_proxy.js",
@@ -321,7 +350,6 @@ preprocess_if_expr("preprocess_non_web_component_files") {
     "chromeos/device_page/device_page_browser_proxy.js",
     "chromeos/device_page/drag_behavior.js",
     "chromeos/device_page/layout_behavior.js",
-    "chromeos/global_scroll_target_behavior.js",
     "chromeos/google_assistant_page/google_assistant_browser_proxy.js",
     "chromeos/guest_os/guest_os_browser_proxy.js",
     "chromeos/os_privacy_page/privacy_hub_browser_proxy.js",
@@ -377,19 +405,15 @@ preprocess_if_expr("preprocess_non_web_component_files") {
     "chromeos/os_about_page/device_name_browser_proxy.js",
     "chromeos/os_about_page/device_name_util.js",
     "chromeos/os_reset_page/os_reset_browser_proxy.js",
-    "chromeos/os_settings.js",
     "chromeos/parental_controls_page/parental_controls_browser_proxy.js",
     "chromeos/personalization_page/change_picture_browser_proxy.js",
     "chromeos/personalization_page/personalization_hub_browser_proxy.js",
     "chromeos/personalization_page/wallpaper_browser_proxy.js",
-    "chromeos/prefs_behavior.js",
     "chromeos/os_privacy_page/peripheral_data_access_browser_proxy.js",
     "chromeos/os_privacy_page/metrics_consent_browser_proxy.js",
     "chromeos/os_people_page/account_manager_browser_proxy.js",
-    "chromeos/route_observer_behavior.js",
     "chromeos/ambient_mode_page/ambient_mode_browser_proxy.js",
     "chromeos/ambient_mode_page/constants.js",
-    "router.js",
   ]
 }
 
@@ -430,8 +454,8 @@ preprocess_if_expr("preprocess_browser_settings_tsc") {
     "site_favicon.js",
   ]
 
+  # Files that don't have a corresponding HTML file.
   in_files = [
-    # Files that don't have a corresponding HTML file.
     "appearance_page/fonts_browser_proxy.js",
     "controls/cr_policy_pref_mixin.js",
     "controls/pref_control_mixin.js",
@@ -619,7 +643,6 @@ preprocess_if_expr("preprocess_web_components") {
     "chromeos/os_bluetooth_page/settings_fast_pair_toggle.js",
     "chromeos/os_files_page/os_files_page.js",
     "chromeos/os_files_page/smb_shares_page.js",
-    "chromeos/os_icons.js",
     "chromeos/os_languages_page/add_input_methods_dialog.js",
     "chromeos/os_languages_page/add_items_dialog.js",
     "chromeos/os_languages_page/add_spellcheck_languages_dialog.js",
@@ -671,7 +694,6 @@ preprocess_if_expr("preprocess_web_components") {
     "chromeos/os_search_page/os_search_selection_dialog.js",
     "chromeos/os_search_page/search_engine.js",
     "chromeos/os_search_page/search_subpage.js",
-    "chromeos/os_settings_icons_css.js",
     "chromeos/os_settings_main/os_settings_main.js",
     "chromeos/os_settings_menu/os_settings_menu.js",
     "chromeos/os_settings_page/os_settings_page.js",
