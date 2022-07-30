@@ -1287,8 +1287,8 @@
     <message name="IDS_SETTINGS_LANGUAGES_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the language options. Only visible by screen reader software.">
       Show language options
     </message>
-    <message name="IDS_SETTINGS_LANGUAGES_BROWSER_LANGUAGES_LIST_ORDERING_INSTRUCTIONS" desc="Explanatory message about ordering the list of languages.">
-      Order languages based on your preference
+    <message name="IDS_SETTINGS_LANGUAGES_PREFERRED_LANGUAGES_DESC" desc="Explanatory message about the list of preferred languages.">
+      Websites will show content in your preferred languages, when possible
     </message>
     <message name="IDS_SETTINGS_LANGUAGES_OFFER_TO_TRANSLATE_IN_THIS_LANGUAGE" desc="The label for a checkbox which indicates whether or not pages in this language should be translated by default.">
       Offer to translate pages in this language
