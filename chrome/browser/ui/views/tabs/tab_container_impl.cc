@@ -421,6 +421,17 @@ void TabContainerImpl::UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) {
     group_views->second->UpdateBounds();
 }
 
+void TabContainerImpl::NotifyTabGroupEditorBubbleOpened() {
+  // Suppress the mouse watching behavior of tab closing mode.
+  RemoveMessageLoopObserver();
+}
+
+void TabContainerImpl::NotifyTabGroupEditorBubbleClosed() {
+  // Restore the mouse watching behavior of tab closing mode.
+  if (in_tab_close_)
+    AddMessageLoopObserver();
+}
+
 // TODO(pkasting): This should really return an optional<size_t>
 int TabContainerImpl::GetModelIndexOf(const TabSlotView* slot_view) const {
   const absl::optional<size_t> index =

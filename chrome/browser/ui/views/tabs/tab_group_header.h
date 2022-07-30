@@ -96,7 +96,7 @@ class TabGroupHeader : public TabSlotView,
   // at once.
   class EditorBubbleTracker : public views::WidgetObserver {
    public:
-    EditorBubbleTracker() = default;
+    explicit EditorBubbleTracker(TabSlotController* tab_slot_controller);
     ~EditorBubbleTracker() override;
 
     void Opened(views::Widget* bubble_widget);
@@ -109,6 +109,9 @@ class TabGroupHeader : public TabSlotView,
    private:
     bool is_open_ = false;
     raw_ptr<views::Widget> widget_;
+    // Outlives this because it's a dependency inversion interface for the
+    // header's parent View.
+    raw_ptr<TabSlotController> tab_slot_controller_;
   };
 
   EditorBubbleTracker editor_bubble_tracker_;

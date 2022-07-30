@@ -1528,6 +1528,13 @@ bool TabStrip::ToggleTabGroupCollapsedState(
   return controller_->ToggleTabGroupCollapsedState(group, origin);
 }
 
+void TabStrip::NotifyTabGroupEditorBubbleOpened() {
+  tab_container_->NotifyTabGroupEditorBubbleOpened();
+}
+void TabStrip::NotifyTabGroupEditorBubbleClosed() {
+  tab_container_->NotifyTabGroupEditorBubbleClosed();
+}
+
 void TabStrip::ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,
                                      ui::MenuSourceType source_type) {

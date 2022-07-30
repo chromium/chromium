@@ -95,6 +95,10 @@ class TabSlotController {
       ToggleTabGroupCollapsedStateOrigin origin =
           ToggleTabGroupCollapsedStateOrigin::kImplicitAction) = 0;
 
+  // Notify this controller of a tab group editor bubble opening/closing.
+  virtual void NotifyTabGroupEditorBubbleOpened() = 0;
+  virtual void NotifyTabGroupEditorBubbleClosed() = 0;
+
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,

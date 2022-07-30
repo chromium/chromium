@@ -67,6 +67,8 @@ class TabContainerImpl : public TabContainer,
   void OnGroupContentsChanged(const tab_groups::TabGroupId& group) override;
   void OnGroupClosed(const tab_groups::TabGroupId& group) override;
   void UpdateTabGroupVisuals(tab_groups::TabGroupId group_id) override;
+  void NotifyTabGroupEditorBubbleOpened() override;
+  void NotifyTabGroupEditorBubbleClosed() override;
 
   int GetModelIndexOf(const TabSlotView* slot_view) const override;
 

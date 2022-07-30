@@ -261,6 +261,8 @@ class TabStrip : public views::View,
       const tab_groups::TabGroupId group,
       ToggleTabGroupCollapsedStateOrigin origin =
           ToggleTabGroupCollapsedStateOrigin::kImplicitAction) override;
+  void NotifyTabGroupEditorBubbleOpened() override;
+  void NotifyTabGroupEditorBubbleClosed() override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
                              ui::MenuSourceType source_type) override;
