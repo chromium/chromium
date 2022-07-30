@@ -23,9 +23,7 @@ const EventType = chrome.automation.EventType;
 const RoleType = chrome.automation.RoleType;
 const StateType = chrome.automation.StateType;
 
-/**
- * @implements {ChromeVoxStateObserver}
- */
+/** @implements {ChromeVoxStateObserver} */
 export class RangeAutomationHandler extends BaseAutomationHandler {
   /** @private */
   constructor() {
@@ -113,9 +111,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     this.addListener_(EventType.SORT_CHANGED, this.onAriaAttributeChanged);
   }
 
-  /**
-   * @param {!ChromeVoxEvent} evt
-   */
+  /** @param {!ChromeVoxEvent} evt */
   onEventIfInRange(evt) {
     if (BaseAutomationHandler.disallowEventFromAction(evt)) {
       return;
@@ -161,9 +157,7 @@ export class RangeAutomationHandler extends BaseAutomationHandler {
     }
   }
 
-  /**
-   * @param {!ChromeVoxEvent} evt
-   */
+  /** @param {!ChromeVoxEvent} evt */
   onAriaAttributeChanged(evt) {
     // Don't report changes on editable nodes since they interfere with text
     // selection changes. Users can query via Search+k for the current state
