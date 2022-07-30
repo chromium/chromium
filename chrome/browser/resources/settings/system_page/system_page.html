@@ -6,7 +6,7 @@
     </settings-toggle-button>
     <div class="hr"></div>
 </if>
-<if expr="not chromeos_ash and not chromeos_lacros">
+<if expr="not chromeos_lacros">
     <settings-toggle-button id="hardwareAcceleration"
         pref="{{prefs.hardware_acceleration_mode.enabled}}"
         label="$i18n{hardwareAccelerationLabel}">
@@ -51,12 +51,10 @@
       </div>
     </template>
 </if>
-    <if expr="not chromeos_ash">
-      <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
-        <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RESTART]]"
-            on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
-      </template>
-    </if>
+    <template is="dom-if" if="[[shouldShowRelaunchDialog]]" restamp>
+      <relaunch-confirmation-dialog restart-type="[[restartTypeEnum.RESTART]]"
+          on-close="onRelaunchDialogClose"></relaunch-confirmation-dialog>
+    </template>
 <if expr="chromeos_lacros">
     <template is="dom-if" if="[[isSecondaryUser_]]">
       <settings-toggle-button id="useAshProxy"

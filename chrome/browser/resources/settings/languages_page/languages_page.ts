@@ -24,9 +24,7 @@
  import './languages.js';
  import '../controls/settings_toggle_button.js';
  import '../icons.html.js';
- // <if expr="not chromeos_ash">
  import '../relaunch_confirmation_dialog.js';
- // </if>
  import '../settings_shared.css.js';
  import '../settings_vars.css.js';
 
