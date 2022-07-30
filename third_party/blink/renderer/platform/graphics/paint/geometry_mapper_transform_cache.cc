@@ -47,6 +47,9 @@ void GeometryMapperTransformCache::Update(
   has_sticky_ =
       node.RequiresCompositingForStickyPosition() || parent.has_sticky_;
 
+  is_backface_hidden_ =
+      node.IsBackfaceHiddenInternal(parent.is_backface_hidden_);
+
   nearest_scroll_translation_ =
       node.ScrollNode() ? &node : parent.nearest_scroll_translation_;
 

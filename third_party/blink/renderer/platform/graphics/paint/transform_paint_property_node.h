@@ -320,6 +320,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     return state_.backface_visibility;
   }
 
+  bool IsBackfaceHidden() const {
+    return GetTransformCache().is_backface_hidden();
+  }
+
   // Returns true if the backface visibility for this node is the same as that
   // of its parent. This will be true for the Root node.
   bool BackfaceVisibilitySameAsParent() const {
@@ -340,19 +344,6 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
       return true;
     return state_.flags.flattens_inherited_transform ==
            Parent()->Unalias().state_.flags.flattens_inherited_transform;
-  }
-
-  // Returns the first non-inherited BackefaceVisibility value along the
-  // transform node ancestor chain, including this node's value if it is
-  // non-inherited. TODO(wangxianzhu): Let PaintPropertyTreeBuilder calculate
-  // the value instead of walking up the tree.
-  bool IsBackfaceHidden() const {
-    const auto* node = this;
-    while (node &&
-           node->state_.backface_visibility == BackfaceVisibility::kInherited)
-      node = node->UnaliasedParent();
-    return node &&
-           node->state_.backface_visibility == BackfaceVisibility::kHidden;
   }
 
   bool HasDirectCompositingReasons() const {
@@ -450,6 +441,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
   CompositingReasons DirectCompositingReasons() const {
     return state_.direct_compositing_reasons;
+  }
+
+  bool IsBackfaceHiddenInternal(bool parent_backface_hidden) const {
+    if (state_.backface_visibility == BackfaceVisibility::kInherited)
+      return parent_backface_hidden;
+    return state_.backface_visibility == BackfaceVisibility::kHidden;
   }
 
   void Validate() const {
