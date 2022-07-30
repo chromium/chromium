@@ -150,6 +150,15 @@ void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
   this->UpdateStatusChanged(update_engine_client->GetLastStatus());
 }
 
+void VersionUpdaterCros::ApplyDeferredUpdate() {
+  UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
+
+  DCHECK(update_engine_client->GetLastStatus().current_operation() ==
+         update_engine::Operation::UPDATED_BUT_DEFERRED);
+
+  update_engine_client->ApplyDeferredUpdate(base::DoNothing());
+}
+
 void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
                                         PromoteCallback) {
   callback_ = std::move(callback);
@@ -343,9 +352,11 @@ void VersionUpdaterCros::UpdateStatusChanged(
       progress = 100;
       my_status = UPDATING;
       break;
-    case update_engine::Operation::UPDATED_BUT_DEFERRED:
     case update_engine::Operation::UPDATED_NEED_REBOOT:
       my_status = NEARLY_UPDATED;
+      break;
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
+      my_status = DEFERRED;
       break;
     default:
       NOTREACHED();

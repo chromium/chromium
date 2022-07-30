@@ -122,7 +122,9 @@ void FakeUpdateEngineClient::IsFeatureEnabled(
 }
 
 void FakeUpdateEngineClient::ApplyDeferredUpdate(
-    base::OnceClosure failure_callback) {}
+    base::OnceClosure failure_callback) {
+  apply_deferred_update_count_++;
+}
 
 void FakeUpdateEngineClient::set_default_status(
     const update_engine::StatusResult& status) {

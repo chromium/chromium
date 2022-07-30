@@ -82,6 +82,7 @@ SafetyCheckHandler::UpdateStatus ConvertToUpdateStatus(
       return SafetyCheckHandler::UpdateStatus::kUpdated;
     case VersionUpdater::UPDATING:
       return SafetyCheckHandler::UpdateStatus::kUpdating;
+    case VersionUpdater::DEFERRED:
     case VersionUpdater::NEED_PERMISSION_TO_UPDATE:
     case VersionUpdater::NEARLY_UPDATED:
       return SafetyCheckHandler::UpdateStatus::kRelaunch;

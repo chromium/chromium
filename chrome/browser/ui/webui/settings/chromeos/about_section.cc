@@ -260,6 +260,8 @@ void AboutSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
     {"aboutEndOfLifeTitle", IDS_SETTINGS_ABOUT_PAGE_END_OF_LIFE_TITLE},
     {"aboutDeviceName", IDS_SETTINGS_ABOUT_PAGE_DEVICE_NAME},
+    {"aboutRelaunchAndAutoUpdate",
+     IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_AUTO_UPDATE},
     {"aboutRelaunchAndPowerwash",
      IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_POWERWASH},
     {"aboutRollbackInProgress", IDS_SETTINGS_UPGRADE_ROLLBACK_IN_PROGRESS},

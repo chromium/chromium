@@ -65,6 +65,11 @@
     margin-inline-end: -4px;
     margin-inline-start: 12px;
   }
+
+  #deferredUpdateButtons {
+    min-height: unset;
+    padding-bottom: 10px;
+  }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
@@ -127,6 +132,18 @@
             $i18n{aboutCheckForUpdates}
           </cr-button>
         </span>
+      </div>
+      <div id="deferredUpdateButtons" class="settings-box first"
+          hidden="[[!hasDeferredUpdate_]]">
+        <div class="icon-container"></div>
+        <cr-button id="applyDeferredUpdate"
+            on-click="onApplyDeferredUpdateClick_">
+          $i18n{aboutRelaunch}
+        </cr-button>
+        <cr-button id="applyAndSetAutoUpdate"
+            on-click="onApplyAndSetAutoUpdateClick_">
+          $i18n{aboutRelaunchAndAutoUpdate}
+        </cr-button>
       </div>
       <cr-link-row
           id="aboutTPMFirmwareUpdate"

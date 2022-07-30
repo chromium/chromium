@@ -129,6 +129,17 @@ TEST_F(AboutHandlerTest, EndOfLifeMessageInAboutDetailsSubpage) {
   EXPECT_EQ("", CallGetEndOfLifeInfoAndReturnString(false /*=has_eol_passed*/));
 }
 
+TEST_F(AboutHandlerTest, DeferredUpdateMessageInAboutPage) {
+  update_engine::StatusResult status;
+  status.set_current_operation(update_engine::Operation::UPDATED_BUT_DEFERRED);
+  fake_update_engine_client_->set_default_status(status);
+  fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
+
+  EXPECT_EQ(0, fake_update_engine_client_->apply_deferred_update_count());
+  web_ui_.HandleReceivedMessage("applyDeferredUpdate", base::Value::List());
+  EXPECT_EQ(1, fake_update_engine_client_->apply_deferred_update_count());
+}
+
 }  // namespace
 
 }  // namespace settings

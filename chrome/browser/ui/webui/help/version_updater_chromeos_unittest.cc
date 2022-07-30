@@ -241,4 +241,15 @@ TEST_F(VersionUpdaterCrosTest, IsFeatureEnabled) {
   EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
 }
 
+TEST_F(VersionUpdaterCrosTest, ApplyDeferredUpdate) {
+  update_engine::StatusResult status;
+  status.set_current_operation(update_engine::Operation::UPDATED_BUT_DEFERRED);
+  fake_update_engine_client_->set_default_status(status);
+  fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
+
+  EXPECT_EQ(0, fake_update_engine_client_->apply_deferred_update_count());
+  version_updater_cros_ptr_->ApplyDeferredUpdate();
+  EXPECT_EQ(1, fake_update_engine_client_->apply_deferred_update_count());
+}
+
 }  // namespace chromeos

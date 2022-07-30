@@ -86,6 +86,7 @@ export const UpdateStatus = {
   DISABLED: 'disabled',
   DISABLED_BY_ADMIN: 'disabled_by_admin',
   NEED_PERMISSION_TO_UPDATE: 'need_permission_to_update',
+  DEFERRED: 'deferred',
 };
 
 /**
@@ -145,6 +146,11 @@ export function isTargetChannelMoreStable(currentChannel, targetChannel) {
 
 /** @interface */
 export class AboutPageBrowserProxy {
+  /**
+   * Applies deferred update if it exists.
+   */
+  applyDeferredUpdate() {}
+
   /**
    * Indicates to the browser that the page is ready.
    */
@@ -267,6 +273,11 @@ export class AboutPageBrowserProxyImpl {
   /** @param {!AboutPageBrowserProxy} obj */
   static setInstanceForTesting(obj) {
     instance = obj;
+  }
+
+  /** @override */
+  applyDeferredUpdate() {
+    chrome.send('applyDeferredUpdate');
   }
 
   /** @override */

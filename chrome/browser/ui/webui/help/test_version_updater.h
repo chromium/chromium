@@ -43,6 +43,7 @@ class TestVersionUpdater : public VersionUpdater {
   void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override {}
+  void ApplyDeferredUpdate() override {}
 #endif
 
  private:

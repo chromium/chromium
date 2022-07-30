@@ -147,6 +147,12 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       },
 
       /** @private */
+      hasDeferredUpdate_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
       eolMessageWithMonthAndYear_: {
         type: String,
         value: '',
@@ -376,6 +382,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       this.showUpdateWarningDialog_ = true;
       this.updateInfo_ = {version: event.version, size: event.size};
     }
+    this.hasDeferredUpdate_ = (event.status === UpdateStatus.DEFERRED);
     this.currentUpdateStatusEvent_ = event;
   }
 
@@ -541,6 +548,8 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
         return this.i18nAdvanced('aboutUpgradeDownloadError');
       case UpdateStatus.DISABLED_BY_ADMIN:
         return this.i18nAdvanced('aboutUpgradeAdministrator');
+      case UpdateStatus.DEFERRED:
+        return this.i18nAdvanced('aboutUpgradeRelaunch');
       default:
         function formatMessage(msg) {
           return parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
@@ -579,6 +588,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
         return 'cr:error-outline';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
+      case UpdateStatus.DEFERRED:
         // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
         return 'settings:check-circle';
       default:
@@ -669,6 +679,18 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
     this.onUpdateStatusChanged_({status: UpdateStatus.CHECKING});
     this.aboutBrowserProxy_.requestUpdate();
     this.$.updateStatusMessageInner.focus();
+  }
+
+  /** @private */
+  onApplyDeferredUpdateClick_() {
+    this.aboutBrowserProxy_.applyDeferredUpdate();
+    this.$.updateStatusMessageInner.focus();
+  }
+
+  /** @private */
+  onApplyAndSetAutoUpdateClick_() {
+    this.aboutBrowserProxy_.setConsumerAutoUpdate(true);
+    this.onApplyDeferredUpdateClick_();
   }
 
   /**

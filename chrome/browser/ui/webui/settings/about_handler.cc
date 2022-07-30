@@ -251,6 +251,9 @@ std::string UpdateStatusToString(VersionUpdater::Status status) {
     case VersionUpdater::NEED_PERMISSION_TO_UPDATE:
       status_str = "need_permission_to_update";
       break;
+    case VersionUpdater::DEFERRED:
+      status_str = "deferred";
+      break;
   }
 
   return status_str;
@@ -308,6 +311,10 @@ void AboutHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setChannel", base::BindRepeating(&AboutHandler::HandleSetChannel,
                                         base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "applyDeferredUpdate",
+      base::BindRepeating(&AboutHandler::HandleApplyDeferredUpdate,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "requestUpdate", base::BindRepeating(&AboutHandler::HandleRequestUpdate,
                                            base::Unretained(this)));
@@ -603,6 +610,10 @@ void AboutHandler::OnGetTargetChannel(std::string callback_id,
   channel_info->SetBoolKey("isLts", is_lts);
 
   ResolveJavascriptCallback(base::Value(callback_id), *channel_info);
+}
+
+void AboutHandler::HandleApplyDeferredUpdate(const base::Value::List& args) {
+  version_updater_->ApplyDeferredUpdate();
 }
 
 void AboutHandler::HandleRequestUpdate(const base::Value::List& args) {

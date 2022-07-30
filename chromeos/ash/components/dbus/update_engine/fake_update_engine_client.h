@@ -128,6 +128,11 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   // Returns how many times |IsFeatureEnabled()| is called.
   int is_feature_enabled_count() const { return is_feature_enabled_count_; }
 
+  // Returns how many times |ApplyDeferredUpdate()| is called.
+  int apply_deferred_update_count() const {
+    return apply_deferred_update_count_;
+  }
+
   void SetToggleFeature(const std::string& feature,
                         absl::optional<bool> opt_enabled);
 
@@ -147,6 +152,7 @@ class COMPONENT_EXPORT(ASH_DBUS_UPDATE_ENGINE) FakeUpdateEngineClient
   int update_over_cellular_one_time_permission_count_ = 0;
   int toggle_feature_count_ = 0;
   int is_feature_enabled_count_ = 0;
+  int apply_deferred_update_count_ = 0;
   std::map<std::string, absl::optional<bool>> features_;
   base::Time eol_date_;
 };

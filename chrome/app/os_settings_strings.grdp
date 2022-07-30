@@ -63,6 +63,9 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_POWERWASH" desc="The label for the button that relaunches and powerwashes the browser once update is complete">
     Restart and reset
   </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_RELAUNCH_AND_AUTO_UPDATE" desc="The label for the button that relaunches and enables automatic updates">
+    Restart and get automatic updates
+  </message>
   <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH" desc="Status label: Successfully updated ChromiumOS/ChromeOS">
     Nearly up to date! Restart your device to finish updating.
   </message>

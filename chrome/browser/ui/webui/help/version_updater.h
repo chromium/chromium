@@ -37,7 +37,8 @@ class VersionUpdater {
     FAILED_HTTP,
     FAILED_DOWNLOAD,
     DISABLED,
-    DISABLED_BY_ADMIN
+    DISABLED_BY_ADMIN,
+    DEFERRED
   };
 
   // Promotion state (Mac-only).
@@ -127,6 +128,9 @@ class VersionUpdater {
       StatusCallback callback,
       const std::string& update_version,
       int64_t update_size) = 0;
+
+  // If an update is downloaded but deferred, apply the deferred update.
+  virtual void ApplyDeferredUpdate() = 0;
 #endif
 };
 
