@@ -12,6 +12,8 @@ import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 
+assert(!bundle_widevine_cdm || (enable_widevine && enable_library_cdms))
+
 buildflag_header("buildflags") {
   header = "buildflags.h"
 
@@ -23,13 +25,9 @@ buildflag_header("buildflags") {
   ]
 }
 
-# No branding, use the default one.
-widevine_cdm_version_h_file = "widevine_cdm_version.h"
-widevine_cdm_binary_files = []
-widevine_cdm_manifest_and_license_files = []
-
 # TODO(xhwang): widevine_cdm_version.h is only used in few places. Clean this up
 # so we don't need to copy it in most cases.
+# Also, merge the bundle_widevine_cdm blocks as much as possible.
 if (bundle_widevine_cdm) {
   widevine_arch = target_cpu
 
@@ -47,6 +45,9 @@ if (bundle_widevine_cdm) {
     assert(is_win || is_mac)
     widevine_cdm_binary_files += [ "${widevine_cdm_root}/${cdm_file_name}.sig" ]
   }
+} else {
+  # The CDM is not bundled. Use the default file.
+  widevine_cdm_version_h_file = "widevine_cdm_version.h"
 }
 
 copy("version_h") {
@@ -69,18 +70,12 @@ source_set("headers") {
   ]
 }
 
-if (widevine_cdm_manifest_and_license_files != []) {
+if (bundle_widevine_cdm) {
   copy("widevine_cdm_manifest_and_license") {
     sources = widevine_cdm_manifest_and_license_files
     outputs = [ "${root_out_dir}/WidevineCdm/{{source_file_part}}" ]
   }
-} else {
-  group("widevine_cdm_manifest_and_license") {
-    # NOP
-  }
-}
 
-if (widevine_cdm_binary_files != []) {
   copy("widevine_cdm_binary") {
     sources = widevine_cdm_binary_files
     outputs = [ "${root_out_dir}/${widevine_cdm_path}/{{source_file_part}}" ]
@@ -88,25 +83,25 @@ if (widevine_cdm_binary_files != []) {
     # TODO(jrummell)
     # 'COPY_PHASE_STRIP': 'NO',
   }
+
+  group("cdm") {
+    # Needed at run time by tests, e.g. swarming tests to generate isolate.
+    # See https://crbug.com/824493 for context.
+    data_deps = [
+      ":widevine_cdm_binary",
+      ":widevine_cdm_manifest_and_license",
+    ]
+
+    # Needed at build time e.g. for mac bundle (//chrome:chrome_framework).
+    public_deps = [
+      ":widevine_cdm_binary",
+      ":widevine_cdm_manifest_and_license",
+    ]
+  }
 } else {
-  group("widevine_cdm_binary") {
+  group("cdm") {
     # NOP
   }
-}
-
-group("cdm") {
-  # Needed at run time by tests, e.g. swarming tests to generate isolate.
-  # See https://crbug.com/824493 for context.
-  data_deps = [
-    ":widevine_cdm_binary",
-    ":widevine_cdm_manifest_and_license",
-  ]
-
-  # Needed at build time e.g. for mac bundle (//chrome:chrome_framework).
-  public_deps = [
-    ":widevine_cdm_binary",
-    ":widevine_cdm_manifest_and_license",
-  ]
 }
 
 # This target exists for tests to depend on that pulls in a runtime dependency
