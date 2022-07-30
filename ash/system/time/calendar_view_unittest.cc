@@ -187,6 +187,10 @@ class CalendarViewTest : public AshTestBase {
   }
   void ResetToToday() { calendar_view_->ResetToToday(); }
 
+  void RequestFocusForEventListCloseButton() {
+    calendar_view_->RequestFocusForEventListCloseButton();
+  }
+
   void PressTab() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
     generator.PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_NONE);
@@ -785,6 +789,116 @@ TEST_F(CalendarViewTest, FocusReturnsToTodaysDate) {
 
   // After EventListView is closed, todays DateCellView should be focused.
   EXPECT_EQ(todays_date_cell_view, focus_manager->GetFocusedView());
+}
+
+// Tests `RequestFocusForEventListCloseButton()`.
+TEST_F(CalendarViewTest, CloseButtonFocusing) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  // Todays DateCellView should be focused on open.
+  ASSERT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  ASSERT_FALSE(event_list_view());
+
+  PressEnter();
+  EXPECT_TRUE(event_list_view());
+
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+
+  // Focus moves back to the date cell.
+  PressShiftTab();
+  EXPECT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+
+  // Manually moves the focus to the close button.
+  RequestFocusForEventListCloseButton();
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+}
+
+// Tests when the focus changes to another date cell with the event list opened,
+// the focusing ring will go to the close button automatically.
+TEST_F(CalendarViewTest, FocusingToCloseButtonWithEventListOpened) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+  // Todays DateCellView should be focused on open.
+  ASSERT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  ASSERT_FALSE(event_list_view());
+
+  PressEnter();
+  EXPECT_TRUE(event_list_view());
+
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+
+  // Focus moves back to today's date cell.
+  PressShiftTab();
+  EXPECT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+
+  // Navigates to another date cell and focuses on it. The focusing ring should
+  // go to the close button automatically.
+  PressUp();
+  EXPECT_EQ(u"31",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  PressEnter();
+  EXPECT_TRUE(event_list_view());
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+
+  // Tests different date cells and expects the same focusing behavior.
+  PressShiftTab();
+  PressLeft();
+  EXPECT_EQ(u"29",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  PressEnter();
+  EXPECT_TRUE(event_list_view());
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+
+  PressShiftTab();
+  PressRight();
+  PressRight();
+  EXPECT_EQ(u"25",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  PressEnter();
+  EXPECT_TRUE(event_list_view());
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
+
+  PressShiftTab();
+  PressDown();
+  EXPECT_EQ(u"30",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  PressEnter();
+  EXPECT_TRUE(event_list_view());
+  EXPECT_EQ(focus_manager->GetFocusedView(), close_button());
 }
 
 TEST_F(CalendarViewTest, MonthViewFocusing) {

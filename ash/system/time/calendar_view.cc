@@ -1110,6 +1110,13 @@ void CalendarView::CloseEventList() {
                     gfx::Tween::FAST_OUT_SLOW_IN);
 }
 
+void CalendarView::OnSelectedDateUpdated() {
+  // If the event list is already open and the date cell is focused, moves the
+  // focusing ring to the close button.
+  if (event_list_view_ && IsDateCellViewFocused())
+    RequestFocusForEventListCloseButton();
+}
+
 void CalendarView::ScrollUpOneMonth() {
   calendar_view_controller_->UpdateMonth(
       calendar_view_controller_->GetPreviousMonthFirstDayUTC(1));
@@ -1633,16 +1640,8 @@ void CalendarView::OnOpenEventListAnimationComplete() {
 
   // Moves focusing ring to the close button of the event list if it's opened
   // from the date cell view focus.
-  if (IsDateCellViewFocused()) {
-    auto* focus_manager = GetFocusManager();
-    event_list_view_->RequestFocus();
-    focus_manager->AdvanceFocus(/*reverse=*/false);
-    current_month_->DisableFocus();
-    previous_month_->DisableFocus();
-    next_month_->DisableFocus();
-    next_next_month_->DisableFocus();
-    content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-  }
+  if (IsDateCellViewFocused())
+    RequestFocusForEventListCloseButton();
 
   up_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_CALENDAR_UP_BUTTON_EVENT_LIST_ACCESSIBLE_DESCRIPTION));
@@ -1675,6 +1674,18 @@ void CalendarView::OnCloseEventListAnimationComplete() {
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
   down_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
+}
+
+void CalendarView::RequestFocusForEventListCloseButton() {
+  DCHECK(event_list_view_);
+  auto* focus_manager = GetFocusManager();
+  event_list_view_->RequestFocus();
+  focus_manager->AdvanceFocus(/*reverse=*/false);
+  current_month_->DisableFocus();
+  previous_month_->DisableFocus();
+  next_month_->DisableFocus();
+  next_next_month_->DisableFocus();
+  content_view_->SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
 void CalendarView::OnResetToTodayAnimationComplete() {
