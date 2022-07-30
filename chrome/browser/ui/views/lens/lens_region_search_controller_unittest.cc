@@ -6,6 +6,7 @@
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/lens/metrics/lens_metrics.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "components/lens/lens_features.h"
@@ -19,7 +20,8 @@ class LensRegionSearchControllerTest : public TestWithBrowserView {
  public:
   void SetUp() override {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures({features::kLensStandalone}, {});
+    features.InitWithFeatures({features::kLensStandalone},
+                              {features::kUnifiedSidePanel});
     TestWithBrowserView::SetUp();
 
     // Create an active web contents.
