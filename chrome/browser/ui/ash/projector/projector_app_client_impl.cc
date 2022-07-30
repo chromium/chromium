@@ -8,7 +8,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
@@ -165,4 +167,26 @@ void ProjectorAppClientImpl::GetScreencast(
     const std::string& screencast_id,
     ash::ProjectorAppClient::OnGetScreencastCallback callback) {
   screencast_manager_.GetScreencast(screencast_id, std::move(callback));
+}
+
+void ProjectorAppClientImpl::SetAnnotatorMessageHandler(
+    ash::AnnotatorMessageHandler* handler) {
+  annotator_message_handler_ = handler;
+}
+
+void ProjectorAppClientImpl::ResetAnnotatorMessageHandler(
+    ash::AnnotatorMessageHandler* handler) {
+  if (annotator_message_handler_ == handler) {
+    annotator_message_handler_ = nullptr;
+  }
+}
+
+void ProjectorAppClientImpl::SetTool(const ash::AnnotatorTool& tool) {
+  DCHECK(annotator_message_handler_);
+  annotator_message_handler_->SetTool(tool);
+}
+
+void ProjectorAppClientImpl::Clear() {
+  DCHECK(annotator_message_handler_);
+  annotator_message_handler_->Clear();
 }

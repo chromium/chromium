@@ -4,14 +4,14 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/projector/projector_controller_impl.h"
-#include "ash/public/cpp/projector/projector_client.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/test/media_app_ui_browsertest.h"
 #include "ash/webui/projector_app/buildflags.h"
+#include "ash/webui/projector_app/projector_app_client.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
-#include "chrome/browser/ui/ash/projector/projector_client_impl.h"
+#include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "content/public/test/browser_test.h"
 
@@ -65,10 +65,10 @@ IN_PROC_BROWSER_TEST_P(ProjectorAppIntegrationTest,
   capture_mode_controller->PerformCapture();
   run_loop.Run();
 
-  ProjectorClientImpl* projector_client =
-      static_cast<ProjectorClientImpl*>(ash::ProjectorClient::Get());
+  ProjectorAppClientImpl* projector_app_client =
+      static_cast<ProjectorAppClientImpl*>(ash::ProjectorAppClient::Get());
   content::WebContents* annotator_embedder =
-      projector_client->get_annotator_message_handler_for_test()
+      projector_app_client->get_annotator_message_handler_for_test()
           ->get_web_ui_for_test()
           ->GetWebContents();
   PrepareAppForTest(annotator_embedder);

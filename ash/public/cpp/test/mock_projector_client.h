@@ -38,8 +38,6 @@ class MockProjectorClient : public ProjectorClient,
   MOCK_CONST_METHOD0(CloseProjectorApp, void());
   MOCK_CONST_METHOD1(OnNewScreencastPreconditionChanged,
                      void(const NewScreencastPrecondition&));
-  MOCK_METHOD1(SetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
-  MOCK_METHOD1(ResetAnnotatorMessageHandler, void(AnnotatorMessageHandler*));
 
   // ProjectorAnnotatorController:
   MOCK_METHOD1(SetTool, void(const AnnotatorTool&));

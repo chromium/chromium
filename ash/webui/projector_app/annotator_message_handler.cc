@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "ash/public/cpp/projector/annotator_tool.h"
-#include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/webui/projector_app/projector_app_client.h"
 #include "base/check.h"
 #include "base/json/values_util.h"
 #include "base/values.h"
@@ -17,11 +17,11 @@
 namespace ash {
 
 AnnotatorMessageHandler::AnnotatorMessageHandler() {
-  ProjectorClient::Get()->SetAnnotatorMessageHandler(this);
+  ProjectorAppClient::Get()->SetAnnotatorMessageHandler(this);
 }
 
 AnnotatorMessageHandler::~AnnotatorMessageHandler() {
-  ProjectorClient::Get()->ResetAnnotatorMessageHandler(this);
+  ProjectorAppClient::Get()->ResetAnnotatorMessageHandler(this);
 };
 
 void AnnotatorMessageHandler::RegisterMessages() {

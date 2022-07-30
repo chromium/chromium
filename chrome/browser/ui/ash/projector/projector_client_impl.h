@@ -10,7 +10,6 @@
 #include "ash/public/cpp/projector/projector_annotator_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/webui/projector_app/annotator_message_handler.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -60,10 +59,6 @@ class ProjectorClientImpl
   void CloseProjectorApp() const override;
   void OnNewScreencastPreconditionChanged(
       const ash::NewScreencastPrecondition& precondition) const override;
-  void SetAnnotatorMessageHandler(
-      ash::AnnotatorMessageHandler* handler) override;
-  void ResetAnnotatorMessageHandler(
-      ash::AnnotatorMessageHandler* handler) override;
 
   // SpeechRecognizerDelegate:
   void OnSpeechResult(
@@ -94,10 +89,6 @@ class ProjectorClientImpl
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
 
-  ash::AnnotatorMessageHandler* get_annotator_message_handler_for_test() {
-    return message_handler_;
-  }
-
  private:
   // Maybe reset |drive_observation_| and observe the Drive integration service
   // of active profile when ActiveUserChanged and OnUserProfileLoaded.
@@ -111,7 +102,6 @@ class ProjectorClientImpl
   void SetAppIsDisabled(bool disabled);
 
   ash::ProjectorController* const controller_;
-  ash::AnnotatorMessageHandler* message_handler_ = nullptr;
   SpeechRecognizerStatus recognizer_status_ =
       SpeechRecognizerStatus::SPEECH_RECOGNIZER_OFF;
   std::unique_ptr<OnDeviceSpeechRecognizer> speech_recognizer_;

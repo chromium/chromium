@@ -28,6 +28,9 @@ class Value;
 
 namespace ash {
 
+class AnnotatorMessageHandler;
+
+struct AnnotatorTool;
 struct ProjectorScreencast;
 
 struct NewScreencastPrecondition;
@@ -156,6 +159,21 @@ class ProjectorAppClient {
   // Populates a screencast object in |callback| for given |screencast_id|.
   virtual void GetScreencast(const std::string& screencast_id,
                              OnGetScreencastCallback callback) = 0;
+
+  // Registers the AnnotatorMessageHandler that is owned by the WebUI that
+  // contains the Projector annotator.
+  virtual void SetAnnotatorMessageHandler(AnnotatorMessageHandler* handler) = 0;
+
+  // Resets the stored AnnotatorMessageHandler if it matches the one that is
+  // passed in.
+  virtual void ResetAnnotatorMessageHandler(
+      AnnotatorMessageHandler* handler) = 0;
+
+  // Sets the tool inside the annotator WebUI.
+  virtual void SetTool(const AnnotatorTool& tool) = 0;
+
+  // Clears the contents of the annotator canvas.
+  virtual void Clear() = 0;
 
  protected:
   ProjectorAppClient();

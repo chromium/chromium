@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "ash/public/cpp/projector/projector_annotator_controller.h"
+#include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
@@ -22,6 +24,10 @@ class URLLoaderFactory;
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
+
+namespace ash {
+class AnnotatorMessageHandler;
+}  // namespace ash
 
 // Implements the interface for Projector App.
 class ProjectorAppClientImpl : public ash::ProjectorAppClient {
@@ -50,6 +56,16 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   void GetScreencast(
       const std::string& screencast_id,
       ash::ProjectorAppClient::OnGetScreencastCallback callback) override;
+  void SetAnnotatorMessageHandler(
+      ash::AnnotatorMessageHandler* handler) override;
+  void ResetAnnotatorMessageHandler(
+      ash::AnnotatorMessageHandler* handler) override;
+  void SetTool(const ash::AnnotatorTool& tool) override;
+  void Clear() override;
+
+  ash::AnnotatorMessageHandler* get_annotator_message_handler_for_test() {
+    return annotator_message_handler_;
+  }
 
  private:
   void NotifyScreencastsPendingStatusChanged(
@@ -64,6 +80,8 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
   PendingScreencastManager pending_screencast_manager_;
 
   ash::ScreencastManager screencast_manager_;
+
+  ash::AnnotatorMessageHandler* annotator_message_handler_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_

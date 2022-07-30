@@ -9,7 +9,6 @@
 #include "ash/public/cpp/projector/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
-#include "ash/webui/projector_app/annotator_message_handler.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
@@ -161,18 +160,6 @@ void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
     app_client->OnNewScreencastPreconditionChanged(precondition);
 }
 
-void ProjectorClientImpl::SetAnnotatorMessageHandler(
-    ash::AnnotatorMessageHandler* handler) {
-  message_handler_ = handler;
-}
-
-void ProjectorClientImpl::ResetAnnotatorMessageHandler(
-    ash::AnnotatorMessageHandler* handler) {
-  if (message_handler_ == handler) {
-    message_handler_ = nullptr;
-  }
-}
-
 void ProjectorClientImpl::OnSpeechResult(
     const std::u16string& text,
     bool is_final,
@@ -205,8 +192,7 @@ void ProjectorClientImpl::OnSpeechRecognitionStopped() {
 }
 
 void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
-  DCHECK(message_handler_);
-  message_handler_->SetTool(tool);
+  ash::ProjectorAppClient::Get()->SetTool(tool);
 }
 
 // TODO(b/220202359): Implement undo.
@@ -216,8 +202,7 @@ void ProjectorClientImpl::Undo() {}
 void ProjectorClientImpl::Redo() {}
 
 void ProjectorClientImpl::Clear() {
-  DCHECK(message_handler_);
-  message_handler_->Clear();
+  ash::ProjectorAppClient::Get()->Clear();
 }
 
 void ProjectorClientImpl::OnFileSystemMounted() {
