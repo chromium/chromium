@@ -103,6 +103,9 @@ public class TabPersistentStore {
     private static final int MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_DEFAULT_BATCH_SIZE = 5;
     private static final String MIGRATE_TO_CRITICAL_PERSISTED_TAB_DATA_BATCH_SIZE_PARAM =
             "migrate_to_critical_persisted_tab_data_batch_size";
+    private static final String SAVE_CRITICAL_PERSISTED_TAB_DATA_NO_RESTORE =
+            "save_critical_persisted_tab_data_no_restore";
+
     private TabModelObserver mTabModelObserver;
 
     @IntDef({ActiveTabState.OTHER, ActiveTabState.NTP, ActiveTabState.EMPTY})
@@ -1359,7 +1362,8 @@ public class TabPersistentStore {
             if (mDestroyed || isCancelled()) return;
             if (mStateSaved) {
                 if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).setIsTabStateDirty(false);
-                mTab.setIsTabSaveEnabled(isCriticalPersistedTabDataEnabled());
+                mTab.setIsTabSaveEnabled(isCriticalPersistedTabDataEnabled()
+                        || isCriticalPersistedTabDataSavingEnabled());
                 migrateSomeRemainingTabsToCriticalPersistedTabData();
             }
             mSaveTabTask = null;
@@ -1666,6 +1670,15 @@ public class TabPersistentStore {
         return ChromeFeatureList.sCriticalPersistedTabData.isEnabled();
     }
 
+    private static boolean isCriticalPersistedTabDataSavingEnabled() {
+        if (FeatureList.isInitialized()) {
+            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                    ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA,
+                    SAVE_CRITICAL_PERSISTED_TAB_DATA_NO_RESTORE, false);
+        }
+        return false;
+    }
+
     private class LoadTabTask extends AsyncTask<TabState> {
         private final TabRestoreDetails mTabToRestore;
         private TabState mTabState;
@@ -1939,7 +1952,9 @@ public class TabPersistentStore {
     }
 
     private void migrateSomeRemainingTabsToCriticalPersistedTabData() {
-        if (!isCriticalPersistedTabDataEnabled()) return;
+        if (!isCriticalPersistedTabDataEnabled() && !isCriticalPersistedTabDataSavingEnabled()) {
+            return;
+        }
         int numMigrated = 0;
         while (numMigrated < getMigrateToCriticalPersistedTabDataBatchSize()
                 && !mTabsToMigrate.isEmpty()) {
