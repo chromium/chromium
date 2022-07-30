@@ -47,6 +47,7 @@ enum Setting {
   kBluetoothPairDevice = 103,
   kBluetoothUnpairDevice = 104,
   kFastPairOnOff = 105,
+  kFastPairSavedDevices= 106,
 
   // MultiDevice section.
   kSetUpMultiDevice = 200,

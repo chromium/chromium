@@ -153,6 +153,18 @@ const std::vector<SearchConcept>& GetFastPairOnSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetFastPairSavedDevicesSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_FAST_PAIR_SAVED_DEVICES,
+       mojom::kBluetoothSavedDevicesSubpagePath,
+       mojom::SearchResultIcon::kBluetooth,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kFastPairSavedDevices}},
+  });
+  return *tags;
+}
+
 }  // namespace
 
 BluetoothSection::BluetoothSection(Profile* profile,
@@ -391,7 +403,8 @@ void BluetoothSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 void BluetoothSection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<BluetoothHandler>());
 
-  if (features::IsFastPairSavedDevicesEnabled()) {
+  if (ash::features::IsFastPairEnabled() &&
+      features::IsFastPairSavedDevicesEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<FastPairSavedDevicesHandler>());
   }
 }
@@ -433,7 +446,8 @@ void BluetoothSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                      mojom::kBluetoothDevicesSubpagePath);
   static constexpr mojom::Setting kBluetoothDevicesSettings[] = {
       mojom::Setting::kBluetoothOnOff, mojom::Setting::kBluetoothPairDevice,
-      mojom::Setting::kBluetoothUnpairDevice, mojom::Setting::kFastPairOnOff};
+      mojom::Setting::kBluetoothUnpairDevice, mojom::Setting::kFastPairOnOff,
+      mojom::Setting::kFastPairSavedDevices};
   static constexpr mojom::Setting kBluetoothDevicesSettingsLegacy[] = {
       mojom::Setting::kBluetoothConnectToDevice,
       mojom::Setting::kBluetoothDisconnectFromDevice,
@@ -506,6 +520,7 @@ void BluetoothSection::UpdateSearchTags() {
   updater.RemoveSearchTags(GetBluetoothOffSearchConcepts());
   updater.RemoveSearchTags(GetFastPairOnSearchConcepts());
   updater.RemoveSearchTags(GetFastPairOffSearchConcepts());
+  updater.RemoveSearchTags(GetFastPairSavedDevicesSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothConnectableSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothConnectedSearchConcepts());
   updater.RemoveSearchTags(GetBluetoothPairableSearchConcepts());
@@ -522,6 +537,10 @@ void BluetoothSection::UpdateSearchTags() {
       updater.AddSearchTags(GetFastPairOnSearchConcepts());
     } else {
       updater.AddSearchTags(GetFastPairOffSearchConcepts());
+    }
+
+    if (features::IsFastPairSavedDevicesEnabled()) {
+      updater.AddSearchTags(GetFastPairSavedDevicesSearchConcepts());
     }
   }
 

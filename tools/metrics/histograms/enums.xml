@@ -73027,6 +73027,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="103" label="Bluetooth: Pair Device"/>
   <int value="104" label="Bluetooth: Unpair Device"/>
   <int value="105" label="Bluetooth: Fast Pair On/Off"/>
+  <int value="106" label="Bluetooth: Fast Pair Saved Devices"/>
   <int value="200" label="Set Up MultiDevice"/>
   <int value="201" label="Verify MultiDevice Setup"/>
   <int value="202" label="MultiDevice On/Off"/>
