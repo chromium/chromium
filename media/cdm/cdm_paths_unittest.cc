@@ -4,8 +4,11 @@
 
 #include "media/cdm/cdm_paths.h"
 
-#include "base/strings/string_split.h"
+#include <string>
+
+#include "base/files/file_path.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -15,9 +18,6 @@
 namespace media {
 
 namespace {
-
-// Special path used in chrome components.
-const char kPlatformSpecific[] = "_platform_specific";
 
 // Name of the component platform.
 const char kComponentPlatform[] =
@@ -47,24 +47,10 @@ const char kComponentArch[] =
     "unsupported_arch";
 #endif
 
-base::FilePath GetExpectedPlatformSpecificDirectory(
-    const std::string& base_path) {
-  base::FilePath path;
-  const std::string kPlatformArch =
-      std::string(kComponentPlatform) + "_" + kComponentArch;
-  return path.AppendASCII(base_path)
-      .AppendASCII(kPlatformSpecific)
-      .AppendASCII(kPlatformArch);
-}
-
-std::string GetFlag() {
-  return BUILDFLAG(CDM_PLATFORM_SPECIFIC_PATH);
-}
-
 }  // namespace
 
 TEST(CdmPathsTest, FlagSpecified) {
-  EXPECT_FALSE(GetFlag().empty());
+  EXPECT_FALSE(std::string(BUILDFLAG(CDM_PLATFORM_SPECIFIC_PATH)).empty());
 }
 
 TEST(CdmPathsTest, Prefix) {
@@ -76,9 +62,17 @@ TEST(CdmPathsTest, Prefix) {
 }
 
 TEST(CdmPathsTest, Expected) {
-  const char kPrefix[] = "cdm";
-  EXPECT_EQ(GetExpectedPlatformSpecificDirectory(kPrefix),
-            GetPlatformSpecificDirectory(kPrefix));
+  // The same prefix that will be passed to the function under test followed by
+  // the special path used by Chrome's component updater.
+  std::string expected_path = base::StringPrintf(
+      "SomeCdm/_platform_specific/%s_%s", kComponentPlatform, kComponentArch);
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(base::ReplaceChars(expected_path, "/", "\\", &expected_path));
+#endif
+
+  EXPECT_EQ(base::FilePath::FromUTF8Unsafe(expected_path),
+            GetPlatformSpecificDirectory("SomeCdm"));
 }
 
 }  // namespace media
