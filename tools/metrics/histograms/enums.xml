@@ -10318,29 +10318,22 @@ others/histograms.xml -->
 </enum>
 
 <enum name="BackPressConsumer">
-<!-- Append the new enumerator to the end. Add the label in the format
-  of "(value of BackPressHandler.Type) <Name of BackPressHandler.Type>".
-  It is okay the new value of enumerator is different from value of
-  BackPressHandler.Type.
-  -->
-
-  <int value="0" label="(00) TEXT_BUBBLE"/>
-  <int value="1" label="(01) VR_DELEGATE"/>
-  <int value="2" label="(02) AR_DELEGATE"/>
-  <int value="3" label="(03) SCENE_OVERLAY"/>
-  <int value="4" label="(04) START_SURFACE_MEDIATOR"/>
-  <int value="5" label="(05) SELECTION_POPUP"/>
-  <int value="6" label="(06) MANUAL_FILLING"/>
-  <int value="7" label="(07) FULLSCREEN"/>
-  <int value="8" label="(08) BOTTOM_SHEET"/>
-  <int value="9" label="(09) TAB_MODAL_HANDLER"/>
-  <int value="10" label="(10) TAB_SWITCHER_TO_BROWSING"/>
-  <int value="11" label="(11) CLOSE_WATCHER"/>
-  <int value="12" label="(13) TOOLBAR_TAB_CONTROLLER"/>
-  <int value="13" label="(14) TAB_RETURN_TO_CHROME_START_SURFACE"/>
-  <int value="14" label="(15) SHOW_READING_LIST"/>
-  <int value="15" label="(16) MINIMIZE_APP_AND_CLOSE_TAB"/>
-  <int value="16" label="(12) FIND_TOOLBAR"/>
+  <int value="0" label="TEXT_BUBBLE"/>
+  <int value="1" label="VR_DELEGATE"/>
+  <int value="2" label="AR_DELEGATE"/>
+  <int value="3" label="SCENE_OVERLAY"/>
+  <int value="4" label="START_SURFACE_MEDIATOR"/>
+  <int value="5" label="SELECTION_POPUP"/>
+  <int value="6" label="MANUAL_FILLING"/>
+  <int value="7" label="FULLSCREEN"/>
+  <int value="8" label="BOTTOM_SHEET"/>
+  <int value="9" label="TAB_MODAL_HANDLER"/>
+  <int value="10" label="TAB_SWITCHER_TO_BROWSING"/>
+  <int value="11" label="CLOSE_WATCHER"/>
+  <int value="12" label="TOOLBAR_TAB_CONTROLLER"/>
+  <int value="13" label="TAB_RETURN_TO_CHROME_START_SURFACE"/>
+  <int value="14" label="SHOW_READING_LIST"/>
+  <int value="15" label="MINIMIZE_APP_AND_CLOSE_TAB"/>
 </enum>
 
 <enum name="BadMessageReasonAutofill">
