@@ -29,6 +29,7 @@ class CORE_EXPORT MobileFriendlinessChecker
  public:
   explicit MobileFriendlinessChecker(LocalFrameView& frame_view);
   virtual ~MobileFriendlinessChecker();
+  static MobileFriendlinessChecker* Create(LocalFrameView& frame_view);
   static MobileFriendlinessChecker* From(const Document&);
 
   // LocalFrameView::LifecycleNotificationObserver implementation
