@@ -11,12 +11,10 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/values.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -24,7 +22,7 @@
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/protobuf/src/google/protobuf/message_lite.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 
@@ -92,7 +90,8 @@ class SpeculativeReportQueueImpl : public ReportQueue {
 
   // Substitutes actual queue to the speculative, when ready.
   // Initiates processesing of all pending records.
-  void AttachActualQueue(std::unique_ptr<ReportQueue> actual_queue);
+  void AttachActualQueue(
+      StatusOr<std::unique_ptr<ReportQueue>> status_or_actual_queue);
 
  private:
   // Moveable, non-copyable struct holding a pending record producer for the
@@ -132,8 +131,9 @@ class SpeculativeReportQueueImpl : public ReportQueue {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Actual |ReportQueue|, once created.
-  std::unique_ptr<ReportQueue> report_queue_
+  // Creation status of |ReportQueue| and actual |ReportQueue| if successfully
+  // created.
+  absl::optional<StatusOr<std::unique_ptr<ReportQueue>>> status_or_report_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Queue of the pending record producers, collected before actual queue has

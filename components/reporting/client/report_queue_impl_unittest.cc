@@ -257,6 +257,48 @@ TEST_F(ReportQueueImplTest, SuccessfulSpeculativeStringRecord) {
   EXPECT_EQ(test_storage_module()->record().data(), kTestString);
 }
 
+TEST_F(ReportQueueImplTest, SpeculativeQueueMultipleRecordsAfterCreation) {
+  constexpr char kTestString1[] = "record1";
+  constexpr char kTestString2[] = "record2";
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+
+  speculative_report_queue->AttachActualQueue(std::move(report_queue_));
+  // Let everything ongoing to finish.
+  task_environment_.RunUntilIdle();
+
+  test::TestEvent<Status> test_event1;
+  speculative_report_queue->Enqueue(kTestString1, Priority::IMMEDIATE,
+                                    test_event1.cb());
+  const auto result1 = test_event1.result();
+  ASSERT_TRUE(result1.ok());
+  EXPECT_EQ(test_storage_module()->priority(), Priority::IMMEDIATE);
+  EXPECT_EQ(test_storage_module()->record().data(), kTestString1);
+
+  test::TestEvent<Status> test_event2;
+  speculative_report_queue->Enqueue(kTestString2, Priority::SLOW_BATCH,
+                                    test_event2.cb());
+  const auto result2 = test_event2.result();
+  ASSERT_TRUE(result2.ok());
+  EXPECT_EQ(test_storage_module()->priority(), Priority::SLOW_BATCH);
+  EXPECT_EQ(test_storage_module()->record().data(), kTestString2);
+}
+
+TEST_F(ReportQueueImplTest, SpeculativeQueueCreationFailed) {
+  constexpr char kTestString[] = "record";
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+
+  auto attach_cb = speculative_report_queue->PrepareToAttachActualQueue();
+  std::move(attach_cb).Run(Status(error::UNKNOWN, "error msg"));
+  task_environment_.RunUntilIdle();
+
+  test::TestEvent<Status> test_event;
+  speculative_report_queue->Enqueue(kTestString, Priority::IMMEDIATE,
+                                    test_event.cb());
+  const auto result = test_event.result();
+  ASSERT_FALSE(result.ok());
+  EXPECT_EQ(result.code(), error::UNKNOWN);
+}
+
 TEST_F(ReportQueueImplTest, OverlappingStringRecords) {
   constexpr char kTestString1[] = "record1";
   constexpr char kTestString2[] = "record2";
@@ -356,6 +398,21 @@ TEST_F(ReportQueueImplTest, FlushUninitializedSpeculativeReportQueue) {
   const auto result = event.result();
   ASSERT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::FAILED_PRECONDITION);
+}
+
+TEST_F(ReportQueueImplTest, FlushFailedSpeculativeReportQueue) {
+  test::TestEvent<Status> event;
+
+  auto speculative_report_queue = SpeculativeReportQueueImpl::Create();
+  auto attach_cb = speculative_report_queue->PrepareToAttachActualQueue();
+  std::move(attach_cb).Run(Status(error::UNKNOWN, "error msg"));
+  task_environment_.RunUntilIdle();
+
+  speculative_report_queue->Flush(priority_, event.cb());
+
+  const auto result = event.result();
+  ASSERT_FALSE(result.ok());
+  EXPECT_EQ(result.error_code(), error::UNKNOWN);
 }
 
 TEST_F(ReportQueueImplTest, AsyncProcessingReportQueue) {
