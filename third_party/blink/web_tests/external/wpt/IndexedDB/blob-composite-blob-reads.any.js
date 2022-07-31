@@ -1,5 +1,6 @@
 // META: title=IDB-backed composite blobs maintain coherency
 // META: script=resources/support-promises.js
+// META: timeout=long
 
 // This test file is intended to help validate browser handling of complex blob
 // scenarios where one or more levels of multipart blobs are used and varying
@@ -8,15 +9,19 @@
 //
 // A variety of approaches of reading the blob's contents are attempted for
 // completeness:
-// - fetch of a URL created via URL.createObjectURL
+// - `fetch-blob-url`: fetch of a URL created via URL.createObjectURL
 //   - Note that this is likely to involve multi-process behavior in a way that
 //     the next 2 currently will not unless their Blobs are round-tripped
 //     through a MessagePort.
-// - FileReader
-// - Blob.prototype.arrayBuffer()
+// - `file-reader`: FileReader
+// - `direct`: Blob.prototype.arrayBuffer()
 
 function composite_blob_test({ blobCount, blobSize, name }) {
-  for (const mode of ["fetch-blob-url", "file-reader", "direct"]) {
+  // NOTE: In order to reduce the runtime of this test and due to the similarity
+  // of the "file-reader" mechanism to the "direct", "file-reader" is commented
+  // out, but if you are investigating failures detected by this test, you may
+  // want to uncomment it.
+  for (const mode of ["fetch-blob-url", /*"file-reader",*/ "direct"]) {
     promise_test(async testCase => {
       const key = "the-blobs";
       let memBlobs = [];

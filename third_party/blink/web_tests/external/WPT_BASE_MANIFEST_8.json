@@ -251945,7 +251945,7 @@
     ],
     "resources": {
      "bluetooth-fake-devices.js": [
-      "7710d7f83f6e71e9953a3cd810d2c4de2ef78342",
+      "5694b0803a388946e0df615a135120ebcd61d0e6",
       []
      ],
      "bluetooth-scanning-helpers.js": [
@@ -342295,7 +342295,7 @@
      ]
     ],
     "blob-composite-blob-reads.any.js": [
-     "7d043ebdf2942acafdec3cf231116759fc965edc",
+     "c94c737f20ef503f47cdce784f30612292595cbf",
      [
       "IndexedDB/blob-composite-blob-reads.any.html",
       {
@@ -342307,8 +342307,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -342322,8 +342327,13 @@
         [
          "script",
          "resources/support-promises.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
@@ -357266,6 +357276,32 @@
         }
        ]
       ],
+      "blocklisted-manufacturer-data-filtered-from-event.https.window.js": [
+       "c73e3dbad1b20dd26a02d6ca4326a53b3f668a92",
+       [
+        "bluetooth/device/watchAdvertisements/blocklisted-manufacturer-data-filtered-from-event.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/resources/testdriver.js"
+          ],
+          [
+           "script",
+           "/resources/testdriver-vendor.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-test.js"
+          ],
+          [
+           "script",
+           "/bluetooth/resources/bluetooth-fake-devices.js"
+          ]
+         ]
+        }
+       ]
+      ],
       "concurrent-watchAdvertisements-calls.https.window.js": [
        "cb6532be68ece2a04f5d70106f7b58869906b086",
        [
@@ -357774,8 +357810,42 @@
        ]
       ]
      },
+     "blocklisted-manufacturer-data-in-filter.https.window.js": [
+      "21ae2f1e7ad9b61c261d225469ade9f69ef9f743",
+      [
+       "bluetooth/requestDevice/blocklisted-manufacturer-data-in-filter.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testharness.js"
+         ],
+         [
+          "script",
+          "/resources/testharnessreport.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "/bluetooth/resources/bluetooth-test.js"
+         ],
+         [
+          "script",
+          "/bluetooth/resources/bluetooth-fake-devices.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "blocklisted-service-in-filter.https.window.js": [
-      "48f3d1309da0774442445f1328657ee31e76b8a8",
+      "beb80f42c396b1589413431f5a57e49cd8f32f97",
       [
        "bluetooth/requestDevice/blocklisted-service-in-filter.https.window.html",
        {
