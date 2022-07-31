@@ -10,6 +10,7 @@
 #include "ash/ash_export.h"
 #include "components/version_info/channel.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/vector_icon_types.h"
 
 namespace ash::channel_indicator_utils {
 
@@ -38,6 +39,11 @@ ASH_EXPORT SkColor GetBgColor(version_info::Channel channel);
 // the function will return an empty std::u16string.
 ASH_EXPORT std::u16string GetFullReleaseTrackString(
     version_info::Channel channel);
+
+// Returns a reference to the pre-constructed vector icon for release track
+// `channel`. The function performs a DCHECK() that `channel` is one of the
+// displayable values, but if it isn't then the icon for `CANARY` is returned.
+const gfx::VectorIcon& GetVectorIcon(version_info::Channel channel);
 
 }  // namespace ash::channel_indicator_utils
 

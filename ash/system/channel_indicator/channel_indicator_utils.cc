@@ -7,9 +7,11 @@
 #include <string>
 
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -95,6 +97,22 @@ std::u16string GetFullReleaseTrackString(version_info::Channel channel) {
                                                                    false)),
        u" ",
        base::UTF8ToUTF16(Shell::Get()->shell_delegate()->GetVersionString())});
+}
+
+const gfx::VectorIcon& GetVectorIcon(version_info::Channel channel) {
+  DCHECK(IsDisplayableChannel(channel));
+  switch (channel) {
+    case version_info::Channel::BETA:
+      return kChannelBetaIcon;
+    case version_info::Channel::DEV:
+      return kChannelDevIcon;
+    case version_info::Channel::CANARY:
+      return kChannelCanaryIcon;
+    case version_info::Channel::UNKNOWN:
+    case version_info::Channel::STABLE:
+      NOTREACHED();
+      return kChannelCanaryIcon;
+  }
 }
 
 }  // namespace ash::channel_indicator_utils

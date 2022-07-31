@@ -93,6 +93,22 @@ void TrayItemView::CreateImageView() {
   PreferredSizeChanged();
 }
 
+void TrayItemView::DestroyLabel() {
+  if (!label_)
+    return;
+
+  RemoveChildViewT(label_);
+  label_ = nullptr;
+}
+
+void TrayItemView::DestroyImageView() {
+  if (!image_view_)
+    return;
+
+  RemoveChildViewT(image_view_);
+  image_view_ = nullptr;
+}
+
 void TrayItemView::SetVisible(bool set_visible) {
   if (!GetWidget() ||
       ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==

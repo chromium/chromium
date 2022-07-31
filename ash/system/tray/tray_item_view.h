@@ -64,6 +64,12 @@ class ASH_EXPORT TrayItemView : public views::View,
   void CreateLabel();
   void CreateImageView();
 
+  // Methods for destroying a child label or ImageView, which a user of
+  // `TrayItemView` should do if they know a child view is no longer visible and
+  // is expected to remain as such for longer than ~0.1 seconds.
+  void DestroyLabel();
+  void DestroyImageView();
+
   // Called when locale change is detected (which should not happen after the
   // user session starts). It should reload any strings the view is using.
   virtual void HandleLocaleChange() = 0;
