@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">रीफ़्रेश करें</translation>
 <translation id="3009958530611748826">सेव करने के लिए कोई फ़ोल्डर चुनें</translation>
 <translation id="3017079585324758401">बैकग्राउंड</translation>
+<translation id="302435934487327038">फ़र्मवेयर इंस्टॉल हो गया है</translation>
 <translation id="3027578600144895987">कैमरा बंद करें</translation>
 <translation id="3031560714565892478">डिवाइस एक वीडियो कैमरा है.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -664,13 +665,13 @@
 <translation id="6618744767048954150">जांच चल रही है</translation>
 <translation id="6620487321149975369">प्रिंट की गई फ़ाइलें तब तक इतिहास में दिखेंगी, जब तक इन्हें मैन्युअल तरीके से हटा नहीं दिया जाता</translation>
 <translation id="6643016212128521049">साफ़ करें</translation>
+<translation id="6644568396961840069">फ़ाइल सेव नहीं की जा सकी. दूसरी तरह के बाहरी स्टोरेज को प्लग इन करके देखें या बाद में कोशिश करें.</translation>
 <translation id="6647510110698214773">एन्क्रिप्शन का एल्गोरिदम</translation>
 <translation id="6650062777702288430">काना/अक्षर और अंक स्विच करने वाला बटन</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउज़र टैब</translation>
 <translation id="6692996468359469499">चुनी हुई सामग्री से जुड़ी जानकारी पाएं</translation>
 <translation id="6704062477274546131">डीएनएस रिज़ॉल्यूशन</translation>
-<translation id="6721744718589119342">हम ज़्यादा जानकारी या अपडेट के लिए, आपको ईमेल भेज सकते हैं</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6723847290197874913">कीबोर्ड की बैकलाइट</translation>
 <translation id="672609503628871915">देखें कि नया क्या है</translation>
@@ -826,6 +827,7 @@
 <translation id="8217675307824400706">वाई-फ़ाई से कनेक्ट हों</translation>
 <translation id="8221728673725659466">कैलिब्रेशन पूरा हुआ</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>
+<translation id="8227119283605456246">फ़ाइल अटैच करें</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
 <translation id="8246209727385807362">अज्ञात वाहक</translation>
 <translation id="827422111966801947">गहरा नीला</translation>

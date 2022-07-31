@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">បានបរាជ័យក្នុងការបោះពុម្ព</translation>
 <translation id="1125564390852150847">បង្កើតផ្ទាំងថ្មី</translation>
 <translation id="1126809382673880764">មិនការពារអ្នក​ពីគេហទំព័រ ការទាញយក ឬកម្មវិធី​បន្ថែម​ដែលមានគ្រោះថ្នាក់ទេ។ អ្នក​នឹង​នៅតែ​ទទួលបាន​ការការពារ​ការរុករក​ដោយសុវត្ថិភាព (ប្រសិនបើមាន) នៅក្នុង​សេវាកម្ម Google ផ្សេងទៀត​ដូចជា Gmail និង​កម្មវិធីស្វែងរកជាដើម។</translation>
+<translation id="1135212215217513471">ទាញយក Chrome សម្រាប់ iOS</translation>
 <translation id="1145536944570833626">លុបទិន្នន័យដែលមានស្រាប់។</translation>
 <translation id="1147031633655575115">បានចូលជា <ph name="USER" /></translation>
 <translation id="1154984953698510061">មើលផ្ទាំងផ្សេងទៀត</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">ដើម្បី​ប្រាកដថា អ្នកអាចចូលប្រើ​ទិន្នន័យ​សមកាលកម្ម​របស់អ្នកបាន​ជានិច្ច សូមផ្ទៀងផ្ទាត់ថា​ជាអ្នក</translation>
 <translation id="1870148520156231997">បង្ហាញ​ពាក្យសម្ងាត់</translation>
 <translation id="1872096359983322073">ពិល</translation>
+<translation id="1910975740091000991">Chrome សម្រាប់ iOS</translation>
 <translation id="1911619930368729126">អាប់ឡូត Google Drive</translation>
 <translation id="1923342640370224680">ម៉ោងមុន</translation>
 <translation id="1930989359703290198">ស្ថាប័នរបស់អ្នក​អនុញ្ញាតឱ្យអ្នក​ចូលដោយប្រើ​គណនីជាក់លាក់​តែប៉ុណ្ណោះ។ គណនីដែលមិនមាន​ការអនុញ្ញាត​ត្រូវបានលាក់។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">ស្វែងរក​អត្ថបទ​ដែលអ្នក​បានចម្លង</translation>
 <translation id="214201757571129614">ចូលគណនី…</translation>
 <translation id="2149973817440762519">កែប្រែចំណាំ</translation>
+<translation id="2155145621546387786">ចែករំលែក Chrome</translation>
 <translation id="2175927920773552910">កូដ QR</translation>
 <translation id="2218443599109088993">បង្រួម</translation>
 <translation id="2230173723195178503">បាន​ផ្ទុក​គេហទំព័រ​</translation>

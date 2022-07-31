@@ -4235,7 +4235,6 @@
 <translation id="5026874946691314267">Үүнийг дахиж бүү харуул</translation>
 <translation id="5027550639139316293">И-мэйлийн гэрчилгээ</translation>
 <translation id="5027562294707732951">Өргөтгөл нэмэх</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" />-г <ph name="PRIMARY_EMAIL" />-с хасах бөгөөд энэ Chromebook-тэй үл хослуулсан.</translation>
 <translation id="5029568752722684782">Хуулбарыг арилгах</translation>
 <translation id="5029873138381728058">VM-г шалгаж чадсангүй</translation>
 <translation id="503155457707535043">Аппуyдыг татаж байна</translation>
@@ -6510,7 +6509,6 @@
 <translation id="7280877790564589615">Зөвшөөрөл хүссэн</translation>
 <translation id="7282547042039404307">Зөөлөн</translation>
 <translation id="7282992757463864530">Мэдээллийн самбар</translation>
-<translation id="728334460283296316">Төхөөрөмжийг хасах</translation>
 <translation id="7283555985781738399">Зочны горим</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Энэ төхөөрөмжийг 1 хоногийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}other{Энэ төхөөрөмжийг {DAYS} хоногийн турш хадгалах бөгөөд та дараагийн удаа кодгүйгээр холбогдох боломжтой. Үүнийг танай администратор тохируулсан.}}</translation>
 <translation id="7284411326658527427">Хүн бүр бүртгэлээ хувийн болгож, өгөгдлөө хувьдаа хадгалж болно.</translation>
@@ -7804,8 +7802,6 @@
 <translation id="8531701051932785007">Сайжруулсан аюулгүй хөтөч унтраалттай байна</translation>
 <translation id="8534656636775144800">Уучлаарай, домайнд нэгдэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="8535005006684281994">Нетскейп гэрчилгээг шинэчлэх холбоос</translation>
-<translation id="8536565869707961418"><ph name="DEVICE" />-г <ph name="PRIMARY_EMAIL" />-с хасна уу.
-    Төхөөрөмжийг дотоодод ашиглах боломжтой хэвээр байна.</translation>
 <translation id="8536713137312218707">Шуурхай тушаал</translation>
 <translation id="8536956381488731905">Товч дарахад дуу гарах</translation>
 <translation id="8539727552378197395">Үгүй (HttpOnly)</translation>

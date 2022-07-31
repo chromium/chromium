@@ -4226,7 +4226,6 @@
 <translation id="5026874946691314267">اسے دوبارہ نہ دکھائیں</translation>
 <translation id="5027550639139316293">ای میل سرٹیفکیٹ</translation>
 <translation id="5027562294707732951">ایکسٹینشن شامل کریں</translation>
-<translation id="5028202297152853903">‏<ph name="DEVICE" /> کو <ph name="PRIMARY_EMAIL" /> سے ہٹا دیا جائے گا اور اس Chromebook کے ساتھ اس کا جوڑا ختم کر دیا جائے گا۔</translation>
 <translation id="5029568752722684782">کاپی صاف کریں</translation>
 <translation id="5029873138381728058">‏VMs چیک کرنے میں ناکام</translation>
 <translation id="503155457707535043">ایپس ڈاؤن لوڈ ہو رہی ہیں</translation>
@@ -6500,7 +6499,6 @@
 <translation id="7280877790564589615">اجازت کی درخواست کی گئی</translation>
 <translation id="7282547042039404307">ہموار</translation>
 <translation id="7282992757463864530">معلومات بار</translation>
-<translation id="728334460283296316">آلہ ہٹائیں</translation>
 <translation id="7283555985781738399">مہمان وضع</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{یہ آلہ 1 دن کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}other{یہ آلہ {DAYS} دن کے لیے محفوظ رہے گا اور آپ اگلی بار بغیر کوڈ کے منسلک ہو سکتے ہیں۔ اس کو آپ کے منتظم نے سیٹ کیا ہے۔}}</translation>
 <translation id="7284411326658527427">ہر شخص اپنے اکاؤنٹ کو ذاتی نوعیت کا بنا اور ڈیٹا کو نجی رکھ سکتا ہے۔</translation>
@@ -7795,8 +7793,6 @@
 <translation id="8531701051932785007">بہتر کردہ محفوظ براؤزنگ آف ہے</translation>
 <translation id="8534656636775144800">افوہ!  ڈومین میں شامل ہونے کی کوشش کرتے وقت کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8535005006684281994">‏Netscape سرٹیفیکیٹ تجدید URL</translation>
-<translation id="8536565869707961418"><ph name="PRIMARY_EMAIL" /> سے <ph name="DEVICE" /> کو ہٹائیں۔
-    آلہ اب بھی مقامی طور پر استعمال کیا جا سکتا ہے۔</translation>
 <translation id="8536713137312218707">فوری ہدایات</translation>
 <translation id="8536956381488731905">کلید دبانے پر آواز</translation>
 <translation id="8539727552378197395">‏کوئی (HttpOnly) نہیں ہے</translation>

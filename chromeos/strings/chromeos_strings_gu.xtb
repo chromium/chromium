@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">રિફ્રેશ કરો</translation>
 <translation id="3009958530611748826">સ્કૅન જેમાં સાચવવાના છે તે ફોલ્ડર પસંદ કરો</translation>
 <translation id="3017079585324758401">બૅકગ્રાઉન્ડ</translation>
+<translation id="302435934487327038">ઇન્સ્ટૉલ કરવાનું પૂર્ણ થયું</translation>
 <translation id="3027578600144895987">કૅમેરા બંધ કરો</translation>
 <translation id="3031560714565892478">ડિવાઇસ એક વીડિયો કૅમેરા છે.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,13 +664,13 @@
 <translation id="6618744767048954150">હજીપણ તપાસ થઈ રહી છે</translation>
 <translation id="6620487321149975369">જ્યાં સુધી પ્રિન્ટ કાર્યોને મેન્યુઅલી કાઢી નાખવામાં નહીં આવે, ત્યાં સુધી તે ઇતિહાસમાં દેખાશે</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
+<translation id="6644568396961840069">ફાઇલ સાચવી શકાઈ નથી. કોઈ અલગ બાહ્ય સ્ટોરેજ પ્લગ ઇન કરવાનો પ્રયાસ કરો અથવા થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6647510110698214773">એન્ક્રિપ્શન ઍલ્ગોરિધમ</translation>
 <translation id="6650062777702288430">કાના/આલ્ફાન્યૂમેરિક સ્વિચ કી</translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="6659594942844771486">બ્રાઉઝર ટૅબ</translation>
 <translation id="6692996468359469499">તમારી પસંદગી સંબંધિત માહિતી મેળવો</translation>
 <translation id="6704062477274546131">DNSનો ઉકેલ</translation>
-<translation id="6721744718589119342">વધુ માહિતી અથવા અપડેટ માટે, અમે તમને ઇમેઇલ મોકલી શકીએ છીએ</translation>
 <translation id="6723839937902243910">પાવર</translation>
 <translation id="6723847290197874913">કીબોર્ડ બૅકલાઇટ</translation>
 <translation id="672609503628871915">શું નવું છે તે જુઓ</translation>
@@ -825,6 +826,7 @@
 <translation id="8217675307824400706">કનેક્ટ કરો</translation>
 <translation id="8221728673725659466">કેલિબ્રેશન પૂર્ણ થયું</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
+<translation id="8227119283605456246">ફાઇલ જોડો</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8246209727385807362">અજાણ કૅરિઅર</translation>
 <translation id="827422111966801947">ઘેરો ભૂરો</translation>

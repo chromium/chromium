@@ -84,6 +84,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1346748346194534595">À direita</translation>
 <translation id="1351937230027495976">Recolher menu</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, use sua impressão digital</translation>
+<translation id="1365866993922957110">Receber atualizações automáticas</translation>
 <translation id="1372545819342940910">Salvar espaço de trabalho para mais tarde</translation>
 <translation id="1383597849754832576">Não foi possível fazer o download dos arquivos de fala. Tente novamente mais tarde.</translation>
 <translation id="1383876407941801731">Pesquisar</translation>
@@ -161,6 +162,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1830308660060964064">O <ph name="ITEM_TITLE" /> foi liberado</translation>
 <translation id="1836215606488044471">Assistente (carregando…)</translation>
 <translation id="1838895407229022812">O Modo noturno está desativado.</translation>
+<translation id="1862380676329487333">Atualizar e sair</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta traseira)</translation>
 <translation id="1879018240766558464">No momento, não há suporte para janelas anônimas. Outros apps serão salvos.</translation>
 <translation id="1882814835921407042">Rede móvel indisponível</translation>
@@ -561,6 +563,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="423685346499232137">Não é possível copiar nem colar conteúdo no momento</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
+<translation id="4247123849143712100">Atualizar e desligar</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
 <translation id="425364040945105958">Sem chip</translation>
 <translation id="4261870227682513959">Mostrar configurações de notificação. As notificações estão desativadas</translation>
@@ -920,6 +923,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerenciada por <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> conectado</translation>
 <translation id="6351032674660237738">SUGESTÕES DE APPS</translation>
+<translation id="6359587239691116345">Instale os recursos e melhorias de segurança mais recentes. Caso você recuse essa atualização, o dispositivo pode deixar de funcionar corretamente e você pode enfrentar problemas de segurança e performance.</translation>
 <translation id="6376931439017688372">Bluetooth ativado</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo, digite o PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK está desativado</translation>
@@ -941,6 +945,7 @@ Conecte o dispositivo a uma fonte de energia.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> precisa que você atualize seu <ph name="DEVICE_TYPE" /> antes do fim do prazo</translation>
 <translation id="649452524636452238">PIN do cartão inteligente</translation>
 <translation id="6495400115277918834">O picture-in-picture foi iniciado. Pressione "Alt + Shift + V" para focar</translation>
+<translation id="6500896621837555595">Atualizar</translation>
 <translation id="6501401484702599040">Transmitindo tela para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Câmera perdida, tentando reconectar.</translation>
 <translation id="6520517963145875092">Selecione uma janela para a captura</translation>
@@ -1218,6 +1223,7 @@ Nova instalação</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
 <translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>
+<translation id="8091387634532529612">Atualizações automáticas</translation>
 <translation id="8098591350844501178">Parar de transmitir tela para <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ativ. nos apps</translation>
 <translation id="8120151603115102514">Seu smartphone não tem uma tela de bloqueio. Para desbloquear o Chromebook, digite sua senha</translation>
@@ -1424,4 +1430,5 @@ Nova instalação</translation>
 <translation id="974545358917229949">Exibindo <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Paisagem</translation>
 <translation id="990277280839877440">Janela <ph name="WINDOW_TITILE" /> fechada.</translation>
+<translation id="996204416024568215">Instale os recursos e melhorias de segurança mais recentes. As atualizações ocorrem em segundo plano.</translation>
 </translationbundle>

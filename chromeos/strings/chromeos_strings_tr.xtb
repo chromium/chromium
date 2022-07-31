@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">YENİLE</translation>
 <translation id="3009958530611748826">Kaydedilecek bir klasör seçin</translation>
 <translation id="3017079585324758401">Arka plan</translation>
+<translation id="302435934487327038">Yükleme tamamlandı</translation>
 <translation id="3027578600144895987">Kamerayı kapat</translation>
 <translation id="3031560714565892478">Cihazın türü video kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,13 +665,13 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6618744767048954150">Çalışıyor</translation>
 <translation id="6620487321149975369">Yazdırma işleri, manuel olarak kaldırılmadığı sürece geçmişte görünür</translation>
 <translation id="6643016212128521049">Temizle</translation>
+<translation id="6644568396961840069">Dosya kaydedilemedi. Farklı bir harici depolama cihazı takmayı deneyin veya daha sonra tekrar deneyin.</translation>
 <translation id="6647510110698214773">Şifreleme algoritması</translation>
 <translation id="6650062777702288430">Kana/alfanümerik karaktere geç</translation>
 <translation id="6657585470893396449">Şifre</translation>
 <translation id="6659594942844771486">Sekme</translation>
 <translation id="6692996468359469499">Seçiminizle alakalı bilgi edinin</translation>
 <translation id="6704062477274546131">DNS Çözümlemesi</translation>
-<translation id="6721744718589119342">Daha fazla bilgi veya güncelleme için size e-posta gönderebiliriz</translation>
 <translation id="6723839937902243910">Güç</translation>
 <translation id="6723847290197874913">Klavye arka ışığı</translation>
 <translation id="672609503628871915">Yenilikleri görüntüle</translation>
@@ -826,6 +827,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8217675307824400706">Bağlanın</translation>
 <translation id="8221728673725659466">Ayarlama tamamlandı</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>
+<translation id="8227119283605456246">Dosya ekle</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8246209727385807362">Bilinmeyen operatör</translation>
 <translation id="827422111966801947">Çivit Mavisi</translation>

@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">ATNAUJINTI</translation>
 <translation id="3009958530611748826">Pasirinkite aplanką, kuriame pageidaujate išsaugoti</translation>
 <translation id="3017079585324758401">Fonas</translation>
+<translation id="302435934487327038">Įdiegta</translation>
 <translation id="3027578600144895987">Uždaryti vaizdo kamerą</translation>
 <translation id="3031560714565892478">Įrenginys yra vaizdo kamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,13 +665,13 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>
 <translation id="6643016212128521049">Išvalyti</translation>
+<translation id="6644568396961840069">Failo nepavyko išsaugoti. Pabandykite prijungti kitą išorinę saugyklą arba vėliau bandykite dar kartą.</translation>
 <translation id="6647510110698214773">Šifruotės algoritmas</translation>
 <translation id="6650062777702288430">Kana / raidinių ir skaitinių simbolių jungiklis</translation>
 <translation id="6657585470893396449">Slaptažodis</translation>
 <translation id="6659594942844771486">Skirtukas</translation>
 <translation id="6692996468359469499">Su pasirinkimu susijusios informacijos gavimas</translation>
 <translation id="6704062477274546131">DNS pavadinimų vertimas</translation>
-<translation id="6721744718589119342">Išsiųsime jums el. laišką, jei reikės daugiau informacijos ar naujienų</translation>
 <translation id="6723839937902243910">Maitinimas</translation>
 <translation id="6723847290197874913">Klaviatūros foninis apšvietimas</translation>
 <translation id="672609503628871915">Sužinokite, kas naujo</translation>
@@ -826,6 +827,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8217675307824400706">Prisijungimas</translation>
 <translation id="8221728673725659466">Kalibravimas atliktas</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>
+<translation id="8227119283605456246">Pridėtas failas</translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8246209727385807362">Nežinomas operatorius</translation>
 <translation id="827422111966801947">Indigo spalva</translation>

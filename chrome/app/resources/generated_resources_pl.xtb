@@ -4211,7 +4211,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5026874946691314267">Nie pokazuj więcej tego komunikatu</translation>
 <translation id="5027550639139316293">Certyfikat poczty e-mail</translation>
 <translation id="5027562294707732951">Dodaj rozszerzenie</translation>
-<translation id="5028202297152853903">Urządzenie <ph name="DEVICE" /> zostanie usunięte z konta <ph name="PRIMARY_EMAIL" /> i rozparowane z tym Chromebookiem.</translation>
 <translation id="5029568752722684782">Usuń kopię</translation>
 <translation id="5029873138381728058">Nie udało się sprawdzić maszyn wirtualnych</translation>
 <translation id="503155457707535043">Pobieram aplikacje</translation>
@@ -6489,7 +6488,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7280877790564589615">Prośba o uprawnienia</translation>
 <translation id="7282547042039404307">Płynny</translation>
 <translation id="7282992757463864530">Pasek informacyjny</translation>
-<translation id="728334460283296316">Usuwanie urządzenia</translation>
 <translation id="7283555985781738399">Tryb gościa</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{To urządzenie będzie zapisane przez 1 dzień. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}few{To urządzenie będzie zapisane przez {DAYS} dni. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}many{To urządzenie będzie zapisane przez {DAYS} dni. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}other{To urządzenie będzie zapisane przez {DAYS} dnia. Następnym razem możesz połączyć się bez podawania kodu. Tę opcję ustawia administrator.}}</translation>
 <translation id="7284411326658527427">Każda osoba może spersonalizować swoje konto i zachować prywatność swoich danych.</translation>
@@ -7786,8 +7784,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8531701051932785007">Ulepszone Bezpieczne przeglądanie jest wyłączone</translation>
 <translation id="8534656636775144800">Ups. Podczas próby dołączenia do domeny wystąpił błąd. Spróbuj ponownie.</translation>
 <translation id="8535005006684281994">Adres URL odnowienia certyfikatu firmy Netscape</translation>
-<translation id="8536565869707961418">Usuń urządzenie <ph name="DEVICE" /> z konta <ph name="PRIMARY_EMAIL" />.
-    Urządzenia można nadal używać lokalnie.</translation>
 <translation id="8536713137312218707">Szybkie polecenia</translation>
 <translation id="8536956381488731905">Dźwięk przy naciśnięciu</translation>
 <translation id="8539727552378197395">Nie (HttpOnly)</translation>

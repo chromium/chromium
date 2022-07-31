@@ -4223,7 +4223,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5026874946691314267">Ez erakutsi berriro</translation>
 <translation id="5027550639139316293">Posta elektronikoko ziurtagiria</translation>
 <translation id="5027562294707732951">Gehitu luzapena</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" /> <ph name="PRIMARY_EMAIL" /> kontutik kenduko da, eta Chromebook-etik desparekatuko.</translation>
 <translation id="5029568752722684782">Garbitu kopia</translation>
 <translation id="5029873138381728058">Ezin izan dira egiaztatu makina birtualak</translation>
 <translation id="503155457707535043">Deskargatzen ari dira aplikazioak</translation>
@@ -6495,7 +6494,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7280877790564589615">Baimena behar da</translation>
 <translation id="7282547042039404307">Leuna</translation>
 <translation id="7282992757463864530">Informazio-barra</translation>
-<translation id="728334460283296316">Kendu gailua</translation>
 <translation id="7283555985781738399">Gonbidatu modua</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Gailua egun batez gordeko da; hurrengoan, koderik erabili gabe konektatu ahal izango zara. Administratzaileak ezarri du arau hori.}other{Gailua {DAYS} egunez gordeko da; hurrengoan, koderik erabili gabe konektatu ahal izango zara. Administratzaileak ezarri du arau hori.}}</translation>
 <translation id="7284411326658527427">Bakoitzak bere kontua pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
@@ -7790,8 +7788,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8531701051932785007">Arakatze seguru hobetua desaktibatuta dago</translation>
 <translation id="8534656636775144800">Arazo bat izan da domeinuan sartzen saiatzean. Saiatu berriro.</translation>
 <translation id="8535005006684281994">Netscape ziurtagiria berritzeko URLa</translation>
-<translation id="8536565869707961418"><ph name="PRIMARY_EMAIL" /> kontutik kendu nahi duzu <ph name="DEVICE" />?
-    Hala ere, gailua lokalki erabiltzen jarraitu ahal izango duzu.</translation>
 <translation id="8536713137312218707">Agindu bizkorrak</translation>
 <translation id="8536956381488731905">Aktibatu soinua teklak sakatzean</translation>
 <translation id="8539727552378197395">Ez (Http soilik)</translation>

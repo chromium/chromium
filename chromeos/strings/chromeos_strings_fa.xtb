@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">بازخوانی</translation>
 <translation id="3009958530611748826">پوشه‌ای را برای ذخیره در آن انتخاب کنید</translation>
 <translation id="3017079585324758401">پس‌زمینه</translation>
+<translation id="302435934487327038">نصب تکمیل شد</translation>
 <translation id="3027578600144895987">بستن دوربین</translation>
 <translation id="3031560714565892478">دستگاه دوربین ویدیویی است.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> میلی‌آمپر</translation>
@@ -664,13 +665,13 @@
 <translation id="6618744767048954150">درحال اجرا</translation>
 <translation id="6620487321149975369">کارهای چاپ تا زمانی‌که به‌طور دستی برداشته نشوند در سابقه نشان داده می‌شوند</translation>
 <translation id="6643016212128521049">پاک کردن</translation>
+<translation id="6644568396961840069">فایل ذخیره نشد. فضای ذخیره‌سازی خارجی دیگری را وصل کنید یا بعداً دوباره امتحان کنید.</translation>
 <translation id="6647510110698214773">الگوریتم رمزگذاری</translation>
 <translation id="6650062777702288430">تغییر میان کانا/ حرفی‌عددی</translation>
 <translation id="6657585470893396449">گذرواژه</translation>
 <translation id="6659594942844771486">برگه</translation>
 <translation id="6692996468359469499">دریافت اطلاعاتی که با انتخابتان مرتبط است</translation>
 <translation id="6704062477274546131">وضوح ساناد</translation>
-<translation id="6721744718589119342">ممکن است اطلاعات بیشتر یا به‌روزرسانی‌ها را برایتان ایمیل کنیم.</translation>
 <translation id="6723839937902243910">نیرو</translation>
 <translation id="6723847290197874913">نور پس‌زمینه صفحه‌کلید</translation>
 <translation id="672609503628871915">مشاهده تازه‌ها</translation>
@@ -826,6 +827,7 @@
 <translation id="8217675307824400706">متصل شوید</translation>
 <translation id="8221728673725659466">واسنجی تکمیل شد</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
+<translation id="8227119283605456246">پیوست کردن فایل</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8246209727385807362">شرکت مخابراتی ناشناس</translation>
 <translation id="827422111966801947">نیلی سیر</translation>

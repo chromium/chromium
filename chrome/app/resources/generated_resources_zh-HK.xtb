@@ -905,6 +905,7 @@
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">未登入</translation>
+<translation id="1831848493690504725">我們無法透過已連線的網絡連接 Google。請嘗試選取其他網絡，或檢查網絡設定或 Proxy 設定 (如有使用 Proxy)。</translation>
 <translation id="1832459821645506983">是，我同意使用</translation>
 <translation id="1832511806131704864">手機變更內容已更新</translation>
 <translation id="1832848789136765277">為確保您可隨時存取同步資料，請驗證您的身分</translation>
@@ -4240,7 +4241,6 @@
 <translation id="5026874946691314267">不要再顯示這則通知</translation>
 <translation id="5027550639139316293">電郵憑證</translation>
 <translation id="5027562294707732951">新增擴充程式</translation>
-<translation id="5028202297152853903">「<ph name="DEVICE" />」將會由 <ph name="PRIMARY_EMAIL" /> 移除，並與此 Chromebook 取消配對。</translation>
 <translation id="5029568752722684782">清除副本</translation>
 <translation id="5029873138381728058">無法檢查虛擬機器</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
@@ -4752,6 +4752,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />要求以下權限：</translation>
 <translation id="5534304873398226603">捨棄相片或影片</translation>
 <translation id="5537725057119320332">投放</translation>
+<translation id="5539070192556911367">無法連接 Google</translation>
 <translation id="5539221284352502426">伺服器已拒絕您輸入的密碼。原因可能包括：密碼太短、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
 <translation id="5541694225089836610">您的管理員已停用此操作</translation>
 <translation id="5542132724887566711">設定檔</translation>
@@ -4815,6 +4816,7 @@
 <translation id="5585912436068747822">無法格式化</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在載入應用程式…</translation>
+<translation id="5590418976913374224">在裝置啟動時播放音效</translation>
 <translation id="5592595402373377407">目前還沒有足夠的數據。</translation>
 <translation id="5595307023264033512">網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">編輯地址</translation>
@@ -6357,6 +6359,7 @@
 <translation id="7102687220333134671">已開啟自動更新功能</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="710640343305609397">開啟網絡設定</translation>
+<translation id="7107609441453408294">透過所有喇叭播放相同的音效</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108668606237948702">Enter 鍵</translation>
 <translation id="7108933416628942903">立即鎖定</translation>
@@ -6513,7 +6516,6 @@
 <translation id="7280877790564589615">已要求許可</translation>
 <translation id="7282547042039404307">流暢</translation>
 <translation id="7282992757463864530">資料列</translation>
-<translation id="728334460283296316">移除裝置</translation>
 <translation id="7283555985781738399">訪客模式</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{系統會記住此裝置，在 1 天內無需輸入驗證碼即可再次連接。此設定由管理員設定。}other{系統會記住此裝置，在 {DAYS} 天內無需輸入驗證碼即可再次連接。此設定由管理員設定。}}</translation>
 <translation id="7284411326658527427">每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
@@ -6589,6 +6591,7 @@
 <translation id="7364745943115323529">投放…</translation>
 <translation id="7364796246159120393">選擇檔案</translation>
 <translation id="7365076891350562061">顯示器大小</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - 固定咗</translation>
 <translation id="7366316827772164604">正在掃瞄附近的裝置…</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7366909168761621528">瀏覽資料</translation>
@@ -7810,8 +7813,6 @@
 <translation id="8531701051932785007">「強化安全瀏覽」功能已關閉</translation>
 <translation id="8534656636775144800">抱歉！嘗試加入網域時發生錯誤，請再試一次。</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
-<translation id="8536565869707961418">從 <ph name="PRIMARY_EMAIL" /> 移除「<ph name="DEVICE" />」。
-    裝置仍可在本機使用。</translation>
 <translation id="8536713137312218707">快速指令</translation>
 <translation id="8536956381488731905">按鍵音效</translation>
 <translation id="8539727552378197395">否 (限 Http)</translation>

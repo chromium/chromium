@@ -4227,7 +4227,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5026874946691314267">Bu xabar boshqa ko‘rsatilmasin</translation>
 <translation id="5027550639139316293">Email sertifikati</translation>
 <translation id="5027562294707732951">Kengaytmani o‘rnatish</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" /> qurilmasi <ph name="PRIMARY_EMAIL" /> hisobidan olib tashlanadi va bu Chromebookdan uziladi.</translation>
 <translation id="5029568752722684782">Nusxani o‘chirib tashlash</translation>
 <translation id="5029873138381728058">VM tekshirilmadi</translation>
 <translation id="503155457707535043">Ilovalar yuklab olinishi</translation>
@@ -6502,7 +6501,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7280877790564589615">Ruxsat so‘ralmoqda</translation>
 <translation id="7282547042039404307">Ravon</translation>
 <translation id="7282992757463864530">Axborot paneli</translation>
-<translation id="728334460283296316">Qurilmani olib tashlash</translation>
 <translation id="7283555985781738399">Mehmon rejimi</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Bu qurilma 1 kun davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}other{Bu qurilma {DAYS} kun davomida saqlanadi va unga keyingi safar kodsiz ulanish mumkin. Bu administrator tomonidan sozlangan.}}</translation>
 <translation id="7284411326658527427">Har bir odamning hisobi alohida moslashtiriladi va ularning maʼlumotlari xavfsiz saqlanadi.</translation>
@@ -7797,8 +7795,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8531701051932785007">Saytlarni kuchaytirilgan rejimda xavfsiz kezish faolsizlantirildi</translation>
 <translation id="8534656636775144800">Domenga ulanishda xatolik yuz berdi. Qaytadan urining.</translation>
 <translation id="8535005006684281994">Netscape sertifikatini yangilash URL manzili</translation>
-<translation id="8536565869707961418"><ph name="DEVICE" /> qurilmasini <ph name="PRIMARY_EMAIL" /> hisobidan olib tashlash.
-    Qurilma faqat mahalliy ishlatilishi mumkin.</translation>
 <translation id="8536713137312218707">Tezkor buyruqlar</translation>
 <translation id="8536956381488731905">Tugmalar tovushi</translation>
 <translation id="8539727552378197395">Yo‘q (HttpOnly)</translation>

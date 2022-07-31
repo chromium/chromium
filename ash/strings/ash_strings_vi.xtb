@@ -84,6 +84,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1346748346194534595">Phải</translation>
 <translation id="1351937230027495976">Thu gọn menu</translation>
 <translation id="1364382257761975320">Hãy dùng vân tay của bạn để mở khóa Chromebook</translation>
+<translation id="1365866993922957110">Nhận bản cập nhật tự động</translation>
 <translation id="1372545819342940910">Lưu không gian làm việc để dùng sau</translation>
 <translation id="1383597849754832576">Không thể tải tệp mã chuyển lời nói thành văn bản xuống. Hãy thử lại sau.</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
@@ -161,6 +162,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1830308660060964064">Đã bỏ ghim <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Trợ lý (đang tải...)</translation>
 <translation id="1838895407229022812">Chế độ Ánh sáng đêm đang tắt.</translation>
+<translation id="1862380676329487333">Cập nhật và đăng xuất</translation>
 <translation id="1864454756846565995">Thiết bị USB-C (cổng phía sau)</translation>
 <translation id="1879018240766558464">Hiện không hỗ trợ cửa sổ ẩn danh. Các ứng dụng khác sẽ được lưu.</translation>
 <translation id="1882814835921407042">Không có mạng di động</translation>
@@ -561,6 +563,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="423685346499232137">Không thể sao chép hoặc dán nội dung vào lúc này</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
+<translation id="4247123849143712100">Cập nhật và tắt</translation>
 <translation id="4250229828105606438">Ảnh chụp màn hình</translation>
 <translation id="425364040945105958">Không có SIM</translation>
 <translation id="4261870227682513959">Hiển thị các tùy chọn cài đặt thông báo. Thông báo hiện đang tắt</translation>
@@ -920,6 +923,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> là phiên do <ph name="MANAGER" /> quản lý</translation>
 <translation id="6344138931392227467">Đã kết nối <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">ĐỀ XUẤT ỨNG DỤNG</translation>
+<translation id="6359587239691116345">Nhận các tính năng mới nhất và mức độ bảo mật cao hơn. Nếu bạn từ chối bản cập nhật này, thiết bị của bạn có thể sẽ không còn hoạt động bình thường. Đồng thời, bạn có thể gặp các vấn đề về hiệu suất và bảo mật.</translation>
 <translation id="6376931439017688372">Bluetooth đang bật</translation>
 <translation id="6381109794406942707">Để mở khóa thiết bị, hãy nhập mã PIN của bạn.</translation>
 <translation id="639644700271529076">CAPS LOCK tắt</translation>
@@ -941,6 +945,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6491071886865974820">Theo yêu cầu của <ph name="MANAGER" />, bạn phải cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình trước thời hạn</translation>
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>
 <translation id="6495400115277918834">Tính năng hình trong hình đã bắt đầu, hãy nhấn tổ hợp phím Alt+Shift+V để lấy tâm điểm</translation>
+<translation id="6500896621837555595">Cập nhật</translation>
 <translation id="6501401484702599040">Đang truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Máy ảnh bị mất kết nối, đang cố gắng kết nối lại.</translation>
 <translation id="6520517963145875092">Chọn một cửa sổ để chụp</translation>
@@ -1218,6 +1223,7 @@ Mới cài đặt</translation>
 <translation id="8054466585765276473">Đang tính toán thời lượng pin.</translation>
 <translation id="8061464966246066292">Độ tương phản cao</translation>
 <translation id="8083540854303889870">Lưu để dùng sau</translation>
+<translation id="8091387634532529612">Cập nhật tự động</translation>
 <translation id="8098591350844501178">Dừng truyền màn hình tới <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Bật, tất cả</translation>
 <translation id="8120151603115102514">Điện thoại của bạn không có màn hình khoá. Hãy nhập mật khẩu để mở khoá chiếc Chromebook của bạn.</translation>
@@ -1424,4 +1430,5 @@ Mới cài đặt</translation>
 <translation id="974545358917229949">Đang hiển thị <ph name="RESULT_COUNT" /> kết quả cho <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Khổ ngang</translation>
 <translation id="990277280839877440">Đã đóng cửa sổ <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">Nhận các tính năng mới nhất và mức độ bảo mật cao hơn. Quá trình cập nhật diễn ra trong nền.</translation>
 </translationbundle>

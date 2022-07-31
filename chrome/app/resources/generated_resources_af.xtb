@@ -1081,6 +1081,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1997616988432401742">Jou sertifikate</translation>
 <translation id="1999115740519098545">Met afskop</translation>
 <translation id="2000419248597011803">Stuur 'n paar webkoekies en soektogte vanaf die adresbalk en soekkassie na jou versteksoekenjin toe</translation>
+<translation id="2001148512690747464">Daar is geen Kitsbind-toestelle in <ph name="PRIMARY_EMAIL" /> gestoor nie</translation>
 <translation id="2002109485265116295">Intyds</translation>
 <translation id="2003130567827682533">Om "<ph name="NAME" />"-data te aktiveer, koppel eers aan 'n Wi-Fi-netwerk</translation>
 <translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
@@ -1345,6 +1346,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2241053333139545397">Lees en verander jou data op 'n hele aantal webwerwe</translation>
 <translation id="2241634353105152135">Net een keer</translation>
 <translation id="2242687258748107519">Lêerinligting</translation>
+<translation id="2245296100676446525">Skakel sinkroniseer aan om jou boekmerke, wagwoorde, geskiedenis en meer op hierdie toestel en enige ander plek waar jy tans sinkroniseer, te kry.</translation>
 <translation id="2245603955208828424">Gebruik die pylsleutels om letter vir letter deur items te beweeg</translation>
 <translation id="2246129643805925002">Jou <ph name="DEVICE_TYPE" /> dateer op die agtergrond op om vir jou die jongste kenmerke en sekuriteitverbeteringe te gee. Jy kan opdateringvoorkeure in Instellings kontroleer.</translation>
 <translation id="2246549592927364792">Kry prentbeskrywings van Google af?</translation>
@@ -1789,6 +1791,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2642111877055905627">Sokkerbal</translation>
 <translation id="2643698698624765890">Bestuur jou uitbreidings deur Uitbreidings in die Venster-kieslys te klik.</translation>
 <translation id="2645047101481282803">Jou toestel word bestuur deur <ph name="PROFILE_NAME" /></translation>
+<translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{1 wagwoord is op hierdie toestel ingevoer}other{{NUM_PASSWORDS} wagwoorde is op hierdie toestel ingevoer}}</translation>
 <translation id="2645435784669275700">Chrome-bedryfstelsel</translation>
 <translation id="2649045351178520408">Basis64-geënkodeerde ASCII, sertifikaatketting</translation>
 <translation id="2652129567809778422">Kies wagwoord</translation>
@@ -2966,6 +2969,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3789841737615482174">Installeer</translation>
 <translation id="3790417903123637354">Iets is fout. Probeer later weer</translation>
 <translation id="379082410132524484">Jou kaart het verval</translation>
+<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> uitbreidings</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome het nie enige skadelike sagteware op jou rekenaar gekry nie • 1 dag gelede nagegaan}other{Chrome het nie enige skadelike sagteware op jou rekenaar gekry nie • {NUM_DAYS} dae gelede nagegaan}}</translation>
 <translation id="379500251094592809">Maak seker dat albei toestelle ontsluit is, naby mekaar is, en dat Bluetooth aangeskakel is om Nabydeling te gebruik. As jy met 'n Chromebook deel wat nie in jou kontakte is nie, moet jy seker maak dat Naby-sigbaarheid daarop aangeskakel is (maak die statusarea oop deur die tyd te kies en skakel dan Naby-sigbaarheid aan) <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Af</translation>
@@ -4753,6 +4757,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5542750926112347543">Webkoekies van <ph name="DOMAIN" /> af word geblokkeer</translation>
 <translation id="5542949973455282971">Koppel tans aan <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Kontroleer tans status …</translation>
+<translation id="5544482392629385159">Toestel <ph name="DEVICE_INDEX" /> van <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Leweraar</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Voeg oortjie by groep}other{Voeg oortjies by groep}}</translation>
 <translation id="5545693483061321551">Werwe kan nie jou webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te publiseer. Kenmerke op sommige werwe sal dalk nie werk nie.</translation>
@@ -5555,6 +5560,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6333170995003625229">Jou e-posadres of wagwoord kon nie geverifieer word nie. Probeer weer aanmeld.</translation>
 <translation id="6335920438823100346"><ph name="MANAGER" /> vereis dat jy jou data rugsteun en hierdie Chromebook na die fabriekinstellings terugstel om Linux te begin.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> het ADB-ontfouting gedeaktiveer. Dit sal jou <ph name="DEVICE_TYPE" /> oor 24 uur terugstel. Rugsteun enige lêers wat jy wil hou.</translation>
+<translation id="6338402296920404442">Oorweeg dit om <ph name="FILENAME" /> uit te vee sodat ander wat hierdie toestel gebruik, nie jou wagwoorde kan sien nie.</translation>
 <translation id="6338981933082930623">Alle werwe kan enige advertensies vir jou wys</translation>
 <translation id="6339668969738228384">Skep 'n nuwe profiel vir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internetdrukkerprotokol (IPPS)</translation>
@@ -7627,6 +7633,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8338952601723052325">Ontwikkelaarwebwerf</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> se data wat plaaslik geberg is</translation>
 <translation id="833986336429795709">Kies 'n program om hierdie skakel oop te maak</translation>
+<translation id="8340547030807793004">Meer handelinge vir <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">Het nie probeer nie</translation>
 <translation id="8342861492835240085">Kies 'n versameling</translation>
 <translation id="8345848587667658367">Jy kan nou jou foon se onlangse foto's, media, kennisgewings en programme bekyk</translation>

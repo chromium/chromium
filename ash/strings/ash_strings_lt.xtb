@@ -84,6 +84,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1346748346194534595">Dešinė</translation>
 <translation id="1351937230027495976">Sutraukti meniu</translation>
 <translation id="1364382257761975320">Kad atrakintumėte „Chromebook“, naudokite kontrolinį kodą</translation>
+<translation id="1365866993922957110">Gauti automatinius naujinius</translation>
 <translation id="1372545819342940910">Išsaugoti darbalaukį naudoti vėliau</translation>
 <translation id="1383597849754832576">Nepavyko atsisiųsti kalbos failų. Vėliau bandykite dar kartą.</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
@@ -161,6 +162,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1830308660060964064">Atsegta: <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Padėjėjas (įkeliama...)</translation>
 <translation id="1838895407229022812">Nakties šviesa išjungta.</translation>
+<translation id="1862380676329487333">Atnaujinti ir atsijungti</translation>
 <translation id="1864454756846565995">USB-C įrenginys (prievadas gale)</translation>
 <translation id="1879018240766558464">Inkognito langai šiuo metu nepalaikomi. Kitos programos bus išsaugotos.</translation>
 <translation id="1882814835921407042">Nėra mobiliojo ryšio tinklo</translation>
@@ -561,6 +563,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="423685346499232137">Šiuo metu negalima kopijuoti ar įklijuoti turinio</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Atidaryti nustatymus</translation>
+<translation id="4247123849143712100">Atnaujinti ir išjungti</translation>
 <translation id="4250229828105606438">Ekrano kopija</translation>
 <translation id="425364040945105958">Nėra SIM kortelės</translation>
 <translation id="4261870227682513959">Rodyti pranešimų nustatymus. Pranešimai išjungti</translation>
@@ -920,6 +923,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> yra valdomas seansas, kurį valdo <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Prijungta: <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">PROGRAMŲ PASIŪLYMAI</translation>
+<translation id="6359587239691116345">Gaukite naujausias funkcijas ir saugos patobulinimus. Jei atmesite šį naujinį, įrenginys gali tinkamai nebeveikti ir gali kilti saugos bei našumo problemų.</translation>
 <translation id="6376931439017688372">„Bluetooth“ įjungtas</translation>
 <translation id="6381109794406942707">Jei norite atrakinti įrenginį, įveskite PIN kodą.</translation>
 <translation id="639644700271529076">DIDŽIŲJŲ RAIDŽIŲ RAŠYMAS išjungtas</translation>
@@ -941,6 +945,7 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> reikalauja atnaujinti „<ph name="DEVICE_TYPE" />“ iki termino</translation>
 <translation id="649452524636452238">Išmaniosios kortelės PIN kodas</translation>
 <translation id="6495400115277918834">Funkcija vaizdas vaizde paleista, jei norite sufokusuoti, spauskite „Alt“ + „Shift“ + V</translation>
+<translation id="6500896621837555595">Atnaujinti</translation>
 <translation id="6501401484702599040">Perduodamas ekranas į „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6515727200518652613">Fotoaparatas atsijungė, bandoma prijungti iš naujo.</translation>
 <translation id="6520517963145875092">Pasirinkite norimą užfiksuoti langą</translation>
@@ -1218,6 +1223,7 @@ Naujas įdiegimas</translation>
 <translation id="8054466585765276473">Apskaičiuojamas laikas, likęs iki akumuliatoriaus išsikrovimo.</translation>
 <translation id="8061464966246066292">Didelis kontrastas</translation>
 <translation id="8083540854303889870">Išsaugota vėlesniam laikui</translation>
+<translation id="8091387634532529612">Automatiniai naujiniai</translation>
 <translation id="8098591350844501178">Sustabdyti ekrano perdavimą į: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Visų programų pranešimai įjungti</translation>
 <translation id="8120151603115102514">Jūsų telefone nėra užrakinimo ekrano. Jei norite atrakinti „Chromebook“, įveskite slaptažodį.</translation>
@@ -1424,4 +1430,5 @@ Naujas įdiegimas</translation>
 <translation id="974545358917229949">Pagal užklausą „<ph name="QUERY" />“ pateikiama rezultatų: <ph name="RESULT_COUNT" /></translation>
 <translation id="98515147261107953">Gulsčias</translation>
 <translation id="990277280839877440">Langas „<ph name="WINDOW_TITILE" />“ uždarytas.</translation>
+<translation id="996204416024568215">Gaukite naujausias funkcijas ir saugos patobulinimus. Atnaujinimai vykdomi fone.</translation>
 </translationbundle>

@@ -99,7 +99,6 @@
 <translation id="1105572260329131950">安全な接続にデフォルトのアイコンを使用する</translation>
 <translation id="1107538157073168076">分析情報の拡張機能を無効にする</translation>
 <translation id="1110426799149444997"><ph name="GOOGLE_LENS_PRODUCT_NAME" /> の地域検索を無効にする。</translation>
-<translation id="1111781754511998498">プロジェクター</translation>
 <translation id="1117535567637097036">このポリシーで設定したプロトコル ハンドラは、Android インテントの処理には使用されません。</translation>
 <translation id="1118093128235245168">接続されている USB デバイスへのアクセスを求めるメッセージをユーザーに表示することをサイトに許可する</translation>
 <translation id="111910763555783249">通知設定</translation>
@@ -895,7 +894,6 @@
 <translation id="1962864958436828230">データ漏洩防止のクリップボード制限の最小サイズを設定する</translation>
 <translation id="1964634611280150550">シークレット モードを無効にする</translation>
 <translation id="1964802606569741174">このポリシーは Android YouTube アプリには適用されません。YouTube でセーフモードを有効にする場合は、Android YouTube アプリのインストールを禁止する必要があります。</translation>
-<translation id="1967334955994230472">プロジェクターを無効にする</translation>
 <translation id="1969212217917526199">リモート アクセス ホストの Debug ビルドでポリシーをオーバーライドします。
 
           この値は、ポリシー値のマッピングに対するポリシー名の JSON 辞書として解析されます。</translation>
@@ -2160,7 +2158,6 @@
 <translation id="328347261792478720">デフォルトでは、ブラウザはユーザーに合わせてパーソナライズされたおすすめメディアを表示します。このポリシーを無効に設定すると、ユーザーに対するおすすめは表示されません。このポリシーを有効にするか、未設定のままにすると、おすすめメディアがユーザーに表示されます。</translation>
 <translation id="3284094172359247914">WebUSB API の使用を管理する</translation>
 <translation id="3288595667065905535">リリース チャンネル</translation>
-<translation id="3291318845269544294">プロジェクターを有効にする</translation>
 <translation id="3294430356898755483">このポリシーを設定した場合、管理者はユーザー用のプリンタのリストを設定できます。プリンタの選択は、ユーザーが初めて印刷しようとしたときに行われます。
 
       このポリシーの使用方法:
@@ -2230,7 +2227,6 @@
           このポリシーの値はミリ秒単位とし、アイドル待ちの時間と同じかそれより短い時間を指定できます。
 
           警告メッセージは、アイドル時の操作がログアウトかシャットダウンの場合にのみ表示されます。</translation>
-<translation id="3360280740977649313">プロジェクターのポリシーを設定します。</translation>
 <translation id="3360490004791301756">ユーザーに対して <ph name="PRODUCT_OS_NAME" /> の登録特典の利用を許可する</translation>
 <translation id="3363360928811201045">管理対象アカウントに制限を追加する</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> を有効にする</translation>
@@ -2428,7 +2424,6 @@
 <translation id="3628480121685794414">片面印刷を有効にする</translation>
 <translation id="3634125384445314047">スマートフォンで最近撮影した写真や動画にスマートフォン ハブ経由でアクセスすることを許可します。</translation>
 <translation id="3643284063603988867">「パスワードを保存する」機能を有効にする</translation>
-<translation id="3644278943784332493">ファミリー リンクのユーザーに対して Projector dogfood を有効にする</translation>
 <translation id="3644735978203799620">マルチ スクリーン キャプチャの自動選択を有効にする</translation>
 <translation id="3646859102161347133">画面拡大鏡のタイプを設定する</translation>
 <translation id="3647212518036289905">このポリシーでは、HTTP 認証で使用する GSSAPI ライブラリを指定できます。ポリシーには、ライブラリ名またはフルパスのいずれかを指定します。
@@ -4746,8 +4741,6 @@
       このポリシーを無効に設定した場合、WPAD の最適化は無効になり、DNS ベースの WPAD サーバーに対する <ph name="PRODUCT_NAME" /> の待機間隔が長くなります。
 
       このポリシーを設定したかどうかに関係なく、ユーザーは WPAD の最適化設定を変更できません。</translation>
-<translation id="6365249741643189510">このポリシーは、企業ユーザーの場合、画面録画の文字起こしの作成と Google ドライブへのアップロードの権限を Projector に付与します。このポリシーは、ファミリー リンクのユーザーには影響しません。このポリシーは、ファミリー リンクのユーザー向けの <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> ポリシーには影響しません。ポリシーを未設定のままにするか有効にすると、Projector が有効になります。
-      ポリシーを無効にした場合、Projector は無効になります。</translation>
 <translation id="6366574325767783825">このポリシーを True に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> では Signed HTTP Exchange として配信されるウェブ コンテンツが許可されます。
 
       このポリシーを False に設定した場合、Signed HTTP Exchange は読み込まれません。</translation>
@@ -5251,7 +5244,6 @@
       現在サポートされている言語は、af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi です。</translation>
 <translation id="6926703471186170050">長辺とじの両面印刷を有効にする</translation>
 <translation id="6929746927224321095">自動入力を無効にする</translation>
-<translation id="6930459178825296156">このポリシーは、ファミリー リンクのユーザーの場合は Projector の機能を有効にし、画面記録の文字起こしと Google ドライブへのアップロードの権限を Projector に付与します。このポリシーは、他のタイプのユーザーには影響しません。このポリシーは、企業ユーザーに対する <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> ポリシーには影響しません。このポリシーを有効にした場合、ファミリー リンクのユーザーに対して Projector dogfood が有効になります。このポリシーを無効にした場合、ファミリー リンクのユーザーに対して Projector dogfood が無効になります。このポリシーを設定しない場合、デフォルトではファミリー リンクのユーザーに対して Projector dogfood が無効になります。</translation>
 <translation id="6931242315485576290">Google とのデータの同期を無効にする</translation>
 <translation id="6940243892299228102">デスク テンプレートの使用をユーザーに許可しない</translation>
 <translation id="6943577887654905793">Mac/Linux 設定名:</translation>
@@ -6097,7 +6089,6 @@
       ログイン画面のスクリーンセーバーとして使用する拡張機能の ID を指定します。拡張機能は、DeviceAppPack ポリシーを使用してこのドメインに設定されている AppPack のものである必要があります。</translation>
 <translation id="7882890448959833986">サポート外の OS の警告を表示しない</translation>
 <translation id="788480874436328004">パスワード マネージャーを使用したパスワードの保存を無効にする</translation>
-<translation id="7885255514815321350">ファミリー リンクのユーザーに対して Projector dogfood を無効にする</translation>
 <translation id="7887379840451099426">バッテリーでの使用中にのみ適用する電源管理設定</translation>
 <translation id="7891884447851425349"><ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> がオンの場合に、<ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> では、デフォルトの検索に使用する検索エンジンの URL を指定できます。この URL には <ph name="SEARCH_TERM_MARKER" /> という文字列を含めます。この文字列は、クエリの送信時にユーザーが指定した検索キーワードに置き換えられます。
 

@@ -735,7 +735,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1688935057616748272">Introduza uma letra.</translation>
 <translation id="168991973552362966">Adicionar uma impressora próxima</translation>
 <translation id="1689945336726856614">Copiar &amp;URL</translation>
-<translation id="1692115862433274081">Utilizar outra conta</translation>
+<translation id="1692115862433274081">Usar outra conta</translation>
 <translation id="1692118695553449118">A sincronização está ativada</translation>
 <translation id="1692210323591458290">Roxo escuro</translation>
 <translation id="1692713444215319269">Inversão de cores, lupa e definições de visualização</translation>
@@ -4225,7 +4225,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5026874946691314267">Não voltar a mostrar</translation>
 <translation id="5027550639139316293">Certificado de email</translation>
 <translation id="5027562294707732951">Adicionar extensão</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" /> vai ser removido de <ph name="PRIMARY_EMAIL" /> e dessincronizado com este Chromebook.</translation>
 <translation id="5029568752722684782">Limpar cópia</translation>
 <translation id="5029873138381728058">Falha ao verificar VMs</translation>
 <translation id="503155457707535043">A transferir aplicações…</translation>
@@ -6501,7 +6500,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7280877790564589615">Autorização solicitada</translation>
 <translation id="7282547042039404307">Suave</translation>
 <translation id="7282992757463864530">Barra de informações</translation>
-<translation id="728334460283296316">Remova o dispositivo</translation>
 <translation id="7283555985781738399">Modo convidado</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Este dispositivo vai ser guardado durante 1 dia e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}other{Este dispositivo vai ser guardado durante {DAYS} dias e pode associar sem um código da próxima vez. Esta opção é definida pelo administrador.}}</translation>
 <translation id="7284411326658527427">Cada pessoa pode personalizar a respetiva conta e manter os dados privados.</translation>
@@ -7798,8 +7796,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8531701051932785007">A Navegação segura melhorada está desativada</translation>
 <translation id="8534656636775144800">Ups! Ocorreu um erro ao tentar aderir ao domínio. Tente novamente.</translation>
 <translation id="8535005006684281994">URL de renovação de certificado Netscape</translation>
-<translation id="8536565869707961418">Remova <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />.
-    O dispositivo ainda pode ser usado localmente.</translation>
 <translation id="8536713137312218707">Comandos rápidos</translation>
 <translation id="8536956381488731905">Som ao premir as teclas</translation>
 <translation id="8539727552378197395">Não (HttpOnly)</translation>

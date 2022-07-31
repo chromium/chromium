@@ -103,7 +103,6 @@
 <translation id="1105572260329131950">使用默认图标表示安全连接</translation>
 <translation id="1107538157073168076">停用数据洞见扩展程序</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />区域搜索。</translation>
-<translation id="1111781754511998498">投影仪</translation>
 <translation id="1117535567637097036">通过此政策设置的协议处理程序不会被用于处理 Android intent。</translation>
 <translation id="1118093128235245168">允许网站请求用户授权其访问所连接的 USB 设备</translation>
 <translation id="111910763555783249">通知设置</translation>
@@ -932,7 +931,6 @@
 <translation id="1962864958436828230">设定数据大小下限以与旨在预防数据泄露的剪贴板限制规则搭配使用</translation>
 <translation id="1964634611280150550">隐身模式已停用</translation>
 <translation id="1964802606569741174">此政策对 Android 版 YouTube 应用没有任何影响。如果应在 YouTube 中强制启用安全模式，则应禁止安装 Android 版 YouTube 应用。</translation>
-<translation id="1967334955994230472">停用投影仪</translation>
 <translation id="1969212217917526199">覆盖与远程访问主机的调试版本号相关的政策。
 
           此政策的值会被解析为“政策名称-政策值”对应关系的 JSON 字典条目。</translation>
@@ -2257,7 +2255,6 @@
 <translation id="328347261792478720">默认情况下，浏览器会显示为用户量身定制的媒体推荐内容。如果此政策已停用，系统将对用户隐藏这些推荐内容。如果此政策已启用或未设置，系统则会向用户显示媒体推荐内容。</translation>
 <translation id="3284094172359247914">控制对 WebUSB API 的使用</translation>
 <translation id="3288595667065905535">发布版</translation>
-<translation id="3291318845269544294">启用投影仪</translation>
 <translation id="3294430356898755483">通过设置此政策，管理员可以为用户配置打印机列表。当用户首次尝试打印时，需要选择打印机。
 
       使用此政策可以：
@@ -2323,7 +2320,6 @@
           指定的政策值应以毫秒为单位，且不得大于闲置延迟时间。
 
           仅当闲置操作为注销或关机时，系统才会显示警告消息。</translation>
-<translation id="3360280740977649313">控制有关投影仪的政策。</translation>
 <translation id="3360490004791301756">允许用户通过注册 <ph name="PRODUCT_OS_NAME" /> 来兑换优惠</translation>
 <translation id="3363360928811201045">针对受管理的帐号添加限制</translation>
 <translation id="3373381043600809954">启用“<ph name="PRODUCT_NAME" />”。</translation>
@@ -2520,7 +2516,6 @@
 <translation id="3628480121685794414">启用单面打印</translation>
 <translation id="3634125384445314047">允许通过 Phone Hub 访问手机上近期拍摄的照片和视频。</translation>
 <translation id="3643284063603988867">启用“记住密码”功能</translation>
-<translation id="3644278943784332493">为 Family Link 用户启用投影仪 dogfood</translation>
 <translation id="3644735978203799620">允许自动选择多个屏幕截图</translation>
 <translation id="3646859102161347133">设置放大镜类型</translation>
 <translation id="3647212518036289905">通过设置此政策，您可以指定要用于 HTTP 身份验证的 GSSAPI 库。您可以将此政策设为库名称或完整路径。
@@ -4925,12 +4920,6 @@
       如果此政策已停用，系统会关闭 WPAD 优化设置，这会导致 <ph name="PRODUCT_NAME" /> 必须等待更长时间，才能收到基于 DNS 的 WPAD 服务器的响应。
 
       无论您是否设置了此政策，用户都无法更改 WPAD 优化设置。</translation>
-<translation id="6365249741643189510">此政策旨在授权投影仪为企业用户创建录屏、转录所录内容并将其上传到云端硬盘。
-      此政策不会影响 Family Link 用户。
-      此政策不会影响适用于 Family Link 用户的 <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> 政策。
-
-      如果此政策未设置或已启用，系统将启用投影仪。
-      如果此政策已停用，系统将停用投影仪。</translation>
 <translation id="6366574325767783825">如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 将会接受通过 Signed HTTP Exchange (SXG) 提供的网络内容。
 
       如果此政策设为 False，系统会阻止加载 Signed HTTP Exchange (SXG) 内容。</translation>
@@ -5470,13 +5459,6 @@
       目前支持的语言包括：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="6926703471186170050">启用长边双面打印</translation>
 <translation id="6929746927224321095">停用“自动填充”功能</translation>
-<translation id="6930459178825296156">此政策会为 Family Link 用户启用投影仪功能，并授权投影仪创建录屏、转录所录内容并将其上传到云端硬盘。
-      此政策不会影响其他类型的用户。
-      此政策不会影响适用于企业用户的 <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> 政策。
-
-      如果启用此政策，系统将为 Family Link 用户启用投影仪 dogfood。
-      如果停用此政策，系统将为 Family Link 用户停用投影仪 dogfood。
-      如果未设置此政策，则默认情况下，系统将为 Family Link 用户停用投影仪 dogfood。</translation>
 <translation id="6931242315485576290">停用与 Google 同步数据的功能</translation>
 <translation id="6940243892299228102">不允许用户使用桌面模板</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好设置名称：</translation>
@@ -6359,7 +6341,6 @@
       确定在登录屏幕上用作屏幕保护程序的扩展程序的 ID。该扩展程序必须属于通过 DeviceAppPack 策略为此域配置的 AppPack。</translation>
 <translation id="7882890448959833986">禁止显示“操作系统不受支持”警告</translation>
 <translation id="788480874436328004">禁止使用密码管理器保存密码</translation>
-<translation id="7885255514815321350">为 Family Link 用户停用投影仪 dogfood</translation>
 <translation id="7887379840451099426">仅当使用电池供电时才适用的电源管理设置</translation>
 <translation id="7891884447851425349">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 来指定在默认搜索期间使用的搜索引擎网址。该网址应包含字符串<ph name="SEARCH_TERM_MARKER" />；当用户执行查询时，系统会将此字符串替换成用户的搜索字词。
 

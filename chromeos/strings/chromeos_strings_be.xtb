@@ -670,7 +670,6 @@
 <translation id="6659594942844771486">Укладка</translation>
 <translation id="6692996468359469499">Атрыманне інфармацыі, звязанай з вылучаным вамі</translation>
 <translation id="6704062477274546131">Супастаўленне імён DNS</translation>
-<translation id="6721744718589119342">Мы можам выкарыстоўваць электронную пошту, каб запытваць у вас дадатковыя звесткі і паведамляць пра абнаўленні</translation>
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="6723847290197874913">Падсветка клавіятуры</translation>
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
@@ -801,7 +800,7 @@
 <translation id="7978412674231730200">Закрыты ключ</translation>
 <translation id="7982789257301363584">Сетка</translation>
 <translation id="7994702968232966508">Метад EAP</translation>
-<translation id="8018928621986160031">Захавана ў папцы "<ph name="FILE_LOCATION" />"</translation>
+<translation id="8018928621986160031">Захавана ў папцы <ph name="FILE_LOCATION" /></translation>
 <translation id="802154636333426148">Збой спампоўкі</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>
@@ -826,6 +825,7 @@
 <translation id="8217675307824400706">Устанавіце падключэнне</translation>
 <translation id="8221728673725659466">Калібраванне завершана</translation>
 <translation id="8226628635270268143">Выберыце любімыя фота і альбомы</translation>
+<translation id="8227119283605456246">Далучыць файл</translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
 <translation id="8246209727385807362">Невядомы аператар</translation>
 <translation id="827422111966801947">Індыга</translation>

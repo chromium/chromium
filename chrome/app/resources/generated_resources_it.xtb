@@ -4224,7 +4224,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5026874946691314267">Non visualizzare più</translation>
 <translation id="5027550639139316293">Certificato email</translation>
 <translation id="5027562294707732951">Aggiungi estensione</translation>
-<translation id="5028202297152853903">Il dispositivo <ph name="DEVICE" /> verrà rimosso da <ph name="PRIMARY_EMAIL" /> e non sarà associato a questo Chromebook.</translation>
 <translation id="5029568752722684782">Cancella copia</translation>
 <translation id="5029873138381728058">Impossibile controllare le VM</translation>
 <translation id="503155457707535043">Download delle app in corso</translation>
@@ -6496,7 +6495,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7280877790564589615">Richiesta di autorizzazione</translation>
 <translation id="7282547042039404307">Fluido</translation>
 <translation id="7282992757463864530">Barra delle informazioni</translation>
-<translation id="728334460283296316">Rimuovi dispositivo</translation>
 <translation id="7283555985781738399">Modalità ospite</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Questo dispositivo verrà salvato per 1 giorno e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}other{Questo dispositivo verrà salvato per {DAYS} giorni e la prossima volta potrai connetterti senza un codice. Questa impostazione è stata configurata dal tuo amministratore.}}</translation>
 <translation id="7284411326658527427">Ogni persona potrà personalizzare il proprio account e mantenere privati i dati.</translation>
@@ -7793,8 +7791,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8531701051932785007">Navigazione sicura avanzata è disattivata</translation>
 <translation id="8534656636775144800">Spiacenti. Si è verificato un problema durante il tentativo di aggiunta al dominio. Riprova.</translation>
 <translation id="8535005006684281994">URL di rinnovo certificato Netscape</translation>
-<translation id="8536565869707961418">Vuoi rimuovere <ph name="DEVICE" /> da <ph name="PRIMARY_EMAIL" />?
-    Il dispositivo può ancora essere utilizzato localmente.</translation>
 <translation id="8536713137312218707">Comandi rapidi</translation>
 <translation id="8536956381488731905">Suono tasti</translation>
 <translation id="8539727552378197395">No (solo Http)</translation>

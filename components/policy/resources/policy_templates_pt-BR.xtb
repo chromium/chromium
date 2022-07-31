@@ -103,7 +103,6 @@
 <translation id="1105572260329131950">Usar os ícones padrão em conexões seguras</translation>
 <translation id="1107538157073168076">Desativar extensão de insights</translation>
 <translation id="1110426799149444997">Desativar a pesquisa por região do <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">Os gerenciadores de protocolo definidos por esta política não são usados na manipulação de intents do Android.</translation>
 <translation id="1118093128235245168">Permitir que os sites peçam ao usuário para conceder acesso a um dispositivo USB conectado</translation>
 <translation id="111910763555783249">Configurações de notificação</translation>
@@ -957,7 +956,6 @@ Web e PWAs. No momento, com suporte apenas no
 <translation id="1962864958436828230">Definir o limite mínimo para a prevenção contra vazamento de dados de acordo com a restrição da área de transferência</translation>
 <translation id="1964634611280150550">Modo de navegação anônima desativado</translation>
 <translation id="1964802606569741174">Esta política não tem nenhum efeito sobre o app YouTube para Android. Se o modo de segurança do YouTube precisar ser aplicado, a instalação desse app será bloqueada.</translation>
-<translation id="1967334955994230472">Desativar Projector</translation>
 <translation id="1969212217917526199">Modifica as políticas sobre versões de depuração do host de acesso remoto.
 
           O valor é analisado como um dicionário JSON de nome de política para mapeamentos de valor de política.</translation>
@@ -2297,7 +2295,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="328347261792478720">Por padrão, o navegador mostrará recomendações de mídia personalizadas para o usuário. Se esta política for definida como "Desativada", essas recomendações ficarão ocultas para o usuário. Se esta política for definida como "Ativada" ou não for definida, as recomendações de mídia serão mostradas para o usuário.</translation>
 <translation id="3284094172359247914">Controla o uso da API WebUSB</translation>
 <translation id="3288595667065905535">Liberar canal</translation>
-<translation id="3291318845269544294">Ativar Projector</translation>
 <translation id="3294430356898755483">A definição da política permite aos administradores configurar uma lista de impressoras para os usuários. A seleção da impressora ocorre na primeira vez que os usuários tentam imprimir.
 
       Ao usar a política:
@@ -2366,7 +2363,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de inatividade.
 
           A mensagem de aviso só será mostrada se a ação de inatividade for para sair ou encerrar.</translation>
-<translation id="3360280740977649313">Controla as políticas do Projector.</translation>
 <translation id="3360490004791301756">Permitir que os usuários resgatem ofertas pelo Registro do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="3363360928811201045">Adicionar restrições em contas gerenciadas</translation>
 <translation id="3373381043600809954">Ativar "<ph name="PRODUCT_NAME" />".</translation>
@@ -2563,7 +2559,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3628480121685794414">Ativar impressão simplex</translation>
 <translation id="3634125384445314047">Permitir que fotos e vídeos recentes capturados no smartphone sejam acessados usando o recurso Seu smartphone.</translation>
 <translation id="3643284063603988867">Ativar o recurso "Lembrar senha"</translation>
-<translation id="3644278943784332493">Ativa o dogfood do Projector para usuários do Family Link</translation>
 <translation id="3644735978203799620">Permite a seleção automática de várias capturas de tela</translation>
 <translation id="3646859102161347133">Definir tipo de lupa</translation>
 <translation id="3647212518036289905">Definir a política especifica qual biblioteca GSSAPI será usada para a autenticação HTTP. Defina a política como um nome de biblioteca ou um caminho completo.
@@ -3195,6 +3190,13 @@ Quando a política for definida, o <ph name="PRODUCT_OS_NAME" /> permitirá que 
 <translation id="4347908978527632940">Se essa política for definida como "true", e o usuário for um usuário supervisionado, outros apps do Android poderão consultar restrições da Web do usuário por meio de um provedor de conteúdo.
 
           Se for definida como "false" ou não for definida, o provedor de conteúdo não retornará nenhuma informação.</translation>
+<translation id="4357587374229381015">Especifica um nome de parâmetro de URL que vai ser usado na página de login do IdP SAML para preencher automaticamente o campo de nome de usuário.
+
+      O e-mail do usuário associado ao perfil do <ph name="PRODUCT_OS_NAME" /> vai ser usado como um valor para o parâmetro de URL. Por isso, essa configuração vai precisar ser desativada se os usuários tiverem que usar e-mails diferentes com o IdP SAML.
+
+      Se essa configuração não estiver definida, o nome de usuário vai precisar ser informado manualmente na página de login do IdP SAML.
+
+      Essa política afeta a autenticação on-line em telas de login e de bloqueio.</translation>
 <translation id="4363057787588706121">Permitir a mescla de políticas de lista de diferentes fontes</translation>
 <translation id="4363101430102811068">Ativa a detecção de vazamento para credenciais digitadas</translation>
 <translation id="436581050240847513">Relatar interfaces de redes de dispositivos</translation>
@@ -5015,12 +5017,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como "Desativada", a otimização da WPAD será desativada e o <ph name="PRODUCT_NAME" /> precisará esperar mais por servidores de WPAD baseados em DNS.
 
       Em qualquer um dos casos, não será possível mudar a configuração de otimização da WPAD.</translation>
-<translation id="6365249741643189510">Esta política concede ao Projector permissão para criar, transcrever e fazer upload de gravações de tela para o Drive para usuários corporativos.
-      Esta política não afeta usuários do Family Link.
-      Esta política não afeta a política <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> para usuários do Family Link.
-
-      Se ela não for definida, o Projector vai ser ativado.
-      Se ela for desativada, o Projector vai ser desativado.</translation>
 <translation id="6366574325767783825">Se a política for definida como verdadeira ou não for definida, o <ph name="PRODUCT_NAME" /> aceitará conteúdos da Web exibidos como Signed HTTP Exchanges.
 
       Se ela for definida como falsa, conteúdos Signed HTTP Exchanges não serão carregados.</translation>
@@ -5560,13 +5556,6 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Os idiomas compatíveis no momento são: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Ativar impressão duplex de borda longa</translation>
 <translation id="6929746927224321095">Desativar o preenchimento automático</translation>
-<translation id="6930459178825296156">Esta política ativa o recurso do Projector para usuários do Family Link e permite criar e transcrever gravações da tela e fazer upload delas no Drive.
-      Esta política não afeta outros tipos de usuários.
-      Esta política não afeta a política <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> para usuários corporativos.
-
-      Se ela estiver ativada, o dogfood do Projector será ativado para usuários do Family Link.
-      Se ela estiver desativada, o dogfood do Projector vai ficar desativado para esses usuários.
-      Se ela não for definida, o dogfood do Projector será desativado por padrão para esses usuários.</translation>
 <translation id="6931242315485576290">Desativar a sincronização de dados com o Google</translation>
 <translation id="6940243892299228102">Não permitir que os usuários usem modelos de espaço de trabalho</translation>
 <translation id="6943577887654905793">Nome de preferência Mac/Linux:</translation>
@@ -6449,7 +6438,6 @@ Se esta política não for definida, o renderizador padrão será usado para tod
       Determina a identificação da extensão a ser usada como protetor de tela na tela de login. A extensão deve ser parte do AppPack configurado para este domínio por meio da política DeviceAppPack.</translation>
 <translation id="7882890448959833986">Remover o aviso de SO não compatível</translation>
 <translation id="788480874436328004">Desativar o salvamento de senhas no gerenciador de senhas</translation>
-<translation id="7885255514815321350">Desativa o dogfood do Projector para usuários do Family Link</translation>
 <translation id="7887379840451099426">Configurações de gerenciamento de energia aplicáveis apenas quando em funcionamento com energia da bateria.</translation>
 <translation id="7891884447851425349">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> especificará o URL do mecanismo de pesquisa usado na pesquisa padrão. O URL precisa incluir a string <ph name="SEARCH_TERM_MARKER" />, que é substituída na consulta pelos termos de pesquisa do usuário.
 

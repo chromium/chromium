@@ -4220,7 +4220,6 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5026874946691314267">Bunu bir daha göstərməyin</translation>
 <translation id="5027550639139316293">E-poçt Sertifikatı</translation>
 <translation id="5027562294707732951">Artırma əlavə edin</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" /> <ph name="PRIMARY_EMAIL" /> hesabından silinəcək və bu Chromebook'dan ayrılacaq.</translation>
 <translation id="5029568752722684782">Kopyanı təmizləyin</translation>
 <translation id="5029873138381728058">VM'ləri yoxlamaq alınmadı</translation>
 <translation id="503155457707535043">Tətbiqlər endirilir</translation>
@@ -6493,7 +6492,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7280877790564589615">İcazə sorğusu göndərildi</translation>
 <translation id="7282547042039404307">Problemsiz</translation>
 <translation id="7282992757463864530">Məlumat paneli</translation>
-<translation id="728334460283296316">Cihazı silin</translation>
 <translation id="7283555985781738399">Qonaq rejimi</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Bu cihaz 1 gün saxlanacaq və növbəti dəfə kod olmadan qoşula bilərsiniz. Bu, administratorunuz tərəfindən ayarlanıb.}other{Bu cihaz {DAYS} gün saxlanacaq və növbəti dəfə kod olmadan qoşula bilərsiniz. Bu, administratorunuz tərəfindən ayarlanıb.}}</translation>
 <translation id="7284411326658527427">Hər bir şəxs öz hesabını fərdiləşdirə və datanı məxfi saxlaya bilər.</translation>
@@ -7788,8 +7786,6 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8531701051932785007">Qabaqcıl Güvənli Baxış deaktivdir</translation>
 <translation id="8534656636775144800">Ups! Domenə qoşularkən xəta baş verdi. Yenidən cəhd edin.</translation>
 <translation id="8535005006684281994">Netscape Sertifikat Yeniləmə URL</translation>
-<translation id="8536565869707961418"><ph name="DEVICE" /> <ph name="PRIMARY_EMAIL" /> hesabından silinsin?
-    Cihaz hələ də lokal olaraq istifadə edilə bilər.</translation>
 <translation id="8536713137312218707">Sürətli Əmrlər</translation>
 <translation id="8536956381488731905">Düyməyə basma səsi</translation>
 <translation id="8539727552378197395">Yoxdur (HttpOnly)</translation>

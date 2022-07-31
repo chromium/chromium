@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="3009958530611748826">ಉಳಿಸಲು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="3017079585324758401">ಹಿನ್ನೆಲೆ</translation>
+<translation id="302435934487327038">ಇನ್‌ಸ್ಟಾಲ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3027578600144895987">ಕ್ಯಾಮರಾವನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="3031560714565892478">ಸಾಧನವು ವೀಡಿಯೊ ಕ್ಯಾಮರಾ ಆಗಿದೆ.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,13 +664,13 @@
 <translation id="6618744767048954150">ರನ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="6620487321149975369">ಮುದ್ರಣ ಕಾರ್ಯಗಳನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕದ ಹೊರತು, ಅವು ಇತಿಹಾಸದಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="6643016212128521049">ತೆರವುಗೊಳಿಸಿ</translation>
+<translation id="6644568396961840069">ಫೈಲ್ ಅನ್ನು ಉಳಿಸಲಾಗಲಿಲ್ಲ. ಬೇರೆ ಬಾಹ್ಯ ಸಂಗ್ರಹಣೆಯಲ್ಲಿ ಪ್ಲಗ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6647510110698214773">ಎನ್‌ಕ್ರಿಪ್ಶನ್ ಅಲ್ಗಾರಿದಮ್</translation>
 <translation id="6650062777702288430">ಕನಾ/ಆಲ್ಫಾನ್ಯೂಮರಿಕ್ ಸ್ವಿಚ್</translation>
 <translation id="6657585470893396449">ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="6659594942844771486">ಬ್ರೌಸರ್ ಟ್ಯಾಬ್</translation>
 <translation id="6692996468359469499">ನಿಮ್ಮ ಆಯ್ಕೆಗೆ ಸಂಬಂಧಿಸಿದ ಮಾಹಿತಿ ಪಡೆಯಿರಿ</translation>
 <translation id="6704062477274546131">DNS ರೆಸಲ್ಯೂಷನ್‌‌</translation>
-<translation id="6721744718589119342">ಹೆಚ್ಚಿನ ಮಾಹಿತಿ ಅಥವಾ ಅಪ್‌ಡೇಟ್‌ಗಳಿಗಾಗಿ ನಾವು ನಿಮಗೆ ಇಮೇಲ್ ಕಳುಹಿಸಬಹುದು</translation>
 <translation id="6723839937902243910">ಪವರ್‌</translation>
 <translation id="6723847290197874913">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್</translation>
 <translation id="672609503628871915">ಹೊಸದೇನಿದೆ ನೋಡಿ</translation>
@@ -825,6 +826,7 @@
 <translation id="8217675307824400706">ಕನೆಕ್ಟ್ ಆಗಿರಿ</translation>
 <translation id="8221728673725659466">ಕ್ಯಾಲಿಬ್ರೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
+<translation id="8227119283605456246">ಫೈಲ್‌‎ ಲಗತ್ತಿಸಿ</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8246209727385807362">ಅಪರಿಚಿತ ವಾಹಕ</translation>
 <translation id="827422111966801947">ಇಂಡಿಗೊ</translation>

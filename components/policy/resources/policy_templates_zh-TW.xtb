@@ -103,7 +103,6 @@
 <translation id="1105572260329131950">使用預設圖示代表安全連線</translation>
 <translation id="1107538157073168076">停用深入分析擴充功能</translation>
 <translation id="1110426799149444997">停用 <ph name="GOOGLE_LENS_PRODUCT_NAME" />的區域搜尋功能。</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">處理 Android 意圖時，系統不會使用透過這項政策設定的通訊協定處理常式。</translation>
 <translation id="1118093128235245168">允許網站要求使用者授權存取已連線的 USB 裝置</translation>
 <translation id="111910763555783249">通知設定</translation>
@@ -941,7 +940,6 @@
 <translation id="1962864958436828230">設定防止資料外洩的剪貼簿資料大小最低限制</translation>
 <translation id="1964634611280150550">無痕模式已停用</translation>
 <translation id="1964802606569741174">這項政策對 Android YouTube 應用程式沒有影響。如要強制採用 YouTube 安全模式，則必須禁止下載 Android YouTube 應用程式。</translation>
-<translation id="1967334955994230472">停用 Projector</translation>
 <translation id="1969212217917526199">覆寫遠端存取主機的偵錯版本政策。
 
           系統會以政策名稱 JSON 字典形式剖析這個值，以對應政策值。</translation>
@@ -2259,7 +2257,6 @@
 <translation id="328347261792478720">在預設狀態下，瀏覽器會根據使用者顯示個人化的媒體推薦內容。如果將這項政策設為停用，瀏覽器會向使用者隱藏這類推薦內容。如果將這項政策設為啟用或不設定，瀏覽器會向使用者顯示媒體推薦內容。</translation>
 <translation id="3284094172359247914">控制 WebUSB API 使用權限</translation>
 <translation id="3288595667065905535">發布頻道</translation>
-<translation id="3291318845269544294">啟用 Projector</translation>
 <translation id="3294430356898755483">你可以透過這項政策，讓管理員為使用者設定印表機清單。印表機選取作業會在使用者第一次嘗試列印時啟動。
 
       這項政策的用途如下：
@@ -2325,7 +2322,6 @@
           指定政策值時需以毫秒為單位。設定值必須小於或等於閒置延遲時間。
 
           只有當閒置動作設為登出或關機時，系統才會顯示警告訊息。</translation>
-<translation id="3360280740977649313">控制 Projector 的各項政策。</translation>
 <translation id="3360490004791301756">允許使用者透過 <ph name="PRODUCT_OS_NAME" /> 註冊機制兌換優惠</translation>
 <translation id="3363360928811201045">對受管理帳戶設定限制</translation>
 <translation id="3373381043600809954">啟用「<ph name="PRODUCT_NAME" />」</translation>
@@ -2522,7 +2518,6 @@
 <translation id="3628480121685794414">啟用單面列印</translation>
 <translation id="3634125384445314047">允許他人透過 Phone Hub 存取手機上最近拍攝的相片和影片。</translation>
 <translation id="3643284063603988867">啟用「記住密碼」功能</translation>
-<translation id="3644278943784332493">為 Family Link 使用者啟用 Projector Dogfood 測試</translation>
 <translation id="3644735978203799620">擷取多個螢幕畫面時啟用自動選取功能</translation>
 <translation id="3646859102161347133">設定螢幕放大鏡類型</translation>
 <translation id="3647212518036289905">你可以透過這項政策指定要用於 HTTP 驗證的 GSSAPI 程式庫。請將這項政策設為程式庫名稱或完整路徑。
@@ -4916,13 +4911,6 @@
       如果將這項政策設為停用，系統會關閉 WPAD 最佳化功能，導致 <ph name="PRODUCT_NAME" /> 等待 DNS WPAD 伺服器的時間增加。
 
       無論這項政策是否有設定，使用者都無法變更 WPAD 最佳化設定。</translation>
-<translation id="6365249741643189510">這項政策會授予 Projector 權限，讓企業版使用者能建立及轉錄螢幕畫面錄製內容，並上傳至雲端硬碟。
-
-      這項政策不適用於 Family Link 使用者。
-      這項政策不會影響 Family Link 使用者的 <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" /> 政策。
-
-      如果啟用這項政策或不設定，系統會啟用 Projector。
-      如果停用這項政策，Projector 也會隨之停用。</translation>
 <translation id="6366574325767783825">如果將這項政策設為 True 或不設定，<ph name="PRODUCT_NAME" /> 將接受透過 Signed HTTP Exchange 提供的網路內容。
 
       如果將這項政策設為 False，系統將無法載入 Signed HTTP Exchange。</translation>
@@ -5460,13 +5448,6 @@
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="6926703471186170050">啟用長邊雙面列印</translation>
 <translation id="6929746927224321095">停用自動填入功能</translation>
-<translation id="6930459178825296156">這項政策會為 Family Link 使用者啟用 Projector 功能，並授予這項功能權限，讓 Projector 能建立及轉錄螢幕畫面錄製內容，並上傳至雲端硬碟。
-      這項政策不適用於其他類型的使用者。
-      這項政策不會影響企業版使用者的 <ph name="PROJECTOR_ENABLED_POLICY_NAME" /> 政策。
-
-      如果啟用這項政策，系統會為 Family Link 使用者啟用 Projector Dogfood 測試。
-      如果停用這項政策，系統會為 Family Link 使用者停用 Projector Dogfood 測試。
-      如果不設定這項政策，系統預設會為 Family Link 使用者停用 Projector Dogfood 測試。</translation>
 <translation id="6931242315485576290">停用 Google 資料同步處理功能</translation>
 <translation id="6940243892299228102">禁止使用者使用桌面範本</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
@@ -6342,7 +6323,6 @@
       決定使用擴充程式 ID 當做登入畫面的螢幕保護程式。該擴充功能必須屬於你透過 DeviceAppPack 政策為這個網域設定的 AppPack。</translation>
 <translation id="7882890448959833986">偵測到不支援的作業系統時不顯示警告</translation>
 <translation id="788480874436328004">禁止使用密碼管理員儲存密碼</translation>
-<translation id="7885255514815321350">為 Family Link 使用者停用 Projector Dogfood 測試</translation>
 <translation id="7887379840451099426">只有在裝置使用電池供電時才適用的電源管理設定</translation>
 <translation id="7891884447851425349">如果已啟用 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 政策，你可以設定 <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> 政策來指定在進行預設搜尋時所使用的搜尋引擎網址。網址應包含字串 <ph name="SEARCH_TERM_MARKER" />，系統會在查詢中將其替換為使用者的搜尋字詞。
 

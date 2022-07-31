@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">ശരി</translation>
 <translation id="1351937230027495976">മെനു ചുരുക്കുക</translation>
 <translation id="1364382257761975320">Chromebook അൺലോക്ക് ചെയ്യാൻ നിങ്ങളുടെ ഫിംഗർപ്രിന്റ് ഉപയോഗിക്കുക</translation>
+<translation id="1365866993922957110">സ്വയമേവയുള്ള അപ്ഡേറ്റുകൾ നേടുക</translation>
 <translation id="1372545819342940910">പിന്നീട് ഉപയോഗിക്കാൻ ഡെസ്ക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="1383597849754832576">സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> അൺപിൻ ചെയ്‌തു</translation>
 <translation id="1836215606488044471">സഹായി (ലോഡുചെയ്യുന്നു...)</translation>
 <translation id="1838895407229022812">നൈറ്റ് ലൈറ്റ് ഓഫാണ്.</translation>
+<translation id="1862380676329487333">അപ്ഡേറ്റ് ചെയ്ത് സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="1864454756846565995">USB-C ഉപകരണം (പുറകിലെ പോർട്ട്)</translation>
 <translation id="1879018240766558464">അദൃശ്യ വിൻഡോകൾ നിലവിൽ പിന്തുണയ്ക്കുന്നില്ല. മറ്റ് ആപ്പുകൾ സംരക്ഷിക്കും.</translation>
 <translation id="1882814835921407042">മൊബൈൽ നെറ്റ്‌വർക്ക് ഇല്ല</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">ഇപ്പോൾ ഉള്ളടക്കം പകർത്താനോ ഒട്ടിക്കാനോ കഴിയില്ല</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
+<translation id="4247123849143712100">അപ്ഡേറ്റ് ചെയ്ത് ഷട്ട് ഡൗൺ ചെയ്യുക</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
 <translation id="425364040945105958">സിം ഇല്ല</translation>
 <translation id="4261870227682513959">അറിയിപ്പ് ക്രമീകരണം കാണിക്കുക. അറിയിപ്പുകൾ ഓഫാണ്</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="MANAGER" /> മാനേജ് ചെയ്യുന്ന ഒരു മാനേജ് ചെയ്യപ്പെടുന്ന സെഷനാണ് <ph name="DISPLAY_NAME" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> കണക്‌റ്റ് ചെയ്‌തു</translation>
 <translation id="6351032674660237738">ആപ്പ് നിർദ്ദേശങ്ങൾ</translation>
+<translation id="6359587239691116345">ഏറ്റവും പുതിയ ഫീച്ചറുകളും സുരക്ഷാ മെച്ചപ്പെടുത്തലുകളും നേടുക. ഈ അപ്ഡേറ്റ് നിങ്ങൾ നിരസിക്കുകയാണെങ്കിൽ, ഉപകരണം ഇനി ശരിയായി പ്രവർത്തിച്ചേക്കില്ല, സുരക്ഷയും പ്രകടനവുമായി ബന്ധപ്പെട്ട പ്രശ്നങ്ങൾ നിങ്ങൾ നേരിട്ടേക്കാം.</translation>
 <translation id="6376931439017688372">Bluetooth ഓണാണ്</translation>
 <translation id="6381109794406942707">ഉപകരണം അൺലോക്ക് ചെയ്യാൻ, നിങ്ങളുടെ പിൻ നൽകുക.</translation>
 <translation id="639644700271529076">CAPS LOCK ഓഫാണ്</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820">സമയപരിധി അവസാനിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" /> ആവശ്യപ്പെടുന്നു.</translation>
 <translation id="649452524636452238">സ്‌മാർട്ട് കാർഡ് പിൻ</translation>
 <translation id="6495400115277918834">ചിത്രത്തിനുള്ളിൽ ചിത്രം ആരംഭിച്ചു, ഫോക്കസ് ചെയ്യാൻ Alt+Shift+V അമർത്തുക</translation>
+<translation id="6500896621837555595">അപ്ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് സ്‌ക്രീൻ കാസ്‌റ്റുചെയ്യുന്നു</translation>
 <translation id="6515727200518652613">ക്യാമറ വിച്ഛേദിക്കപ്പെട്ടു, വീണ്ടും കണക്റ്റ് ചെയ്യാൻ ശ്രമിക്കുന്നു.</translation>
 <translation id="6520517963145875092">ക്യാപ്‌ചർ ചെയ്യാൻ വിൻഡോ തിരഞ്ഞെടുക്കുക</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">ബാറ്ററി സമയം കണക്കാക്കുന്നു.</translation>
 <translation id="8061464966246066292">ഉയർന്ന ദൃശ്യ തീവ്രത</translation>
 <translation id="8083540854303889870">പിന്നീട് കാണാൻ സംരക്ഷിച്ചവ</translation>
+<translation id="8091387634532529612">സ്വയമേവയുള്ള അപ്‌ഡേറ്റുകൾ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> എന്നതിലേക്ക് സ്‌ക്രീൻ കാസ്‌റ്റുചെയ്യുന്നത് നിർത്തുക</translation>
 <translation id="8113423164597455979">ആപ്പിലെല്ലാം ഓൺ</translation>
 <translation id="8120151603115102514">നിങ്ങളുടെ ഫോണിന് ലോക്ക് സ്ക്രീനില്ല. Chromebook അൺലോക്ക് ചെയ്യാൻ പാസ്‌വേഡ് നൽകുക.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949"><ph name="QUERY" /> എന്നതിനുള്ള <ph name="RESULT_COUNT" /> ഫലങ്ങൾ കാണിക്കുന്നു</translation>
 <translation id="98515147261107953">ലാന്‍ഡ്‌സ്‌കേപ്പ്</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> വിൻഡോ അടച്ചു.</translation>
+<translation id="996204416024568215">ഏറ്റവും പുതിയ ഫീച്ചറുകളും സുരക്ഷാ മെച്ചപ്പെടുത്തലുകളും നേടുക. അപ്‌ഡേറ്റുകൾ പശ്ചാത്തലത്തിൽ സംഭവിക്കുന്നു.</translation>
 </translationbundle>

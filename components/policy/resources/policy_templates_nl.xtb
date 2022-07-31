@@ -103,7 +103,6 @@
 <translation id="1105572260329131950">Standaardiconen gebruiken voor beveiligde verbindingen</translation>
 <translation id="1107538157073168076">Extensie voor inzichten uitzetten</translation>
 <translation id="1110426799149444997">Regio doorzoeken uitzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
-<translation id="1111781754511998498">Projector</translation>
 <translation id="1117535567637097036">De protocolhandlers die via dit beleid zijn ingesteld, worden niet gebruikt bij de verwerking van Android-intenties.</translation>
 <translation id="1118093128235245168">Toestaan dat sites de gebruiker vragen om toegang te verlenen tot een aangesloten USB-apparaat</translation>
 <translation id="111910763555783249">Instellingen voor meldingen</translation>
@@ -936,7 +935,6 @@ Als je het beleid niet instelt, zijn er geen extensies vrijgesteld van de resetp
 <translation id="1962864958436828230">Minimale groottelimiet instellen voor klembordbeperking ter voorkoming van datalekken</translation>
 <translation id="1964634611280150550">Incognitomodus staat uit</translation>
 <translation id="1964802606569741174">Dit beleid is niet van invloed op de YouTube-app voor Android. Als de veiligheidsmodus voor YouTube moet worden afgedwongen, moet je installatie van de YouTube-app voor Android niet toestaan.</translation>
-<translation id="1967334955994230472">Projector uitzetten</translation>
 <translation id="1969212217917526199">Hiermee worden beleidsregels overgeschreven op Debug-builds van de host voor externe toegang.
 
           De waarde wordt geparseerd als een JSON-woordenboek van beleidsnaam tot beleidswaardelocaties.</translation>
@@ -2261,7 +2259,6 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="328347261792478720">De browser toont standaard media-aanbevelingen die zijn gepersonaliseerd voor de gebruiker. Als je dit beleid niet toepast, ziet de gebruiker deze aanbevelingen niet. Als je dit beleid toepast of niet instelt, ziet de gebruiker de media-aanbevelingen.</translation>
 <translation id="3284094172359247914">Gebruik van de WebUSB API beheren</translation>
 <translation id="3288595667065905535">Releasekanaal</translation>
-<translation id="3291318845269544294">Projector aanzetten</translation>
 <translation id="3294430356898755483">Als je dit beleid instelt, kunnen beheerders een lijst met printers instellen voor hun gebruikers. Als gebruikers voor het eerst iets afdrukken, moeten ze een printer selecteren.
 
       Met het beleid:
@@ -2327,7 +2324,6 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
           De beleidswaarde moet worden gespecificeerd in milliseconden. De opgegeven waarden moeten kleiner dan of gelijk zijn aan de inactieve vertraging.
 
           Het waarschuwingsbericht wordt alleen getoond als de inactieve actie 'uitloggen' of 'afsluiten' is.</translation>
-<translation id="3360280740977649313">Bepaalt het beleid voor Projector.</translation>
 <translation id="3360490004791301756">Gebruikers toestaan aanbiedingen in te wisselen via <ph name="PRODUCT_OS_NAME" />-registratie</translation>
 <translation id="3363360928811201045">Beperkingen op beheerde accounts beheren</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> aanzetten</translation>
@@ -2526,7 +2522,6 @@ Er worden geen automatische updatecontroles geblokkeerd door dit beleid, maar de
 <translation id="3628480121685794414">Enkelzijdig afdrukken aanzetten</translation>
 <translation id="3634125384445314047">Recente foto's en video's die op de telefoon zijn gemaakt, toegankelijk maken via Telefoonhub.</translation>
 <translation id="3643284063603988867">Functie 'Wachtwoord onthouden' aanzetten</translation>
-<translation id="3644278943784332493">Dogfood-versie van Projector aanzetten voor gebruikers van Family Link</translation>
 <translation id="3644735978203799620">Zet automatisch selecteren aan voor opnamen van meerdere schermen</translation>
 <translation id="3646859102161347133">Het type vergrootglas instellen</translation>
 <translation id="3647212518036289905">Als je het beleid instelt, geef je aan welke GSSAPI-bibliotheek moet worden gebruikt voor HTTP-verificatie. Stel het beleid in op een bibliotheeknaam of een volledig pad.
@@ -4935,12 +4930,6 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Als je het beleid niet toepast, staat WPAD-optimalisatie uit, waardoor <ph name="PRODUCT_NAME" /> langer moet wachten op DNS-gebaseerde WPAD-servers.
 
       Ongeacht of dit beleid is ingesteld, kan de gebruiker de instelling voor WPAD-optimalisatie niet wijzigen.</translation>
-<translation id="6365249741643189510">Dit beleid geeft Projector toestemming om schermopnamen te maken, er een transcript van te maken en ze te uploaden naar Drive voor zakelijke gebruikers.
-      Dit beleid is niet van toepassing voor gebruikers van Family Link.
-      Dit beleid heeft geen invloed op het <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" />-beleid voor gebruikers van Family Link.
-
-      Als je het beleid toepast of niet instelt, staat Projector aan.
-      Als je het beleid niet toepast, staat Projector uit.</translation>
 <translation id="6366574325767783825">Als je het beleid instelt op True of niet instelt, accepteert <ph name="PRODUCT_NAME" /> webcontent die wordt getoond als Signed HTTP Exchange.
 
       Als je het beleid instelt op False, worden Signed HTTP Exchanges niet geladen.</translation>
@@ -5479,13 +5468,6 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
       De volgende talen worden momenteel ondersteund: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Dubbelzijdig afdrukken over lange zijde aanzetten</translation>
 <translation id="6929746927224321095">Automatisch invullen uitzetten</translation>
-<translation id="6930459178825296156">Met dit beleid kunnen gebruikers van Family Link gebruikmaken van de functie Projector om schermopnamen te maken, hiervan transcripties te maken en te uploaden naar Drive.
-      Dit beleid is niet van toepassing voor andere gebruikerstypen.
-      Dit beleid heeft geen invloed op het <ph name="PROJECTOR_ENABLED_POLICY_NAME" />-beleid voor zakelijke gebruikers.
-
-      Als je het beleid toepast, wordt de dogfood-versie van Projector aangezet voor gebruikers van Family Link.
-      Als je het beleid niet toepast, wordt de dogfood-versie van Projector uitgezet voor gebruikers van Family Link.
-      Als je het beleid niet instelt, staat de dogfood-versie van Projector standaard uit voor gebruikers van Family Link.</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6940243892299228102">Niet toestaan dat gebruikers bureautemplates gebruiken</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
@@ -6368,7 +6350,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Hiermee bepaal je de ID van de extensie die moet worden gebruikt als schermbeveiliging voor het inlogvenster. De extensie moet onderdeel zijn van het AppPack dat is geconfigureerd voor dit domein via het beleid DeviceAppPack.</translation>
 <translation id="7882890448959833986">De waarschuwing voor een niet-ondersteund besturingssysteem negeren</translation>
 <translation id="788480874436328004">Opslag van wachtwoorden met de Wachtwoordmanager uitzetten</translation>
-<translation id="7885255514815321350">Dogfood-versie van Projector uitzetten voor gebruikers van Family Link</translation>
 <translation id="7887379840451099426">Instellingen voor energiebeheer die alleen van toepassing zijn als er op de batterij wordt gewerkt</translation>
 <translation id="7891884447851425349">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SEARCH_URL_POLICY_NAME" /> instelt, wordt de URL gespecificeerd van de zoekmachine die tijdens een standaard zoekopdracht wordt gebruikt. De URL moet de tekenreeks <ph name="SEARCH_TERM_MARKER" /> bevatten. Deze tekenreeks wordt tijdens de zoekopdracht vervangen door de zoektermen van de gebruiker.
 

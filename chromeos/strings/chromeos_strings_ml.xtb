@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3017079585324758401">പശ്ചാത്തലം</translation>
+<translation id="302435934487327038">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയായി</translation>
 <translation id="3027578600144895987">ക്യാമറ അടയ്ക്കുക</translation>
 <translation id="3031560714565892478">ഉപകരണം ഒരു വീഡിയോ ക്യാമറയാണ്.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,13 +664,13 @@
 <translation id="6618744767048954150">റൺ ചെയ്യുന്നു</translation>
 <translation id="6620487321149975369">നേരിട്ട് നീക്കം ചെയ്തില്ലെങ്കിൽ പ്രിന്റ് ജോലികൾ ചരിത്രത്തിൽ ദൃശ്യമാകും</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
+<translation id="6644568396961840069">ഫയൽ സംരക്ഷിക്കാനായില്ല. മറ്റൊരു ബാഹ്യ സ്‌റ്റോറേജ് പ്ലഗ് ഇൻ ചെയ്ത് ശ്രമിക്കുക, അല്ലെങ്കിൽ പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6647510110698214773">എൻക്രിപ്ഷൻ അൽഗോരിതം</translation>
 <translation id="6650062777702288430">കാന/ആൽഫാന്യൂമെറിക് സ്വിച്ച്</translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="6659594942844771486">ബ്രൗസർ ടാബ്</translation>
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6704062477274546131">DNS റെസല്യൂഷൻ</translation>
-<translation id="6721744718589119342">കൂടുതൽ വിവരങ്ങൾക്കും അപ്ഡേറ്റുകൾക്കുമായി ഞങ്ങൾക്ക് നിങ്ങളെ ഇമെയിലിൽ ബന്ധപ്പെടാം</translation>
 <translation id="6723839937902243910">പവർ</translation>
 <translation id="6723847290197874913">കീബോർഡ് ബാക്ക്‌ലൈറ്റ്</translation>
 <translation id="672609503628871915">പുതിയതെന്താണെന്ന് കാണുക</translation>
@@ -825,6 +826,7 @@
 <translation id="8217675307824400706">കണക്റ്റ് ചെയ്യുക</translation>
 <translation id="8221728673725659466">കാലിബ്രേഷൻ പൂർത്തിയായി</translation>
 <translation id="8226628635270268143">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഫോട്ടോകളും ആൽബങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
+<translation id="8227119283605456246">ഫയൽ അറ്റാച്ചുചെയ്യുക</translation>
 <translation id="8230672074305416752">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="8246209727385807362">അജ്ഞാത സേവനദാതാവ്</translation>
 <translation id="827422111966801947">ഇൻഡിഗോ</translation>

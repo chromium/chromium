@@ -4240,7 +4240,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5026874946691314267">Jangan tunjukkannya lagi</translation>
 <translation id="5027550639139316293">Sijil E-mel</translation>
 <translation id="5027562294707732951">Tambahkan sambungan</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" /> akan dialih keluar daripada <ph name="PRIMARY_EMAIL" /> dan dinyahgandingkan dengan Chromebook ini.</translation>
 <translation id="5029568752722684782">Hapuskan salinan</translation>
 <translation id="5029873138381728058">Gagal menyemak VM</translation>
 <translation id="503155457707535043">Apl sedang dimuat turun</translation>
@@ -6515,7 +6514,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7280877790564589615">Kebenaran diminta</translation>
 <translation id="7282547042039404307">Lancar</translation>
 <translation id="7282992757463864530">Bar Maklumat</translation>
-<translation id="728334460283296316">Alih keluar peranti</translation>
 <translation id="7283555985781738399">Mod tetamu</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Peranti ini akan disimpan selama 1 hari dan anda boleh menyambung tanpa kod masa seterusnya. Ini ditetapkan oleh pentadbir anda.}other{Peranti ini akan disimpan selama {DAYS} hari dan anda boleh menyambung tanpa kod pada masa akan datang. Ini ditetapkan oleh pentadbir anda.}}</translation>
 <translation id="7284411326658527427">Setiap orang boleh memeribadikan akaun mereka dan merahsiakan data.</translation>
@@ -7813,8 +7811,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8531701051932785007">Penyemakan Imbas Selamat Dipertingkat dimatikan</translation>
 <translation id="8534656636775144800">Op! Berlaku masalah semasa cuba menyertai domain. Sila cuba lagi.</translation>
 <translation id="8535005006684281994">URL Pembaharuan Sijil Netscape</translation>
-<translation id="8536565869707961418">Alih keluar <ph name="DEVICE" /> daripada <ph name="PRIMARY_EMAIL" />.
-    Peranti masih boleh digunakan secara setempat.</translation>
 <translation id="8536713137312218707">Perintah Pantas</translation>
 <translation id="8536956381488731905">Bunyi pada tekanan kekunci</translation>
 <translation id="8539727552378197395">Tidak (HttpOnly)</translation>

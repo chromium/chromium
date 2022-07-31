@@ -92,6 +92,7 @@
 <translation id="1644574205037202324">வரலாறு</translation>
 <translation id="1645954272419197032">சாதனத் தகவலை உறுதிப்படுத்துதல்</translation>
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
+<translation id="1664796644829245314"><ph name="PREVIEW_OBJECT" /> இன் மாதிரிக்காட்சியைக் காட்டும்</translation>
 <translation id="1668469839109562275">உள்ளமைந்த VPN</translation>
 <translation id="1672499492233627739">வெப்கேம் வீடியோ ஊட்டம்</translation>
 <translation id="1676557873873341166">வீடியோவை எடுக்கிறது</translation>
@@ -234,6 +235,7 @@
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3017079585324758401">பின்புலம்</translation>
+<translation id="302435934487327038">நிறுவப்பட்டது</translation>
 <translation id="3027578600144895987">கேமராவை மூடும்</translation>
 <translation id="3031560714565892478">சாதனம் ஒரு வீடியோ கேமரா.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,13 +665,13 @@
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
 <translation id="6620487321149975369">பிரிண்ட்டிங் பணிகளை நீங்களாகவே அகற்றும் வரை அவை வரலாற்றில் காட்டப்படும்</translation>
 <translation id="6643016212128521049">அழி</translation>
+<translation id="6644568396961840069">ஃபைலைச் சேமிக்க முடியவில்லை. வேறொரு வெளிப்புறச் சேமிப்பகத்தைப் பயன்படுத்தவும் அல்லது பிறகு முயலவும்.</translation>
 <translation id="6647510110698214773">என்க்ரிப்ஷன் அல்காரிதம்</translation>
 <translation id="6650062777702288430">கானா/எண்ணெழுத்து ஸ்விட்ச்</translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6659594942844771486">உலாவிப் பக்கம்</translation>
 <translation id="6692996468359469499">திரையில் நீங்கள் தேர்ந்தெடுத்தது தொடர்பாக தகவல்களைப் பெறவும்</translation>
 <translation id="6704062477274546131">DNS ரெசல்யூஷன்</translation>
-<translation id="6721744718589119342">கூடுதல் தகவல்களைப் பெறுவதற்காகவோ அறிவிப்புகளை வழங்குவதற்காகவோ நாங்கள் உங்களுக்கு மின்னஞ்சல் அனுப்பலாம்</translation>
 <translation id="6723839937902243910">ஆற்றல்</translation>
 <translation id="6723847290197874913">கீபோர்டு பேக்லைட்</translation>
 <translation id="672609503628871915">புதியதைப் பார்க்கவும்</translation>
@@ -800,6 +802,7 @@
 <translation id="7978412674231730200">தனிப்பட்ட விசை</translation>
 <translation id="7982789257301363584">நெட்வொர்க்</translation>
 <translation id="7994702968232966508">EAP முறை</translation>
+<translation id="8018928621986160031">"<ph name="FILE_LOCATION" />" இல் சேமிக்கப்பட்டது</translation>
 <translation id="802154636333426148">பதிவிறக்க முடியவில்லை</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
 <translation id="80398733265834479">தன்னியக்க வண்ணப் பயன்முறையை இயக்கும்</translation>
@@ -824,6 +827,7 @@
 <translation id="8217675307824400706">இணையத்துடன் இணைத்திடுங்கள்</translation>
 <translation id="8221728673725659466">சரிசெய்தல் நிறைவடைந்தது</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
+<translation id="8227119283605456246">ஃபைலை இணை</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8246209727385807362">அறியப்படாத தொலைத்தொடர்பு நிறுவனம்</translation>
 <translation id="827422111966801947">இண்டிகோ</translation>

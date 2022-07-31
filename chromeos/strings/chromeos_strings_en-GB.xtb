@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Types</translation>
 <translation id="2461822463642141190">Current</translation>
 <translation id="2480034874476596812">Manually turn off</translation>
+<translation id="248546197012830854">Device is offline. Connect to Wi-Fi network to see help content.</translation>
 <translation id="2491955442992294626">Keys aren't tested when you're using another window</translation>
 <translation id="2493126929778606526">Your best photos, selected automatically</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -664,6 +665,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6611280807952151149">Exit <ph name="DEVICE_TYPE" /> repair</translation>
 <translation id="6618744767048954150">Running</translation>
 <translation id="6620487321149975369">Print jobs will appear in history unless they are removed manually</translation>
+<translation id="6624819909909965616">Can't upload file larger than 10 MB</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6644568396961840069">File couldn't be saved. Try plugging in a different external storage, or try again later.</translation>
 <translation id="6647510110698214773">Encryption algorithm</translation>
@@ -672,7 +674,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6692996468359469499">Get info related to your selection</translation>
 <translation id="6704062477274546131">DNS resolution</translation>
-<translation id="6721744718589119342">We may email you for more information or updates</translation>
 <translation id="6723839937902243910">Power</translation>
 <translation id="6723847290197874913">Keyboard backlight</translation>
 <translation id="672609503628871915">See what's new</translation>
@@ -700,6 +701,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="6995564396478647735">Make sure that Write Protect is on</translation>
+<translation id="7005833343836210400">Device is offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Device is not connected.</translation>
@@ -814,6 +816,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
 <translation id="8083281199617904460">This repair process is intended for a trained repair technician. Start only after replacing the malfunctioning components.</translation>
 <translation id="808894953321890993">Change password</translation>
+<translation id="8094062939584182041">Allow Google to email you about this issue</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>
 <translation id="8109786307828817014">Proceed with failed calibrations?</translation>
 <translation id="811820734797650957">(Android) Gateway can be pinged</translation>
@@ -828,6 +831,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8217675307824400706">Get connected</translation>
 <translation id="8221728673725659466">Calibration complete</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
+<translation id="8227119283605456246">Attach file</translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8246209727385807362">Unknown operator</translation>
 <translation id="827422111966801947">Indigo</translation>

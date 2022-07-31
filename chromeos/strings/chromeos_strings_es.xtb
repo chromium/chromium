@@ -669,7 +669,6 @@
 <translation id="6659594942844771486">Pestaña</translation>
 <translation id="6692996468359469499">Obtener información sobre tu selección</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
-<translation id="6721744718589119342">Podemos enviarte un correo para pedirte más información o notificarte cambios</translation>
 <translation id="6723839937902243910">Batería</translation>
 <translation id="6723847290197874913">Retroiluminación del teclado</translation>
 <translation id="672609503628871915">Consultar las novedades</translation>
@@ -825,6 +824,7 @@
 <translation id="8217675307824400706">Conéctate</translation>
 <translation id="8221728673725659466">Calibración completa</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
+<translation id="8227119283605456246">Adjuntar archivo</translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
 <translation id="8246209727385807362">Operador desconocido</translation>
 <translation id="827422111966801947">Índigo</translation>

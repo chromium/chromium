@@ -4239,7 +4239,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5026874946691314267">Ne prikazuj ponovo</translation>
 <translation id="5027550639139316293">Potvrda za e-poštu</translation>
 <translation id="5027562294707732951">Dodaj ekstenziju</translation>
-<translation id="5028202297152853903">Uređaj <ph name="DEVICE" /> uklonit će se s e-adrese <ph name="PRIMARY_EMAIL" /> i raspariti s ovim Chromebookom.</translation>
 <translation id="5029568752722684782">Obriši kopiju</translation>
 <translation id="5029873138381728058">Provjera VM-ova nije uspjela</translation>
 <translation id="503155457707535043">Preuzimanje aplikacija</translation>
@@ -6518,7 +6517,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7280877790564589615">Upućen je zahtjev za odobrenje</translation>
 <translation id="7282547042039404307">Glatko</translation>
 <translation id="7282992757463864530">Infotraka</translation>
-<translation id="728334460283296316">Uklanjanje uređaja</translation>
 <translation id="7283555985781738399">Način rada za gosta</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Ovaj uređaj će biti sačuvan jedan dan i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}one{Ovaj uređaj će biti sačuvan {DAYS} dan i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}few{Ovaj uređaj će biti sačuvan {DAYS} dana i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}other{Ovaj uređaj će biti sačuvan {DAYS} dana i sljedeći put se možete povezati bez koda. Ovo je postavio vaš administrator.}}</translation>
 <translation id="7284411326658527427">Svaka osoba može personalizirati svoj račun i čuvati privatnost podataka.</translation>
@@ -7815,8 +7813,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8531701051932785007">Poboljšano Sigurno pregledanje je isključeno</translation>
 <translation id="8534656636775144800">Ups! Došlo je do pogreške pri pokušaju pridruživanja domeni. Pokušajte ponovo.</translation>
 <translation id="8535005006684281994">URL za obnovu Netscape potvrde</translation>
-<translation id="8536565869707961418">Uklonite uređaj <ph name="DEVICE" /> s e-adrese <ph name="PRIMARY_EMAIL" />.
-    Uređaj se i dalje može lokalno upotrebljavati.</translation>
 <translation id="8536713137312218707">Brze komande</translation>
 <translation id="8536956381488731905">Zvuk pri pritisku tipke</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>

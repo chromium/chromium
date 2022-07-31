@@ -4222,7 +4222,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5026874946691314267">Dit bericht niet meer bekijken</translation>
 <translation id="5027550639139316293">Certificaat voor e-mail</translation>
 <translation id="5027562294707732951">Extensie toevoegen</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" /> wordt verwijderd uit <ph name="PRIMARY_EMAIL" /> en ontkoppeld van deze Chromebook.</translation>
 <translation id="5029568752722684782">Kopie wissen</translation>
 <translation id="5029873138381728058">Kan VM's niet checken</translation>
 <translation id="503155457707535043">Apps downloaden</translation>
@@ -6493,7 +6492,6 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7280877790564589615">Rechten gevraagd</translation>
 <translation id="7282547042039404307">Vloeiend</translation>
 <translation id="7282992757463864530">Infobalk</translation>
-<translation id="728334460283296316">Apparaat verwijderen</translation>
 <translation id="7283555985781738399">Gastmodus</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Dit apparaat wordt 1 dag bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}other{Dit apparaat wordt {DAYS} dagen bewaard en je kunt de volgende keer verbinding maken zonder een code. Dit wordt ingesteld door je beheerder.}}</translation>
 <translation id="7284411326658527427">Ze kunnen ieder hun account personaliseren en gegevens privé houden.</translation>
@@ -7787,8 +7785,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8531701051932785007">Uitgebreide versie van Safe Browsing staat uit</translation>
 <translation id="8534656636775144800">Er is een fout opgetreden bij het verbinden met het domein. Probeer het opnieuw.</translation>
 <translation id="8535005006684281994">URL voor verlengen van Netscape-certificaat</translation>
-<translation id="8536565869707961418"><ph name="DEVICE" /> verwijderen uit <ph name="PRIMARY_EMAIL" />.
-    Het apparaat kan nog steeds lokaal worden gebruikt.</translation>
 <translation id="8536713137312218707">Snelle opdrachten</translation>
 <translation id="8536956381488731905">Geluid bij toetsaanslag</translation>
 <translation id="8539727552378197395">Nee (HttpOnly)</translation>

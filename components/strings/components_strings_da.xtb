@@ -1228,6 +1228,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4305666528087210886">Din fil kunne ikke tilgås</translation>
 <translation id="4306529830550717874">Vil du gemme adressen?</translation>
 <translation id="4306812610847412719">udklipsholder</translation>
+<translation id="4308567447483056043">Denne politik ignoreres, fordi brugeren ikke er tilknyttet organisationen. Chrome-browseren og -profilen skal administreres via Administrationskonsol af den samme organisation, før denne politik kan anvendes.</translation>
 <translation id="4310070645992025887">Søg i dine søgeforløb</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloker (standardindstilling)</translation>

@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">ЖАҢАРТУ</translation>
 <translation id="3009958530611748826">Сканерленген мазмұн сақталатын қалтаны таңдаңыз</translation>
 <translation id="3017079585324758401">Фон</translation>
+<translation id="302435934487327038">Орнату аяқталды</translation>
 <translation id="3027578600144895987">Камераны жабу</translation>
 <translation id="3031560714565892478">Бұл — бейнекамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -663,13 +664,13 @@
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6620487321149975369">Қолмен өшірмесеңіз, баспа жұмыстары тарихта сақтала береді.</translation>
 <translation id="6643016212128521049">Тазалау</translation>
+<translation id="6644568396961840069">Файл сақталмады. Басқа сыртқы жадты қосып көріңіз немесе әрекетті кейінірек қайталаңыз.</translation>
 <translation id="6647510110698214773">Шифрлау алгоритмі</translation>
 <translation id="6650062777702288430">Кана мен әріптік-сандық белгілерді өзара ауыстыру</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659594942844771486">Қойынды</translation>
 <translation id="6692996468359469499">Таңдауға қатысты ақпарат алу</translation>
 <translation id="6704062477274546131">DNS ажыратымдылығы</translation>
-<translation id="6721744718589119342">Толығырақ ақпарат алып, жаңалықтардан хабардар болуыңыз үшін, сізге электрондық хаттар жіберуіміз мүмкін.</translation>
 <translation id="6723839937902243910">Күш</translation>
 <translation id="6723847290197874913">Пернетақта жарығы</translation>
 <translation id="672609503628871915">Жаңалықтарды қарау</translation>
@@ -825,6 +826,7 @@
 <translation id="8217675307824400706">Қосылу</translation>
 <translation id="8221728673725659466">Калибрлеу аяқталды</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
+<translation id="8227119283605456246">Файл тіркеу</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8246209727385807362">Белгісіз оператор</translation>
 <translation id="827422111966801947">Индиго</translation>

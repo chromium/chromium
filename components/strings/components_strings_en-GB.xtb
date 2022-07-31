@@ -1071,6 +1071,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3835233591525155343">Your device use</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to create a new Google Doc quickly</translation>
 <translation id="385051799172605136">Back</translation>
+<translation id="3853684360927654006">Password strength calculator</translation>
 <translation id="3858027520442213535">Update date and time</translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3872834068356954457">Science</translation>
@@ -1681,6 +1682,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5518670652865028077">Arts and entertainment</translation>
 <translation id="5519516356611866228">With your changes</translation>
 <translation id="5523118979700054094">Policy name</translation>
+<translation id="5525755241743357906">File is copied or moved</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to personalise your accessibility tools in Chrome OS settings</translation>
 <translation id="5528532273234423708">Home automation</translation>
 <translation id="55293785478302737">Edge stitch</translation>
@@ -2933,6 +2935,7 @@ Additional details:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab and then Enter to set Chrome as the system's default browser in iOS settings</translation>
 <translation id="9096679202588811390">TV shows and programmes</translation>
 <translation id="9101630580131696064">Tray 1</translation>
+<translation id="9102081333385212048">Files that you copy or move are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.</translation>
 <translation id="9103537084693478942">Video software</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> normally uses encryption to protect your information. When Chromium tried to connect to <ph name="SITE" /> this time, the website sent back unusual and incorrect credentials. This may happen when an attacker is trying to pretend to be <ph name="SITE" />, or a Wi-Fi sign-in screen has interrupted the connection. Your information is still secure because Chromium stopped the connection before any data was exchanged.</translation>
 <translation id="9106062320799175032">Add Billing Address</translation>

@@ -84,6 +84,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351937230027495976">Réduire le menu</translation>
 <translation id="1364382257761975320">Utilisez votre empreinte digitale pour déverrouiller votre Chromebook</translation>
+<translation id="1365866993922957110">Recevoir des mises à jour automatiques</translation>
 <translation id="1372545819342940910">Enregistrer le bureau pour plus tard</translation>
 <translation id="1383597849754832576">Impossible de télécharger les fichiers de synthèse textuelle. Réessayez plus tard.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -161,6 +162,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1830308660060964064">L'épinglage de <ph name="ITEM_TITLE" /> été annulé</translation>
 <translation id="1836215606488044471">Assistant Google (chargement en cours…)</translation>
 <translation id="1838895407229022812">Le mode Éclairage nocturne est désactivé.</translation>
+<translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
 <translation id="1864454756846565995">Appareil USB-C (port arrière)</translation>
 <translation id="1879018240766558464">Les fenêtres de navigation privée ne sont pas prises en charge actuellement. Les autres applications seront enregistrées.</translation>
 <translation id="1882814835921407042">Aucun réseau cellulaire</translation>
@@ -561,6 +563,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="423685346499232137">Impossible de copier ni de coller du contenu pour le moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
+<translation id="4247123849143712100">Mettre à jour et éteindre</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
 <translation id="425364040945105958">Aucune carte SIM</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
@@ -920,6 +923,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connecté</translation>
 <translation id="6351032674660237738">SUGGESTIONS D'APPLICATIONS</translation>
+<translation id="6359587239691116345">Bénéficiez des dernières fonctionnalités et améliorations de la sécurité. Si vous refusez cette mise à jour, votre appareil pourrait ne plus fonctionner correctement, et vous pourriez rencontrer des problèmes de sécurité et de performance.</translation>
 <translation id="6376931439017688372">Le Bluetooth est activé</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, entrez votre NIP.</translation>
 <translation id="639644700271529076">Touche de verrouillage des majuscules désactivée</translation>
@@ -941,6 +945,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> exige que vous mettiez à jour votre <ph name="DEVICE_TYPE" /> avant la date limite</translation>
 <translation id="649452524636452238">NIP de la carte à puce</translation>
 <translation id="6495400115277918834">Début de l'incrustation d'image, appuyez sur les touches Alt+Majuscule+V pour sélectionner</translation>
+<translation id="6500896621837555595">Mettre à jour</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur <ph name="RECEIVER_NAME" /> en cours</translation>
 <translation id="6515727200518652613">Caméra déconnectée; tentative de reconnexion en cours…</translation>
 <translation id="6520517963145875092">Sélectionnez une fenêtre à capturer</translation>
@@ -1218,6 +1223,7 @@ Nouvelle installation</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
 <translation id="8061464966246066292">Contraste élevé</translation>
 <translation id="8083540854303889870">Enregistré pour plus tard</translation>
+<translation id="8091387634532529612">Mises à jour automatiques</translation>
 <translation id="8098591350844501178">Arrêter la diffusion de l'écran sur <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Pour déverrouiller votre Chromebook, entrez votre mot de passe.</translation>
@@ -1424,4 +1430,5 @@ Nouvelle installation</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Paysage</translation>
 <translation id="990277280839877440">La fenêtre <ph name="WINDOW_TITILE" /> a été fermée.</translation>
+<translation id="996204416024568215">Bénéficiez des dernières fonctionnalités et améliorations de la sécurité. Les mises à jour s'effectuent en arrière-plan.</translation>
 </translationbundle>

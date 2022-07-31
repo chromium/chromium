@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">LÀM MỚI</translation>
 <translation id="3009958530611748826">Chọn một thư mục để lưu</translation>
 <translation id="3017079585324758401">Nền</translation>
+<translation id="302435934487327038">Quá trình cài đặt đã hoàn tất</translation>
 <translation id="3027578600144895987">Tắt máy ảnh</translation>
 <translation id="3031560714565892478">Thiết bị là máy quay video.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
@@ -664,13 +665,13 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6618744767048954150">Đang chạy</translation>
 <translation id="6620487321149975369">Lệnh in sẽ xuất hiện trong lịch sử in trừ phi bạn tự xóa</translation>
 <translation id="6643016212128521049">Xóa</translation>
+<translation id="6644568396961840069">Không thể lưu tệp. Hãy thử sử dụng một bộ nhớ ngoài khác hoặc thử lại sau.</translation>
 <translation id="6647510110698214773">Thuật toán mã hoá</translation>
 <translation id="6650062777702288430">Chuyển sang bàn phím Kana/ký tự chữ-số</translation>
 <translation id="6657585470893396449">Mật khẩu</translation>
 <translation id="6659594942844771486">Thẻ</translation>
 <translation id="6692996468359469499">Nhận thông tin liên quan đến lựa chọn của bạn</translation>
 <translation id="6704062477274546131">Phân giải DNS</translation>
-<translation id="6721744718589119342">Chúng tôi có thể gửi email cho bạn để hỏi thêm thông tin hoặc để cập nhật thông tin cho bạn</translation>
 <translation id="6723839937902243910">Nguồn</translation>
 <translation id="6723847290197874913">Đèn nền bàn phím</translation>
 <translation id="672609503628871915">Xem tính năng mới</translation>
@@ -826,6 +827,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8217675307824400706">Kết nối</translation>
 <translation id="8221728673725659466">Hiệu chỉnh xong</translation>
 <translation id="8226628635270268143">Chọn ảnh và album bạn yêu thích</translation>
+<translation id="8227119283605456246">Đính kèm tệp</translation>
 <translation id="8230672074305416752">Không ping được cổng của mạng mặc định</translation>
 <translation id="8246209727385807362">Nhà cung cấp dịch vụ không xác định</translation>
 <translation id="827422111966801947">Màu chàm</translation>

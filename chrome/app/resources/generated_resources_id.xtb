@@ -4239,7 +4239,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5026874946691314267">Jangan tampilkan pemberitahuan ini lagi</translation>
 <translation id="5027550639139316293">Sertifikat Email</translation>
 <translation id="5027562294707732951">Tambahkan ekstensi</translation>
-<translation id="5028202297152853903"><ph name="DEVICE" /> akan dihapus dari <ph name="PRIMARY_EMAIL" /> dan dilepas sambungannya dengan Chromebook ini.</translation>
 <translation id="5029568752722684782">Hapus salinan</translation>
 <translation id="5029873138381728058">Gagal memeriksa VM</translation>
 <translation id="503155457707535043">Aplikasi sedang didownload</translation>
@@ -6514,7 +6513,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7280877790564589615">Izin diminta</translation>
 <translation id="7282547042039404307">Halus</translation>
 <translation id="7282992757463864530">Infobar</translation>
-<translation id="728334460283296316">Hapus perangkat</translation>
 <translation id="7283555985781738399">Mode tamu</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Perangkat ini akan disimpan selama 1 hari dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}other{Perangkat ini akan disimpan selama {DAYS} hari dan Anda dapat terhubung pada waktu berikutnya tanpa kode. Ini disetel oleh administrator Anda.}}</translation>
 <translation id="7284411326658527427">Setiap pengguna dapat mempersonalisasi akunnya dan menjaga privasi datanya.</translation>
@@ -7811,8 +7809,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8531701051932785007">Safe Browsing yang Disempurnakan nonaktif</translation>
 <translation id="8534656636775144800">Maaf.  Terjadi masalah saat mencoba bergabung dengan domain. Harap coba lagi.</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
-<translation id="8536565869707961418">Menghapus <ph name="DEVICE" /> dari <ph name="PRIMARY_EMAIL" />.
-    Perangkat masih dapat digunakan secara lokal.</translation>
 <translation id="8536713137312218707">Perintah Cepat</translation>
 <translation id="8536956381488731905">Suara saat tombol ditekan</translation>
 <translation id="8539727552378197395">Tidak (HttpOnly)</translation>

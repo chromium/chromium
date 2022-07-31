@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">ЖАҢЫРТУУ</translation>
 <translation id="3009958530611748826">Скандалган нерселерди сактоо үчүн папка тандаңыз</translation>
 <translation id="3017079585324758401">Фон</translation>
+<translation id="302435934487327038">Орнотулду</translation>
 <translation id="3027578600144895987">Камераны жабуу</translation>
 <translation id="3031560714565892478">Түзмөк — видео камера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />мА</translation>
@@ -664,13 +665,13 @@
 <translation id="6618744767048954150">Иштеп жатат</translation>
 <translation id="6620487321149975369">Басып чыгаруу тапшырмаларын кол менен өчүрмөйүнчө, алар таржымалда сакталат</translation>
 <translation id="6643016212128521049">Тазалоо</translation>
+<translation id="6644568396961840069">Файл сакталган жок. Башка тышкы сактагычты сайып көрүңүз же кийинчерээк кайталаңыз.</translation>
 <translation id="6647510110698214773">Шифрлөөнүн алгоритми</translation>
 <translation id="6650062777702288430">Кана/сандар менен тамгалар которгучу</translation>
 <translation id="6657585470893396449">Сырсөз</translation>
 <translation id="6659594942844771486">Өтмөк</translation>
 <translation id="6692996468359469499">Сиз тандаган нерсеге тиешелүү маалыматты алуу</translation>
 <translation id="6704062477274546131">DNS дааналыгы</translation>
-<translation id="6721744718589119342">Кошумча маалыматтар менен соңку жаңылыктарды электрондук кат аркылуу кабарлап турабыз</translation>
 <translation id="6723839937902243910">Кубат</translation>
 <translation id="6723847290197874913">Баскычтоптун жарыгы</translation>
 <translation id="672609503628871915">Эмне жаңылык бар</translation>
@@ -826,6 +827,7 @@
 <translation id="8217675307824400706">Туташыңыз</translation>
 <translation id="8221728673725659466">Калибрдөө аяктады</translation>
 <translation id="8226628635270268143">Сүйүктүү сүрөттөр менен альбомдорду тандоо</translation>
+<translation id="8227119283605456246">Файл тиркөө</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="8246209727385807362">Белгисиз байланыш оператору</translation>
 <translation id="827422111966801947">Индиго</translation>

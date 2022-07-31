@@ -235,6 +235,7 @@
 <translation id="3008341117444806826">पुनः ताजा गर्नुहोस्</translation>
 <translation id="3009958530611748826">सुरक्षित गर्न कुनै फोल्डर चयन गर्नुहोस्</translation>
 <translation id="3017079585324758401">पृष्ठभूमि</translation>
+<translation id="302435934487327038">इन्स्टल गर्ने प्रक्रिया पूरा भयो</translation>
 <translation id="3027578600144895987">क्यामेरा बन्द गर्नुहोस्</translation>
 <translation id="3031560714565892478">यो डिभाइस भिडियो क्यामेरा हो।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
@@ -663,13 +664,13 @@
 <translation id="6618744767048954150">जाँच हुँदै छ</translation>
 <translation id="6620487321149975369">तपाईंले प्रिन्टसम्बन्धी कार्यहरू नहटाउँदासम्म ती कार्यहरू इतिहासमा देखिने छन्</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
+<translation id="6644568396961840069">फाइल सेभ गर्न सकिएन। अर्कै बाह्य भण्डारण घुसाई हेर्नुहोस् वा पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6647510110698214773">इन्क्रिप्सनसम्बन्धी एल्गोरिदम</translation>
 <translation id="6650062777702288430">काना र अङ्क तथा अक्षरमिश्रित वर्णहरू अदलबदल गर्ने की</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउजर ट्याब</translation>
 <translation id="6692996468359469499">आफ्नो चयनसँग सम्बन्धित जानकारी प्राप्त गर्नुहोस्</translation>
 <translation id="6704062477274546131">DNS रिजोल्युसन</translation>
-<translation id="6721744718589119342">हामी तपाईंलाई इमेल पठाएर थप जानकारी वा अद्यावधिक सूचना माग्न सक्छौँ</translation>
 <translation id="6723839937902243910">पावर</translation>
 <translation id="6723847290197874913">किबोर्डको ब्याकलाइट</translation>
 <translation id="672609503628871915">नयाँ के छ हेर्नुहोस्</translation>
@@ -825,6 +826,7 @@
 <translation id="8217675307824400706">कनेक्ट गर्नुहोस्</translation>
 <translation id="8221728673725659466">क्यालिब्रेट गर्ने कार्य पूरा भयो</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
+<translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8246209727385807362">अज्ञात सेवा प्रदायक</translation>
 <translation id="827422111966801947">इन्डिगो</translation>

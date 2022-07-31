@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Оңға</translation>
 <translation id="1351937230027495976">Мәзірді жию</translation>
 <translation id="1364382257761975320">Chromebook құлпын ашу үшін саусақ ізін пайдаланыңыз.</translation>
+<translation id="1365866993922957110">Автоматты жаңартуларды алу</translation>
 <translation id="1372545819342940910">Жұмыс үстелін сақтау</translation>
 <translation id="1383597849754832576">Автоматты субтитр файлдары жүктеп алынбады. Кейінірек қайталап көріңіз.</translation>
 <translation id="1383876407941801731">Іздеу</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> босатылды.</translation>
 <translation id="1836215606488044471">Assistant (жүктелуде...)</translation>
 <translation id="1838895407229022812">"Түнгі жарық" функциясы өшірулі.</translation>
+<translation id="1862380676329487333">Жаңарту және шығу</translation>
 <translation id="1864454756846565995">USB-C құрылғысы (артқы ұяшық)</translation>
 <translation id="1879018240766558464">Инкогнито терезелеріне қазір қолдау көрсетілмейді. Басқа қолданбалар сақталады.</translation>
 <translation id="1882814835921407042">Мобильдік желі жоқ.</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">Мазмұнды қазір көшіру немесе қою мүмкін емес.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Параметрлерді ашу</translation>
+<translation id="4247123849143712100">Жаңарту және өшіру</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="425364040945105958">SIM картасы жоқ.</translation>
 <translation id="4261870227682513959">Хабарландыру параметрлерін көрсету. Хабарландырулар өшірулі</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> басқаратын сеанс.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> қосылды</translation>
 <translation id="6351032674660237738">ҚОЛДАНБА ҰСЫНЫСТАРЫ</translation>
+<translation id="6359587239691116345">Соңғы шыққан функцияларды және қауіпсіздікті жақсарту мүмкіндіктерін пайдаланыңыз. Бұл жаңартуды қабылдамасаңыз, құрылғыңыз дұрыс жұмыс істемей, қауіпсіздік пен өнімділікке қатысты ақаулар туындауы мүмкін.</translation>
 <translation id="6376931439017688372">Bluetooth қосулы</translation>
 <translation id="6381109794406942707">Құрылғының құлпын ашу үшін PIN кодын енгізіңіз.</translation>
 <translation id="639644700271529076">CAPS LOCK өшірулі</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820">Мерзім аяқталғанға дейін, <ph name="MANAGER" /> сізден <ph name="DEVICE_TYPE" /> құрылғысын жаңартуыңызды талап етеді.</translation>
 <translation id="649452524636452238">Смарт картаның PIN коды</translation>
 <translation id="6495400115277918834">"Суреттегі сурет" режимі қосылды, ерекшелеу үшін Alt+Shift+V пернелер тіркесімін басыңыз.</translation>
+<translation id="6500896621837555595">Жаңарту</translation>
 <translation id="6501401484702599040">Экранды <ph name="RECEIVER_NAME" /> құрылғысына трансляциялау</translation>
 <translation id="6515727200518652613">Камера ажырап кетті, қайта жалғанып жатыр.</translation>
 <translation id="6520517963145875092">Түсіру үшін терезені таңдаңыз</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">Батарея уақытын есептеу.</translation>
 <translation id="8061464966246066292">Жоғары контраст</translation>
 <translation id="8083540854303889870">Кейінге сақталған</translation>
+<translation id="8091387634532529612">Автоматты жаңартулар</translation>
 <translation id="8098591350844501178">Экран мазмұнын <ph name="RECEIVER_NAME" /> құрылғысына трансляциялауды тоқтату</translation>
 <translation id="8113423164597455979">Қосулы</translation>
 <translation id="8120151603115102514">Телефоныңызда құлып экраны жоқ. Chromebook құлпын ашу үшін құпия сөзді енгізіңіз.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949"><ph name="QUERY" /> бойынша <ph name="RESULT_COUNT" /> нәтиже көрсетілуде</translation>
 <translation id="98515147261107953">Альбомдық</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезесі жабық.</translation>
+<translation id="996204416024568215">Соңғы шыққан функцияларды және қауіпсіздікті жақсарту мүмкіндіктерін пайдаланыңыз. Жаңарту әрекеттері фондық режимде жасалады.</translation>
 </translationbundle>

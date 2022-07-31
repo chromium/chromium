@@ -4227,7 +4227,6 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5026874946691314267">Ne prikazuj to ponovo</translation>
 <translation id="5027550639139316293">Certifikat e-pošte</translation>
 <translation id="5027562294707732951">Dodaj proširenje</translation>
-<translation id="5028202297152853903">Uređaj <ph name="DEVICE" /> uklonit će se s e-adrese <ph name="PRIMARY_EMAIL" /> i raspariti s ovim Chromebookom.</translation>
 <translation id="5029568752722684782">Izbriši kopiju</translation>
 <translation id="5029873138381728058">Provjera VM-ova nije uspjela</translation>
 <translation id="503155457707535043">Preuzimanje aplikacija</translation>
@@ -6503,7 +6502,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7280877790564589615">Traženje dopuštenja</translation>
 <translation id="7282547042039404307">Glatko</translation>
 <translation id="7282992757463864530">Infotraka</translation>
-<translation id="728334460283296316">Uklanjanje uređaja</translation>
 <translation id="7283555985781738399">Način rada za goste</translation>
 <translation id="7284307451964417957">{DAYS,plural, =1{Uređaj će biti spremljen jedan dan te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}one{Uređaj će biti spremljen {DAYS} dan te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}few{Uređaj će biti spremljen {DAYS} dana te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}other{Uređaj će biti spremljen {DAYS} dana te se sljedeći put možete povezati bez koda. To postavlja vaš administrator.}}</translation>
 <translation id="7284411326658527427">Svaka osoba može prilagoditi svoj račun i zadržati privatnost svojih podataka.</translation>
@@ -7799,8 +7797,6 @@ Mislim da ta web-lokacija ne bi trebala biti blokirana!</translation>
 <translation id="8531701051932785007">Isključeno je poboljšano sigurno pregledavanje</translation>
 <translation id="8534656636775144800">Ups! Došlo je do pogreške pri pokušaju pridruživanja domeni. Pokušajte ponovo.</translation>
 <translation id="8535005006684281994">URL za obnavljanje Netscape certifikata</translation>
-<translation id="8536565869707961418">Uklonite uređaj <ph name="DEVICE" /> s e-adrese <ph name="PRIMARY_EMAIL" />.
-    Uređaj se i dalje može lokalno upotrebljavati.</translation>
 <translation id="8536713137312218707">Brze naredbe</translation>
 <translation id="8536956381488731905">Zvuk pritiska tipke</translation>
 <translation id="8539727552378197395">Ne (samo http)</translation>

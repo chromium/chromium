@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Оң</translation>
 <translation id="1351937230027495976">Менюну жыйыштыруу</translation>
 <translation id="1364382257761975320">Chromebook'тун кулпусун манжаңыздын изи менен ачыңыз</translation>
+<translation id="1365866993922957110">Автоматтык жаңыртууларды алуу</translation>
 <translation id="1372545819342940910">Иш тактаны кийинкиге сактоо</translation>
 <translation id="1383597849754832576">Кеп файлдары жүктөлүп алынган жок. Кийинчерээк кайталаңыз.</translation>
 <translation id="1383876407941801731">Издөө</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> бошотулду</translation>
 <translation id="1836215606488044471">Жардамчы (жүктөлүүдө...)</translation>
 <translation id="1838895407229022812">Түнкү жарык өчүк.</translation>
+<translation id="1862380676329487333">Жаңыртуу жана чыгуу</translation>
 <translation id="1864454756846565995">USB-C түзмөгү (арткы оюкча)</translation>
 <translation id="1879018240766558464">Жашыруун терезелер учурда колдоого алынбайт. Башка колдонмолор сакталат.</translation>
 <translation id="1882814835921407042">Мобилдик Интернет жок</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">Учурда контентти көчүрүп же чаптоого болбойт</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Жөндөөлөрдү ачуу</translation>
+<translation id="4247123849143712100">Жаңыртуу жана өчүрүү</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="425364040945105958">SIM-карта жок</translation>
 <translation id="4261870227682513959">Билдирмелердин жөндөөлөрүн көрсөтүү. Билдирмелер өчүк</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> тарабынан башкарылган сеанс</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> туташты</translation>
 <translation id="6351032674660237738">СУНУШТАЛГАН КОЛДОНМОЛОР</translation>
+<translation id="6359587239691116345">Жаңы функцияларды жана коопсуздук жакшыртууларын алыңыз. Эгер бул жаңыртууну четке какчаңыз, түзмөгүңүз туура иштебей, коопсуздук жана майнаптуулук көйгөйлөрү чыгышы мүмкүн.</translation>
 <translation id="6376931439017688372">Bluetooth күйүк</translation>
 <translation id="6381109794406942707">Түзмөктүн кулпусун ачуу үчүн PIN кодуңузду киргизиңиз.</translation>
 <translation id="639644700271529076">CAPS LOCK өчүк</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мөөнөтү бүткөнгө чейин жаңыртууну талап кылууда</translation>
 <translation id="649452524636452238">Акылдуу картанын PIN коду</translation>
 <translation id="6495400115277918834">Сүрөттөгү сүрөт режими башталды, өтүү үчүн Alt+Shift+V баскычтарын басыңыз</translation>
+<translation id="6500896621837555595">Жаңыртуу</translation>
 <translation id="6501401484702599040">Тышкы экранга чыгаруу <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Камера ажырап калды. Кайра туташтырылууда.</translation>
 <translation id="6520517963145875092">Сүрөткө тартуу үчүн терезе тандаңыз</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">Батареянын убакыты эсептелүүдө.</translation>
 <translation id="8061464966246066292">Жогорку контраст</translation>
 <translation id="8083540854303889870">Кийинкиге сакталды</translation>
+<translation id="8091387634532529612">Автоматтык жаңыртуулар</translation>
 <translation id="8098591350844501178">Экранды <ph name="RECEIVER_NAME" /> түзмөгүнө чыгарууну токтотуу</translation>
 <translation id="8113423164597455979">Бүт колд. күйүк</translation>
 <translation id="8120151603115102514">Телефонуңуздун кулпу экраны иштетилген эмес. Chromebook'тун кулпусун ачуу үчүн сырсөздү териңиз.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949"><ph name="QUERY" /> сурамы боюнча <ph name="RESULT_COUNT" /> натыйжа көрсөтүлүүдө</translation>
 <translation id="98515147261107953">Туурасынан</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> терезеси жабылды.</translation>
+<translation id="996204416024568215">Жаңы функцияларды жана коопсуздук жакшыртууларын алыңыз. Жаңыртуулар фондо аткарылат.</translation>
 </translationbundle>
