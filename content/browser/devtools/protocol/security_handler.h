@@ -60,6 +60,7 @@ class SecurityHandler : public DevToolsDomainHandler,
 
   void AttachToRenderFrameHost();
   void FlushPendingCertificateErrorNotifications();
+  Response AssureTopLevelActiveFrame();
 
   // WebContentsObserver overrides
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;

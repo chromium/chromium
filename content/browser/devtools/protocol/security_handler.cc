@@ -102,6 +102,11 @@ bool SecurityHandler::NotifyCertificateError(int cert_error,
 }
 
 Response SecurityHandler::Enable() {
+  if (host_) {
+    Response response = AssureTopLevelActiveFrame();
+    if (response.IsError())
+      return response;
+  }
   enabled_ = true;
   if (host_)
     AttachToRenderFrameHost();
@@ -163,6 +168,20 @@ Response SecurityHandler::SetIgnoreCertificateErrors(bool ignore) {
   } else {
     cert_error_override_mode_ = CertErrorOverrideMode::kDisabled;
   }
+  return Response::Success();
+}
+
+Response SecurityHandler::AssureTopLevelActiveFrame() {
+  DCHECK(host_);
+  constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
+      "Command can only be executed on top-level targets";
+  if (host_->GetParentOrOuterDocument())
+    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+
+  constexpr char kErrorInactivePage[] = "Not attached to an active page";
+  if (!host_->IsActive())
+    return Response::ServerError(kErrorInactivePage);
+
   return Response::Success();
 }
 
