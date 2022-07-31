@@ -448,10 +448,12 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   DCHECK(initialized_);
 #endif
 
-  // All nodes must have an unignored parent within their tree under
-  // the root node of the web area, so force that node to always be unignored.
+  // All nodes must have an unignored parent within their tree under the root
+  // node of the main web area, so force that node to always be unignored.
+  // The web area for a <select>'s' popup document is ignored, because the
+  // popup object hierarchy is constructed without the document root.
   if (IsWebArea())
-    return false;
+    return CachedParentObject() && CachedParentObject()->IsMenuList();
 
   const Node* node = GetNode();
   if (IsA<HTMLHtmlElement>(node))

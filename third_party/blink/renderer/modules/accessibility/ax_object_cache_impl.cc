@@ -1562,9 +1562,10 @@ AXObject* AXObjectCacheImpl::CreateAndInit(ax::mojom::blink::Role role,
   return obj;
 }
 
+// Do not pass a depth if the entire subtree of AXObjects should be removed.
 void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(AXObject* subtree,
-                                                       int depth) {
-  if (!subtree || depth <= 0)
+                                                       int depth = -999) {
+  if (!subtree || depth == 0)
     return;
 
   depth--;
@@ -2492,6 +2493,14 @@ void AXObjectCacheImpl::ProcessInvalidatedObjects(Document& document) {
         !IsDisplayLocked(node->GetLayoutObject());
     if (is_ax_layout_object == will_be_ax_layout_object)
       return static_cast<AXObject*>(nullptr);  // No change in the AXObject.
+
+    // When a pseudo element loses its layout, destroy all of the nodeless
+    // descendant objects (they could not be individually invalidated because
+    // only AXObjects with a node can be invalidated).
+    if (!will_be_ax_layout_object && node->IsPseudoElement()) {
+      for (const auto& ax_child : current->UnignoredChildren())
+        RemoveAXObjectsInLayoutSubtree(ax_child);
+    }
 
     AXID retained_axid = current->AXObjectID();
     // Remove from relevant maps, but not from relation cache, as the relations

@@ -620,12 +620,13 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   std::vector<ui::AXEventGenerator::TargetedEvent> deferred_events;
   for (const auto& targeted_event : event_generator()) {
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
-    if (!event_target)
-      continue;
+    DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 
     event_target = RetargetForEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
-    if (!event_target || !event_target->CanFireEvents())
+    DCHECK(event_target) << "No retargeted event target for "
+                         << targeted_event.node_id;
+    if (!event_target->CanFireEvents())
       continue;
 
     // IsDescendantOf() also returns true in the case of equality.
@@ -650,12 +651,13 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   // Now fire all of the rest of the generated events we previously deferred.
   for (const auto& targeted_event : deferred_events) {
     BrowserAccessibility* event_target = GetFromID(targeted_event.node_id);
-    if (!event_target)
-      continue;
+    DCHECK(event_target) << "No event target for " << targeted_event.node_id;
 
     event_target = RetargetForEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
-    if (!event_target || !event_target->CanFireEvents())
+    DCHECK(event_target) << "No retargeted event target for "
+                         << targeted_event.node_id;
+    if (!event_target->CanFireEvents())
       continue;
 
     FireGeneratedEvent(targeted_event.event_params.event, event_target);
@@ -666,14 +668,16 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
   for (const ui::AXEvent& event : details.events) {
     // Fire the native event.
     BrowserAccessibility* event_target = GetFromID(event.id);
-    if (!event_target)
-      continue;
+    DCHECK(event_target) << "No event target for " << event.id
+                         << " with event type " << event.event_type;
     RetargetEventType type =
         event.event_type == ax::mojom::Event::kHover
             ? RetargetEventType::RetargetEventTypeBlinkHover
             : RetargetEventType::RetargetEventTypeBlinkGeneral;
     BrowserAccessibility* retargeted = RetargetForEvents(event_target, type);
-    if (!retargeted || !retargeted->CanFireEvents())
+    DCHECK(retargeted) << "No retargeted event target for " << event.id
+                       << " with event type " << event.event_type;
+    if (!retargeted->CanFireEvents())
       continue;
 
     if (event.event_type == ax::mojom::Event::kHover)

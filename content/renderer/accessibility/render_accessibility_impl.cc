@@ -627,6 +627,7 @@ RenderAccessibilityImpl::EnqueueDirtyObject(
     ax::mojom::Action event_from_action,
     std::vector<ui::AXEventIntent> event_intents,
     std::list<std::unique_ptr<AXDirtyObject>>::iterator insertion_point) {
+  DCHECK(!obj.IsDetached());
   AXDirtyObject* dirty_object = new AXDirtyObject();
   dirty_object->obj = obj;
   dirty_object->event_from = event_from;
@@ -806,25 +807,6 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
   // time to inject a stylesheet for image annotation debugging.
   bool had_load_complete_messages = false;
 
-  // Loop over each event and generate an updated event message.
-  for (ui::AXEvent& event : src_events) {
-    if (event.event_type == ax::mojom::Event::kLayoutComplete)
-      need_to_send_location_changes = true;
-
-    if (event.event_type == ax::mojom::Event::kLoadComplete)
-      had_load_complete_messages = true;
-
-    if (event.event_type == ax::mojom::Event::kEndOfTest) {
-      had_end_of_test_event = true;
-      continue;
-    }
-
-    events.push_back(event);
-
-    VLOG(1) << "Accessibility event: " << ui::ToString(event.event_type)
-            << " on node id " << event.id;
-  }
-
   // Dirty objects can be added as a result of serialization. For example,
   // as children are iterated during depth first traversal in the serializer,
   // the children sometimes need to be created. The initialization of these
@@ -899,12 +881,50 @@ bool RenderAccessibilityImpl::SerializeUpdatesAndEvents(
     if (plugin_tree_source_)
       AddPluginTreeToUpdate(&update, invalidate_plugin_subtree);
 
+    DCHECK_GT(update.nodes.size(), 0U);
     for (auto& node : update.nodes)
       already_serialized_ids.insert(node.id);
 
     updates.push_back(update);
 
     VLOG(1) << "Accessibility tree update:\n" << update.ToString();
+  }
+
+  // Loop over each event and generate an updated event message.
+  for (ui::AXEvent& event : src_events) {
+    if (event.event_type == ax::mojom::Event::kEndOfTest) {
+      had_end_of_test_event = true;
+      continue;
+    }
+
+    if (already_serialized_ids.find(event.id) == already_serialized_ids.end()) {
+      // Node no longer exists or could not be serialized.
+      VLOG(1) << "Dropped AXEvent: " << event.event_type << " on "
+              << WebAXObject::FromWebDocumentByID(document, event.id)
+                     .ToString(true)
+                     .Utf8();
+      continue;
+    }
+
+#if DCHECK_IS_ON()
+    WebAXObject obj = WebAXObject::FromWebDocumentByID(document, event.id);
+    DCHECK(!obj.IsDetached())
+        << "Detached object for AXEvent: " << event.event_type << " on #"
+        << event.id;
+#endif
+
+    if (event.event_type == ax::mojom::Event::kLayoutComplete)
+      need_to_send_location_changes = true;
+
+    if (event.event_type == ax::mojom::Event::kLoadComplete)
+      had_load_complete_messages = true;
+
+    events.push_back(event);
+
+    VLOG(1) << "AXEvent: " << ui::ToString(event.event_type) << " on "
+            << WebAXObject::FromWebDocumentByID(document, event.id)
+                   .ToString(true)
+                   .Utf8();
   }
 
   if (had_end_of_test_event) {
@@ -962,6 +982,8 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
 
     // If loaded and has some content, insert load complete at the top, so that
     // screen readers are informed a new document is ready.
+    // This is helpful in the case where the screen reader is launched after the
+    // page was already loaded.
     if (root_obj.IsLoaded() && !document.Body().IsNull() &&
         !document.Body().FirstChild().IsNull()) {
       pending_events_.insert(
@@ -1007,10 +1029,12 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   WebDocument popup_document = GetPopupDocument();
   if (!popup_document.IsNull()) {
     WebAXObject popup_root_obj = WebAXObject::FromWebDocument(popup_document);
-    if (!popup_root_obj.MaybeUpdateLayoutAndCheckValidity()) {
+    if (!popup_root_obj.IsNull() &&
+        !popup_root_obj.MaybeUpdateLayoutAndCheckValidity()) {
       // If a popup is open but we can't ensure its validity, return without
       // sending an update bundle, the same as we would for a node in the main
       // document.
+      // Do not perform this check unless the popup has an a11y tree.
       return;
     }
   }
@@ -1043,6 +1067,13 @@ void RenderAccessibilityImpl::SendPendingAccessibilityEvents() {
   bool need_to_send_location_changes = SerializeUpdatesAndEvents(
       document, root, updates_and_events->events, updates_and_events->updates,
       invalidate_plugin_subtree);
+  if (updates_and_events->updates.empty()) {
+    // Do not send a serialization if there are no updates.
+    DCHECK(updates_and_events->events.empty())
+        << "If there are no updates, there also shouldn't be any events, "
+           "because events always mark an object dirty.";
+    return;
+  }
 
   if (image_annotation_debugging_)
     AddImageAnnotationDebuggingAttributes(updates_and_events->updates);

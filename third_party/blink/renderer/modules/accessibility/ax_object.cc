@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -195,8 +196,10 @@ String GetNodeString(Node* node) {
   }
 
   Element* element = DynamicTo<Element>(node);
-  if (!element)
-    return "<null>";
+  if (!element) {
+    return To<Document>(node)->IsLoadCompleted() ? "#document"
+                                                 : "#document (loading)";
+  }
 
   String string_builder = "<";
 
@@ -655,6 +658,15 @@ void AXObject::Init(AXObject* parent) {
   DCHECK(IsValidRole(role_)) << "Illegal " << role_ << " for\n"
                              << GetNode() << '\n'
                              << GetLayoutObject();
+
+  HTMLOptGroupElement* optgroup = DynamicTo<HTMLOptGroupElement>(GetNode());
+  if (optgroup && optgroup->OwnerSelectElement()) {
+    // We do not currently create accessible objects for an <optgroup> inside of
+    // a <select size=1>.
+    // TODO(accessibility) Remove this once we refactor HTML <select> to use
+    // the shadow DOM and AXNodeObject instead of AXMenuList* classes.
+    DCHECK(!optgroup->OwnerSelectElement()->UsesMenuList());
+  }
 #endif  // DCHECK_IS_ON()
 
   // Determine the parent as soon as possible.
@@ -967,7 +979,16 @@ AXObject* AXObject::ComputeNonARIAParent(AXObjectCacheImpl& cache,
   if (auto* document = DynamicTo<Document>(current_node)) {
     LocalFrame* frame = document->GetFrame();
     DCHECK(frame);
-    return cache.GetOrCreate(frame->PagePopupOwner());
+    Node* popup_owner = frame->PagePopupOwner();
+    if (!popup_owner)
+      return nullptr;
+    // TODO(accessibility) Remove this rule once we stop using AXMenuList*.
+    if (IsA<HTMLSelectElement>(popup_owner) &&
+        AXObjectCacheImpl::ShouldCreateAXMenuListFor(
+            popup_owner->GetLayoutObject())) {
+      return nullptr;
+    }
+    return cache.GetOrCreate(popup_owner);
   }
 
   // For <option> in <select size=1>, return the popup.
@@ -6622,8 +6643,17 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
   if (verbose) {
     string_builder = string_builder + " axid#" + String::Number(AXObjectID());
     // Add useful HTML element info, like <div.myClass#myId>.
-    if (GetNode())
+    if (GetNode()) {
       string_builder = string_builder + " " + GetNodeString(GetNode());
+      if (IsA<Document>(GetNode())) {
+        if (IsRoot())
+          string_builder = string_builder + " isRoot";
+        if (GetDocument()->GetFrame() &&
+            GetDocument()->GetFrame()->PagePopupOwner()) {
+          string_builder = string_builder + " isPopup";
+        }
+      }
+    }
 
     // Add properties of interest that often contribute to errors:
     if (HasARIAOwns(GetElement())) {
