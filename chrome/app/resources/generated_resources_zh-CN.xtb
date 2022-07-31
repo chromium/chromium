@@ -3494,7 +3494,7 @@
 <translation id="431076611119798497">详细信息(&amp;D)</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 个 Google 帐号}other{<ph name="EXTRA_ACCOUNTS" /> 个 Google 帐号}}</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
-<translation id="4314497418046265427">通过将手机连接到 <ph name="DEVICE_TYPE" /> 提高工作效率</translation>
+<translation id="4314497418046265427">将手机连接到 <ph name="DEVICE_TYPE" />，可提高工作效率</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
 <translation id="4315933848520197627">解除帐号关联</translation>
 <translation id="4316850752623536204">开发者网站</translation>
@@ -7600,7 +7600,7 @@
 <translation id="833986336429795709">要打开此链接，请选择一个应用</translation>
 <translation id="8342221978608739536">没试过</translation>
 <translation id="8342861492835240085">选择一个集合</translation>
-<translation id="8345848587667658367">您现在可以查看手机中的近期照片、媒体、通知和应用</translation>
+<translation id="8345848587667658367">您现在可以查看手机中近期的照片、媒体、通知和应用</translation>
 <translation id="8347227221149377169">打印任务</translation>
 <translation id="834785183489258869">不过，在无痕模式下，网站无法使用 Cookie 查看您在各个不同网站上的浏览活动，因而无法实现某些功能或目的（例如为您展示个性化广告）。某些网站上的功能可能无法正常运行。</translation>
 <translation id="8350789879725387295">在 Dock 中显示触控笔工具</translation>
