@@ -3428,7 +3428,7 @@
 <translation id="431076611119798497">詳細(&amp;D)</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 件の Google アカウント}other{<ph name="EXTRA_ACCOUNTS" /> 件の Google アカウント}}</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>
-<translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> を接続すると、生産性が向上します</translation>
+<translation id="4314497418046265427">スマートフォンと <ph name="DEVICE_TYPE" /> をリンクすれば、生産性が向上します</translation>
 <translation id="4314815835985389558">同期を管理</translation>
 <translation id="4315933848520197627">アカウントのリンク解除</translation>
 <translation id="4316850752623536204">デベロッパーのウェブサイト</translation>
@@ -3857,7 +3857,7 @@
 <translation id="474609389162964566">「OK Google」と話しかけてアシスタントにアクセス</translation>
 <translation id="4746351372139058112">メッセージ</translation>
 <translation id="4748783296226936791">一般的ではないキーボードや、ゲーム コントローラなどのデバイスを使用する機能に対応するために、多くのサイトは HID デバイスに接続します</translation>
-<translation id="4750185073185658673">スマートフォンでいくつかのアクセス許可を確認してください。スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
+<translation id="4750185073185658673">スマートフォンでアクセス許可の設定を見直し、スマートフォンの Bluetooth と Wi-Fi がオンになっていることをご確認ください。</translation>
 <translation id="4750394297954878236">候補</translation>
 <translation id="475088594373173692">最初のユーザー</translation>
 <translation id="4756378406049221019">停止 / 再読み込み</translation>
