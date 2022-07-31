@@ -69,7 +69,9 @@ struct ScanRecord {
   Appearance appearance;
   Power tx_power;
 
-  map<uint8, array<uint8>>? manufacturer_data;
+  // Key is the company identifier and the value is an array of bytes of
+  // manufacturer specific data.
+  map<uint16, array<uint8>>? manufacturer_data;
   ServiceDataMap? service_data;
 };
 

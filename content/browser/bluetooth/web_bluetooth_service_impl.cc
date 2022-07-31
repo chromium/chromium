@@ -311,7 +311,9 @@ class WebBluetoothServiceImpl::WatchAdvertisementsClient
         filtered_event->manufacturer_data,
         [this](const std::pair<uint16_t, std::vector<uint8_t>>& entry) {
           return !service_->IsAllowedToAccessManufacturerData(device_id_,
-                                                              entry.first);
+                                                              entry.first) ||
+                 BluetoothBlocklist::Get().IsExcluded(entry.first,
+                                                      entry.second);
         });
     client_->AdvertisingEvent(std::move(filtered_event));
   }

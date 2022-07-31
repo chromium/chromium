@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BLUETOOTH_BLUETOOTH_UTIL_H_
 
 #include "content/common/content_export.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 
 namespace content {
@@ -13,6 +14,11 @@ namespace content {
 CONTENT_EXPORT bool AreScanFiltersSame(
     const blink::mojom::WebBluetoothLeScanFilter& filter_1,
     const blink::mojom::WebBluetoothLeScanFilter& filter_2);
+
+// Return true if |data| can be matched by |prefix|.
+CONTENT_EXPORT bool MatchesBluetoothDataFilter(
+    const std::vector<blink::mojom::WebBluetoothDataFilterPtr>& prefix,
+    const device::BluetoothDevice::ManufacturerData& data);
 
 }  // namespace content
 

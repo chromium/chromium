@@ -135,6 +135,19 @@ const manufacturer2Data = new Uint8Array([3, 4]);
 const uuid1234Data = new Uint8Array([5, 6]);
 const uuid5678Data = new Uint8Array([7, 8]);
 const uuidABCDData = new Uint8Array([9, 10]);
+
+// TODO(crbug.com/1163207): Add the blocklist link.
+// Fake manufacturer data following iBeacon format listed in
+// https://en.wikipedia.org/wiki/IBeacon, which will be blocked according to [TBD blocklist link].
+const blocklistedManufacturerId = 0x4c;
+const blocklistedManufacturerData = new Uint8Array([
+  0x02, 0x15, 0xb3, 0xeb, 0x8d, 0xb1, 0x30, 0xa5, 0x44, 0x8d, 0xb4, 0xac,
+  0xfb, 0x68, 0xc9, 0x23, 0xa3, 0x0e, 0x00, 0x00, 0x00, 0x00, 0xbf
+]);
+// Fake manufacturer data that is not in [TBD blocklist link].
+const nonBlocklistedManufacturerId = 0x0001;
+const nonBlocklistedManufacturerData =  new Uint8Array([1, 2]);
+
 /**
  * An advertisement packet object that simulates a device that advertises
  * service and manufacturer data.

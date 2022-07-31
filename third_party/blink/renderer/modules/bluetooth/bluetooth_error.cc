@@ -200,10 +200,10 @@ DOMException* BluetoothError::CreateDOMException(
                 "Origin is not allowed to access the service. Tip: Add the "
                 "service UUID to 'optionalServices' in requestDevice() "
                 "options. https://goo.gl/HxfxSQ");
-      MAP_ERROR(REQUEST_DEVICE_WITH_BLOCKLISTED_UUID,
+      MAP_ERROR(REQUEST_DEVICE_WITH_BLOCKLISTED_UUID_OR_MANUFACTURER_DATA,
                 DOMExceptionCode::kSecurityError,
                 "requestDevice() called with a filter containing a blocklisted "
-                "UUID. https://goo.gl/4NeimX");
+                "UUID or manufacturer data. https://goo.gl/4NeimX");
       MAP_ERROR(PERMISSIONS_POLICY_VIOLATION, DOMExceptionCode::kSecurityError,
                 "Access to the feature \"bluetooth\" is disallowed by "
                 "permissions policy.");

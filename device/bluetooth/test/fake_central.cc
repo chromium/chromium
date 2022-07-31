@@ -35,7 +35,7 @@ T ValueOrDefault(Optional&& opt) {
 }
 
 device::BluetoothDevice::ManufacturerDataMap ToManufacturerDataMap(
-    base::flat_map<uint8_t, std::vector<uint8_t>>&& map) {
+    base::flat_map<uint16_t, std::vector<uint8_t>>&& map) {
   return device::BluetoothDevice::ManufacturerDataMap(
       std::make_move_iterator(map.begin()), std::make_move_iterator(map.end()));
 }

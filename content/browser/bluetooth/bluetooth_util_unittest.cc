@@ -337,4 +337,77 @@ TEST_F(BluetoothUtilTest, DifferentManufacturerDataMask) {
   EXPECT_FALSE(AreScanFiltersSame(*filter_1, *filter_2));
 }
 
+TEST_F(BluetoothUtilTest, MatchesBluetoothDataFilterMatch) {
+  // Same data full mask.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x1, 0xff));
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x2, 0xff));
+    EXPECT_TRUE(MatchesBluetoothDataFilter(filter, {0x1, 0x2}));
+  }
+
+  // Same data partial mask.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x1, 0x01));
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x2, 0x02));
+    EXPECT_TRUE(MatchesBluetoothDataFilter(filter, {0x1, 0x2}));
+  }
+
+  // Prefix matches.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x1, 0xff));
+    EXPECT_TRUE(MatchesBluetoothDataFilter(filter, {0x1, 0x2}));
+  }
+
+  // Empty filter matches anything.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    EXPECT_TRUE(MatchesBluetoothDataFilter(filter, {0x1, 0x2}));
+    EXPECT_TRUE(MatchesBluetoothDataFilter(filter, {}));
+  }
+}
+
+TEST_F(BluetoothUtilTest, MatchesBluetoothDataFilterNotMatch) {
+  // Different data full mask.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x1, 0xff));
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x2, 0xff));
+    EXPECT_FALSE(MatchesBluetoothDataFilter(filter, {0x2, 0x2}));
+  }
+
+  // Same data partial mask.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x1, 0x01));
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x2, 0x02));
+    EXPECT_FALSE(MatchesBluetoothDataFilter(filter, {0x2, 0x2}));
+  }
+
+  // Prefix doesn't match.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x2, 0xff));
+    EXPECT_FALSE(MatchesBluetoothDataFilter(filter, {0x1, 0x2}));
+  }
+
+  // Filter is longer than data.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x1, 0xff));
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x2, 0xff));
+    EXPECT_FALSE(MatchesBluetoothDataFilter(filter, {0x1}));
+  }
+
+  // Filter expect there is second byte.
+  {
+    std::vector<blink::mojom::WebBluetoothDataFilterPtr> filter;
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x1, 0xff));
+    filter.push_back(blink::mojom::WebBluetoothDataFilter::New(0x0, 0x00));
+    EXPECT_FALSE(MatchesBluetoothDataFilter(filter, {0x1}));
+  }
+}
+
 }  // namespace content

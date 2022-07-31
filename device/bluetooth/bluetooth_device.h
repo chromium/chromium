@@ -148,7 +148,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
                              BluetoothUUIDHash>
       ServiceDataMap;
   typedef uint16_t ManufacturerId;
-  typedef std::unordered_map<ManufacturerId, std::vector<uint8_t>>
+  typedef std::vector<uint8_t> ManufacturerData;
+  typedef std::unordered_map<ManufacturerId, ManufacturerData>
       ManufacturerDataMap;
   typedef std::unordered_set<ManufacturerId> ManufacturerIDSet;
 

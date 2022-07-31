@@ -45,4 +45,20 @@ bool AreScanFiltersSame(
   return true;
 }
 
+bool MatchesBluetoothDataFilter(
+    const std::vector<blink::mojom::WebBluetoothDataFilterPtr>& prefix,
+    const device::BluetoothDevice::ManufacturerData& data) {
+  if (prefix.size() > data.size())
+    return false;
+  // For each bit in mask, check the corresponding bit in device
+  // manufacturer data is equal to the corresponding bit in expected data.
+  size_t i = 0;
+  for (const auto& byte : prefix) {
+    if ((byte->mask & byte->data) != (byte->mask & data.at(i++))) {
+      return false;
+    }
+  }
+  return true;
+}
+
 }  // namespace content
