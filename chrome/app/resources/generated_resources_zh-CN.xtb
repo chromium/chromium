@@ -3455,7 +3455,7 @@
 <translation id="431076611119798497">详细信息(&amp;D)</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 个 Google 帐号}other{<ph name="EXTRA_ACCOUNTS" /> 个 Google 帐号}}</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>
-<translation id="4314497418046265427">通过将手机连接到 <ph name="DEVICE_TYPE" /> 提高工作效率</translation>
+<translation id="4314497418046265427">将手机连接到 <ph name="DEVICE_TYPE" />，可提高工作效率</translation>
 <translation id="4314815835985389558">管理同步数据</translation>
 <translation id="4315933848520197627">解除帐号关联</translation>
 <translation id="4316850752623536204">开发者网站</translation>
