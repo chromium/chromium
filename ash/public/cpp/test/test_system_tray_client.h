@@ -69,6 +69,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
                          GURL& final_event_url) override;
   void ShowChannelInfoAdditionalDetails() override;
   void ShowChannelInfoGiveFeedback() override;
+  bool IsUserFeedbackEnabled() override;
 
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;
@@ -120,6 +121,10 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return last_network_settings_network_id_;
   }
 
+  void set_user_feedback_enabled(bool user_feedback_enabled) {
+    user_feedback_enabled_ = user_feedback_enabled;
+  }
+
  private:
   int show_network_settings_count_ = 0;
   int show_bluetooth_settings_count_ = 0;
@@ -135,6 +140,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   std::string last_bluetooth_settings_device_id_;
   std::string last_network_settings_network_id_;
   std::string last_network_type_;
+  bool user_feedback_enabled_ = false;
 };
 
 }  // namespace ash

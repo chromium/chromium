@@ -107,6 +107,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
                          GURL& finalized_event_url) override;
   void ShowChannelInfoAdditionalDetails() override;
   void ShowChannelInfoGiveFeedback() override;
+  bool IsUserFeedbackEnabled() override;
 
  protected:
   // Used by mocks in tests.

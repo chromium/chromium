@@ -126,4 +126,8 @@ void TestSystemTrayClient::ShowChannelInfoAdditionalDetails() {}
 
 void TestSystemTrayClient::ShowChannelInfoGiveFeedback() {}
 
+bool TestSystemTrayClient::IsUserFeedbackEnabled() {
+  return user_feedback_enabled_;
+}
+
 }  // namespace ash

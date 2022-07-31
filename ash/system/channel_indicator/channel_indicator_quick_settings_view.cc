@@ -4,6 +4,8 @@
 
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -34,11 +36,20 @@ constexpr int kVersionButtonMarginHorizontal = 16;
 
 constexpr int kVersionButtonLargeCornerRadius = 16;
 constexpr int kVersionButtonSmallCornerRadius = 4;
-constexpr SkScalar kVersionButtonCorners[] = {
-    kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
-    kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius,
-    kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius,
-    kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius};
+
+constexpr size_t kNumVersionButtonCornerRadii = 8;
+constexpr SkScalar
+    kPartneredVersionButtonCorners[kNumVersionButtonCornerRadii] = {
+        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
+        kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius,
+        kVersionButtonSmallCornerRadius, kVersionButtonSmallCornerRadius,
+        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius};
+constexpr SkScalar
+    kStandaloneVersionButtonCorners[kNumVersionButtonCornerRadii] = {
+        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
+        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
+        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius,
+        kVersionButtonLargeCornerRadius, kVersionButtonLargeCornerRadius};
 
 constexpr int kSubmitFeedbackButtonMarginVertical = 6;
 constexpr int kSubmitFeedbackButtonMarginHorizontal = 16;
@@ -57,14 +68,13 @@ constexpr SkScalar kSubmitFeedbackButtonCorners[] = {
 
 constexpr int kButtonSpacing = 2;
 
-}  // namespace
-
-// VersionButton provides a styled button, for devices on a
+// VersionButton is a base class that provides a styled button, for devices on a
 // non-stable release track, that has a label for the channel and ChromeOS
 // version.
-class ASH_EXPORT VersionButton : public views::LabelButton {
+class VersionButton : public views::LabelButton {
  public:
-  explicit VersionButton(version_info::Channel channel)
+  VersionButton(version_info::Channel channel,
+                const SkScalar (&corners)[kNumVersionButtonCornerRadii])
       : LabelButton(
             base::BindRepeating([] {
               Shell::Get()
@@ -74,6 +84,7 @@ class ASH_EXPORT VersionButton : public views::LabelButton {
             }),
             channel_indicator_utils::GetFullReleaseTrackString(channel)),
         channel_(channel) {
+    std::copy(corners, corners + kNumVersionButtonCornerRadii, corners_);
     SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
         kVersionButtonMarginVertical, kVersionButtonMarginHorizontal)));
     SetImageLabelSpacing(kVersionButtonImageLabelSpacing);
@@ -93,10 +104,9 @@ class ASH_EXPORT VersionButton : public views::LabelButton {
     cc::PaintFlags flags;
     flags.setColor(channel_indicator_utils::GetBgColor(channel_));
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    canvas->DrawPath(
-        SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
-                              kVersionButtonCorners, SkPathDirection::kCW),
-        flags);
+    canvas->DrawPath(SkPath().addRoundRect(gfx::RectToSkRect(GetLocalBounds()),
+                                           corners_, SkPathDirection::kCW),
+                     flags);
   }
 
   void OnThemeChanged() override {
@@ -111,12 +121,16 @@ class ASH_EXPORT VersionButton : public views::LabelButton {
     SetEnabledTextColors(channel_indicator_utils::GetFgColor(channel_));
   }
 
+  // The channel itself, BETA, DEV, or CANARY.
   const version_info::Channel channel_;
+
+  // Array of values that represents the rounded rect corners.
+  SkScalar corners_[kNumVersionButtonCornerRadii];
 };
 
 // SubmitFeedbackButton provides a styled button, for devices on a
 // non-stable release track, that allows the user to submit feedback.
-class ASH_EXPORT SubmitFeedbackButton : public IconButton {
+class SubmitFeedbackButton : public IconButton {
  public:
   explicit SubmitFeedbackButton(version_info::Channel channel)
       : IconButton(base::BindRepeating([] {
@@ -154,8 +168,11 @@ class ASH_EXPORT SubmitFeedbackButton : public IconButton {
   const version_info::Channel channel_;
 };
 
+}  // namespace
+
 ChannelIndicatorQuickSettingsView::ChannelIndicatorQuickSettingsView(
-    version_info::Channel channel) {
+    version_info::Channel channel,
+    bool allow_user_feedback) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, kUnifiedSystemInfoViewPadding,
       kUnifiedSystemInfoSpacing));
@@ -163,18 +180,23 @@ ChannelIndicatorQuickSettingsView::ChannelIndicatorQuickSettingsView(
       views::BoxLayout::CrossAxisAlignment::kCenter);
   layout->set_between_child_spacing(kButtonSpacing);
 
-  version_button_ = AddChildView(std::make_unique<VersionButton>(channel));
-  feedback_button_ =
-      AddChildView(std::make_unique<SubmitFeedbackButton>(channel));
+  version_button_ = AddChildView(std::make_unique<VersionButton>(
+      channel, allow_user_feedback ? kPartneredVersionButtonCorners
+                                   : kStandaloneVersionButtonCorners));
+
+  if (allow_user_feedback) {
+    feedback_button_ =
+        AddChildView(std::make_unique<SubmitFeedbackButton>(channel));
+  }
 }
 
 bool ChannelIndicatorQuickSettingsView::IsVersionButtonVisibleForTesting() {
-  return version_button_->GetVisible();
+  return version_button_ && version_button_->GetVisible();
 }
 
 bool ChannelIndicatorQuickSettingsView::
     IsSubmitFeedbackButtonVisibleForTesting() {
-  return feedback_button_->GetVisible();
+  return feedback_button_ && feedback_button_->GetVisible();
 }
 
 }  // namespace ash

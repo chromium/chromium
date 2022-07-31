@@ -5,6 +5,7 @@
 #include "ash/system/channel_indicator/channel_indicator_quick_settings_view.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/test/test_system_tray_client.h"
 #include "ash/test/ash_test_base.h"
 #include "components/version_info/channel.h"
 
@@ -25,17 +26,24 @@ class ChannelIndicatorQuickSettingsViewTest
   void SetUp() override {
     AshTestBase::SetUp();
 
-    // Instantiate members.
+    // Param is whether user feedback is allowed.
+    system_tray_client_ = GetSystemTrayClient();
+    system_tray_client_->set_user_feedback_enabled(GetParam());
+
+    // Instantiate view.
     view_ = std::make_unique<ChannelIndicatorQuickSettingsView>(
-        static_cast<version_info::Channel>(GetParam()));
+        version_info::Channel::BETA,
+        system_tray_client_->IsUserFeedbackEnabled());
   }
 
-  // Ignored for now, will come into play with the fix for crbug.com/1344855.
-  bool IsFeedbackShown() { return GetParam(); }
+  bool IsFeedbackShown() {
+    return system_tray_client_->IsUserFeedbackEnabled();
+  }
 
   ChannelIndicatorQuickSettingsView* view() { return view_.get(); }
 
  private:
+  TestSystemTrayClient* system_tray_client_;
   std::unique_ptr<ChannelIndicatorQuickSettingsView> view_;
 };
 
@@ -51,9 +59,10 @@ TEST_P(ChannelIndicatorQuickSettingsViewTest, Visible) {
   // Version button is always visible.
   EXPECT_TRUE(view()->IsVersionButtonVisibleForTesting());
 
-  // Feedback button is always visible, for now. This will change with the fix
-  // for crbug.com/1344855.
-  EXPECT_TRUE(view()->IsSubmitFeedbackButtonVisibleForTesting());
+  // Feedback button is visible if `SystemTrayClient` says the user preference
+  // is set that allows user feedback.
+  EXPECT_EQ(view()->IsSubmitFeedbackButtonVisibleForTesting(),
+            IsFeedbackShown());
 }
 
 }  // namespace ash

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -669,8 +670,12 @@ UnifiedSystemInfoView::UnifiedSystemInfoView(
   auto channel = Shell::Get()->shell_delegate()->GetChannel();
   if (features::IsReleaseTrackUiEnabled() &&
       channel_indicator_utils::IsDisplayableChannel(channel)) {
-    channel_view_ = AddChildView(
-        std::make_unique<ChannelIndicatorQuickSettingsView>(channel));
+    channel_view_ =
+        AddChildView(std::make_unique<ChannelIndicatorQuickSettingsView>(
+            channel, Shell::Get()
+                         ->system_tray_model()
+                         ->client()
+                         ->IsUserFeedbackEnabled()));
   }
 }
 

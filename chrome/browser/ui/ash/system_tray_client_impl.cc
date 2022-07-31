@@ -59,6 +59,7 @@
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -67,6 +68,7 @@
 #include "chromeos/ash/components/network/network_util.h"
 #include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/ash/components/network/tether_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/features.h"
 #include "components/session_manager/core/session_manager.h"
@@ -75,7 +77,6 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
-
 using session_manager::SessionManager;
 using session_manager::SessionState;
 
@@ -778,6 +779,13 @@ void SystemTrayClientImpl::ShowChannelInfoAdditionalDetails() {
 
 void SystemTrayClientImpl::ShowChannelInfoGiveFeedback() {
   ash::NewWindowDelegate::GetInstance()->OpenFeedbackPage();
+}
+
+bool SystemTrayClientImpl::IsUserFeedbackEnabled() {
+  PrefService* signin_prefs =
+      ProfileManager::GetActiveUserProfile()->GetPrefs();
+  DCHECK(signin_prefs);
+  return signin_prefs->GetBoolean(prefs::kUserFeedbackAllowed);
 }
 
 SystemTrayClientImpl::SystemTrayClientImpl(SystemTrayClientImpl* mock_instance)

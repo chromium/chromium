@@ -11,14 +11,12 @@
 
 namespace ash {
 
-class VersionButton;
-class SubmitFeedbackButton;
-
 // ChannelIndicatorQuickSettingsView contains all of the views included in the
 // channel indicator UI that resides in UnifiedSystemInfoView.
 class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
  public:
-  explicit ChannelIndicatorQuickSettingsView(version_info::Channel channel);
+  ChannelIndicatorQuickSettingsView(version_info::Channel channel,
+                                    bool allow_user_feedback);
   ChannelIndicatorQuickSettingsView(const ChannelIndicatorQuickSettingsView&) =
       delete;
   ChannelIndicatorQuickSettingsView& operator=(
@@ -31,8 +29,8 @@ class ASH_EXPORT ChannelIndicatorQuickSettingsView : public views::View {
 
  private:
   // Refs maintained for unit test introspection methods.
-  VersionButton* version_button_ = nullptr;
-  SubmitFeedbackButton* feedback_button_ = nullptr;
+  views::View* version_button_ = nullptr;
+  views::View* feedback_button_ = nullptr;
 };
 
 }  // namespace ash
