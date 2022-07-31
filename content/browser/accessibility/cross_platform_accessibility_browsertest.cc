@@ -825,32 +825,136 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   ASSERT_NE(select, nullptr);
   EXPECT_EQ(ax::mojom::Role::kPopUpButton, select->GetRole());
 
+  {
+    // Get popup via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* popup = select->InternalGetChild(0);
+    ASSERT_NE(popup, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListPopup, popup->GetRole());
+
+    // Get "Option 1" via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* option_1 = popup->InternalGetChild(0);
+    ASSERT_NE(option_1, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_1->GetRole());
+    EXPECT_EQ("Option 1",
+              option_1->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Invisible because select is collapsed.
+    EXPECT_TRUE(option_1->HasState(ax::mojom::State::kInvisible));
+
+    // Get "Option 2" via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* option_2 = popup->InternalGetChild(1);
+    ASSERT_NE(option_2, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_2->GetRole());
+    EXPECT_EQ("Option 2",
+              option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Visible because it's selected and shown inside the collapsed select.
+    EXPECT_FALSE(option_2->HasState(ax::mojom::State::kInvisible));
+  }
+
   // Open popup.
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ui::kAXModeComplete,
                                          ax::mojom::Event::kChildrenChanged);
-  ui::AXActionData action_data;
-  action_data.action = ax::mojom::Action::kDoDefault;
-  select->AccessibilityPerformAction(action_data);
-  ASSERT_TRUE(waiter.WaitForNotification());
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    select->AccessibilityPerformAction(action_data);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
 
-  // Get popup.
-  const BrowserAccessibility* popup = select->PlatformGetChild(0);
-  ASSERT_NE(popup, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kMenuListPopup, popup->GetRole());
+  {
+    // Get popup.
+    const BrowserAccessibility* popup = select->PlatformGetChild(0);
+    ASSERT_NE(popup, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListPopup, popup->GetRole());
 
-  // Get "Option 2".
-  const BrowserAccessibility* option_2 = popup->PlatformGetChild(1);
-  ASSERT_NE(option_2, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_2->GetRole());
-  EXPECT_EQ("Option 2",
-            option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Get "Option 1".
+    const BrowserAccessibility* option_1 = popup->PlatformGetChild(0);
+    ASSERT_NE(option_1, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_1->GetRole());
+    EXPECT_EQ("Option 1",
+              option_1->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Visible because select is expanded.
+    EXPECT_FALSE(option_1->HasState(ax::mojom::State::kInvisible));
 
-  // Ensure active descendant is "Option 2"
-  int active_descendant_id = -1;
-  EXPECT_TRUE(popup->GetIntAttribute(
-      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
-  EXPECT_EQ(active_descendant_id, option_2->GetId());
+    // Get "Option 2".
+    const BrowserAccessibility* option_2 = popup->PlatformGetChild(1);
+    ASSERT_NE(option_2, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_2->GetRole());
+    EXPECT_EQ("Option 2",
+              option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    EXPECT_FALSE(option_2->HasState(ax::mojom::State::kInvisible));
+
+    // Ensure active descendant is "Option 2"
+    int active_descendant_id = -1;
+    EXPECT_TRUE(popup->GetIntAttribute(
+        ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
+    EXPECT_EQ(active_descendant_id, option_2->GetId());
+  }
+
+  // Close the popup.
+  {
+    ui::AXActionData action_data;
+    action_data.action = ax::mojom::Action::kDoDefault;
+    select->AccessibilityPerformAction(action_data);
+    ASSERT_TRUE(waiter.WaitForNotification());
+  }
+
+  {
+    // Get popup via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* popup = select->InternalGetChild(0);
+    ASSERT_NE(popup, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListPopup, popup->GetRole());
+
+    // Get "Option 1" via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* option_1 = popup->InternalGetChild(0);
+    ASSERT_NE(option_1, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_1->GetRole());
+    EXPECT_EQ("Option 1",
+              option_1->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Invisible because select is collapsed.
+    EXPECT_TRUE(option_1->HasState(ax::mojom::State::kInvisible));
+
+    // Get "Option 2" via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* option_2 = popup->InternalGetChild(1);
+    ASSERT_NE(option_2, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_2->GetRole());
+    EXPECT_EQ("Option 2",
+              option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Visible because it's selected and shown inside the collapsed select.
+    EXPECT_FALSE(option_2->HasState(ax::mojom::State::kInvisible));
+  }
+
+  AccessibilityNotificationWaiter active_descendant_waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ax::mojom::Event::kActiveDescendantChanged);
+
+  // Select the first option.
+  ExecuteScript("document.getElementById('select_node').selectedIndex = 0;");
+  ASSERT_TRUE(active_descendant_waiter.WaitForNotification());
+  {
+    // Get popup via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* popup = select->InternalGetChild(0);
+    ASSERT_NE(popup, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListPopup, popup->GetRole());
+
+    // Get "Option 1" via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* option_1 = popup->InternalGetChild(0);
+    ASSERT_NE(option_1, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_1->GetRole());
+    EXPECT_EQ("Option 1",
+              option_1->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Visible because it's selected and shown inside the collapsed select.
+    EXPECT_FALSE(option_1->HasState(ax::mojom::State::kInvisible));
+
+    // Get "Option 2" via InternalGetChild so that hidden nodes are included.
+    const BrowserAccessibility* option_2 = popup->InternalGetChild(1);
+    ASSERT_NE(option_2, nullptr);
+    EXPECT_EQ(ax::mojom::Role::kMenuListOption, option_2->GetRole());
+    EXPECT_EQ("Option 2",
+              option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
+    // Invisible because select is collapsed.
+    EXPECT_TRUE(option_2->HasState(ax::mojom::State::kInvisible));
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 

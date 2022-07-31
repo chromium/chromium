@@ -508,18 +508,6 @@ void RenderAccessibilityImpl::HandleAXEvent(const ui::AXEvent& event) {
     serializer_->InvalidateSubtree(obj);
 #endif
 
-  // If a select tag is opened or closed, all the children must be updated
-  // because their visibility may have changed.
-  if (obj.Role() == ax::mojom::Role::kMenuListPopup &&
-      event.event_type == ax::mojom::Event::kChildrenChanged) {
-    WebAXObject popup_like_object = obj.ParentObject();
-    if (!popup_like_object.IsDetached()) {
-      serializer_->InvalidateSubtree(popup_like_object);
-      HandleAXEvent(ui::AXEvent(popup_like_object.AxID(),
-                                ax::mojom::Event::kChildrenChanged));
-    }
-  }
-
   // Discard duplicate accessibility events.
   for (const ui::AXEvent& pending_event : pending_events_) {
     if (pending_event.id == event.id &&
