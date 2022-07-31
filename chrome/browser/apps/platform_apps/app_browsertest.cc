@@ -244,14 +244,14 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     const extensions::Extension* extension = LoadExtension(extension_path);
     ASSERT_TRUE(extension);
 
-    apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
-    launch_files->file_paths.push_back(file_path);
+    std::vector<base::FilePath> launch_files;
+    launch_files.push_back(file_path);
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->LaunchAppWithFiles(
             extension->id(),
             apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 true /* preferred_container */),
-            apps::mojom::LaunchSource::kFromTest, std::move(launch_files));
+            apps::LaunchSource::kFromTest, std::move(launch_files));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 

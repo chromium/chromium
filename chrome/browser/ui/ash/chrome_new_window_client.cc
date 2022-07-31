@@ -436,14 +436,23 @@ void ChromeNewWindowClient::OpenDownloadsFolder() {
       return;
     }
 
-    apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
-    launch_files->file_paths.push_back(downloads_path);
-
-    proxy->LaunchAppWithFiles(
-        update.AppId(),
-        apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                            /*prefer_container=*/true),
-        apps::mojom::LaunchSource::kFromKeyboard, std::move(launch_files));
+    if (base::FeatureList::IsEnabled(apps::kAppServiceLaunchWithoutMojom)) {
+      std::vector<base::FilePath> launch_files;
+      launch_files.push_back(downloads_path);
+      proxy->LaunchAppWithFiles(
+          update.AppId(),
+          apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              /*prefer_container=*/true),
+          apps::LaunchSource::kFromKeyboard, std::move(launch_files));
+    } else {
+      apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
+      launch_files->file_paths.push_back(downloads_path);
+      proxy->LaunchAppWithFiles(
+          update.AppId(),
+          apps::GetEventFlags(WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              /*prefer_container=*/true),
+          apps::mojom::LaunchSource::kFromKeyboard, std::move(launch_files));
+    }
   };
 
   bool result = proxy->AppRegistryCache().ForOneApp(

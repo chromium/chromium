@@ -154,6 +154,12 @@ class AppServiceProxyBase : public KeyedService,
   // TODO(crbug.com/1264164): Remove this method.
   void LaunchAppWithFiles(const std::string& app_id,
                           int32_t event_flags,
+                          LaunchSource launch_source,
+                          std::vector<base::FilePath> file_paths);
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
+  void LaunchAppWithFiles(const std::string& app_id,
+                          int32_t event_flags,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::FilePathsPtr file_paths);
 

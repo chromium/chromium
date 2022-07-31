@@ -150,8 +150,8 @@ void AppServiceProxyLacros::Launch(const std::string& app_id,
 void AppServiceProxyLacros::LaunchAppWithFiles(
     const std::string& app_id,
     int32_t event_flags,
-    apps::mojom::LaunchSource launch_source,
-    apps::mojom::FilePathsPtr file_paths) {
+    LaunchSource launch_source,
+    std::vector<base::FilePath> file_paths) {
   if (!remote_crosapi_app_service_proxy_) {
     return;
   }
@@ -165,11 +165,20 @@ void AppServiceProxyLacros::LaunchAppWithFiles(
     return;
   }
   auto params = CreateCrosapiLaunchParamsWithEventFlags(
-      this, app_id, event_flags,
-      ConvertMojomLaunchSourceToLaunchSource(launch_source),
-      display::kInvalidDisplayId);
-  params->intent = apps_util::CreateCrosapiIntentForViewFiles(file_paths);
+      this, app_id, event_flags, launch_source, display::kInvalidDisplayId);
+  params->intent =
+      apps_util::CreateCrosapiIntentForViewFiles(std::move(file_paths));
   remote_crosapi_app_service_proxy_->Launch(std::move(params));
+}
+
+void AppServiceProxyLacros::LaunchAppWithFiles(
+    const std::string& app_id,
+    int32_t event_flags,
+    apps::mojom::LaunchSource launch_source,
+    apps::mojom::FilePathsPtr file_paths) {
+  LaunchAppWithFiles(app_id, event_flags,
+                     ConvertMojomLaunchSourceToLaunchSource(launch_source),
+                     ConvertMojomFilePathsToFilePaths(std::move(file_paths)));
 }
 
 void AppServiceProxyLacros::LaunchAppWithIntent(const std::string& app_id,
