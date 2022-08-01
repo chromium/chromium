@@ -19,6 +19,8 @@ namespace media {
 
 namespace v4l2_test {
 
+namespace {
+
 constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
 
 static_assert(kNumberOfBuffersInCaptureQueue <= 16,
@@ -600,6 +602,8 @@ void FillGlobalMotionParams(
     v4l2_gm[i].invalid = !libgav1::SetupShear(&gm);
   }
 }
+
+}  // namespace
 
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
