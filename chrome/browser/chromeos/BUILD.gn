@@ -3828,6 +3828,13 @@ proto_library("login_logout_event_proto") {
   ]
 }
 
+proto_library("lock_unlock_event_proto") {
+  sources = [ "../policy/messaging_layer/proto/synced/lock_unlock_event.proto" ]
+  deps = [
+    "//chrome/browser/policy/messaging_layer/proto:session_affiliated_user",
+  ]
+}
+
 proto_library("user_event_reporter_testing_record_proto") {
   sources =
       [ "../ash/policy/reporting/user_event_reporter_testing_record.proto" ]
