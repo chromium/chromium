@@ -7094,3 +7094,6 @@ crbug.com/1348835 [ Mac ] virtual/threaded-no-composited-antialiasing/animations
 
 # TODO(crbug.com/1225773): Re-enable this test
 crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Skip ]
+
+# Flaky timeouts on WebKit Linux MSAN
+crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Pass Timeout ]
