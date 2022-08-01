@@ -21,15 +21,22 @@ struct RouterLinkState;
 class LocalRouterLink : public RouterLink {
  public:
   // Creates a new pair of LocalRouterLinks linking the given pair of Routers
-  // together. The Routers must not currently have outward links. `type` must
-  // be either kCentral or kBridge, as local links may never be peripheral.
-  static RouterLink::Pair ConnectRouters(LinkType type,
-                                         const Router::Pair& routers);
+  // together. `type` must be either kCentral or kBridge, as local links may
+  // never be peripheral. `initial_state` determines whether the new link starts
+  // in a stable state.
+  //
+  // It is the caller's responsibilty to give the returned links to their
+  // respective Routers.
+  enum InitialState { kUnstable, kStable };
+  static RouterLink::Pair CreatePair(LinkType type,
+                                     const Router::Pair& routers,
+                                     InitialState initial_state = kUnstable);
 
   // RouterLink:
   LinkType GetType() const override;
   RouterLinkState* GetLinkState() const override;
-  bool HasLocalPeer(const Router& router) override;
+  Ref<Router> GetLocalPeer() override;
+  RemoteRouterLink* AsRemoteRouterLink() override;
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
   void AcceptRouteDisconnected() override;

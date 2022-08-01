@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ipcz/ipcz.h"
+#include "ipcz/local_router_link.h"
 #include "ipcz/node_link.h"
 #include "ipcz/remote_router_link.h"
 #include "ipcz/sequence_number.h"
@@ -18,6 +19,7 @@
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "util/log.h"
+#include "util/multi_mutex_lock.h"
 
 namespace ipcz {
 
@@ -82,6 +84,15 @@ bool Router::IsRouteDead() {
   return (status_.flags & IPCZ_PORTAL_STATUS_DEAD) != 0;
 }
 
+bool Router::IsOnCentralRemoteLink() {
+  absl::MutexLock lock(&mutex_);
+  // This may only be called on terminal Routers.
+  ABSL_ASSERT(!inward_edge_);
+  return outward_edge_.primary_link() && outward_edge_.is_stable() &&
+         outward_edge_.primary_link()->GetType().is_central() &&
+         !outward_edge_.primary_link()->GetLocalPeer();
+}
+
 void Router::QueryStatus(IpczPortalStatus& status) {
   absl::MutexLock lock(&mutex_);
   const size_t size = std::min(status.size, status_.size);
@@ -92,7 +103,7 @@ void Router::QueryStatus(IpczPortalStatus& status) {
 bool Router::HasLocalPeer(Router& router) {
   absl::MutexLock lock(&mutex_);
   return outward_edge_.primary_link() &&
-         outward_edge_.primary_link()->HasLocalPeer(router);
+         outward_edge_.primary_link()->GetLocalPeer() == &router;
 }
 
 IpczResult Router::SendOutboundParcel(Parcel& parcel) {
@@ -149,6 +160,14 @@ void Router::SetOutwardLink(Ref<RouterLink> link) {
 
   {
     absl::MutexLock lock(&mutex_);
+
+    // If we have a stable inward edge (or none at all), and the outward edge
+    // is stable too, our new link can be marked stable from our side.
+    if (link->GetType().is_central() && outward_edge_.is_stable() &&
+        (!inward_edge_ || inward_edge_->is_stable())) {
+      link->MarkSideStable();
+    }
+
     if (!is_disconnected_) {
       outward_edge_.SetPrimaryLink(std::move(link));
     }
@@ -161,7 +180,7 @@ void Router::SetOutwardLink(Ref<RouterLink> link) {
     return;
   }
 
-  Flush();
+  Flush(kForceProxyBypassAttempt);
 }
 
 bool Router::AcceptInboundParcel(Parcel& parcel) {
@@ -398,8 +417,7 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
     DVLOG(4) << "Disconnected new Router immediately after deserialization";
     router->AcceptRouteDisconnectedFrom(LinkType::kPeripheralOutward);
   }
-
-  router->Flush();
+  router->Flush(kForceProxyBypassAttempt);
   return router;
 }
 
@@ -493,46 +511,242 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
 
   // We may have inbound parcels queued which need to be forwarded to the new
   // Router, so give them a chance to be flushed out.
-  Flush();
+  Flush(kForceProxyBypassAttempt);
 }
 
 bool Router::BypassPeer(RemoteRouterLink& requestor,
                         const NodeName& bypass_target_node,
                         SublinkId bypass_target_sublink) {
-  // TODO: Implement this.
-  return true;
+  NodeLink& from_node_link = *requestor.node_link();
+
+  // Validate that the source of this request is actually our peripheral outward
+  // peer, and that we are therefore its inward peer.
+  {
+    absl::MutexLock lock(&mutex_);
+    const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+    if (!outward_link) {
+      // This Router may have been disconnected already due to some other
+      // failure along the route. This is not the fault of the requestor, so we
+      // silently ignore the request.
+      return true;
+    }
+
+    if (outward_link != &requestor ||
+        !outward_link->GetType().is_peripheral_outward()) {
+      DLOG(ERROR) << "Rejecting RequestProxyBypass received on "
+                  << requestor.Describe() << " with existing "
+                  << outward_edge_.primary_link()->Describe();
+      return false;
+    }
+  }
+
+  // There are two distinct cases to handle. The first case here is when the
+  // proxy's outward peer lives on a different node from us.
+  if (bypass_target_node != from_node_link.local_node_name()) {
+    Ref<NodeLink> link_to_bypass_target =
+        from_node_link.node()->GetLink(bypass_target_node);
+    if (link_to_bypass_target) {
+      return BypassPeerWithNewRemoteLink(
+          requestor, *link_to_bypass_target, bypass_target_sublink,
+          link_to_bypass_target->memory().TryAllocateRouterLinkState());
+    }
+
+    // We need to establish a link to the target node before we can proceed.
+    from_node_link.node()->EstablishLink(
+        bypass_target_node,
+        [router = WrapRefCounted(this), requestor = WrapRefCounted(&requestor),
+         bypass_target_sublink](NodeLink* link_to_bypass_target) {
+          if (!link_to_bypass_target) {
+            DLOG(ERROR) << "Disconnecting Router due to failed introduction";
+            router->AcceptRouteDisconnectedFrom(LinkType::kPeripheralOutward);
+            return;
+          }
+
+          router->BypassPeerWithNewRemoteLink(
+              *requestor, *link_to_bypass_target, bypass_target_sublink,
+              link_to_bypass_target->memory().TryAllocateRouterLinkState());
+        });
+    return true;
+  }
+
+  // The second case is when the proxy's outward peer lives on our own node.
+  return BypassPeerWithNewLocalLink(requestor, bypass_target_sublink);
 }
 
 bool Router::AcceptBypassLink(
-    Ref<NodeLink> new_node_link,
+    NodeLink& new_node_link,
     SublinkId new_sublink,
     FragmentRef<RouterLinkState> new_link_state,
     SequenceNumber inbound_sequence_length_from_bypassed_link) {
-  // TODO: Implement this.
+  SequenceNumber length_to_proxy_from_us;
+  Ref<RemoteRouterLink> old_link;
+  Ref<RemoteRouterLink> new_link;
+  {
+    absl::ReleasableMutexLock lock(&mutex_);
+    if (is_disconnected_ || !outward_edge_.primary_link()) {
+      // We've already been unexpectedly disconnected from the proxy, so the
+      // route is dysfunctional. Don't establish new links.
+      DVLOG(4) << "Discarding proxy bypass link due to peer disconnection";
+      return true;
+    }
+
+    old_link =
+        WrapRefCounted(outward_edge_.primary_link()->AsRemoteRouterLink());
+    if (!old_link) {
+      // It only makes sense to receive this at a router whose outward link is
+      // remote. If we have a non-remote outward link, something is wrong.
+      DVLOG(4) << "Rejecting unexpected bypass link";
+      return false;
+    }
+
+    if (old_link->node_link() != &new_node_link &&
+        !old_link->CanNodeRequestBypass(new_node_link.remote_node_name())) {
+      // The new link must either go to the same node as the old link, or the
+      // the old link must have been expecting a bypass link to the new node.
+      DLOG(ERROR) << "Rejecting unauthorized BypassProxy";
+      return false;
+    }
+
+    length_to_proxy_from_us = outbound_parcels_.current_sequence_number();
+    if (!outward_edge_.BeginPrimaryLinkDecay()) {
+      DLOG(ERROR) << "Rejecting BypassProxy on failure to decay link";
+      return false;
+    }
+
+    // By convention the initiator of a bypass assumes side A of the bypass
+    // link, so we assume side B.
+    new_link = new_node_link.AddRemoteRouterLink(
+        new_sublink, std::move(new_link_state), LinkType::kCentral,
+        LinkSide::kB, WrapRefCounted(this));
+
+    if (new_link) {
+      DVLOG(4) << "Bypassing proxy on other end of " << old_link->Describe()
+               << " using a new " << new_link->Describe()
+               << " with length to proxy " << length_to_proxy_from_us
+               << " and length from proxy "
+               << inbound_sequence_length_from_bypassed_link;
+
+      outward_edge_.set_length_to_decaying_link(length_to_proxy_from_us);
+      outward_edge_.set_length_from_decaying_link(
+          inbound_sequence_length_from_bypassed_link);
+      outward_edge_.SetPrimaryLink(new_link);
+    }
+  }
+
+  if (!new_link) {
+    AcceptRouteDisconnectedFrom(LinkType::kCentral);
+    return true;
+  }
+
+  if (new_link->node_link() == old_link->node_link()) {
+    // If the new link goes to the same place as the old link, we only need
+    // to tell the proxy there to stop proxying. It has already conspired with
+    // its local outward peer.
+    old_link->StopProxyingToLocalPeer(length_to_proxy_from_us);
+  } else {
+    // Otherwise, tell the proxy to stop proxying and let its inward peer (our
+    // new outward peer) know that the proxy will stop.
+    old_link->StopProxying(length_to_proxy_from_us,
+                           inbound_sequence_length_from_bypassed_link);
+    new_link->ProxyWillStop(length_to_proxy_from_us);
+  }
+
+  Flush();
   return true;
 }
 
 bool Router::StopProxying(SequenceNumber inbound_sequence_length,
                           SequenceNumber outbound_sequence_length) {
-  // TODO: Implement this.
+  {
+    absl::MutexLock lock(&mutex_);
+    if (outward_edge_.is_stable() || !inward_edge_ ||
+        inward_edge_->is_stable()) {
+      // Proxies begin decaying their links before requesting to be bypassed,
+      // and they don't adopt new links after that. So if either edge is stable
+      // then someone is doing something wrong.
+      DLOG(ERROR) << "Rejecting StopProxying on invalid or non-proxying Router";
+      return false;
+    }
+
+    inward_edge_->set_length_to_decaying_link(inbound_sequence_length);
+    inward_edge_->set_length_from_decaying_link(outbound_sequence_length);
+    outward_edge_.set_length_to_decaying_link(outbound_sequence_length);
+    outward_edge_.set_length_from_decaying_link(inbound_sequence_length);
+  }
+
+  Flush();
   return true;
 }
 
 bool Router::NotifyProxyWillStop(SequenceNumber inbound_sequence_length) {
-  // TODO: Implement this.
-  return true;
-}
+  {
+    absl::MutexLock lock(&mutex_);
+    if (outward_edge_.is_stable()) {
+      // If the outward edge is already stable, either this request is invalid,
+      // or we've lost all links due to disconnection. In the latter case we
+      // can silently ignore this, but the former case is a validation failure.
+      return is_disconnected_;
+    }
 
-bool Router::BypassPeerWithLink(NodeLink& from_node_link,
-                                SublinkId new_sublink,
-                                FragmentRef<RouterLinkState> new_link_state,
-                                SequenceNumber inbound_sequence_length) {
-  // TODO: Implement this.
+    DVLOG(4) << "Bypassed proxy will stop forwarding inbound parcels after a "
+             << "sequence length of " << inbound_sequence_length;
+
+    outward_edge_.set_length_from_decaying_link(inbound_sequence_length);
+  }
+
+  Flush();
   return true;
 }
 
 bool Router::StopProxyingToLocalPeer(SequenceNumber outbound_sequence_length) {
-  // TODO: Implement this.
+  Ref<Router> local_peer;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (outward_edge_.decaying_link()) {
+      local_peer = outward_edge_.decaying_link()->GetLocalPeer();
+    } else {
+      // Ignore this request if we've been unexpectedly disconnected.
+      return is_disconnected_;
+    }
+  }
+
+  if (!local_peer) {
+    // It's invalid to send call this on a Router with a non-local outward peer.
+    DLOG(ERROR) << "Rejecting StopProxyingToLocalPeer with no local peer";
+    return false;
+  }
+
+  {
+    MultiMutexLock lock(&mutex_, &local_peer->mutex_);
+    const Ref<RouterLink>& our_link = outward_edge_.decaying_link();
+    const Ref<RouterLink>& peer_link =
+        local_peer->outward_edge_.decaying_link();
+    if (!our_link || !peer_link) {
+      // Either Router may have been unexpectedly disconnected, in which case
+      // we can ignore this request.
+      return true;
+    }
+
+    if (!inward_edge_ || our_link->GetLocalPeer() != local_peer ||
+        peer_link->GetLocalPeer() != this) {
+      // Consistency check: this must be a proxying router, and both this router
+      // and its local peer must link to each other.
+      DLOG(ERROR) << "Rejecting StopProxyingToLocalPeer at invalid proxy";
+      return false;
+    }
+
+    DVLOG(4) << "Stopping proxy with decaying "
+             << inward_edge_->decaying_link()->Describe() << " and decaying "
+             << our_link->Describe();
+
+    local_peer->outward_edge_.set_length_from_decaying_link(
+        outbound_sequence_length);
+    outward_edge_.set_length_to_decaying_link(outbound_sequence_length);
+    inward_edge_->set_length_from_decaying_link(outbound_sequence_length);
+  }
+
+  Flush();
+  local_peer->Flush();
   return true;
 }
 
@@ -561,7 +775,7 @@ void Router::NotifyLinkDisconnected(RemoteRouterLink& link) {
   }
 }
 
-void Router::Flush() {
+void Router::Flush(FlushBehavior behavior) {
   Ref<RouterLink> outward_link;
   Ref<RouterLink> inward_link;
   Ref<RouterLink> decaying_outward_link;
@@ -570,6 +784,10 @@ void Router::Flush() {
   Ref<RouterLink> dead_outward_link;
   absl::optional<SequenceNumber> final_inward_sequence_length;
   absl::optional<SequenceNumber> final_outward_sequence_length;
+  bool on_central_link = false;
+  bool inward_link_decayed = false;
+  bool outward_link_decayed = false;
+  bool dropped_last_decaying_link = false;
   ParcelsToFlush parcels_to_flush;
   {
     absl::MutexLock lock(&mutex_);
@@ -581,6 +799,7 @@ void Router::Flush() {
     decaying_outward_link = outward_edge_.decaying_link();
     decaying_inward_link =
         inward_edge_ ? inward_edge_->decaying_link() : nullptr;
+    on_central_link = outward_link && outward_link->GetType().is_central();
 
     // Collect any parcels which are safe to transmit now. Note that we do not
     // transmit anything or generally call into any RouterLinks while `mutex_`
@@ -591,11 +810,53 @@ void Router::Flush() {
     // is released further below.
 
     CollectParcelsToFlush(outbound_parcels_, outward_edge_, parcels_to_flush);
-    if (inward_edge_) {
-      CollectParcelsToFlush(inbound_parcels_, *inward_edge_, parcels_to_flush);
+    const SequenceNumber outbound_sequence_length_sent =
+        outbound_parcels_.current_sequence_number();
+    const SequenceNumber inbound_sequence_length_received =
+        inbound_parcels_.GetCurrentSequenceLength();
+    if (outward_edge_.MaybeFinishDecay(outbound_sequence_length_sent,
+                                       inbound_sequence_length_received)) {
+      DVLOG(4) << "Outward " << decaying_outward_link->Describe()
+               << " fully decayed at " << outbound_sequence_length_sent
+               << " sent and " << inbound_sequence_length_received
+               << " recived";
+      outward_link_decayed = true;
     }
 
-    if (outward_link && outbound_parcels_.IsSequenceFullyConsumed()) {
+    if (inward_edge_) {
+      CollectParcelsToFlush(inbound_parcels_, *inward_edge_, parcels_to_flush);
+      const SequenceNumber inbound_sequence_length_sent =
+          inbound_parcels_.current_sequence_number();
+      const SequenceNumber outbound_sequence_length_received =
+          outbound_parcels_.GetCurrentSequenceLength();
+      if (inward_edge_->MaybeFinishDecay(inbound_sequence_length_sent,
+                                         outbound_sequence_length_received)) {
+        DVLOG(4) << "Inward " << decaying_inward_link->Describe()
+                 << " fully decayed at " << inbound_sequence_length_sent
+                 << " sent and " << outbound_sequence_length_received
+                 << " received";
+        inward_link_decayed = true;
+      }
+    }
+
+    // If we're dropping the last of our decaying links, our outward link may
+    // now be stable. This may unblock proxy bypass or other operations.
+    const bool inward_edge_stable =
+        !decaying_inward_link || inward_link_decayed;
+    const bool outward_edge_stable =
+        outward_link && (!decaying_outward_link || outward_link_decayed);
+    const bool both_edges_stable = inward_edge_stable && outward_edge_stable;
+    const bool either_link_decayed =
+        inward_link_decayed || outward_link_decayed;
+    if (on_central_link && either_link_decayed && both_edges_stable) {
+      DVLOG(4) << "Router with fully decayed links may be eligible for bypass "
+               << " with outward " << outward_link->Describe();
+      outward_link->MarkSideStable();
+      dropped_last_decaying_link = true;
+    }
+
+    if (on_central_link && outbound_parcels_.IsSequenceFullyConsumed() &&
+        outward_link->TryLockForClosure()) {
       // Notify the other end of the route that this end is closed. See the
       // AcceptRouteClosure() invocation further below.
       final_outward_sequence_length =
@@ -627,6 +888,14 @@ void Router::Flush() {
     parcel.link->AcceptParcel(parcel.parcel);
   }
 
+  if (outward_link_decayed) {
+    decaying_outward_link->Deactivate();
+  }
+
+  if (inward_link_decayed) {
+    decaying_inward_link->Deactivate();
+  }
+
   if (dead_outward_link) {
     if (final_outward_sequence_length) {
       dead_outward_link->AcceptRouteClosure(*final_outward_sequence_length);
@@ -640,6 +909,298 @@ void Router::Flush() {
     }
     dead_inward_link->Deactivate();
   }
+
+  if (dead_outward_link || !on_central_link) {
+    // If we're not on a central link, there's no more work to do.
+    return;
+  }
+
+  if (!dropped_last_decaying_link && behavior != kForceProxyBypassAttempt) {
+    // No relevant state changes, so there are no new bypass opportunities.
+    return;
+  }
+
+  if (inward_link && MaybeStartSelfBypass()) {
+    return;
+  }
+
+  if (outward_link) {
+    outward_link->FlushOtherSideIfWaiting();
+  }
+}
+
+bool Router::MaybeStartSelfBypass() {
+  Ref<RemoteRouterLink> remote_inward_link;
+  Ref<RemoteRouterLink> remote_outward_link;
+  Ref<Router> local_outward_peer;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (!inward_edge_ || !inward_edge_->primary_link() ||
+        !inward_edge_->is_stable()) {
+      // Only a proxy with stable links can be bypassed.
+      return false;
+    }
+
+    const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+    RemoteRouterLink* inward_link =
+        inward_edge_->primary_link()->AsRemoteRouterLink();
+    if (!outward_link || !inward_link) {
+      return false;
+    }
+
+    const NodeName& inward_peer_name =
+        inward_link->node_link()->remote_node_name();
+    if (!outward_link->TryLockForBypass(inward_peer_name)) {
+      DVLOG(4) << "Proxy bypass blocked by busy " << outward_link->Describe();
+      return false;
+    }
+
+    remote_inward_link = WrapRefCounted(inward_link);
+    local_outward_peer = outward_link->GetLocalPeer();
+    if (!local_outward_peer) {
+      remote_outward_link = WrapRefCounted(outward_link->AsRemoteRouterLink());
+    }
+  }
+
+  if (remote_outward_link) {
+    // The simpler case here: our outward peer is on another node, so we begin
+    // decaying our inward and outward links and ask the inward peer to bypass
+    // us ASAP.
+    {
+      absl::MutexLock lock(&mutex_);
+      if (!inward_edge_ || !inward_edge_->primary_link() ||
+          !outward_edge_.primary_link()) {
+        // We've been disconnected since leaving the block above. Nothing to do.
+        return false;
+      }
+
+      outward_edge_.BeginPrimaryLinkDecay();
+      inward_edge_->BeginPrimaryLinkDecay();
+    }
+
+    DVLOG(4) << "Proxy sending bypass request to inward peer over "
+             << remote_inward_link->Describe()
+             << " targeting outward peer on other side of "
+             << remote_outward_link->Describe();
+
+    remote_inward_link->BypassPeer(
+        remote_outward_link->node_link()->remote_node_name(),
+        remote_outward_link->sublink());
+    return true;
+  }
+
+  // When the bypass target is local to the same node as this router, we can
+  // establish the bypass link immediately and send it to the remote inward
+  // peer.
+  return StartSelfBypassToLocalPeer(
+      *local_outward_peer, *remote_inward_link,
+      remote_inward_link->node_link()->memory().TryAllocateRouterLinkState());
+}
+
+bool Router::StartSelfBypassToLocalPeer(
+    Router& local_outward_peer,
+    RemoteRouterLink& inward_link,
+    FragmentRef<RouterLinkState> new_link_state) {
+  if (new_link_state.is_null()) {
+    NodeLinkMemory& memory = inward_link.node_link()->memory();
+    memory.AllocateRouterLinkState(
+        [router = WrapRefCounted(this),
+         local_outward_peer = WrapRefCounted(&local_outward_peer),
+         inward_link = WrapRefCounted(&inward_link)](
+            FragmentRef<RouterLinkState> new_link_state) {
+          router->StartSelfBypassToLocalPeer(*local_outward_peer, *inward_link,
+                                             std::move(new_link_state));
+        });
+    return true;
+  }
+
+  Ref<RemoteRouterLink> new_link;
+  SequenceNumber length_from_outward_peer;
+  const SublinkId new_sublink =
+      inward_link.node_link()->memory().AllocateSublinkIds(1);
+  {
+    MultiMutexLock lock(&mutex_, &local_outward_peer.mutex_);
+
+    const Ref<RouterLink>& outward_link = outward_edge_.primary_link();
+    const Ref<RouterLink>& peer_outward_link =
+        local_outward_peer.outward_edge_.primary_link();
+    if (!outward_link || !peer_outward_link || is_disconnected_ ||
+        local_outward_peer.is_disconnected_) {
+      DVLOG(4) << "Proxy bypass blocked due to peer closure or disconnection";
+      return false;
+    }
+
+    DVLOG(4) << "Proxy requesting own bypass from inward peer on "
+             << inward_link.node_link()->remote_node_name().ToString()
+             << " to local outward peer";
+
+    ABSL_ASSERT(outward_link->GetLocalPeer() == &local_outward_peer);
+    ABSL_ASSERT(peer_outward_link->GetLocalPeer() == this);
+
+    // Decay both of our existing links, as well as the local peer's link to us.
+    length_from_outward_peer =
+        local_outward_peer.outbound_parcels_.current_sequence_number();
+    local_outward_peer.outward_edge_.BeginPrimaryLinkDecay();
+    local_outward_peer.outward_edge_.set_length_to_decaying_link(
+        length_from_outward_peer);
+    outward_edge_.BeginPrimaryLinkDecay();
+    outward_edge_.set_length_from_decaying_link(length_from_outward_peer);
+    inward_edge_->BeginPrimaryLinkDecay();
+    inward_edge_->set_length_to_decaying_link(length_from_outward_peer);
+
+    new_link = inward_link.node_link()->AddRemoteRouterLink(
+        new_sublink, new_link_state, LinkType::kCentral, LinkSide::kA,
+        WrapRefCounted(&local_outward_peer));
+  }
+
+  if (!new_link) {
+    AcceptRouteDisconnectedFrom(LinkType::kCentral);
+    return false;
+  }
+
+  // Inform our inward peer on another node that they can bypass us using the
+  // new link we just created to our own outward local peer. Once that message
+  // is sent, it's safe for that local peer to adopt the new link.
+  inward_link.BypassPeerWithLink(new_sublink, std::move(new_link_state),
+                                 length_from_outward_peer);
+  local_outward_peer.SetOutwardLink(std::move(new_link));
+  return true;
+}
+
+bool Router::BypassPeerWithNewRemoteLink(
+    RemoteRouterLink& requestor,
+    NodeLink& node_link,
+    SublinkId bypass_target_sublink,
+    FragmentRef<RouterLinkState> new_link_state) {
+  if (new_link_state.is_null()) {
+    // We can't proceed with bypass until we have a fragment allocated for a new
+    // RouterLinkState.
+    node_link.memory().AllocateRouterLinkState(
+        [router = WrapRefCounted(this), requestor = WrapRefCounted(&requestor),
+         node_link = WrapRefCounted(&node_link),
+         bypass_target_sublink](FragmentRef<RouterLinkState> new_link_state) {
+          router->BypassPeerWithNewRemoteLink(*requestor, *node_link,
+                                              bypass_target_sublink,
+                                              std::move(new_link_state));
+        });
+    return true;
+  }
+
+  // Begin decaying our outward link.
+  SequenceNumber length_to_decaying_link;
+  Ref<RouterLink> new_link;
+  const SublinkId new_sublink = node_link.memory().AllocateSublinkIds(1);
+  {
+    absl::ReleasableMutexLock lock(&mutex_);
+    if (!outward_edge_.primary_link() || is_disconnected_) {
+      // We've been disconnected since leaving the above block. Don't bother
+      // to request a bypass. This is not the requestor's fault, so it's not
+      // treated as an error.
+      return true;
+    }
+
+    if (!outward_edge_.BeginPrimaryLinkDecay()) {
+      DLOG(ERROR) << "Rejecting BypassPeer on failure to decay link";
+      return false;
+    }
+
+    length_to_decaying_link = outbound_parcels_.current_sequence_number();
+    outward_edge_.set_length_to_decaying_link(length_to_decaying_link);
+    new_link = node_link.AddRemoteRouterLink(new_sublink, new_link_state,
+                                             LinkType::kCentral, LinkSide::kA,
+                                             WrapRefCounted(this));
+  }
+
+  if (!new_link) {
+    // The NodeLink was disconnected before we could create a new link for
+    // this Router. This is not the requestor's fault, so it's not treated as
+    // an error.
+    AcceptRouteDisconnectedFrom(LinkType::kCentral);
+    return true;
+  }
+
+  const NodeName proxy_node_name = requestor.node_link()->remote_node_name();
+  DVLOG(4) << "Sending AcceptBypassLink from "
+           << node_link.local_node_name().ToString() << " to "
+           << node_link.remote_node_name().ToString() << " with new sublink "
+           << new_sublink << " to replace a link to proxy "
+           << proxy_node_name.ToString() << " via sublink "
+           << bypass_target_sublink;
+
+  node_link.AcceptBypassLink(proxy_node_name, bypass_target_sublink,
+                             length_to_decaying_link, new_sublink,
+                             std::move(new_link_state));
+
+  // NOTE: This link is intentionally set *after* transmitting the
+  // above message. Otherwise the router might race on another thread to send
+  // messages via `new_sublink`, and the remote node would have no idea where
+  // to route them.
+  SetOutwardLink(std::move(new_link));
+  return true;
+}
+
+bool Router::BypassPeerWithNewLocalLink(RemoteRouterLink& requestor,
+                                        SublinkId bypass_target_sublink) {
+  NodeLink& from_node_link = *requestor.node_link();
+  const Ref<Router> new_local_peer =
+      from_node_link.GetRouter(bypass_target_sublink);
+  if (!new_local_peer) {
+    // The peer may have already been destroyed or disconnected from the proxy
+    // by the time we get here.
+    AcceptRouteDisconnectedFrom(LinkType::kPeripheralOutward);
+    return true;
+  }
+
+  Ref<RouterLink> link_from_new_local_peer_to_proxy;
+  SequenceNumber length_to_proxy_from_us;
+  SequenceNumber length_from_proxy_to_us;
+  {
+    MultiMutexLock lock(&mutex_, &new_local_peer->mutex_);
+    length_from_proxy_to_us =
+        new_local_peer->outbound_parcels_.current_sequence_number();
+    length_to_proxy_from_us = outbound_parcels_.current_sequence_number();
+
+    DVLOG(4) << "Proxy bypass requested with new local peer on "
+             << from_node_link.local_node_name().ToString() << " and proxy on "
+             << from_node_link.remote_node_name().ToString() << " via sublinks "
+             << bypass_target_sublink << " and " << requestor.sublink()
+             << "; length to the proxy is " << length_to_proxy_from_us
+             << " and length from the proxy " << length_from_proxy_to_us;
+
+    link_from_new_local_peer_to_proxy =
+        new_local_peer->outward_edge_.primary_link();
+    if (!outward_edge_.primary_link() || !link_from_new_local_peer_to_proxy ||
+        is_disconnected_ || new_local_peer->is_disconnected_) {
+      return true;
+    }
+
+    // Otherwise immediately begin decay of both links to the proxy.
+    if (!outward_edge_.BeginPrimaryLinkDecay() ||
+        !new_local_peer->outward_edge_.BeginPrimaryLinkDecay()) {
+      DLOG(ERROR) << "Rejecting RequestProxyBypass on failure to decay link";
+      return false;
+    }
+    outward_edge_.set_length_to_decaying_link(length_to_proxy_from_us);
+    outward_edge_.set_length_from_decaying_link(length_from_proxy_to_us);
+    new_local_peer->outward_edge_.set_length_to_decaying_link(
+        length_from_proxy_to_us);
+    new_local_peer->outward_edge_.set_length_from_decaying_link(
+        length_to_proxy_from_us);
+
+    // Finally, link the two routers with a new LocalRouterLink. This link will
+    // remain unstable until the decaying proxy links are gone.
+    RouterLink::Pair links = LocalRouterLink::CreatePair(
+        LinkType::kCentral, Router::Pair(WrapRefCounted(this), new_local_peer));
+    outward_edge_.SetPrimaryLink(std::move(links.first));
+    new_local_peer->outward_edge_.SetPrimaryLink(std::move(links.second));
+  }
+
+  link_from_new_local_peer_to_proxy->StopProxying(length_from_proxy_to_us,
+                                                  length_to_proxy_from_us);
+
+  Flush();
+  new_local_peer->Flush();
+  return true;
 }
 
 }  // namespace ipcz

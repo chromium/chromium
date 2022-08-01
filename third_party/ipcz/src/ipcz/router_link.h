@@ -39,9 +39,13 @@ class RouterLink : public RefCounted {
   // returns null.
   virtual RouterLinkState* GetLinkState() const = 0;
 
-  // Returns true if this is a LocalRouterLink and the Router on the other side
-  // of the link is `router`.
-  virtual bool HasLocalPeer(const Router& router) = 0;
+  // Returns the Router on the other end of this link, if this is a
+  // LocalRouterLink. Otherwise returns null.
+  virtual Ref<Router> GetLocalPeer() = 0;
+
+  // If this is a RemoteRouterLink, returns a downcast reference to it.
+  // Otherwise returns null.
+  virtual RemoteRouterLink* AsRemoteRouterLink() = 0;
 
   // Passes a parcel to the Router on the other side of this link to be queued
   // and/or router further.
