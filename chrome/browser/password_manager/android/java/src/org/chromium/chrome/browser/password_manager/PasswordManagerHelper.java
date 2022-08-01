@@ -366,7 +366,9 @@ public class PasswordManagerHelper {
 
         // Request for overlay flow, Play Store will fallback to the default
         // behaviour if overlay is not available.
-        intent.putExtra("overlay", true);
+        // TODO(crbug.com/1348506): Use AlleyOop v3 overlay UI after fixing Chrome restart
+        // during the GMS Core installation.
+        // intent.putExtra("overlay", true);
 
         context.startActivity(intent);
     }
