@@ -143,6 +143,12 @@ class PageHandler : public DevToolsDomainHandler,
       Maybe<bool> from_surface,
       Maybe<bool> capture_beyond_viewport,
       std::unique_ptr<CaptureScreenshotCallback> callback) override;
+  void CaptureScreenshotBeyondViewport(
+    RenderWidgetHostImpl* widget_host,
+    std::string screenshot_format,
+    int screenshot_quality,
+    Maybe<Page::Viewport> clip,
+    std::unique_ptr<CaptureScreenshotCallback> callback);
   void CaptureSnapshot(
       Maybe<std::string> format,
       std::unique_ptr<CaptureSnapshotCallback> callback) override;
