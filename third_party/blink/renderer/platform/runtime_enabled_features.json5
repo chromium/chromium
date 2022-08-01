@@ -885,6 +885,11 @@
       name: "DocumentDomain",
     },
     {
+      name: "DocumentPictureInPictureAPI",
+      depends_on: ["PictureInPictureAPI"],
+      settable_from_internals: true,
+    },
+    {
       name: "DocumentPolicy",
       status: "stable",
     },
@@ -1760,11 +1765,6 @@
     {
       name: "PictureInPictureAPI",
       status: "stable"
-    },
-    {
-      name: "PictureInPictureV2",
-      depends_on: ["PictureInPictureAPI"],
-      settable_from_internals: true,
     },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374

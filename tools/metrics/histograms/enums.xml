@@ -61971,6 +61971,7 @@ from previous Chrome versions.
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>
+  <int value="1998568354" label="DocumentPictureInPictureAPI:enabled"/>
   <int value="1998917160" label="AppServiceAdaptiveIcon:enabled"/>
   <int value="2000091128" label="enable-touch-hover"/>
   <int value="2000291475"
@@ -62114,6 +62115,7 @@ from previous Chrome versions.
   <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>
   <int value="2097048479" label="disable-auto-hiding-toolbar-threshold"/>
   <int value="2098059607" label="WifiSyncAllowDeletes:disabled"/>
+  <int value="2098114768" label="DocumentPictureInPictureAPI:disabled"/>
   <int value="2098597721"
       label="WebAuthenticationPasskeysUIExperiment:disabled"/>
   <int value="2098714203" label="enable-generic-sensors"/>

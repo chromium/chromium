@@ -1262,8 +1262,8 @@
     "prefix": "document-pip",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--enable-features=PictureInPictureV2",
-             "--enable-blink-features=PictureInPictureV2"]
+    "args": ["--enable-features=DocumentPictureInPictureAPI",
+             "--enable-blink-features=DocumentPictureInPictureAPI"]
   },
   {
     "prefix": "origin-agent-cluster-default",

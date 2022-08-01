@@ -1867,7 +1867,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
 // See crbug.com/1320453 for why this is off for lacros.
 class BrowserNavigatorWithPictureInPictureTest : public BrowserNavigatorTest {
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kPictureInPictureV2};
+      features::kDocumentPictureInPictureAPI};
 };
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
@@ -1910,7 +1910,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorWithPictureInPictureTest,
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_PictureInPicture_FeatureMustBeEnabled) {
   // Creating a picture in picture window should not work if the feature is off.
-  ASSERT_FALSE(base::FeatureList::IsEnabled(features::kPictureInPictureV2));
+  ASSERT_FALSE(
+      base::FeatureList::IsEnabled(features::kDocumentPictureInPictureAPI));
   NavigateParams params(MakeNavigateParams(browser()));
   params.disposition = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
   Navigate(&params);
