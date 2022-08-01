@@ -230,6 +230,18 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
   DCHECK(RuntimeEnabledFeatures::FencedFramesEnabled(
       outer_element->GetExecutionContext()));
 
+  // If the frame embedding a fenced frame is a detached frame, the execution
+  // context will be null. That makes it impossible to check the sandbox flags,
+  // so delegate creation is stopped if that is the case.
+  if (!outer_element->GetExecutionContext()) {
+    outer_element->GetDocument().AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Can't create a fenced frame in a detached frame."));
+    return nullptr;
+  }
+
   // If the element has been disconnected by the time we attempt to create the
   // delegate (eg, due to deferral while prerendering), we should not create the
   // delegate.
