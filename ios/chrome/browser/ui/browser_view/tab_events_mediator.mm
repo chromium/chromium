@@ -7,7 +7,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
+#import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -25,10 +25,10 @@
   // Bridges C++ WebStateObserver methods to this mediator.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // Forwards observer methods for active WebStates in the WebStateList to
+  // Forwards observer methods for all WebStates in the WebStateList to
   // this mediator.
-  std::unique_ptr<ActiveWebStateObservationForwarder>
-      _activeWebStateObservationForwarder;
+  std::unique_ptr<AllWebStateObservationForwarder>
+      _allWebStateObservationForwarder;
 
   WebStateList* _webStateList;
   __weak NewTabPageCoordinator* _ntpCoordinator;
@@ -44,15 +44,15 @@
 
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
-    _activeWebStateObservationForwarder =
-        std::make_unique<ActiveWebStateObservationForwarder>(
-            webStateList, _webStateObserverBridge.get());
+    _allWebStateObservationForwarder =
+        std::make_unique<AllWebStateObservationForwarder>(
+            _webStateList, _webStateObserverBridge.get());
   }
   return self;
 }
 
 - (void)disconnect {
-  _activeWebStateObservationForwarder = nullptr;
+  _allWebStateObservationForwarder = nullptr;
   _webStateObserverBridge = nullptr;
 
   _webStateList = nullptr;
