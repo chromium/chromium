@@ -56194,6 +56194,8 @@ from previous Chrome versions.
   <int value="-1669727073"
       label="HandwritingLegacyRecognitionAllLang:disabled"/>
   <int value="-1669486359" label="ImportantSitesInCBD:enabled"/>
+  <int value="-1669172326"
+      label="AutofillEnableDependentLocalityParsing:disabled"/>
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
   <int value="-1667822423" label="ContextMenuGoogleLensChip:disabled"/>
   <int value="-1666652919" label="MagnifierPanningImprovements:disabled"/>
@@ -57364,6 +57366,8 @@ from previous Chrome versions.
   <int value="-972945109" label="NtpRealbox:disabled"/>
   <int value="-972737445" label="ArcUseAuthEndpoint:disabled"/>
   <int value="-972425050" label="gesture-editing"/>
+  <int value="-970201112"
+      label="AutofillEnableDependentLocalityParsing:enabled"/>
   <int value="-970067535" label="BackgroundTaskComponentUpdate:disabled"/>
   <int value="-969332901" label="stop-non-timers-in-background:disabled"/>
   <int value="-969028093" label="FullRestore:disabled"/>
