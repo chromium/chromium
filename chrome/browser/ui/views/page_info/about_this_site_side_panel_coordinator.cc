@@ -7,6 +7,7 @@
 #include "base/callback.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -51,12 +52,13 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
     // The user issued a follow-up AboutThisPage query.
     about_this_site_side_panel_view_->OpenUrl(params);
   } else {
+    const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+        ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
     auto entry = std::make_unique<SidePanelEntry>(
         SidePanelEntry::Id::kAboutThisSite,
         l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
-        // TODO(crbug.com/1318000): Use the correct icon.
-        ui::ImageModel::FromVectorIcon(vector_icons::kSearchIcon,
-                                       ui::kColorIcon),
+        ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
+                                       ui::kColorIcon, icon_size),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView,
             base::Unretained(this), params));
