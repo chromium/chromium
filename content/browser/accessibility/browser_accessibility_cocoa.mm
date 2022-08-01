@@ -1209,9 +1209,6 @@ bool content::IsNSRange(id value) {
   return [self role];
 }
 - (NSString*)role {
-  content::BrowserAccessibilityStateImpl::GetInstance()
-      ->OnAccessibilityApiUsage();
-
   if (![self instanceActive]) {
     TRACE_EVENT0("accessibility", "BrowserAccessibilityCocoa::role nil");
     return nil;

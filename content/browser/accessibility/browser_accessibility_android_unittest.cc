@@ -6,11 +6,11 @@
 
 #include <memory>
 
-#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_manager_android.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
@@ -60,9 +60,12 @@ class BrowserAccessibilityAndroidTest : public testing::Test {
 
  private:
   void SetUp() override;
-  base::test::TaskEnvironment task_environment_;
   MockContentClient client_;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
+
+  // This is needed to prevent a DCHECK failure when OnAccessibilityApiUsage
+  // is called in BrowserAccessibility::GetRole.
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 BrowserAccessibilityAndroidTest::BrowserAccessibilityAndroidTest()
