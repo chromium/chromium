@@ -475,8 +475,14 @@ bool NetworkState::IsNonShillCellularNetwork() const {
   return type() == shill::kTypeCellular && IsStubCellularServicePath(path());
 }
 
-bool NetworkState::IsShillCaptivePortal() const {
-  switch (portal_state_) {
+NetworkState::PortalState NetworkState::GetPortalState() const {
+  return chrome_portal_state_ != PortalState::kUnknown ? chrome_portal_state_
+                                                       : shill_portal_state_;
+}
+
+bool NetworkState::IsCaptivePortal() const {
+  PortalState portal_state = GetPortalState();
+  switch (portal_state) {
     case PortalState::kUnknown:
     case PortalState::kOnline:
       return false;
@@ -488,10 +494,6 @@ bool NetworkState::IsShillCaptivePortal() const {
   }
   NOTREACHED();
   return false;
-}
-
-bool NetworkState::IsCaptivePortal() const {
-  return is_chrome_captive_portal_ || IsShillCaptivePortal();
 }
 
 bool NetworkState::IsSecure() const {
@@ -660,21 +662,23 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
       properties.FindIntKey(kPortalDetectionFailedStatusCodeProperty)
           .value_or(0);
   if (connection_state_ == shill::kStateNoConnectivity) {
-    portal_state_ = PortalState::kNoInternet;
+    shill_portal_state_ = PortalState::kNoInternet;
   } else if (connection_state_ == shill::kStateRedirectFound) {
-    portal_state_ = status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED
-                        ? PortalState::kProxyAuthRequired
-                        : PortalState::kPortal;
+    shill_portal_state_ = status_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED
+                              ? PortalState::kProxyAuthRequired
+                              : PortalState::kPortal;
   } else if (connection_state_ == shill::kStatePortalSuspected) {
-    portal_state_ = PortalState::kPortalSuspected;
+    shill_portal_state_ = PortalState::kPortalSuspected;
   } else {
-    portal_state_ = PortalState::kOnline;
+    shill_portal_state_ = PortalState::kOnline;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkStateResult", portal_state_);
-  if (portal_state_ != PortalState::kOnline) {
-    NET_LOG(EVENT) << "Network is in captive portal state: " << NetworkId(this)
-                   << " status_code=" << status_code;
+  UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkStateResult",
+                            shill_portal_state_);
+  if (shill_portal_state_ != PortalState::kOnline) {
+    NET_LOG(EVENT) << "Shill captive portal state for: " << NetworkId(this)
+                   << " = " << static_cast<int>(shill_portal_state_)
+                   << " ,status_code=" << status_code;
     base::UmaHistogramSparse("CaptivePortal.NetworkStateStatusCode",
                              std::abs(status_code));
   }

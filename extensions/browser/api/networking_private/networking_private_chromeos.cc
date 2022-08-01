@@ -575,8 +575,8 @@ void NetworkingPrivateChromeOS::GetCaptivePortalStatus(
             ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE));
     return;
   }
-  ash::NetworkState::PortalState portal_state = network->portal_state();
-  std::move(success_callback).Run(PortalStatusString(portal_state));
+  std::move(success_callback)
+      .Run(PortalStatusString(network->GetPortalState()));
 }
 
 void NetworkingPrivateChromeOS::UnlockCellularSim(

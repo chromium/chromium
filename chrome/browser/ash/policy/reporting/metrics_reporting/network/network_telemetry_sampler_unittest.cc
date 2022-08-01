@@ -59,7 +59,6 @@ struct FakeNetworkData {
   std::string device_name;
   std::string ip_address;
   std::string gateway;
-  bool is_portal;
   bool is_visible;
   bool is_configured;
 };
@@ -150,10 +149,6 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
       service_client->SetServiceProperty(
           service_path, shill::kSignalStrengthProperty,
           base::Value(network_data.signal_strength));
-      ash::NetworkHandler::Get()
-          ->network_state_handler()
-          ->SetNetworkChromePortalDetected(service_path,
-                                           network_data.is_portal);
       service_client->SetServiceProperty(service_path, shill::kDeviceProperty,
                                          base::Value(device_path));
       base::DictionaryValue ip_config_properties;
@@ -192,8 +187,8 @@ TEST_F(NetworkTelemetrySamplerTest, CellularConnected) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateReady, shill::kTypeCellular,
        0 /* signal_strength */, "cellular0", "192.168.86.25" /* ip_address */,
-       "192.168.86.1" /* gateway */, false /* is_portal */,
-       true /* is_visible */, true /* is_configured */}};
+       "192.168.86.1" /* gateway */, true /* is_visible */,
+       true /* is_configured */}};
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler(
@@ -259,7 +254,7 @@ TEST_F(NetworkTelemetrySamplerTest, CellularNotConnected) {
   // Signal strength should be ignored for non wifi networks even if it is set.
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateIdle, shill::kTypeCellular, kSignalStrength,
-       "cellular0", "" /* ip_address */, "" /* gateway */, true /* is_portal */,
+       "cellular0", "" /* ip_address */, "" /* gateway */,
        true /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
@@ -276,7 +271,7 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected_NoSignalStrength) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateIdle, shill::kTypeWifi, 0 /* signal_strength */,
        kInterfaceName, "" /* ip_address */, "" /* gateway */,
-       true /* is_portal */, false /* is_visible */, true /* is_configured */}};
+       false /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler(
@@ -292,8 +287,8 @@ TEST_F(NetworkTelemetrySamplerTest, EthernetPortal) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateRedirectFound, shill::kTypeEthernet,
        0 /* signal_strength */, "eth0", "192.168.86.25" /* ip_address */,
-       "192.168.86.1" /* gateway */, true /* is_portal */,
-       true /* is_visible */, true /* is_configured */}};
+       "192.168.86.1" /* gateway */, true /* is_visible */,
+       true /* is_configured */}};
 
   SetNetworkData(networks_data);
   NetworkTelemetrySampler network_telemetry_sampler(
@@ -348,8 +343,8 @@ TEST_F(NetworkTelemetrySamplerTest, EmptyLatencyData) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateOnline, shill::kTypeEthernet,
        0 /* signal_strength */, "eth0", "192.168.86.25" /* ip_address */,
-       "192.168.86.1" /* gateway */, true /* is_portal */,
-       true /* is_visible */, true /* is_configured */}};
+       "192.168.86.1" /* gateway */, true /* is_visible */,
+       true /* is_configured */}};
 
   SetNetworkData(networks_data);
   https_latency_sampler_->SetMetricData(absl::nullopt);
@@ -406,15 +401,15 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateReady, shill::kTypeWifi, 10 /* signal_strength */,
        "wlan0", "192.168.86.25" /* ip_address */, "192.168.86.1" /* gateway */,
-       false /* is_portal */, true /* is_visible */, false /* is_configured */},
+       true /* is_visible */, false /* is_configured */},
       {"guid2", shill::kStateOnline, shill::kTypeWifi, 50 /* signal_strength */,
        kInterfaceName, "192.168.86.26" /* ip_address */,
-       "192.168.86.2" /* gateway */, false /* is_portal */,
-       true /* is_visible */, true /* is_configured */},
+       "192.168.86.2" /* gateway */, true /* is_visible */,
+       true /* is_configured */},
       {"guid3", shill::kStateReady, ::chromeos::kTypeTether,
        0 /* signal_strength */, "tether1", "192.168.86.27" /* ip_address */,
-       "192.168.86.3" /* gateway */, false /* is_portal */,
-       true /* is_visible */, true /* is_configured */}};
+       "192.168.86.3" /* gateway */, true /* is_visible */,
+       true /* is_configured */}};
 
   SetNetworkData(networks_data);
 
@@ -520,7 +515,7 @@ TEST_F(NetworkTelemetrySamplerTest, WifiNotConnected) {
   const std::vector<FakeNetworkData> networks_data = {
       {"guid1", shill::kStateIdle, shill::kTypeWifi, kSignalStrength,
        kInterfaceName, "" /* ip_address */, "" /* gateway */,
-       false /* is_portal */, true /* is_visible */, true /* is_configured */}};
+       true /* is_visible */, true /* is_configured */}};
 
   SetNetworkData(networks_data);
   network_handler_test_helper_.ConfigureService(
