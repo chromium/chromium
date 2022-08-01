@@ -181,17 +181,17 @@ SkColor AshColorProvider::GetControlsLayerColor(ControlsLayerType type) const {
     case ControlsLayerType::kFocusRingColor:
       return color_provider->GetColor(ui::kColorAshFocusRing);
     case ControlsLayerType::kHighlightColor1:
-      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor1);
+      return color_provider->GetColor(ui::kColorHighlightBorderHighlight1);
     case ControlsLayerType::kHighlightColor2:
-      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor2);
+      return color_provider->GetColor(ui::kColorHighlightBorderHighlight2);
     case ControlsLayerType::kHighlightColor3:
-      return color_provider->GetColor(ui::kColorAshSystemUIHighlightColor3);
+      return color_provider->GetColor(ui::kColorHighlightBorderHighlight3);
     case ControlsLayerType::kBorderColor1:
-      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor1);
+      return color_provider->GetColor(ui::kColorHighlightBorderBorder1);
     case ControlsLayerType::kBorderColor2:
-      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor2);
+      return color_provider->GetColor(ui::kColorHighlightBorderBorder2);
     case ControlsLayerType::kBorderColor3:
-      return color_provider->GetColor(ui::kColorAshSystemUIBorderColor3);
+      return color_provider->GetColor(ui::kColorHighlightBorderBorder3);
   }
 }
 
