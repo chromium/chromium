@@ -7087,3 +7087,7 @@ crbug.com/1348447 [ Linux ] external/wpt/IndexedDB/blob-composite-blob-reads.any
 crbug.com/1348447 [ Linux ] external/wpt/IndexedDB/blob-composite-blob-reads.any.html [ Failure Pass Timeout ]
 crbug.com/1348447 [ Linux ] virtual/third-party-storage-partitioning/external/wpt/IndexedDB/blob-composite-blob-reads.any.worker.html [ Failure Pass Timeout ]
 crbug.com/1347675 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/fragment-navigation.https.html [ Pass Timeout ]
+
+# Sheriff 2022-08-01
+crbug.com/1348835 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass ]
+crbug.com/1348835 [ Mac ] virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass ]
