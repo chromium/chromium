@@ -10,6 +10,7 @@
 # run; only use interactive_ui_tests if running your test in browser_tests
 # causes flakes (due to widget activation, occlusion, etc.)
 
+AccessCodeCastDialogBrowserTest.*
 AccuracyTipBubbleViewDialogBrowserTest.*
 AppInfoDialogBrowserTest.*
 AskGoogleForSuggestionsDialogTest.*
