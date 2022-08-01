@@ -408,9 +408,6 @@ class ASH_EXPORT AppListControllerImpl
   // `animate` - whether the transition should be animated.
   void UpdateForOverviewModeChange(bool show_home_launcher, bool animate);
 
-  // Returns the length of the most recent query.
-  int GetLastQueryLength();
-
   // Shuts down the AppListControllerImpl, removing itself as an observer.
   void Shutdown();
 

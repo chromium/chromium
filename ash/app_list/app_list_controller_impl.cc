@@ -1342,16 +1342,6 @@ void AppListControllerImpl::OpenSearchResult(const std::string& result_id,
   // not record search result metrics for them.
   if (launched_from != AppListLaunchedFrom::kLaunchedFromSuggestionChip) {
     base::RecordAction(base::UserMetricsAction("AppList_OpenSearchResult"));
-
-    UMA_HISTOGRAM_COUNTS_100("Apps.AppListSearchQueryLength",
-                             GetLastQueryLength());
-    if (IsTabletMode()) {
-      UMA_HISTOGRAM_COUNTS_100("Apps.AppListSearchQueryLength.TabletMode",
-                               GetLastQueryLength());
-    } else {
-      UMA_HISTOGRAM_COUNTS_100("Apps.AppListSearchQueryLength.ClamshellMode",
-                               GetLastQueryLength());
-    }
   }
 
   if (client_) {
@@ -2070,13 +2060,6 @@ aura::Window* AppListControllerImpl::GetContainerForDisplayId(
 bool AppListControllerImpl::ShouldLauncherShowBehindApps() const {
   return IsTabletMode() &&
          app_list_page_ != AppListState::kStateEmbeddedAssistant;
-}
-
-int AppListControllerImpl::GetLastQueryLength() {
-  std::u16string query;
-  base::TrimWhitespace(GetSearchModel()->search_box()->text(), base::TRIM_ALL,
-                       &query);
-  return query.length();
 }
 
 void AppListControllerImpl::Shutdown() {
