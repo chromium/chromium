@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_LiveCaption) {
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(FeaturePromoDialogTest, InvokeUi_IPH_ProfileSwitch) {
-  set_baseline("2936082");
+  set_baseline("3710120");
   ShowAndVerifyUi();
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
