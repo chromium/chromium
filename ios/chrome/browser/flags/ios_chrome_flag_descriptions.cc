@@ -484,6 +484,11 @@ const char kOmniboxHttpsUpgradesName[] = "Omnibox HTTPS upgrades";
 const char kOmniboxHttpsUpgradesDescription[] =
     "Enables HTTPS upgrades for omnibox navigations typed without a scheme";
 
+const char kOmniboxKeyboardPasteButtonName[] = "Omnibox keyboard paste button";
+const char kOmniboxKeyboardPasteButtonDescription[] =
+    "Enables paste button in the omnibox's keyboard accessory. Only available "
+    "from iOS 16 onward.";
+
 const char kOmniboxUIMaxAutocompleteMatchesName[] =
     "Omnibox UI Max Autocomplete Matches";
 const char kOmniboxUIMaxAutocompleteMatchesDescription[] =

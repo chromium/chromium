@@ -448,6 +448,11 @@ extern const char kNTPViewHierarchyRepairDescription[];
 extern const char kOmniboxHttpsUpgradesName[];
 extern const char kOmniboxHttpsUpgradesDescription[];
 
+// Title and description for the flag to enable paste button in the omnibox's
+// keyboard accessory.
+extern const char kOmniboxKeyboardPasteButtonName[];
+extern const char kOmniboxKeyboardPasteButtonDescription[];
+
 // Title and description for the flag to change the max number of autocomplete
 // matches in the omnibox popup.
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];

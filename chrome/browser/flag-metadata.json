@@ -4694,6 +4694,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-keyboard-paste-button",
+    "owners": ["christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-max-url-matches",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110
