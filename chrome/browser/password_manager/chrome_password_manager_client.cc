@@ -113,14 +113,14 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "url/url_constants.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
-#include "ui/base/clipboard/clipboard.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
