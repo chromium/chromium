@@ -12,25 +12,22 @@ import("//ui/webui/webui_features.gni")
 template("create_js_source_maps") {
   assert(enable_webui_inline_sourcemaps)
 
-  action_foreach(target_name) {
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "sources",
+                             "outputs",
+                             "deps",
+                           ])
     script =
         "//tools/code_coverage/create_js_source_maps/create_js_source_maps.py"
-    args = []
+    args = [ "--sources" ] + rebase_path(invoker.sources, root_out_dir) +
+           [ "--outputs" ] + rebase_path(invoker.outputs, root_out_dir)
     inputs = [
       "//tools/code_coverage/create_js_source_maps/create_js_source_maps.js",
     ]
-    sources = []
-    deps = invoker.deps
-    foreach(dependency, deps) {
-      foreach(preprocess_output, get_target_outputs(dependency)) {
-        if (get_path_info(preprocess_output, "extension") == "ts" ||
-            get_path_info(preprocess_output, "extension") == "js") {
-          sources += [ preprocess_output ]
-        }
-      }
+    if (defined(invoker.inline_sourcemaps) && invoker.inline_sourcemaps) {
+      args += [ "--inline-sourcemaps" ]
     }
-    rebased = rebase_path("{{source}}.map", root_out_dir, "/")
-    outputs = [ "$root_out_dir/$rebased" ]
-    args = [ "{{source}}" ]
   }
 }

@@ -9,7 +9,6 @@
  *
  * Helper for create_js_source_maps_test.py.
  */
-import fs from 'fs';
 
 import {SourceMapConsumer} from '../../../../third_party/js_code_coverage/node_modules/source-map/source-map.js';
 // TODO(crbug.com/1307980): Move argparse to the js_code_coverage library.
@@ -34,7 +33,7 @@ parser.addArgument('--column', {
 const argv = parser.parseArgs();
 
 
-const sourceMap = JSON.parse(fs.readFileSync(argv.source_map));
+const sourceMap = JSON.parse(argv.source_map);
 // Async function to get around "Cannot use keyword 'await' outside an async
 // function" complaint in ESLint. Our version of node would allow us to use
 // 'await' at the top level, but our version of ESLint fails.
