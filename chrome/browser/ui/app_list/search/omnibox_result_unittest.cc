@@ -324,6 +324,20 @@ TEST_F(OmniboxResultTest, OmniboxSearchResult) {
   EXPECT_EQ(0u, non_search_result->actions().size());
 }
 
+// Test that search-what-you-typed results are specially handled.
+TEST_F(OmniboxResultTest, SearchWhatYouTypedResult) {
+  // Search-what-you-typed results should be marked for not needing update
+  // animations.
+  const auto search_what_you_typed_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED);
+  EXPECT_TRUE(
+      search_what_you_typed_result->CloneMetadata()->skip_update_animation);
+
+  const auto other_result = CreateOmniboxResult(
+      "https://example.com", AutocompleteMatchType::HISTORY_URL);
+  EXPECT_FALSE(other_result->CloneMetadata()->skip_update_animation);
+}
+
 // Test that category is correctly set.
 TEST_F(OmniboxResultTest, Category) {
   // Search suggestions belong to the "search and assistant" category.
