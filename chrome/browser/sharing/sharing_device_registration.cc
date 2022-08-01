@@ -335,12 +335,8 @@ bool SharingDeviceRegistration::IsRemoteCopySupported() const {
 
 bool SharingDeviceRegistration::IsOptimizationGuidePushNotificationSupported()
     const {
-#if BUILDFLAG(IS_ANDROID)
   return optimization_guide::features::IsOptimizationHintsEnabled() &&
          optimization_guide::features::IsPushNotificationsEnabled();
-#else
-  return false;
-#endif
 }
 
 void SharingDeviceRegistration::SetEnabledFeaturesForTesting(

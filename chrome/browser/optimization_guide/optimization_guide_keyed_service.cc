@@ -143,16 +143,21 @@ void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
 std::unique_ptr<optimization_guide::PushNotificationManager>
 OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
     Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
   if (optimization_guide::features::IsPushNotificationsEnabled()) {
+// TODO(crbug.com/1347657) use PushNotificationManager for Android.
+// OptimizationGuideBridge specific pieces of AndroidPushNotificationManager
+// were for Chime which went unused.
+#if BUILDFLAG(IS_ANDROID)
     auto push_notification_manager = std::make_unique<
         optimization_guide::android::AndroidPushNotificationManager>(
         profile->GetPrefs());
     push_notification_manager->AddObserver(
         PriceTrackingNotificationBridge::GetForBrowserContext(profile));
     return push_notification_manager;
-  }
+#else
+    return std::make_unique<optimization_guide::PushNotificationManager>();
 #endif
+  }
   return nullptr;
 }
 

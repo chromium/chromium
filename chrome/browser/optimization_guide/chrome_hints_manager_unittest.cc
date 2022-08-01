@@ -350,12 +350,8 @@ class ChromeHintsManagerPushEnabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeHintsManagerPushEnabledTest, PushManagerSetOnAndroid) {
-#if BUILDFLAG(IS_ANDROID)
+TEST_F(ChromeHintsManagerPushEnabledTest, PushManagerSet) {
   EXPECT_TRUE(hints_manager()->push_notification_manager());
-#else
-  EXPECT_FALSE(hints_manager()->push_notification_manager());
-#endif
 }
 
 class ChromeHintsManagerPushDisabledTest
@@ -370,7 +366,7 @@ class ChromeHintsManagerPushDisabledTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ChromeHintsManagerPushDisabledTest, PushManagerSetOnAndroid) {
+TEST_F(ChromeHintsManagerPushDisabledTest, PushManagerSet) {
   EXPECT_FALSE(hints_manager()->push_notification_manager());
 }
 
