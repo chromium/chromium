@@ -96,6 +96,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
 
   available_len = max(available_len, 0);
 
+  DCHECK_EQ(axis.sizes_.size(), deltas.size());
   int* grid_layout = axis.sizes_.data();
 
   if (grid.IsEmpty()) {
@@ -387,16 +388,12 @@ void LayoutFrameSet::UpdateLayout() {
 
   unsigned cols = FrameSet()->TotalCols();
   unsigned rows = FrameSet()->TotalRows();
-  Vector<int>& rows_deltas = rows_.deltas_;
-  Vector<int>& cols_deltas = cols_.deltas_;
+  const Vector<int>& rows_deltas = FrameSet()->RowDeltas();
+  const Vector<int>& cols_deltas = FrameSet()->ColDeltas();
 
   if (rows_.sizes_.size() != rows || cols_.sizes_.size() != cols) {
     rows_.Resize(rows);
-    rows_deltas.resize(rows);
-    rows_deltas.Fill(0);
     cols_.Resize(cols);
-    cols_deltas.resize(cols);
-    cols_deltas.Fill(0);
   }
 
   LayoutUnit border_thickness(FrameSet()->Border());

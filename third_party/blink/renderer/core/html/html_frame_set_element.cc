@@ -78,12 +78,20 @@ void HTMLFrameSetElement::ParseAttribute(
       row_lengths_ = ParseListOfDimensions(value.GetString());
       SetNeedsStyleRecalc(kSubtreeStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
+      if (GetLayoutObject() && TotalRows() != resize_rows_.deltas_.size()) {
+        resize_rows_.Resize(TotalRows());
+        resize_cols_.Resize(TotalCols());
+      }
     }
   } else if (name == html_names::kColsAttr) {
     if (!value.IsNull()) {
       col_lengths_ = ParseListOfDimensions(value.GetString());
       SetNeedsStyleRecalc(kSubtreeStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
+      if (GetLayoutObject() && TotalCols() != resize_cols_.deltas_.size()) {
+        resize_rows_.Resize(TotalRows());
+        resize_cols_.Resize(TotalCols());
+      }
     }
   } else if (name == html_names::kFrameborderAttr) {
     if (!value.IsNull()) {
@@ -258,8 +266,8 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
 
   HTMLElement::AttachLayoutTree(context);
   is_resizing_ = false;
-  resize_cols_.split_being_resized_ = ResizeAxis::kNoSplit;
-  resize_rows_.split_being_resized_ = ResizeAxis::kNoSplit;
+  resize_rows_.Resize(TotalRows());
+  resize_cols_.Resize(TotalCols());
 }
 
 void HTMLFrameSetElement::DefaultEventHandler(Event& evt) {
@@ -359,8 +367,8 @@ void HTMLFrameSetElement::ContinueResizing(LayoutFrameSet::GridAxis& axis,
       (position - current_split_position) - resize_axis.split_resize_offset_;
   if (!delta)
     return;
-  axis.deltas_[resize_axis.split_being_resized_ - 1] += delta;
-  axis.deltas_[resize_axis.split_being_resized_] -= delta;
+  resize_axis.deltas_[resize_axis.split_being_resized_ - 1] += delta;
+  resize_axis.deltas_[resize_axis.split_being_resized_] -= delta;
   GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
       layout_invalidation_reason::kSizeChanged);
 }
@@ -415,6 +423,12 @@ int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
     split_position += border_thickness + axis.sizes_[i];
   }
   return ResizeAxis::kNoSplit;
+}
+
+void HTMLFrameSetElement::ResizeAxis::Resize(wtf_size_t number_of_frames) {
+  deltas_.resize(number_of_frames);
+  deltas_.Fill(0);
+  split_being_resized_ = kNoSplit;
 }
 
 }  // namespace blink

@@ -58,6 +58,8 @@ class HTMLFrameSetElement final : public HTMLElement {
 
   const Vector<HTMLDimension>& RowLengths() const { return row_lengths_; }
   const Vector<HTMLDimension>& ColLengths() const { return col_lengths_; }
+  const Vector<int>& RowDeltas() const { return resize_rows_.deltas_; }
+  const Vector<int>& ColDeltas() const { return resize_cols_.deltas_; }
 
   bool HasNonInBodyInsertionMode() const override { return true; }
 
@@ -97,11 +99,13 @@ class HTMLFrameSetElement final : public HTMLElement {
     ResizeAxis(const ResizeAxis&) = delete;
     ResizeAxis& operator=(const ResizeAxis&) = delete;
 
+    void Resize(wtf_size_t number_of_frames);
     // Returns true if a split is being resized now.
     bool IsResizingSplit() const { return split_being_resized_ != kNoSplit; }
 
     static constexpr int kNoSplit = -1;
 
+    Vector<int> deltas_;
     int split_being_resized_ = kNoSplit;
     int split_resize_offset_;
   };

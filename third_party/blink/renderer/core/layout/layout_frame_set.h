@@ -111,7 +111,6 @@ class LayoutFrameSet final : public LayoutBox {
     bool CanResizeSplitAt(int split_index) const;
 
     Vector<int> sizes_;
-    Vector<int> deltas_;
     Vector<bool> prevent_resize_;
     Vector<bool> allow_border_;
   };
