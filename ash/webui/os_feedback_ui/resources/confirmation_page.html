@@ -25,12 +25,8 @@
     flex-direction: column;
   }
 
-  #message {
-    color: var(--cros-text-color-secondary);
-    font-family: var(--feedback-roboto-font-family);
-    font-size: 13px;
-    font-weight: var(--feedback-regular-font-weight);
-    line-height: 20px;
+  #helpResourcesLabel {
+    margin: 24px 0 12px 0;
   }
 
   .label {
@@ -67,9 +63,9 @@
     <h1 class="page-title">[[getTitle_(sendReportStatus)]]</h1>
   </div>
   <div id="content">
-    <div id="message">[[getMessage_(sendReportStatus)]]</div>
+    <div id="message" class="sub-label">[[getMessage_(sendReportStatus)]]</div>
     <div id="helpResources">
-      <p id="helpResourcesLabel">[[i18n('helpResourcesLabel')]]</p>
+      <h2 id="helpResourcesLabel">[[i18n('helpResourcesLabel')]]</h2>
       <cr-link-row id="explore" start-icon="help-resources:explore"
           external using-slotted-label
           on-click="handleLinkClicked_">
