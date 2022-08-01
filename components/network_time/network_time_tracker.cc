@@ -539,14 +539,13 @@ bool NetworkTimeTracker::UpdateTimeFromResponse(
     RecordFetchValidHistogram(false);
     return false;
   }
-  const base::DictionaryValue* dict;
-  if (!value->GetAsDictionary(&dict)) {
+  if (!value->is_dict()) {
     DVLOG(1) << "not a dictionary";
     RecordFetchValidHistogram(false);
     return false;
   }
   absl::optional<double> current_time_millis =
-      dict->FindDoubleKey("current_time_millis");
+      value->GetDict().FindDouble("current_time_millis");
   if (!current_time_millis) {
     DVLOG(1) << "no current_time_millis";
     RecordFetchValidHistogram(false);
