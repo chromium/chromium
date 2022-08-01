@@ -164,13 +164,17 @@ if (is_chromeos_ash) {
   ]
 }
 
-if (is_win && is_chrome_branded) {
-  non_preprocessed_files += [
-    "chrome_cleanup_page_test.ts",
-    "incompatible_applications_page_test.ts",
-    "safety_check_chrome_cleaner_test.ts",
-    "test_chrome_cleanup_proxy.ts",
-  ]
+if (is_win) {
+  non_preprocessed_files += [ "passkeys_subpage_test.ts" ]
+
+  if (is_chrome_branded) {
+    non_preprocessed_files += [
+      "chrome_cleanup_page_test.ts",
+      "incompatible_applications_page_test.ts",
+      "safety_check_chrome_cleaner_test.ts",
+      "test_chrome_cleanup_proxy.ts",
+    ]
+  }
 }
 
 preprocessed_folder = "$target_gen_dir/preprocessed"

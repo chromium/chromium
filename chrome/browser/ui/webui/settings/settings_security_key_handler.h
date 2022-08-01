@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/bio/enrollment_handler.h"
@@ -24,6 +25,8 @@ enum class CredentialManagementStatus;
 class SetPINRequestHandler;
 class ResetRequestHandler;
 }  // namespace device
+
+class LocalCredentialManagement;
 
 namespace settings {
 
@@ -266,6 +269,44 @@ class SecurityKeysPhonesHandler : public SettingsPageUIHandler {
 
   void DoEnumerate(const base::Value& callback_id);
 };
+
+#if BUILDFLAG(IS_WIN)
+
+class PasskeysHandler : public SettingsPageUIHandler {
+ public:
+  PasskeysHandler();
+  ~PasskeysHandler() override;
+
+ protected:
+  void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
+
+ private:
+  void HandleHasPasskeys(const base::Value::List& args);
+  void OnHasPasskeysComplete(
+      std::string callback_id,
+      std::unique_ptr<LocalCredentialManagement> local_cred_man,
+      bool has_passkeys);
+
+  void HandleEnumerate(const base::Value::List& args);
+  void DoEnumerate(std::string callback_id);
+  void OnEnumerateComplete(
+      std::string callback_id,
+      std::unique_ptr<LocalCredentialManagement> local_cred_man,
+      absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
+          credentials);
+
+  void HandleDelete(const base::Value::List& args);
+  void OnDeleteComplete(
+      std::string callback_id,
+      std::unique_ptr<LocalCredentialManagement> local_cred_man,
+      bool delete_ok);
+
+  base::WeakPtrFactory<PasskeysHandler> weak_factory_{this};
+};
+
+#endif
 
 }  // namespace settings
 

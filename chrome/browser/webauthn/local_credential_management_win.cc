@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/i18n/string_compare.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -18,6 +19,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
+#include "content/public/common/content_features.h"
 #include "device/fido/win/authenticator.h"
 #include "device/fido/win/webauthn_api.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -172,7 +174,8 @@ void LocalCredentialManagement::HasCredentials(
     base::OnceCallback<void(bool)> callback) {
   absl::optional<bool> result;
 
-  if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery()) {
+  if (!api_->IsAvailable() || !api_->SupportsSilentDiscovery() ||
+      !base::FeatureList::IsEnabled(features::kWebAuthConditionalUI)) {
     result = false;
   } else if (profile->GetPrefs()->GetBoolean(kHasPlatformCredentialsPref)) {
     result = true;

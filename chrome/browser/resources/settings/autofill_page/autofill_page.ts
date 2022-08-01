@@ -42,6 +42,7 @@ export class SettingsAutofillPageElement extends
   static get properties() {
     return {
       passwordFilter_: String,
+      passkeyFilter_: String,
 
       focusConfig_: {
         type: Object,
@@ -83,6 +84,7 @@ export class SettingsAutofillPageElement extends
   }
 
   private passwordFilter_: string;
+  private passkeyFilter_: string;
   private focusConfig_: Map<string, string>;
   private passwordManagerSubLabel_: string;
   private enablePasswordViewPage_: string;

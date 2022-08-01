@@ -825,6 +825,11 @@ GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 ].forEach(test => registerTest(...test));
 GEN('#endif');
 
+GEN('#if BUILDFLAG(IS_WIN)');
+[['PasskeysSubpage', 'passkeys_subpage_test.js'],
+].forEach(test => registerTest(...test));
+GEN('#endif');
+
 GEN('#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 [['ChromeCleanupPage', 'chrome_cleanup_page_test.js'],
  ['IncompatibleApplicationsPage', 'incompatible_applications_page_test.js'],

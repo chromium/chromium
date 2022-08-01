@@ -30,6 +30,7 @@ export interface SettingsRoutes {
   LANGUAGES: Route;
   MANAGE_PROFILE: Route;
   ON_STARTUP: Route;
+  PASSKEYS: Route;
   PASSWORDS: Route;
   PASSWORD_VIEW: Route;
   DEVICE_PASSWORDS: Route;

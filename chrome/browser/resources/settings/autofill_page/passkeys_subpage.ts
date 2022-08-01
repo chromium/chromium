@@ -1,0 +1,157 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview A settings subpage that allows the user to see and manage the
+    passkeys on their computer.
+ */
+import '../settings_shared.css.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import '../site_favicon.js';
+
+import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
+import {getTemplate} from './passkeys_subpage.html.js';
+
+export interface SettingsPasskeysSubpageElement {
+  $: {
+    deleteErrorDialog: CrLazyRenderElement<CrDialogElement>,
+  };
+}
+
+export class SettingsPasskeysSubpageElement extends PolymerElement {
+  static get is() {
+    return 'settings-passkeys-subpage';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /** Substring to filter the passkeys by. */
+      filter: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  private filter: string;
+  private passkeys_: Passkey[];
+  // Set if the current platform doesn't support passkey management.
+  // (E.g. Windows prior to 2022H2.)
+  private noManagement_: boolean;
+  // Contains the credentialId of the passkey that the action menu was opened
+  // for.
+  private credentialIdForActionMenu_: string|null;
+
+  private browserProxy_: PasskeysBrowserProxy =
+      PasskeysBrowserProxyImpl.getInstance();
+
+  override ready() {
+    super.ready();
+    this.browserProxy_.enumerate().then(this.onEnumerateComplete_.bind(this));
+  }
+
+  /**
+   * Used to filter the displayed passkeys when search text is entered.
+   */
+  private filterFunction_(): ((passkey: Passkey) => boolean) {
+    return passkey => [passkey.relyingPartyId, passkey.userName].some(
+               str => str.toLowerCase().includes(
+                   this.filter.trim().toLowerCase()));
+  }
+
+  /**
+   * Called when the browser has a new list of passkeys.
+   */
+  private onEnumerateComplete_(passkeys: Passkey[]|null) {
+    if (passkeys === null) {
+      this.noManagement_ = true;
+      this.passkeys_ = [];
+      return;
+    }
+
+    // `passkeys` will have been sorted already because it's easier to do a
+    // Public Suffix List-based sort in C++.
+    this.passkeys_ = passkeys;
+  }
+
+  private getIconURL_(passkey: Passkey): string {
+    // `passkey.relyingPartyId` comes from the OS and hopefully can be trusted,
+    // but don't let bad data form an unexpected URL. Thus drop any passkeys
+    // with characters in the RP ID that are meaningful in a host per
+    // https://datatracker.ietf.org/doc/html/rfc1738#section-3.1
+    if (['@', ':', '/'].every(c => passkey.relyingPartyId.indexOf(c) === -1)) {
+      return 'https://' + passkey.relyingPartyId + '/';
+    }
+
+    return '';
+  }
+
+  /**
+   * Called when the user clicks on the three-dots icon for a passkey.
+   */
+  private onDotsClick_(e: Event) {
+    this.credentialIdForActionMenu_ =
+        (e.target as HTMLElement).dataset['credentialId']!;
+    this.shadowRoot!.querySelector('cr-action-menu')!.showAt(
+        e.target as HTMLElement, {
+          anchorAlignmentY: AnchorAlignment.AFTER_END,
+        });
+  }
+
+  /**
+   * Called when the user clicks to delete a passkey.
+   */
+  private onDeleteClick_() {
+    this.shadowRoot!.querySelector('cr-action-menu')!.close();
+
+    assert(this.credentialIdForActionMenu_);
+    this.browserProxy_.delete(this.credentialIdForActionMenu_)
+        .then(
+            this.onDeleteComplete_.bind(this, this.credentialIdForActionMenu_));
+  }
+
+  /**
+   * Called when a delete operation has completed.
+   */
+  private onDeleteComplete_(
+      deletedCredentialId: string, newPasskeys: Passkey[]|null) {
+    if (newPasskeys !== null &&
+        newPasskeys.findIndex(
+            (cred) => cred.credentialId === deletedCredentialId) !== -1) {
+      // The passkey is still present thus the deletion failed.
+      this.$.deleteErrorDialog.get().showModal();
+    }
+    this.onEnumerateComplete_(newPasskeys);
+  }
+
+  /**
+   * Called when the user clicks the "ok" button on the error dialog.
+   */
+  private onCloseDialog_(_: Event) {
+    this.$.deleteErrorDialog.get().close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-passkeys-subpage': SettingsPasskeysSubpageElement;
+  }
+}
+
+customElements.define(
+    SettingsPasskeysSubpageElement.is, SettingsPasskeysSubpageElement);
