@@ -252719,6 +252719,10 @@
      "6805c323df5a975231648b830e33ce183c3cbbd3",
      []
     ],
+    "proxy-all.sub.pac": [
+     "de601e5d7020e0107e77d91d77716e2e1c6fac23",
+     []
+    ],
     "redirect-opt-in.py": [
      "b5e674a27fb6e2b459b1815ca86fe3c8f1d9b60f",
      []
@@ -507819,6 +507823,16 @@
      [
       null,
       {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "preconnect.html": [
+     "f95a5c0ba052e8a35271f893c474a14892d6f21d",
+     [
+      null,
+      {
+       "pac": "/common/proxy-all.sub.pac",
        "timeout": "long"
       }
      ]
