@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SYNC_SYNC_ERROR_NOTIFIER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ class SyncErrorNotifier;
 // Singleton that owns all SyncErrorNotifiers and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated SyncErrorNotifier.
-class SyncErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
+class SyncErrorNotifierFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of SyncErrorNotifier associated with this profile,
   // creating one if none exists and the shell exists.

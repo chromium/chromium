@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYNC_SYNC_SERVICE_FACTORY_ASH_H_
 #define CHROME_BROWSER_ASH_SYNC_SYNC_SERVICE_FACTORY_ASH_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -18,7 +18,7 @@ namespace ash {
 
 class SyncServiceAsh;
 
-class SyncServiceFactoryAsh : public BrowserContextKeyedServiceFactory {
+class SyncServiceFactoryAsh : public ProfileKeyedServiceFactory {
  public:
   static SyncServiceAsh* GetForProfile(Profile* profile);
   static SyncServiceFactoryAsh* GetInstance();

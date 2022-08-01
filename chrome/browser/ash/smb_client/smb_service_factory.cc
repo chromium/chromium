@@ -13,9 +13,7 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -48,9 +46,9 @@ SmbServiceFactory* SmbServiceFactory::GetInstance() {
 }
 
 SmbServiceFactory::SmbServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           /*name=*/"SmbService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {
   DependsOn(file_system_provider::ServiceFactory::GetInstance());
   DependsOn(AuthPolicyCredentialsManagerFactory::GetInstance());
   DependsOn(KerberosCredentialsManagerFactory::GetInstance());
@@ -74,11 +72,6 @@ KeyedService* SmbServiceFactory::BuildServiceInstanceFor(
   if (!service_should_run)
     return nullptr;
   return new SmbService(profile, std::make_unique<base::DefaultTickClock>());
-}
-
-content::BrowserContext* SmbServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 void SmbServiceFactory::RegisterProfilePrefs(

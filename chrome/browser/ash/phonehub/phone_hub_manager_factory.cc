@@ -30,7 +30,6 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
@@ -71,9 +70,7 @@ PhoneHubManagerFactory* PhoneHubManagerFactory::GetInstance() {
 }
 
 PhoneHubManagerFactory::PhoneHubManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PhoneHubManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PhoneHubManager") {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   if (features::IsPhoneHubCameraRollEnabled()) {
     DependsOn(HoldingSpaceKeyedServiceFactory::GetInstance());

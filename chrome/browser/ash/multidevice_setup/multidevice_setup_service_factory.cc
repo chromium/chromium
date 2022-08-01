@@ -23,7 +23,6 @@
 #include "chrome/browser/ash/multidevice_setup/oobe_completion_tracker_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user_manager.h"
 
@@ -107,9 +106,7 @@ MultiDeviceSetupServiceFactory* MultiDeviceSetupServiceFactory::GetInstance() {
 }
 
 MultiDeviceSetupServiceFactory::MultiDeviceSetupServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "MultiDeviceSetupService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("MultiDeviceSetupService") {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(AuthTokenValidatorFactory::GetInstance());
   DependsOn(OobeCompletionTrackerFactory::GetInstance());

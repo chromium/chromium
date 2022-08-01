@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_SMB_CLIENT_SMB_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 // TODO(https://crbug.com/1164001): remove and use forward declaration.
 #include "chrome/browser/ash/smb_client/smb_service.h"
@@ -14,7 +14,7 @@
 namespace ash {
 namespace smb_client {
 
-class SmbServiceFactory : public BrowserContextKeyedServiceFactory {
+class SmbServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns a service instance singleton, after creating it (if necessary).
   static SmbService* Get(content::BrowserContext* context);
@@ -40,8 +40,6 @@ class SmbServiceFactory : public BrowserContextKeyedServiceFactory {
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 };

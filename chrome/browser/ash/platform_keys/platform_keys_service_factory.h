@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_PLATFORM_KEYS_SERVICE_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -18,7 +18,7 @@ namespace platform_keys {
 class PlatformKeysService;
 
 // Factory to create PlatformKeysService.
-class PlatformKeysServiceFactory : public BrowserContextKeyedServiceFactory {
+class PlatformKeysServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static PlatformKeysService* GetForBrowserContext(
       content::BrowserContext* context);
@@ -62,8 +62,6 @@ class PlatformKeysServiceFactory : public BrowserContextKeyedServiceFactory {
   ~PlatformKeysServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
   void BrowserContextShutdown(content::BrowserContext* context) override;

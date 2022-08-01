@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_ASH_KERBEROS_KERBEROS_CREDENTIALS_MANAGER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace base {
@@ -22,8 +22,7 @@ class KerberosCredentialsManager;
 // KerberosCredentialsManager holds a non-owned pointer to its respective
 // primary profile, so its life-time depends on the life-time of that profile.
 // Multiple primary profiles only happen in tests.
-class KerberosCredentialsManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class KerberosCredentialsManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Gets the existing service instance associated with the given profile.
   // Returns nullptr for non-primary profiles.

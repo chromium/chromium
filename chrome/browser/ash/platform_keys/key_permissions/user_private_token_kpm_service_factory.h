@@ -9,7 +9,7 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -46,7 +46,7 @@ class UserPrivateTokenKeyPermissionsManagerService : public KeyedService {
 };
 
 class UserPrivateTokenKeyPermissionsManagerServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static UserPrivateTokenKeyPermissionsManagerService* GetForBrowserContext(
       content::BrowserContext* context);

@@ -19,7 +19,6 @@
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -50,9 +49,7 @@ TetherService* TetherServiceFactory::GetForBrowserContext(
 }
 
 TetherServiceFactory::TetherServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "TetherService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("TetherService") {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
   DependsOn(multidevice_setup::MultiDeviceSetupClientFactory::GetInstance());
 }

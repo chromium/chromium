@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -47,9 +46,7 @@ QuickUnlockFactory* QuickUnlockFactory::GetInstance() {
 }
 
 QuickUnlockFactory::QuickUnlockFactory()
-    : BrowserContextKeyedServiceFactory(
-          "QuickUnlockFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("QuickUnlockFactory") {}
 
 QuickUnlockFactory::~QuickUnlockFactory() {}
 

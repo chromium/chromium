@@ -12,7 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -100,7 +100,7 @@ class SigninPartitionManager : public KeyedService {
   void SetOnCreateNewStoragePartitionForTesting(
       OnCreateNewStoragePartition on_create_new_storage_partition);
 
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static SigninPartitionManager* GetForBrowserContext(
         content::BrowserContext* browser_context);
@@ -118,8 +118,6 @@ class SigninPartitionManager : public KeyedService {
 
     // BrowserContextKeyedServiceFactory:
     KeyedService* BuildServiceInstanceFor(
-        content::BrowserContext* context) const override;
-    content::BrowserContext* GetBrowserContextToUse(
         content::BrowserContext* context) const override;
   };
 

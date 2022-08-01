@@ -184,9 +184,9 @@ void SigninPartitionManager::OnStoragePartitionCleared(
 }
 
 SigninPartitionManager::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SigninPartitionManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildServicesForAllProfiles()) {}
 
 SigninPartitionManager::Factory::~Factory() = default;
 
@@ -207,12 +207,6 @@ SigninPartitionManager::Factory::GetInstance() {
 KeyedService* SigninPartitionManager::Factory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new SigninPartitionManager(context);
-}
-
-content::BrowserContext*
-SigninPartitionManager::Factory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 }  // namespace login

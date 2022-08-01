@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_TETHER_TETHER_SERVICE_FACTORY_H_
 
 #include "chrome/browser/ash/tether/tether_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -21,7 +21,7 @@ namespace ash {
 namespace tether {
 
 // Singleton factory that builds and owns all TetherServices.
-class TetherServiceFactory : public BrowserContextKeyedServiceFactory {
+class TetherServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static TetherServiceFactory* GetInstance();
 

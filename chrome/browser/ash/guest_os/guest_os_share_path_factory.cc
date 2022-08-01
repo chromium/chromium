@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace guest_os {
 
@@ -25,9 +24,7 @@ GuestOsSharePathFactory* GuestOsSharePathFactory::GetInstance() {
 }
 
 GuestOsSharePathFactory::GuestOsSharePathFactory()
-    : BrowserContextKeyedServiceFactory(
-          "GuestOsSharePath",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("GuestOsSharePath") {
   DependsOn(crostini::CrostiniManagerFactory::GetInstance());
 }
 

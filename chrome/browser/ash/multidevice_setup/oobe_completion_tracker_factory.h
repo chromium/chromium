@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_OOBE_COMPLETION_TRACKER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 class Profile;
@@ -17,7 +17,7 @@ namespace multidevice_setup {
 class OobeCompletionTracker;
 
 // Owns OobeCompletionTracker instances and associates them with Profiles.
-class OobeCompletionTrackerFactory : public BrowserContextKeyedServiceFactory {
+class OobeCompletionTrackerFactory : public ProfileKeyedServiceFactory {
  public:
   static OobeCompletionTracker* GetForProfile(Profile* profile);
 

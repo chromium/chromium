@@ -6,9 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 namespace printing {
@@ -30,9 +28,9 @@ AuthorizationZonesManagerFactory::GetForBrowserContext(
 }
 
 AuthorizationZonesManagerFactory::AuthorizationZonesManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "AuthorizationZonesManagerFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
 
 AuthorizationZonesManagerFactory::~AuthorizationZonesManagerFactory() = default;
 
@@ -40,12 +38,6 @@ KeyedService* AuthorizationZonesManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return AuthorizationZonesManager::Create(Profile::FromBrowserContext(context))
       .release();
-}
-
-content::BrowserContext*
-AuthorizationZonesManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace oauth2

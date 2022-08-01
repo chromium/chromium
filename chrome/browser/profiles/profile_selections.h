@@ -70,6 +70,15 @@ class ProfileSelections {
 
     // Builder setters
     Builder& WithRegular(ProfileSelection selection);
+    // Note: When Guest and Regular are not mutually exclusive on Ash and
+    // Lacros, a Profile can potentially return true for both
+    // `IsRegularProfile()` and `IsGuestSession()`. This is currently not
+    // supported by the API, meaning that extra code might need to be added to
+    // make sure all the cases are properly covered. Using the API, if both
+    // `IsRegularProfile()` and `IsGuestSession()` are true, Regular
+    // ProfileSelection logic will be used.
+    // TODO(crbug.com/1348572): remove this comment once `IsGuestSession()` is
+    // fixed.
     Builder& WithGuest(ProfileSelection selection);
     Builder& WithSystem(ProfileSelection selection);
 

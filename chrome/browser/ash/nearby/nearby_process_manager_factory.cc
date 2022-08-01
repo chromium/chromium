@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/nearby/nearby_process_manager_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -53,9 +52,7 @@ void NearbyProcessManagerFactory::SetBypassPrimaryUserCheckForTesting(
 }
 
 NearbyProcessManagerFactory::NearbyProcessManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "NearbyProcessManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("NearbyProcessManager") {
   DependsOn(NearbyDependenciesProviderFactory::GetInstance());
 }
 

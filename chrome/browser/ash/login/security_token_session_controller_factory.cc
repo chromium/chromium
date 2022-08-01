@@ -11,16 +11,15 @@
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
 namespace login {
 
 SecurityTokenSessionControllerFactory::SecurityTokenSessionControllerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "SecurityTokenSessionController",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {
   DependsOn(chromeos::CertificateProviderServiceFactory::GetInstance());
 }
 
@@ -62,12 +61,6 @@ KeyedService* SecurityTokenSessionControllerFactory::BuildServiceInstanceFor(
           context);
   return new SecurityTokenSessionController(local_state, profile->GetPrefs(),
                                             user, certificate_provider_service);
-}
-
-content::BrowserContext*
-SecurityTokenSessionControllerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 bool SecurityTokenSessionControllerFactory::ServiceIsCreatedWithBrowserContext()

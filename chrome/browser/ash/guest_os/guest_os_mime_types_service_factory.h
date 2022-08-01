@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_MIME_TYPES_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,8 +14,7 @@ namespace guest_os {
 
 class GuestOsMimeTypesService;
 
-class GuestOsMimeTypesServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class GuestOsMimeTypesServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static GuestOsMimeTypesService* GetForProfile(Profile* profile);
   static GuestOsMimeTypesServiceFactory* GetInstance();

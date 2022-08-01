@@ -25,9 +25,7 @@ GuestOsRegistryServiceFactory* GuestOsRegistryServiceFactory::GetInstance() {
 }
 
 GuestOsRegistryServiceFactory::GuestOsRegistryServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "GuestOsRegistryService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("GuestOsRegistryService") {}
 
 GuestOsRegistryServiceFactory::~GuestOsRegistryServiceFactory() = default;
 
