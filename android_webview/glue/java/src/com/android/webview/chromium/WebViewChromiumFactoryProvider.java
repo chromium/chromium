@@ -509,15 +509,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 "Android.WebView.Startup.CreationTime.Stage1.FactoryInit",
                 SystemClock.uptimeMillis() - startTime);
 
-        /* TODO(torne): re-enable this once the API change is sorted out
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            // TODO: Use the framework constants as indices in timestamps array.
-            startTime = mWebViewDelegate.getTimestamps()[0];
+            final long webviewLoadStart =
+                    mWebViewDelegate.getStartupTimestamps().getWebViewLoadStart();
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.Startup.CreationTime.TotalFactoryInitTime",
-                    SystemClock.uptimeMillis() - startTime);
+                    SystemClock.uptimeMillis() - webviewLoadStart);
         }
-        */
     }
 
     // These values are persisted to logs. Entries should not be renumbered and
