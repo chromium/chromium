@@ -236,7 +236,7 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // heuristics -- a JSON object holding key -> value pairs (a map) stored in
   // |on_page_data_map|. The merged data is written to |info|.
   static void MergeProductInfoData(ProductInfo* info,
-                                   base::Value& on_page_data_map);
+                                   const base::Value::Dict& on_page_data_map);
 
   void HandleOptGuideMerchantInfoResponse(
       const GURL& url,
