@@ -166,14 +166,14 @@ AutofillManager::~AutofillManager() {
 
 void AutofillManager::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection))
     return;
-  }
   if (details.adopted_language == translate::kUnknownLanguageCode ||
       !driver_->IsInActiveFrame()) {
     return;
   }
 
+  NotifyObservers(&Observer::OnBeforeLanguageDetermined);
   LanguageCode lang(details.adopted_language);
   for (auto& [form_id, form_structure] : form_structures_)
     form_structure->set_current_page_language(lang);
@@ -183,6 +183,7 @@ void AutofillManager::OnLanguageDetermined(
       form_structure->DetermineHeuristicTypes(form_interactions_ukm_logger(),
                                               log_manager_);
     }
+    NotifyObservers(&Observer::OnAfterLanguageDetermined);
     return;
   }
 
@@ -212,6 +213,7 @@ void AutofillManager::OnLanguageDetermined(
       return;
     for (auto& [id, form_structure] : form_structures)
       self->form_structures_[id] = std::move(form_structure);
+    self->NotifyObservers(&Observer::OnAfterLanguageDetermined);
   };
 
   // Transfers the cached `form_structures_` to the worker task, which will
