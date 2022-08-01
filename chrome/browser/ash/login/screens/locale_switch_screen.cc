@@ -51,19 +51,13 @@ std::string LocaleSwitchScreen::GetResultString(Result result) {
   }
 }
 
-LocaleSwitchScreen::LocaleSwitchScreen(LocaleSwitchView* view,
+LocaleSwitchScreen::LocaleSwitchScreen(base::WeakPtr<LocaleSwitchView> view,
                                        const ScreenExitCallback& exit_callback)
     : BaseScreen(LocaleSwitchView::kScreenId, OobeScreenPriority::DEFAULT),
-      view_(view),
-      exit_callback_(exit_callback) {
-  if (view_)
-    view_->Bind(this);
-}
+      view_(std::move(view)),
+      exit_callback_(exit_callback) {}
 
-LocaleSwitchScreen::~LocaleSwitchScreen() {
-  if (view_)
-    view_->Unbind();
-}
+LocaleSwitchScreen::~LocaleSwitchScreen() = default;
 
 bool LocaleSwitchScreen::MaybeSkip(WizardContext* wizard_context) {
   if (wizard_context->skip_post_login_screens_for_tests) {
@@ -135,11 +129,6 @@ void LocaleSwitchScreen::ShowImpl() {
 
 void LocaleSwitchScreen::HideImpl() {
   ResetState();
-}
-
-void LocaleSwitchScreen::OnViewDestroyed(LocaleSwitchView* view) {
-  if (view == view_)
-    view_ = nullptr;
 }
 
 void LocaleSwitchScreen::OnErrorStateOfRefreshTokenUpdatedForAccount(
