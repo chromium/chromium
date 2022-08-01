@@ -168,7 +168,6 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(
                 mRecyclerView.getContext(), LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.setItemAnimator(null);
         mRecyclerView.addOnScrollListener(mMediator);
 
         mToolbar = (HistoryClustersToolbar) mSelectableListLayout.initializeToolbar(

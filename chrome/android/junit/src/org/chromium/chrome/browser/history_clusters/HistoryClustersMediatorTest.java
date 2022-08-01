@@ -320,6 +320,7 @@ public class HistoryClustersMediatorTest {
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("");
 
+        mMediator.setQueryState(QueryState.forQueryless());
         mMediator.startQuery("");
         fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
 
@@ -341,6 +342,7 @@ public class HistoryClustersMediatorTest {
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("");
 
+        mMediator.setQueryState(QueryState.forQueryless());
         mMediator.startQuery("");
         fulfillPromise(promise, HistoryClustersResult.emptyResult());
 
@@ -388,6 +390,7 @@ public class HistoryClustersMediatorTest {
         doReturn(new Promise<>()).when(mBridge).queryClusters("pan");
         // Add a dummy entry to mModelList so we can check it was cleared.
         mModelList.add(new ListItem(42, new PropertyModel()));
+        mMediator.setQueryState(QueryState.forQuery("pan", ""));
         mMediator.onSearchTextChanged("pan");
 
         assertEquals(mModelList.size(), 0);
