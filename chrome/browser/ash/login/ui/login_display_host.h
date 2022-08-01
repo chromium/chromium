@@ -246,7 +246,8 @@ class LoginDisplayHost {
 
   // Gets the keyboard remapped pref value for `pref_name` key. Returns true if
   // successful, otherwise returns false.
-  // TODO (crbug.com/1168114): Double check if this method belongs here.
+  // It provides a remapping based on currently selected user pod (as different
+  // users might have different remappings).
   virtual bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                             int* value) const = 0;
   // Allows tests to wait for WebUI to start.

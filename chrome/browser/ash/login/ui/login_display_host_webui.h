@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "ash/components/audio/cras_audio_handler.h"
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/login_display_host_common.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
@@ -58,7 +56,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
                               public ui::InputDeviceEventObserver,
                               public views::WidgetRemovalsObserver,
                               public views::WidgetObserver,
-                              public MultiUserWindowManagerObserver,
                               public OobeUI::Observer {
  public:
   LoginDisplayHostWebUI();
@@ -153,11 +150,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnWidgetDestroying(views::Widget* widget) override;
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
-
-  // TODO (crbug.com/1168114): remove whole observer hierarchy, it is not needed
-  // anymore.
-  // MultiUserWindowManagerObserver:
-  void OnUserSwitchAnimationFinished() override;
 
   // OobeUI::Observer:
   void OnCurrentScreenChanged(OobeScreenId current_screen,

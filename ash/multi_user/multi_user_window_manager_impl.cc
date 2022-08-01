@@ -10,7 +10,6 @@
 #include "ash/media/media_controller_impl.h"
 #include "ash/multi_user/user_switch_animator.h"
 #include "ash/public/cpp/multi_user_window_manager_delegate.h"
-#include "ash/public/cpp/multi_user_window_manager_observer.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -133,11 +132,6 @@ MultiUserWindowManagerImpl* MultiUserWindowManagerImpl::Get() {
   return g_instance;
 }
 
-void MultiUserWindowManagerImpl::OnDidSwitchActiveAccount() {
-  for (MultiUserWindowManagerObserver& observer : observers_)
-    observer.OnUserSwitchAnimationFinished();
-}
-
 void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
                                                 const AccountId& account_id) {
   // Make sure the window is valid and there was no owner yet.
@@ -232,16 +226,6 @@ const AccountId& MultiUserWindowManagerImpl::GetUserPresentingWindow(
 
 const AccountId& MultiUserWindowManagerImpl::CurrentAccountId() const {
   return current_account_id_;
-}
-
-void MultiUserWindowManagerImpl::AddObserver(
-    MultiUserWindowManagerObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void MultiUserWindowManagerImpl::RemoveObserver(
-    MultiUserWindowManagerObserver* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 bool MultiUserWindowManagerImpl::IsWindowOnDesktopOfUser(

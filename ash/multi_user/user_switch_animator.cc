@@ -148,7 +148,6 @@ void UserSwitchAnimator::AdvanceUserTransitionAnimation() {
     case ANIMATION_STEP_FINALIZE:
       user_changed_animation_timer_.reset();
       animation_step_ = ANIMATION_STEP_ENDED;
-      owner_->OnDidSwitchActiveAccount();
       break;
     case ANIMATION_STEP_ENDED:
       NOTREACHED();

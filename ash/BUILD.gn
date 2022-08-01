@@ -789,7 +789,6 @@ component("ash") {
     "public/cpp/event_rewriter_controller.h",
     "public/cpp/multi_user_window_manager.h",
     "public/cpp/multi_user_window_manager_delegate.h",
-    "public/cpp/multi_user_window_manager_observer.h",
     "public/cpp/overview_test_api.h",
     "public/cpp/shelf_config.h",
     "public/cpp/shelf_test_api.h",

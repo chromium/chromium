@@ -42,8 +42,6 @@ class TestMultiUserWindowManager : public ash::MultiUserWindowManager {
   const AccountId& GetUserPresentingWindow(
       const aura::Window* window) const override;
   const AccountId& CurrentAccountId() const override;
-  void AddObserver(ash::MultiUserWindowManagerObserver* observer) override;
-  void RemoveObserver(ash::MultiUserWindowManagerObserver* observer) override;
 
  private:
   TestMultiUserWindowManager(Browser* visiting_browser,

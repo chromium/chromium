@@ -89,12 +89,6 @@ const AccountId& TestMultiUserWindowManager::CurrentAccountId() const {
   return current_account_id_;
 }
 
-void TestMultiUserWindowManager::AddObserver(
-    ash::MultiUserWindowManagerObserver* observer) {}
-
-void TestMultiUserWindowManager::RemoveObserver(
-    ash::MultiUserWindowManagerObserver* observer) {}
-
 TestMultiUserWindowManager::TestMultiUserWindowManager(
     Browser* visiting_browser,
     const AccountId& desktop_owner)
