@@ -344,6 +344,52 @@ class UnitTest(unittest.TestCase):
               'shards environment.', ctx.message))
       self.assertEqual(ctx.exception.code, 2)
 
+  @mock.patch('os.getenv', side_effect=[1, 0])
+  def test_no_retries_when_repeat(self, _):
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--test-cases',
+        'SomeClass.SomeTestCase',
+        '--isolated-script-test-repeat',
+        '20',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual(0, runner.args.retries)
+
+  @mock.patch('os.getenv', side_effect=[1, 0])
+  def test_override_retries_when_repeat(self, _):
+    cmd = [
+        '--app',
+        './foo-Runner.app',
+        '--xcode-path',
+        'some/Xcode.app',
+        '--test-cases',
+        'SomeClass.SomeTestCase',
+        '--isolated-script-test-repeat',
+        '20',
+        '--retries',
+        '3',
+
+        # Required
+        '--xcode-build-version',
+        '123abc',
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual(0, runner.args.retries)
+
 
 class RunnerInstallXcodeTest(test_runner_test.TestCase):
   """Tests Xcode and runtime installing logic in Runner.run()"""
