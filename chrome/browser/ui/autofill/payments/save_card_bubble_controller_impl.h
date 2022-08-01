@@ -104,7 +104,7 @@ class SaveCardBubbleControllerImpl
   std::u16string GetExplanatoryMessage() const override;
   std::u16string GetAcceptButtonText() const override;
   std::u16string GetDeclineButtonText() const override;
-  const AccountInfo& GetAccountInfo() const override;
+  const AccountInfo& GetAccountInfo() override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
   AutofillBubbleBase* GetSaveCardBubbleView() const override;

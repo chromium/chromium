@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
@@ -32,6 +33,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -50,6 +52,28 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 
+namespace {
+
+ui::ImageModel GetProfileAvatar(AccountInfo account_info) {
+  // Get the user avatar icon.
+  gfx::Image account_avatar = account_info.account_image;
+
+  // Check for avatar being empty and replacing it with a
+  // placeholder if that is the case.
+  if (account_avatar.IsEmpty()) {
+    account_avatar = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  }
+
+  int avatar_size = views::style::GetLineHeight(
+      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_SECONDARY);
+
+  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+      account_avatar, avatar_size, avatar_size, profiles::SHAPE_CIRCLE));
+}
+
+}  // namespace
+
 namespace autofill {
 
 SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
@@ -59,11 +83,23 @@ SaveCardOfferBubbleViews::SaveCardOfferBubbleViews(
     : SaveCardBubbleViews(anchor_view, web_contents, controller) {
   SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
   const LegalMessageLines message_lines = controller->GetLegalMessageLines();
+
   if (!message_lines.empty()) {
-    legal_message_view_ = SetFootnoteView(std::make_unique<LegalMessageView>(
-        message_lines,
-        base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
-                            base::Unretained(this))));
+    if (IsSaveCardUiExperimentEnabled()) {
+      std::string user_email = controller->GetAccountInfo().email;
+      // Display TOS with user avatar and email present in the footer.
+      legal_message_view_ = SetFootnoteView(std::make_unique<LegalMessageView>(
+          message_lines, base::UTF8ToUTF16(user_email),
+          GetProfileAvatar(controller->GetAccountInfo()),
+          base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
+                              base::Unretained(this))));
+    } else {
+      legal_message_view_ = SetFootnoteView(std::make_unique<LegalMessageView>(
+          message_lines, /*user_email=*/absl::nullopt,
+          /*user_avatar=*/absl::nullopt,
+          base::BindRepeating(&SaveCardOfferBubbleViews::LinkClicked,
+                              base::Unretained(this))));
+    }
     InitFootnoteView(legal_message_view_);
   }
 
@@ -143,20 +179,22 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   // Set the header image.
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
 
-  // Check if the save card offer ui experiment is enabled.
-  bool save_card_ui_experiment_enabled =
-      (base::FeatureList::IsEnabled(features::kAutofillSaveCardUiExperiment) &&
-       features::kAutofillSaveCardUiExperimentSelectorInNumber.Get());
+  // Boolean to show the shield image for save card bubble. It is
+  // active/shown only when save card ui experiment is enabled and when the
+  // active experiment selected != 3 (existing option with user information
+  // view).
+  bool show_shield_header_image =
+      IsSaveCardUiExperimentEnabled() &&
+      features::kAutofillSaveCardUiExperimentSelectorInNumber.Get() != 3;
 
   // Ternary operator added for the save card ui experiment where the feature
   // flag and the experiment selected would determine if the experiment is
   // active or not. Currently, any option != 0 and experiment flag enabled
   // should trigger the experiment.
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
-      *bundle.GetImageSkiaNamed(save_card_ui_experiment_enabled
-                                    ? IDR_SAVE_CARD_SECURELY
-                                    : IDR_SAVE_CARD),
-      *bundle.GetImageSkiaNamed(save_card_ui_experiment_enabled
+      *bundle.GetImageSkiaNamed(
+          show_shield_header_image ? IDR_SAVE_CARD_SECURELY : IDR_SAVE_CARD),
+      *bundle.GetImageSkiaNamed(show_shield_header_image
                                     ? IDR_SAVE_CARD_SECURELY_DARK
                                     : IDR_SAVE_CARD_DARK),
       base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
@@ -343,6 +381,12 @@ SaveCardOfferBubbleViews::CreateUploadExplanationView() {
       views::BubbleBorder::Arrow::TOP_RIGHT);
   upload_explanation_tooltip->SetID(DialogViewId::UPLOAD_EXPLANATION_TOOLTIP);
   return upload_explanation_tooltip;
+}
+
+bool SaveCardOfferBubbleViews::IsSaveCardUiExperimentEnabled() {
+  return (
+      base::FeatureList::IsEnabled(features::kAutofillSaveCardUiExperiment) &&
+      features::kAutofillSaveCardUiExperimentSelectorInNumber.Get() != 0);
 }
 
 void SaveCardOfferBubbleViews::LinkClicked(const GURL& url) {

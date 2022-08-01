@@ -283,10 +283,16 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
+  int save_card_ui_experiment_arm =
+      features::kAutofillSaveCardUiExperimentSelectorInNumber.Get();
+
   // Adding the Save Card UI Experiment to the active experiments in upload
-  // request if the experiment is active.
+  // request if the experiment is active. If 3rd save card ui experiment, aka
+  // Current with Avatar and Email, is selected then we would not add
+  // AutofillSaveCardUiExperiment to the active experiments list, as we want the
+  // current footer to be displayed.
   if (base::FeatureList::IsEnabled(features::kAutofillSaveCardUiExperiment) &&
-      features::kAutofillSaveCardUiExperimentSelectorInNumber.Get() != 0) {
+      (save_card_ui_experiment_arm == 1 || save_card_ui_experiment_arm == 2)) {
     upload_request_.active_experiments.push_back(
         "AutofillSaveCardUiExperiment");
   }

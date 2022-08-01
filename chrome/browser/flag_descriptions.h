@@ -279,8 +279,9 @@ extern const char kAutofillSaveAndFillVPADescription[];
 
 extern const char kAutofillSaveCardUiExperimentName[];
 extern const char kAutofillSaveCardUiExperimentDescription[];
-extern const char kAutofillSaveCardUiExperimentFasterAndProtected[];
+extern const char kAutofillSaveCardUiExperimentCurrentWithUserAvatarAndEmail[];
 extern const char kAutofillSaveCardUiExperimentEncryptedAndSecure[];
+extern const char kAutofillSaveCardUiExperimentFasterAndProtected[];
 
 extern const char kAutofillShowManualFallbackInContextMenuName[];
 extern const char kAutofillShowManualFallbackInContextMenuDescription[];

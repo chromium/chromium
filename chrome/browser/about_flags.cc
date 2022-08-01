@@ -578,13 +578,18 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam
-    kAutofillSaveCardUiExperimentEnableFasterAndProtected[] = {
-        {"autofill_save_card_ui_experiment_selector_in_number", "1"},
+    kAutofillSaveCardUiExperimentEnableCurrentWithUserAvatarAndEmail[] = {
+        {"autofill_save_card_ui_experiment_selector_in_number", "3"},
 };
 
 const FeatureEntry::FeatureParam
     kAutofillSaveCardUiExperimentEnableEncryptedAndSecure[] = {
         {"autofill_save_card_ui_experiment_selector_in_number", "2"},
+};
+
+const FeatureEntry::FeatureParam
+    kAutofillSaveCardUiExperimentEnableFasterAndProtected[] = {
+        {"autofill_save_card_ui_experiment_selector_in_number", "1"},
 };
 
 const FeatureEntry::FeatureVariation kAutofillSaveCardUiExperimentOptions[] = {
@@ -594,6 +599,12 @@ const FeatureEntry::FeatureVariation kAutofillSaveCardUiExperimentOptions[] = {
     {flag_descriptions::kAutofillSaveCardUiExperimentEncryptedAndSecure,
      kAutofillSaveCardUiExperimentEnableEncryptedAndSecure,
      std::size(kAutofillSaveCardUiExperimentEnableEncryptedAndSecure), nullptr},
+    {flag_descriptions::
+         kAutofillSaveCardUiExperimentCurrentWithUserAvatarAndEmail,
+     kAutofillSaveCardUiExperimentEnableCurrentWithUserAvatarAndEmail,
+     std::size(
+         kAutofillSaveCardUiExperimentEnableCurrentWithUserAvatarAndEmail),
+     nullptr},
 };
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

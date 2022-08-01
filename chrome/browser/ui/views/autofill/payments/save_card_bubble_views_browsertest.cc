@@ -2392,4 +2392,9 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTestForManageCard,
                   Bucket(ManageCardsPromptMetric::kManageCardsDone, 1)));
 }
 
+// TODO(crbug.com/1346433): Add new browser tests for save card bubble view
+// where it check for user label information based on experiment conditions.
+// These aren't being added at the current time because of issues with the Sync
+// setup that makes them flaky.
+
 }  // namespace autofill

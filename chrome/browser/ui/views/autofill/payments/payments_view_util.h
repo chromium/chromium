@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/table_layout_view.h"
@@ -62,7 +63,12 @@ class LegalMessageView : public views::BoxLayoutView {
 
   using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
 
+  // Along with the legal message lines and link callbacks, we are sending the
+  // user email and avatar as optional params. These will be displayed at the
+  // bottom line of this view if they have value.
   LegalMessageView(const LegalMessageLines& legal_message_lines,
+                   absl::optional<std::u16string> optional_user_email,
+                   absl::optional<ui::ImageModel> optional_user_avatar,
                    LinkClickedCallback callback);
   ~LegalMessageView() override;
 };

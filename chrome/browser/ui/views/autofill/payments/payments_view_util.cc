@@ -4,17 +4,21 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/ranges/algorithm.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
@@ -159,8 +163,11 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield() {
   return textfield;
 }
 
-LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
-                                   LinkClickedCallback callback) {
+LegalMessageView::LegalMessageView(
+    const LegalMessageLines& legal_message_lines,
+    absl::optional<std::u16string> optional_user_email,
+    absl::optional<ui::ImageModel> optional_user_avatar,
+    LinkClickedCallback callback) {
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
@@ -176,6 +183,35 @@ LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
                                base::BindRepeating(callback, link.url)));
     }
   }
+
+  if (!optional_user_email.has_value() && !optional_user_avatar.has_value())
+    return;
+
+  std::u16string user_email = optional_user_email.value();
+  ui::ImageModel user_avatar = optional_user_avatar.value();
+  if (user_email.empty() && user_avatar.IsEmpty())
+    return;
+
+  // Extra child view for user identity information including the avatar and
+  // the email.
+  views::View* user_info_view = AddChildView(std::make_unique<views::View>());
+
+  auto* const user_label_layout =
+      user_info_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  user_label_layout->set_between_child_spacing(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL));
+
+  user_info_view->AddChildView(std::make_unique<views::ImageView>(user_avatar));
+
+  views::Label* email_label =
+      user_info_view->AddChildView(std::make_unique<views::Label>());
+  email_label->SetText(user_email);
+  email_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
+  email_label->SetTextStyle(views::style::STYLE_SECONDARY);
+
+  user_info_view->SetID(DialogViewId::USER_INFORMATION_VIEW);
 }
 
 LegalMessageView::~LegalMessageView() = default;

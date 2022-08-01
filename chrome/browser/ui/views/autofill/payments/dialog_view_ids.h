@@ -25,6 +25,7 @@ enum DialogViewId : int {
   SIGN_IN_PROMO_VIEW,        // Contains the sign-in promo view
   MANAGE_CARDS_VIEW,         // The manage cards view
   EXPIRATION_DATE_VIEW,      // Contains the dropdowns for expiration date
+  USER_INFORMATION_VIEW,     // User avatar/display picture and email address.
 
   // The sub-view that contains the sign-in button in the promo.
   SIGN_IN_VIEW,
