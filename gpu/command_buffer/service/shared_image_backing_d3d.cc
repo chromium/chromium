@@ -644,6 +644,10 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
+  // Evict invalid external images e.g. due to their device being destroyed.
+  base::EraseIf(dawn_external_images_,
+                [](const auto& kv) { return !kv.second->IsValid(); });
+
   // Persistently open the shared handle by caching it on this backing.
   auto it = dawn_external_images_.find(device);
   dawn::native::d3d12::ExternalImageDXGI* external_image_ptr = nullptr;
@@ -670,6 +674,7 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
     external_image_ptr = it->second.get();
   }
   DCHECK(external_image_ptr);
+  DCHECK(external_image_ptr->IsValid());
   return std::make_unique<SharedImageRepresentationDawnD3D>(
       manager, this, tracker, device, external_image_ptr);
 #else
