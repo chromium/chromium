@@ -399,7 +399,7 @@ class FindElementWebView : public StubWebView {
   // Overridden from WebView:
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     ++current_count_;
     if (scenario_ == kElementExistsTimeout ||
@@ -428,7 +428,7 @@ class FindElementWebView : public StubWebView {
       *result = base::Value::ToUniquePtrValue(result_->Clone());
       frame_ = frame;
       function_ = function;
-      args_ = base::Value::ToUniquePtrValue(args.Clone());
+      args_ = std::make_unique<base::Value>(args.Clone());
     }
     return Status(kOk);
   }
@@ -619,7 +619,7 @@ class ErrorCallFunctionWebView : public StubWebView {
   // Overridden from WebView:
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     return Status(code_);
   }

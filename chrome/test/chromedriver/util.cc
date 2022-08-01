@@ -42,9 +42,9 @@ std::string GenerateId() {
 namespace {
 const double kCentimetersPerInch = 2.54;
 
-Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
+Status FlattenStringArray(const base::Value::List* src, std::u16string* dest) {
   std::u16string keys;
-  for (const base::Value& i : src->GetList()) {
+  for (const base::Value& i : *src) {
     if (!i.is_string())
       return Status(kUnknownError, "keys should be a string");
 
@@ -67,11 +67,10 @@ Status FlattenStringArray(const base::ListValue* src, std::u16string* dest) {
 
 }  // namespace
 
-Status SendKeysOnWindow(
-    WebView* web_view,
-    const base::ListValue* key_list,
-    bool release_modifiers,
-    int* sticky_modifiers) {
+Status SendKeysOnWindow(WebView* web_view,
+                        const base::Value::List* key_list,
+                        bool release_modifiers,
+                        int* sticky_modifiers) {
   std::u16string keys;
   Status status = FlattenStringArray(key_list, &keys);
   if (status.IsError())

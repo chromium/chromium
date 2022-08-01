@@ -9,11 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 
 namespace base {
 class DictionaryValue;
 class FilePath;
-class ListValue;
 class TimeDelta;
 class Value;
 }
@@ -105,7 +105,7 @@ class WebView {
   // |result| will never be NULL on success.
   virtual Status CallFunction(const std::string& frame,
                               const std::string& function,
-                              const base::ListValue& args,
+                              const base::Value::List& args,
                               std::unique_ptr<base::Value>* result) = 0;
 
   // Calls a JavaScript function in a specified frame with the given args and
@@ -115,7 +115,7 @@ class WebView {
   // |result| will never be NULL on success.
   virtual Status CallAsyncFunction(const std::string& frame,
                                    const std::string& function,
-                                   const base::ListValue& args,
+                                   const base::Value::List& args,
                                    const base::TimeDelta& timeout,
                                    std::unique_ptr<base::Value>* result) = 0;
 
@@ -126,7 +126,7 @@ class WebView {
   virtual Status CallUserAsyncFunction(
       const std::string& frame,
       const std::string& function,
-      const base::ListValue& args,
+      const base::Value::List& args,
       const base::TimeDelta& timeout,
       std::unique_ptr<base::Value>* result) = 0;
 
@@ -136,7 +136,7 @@ class WebView {
   // |result| will never be NULL on success.
   virtual Status CallUserSyncScript(const std::string& frame,
                                     const std::string& script,
-                                    const base::ListValue& args,
+                                    const base::Value::List& args,
                                     const base::TimeDelta& timeout,
                                     std::unique_ptr<base::Value>* result) = 0;
 
@@ -145,7 +145,7 @@ class WebView {
   // frame.
   virtual Status GetFrameByFunction(const std::string& frame,
                                     const std::string& function,
-                                    const base::ListValue& args,
+                                    const base::Value::List& args,
                                     std::string* out_frame) = 0;
 
   // Dispatch a sequence of mouse events.

@@ -88,14 +88,14 @@ Status StubWebView::EvaluateScript(const std::string& frame,
 
 Status StubWebView::CallFunction(const std::string& frame,
                                  const std::string& function,
-                                 const base::ListValue& args,
+                                 const base::Value::List& args,
                                  std::unique_ptr<base::Value>* result) {
   return Status(kOk);
 }
 
 Status StubWebView::CallAsyncFunction(const std::string& frame,
                                       const std::string& function,
-                                      const base::ListValue& args,
+                                      const base::Value::List& args,
                                       const base::TimeDelta& timeout,
                                       std::unique_ptr<base::Value>* result) {
   return Status(kOk);
@@ -104,7 +104,7 @@ Status StubWebView::CallAsyncFunction(const std::string& frame,
 Status StubWebView::CallUserAsyncFunction(
     const std::string& frame,
     const std::string& function,
-    const base::ListValue& args,
+    const base::Value::List& args,
     const base::TimeDelta& timeout,
     std::unique_ptr<base::Value>* result) {
   return Status(kOk);
@@ -112,7 +112,7 @@ Status StubWebView::CallUserAsyncFunction(
 
 Status StubWebView::CallUserSyncScript(const std::string& frame,
                                        const std::string& script,
-                                       const base::ListValue& args,
+                                       const base::Value::List& args,
                                        const base::TimeDelta& timeout,
                                        std::unique_ptr<base::Value>* result) {
   return Status(kOk);
@@ -120,7 +120,7 @@ Status StubWebView::CallUserSyncScript(const std::string& frame,
 
 Status StubWebView::GetFrameByFunction(const std::string& frame,
                                        const std::string& function,
-                                       const base::ListValue& args,
+                                       const base::Value::List& args,
                                        std::string* out_frame) {
   return Status(kOk);
 }

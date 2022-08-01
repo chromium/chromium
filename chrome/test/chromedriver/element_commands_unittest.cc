@@ -65,7 +65,7 @@ class MockResponseWebView : public StubWebView {
 
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     if (function ==
         webdriver::atoms::asString(webdriver::atoms::GET_LOCATION)) {
