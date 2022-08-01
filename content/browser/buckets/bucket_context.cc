@@ -13,34 +13,18 @@
 namespace content {
 
 BucketContext::BucketContext(
-    const GlobalRenderFrameHostId& render_frame_host_id,
-    const url::Origin& origin)
-    : id_(render_frame_host_id), origin_(origin) {}
+    const GlobalRenderFrameHostId& render_frame_host_id)
+    : id_(render_frame_host_id) {}
 
-BucketContext::BucketContext(int render_process_id, const url::Origin& origin)
-    : id_(render_process_id), origin_(origin) {}
+BucketContext::BucketContext(int render_process_id) : id_(render_process_id) {}
 
 BucketContext::BucketContext(const BucketContext& other) = default;
 
 BucketContext::~BucketContext() = default;
 
-StoragePartitionImpl* BucketContext::GetStoragePartition() const {
-  if (absl::holds_alternative<int>(id_)) {
-    RenderProcessHost* rph = RenderProcessHost::FromID(absl::get<int>(id_));
-    if (!rph)
-      return nullptr;
-    return static_cast<StoragePartitionImpl*>(rph->GetStoragePartition());
-  }
-
-  RenderFrameHost* rfh =
-      RenderFrameHost::FromID(absl::get<GlobalRenderFrameHostId>(id_));
-  if (!rfh)
-    return nullptr;
-  return static_cast<StoragePartitionImpl*>(rfh->GetStoragePartition());
-}
-
 blink::mojom::PermissionStatus BucketContext::GetPermissionStatus(
-    blink::PermissionType permission_type) const {
+    blink::PermissionType permission_type,
+    const url::Origin& origin) const {
   if (permission_status_for_test_)
     return *permission_status_for_test_;
 
@@ -50,7 +34,7 @@ blink::mojom::PermissionStatus BucketContext::GetPermissionStatus(
       return blink::mojom::PermissionStatus::DENIED;
     return rph->GetBrowserContext()
         ->GetPermissionController()
-        ->GetPermissionStatusForWorker(permission_type, rph, origin_);
+        ->GetPermissionStatusForWorker(permission_type, rph, origin);
   }
 
   RenderFrameHost* rfh =

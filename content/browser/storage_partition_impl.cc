@@ -1309,7 +1309,7 @@ void StoragePartitionImpl::Initialize(
   // behavior when restoring the state fails.
   cookie_store_manager_->LoadAllSubscriptions(base::DoNothing());
 
-  bucket_manager_ = std::make_unique<BucketManager>(quota_manager_proxy);
+  bucket_manager_ = std::make_unique<BucketManager>(this);
 
   // The Conversion Measurement API is not available in Incognito mode.
   if (!is_in_memory() &&
@@ -1479,6 +1479,11 @@ void StoragePartitionImpl::CreateTrustTokenQueryAnswerer(
 storage::QuotaManager* StoragePartitionImpl::GetQuotaManager() {
   DCHECK(initialized_);
   return quota_manager_.get();
+}
+
+storage::QuotaManagerProxy* StoragePartitionImpl::GetQuotaManagerProxy() {
+  DCHECK(initialized_);
+  return quota_manager_->proxy();
 }
 
 BackgroundSyncContextImpl* StoragePartitionImpl::GetBackgroundSyncContext() {
