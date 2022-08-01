@@ -211,6 +211,18 @@ std::vector<GURL> DlpFilesController::IsFilesTransferRestricted(
   return restricted_files_sources;
 }
 
+std::map<std::string, std::set<std::string>>
+DlpFilesController::GetDlpRestrictionDetails(const std::string& sourceUrl) {
+  policy::DlpRulesManager* dlp_rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!dlp_rules_manager) {
+    return {};
+  }
+  // TODO(crbug.com/1346254): Call DlpRulesManager to get the restricted
+  // destinations and components; aggregate and convert to string format.
+  return {};
+}
+
 void DlpFilesController::ReturnDisallowedTransfers(
     base::flat_map<std::string, storage::FileSystemURL> files_map,
     GetDisallowedTransfersCallback result_callback,

@@ -777,7 +777,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(3);
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
+  // TODO(crbug.com/1346254): When implementation is completed, add following
+  // checks: EXPECT_CALL(*mock_rules_manager_,
+  // GetAggregatedComponents).Times(1); EXPECT_CALL(*mock_rules_manager_,
+  // GetAggregatedDestinations).Times(1);
 
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
@@ -819,7 +823,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
       .WillOnce(testing::Return(policy::DlpRulesManager::Level::kAllow))
       .RetiresOnSaturation();
 
-  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata", {},
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "default"},
                                {.load_as_component = true}));
 }
 
@@ -829,9 +834,45 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
-      .WillOnce(testing::Return(false))
-      .RetiresOnSaturation();
+  ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+  EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents).Times(0);
+  EXPECT_CALL(*mock_rules_manager_, GetAggregatedDestinations).Times(0);
+
+  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+
+  const base::FilePath blocked_file_path =
+      temp_dir_.GetPath().Append("blocked_file.txt");
+
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::File blocked_test_file(
+        blocked_file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(blocked_test_file.IsValid());
+  }
+
+  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
+  EXPECT_CALL(add_file_cb, Run).Times(1);
+  dlp::AddFileRequest request;
+  request.set_file_path(blocked_file_path.value());
+  request.set_source_url("https://example1.com");
+  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "disabled"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
   // We should not get to the point of checking DLP.
   EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
 
@@ -854,6 +895,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
   request.set_source_url("https://example1.com");
   chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
 
-  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata_disabled", {},
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "error"},
                                {.load_as_component = true}));
 }

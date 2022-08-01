@@ -1401,6 +1401,11 @@ interface Functions {
       [instanceOf=Entry] object[] entries,
       GetDlpMetadataCallback callback);
 
+  // Shows a modal containing Data Leak Prevention (DLP) Restriction Details.
+  // |sourceUrl| Source URL of the Entry for which the details should be shown.
+  static void showDlpRestrictionDetails(
+      DOMString sourceUrl);
+
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.
   // |entry| Entry of the source entry to be copied.
