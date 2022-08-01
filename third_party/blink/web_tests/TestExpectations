@@ -7098,3 +7098,6 @@ crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-mo
 
 # Flaky timeouts on WebKit Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Pass Timeout ]
+
+# TODO(crbug.com/1348836): Re-enable this test
+crbug.com/1348836 external/wpt/accessibility/crashtests/aria-owns-fallback-content.html [ Skip ]
