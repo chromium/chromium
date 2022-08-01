@@ -4336,6 +4336,7 @@ static_library("ui") {
       "views/exclusive_access_bubble_views_context.h",
       "views/extensions/chooser_dialog_view.cc",
       "views/extensions/chooser_dialog_view.h",
+      "views/extensions/constants.h",
       "views/extensions/expandable_container_view.cc",
       "views/extensions/expandable_container_view.h",
       "views/extensions/extension_context_menu_controller.cc",

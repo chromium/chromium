@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/constants.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/site_settings_expand_button.h"
@@ -555,8 +556,7 @@ void ExtensionsTabbedMenuView::CreateExtensionsTab() {
       ui::ImageModel::FromResourceId(IDR_WEBSTORE_ICON_16));
   auto open_icon =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kOpenInNewIcon, ui::kColorIcon,
-          webstore_icon->GetImageModel().Size().width()));
+          vector_icons::kOpenInNewIcon, ui::kColorIcon, kMenuIconSize));
 
   auto installed_tab_footer =
       views::Builder<HoverButton>(
