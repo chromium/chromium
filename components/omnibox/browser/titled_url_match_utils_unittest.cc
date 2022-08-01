@@ -173,6 +173,10 @@ TEST(TitledUrlMatchUtilsTest, DoTrimHttpScheme) {
 }
 
 TEST(TitledUrlMatchUtilsTest, DontTrimHttpSchemeIfInputHasScheme) {
+  RichAutocompletionParams::ClearParamsForTesting();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature({omnibox::kRichAutocompletion});
+
   GURL match_url("http://www.facebook.com/");
   AutocompleteMatch autocomplete_match =
       BuildTestAutocompleteMatch("http://face", match_url, {{11, 15}});
@@ -217,6 +221,10 @@ TEST(TitledUrlMatchUtilsTest, DoTrimHttpsScheme) {
 }
 
 TEST(TitledUrlMatchUtilsTest, DontTrimHttpsSchemeIfInputHasScheme) {
+  RichAutocompletionParams::ClearParamsForTesting();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature({omnibox::kRichAutocompletion});
+
   GURL match_url("https://www.facebook.com/");
   AutocompleteMatch autocomplete_match =
       BuildTestAutocompleteMatch("https://face", match_url, {{12, 16}});
