@@ -55,12 +55,15 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/start_suggest_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
+#import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/ntp/feed_delegate.h"
 #import "ios/chrome/browser/ui/ntp/metrics.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/notification_promo_whats_new.h"
 #import "ios/chrome/browser/ui/ntp/ntp_tile_saver.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
+#import "ios/chrome/browser/ui/start_surface/start_surface_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -351,10 +354,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
   self.returnToRecentTabItem.title =
       l10n_util::GetNSString(IDS_IOS_RETURN_TO_RECENT_TAB_TITLE);
-  NSString* subtitle = [NSString
-      stringWithFormat:@"%@%@", base::SysUTF16ToNSString(webState->GetTitle()),
-                       timeLabel];
-  self.returnToRecentTabItem.subtitle = subtitle;
+  self.returnToRecentTabItem.subtitle = [self
+      constructReturnToRecentTabSubtitleWithPageTitle:base::SysUTF16ToNSString(
+                                                          webState->GetTitle())
+                                           timeString:timeLabel];
   self.showMostRecentTabStartSurfaceTile = YES;
   NSArray<CSCollectionViewItem*>* items =
       [self itemsForSectionInfo:self.returnToRecentTabSectionInfo];
@@ -596,6 +599,19 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
         [self.collectionConsumer itemHasChanged:self.returnToRecentTabItem];
       }
     }
+  }
+}
+
+- (void)mostRecentTabTitleWasUpdated:(NSString*)title {
+  if (self.returnToRecentTabItem) {
+    SceneState* scene =
+        SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+    NSString* time_label = GetRecentTabTileTimeLabelForSceneState(scene);
+    self.returnToRecentTabItem.subtitle =
+        [self constructReturnToRecentTabSubtitleWithPageTitle:title
+                                                   timeString:time_label];
+    [self.consumer
+        updateReturnToRecentTabTileWithConfig:self.returnToRecentTabItem];
   }
 }
 
@@ -844,6 +860,12 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
       base::BindOnce(&StartSuggestServiceResponseBridge::OnSuggestionsReceived,
                      _startSuggestServiceResponseBridge->AsWeakPtr()),
       self.showingStartSurface);
+}
+
+- (NSString*)constructReturnToRecentTabSubtitleWithPageTitle:
+                 (NSString*)pageTitle
+                                                  timeString:(NSString*)time {
+  return [NSString stringWithFormat:@"%@%@", pageTitle, time];
 }
 
 #pragma mark - Properties

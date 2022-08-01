@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/start_surface/start_surface_recent_tab_removal_observer_bridge.h"
 
+#import "base/strings/sys_string_conversions.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -31,4 +33,13 @@ void StartSurfaceRecentTabObserverBridge::MostRecentTabFaviconUpdated(
     return;
 
   [delegate_ mostRecentTabFaviconUpdatedWithImage:image];
+}
+
+void StartSurfaceRecentTabObserverBridge::MostRecentTabTitleUpdated(
+    const std::u16string& title) {
+  const SEL selector = @selector(mostRecentTabTitleWasUpdated:);
+  if (![delegate_ respondsToSelector:selector])
+    return;
+
+  [delegate_ mostRecentTabTitleWasUpdated:base::SysUTF16ToNSString(title)];
 }

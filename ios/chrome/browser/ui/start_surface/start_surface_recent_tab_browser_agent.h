@@ -35,6 +35,8 @@ class StartSurfaceRecentTabObserver {
   // recent tab was updated to `image`.
   virtual void MostRecentTabFaviconUpdated(UIImage* image) {}
 
+  virtual void MostRecentTabTitleUpdated(const std::u16string& title) {}
+
  protected:
   virtual ~StartSurfaceRecentTabObserver() = default;
 };
@@ -82,6 +84,7 @@ class StartSurfaceRecentTabBrowserAgent
 
   // web::WebStateObserver
   void WebStateDestroyed(web::WebState* web_state) override;
+  void TitleWasSet(web::WebState* web_state) override;
 
   // favicon::FaviconDriverObserver
   void OnFaviconUpdated(favicon::FaviconDriver* driver,
