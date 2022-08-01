@@ -235,8 +235,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - BVC
 
 // Note other delegates defined in the Delegates category header.
-@interface BrowserViewController () <CRWWebStateObserver,
-                                     FindBarPresentationDelegate,
+@interface BrowserViewController () <FindBarPresentationDelegate,
                                      FullscreenUIElement,
                                      MainContentUI,
                                      SideSwipeControllerDelegate,
@@ -312,14 +311,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Fake status bar view used to blend the toolbar into the status bar.
   UIView* _fakeStatusBarView;
-
-  // Forwards observer methods for all WebStates in the WebStateList to this
-  // BrowserViewController object.
-  std::unique_ptr<AllWebStateObservationForwarder>
-      _allWebStateObservationForwarder;
-
-  // Bridges C++ WebStateObserver methods to this BrowserViewController.
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
   std::unique_ptr<UrlLoadingObserverBridge> _URLLoadingObserverBridge;
 
@@ -513,12 +504,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _footerFullscreenProgress = 1.0;
 
     _isOffTheRecord = browser->GetBrowserState()->IsOffTheRecord();
-
-    _webStateObserverBridge =
-        std::make_unique<web::WebStateObserverBridge>(self);
-    _allWebStateObservationForwarder =
-        std::make_unique<AllWebStateObservationForwarder>(
-            browser->GetWebStateList(), _webStateObserverBridge.get());
 
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     browser->GetWebStateList()->AddObserver(_webStateListObserver.get());
@@ -1037,7 +1022,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.secondaryToolbarCoordinator = nil;
   _sideSwipeController = nil;
   _webStateListObserver.reset();
-  _allWebStateObservationForwarder = nullptr;
   [_voiceSearchController disconnect];
   _voiceSearchController = nil;
   _fullscreenDisabler = nullptr;
@@ -2778,16 +2762,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [animationView animateFromCurrentView:snapshotView
                               toNewView:swipeView
                              inPosition:position];
-}
-
-#pragma mark - CRWWebStateObserver methods.
-
-// TODO(crbug.com/1329087): Move this logic to a mediator attached to the
-// primary toolbar coordinator (ToolbarMediator?
-- (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigation {
-  if (webState == self.currentWebState)
-    [self.primaryToolbarCoordinator updateToolbar];
 }
 
 #pragma mark - OmniboxPopupPresenterDelegate methods.
