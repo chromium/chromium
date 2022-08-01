@@ -717,7 +717,6 @@ class GpuIntegrationTest(
       # it's the discrete GPU, so that test expectations can be written that
       # target the discrete GPU.
       gpu_tags.append(gpu_helper.GetANGLERenderer(gpu_info))
-      gpu_tags.append(gpu_helper.GetSwiftShaderGLRenderer(gpu_info))
       gpu_tags.append(gpu_helper.GetCommandDecoder(gpu_info))
       gpu_tags.append(gpu_helper.GetOOPCanvasStatus(gpu_info.feature_status))
       gpu_tags.append(gpu_helper.GetAsanStatus(gpu_info))

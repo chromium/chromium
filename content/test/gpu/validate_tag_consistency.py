@@ -55,8 +55,6 @@ TAG_HEADER = """\
 # tags: [ skia-renderer-dawn
 #         skia-renderer-gl
 #         skia-renderer-vulkan ]
-# SwiftShader
-# tags: [ swiftshader-gl no-swiftshader-gl ]
 # Driver
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0 ]
