@@ -3,7 +3,7 @@
     color: var(--cros-text-color-secondary);
     font-size: 15px;
     font-weight: 500;
-    margin: 24px 0 0;
+    margin: 0;
   }
 
   .help-item {
@@ -39,12 +39,30 @@
     max-width: 200px;
     text-align: center;
   }
+
+  #helpContentLabelContainer {
+    align-items: center;
+    display: inline-flex;
+    margin-top: 24px;
+  }
+
+  #helpContentIcon {
+    display: inline-block;
+    height: 20px;
+    --iron-icon-fill-color: var(--cros-icon-color-secondary);
+    margin-inline-start: 6px;
+    width: 20px;
+  }
 </style>
 <iron-media-query query="(prefers-color-scheme: dark)"
   query-matches="{{isDarkModeEnabled_}}">
 </iron-media-query>
 <div id="helpContentContainer">
-  <h2 class="help-content-label">[[getLabel_(searchResult, isOnline_)]]</h2>
+  <div id="helpContentLabelContainer">
+    <h2 class="help-content-label">[[getLabel_(searchResult, isOnline_)]]</h2>
+    <iron-icon icon="help-content:info" id="helpContentIcon">
+    </iron-icon>
+  </div>
   <template is="dom-if" if="[[!isOnline_]]">
     <div class="help-content-offline-details">
       <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]" 
