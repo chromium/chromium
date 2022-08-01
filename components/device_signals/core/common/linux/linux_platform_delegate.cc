@@ -13,9 +13,10 @@ LinuxPlatformDelegate::LinuxPlatformDelegate() = default;
 
 LinuxPlatformDelegate::~LinuxPlatformDelegate() = default;
 
-ExecutableMetadata LinuxPlatformDelegate::GetExecutableMetadata(
-    const base::FilePath& file_path) {
-  return ExecutableMetadata();
+FilePathMap<ExecutableMetadata> LinuxPlatformDelegate::GetAllExecutableMetadata(
+    const FilePathSet& file_paths) {
+  // TODO(b:231326345): Implement.
+  return FilePathMap<ExecutableMetadata>();
 }
 
 }  // namespace device_signals

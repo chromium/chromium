@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/enterprise_reporting_private/conversion_utils.h"
 
+#include "build/build_config.h"
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #include <memory>
@@ -118,10 +120,8 @@ absl::optional<ParsedSignalsError> ConvertFileSystemInfoResponse(
       const auto& executable_metadata =
           file_system_item.executable_metadata.value();
 
-      if (executable_metadata.is_running) {
-        response.is_running =
-            std::make_unique<bool>(executable_metadata.is_running);
-      }
+      response.is_running =
+          std::make_unique<bool>(executable_metadata.is_running);
 
       if (executable_metadata.public_key_sha256) {
         response.public_key_sha256 = std::make_unique<std::string>(

@@ -41,6 +41,17 @@ std::string HexEncodeHash(const std::string& hashed_data) {
       base::HexEncode(std::data(hashed_data), hashed_data.size()));
 }
 
+absl::optional<size_t> FindItemIndexByFilePath(
+    const base::FilePath& expected_file_path,
+    const std::vector<FileSystemItem>& items) {
+  for (size_t i = 0; i < items.size(); i++) {
+    if (items[i].file_path == expected_file_path) {
+      return i;
+    }
+  }
+  return absl::nullopt;
+}
+
 }  // namespace
 
 class FileSystemServiceTest : public testing::Test {
@@ -52,6 +63,9 @@ class FileSystemServiceTest : public testing::Test {
 
     file_system_service_ =
         FileSystemService::Create(std::move(mock_platform_delegate));
+
+    ON_CALL(*mock_platform_delegate_, GetAllExecutableMetadata(FilePathSet()))
+        .WillByDefault(Return(FilePathMap<ExecutableMetadata>()));
   }
 
   void ExpectResolvablePath(const base::FilePath& path,
@@ -98,26 +112,33 @@ TEST_F(FileSystemServiceTest, GetSignals_Presence) {
   ExpectPathIsReadable(found_path_resolved);
 
   std::vector<GetFileSystemInfoOptions> options;
-  options.push_back(CreateOptions(unresolvable_file_path, true, true));
-  options.push_back(CreateOptions(access_denied_path, true, true));
+  options.push_back(CreateOptions(unresolvable_file_path, true, false));
+  options.push_back(CreateOptions(access_denied_path, true, false));
   options.push_back(CreateOptions(found_path, false, false));
 
   std::array<PresenceValue, 4> expected_presence_values{
       PresenceValue::kNotFound, PresenceValue::kAccessDenied,
       PresenceValue::kFound};
 
+  EXPECT_CALL(*mock_platform_delegate_,
+              GetAllExecutableMetadata(FilePathSet()));
+
   auto file_system_items = file_system_service_->GetSignals(options);
 
   ASSERT_EQ(file_system_items.size(), options.size());
 
-  for (size_t i = 0; i < file_system_items.size(); i++) {
-    EXPECT_EQ(file_system_items[i].file_path, options[i].file_path);
-    EXPECT_EQ(file_system_items[i].presence, expected_presence_values[i]);
+  for (size_t i = 0; i < options.size(); i++) {
+    auto index =
+        FindItemIndexByFilePath(options[i].file_path, file_system_items);
+    ASSERT_TRUE(index.has_value());
+
+    const FileSystemItem& item = file_system_items[index.value()];
+    EXPECT_EQ(item.presence, expected_presence_values[i]);
 
     // No metadata was collected, as it was only requested for the two files
     // that cannot be found/accessed.
-    EXPECT_FALSE(file_system_items[i].sha256_hash.has_value());
-    EXPECT_FALSE(file_system_items[i].executable_metadata.has_value());
+    EXPECT_FALSE(item.sha256_hash.has_value());
+    EXPECT_FALSE(item.executable_metadata.has_value());
   }
 }
 
@@ -147,6 +168,9 @@ TEST_F(FileSystemServiceTest, GetSignals_Hash_Success) {
   options.push_back(
       CreateOptions(scoped_dir.GetPath(), /*compute_sha256=*/true, false));
 
+  EXPECT_CALL(*mock_platform_delegate_,
+              GetAllExecutableMetadata(FilePathSet()));
+
   auto file_system_items = file_system_service_->GetSignals(options);
 
   constexpr char expected_sha256_hash[] =
@@ -154,16 +178,78 @@ TEST_F(FileSystemServiceTest, GetSignals_Hash_Success) {
   ASSERT_EQ(file_system_items.size(), options.size());
 
   // The file's hash was computed.
-  EXPECT_EQ(file_system_items[0].file_path, absolute_file_path);
-  EXPECT_EQ(file_system_items[0].presence, PresenceValue::kFound);
-  ASSERT_TRUE(file_system_items[0].sha256_hash.has_value());
-  EXPECT_EQ(HexEncodeHash(file_system_items[0].sha256_hash.value()),
-            expected_sha256_hash);
+  auto index = FindItemIndexByFilePath(absolute_file_path, file_system_items);
+  ASSERT_TRUE(index.has_value());
+  FileSystemItem& item = file_system_items[index.value()];
+  EXPECT_EQ(item.presence, PresenceValue::kFound);
+  ASSERT_TRUE(item.sha256_hash.has_value());
+  EXPECT_EQ(HexEncodeHash(item.sha256_hash.value()), expected_sha256_hash);
 
   // The directory does not have a hash.
-  EXPECT_EQ(file_system_items[1].file_path, scoped_dir.GetPath());
-  EXPECT_EQ(file_system_items[1].presence, PresenceValue::kFound);
-  EXPECT_FALSE(file_system_items[1].sha256_hash.has_value());
+  index = FindItemIndexByFilePath(scoped_dir.GetPath(), file_system_items);
+  ASSERT_TRUE(index.has_value());
+  item = file_system_items[index.value()];
+  EXPECT_EQ(item.file_path, scoped_dir.GetPath());
+  EXPECT_EQ(item.presence, PresenceValue::kFound);
+  EXPECT_FALSE(item.sha256_hash.has_value());
+}
+
+// Tests that the FileSystemService uses the PlatformDelegate to collect
+// the ExecutableMetadata only when requested.
+TEST_F(FileSystemServiceTest, GetSignals_ExecutableMetadata) {
+  base::FilePath first_found_path =
+      base::FilePath::FromUTF8Unsafe("/first/found");
+  base::FilePath first_found_path_resolved =
+      base::FilePath::FromUTF8Unsafe("/first/found/resolved");
+  ExpectResolvablePath(first_found_path, first_found_path_resolved);
+  ExpectPathIsReadable(first_found_path_resolved);
+
+  base::FilePath second_found_path =
+      base::FilePath::FromUTF8Unsafe("/second/found");
+  base::FilePath second_found_path_resolved =
+      base::FilePath::FromUTF8Unsafe("/second/found/resolved");
+  ExpectResolvablePath(second_found_path, second_found_path_resolved);
+  ExpectPathIsReadable(second_found_path_resolved);
+
+  ExecutableMetadata executable_metadata;
+  executable_metadata.is_running = true;
+
+  FilePathSet expected_path_set;
+  expected_path_set.insert(first_found_path_resolved);
+
+  FilePathMap<ExecutableMetadata> result_metadata_map;
+  result_metadata_map.insert({first_found_path_resolved, executable_metadata});
+
+  EXPECT_CALL(*mock_platform_delegate_,
+              GetAllExecutableMetadata(expected_path_set))
+      .WillOnce(Return(result_metadata_map));
+
+  std::vector<GetFileSystemInfoOptions> options;
+  options.push_back(CreateOptions(first_found_path, false,
+                                  /*compute_executable_metadata=*/true));
+  options.push_back(CreateOptions(second_found_path, false,
+                                  /*compute_executable_metadata=*/false));
+
+  auto file_system_items = file_system_service_->GetSignals(options);
+
+  ASSERT_EQ(file_system_items.size(), options.size());
+
+  // The first file's executable metadata was properly retrieved via the
+  // mocked delegate.
+  auto index = FindItemIndexByFilePath(first_found_path, file_system_items);
+  ASSERT_TRUE(index.has_value());
+  FileSystemItem& item = file_system_items[index.value()];
+  EXPECT_EQ(item.presence, PresenceValue::kFound);
+  ASSERT_TRUE(item.executable_metadata.has_value());
+  EXPECT_EQ(item.executable_metadata.value(), executable_metadata);
+
+  // We did not request executable metadata from the second file, so it should
+  // be absl::nullopt.
+  index = FindItemIndexByFilePath(second_found_path, file_system_items);
+  ASSERT_TRUE(index.has_value());
+  item = file_system_items[index.value()];
+  EXPECT_EQ(item.presence, PresenceValue::kFound);
+  EXPECT_FALSE(item.executable_metadata.has_value());
 }
 
 }  // namespace device_signals

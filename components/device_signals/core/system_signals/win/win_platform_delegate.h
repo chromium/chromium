@@ -17,8 +17,8 @@ class WinPlatformDelegate : public BasePlatformDelegate {
   // PlatformDelegate:
   bool ResolveFilePath(const base::FilePath& file_path,
                        base::FilePath* resolved_file_path) override;
-  ExecutableMetadata GetExecutableMetadata(
-      const base::FilePath& file_path) override;
+  FilePathMap<ExecutableMetadata> GetAllExecutableMetadata(
+      const FilePathSet& file_paths) override;
 };
 
 }  // namespace device_signals

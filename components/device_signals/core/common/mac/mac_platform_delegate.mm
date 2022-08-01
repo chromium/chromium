@@ -13,9 +13,10 @@ MacPlatformDelegate::MacPlatformDelegate() = default;
 
 MacPlatformDelegate::~MacPlatformDelegate() = default;
 
-ExecutableMetadata MacPlatformDelegate::GetExecutableMetadata(
-    const base::FilePath& file_path) {
-  return ExecutableMetadata();
+FilePathMap<ExecutableMetadata> MacPlatformDelegate::GetAllExecutableMetadata(
+    const FilePathSet& file_paths) {
+  // TODO(b:231326198): Implement.
+  return FilePathMap<ExecutableMetadata>();
 }
 
 }  // namespace device_signals
