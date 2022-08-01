@@ -59,6 +59,11 @@ export class TaskModuleElement extends I18nMixin
         type: String,
         computed: 'computeDisableName_()',
       },
+
+      info_: {
+        type: String,
+        computed: 'computeInfo_()',
+      },
     };
   }
 
@@ -66,6 +71,7 @@ export class TaskModuleElement extends I18nMixin
   private title_: string;
   private dismissName_: string;
   private disableName_: string;
+  private info_: string;
 
   private intersectionObserver_: IntersectionObserver|null = null;
 
@@ -85,6 +91,12 @@ export class TaskModuleElement extends I18nMixin
     return loadTimeData.getBoolean('modulesRecipeHistoricalExperimentEnabled') ?
         loadTimeData.getString('modulesRecipeViewedTasksLower') :
         loadTimeData.getString('modulesRecipeTasksLower');
+  }
+
+  private computeInfo_(): string {
+    return loadTimeData.getBoolean('moduleRecipeExtendedExperimentEnabled') ?
+        loadTimeData.getString('modulesRecipeExtendedInfo') :
+        loadTimeData.getString('modulesRecipeInfo');
   }
 
   private onTaskItemClick_(e: DomRepeatEvent<TaskItem>) {
