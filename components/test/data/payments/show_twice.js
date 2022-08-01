@@ -9,7 +9,7 @@
  */
 function showFirst() { // eslint-disable-line no-unused-vars
   const request1 = new PaymentRequest(
-      [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
+      [{supportedMethods: 'https://bobpay.com'}, {supportedMethods: 'https://alicepay.com'}],
       {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
   request1.show();
 }
@@ -20,7 +20,7 @@ function showFirst() { // eslint-disable-line no-unused-vars
  */
 async function showSecond() { // eslint-disable-line no-unused-vars
   const request2 = new PaymentRequest(
-      [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
+      [{supportedMethods: 'https://bobpay.com'}],
       {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}});
   // We already have a PaymentRequest showing, so this should fail.
   try {
