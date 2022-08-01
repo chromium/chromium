@@ -466,8 +466,11 @@ TEST_F(ApcClientImplTest, PromptForConsent) {
       .Times(1)
       .WillOnce(MoveArg<0>(&coordinator_callback));
 
-  apc_client()->PromptForConsent();
+  base::MockCallback<ApcClient::OnboardingResultCallback> result_callback;
+  apc_client()->PromptForConsent(result_callback.Get());
   EXPECT_TRUE(apc_client()->IsRunning());
+
+  EXPECT_CALL(result_callback, Run(true));
   std::move(coordinator_callback).Run(true);
   EXPECT_FALSE(apc_client()->IsRunning());
 }
