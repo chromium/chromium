@@ -18,3 +18,6 @@
 
 # TODO(crbug/1347903)
 -org.chromium.chrome.features.start_surface.StartSurfaceBackButtonTest.testShow_SingleAsHomepage_BackButtonWithTabSwitcher__NoInstant_Return
+
+# TODO(crbug/1349083)
+-org.chromium.chrome.browser.sync.SyncErrorCardPreferenceTest.testSyncErrorCardForPassphraseRequiredWithTitleFeatureDisabled__NightModeEnabled
