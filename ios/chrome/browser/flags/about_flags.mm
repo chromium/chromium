@@ -249,11 +249,12 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoFullWithTitle[] = {
-    {kDiscoverFeedTopSyncPromoStyleParam,
-     kDiscoverFeedTopSyncPromoStyleFullWithTitle}};
+    {kDiscoverFeedTopSyncPromoStyleFullWithTitle, "true"},
+    {kDiscoverFeedTopSyncPromoStyleCompact, "false"}};
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompact[] = {
-    {kDiscoverFeedTopSyncPromoStyleParam,
-     kDiscoverFeedTopSyncPromoStyleCompact}};
+    {kDiscoverFeedTopSyncPromoStyleFullWithTitle, "false"},
+    {kDiscoverFeedTopSyncPromoStyleCompact, "true"}};
+
 const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
     {"Full with title", kDiscoverFeedTopSyncPromoFullWithTitle,
      std::size(kDiscoverFeedTopSyncPromoFullWithTitle), nullptr},

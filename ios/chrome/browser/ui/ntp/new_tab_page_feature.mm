@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 
+#import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -62,6 +63,12 @@ bool IsNTPViewHierarchyRepairEnabled() {
 
 bool IsDiscoverFeedTopSyncPromoEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedTopSyncPromo);
+}
+
+bool IsDiscoverFeedTopSyncPromoCompact() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyleCompact,
+      false);
 }
 
 bool IsFeedAblationEnabled() {

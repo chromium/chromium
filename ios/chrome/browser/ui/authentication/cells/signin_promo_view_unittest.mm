@@ -81,23 +81,33 @@ TEST_F(SigninPromoViewTest, AccessibilityLabel) {
 
 // Tests that signin is created on non-compact layout and that setting compact
 // layout changes the primary button styling.
-TEST_F(SigninPromoViewTest, CompactLayout) {
+TEST_F(SigninPromoViewTest, ChangeLayout) {
   UIWindow* currentWindow = GetAnyKeyWindow();
   SigninPromoView* view =
       [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
   view.mode = SigninPromoViewModeNoAccounts;
   [currentWindow.rootViewController.view addSubview:view];
-  // The default mode should not be compact.
-  EXPECT_FALSE(view.compactLayout);
+  // The default mode should be standard.
+  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleStandard);
   // In full layout, the primary button is rounded with background color.
   EXPECT_TRUE(view.primaryButton.backgroundColor);
   EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
 
-  view = [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-  view.mode = SigninPromoViewModeNoAccounts;
-  view.compactLayout = YES;
-  EXPECT_TRUE(view.compactLayout);
+  // Switch to compact layout.
+  view.promoViewStyle = SigninPromoViewStyleTitledCompact;
+  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleTitledCompact);
   // In compact layout, the primary button is plain.
   EXPECT_FALSE(view.primaryButton.backgroundColor);
   EXPECT_EQ(view.primaryButton.layer.cornerRadius, 0.0);
+  // The secondary button should be hidden.
+  EXPECT_TRUE(view.secondaryButton.hidden);
+
+  // Switch to titled layout.
+  view.promoViewStyle = SigninPromoViewStyleTitled;
+  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleTitled);
+  // In titled layout, the primary button is rounded with a background color.
+  EXPECT_TRUE(view.primaryButton.backgroundColor);
+  EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
+  // The secondary button should be hidden.
+  EXPECT_TRUE(view.secondaryButton.hidden);
 }

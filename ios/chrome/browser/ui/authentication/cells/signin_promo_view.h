@@ -40,8 +40,8 @@
 // `textLabel`.
 @property(nonatomic, assign, readonly) CGFloat horizontalPadding;
 
-// `YES` when the promo view layout is compact.
-@property(nonatomic, assign) BOOL compactLayout;
+// The current layout style. Defaults to `SigninPromoViewStyleStandard`.
+@property(nonatomic, assign) SigninPromoViewStyle promoViewStyle;
 
 // Designated initializer.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;

@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
 #import "ios/chrome/browser/ui/ntp/feed_top_section_consumer.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -135,10 +136,10 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
 
   SigninPromoViewConfigurator* configurator =
       self.delegate.signinPromoConfigurator;
-  // TODO(crbug.com/1331010): Use feature params to specify which style of promo
-  // to use.
-  [configurator configureSigninPromoView:promoView
-                               withStyle:SigninPromoViewStyleTitledCompact];
+  SigninPromoViewStyle promoViewStyle = IsDiscoverFeedTopSyncPromoCompact()
+                                            ? SigninPromoViewStyleTitledCompact
+                                            : SigninPromoViewStyleTitled;
+  [configurator configureSigninPromoView:promoView withStyle:promoViewStyle];
   promoView.titleLabel.text =
       l10n_util::GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_TITLE);
   promoView.textLabel.text =
