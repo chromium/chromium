@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/path_service.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
@@ -78,7 +79,8 @@ bool IOSChromeNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
   bool allowed =
       !cookie_settings_ ||
       cookie_settings_->IsFullCookieAccessAllowed(
-          request.url(), request.site_for_cookies().RepresentativeUrl());
+          request.url(), request.site_for_cookies().RepresentativeUrl(),
+          QueryReason::kCookies);
 
   if (!allowed) {
     ExcludeAllCookies(
@@ -98,7 +100,8 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
     return true;
 
   return cookie_settings_->IsFullCookieAccessAllowed(
-      request.url(), request.site_for_cookies().RepresentativeUrl());
+      request.url(), request.site_for_cookies().RepresentativeUrl(),
+      QueryReason::kCookies);
 }
 
 net::NetworkDelegate::PrivacySetting
@@ -111,8 +114,8 @@ IOSChromeNetworkDelegate::OnForcePrivacyMode(
   if (!cookie_settings_.get())
     return net::NetworkDelegate::PrivacySetting::kStateAllowed;
 
-  return cookie_settings_->IsFullCookieAccessAllowed(url, site_for_cookies,
-                                                     top_frame_origin)
+  return cookie_settings_->IsFullCookieAccessAllowed(
+             url, site_for_cookies, top_frame_origin, QueryReason::kCookies)
              ? net::NetworkDelegate::PrivacySetting::kStateAllowed
              : net::NetworkDelegate::PrivacySetting::kStateDisallowed;
 }

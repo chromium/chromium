@@ -1317,8 +1317,9 @@ UkmPageLoadMetricsObserver::GetThirdPartyCookieBlockingEnabled() const {
   if (!cookie_settings->ShouldBlockThirdPartyCookies())
     return absl::nullopt;
 
-  return !cookie_settings->IsThirdPartyAccessAllowed(GetDelegate().GetUrl(),
-                                                     nullptr /* source */);
+  return !cookie_settings->IsThirdPartyAccessAllowed(
+      GetDelegate().GetUrl(), nullptr /* source */,
+      content_settings::CookieSettings::QueryReason::kSetting);
 }
 
 void UkmPageLoadMetricsObserver::RecordResponsivenessMetrics() {

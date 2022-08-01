@@ -6254,7 +6254,9 @@ bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
   // Persistent MediaDevice IDs are allowed if cookies are allowed.
   return CookieSettingsFactory::GetForProfile(
              Profile::FromBrowserContext(browser_context))
-      ->IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin);
+      ->IsFullCookieAccessAllowed(
+          url, site_for_cookies, top_frame_origin,
+          content_settings::CookieSettings::QueryReason::kSiteStorage);
 }
 
 #if !BUILDFLAG(IS_ANDROID)

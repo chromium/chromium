@@ -65,9 +65,12 @@ void DurableStoragePermissionContext::DecidePermission(
 
   // Don't grant durable for session-only storage, since it won't be persisted
   // anyway. Don't grant durable if we can't write cookies.
-  if (cookie_settings->IsCookieSessionOnly(requesting_origin) ||
-      !cookie_settings->IsFullCookieAccessAllowed(requesting_origin,
-                                                  requesting_origin)) {
+  if (cookie_settings->IsCookieSessionOnly(
+          requesting_origin,
+          content_settings::CookieSettings::QueryReason::kSiteStorage) ||
+      !cookie_settings->IsFullCookieAccessAllowed(
+          requesting_origin, requesting_origin,
+          content_settings::CookieSettings::QueryReason::kSiteStorage)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
                         std::move(callback), /*persist=*/false,
                         CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);

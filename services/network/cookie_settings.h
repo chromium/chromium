@@ -36,6 +36,8 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     : public content_settings::CookieSettingsBase {
  public:
+  using QueryReason = content_settings::CookieSettingsBase::QueryReason;
+
   CookieSettings();
 
   CookieSettings(const CookieSettings&) = delete;
@@ -152,7 +154,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
-      content_settings::SettingSource* source) const override;
+      content_settings::SettingSource* source,
+      QueryReason query_reason) const override;
 
   // An enum that represents the result of applying the user's
   // third-party-cookie-blocking setting in a given context.
@@ -185,7 +188,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
       bool is_third_party_request,
       const GURL& url,
       const GURL& first_party_url,
-      ContentSetting cookie_setting) const;
+      ContentSetting cookie_setting,
+      QueryReason query_reason) const;
 
   // Determines the scope of third-party-cookie-blocking, i.e. whether it
   // applies to all cookies or just unpartitioned cookies. Assumes that
@@ -200,14 +204,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
   CookieSettingWithMetadata GetCookieSettingWithMetadata(
       const GURL& url,
       const GURL& first_party_url,
-      bool is_third_party_request) const;
+      bool is_third_party_request,
+      QueryReason query_reason) const;
 
   // An overload of the above, which determines `first_party_url` and
   // `is_third_party_request` appropriately.
   CookieSettingWithMetadata GetCookieSettingWithMetadata(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const url::Origin* top_frame_origin) const;
+      const url::Origin* top_frame_origin,
+      QueryReason query_reason) const;
 
   // Returns whether the given cookie should be allowed to be sent, according to
   // the user's settings. Assumes that the `cookie.access_result` has been
