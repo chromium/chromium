@@ -1,6 +1,6 @@
 <blink>Hello world!</blink>
 
-He blinked slowly back at him. CAT
+She blinked slowly back at him.
 
 Then, backed away.
 
