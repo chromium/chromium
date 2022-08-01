@@ -22,12 +22,12 @@
 
   TestRunner.markStep('detachFrame1');
   await BindingsTestRunner.detachFrame('frame1');
-  await TestRunner.evaluateInPageAnonymously('GCController.collectAll()');
+  await BindingsTestRunner.GC();
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.markStep('detachFrame2');
   await BindingsTestRunner.detachFrame('frame2');
-  await TestRunner.evaluateInPageAnonymously('GCController.collectAll()');
+  await BindingsTestRunner.GC();
   SourcesTestRunner.dumpNavigatorView(sourcesNavigator, false);
 
   TestRunner.completeTest();
