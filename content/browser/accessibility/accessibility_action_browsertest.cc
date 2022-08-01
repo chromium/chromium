@@ -373,7 +373,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, HorizontalScroll) {
   EXPECT_EQ(x_step_4, x_before);
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest, CanvasGetImage) {
+// Flaky on Mac https://crbug.com/1337760.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CanvasGetImage DISABLED_CanvasGetImage
+#else
+#define MAYBE_CanvasGetImage CanvasGetImage
+#endif
+IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
+                       MAYBE_CanvasGetImage) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(
       <body>
         <canvas aria-label="canvas" id="c" width="4" height="2">
