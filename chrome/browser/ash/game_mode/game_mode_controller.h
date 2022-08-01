@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_GAME_MODE_CONTROLLER_H_
-#define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_GAME_MODE_CONTROLLER_H_
+#ifndef CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_H_
+#define CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_H_
 
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_observer.h"
@@ -13,7 +13,7 @@
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
 
-namespace borealis {
+namespace game_mode {
 
 // When a borealis window enters full screen, game mode is enabled.
 // The controller works as follows:
@@ -29,13 +29,13 @@ namespace borealis {
 //         +------"GameMode off"<-----------------+
 //                                No window focused
 //
-class BorealisGameModeController : public aura::client::FocusChangeObserver {
+class GameModeController : public aura::client::FocusChangeObserver {
  public:
-  BorealisGameModeController();
-  BorealisGameModeController(const BorealisGameModeController&) = delete;
-  BorealisGameModeController& operator=(const BorealisGameModeController&) =
+  GameModeController();
+  GameModeController(const GameModeController&) = delete;
+  GameModeController& operator=(const GameModeController&) =
       delete;
-  ~BorealisGameModeController() override;
+  ~GameModeController() override;
 
   // Overridden from FocusChangeObserver
   void OnWindowFocused(aura::Window* gained_focus,
@@ -79,13 +79,13 @@ class BorealisGameModeController : public aura::client::FocusChangeObserver {
         window_state_observer_{this};
     base::ScopedObservation<aura::Window, aura::WindowObserver>
         window_observer_{this};
-    std::unique_ptr<BorealisGameModeController::GameModeEnabler> game_mode_;
+    std::unique_ptr<GameModeController::GameModeEnabler> game_mode_;
   };
 
  private:
   std::unique_ptr<WindowTracker> focused_;
 };
 
-}  // namespace borealis
+}  // namespace game_mode
 
-#endif  // CHROME_BROWSER_ASH_BOREALIS_BOREALIS_GAME_MODE_CONTROLLER_H_
+#endif  // CHROME_BROWSER_ASH_GAME_MODE_GAME_MODE_CONTROLLER_H_

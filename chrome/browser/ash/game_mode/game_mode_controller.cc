@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
+#include "chrome/browser/ash/game_mode/game_mode_controller.h"
 
 #include "ash/shell.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
-#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "ui/views/widget/widget.h"
 
-namespace borealis {
+namespace game_mode {
+
+using borealis::BorealisGameModeResult;
+using borealis::BorealisWindowManager;
 
 constexpr int kRefreshSec = 60;
 constexpr int kTimeoutSec = kRefreshSec + 10;
 
-BorealisGameModeController::BorealisGameModeController() {
+GameModeController::GameModeController() {
   if (!ash::Shell::HasInstance())
     return;
   aura::client::FocusClient* focus_client =
@@ -27,13 +29,13 @@ BorealisGameModeController::BorealisGameModeController() {
   OnWindowFocused(focus_client->GetFocusedWindow(), nullptr);
 }
 
-BorealisGameModeController::~BorealisGameModeController() {
+GameModeController::~GameModeController() {
   if (ash::Shell::HasInstance())
     aura::client::GetFocusClient(ash::Shell::GetPrimaryRootWindow())
         ->RemoveObserver(this);
 }
 
-void BorealisGameModeController::OnWindowFocused(aura::Window* gained_focus,
+void GameModeController::OnWindowFocused(aura::Window* gained_focus,
                                                  aura::Window* lost_focus) {
   if (!gained_focus) {
     focused_.reset();
@@ -52,7 +54,7 @@ void BorealisGameModeController::OnWindowFocused(aura::Window* gained_focus,
   }
 }
 
-BorealisGameModeController::WindowTracker::WindowTracker(
+GameModeController::WindowTracker::WindowTracker(
     ash::WindowState* window_state,
     std::unique_ptr<WindowTracker> previous_focus) {
   if (previous_focus && previous_focus->game_mode_) {
@@ -63,15 +65,15 @@ BorealisGameModeController::WindowTracker::WindowTracker(
   window_observer_.Observe(window_state->window());
 }
 
-BorealisGameModeController::WindowTracker::~WindowTracker() {}
+GameModeController::WindowTracker::~WindowTracker() {}
 
-void BorealisGameModeController::WindowTracker::OnPostWindowStateTypeChange(
+void GameModeController::WindowTracker::OnPostWindowStateTypeChange(
     ash::WindowState* window_state,
     chromeos::WindowStateType old_type) {
   UpdateGameModeStatus(window_state);
 }
 
-void BorealisGameModeController::WindowTracker::UpdateGameModeStatus(
+void GameModeController::WindowTracker::UpdateGameModeStatus(
     ash::WindowState* window_state) {
   if (!game_mode_ && window_state->IsFullscreen()) {
     game_mode_ = std::make_unique<GameModeEnabler>();
@@ -80,16 +82,16 @@ void BorealisGameModeController::WindowTracker::UpdateGameModeStatus(
   }
 }
 
-void BorealisGameModeController::WindowTracker::OnWindowDestroying(
+void GameModeController::WindowTracker::OnWindowDestroying(
     aura::Window* window) {
   window_state_observer_.Reset();
   window_observer_.Reset();
   game_mode_.reset();
 }
 
-bool BorealisGameModeController::GameModeEnabler::should_record_failure;
+bool GameModeController::GameModeEnabler::should_record_failure;
 
-BorealisGameModeController::GameModeEnabler::GameModeEnabler() {
+GameModeController::GameModeEnabler::GameModeEnabler() {
   GameModeEnabler::should_record_failure = true;
   RecordBorealisGameModeResultHistogram(BorealisGameModeResult::kAttempted);
   if (ash::ResourcedClient::Get()) {
@@ -101,7 +103,7 @@ BorealisGameModeController::GameModeEnabler::GameModeEnabler() {
                &GameModeEnabler::RefreshGameMode);
 }
 
-BorealisGameModeController::GameModeEnabler::~GameModeEnabler() {
+GameModeController::GameModeEnabler::~GameModeEnabler() {
   timer_.Stop();
   if (ash::ResourcedClient::Get()) {
     ash::ResourcedClient::Get()->SetGameModeWithTimeout(
@@ -110,7 +112,7 @@ BorealisGameModeController::GameModeEnabler::~GameModeEnabler() {
   }
 }
 
-void BorealisGameModeController::GameModeEnabler::RefreshGameMode() {
+void GameModeController::GameModeEnabler::RefreshGameMode() {
   if (ash::ResourcedClient::Get()) {
     ash::ResourcedClient::Get()->SetGameModeWithTimeout(
         ash::ResourcedClient::GameMode::BOREALIS, kTimeoutSec,
@@ -119,7 +121,7 @@ void BorealisGameModeController::GameModeEnabler::RefreshGameMode() {
 }
 
 // Previous is whether game mode was enabled previous to this call.
-void BorealisGameModeController::GameModeEnabler::OnSetGameMode(
+void GameModeController::GameModeEnabler::OnSetGameMode(
     bool was_refresh,
     absl::optional<ash::ResourcedClient::GameMode> previous) {
   if (!previous.has_value()) {
@@ -134,4 +136,4 @@ void BorealisGameModeController::GameModeEnabler::OnSetGameMode(
   }
 }
 
-}  // namespace borealis
+}  // namespace game_mode

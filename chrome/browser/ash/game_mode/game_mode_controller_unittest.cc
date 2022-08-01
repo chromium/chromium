@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
+#include "chrome/browser/ash/game_mode/game_mode_controller.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -19,12 +19,19 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
-namespace borealis {
+namespace game_mode {
 namespace {
 
-class BorealisGameModeControllerTest : public ChromeAshTestBase {
+using borealis::BorealisFeatures;
+using borealis::BorealisGameModeResult;
+using borealis::BorealisServiceFake;
+using borealis::BorealisWindowManager;
+using borealis::CreateFakeWidget;
+using borealis::kBorealisGameModeResultHistogram;
+
+class GameModeControllerTest : public ChromeAshTestBase {
  public:
-  BorealisGameModeControllerTest()
+  GameModeControllerTest()
       : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>(
                 base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
@@ -34,12 +41,15 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
     ChromeAshTestBase::SetUp();
     fake_resourced_client_ = new ash::FakeResourcedClient();
     profile_ = std::make_unique<TestingProfile>();
-    service_fake_ = BorealisServiceFake::UseFakeForTesting(profile_.get());
-    window_manager_ = std::make_unique<BorealisWindowManager>(profile_.get());
-    service_fake_->SetWindowManagerForTesting(window_manager_.get());
-    game_mode_controller_ = std::make_unique<BorealisGameModeController>();
+    borealis_service_fake_ =
+        BorealisServiceFake::UseFakeForTesting(profile_.get());
+    borealis_window_manager_ =
+        std::make_unique<BorealisWindowManager>(profile_.get());
+    borealis_service_fake_->SetWindowManagerForTesting(
+        borealis_window_manager_.get());
+    game_mode_controller_ = std::make_unique<GameModeController>();
     features_ = std::make_unique<BorealisFeatures>(profile_.get());
-    service_fake_->SetFeaturesForTesting(features_.get());
+    borealis_service_fake_->SetFeaturesForTesting(features_.get());
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
@@ -51,15 +61,15 @@ class BorealisGameModeControllerTest : public ChromeAshTestBase {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<BorealisWindowManager> window_manager_;
-  std::unique_ptr<BorealisGameModeController> game_mode_controller_;
+  std::unique_ptr<BorealisWindowManager> borealis_window_manager_;
+  std::unique_ptr<GameModeController> game_mode_controller_;
   std::unique_ptr<BorealisFeatures> features_;
-  BorealisServiceFake* service_fake_;
+  BorealisServiceFake* borealis_service_fake_;
   ash::FakeResourcedClient* fake_resourced_client_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-TEST_F(BorealisGameModeControllerTest, ChangingFullScreenTogglesGameMode) {
+TEST_F(GameModeControllerTest, ChangingFullScreenTogglesGameMode) {
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -71,7 +81,7 @@ TEST_F(BorealisGameModeControllerTest, ChangingFullScreenTogglesGameMode) {
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
 }
 
-TEST_F(BorealisGameModeControllerTest, NonBorealisWindowDoesNotEnterGameMode) {
+TEST_F(GameModeControllerTest, NonBorealisWindowDoesNotEnterGameMode) {
   std::unique_ptr<aura::Window> window = CreateTestWindow();
   views::Widget::GetTopLevelWidgetForNativeView(window.get())
       ->SetFullscreen(true);
@@ -79,7 +89,7 @@ TEST_F(BorealisGameModeControllerTest, NonBorealisWindowDoesNotEnterGameMode) {
   EXPECT_EQ(0, fake_resourced_client_->get_enter_game_mode_count());
 }
 
-TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
+TEST_F(GameModeControllerTest, SwitchingWindowsTogglesGameMode) {
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -99,7 +109,7 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsTogglesGameMode) {
   EXPECT_EQ(2, fake_resourced_client_->get_enter_game_mode_count());
 }
 
-TEST_F(BorealisGameModeControllerTest, DestroyingWindowExitsGameMode) {
+TEST_F(GameModeControllerTest, DestroyingWindowExitsGameMode) {
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -111,7 +121,7 @@ TEST_F(BorealisGameModeControllerTest, DestroyingWindowExitsGameMode) {
   EXPECT_EQ(1, fake_resourced_client_->get_exit_game_mode_count());
 }
 
-TEST_F(BorealisGameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
+TEST_F(GameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -126,7 +136,7 @@ TEST_F(BorealisGameModeControllerTest, SwitchingWindowsMaintainsGameMode) {
   EXPECT_EQ(1, fake_resourced_client_->get_enter_game_mode_count());
 }
 
-TEST_F(BorealisGameModeControllerTest, SetGameModeFailureDoesNotCrash) {
+TEST_F(GameModeControllerTest, SetGameModeFailureDoesNotCrash) {
   fake_resourced_client_->set_set_game_mode_with_timeout_response(
       absl::nullopt);
   std::unique_ptr<views::Widget> test_widget =
@@ -137,7 +147,7 @@ TEST_F(BorealisGameModeControllerTest, SetGameModeFailureDoesNotCrash) {
   EXPECT_FALSE(ash::WindowState::Get(window)->IsFullscreen());
 }
 
-TEST_F(BorealisGameModeControllerTest, GameModeRefreshes) {
+TEST_F(GameModeControllerTest, GameModeRefreshes) {
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -147,7 +157,7 @@ TEST_F(BorealisGameModeControllerTest, GameModeRefreshes) {
   EXPECT_EQ(2, fake_resourced_client_->get_enter_game_mode_count());
 }
 
-TEST_F(BorealisGameModeControllerTest, GameModeMetricsRecorded) {
+TEST_F(GameModeControllerTest, GameModeMetricsRecorded) {
   std::unique_ptr<views::Widget> test_widget =
       CreateFakeWidget("org.chromium.borealis.foo", true);
   aura::Window* window = test_widget->GetNativeWindow();
@@ -199,4 +209,4 @@ TEST_F(BorealisGameModeControllerTest, GameModeMetricsRecorded) {
 }
 
 }  // namespace
-}  // namespace borealis
+}  // namespace game_mode
