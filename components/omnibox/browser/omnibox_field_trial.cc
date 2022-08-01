@@ -749,6 +749,15 @@ const base::FeatureParam<bool> kAutocompleteStabilityAsyncProvidersFirst(
     &omnibox::kAutocompleteStability,
     "AutocompleteStabilityAsyncProvidersFirst",
     false);
+const base::FeatureParam<bool>
+    kAutocompleteStabilityUpdateResultDebounceFromLastRun(
+        &omnibox::kAutocompleteStability,
+        "AutocompleteStabilityUpdateResultDebounceFromLastRun",
+        false);
+const base::FeatureParam<int> kAutocompleteStabilityUpdateResultDebounceDelay(
+    &omnibox::kAutocompleteStability,
+    "AutocompleteStabilityUpdateResultDebounceDelay",
+    0);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions:
 
