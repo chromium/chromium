@@ -244,8 +244,15 @@ AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
   if (!local_frame_->IsAttached())
     return nullptr;
 
-  if (num_resource_clients_ >= kMaxConcurrentRequests)
+  LocalDOMWindow* window = local_frame_->DomWindow();
+
+  if (num_resource_clients_ >= kMaxConcurrentRequests) {
+    LogAuditIssue(
+        window, AttributionReportingIssueType::kTooManyConcurrentRequests,
+        element, /*request_id=*/absl::nullopt,
+        /*invalid_parameter=*/AtomicString::Number(kMaxConcurrentRequests));
     return nullptr;
+  }
 
   if (!src_url.ProtocolIsInHTTPFamily())
     return nullptr;
@@ -255,7 +262,6 @@ AttributionSrcLoader::CreateAndSendRequest(const KURL& src_url,
     return nullptr;
   }
 
-  LocalDOMWindow* window = local_frame_->DomWindow();
   Document* document = window->document();
 
   if (document->IsPrerendering()) {
