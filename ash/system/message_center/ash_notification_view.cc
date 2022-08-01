@@ -762,6 +762,22 @@ base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(
   return base::Milliseconds(kGeneralCollapseAnimationDuration);
 }
 
+void AshNotificationView::AbortAllLayerAnimations() {
+  layer()->GetAnimator()->AbortAllAnimations();
+
+  // Aborting animations on these views can result in the view being deleted. To
+  // prevent a container overflow we need to copy the view pointers into a
+  // separate vector before calling abort animations on them.
+  std::vector<views::View*> grouped_notifications;
+  std::copy(grouped_notifications_container_->children().begin(),
+            grouped_notifications_container_->children().end(),
+            std::back_inserter(grouped_notifications));
+
+  for (auto* child : grouped_notifications) {
+    child->layer()->GetAnimator()->AbortAllAnimations();
+  }
+}
+
 void AshNotificationView::AddGroupNotification(
     const message_center::Notification& notification) {
   DCHECK(is_grouped_parent_view_);
@@ -876,7 +892,9 @@ void AshNotificationView::RemoveGroupNotification(
         self->expand_button_->UpdateGroupedNotificationsCount(
             self->total_grouped_notifications_);
 
-        self->grouped_notifications_container_->RemoveChildViewT(to_be_removed);
+        // crbug/1347815: Release this view immediately to prevent msan failure.
+        self->grouped_notifications_container_->RemoveChildViewT(to_be_removed)
+            .release();
         self->PreferredSizeChanged();
       },
       weak_factory_.GetWeakPtr(), notification_id);
@@ -1524,7 +1542,7 @@ void AshNotificationView::AnimateResizeAfterRemoval(
       grouped_notifications_container_->height();
   size_t removed_index =
       grouped_notifications_container_->GetIndexOf(to_be_removed).value();
-  LOG(ERROR) << "Removed after animation";
+
   grouped_notifications_container_->RemoveChildViewT(to_be_removed).reset();
 
   auto* notification_view_controller = message_center_utils::
