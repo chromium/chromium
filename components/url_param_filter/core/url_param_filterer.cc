@@ -18,10 +18,37 @@
 #include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 
 namespace url_param_filter {
+
+namespace internal {
+
+absl::optional<std::string> GetLabelFromHostname(const GURL& gurl) {
+  if (gurl.HostIsIPAddress()) {
+    return absl::nullopt;
+  }
+  std::string etld_plus_one =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          gurl, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  if (etld_plus_one.empty()) {
+    return absl::nullopt;
+  }
+  size_t etld_len = net::registry_controlled_domains::GetRegistryLength(
+      gurl, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+  if (etld_len == 0 || etld_len == std::string::npos ||
+      etld_plus_one.size() - etld_len - 1 <= 0) {
+    return absl::nullopt;
+  }
+  return etld_plus_one.substr(0, etld_plus_one.size() - etld_len - 1);
+}
+
+}  // namespace internal
+
 namespace {
 
 // Get the ETLD+1 of the URL, which means any subdomain is treated equivalently.
@@ -35,12 +62,46 @@ std::string GetClassifiedSite(const GURL& gurl) {
       gurl, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
+std::map<std::string, ClassificationExperimentStatus> GetBlockedParameters(
+    const GURL& source_url,
+    const GURL& destination_url,
+    const ClassificationMap& classification_map,
+    const FilterClassification::UseCase use_case) {
+  std::string source_classified_site = GetClassifiedSite(source_url);
+  std::string destination_classified_site = GetClassifiedSite(destination_url);
+  absl::optional<std::string> source_label =
+      internal::GetLabelFromHostname(source_url);
+
+  std::map<std::string, ClassificationExperimentStatus> blocked_parameters;
+  std::vector<ClassificationMapKey> search_keys = {
+      {SourceKey(std::move(source_classified_site)),
+       DestinationKey(std::move(destination_classified_site))}};
+  if (source_label.has_value()) {
+    search_keys.push_back(SourceWildcardKey(std::move(source_label.value())));
+  }
+
+  // Check whether source site, as seen by the classifier (eTLD+1 or IP), has
+  // params classified as requiring filtering. If so, and the params are present
+  // on the destination URL, or any nested URLs, remove them.
+  for (const auto& key : search_keys) {
+    auto classification_result = classification_map.find(key);
+    if (classification_result != classification_map.end()) {
+      auto classification_with_use_case =
+          classification_result->second.find(use_case);
+      if (classification_with_use_case != classification_result->second.end()) {
+        blocked_parameters.insert(classification_with_use_case->second.begin(),
+                                  classification_with_use_case->second.end());
+      }
+    }
+  }
+  return blocked_parameters;
+}
+
 // Filter a given URL according to the passed-in classifications, optionally
 // checking any encoded, nested URLs.
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
-                       const ClassificationMap& source_classification_map,
-                       const ClassificationMap& destination_classification_map,
+                       const ClassificationMap& classification_map,
                        const bool check_nested,
                        const FilterClassification::UseCase use_case) {
   GURL result = GURL{destination_url};
@@ -54,38 +115,10 @@ FilterResult FilterUrl(const GURL& source_url,
                         experiment_status};
   }
 
-  std::string source_classified_site = GetClassifiedSite(source_url);
-  std::string destination_classified_site = GetClassifiedSite(destination_url);
+  std::map<std::string, ClassificationExperimentStatus> blocked_parameters =
+      GetBlockedParameters(source_url, destination_url, classification_map,
+                           use_case);
 
-  std::map<std::string, ClassificationExperimentStatus> blocked_parameters;
-  // Check whether source site, as seen by the classifier (eTLD+1 or IP), has
-  // params classified as requiring filtering. If so, and the params are present
-  // on the destination URL, or any nested URLs, remove them.
-  auto source_classification_result =
-      source_classification_map.find(source_classified_site);
-  if (source_classification_result != source_classification_map.end()) {
-    auto source_classification_with_use_case =
-        source_classification_result->second.find(use_case);
-    if (source_classification_with_use_case !=
-        source_classification_result->second.end()) {
-      blocked_parameters.insert(
-          source_classification_with_use_case->second.begin(),
-          source_classification_with_use_case->second.end());
-    }
-  }
-  auto destination_classification_result =
-      destination_classification_map.find(destination_classified_site);
-  if (destination_classification_result !=
-      destination_classification_map.end()) {
-    auto destination_classification_with_use_case =
-        destination_classification_result->second.find(use_case);
-    if (destination_classification_with_use_case !=
-        destination_classification_result->second.end()) {
-      blocked_parameters.insert(
-          destination_classification_with_use_case->second.begin(),
-          destination_classification_with_use_case->second.end());
-    }
-  }
   // Return quickly if there are no parameters we care about.
   if (blocked_parameters.size() == 0) {
     return FilterResult{destination_url, filtered_params_count,
@@ -103,9 +136,8 @@ FilterResult FilterUrl(const GURL& source_url,
       if (check_nested) {
         GURL nested = GURL{base::UnescapeBinaryURLComponent(value)};
         if (nested.is_valid()) {
-          FilterResult nested_result =
-              FilterUrl(destination_url, nested, source_classification_map,
-                        destination_classification_map, false, use_case);
+          FilterResult nested_result = FilterUrl(
+              destination_url, nested, classification_map, false, use_case);
           // If a nested URL contains a param we must filter, do so now.
           if (nested != nested_result.filtered_url) {
             value = base::EscapeQueryParamValue(
@@ -146,22 +178,19 @@ FilterResult FilterUrl(const GURL& source_url,
 
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
-                       const ClassificationMap& source_classification_map,
-                       const ClassificationMap& destination_classification_map,
+                       const ClassificationMap& classification_map,
                        const FilterClassification::UseCase use_case) {
-  return FilterUrl(source_url, destination_url, source_classification_map,
-                   destination_classification_map, true, use_case);
+  return FilterUrl(source_url, destination_url, classification_map, true,
+                   use_case);
 }
 
 FilterResult FilterUrl(const GURL& source_url, const GURL& destination_url) {
   if (!base::FeatureList::IsEnabled(features::kIncognitoParamFilterEnabled)) {
     return FilterResult{destination_url, 0};
   }
-  return FilterUrl(
-      source_url, destination_url,
-      ClassificationsLoader::GetInstance()->GetSourceClassifications(),
-      ClassificationsLoader::GetInstance()->GetDestinationClassifications(),
-      FilterClassification::USE_CASE_UNKNOWN);
+  return FilterUrl(source_url, destination_url,
+                   ClassificationsLoader::GetInstance()->GetClassifications(),
+                   FilterClassification::USE_CASE_UNKNOWN);
 }
 
 FilterResult FilterUrl(const GURL& source_url,
@@ -171,11 +200,9 @@ FilterResult FilterUrl(const GURL& source_url,
     return FilterResult{destination_url, 0,
                         ClassificationExperimentStatus::NON_EXPERIMENTAL};
   }
-  return FilterUrl(
-      source_url, destination_url,
-      ClassificationsLoader::GetInstance()->GetSourceClassifications(),
-      ClassificationsLoader::GetInstance()->GetDestinationClassifications(),
-      use_case);
+  return FilterUrl(source_url, destination_url,
+                   ClassificationsLoader::GetInstance()->GetClassifications(),
+                   use_case);
 }
 
 }  // namespace url_param_filter

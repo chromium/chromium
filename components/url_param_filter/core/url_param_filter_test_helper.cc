@@ -38,7 +38,7 @@ ClassificationMap CreateClassificationMapForTesting(
   for (auto i : source) {
     for (auto j : i.second) {
       for (auto k : j.second) {
-        result[i.first][j.first][k] =
+        result[{.site_role = role, .site = i.first}][j.first][k] =
             ClassificationExperimentStatus::NON_EXPERIMENTAL;
       }
     }
@@ -46,11 +46,16 @@ ClassificationMap CreateClassificationMapForTesting(
   return result;
 }
 
-ClassificationMap CreateClassificationMapForTesting(
-    const std::map<std::string, std::vector<std::string>>& source,
-    url_param_filter::FilterClassification_SiteRole role) {
-  return CreateClassificationMapForTesting(ConvertToDefaultUseCases(source),
-                                           role);
+url_param_filter::ClassificationMap CreateClassificationMapForTesting(
+    const std::map<ClassificationMapKey, std::vector<std::string>>& source) {
+  url_param_filter::ClassificationMap result;
+  for (const auto& [key, params] : source) {
+    for (const auto& param : params) {
+      result[key][FilterClassification::USE_CASE_UNKNOWN][param] =
+          ClassificationExperimentStatus::NON_EXPERIMENTAL;
+    }
+  }
+  return result;
 }
 
 std::string CreateSerializedUrlParamFilterClassificationForTesting(
@@ -62,12 +67,12 @@ std::string CreateSerializedUrlParamFilterClassificationForTesting(
                             std::vector<std::string>>>& destination_params,
     const std::vector<std::string>& experiment_tags) {
   url_param_filter::FilterClassifications classifications;
-  for (auto i : CreateClassificationMapForTesting(
+  for (auto [key, inner_map] : CreateClassificationMapForTesting(
            source_params, url_param_filter::FilterClassification_SiteRole::
                               FilterClassification_SiteRole_SOURCE)) {
-    for (auto j : i.second) {
+    for (auto j : inner_map) {
       url_param_filter::FilterClassification classification;
-      classification.set_site(i.first);
+      classification.set_site(key.site);
       for (auto i : experiment_tags) {
         classification.add_experiment_tags(i);
       }
@@ -84,12 +89,12 @@ std::string CreateSerializedUrlParamFilterClassificationForTesting(
       *classifications.add_classifications() = std::move(classification);
     }
   }
-  for (auto i : CreateClassificationMapForTesting(
+  for (auto [key, inner_map] : CreateClassificationMapForTesting(
            destination_params, url_param_filter::FilterClassification_SiteRole::
                                    FilterClassification_SiteRole_DESTINATION)) {
-    for (auto j : i.second) {
+    for (auto j : inner_map) {
       url_param_filter::FilterClassification classification;
-      classification.set_site(i.first);
+      classification.set_site(key.site);
       for (auto i : experiment_tags) {
         classification.add_experiment_tags(i);
       }
@@ -159,16 +164,32 @@ FilterClassifications MakeClassificationsProtoFromMapWithUseCases(
   for (const auto& [site, param_map] : source_map) {
     for (const auto& [use_case, params] : param_map) {
       AddClassification(classifications.add_classifications(), site,
-                        FilterClassification_SiteRole_SOURCE, params,
-                        {use_case}, {DEFAULT_TAG});
+                        FilterClassification_SiteRole_SOURCE,
+                        FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                        params, {use_case}, {DEFAULT_TAG});
     }
   }
   for (const auto& [site, param_map] : dest_map) {
     for (const auto& [use_case, params] : param_map) {
       AddClassification(classifications.add_classifications(), site,
-                        FilterClassification_SiteRole_DESTINATION, params,
-                        {use_case}, {DEFAULT_TAG});
+                        FilterClassification_SiteRole_DESTINATION,
+                        FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                        params, {use_case}, {DEFAULT_TAG});
     }
+  }
+  return classifications;
+}
+
+FilterClassifications MakeClassificationsProtoFromMap(
+    const std::map<ClassificationMapKey, std::vector<std::string>>& map) {
+  url_param_filter::FilterClassifications classifications;
+  for (const auto& [key, params] : map) {
+    AddClassification(classifications.add_classifications(), key.site,
+                      key.site_role, key.site_match_type, params,
+                      {
+                          FilterClassification::USE_CASE_UNKNOWN,
+                      },
+                      {DEFAULT_TAG});
   }
   return classifications;
 }
@@ -180,13 +201,15 @@ FilterClassifications MakeClassificationsProtoFromMap(
   std::vector<FilterClassification::UseCase> use_cases;
   for (const auto& [site, params] : source_map) {
     AddClassification(classifications.add_classifications(), site,
-                      FilterClassification_SiteRole_SOURCE, params, use_cases,
-                      {});
+                      FilterClassification_SiteRole_SOURCE,
+                      FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                      params, use_cases, {});
   }
   for (const auto& [site, params] : dest_map) {
     AddClassification(classifications.add_classifications(), site,
-                      FilterClassification_SiteRole_DESTINATION, params,
-                      use_cases, {});
+                      FilterClassification_SiteRole_DESTINATION,
+                      FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                      params, use_cases, {});
   }
   return classifications;
 }
@@ -194,26 +217,31 @@ FilterClassifications MakeClassificationsProtoFromMap(
 FilterClassification MakeFilterClassification(
     const std::string& site,
     FilterClassification_SiteRole role,
+    FilterClassification_SiteMatchType site_match_type,
     const std::vector<std::string>& params) {
-  return MakeFilterClassification(site, role, params, {}, DEFAULT_TAG);
+  return MakeFilterClassification(site, role, site_match_type, params, {},
+                                  DEFAULT_TAG);
 }
 
 FilterClassification MakeFilterClassification(
     const std::string& site,
     FilterClassification_SiteRole role,
+    FilterClassification_SiteMatchType site_match_type,
     const std::vector<std::string>& params,
     const std::vector<FilterClassification::UseCase>& use_cases) {
-  return MakeFilterClassification(site, role, params, use_cases, DEFAULT_TAG);
+  return MakeFilterClassification(site, role, site_match_type, params,
+                                  use_cases, DEFAULT_TAG);
 }
 
 FilterClassification MakeFilterClassification(
     const std::string& site,
     FilterClassification_SiteRole role,
+    FilterClassification_SiteMatchType site_match_type,
     const std::vector<std::string>& params,
     const std::vector<FilterClassification::UseCase>& use_cases,
     const std::string& experiment_identifier) {
   FilterClassification fc;
-  AddClassification(&fc, site, role, params, use_cases,
+  AddClassification(&fc, site, role, site_match_type, params, use_cases,
                     {experiment_identifier});
   return fc;
 }
@@ -222,11 +250,13 @@ void AddClassification(
     FilterClassification* classification,
     const std::string& site,
     FilterClassification_SiteRole role,
+    FilterClassification_SiteMatchType site_match_type,
     const std::vector<std::string>& params,
     const std::vector<FilterClassification::UseCase>& use_cases,
     const std::vector<std::string>& experiment_tags) {
   classification->set_site(site);
   classification->set_site_role(role);
+  classification->set_site_match_type(site_match_type);
   // The proto distinguishes between empty and not set; for the purposes of this
   // test helper, we avoid empty being considered an experiment.
   if (!experiment_tags.empty()) {
