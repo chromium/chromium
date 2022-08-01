@@ -1054,7 +1054,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.EndRecordingReason.{TabletOrClamshell}"
-    enum="EndRecordingReason" expires_after="2022-09-09">
+    enum="EndRecordingReason" expires_after="2023-08-01">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1066,7 +1066,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"
-    enum="CaptureModeEntryType" expires_after="2022-09-09">
+    enum="CaptureModeEntryType" expires_after="2023-08-01">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -1130,7 +1130,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.Projector.ScreenRecordingLength.{TabletOrClamshell}"
-    units="seconds" expires_after="2022-09-09">
+    units="seconds" expires_after="2023-08-01">
   <owner>afakhry@chromium.org</owner>
   <owner>michelefan@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -1216,7 +1216,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshell}"
-    units="seconds" expires_after="2022-09-09">
+    units="seconds" expires_after="2023-08-01">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
