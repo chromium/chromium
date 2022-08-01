@@ -7091,3 +7091,6 @@ crbug.com/1347675 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/fragment
 # Sheriff 2022-08-01
 crbug.com/1348835 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass ]
 crbug.com/1348835 [ Mac ] virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass ]
+
+# TODO(crbug.com/1225773): Re-enable this test
+crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Skip ]
