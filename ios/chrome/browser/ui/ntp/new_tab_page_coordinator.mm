@@ -384,6 +384,7 @@ namespace {
   [self.containedViewController.view removeFromSuperview];
   [self.containedViewController removeFromParentViewController];
   self.containedViewController = nil;
+  self.ntpViewController.feedHeaderViewController = nil;
   self.ntpViewController = nil;
   self.feedHeaderViewController = nil;
   self.alertCoordinator = nil;
