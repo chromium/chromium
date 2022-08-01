@@ -235,6 +235,18 @@ Polymer({
     this.unlisten(this, 'keydown', 'onKeydown_');
   },
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isESimNetwork_() {
+    const mojom = chromeos.networkConfig.mojom;
+    return !!this.networkState &&
+        this.networkState.type === mojom.NetworkType.kCellular &&
+        !!this.networkState.typeState.cellular.eid &&
+        !!this.networkState.typeState.cellular.iccid;
+  },
+
   /** @private */
   async itemChanged_() {
     if (this.item && !this.item.hasOwnProperty('customItemType')) {
@@ -267,10 +279,7 @@ Polymer({
 
     // Show service provider subtext only when networkState is an eSIM cellular
     // network.
-    if (!this.networkState ||
-        this.networkState.type !== mojom.NetworkType.kCellular ||
-        !this.networkState.typeState.cellular.eid ||
-        !this.networkState.typeState.cellular.iccid) {
+    if (!this.isESimNetwork_()) {
       return;
     }
 
@@ -327,7 +336,7 @@ Polymer({
   setItemTitle_() {
     const itemName = this.getItemName_();
     const subtitle = this.getSubtitle();
-    if (!subtitle) {
+    if (!subtitle || (this.isESimNetwork_() && itemName === subtitle)) {
       this.itemTitle_ = itemName;
       return;
     }
