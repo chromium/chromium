@@ -10,7 +10,7 @@
 // time.h is a widely included header and its size impacts build time.
 // Try not to raise this limit unless necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 491000
+#pragma clang max_tokens_here 492000
 #endif  // BUILDFLAG(IS_LINUX)
 
 #include <atomic>
