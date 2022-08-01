@@ -1263,7 +1263,8 @@ public class RootUiCoordinator
             stubId = R.id.find_toolbar_tablet_stub;
         }
         mFindToolbarManager = new FindToolbarManager(mActivity.findViewById(stubId),
-                mTabModelSelectorSupplier.get(), mWindowAndroid, mActionModeControllerCallback);
+                mTabModelSelectorSupplier.get(), mWindowAndroid, mActionModeControllerCallback,
+                mBackPressManager);
 
         mFindToolbarObserver = new FindToolbarObserver() {
             @Override
