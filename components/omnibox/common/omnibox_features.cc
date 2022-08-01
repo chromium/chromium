@@ -209,7 +209,7 @@ const base::Feature kBookmarkPaths{"OmniboxBookmarkPaths",
 // duplicate shortcuts are given an aggregate score, as if they had been a
 // single shortcut.
 const base::Feature kAggregateShortcuts{"OmniboxAggregateShortcuts",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 // If enabled, when updating or creating a shortcut, the last word of the input
 // is expanded, if possible, to a complete word in the suggestion description.

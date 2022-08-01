@@ -6180,7 +6180,6 @@
                     },
                     "enable_features": [
                         "LocalHistorySuggestRevamp",
-                        "OmniboxAggregateShortcuts",
                         "OmniboxBlurWithEscape",
                         "OmniboxBookmarkPaths",
                         "OmniboxClosePopupWithEscape",
