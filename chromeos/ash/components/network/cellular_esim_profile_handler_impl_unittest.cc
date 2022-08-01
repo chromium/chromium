@@ -102,10 +102,10 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
 
     if (also_add_to_prefs) {
-      base::Value euicc_paths_from_prefs = GetEuiccListFromPrefs();
+      base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
       euicc_paths_from_prefs.Append(euicc_path);
       device_prefs_.Set(prefs::kESimRefreshedEuiccs,
-                        std::move(euicc_paths_from_prefs));
+                        base::Value(std::move(euicc_paths_from_prefs)));
     }
   }
 
@@ -199,8 +199,8 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     return helper_.hermes_euicc_test()->GetLastRefreshProfilesRestoreSlotArg();
   }
 
-  base::Value GetEuiccListFromPrefs() {
-    return device_prefs_.GetList(prefs::kESimRefreshedEuiccs)->Clone();
+  base::Value::List GetEuiccListFromPrefs() {
+    return device_prefs_.GetValueList(prefs::kESimRefreshedEuiccs).Clone();
   }
 
   void SetPSimSlotInfo(const std::string& iccid) {
@@ -483,25 +483,22 @@ TEST_F(CellularESimProfileHandlerImplTest,
   AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
 
   Init();
-  base::Value euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_TRUE(euicc_paths_from_prefs.GetListDeprecated().empty());
+  base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
+  EXPECT_TRUE(euicc_paths_from_prefs.empty());
 
   // Set device prefs; a new auto-refresh should have started but not yet
   // completed.
   SetDevicePrefs();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_TRUE(euicc_paths_from_prefs.GetListDeprecated().empty());
+  EXPECT_TRUE(euicc_paths_from_prefs.empty());
   EXPECT_FALSE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
 
   FastForwardProfileRefreshDelay();
   base::RunLoop().RunUntilIdle();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_EQ(1u, euicc_paths_from_prefs.GetListDeprecated().size());
+  EXPECT_EQ(1u, euicc_paths_from_prefs.size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
-            euicc_paths_from_prefs.GetListDeprecated()[0].GetString());
+            euicc_paths_from_prefs[0].GetString());
   EXPECT_TRUE(HasAutoRefreshedEuicc(/*euicc_num=*/1));
   EXPECT_TRUE(GetLastRefreshProfilesRestoreSlotArg());
 }
@@ -544,18 +541,16 @@ TEST_F(CellularESimProfileHandlerImplTest,
   SetDevicePrefs();
 
   // Verify that no EUICCs exist in pref.
-  base::Value euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_TRUE(euicc_paths_from_prefs.GetListDeprecated().empty());
+  base::Value::List euicc_paths_from_prefs = GetEuiccListFromPrefs();
+  EXPECT_TRUE(euicc_paths_from_prefs.empty());
 
   // Verify that EUICCs are refreshed after the cellular device is added.
   AddCellularDevice();
   FastForwardProfileRefreshDelay();
   euicc_paths_from_prefs = GetEuiccListFromPrefs();
-  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
-  EXPECT_EQ(1u, euicc_paths_from_prefs.GetListDeprecated().size());
+  EXPECT_EQ(1u, euicc_paths_from_prefs.size());
   EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
-            euicc_paths_from_prefs.GetListDeprecated()[0].GetString());
+            euicc_paths_from_prefs[0].GetString());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest, DisableActiveESimProfile) {
