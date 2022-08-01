@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_DRAG_DROP_NOTIFIER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_DRAG_DROP_NOTIFIER_H_
 
-#include "base/callback.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 
 namespace policy {
@@ -36,10 +35,6 @@ class DlpDragDropNotifier : public DlpDataTransferNotifier {
 
   // views::WidgetObserver
   void OnWidgetDestroying(views::Widget* widget) override;
-
- private:
-  // Drop callback.
-  base::OnceClosure drop_cb_;
 };
 
 }  // namespace policy

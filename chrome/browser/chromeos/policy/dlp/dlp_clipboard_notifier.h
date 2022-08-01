@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFIER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFIER_H_
 
-#include "base/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -58,8 +57,6 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   // `data_dst` before.
   bool DidUserCancelDst(const ui::DataTransferEndpoint* const data_dst);
 
-  void SetBlinkPasteCallbackForTesting(base::OnceCallback<void(bool)> paste_cb);
-
  protected:
   // Exposed for tests to override.
   void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
@@ -94,9 +91,6 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   // Vector of destinations rejected by the user on warning for copy/paste. It
   // gets reset when the clipboard data changes.
   std::vector<ui::DataTransferEndpoint> cancelled_dsts_;
-
-  // Blink paste callback.
-  base::OnceCallback<void(bool)> blink_paste_cb_;
 };
 
 }  // namespace policy
