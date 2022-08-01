@@ -22,7 +22,7 @@ public class TestSelectionPopupController implements SelectionPopupController {
     public TestSelectionPopupController() {}
 
     @Override
-    public void setActionModeCallback(ActionMode.Callback callback) {}
+    public void setActionModeCallback(ActionMode.Callback2 callback) {}
 
     @Override
     public void setNonSelectionActionModeCallback(ActionMode.Callback callback) {}

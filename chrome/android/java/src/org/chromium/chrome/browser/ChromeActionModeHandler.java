@@ -62,14 +62,16 @@ public class ChromeActionModeHandler {
      * @param searchCallback Callback to run when search action is selected in the action mode.
      * @param shareDelegateSupplier The {@link Supplier} of the {@link ShareDelegate} that will be
      *        notified when a share action is performed.
+     * @param canDrawOutsideScreen Whether floating action bar can be drawn outside the screen.
      */
     public ChromeActionModeHandler(ActivityTabProvider activityTabProvider,
             Consumer<Boolean> actionBarObserver, Callback<String> searchCallback,
-            Supplier<ShareDelegate> shareDelegateSupplier) {
+            Supplier<ShareDelegate> shareDelegateSupplier, boolean canDrawOutsideScreen) {
         mInitWebContentsObserver = (webContents) -> {
             SelectionPopupController.fromWebContents(webContents)
-                    .setActionModeCallback(new ActionModeCallback(mActiveTab, webContents,
-                            actionBarObserver, searchCallback, shareDelegateSupplier));
+                    .setActionModeCallback(
+                            new ActionModeCallback(mActiveTab, webContents, actionBarObserver,
+                                    searchCallback, shareDelegateSupplier, canDrawOutsideScreen));
         };
 
         mActivityTabTabObserver =
@@ -94,7 +96,7 @@ public class ChromeActionModeHandler {
     }
 
     @VisibleForTesting
-    static class ActionModeCallback implements ActionMode.Callback {
+    static class ActionModeCallback extends ActionMode.Callback2 {
         /**
          * Android Intent size limitations prevent sending over a megabyte of data. Limit
          * query lengths to 100kB because other things may be added to the Intent.
@@ -106,17 +108,20 @@ public class ChromeActionModeHandler {
         private final Consumer<Boolean> mActionBarObserver;
         private final Callback<String> mSearchCallback;
         private final Supplier<ShareDelegate> mShareDelegateSupplier;
+        private final boolean mCanDrawOutsideScreen;
 
         // Used for recording UMA histograms.
         private long mContextMenuStartTime;
 
         ActionModeCallback(Tab tab, WebContents webContents, Consumer<Boolean> observer,
-                Callback<String> searchCallback, Supplier<ShareDelegate> shareDelegateSupplier) {
+                Callback<String> searchCallback, Supplier<ShareDelegate> shareDelegateSupplier,
+                boolean canDrawOutsideScreen) {
             mTab = tab;
             mHelper = getActionModeCallbackHelper(webContents);
             mActionBarObserver = observer;
             mSearchCallback = searchCallback;
             mShareDelegateSupplier = shareDelegateSupplier;
+            mCanDrawOutsideScreen = canDrawOutsideScreen;
         }
 
         @VisibleForTesting
@@ -231,8 +236,24 @@ public class ChromeActionModeHandler {
             notifyContextualActionBarVisibilityChanged(false);
         }
 
+        @Override
+        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+            mHelper.onGetContentRect(mode, view, outRect);
+            if (mCanDrawOutsideScreen) {
+                // If the selected text is on the right side near the edge (over 3/4 of the screen),
+                // move it closer to the center to avoid the action mode being cut off.
+                int quarter = view.getWidth() / 4;
+                if (outRect.right - quarter * 3 > 0) {
+                    int xoffset = quarter
+                            + view.getResources().getDimensionPixelSize(
+                                    R.dimen.custom_tabs_actionmode_offset);
+                    outRect.offset(-xoffset, 0);
+                }
+            }
+        }
+
         private void notifyContextualActionBarVisibilityChanged(boolean show) {
-            if (!mHelper.supportsFloatingActionMode()) mActionBarObserver.accept(show);
+            mActionBarObserver.accept(show);
         }
 
         private Set<String> getPackageNames(List<ResolveInfo> list) {
@@ -247,11 +268,7 @@ public class ChromeActionModeHandler {
         }
 
         private void recordUserAction() {
-            if (mHelper.supportsFloatingActionMode()) {
-                RecordUserAction.record("MobileActionBarShown.Floating");
-            } else {
-                RecordUserAction.record("MobileActionBarShown.Toolbar");
-            }
+            RecordUserAction.record("MobileActionBarShown.Floating");
         }
 
         private static String sanitizeTextForShare(String text) {

@@ -689,7 +689,7 @@ public class RootUiCoordinator
                     mTabModelSelectorSupplier.get().openNewTab(
                             generateUrlParamsForSearch(tab, query),
                             TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, tab.isIncognito());
-                }, mShareDelegateSupplier);
+                }, mShareDelegateSupplier, canDrawOutsideScreen());
         mVrModeObserver = new VrModeObserver() {
             @Override
             public void onEnterVr() {
@@ -1242,6 +1242,13 @@ public class RootUiCoordinator
         Rect appRect = new Rect();
         mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(appRect);
         return appRect;
+    }
+
+    /**
+     * Whether UI like popup can be drawn outside the screen. {@code false} by default.
+     */
+    protected boolean canDrawOutsideScreen() {
+        return false;
     }
 
     private void hideAppMenu() {
