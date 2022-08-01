@@ -78,9 +78,9 @@ constexpr char kKbdInvalidCustomTopRowLayout[] = "X X X";
 
 // Values for enum output parameters to IdentifyKeyboard() that do not
 // match any enum types.
-constexpr auto kImpossibleDeviceType =
+const auto kImpossibleDeviceType =
     static_cast<ui::EventRewriterChromeOS::DeviceType>(-1);
-constexpr auto kImpossibleKeyboardTopRowLayout =
+const auto kImpossibleKeyboardTopRowLayout =
     static_cast<ui::EventRewriterChromeOS::KeyboardTopRowLayout>(-1);
 
 class TestEventRewriterContinuation

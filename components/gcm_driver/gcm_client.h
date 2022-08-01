@@ -58,7 +58,7 @@ class GCMClient {
   };
 
   // Used for UMA. Can add enum values, but never renumber or delete and reuse.
-  enum Result {
+  enum Result : uint8_t {
     // Successful operation.
     SUCCESS,
     // Invalid parameter.

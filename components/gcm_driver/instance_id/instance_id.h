@@ -30,7 +30,7 @@ extern const char kGCMScope[];
 class InstanceID {
  public:
   // Used in UMA. Can add enum values, but never renumber or delete and reuse.
-  enum Result {
+  enum Result : uint8_t {
     // Successful operation.
     SUCCESS = 0,
     // Invalid parameter.
