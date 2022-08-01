@@ -63,9 +63,10 @@ class ASH_EXPORT AmbientPhotoCache {
 
   // Read the photo cache at |cache_index| and call |callback| when complete.
   // If a particular cache fails to be read, |cache_entry| will be empty.
-  virtual void ReadPhotoCache(int cache_index,
-                              ::ambient::PhotoCacheEntry* cache_entry,
-                              base::OnceCallback<void()> callback) = 0;
+  virtual void ReadPhotoCache(
+      int cache_index,
+      base::OnceCallback<void(::ambient::PhotoCacheEntry cache_entry)>
+          callback) = 0;
 
   // Erase all stored files from disk.
   virtual void Clear() = 0;

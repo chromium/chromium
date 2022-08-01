@@ -114,17 +114,16 @@ class TestAmbientPhotoCacheImpl : public AmbientPhotoCache {
     std::move(callback).Run();
   }
 
-  void ReadPhotoCache(int cache_index,
-                      ::ambient::PhotoCacheEntry* cache_entry,
-                      base::OnceCallback<void()> callback) override {
+  void ReadPhotoCache(
+      int cache_index,
+      base::OnceCallback<void(::ambient::PhotoCacheEntry)> callback) override {
     auto it = files_.find(cache_index);
     if (it == files_.end()) {
-      std::move(callback).Run();
+      std::move(callback).Run(::ambient::PhotoCacheEntry());
       return;
     }
 
-    *cache_entry = it->second;
-    std::move(callback).Run();
+    std::move(callback).Run(it->second);
   }
 
   void Clear() override {

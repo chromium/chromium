@@ -233,26 +233,27 @@ class AmbientPhotoCacheImpl : public AmbientPhotoCache {
         std::move(callback));
   }
 
-  void ReadPhotoCache(int cache_index,
-                      ambient::PhotoCacheEntry* cache_entry,
-                      base::OnceCallback<void()> callback) override {
-    task_runner_->PostTaskAndReply(
+  void ReadPhotoCache(
+      int cache_index,
+      base::OnceCallback<void(::ambient::PhotoCacheEntry)> callback) override {
+    task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
         base::BindOnce(
-            [](int cache_index, const base::FilePath& root_path,
-               ambient::PhotoCacheEntry* cache_entry) {
+            [](int cache_index, const base::FilePath& root_path) {
               auto cache_path = GetCachePath(cache_index, root_path);
 
               // Read the existing cache.
               const char* path_str = cache_path.value().c_str();
               std::fstream input(path_str, std::ios::in | std::ios::binary);
-              if (!input || !cache_entry->ParseFromIstream(&input)) {
+              ambient::PhotoCacheEntry cache_entry;
+              if (!input || !cache_entry.ParseFromIstream(&input)) {
                 LOG(ERROR) << "Unable to read photo cache";
-                *cache_entry = ambient::PhotoCacheEntry();
+                cache_entry = ::ambient::PhotoCacheEntry();
                 base::DeleteFile(cache_path);
               }
+              return cache_entry;
             },
-            cache_index, root_directory_, cache_entry),
+            cache_index, root_directory_),
         std::move(callback));
   }
 
