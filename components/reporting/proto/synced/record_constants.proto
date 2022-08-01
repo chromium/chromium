@@ -75,6 +75,9 @@ enum Destination {
   // is detected by the security daemon.
   SUSPICIOUS_EVENTS = 20;
 
+  // |LOCK_UNLOCK_EVENTS| is for lock/unlock events.
+  LOCK_UNLOCK_EVENTS = 21;
+
   reserved 8;
 }
 
