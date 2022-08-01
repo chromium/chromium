@@ -73,6 +73,14 @@ MockAccessCodeCastSinkService::MockAccessCodeCastSinkService(
                                 network_monitor,
                                 profile->GetPrefs()) {}
 
+MediaRoute CreateRouteForTesting(const MediaSinkInternal& sink) {
+  std::string sink_id = sink.id();
+  std::string route_id =
+      "urn:x-org.chromium:media:route:1/" + sink_id + "/http://foo.com";
+  return MediaRoute(route_id, MediaSource("access_code"), sink_id,
+                    "access_sink", true);
+}
+
 MockAccessCodeCastSinkService::~MockAccessCodeCastSinkService() = default;
 
 }  // namespace media_router

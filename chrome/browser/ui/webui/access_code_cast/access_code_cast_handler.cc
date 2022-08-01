@@ -201,9 +201,6 @@ void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
     return;
   }
 
-  // Sink has been completely added so caller can be alerted.
-  access_code_sink_service_->StoreSinkAndSetExpirationTimer(sink_id_.value());
-
   std::move(add_sink_callback_).Run(AddSinkResultCode::OK);
 }
 
@@ -289,6 +286,18 @@ void AccessCodeCastHandler::CastToSink(CastToSinkCallback callback) {
 
   current_route_request_ = absl::make_optional(*params->request);
 
+  if (HasActiveRoute(sink_id_.value())) {
+    GetMediaRouter()->GetLogger()->LogInfo(
+        mojom::LogCategory::kUi, kLoggerComponent,
+        "There already exists a route for the given sink id. No new route can "
+        "be created. Checking to see if this is a saved device -- otherwise we "
+        "wil remove it from the media router.",
+        sink_id_.value(), "", "");
+    access_code_sink_service_->CheckMediaSinkForExpiration(sink_id_.value());
+    std::move(callback).Run(RouteRequestResultCode::ROUTE_ALREADY_EXISTS);
+    return;
+  }
+
   params->route_result_callbacks.push_back(base::BindOnce(
       &AccessCodeCastHandler::OnRouteResponse, weak_ptr_factory_.GetWeakPtr(),
       cast_mode, params->request->id, *sink_id_, std::move(callback)));
@@ -330,6 +339,19 @@ void AccessCodeCastHandler::OnRouteResponse(MediaCastMode cast_mode,
 
   base::UmaHistogramSparse("MediaRouter.Source.CastingSource", cast_mode);
   std::move(dialog_callback).Run(RouteRequestResultCode::OK);
+}
+
+bool AccessCodeCastHandler::HasActiveRoute(const MediaSink::Id& sink_id) {
+  if (!GetMediaRouter())
+    return false;
+  auto routes = GetMediaRouter()->GetCurrentRoutes();
+  auto route_it = std::find_if(routes.begin(), routes.end(),
+                               [&sink_id](const MediaRoute& route) {
+                                 return route.media_sink_id() == sink_id;
+                               });
+  if (route_it == routes.end())
+    return false;
+  return true;
 }
 
 }  // namespace media_router
