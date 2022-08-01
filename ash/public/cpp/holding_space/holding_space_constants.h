@@ -37,17 +37,24 @@ constexpr int kHoldingSpaceTrayIconSize = 20;
 // Context menu commands.
 enum class HoldingSpaceCommandId {
   kMinValue = 1,  // NOTE: Zero is used when command id is unset.
-  kCancelItem = kMinValue,
-  kCopyImageToClipboard,
-  kHidePreviews,
+
+  // Core item commands.
+  kCopyImageToClipboard = kMinValue,
   kRemoveItem,
-  kResumeItem,
-  kPauseItem,
   kPinItem,
   kShowInFolder,
-  kShowPreviews,
   kUnpinItem,
-  kMaxValue = kUnpinItem,
+
+  // In-progress item commands.
+  kCancelItem,
+  kResumeItem,
+  kPauseItem,
+
+  // Tray commands.
+  kHidePreviews,
+  kShowPreviews,
+
+  kMaxValue = kShowPreviews,
 };
 
 // View IDs.

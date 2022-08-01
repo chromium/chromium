@@ -5,6 +5,7 @@
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -118,8 +119,8 @@ TEST_P(HoldingSpaceItemTest, AccessibleName) {
             u"Primary text, Secondary text");
 }
 
-// Tests pause for each holding space item type.
-TEST_P(HoldingSpaceItemTest, Pause) {
+// Tests in-progress commands for each holding space item type.
+TEST_P(HoldingSpaceItemTest, InProgressCommands) {
   // Create an in-progress `holding_space_item`.
   auto holding_space_item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
@@ -127,28 +128,29 @@ TEST_P(HoldingSpaceItemTest, Pause) {
       HoldingSpaceProgress(/*current_bytes=*/50, /*total_bytes=*/100),
       /*image_resolver=*/base::BindOnce(&CreateFakeHoldingSpaceImage));
 
-  // Initially items are not paused.
-  EXPECT_FALSE(holding_space_item->IsPaused());
+  // Initially commands are not set.
+  EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 
-  // It should be possible to update pause to a new value.
-  EXPECT_TRUE(holding_space_item->SetPaused(true));
-  EXPECT_TRUE(holding_space_item->IsPaused());
+  // It should be possible to update commands to a new value.
+  std::set<HoldingSpaceCommandId> in_progress_commands;
+  in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
+  EXPECT_TRUE(holding_space_item->SetInProgressCommands(in_progress_commands));
+  EXPECT_EQ(holding_space_item->in_progress_commands(), in_progress_commands);
 
   // It should no-op to try to update pause to its existing value.
-  EXPECT_FALSE(holding_space_item->SetPaused(true));
-  EXPECT_TRUE(holding_space_item->IsPaused());
+  EXPECT_FALSE(holding_space_item->SetInProgressCommands(in_progress_commands));
+  EXPECT_EQ(holding_space_item->in_progress_commands(), in_progress_commands);
 
-  // Once progress has been marked completed, items are no longer paused.
+  // Once progress has been marked completed, commands are not set.
   EXPECT_TRUE(holding_space_item->SetProgress(
       HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100)));
   EXPECT_TRUE(holding_space_item->progress().IsComplete());
-  EXPECT_FALSE(holding_space_item->IsPaused());
+  EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 
-  // It should no-op to try to update pause for items which are not in-progress.
-  EXPECT_FALSE(holding_space_item->SetPaused(true));
-  EXPECT_FALSE(holding_space_item->IsPaused());
-  EXPECT_FALSE(holding_space_item->SetPaused(false));
-  EXPECT_FALSE(holding_space_item->IsPaused());
+  // It should no-op to try to update commands for items which are not
+  // in-progress.
+  EXPECT_FALSE(holding_space_item->SetInProgressCommands(in_progress_commands));
+  EXPECT_TRUE(holding_space_item->in_progress_commands().empty());
 }
 
 // Tests progress for each holding space item type.
