@@ -7442,6 +7442,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Right-click on a tab and select "Add tab to new group"
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP" desc="The description of the add tab step in the tab group tutorial when there's already a group in the tabstrip.">
+          Right-click on a tab and select "Add Tab To Group" and then select "New Group"
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP" desc="The description of the add tab step in the tab group tutorial when there's already a group in the tabstrip.">
+          Right-click on a tab and select "Add tab to group" and then select "New group"
+        </message>
+      </if>
       <message name="IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE" desc="The description of the editor bubble step in the tab group tutorial">
         Name your group, choose a color, then press Esc
       </message>
