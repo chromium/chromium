@@ -289,7 +289,6 @@ AshNotificationView::NotificationTitleRow::NotificationTitleRow(
   title_view_->SetMultiLine(true);
   title_view_->SetAllowCharacterBreak(true);
   title_view_->SetMaxLines(kTitleLabelExpandedMaxLines);
-  title_view_->SetMaximumWidth(kNotificationInMessageCenterWidth);
 
   ConfigureLabelStyle(title_row_divider_, kTimestampInCollapsedViewSize,
                       /*is_color_primary=*/false);
@@ -1411,7 +1410,8 @@ int AshNotificationView::GetExpandedTitleLabelWidth() {
 
   return notification_width - kNotificationViewPadding.width() -
          kAppIconViewSize - kMainRightViewChildPadding.width() -
-         kAppIconViewSize - kRightContentExpandedPadding.width() -
+         kAppIconViewSize - right_content()->width() -
+         kRightContentExpandedPadding.width() -
          kMessageLabelInExpandedStatePadding.width();
 }
 
