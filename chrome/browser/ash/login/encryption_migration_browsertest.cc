@@ -367,7 +367,9 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
                    .has_account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
+// TODO(crbug.com/1324733): Re-enable this test
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest,
+                       DISABLED_InsufficientSpaceOnResume) {
   set_free_space(5 * 1000 * 1000);
   MarkUserHasEnterprisePolicy();
 
@@ -393,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, InsufficientSpaceOnResume) {
                    .has_account_id());
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, MigrationFailure) {
+// TODO(crbug.com/1324694): Re-enable this test
+IN_PROC_BROWSER_TEST_F(EncryptionMigrationTest, DISABLED_MigrationFailure) {
   MarkUserHasEnterprisePolicy();
 
   OobeScreenWaiter encryption_migration_screen_waiter(
