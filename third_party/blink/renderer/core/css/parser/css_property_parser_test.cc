@@ -195,7 +195,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit13) {
       CSSPropertyID::kGridTemplateColumns,
       "repeat(100000000000000000000, 10% 1fr)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 10000000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit14) {
@@ -203,7 +203,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit14) {
       CSSPropertyID::kGridTemplateRows,
       "repeat(100000000000000000000, 10% 1fr)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 10000000);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit15) {
@@ -211,7 +211,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit15) {
       CSSPropertyID::kGridTemplateColumns,
       "repeat(100000000000000000000, 10% 5em 1fr auto auto 15px min-content)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 9999997);
 }
 
 TEST(CSSPropertyParserTest, GridTrackLimit16) {
@@ -219,7 +219,7 @@ TEST(CSSPropertyParserTest, GridTrackLimit16) {
       CSSPropertyID::kGridTemplateRows,
       "repeat(100000000000000000000, 10% 5em 1fr auto auto 15px min-content)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
-  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), INT_MAX - 1);
+  EXPECT_EQ(ComputeNumberOfTracks(To<CSSValueList>(value)), 9999997);
 }
 
 static int GetGridPositionInteger(const CSSValue& value) {
@@ -259,7 +259,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit4) {
       CSSPropertyID::kGridRowEnd, "5000000000",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), INT_MAX - 1);
+  EXPECT_EQ(GetGridPositionInteger(*value), 10000000);
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit5) {
@@ -291,7 +291,7 @@ TEST(CSSPropertyParserTest, GridPositionLimit8) {
       CSSPropertyID::kGridRowEnd, "-5000000000",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   DCHECK(value);
-  EXPECT_EQ(GetGridPositionInteger(*value), 1 - INT_MAX);
+  EXPECT_EQ(GetGridPositionInteger(*value), -10000000);
 }
 
 TEST(CSSPropertyParserTest, ColorFunction) {
