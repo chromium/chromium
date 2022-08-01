@@ -318,3 +318,35 @@ TEST_F(PromoServiceTest, BlocklistWrongExpiryType) {
   // All the invalid formats should've been removed from the pref.
   ASSERT_EQ(0u, prefs()->GetDictionary(prefs::kNtpPromoBlocklist)->DictSize());
 }
+
+TEST_F(PromoServiceTest, UndoBlocklistPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ntp_features::kNtpMiddleSlotPromoDismissal);
+
+  std::string response_string =
+      "{\"update\":{\"promos\":{\"middle\":\"<style></style><div><script></"
+      "script></div>\", \"log_url\":\"/log_url?id=42\", \"id\": \"42\"}}}";
+  SetUpResponseWithData(service()->GetLoadURLForTesting(), response_string);
+
+  ASSERT_EQ(service()->promo_data(), absl::nullopt);
+
+  service()->Refresh();
+  base::RunLoop().RunUntilIdle();
+
+  PromoData promo;
+  promo.promo_html = "<style></style><div><script></script></div>";
+  promo.promo_log_url = GURL("https://www.google.com/log_url?id=42");
+  promo.promo_id = "42";
+
+  ASSERT_EQ(0u, prefs()->GetDictionary(prefs::kNtpPromoBlocklist)->DictSize());
+
+  service()->BlocklistPromo("42");
+
+  const auto* blocklist = prefs()->GetDictionary(prefs::kNtpPromoBlocklist);
+  ASSERT_EQ(1u, blocklist->DictSize());
+  ASSERT_TRUE(blocklist->FindKey("42"));
+
+  service()->UndoBlocklistPromo("42");
+
+  ASSERT_EQ(0u, prefs()->GetDictionary(prefs::kNtpPromoBlocklist)->DictSize());
+}
