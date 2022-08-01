@@ -6,6 +6,7 @@
 
 #include <numeric>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -192,8 +193,12 @@ UnifiedSystemTrayView::UnifiedSystemTrayView(
 
   auto add_layered_child = [](views::View* parent, views::View* child) {
     parent->AddChildView(child);
-    child->SetPaintToLayer();
-    child->layer()->SetFillsBoundsOpaquely(false);
+    // In dark light mode, we switch TrayBubbleView to use a textured layer
+    // instead of solid color layer, so no need to create an extra layer here.
+    if (!features::IsDarkLightModeEnabled()) {
+      child->SetPaintToLayer();
+      child->layer()->SetFillsBoundsOpaquely(false);
+    }
   };
 
   SessionControllerImpl* session_controller =
@@ -257,8 +262,6 @@ void UnifiedSystemTrayView::AddFeaturePodButton(FeaturePodButton* button) {
 }
 
 void UnifiedSystemTrayView::AddSliderView(views::View* slider_view) {
-  slider_view->SetPaintToLayer();
-  slider_view->layer()->SetFillsBoundsOpaquely(false);
   sliders_container_->AddChildView(slider_view);
 }
 
