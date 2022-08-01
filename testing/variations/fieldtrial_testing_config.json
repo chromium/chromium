@@ -6092,6 +6092,25 @@
             ]
         }
     ],
+    "NormalPriorityImageDecoding": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "NormalPriorityImageDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "NtpRealboxDesignUpdates": [
         {
             "platforms": [
