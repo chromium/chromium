@@ -756,6 +756,8 @@ ServiceWorkerVersion::CreateSimpleEventCallback(int request_id) {
 void ServiceWorkerVersion::RunAfterStartWorker(
     ServiceWorkerMetrics::EventType purpose,
     StatusCallback callback) {
+  ServiceWorkerMetrics::RecordRunAfterStartWorkerStatus(running_status(),
+                                                        purpose);
   if (running_status() == EmbeddedWorkerStatus::RUNNING) {
     DCHECK(start_callbacks_.empty());
     std::move(callback).Run(blink::ServiceWorkerStatusCode::kOk);

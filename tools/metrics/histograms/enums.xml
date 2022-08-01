@@ -29391,6 +29391,13 @@ Called by update_document_policy_enum.py.-->
   <int value="11" label="SCRIPT_EVALUATION"/>
 </enum>
 
+<enum name="EmbeddedWorkerStatus">
+  <int value="0" label="STOPPED"/>
+  <int value="1" label="STARTING"/>
+  <int value="2" label="RUNNING"/>
+  <int value="3" label="STOPPING"/>
+</enum>
+
 <enum name="EmeApiType">
   <int value="0" label="Not expected"/>
   <int value="1" label="MediaKeySystemAccess.createMediaKeys()"/>

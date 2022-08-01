@@ -616,6 +616,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.MaybeStartWorker.Purpose"
+    enum="ServiceWorkerMetrics.EventType" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the purpose for potentially starting a service worker. This is
+    recorded every time a running worker is required whether it needs to be
+    started or not in the ServiceWorkerVersion::RunAfterStartWorker() method.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.MaybeStartWorker.RunningStatus"
+    enum="EmbeddedWorkerStatus" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Record the current status of a service worker when we need it to be running
+    for some purpose. If the status is STOPPED or STOPPING then the service
+    worker will be started. This is recorded from
+    ServiceWorkerVersion::RunAfterStartWorker().
+
+    See also ServiceWorker.MaybeStartWorker.RunningStatusByPurpose_* for the
+    breakdown by event type.
+  </summary>
+</histogram>
+
+<histogram
+    name="ServiceWorker.MaybeStartWorker.RunningStatusByPurpose_{ServiceWorkerEventType}"
+    enum="EmbeddedWorkerStatus" expires_after="2023-06-30">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Record the current status of a service worker when we need it to be running
+    broken down by the purpose for needing a worker. If the status is STOPPED or
+    STOPPING then the service worker will be started. This is recorded from
+    ServiceWorkerVersion::RunAfterStartWorker(). (see
+    ServiceWorker.MaybeStartWorker.RunningStatus for all attempts).
+  </summary>
+  <token key="ServiceWorkerEventType" variants="ServiceWorkerEventType"/>
+</histogram>
+
 <histogram name="ServiceWorker.NotificationClickEvent.Time" units="ms"
     expires_after="M96">
   <owner>peter@chromium.org</owner>
