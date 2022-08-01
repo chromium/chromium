@@ -15852,54 +15852,54 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="0" label="Camera image"/>
   <int value="1" label="User defined"/>
   <int value="2" label="Profile image"/>
-  <int value="10" label="Beaker"/>
-  <int value="11" label="Bee"/>
-  <int value="12" label="Briefcase"/>
-  <int value="13" label="Circles"/>
-  <int value="14" label="Cloud"/>
-  <int value="15" label="Cupcake"/>
-  <int value="16" label="Day"/>
-  <int value="17" label="Flower"/>
-  <int value="18" label="Globe"/>
-  <int value="19" label="Hot air"/>
-  <int value="20" label="Ladybug"/>
-  <int value="21" label="Leaf"/>
-  <int value="22" label="Night"/>
-  <int value="23" label="Plane"/>
-  <int value="24" label="Robot body"/>
-  <int value="25" label="Robot head"/>
-  <int value="26" label="Toolbox"/>
-  <int value="27" label="User color"/>
-  <int value="28" label="User enterprise"/>
-  <int value="29" label="Bicycle"/>
-  <int value="30" label="Bokeh"/>
-  <int value="31" label="Chess"/>
-  <int value="32" label="Coffee"/>
-  <int value="33" label="Dragonfly"/>
-  <int value="34" label="Frog"/>
-  <int value="35" label="Gazania Flower"/>
-  <int value="36" label="Jack Russell Terrier"/>
-  <int value="37" label="Jellyfish"/>
-  <int value="38" label="Kiwi"/>
-  <int value="39" label="Penguin1"/>
-  <int value="40" label="Rainbowfish"/>
-  <int value="41" label="Record player"/>
-  <int value="42" label="Upside Down"/>
-  <int value="43" label="Cat"/>
-  <int value="44" label="Penguin2"/>
-  <int value="45" label="Fox"/>
-  <int value="46" label="Snail"/>
-  <int value="47" label="Red butterfly"/>
-  <int value="48" label="Cat"/>
-  <int value="49" label="Corgi"/>
-  <int value="50" label="Rabbit"/>
-  <int value="51" label="Pink butterfly"/>
-  <int value="52" label="Monkey"/>
-  <int value="53" label="Dragon"/>
-  <int value="54" label="Elephant"/>
-  <int value="55" label="Panda"/>
-  <int value="56" label="Unicorn"/>
-  <int value="57" label="Butterflies"/>
+  <int value="10" label="Beaker (deprecated)"/>
+  <int value="11" label="Bee (deprecated)"/>
+  <int value="12" label="Briefcase (deprecated)"/>
+  <int value="13" label="Circles (deprecated)"/>
+  <int value="14" label="Cloud (deprecated)"/>
+  <int value="15" label="Cupcake (deprecated)"/>
+  <int value="16" label="Day (deprecated)"/>
+  <int value="17" label="Flower (deprecated)"/>
+  <int value="18" label="Globe (deprecated)"/>
+  <int value="19" label="Hot air (deprecated)"/>
+  <int value="20" label="Ladybug (deprecated)"/>
+  <int value="21" label="Leaf (deprecated)"/>
+  <int value="22" label="Night (deprecated)"/>
+  <int value="23" label="Plane (deprecated)"/>
+  <int value="24" label="Robot body (deprecated)"/>
+  <int value="25" label="Robot head (deprecated)"/>
+  <int value="26" label="Toolbox (deprecated)"/>
+  <int value="27" label="User color (deprecated)"/>
+  <int value="28" label="User enterprise (deprecated)"/>
+  <int value="29" label="Bicycle (deprecated)"/>
+  <int value="30" label="Bokeh (deprecated)"/>
+  <int value="31" label="Chess (deprecated)"/>
+  <int value="32" label="Coffee (deprecated)"/>
+  <int value="33" label="Dragonfly (deprecated)"/>
+  <int value="34" label="Frog (deprecated)"/>
+  <int value="35" label="Gazania Flower (deprecated)"/>
+  <int value="36" label="Jack Russell Terrier (deprecated)"/>
+  <int value="37" label="Jellyfish (deprecated)"/>
+  <int value="38" label="Kiwi (deprecated)"/>
+  <int value="39" label="Penguin1 (deprecated)"/>
+  <int value="40" label="Rainbowfish (deprecated)"/>
+  <int value="41" label="Record player (deprecated)"/>
+  <int value="42" label="Upside Down (deprecated)"/>
+  <int value="43" label="Cat (deprecated)"/>
+  <int value="44" label="Penguin2 (deprecated)"/>
+  <int value="45" label="Fox (deprecated)"/>
+  <int value="46" label="Snail (deprecated)"/>
+  <int value="47" label="Red butterfly (deprecated)"/>
+  <int value="48" label="Cat (deprecated)"/>
+  <int value="49" label="Corgi (deprecated)"/>
+  <int value="50" label="Rabbit (deprecated)"/>
+  <int value="51" label="Pink butterfly (deprecated)"/>
+  <int value="52" label="Monkey (deprecated)"/>
+  <int value="53" label="Dragon (deprecated)"/>
+  <int value="54" label="Elephant (deprecated)"/>
+  <int value="55" label="Panda (deprecated)"/>
+  <int value="56" label="Unicorn (deprecated)"/>
+  <int value="57" label="Butterflies (deprecated)"/>
   <int value="58" label="Bird"/>
   <int value="59" label="Ramen"/>
   <int value="60" label="Tamagotchi"/>
@@ -15918,11 +15918,11 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="73" label="Onigiri"/>
   <int value="74" label="Melon"/>
   <int value="75" label="Avocado"/>
-  <int value="76" label="Landing"/>
-  <int value="77" label="Lunar"/>
-  <int value="78" label="Dots"/>
-  <int value="79" label="Spin"/>
-  <int value="80" label="Grids"/>
+  <int value="76" label="Landing (deprecated)"/>
+  <int value="77" label="Lunar (deprecated)"/>
+  <int value="78" label="Dots (deprecated)"/>
+  <int value="79" label="Spin (deprecated)"/>
+  <int value="80" label="Grid (deprecated)s"/>
   <int value="81" label="Botanist"/>
   <int value="82" label="Burger"/>
   <int value="83" label="Graduate"/>
