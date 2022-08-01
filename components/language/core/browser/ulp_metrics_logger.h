@@ -19,7 +19,7 @@ const char kInitiationTranslateTargetInULPHistogram[] =
 const char kInitiationTopAcceptLanguageInULPHistogram[] =
     "LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP";
 const char kInitiationAcceptLanguagesULPOverlapHistogram[] =
-    "LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap";
+    "LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base";
 
 // Keep up to date with ULPLanguageStatus in
 // //tools/metrics/histograms/enums.xml.
@@ -67,7 +67,8 @@ class ULPMetricsLogger {
       const std::vector<std::string>& ulp_languages);
 
   // Returns a number from 0-100 that indicates the ratio of ulp_languages that
-  // are present in accept_languages.
+  // are present in accept_languages. Only language bases are compared (e.g
+  // pt-BR == pt-MZ).
   virtual int ULPLanguagesInAcceptLanguagesRatio(
       const std::vector<std::string> accept_languages,
       const std::vector<std::string> ulp_languages);

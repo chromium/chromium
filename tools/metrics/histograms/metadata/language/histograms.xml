@@ -375,6 +375,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap"
+    units="%" expires_after="2022-07-22">
+  <obsolete>
+    Replaced by LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base
+  </obsolete>
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The ratio of ULP languages in the user's Accept Languages over the total
+    number of languages in their LanguageProfile. This answers the question of
+    &quot;How many of the predicted ULP languages have already been added by the
+    user?&quot;.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base"
     units="%" expires_after="2023-01-15">
   <owner>jds@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -383,6 +400,8 @@ chromium-metrics-reviews@google.com.
     number of languages in their LanguageProfile. This answers the question of
     &quot;How many of the predicted ULP languages have already been added by the
     user?&quot;.
+
+    Only base languages are compared (e.g. pt-BR == pt-MZ).
 
     Recorded once at startup when ULP is initialized.
   </summary>
