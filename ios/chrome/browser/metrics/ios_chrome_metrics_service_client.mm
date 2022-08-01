@@ -71,6 +71,7 @@
 #import "ios/chrome/browser/metrics/ios_chrome_default_browser_metrics_provider.h"
 #include "ios/chrome/browser/metrics/ios_chrome_signin_and_sync_status_metrics_provider.h"
 #include "ios/chrome/browser/metrics/ios_chrome_stability_metrics_provider.h"
+#import "ios/chrome/browser/metrics/ios_feed_enabled_metrics_provider.h"
 #include "ios/chrome/browser/metrics/ios_profile_session_metrics_provider.h"
 #include "ios/chrome/browser/metrics/mobile_session_shutdown_metrics_provider.h"
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
@@ -343,6 +344,13 @@ void IOSChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
 
   metrics_service_->RegisterMetricsProvider(
       CreateIOSProfileSessionMetricsProvider());
+
+  ChromeBrowserState* browser_state = GetApplicationContext()
+                                          ->GetChromeBrowserStateManager()
+                                          ->GetLastUsedBrowserState();
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<IOSFeedEnabledMetricsProvider>(
+          browser_state->GetPrefs()));
 }
 
 void IOSChromeMetricsServiceClient::RegisterUKMProviders() {
