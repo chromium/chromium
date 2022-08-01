@@ -895,7 +895,7 @@ deps = {
       'packages': [
         {
           'package': 'experimental/google.com/sshrimp/chromium/rts/model/linux-amd64',
-          'version': '3K1dz8hGV_xBeEcPKmXfrPYWCwXdRf6KVVLrg7AuJ0sC',
+          'version': '61RZ40XmEInOMhnIJMEqdOjocdCHqodmEJcDxu4x7uIC',
         },
       ],
       'dep_type': 'cipd',
