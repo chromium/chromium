@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.h"
 #include "components/safe_search_api/url_checker_client.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 class GURL;
 

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client_factory.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
 
 namespace {
