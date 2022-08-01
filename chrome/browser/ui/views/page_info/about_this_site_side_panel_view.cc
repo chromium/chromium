@@ -73,35 +73,43 @@ void AboutThisSiteSidePanelView::LoadProgressChanged(double progress) {
   SetContentVisible(progress == 1.0);
 }
 
-bool AboutThisSiteSidePanelView::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  // Disable context menu.
-  return true;
-}
-
 void AboutThisSiteSidePanelView::OpenUrl(const content::OpenURLParams& params) {
   web_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
 }
 
-void AboutThisSiteSidePanelView::DidOpenRequestedURL(
-    content::WebContents* new_contents,
-    content::RenderFrameHost* source_render_frame_host,
-    const GURL& url,
-    const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    bool started_from_context_menu,
-    bool renderer_initiated) {
-  content::OpenURLParams params(url, referrer, disposition, transition,
-                                renderer_initiated);
-  // If the navigation is initiated by the renderer process, we must set an
-  // initiator origin.
-  if (renderer_initiated)
-    params.initiator_origin = url::Origin::Create(url);
+content::WebContents* AboutThisSiteSidePanelView::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  // Redirect requests to open a new tab to the main browser. These come e.g.
+  // from the context menu.
+  return outer_delegate()->OpenURLFromTab(source, params);
+}
 
-  browser_view_->browser()->OpenURL(params);
+void AboutThisSiteSidePanelView::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const gfx::Rect& initial_rect,
+    bool user_gesture,
+    bool* was_blocked) {
+  // Redirect requests to add a webcontents to the main browser. These come e.g.
+  // from middle clicks on links.
+  outer_delegate()->AddNewContents(source, std::move(new_contents), target_url,
+                                   disposition, initial_rect, user_gesture,
+                                   was_blocked);
+}
+
+bool AboutThisSiteSidePanelView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  // Redirect keyboard events to the main browser.
+  return outer_delegate()->HandleKeyboardEvent(source, event);
+}
+
+content::WebContentsDelegate* AboutThisSiteSidePanelView::outer_delegate() {
+  return browser_view_->browser();
 }
 
 void AboutThisSiteSidePanelView::OpenUrlInBrowser(
