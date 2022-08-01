@@ -152,6 +152,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.BatteryLevel.Accepted.Geolocation" units="%"
     expires_after="M85">
+  <obsolete>
+    Removed in July 2022, as it's been unused for some time.
+  </obsolete>
   <owner>timloh@chromium.org</owner>
   <summary>
     Battery percentage when a geolocation permission prompt was accepted on
@@ -161,6 +164,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.BatteryLevel.Accepted.LocationSettingsDialog"
     units="%" expires_after="2022-08-28">
+  <obsolete>
+    Removed in July 2022, as it's been unused for some time.
+  </obsolete>
   <owner>andypaicu@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -173,6 +179,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.BatteryLevel.Denied.Geolocation" units="%"
     expires_after="M85">
+  <obsolete>
+    Removed in July 2022, as it's been unused for some time.
+  </obsolete>
   <owner>timloh@chromium.org</owner>
   <summary>
     Battery percentage when a geolocation permission prompt was denied on
@@ -182,6 +191,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.BatteryLevel.Denied.LocationSettingsDialog"
     units="%" expires_after="M77">
+  <obsolete>
+    Removed in July 2022, as it's been unused for some time.
+  </obsolete>
   <owner>timloh@chromium.org</owner>
   <summary>
     Battery percentage when a location settings dialog was denied.
@@ -190,6 +202,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Permissions.BatteryLevel.Dismissed.Geolocation" units="%"
     expires_after="M85">
+  <obsolete>
+    Removed in July 2022, as it's been unused for some time.
+  </obsolete>
   <owner>timloh@chromium.org</owner>
   <summary>
     Battery percentage when a geolocation permission prompt was dismissed on

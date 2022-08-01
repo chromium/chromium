@@ -13,7 +13,6 @@
 #include "components/location/android/location_settings_impl.h"
 #include "components/permissions/android/android_permission_util.h"
 #include "components/permissions/permission_request_id.h"
-#include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -36,10 +35,6 @@ const char kLocationSettingsAcceptMetricBase[] =
     "Geolocation.SettingsDialog.AcceptEvent.";
 const char kLocationSettingsDenyMetricBase[] =
     "Geolocation.SettingsDialog.DenyEvent.";
-const char kLocationSettingsAcceptBatteryMetric[] =
-    "Permissions.BatteryLevel.Accepted.LocationSettingsDialog";
-const char kLocationSettingsDenyBatteryMetric[] =
-    "Permissions.BatteryLevel.Denied.LocationSettingsDialog";
 
 const char kLocationSettingsMetricDSESuffix[] = "DSE";
 const char kLocationSettingsMetricNonDSESuffix[] = "NonDSE";
@@ -390,15 +385,11 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
     LogLocationSettingsMetric(kLocationSettingsAcceptMetricBase,
                               is_default_search,
                               LocationSettingsBackOffLevel(is_default_search));
-    PermissionUmaUtil::RecordWithBatteryBucket(
-        kLocationSettingsAcceptBatteryMetric);
     ResetLocationSettingsBackOff(is_default_search);
   } else {
     LogLocationSettingsMetric(kLocationSettingsDenyMetricBase,
                               is_default_search,
                               LocationSettingsBackOffLevel(is_default_search));
-    PermissionUmaUtil::RecordWithBatteryBucket(
-        kLocationSettingsDenyBatteryMetric);
     UpdateLocationSettingsBackOff(is_default_search);
     content_setting = CONTENT_SETTING_BLOCK;
     persist = false;
