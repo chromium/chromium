@@ -12,4 +12,6 @@ interface IBrowserSandboxService {
 
     // TODO(rayankans): Pass fragment creation params (profile name, persistence ID, etc.)
     IBrowserFragmentDelegate createFragmentDelegate() = 2;
+
+    void setRemoteDebuggingEnabled(in boolean enabled) = 3;
 }

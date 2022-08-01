@@ -103,4 +103,14 @@ public class Browser {
             return null;
         }
     }
+
+    /**
+     * Enables or disables DevTools remote debugging.
+     */
+    public void setRemoteDebuggingEnabled(boolean enabled) {
+        try {
+            mBrowserSandboxService.setRemoteDebuggingEnabled(enabled);
+        } catch (RemoteException e) {
+        }
+    }
 }
