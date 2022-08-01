@@ -36,6 +36,7 @@
 namespace lottie {
 namespace {
 
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::FieldsAre;
 using ::testing::FloatEq;
@@ -434,7 +435,7 @@ TEST_F(AnimationTest, PlaySubsectionOfLinearAnimation) {
 
   EXPECT_FALSE(observer.animation_cycle_ended());
   animation_->Start(Animation::PlaybackConfig(
-      {kStartTime, kDuration, Animation::Style::kLinear}));
+      {{kStartTime, kStartTime + kDuration}}, Animation::Style::kLinear));
 
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
@@ -496,7 +497,8 @@ TEST_F(AnimationTest, PausingLinearAnimation) {
   AdvanceClock(base::Milliseconds(200));
 
   animation_->Start(Animation::PlaybackConfig(
-      {kStartTime, kDuration, Animation::Style::kLinear}));
+      {{kStartTime, kStartTime + kDuration}}, Animation::Style::kLinear));
+
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   constexpr auto kAdvance = base::Milliseconds(100);
@@ -595,7 +597,8 @@ TEST_F(AnimationTest, PlaySubsectionOfLoopAnimation) {
 
   EXPECT_TRUE(IsStopped());
   animation_->Start(Animation::PlaybackConfig(
-      {kStartTime, kDuration, Animation::Style::kLoop}));
+      {{kStartTime, kStartTime + kDuration}}, Animation::Style::kLoop));
+
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -648,6 +651,110 @@ TEST_F(AnimationTest, PlaySubsectionOfLoopAnimation) {
   EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(), GetTimerStartOffset());
 }
 
+TEST_F(AnimationTest, PlayDifferentSubsectionsOfLoopingAnimation) {
+  constexpr auto kStartTime1 = base::Milliseconds(400);
+  constexpr auto kDuration1 = base::Milliseconds(1000);
+
+  constexpr auto kStartTime2 = base::Milliseconds(100);
+  constexpr auto kDuration2 = base::Milliseconds(500);
+
+  TestAnimationObserver observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(
+      Animation::PlaybackConfig({{kStartTime1, kStartTime1 + kDuration1},
+                                 {kStartTime2, kStartTime2 + kDuration2}},
+                                Animation::Style::kLoop));
+
+  // T: 400 ms
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  kStartTime1 / kAnimationDuration);
+
+  // T: 600 ms
+  AdvanceClock(base::Milliseconds(200));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime1 + base::Milliseconds(200)) / kAnimationDuration);
+
+  // T: 1399 ms (just before first cycle end)
+  AdvanceClock(base::Milliseconds(799));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(
+      *animation_->GetCurrentProgress(),
+      (kStartTime1 + kDuration1 - base::Milliseconds(1)) / kAnimationDuration);
+
+  // T: 100 ms (start of second cycle)
+  AdvanceClock(base::Milliseconds(1));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  kStartTime2 / kAnimationDuration);
+
+  // T: 300 ms
+  AdvanceClock(base::Milliseconds(200));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + base::Milliseconds(200)) / kAnimationDuration);
+
+  // T: 599 ms (just before second cycle end)
+  AdvanceClock(base::Milliseconds(299));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(
+      *animation_->GetCurrentProgress(),
+      (kStartTime2 + kDuration2 - base::Milliseconds(1)) / kAnimationDuration);
+
+  // T: 100 ms (start of second cycle)
+  AdvanceClock(base::Milliseconds(1));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  kStartTime2 / kAnimationDuration);
+}
+
+TEST_F(AnimationTest, HandlesLargeStepsInLoopingAnimation) {
+  constexpr auto kStartTime1 = base::Milliseconds(400);
+  constexpr auto kDuration1 = base::Milliseconds(1000);
+
+  constexpr auto kStartTime2 = base::Milliseconds(100);
+  constexpr auto kDuration2 = base::Milliseconds(500);
+
+  TestAnimationObserver observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(
+      Animation::PlaybackConfig({{kStartTime1, kStartTime1 + kDuration1},
+                                 {kStartTime2, kStartTime2 + kDuration2}},
+                                Animation::Style::kLoop));
+
+  // T: 400 ms
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  kStartTime1 / kAnimationDuration);
+
+  // T: 200 ms (end of first cycle + 100 ms into second cycle)
+  AdvanceClock(kDuration1 + base::Milliseconds(100));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + base::Milliseconds(100)) / kAnimationDuration);
+
+  // T: 300 ms (end of second cycle + 200 ms into third cycle)
+  AdvanceClock(base::Milliseconds(600));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + base::Milliseconds(200)) / kAnimationDuration);
+}
+
 TEST_F(AnimationTest, PausingLoopAnimation) {
   constexpr auto kStartTime = base::Milliseconds(400);
   constexpr auto kDuration = base::Milliseconds(1000);
@@ -657,7 +764,7 @@ TEST_F(AnimationTest, PausingLoopAnimation) {
   AdvanceClock(base::Milliseconds(200));
 
   animation_->Start(Animation::PlaybackConfig(
-      {kStartTime, kDuration, Animation::Style::kLoop}));
+      {{kStartTime, kStartTime + kDuration}}, Animation::Style::kLoop));
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   ASSERT_TRUE(animation_->GetCurrentProgress());
@@ -777,7 +884,7 @@ TEST_F(AnimationTest, PlaySubsectionOfThrobbingAnimation) {
   AdvanceClock(base::Milliseconds(300));
 
   animation_->Start(Animation::PlaybackConfig(
-      {kStartTime, kDuration, Animation::Style::kThrobbing}));
+      {{kStartTime, kStartTime + kDuration}}, Animation::Style::kThrobbing));
   EXPECT_TRUE(IsScheduledToPlay());
   EXPECT_FALSE(observer.animation_will_start_playing());
 
@@ -854,6 +961,118 @@ TEST_F(AnimationTest, PlaySubsectionOfThrobbingAnimation) {
   EXPECT_TRUE(IsPlaying());
 }
 
+TEST_F(AnimationTest, PlayDifferentSubsectionsOfThrobbingAnimation) {
+  constexpr auto kStartTime1 = base::Milliseconds(400);
+  constexpr auto kDuration1 = base::Milliseconds(1000);
+
+  constexpr auto kStartTime2 = base::Milliseconds(100);
+  constexpr auto kDuration2 = base::Milliseconds(500);
+
+  TestAnimationObserver observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(
+      Animation::PlaybackConfig({{kStartTime1, kStartTime1 + kDuration1},
+                                 {kStartTime2, kStartTime2 + kDuration2}},
+                                Animation::Style::kThrobbing));
+
+  // T: 400 ms
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  kStartTime1 / kAnimationDuration);
+
+  // T: 600 ms
+  AdvanceClock(base::Milliseconds(200));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime1 + base::Milliseconds(200)) / kAnimationDuration);
+
+  // T: 1399 ms (just before first cycle end)
+  AdvanceClock(base::Milliseconds(799));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(
+      *animation_->GetCurrentProgress(),
+      (kStartTime1 + kDuration1 - base::Milliseconds(1)) / kAnimationDuration);
+
+  // T: 600 ms (end of second cycle, reversed)
+  AdvanceClock(base::Milliseconds(1));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + kDuration2) / kAnimationDuration);
+
+  // T: 400 ms
+  AdvanceClock(base::Milliseconds(200));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + kDuration2 - base::Milliseconds(200)) /
+                      kAnimationDuration);
+
+  // T: 101 ms (just after start of second cycle start)
+  AdvanceClock(base::Milliseconds(299));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + base::Milliseconds(1)) / kAnimationDuration);
+
+  // T: 100 ms (start of second cycle)
+  AdvanceClock(base::Milliseconds(1));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  kStartTime2 / kAnimationDuration);
+
+  // T: 300 ms (going forward)
+  AdvanceClock(base::Milliseconds(200));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + base::Milliseconds(200)) / kAnimationDuration);
+}
+
+TEST_F(AnimationTest, HandlesLargeStepsInThrobbingAnimation) {
+  constexpr auto kStartTime1 = base::Milliseconds(400);
+  constexpr auto kDuration1 = base::Milliseconds(1000);
+
+  constexpr auto kStartTime2 = base::Milliseconds(100);
+  constexpr auto kDuration2 = base::Milliseconds(500);
+
+  TestAnimationObserver observer(animation_.get());
+
+  AdvanceClock(base::Milliseconds(300));
+
+  animation_->Start(
+      Animation::PlaybackConfig({{kStartTime1, kStartTime1 + kDuration1},
+                                 {kStartTime2, kStartTime2 + kDuration2}},
+                                Animation::Style::kThrobbing));
+
+  // T: 400 ms
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  kStartTime1 / kAnimationDuration);
+
+  // T: 500 ms (end of first cycle + 100 ms into second cycle)
+  AdvanceClock(kDuration1 + base::Milliseconds(100));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + kDuration2 - base::Milliseconds(100)) /
+                      kAnimationDuration);
+
+  // T: 300 ms (end of second cycle + 200 ms into third cycle)
+  AdvanceClock(base::Milliseconds(600));
+  animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
+  ASSERT_TRUE(animation_->GetCurrentProgress());
+  EXPECT_FLOAT_EQ(*animation_->GetCurrentProgress(),
+                  (kStartTime2 + base::Milliseconds(200)) / kAnimationDuration);
+}
+
 TEST_F(AnimationTest, PausingThrobbingAnimation) {
   constexpr auto kStartTime = base::Milliseconds(400);
   constexpr auto kDuration = base::Milliseconds(1000);
@@ -861,7 +1080,7 @@ TEST_F(AnimationTest, PausingThrobbingAnimation) {
   AdvanceClock(base::Milliseconds(200));
 
   animation_->Start(Animation::PlaybackConfig(
-      {kStartTime, kDuration, Animation::Style::kThrobbing}));
+      {{kStartTime, kStartTime + kDuration}}, Animation::Style::kThrobbing));
   animation_->Paint(canvas(), NowTicks(), animation_->GetOriginalSize());
 
   EXPECT_TRUE(IsPlaying());
@@ -1306,23 +1525,27 @@ TEST_F(AnimationTest, NotifiesAnimationIsDeleting) {
 
 TEST_F(AnimationTest, GetPlaybackConfig) {
   EXPECT_FALSE(animation_->GetPlaybackConfig());
-  Animation::PlaybackConfig test_config = {
-      /*start_offset=*/kAnimationDuration / 4,
-      /*duration=*/kAnimationDuration / 2, Animation::Style::kThrobbing};
+  Animation::PlaybackConfig test_config(
+      {{/*start_offset=*/kAnimationDuration / 4,
+        /*end_offset=*/kAnimationDuration * 3 / 4}},
+      Animation::Style::kThrobbing);
   animation_->Start(test_config);
   ASSERT_TRUE(animation_->GetPlaybackConfig());
   EXPECT_THAT(*animation_->GetPlaybackConfig(),
-              FieldsAre(test_config.start_offset, test_config.duration,
+              FieldsAre(ElementsAre(FieldsAre(
+                            test_config.scheduled_cycles.front().start_offset,
+                            test_config.scheduled_cycles.front().end_offset)),
                         test_config.style));
   animation_->Stop();
   EXPECT_FALSE(animation_->GetPlaybackConfig());
-  test_config.start_offset = kAnimationDuration / 2;
-  test_config.duration = kAnimationDuration / 4;
+  test_config.scheduled_cycles.front().start_offset = kAnimationDuration / 2;
   test_config.style = Animation::Style::kLoop;
   animation_->Start(test_config);
   ASSERT_TRUE(animation_->GetPlaybackConfig());
   EXPECT_THAT(*animation_->GetPlaybackConfig(),
-              FieldsAre(test_config.start_offset, test_config.duration,
+              FieldsAre(ElementsAre(FieldsAre(
+                            test_config.scheduled_cycles.front().start_offset,
+                            test_config.scheduled_cycles.front().end_offset)),
                         test_config.style));
 }
 
