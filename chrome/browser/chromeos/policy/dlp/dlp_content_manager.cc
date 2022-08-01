@@ -511,11 +511,7 @@ void DlpContentManager::OnConfidentialityChanged(
   if (confidential_web_contents_.contains(web_contents)) {
     old_restriction_set = confidential_web_contents_[web_contents];
   }
-  if (restriction_set.IsEmpty()) {
-    RemoveFromConfidential(web_contents);
-  } else {
-    confidential_web_contents_[web_contents] = restriction_set;
-  }
+  UpdateConfidentiality(web_contents, restriction_set);
   NotifyOnConfidentialityChanged(old_restriction_set, restriction_set,
                                  web_contents);
 }
@@ -680,7 +676,6 @@ void DlpContentManager::CheckRunningScreenShares() {
   for (auto& screen_share : running_screen_shares_) {
     ConfidentialContentsInfo info = GetScreenShareConfidentialContentsInfo(
         screen_share->media_id(), screen_share->web_contents().get());
-
     if (IsReported(info.restriction_info) && reporting_manager_ &&
         last_reported_screen_share_.ShouldReportAndUpdate(
             screen_share->label(), info.confidential_contents)) {
@@ -858,6 +853,16 @@ void DlpContentManager::RemoveAllowedContents(
       contents.GetContents(), [=](const DlpConfidentialContent& content) {
         return user_allowed_contents_cache_.Contains(content, restriction);
       });
+}
+
+void DlpContentManager::UpdateConfidentiality(
+    content::WebContents* web_contents,
+    const DlpContentRestrictionSet& restriction_set) {
+  if (restriction_set.IsEmpty()) {
+    RemoveFromConfidential(web_contents);
+  } else {
+    confidential_web_contents_[web_contents] = restriction_set;
+  }
 }
 
 void DlpContentManager::NotifyOnConfidentialityChanged(

@@ -48,6 +48,13 @@ void DlpContentManagerTestHelper::ChangeConfidentiality(
   manager_->OnConfidentialityChanged(web_contents, restrictions);
 }
 
+void DlpContentManagerTestHelper::UpdateConfidentiality(
+    content::WebContents* web_contents,
+    const DlpContentRestrictionSet& restrictions) {
+  DCHECK(manager_);
+  manager_->UpdateConfidentiality(web_contents, restrictions);
+}
+
 void DlpContentManagerTestHelper::ChangeVisibility(
     content::WebContents* web_contents) {
   DCHECK(manager_);
