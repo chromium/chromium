@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -174,4 +174,3 @@ class UploadDownloadUtilsTest(fake_filesystem_unittest.TestCase):
 
 if __name__ == '__main__':
   unittest.main(verbosity=2)
-
