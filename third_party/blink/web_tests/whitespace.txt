@@ -1,4 +1,4 @@
-<blink>H ello world!</blink>
+<blink>Hello world!</blink>
 
 He blinked slowly back at him.
 
