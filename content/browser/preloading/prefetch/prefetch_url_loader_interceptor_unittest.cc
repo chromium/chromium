@@ -13,7 +13,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/public/browser/browser_context.h"
@@ -43,6 +45,46 @@ namespace {
 #define DISABLE_ASAN(x) x
 #endif
 
+const char kDNSCanaryCheckAddress[] = "http://testdnscanarycheck.com";
+const char kTLSCanaryCheckAddress[] = "http://testtlscanarycheck.com";
+
+class TestPrefetchOriginProber : public PrefetchOriginProber {
+ public:
+  TestPrefetchOriginProber(BrowserContext* browser_context,
+                           bool should_probe_origins_response,
+                           const GURL& probe_url,
+                           PrefetchProbeResult probe_result)
+      : PrefetchOriginProber(browser_context,
+                             GURL(kDNSCanaryCheckAddress),
+                             GURL(kTLSCanaryCheckAddress)),
+        should_probe_origins_response_(should_probe_origins_response),
+        probe_url_(probe_url),
+        probe_result_(probe_result) {}
+
+  bool ShouldProbeOrigins() const override {
+    return should_probe_origins_response_;
+  }
+
+  void Probe(const GURL& url, OnProbeResultCallback callback) override {
+    EXPECT_TRUE(should_probe_origins_response_);
+    EXPECT_EQ(url, probe_url_);
+
+    num_probes_++;
+
+    std::move(callback).Run(probe_result_);
+  }
+
+  int num_probes() const { return num_probes_; }
+
+ private:
+  bool should_probe_origins_response_;
+
+  GURL probe_url_;
+  PrefetchProbeResult probe_result_;
+
+  int num_probes_{0};
+};
+
 class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
  public:
   explicit TestPrefetchURLLoaderInterceptor(int frame_tree_node_id)
@@ -53,6 +95,13 @@ class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
     prefetches_[prefetch_container->GetURL()] = prefetch_container;
   }
 
+  void TakePrefetchOriginProber(
+      std::unique_ptr<TestPrefetchOriginProber> origin_prober) {
+    origin_prober_ = std::move(origin_prober);
+  }
+
+  int num_probes() const { return origin_prober_->num_probes(); }
+
  private:
   base::WeakPtr<PrefetchContainer> GetPrefetch(const GURL& url) const override {
     const auto& iter = prefetches_.find(url);
@@ -61,7 +110,13 @@ class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
     return iter->second;
   }
 
+  PrefetchOriginProber* GetPrefetchOriginProber() const override {
+    EXPECT_TRUE(origin_prober_);
+    return origin_prober_.get();
+  }
+
   std::map<GURL, base::WeakPtr<PrefetchContainer>> prefetches_;
+  std::unique_ptr<TestPrefetchOriginProber> origin_prober_;
 };
 
 class PrefetchURLLoaderInterceptorTest : public RenderViewHostTestHarness {
@@ -184,6 +239,11 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
+
   network::ResourceRequest request;
   request.url = kTestUrl;
   request.resource_type =
@@ -203,6 +263,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   histogram_tester().ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", base::TimeDelta(),
       1);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
@@ -227,6 +289,11 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   task_environment()->FastForwardBy(base::Milliseconds(10));
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
+
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
 
   network::ResourceRequest request;
   request.url = kTestUrl;
@@ -255,6 +322,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   histogram_tester().ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime",
       base::Milliseconds(20), 1);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
@@ -277,6 +346,11 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
+
   network::ResourceRequest request;
   request.url = kTestUrl;
   request.resource_type =
@@ -296,11 +370,18 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   histogram_tester().ExpectUniqueTimeSample(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", base::TimeDelta(),
       1);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
        DISABLE_ASAN(DoNotInterceptNavigationNoPrefetch)) {
   const GURL kTestUrl("https://example.com");
+
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
 
   // With no prefetch set, the navigation shouldn't be intercepted.
 
@@ -322,6 +403,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   histogram_tester().ExpectTotalCount(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
@@ -337,6 +420,11 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           nullptr);
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
+
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
 
   // Set up ResourceRequest
   network::ResourceRequest request;
@@ -358,6 +446,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   histogram_tester().ExpectTotalCount(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
@@ -381,6 +471,11 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
+
   network::ResourceRequest request;
   request.url = kTestUrl;
   request.resource_type =
@@ -399,6 +494,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   histogram_tester().ExpectTotalCount(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
 }
 
 TEST_F(PrefetchURLLoaderInterceptorTest,
@@ -424,6 +521,11 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/false, kTestUrl,
+          PrefetchProbeResult::kNoProbing));
+
   network::ResourceRequest request;
   request.url = kTestUrl;
   request.resource_type =
@@ -442,6 +544,100 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
 
   histogram_tester().ExpectTotalCount(
       "PrefetchProxy.AfterClick.Mainframe.CookieWaitTime", 0);
+
+  EXPECT_EQ(interceptor()->num_probes(), 0);
+}
+
+TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
+  const GURL kTestUrl("https://example.com");
+
+  std::unique_ptr<PrefetchContainer> prefetch_container =
+      std::make_unique<PrefetchContainer>(
+          main_rfh()->GetGlobalId(), kTestUrl,
+          PrefetchType(/*use_isolated_network_context=*/true,
+                       /*use_prefetch_proxy=*/true),
+          nullptr);
+
+  prefetch_container->TakePrefetchedResponse(
+      std::make_unique<PrefetchedMainframeResponseContainer>(
+          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
+          std::make_unique<std::string>("test body")));
+
+  prefetch_container->OnIsolatedCookieCopyStart();
+  prefetch_container->OnIsolatedCookieCopyComplete();
+
+  interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
+
+  // Set up |TestPrefetchOriginProber| to require a probe and simulate a
+  // successful probe.
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/true, kTestUrl,
+          PrefetchProbeResult::kDNSProbeSuccess));
+
+  network::ResourceRequest request;
+  request.url = kTestUrl;
+  request.resource_type =
+      static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  request.method = "GET";
+
+  interceptor()->MaybeCreateLoader(
+      request, browser_context(),
+      base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
+                     base::Unretained(this)),
+      base::BindOnce([](bool) { NOTREACHED(); }));
+  WaitForCallback();
+
+  EXPECT_TRUE(was_intercepted().has_value());
+  EXPECT_TRUE(was_intercepted().value());
+
+  EXPECT_EQ(interceptor()->num_probes(), 1);
+}
+
+TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
+  const GURL kTestUrl("https://example.com");
+
+  std::unique_ptr<PrefetchContainer> prefetch_container =
+      std::make_unique<PrefetchContainer>(
+          main_rfh()->GetGlobalId(), kTestUrl,
+          PrefetchType(/*use_isolated_network_context=*/true,
+                       /*use_prefetch_proxy=*/true),
+          nullptr);
+
+  prefetch_container->TakePrefetchedResponse(
+      std::make_unique<PrefetchedMainframeResponseContainer>(
+          net::IsolationInfo(), network::mojom::URLResponseHead::New(),
+          std::make_unique<std::string>("test body")));
+
+  prefetch_container->OnIsolatedCookieCopyStart();
+  prefetch_container->OnIsolatedCookieCopyComplete();
+
+  interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
+
+  // Set up |TestPrefetchOriginProber| to require a probe and simulate a
+  // successful probe.
+  interceptor()->TakePrefetchOriginProber(
+      std::make_unique<TestPrefetchOriginProber>(
+          browser_context(), /*should_probe_origins_response=*/true, kTestUrl,
+          PrefetchProbeResult::kDNSProbeFailure));
+
+  network::ResourceRequest request;
+  request.url = kTestUrl;
+  request.resource_type =
+      static_cast<int>(blink::mojom::ResourceType::kMainFrame);
+  request.method = "GET";
+
+  interceptor()->MaybeCreateLoader(
+      request, browser_context(),
+      base::BindOnce(&PrefetchURLLoaderInterceptorTest::LoaderCallback,
+                     base::Unretained(this)),
+      base::BindOnce([](bool) { NOTREACHED(); }));
+  WaitForCallback();
+
+  EXPECT_TRUE(was_intercepted().has_value());
+  EXPECT_FALSE(was_intercepted().value());
+
+  EXPECT_EQ(interceptor()->num_probes(), 1);
 }
 
 }  // namespace

@@ -34,6 +34,7 @@ class IsolationInfo;
 namespace content {
 
 class BrowserContext;
+class PrefetchOriginProber;
 class PrefetchProxyConfigurator;
 class PrefetchServiceDelegate;
 class ServiceWorkerContext;
@@ -64,6 +65,10 @@ class CONTENT_EXPORT PrefetchService {
 
   PrefetchProxyConfigurator* GetPrefetchProxyConfigurator() const {
     return prefetch_proxy_configurator_.get();
+  }
+
+  PrefetchOriginProber* GetPrefetchOriginProber() const {
+    return origin_prober_.get();
   }
 
   virtual void PrefetchUrl(base::WeakPtr<PrefetchContainer> prefetch_container);
@@ -199,6 +204,9 @@ class CONTENT_EXPORT PrefetchService {
   // The custom proxy configurator for Prefetch Proxy. Only used on prefetches
   // that require the proxy.
   std::unique_ptr<PrefetchProxyConfigurator> prefetch_proxy_configurator_;
+
+  // The origin prober class which manages all logic for origin probing.
+  std::unique_ptr<PrefetchOriginProber> origin_prober_;
 
   // All prefetches associated with |this| regardless of ownership.
   std::map<PrefetchContainer::Key, base::WeakPtr<PrefetchContainer>>

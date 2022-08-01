@@ -76,6 +76,33 @@ bool PrefetchServiceHTMLOnly();
 // The maximum time a prefetched response is servable.
 CONTENT_EXPORT base::TimeDelta PrefetchCacheableDuration();
 
+// Whether probing must be done at all.
+bool PrefetchProbingEnabled();
+
+// Whether an ISP filtering canary check should be made on browser startup.
+bool PrefetchCanaryCheckEnabled();
+
+// Whether the TLS ISP filtering canary check should enabled. Only has effect if
+// canary checks are enabled (PrefetchProxyCanaryCheckEnabled is true). When
+// false, only the DNS canary check will be performed. When true, both the DNS
+// and TLS canary checks will be enabled.
+bool PrefetchTLSCanaryCheckEnabled();
+
+// The URL to use for the TLS canary check.
+GURL PrefetchTLSCanaryCheckURL(const GURL& default_tls_canary_check_url);
+
+// The URL to use for the DNS canary check.
+GURL PrefetchDNSCanaryCheckURL(const GURL& default_dns_canary_check_url);
+
+// How long a canary check can be cached for the same network.
+base::TimeDelta PrefetchCanaryCheckCacheLifetime();
+
+// The amount of time to allow before timing out a canary check.
+base::TimeDelta PrefetchCanaryCheckTimeout();
+
+// The number of retries to allow for canary checks.
+int PrefetchCanaryCheckRetries();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_PARAMS_H_

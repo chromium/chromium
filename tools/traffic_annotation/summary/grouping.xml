@@ -423,6 +423,7 @@ after discussions on the right group.
       <annotation id="predictive_prefetch"/>
       <annotation id="prefetch_proxy_probe"/>
       <annotation id="speculation_rules_prefetch"/>
+      <annotation id="speculation_rules_prefetch_probe"/>
     </sender>
   </group>
   <group name="Updates, Recovery, and Crash Reports" hidden="true">
