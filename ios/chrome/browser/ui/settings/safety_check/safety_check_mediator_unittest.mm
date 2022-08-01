@@ -341,6 +341,8 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingSafeUI) {
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
 }
 
+// Tests UI for Safe Browsing row in Safety Check settings with one of the
+// Enhanced Protection features enabled.
 TEST_F(SafetyCheckMediatorTest,
        SafeBrowsingSafeUIStandardAndEnhancedProtection) {
   base::test::ScopedFeatureList feature_list;
@@ -363,6 +365,55 @@ TEST_F(SafetyCheckMediatorTest,
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC));
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
             [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+}
+
+// TODO(crbug.com/1348254): Consolidate with other test when feature is
+// launched.
+// Tests UI for Safe Browsing row in Safety Check settings with Enhanced
+// Protection features enabled.
+TEST_F(SafetyCheckMediatorTest,
+       SafeBrowsingSafeUIStandardAndEnhancedProtectionPhase2IOS) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{safe_browsing::kEnhancedProtection,
+                            safe_browsing::kEnhancedProtectionPhase2IOS},
+      /*disabled_features=*/{});
+
+  // Check UI when Safe Browsing protection choice is "Enhanced Protection".
+  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
+            UITableViewCellAccessoryNone);
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+
+  // Check UI when Safe Browsing protection choice is "Standard Protection".
+  mediator_.enhancedSafeBrowsingPreference.value = false;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_NSEQ(
+      mediator_.safeBrowsingCheckItem.detailText,
+      GetNSString(
+          IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION));
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_safe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
+
+  // Check UI when Safe Browsing protection choice is "No Protection".
+  mediator_.safeBrowsingPreference.value = false;
+  mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateUnsafe;
+  [mediator_ reconfigureSafeBrowsingCheckItem];
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.accessoryType,
+            UITableViewCellAccessoryDisclosureIndicator);
+  EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
+            [[UIImage imageNamed:@"settings_unsafe_state"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);
 }
 
