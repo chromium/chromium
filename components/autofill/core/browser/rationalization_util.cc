@@ -30,23 +30,20 @@ void RationalizePhoneNumberFields(
     ServerFieldType current_field_type = field->Type().GetStorableType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:
+        found_number_field = field;
+        phone_number_found = true;
+        break;
+      case PHONE_HOME_NUMBER_PREFIX:
         if (!found_number_field) {
           found_number_field = field;
-          if (field->max_length < 5) {
-            phone_number_separate_fields = true;
-          } else {
-            phone_number_found = true;
-          }
-          break;
+          phone_number_separate_fields = true;
         }
-        // If the form has phone number separated into exchange and subscriber
-        // number we mark both of them as number fields.
-        // TODO(wuandy): A less hacky solution to have dedicated enum for
-        // exchange and subscriber number.
-        DCHECK(phone_number_separate_fields);
-        DCHECK(!found_number_field_second);
-        found_number_field_second = field;
-        phone_number_found = true;
+        break;
+      case PHONE_HOME_NUMBER_SUFFIX:
+        if (phone_number_separate_fields) {
+          found_number_field_second = field;
+          phone_number_found = true;
+        }
         break;
       case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
       case PHONE_HOME_CITY_CODE:

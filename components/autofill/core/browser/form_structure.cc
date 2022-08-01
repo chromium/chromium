@@ -298,7 +298,7 @@ void PopulateRandomizedFieldMetadata(
 ServerFieldTypeSet GetNecessaryTypesFor(ServerFieldType type) {
   switch (type) {
     case PHONE_HOME_COUNTRY_CODE:
-      return {PHONE_HOME_NUMBER,
+      return {PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
               base::FeatureList::IsEnabled(
                   features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
                   ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX

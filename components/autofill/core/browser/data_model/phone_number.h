@@ -39,12 +39,6 @@ class PhoneNumber : public FormGroup {
       const std::u16string& value,
       structured_address::VerificationStatus status) override;
 
-  // Size and offset of the prefix and suffix portions of phone numbers.
-  static const size_t kPrefixOffset = 0;
-  static const size_t kPrefixLength = 3;
-  static const size_t kSuffixOffset = 3;
-  static const size_t kSuffixLength = 4;
-
   // The class used to combine home phone parts into a whole number.
   class PhoneCombineHelper {
    public:

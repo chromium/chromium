@@ -8,11 +8,11 @@ ADDRESS_HOME_CITY | delivCity | City: | New York | delivTitle_1-default
 ADDRESS_HOME_STATE | delivState | NY | NY | delivTitle_1-default
 ADDRESS_HOME_ZIP | delivZipCode | Zip Code: | 10011 | delivTitle_1-default
 PHONE_HOME_CITY_CODE | HomeArea |  |  | delivTitle_1-default
-PHONE_HOME_NUMBER | HomePrefix |  |  | delivTitle_1-default
-PHONE_HOME_NUMBER | HomeSuffix |  |  | delivTitle_1-default
+PHONE_HOME_NUMBER_PREFIX | HomePrefix |  |  | delivTitle_1-default
+PHONE_HOME_NUMBER_SUFFIX | HomeSuffix |  |  | delivTitle_1-default
 PHONE_HOME_CITY_CODE | WorkArea |  |  | delivTitle_1-default
-PHONE_HOME_NUMBER | WorkPrefix |  |  | delivTitle_1-default
-PHONE_HOME_NUMBER | WorkSuffix |  |  | delivTitle_1-default
+PHONE_HOME_NUMBER_PREFIX | WorkPrefix |  |  | delivTitle_1-default
+PHONE_HOME_NUMBER_SUFFIX | WorkSuffix |  |  | delivTitle_1-default
 PHONE_HOME_EXTENSION | delivWorkPhoneExt | Ext: |  | delivTitle_1-default
 UNKNOWN_TYPE | dlv_isct_tx | Closest Major Intersection: |  | delivTitle_1-default
 UNKNOWN_TYPE | instructions |  |  | delivTitle_1-default

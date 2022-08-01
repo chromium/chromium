@@ -111,13 +111,6 @@ void AutofillField::SetHtmlType(HtmlFieldType type, HtmlFieldMode mode) {
   html_type_ = type;
   html_mode_ = mode;
   overall_type_ = AutofillType(NO_SERVER_DATA);
-
-  if (type == HTML_TYPE_TEL_LOCAL_PREFIX)
-    phone_part_ = PHONE_PREFIX;
-  else if (type == HTML_TYPE_TEL_LOCAL_SUFFIX)
-    phone_part_ = PHONE_SUFFIX;
-  else
-    phone_part_ = IGNORED;
 }
 
 void AutofillField::SetTypeTo(const AutofillType& type) {

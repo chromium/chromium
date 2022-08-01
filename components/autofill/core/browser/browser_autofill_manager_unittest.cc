@@ -4833,10 +4833,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
   EXPECT_EQ(u"4567", response_data2.fields[3].value);
   EXPECT_EQ(std::u16string(), response_data2.fields[4].value);
 
-  // We should not be able to fill international numbers correctly in a form
-  // containing fields with US max_length. However, the field should fill with
-  // the number of digits equal to the max length specified, starting from the
-  // right.
+  // For other countries, fill prefix and suffix fields with best effort.
   work_profile->SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
   work_profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"447700954321");
   page_id = 3;
@@ -4851,7 +4848,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
   ASSERT_EQ(5U, response_data3.fields.size());
   EXPECT_EQ(u"4", response_data3.fields[0].value);
   EXPECT_EQ(u"700", response_data3.fields[1].value);
-  EXPECT_EQ(u"321", response_data3.fields[2].value);
+  EXPECT_EQ(u"95", response_data3.fields[2].value);
   EXPECT_EQ(u"4321", response_data3.fields[3].value);
   EXPECT_EQ(std::u16string(), response_data3.fields[4].value);
 
@@ -4867,8 +4864,8 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest, FillPhoneNumber) {
   ASSERT_EQ(5U, response_data4.fields.size());
   EXPECT_EQ(u"44", response_data4.fields[0].value);
   EXPECT_EQ(u"7700", response_data4.fields[1].value);
-  EXPECT_EQ(u"954321", response_data4.fields[2].value);
-  EXPECT_EQ(u"954321", response_data4.fields[3].value);
+  EXPECT_EQ(u"95", response_data4.fields[2].value);
+  EXPECT_EQ(u"4321", response_data4.fields[3].value);
   EXPECT_EQ(std::u16string(), response_data4.fields[4].value);
 }
 
@@ -6377,8 +6374,8 @@ const ProfileMatchingTypesTestCase kProfileMatchingTypesTestCases[] = {
     {"1", {PHONE_HOME_COUNTRY_CODE}, {PHONE_HOME_COUNTRY_CODE}},
     {"234", {PHONE_HOME_CITY_CODE}, {PHONE_HOME_CITY_CODE}},
     {"5678901", {PHONE_HOME_NUMBER}, {PHONE_HOME_NUMBER}},
-    {"567", {PHONE_HOME_NUMBER}, {PHONE_HOME_NUMBER}},
-    {"8901", {PHONE_HOME_NUMBER}, {PHONE_HOME_NUMBER}},
+    {"567", {PHONE_HOME_NUMBER_PREFIX}, {PHONE_HOME_NUMBER_PREFIX}},
+    {"8901", {PHONE_HOME_NUMBER_SUFFIX}, {PHONE_HOME_NUMBER_SUFFIX}},
 
     // Test a European profile.
     {"Paris", {ADDRESS_HOME_CITY}, {ADDRESS_HOME_CITY}},

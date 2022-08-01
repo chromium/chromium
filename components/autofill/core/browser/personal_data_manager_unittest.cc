@@ -1750,6 +1750,8 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
                                               ADDRESS_HOME_ZIP,
                                               ADDRESS_HOME_COUNTRY,
                                               PHONE_HOME_NUMBER,
+                                              PHONE_HOME_NUMBER_PREFIX,
+                                              PHONE_HOME_NUMBER_SUFFIX,
                                               PHONE_HOME_COUNTRY_CODE,
                                               PHONE_HOME_CITY_CODE,
                                               PHONE_HOME_CITY_AND_NUMBER,

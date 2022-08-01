@@ -577,11 +577,6 @@ INSTANTIATE_TEST_SUITE_P(
         AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL_SUFFIX,
                                          /*field_max_length=*/0, u"4578",
                                          u"+15145554578"},
-        // Filling a phone type field with a max length of 3 should fill only
-        // the prefix.
-        AutofillPhoneFieldFillerTestCase{HTML_TYPE_TEL_LOCAL,
-                                         /*field_max_length=*/3, u"555",
-                                         u"+15145554578"},
         // TODO(crbug.com/581485): There should be a test case where the full
         // number is requested (HTML_TYPE_TEL) but a field_max_length of 3 would
         // fill the prefix.
