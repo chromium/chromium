@@ -115,6 +115,9 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
 @property(nonatomic, strong)
     ContentSuggestionsModuleContainer* trendingQueriesModuleContainer;
 @property(nonatomic, strong) UIView* trendingQueriesContainingView;
+// Width Anchor of the Trending Queries module container.
+@property(nonatomic, strong)
+    NSLayoutConstraint* trendingQueriesContainerWidthAnchor;
 // List of all of the Trending Query views.
 @property(nonatomic, strong)
     NSMutableArray<QuerySuggestionView*>* trendingQueryViews;
@@ -282,10 +285,13 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
     }
     [self.verticalStackView
         addArrangedSubview:self.trendingQueriesModuleContainer];
+    self.trendingQueriesContainerWidthAnchor =
+        [self.trendingQueriesModuleContainer.widthAnchor
+            constraintEqualToConstant:
+                GetModuleWidthForHorizontalTraitCollection(
+                    self.traitCollection)];
     [NSLayoutConstraint activateConstraints:@[
-      [self.trendingQueriesModuleContainer.widthAnchor
-          constraintEqualToConstant:GetModuleWidthForHorizontalTraitCollection(
-                                        self.traitCollection)],
+      self.trendingQueriesContainerWidthAnchor,
       [self.trendingQueriesModuleContainer.heightAnchor
           constraintEqualToConstant:[self.trendingQueriesModuleContainer
                                             calculateIntrinsicHeight]]
@@ -376,6 +382,10 @@ CGFloat GetModuleWidthForHorizontalTraitCollection(
         GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
     self.mostVisitedContainerWidthAnchor.constant =
         GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
+    if (IsTrendingQueriesModuleEnabled()) {
+      self.trendingQueriesContainerWidthAnchor.constant =
+          GetModuleWidthForHorizontalTraitCollection(self.traitCollection);
+    }
   }
 }
 
