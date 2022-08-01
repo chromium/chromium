@@ -62,6 +62,7 @@ void SavePasswordLeakDetectionDelegate::StartLeakCheck(
     leak_detection_timer_.Stop();
     std::move(callback).Run(
         LeakDetectionStatus(LeakDetectionStatusCode::ABORTED), false);
+    return;
   }
 
   leak_check_ = leak_factory_->TryCreateLeakCheck(
