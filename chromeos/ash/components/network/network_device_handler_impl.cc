@@ -112,7 +112,7 @@ void HandleSimPinOperationFailure(
     const std::string& shill_error_name,
     const std::string& shill_error_message) {
   CellularMetricsLogger::RecordSimPinOperationResult(
-      pin_operation, allow_cellular_sim_lock, shill_error_message);
+      pin_operation, allow_cellular_sim_lock, shill_error_name);
   HandleShillCallFailure(device_path, std::move(error_callback),
                          shill_error_name, shill_error_message);
 }
