@@ -69,6 +69,9 @@ class AppListToastContainerView : public views::View {
   // RecentAppsView.
   bool HandleFocus(int column);
 
+  // Disables focus when a folder is open.
+  void DisableFocusForShowingActiveFolder(bool disabled);
+
   // Updates the toast container to show/hide the reorder nudge if needed.
   void MaybeUpdateReorderNudgeView();
 

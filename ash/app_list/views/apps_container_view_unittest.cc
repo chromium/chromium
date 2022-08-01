@@ -5,6 +5,7 @@
 #include "ash/app_list/views/apps_container_view.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/recent_apps_view.h"
@@ -19,6 +20,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {
@@ -32,6 +34,25 @@ class AppsContainerViewTest : public AshTestBase {
                                {});
   }
   ~AppsContainerViewTest() override = default;
+
+  // testing::Test:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    app_list_test_model_ = std::make_unique<test::AppListTestModel>();
+    search_model_ = std::make_unique<SearchModel>();
+    Shell::Get()->app_list_controller()->SetActiveModel(
+        /*profile_id=*/1, app_list_test_model_.get(), search_model_.get());
+  }
+
+  void AddFolderWithApps(int count) {
+    app_list_test_model_->CreateAndPopulateFolderWithApps(count);
+  }
+
+  AppListToastContainerView* GetToastContainerView() {
+    return GetAppListTestHelper()
+        ->GetAppsContainerView()
+        ->GetToastContainerView();
+  }
 
   void PressDown() {
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
@@ -47,6 +68,8 @@ class AppsContainerViewTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList features_;
+  std::unique_ptr<test::AppListTestModel> app_list_test_model_;
+  std::unique_ptr<SearchModel> search_model_;
 };
 
 TEST_F(AppsContainerViewTest, ContinueSectionVisibleByDefault) {
@@ -203,6 +226,52 @@ TEST_F(AppsContainerViewTest, ShowContinueSectionPlaysAnimation) {
   EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->is_animating());
   EXPECT_TRUE(apps_grid_view->layer()->GetAnimator()->IsAnimatingProperty(
       ui::LayerAnimationElement::TRANSFORM));
+}
+
+TEST_F(AppsContainerViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  AddFolderWithApps(5);
+  TabletMode::Get()->SetEnabledForTest(true);
+
+  // Force the sorting toast to show.
+  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      AppListSortOrder::kColor,
+      /*animate=*/false, /*update_position_closure=*/base::OnceClosure());
+  ASSERT_TRUE(GetToastContainerView()->GetToastButton());
+
+  // Open the folder.
+  AppListItemView* folder_item =
+      helper->GetRootPagedAppsGridView()->GetItemViewAt(0);
+  LeftClickOn(folder_item);
+
+  // Note: For fullscreen app list, the search box is part of the focus cycle
+  // when a folder is open.
+  auto* continue_section = helper->GetFullscreenContinueSectionView();
+  EXPECT_TRUE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(continue_section->GetViewAccessibility().IsLeaf());
+  auto* recent_apps = helper->GetFullscreenRecentAppsView();
+  EXPECT_TRUE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(recent_apps->GetViewAccessibility().IsLeaf());
+  auto* toast_container = GetToastContainerView();
+  EXPECT_TRUE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(toast_container->GetViewAccessibility().IsLeaf());
+  auto* apps_grid_view = helper->GetRootPagedAppsGridView();
+  EXPECT_TRUE(apps_grid_view->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(apps_grid_view->GetViewAccessibility().IsLeaf());
+
+  // Close the folder.
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
+
+  EXPECT_FALSE(continue_section->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(continue_section->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(recent_apps->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(recent_apps->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(toast_container->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(apps_grid_view->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(apps_grid_view->GetViewAccessibility().IsLeaf());
 }
 
 TEST_F(AppsContainerViewTest, UpdatesSelectedPageAfterFocusTraversal) {

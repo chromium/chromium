@@ -25,7 +25,6 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
-#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
@@ -69,7 +68,6 @@
 #include "ui/display/screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_model.h"
@@ -1366,52 +1364,6 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInFolder) {
   // Test traversal triggered by left.
   TestFocusTraversal(is_rtl_ ? forward_view_list : backward_view_list,
                      ui::VKEY_LEFT, false);
-}
-
-TEST_F(AppListViewFocusTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
-  Show();
-
-  // Transition to FULLSCREEN_ALL_APPS state and open the folder.
-  SetAppListState(ash::AppListViewState::kFullscreenAllApps);
-  folder_item_view()->RequestFocus();
-  SimulateKeyPress(ui::VKEY_RETURN, false);
-  auto* apps_container_view = contents_view()->apps_container_view();
-  ASSERT_TRUE(apps_container_view->IsInFolderView());
-
-  // Note: For fullscreen app list, the search box is part of the focus cycle
-  // when a folder is open.
-  // ProductivityLauncher uses recent apps and continue section.
-  auto* recent_apps_view = apps_container_view->GetRecentAppsView();
-  auto* continue_section_view = apps_container_view->GetContinueSectionView();
-  // Non-ProductivityLauncher uses suggestion chips.
-  auto* suggestion_chip_container =
-      apps_container_view->suggestion_chip_container_view_for_test();
-  if (features::IsProductivityLauncherEnabled()) {
-    EXPECT_TRUE(recent_apps_view->GetViewAccessibility().IsIgnored());
-    EXPECT_TRUE(recent_apps_view->GetViewAccessibility().IsLeaf());
-    EXPECT_TRUE(continue_section_view->GetViewAccessibility().IsIgnored());
-    EXPECT_TRUE(continue_section_view->GetViewAccessibility().IsLeaf());
-  } else {
-    EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
-    EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
-  }
-  EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsIgnored());
-  EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsLeaf());
-
-  // Close the folder.
-  SimulateKeyPress(ui::VKEY_ESCAPE, false);
-
-  if (features::IsProductivityLauncherEnabled()) {
-    EXPECT_FALSE(recent_apps_view->GetViewAccessibility().IsIgnored());
-    EXPECT_FALSE(recent_apps_view->GetViewAccessibility().IsLeaf());
-    EXPECT_FALSE(continue_section_view->GetViewAccessibility().IsIgnored());
-    EXPECT_FALSE(continue_section_view->GetViewAccessibility().IsLeaf());
-  } else {
-    EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
-    EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
-  }
-  EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsIgnored());
-  EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsLeaf());
 }
 
 // Tests the vertical focus traversal by in PEEKING state.
