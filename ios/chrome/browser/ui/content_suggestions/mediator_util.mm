@@ -66,17 +66,13 @@ ContentSuggestionsMostVisitedItem* ConvertNTPTile(
     const ntp_tiles::NTPTile& tile,
     ContentSuggestionsSectionInformation* sectionInfo) {
   ContentSuggestionsMostVisitedItem* suggestion =
-      [[ContentSuggestionsMostVisitedItem alloc] initWithType:0];
+      [[ContentSuggestionsMostVisitedItem alloc] init];
 
   suggestion.title = base::SysUTF16ToNSString(tile.title);
   suggestion.URL = tile.url;
   suggestion.source = tile.source;
   suggestion.titleSource = tile.title_source;
   suggestion.accessibilityTraits = UIAccessibilityTraitButton;
-
-  suggestion.suggestionIdentifier = [[ContentSuggestionIdentifier alloc] init];
-  suggestion.suggestionIdentifier.IDInSection = tile.url.spec();
-  suggestion.suggestionIdentifier.sectionInfo = sectionInfo;
 
   return suggestion;
 }

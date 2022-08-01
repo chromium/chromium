@@ -137,10 +137,6 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
   config.features_enabled.push_back(kDiscoverFeedInNtp);
-  config.features_enabled.push_back(kSingleCellContentSuggestions);
-  config.features_enabled.push_back(kContentSuggestionsHeaderMigration);
-  config.features_enabled.push_back(
-      kContentSuggestionsUIViewControllerMigration);
   return config;
 }
 
