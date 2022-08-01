@@ -49,7 +49,7 @@ struct AX_BASE_EXPORT AXNodeData {
 
   AXNodeData(const AXNodeData& other);
   AXNodeData(AXNodeData&& other);
-  AXNodeData& operator=(AXNodeData other);
+  AXNodeData& operator=(const AXNodeData& other);
 
   // Accessing accessibility attributes:
   //
