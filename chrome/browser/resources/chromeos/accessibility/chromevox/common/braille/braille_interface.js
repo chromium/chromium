@@ -9,14 +9,8 @@
  *
  */
 
-goog.provide('BrailleInterface');
-
-goog.require('BrailleKeyCommand');
-goog.require('BrailleKeyEvent');
-goog.require('NavBraille');
-
 /** @interface */
-BrailleInterface = class {
+export class BrailleInterface {
   /**
    * Sends the given params to the Braille display for output.
    * @param {!NavBraille} params Parameters to send to the
@@ -64,4 +58,4 @@ BrailleInterface = class {
    *     braille cells, not text cells.
    */
   route(braillePosition) {}
-};
+}
