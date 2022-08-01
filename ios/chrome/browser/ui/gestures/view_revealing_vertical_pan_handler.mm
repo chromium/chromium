@@ -306,6 +306,10 @@ enum class ScrollViewTracking {
     if (!weakSelf.animator.reversed) {
       weakSelf.currentState = weakSelf.nextState;
     }
+    // Animator crashes if stopAnimation is called during this completer. It can
+    // happened if a listener to `didAnimateViewRevealFromState:toState`
+    // triggers a new state change. Make it nil to avoid calling that.
+    weakSelf.animator = nil;
     [weakSelf didAnimateViewRevealFromState:startState
                                     toState:weakSelf.currentState];
   }];
