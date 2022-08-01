@@ -97,4 +97,10 @@ extern const base::Feature kEnableExpKitAppleCalendar;
 // Feature flag to enable sign-out from Chrome Browsing Data.
 extern const base::Feature kEnableCBDSignOut;
 
+// Feature flag to enable Phone Numbers detection.
+extern const base::Feature kEnablePhoneNumbers;
+
+// Feature flag to enable Mini Map in experience kit.
+extern const base::Feature kEnableMiniMap;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

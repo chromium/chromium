@@ -81,3 +81,9 @@ const base::Feature kEnableExpKitAppleCalendar{
 
 const base::Feature kEnableCBDSignOut{"EnableCbdSignOut",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnablePhoneNumbers{"EnablePhoneNumbers",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableMiniMap{"EnableMiniMap",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
