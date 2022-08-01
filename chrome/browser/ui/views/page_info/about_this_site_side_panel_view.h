@@ -35,6 +35,9 @@ class AboutThisSiteSidePanelView
   void OpenUrl(const content::OpenURLParams& params);
 
  private:
+  // Opens a URL in a regular tab.
+  void OpenUrlInBrowser(const content::OpenURLParams& params);
+
   // Shows / hides the page and the loading view to avoid showing
   // loading artifacts.
   void SetContentVisible(bool visible);

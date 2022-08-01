@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 
+#include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -59,8 +62,10 @@ AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
   SetContentVisible(false);
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);
-  // TODO(crbug.com/1318000): Intercept all cross-origin navigations and open
-  // them in a new tab.
+  web_contents->SetUserData(
+      kAboutThisSiteWebContentsUserDataKey,
+      std::make_unique<AboutThisSiteWebContentsUserData>(base::BindRepeating(
+          &AboutThisSiteSidePanelView::OpenUrlInBrowser, AsWeakPtr())));
   Observe(web_contents);
 }
 
@@ -96,6 +101,11 @@ void AboutThisSiteSidePanelView::DidOpenRequestedURL(
   if (renderer_initiated)
     params.initiator_origin = url::Origin::Create(url);
 
+  browser_view_->browser()->OpenURL(params);
+}
+
+void AboutThisSiteSidePanelView::OpenUrlInBrowser(
+    const content::OpenURLParams& params) {
   browser_view_->browser()->OpenURL(params);
 }
 

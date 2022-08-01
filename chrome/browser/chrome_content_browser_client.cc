@@ -443,6 +443,7 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/unified_autoplay_config.h"
+#include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
@@ -4615,6 +4616,9 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 
   MaybeAddThrottle(MaybeCreateNavigationAblationThrottle(handle), &throttles);
 
+#if !BUILDFLAG(IS_ANDROID)
+  MaybeAddThrottle(MaybeCreateAboutThisSiteThrottleFor(handle), &throttles);
+#endif
   return throttles;
 }
 
