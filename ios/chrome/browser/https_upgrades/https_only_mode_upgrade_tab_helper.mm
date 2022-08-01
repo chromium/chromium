@@ -167,12 +167,12 @@ void HttpsOnlyModeUpgradeTabHelper::DidFinishNavigation(
     return;
   }
 
-  state_ = State::kNone;
-  if (navigation_context->GetUrl().SchemeIs(url::kHttpsScheme) ||
-      service_->IsFakeHTTPSForTesting(navigation_context->GetUrl())) {
+  if (state_ == State::kDone &&
+      (navigation_context->GetUrl().SchemeIs(url::kHttpsScheme) ||
+       service_->IsFakeHTTPSForTesting(navigation_context->GetUrl()))) {
     RecordUMA(Event::kUpgradeSucceeded);
-    return;
   }
+  state_ = State::kNone;
 }
 
 void HttpsOnlyModeUpgradeTabHelper::StopToUpgrade(
@@ -256,7 +256,10 @@ void HttpsOnlyModeUpgradeTabHelper::ShouldAllowResponse(
   // If already HTTPS (real or faux), simply allow the response.
   if (url.SchemeIs(url::kHttpsScheme) || service_->IsFakeHTTPSForTesting(url)) {
     timer_.Stop();
-    state_ = State::kDone;
+    if (state_ != State::kNone) {
+      // Only call it done if the navigation was originally upgraded.
+      state_ = State::kDone;
+    }
     std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;

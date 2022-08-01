@@ -144,6 +144,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // Release the histogram tester.
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
+
   [super tearDown];
 }
 
