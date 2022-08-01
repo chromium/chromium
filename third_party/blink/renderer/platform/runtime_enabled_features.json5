@@ -1876,6 +1876,17 @@
       name: "QuotaChange",
       status: "experimental",
     },
+    // This User-Agent Reduction feature has been enabled starting from M101,
+    // but we still keep this flag for future phase tests.
+    {
+      name: "ReduceUserAgentMinorVersion",
+      status: "stable",
+    },
+    {
+      name: "ReduceUserAgentPlatformOsCpu",
+      depends_on: ["ReduceUserAgentMinorVersion"],
+      status: "experimental",
+    },
     {
       name: "RegionCapture",
       origin_trial_feature_name: "RegionCapture",
