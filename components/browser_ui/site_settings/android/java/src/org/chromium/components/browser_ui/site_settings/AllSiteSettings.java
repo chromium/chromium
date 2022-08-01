@@ -121,15 +121,15 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
             mCategory = SiteSettingsCategory.createFromType(
                     browserContextHandle, SiteSettingsCategory.Type.ALL_SITES);
         }
-        if (!(mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
-                    || mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE))) {
+        if (!(mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
+                    || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE)) {
             throw new IllegalArgumentException("Use SingleCategorySettings instead.");
         };
 
         ViewGroup view = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
 
         // Add custom views for Storage Preferences to bottom of the fragment.
-        if (mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             inflater.inflate(R.layout.storage_preferences_view, view, true);
             mEmptyView = view.findViewById(R.id.empty_storage);
             mClearButton = view.findViewById(R.id.clear_button);
@@ -391,7 +391,7 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
     /** Returns whether the new All Sites UI should be used. */
     private boolean isNewAllSitesUiEnabled() {
         // Only in the "All sites" mode and with the flag enabled.
-        return mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
+        return mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
                 && SiteSettingsFeatureList.isEnabled(
                         SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS);
     }
