@@ -13,8 +13,11 @@ class Window;
 
 namespace ash {
 
-// Returns true if |window| is an ARC app window.
+// Returns true if `window` is an ARC app window.
 ASH_PUBLIC_EXPORT bool IsArcWindow(const aura::Window* window);
+
+// Returns true if `window` is a lacros window.
+ASH_PUBLIC_EXPORT bool IsLacrosWindow(const aura::Window* window);
 
 }  // namespace ash
 

@@ -24,6 +24,7 @@ class CrostiniSecurityDelegate : public guest_os::GuestOsSecurityDelegate {
 
   // exo::SecurityDelegate overrides:
   std::string GetSecurityContext() const override;
+  bool CanLockPointer(aura::Window* window) const override;
 
  private:
   // Private constructor to force use of Build().

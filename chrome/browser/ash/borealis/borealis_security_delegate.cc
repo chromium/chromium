@@ -11,7 +11,9 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "third_party/cros_system_api/constants/vm_tools.h"
+#include "ui/aura/window.h"
 
 namespace borealis {
 
@@ -48,6 +50,10 @@ bool BorealisSecurityDelegate::CanSelfActivate(aura::Window* window) const {
   return BorealisService::GetForProfile(profile_)
              ->WindowManager()
              .GetShelfAppId(window) == kClientAppId;
+}
+
+bool BorealisSecurityDelegate::CanLockPointer(aura::Window* window) const {
+  return window->GetProperty(chromeos::kUseOverviewToExitPointerLock);
 }
 
 }  // namespace borealis

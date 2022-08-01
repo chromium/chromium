@@ -4,6 +4,7 @@
 
 #include "components/exo/pointer.h"
 
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
@@ -27,11 +28,13 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "components/exo/test/exo_test_helper.h"
+#include "components/exo/test/mock_security_delegate.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -223,10 +226,8 @@ class PointerConstraintTest : public PointerTest {
     std::unique_ptr<ShellSurface> shell_surface =
         test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
 
-    shell_surface->surface_for_testing()
-        ->window()
-        ->GetToplevelWindow()
-        ->SetProperty(chromeos::kUseOverviewToExitPointerLock, true);
+    shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+        chromeos::kUseOverviewToExitPointerLock, true);
 
     return shell_surface;
   }
@@ -1817,6 +1818,52 @@ TEST_F(PointerConstraintTest, UserCanBreakAndActivatePersistentConstraint) {
   EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
+
+TEST_F(PointerConstraintTest, DefaultSecrityDeletegate) {
+  auto default_security_delegate =
+      SecurityDelegate::GetDefaultSecurityDelegate();
+  auto shell_surface = test::ShellSurfaceBuilder({10, 10})
+                           .SetSecurityDelegate(default_security_delegate.get())
+                           .BuildShellSurface();
+
+  auto* surface = shell_surface->surface_for_testing();
+
+  focus_client_->FocusWindow(surface->window());
+
+  MockPointerConstraintDelegate constraint_delegate;
+
+  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
+      .WillRepeatedly(testing::Return(surface));
+
+  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(1);
+  EXPECT_FALSE(pointer_->ConstrainPointer(&constraint_delegate));
+  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
+
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::LACROS));
+
+  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
+      .WillRepeatedly(testing::Return(surface));
+  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(0);
+  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate));
+
+  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
+
+  EXPECT_CALL(constraint_delegate, GetConstrainedSurface())
+      .WillRepeatedly(testing::Return(surface));
+  shell_surface->GetWidget()->GetNativeWindow()->SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  EXPECT_CALL(constraint_delegate, OnDefunct()).Times(0);
+  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate));
+
+  ::testing::Mock::VerifyAndClearExpectations(&constraint_delegate);
+
+  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate);
+  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
+
+  pointer_.reset();
+}
+
 #endif
 
 TEST_F(PointerTest, PointerStylus) {

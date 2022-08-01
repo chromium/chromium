@@ -225,6 +225,8 @@ source_set("test_support") {
     "test/exo_test_suite_aura.h",
     "test/mock_security_delegate.cc",
     "test/mock_security_delegate.h",
+    "test/test_security_delegate.cc",
+    "test/test_security_delegate.h",
   ]
 
   public_deps = [ "//testing/gtest" ]

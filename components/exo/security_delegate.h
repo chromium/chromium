@@ -45,6 +45,12 @@ class SecurityDelegate {
   // per-subsystem, i.e. a product like ARC++ knows that its windows should be
   // able to self activate, whereas Crostini knows they usually shouldn't.
   virtual bool CanSelfActivate(aura::Window* window) const;
+
+  // Called when a client made pointer lock request, defined in
+  // pointer-constraints-unstable-v1.xml extension protocol.  True if the client
+  // can lock the location of the pointer and disable movement, or return false
+  // to reject the pointer lock request.
+  virtual bool CanLockPointer(aura::Window* window) const;
 };
 
 }  // namespace exo
