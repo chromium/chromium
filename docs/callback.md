@@ -577,53 +577,78 @@ base::BindRepeating(&Foo, base::Passed(std::move(p))); // Ok, but subtle.
 
 ### Binding A Class Method With Weak Pointers
 
-If `MyClass` has a `base::WeakPtr<MyClass> weak_this_` member (see below)
-then a class method can be bound with:
+Callbacks to a class method may be bound using a weak pointer as the receiver.
+A callback bound using a weak pointer receiver will be automatically cancelled
+(calling `Run()` becomes a no-op) if the weak pointer is invalidated, e.g. its
+associated class instance is destroyed.
 
-```cpp
-base::BindOnce(&MyClass::Foo, weak_this_);
-```
-
-The callback will not be run if the object has already been destroyed.
-
-Note that class method callbacks bound to `base::WeakPtr`s may only be
-run on the same sequence on which the object will be destroyed, since otherwise
-execution of the callback might race with the object's deletion.
-
-To use `base::WeakPtr` with `base::Bind{Once, Repeating}()` as the `this`
-pointer to a method bound in a callback, `MyClass` will typically look like:
+The most common way to use this pattern is by embedding a `base::WeakPtrFactory`
+field, e.g.:
 
 ```cpp
 class MyClass {
-public:
-  MyClass() {
-    weak_this_ = weak_factory_.GetWeakPtr();
-  }
-private:
-  base::WeakPtr<MyClass> weak_this_;
-  // MyClass member variables go here.
+ public:
+  MyClass();
+
+  void Foo();
+
+ private:
+  std::string data_;
+
+  // Chrome's compiler toolchain enforces that any `WeakPtrFactory`
+  // fields are declared last, to avoid destruction ordering issues.
   base::WeakPtrFactory<MyClass> weak_factory_{this};
 };
 ```
 
-`weak_factory_` is the last member variable in `MyClass` so that it is
-destroyed first. This ensures that if any class methods bound to `weak_this_`
-are `Run()` during teardown, then they will not actually be executed.
+Then use `base::WeakPtrFactory<T>::GetWeakPtr()` as the receiver when
+binding a callback:
 
-If `MyClass` only ever binds and executes callbacks on the same sequence, then
-it is generally safe to call `weak_factory_.GetWeakPtr()` at the
-`base::Bind{Once, Repeating}()` call, rather than taking a separate `weak_this_`
-during construction.
+```cpp
+base::SequencedTaskRunnerHandle::Get()->PostTask(
+    FROM_HERE,
+    base::BindOnce(&MyClass::Foo, weak_factory_.GetWeakPtr());
+```
+
+If `this` is destroyed before the posted callback runs, the callback will
+simply become a no-op when run, rather than being a use-after-free bug on
+the destroyed `MyClass` instance.
+
+**Sequence safety**
+
+Class method callbacks bound to `base::WeakPtr`s must be run on the same
+sequence on which the object will be destroyed to avoid potential races
+between object destruction and callback execution. The same caveat applies if
+a class manually invalidates live `base::WeakPtr`s with
+`base::WeakPtrFactory<T>::InvalidateWeakPtrs()`.
 
 ### Binding A Class Method With Manual Lifetime Management
 
+If a callback bound to a class method does not need cancel-on-destroy
+semantics (because there is some external guarantee that the class instance will
+always be live when running the callback), then use:
+
 ```cpp
-base::BindOnce(&MyClass::Foo, base::Unretained(this));
+// base::Unretained() is safe since `this` joins `background_thread_` in the
+// destructor.
+background_thread_->PostTask(
+    FROM_HERE, base::BindOnce(&MyClass::Foo, base::Unretained(this)));
 ```
 
-This disables all lifetime management on the object. You're responsible for
-making sure the object is alive at the time of the call. You break it, you own
-it!
+It is often a good idea to add a brief comment to explain why
+`base::Unretained()` is safe in this context; if nothing else, for future code
+archaeologists trying to fix a use-after-free bug.
+
+An alternative is `base::WeakPtrFactory<T>::GetSafeRef()`:
+
+```cpp
+background_thread_->PostTask(
+    FROM_HERE, base::BindOnce(&MyClass::Foo, weak_factory_.GetSafeRef());
+```
+
+Similar to `base::Unretained()`, this disables cancel-on-destroy semantics;
+unlike `base::Unretained()`, this is guaranteed to terminate safely if the
+lifetime expectations are violated.
 
 ### Binding A Class Method And Having The Callback Own The Class
 
