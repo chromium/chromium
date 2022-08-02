@@ -834,6 +834,7 @@
     "prefix": "third-party-storage-partitioning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "wpt_internal/file-system-api",
       "wpt_internal/storage/quota/partitioned-webkitTemporaryStorage-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitPersistentStorage-quota-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitStorageInfo-temporary-quota-usage-details.tentative.sub.html",
@@ -850,7 +851,8 @@
       "external/wpt/webstorage/localstorage-basic-partitioned.tentative.sub.html",
       "external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html",
       "external/wpt/IndexedDB",
-      "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html"
+      "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html",
+      "fast/filesystem"
     ],
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
   },
