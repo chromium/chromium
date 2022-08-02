@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/shared_image_interface_in_process.h"
+#include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 
 #include "base/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -11,12 +11,18 @@
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/command_buffer_task_executor.h"
+#include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_memory_tracker.h"
+#include "gpu/command_buffer/service/image_factory.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
+#include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
-#include "gpu/ipc/single_task_sequence.h"
 #include "ui/gl/gl_context.h"
 
 namespace gpu {
@@ -60,7 +66,7 @@ struct SharedImageInterfaceInProcess::SetUpOnGpuParams {
 SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     SingleTaskSequence* task_sequence,
     DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller,
-    std::unique_ptr<CommandBufferHelper> command_buffer_helper)
+    raw_ptr<CommandBufferHelper> command_buffer_helper)
     : SharedImageInterfaceInProcess(
           task_sequence,
           display_controller->sync_point_manager(),
@@ -73,7 +79,7 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
           display_controller->image_factory(),
           display_controller->memory_tracker(),
           /*is_for_display_compositor=*/true,
-          std::move(command_buffer_helper)) {}
+          command_buffer_helper) {}
 
 SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     SingleTaskSequence* task_sequence,
@@ -87,11 +93,11 @@ SharedImageInterfaceInProcess::SharedImageInterfaceInProcess(
     ImageFactory* image_factory,
     MemoryTracker* memory_tracker,
     bool is_for_display_compositor,
-    std::unique_ptr<CommandBufferHelper> command_buffer_helper)
+    raw_ptr<CommandBufferHelper> command_buffer_helper)
     : task_sequence_(task_sequence),
       command_buffer_id_(
           DisplayCompositorMemoryAndTaskControllerOnGpu::NextCommandBufferId()),
-      command_buffer_helper_(std::move(command_buffer_helper)),
+      command_buffer_helper_(command_buffer_helper),
       shared_image_manager_(shared_image_manager),
       sync_point_manager_(sync_point_manager) {
   DETACH_FROM_SEQUENCE(gpu_sequence_checker_);
@@ -234,8 +240,10 @@ void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type,
           surface_handle, usage)) {
-    // Signal errors by losing the command buffer.
-    command_buffer_helper_->SetError();
+    if (command_buffer_helper_) {
+      // Signal errors by losing the command buffer.
+      command_buffer_helper_->SetError();
+    }
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -291,8 +299,10 @@ void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
   if (!shared_image_factory_->CreateSharedImage(
           mailbox, format, size, color_space, surface_origin, alpha_type, usage,
           pixel_data)) {
-    // Signal errors by losing the command buffer.
-    command_buffer_helper_->SetError();
+    if (command_buffer_helper_) {
+      // Signal errors by losing the command buffer.
+      command_buffer_helper_->SetError();
+    }
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -369,9 +379,10 @@ void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(
           mailbox, kDisplayCompositorClientId, std::move(handle), format, plane,
           surface_handle, size, color_space, surface_origin, alpha_type,
           usage)) {
-    // Signal errors by losing the command buffer.
-    // Signal errors by losing the command buffer.
-    command_buffer_helper_->SetError();
+    if (command_buffer_helper_) {
+      // Signal errors by losing the command buffer.
+      command_buffer_helper_->SetError();
+    }
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -443,8 +454,10 @@ void SharedImageInterfaceInProcess::UpdateSharedImageOnGpuThread(
 
   if (!shared_image_factory_ ||
       !shared_image_factory_->UpdateSharedImage(mailbox)) {
-    // Signal errors by losing the command buffer.
-    command_buffer_helper_->SetError();
+    if (command_buffer_helper_) {
+      // Signal errors by losing the command buffer.
+      command_buffer_helper_->SetError();
+    }
     return;
   }
   sync_point_client_state_->ReleaseFenceSync(sync_token.release_count());
@@ -470,8 +483,10 @@ void SharedImageInterfaceInProcess::DestroySharedImageOnGpuThread(
 
   if (!shared_image_factory_ ||
       !shared_image_factory_->DestroySharedImage(mailbox)) {
-    // Signal errors by losing the command buffer.
-    command_buffer_helper_->SetError();
+    if (command_buffer_helper_) {
+      // Signal errors by losing the command buffer.
+      command_buffer_helper_->SetError();
+    }
   }
 }
 

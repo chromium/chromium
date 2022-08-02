@@ -11,8 +11,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/ipc/gpu_task_scheduler_helper.h"
 
 namespace gpu {
 class SharedContextState;

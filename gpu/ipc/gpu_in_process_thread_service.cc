@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/ipc/scheduler_sequence.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
 
 namespace gpu {
 

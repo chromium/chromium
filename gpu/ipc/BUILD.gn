@@ -5,25 +5,16 @@
 import("//build/config/ui.gni")
 
 component("gl_in_process_context") {
+  testonly = true
+
   sources = [
-    "command_buffer_task_executor.cc",
-    "command_buffer_task_executor.h",
-    "display_compositor_memory_and_task_controller_on_gpu.cc",
-    "display_compositor_memory_and_task_controller_on_gpu.h",
     "gl_in_process_context.cc",
     "gl_in_process_context.h",
     "gl_in_process_context_export.h",
     "gpu_in_process_thread_service.cc",
     "gpu_in_process_thread_service.h",
-    "gpu_task_scheduler_helper.cc",
-    "gpu_task_scheduler_helper.h",
     "in_process_command_buffer.cc",
     "in_process_command_buffer.h",
-    "scheduler_sequence.cc",
-    "scheduler_sequence.h",
-    "shared_image_interface_in_process.cc",
-    "shared_image_interface_in_process.h",
-    "single_task_sequence.h",
   ]
 
   defines = [ "GL_IN_PROCESS_CONTEXT_IMPLEMENTATION" ]

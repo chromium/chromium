@@ -11,11 +11,11 @@
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/service/command_buffer_task_executor.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
+#include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/in_process_command_buffer.h"
-#include "gpu/ipc/single_task_sequence.h"
 #include "ui/gl/gl_share_group.h"
 
 namespace gpu {

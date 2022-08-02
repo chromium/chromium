@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "gpu/ipc/gpu_task_scheduler_helper.h"
+#include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
-#include "gpu/ipc/scheduler_sequence.h"
-#include "gpu/ipc/single_task_sequence.h"
+#include "gpu/command_buffer/service/command_buffer_task_executor.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "gpu/command_buffer/service/single_task_sequence.h"
 
 namespace gpu {
 

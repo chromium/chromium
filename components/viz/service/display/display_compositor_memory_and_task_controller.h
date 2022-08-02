@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "components/viz/service/viz_service_export.h"
-#include "gpu/ipc/display_compositor_memory_and_task_controller_on_gpu.h"
-#include "gpu/ipc/gpu_task_scheduler_helper.h"
+#include "gpu/command_buffer/service/display_compositor_memory_and_task_controller_on_gpu.h"
+#include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 
 namespace base {
 class WaitableEvent;

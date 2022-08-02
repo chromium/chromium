@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "gpu/ipc/single_task_sequence.h"
+#include "gpu/command_buffer/service/single_task_sequence.h"
 
 namespace gpu {
 class SyncPointManager;

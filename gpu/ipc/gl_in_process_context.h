@@ -9,7 +9,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
+#include "gpu/command_buffer/service/command_buffer_task_executor.h"
 #include "gpu/ipc/gl_in_process_context_export.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "ui/gfx/native_widget_types.h"

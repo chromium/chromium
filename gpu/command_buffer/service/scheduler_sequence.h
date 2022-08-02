@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_SCHEDULER_SEQUENCE_H_
-#define GPU_IPC_SCHEDULER_SEQUENCE_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_SEQUENCE_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_SEQUENCE_H_
 
 #include <memory>
 #include <vector>
@@ -14,8 +14,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/ipc/gl_in_process_context_export.h"
-#include "gpu/ipc/single_task_sequence.h"
+#include "gpu/command_buffer/service/single_task_sequence.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace viz {
 class Display;
@@ -30,7 +30,7 @@ class Scheduler;
 
 // Selectively allow ScheduleTask if DefaultDisallowScheduleTaskOnCurrentThread
 // is used for a thread.
-class GL_IN_PROCESS_CONTEXT_EXPORT ScopedAllowScheduleGpuTask {
+class GPU_GLES2_EXPORT ScopedAllowScheduleGpuTask {
  public:
   ScopedAllowScheduleGpuTask(const ScopedAllowScheduleGpuTask&) = delete;
   ScopedAllowScheduleGpuTask& operator=(const ScopedAllowScheduleGpuTask&) =
@@ -58,8 +58,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT ScopedAllowScheduleGpuTask {
 };
 
 // SingleTaskSequence implementation that uses gpu scheduler sequences.
-class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
-    : public SingleTaskSequence {
+class GPU_GLES2_EXPORT SchedulerSequence : public SingleTaskSequence {
  public:
   // Enable DCHECKs for Android WebView restrictions for ScheduleTask for
   // current thread. Then use ScopedAllowScheduleGpuTask to selectively
@@ -109,4 +108,4 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SchedulerSequence
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_SCHEDULER_SEQUENCE_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_SEQUENCE_H_

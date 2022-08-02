@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_COMMAND_BUFFER_TASK_EXECUTOR_H_
-#define GPU_IPC_COMMAND_BUFFER_TASK_EXECUTOR_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_COMMAND_BUFFER_TASK_EXECUTOR_H_
+#define GPU_COMMAND_BUFFER_SERVICE_COMMAND_BUFFER_TASK_EXECUTOR_H_
 
 #include <memory>
 #include <vector>
@@ -21,7 +21,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/ipc/gl_in_process_context_export.h"
+#include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_surface_format.h"
 
 namespace gl {
@@ -42,7 +42,7 @@ class ProgramCache;
 // the GPU thread used by InProcessCommandBuffer.
 // TODO(crbug.com/1247756): This class should be revisited as lots of
 // functionality isn't needed anymore with GLRenderer deleted.
-class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
+class GPU_GLES2_EXPORT CommandBufferTaskExecutor {
  public:
   CommandBufferTaskExecutor(const GpuPreferences& gpu_preferences,
                             const GpuFeatureInfo& gpu_feature_info,
@@ -130,4 +130,4 @@ class GL_IN_PROCESS_CONTEXT_EXPORT CommandBufferTaskExecutor {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_COMMAND_BUFFER_TASK_EXECUTOR_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_COMMAND_BUFFER_TASK_EXECUTOR_H_

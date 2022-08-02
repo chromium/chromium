@@ -12,9 +12,9 @@
 #include "base/task/bind_post_task.h"
 #include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
-#include "gpu/ipc/scheduler_sequence.h"
-#include "gpu/ipc/shared_image_interface_in_process.h"
+#include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 
 namespace viz {
 

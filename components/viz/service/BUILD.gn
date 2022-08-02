@@ -258,7 +258,6 @@ viz_component("service") {
     "//cc/debug",
     "//components/viz/common",
     "//gpu/command_buffer/service:gles2",
-    "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/service",
     "//gpu/vulkan:buildflags",
     "//media/gpu/ipc/service",

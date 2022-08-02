@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
-#include "gpu/ipc/scheduler_sequence.h"
-#include "gpu/ipc/shared_image_interface_in_process.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
+#include "gpu/command_buffer/service/shared_image_interface_in_process.h"
 
 namespace viz {
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_SINGLE_TASK_SEQUENCE_H_
-#define GPU_IPC_SINGLE_TASK_SEQUENCE_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SINGLE_TASK_SEQUENCE_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SINGLE_TASK_SEQUENCE_H_
 
 #include <memory>
 #include <vector>
@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/ipc/gl_in_process_context_export.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace base {
 class TimeTicks;
@@ -22,7 +22,7 @@ namespace gpu {
 // run in order. Tasks across sequences should be synchronized using sync
 // tokens. Destroying the sequence will drop tasks which haven't been executed
 // yet.
-class GL_IN_PROCESS_CONTEXT_EXPORT SingleTaskSequence {
+class GPU_GLES2_EXPORT SingleTaskSequence {
  public:
   virtual ~SingleTaskSequence() {}
 
@@ -66,4 +66,4 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SingleTaskSequence {
 };
 }  // namespace gpu
 
-#endif  // GPU_IPC_SINGLE_TASK_SEQUENCE_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SINGLE_TASK_SEQUENCE_H_

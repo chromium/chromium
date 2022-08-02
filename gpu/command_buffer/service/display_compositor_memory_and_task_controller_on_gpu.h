@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
-#define GPU_IPC_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
+#define GPU_COMMAND_BUFFER_SERVICE_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
@@ -12,8 +12,8 @@
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/gpu_gles2_export.h"
 #include "gpu/ipc/common/command_buffer_id.h"
-#include "gpu/ipc/gl_in_process_context_export.h"
 
 namespace gpu {
 class CommandBufferTaskExecutor;
@@ -27,8 +27,7 @@ struct GpuPreferences;
 // This class holds ownership of data structure that is only used on the gpu
 // thread. This class is expected to be 1:1 relationship with the display
 // compositor.
-class GL_IN_PROCESS_CONTEXT_EXPORT
-    DisplayCompositorMemoryAndTaskControllerOnGpu {
+class GPU_GLES2_EXPORT DisplayCompositorMemoryAndTaskControllerOnGpu {
  public:
   // Used for SkiaRenderer.
   DisplayCompositorMemoryAndTaskControllerOnGpu(
@@ -95,4 +94,4 @@ class GL_IN_PROCESS_CONTEXT_EXPORT
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_

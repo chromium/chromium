@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
-#define GPU_IPC_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
+#define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
 
+#include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
-#include "gpu/ipc/in_process_command_buffer.h"
+#include "gpu/gpu_gles2_export.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace base {
 class WaitableEvent;
@@ -22,6 +24,13 @@ class SharedImageFactory;
 class SharedImageManager;
 class SingleTaskSequence;
 class SyncPointClientState;
+class DisplayCompositorMemoryAndTaskControllerOnGpu;
+class SyncPointManager;
+struct GpuPreferences;
+class GpuDriverBugWorkarounds;
+struct GpuFeatureInfo;
+class ImageFactory;
+class MemoryTracker;
 struct SyncToken;
 
 // This is an implementation of the SharedImageInterface to be used on the viz
@@ -29,11 +38,16 @@ struct SyncToken;
 // happening on gpu thread.
 // TODO(weiliangc): Currently this is implemented as backed by
 // InProcessCommandBuffer. Add constructor for using with SkiaRenderer.
-class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
+class GPU_GLES2_EXPORT SharedImageInterfaceInProcess
     : public SharedImageInterface {
  public:
-  using CommandBufferHelper =
-      InProcessCommandBuffer::SharedImageInterfaceHelper;
+  // This is only implemented by InProcessCommandBuffer.
+  class GPU_GLES2_EXPORT CommandBufferHelper {
+   public:
+    virtual void SetError() = 0;
+    virtual void WrapTaskWithGpuCheck(base::OnceClosure task) = 0;
+  };
+
   // The callers must guarantee that the instances passed via pointers are kept
   // alive for as long as the instance of this class is alive. This can be
   // achieved by ensuring that the ownership of the created
@@ -42,7 +56,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   SharedImageInterfaceInProcess(
       SingleTaskSequence* task_sequence,
       DisplayCompositorMemoryAndTaskControllerOnGpu* display_controller,
-      std::unique_ptr<CommandBufferHelper> command_buffer_helper);
+      raw_ptr<CommandBufferHelper> command_buffer_helper);
   // The callers must guarantee that the instances passed via pointers are kept
   // alive for as long as the instance of this class is alive. This can be
   // achieved by ensuring that the ownership of the created
@@ -60,7 +74,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
       ImageFactory* image_factory,
       MemoryTracker* tracker,
       bool is_for_display_compositor = false,
-      std::unique_ptr<CommandBufferHelper> command_buffer_helper = nullptr);
+      raw_ptr<CommandBufferHelper> command_buffer_helper = nullptr);
 
   SharedImageInterfaceInProcess(const SharedImageInterfaceInProcess&) = delete;
   SharedImageInterfaceInProcess& operator=(
@@ -232,7 +246,7 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
   // SharedImageInterfaceInProcess.
   raw_ptr<SingleTaskSequence> task_sequence_;
   const CommandBufferId command_buffer_id_;
-  std::unique_ptr<CommandBufferHelper> command_buffer_helper_;
+  raw_ptr<CommandBufferHelper> command_buffer_helper_;
 
   base::OnceCallback<std::unique_ptr<SharedImageFactory>()> create_factory_;
 
@@ -260,4 +274,4 @@ class GL_IN_PROCESS_CONTEXT_EXPORT SharedImageInterfaceInProcess
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_INTERFACE_IN_PROCESS_H_

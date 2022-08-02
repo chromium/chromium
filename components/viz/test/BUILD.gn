@@ -102,6 +102,7 @@ viz_static_library("test_support") {
     "//gpu:test_support",
     "//gpu/command_buffer/client:gles2_implementation",
     "//gpu/command_buffer/client:raster_interface",
+    "//gpu/ipc:gl_in_process_context",
     "//gpu/skia_bindings",
     "//services/viz/privileged/mojom",
     "//testing/gmock",

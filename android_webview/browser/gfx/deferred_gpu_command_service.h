@@ -6,7 +6,7 @@
 #define ANDROID_WEBVIEW_BROWSER_GFX_DEFERRED_GPU_COMMAND_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
+#include "gpu/command_buffer/service/command_buffer_task_executor.h"
 
 namespace gl {
 class GLShareGroup;

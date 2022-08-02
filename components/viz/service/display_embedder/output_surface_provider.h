@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
+#include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 
 namespace viz {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_IPC_GPU_TASK_SCHEDULER_HELPER_H_
-#define GPU_IPC_GPU_TASK_SCHEDULER_HELPER_H_
+#ifndef GPU_COMMAND_BUFFER_SERVICE_GPU_TASK_SCHEDULER_HELPER_H_
+#define GPU_COMMAND_BUFFER_SERVICE_GPU_TASK_SCHEDULER_HELPER_H_
 
 #include <vector>
 
@@ -11,7 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/sequence_id.h"
-#include "gpu/ipc/gl_in_process_context_export.h"
+#include "gpu/gpu_gles2_export.h"
 
 namespace base {
 class TimeTicks;
@@ -38,7 +38,7 @@ class InProcessCommandBuffer;
 // This class is per display compositor. When this is used with SkiaRenderer, it
 // is created on SkiaOutputSurfaceImpl. Each user of this class would hold a
 // reference.
-class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
+class GPU_GLES2_EXPORT GpuTaskSchedulerHelper {
  public:
   // This constructor is only used for SkiaOutputSurface.
   explicit GpuTaskSchedulerHelper(
@@ -108,4 +108,4 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuTaskSchedulerHelper {
 
 }  // namespace gpu
 
-#endif  // GPU_IPC_GPU_TASK_SCHEDULER_HELPER_H_
+#endif  // GPU_COMMAND_BUFFER_SERVICE_GPU_TASK_SCHEDULER_HELPER_H_

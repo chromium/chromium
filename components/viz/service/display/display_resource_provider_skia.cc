@@ -10,7 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "build/build_config.h"
-#include "gpu/ipc/scheduler_sequence.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace viz {
