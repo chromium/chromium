@@ -132,13 +132,10 @@ bool IsExtensionAllowed(Profile* profile, const Extension* extension) {
     // allowed in chrome/common/extensions/api/_permission_features.json
     return true;
   }
-  const base::Value* list =
-      profile->GetPrefs()->GetList(prefs::kAttestationExtensionAllowlist);
-  DCHECK_NE(list, nullptr);
+  const base::Value::List& list =
+      profile->GetPrefs()->GetValueList(prefs::kAttestationExtensionAllowlist);
   base::Value value(extension->id());
-  return std::find(list->GetListDeprecated().begin(),
-                   list->GetListDeprecated().end(),
-                   value) != list->GetListDeprecated().end();
+  return base::Contains(list, value);
 }
 
 }  // namespace platform_keys
