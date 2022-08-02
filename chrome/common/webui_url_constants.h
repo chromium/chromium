@@ -359,6 +359,7 @@ extern const char kOsUIAccountMigrationWelcomeURL[];
 extern const char kOsUIAddSupervisionURL[];
 extern const char kOsUIAppDisabledURL[];
 extern const char kOsUIAppServiceInternalsURL[];
+extern const char kOsUIBluetoothInternalsURL[];
 extern const char kOsUICrashesURL[];
 extern const char kOsUICreditsURL[];
 extern const char kOsUIDeviceLogURL[];

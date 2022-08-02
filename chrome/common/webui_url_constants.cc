@@ -387,6 +387,7 @@ const char kOsUIAccountMigrationWelcomeURL[] = "os://account-migration-welcome";
 const char kOsUIAddSupervisionURL[] = "os://add-supervision";
 const char kOsUIAppDisabledURL[] = "os://app-disabled";
 const char kOsUIAppServiceInternalsURL[] = "os://app-service-internals";
+const char kOsUIBluetoothInternalsURL[] = "os://bluetooth-internals";
 const char kOsUICrashesURL[] = "os://crashes";
 const char kOsUICreditsURL[] = "os://credits";
 const char kOsUIDeviceLogURL[] = "os://device-log";
