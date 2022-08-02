@@ -72,11 +72,16 @@
   .tag {
     background: rgba(var(--ntp-background-override-color-rgb), .9);
     border-radius: 4px;
+    box-sizing: border-box;
     color: var(--cr-primary-text-color);
-    font-size: 9px;
+    font-size: 12px;
     margin: 8px;
+    max-width: 149px;
+    overflow: hidden;
     padding:  8px;
     position: absolute;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   :host-context([dir=rtl]) .tag {
@@ -190,7 +195,7 @@
         <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
             draggable="false">
         </img>
-        <div class="tag">[[item.info]]</div>
+        <div class="tag" title="[[item.info]]">[[item.info]]</div>
         <div class="name" title="[[item.name]]">[[item.name]]</div>
         <div class="secondary">[[item.siteName]]</div>
       </a>
