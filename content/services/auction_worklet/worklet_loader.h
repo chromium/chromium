@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_downloader.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -35,13 +36,13 @@ class AuctionDownloader;
 // UnboundScript or WasmModuleObject on the V8 thread. Create via the
 // appropriate subclass. That also provides the way extracting the appropriate
 // type from Result.
-class WorkletLoaderBase {
+class CONTENT_EXPORT WorkletLoaderBase {
  public:
   // The result of loading JS or Wasm, memory-managing the underlying V8 object.
   //
   // This helps ensure that the script handle is deleted on the right thread
   // even in case when the callback handling the result is destroyed.
-  class Result {
+  class CONTENT_EXPORT Result {
    public:
     Result();
     Result(scoped_refptr<AuctionV8Helper> v8_helper,
@@ -150,7 +151,7 @@ class WorkletLoaderBase {
 };
 
 // Utility for loading and compiling worklet JavaScript.
-class WorkletLoader : public WorkletLoaderBase {
+class CONTENT_EXPORT WorkletLoader : public WorkletLoaderBase {
  public:
   // Starts loading the resource on construction. Callback will be invoked
   // asynchronously once the data has been fetched and compiled or an error has
@@ -171,7 +172,7 @@ class WorkletLoader : public WorkletLoaderBase {
   static v8::Global<v8::UnboundScript> TakeScript(Result&& result);
 };
 
-class WorkletWasmLoader : public WorkletLoaderBase {
+class CONTENT_EXPORT WorkletWasmLoader : public WorkletLoaderBase {
  public:
   // Starts loading the resource on construction. Callback will be invoked
   // asynchronously once the data has been fetched and compiled or an error has

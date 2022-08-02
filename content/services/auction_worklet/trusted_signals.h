@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "content/common/content_export.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -39,13 +40,13 @@ class AuctionV8Helper;
 // JSON subcomponents would remove 2 copies, without too much complexity. Could
 // even implement V8 deep-copy logic, to remove two more copies (counting the
 // clone operation as a copy).
-class TrustedSignals {
+class CONTENT_EXPORT TrustedSignals {
  public:
   // Contains the values returned by the server.
   //
   // This can be created and destroyed on any thread, but GetSignals() can only
   // be used on the V8 thread.
-  class Result : public base::RefCountedThreadSafe<Result> {
+  class CONTENT_EXPORT Result : public base::RefCountedThreadSafe<Result> {
    public:
     // Constructor for bidding signals.
     Result(std::map<std::string, std::string> bidder_json_data,

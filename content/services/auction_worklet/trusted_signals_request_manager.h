@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/trusted_signals.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,7 +34,7 @@ class TrustedSignals;
 // requests.
 //
 // TODO(https://crbug.com/1276639): Cache responses as well.
-class TrustedSignalsRequestManager {
+class CONTENT_EXPORT TrustedSignalsRequestManager {
  public:
   // Delay between construction of a Request and automatically starting a
   // network request when `automatically_send_requests` is true.

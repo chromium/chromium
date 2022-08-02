@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "v8/include/v8-forward.h"
 
@@ -40,7 +41,7 @@ class Bindings {
 // This helps manage the state of bindings on a context should we chose to
 // recycle it, by calling Reset() after the current usage is done, to prepare
 // for the next. Context is accessed via ContextRecyclerScope.
-class ContextRecycler {
+class CONTENT_EXPORT ContextRecycler {
  public:
   explicit ContextRecycler(AuctionV8Helper* v8_helper);
   ~ContextRecycler();
@@ -94,7 +95,7 @@ class ContextRecycler {
 
 // Helper to enter a context scope on creation and reset all bindings
 // on destruction.
-class ContextRecyclerScope {
+class CONTENT_EXPORT ContextRecyclerScope {
  public:
   // `context_recycler` must outlast `this`.
   explicit ContextRecyclerScope(ContextRecycler& context_recycler);

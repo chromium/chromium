@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_AUCTION_WORKLET_SERVICE_IMPL_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -28,7 +29,8 @@ class SellerWorklet;
 
 // mojom::AuctionWorkletService implementation. This is intended to run in a
 // sandboxed utility process.
-class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
+class CONTENT_EXPORT AuctionWorkletServiceImpl
+    : public mojom::AuctionWorkletService {
  public:
   explicit AuctionWorkletServiceImpl(const AuctionWorkletServiceImpl&) = delete;
   AuctionWorkletServiceImpl& operator=(const AuctionWorkletServiceImpl&) =

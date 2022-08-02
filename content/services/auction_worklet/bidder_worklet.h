@@ -18,6 +18,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -56,7 +57,7 @@ namespace auction_worklet {
 // to both be used for two generateBid() calls for different interest groups
 // with the same owner in the same auction, and to be used to bid for the same
 // interest group in different auctions.
-class BidderWorklet : public mojom::BidderWorklet {
+class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet {
  public:
   // Deletes the worklet immediately and resets the BidderWorklet's Mojo pipe
   // with the provided description. See mojo::Receiver::ResetWithReason().

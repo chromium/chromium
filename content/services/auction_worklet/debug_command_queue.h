@@ -15,6 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "content/common/content_export.h"
 
 namespace auction_worklet {
 
@@ -23,7 +24,8 @@ namespace auction_worklet {
 // execution of V8 thread when paused in debugger. It's owned by the
 // AuctionV8Helper (but may extend its own lifetime a bit to keep callbacks
 // safe).
-class DebugCommandQueue : public base::RefCountedThreadSafe<DebugCommandQueue> {
+class CONTENT_EXPORT DebugCommandQueue
+    : public base::RefCountedThreadSafe<DebugCommandQueue> {
  public:
   // May be created and destroyed on any thread.
   explicit DebugCommandQueue(

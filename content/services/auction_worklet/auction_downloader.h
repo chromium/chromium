@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/unguessable_token.h"
+#include "content/common/content_export.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -25,7 +26,7 @@ namespace auction_worklet {
 
 // Download utility for auction scripts and JSON data. Creates requests and
 // blocks responses.
-class AuctionDownloader {
+class CONTENT_EXPORT AuctionDownloader {
  public:
   // Mime type to use for Accept header. Any response without a matching
   // Content-Type header is rejected.

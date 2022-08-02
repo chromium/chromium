@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "gin/public/isolate_holder.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -56,7 +57,7 @@ class DebugCommandQueue;
 // the thread represented by the `v8_runner` argument to Create(). It's the
 // caller's responsibility to ensure that all other methods are used from the v8
 // runner.
-class AuctionV8Helper
+class CONTENT_EXPORT AuctionV8Helper
     : public base::RefCountedDeleteOnSequence<AuctionV8Helper> {
  public:
   // Timeout for script execution.
@@ -65,7 +66,7 @@ class AuctionV8Helper
   // Helper class to set up v8 scopes to use Isolate. All methods expect a
   // FullIsolateScope to be have been created on the current thread, and a
   // context to be entered.
-  class FullIsolateScope {
+  class CONTENT_EXPORT FullIsolateScope {
    public:
     explicit FullIsolateScope(AuctionV8Helper* v8_helper);
     explicit FullIsolateScope(const FullIsolateScope&) = delete;
@@ -83,7 +84,7 @@ class AuctionV8Helper
   //
   // This class is thread-safe, except SetResumeCallback must be used from V8
   // thread.
-  class DebugId : public base::RefCountedThreadSafe<DebugId> {
+  class CONTENT_EXPORT DebugId : public base::RefCountedThreadSafe<DebugId> {
    public:
     explicit DebugId(AuctionV8Helper* v8_helper);
 

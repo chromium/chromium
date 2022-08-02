@@ -8,6 +8,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/context_recycler.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
@@ -20,7 +21,7 @@ namespace auction_worklet {
 
 // Class to manage bindings for setting a bidding result. Expected to be used
 // for a context managed by ContextRecycler.
-class SetBidBindings : public Bindings {
+class CONTENT_EXPORT SetBidBindings : public Bindings {
  public:
   explicit SetBidBindings(AuctionV8Helper* v8_helper);
   SetBidBindings(const SetBidBindings&) = delete;
