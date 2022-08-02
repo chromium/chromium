@@ -176,7 +176,7 @@ tree_closure_notifier(
     name = "gpu-tree-closer-email",
     notify_emails = ["chrome-gpu-build-failures@google.com"],
     notify_rotation_urls = [
-        "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-gpu-pixel-wrangler",
+        "https://chrome-ops-rotation-proxy.appspot.com/current/oncallator:chrome-gpu-pixel-wrangler-weekly",
     ],
 )
 
