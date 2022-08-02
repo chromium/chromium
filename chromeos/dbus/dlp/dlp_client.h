@@ -53,8 +53,11 @@ class COMPONENT_EXPORT(DLP) DlpClient {
     // Sets response for RequestFileAccess call.
     virtual void SetFileAccessAllowed(bool allowed) = 0;
 
+    // Sets the response for IsAlive call.
+    virtual void SetIsAlive(bool is_alive) = 0;
+
    protected:
-    virtual ~TestInterface() {}
+    virtual ~TestInterface() = default;
   };
 
   DlpClient(const DlpClient&) = delete;

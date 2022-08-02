@@ -81,7 +81,7 @@ void FakeDlpClient::RequestFileAccess(
 }
 
 bool FakeDlpClient::IsAlive() const {
-  return true;
+  return is_alive_;
 }
 
 DlpClient::TestInterface* FakeDlpClient::GetTestInterface() {
@@ -103,6 +103,10 @@ void FakeDlpClient::SetCheckFilesTransferResponse(
 
 void FakeDlpClient::SetFileAccessAllowed(bool allowed) {
   file_access_allowed_ = allowed;
+}
+
+void FakeDlpClient::SetIsAlive(bool is_alive) {
+  is_alive_ = is_alive;
 }
 
 }  // namespace chromeos

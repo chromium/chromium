@@ -43,10 +43,12 @@ class COMPONENT_EXPORT(DLP) FakeDlpClient : public DlpClient,
   void SetCheckFilesTransferResponse(
       dlp::CheckFilesTransferResponse response) override;
   void SetFileAccessAllowed(bool allowed) override;
+  void SetIsAlive(bool is_alive) override;
 
  private:
   int set_dlp_files_policy_count_ = 0;
   bool file_access_allowed_ = true;
+  bool is_alive_ = true;
   base::flat_map<ino_t, std::string> files_database_;
   absl::optional<std::string> fake_source_;
   absl::optional<dlp::CheckFilesTransferResponse>
