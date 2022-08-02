@@ -6183,6 +6183,10 @@
 <translation id="6943939122536910181"><ph name="DEVICE" />-с салсан</translation>
 <translation id="6945221475159498467">Сонгох</translation>
 <translation id="694592694773692225">Энэ хуудсанд дахин чиглүүлэлтийг блоклосон байна.</translation>
+<translation id="6947015141909171112">Та жорд зориулсан Хайлтын саяхны үйл ажиллагаандaa тулгуурласан жоруудыг харж байна.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Та картын цэсээс тохиргоог удирдах эсвэл Chrome-г өөрчлөх хэсгээс бусад сонголтыг харах боломжтой.</translation>
 <translation id="6949434160682548041">Нууц үг (сонголтот)</translation>
 <translation id="6950627417367801484">Аппуудыг сэргээх</translation>
 <translation id="6952242901357037157">Та мөн энд <ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-ийн нууц үгнүүдээ харуулах боломжтой</translation>

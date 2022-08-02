@@ -6191,6 +6191,10 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6943939122536910181">Forbindelsen til <ph name="DEVICE" /> er afbrudt</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="694592694773692225">Omdirigering er blokeret på denne side.</translation>
+<translation id="6947015141909171112">Du får vist opskrifter baseret på dine seneste søgninger efter opskrifter.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Du kan administrere indstillingerne i kortmenuen eller se flere valgmuligheder under Tilpas Chrome.</translation>
 <translation id="6949434160682548041">Adgangskode (valgfrit)</translation>
 <translation id="6950627417367801484">Gendan apps</translation>
 <translation id="6952242901357037157">Du kan også vise adgangskoder fra din <ph name="BEGIN_LINK" />Google-konto<ph name="END_LINK" /> her</translation>

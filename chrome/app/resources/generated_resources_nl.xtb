@@ -6165,6 +6165,9 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="6943939122536910181">Verbinding met <ph name="DEVICE" /> verbroken</translation>
 <translation id="6945221475159498467">Selecteren</translation>
 <translation id="694592694773692225">Omleiding geblokkeerd op deze pagina.</translation>
+<translation id="6947015141909171112">Je ziet recepten op basis van je recente zoekactiviteit voor recepten.
+        <ph name="BREAK" /><ph name="BREAK" />
+Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het gedeelte Chrome aanpassen.</translation>
 <translation id="6949434160682548041">Wachtwoord (optioneel)</translation>
 <translation id="6950627417367801484">Apps herstellen</translation>
 <translation id="6952242901357037157">Je kunt hier ook wachtwoorden van je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /> bekijken</translation>
