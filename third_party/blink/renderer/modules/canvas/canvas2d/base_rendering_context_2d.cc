@@ -773,6 +773,8 @@ void BaseRenderingContext2D::setFilter(
           filter_string == GetState().UnparsedCSSFilter()) {
         return;
       }
+      if (!execution_context)
+        return;
       const CSSValue* css_value = CSSParser::ParseSingleValue(
           CSSPropertyID::kFilter, filter_string,
           MakeGarbageCollected<CSSParserContext>(
