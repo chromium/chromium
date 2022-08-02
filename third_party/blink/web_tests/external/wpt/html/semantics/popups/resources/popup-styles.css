@@ -2,20 +2,23 @@
   position: fixed;
   inset-inline-start: 0;
   inset-inline-end: 0;
+  inset-block-start: 0;
+  inset-block-end: 0;
   width: fit-content;
   height: fit-content;
   margin: auto;
   border: solid;
+  overflow: auto;
   padding: 1em;
-  background-color: Canvas;
   color: CanvasText;
+  background-color: Canvas;
 }
 .fake-pop-up-backdrop {
   position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  inset-block-start: 0;
+  inset-block-end: 0;
   background: transparent;
   pointer-events: none !important;
 }
