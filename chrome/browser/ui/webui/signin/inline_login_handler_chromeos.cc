@@ -283,6 +283,7 @@ void InlineLoginHandlerChromeOS::SetExtraInitParams(base::Value::Dict& params) {
              base::Value(GetInlineLoginFlowName(Profile::FromWebUI(web_ui()),
                                                 params.FindString("email"))));
   params.Set("dontResizeNonEmbeddedPages", true);
+  params.Set("enableGaiaActionButtons", true);
 
   // For in-session login flows, request Gaia to ignore third party SAML IdP SSO
   // redirection policies (and redirect to SAML IdPs by default), otherwise some
