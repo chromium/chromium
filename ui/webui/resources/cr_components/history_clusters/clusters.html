@@ -13,6 +13,11 @@
     padding: var(--first-cluster-padding-top) var(--cluster-padding-horizontal) 0;
   }
 
+ :host([in-side-panel]) #clusters {
+    min-width: 0;
+    padding: 0 0 0;
+ }
+
   #placeholder {
     align-items: center;
     color: var(--md-loading-message-color);

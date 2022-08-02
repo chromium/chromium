@@ -31,6 +31,11 @@ html {
 
 /* Sizes: */
 html {
+  --card-max-width: 960px;
+  --card-min-width: 550px;
+  --card-padding-between: 16px;
+  --card-padding-side: 24px;
+  --first-card-padding-top: 24px;
   --cluster-max-width: var(--card-max-width);
   --cluster-min-width: var(--card-min-width);
   --cluster-padding-horizontal: var(--card-padding-side);

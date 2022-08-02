@@ -30,7 +30,8 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
   global_registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kHistoryClusters,
       l10n_util::GetStringUTF16(IDS_HISTORY_CLUSTERS_JOURNEYS_TAB_LABEL),
-      ui::ImageModel::FromVectorIcon(kJourneysIcon, ui::kColorIcon),
+      ui::ImageModel::FromVectorIcon(kJourneysIcon, ui::kColorIcon,
+                                     /*icon_size=*/16),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,
           base::Unretained(this))));

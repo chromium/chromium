@@ -68,6 +68,15 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   static get properties() {
     return {
       /**
+       * Whether the clusters are in the side panel.
+       */
+      inSidePanel: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('inSidePanel'),
+        reflectToAttribute: true,
+      },
+
+      /**
        * The current query for which related clusters are requested and shown.
        */
       query: {
@@ -113,6 +122,7 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   // Properties
   //============================================================================
 
+  inSidePanel: boolean;
   query: string;
   private callbackRouter_: PageCallbackRouter;
   private headerText_: string;
