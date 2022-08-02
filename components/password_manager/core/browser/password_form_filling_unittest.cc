@@ -146,7 +146,8 @@ TEST_F(PasswordFormFillingTest, NoSavedCredentials) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get());
+      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
   EXPECT_EQ(LikelyFormFilling::kNoFilling, likely_form_filling);
 }
 
@@ -165,7 +166,8 @@ TEST_F(PasswordFormFillingTest, Autofill) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
 
   // On Android Touch To Fill will prevent autofilling credentials on page load.
   // On iOS Reauth is always required.
@@ -238,7 +240,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
 
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form, best_matches, federated_matches_,
-        &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
+        &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+        /*webauthn_suggestions_available=*/false);
 
     // In all cases where a current password exists, fill on load should be
     // permitted. Otherwise, the renderer will not fill anyway and return
@@ -257,7 +260,7 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestion) {
   }
 }
 
-#if !defined(ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PasswordFormFillingTest, DontFillOnLoadWebAuthnCredentials) {
   MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
   observed_form_.accepts_webauthn_credentials = true;
@@ -271,13 +274,30 @@ TEST_F(PasswordFormFillingTest, DontFillOnLoadWebAuthnCredentials) {
     EXPECT_CALL(client_, PasswordWasAutofilled);
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,
-        &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
+        &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+        /*webauthn_suggestions_available=*/false);
     if (webauthn_autofill_enabled) {
       EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
     } else {
       EXPECT_EQ(LikelyFormFilling::kFillOnPageLoad, likely_form_filling);
     }
   }
+}
+
+TEST_F(PasswordFormFillingTest, FillWithOnlyWebAuthnCredentials) {
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate;
+  observed_form_.accepts_webauthn_credentials = true;
+
+  EXPECT_CALL(client_, GetWebAuthnCredentialsDelegate())
+      .WillOnce(Return(&webauthn_credentials_delegate));
+  EXPECT_CALL(webauthn_credentials_delegate, IsWebAuthnAutofillEnabled())
+      .WillOnce(Return(true));
+  EXPECT_CALL(client_, PasswordWasAutofilled);
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form_, {&saved_match_}, federated_matches_,
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
 
@@ -335,7 +355,8 @@ TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
 
     LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
         &client_, &driver_, observed_form, best_matches, federated_matches_,
-        &preferred_match, /*blocked_by_user=*/false, metrics_recorder_.get());
+        &preferred_match, /*blocked_by_user=*/false, metrics_recorder_.get(),
+        /*webauthn_suggestions_available=*/false);
 
     EXPECT_EQ(test_case.likely_form_filling, likely_form_filling);
   }
@@ -352,7 +373,8 @@ TEST_F(PasswordFormFillingTest, AutofillPSLMatch) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      &psl_saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
+      &psl_saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 
   // Check that the message to the renderer (i.e. |fill_data|) is filled
@@ -385,7 +407,8 @@ TEST_F(PasswordFormFillingTest, NoAutofillOnHttp) {
 #endif
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_http_form, best_matches, federated_matches_,
-      &saved_http_match, /*blocked_by_user=*/false, metrics_recorder_.get());
+      &saved_http_match, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 
@@ -395,7 +418,8 @@ TEST_F(PasswordFormFillingTest, TouchToFill) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get());
+      &saved_match_, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
@@ -419,7 +443,8 @@ TEST_F(PasswordFormFillingTest, AutofillAffiliatedWebMatch) {
 
   LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      &affiliated_match, /*blocked_by_user=*/false, metrics_recorder_.get());
+      &affiliated_match, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
   EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 
   // Check that the message to the renderer (i.e. |fill_data|) is filled
@@ -448,7 +473,8 @@ TEST_F(PasswordFormFillingTest,
                            /*should_show_popup_without_passwords=*/true));
   SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get());
+      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
 }
 
 TEST_F(PasswordFormFillingTest,
@@ -462,7 +488,8 @@ TEST_F(PasswordFormFillingTest,
                            /*should_show_popup_without_passwords=*/false));
   SendFillInformationToRenderer(
       &client_, &driver_, observed_form_, best_matches, federated_matches_,
-      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get());
+      nullptr, /*blocked_by_user=*/false, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false);
 }
 
 // Tests that the when there is a single preferred match, and no extra

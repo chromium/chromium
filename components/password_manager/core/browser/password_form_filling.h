@@ -46,7 +46,8 @@ LikelyFormFilling SendFillInformationToRenderer(
     const std::vector<const PasswordForm*>& federated_matches,
     const PasswordForm* preferred_match,
     bool blocked_by_user,
-    PasswordFormMetricsRecorder* metrics_recorder);
+    PasswordFormMetricsRecorder* metrics_recorder,
+    bool webauthn_suggestions_available);
 
 // Create a PasswordFormFillData structure in preparation for filling a form
 // identified by |form_on_page|, with credentials from |preferred_match| and

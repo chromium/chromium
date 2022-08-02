@@ -117,7 +117,8 @@ LikelyFormFilling SendFillInformationToRenderer(
     const std::vector<const PasswordForm*>& federated_matches,
     const PasswordForm* preferred_match,
     bool blocked_by_user,
-    PasswordFormMetricsRecorder* metrics_recorder) {
+    PasswordFormMetricsRecorder* metrics_recorder,
+    bool webauthn_suggestions_available) {
   DCHECK(driver);
   DCHECK_EQ(PasswordForm::Scheme::kHtml, observed_form.scheme);
 
@@ -131,19 +132,19 @@ LikelyFormFilling SendFillInformationToRenderer(
              observed_form.confirmation_password_element_renderer_id});
   }
 
-  if (best_matches.empty()) {
-    bool should_suppres_popup_due_to_blocked_website =
+  if (best_matches.empty() && !webauthn_suggestions_available) {
+    bool should_suppress_popup_due_to_blocked_website =
         blocked_by_user && base::FeatureList::IsEnabled(
                                kSuppressAccountStoragePromosForBlockedWebsite);
 
-    bool should_suppres_popup_due_to_disabled_saving_and_filling =
+    bool should_suppress_popup_due_to_disabled_saving_and_filling =
         base::FeatureList::IsEnabled(
             kSuppressAccountStoragePromosWhenCredentialServiceDisabled) &&
         !client->IsSavingAndFillingEnabled(observed_form.url);
 
     bool should_show_popup_without_passwords =
-        !should_suppres_popup_due_to_blocked_website &&
-        !should_suppres_popup_due_to_disabled_saving_and_filling &&
+        !should_suppress_popup_due_to_blocked_website &&
+        !should_suppress_popup_due_to_disabled_saving_and_filling &&
         (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
          client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
              client->GetLastCommittedURL()));
@@ -153,7 +154,10 @@ LikelyFormFilling SendFillInformationToRenderer(
         PasswordFormMetricsRecorder::kManagerFillEventNoCredential);
     return LikelyFormFilling::kNoFilling;
   }
-  DCHECK(preferred_match);
+
+  // The only case in which there is no preferred_match is if there are no
+  // saved passwords but there are WebAuthn credentials that can be presented.
+  DCHECK(preferred_match || webauthn_suggestions_available);
 
   // If the parser of the PasswordFormManager decides that there is no
   // current password field, no filling attempt will be made. In this case the
@@ -162,18 +166,21 @@ LikelyFormFilling SendFillInformationToRenderer(
   const bool no_sign_in_form =
       !observed_form.HasPasswordElement() && !observed_form.IsSingleUsername();
 
-  using FormType = PasswordFormMetricsRecorder::MatchedFormType;
-  FormType preferred_form_type = FormType::kExactMatch;
-  if (preferred_match->is_affiliation_based_match) {
-    preferred_form_type = IsValidAndroidFacetURI(preferred_match->signon_realm)
-                              ? FormType::kAffiliatedApp
-                              : FormType::kAffiliatedWebsites;
-  } else if (preferred_match->is_public_suffix_match) {
-    preferred_form_type = FormType::kPublicSuffixMatch;
-  }
+  if (preferred_match) {
+    using FormType = PasswordFormMetricsRecorder::MatchedFormType;
+    FormType preferred_form_type = FormType::kExactMatch;
+    if (preferred_match->is_affiliation_based_match) {
+      preferred_form_type =
+          IsValidAndroidFacetURI(preferred_match->signon_realm)
+              ? FormType::kAffiliatedApp
+              : FormType::kAffiliatedWebsites;
+    } else if (preferred_match->is_public_suffix_match) {
+      preferred_form_type = FormType::kPublicSuffixMatch;
+    }
 
-  if (!no_sign_in_form)
-    metrics_recorder->RecordMatchedFormType(preferred_form_type);
+    if (!no_sign_in_form)
+      metrics_recorder->RecordMatchedFormType(preferred_form_type);
+  }
 
 // This metric will always record kReauthRequired on iOS and Android. So we can
 // drop it there.
@@ -190,10 +197,10 @@ LikelyFormFilling SendFillInformationToRenderer(
       WaitForUsernameReason::kDontWait;
   if (client->IsIncognito()) {
     wait_for_username_reason = WaitForUsernameReason::kIncognitoMode;
-  } else if (preferred_match->is_affiliation_based_match &&
+  } else if (preferred_match && preferred_match->is_affiliation_based_match &&
              !IsValidAndroidFacetURI(preferred_match->signon_realm)) {
     wait_for_username_reason = WaitForUsernameReason::kAffiliatedWebsite;
-  } else if (preferred_match->is_public_suffix_match) {
+  } else if (preferred_match && preferred_match->is_public_suffix_match) {
     wait_for_username_reason = WaitForUsernameReason::kPublicSuffixMatch;
   } else if (no_sign_in_form) {
     // If the parser did not find a current password element, don't fill.
@@ -245,7 +252,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   // Continue with autofilling any password forms as traditionally has been
   // done.
   Autofill(client, driver, observed_form, best_matches, federated_matches,
-           *preferred_match, wait_for_username);
+           preferred_match ? *preferred_match : PasswordForm(),
+           wait_for_username);
   return wait_for_username ? LikelyFormFilling::kFillOnAccountSelect
                            : LikelyFormFilling::kFillOnPageLoad;
 }

@@ -864,11 +864,19 @@ void PasswordFormManager::Fill() {
     return;
 #endif
 
+  bool webauthn_suggestions_available = false;
+  WebAuthnCredentialsDelegate* delegate =
+      client_->GetWebAuthnCredentialsDelegate();
+  if (delegate && delegate->IsWebAuthnAutofillEnabled()) {
+    webauthn_suggestions_available =
+        delegate->GetWebAuthnSuggestions().size() > 0;
+  }
+
   SendFillInformationToRenderer(
       client_, driver_.get(), *observed_password_form.get(),
       form_fetcher_->GetBestMatches(), form_fetcher_->GetFederatedMatches(),
       form_fetcher_->GetPreferredMatch(), form_fetcher_->IsBlocklisted(),
-      metrics_recorder_.get());
+      metrics_recorder_.get(), webauthn_suggestions_available);
 }
 
 void PasswordFormManager::FillForm(
