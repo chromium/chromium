@@ -152,7 +152,7 @@ void GpuSharedImageVideoFactory::CreateImage(
 
   TRACE_EVENT0("media", "GpuSharedImageVideoFactory::CreateVideoFrame");
 
-  if (!CreateImageInternal(spec, mailbox, codec_image, std::move(drdc_lock))) {
+  if (!CreateImageInternal(spec, mailbox, codec_image, drdc_lock)) {
     return;
   }
 
@@ -181,7 +181,8 @@ void GpuSharedImageVideoFactory::CreateImage(
   // should work with some other object that happens to be used by CodecImage,
   // and non-GL things, to hold the output buffer, etc.
   record.codec_image_holder = base::MakeRefCounted<CodecImageHolder>(
-      base::SequencedTaskRunnerHandle::Get(), std::move(codec_image));
+      base::SequencedTaskRunnerHandle::Get(), std::move(codec_image),
+      std::move(drdc_lock));
 
   std::move(image_ready_cb).Run(std::move(record));
 }
