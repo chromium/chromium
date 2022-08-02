@@ -14968,7 +14968,7 @@
     },
     {
       'name': 'ShowAccessibilityOptionsInSystemTrayMenu',
-      'owners': ['file://components/policy/resources/OWNERS', 'rsorokin@chromium.org'],
+      'owners': ['josiahk@google.com', 'file://ui/accessibility/OWNERS'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:27-'],
