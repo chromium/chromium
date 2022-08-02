@@ -103,14 +103,13 @@ bool HidPolicyAllowedDevices::HasDevicePermission(
 void HidPolicyAllowedDevices::LoadAllowAllDevicesForUrlsPolicy() {
   all_devices_policy_.clear();
 
-  const auto* pref_value = pref_change_registrar_.prefs()->Get(
-      prefs::kManagedWebHidAllowAllDevicesForUrls);
-  if (!pref_value)
-    return;
+  const base::Value::List& pref_value =
+      pref_change_registrar_.prefs()->GetValueList(
+          prefs::kManagedWebHidAllowAllDevicesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
-  for (const auto& url_value : pref_value->GetListDeprecated()) {
+  for (const auto& url_value : pref_value) {
     GURL url(url_value.GetString());
     if (url.is_valid())
       all_devices_policy_.insert(url::Origin::Create(url));
@@ -166,19 +165,18 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
   usage_policy_.clear();
   usage_page_policy_.clear();
 
-  const auto* pref_value = pref_change_registrar_.prefs()->Get(
-      prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls);
-  if (!pref_value)
-    return;
+  const base::Value::List& pref_value =
+      pref_change_registrar_.prefs()->GetValueList(
+          prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls);
 
   // The pref value has already been validated by the policy handler, so it is
   // safe to assume that |pref_value| follows the policy template.
-  for (const auto& item : pref_value->GetListDeprecated()) {
-    const base::Value* urls_value = item.FindKey(kPrefUrlsKey);
+  for (const auto& item : pref_value) {
+    const base::Value::List* urls_value = item.GetDict().FindList(kPrefUrlsKey);
     DCHECK(urls_value);
 
     std::vector<url::Origin> urls;
-    for (const auto& url_value : urls_value->GetListDeprecated()) {
+    for (const auto& url_value : *urls_value) {
       GURL url(url_value.GetString());
       if (!url.is_valid())
         continue;
@@ -189,14 +187,16 @@ void HidPolicyAllowedDevices::LoadAllowDevicesWithHidUsagesForUrlsPolicy() {
     if (urls.empty())
       continue;
 
-    const auto* usages_value = item.FindKey(kPrefUsagesKey);
+    const base::Value::List* usages_value =
+        item.GetDict().FindList(kPrefUsagesKey);
     DCHECK(usages_value);
-    for (const auto& usage_and_page_value : usages_value->GetListDeprecated()) {
+    for (const auto& usage_and_page_value : *usages_value) {
       const auto* usage_page_value =
           usage_and_page_value.FindKey(kPrefUsagePageKey);
       DCHECK(usage_page_value);
 
-      const auto* usage_value = usage_and_page_value.FindKey(kPrefUsageKey);
+      const base::Value* usage_value =
+          usage_and_page_value.GetDict().Find(kPrefUsageKey);
       // "usage" is optional. If "usage" is not specified, the policy matches
       // any device containing a top-level collection with the given usage page.
       if (usage_value) {
