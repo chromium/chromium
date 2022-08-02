@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/family_link_user_metrics_provider.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/session_manager/core/session_manager.h"
 
 namespace {
@@ -43,25 +44,57 @@ void FamilyLinkUserMetricsProvider::ProvideCurrentSessionData(
 void FamilyLinkUserMetricsProvider::IdentityManagerCreated(
     signin::IdentityManager* identity_manager) {
   CHECK(identity_manager);
-  scoped_observations_.AddObservation(identity_manager);
+  DCHECK(!identity_manager_);
+
+  identity_manager_ = identity_manager;
+  scoped_observation_.Observe(identity_manager_);
   // The account may have been updated before registering the observer.
   // Set the log segment to the primary account info if it exists.
-  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  AccountInfo primary_account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
   if (!primary_account_info.IsEmpty())
     OnExtendedAccountInfoUpdated(primary_account_info);
 }
 
+void FamilyLinkUserMetricsProvider::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  signin::PrimaryAccountChangeEvent::Type event_type =
+      event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
+  switch (event_type) {
+    case signin::PrimaryAccountChangeEvent::Type::kNone: {
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      DCHECK(identity_manager_);
+      AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+          event_details.GetCurrentState().primary_account);
+      OnExtendedAccountInfoUpdated(account_info);
+      break;
+    }
+    case signin::PrimaryAccountChangeEvent::Type::kCleared: {
+      // Reset the log segment if the user signs out during the session.
+      log_segment_.reset();
+      break;
+    }
+  }
+}
+
 void FamilyLinkUserMetricsProvider::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
-  if (scoped_observations_.IsObservingSource(identity_manager)) {
-    scoped_observations_.RemoveObservation(identity_manager);
-  }
+  DCHECK_EQ(identity_manager, identity_manager_);
+  identity_manager_ = nullptr;
+  scoped_observation_.Reset();
 }
 
 void FamilyLinkUserMetricsProvider::OnExtendedAccountInfoUpdated(
     const AccountInfo& account_info) {
+  if (identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin) !=
+      account_info.account_id) {
+    // Only record extended account information associated with the primary
+    // account of the profile.
+    return;
+  }
   if (!AreParentalSupervisionCapabilitiesKnown(account_info.capabilities)) {
     // Because account info is fetched asynchronously it is possible for a
     // subset of the info to be updated that does not include account

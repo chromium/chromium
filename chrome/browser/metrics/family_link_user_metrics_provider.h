@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_FAMILY_LINK_USER_METRICS_PROVIDER_H_
 
-#include "base/scoped_multi_source_observation.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -16,8 +16,9 @@ namespace metrics {
 class ChromeUserMetricsExtension;
 }  // namespace metrics
 
-// Categorizes the user into a FamilyLink supervision type to segment the
-// Chrome user population.
+// Categorizes the primary account of the active user profile into a FamilyLink
+// supervision type to segment the Chrome user population.
+// TODO(crbug.com/1347816): Support multi-profile supervision type segmentation.
 class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
                                       public IdentityManagerFactory::Observer,
                                       public signin::IdentityManager::Observer {
@@ -57,6 +58,8 @@ class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
       signin::IdentityManager* identity_manager) override;
 
   // signin::IdentityManager::Observer
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;
@@ -66,11 +69,13 @@ class FamilyLinkUserMetricsProvider : public metrics::MetricsProvider,
  private:
   void SetLogSegment(LogSegment log_segment);
 
-  // Used to track the IdentityManagers that this instance is observing so that
+  raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
+
+  // Used to track the IdentityManager that this instance is observing so that
   // this instance can be removed as an observer on its destruction.
-  base::ScopedMultiSourceObservation<signin::IdentityManager,
-                                     signin::IdentityManager::Observer>
-      scoped_observations_{this};
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      scoped_observation_{this};
 
   // Used to track the IdentityManagerFactory instance.
   base::ScopedObservation<IdentityManagerFactory,
