@@ -258,24 +258,23 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
       prefs_->GetValueList(prefs::kPartnerBookmarkMappings);
 
   for (const auto& entry : list) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!entry.GetAsDictionary(&dict)) {
+    if (!entry.is_dict()) {
+      NOTREACHED();
+      continue;
+    }
+    const base::Value::Dict& dict = entry.GetDict();
+
+    const std::string* url = dict.FindString(kMappingUrl);
+    const std::string* provider_title = dict.FindString(kMappingProviderTitle);
+    const std::string* mapped_title = dict.FindString(kMappingTitle);
+    if (!url || !provider_title || !mapped_title) {
       NOTREACHED();
       continue;
     }
 
-    std::string url;
-    std::u16string provider_title;
-    std::u16string mapped_title;
-    if (!dict->GetString(kMappingUrl, &url) ||
-        !dict->GetString(kMappingProviderTitle, &provider_title) ||
-        !dict->GetString(kMappingTitle, &mapped_title)) {
-      NOTREACHED();
-      continue;
-    }
-
-    const NodeRenamingMapKey key(GURL(url), provider_title);
-    node_rename_remove_map_[key] = mapped_title;
+    const NodeRenamingMapKey key(GURL(*url),
+                                 base::UTF8ToUTF16(*provider_title));
+    node_rename_remove_map_[key] = base::UTF8ToUTF16(*mapped_title);
   }
 }
 
