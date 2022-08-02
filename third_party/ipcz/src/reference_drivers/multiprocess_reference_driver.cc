@@ -30,7 +30,7 @@ namespace {
 class MultiprocessTransport
     : public ObjectImpl<MultiprocessTransport, Object::kTransport> {
  public:
-  explicit MultiprocessTransport(std::unique_ptr<SocketTransport> transport)
+  explicit MultiprocessTransport(Ref<SocketTransport> transport)
       : transport_(std::move(transport)) {}
   MultiprocessTransport(const MultiprocessTransport&) = delete;
   MultiprocessTransport& operator=(const MultiprocessTransport&) = delete;
@@ -50,16 +50,19 @@ class MultiprocessTransport
   }
 
   void Deactivate() {
+    Ref<SocketTransport> transport;
     {
       absl::MutexLock lock(&transport_mutex_);
-      transport_->Deactivate();
-      transport_.reset();
+      transport = std::move(transport_);
     }
 
-    if (activity_handler_) {
-      activity_handler_(ipcz_transport_, nullptr, 0, nullptr, 0,
-                        IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED, nullptr);
-    }
+    transport->Deactivate([ipcz_transport = ipcz_transport_,
+                           activity_handler = activity_handler_] {
+      if (activity_handler) {
+        activity_handler(ipcz_transport, nullptr, 0, nullptr, 0,
+                         IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED, nullptr);
+      }
+    });
   }
 
   IpczResult Transmit(absl::Span<const uint8_t> data,
@@ -117,7 +120,7 @@ class MultiprocessTransport
   bool was_activated_ = false;
 
   absl::Mutex transport_mutex_;
-  std::unique_ptr<SocketTransport> transport_ ABSL_GUARDED_BY(transport_mutex_);
+  Ref<SocketTransport> transport_ ABSL_GUARDED_BY(transport_mutex_);
 };
 
 class MultiprocessMemoryMapping
@@ -274,7 +277,7 @@ IpczResult IPCZ_API Deserialize(const void* data,
     case Object::kTransport:
       if (num_handles == 1) {
         object = MakeRefCounted<MultiprocessTransport>(
-            std::make_unique<SocketTransport>(
+            MakeRefCounted<SocketTransport>(
                 WrappedFileDescriptor::UnwrapHandle(handles[0])));
       }
       break;
@@ -419,8 +422,7 @@ const IpczDriver kMultiprocessReferenceDriver = {
     GenerateRandomBytes,
 };
 
-IpczDriverHandle CreateMultiprocessTransport(
-    std::unique_ptr<SocketTransport> transport) {
+IpczDriverHandle CreateMultiprocessTransport(Ref<SocketTransport> transport) {
   return Object::ReleaseAsHandle(
       MakeRefCounted<MultiprocessTransport>(std::move(transport)));
 }

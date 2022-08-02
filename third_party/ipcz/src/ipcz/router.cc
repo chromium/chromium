@@ -431,7 +431,7 @@ void Router::SerializeNewRouter(NodeLink& to_node_link,
     traps_.RemoveAll(dispatcher);
 
     descriptor.next_outgoing_sequence_number =
-        outbound_parcels_.current_sequence_number();
+        outbound_parcels_.GetCurrentSequenceLength();
     descriptor.next_incoming_sequence_number =
         inbound_parcels_.current_sequence_number();
 

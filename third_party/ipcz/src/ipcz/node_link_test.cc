@@ -40,17 +40,16 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
   ABSL_ASSERT(buffer.mapping.is_valid());
 
   const NodeName non_broker_name = broker->GenerateRandomName();
-  auto link0 = NodeLink::Create(
+  auto link0 = NodeLink::CreateInactive(
       broker, LinkSide::kA, broker->GetAssignedName(), non_broker_name,
       Node::Type::kNormal, 0, transport0,
       NodeLinkMemory::Create(broker, std::move(buffer.mapping)));
-  auto link1 = NodeLink::Create(
+  auto link1 = NodeLink::CreateInactive(
       non_broker, LinkSide::kB, non_broker_name, broker->GetAssignedName(),
       Node::Type::kNormal, 0, transport1,
       NodeLinkMemory::Create(non_broker, buffer.memory.Map()));
-
-  transport0->Activate();
-  transport1->Activate();
+  link0->Activate();
+  link1->Activate();
   return {link0, link1};
 }
 

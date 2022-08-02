@@ -5,9 +5,6 @@
 #ifndef IPCZ_SRC_REFERENCE_DRIVERS_MULTIPROCESS_REFERENCE_DRIVER_H_
 #define IPCZ_SRC_REFERENCE_DRIVERS_MULTIPROCESS_REFERENCE_DRIVER_H_
 
-#include <cstdint>
-#include <memory>
-
 #include "ipcz/ipcz.h"
 #include "reference_drivers/file_descriptor.h"
 #include "reference_drivers/socket_transport.h"
@@ -21,8 +18,7 @@ extern const IpczDriver kMultiprocessReferenceDriver;
 
 // Creates a new multiprocess-capable driver transport from a SocketTransport
 // endpoint and returns an IpczDriverHandle to reference it.
-IpczDriverHandle CreateMultiprocessTransport(
-    std::unique_ptr<SocketTransport> transport);
+IpczDriverHandle CreateMultiprocessTransport(Ref<SocketTransport> transport);
 
 // Extracts the underlying file descriptor from a socket-based multiprocess
 // driver transport. `transport` is effectively consumed and invalidated by this

@@ -50,11 +50,11 @@ class TestNodePair {
     auto transports = DriverTransport::CreatePair(kTestDriver);
     DriverMemoryWithMapping buffer =
         NodeLinkMemory::AllocateMemory(kTestDriver);
-    node_link_a_ = NodeLink::Create(
+    node_link_a_ = NodeLink::CreateInactive(
         node_a_, LinkSide::kA, kTestBrokerName, kTestNonBrokerName,
         Node::Type::kNormal, 0, transports.first,
         NodeLinkMemory::Create(node_a_, std::move(buffer.mapping)));
-    node_link_b_ = NodeLink::Create(
+    node_link_b_ = NodeLink::CreateInactive(
         node_b_, LinkSide::kB, kTestNonBrokerName, kTestBrokerName,
         Node::Type::kBroker, 0, transports.second,
         NodeLinkMemory::Create(node_b_, buffer.memory.Map()));
@@ -73,8 +73,8 @@ class TestNodePair {
   // Activates both of the test nodes' NodeLink transports. Tests can defer this
   // activation as a means of deferring NodeLink communications in general.
   void ActivateTransports() {
-    node_link_a_->transport()->Activate();
-    node_link_b_->transport()->Activate();
+    node_link_a_->Activate();
+    node_link_b_->Activate();
   }
 
   // Establishes new RemoteRouterLinks between `a` and `b`. Different initial

@@ -16,15 +16,15 @@
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
+#include "util/ref_counted.h"
 
 namespace ipcz::reference_drivers {
 
 // A driver transport implementation backed by a Unix domain socket, suitable
 // for use in a multiprocess POSIX testing environment.
-class SocketTransport {
+class SocketTransport : public RefCounted {
  public:
-  using Pair = std::pair<std::unique_ptr<SocketTransport>,
-                         std::unique_ptr<SocketTransport>>;
+  using Pair = std::pair<Ref<SocketTransport>, Ref<SocketTransport>>;
 
   struct Message {
     absl::Span<const uint8_t> data;
@@ -45,7 +45,6 @@ class SocketTransport {
   explicit SocketTransport(FileDescriptor fd);
   SocketTransport(const SocketTransport&) = delete;
   SocketTransport& operator=(const SocketTransport&) = delete;
-  ~SocketTransport();
 
   // Creates a new pair of entangled SocketTransport objects. For two transports
   // X and Y, a Send(foo) on X will result in an equivalent message arriving on
@@ -69,14 +68,15 @@ class SocketTransport {
       MessageHandler message_handler = [](Message) { return true; },
       ErrorHandler error_handler = [] {});
 
-  // Stops monitoring the underlying socket. Once this returns, the
-  // handlers given to Activate() will no longer be invoked by the transport. If
-  // called from the I/O thread itself, the I/O thread MUST also guarantee that
-  // it no longer uses the SocketTransport in any capacity.
+  // Stops monitoring the underlying socket. Deactivation may complete
+  // asynchronously, and `shutdown_callback` is invoked when complete.
+  // Invocation may happen before this call returns if the I/O thread has
+  // already been terminated; otherwise the callback is invoked from the I/O
+  // thread just before terminating.
   //
   // NOTE: If Activate() has been called, this MUST be called before destroying
   // the SocketTransport.
-  void Deactivate();
+  void Deactivate(std::function<void()> shutdown_callback);
 
   // Sends the contents of `message` to the SocketTransport's peer,
   // asynchronously. May be called from any thread.
@@ -91,6 +91,8 @@ class SocketTransport {
   FileDescriptor TakeDescriptor();
 
  private:
+  ~SocketTransport() override;
+
   // Attempts to send `message` without queueing.
   //
   // If `header` is non-empty, its contents are sent just before the contents of
@@ -105,6 +107,9 @@ class SocketTransport {
   //
   // This method is invoked by only one thread at a time.
   absl::optional<size_t> TrySend(absl::Span<uint8_t> header, Message message);
+
+  // Static entry point for the I/O thread.
+  static void RunIOThreadForTransport(Ref<SocketTransport> transport);
 
   // Runs the I/O loop for this SocketTransport. Called from a dedicated,
   // internally managed thread. This method does not return until the underlying
@@ -223,7 +228,8 @@ class SocketTransport {
   // State used to wake the I/O thread for various reasons other than incoming
   // messages.
   absl::Mutex notify_mutex_;
-  bool shutdown_ ABSL_GUARDED_BY(notify_mutex_) = false;
+  bool is_io_thread_done_ ABSL_GUARDED_BY(notify_mutex_) = false;
+  std::function<void()> shutdown_callback_ ABSL_GUARDED_BY(notify_mutex_);
   FileDescriptor signal_sender_;
   FileDescriptor signal_receiver_;
 };

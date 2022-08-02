@@ -54,14 +54,29 @@ class NodeLink : public msg::NodeMessageListener {
     Ref<Router> receiver;
   };
 
-  static Ref<NodeLink> Create(Ref<Node> node,
-                              LinkSide link_side,
-                              const NodeName& local_node_name,
-                              const NodeName& remote_node_name,
-                              Node::Type remote_node_type,
-                              uint32_t remote_protocol_version,
-                              Ref<DriverTransport> transport,
-                              Ref<NodeLinkMemory> memory);
+  // Creates a new NodeLink over a transport which is already active. This is
+  // only safe to call from within the activity handler of that transport, and
+  // the returned NodeLink will have effectively already been activated.
+  static Ref<NodeLink> CreateActive(Ref<Node> node,
+                                    LinkSide link_side,
+                                    const NodeName& local_node_name,
+                                    const NodeName& remote_node_name,
+                                    Node::Type remote_node_type,
+                                    uint32_t remote_protocol_version,
+                                    Ref<DriverTransport> transport,
+                                    Ref<NodeLinkMemory> memory);
+
+  // Creates a new NodeLink over a transport which is not yet active. This
+  // NodeLink must be explicitly activated with Activate() before it can be
+  // used.
+  static Ref<NodeLink> CreateInactive(Ref<Node> node,
+                                      LinkSide link_side,
+                                      const NodeName& local_node_name,
+                                      const NodeName& remote_node_name,
+                                      Node::Type remote_node_type,
+                                      uint32_t remote_protocol_version,
+                                      Ref<DriverTransport> transport,
+                                      Ref<NodeLinkMemory> memory);
 
   const Ref<Node>& node() const { return node_; }
   LinkSide link_side() const { return link_side_; }
@@ -73,6 +88,10 @@ class NodeLink : public msg::NodeMessageListener {
 
   NodeLinkMemory& memory() { return *memory_; }
   const NodeLinkMemory& memory() const { return *memory_; }
+
+  // Activates this NodeLink. The NodeLink must have been created with
+  // CreateInactive() and must not have already been activated.
+  void Activate();
 
   // Binds `sublink` on this NodeLink to the given `router`. `link_side`
   // specifies which side of the link this end identifies as (A or B), and
@@ -146,6 +165,10 @@ class NodeLink : public msg::NodeMessageListener {
   // outgoing messages, but it cannot be reactivated. Transmissions over a
   // deactivated transport may or may not guarantee delivery to the peer
   // transport, as this is left to driver's discretion.
+  //
+  // Must only be called on an activated NodeLink, either one which was created
+  // with CreateActive(), or one which was activated later by calling
+  // Activate().
   void Deactivate();
 
   // Finalizes serialization of DriverObjects within `message` and transmits it
@@ -154,6 +177,12 @@ class NodeLink : public msg::NodeMessageListener {
   void Transmit(Message& message);
 
  private:
+  enum ActivationState {
+    kNeverActivated,
+    kActive,
+    kDeactivated,
+  };
+
   NodeLink(Ref<Node> node,
            LinkSide link_side,
            const NodeName& local_node_name,
@@ -161,7 +190,8 @@ class NodeLink : public msg::NodeMessageListener {
            Node::Type remote_node_type,
            uint32_t remote_protocol_version,
            Ref<DriverTransport> transport,
-           Ref<NodeLinkMemory> memory);
+           Ref<NodeLinkMemory> memory,
+           ActivationState initial_activation_state);
   ~NodeLink() override;
 
   SequenceNumber GenerateOutgoingSequenceNumber();
@@ -193,7 +223,7 @@ class NodeLink : public msg::NodeMessageListener {
   const Ref<NodeLinkMemory> memory_;
 
   absl::Mutex mutex_;
-  bool active_ ABSL_GUARDED_BY(mutex_) = true;
+  ActivationState activation_state_ ABSL_GUARDED_BY(mutex_);
 
   // Messages transmitted from this NodeLink may traverse either the driver
   // transport OR a shared memory queue. Messages transmitted from the same

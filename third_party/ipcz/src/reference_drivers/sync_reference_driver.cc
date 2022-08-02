@@ -24,6 +24,12 @@ namespace ipcz::reference_drivers {
 
 namespace {
 
+void CloseAllHandles(absl::Span<const IpczDriverHandle> handles) {
+  for (IpczDriverHandle handle : handles) {
+    Object::TakeFromHandle(handle)->Close();
+  }
+}
+
 // Provides shared ownership of a transport object given to the driver by ipcz
 // during driver transport activation. Within ipcz this corresponds to a
 // DriverTransport object.
@@ -160,9 +166,7 @@ class InProcessTransport
 
     if (peer) {
       for (SavedMessage& m : saved_messages) {
-        for (IpczDriverHandle handle : m.handles) {
-          Object::TakeFromHandle(handle)->Close();
-        }
+        CloseAllHandles(absl::MakeSpan(m.handles));
       }
 
       // NOTE: Although nothing should ever call back into `this` after Close(),
@@ -251,6 +255,8 @@ class InProcessTransport
       // NOTE: Notifying the peer of anything may re-enter `this`, so we must be
       // careful not hold `mutex_` while doing that.
       peer_transport->Notify(data, handles);
+    } else {
+      CloseAllHandles(handles);
     }
     return IPCZ_RESULT_OK;
   }

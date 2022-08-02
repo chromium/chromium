@@ -105,6 +105,20 @@ void* BlockAllocator::Allocate() const {
 
     // Extract the index of the *next* free block from the header of the first.
     FreeBlock first_free_block = free_block_at(first_free_block_index);
+
+    // SUBTLE: This stack requires a race suppression when running with TSan.
+    //
+    // Multiple threads may race to load the front block header at roughly the
+    // same time and end up with the same `first_free_block`. Only one thread
+    // will successfully claim the block via TryUpdateFrontHeader() below, but
+    // all of them will still load the maybe-free block's header here.
+    //
+    // Meanwhile, the winning thread may at any point begin using the block and
+    // e.g. issuing non-atomic writes to its memory. This can cause TSan to blow
+    // up, as it will detect data races between the winner's writes, and the
+    // losing thread(s) issuing this atomic load. The races are legitimate but
+    // harmless, because the result of this load is unused unless the subsequent
+    // TryUpdateFrontHeader() succeeds, which it won't.
     BlockHeader first_free_block_header =
         first_free_block.header().load(std::memory_order_acquire);
     const int16_t next_free_block_index =

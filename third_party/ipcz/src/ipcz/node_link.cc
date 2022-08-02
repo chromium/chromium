@@ -46,18 +46,33 @@ FragmentRef<T> MaybeAdoptFragmentRef(NodeLinkMemory& memory,
 }  // namespace
 
 // static
-Ref<NodeLink> NodeLink::Create(Ref<Node> node,
-                               LinkSide link_side,
-                               const NodeName& local_node_name,
-                               const NodeName& remote_node_name,
-                               Node::Type remote_node_type,
-                               uint32_t remote_protocol_version,
-                               Ref<DriverTransport> transport,
-                               Ref<NodeLinkMemory> memory) {
+Ref<NodeLink> NodeLink::CreateActive(Ref<Node> node,
+                                     LinkSide link_side,
+                                     const NodeName& local_node_name,
+                                     const NodeName& remote_node_name,
+                                     Node::Type remote_node_type,
+                                     uint32_t remote_protocol_version,
+                                     Ref<DriverTransport> transport,
+                                     Ref<NodeLinkMemory> memory) {
   return AdoptRef(new NodeLink(std::move(node), link_side, local_node_name,
                                remote_node_name, remote_node_type,
                                remote_protocol_version, std::move(transport),
-                               std::move(memory)));
+                               std::move(memory), kActive));
+}
+
+// static
+Ref<NodeLink> NodeLink::CreateInactive(Ref<Node> node,
+                                       LinkSide link_side,
+                                       const NodeName& local_node_name,
+                                       const NodeName& remote_node_name,
+                                       Node::Type remote_node_type,
+                                       uint32_t remote_protocol_version,
+                                       Ref<DriverTransport> transport,
+                                       Ref<NodeLinkMemory> memory) {
+  return AdoptRef(new NodeLink(std::move(node), link_side, local_node_name,
+                               remote_node_name, remote_node_type,
+                               remote_protocol_version, std::move(transport),
+                               std::move(memory), kNeverActivated));
 }
 
 NodeLink::NodeLink(Ref<Node> node,
@@ -67,7 +82,8 @@ NodeLink::NodeLink(Ref<Node> node,
                    Node::Type remote_node_type,
                    uint32_t remote_protocol_version,
                    Ref<DriverTransport> transport,
-                   Ref<NodeLinkMemory> memory)
+                   Ref<NodeLinkMemory> memory,
+                   ActivationState initial_activation_state)
     : node_(std::move(node)),
       link_side_(link_side),
       local_node_name_(local_node_name),
@@ -75,14 +91,30 @@ NodeLink::NodeLink(Ref<Node> node,
       remote_node_type_(remote_node_type),
       remote_protocol_version_(remote_protocol_version),
       transport_(std::move(transport)),
-      memory_(std::move(memory)) {
-  transport_->set_listener(WrapRefCounted(this));
-  memory_->SetNodeLink(WrapRefCounted(this));
+      memory_(std::move(memory)),
+      activation_state_(initial_activation_state) {
+  if (initial_activation_state == kActive) {
+    transport_->set_listener(WrapRefCounted(this));
+    memory_->SetNodeLink(WrapRefCounted(this));
+  }
 }
 
 NodeLink::~NodeLink() {
   absl::MutexLock lock(&mutex_);
-  ABSL_HARDENING_ASSERT(!active_);
+  ABSL_HARDENING_ASSERT(activation_state_ != kActive);
+}
+
+void NodeLink::Activate() {
+  transport_->set_listener(WrapRefCounted(this));
+  memory_->SetNodeLink(WrapRefCounted(this));
+
+  {
+    absl::MutexLock lock(&mutex_);
+    ABSL_ASSERT(activation_state_ == kNeverActivated);
+    activation_state_ = kActive;
+  }
+
+  transport_->Activate();
 }
 
 Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
@@ -95,7 +127,7 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(
                                        std::move(link_state), type, side);
 
   absl::MutexLock lock(&mutex_);
-  if (!active_) {
+  if (activation_state_ == kDeactivated) {
     // We don't bind new RemoteRouterLinks once we've been deactivated, lest we
     // incur leaky NodeLink references.
     return nullptr;
@@ -196,10 +228,10 @@ void NodeLink::AcceptBypassLink(
 void NodeLink::Deactivate() {
   {
     absl::MutexLock lock(&mutex_);
-    if (!active_) {
+    if (activation_state_ != kActive) {
       return;
     }
-    active_ = false;
+    activation_state_ = kDeactivated;
   }
 
   OnTransportError();

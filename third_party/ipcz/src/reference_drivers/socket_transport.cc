@@ -24,6 +24,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 #include "util/log.h"
+#include "util/ref_counted.h"
 #include "util/safe_math.h"
 
 namespace ipcz::reference_drivers {
@@ -104,46 +105,43 @@ void SocketTransport::Activate(MessageHandler message_handler,
 
   absl::MutexLock lock(&io_thread_mutex_);
   ABSL_ASSERT(!io_thread_);
-  io_thread_ =
-      std::make_unique<std::thread>(&SocketTransport::RunIOThread, this);
+  io_thread_ = std::make_unique<std::thread>(&RunIOThreadForTransport,
+                                             WrapRefCounted(this));
 }
 
-void SocketTransport::Deactivate() {
+void SocketTransport::Deactivate(std::function<void()> shutdown_callback) {
   {
     // Initiate asynchronous shutdown of the I/O thread.
     absl::MutexLock lock(&notify_mutex_);
-    shutdown_ = true;
-    WakeIOThread();
+    if (!is_io_thread_done_) {
+      ABSL_ASSERT(!shutdown_callback_);
+      std::swap(shutdown_callback, shutdown_callback_);
+      WakeIOThread();
+    }
   }
 
-  std::unique_ptr<std::thread> io_thread_to_join;
+  std::unique_ptr<std::thread> io_thread;
   {
     absl::MutexLock lock(&io_thread_mutex_);
-    if (!io_thread_) {
-      return;
-    }
-
-    if (io_thread_->get_id() != std::this_thread::get_id()) {
-      // If deactivating from anywhere but the I/O thread itself, we join the
-      // I/O thread immediately below.
-      io_thread_to_join = std::move(io_thread_);
-    } else {
-      // Otherwise, we're running on the I/O thread. The I/O thread calling
-      // Deactivate() implies that it's not going to touch the SocketTransport
-      // anymore, so it's safe to detach from `io_thread_` now.
-      io_thread_->detach();
-      io_thread_.reset();
-    }
+    io_thread = std::move(io_thread_);
   }
 
-  if (io_thread_to_join) {
-    io_thread_to_join->join();
+  if (io_thread && io_thread->get_id() == std::this_thread::get_id()) {
+    // If we're running on the I/O thread, we can detach now. The thread will
+    // terminate soon and will run `shutdown_callback_` when finished. This is
+    // safe because the thread owns a reference to `this`.
+    io_thread->detach();
+  } else if (io_thread) {
+    // Otherwise the I/O thread is or was some other thread, which we can join.
+    io_thread->join();
   }
 
-  // In any case it's now safe to drop these handlers, because the I/O thread is
-  // definitely not going to invoke them anymore.
-  message_handler_ = nullptr;
-  error_handler_ = nullptr;
+  if (shutdown_callback) {
+    // If the callback is still valid, then the I/O thread had already begun
+    // shutdown before deactivation was started. This means it's safe to invoke
+    // immediately.
+    shutdown_callback();
+  }
 }
 
 bool SocketTransport::Send(Message message) {
@@ -242,7 +240,7 @@ absl::optional<size_t> SocketTransport::TrySend(absl::Span<uint8_t> header,
         return 0;
       }
 
-      if (errno == EPIPE) {
+      if (errno == EPIPE || errno == ECONNRESET) {
         // Peer closed. Not an error condition per se, but it means we can
         // terminate the transport anyway.
         return absl::nullopt;
@@ -255,6 +253,22 @@ absl::optional<size_t> SocketTransport::TrySend(absl::Span<uint8_t> header,
     }
 
     return static_cast<size_t>(result);
+  }
+}
+
+// static
+void SocketTransport::RunIOThreadForTransport(Ref<SocketTransport> transport) {
+  transport->RunIOThread();
+
+  std::function<void()> shutdown_callback;
+  {
+    absl::MutexLock lock(&transport->notify_mutex_);
+    shutdown_callback = std::move(transport->shutdown_callback_);
+    transport->is_io_thread_done_ = true;
+  }
+
+  if (shutdown_callback) {
+    shutdown_callback();
   }
 }
 
@@ -289,7 +303,7 @@ void SocketTransport::RunIOThread() {
     if (poll_fds[kNotifyFdIndex].revents & POLLIN) {
       absl::MutexLock lock(&notify_mutex_);
       ClearIOThreadSignal();
-      if (shutdown_) {
+      if (shutdown_callback_) {
         return;
       }
 
@@ -516,8 +530,8 @@ SocketTransport::Pair SocketTransport::CreatePair() {
     return {};
   }
 
-  return {std::make_unique<SocketTransport>(std::move(first)),
-          std::make_unique<SocketTransport>(std::move(second))};
+  return {MakeRefCounted<SocketTransport>(std::move(first)),
+          MakeRefCounted<SocketTransport>(std::move(second))};
 }
 
 }  // namespace ipcz::reference_drivers

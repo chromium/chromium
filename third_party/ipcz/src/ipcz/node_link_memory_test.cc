@@ -36,18 +36,18 @@ class NodeLinkMemoryTest : public testing::Test {
     auto transports = DriverTransport::CreatePair(kTestDriver);
     DriverMemoryWithMapping buffer =
         NodeLinkMemory::AllocateMemory(kTestDriver);
-    link_a_ = NodeLink::Create(
+    link_a_ = NodeLink::CreateInactive(
         node_a_, LinkSide::kA, kTestBrokerName, kTestNonBrokerName,
         Node::Type::kNormal, 0, transports.first,
         NodeLinkMemory::Create(node_a_, std::move(buffer.mapping)));
-    link_b_ = NodeLink::Create(
+    link_b_ = NodeLink::CreateInactive(
         node_b_, LinkSide::kB, kTestNonBrokerName, kTestBrokerName,
         Node::Type::kBroker, 0, transports.second,
         NodeLinkMemory::Create(node_b_, buffer.memory.Map()));
     node_a_->AddLink(kTestNonBrokerName, link_a_);
     node_b_->AddLink(kTestBrokerName, link_b_);
-    link_a_->transport()->Activate();
-    link_b_->transport()->Activate();
+    link_a_->Activate();
+    link_b_->Activate();
   }
 
   void TearDown() override {

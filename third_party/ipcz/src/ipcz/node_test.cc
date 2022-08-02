@@ -50,19 +50,19 @@ class NodeTest : public testing::Test {
     DriverMemoryWithMapping buffer =
         NodeLinkMemory::AllocateMemory(kTestDriver);
     const NodeName broker_name = broker_->GetAssignedName();
-    auto broker_link = NodeLink::Create(
+    auto broker_link = NodeLink::CreateInactive(
         broker_, LinkSide::kA, broker_name, name, Node::Type::kNormal, 0,
         transports.first,
         NodeLinkMemory::Create(broker_, std::move(buffer.mapping)));
-    auto node_link = NodeLink::Create(
+    auto node_link = NodeLink::CreateInactive(
         node, LinkSide::kB, name, broker_name, Node::Type::kBroker, 0,
         transports.second, NodeLinkMemory::Create(node, buffer.memory.Map()));
     node->SetAssignedName(name);
     broker_->AddLink(name, broker_link);
     node->AddLink(broker_name, node_link);
     node->SetBrokerLink(node_link);
-    broker_link->transport()->Activate();
-    node_link->transport()->Activate();
+    broker_link->Activate();
+    node_link->Activate();
   }
 
   const Ref<Node> broker_{MakeRefCounted<Node>(Node::Type::kBroker,

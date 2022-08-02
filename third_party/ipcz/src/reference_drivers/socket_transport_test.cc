@@ -22,6 +22,12 @@ using SocketTransportTest = testing::Test;
 
 using testing::ElementsAreArray;
 
+void DeactivateSync(SocketTransport& transport) {
+  absl::Notification notification;
+  transport.Deactivate([&notification] { notification.Notify(); });
+  notification.WaitForNotification();
+}
+
 const char kTestMessage1[] = "Hello, world!";
 
 absl::Span<const uint8_t> AsBytes(std::string_view str) {
@@ -47,7 +53,7 @@ TEST_F(SocketTransportTest, ReadWrite) {
   a->Send({.data = AsBytes(kTestMessage1)});
 
   b_finished.WaitForNotification();
-  b->Deactivate();
+  DeactivateSync(*b);
 }
 
 TEST_F(SocketTransportTest, Disconnect) {
@@ -65,7 +71,7 @@ TEST_F(SocketTransportTest, Disconnect) {
   a.reset();
 
   b_finished.WaitForNotification();
-  b->Deactivate();
+  DeactivateSync(*b);
 
   EXPECT_FALSE(received_message);
 }
@@ -115,26 +121,20 @@ TEST_F(SocketTransportTest, Flood) {
   }
 
   b_finished.WaitForNotification();
-  b->Deactivate();
-  a->Deactivate();
+  DeactivateSync(*b);
+  DeactivateSync(*a);
 }
 
 TEST_F(SocketTransportTest, DestroyFromIOThread) {
   auto channels = SocketTransport::CreatePair();
-  std::unique_ptr<SocketTransport> a = std::move(channels.first);
-  std::unique_ptr<SocketTransport> b = std::move(channels.second);
+  Ref<SocketTransport> a = std::move(channels.first);
+  Ref<SocketTransport> b = std::move(channels.second);
 
   absl::Notification destruction_done;
   b->Activate([](SocketTransport::Message message) { return true; },
-              [&b, &destruction_done] {
-                // Capture the Notification reference locally since resetting
-                // `b` below will destroy this lambda and invalidate its
-                // captures.
-                absl::Notification& done = destruction_done;
-
-                b->Deactivate();
+              [&b, done = &destruction_done] {
+                b->Deactivate([done] { done->Notify(); });
                 b.reset();
-                done.Notify();
               });
 
   // Closing `a` should elicit `b` invoking the above error handler on b's I/O
@@ -152,7 +152,7 @@ TEST_F(SocketTransportTest, SerializeAndDeserialize) {
   FileDescriptor fd = b->TakeDescriptor();
   b.reset();
 
-  b = std::make_unique<SocketTransport>(std::move(fd));
+  b = MakeRefCounted<SocketTransport>(std::move(fd));
 
   absl::Notification b_finished;
   b->Activate([&b_finished](SocketTransport::Message message) {
@@ -164,7 +164,7 @@ TEST_F(SocketTransportTest, SerializeAndDeserialize) {
   a->Send({.data = AsBytes(kTestMessage1)});
 
   b_finished.WaitForNotification();
-  b->Deactivate();
+  DeactivateSync(*b);
 }
 
 TEST_F(SocketTransportTest, ReadWriteWithFileDescriptor) {
@@ -193,7 +193,7 @@ TEST_F(SocketTransportTest, ReadWriteWithFileDescriptor) {
   a->Send({.data = AsBytes(kTestMessage1), .descriptors = {&memory_fd, 1}});
 
   b_finished.WaitForNotification();
-  b->Deactivate();
+  DeactivateSync(*b);
 }
 
 }  // namespace

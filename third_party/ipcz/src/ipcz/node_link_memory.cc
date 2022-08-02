@@ -167,8 +167,24 @@ NodeLinkMemory::NodeLinkMemory(Ref<Node> node,
 NodeLinkMemory::~NodeLinkMemory() = default;
 
 void NodeLinkMemory::SetNodeLink(Ref<NodeLink> link) {
-  absl::MutexLock lock(&mutex_);
-  node_link_ = std::move(link);
+  std::vector<size_t> block_sizes_needed;
+  {
+    absl::MutexLock lock(&mutex_);
+    node_link_ = std::move(link);
+    if (!node_link_) {
+      return;
+    }
+
+    // Any capcity requests accumulated before NodeLink activation can be
+    // carried out now.
+    for (auto& [size, callbacks] : capacity_callbacks_) {
+      block_sizes_needed.push_back(size);
+    }
+  }
+
+  for (size_t size : block_sizes_needed) {
+    RequestBlockCapacity(size, [](bool) {});
+  }
 }
 
 // static
@@ -344,6 +360,13 @@ void NodeLinkMemory::RequestBlockCapacity(
       // will be run when that request completes.
       return;
     }
+
+    if (!node_link_) {
+      // Allocation requests will be fulfilled once the NodeLink is activated
+      // and we're given a reference to it via SetNodeLink().
+      return;
+    }
+
     link = node_link_;
   }
 

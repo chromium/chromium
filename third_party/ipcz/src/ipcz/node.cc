@@ -225,7 +225,7 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
            << name.ToString() << " from broker "
            << from_node_link.remote_node_name().ToString();
 
-  Ref<NodeLink> new_link = NodeLink::Create(
+  Ref<NodeLink> new_link = NodeLink::CreateInactive(
       WrapRefCounted(this), side, local_name, name, Type::kNormal,
       remote_protocol_version, transport, std::move(memory));
   ABSL_ASSERT(new_link);
@@ -239,6 +239,7 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
       // broker may send redundant introductions. It does however take care to
       // ensure that they're ordered consistently across both nodes, so
       // redundant introductions can be safely ignored by convention.
+      return;
     }
 
     // If this node requested this introduction, we may have callbacks to run.
@@ -252,10 +253,7 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
     }
   }
 
-  if (transport) {
-    transport->Activate();
-  }
-
+  new_link->Activate();
   for (auto& callback : callbacks) {
     callback(new_link.get());
   }

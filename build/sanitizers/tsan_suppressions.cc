@@ -124,6 +124,10 @@ char kTSanDefaultSuppressions[] =
     "race:scoped_refptr<WTF::StringImpl>::AddRef\n"
     "race:scoped_refptr<WTF::StringImpl>::Release\n"
 
+    // Harmless data race in ipcz block allocation. See comments in
+    // ipcz::BlockAllocator::Allocate().
+    "race:ipcz::BlockAllocator::Allocate\n"
+
     // End of suppressions.
     ;  // Please keep this semicolon.
 

@@ -231,7 +231,7 @@ void TestNode::SetTransport(IpczDriverHandle transport) {
 
 int TestNode::RunAsChild() {
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
-  auto transport = std::make_unique<reference_drivers::SocketTransport>(
+  auto transport = MakeRefCounted<reference_drivers::SocketTransport>(
       TestChildLauncher::TakeChildSocketDescriptor());
   SetTransport(
       reference_drivers::CreateMultiprocessTransport(std::move(transport)));
