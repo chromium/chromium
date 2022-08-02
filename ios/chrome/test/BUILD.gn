@@ -202,6 +202,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/favicon:unit_tests",
     "//ios/chrome/browser/find_in_page:unit_tests",
     "//ios/chrome/browser/flags:unit_tests",
+    "//ios/chrome/browser/follow:unit_tests",
     "//ios/chrome/browser/history:unit_tests",
     "//ios/chrome/browser/https_upgrades:unit_tests",
     "//ios/chrome/browser/infobars:unit_tests",
