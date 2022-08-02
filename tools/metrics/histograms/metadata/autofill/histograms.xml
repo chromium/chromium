@@ -2177,6 +2177,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Offer.StoredOfferCount.{OfferType}" units="offers"
     expires_after="2022-12-04">
+  <obsolete>
+    Deprecated in August 2022. Subsumed by
+    Autofill.Offer.StoredOfferCount2.{OfferType}.
+  </obsolete>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2186,8 +2190,20 @@ chromium-metrics-reviews@google.com.
   <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
+<histogram name="Autofill.Offer.StoredOfferCount2.{OfferType}" units="offers"
+    expires_after="2023-08-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the number of Autofill offers a user has stored (including if the
+    user has zero offers), separated by offer type, and measured at Chrome
+    profile launch time.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
+</histogram>
+
 <histogram name="Autofill.Offer.StoredOfferRelatedCardCount" units="cards"
-    expires_after="2022-12-04">
+    expires_after="2023-08-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -2198,12 +2214,27 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.Offer.StoredOfferRelatedMerchantCount"
     units="merchants" expires_after="2022-12-04">
+  <obsolete>
+    Deprecated in August 2022. Subsumed by
+    Autofill.Offer.StoredOfferRelatedMerchantCount.{OfferType}.
+  </obsolete>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Tracks the number of the merchants an autofill offer data is related to,
     measured at Chrome profile launch time.
   </summary>
+</histogram>
+
+<histogram name="Autofill.Offer.StoredOfferRelatedMerchantCount.{OfferType}"
+    units="merchants" expires_after="2023-08-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the number of the merchants an autofill offer data is related to,
+    separated by offer type, and measured at Chrome profile launch time.
+  </summary>
+  <token key="OfferType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
 <histogram name="Autofill.Offer.SubmittedCardHasOffer"

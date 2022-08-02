@@ -132,27 +132,39 @@ void LogStoredOfferMetrics(
 
     offer_count[offer->GetOfferType()]++;
 
+    std::string related_merchant_count_histogram_name =
+        "Autofill.Offer.StoredOfferRelatedMerchantCount";
+    // Switch to different sub-histogram depending on offer type being
+    // displayed.
+    switch (offer->GetOfferType()) {
+      case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
+        related_merchant_count_histogram_name += ".GPayPromoCodeOffer";
+        break;
+      case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
+        related_merchant_count_histogram_name += ".CardLinkedOffer";
+        break;
+      case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
+      case AutofillOfferData::OfferType::UNKNOWN:
+        NOTREACHED();
+        continue;
+    }
+    base::UmaHistogramCounts1000(related_merchant_count_histogram_name,
+                                 offer->GetMerchantOrigins().size());
+
     if (offer->GetOfferType() ==
         AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER) {
-      base::UmaHistogramCounts1000(
-          "Autofill.Offer.StoredOfferRelatedMerchantCount",
-          offer->GetMerchantOrigins().size());
       base::UmaHistogramCounts1000("Autofill.Offer.StoredOfferRelatedCardCount",
                                    offer->GetEligibleInstrumentIds().size());
     }
   }
 
-  if (offer_count[AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER] > 0) {
-    base::UmaHistogramCounts1000(
-        "Autofill.Offer.StoredOfferCount.GPayPromoCodeOffer",
-        offer_count[AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER]);
-  }
+  base::UmaHistogramCounts1000(
+      "Autofill.Offer.StoredOfferCount2.GPayPromoCodeOffer",
+      offer_count[AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER]);
 
-  if (offer_count[AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER] > 0) {
-    base::UmaHistogramCounts1000(
-        "Autofill.Offer.StoredOfferCount.CardLinkedOffer",
-        offer_count[AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER]);
-  }
+  base::UmaHistogramCounts1000(
+      "Autofill.Offer.StoredOfferCount2.CardLinkedOffer",
+      offer_count[AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER]);
 }
 
 void LogOffersSuggestionsPopupShown(bool first_time_being_logged) {
