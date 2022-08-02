@@ -24,7 +24,8 @@ message SyncInvalidationsPayload {
   }
 
   // This field contains information about each data type which needs to be
-  // updated.
+  // updated. Note that it may contain data types which current client is not
+  // interested in.
   repeated DataTypeInvalidation data_type_invalidations = 1;
 
   // Opaque field, which has to be provided as part of resulting GetUpdates
