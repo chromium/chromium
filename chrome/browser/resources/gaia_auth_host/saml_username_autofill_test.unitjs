@@ -1,0 +1,85 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+GEN_INCLUDE([
+    '//ui/webui/resources/js/cr.js',
+    '//ui/webui/resources/js/util.js',
+    'saml_username_autofill.js'
+]);
+
+const AZURE_URL_FOR_TESTS = 'https://login.microsoftonline.com/example';
+
+const OKTA_URL_FOR_TESTS = 'https://example.okta.com/login/';
+
+const UNSUPPORTED_IDP_URL_FOR_TESTS = 'https://evil.com/';
+
+const EMAIL_FOR_TESTS = 'example@domain.com';
+
+SamlUsernameAutofillUnitTest = class extends testing.Test {
+  /** @override */
+  testGenCppIncludes() {
+    GEN(`#include "content/public/test/browser_test.h"`);
+  }
+
+  /** @override */
+  get browsePreload() {
+    return DUMMY_URL;
+  }
+}
+
+// Test success for Azure AD.
+TEST_F('SamlUsernameAutofillUnitTest', 'AzureAD', function () {
+  const urlParameterNameToAutofillUsername = 'login_hint';
+  const expectedResult = appendParam(AZURE_URL_FOR_TESTS,
+     urlParameterNameToAutofillUsername, EMAIL_FOR_TESTS);
+  const newUrl = samlUsernameAutofill.maybeAutofillUsername(AZURE_URL_FOR_TESTS,
+     urlParameterNameToAutofillUsername, EMAIL_FOR_TESTS);
+
+  assertEquals(newUrl, expectedResult);
+});
+
+// Test success for Okta.
+TEST_F('SamlUsernameAutofillUnitTest', 'Okta', function () {
+  const urlParameterNameToAutofillUsername = 'username';
+  const expectedResult = appendParam(OKTA_URL_FOR_TESTS,
+     urlParameterNameToAutofillUsername, EMAIL_FOR_TESTS);
+  const newUrl = samlUsernameAutofill.maybeAutofillUsername(OKTA_URL_FOR_TESTS,
+     urlParameterNameToAutofillUsername, EMAIL_FOR_TESTS);
+
+  assertEquals(newUrl, expectedResult);
+});
+
+// Test that we don't autofill the username on unknown IdP page.
+TEST_F('SamlUsernameAutofillUnitTest', 'UnsupportedIdP', function () {
+  const newUrl = samlUsernameAutofill.maybeAutofillUsername(
+      UNSUPPORTED_IDP_URL_FOR_TESTS, 'login_hint', EMAIL_FOR_TESTS);
+
+  assertEquals(newUrl, null);
+});
+
+// Test that we don't autofill the username when user's email is absent.
+TEST_F('SamlUsernameAutofillUnitTest', 'NoEmail', function () {
+  const newUrl = samlUsernameAutofill.maybeAutofillUsername(
+      UNSUPPORTED_IDP_URL_FOR_TESTS, 'login_hint', '');
+
+  assertEquals(newUrl, null);
+});
+
+// Test that we don't autofill the username when we don't know the appropriate
+// url parameter.
+TEST_F('SamlUsernameAutofillUnitTest', 'NoUrlParameter', function () {
+  const newUrl = samlUsernameAutofill.maybeAutofillUsername(
+      UNSUPPORTED_IDP_URL_FOR_TESTS, '', EMAIL_FOR_TESTS);
+
+  assertEquals(newUrl, null);
+});
+
+// Test that we don't autofill the username when login page doesn't use https.
+TEST_F('SamlUsernameAutofillUnitTest', 'HttpLoginPage', function () {
+  const httpMicrosoftUrl = 'http://login.microsoftonline.com/example';
+  const newUrl = samlUsernameAutofill.maybeAutofillUsername(
+      httpMicrosoftUrl, 'login_hint', EMAIL_FOR_TESTS);
+
+  assertEquals(newUrl, null);
+});

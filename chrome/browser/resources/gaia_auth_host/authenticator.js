@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // <include src="saml_handler.js">
+// <include src="saml_username_autofill.js">
 // Note: webview_event_manager.js is already included by saml_handler.js.
 
 // clang-format off
@@ -14,6 +15,7 @@
 // #import {SamlHandler, OnHeadersReceivedDetails} from './saml_handler.m.js';
 // #import {WebviewEventManager} from './webview_event_manager.m.js';
 // #import {PasswordAttributes} from './saml_password_attributes.m.js';
+// #import {maybeAutofillUsername} from './saml_username_autofill.m.js' ;
 // clang-format on
 
 /**
@@ -128,10 +130,6 @@ cr.define('cr.login', function() {
   const GAIA_MESSAGE_GAIA_USER_INFO = 'ChromeOS.Gaia.Message.Gaia.UserInfo';
   const GAIA_MESSAGE_SAML_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Saml.CloseView';
   const GAIA_MESSAGE_GAIA_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Gaia.CloseView';
-
-  // Regular expressions used to check for 3P IdP-related hosts
-  const AZURE_AD_HOST = /login\.microsoftonline\.com$/;
-  const OKTA_HOST = /\.okta\.com$/;
 
   /**
    * The source URL parameter for the constrained signin flow.
@@ -894,39 +892,6 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Check url's host to determine if it comes from a know IdP
-     * @param {URL?} url
-     * @private
-     */
-    isKnownIdP_(url) {
-      return Boolean(
-          url.host.match(AZURE_AD_HOST) || url.host.match(OKTA_HOST));
-    }
-
-    /**
-     * Try to auto-fill email on sign-in page for supported identity providers
-     * @param {string} url url from location header
-     * @private
-     */
-    maybeAutofillUsernameIfKnownIdP_(url) {
-      if (!this.urlParameterToAutofillSAMLUsername_ ||
-          this.urlParameterToAutofillSAMLUsername_.length === 0) {
-        return;
-      }
-      if (!url.startsWith('https')) {
-        return;
-      }
-      if (!this.email_) {
-        return;
-      }
-      if (this.isKnownIdP_(new URL(url))) {
-        url = appendParam(
-            url, this.urlParameterToAutofillSAMLUsername_, this.email_);
-        this.webview_.src = url;
-      }
-    }
-
-    /**
      * Invoked when headers are received in the main frame of the webview. It
      * 1) reads the authenticated user info from a signin header,
      * 2) signals the start of a saml flow upon receiving a saml header.
@@ -967,7 +932,15 @@ cr.define('cr.login', function() {
           assert(header.value !== undefined);
           const location = decodeURIComponent(header.value);
           this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
-          this.maybeAutofillUsernameIfKnownIdP_(header.value);
+          // In some cases we can add a url parameter to autofill the username
+          // field on saml IdP login page.
+          const urlToAutofillUsername =
+              samlUsernameAutofill.maybeAutofillUsername(
+                  header.value, this.urlParameterToAutofillSAMLUsername_,
+                  this.email_);
+          if (urlToAutofillUsername) {
+            this.webview_.src = urlToAutofillUsername;
+          }
         }
       }
     }

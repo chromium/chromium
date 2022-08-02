@@ -26,6 +26,7 @@ generate_grd("build_grd") {
     "gaia_auth_host/saml_handler.m.js",
     "gaia_auth_host/saml_password_attributes.m.js",
     "gaia_auth_host/saml_timestamps.m.js",
+    "gaia_auth_host/saml_username_autofill.m.js",
     "gaia_auth_host/webview_event_manager.m.js",
   ]
 }
@@ -60,11 +61,14 @@ if (is_chromeos_ash && include_js_tests) {
     sources = [
       "saml_password_attributes_test.unitjs",
       "saml_timestamps_test.unitjs",
+      "saml_username_autofill_test.unitjs",
     ]
     gen_include_files = [
       "saml_password_attributes.js",
       "saml_timestamps.js",
+      "saml_username_autofill.js",
       "//ui/webui/resources/js/cr.js",
+      "//ui/webui/resources/js/util.js",
     ]
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   }
@@ -88,6 +92,7 @@ js_type_check("closure_compile") {
     ":saml_handler.m",
     ":saml_password_attributes.m",
     ":saml_timestamps.m",
+    ":saml_username_autofill.m",
     ":webview_event_manager.m",
   ]
 }
@@ -120,6 +125,12 @@ js_library("saml_timestamps.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("saml_username_autofill.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/gaia_auth_host/saml_username_autofill.m.js" ]
+  deps = [ "//ui/webui/resources/js:util.m" ]
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("saml_handler.m") {
   sources = [
     "$root_gen_dir/chrome/browser/resources/gaia_auth_host/saml_handler.m.js",
@@ -140,6 +151,7 @@ js_library("authenticator.m") {
   deps = [
     ":saml_handler.m",
     ":saml_password_attributes.m",
+    ":saml_username_autofill.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
@@ -160,6 +172,7 @@ js_modulizer("modulize") {
     "saml_handler.js",
     "saml_password_attributes.js",
     "saml_timestamps.js",
+    "saml_username_autofill.js",
     "webview_event_manager.js",
   ]
   namespace_rewrites = [
@@ -170,6 +183,7 @@ js_modulizer("modulize") {
     "samlPasswordAttributes.PasswordAttributes|PasswordAttributes",
     "samlPasswordAttributes.readPasswordAttributes|readPasswordAttributes",
     "samlTimestamps.decodeTimestamp|decodeTimestamp",
+    "samlUsernameAutofill.maybeAutofillUsername|maybeAutofillUsername",
     "XMLDocument|Object",
   ]
 }
