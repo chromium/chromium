@@ -6784,22 +6784,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="CookiesInUseDialog.Opened">
-  <owner>alimariam@google.com</owner>
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>sauski@google.com</owner>
-  <description>The user opens the Cookies in use dialog.</description>
-</action>
-
-<action name="CookiesInUseDialog.RemoveButtonClicked">
-  <owner>alimariam@google.com</owner>
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>sauski@google.com</owner>
-  <description>
-    The user clicks remove on an entry in the allowed tree view.
-  </description>
-</action>
-
 <action name="Copy">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

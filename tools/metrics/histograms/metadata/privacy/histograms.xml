@@ -180,17 +180,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.CookiesInUseDialog.Action"
-    enum="CookiesInUseDialogActions" expires_after="2022-12-31">
-  <owner>alimariam@google.com</owner>
-  <owner>olesiamarukhno@google.com</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    Logging actions done by the user while interacting with the &quot;Cookies in
-    use&quot; dialog.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
     enum="DIPSRedirectCategory" expires_after="2022-12-01">
   <owner>bcl@chromium.org</owner>

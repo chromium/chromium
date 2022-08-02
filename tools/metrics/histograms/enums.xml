@@ -19296,18 +19296,6 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Source and destination ports match."/>
 </enum>
 
-<enum name="CookiesInUseDialogActions">
-  <summary>Actions done in &quot;Cookies in use&quot; dialog.</summary>
-  <int value="0" label="Dialog opened"/>
-  <int value="1" label="Single cookie deleted"/>
-  <int value="2" label="Cookies folder deleted"/>
-  <int value="3" label="Folder deleted"/>
-  <int value="4" label="Site deleted"/>
-  <int value="5" label="Site blocked"/>
-  <int value="6" label="Site allowed"/>
-  <int value="7" label="Site cleared on exit"/>
-</enum>
-
 <enum name="CookieSourceScheme">
   <int value="0" label="Secure cookie, source scheme is cryptographic"/>
   <int value="1" label="Secure cookie, source scheme is not cryptographic"/>
