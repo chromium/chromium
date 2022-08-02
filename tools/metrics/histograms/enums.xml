@@ -93955,6 +93955,14 @@ would be helpful to identify which type is being sent.
   <int value="1" label="SearchEngine"/>
 </enum>
 
+<enum name="TextSelectionDetectedEntityType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="None"/>
+  <int value="2" label="Datetime"/>
+  <int value="3" label="Address"/>
+  <int value="4" label="Phone number"/>
+</enum>
+
 <enum name="TextToSpeechEvent">
   <int value="0" label="Start"/>
   <int value="1" label="End"/>

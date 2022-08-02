@@ -555,6 +555,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ExperienceKitCalendar.TextClassifierModelAvailable"
+    enum="BooleanAvailable" expires_after="2022-09-08">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    True if TextClassifier TFLite model was available for entity detection for
+    ExperienceKit Calendar interaction when requested, such as on explicit user
+    text selection.
+  </summary>
+</histogram>
+
 <histogram name="IOS.FinishedNavigationHasContext" enum="Boolean"
     expires_after="2023-05-01">
   <owner>gambard@chromium.org</owner>
@@ -1717,6 +1728,30 @@ chromium-metrics-reviews@google.com.
   <summary>
     The time the Tab switcher is displayed to the user. This histogram will
     always be recorded once the user exit the tab switcher.
+  </summary>
+</histogram>
+
+<histogram name="IOS.TextSelection.EntityDetection.DetectedEntityType"
+    enum="TextSelectionDetectedEntityType" expires_after="2022-09-08">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    The entity type detected by running entity detection on user-selected text.
+    This histogram is recorded every time entity detection is attempted on text
+    that the user explicit selects, such as when displaying context menu actions
+    on a long press.
+  </summary>
+</histogram>
+
+<histogram
+    name="IOS.TextSelection.EntityDetection.TFLiteModelEvaluationDuration"
+    units="ms" expires_after="2022-09-08">
+  <owner>rajendrant@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the time taken for the TFLite text classifier model to extract
+    entities given a text string. This metric does not record the duration for
+    NSDataDetector entity extraction when the TFLite model is unavailable.
   </summary>
 </histogram>
 
