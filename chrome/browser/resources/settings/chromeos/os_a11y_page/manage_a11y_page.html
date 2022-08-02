@@ -218,7 +218,9 @@
           [[dictationLocaleMenuSubtitle_]]
       </div>
     </div>
-    <cr-button on-click="onChangeDictationLocaleButtonClicked_">
+    <cr-button
+        on-click="onChangeDictationLocaleButtonClicked_"
+        aria-describedby="dictationLocaleMenuLabel">
       $i18n{dictationChangeLanguageButton}
     </cr-button>
     <template is="dom-if" if="[[showDictationLocaleMenu_]]" restamp>
