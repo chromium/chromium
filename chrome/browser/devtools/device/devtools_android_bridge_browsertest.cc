@@ -102,13 +102,12 @@ IN_PROC_BROWSER_TEST_F(DevToolsAndroidBridgeTest, DefaultValues) {
   service->ClearPref(prefs::kDevToolsDiscoverTCPTargetsEnabled);
   service->ClearPref(prefs::kDevToolsTCPDiscoveryConfig);
 
-  const base::Value* targets =
-      service->GetList(prefs::kDevToolsTCPDiscoveryConfig);
-  EXPECT_NE(nullptr, targets);
-  EXPECT_EQ(2ul, targets->GetListDeprecated().size());
+  const base::Value::List& targets =
+      service->GetValueList(prefs::kDevToolsTCPDiscoveryConfig);
+  EXPECT_EQ(2ul, targets.size());
 
   std::set<std::string> actual;
-  for (const base::Value& item : targets->GetListDeprecated()) {
+  for (const base::Value& item : targets) {
     std::string value;
     if (item.is_string())
       value = item.GetString();

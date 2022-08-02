@@ -80,15 +80,15 @@ DevToolsAndroidBridge::Factory* DevToolsAndroidBridge::Factory::GetInstance() {
 // static
 DevToolsAndroidBridge* DevToolsAndroidBridge::Factory::GetForProfile(
     Profile* profile) {
-  return static_cast<DevToolsAndroidBridge*>(GetInstance()->
-          GetServiceForBrowserContext(profile->GetOriginalProfile(), true));
+  return static_cast<DevToolsAndroidBridge*>(
+      GetInstance()->GetServiceForBrowserContext(profile->GetOriginalProfile(),
+                                                 true));
 }
 
 DevToolsAndroidBridge::Factory::Factory()
     : BrowserContextKeyedServiceFactory(
           "DevToolsAndroidBridge",
-          BrowserContextDependencyManager::GetInstance()) {
-}
+          BrowserContextDependencyManager::GetInstance()) {}
 
 DevToolsAndroidBridge::Factory::~Factory() {}
 
@@ -307,7 +307,7 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
     listener->DeviceCountChanged(count);
 
   if (device_count_listeners_.empty())
-     return;
+    return;
 
   task_scheduler_.Run(base::BindOnce(&DevToolsAndroidBridge::RequestDeviceCount,
                                      AsWeakPtr(),
@@ -315,12 +315,12 @@ void DevToolsAndroidBridge::ReceivedDeviceCount(int count) {
 }
 
 static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
-    const base::Value* preferenceValue) {
+    const base::Value::List* preferenceValue) {
   std::set<net::HostPortPair> targets;
-  if (!preferenceValue || preferenceValue->GetListDeprecated().empty())
+  if (!preferenceValue || preferenceValue->empty())
     return targets;
   std::string address;
-  for (const auto& address : preferenceValue->GetListDeprecated()) {
+  for (const auto& address : *preferenceValue) {
     if (!address.is_string())
       continue;
     net::HostPortPair target =
@@ -335,7 +335,7 @@ static std::set<net::HostPortPair> ParseTargetDiscoveryPreferenceValue(
 }
 
 static scoped_refptr<TCPDeviceProvider> CreateTCPDeviceProvider(
-    const base::Value* targetDiscoveryConfig) {
+    const base::Value::List* targetDiscoveryConfig) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   std::set<net::HostPortPair> targets =
       ParseTargetDiscoveryPreferenceValue(targetDiscoveryConfig);
@@ -362,9 +362,10 @@ static scoped_refptr<TCPDeviceProvider> CreateTCPDeviceProvider(
 void DevToolsAndroidBridge::CreateDeviceProviders() {
   AndroidDeviceManager::DeviceProviders device_providers;
   PrefService* service = profile_->GetPrefs();
-  const base::Value* targets =
+  const base::Value::List* targets =
       service->GetBoolean(prefs::kDevToolsDiscoverTCPTargetsEnabled)
-          ? service->GetList(prefs::kDevToolsTCPDiscoveryConfig)
+          ? std::addressof(
+                service->GetValueList(prefs::kDevToolsTCPDiscoveryConfig))
           : nullptr;
   scoped_refptr<TCPDeviceProvider> provider = CreateTCPDeviceProvider(targets);
   if (tcp_provider_callback_)
