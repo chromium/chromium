@@ -450,13 +450,15 @@ void PaintArtifactCompositor::LayerizeGroup(
     // If the new layer is the first using the nearest directly composited
     // ancestor, it can't be merged into any previous layers, so skip the merge
     // and overlap loop below.
-    if (const auto* composited_transform =
-            new_layer.GetPropertyTreeState()
-                .Transform()
-                .NearestDirectlyCompositedAncestor()) {
-      if (directly_composited_transforms.insert(composited_transform)
-              .is_new_entry) {
-        continue;
+    if (RuntimeEnabledFeatures::ScrollUpdateOptimizationsEnabled()) {
+      if (const auto* composited_transform =
+              new_layer.GetPropertyTreeState()
+                  .Transform()
+                  .NearestDirectlyCompositedAncestor()) {
+        if (directly_composited_transforms.insert(composited_transform)
+                .is_new_entry) {
+          continue;
+        }
       }
     }
 
