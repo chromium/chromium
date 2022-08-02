@@ -392,7 +392,7 @@ TEST(PhoneNumberTest, NumberPreAndSuffixes) {
     // The `locale` is irrelevant, as the `profile` has country information.
     const std::string locale = "en-US";
     PhoneNumber phone_number(&profile);
-    phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, locale);
+    EXPECT_TRUE(phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, locale));
     EXPECT_EQ(prefix, phone_number.GetInfo(PHONE_HOME_NUMBER_PREFIX, locale));
     EXPECT_EQ(suffix, phone_number.GetInfo(PHONE_HOME_NUMBER_SUFFIX, locale));
   };
@@ -408,6 +408,12 @@ TEST(PhoneNumberTest, NumberPreAndSuffixes) {
     TestNumber(u"03-3224-9999", u"3224", u"9999");   // Landline
     TestNumber(u"090-1234-5678", u"1234", u"5678");  // Mobile
     TestNumber(u"+81 824-86-3123", u"86", u"3123");  // Different length prefix
+  }
+  // DE
+  {
+    // Emergency numbers can be shorter than 4 digits. Make sure we don't crash.
+    profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+    TestNumber(u"110", u"", u"110");
   }
 }
 

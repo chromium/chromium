@@ -226,8 +226,9 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
       // this format that we are aware of (see unit tests), the suffix consists
       // of the last 4 digits, while the length of the prefix varies.
       constexpr size_t kHomePhoneNumberSuffixLength = 4;
-      DCHECK_GE(number.size(), kHomePhoneNumberSuffixLength);
-      return number.substr(number.size() - kHomePhoneNumberSuffixLength);
+      return number.size() >= kHomePhoneNumberSuffixLength
+                 ? number.substr(number.size() - kHomePhoneNumberSuffixLength)
+                 : number;
     }
 
     case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
