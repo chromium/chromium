@@ -109,11 +109,13 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
 
   // Root pages.
   r.BASIC = new Route('/');
-  r.ABOUT = new Route('/help');
+  r.ABOUT = new Route('/help', loadTimeData.getString('aboutPageTitle'));
 
-  r.SEARCH = r.BASIC.createSection('/search', 'search');
+  r.SEARCH = r.BASIC.createSection(
+      '/search', 'search', loadTimeData.getString('searchPageTitle'));
   if (!loadTimeData.getBoolean('isGuest')) {
-    r.PEOPLE = r.BASIC.createSection('/people', 'people');
+    r.PEOPLE = r.BASIC.createSection(
+        '/people', 'people', loadTimeData.getString('peoplePageTitle'));
     r.SIGN_OUT = r.PEOPLE.createChild('/signOut');
     r.SIGN_OUT.isNavigableDialog = true;
     // <if expr="not chromeos_ash">
@@ -135,12 +137,15 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
   // </if>
 
   if (visibility.appearance !== false) {
-    r.APPEARANCE = r.BASIC.createSection('/appearance', 'appearance');
+    r.APPEARANCE = r.BASIC.createSection(
+        '/appearance', 'appearance',
+        loadTimeData.getString('appearancePageTitle'));
     r.FONTS = r.APPEARANCE.createChild('/fonts');
   }
 
   if (visibility.autofill !== false) {
-    r.AUTOFILL = r.BASIC.createSection('/autofill', 'autofill');
+    r.AUTOFILL = r.BASIC.createSection(
+        '/autofill', 'autofill', loadTimeData.getString('autofillPageTitle'));
     r.PASSWORDS = r.AUTOFILL.createChild('/passwords');
     if (loadTimeData.getBoolean('enablePasswordViewPage')) {
       r.PASSWORD_VIEW = r.PASSWORDS.createChild('view');
@@ -158,38 +163,46 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
   }
 
   if (visibility.privacy !== false) {
-    r.PRIVACY = r.BASIC.createSection('/privacy', 'privacy');
+    r.PRIVACY = r.BASIC.createSection(
+        '/privacy', 'privacy', loadTimeData.getString('privacyPageTitle'));
     addPrivacyChildRoutes(r);
   }
 
   // <if expr="not chromeos_ash and not chromeos_lacros">
   if (visibility.defaultBrowser !== false) {
-    r.DEFAULT_BROWSER =
-        r.BASIC.createSection('/defaultBrowser', 'defaultBrowser');
+    r.DEFAULT_BROWSER = r.BASIC.createSection(
+        '/defaultBrowser', 'defaultBrowser',
+        loadTimeData.getString('defaultBrowser'));
   }
   // </if>
 
   r.SEARCH_ENGINES = r.SEARCH.createChild('/searchEngines');
 
   if (visibility.onStartup !== false) {
-    r.ON_STARTUP = r.BASIC.createSection('/onStartup', 'onStartup');
+    r.ON_STARTUP = r.BASIC.createSection(
+        '/onStartup', 'onStartup', loadTimeData.getString('onStartup'));
   }
 
   // Advanced Routes
   if (visibility.advancedSettings !== false) {
     r.ADVANCED = new Route('/advanced');
 
-    r.LANGUAGES = r.ADVANCED.createSection('/languages', 'languages');
+    r.LANGUAGES = r.ADVANCED.createSection(
+        '/languages', 'languages',
+        loadTimeData.getString('languagesPageTitle'));
     r.SPELL_CHECK = r.LANGUAGES.createSection('/spellCheck', 'spellCheck');
     // <if expr="not chromeos_ash and not is_macosx">
     r.EDIT_DICTIONARY = r.SPELL_CHECK.createChild('/editDictionary');
     // </if>
 
     if (visibility.downloads !== false) {
-      r.DOWNLOADS = r.ADVANCED.createSection('/downloads', 'downloads');
+      r.DOWNLOADS = r.ADVANCED.createSection(
+          '/downloads', 'downloads',
+          loadTimeData.getString('downloadsPageTitle'));
     }
 
-    r.ACCESSIBILITY = r.ADVANCED.createSection('/accessibility', 'a11y');
+    r.ACCESSIBILITY = r.ADVANCED.createSection(
+        '/accessibility', 'a11y', loadTimeData.getString('a11yPageTitle'));
 
     // <if expr="is_linux">
     r.CAPTIONS = r.ACCESSIBILITY.createChild('/captions');
@@ -202,11 +215,13 @@ function createBrowserSettingsRoutes(): Partial<SettingsRoutes> {
     // </if>
 
     // <if expr="not chromeos_ash">
-    r.SYSTEM = r.ADVANCED.createSection('/system', 'system');
+    r.SYSTEM = r.ADVANCED.createSection(
+        '/system', 'system', loadTimeData.getString('systemPageTitle'));
     // </if>
 
     if (visibility.reset !== false) {
-      r.RESET = r.ADVANCED.createSection('/reset', 'reset');
+      r.RESET = r.ADVANCED.createSection(
+          '/reset', 'reset', loadTimeData.getString('resetPageTitle'));
       r.RESET_DIALOG = r.RESET.createChild('/resetProfileSettings');
       r.RESET_DIALOG.isNavigableDialog = true;
       r.TRIGGERED_RESET_DIALOG =

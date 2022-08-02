@@ -19,8 +19,11 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
   /** Class for navigable routes. */
   export class Route {
-    /** @param {string} path */
-    constructor(path) {
+    /**
+     * @param {string} path
+     * @param {string=} title
+     */
+    constructor(path, title) {
       /** @type {string} */
       this.path = path;
 
@@ -29,6 +32,9 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
       /** @type {number} */
       this.depth = 0;
+
+      /** @type {string|undefined} */
+      this.title = title;
 
       /**
        * @type {boolean} Whether this route corresponds to a navigable
@@ -47,16 +53,17 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
      * Returns a new Route instance that's a child of this route.
      * @param {string} path Extends this route's path if it doesn't contain a
      *     leading slash.
+     * @param {string=} title
      * @return {!Route}
      */
-    createChild(path) {
+    createChild(path, title) {
       assert(path);
 
       // |path| extends this route's path if it doesn't have a leading slash.
       // If it does have a leading slash, it's just set as the new route's URL.
       const newUrl = path[0] === '/' ? path : `${this.path}/${path}`;
 
-      const route = new Route(newUrl);
+      const route = new Route(newUrl, title);
       route.parent = this;
       route.section = this.section;
       route.depth = this.depth + 1;
@@ -69,10 +76,11 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
      * TODO(tommycli): Remove once we've obsoleted the concept of sections.
      * @param {string} path
      * @param {string} section
+     * @param {string=} title
      * @return {!Route}
      */
-    createSection(path, section) {
-      const route = this.createChild(path);
+    createSection(path, section, title) {
+      const route = this.createChild(path, title);
       route.section = section;
       return route;
     }
@@ -171,6 +179,8 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
       /** @private {!Set} */
       this.routeObservers_ = new Set();
+
+      this.updateTitle_();
     }
 
     /** @param {Object} observer */
@@ -210,6 +220,23 @@ import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
       new Set(this.routeObservers_).forEach((observer) => {
         observer.currentRouteChanged(this.currentRoute, oldRoute);
       });
+
+      this.updateTitle_();
+    }
+
+    /**
+     * Updates the page title to reflect the current route.
+     * @private
+     */
+    updateTitle_() {
+      if (this.currentRoute.title) {
+        document.title = loadTimeData.getStringF(
+            'settingsAltPageTitle', this.currentRoute.title);
+      } else if (
+          !this.currentRoute.isSubpage() &&
+          !this.routes_.ABOUT.contains(this.currentRoute)) {
+        document.title = loadTimeData.getString('settings');
+      }
     }
 
     /** @return {!Route} */

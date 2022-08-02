@@ -25,7 +25,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
+import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
 import {getTemplate} from './settings_main.html.js';
 
@@ -120,17 +120,10 @@ export class SettingsMainElement extends SettingsMainElementBase {
    * Updates the hidden state of the about and settings pages based on the
    * current route.
    */
-  override currentRouteChanged(newRoute: Route) {
+  override currentRouteChanged() {
     const inAbout =
         routes.ABOUT.contains(Router.getInstance().getCurrentRoute());
     this.showPages_ = {about: inAbout, settings: !inAbout};
-
-    if (!newRoute.isSubpage()) {
-      document.title = inAbout ? loadTimeData.getStringF(
-                                     'settingsAltPageTitle',
-                                     loadTimeData.getString('aboutPageTitle')) :
-                                 loadTimeData.getString('settings');
-    }
   }
 
   private onShowingSubpage_() {

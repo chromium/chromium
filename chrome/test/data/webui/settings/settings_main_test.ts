@@ -222,7 +222,7 @@ suite('MainPageTests', function() {
 
   test('exiting search mode, advanced collapsed', function() {
     // Simulating searching while the advanced page is collapsed.
-    settingsMain.currentRouteChanged(routes.BASIC);
+    settingsMain.currentRouteChanged();
     flush();
     return assertAdvancedVisibilityAfterSearch('none');
   });
@@ -276,6 +276,13 @@ suite('MainPageTests', function() {
   test('updates the title based on current route', function() {
     Router.getInstance().navigateTo(routes.BASIC);
     assertEquals(document.title, loadTimeData.getString('settings'));
+
+    Router.getInstance().navigateTo(routes.LANGUAGES);
+    assertEquals(
+        document.title,
+        loadTimeData.getStringF(
+            'settingsAltPageTitle',
+            loadTimeData.getString('languagesPageTitle')));
 
     Router.getInstance().navigateTo(routes.ABOUT);
     assertEquals(

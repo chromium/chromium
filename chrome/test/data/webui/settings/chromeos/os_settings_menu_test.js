@@ -10,6 +10,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 function setupRouter() {
   const testRoutes = {
     BASIC: new Route('/'),
+    ABOUT: new Route('/about'),
     ADVANCED: new Route('/advanced'),
   };
   testRoutes.BLUETOOTH =
