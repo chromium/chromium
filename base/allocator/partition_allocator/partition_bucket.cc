@@ -176,8 +176,6 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     unsigned int flags,
     size_t raw_size,
     size_t slot_span_alignment) {
-  using ::partition_alloc::internal::ScopedUnlockGuard;
-
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             base::bits::IsPowerOfTwo(slot_span_alignment));
 
@@ -687,7 +685,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket<thread_safe>::AllocNewSuperPage(
       return 0;
 
     // Didn't manage to get a new uncommitted super page -> address space issue.
-    ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};
+    ScopedUnlockGuard unlock{root->lock_};
     PartitionOutOfMemoryMappingFailure(root, kSuperPageSize);
   }
 
@@ -1330,7 +1328,7 @@ uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     if (flags & AllocFlags::kReturnNull)
       return 0;
     // See comment in PartitionDirectMap() for unlocking.
-    ::partition_alloc::internal::ScopedUnlockGuard unlock{root->lock_};
+    ScopedUnlockGuard unlock{root->lock_};
     root->OutOfMemory(raw_size);
     PA_IMMEDIATE_CRASH();  // Not required, kept as documentation.
   }
