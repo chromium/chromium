@@ -9,7 +9,6 @@ import android.media.AudioManager;
 import org.chromium.base.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 abstract class AudioDeviceSelector {
@@ -17,53 +16,16 @@ abstract class AudioDeviceSelector {
 
     protected static final boolean DEBUG = false;
 
-    // Supported audio device types.
-    protected static final int DEVICE_DEFAULT = -2;
-    protected static final int DEVICE_INVALID = -1;
-    protected static final int DEVICE_SPEAKERPHONE = 0;
-    protected static final int DEVICE_WIRED_HEADSET = 1;
-    protected static final int DEVICE_EARPIECE = 2;
-    protected static final int DEVICE_BLUETOOTH_HEADSET = 3;
-    protected static final int DEVICE_USB_AUDIO = 4;
-    protected static final int DEVICE_COUNT = 5;
+    protected Devices mDeviceStates = new Devices();
 
-    // Maps audio device types to string values. This map must be in sync
-    // with the device types above.
-    // TODO(henrika): add support for proper detection of device names and
-    // localize the name strings by using resource strings.
-    // See http://crbug.com/333208 for details.
-    protected static final String[] DEVICE_NAMES = new String[] {
-            "Speakerphone",
-            "Wired headset", // With or without microphone.
-            "Headset earpiece", // Only available on mobile phones.
-            "Bluetooth headset", // Requires BLUETOOTH permission.
-            "USB audio", // Requires Android API level 21 (5.0).
-    };
-
-    // List of valid device types.
-    protected static final Integer[] VALID_DEVICES = new Integer[] {
-            DEVICE_SPEAKERPHONE,
-            DEVICE_WIRED_HEADSET,
-            DEVICE_EARPIECE,
-            DEVICE_BLUETOOTH_HEADSET,
-            DEVICE_USB_AUDIO,
-    };
-
-    // Lock to protect |mAudioDevices| and |mRequestedAudioDevice| which can
-    // be accessed from the main thread and the audio manager thread.
-    protected final Object mLock = new Object();
-
-    // Id of the requested audio device. Can only be modified by
-    // call to setDevice().
-    protected int mRequestedAudioDevice = DEVICE_INVALID;
-
-    // Contains a list of currently available audio devices.
-    protected boolean[] mAudioDevices = new boolean[DEVICE_COUNT];
+    protected final AudioDeviceListener mDeviceListener;
 
     protected final AudioManager mAudioManager;
 
     protected AudioDeviceSelector(AudioManager audioManager) {
         mAudioManager = audioManager;
+
+        mDeviceListener = new AudioDeviceListener(mDeviceStates);
     }
 
     /**
@@ -103,49 +65,23 @@ abstract class AudioDeviceSelector {
     protected abstract void setAudioDevice(int device);
 
     public AudioManagerAndroid.AudioDeviceName[] getAudioInputDeviceNames() {
-        boolean devices[] = null;
-        synchronized (mLock) {
-            devices = mAudioDevices.clone();
-        }
-        List<String> list = new ArrayList<String>();
-        AudioManagerAndroid.AudioDeviceName[] array =
-                new AudioManagerAndroid.AudioDeviceName[getNumOfAudioDevices(devices)];
-        int i = 0;
-        for (int id = 0; id < DEVICE_COUNT; ++id) {
-            if (devices[id]) {
-                array[i] = new AudioManagerAndroid.AudioDeviceName(id, DEVICE_NAMES[id]);
-                list.add(DEVICE_NAMES[id]);
-                i++;
-            }
-        }
-        if (DEBUG) logd("getAudioInputDeviceNames: " + list);
-        return array;
+        return mDeviceStates.getAudioInputDeviceNames();
     }
 
-    public boolean setDevice(String deviceId) {
-        int intDeviceId = deviceId.isEmpty() ? DEVICE_DEFAULT : Integer.parseInt(deviceId);
+    /**
+     * Sets the passed ID as the active device if it is available. Also sets the given
+     * ID as the requested device ID, which will be prioritized when a device change
+     * occurs and maybeUpdateSelectedDevice() is called.
+     */
+    public boolean selectDevice(String stringDeviceId) {
+        int deviceId = DeviceHelpers.parseStringId(stringDeviceId);
 
-        if (intDeviceId == DEVICE_DEFAULT) {
-            boolean devices[] = null;
-            synchronized (mLock) {
-                devices = mAudioDevices.clone();
-                mRequestedAudioDevice = DEVICE_DEFAULT;
-            }
-            int defaultDevice = selectDefaultDevice(devices);
-            setAudioDevice(defaultDevice);
-            return true;
-        }
+        int nextDevice = mDeviceStates.setRequestedDeviceIdAndGetNextId(deviceId);
 
-        // A non-default device is specified. Verify that it is valid
-        // device, and if so, start using it.
-        List<Integer> validIds = Arrays.asList(VALID_DEVICES);
-        if (!validIds.contains(intDeviceId) || !mAudioDevices[intDeviceId]) {
-            return false;
-        }
-        synchronized (mLock) {
-            mRequestedAudioDevice = intDeviceId;
-        }
-        setAudioDevice(intDeviceId);
+        // `deviceId` is invalid, or its corresponding device is not available.
+        if (nextDevice == Devices.ID_INVALID) return false;
+
+        setAudioDevice(nextDevice);
         return true;
     }
 
@@ -154,80 +90,208 @@ abstract class AudioDeviceSelector {
      * information about if a specific device has been selected or if
      * the default device is selected.
      */
-    protected void updateDeviceActivation() {
-        boolean devices[] = null;
-        int requested = DEVICE_INVALID;
-        synchronized (mLock) {
-            requested = mRequestedAudioDevice;
-            devices = mAudioDevices.clone();
-        }
-        if (requested == DEVICE_INVALID) {
-            loge("Unable to activate device since no device is selected");
-            return;
-        }
+    protected void maybeUpdateSelectedDevice() {
+        int nextDevice = mDeviceStates.getNextDeviceIfRequested();
 
-        // Update default device if it has been selected explicitly, or
-        // the selected device has been removed from the list.
-        if (requested == DEVICE_DEFAULT || !devices[requested]) {
-            // Get default device given current list and activate the device.
-            int defaultDevice = selectDefaultDevice(devices);
-            setAudioDevice(defaultDevice);
-        } else {
-            // Activate the selected device since we know that it exists in
-            // the list.
-            setAudioDevice(requested);
-        }
+        // No device was explicitly requested.
+        if (nextDevice == Devices.ID_INVALID) return;
+
+        setAudioDevice(nextDevice);
     }
 
-    /** Returns true if setDevice() has been called with a valid device id. */
-    protected boolean deviceHasBeenRequested() {
-        synchronized (mLock) {
-            return (mRequestedAudioDevice != DEVICE_INVALID);
-        }
-    }
+    // Collection of static helpers.
+    private static class DeviceHelpers {
+        // Maps audio device types to string values. This map must be in sync
+        // with the Devices.ID_* below.
+        // TODO(henrika): add support for proper detection of device names and
+        // localize the name strings by using resource strings.
+        // See http://crbug.com/333208 for details.
+        public static final String[] DEVICE_NAMES = new String[] {
+                "Speakerphone",
+                "Wired headset", // With or without microphone.
+                "Headset earpiece", // Only available on mobile phones.
+                "Bluetooth headset", // Requires BLUETOOTH permission.
+                "USB audio",
+        };
 
-    /**
-     * Use a special selection scheme if the default device is selected.
-     * The "most unique" device will be selected; Wired headset first, then USB
-     * audio device, then Bluetooth and last the speaker phone.
-     */
-    private static int selectDefaultDevice(boolean[] devices) {
-        if (devices[DEVICE_WIRED_HEADSET]) {
-            return DEVICE_WIRED_HEADSET;
-        } else if (devices[DEVICE_USB_AUDIO]) {
-            return DEVICE_USB_AUDIO;
-        } else if (devices[DEVICE_BLUETOOTH_HEADSET]) {
-            // TODO(henrika): possibly need improvements here if we are
-            // in a state where Bluetooth is turning off.
-            return DEVICE_BLUETOOTH_HEADSET;
-        }
-        return DEVICE_SPEAKERPHONE;
-    }
+        private static final int ID_VALID_LOWER_BOUND = Devices.ID_SPEAKERPHONE;
+        private static final int ID_VALID_UPPER_BOUND = Devices.ID_USB_AUDIO;
 
-    /** Returns number of available devices */
-    private static int getNumOfAudioDevices(boolean[] devices) {
-        int count = 0;
-        for (int i = 0; i < DEVICE_COUNT; ++i) {
-            if (devices[i]) ++count;
-        }
-        return count;
-    }
-
-    /**
-     * For now, just log the state change but the idea is that we should
-     * notify a registered state change listener (if any) that there has
-     * been a change in the state.
-     * TODO(henrika): add support for state change listener.
-     */
-    protected void reportUpdate() {
-        if (!DEBUG) return;
-
-        synchronized (mLock) {
-            List<String> devices = new ArrayList<String>();
-            for (int i = 0; i < DEVICE_COUNT; ++i) {
-                if (mAudioDevices[i]) devices.add(DEVICE_NAMES[i]);
+        /**
+         * Use a special selection scheme if the default device is selected.
+         * The "most unique" device will be selected; Wired headset first, then USB
+         * audio device, then Bluetooth and last the speaker phone.
+         */
+        public static int selectDefaultDevice(boolean[] devices) {
+            if (devices[Devices.ID_WIRED_HEADSET]) {
+                return Devices.ID_WIRED_HEADSET;
             }
-            logd("reportUpdate: requested=" + mRequestedAudioDevice + ", devices=" + devices);
+
+            if (devices[Devices.ID_USB_AUDIO]) {
+                return Devices.ID_USB_AUDIO;
+            }
+
+            if (devices[Devices.ID_BLUETOOTH_HEADSET]) {
+                return Devices.ID_BLUETOOTH_HEADSET;
+            }
+
+            return Devices.ID_SPEAKERPHONE;
+        }
+
+        public static boolean isDeviceValid(int deviceId) {
+            return deviceId >= ID_VALID_LOWER_BOUND && deviceId <= ID_VALID_UPPER_BOUND;
+        }
+
+        public static boolean isDeviceValidOrDefault(int deviceId) {
+            return deviceId == Devices.ID_DEFAULT || isDeviceValid(deviceId);
+        }
+
+        public static int getActiveDeviceCount(boolean[] devices) {
+            int count = 0;
+
+            for (boolean device : devices) {
+                if (device) ++count;
+            }
+
+            return count;
+        }
+
+        public static int parseStringId(String stringDeviceId) {
+            return stringDeviceId.isEmpty() ? Devices.ID_DEFAULT : Integer.parseInt(stringDeviceId);
+        }
+    }
+
+    public class Devices {
+        // Supported audio device types.
+        public static final int ID_DEFAULT = -2;
+        public static final int ID_INVALID = -1;
+        public static final int ID_SPEAKERPHONE = 0;
+        public static final int ID_WIRED_HEADSET = 1;
+        public static final int ID_EARPIECE = 2;
+        public static final int ID_BLUETOOTH_HEADSET = 3;
+        public static final int ID_USB_AUDIO = 4;
+        private static final int DEVICE_COUNT = 5;
+
+        private Object mLock = new Object();
+
+        private int mRequestedAudioDevice = ID_INVALID;
+
+        private boolean[] mDeviceExistence = new boolean[DEVICE_COUNT];
+
+        /**
+         * Sets the whether a device exists.
+         *
+         * @param deviceId The ID of the device.
+         * @param exists Whether or not the device exists.
+         */
+        public void setDeviceExistence(int deviceId, boolean exists) {
+            if (!DeviceHelpers.isDeviceValid(deviceId)) return;
+
+            synchronized (mLock) {
+                mDeviceExistence[deviceId] = exists;
+            }
+        }
+
+        /**
+         * Called when an available device maybe became invalid or vice versa.
+         */
+        public void onPotentialDeviceStatusChange() {
+            maybeUpdateSelectedDevice();
+        }
+
+        /**
+         * Sets the requested device, and gets the device ID that should be currently selected.
+         *
+         * @param deviceId The requested device ID (including the DEVICE_DEFAULT ID).
+         * @return The ID of the audio device which should be selected, or DEVICE_INVALID if the
+         *         requested ID is unavailable.
+         */
+        public int setRequestedDeviceIdAndGetNextId(int deviceId) {
+            if (!DeviceHelpers.isDeviceValidOrDefault(deviceId)) return Devices.ID_INVALID;
+
+            synchronized (mLock) {
+                mRequestedAudioDevice = deviceId;
+                boolean[] availableDevices = getAvailableDevices_Locked();
+
+                // Handle the default device request.
+                if (deviceId == Devices.ID_DEFAULT) {
+                    return DeviceHelpers.selectDefaultDevice(availableDevices);
+                }
+
+                // A non-default device is specified. Verify that it is available before using it.
+                return availableDevices[deviceId] ? mRequestedAudioDevice : ID_INVALID;
+            }
+        }
+
+        /**
+         * Gets the ID of the device which should be currently selected, or ID_INVALID if no
+         * device was ever requested.
+         */
+        public int getNextDeviceIfRequested() {
+            synchronized (mLock) {
+                if (mRequestedAudioDevice == ID_INVALID) return ID_INVALID;
+
+                boolean[] availableDevices = getAvailableDevices_Locked();
+
+                if (mRequestedAudioDevice == ID_DEFAULT
+                        || !availableDevices[mRequestedAudioDevice]) {
+                    return DeviceHelpers.selectDefaultDevice(availableDevices);
+                }
+
+                return mRequestedAudioDevice;
+            }
+        }
+
+        /**
+         * Computes the list of available devices based off of exiting devices.
+         * We consider the availability of wired headsets, USB audio and earpices to be
+         * mutually exclusive.
+         */
+        private boolean[] getAvailableDevices_Locked() {
+            boolean[] availableDevices = mDeviceExistence.clone();
+
+            // Wired headset, USB audio and earpiece are mutually exclusive, and
+            // prioritized in that order.
+            if (availableDevices[ID_WIRED_HEADSET]) {
+                availableDevices[ID_USB_AUDIO] = false;
+                availableDevices[ID_EARPIECE] = false;
+            } else if (availableDevices[ID_USB_AUDIO]) {
+                availableDevices[ID_EARPIECE] = false;
+            }
+
+            return availableDevices;
+        }
+
+        /**
+         * Returns the list of currently available devices, to be used by the native side.
+         */
+        public AudioManagerAndroid.AudioDeviceName[] getAudioInputDeviceNames() {
+            boolean devices[] = null;
+            synchronized (mLock) {
+                devices = getAvailableDevices_Locked();
+            }
+            List<String> list = new ArrayList<String>();
+            int activeDeviceCount = DeviceHelpers.getActiveDeviceCount(devices);
+            AudioManagerAndroid.AudioDeviceName[] array =
+                    new AudioManagerAndroid.AudioDeviceName[activeDeviceCount];
+
+            int i = 0;
+            for (int id = 0; id < devices.length; ++id) {
+                if (devices[id]) {
+                    array[i] = new AudioManagerAndroid.AudioDeviceName(
+                            id, DeviceHelpers.DEVICE_NAMES[id]);
+                    list.add(DeviceHelpers.DEVICE_NAMES[id]);
+                    i++;
+                }
+            }
+            if (DEBUG) logd("getAudioInputDeviceNames: " + list);
+            return array;
+        }
+
+        public void clearRequestedDevice() {
+            synchronized (mLock) {
+                mRequestedAudioDevice = ID_INVALID;
+            }
         }
     }
 
