@@ -83,7 +83,7 @@ MockDiskMountManager::~MockDiskMountManager() = default;
 
 void MockDiskMountManager::NotifyDeviceInsertEvents() {
   std::unique_ptr<Disk> disk1_ptr = MakeDiskBuilder()
-                                        ->SetDeviceType(DEVICE_TYPE_USB)
+                                        ->SetDeviceType(DeviceType::kUSB)
                                         .SetSizeInBytes(4294967295U)
                                         .Build();
   Disk* disk1 = disk1_ptr.get();
@@ -100,7 +100,7 @@ void MockDiskMountManager::NotifyDeviceInsertEvents() {
   // Disk Changed
   std::unique_ptr<Disk> disk2_ptr = MakeDiskBuilder()
                                         ->SetMountPath(kTestMountPath)
-                                        .SetDeviceType(DEVICE_TYPE_MOBILE)
+                                        .SetDeviceType(DeviceType::kMobile)
                                         .SetSizeInBytes(1073741824)
                                         .Build();
   Disk* disk2 = disk2_ptr.get();
@@ -113,7 +113,7 @@ void MockDiskMountManager::NotifyDeviceRemoveEvents() {
   std::unique_ptr<Disk> disk_ptr = MakeDiskBuilder()
                                        ->SetMountPath(kTestMountPath)
                                        .SetDeviceLabel(kTestDeviceLabel)
-                                       .SetDeviceType(DEVICE_TYPE_SD)
+                                       .SetDeviceType(DeviceType::kSD)
                                        .SetSizeInBytes(1073741824)
                                        .Build();
   Disk* disk = disk_ptr.get();

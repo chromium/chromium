@@ -936,7 +936,7 @@ SystemNotificationManager::MakeRemovableNotification(
     DCHECK_EQ(notification_buttons.size(), uma_types_for_buttons.size());
     notification->set_buttons(notification_buttons);
   }
-  if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&
+  if (volume.device_type() != ash::DeviceType::kUnknown &&
       !volume.storage_device_path().empty()) {
     if (UpdateDeviceMountStatus(event, volume) != MOUNT_STATUS_SUCCESS) {
       notification = MakeMountErrorNotification(event, volume);
@@ -964,7 +964,7 @@ void SystemNotificationManager::HandleMountCompletedEvent(
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, kRemovableNotificationId);
 
-      if (volume.device_type() != chromeos::DEVICE_TYPE_UNKNOWN &&
+      if (volume.device_type() != ash::DeviceType::kUnknown &&
           !volume.storage_device_path().empty()) {
         UpdateDeviceMountStatus(event, volume);
       }

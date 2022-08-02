@@ -540,22 +540,22 @@ void VolumeToVolumeMetadata(
   // Fill device_type iff the volume is removable partition.
   if (volume.type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION) {
     switch (volume.device_type()) {
-      case chromeos::DEVICE_TYPE_UNKNOWN:
+      case ash::DeviceType::kUnknown:
         volume_metadata->device_type =
             file_manager_private::DEVICE_TYPE_UNKNOWN;
         break;
-      case chromeos::DEVICE_TYPE_USB:
+      case ash::DeviceType::kUSB:
         volume_metadata->device_type = file_manager_private::DEVICE_TYPE_USB;
         break;
-      case chromeos::DEVICE_TYPE_SD:
+      case ash::DeviceType::kSD:
         volume_metadata->device_type = file_manager_private::DEVICE_TYPE_SD;
         break;
-      case chromeos::DEVICE_TYPE_OPTICAL_DISC:
-      case chromeos::DEVICE_TYPE_DVD:
+      case ash::DeviceType::kOpticalDisc:
+      case ash::DeviceType::kDVD:
         volume_metadata->device_type =
             file_manager_private::DEVICE_TYPE_OPTICAL;
         break;
-      case chromeos::DEVICE_TYPE_MOBILE:
+      case ash::DeviceType::kMobile:
         volume_metadata->device_type = file_manager_private::DEVICE_TYPE_MOBILE;
         break;
     }

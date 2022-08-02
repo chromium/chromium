@@ -237,7 +237,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "arc.mojom.DeviceType"
-          cpp = "::chromeos::DeviceType"
+          cpp = "::ash::DeviceType"
         },
         {
           mojom = "arc.mojom.MountEvent"

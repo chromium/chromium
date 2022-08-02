@@ -32,8 +32,8 @@ RemovableStorageProvider::PopulateDeviceList() {
        ++iter) {
     const Disk& disk = *iter->second;
     if (disk.is_parent() && !disk.on_boot_device() && disk.has_media() &&
-        (disk.device_type() == chromeos::DEVICE_TYPE_USB ||
-         disk.device_type() == chromeos::DEVICE_TYPE_SD)) {
+        (disk.device_type() == ash::DeviceType::kUSB ||
+         disk.device_type() == ash::DeviceType::kSD)) {
       api::image_writer_private::RemovableStorageDevice device;
       device.storage_unit_id = disk.device_path();
       device.capacity = disk.total_size_in_bytes();
@@ -42,7 +42,7 @@ RemovableStorageProvider::PopulateDeviceList() {
       device.model = disk.product_name();
 
       if (device.model.empty() && device.vendor.empty()) {
-        if (disk.device_type() == chromeos::DEVICE_TYPE_USB) {
+        if (disk.device_type() == ash::DeviceType::kUSB) {
           device.model = kUnknownUSBDiskModel;
         } else {
           device.model = kUnknownSDDiskModel;

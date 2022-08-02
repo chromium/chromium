@@ -11,10 +11,9 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<arc::mojom::DeviceType, chromeos::DeviceType> {
-  static arc::mojom::DeviceType ToMojom(chromeos::DeviceType device_type);
-  static bool FromMojom(arc::mojom::DeviceType input,
-                        chromeos::DeviceType* out);
+struct EnumTraits<arc::mojom::DeviceType, ash::DeviceType> {
+  static arc::mojom::DeviceType ToMojom(ash::DeviceType device_type);
+  static bool FromMojom(arc::mojom::DeviceType input, ash::DeviceType* out);
 };
 
 template <>

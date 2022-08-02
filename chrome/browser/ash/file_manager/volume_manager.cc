@@ -260,7 +260,6 @@ std::string MediaViewDocumentIdToLabel(std::string root_document_id) {
 Volume::Volume()
     : source_(SOURCE_FILE),
       type_(VOLUME_TYPE_GOOGLE_DRIVE),
-      device_type_(chromeos::DEVICE_TYPE_UNKNOWN),
       mount_condition_(ash::disks::MOUNT_CONDITION_NONE),
       mount_context_(MOUNT_CONTEXT_UNKNOWN),
       is_parent_(false),
@@ -278,7 +277,7 @@ std::unique_ptr<Volume> Volume::CreateForDrive(
     const base::FilePath& drive_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_GOOGLE_DRIVE;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   volume->source_path_ = drive_path;
   volume->source_ = SOURCE_NETWORK;
   volume->mount_path_ = drive_path;
@@ -295,7 +294,7 @@ std::unique_ptr<Volume> Volume::CreateForDownloads(
     const base::FilePath& downloads_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOWNLOADS_DIRECTORY;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = downloads_path;
@@ -332,7 +331,7 @@ std::unique_ptr<Volume> Volume::CreateForRemovable(
     volume->drive_label_ = disk->drive_label();
   } else {
     volume->volume_label_ = volume->mount_path().BaseName().AsUTF8Unsafe();
-    volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+    volume->device_type_ = ash::DeviceType::kUnknown;
     volume->is_read_only_ =
         (mount_point.mount_type == ash::MountType::kArchive);
   }
@@ -432,7 +431,7 @@ std::unique_ptr<Volume> Volume::CreateForMTP(const base::FilePath& mount_path,
   volume->volume_label_ = label;
   volume->source_path_ = mount_path;
   volume->source_ = SOURCE_DEVICE;
-  volume->device_type_ = chromeos::DEVICE_TYPE_MOBILE;
+  volume->device_type_ = ash::DeviceType::kMobile;
   return volume;
 }
 
@@ -444,7 +443,7 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MTP;
   volume->file_system_type_ = util::kFuseBox;
-  volume->device_type_ = chromeos::DEVICE_TYPE_MOBILE;
+  volume->device_type_ = ash::DeviceType::kMobile;
   volume->source_path_ = mount_path;
   volume->source_ = SOURCE_DEVICE;
   volume->mount_path_ = mount_path;
@@ -465,7 +464,7 @@ std::unique_ptr<Volume> Volume::CreateForMediaView(
     const std::string& root_document_id) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_MEDIA_VIEW;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = arc::GetDocumentsProviderMountPath(
       arc::kMediaDocumentsProviderAuthority, root_document_id);
@@ -484,7 +483,7 @@ std::unique_ptr<Volume> Volume::CreateForSshfsCrostini(
     const base::FilePath& remote_mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_CROSTINI;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = sshfs_mount_path;
@@ -505,7 +504,7 @@ std::unique_ptr<Volume> Volume::CreateForSftpGuestOs(
     const guest_os::VmType vm_type) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_GUEST_OS;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = sftp_mount_path;
@@ -523,7 +522,7 @@ std::unique_ptr<Volume> Volume::CreateForAndroidFiles(
     const base::FilePath& mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_ANDROID_FILES;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = mount_path;
@@ -546,7 +545,7 @@ std::unique_ptr<Volume> Volume::CreateForDocumentsProvider(
     bool read_only) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_DOCUMENTS_PROVIDER;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ =
@@ -570,7 +569,7 @@ std::unique_ptr<Volume> Volume::CreateForSmb(const base::FilePath& mount_point,
                                              const std::string display_name) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_SMB;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_NETWORK;
   volume->mount_path_ = mount_point;
@@ -591,7 +590,7 @@ std::unique_ptr<Volume> Volume::CreateForShareCache(
     const base::FilePath& mount_path) {
   std::unique_ptr<Volume> volume(new Volume());
   volume->type_ = VOLUME_TYPE_SYSTEM_INTERNAL;
-  volume->device_type_ = chromeos::DEVICE_TYPE_UNKNOWN;
+  volume->device_type_ = ash::DeviceType::kUnknown;
   // Keep source_path empty.
   volume->source_ = SOURCE_SYSTEM;
   volume->mount_path_ = mount_path;
@@ -607,7 +606,7 @@ std::unique_ptr<Volume> Volume::CreateForShareCache(
 std::unique_ptr<Volume> Volume::CreateForTesting(
     const base::FilePath& path,
     VolumeType volume_type,
-    chromeos::DeviceType device_type,
+    ash::DeviceType device_type,
     bool read_only,
     const base::FilePath& device_path,
     const std::string& drive_label,
@@ -990,7 +989,7 @@ bool VolumeManager::RegisterCrostiniDirectoryForTesting(
 
 void VolumeManager::AddVolumeForTesting(const base::FilePath& path,
                                         VolumeType volume_type,
-                                        chromeos::DeviceType device_type,
+                                        ash::DeviceType device_type,
                                         bool read_only,
                                         const base::FilePath& device_path,
                                         const std::string& drive_label,
@@ -1011,7 +1010,7 @@ void VolumeManager::AddVolumeForTesting(std::unique_ptr<Volume> volume) {
 void VolumeManager::RemoveVolumeForTesting(
     const base::FilePath& path,
     VolumeType volume_type,
-    chromeos::DeviceType device_type,
+    ash::DeviceType device_type,
     bool read_only,
     const base::FilePath& device_path,
     const std::string& drive_label,

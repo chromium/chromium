@@ -63,7 +63,7 @@ struct TestDiskInfo {
   const char* product_name;
   const char* fs_uuid;
   const char* storage_device_path;
-  chromeos::DeviceType device_type;
+  DeviceType device_type;
   uint64_t size_in_bytes;
   bool is_read_only;
   const char* file_system_type;
@@ -92,7 +92,7 @@ const TestDiskInfo kTestDisks[] = {
         "/device/product_name",
         "/device/fs_uuid",
         "/device/prefix",
-        chromeos::DEVICE_TYPE_USB,
+        DeviceType::kUSB,
         1073741824,  // size in bytes
         false,       // is read only
         kFileSystemType1,
@@ -110,7 +110,7 @@ const TestDiskInfo kTestDisks[] = {
         "/device/product_name2",
         "/device/fs_uuid2",
         "/device/prefix2",
-        chromeos::DEVICE_TYPE_SD,
+        DeviceType::kSD,
         1073741824,  // size in bytes
         false,       // is read only
         kFileSystemType2,
@@ -128,7 +128,7 @@ const TestDiskInfo kTestDisks[] = {
         "/device/product_name_3",
         "/device/fs_uuid_3",
         "/device/prefix",
-        chromeos::DEVICE_TYPE_USB,
+        DeviceType::kUSB,
         1073741824,  // size in bytes
         true,        // is read only
         kFileSystemType2,

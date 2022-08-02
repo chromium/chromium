@@ -415,7 +415,7 @@ class LocalFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
         kLocalMountPointName, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
-        mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
+        mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
         false /* read_only */);
   }
 
@@ -445,7 +445,7 @@ class RestrictedFileSystemExtensionApiTest
         kRestrictedMountPointName, storage::kFileSystemTypeRestrictedLocal,
         storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
-        mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
+        mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
         true /* read_only */);
   }
 
@@ -649,8 +649,8 @@ class LocalAndDriveFileSystemExtensionApiTest
         kLocalMountPointName, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), local_mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
-        local_mount_point_dir_, VOLUME_TYPE_TESTING,
-        chromeos::DEVICE_TYPE_UNKNOWN, false /* read_only */);
+        local_mount_point_dir_, VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
+        false /* read_only */);
     test_util::WaitUntilDriveMountPointIsAdded(profile());
   }
 

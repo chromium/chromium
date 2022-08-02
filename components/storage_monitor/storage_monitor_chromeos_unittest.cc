@@ -128,7 +128,7 @@ class StorageMonitorCrosTest : public testing::Test {
                    const std::string& device_label,
                    const std::string& vendor_name,
                    const std::string& product_name,
-                   chromeos::DeviceType device_type,
+                   ash::DeviceType device_type,
                    uint64_t device_size_in_bytes);
 
   void UnmountDevice(chromeos::MountError error_code,
@@ -206,7 +206,7 @@ void StorageMonitorCrosTest::MountDevice(
     const std::string& device_label,
     const std::string& vendor_name,
     const std::string& product_name,
-    chromeos::DeviceType device_type,
+    ash::DeviceType device_type,
     uint64_t device_size_in_bytes) {
   if (error_code == chromeos::MOUNT_ERROR_NONE) {
     disk_mount_manager_mock_->CreateDiskEntryForMountDevice(
@@ -266,7 +266,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
               kDevice1Name,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -291,7 +291,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
               kDevice2Name,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice2SizeInBytes);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
@@ -324,7 +324,7 @@ TEST_F(StorageMonitorCrosTest, NoDCIM) {
               kDevice1Name,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -349,7 +349,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
               kDevice1Name,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(0, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -362,7 +362,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
               kDevice1Name,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(0, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -377,7 +377,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
               kDevice1Name,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(0, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -395,7 +395,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
               kSDCardDeviceName1,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_SD,
+              ash::DeviceType::kSD,
               kSDCardSizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -420,7 +420,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
               kSDCardDeviceName2,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_SD,
+              ash::DeviceType::kSD,
               kSDCardSizeInBytes);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
@@ -447,7 +447,7 @@ TEST_F(StorageMonitorCrosTest, AttachDeviceWithEmptyLabel) {
               kEmptyDeviceLabel,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -474,7 +474,7 @@ TEST_F(StorageMonitorCrosTest, GetStorageSize) {
               kEmptyDeviceLabel,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());
@@ -502,7 +502,7 @@ TEST_F(StorageMonitorCrosTest, EjectTest) {
               kEmptyDeviceLabel,
               kVendorName,
               kProductName,
-              chromeos::DEVICE_TYPE_USB,
+              ash::DeviceType::kUSB,
               kDevice1SizeInBytes);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(0, observer().detach_calls());

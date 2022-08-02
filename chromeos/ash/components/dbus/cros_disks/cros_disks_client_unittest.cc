@@ -154,7 +154,7 @@ TEST(CrosDisksClientTest, DiskInfo) {
   EXPECT_EQ(kIdLabel, result.label());
   EXPECT_EQ(kIdUuid, result.uuid());
   EXPECT_EQ(kDeviceSize, result.total_size_in_bytes());
-  EXPECT_EQ(DEVICE_TYPE_SD, result.device_type());
+  EXPECT_EQ(DeviceType::kSD, result.device_type());
   EXPECT_EQ(kMountPath, result.mount_path());
   EXPECT_EQ(kFileSystemType, result.file_system_type());
   EXPECT_EQ(kIsAutoMountable, result.is_auto_mountable());

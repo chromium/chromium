@@ -187,7 +187,7 @@ class SystemNotificationManagerTest
 
     volume_manager->AddVolumeForTesting(
         CreateTestFile("volume/").path(), VOLUME_TYPE_DOWNLOADS_DIRECTORY,
-        chromeos::DEVICE_TYPE_UNKNOWN, false /* read only */);
+        ash::DeviceType::kUnknown, false /* read only */);
   }
 
   void TearDown() override {
@@ -497,7 +497,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigation) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -541,7 +541,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationReadOnlyPolicy) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/true, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -589,7 +589,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAllowAppAccess) {
   service->SetBoolean(arc::prefs::kArcEnabled, true);
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -635,7 +635,7 @@ TEST_F(SystemNotificationManagerTest,
   service->SetBoolean(arc::prefs::kArcEnabled, true);
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -671,7 +671,7 @@ TEST_F(SystemNotificationManagerTest, DeviceNavigationAppsHaveAccess) {
   service->SetBoolean(arc::prefs::kArcHasAccessToRemovableMedia, true);
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -716,7 +716,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedDefault) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -755,7 +755,7 @@ TEST_F(SystemNotificationManagerTest, DeviceUnsupportedNamed) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -798,7 +798,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
   // Build a supported file system volume and mount it.
   std::unique_ptr<Volume> volume1(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -825,7 +825,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedDefault) {
   // Build an unsupported file system volume and mount it on the same device.
   std::unique_ptr<Volume> volume2(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path2")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "unsupported"));
   event.status =
@@ -862,7 +862,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
   // Build a supported file system volume and mount it.
   std::unique_ptr<Volume> volume1(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "FAT32"));
   file_manager_private::MountCompletedEvent event;
@@ -875,7 +875,7 @@ TEST_F(SystemNotificationManagerTest, MultipartDeviceUnsupportedNamed) {
   // Build an unsupported file system volume and mount it on the same device.
   std::unique_ptr<Volume> volume2(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path2")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unsupported"));
   event.status =
@@ -914,7 +914,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownDefault) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       "", "unknown"));
   file_manager_private::MountCompletedEvent event;
@@ -958,7 +958,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownNamed) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/false, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unknown"));
   file_manager_private::MountCompletedEvent event;
@@ -1004,7 +1004,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyDefault) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/true, base::FilePath(FILE_PATH_LITERAL("/device/test")), "",
       "unknown"));
   file_manager_private::MountCompletedEvent event;
@@ -1043,7 +1043,7 @@ TEST_F(SystemNotificationManagerTest, DeviceFailUnknownReadOnlyNamed) {
   base::HistogramTester histogram_tester;
   std::unique_ptr<Volume> volume(Volume::CreateForTesting(
       base::FilePath(FILE_PATH_LITERAL("/mount/path1")),
-      VolumeType::VOLUME_TYPE_TESTING, chromeos::DeviceType::DEVICE_TYPE_USB,
+      VolumeType::VOLUME_TYPE_TESTING, ash::DeviceType::kUSB,
       /*read_only=*/true, base::FilePath(FILE_PATH_LITERAL("/device/test")),
       kDeviceLabel, "unknown"));
   file_manager_private::MountCompletedEvent event;

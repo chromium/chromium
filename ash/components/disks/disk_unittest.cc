@@ -146,7 +146,7 @@ TEST(DiskTest, ConstructFromDiskInfo) {
   EXPECT_EQ(kBusNumber, disk.bus_number());
   EXPECT_EQ(kDeviceNumber, disk.device_number());
   EXPECT_EQ(kDeviceSize, disk.total_size_in_bytes());
-  EXPECT_EQ(DEVICE_TYPE_SD, disk.device_type());
+  EXPECT_EQ(DeviceType::kSD, disk.device_type());
   EXPECT_EQ(kStorageDevicePath, disk.storage_device_path());
   EXPECT_EQ(kBaseMountpath, disk.base_mount_path());
   EXPECT_FALSE(disk.is_parent());

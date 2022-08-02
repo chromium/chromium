@@ -1176,7 +1176,7 @@ TEST_F(FileManagerPathUtilTest, GetDisplayablePathTest) {
 
   volume_manager->AddVolumeForTesting(
       base::FilePath("/mount_path/testing"), VOLUME_TYPE_TESTING,
-      chromeos::DEVICE_TYPE_UNKNOWN, false /* read_only */);
+      ash::DeviceType::kUnknown, false /* read_only */);
 
   struct Test {
     std::string path;
