@@ -931,19 +931,23 @@ chromium-metrics-reviews@google.com.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The durations of time in which the app is too busy to handle user
-    interaction responsively. Logged when a MXMetricPayload is received (one per
-    day). Each sample correspond to one hang. Minimum observed hang time is
-    250ms (but this value may change in future device/OS version). This metric
-    can be normalized by comparing the total number of hangs or the total time
-    spent hung against the number of clients emitting to
-    IOS.MetricKit.ForegroundTimePerDay (hangs per users) or against the total
-    time reported by IOS.MetricKit.ForegroundTimePerDay (hangs per usage).
-    ApplicationHangTime and ForegroundTimePerDay have the same restrictions
-    about when they're emitted (iOS 13+, opted-in to share diagnostic data,
-    etc.). Further, as hangs can only happen during foreground use,
-    ForegroundTimePerDay makes a good comparison point. Only freezes in browser
-    process are reported.
+    The durations of time in which the app is too busy to handle user input
+    responsively. This covers all forms of user input, including all touch
+    screen input (scrolls, pinches, and taps) and input from any connected input
+    device such as a keyboard. Logged when a MXMetricPayload is received (one
+    per day). Each sample corresponds to one hang that happens when the app is
+    in the foreground and doesn't respond quickly enough to user input. The
+    minimum observed hang time is 250ms (but this value may change in future
+    device/OS version). This metric can be normalized by comparing the total
+    number of hangs or the total time spent hung against the number of clients
+    emitting to IOS.MetricKit.ForegroundTimePerDay (hangs per users) or against
+    the total time reported by IOS.MetricKit.ForegroundTimePerDay (fraction of
+    foreground time spent in hangs). ApplicationHangTime and
+    ForegroundTimePerDay have the same restrictions about when they're emitted
+    (opted-in to share diagnostic data with Apple and also opted-in to UMA).
+    Further, as hangs can only happen during foreground use,
+    ForegroundTimePerDay makes a good comparison point. Only hangs in the
+    browser process are reported.
 
     Recorded only if user opted in for sharing diagnostic data on iOS device.
     Note: The date the data is reported is later than the day it account for.
