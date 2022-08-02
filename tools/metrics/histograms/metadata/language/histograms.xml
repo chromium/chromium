@@ -431,6 +431,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP"
+    enum="LocaleCodeISO639" expires_after="2023-01-15">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The language code of each Never Translate language that is not in a users
+    ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
+<histogram
+    name="LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP.Count"
+    units="count" expires_after="2023-01-15">
+  <owner>perrier@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Count of Never Translate languages that are not in a users ULP.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+</histogram>
+
 <histogram name="LanguageUsage.ULP.Initiation.Status{AccountType}"
     enum="ULPInitiationStatus" expires_after="2022-09-11">
   <owner>jds@google.com</owner>
