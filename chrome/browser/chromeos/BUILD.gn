@@ -1462,8 +1462,6 @@ source_set("chromeos") {
     "../ash/policy/status_collector/enterprise_activity_storage.cc",
     "../ash/policy/status_collector/enterprise_activity_storage.h",
     "../ash/policy/status_collector/interval_map.h",
-    "../ash/policy/status_collector/legacy_device_status_collector.cc",
-    "../ash/policy/status_collector/legacy_device_status_collector.h",
     "../ash/policy/status_collector/managed_session_service.cc",
     "../ash/policy/status_collector/managed_session_service.h",
     "../ash/policy/status_collector/status_collector.cc",

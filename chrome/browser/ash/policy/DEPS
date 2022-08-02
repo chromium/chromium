@@ -20,7 +20,4 @@ specific_include_rules = {
   "device_status_collector_browsertest.cc": [
     "+mojo/core/embedder/embedder.h",
   ],
-  "legacy_device_status_collector_browsertest.cc": [
-    "+mojo/core/embedder/embedder.h",
-  ],
 }

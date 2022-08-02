@@ -24,7 +24,6 @@ class SequencedTaskRunner;
 namespace policy {
 
 class CloudPolicyClient;
-class ManagedSessionService;
 class StatusCollector;
 struct StatusCollectorParams;
 
@@ -86,16 +85,8 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
   // if appropriate.
   void RefreshUploadFrequency();
 
-  // Updates the status collector being used.
-  void UpdateStatusCollector();
-
   // CloudPolicyClient used to issue requests to the server.
   CloudPolicyClient* client_;
-
-  // Used to initialize a |ManagedSessionService| instance and pass the
-  // underlying raw ptr to |DeviceStatusCollector| whenever constructed in
-  // |UpdateStatusCollector|.
-  std::unique_ptr<ManagedSessionService> managed_session_service_;
 
   // StatusCollector that provides status for uploading.
   std::unique_ptr<StatusCollector> collector_;
@@ -111,9 +102,6 @@ class StatusUploader : public MediaCaptureDevicesDispatcher::Observer {
 
   // The time the last upload was performed.
   base::Time last_upload_;
-
-  // Subscription for whether or not to user granular reporting.
-  base::CallbackListSubscription granular_reporting_subscription_;
 
   // Callback invoked via a delay to upload device status.
   base::CancelableOnceClosure upload_callback_;

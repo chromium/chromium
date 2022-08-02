@@ -9,8 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "ash/components/settings/cros_settings_names.h"
-#include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/tpm/install_attributes.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
@@ -39,7 +37,6 @@
 #include "chrome/browser/ash/policy/rsu/lookup_key_uploader.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/policy/status_collector/device_status_collector.h"
-#include "chrome/browser/ash/policy/status_collector/legacy_device_status_collector.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/policy/uploading/heartbeat_scheduler.h"
 #include "chrome/browser/ash/policy/uploading/status_uploader.h"
@@ -314,23 +311,9 @@ void DeviceCloudPolicyManagerAsh::NotifyGotRegistry() {
 
 void DeviceCloudPolicyManagerAsh::CreateStatusUploader(
     ManagedSessionService* managed_session_service) {
-  std::unique_ptr<StatusCollector> collector;
-  bool granular_reporting_enabled;
-  ash::CrosSettings* settings = ash::CrosSettings::Get();
-
-  if (!settings->GetBoolean(ash::kEnableDeviceGranularReporting,
-                            &granular_reporting_enabled)) {
-    granular_reporting_enabled = true;
-  }
-
-  if (granular_reporting_enabled) {
-    collector = std::make_unique<DeviceStatusCollector>(
-        local_state_, chromeos::system::StatisticsProvider::GetInstance(),
-        managed_session_service);
-  } else {
-    collector = std::make_unique<LegacyDeviceStatusCollector>(
-        local_state_, chromeos::system::StatisticsProvider::GetInstance());
-  }
+  auto collector = std::make_unique<DeviceStatusCollector>(
+      local_state_, chromeos::system::StatisticsProvider::GetInstance(),
+      managed_session_service);
 
   status_uploader_ = std::make_unique<StatusUploader>(
       client(), std::move(collector), task_runner_,
