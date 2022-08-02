@@ -422,7 +422,7 @@ bool HTMLFrameSetElement::CanResizeRow(const gfx::Point& p) const {
 bool HTMLFrameSetElement::CanResizeColumn(const gfx::Point& p) const {
   const LayoutFrameSet::GridAxis& axis =
       To<LayoutFrameSet>(GetLayoutObject())->cols_;
-  return axis.CanResizeSplitAt(HitTestSplit(axis, p.y()));
+  return axis.CanResizeSplitAt(HitTestSplit(axis, p.x()));
 }
 
 int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
