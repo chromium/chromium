@@ -780,6 +780,13 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         Resources res = getResources();
         switch (visualState) {
             case VisualState.NEW_TAB_NORMAL:
+                // We are likely in the middle of a layout animation, and the NTP cannot draw itself
+                // yet. Use the default background color, which will match what the NTP eventually
+                // draws itself.
+                if (!getToolbarDataProvider().getNewTabPageDelegate().hasCompletedFirstLayout()) {
+                    return ChromeColors.getDefaultThemeColor(getContext(), false);
+                }
+
                 // When the NTP fake search box is visible, the background color should be
                 // transparent. When the location bar reaches the top of the screen (i.e. location
                 // bar is fully expanded), the background needs to change back to the default
@@ -1197,32 +1204,36 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         }
 
         NewTabPageDelegate ntpDelegate = getToolbarDataProvider().getNewTabPageDelegate();
-        ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
-        int locationBarTranslationY = Math.max(
-                0, (mNtpSearchBoxBounds.top - mLocationBar.getPhoneCoordinator().getTop()));
-        mLocationBar.getPhoneCoordinator().setTranslationY(locationBarTranslationY);
+        // #getSearchBoxBounds is only valid once the NTP can actually draw itself.
+        if (ntpDelegate.hasCompletedFirstLayout()) {
+            ntpDelegate.getSearchBoxBounds(mNtpSearchBoxBounds, mNtpSearchBoxTranslation);
+            int locationBarTranslationY = Math.max(
+                    0, (mNtpSearchBoxBounds.top - mLocationBar.getPhoneCoordinator().getTop()));
+            mLocationBar.getPhoneCoordinator().setTranslationY(locationBarTranslationY);
 
-        updateButtonsTranslationY();
+            updateButtonsTranslationY();
 
-        // Linearly interpolate between the bounds of the search box on the NTP and the omnibox
-        // background bounds. |shrinkage| is the scaling factor for the offset -- if it's 1, we are
-        // shrinking the omnibox down to the size of the search box.
-        float shrinkage = 1f
-                - Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR.getInterpolation(
-                        mUrlExpansionFraction);
+            // Linearly interpolate between the bounds of the search box on the NTP and the omnibox
+            // background bounds. |shrinkage| is the scaling factor for the offset -- if it's 1, we
+            // are shrinking the omnibox down to the size of the search box.
+            float shrinkage = 1f
+                    - Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR.getInterpolation(
+                            mUrlExpansionFraction);
 
-        int leftBoundDifference = mNtpSearchBoxBounds.left - mLocationBarBackgroundBounds.left;
-        int rightBoundDifference = mNtpSearchBoxBounds.right - mLocationBarBackgroundBounds.right;
-        int verticalInset = (int) (getResources().getDimensionPixelSize(
-                                           R.dimen.ntp_search_box_bounds_vertical_inset_modern)
-                * (1.f - mUrlExpansionFraction));
-        mLocationBarBackgroundNtpOffset.set(Math.round(leftBoundDifference * shrinkage),
-                locationBarTranslationY, Math.round(rightBoundDifference * shrinkage),
-                locationBarTranslationY);
-        mLocationBarBackgroundNtpOffset.inset(0, verticalInset);
+            int leftBoundDifference = mNtpSearchBoxBounds.left - mLocationBarBackgroundBounds.left;
+            int rightBoundDifference =
+                    mNtpSearchBoxBounds.right - mLocationBarBackgroundBounds.right;
+            int verticalInset = (int) (getResources().getDimensionPixelSize(
+                                               R.dimen.ntp_search_box_bounds_vertical_inset_modern)
+                    * (1.f - mUrlExpansionFraction));
+            mLocationBarBackgroundNtpOffset.set(Math.round(leftBoundDifference * shrinkage),
+                    locationBarTranslationY, Math.round(rightBoundDifference * shrinkage),
+                    locationBarTranslationY);
+            mLocationBarBackgroundNtpOffset.inset(0, verticalInset);
 
-        mLocationBarNtpOffsetLeft = leftBoundDifference * shrinkage;
-        mLocationBarNtpOffsetRight = rightBoundDifference * shrinkage;
+            mLocationBarNtpOffsetLeft = leftBoundDifference * shrinkage;
+            mLocationBarNtpOffsetRight = rightBoundDifference * shrinkage;
+        }
 
         mLocationBarBackgroundAlpha = isExpanded ? 255 : 0;
         mForceDrawLocationBarBackground = mLocationBarBackgroundAlpha > 0;

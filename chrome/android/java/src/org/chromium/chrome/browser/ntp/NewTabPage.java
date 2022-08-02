@@ -705,6 +705,11 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         return mNewTabPageManager.isLocationBarShownInNTP();
     }
 
+    /** @see org.chromium.chrome.browser.omnibox.NewTabPageDelegate#hasCompletedFirstLayout(). */
+    public boolean hasCompletedFirstLayout() {
+        return mNewTabPageLayout.getHeight() > 0;
+    }
+
     /**
      * @return Whether the location bar has been scrolled to top in the NTP.
      */

@@ -1154,6 +1154,12 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         }
 
         @Override
+        public boolean hasCompletedFirstLayout() {
+            assert getNewTabPageForCurrentTab() != null;
+            return getNewTabPageForCurrentTab().hasCompletedFirstLayout();
+        }
+
+        @Override
         public void setSearchBoxScrollListener(Callback<Float> scrollCallback) {
             NewTabPage newVisibleNtp = getNewTabPageForCurrentTab();
             if (mVisibleNtp != null) mVisibleNtp.setSearchBoxScrollListener(null);

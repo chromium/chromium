@@ -49,6 +49,15 @@ public interface NewTabPageDelegate {
     }
 
     /**
+     * Returns whether the first layout pass has happened or not. When false, this often means there
+     * is some animation playing for creating the tab itself. During this time the NTP will not be
+     * able to control any drawing, and the toolbar will still be responsible for drawing itself.
+     */
+    default boolean hasCompletedFirstLayout() {
+        return false;
+    }
+
+    /**
      * Set the listener for NTP to handle the scroll event.
      * @param scrollCallback Callback to be invoked when the event occurs.
      */
