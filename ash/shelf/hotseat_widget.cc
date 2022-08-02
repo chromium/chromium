@@ -552,6 +552,12 @@ void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
   SetTranslucentBackground(
       scrollable_shelf_view_->GetHotseatBackgroundBounds());
 
+  // Hide the shadow when home launcher is showing in tablet mode.
+  if (hotseat_widget_->state() == HotseatState::kShownHomeLauncher) {
+    shadow_->GetLayer()->SetVisible(false);
+    return;
+  }
+
   // Update the shadow content bounds and corner radius.
   shadow_->GetLayer()->SetVisible(true);
   gfx::Rect background_bounds = translucent_background_->bounds();
