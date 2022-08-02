@@ -281,6 +281,11 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   ash::SystemWebAppManager* swa_manager =
       ash::SystemWebAppManager::Get(profile);
+  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
+  // always available at this point.
+  if (!swa_manager) {
+    return;
+  }
   const bool is_installed =
       swa_manager &&
       swa_manager->IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);
@@ -296,14 +301,28 @@ void ProjectorClientImpl::OnEnablementPolicyChanged() {
     CloseProjectorApp();
 
   auto* web_app_provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
+  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
+  // always available at this point.
+  if (!web_app_provider) {
+    return;
+  }
   web_app_provider->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&ProjectorClientImpl::SetAppIsDisabled,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                web_app_provider, !is_enabled));
+                                weak_ptr_factory_.GetWeakPtr(), !is_enabled));
 }
 
-void ProjectorClientImpl::SetAppIsDisabled(web_app::WebAppProvider* provider,
-                                           bool disabled) {
-  provider->sync_bridge().SetAppIsDisabled(
-      ash::kChromeUITrustedProjectorSwaAppId, disabled);
+void ProjectorClientImpl::SetAppIsDisabled(bool disabled) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+
+  auto* web_app_provider = ash::SystemWebAppManager::GetWebAppProvider(profile);
+  // TODO(b/240497023): convert to dcheck once confirm that the pointer is
+  // always available at this point.
+  if (!web_app_provider) {
+    return;
+  }
+  auto* sync_bridge = &web_app_provider->sync_bridge();
+  DCHECK(sync_bridge);
+
+  sync_bridge->SetAppIsDisabled(ash::kChromeUITrustedProjectorSwaAppId,
+                                disabled);
 }
