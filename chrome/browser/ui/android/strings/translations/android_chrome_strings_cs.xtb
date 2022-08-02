@@ -271,6 +271,7 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2496180316473517155">Historie procházení</translation>
 <translation id="2497852260688568942">Synchronizace je administrátorem zakázána.</translation>
 <translation id="250020030759455918">Uvidíte stav přihlášení, údaje o prohlížení a data webu <ph name="SITE_NAME" /> v Chromu</translation>
+<translation id="2507178219579379057">Chrome zkoumá způsoby, jak omezit reklamní spam, podvody a sdílení mezi weby. Chrome také <ph name="BEGIN_LINK" />odhaduje vaše zájmy<ph name="END_LINK" />, na základě nichž vám weby mohou zobrazovat reklamy. Své zájmy můžete spravovat v nastavení.</translation>
 <translation id="2513403576141822879">Další nastavení související s ochranou soukromí, zabezpečením a shromažďováním dat naleznete v části <ph name="BEGIN_LINK" />Synchronizace a služby Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Naskenovat</translation>
 <translation id="2523184218357549926">Odesílá do Googlu adresy URL stránek, které navštěvujete</translation>
@@ -586,7 +587,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="4256782883801055595">Licence open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Jaké údaje používáme:<ph name="END_BOLD" /> Vaši historii prohlížení, což je seznam webů, které jste navštívili v Chromu na tomto zařízení.</translation>
 <translation id="4263656433980196874">Uživatelské rozhraní souhlasu s hlasovým vyhledáváním pomocí Asistenta otevřené na celou výšku</translation>
-<translation id="4266054596873078491">Přihlaste se na tento web a do Chromu pomocí svého účtu Google.</translation>
 <translation id="4269820728363426813">Zkopírovat adresu odkazu</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Zapněte v nastavení systému Android zámek obrazovky<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Používáním Chromu vyjadřujete souhlas se <ph name="BEGIN_TOS_LINK" />smluvními podmínkami společnosti Google<ph name="END_TOS_LINK" /> a <ph name="BEGIN_ATOS_LINK" />dodatečnými smluvními podmínkami prohlížeče Google Chrome a systému ChromeOS<ph name="END_ATOS_LINK" />. Platí také <ph name="BEGIN_PRIVACY_LINK" />zásady ochrany soukromí<ph name="END_PRIVACY_LINK" />.</translation>

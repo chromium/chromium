@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1351937230027495976">ຫຍໍ້ເມນູ</translation>
 <translation id="1364382257761975320">ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃຊ້ລາຍນິ້ວມືຂອງທ່ານ</translation>
+<translation id="1365866993922957110">ຮັບການອັບເດດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="1372545819342940910">ບັນທຶກໂຕະໄວ້ພາຍຫຼັງ</translation>
 <translation id="1383597849754832576">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ສຽງເວົ້າໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064">ຖອນປັກໝຸດ <ph name="ITEM_TITLE" /> ແລ້ວ</translation>
 <translation id="1836215606488044471">ຜູ້ຊ່ວຍ (ກຳລັງໂຫຼດຢູ່...)</translation>
 <translation id="1838895407229022812">ແສງກາງຄືນປິດຢູ່.</translation>
+<translation id="1862380676329487333">ອັບເດດ ແລະ ອອກຈາກລະບົບ</translation>
 <translation id="1864454756846565995">ອຸ​ປະ​ກອນ USB-C (ຜອດ​ດ້ານຫຼັງ)</translation>
 <translation id="1879018240766558464">ຕອນນີ້ບໍ່ຮອງຮັບໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນເທື່ອ. ແອັບອື່ນໆຈະຖືກບັນທຶກໄວ້.</translation>
 <translation id="1882814835921407042">ບໍ່ມີເຄືອຂ່າຍມືຖື</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">ບໍ່ສາມາດສຳເນົາ ຫຼື ວາງເນື້ອຫາໄດ້ໃນຕອນນີ້</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>
+<translation id="4247123849143712100">ອັບເດດ ແລະ ປິດເຄື່ອງ</translation>
 <translation id="4250229828105606438">ຮູບຖ່າຍໜ້າຈໍ</translation>
 <translation id="425364040945105958">ບໍ່ມີ SIM</translation>
 <translation id="4261870227682513959">ສະແດງການຕັ້ງຄ່າການແຈ້ງເຕືອນ. ການແຈ້ງເຕືອນປິດຢູ່</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ແມ່ນເຊດຊັນແບບມີການຈັດການທີ່ຖືກຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">ເຊື່ອມຕໍ່ <ph name="DEVICE_NAME" /> ແລ້ວ</translation>
 <translation id="6351032674660237738">ການແນະນຳແອັບ</translation>
+<translation id="6359587239691116345">ໃຊ້ຄຸນສົມບັດຫຼ້າສຸດ ແລະ ການປັບປຸງຄວາມປອດໄພ. ຖ້າທ່ານປະຕິເສດການອັບເດດນີ້, ອຸປະກອນຂອງທ່ານອາດຈະເຮັດວຽກບໍ່ໄດ້ຕາມປົກກະຕິອີກຕໍ່ໄປ ແລະ ທ່ານອາດພົບບັນຫາຄວາມປອດໄພ ແລະ ປະສິດທິພາບ.</translation>
 <translation id="6376931439017688372">Bluetooth ເປີດຢູ່</translation>
 <translation id="6381109794406942707">ເພື່ອປົດລັອກອຸປະກອນ, ກະລຸນາປ້ອນ PIN ຂອງທ່ານ.</translation>
 <translation id="639644700271529076">CAPS LOCK ປິດ</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກ່ອນເວລາທີ່ກຳນົດໄວ້</translation>
 <translation id="649452524636452238">PIN ບັດອັດສະລິຍະ</translation>
 <translation id="6495400115277918834">ເລີ່ມການສະແດງຜົນຊ້ອນກັນແລ້ວ, ກົດ Alt+Shift+V ເພື່ອໂຟກັສ</translation>
+<translation id="6500896621837555595">ອັບເດດ</translation>
 <translation id="6501401484702599040">ກຳລັງ​ສົ່ງສັນຍານໜ້າ​ຈໍ​ຫາ <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">ກ້ອງຖ່າຍຮູບຂາດການເຊື່ອມຕໍ່, ກຳລັງພະຍາຍາມເຊື່ອມຕໍ່ຄືນໃໝ່.</translation>
 <translation id="6520517963145875092">ເລືອກໜ້າຈໍທີ່ຈະຖ່າຍຮູບ</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">ການ​ຄິດ​ໄລ່​ເວລາແບັດເຕີຣີ.</translation>
 <translation id="8061464966246066292">ຄວາມເຂັ້ມສູງ</translation>
 <translation id="8083540854303889870">ບັນທຶກໄວ້ສໍາລັບພາຍຫຼັງ</translation>
+<translation id="8091387634532529612">ອັບເດດອັດຕະໂນມັດ</translation>
 <translation id="8098591350844501178">ຢຸດການສົ່ງສັນຍານໜ້າຈໍຫາ <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">ເປີດ, ທຸກແອັບ</translation>
 <translation id="8120151603115102514">ໂທລະສັບຂອງທ່ານບໍ່ມີໜ້າຈໍລັອກ. ເພື່ອປົດລັອກ Chromebook ຂອງທ່ານ, ໃຫ້ໃສ່ລະຫັດຜ່ານກ່ອນ.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949">ສະແດງຜົນການຊອກຫາ <ph name="RESULT_COUNT" /> ລາຍການສຳລັບ <ph name="QUERY" /></translation>
 <translation id="98515147261107953">ລວງຂວາງ</translation>
 <translation id="990277280839877440">ປິດໜ້າຈໍ <ph name="WINDOW_TITILE" /> ແລ້ວ.</translation>
+<translation id="996204416024568215">ໃຊ້ຄຸນສົມບັດຫຼ້າສຸດ ແລະ ການປັບປຸງຄວາມປອດໄພ. ການອັບເດດເກີດຂຶ້ນໃນພາບພື້ນຫຼັງ.</translation>
 </translationbundle>

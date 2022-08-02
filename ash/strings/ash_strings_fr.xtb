@@ -84,6 +84,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1346748346194534595">À droite</translation>
 <translation id="1351937230027495976">Réduire le menu</translation>
 <translation id="1364382257761975320">Pour déverrouiller votre Chromebook, utilisez votre empreinte</translation>
+<translation id="1365866993922957110">Activer les mises à jour automatiques</translation>
 <translation id="1372545819342940910">Enregistrer le bureau pour plus tard</translation>
 <translation id="1383597849754832576">Impossible de télécharger les fichiers vocaux. Réessayez plus tard.</translation>
 <translation id="1383876407941801731">Rechercher</translation>
@@ -161,6 +162,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> a été retiré</translation>
 <translation id="1836215606488044471">Assistant (chargement…)</translation>
 <translation id="1838895407229022812">Éclairage nocturne désactivé.</translation>
+<translation id="1862380676329487333">Mettre à jour et se déconnecter</translation>
 <translation id="1864454756846565995">Appareil USB de type C (port situé sur l'arrière de l'appareil)</translation>
 <translation id="1879018240766558464">Les fenêtres de navigation privée ne sont pas prises en charge pour le moment. Les autres applis seront enregistrées.</translation>
 <translation id="1882814835921407042">Pas de réseau mobile</translation>
@@ -561,6 +563,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="423685346499232137">Impossible de copier ou coller du contenu pour l'instant</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
+<translation id="4247123849143712100">Mettre à jour et arrêter</translation>
 <translation id="4250229828105606438">Capture d'écran</translation>
 <translation id="425364040945105958">Aucune carte SIM</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
@@ -920,6 +923,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> est une session gérée par <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connecté(s)</translation>
 <translation id="6351032674660237738">SUGGESTIONS D'APPLICATIONS</translation>
+<translation id="6359587239691116345">Bénéficiez des dernières fonctionnalités et améliorations de sécurité. Si vous refusez cette mise à jour, votre appareil risque de ne plus fonctionner correctement, et vous risquez de rencontrer des problèmes de sécurité et de performances.</translation>
 <translation id="6376931439017688372">Bluetooth activé</translation>
 <translation id="6381109794406942707">Pour déverrouiller l'appareil, saisissez votre code.</translation>
 <translation id="639644700271529076">La touche de verrouillage des majuscules est désactivée.</translation>
@@ -941,6 +945,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> exige la mise à jour de votre <ph name="DEVICE_TYPE" /> avant la date limite</translation>
 <translation id="649452524636452238">Code de la carte à puce</translation>
 <translation id="6495400115277918834">Picture-in-picture a démarré, Alt+Shift+V pour sélectionner</translation>
+<translation id="6500896621837555595">Mettre à jour</translation>
 <translation id="6501401484702599040">Diffusion de l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6515727200518652613">Appareil photo déconnecté, tentative de reconnexion en cours.</translation>
 <translation id="6520517963145875092">Sélectionner une fenêtre à capturer</translation>
@@ -1218,6 +1223,7 @@ Nouvelle installation</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
 <translation id="8061464966246066292">Contraste élevé</translation>
 <translation id="8083540854303889870">Bureaux enregistrés</translation>
+<translation id="8091387634532529612">Mises à jour automatiques</translation>
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Activées, toutes applis</translation>
 <translation id="8120151603115102514">Votre téléphone n'a pas d'écran de verrouillage. Déverrouillez votre Chromebook avec votre mot de passe.</translation>
@@ -1424,4 +1430,5 @@ Nouvelle installation</translation>
 <translation id="974545358917229949">Affichage de <ph name="RESULT_COUNT" /> résultats pour <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Paysage</translation>
 <translation id="990277280839877440">Fenêtre <ph name="WINDOW_TITILE" /> fermée.</translation>
+<translation id="996204416024568215">Bénéficiez des dernières fonctionnalités et améliorations de sécurité. Les mises à jour s'effectuent en arrière-plan.</translation>
 </translationbundle>

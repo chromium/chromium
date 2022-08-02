@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ONYESHA UPYA</translation>
 <translation id="3009958530611748826">Chagua folda utakapohifadhi</translation>
 <translation id="3017079585324758401">Mandhari ya nyuma</translation>
+<translation id="302435934487327038">Usakinishaji umekamilika</translation>
 <translation id="3027578600144895987">Funga kamera</translation>
 <translation id="3031560714565892478">Kifaa hiki ni kamera ya video.</translation>
 <translation id="3054177598518735801">mA <ph name="CURRENT_VALUE" /></translation>
 <translation id="3056720590588772262">Anwani halisi</translation>
 <translation id="3069085583900247081">Jaribio halijafaulu</translation>
-<translation id="3076243757415932261">Inathibitisha vipengele...</translation>
 <translation id="3083667275341675831">Uchunguzi wa Muunganisho</translation>
 <translation id="3084958266922136097">Zima taswira ya skrini</translation>
 <translation id="3091839911843451378">Haijakamilika - Imesimamisha</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Una uhakika kuwa ungependa kufuta historia yote ya kuchapisha? Kazi unazoendelea kuchapisha hazitafutwa.</translation>
 <translation id="3383751554789092165">Badilisha maelezo ya kifaa kulingana na uhitaji.</translation>
 <translation id="3404249063913988450">Washa taswira ya skrini</translation>
-<translation id="3404770484521709967">Vipengele vimewekwa kwa usahihi.</translation>
 <translation id="3413935475507503304">Ili uendelee na sasisho, bofya Inayofuata.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Usalama</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Nenosiri la awali</translation>
 <translation id="4453205916657964690">Kichujio cha mtandao mdogo</translation>
 <translation id="4454245904991689773">Hifadhi faili iliyochanganuliwa kwenye</translation>
-<translation id="4472575034687746823">Anza</translation>
 <translation id="4479639480957787382">Ethaneti</translation>
 <translation id="4483049906298469269">Imeshindwa kuita lango la mtandao usio chaguomsingi</translation>
 <translation id="4500213108254186382">Kipima mchapuko cha kifuniko</translation>
@@ -663,6 +661,7 @@
 <translation id="6618744767048954150">Inakagua</translation>
 <translation id="6620487321149975369">Kazi za kuchapisha zitaonekana katika historia usipoziondoa mwenyewe</translation>
 <translation id="6643016212128521049">Futa</translation>
+<translation id="6644568396961840069">Faili imeshindwa kuhifadhiwa. Jaribu kuunganisha hifadhi nyingine ya nje au jaribu tena baadaye.</translation>
 <translation id="6647510110698214773">Algoriti ya usimbaji fiche</translation>
 <translation id="6650062777702288430">Swichi ya kana au herufi na nambari</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
@@ -808,7 +807,6 @@
 <translation id="8063022551652308521">Kipengele cha Write Protect bado hakijawashwa. Ili uendelee, washa Write Protect.</translation>
 <translation id="8075838845814659848">Chaji iliyosalia</translation>
 <translation id="8082366717211101304">Imeshindwa kusuluhisha DNS kutoka kwenye programu za Android</translation>
-<translation id="8083281199617904460">Mchakato wa marekebisho unalenga mafundi waliopewa mafunzo tu Anza baada tu ya kubadilisha vipengele vyenye hitilafu.</translation>
 <translation id="808894953321890993">Badilisha nenosiri</translation>
 <translation id="8104083085214006426">Unatumia mtandao usio salama unaoweza kutumiwa na mtu yeyote</translation>
 <translation id="8109786307828817014">Ungependa kuendelea bila marekebisho ya vipengele?</translation>

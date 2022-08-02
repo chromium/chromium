@@ -1677,6 +1677,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5518670652865028077">Artea eta aisia</translation>
 <translation id="5519516356611866228">Aldaketekin</translation>
 <translation id="5523118979700054094">Gidalerroaren izena</translation>
+<translation id="5525755241743357906">Fitxategia kopiatu edo mugituko da</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu Sartu, Chrome OS-ren ezarpenetan erabilerraztasun-tresnak pertsonalizatzeko</translation>
 <translation id="5528532273234423708">Domotika</translation>
 <translation id="55293785478302737">Josi ertza</translation>
@@ -2928,6 +2929,7 @@ Xehetasun gehiago:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" Chrome sistemaren arakatzaile lehenetsi gisa ezartzeko iOS-en ezarpenetan</translation>
 <translation id="9096679202588811390">Telesaioak eta programak</translation>
 <translation id="9101630580131696064">1. erretilua</translation>
+<translation id="9102081333385212048">Kopiatzen edo mugitzen dituzun fitxategiak Google Cloud-i edo hirugarrenei bidaltzen zaizkie, azter ditzaten. Adibidez, baliteke fitxategiak eskaneatzea kontuzko datuak edo malwarea duten ikusteko.</translation>
 <translation id="9103537084693478942">Bideo-softwareak</translation>
 <translation id="9103872766612412690">Eskuarki, <ph name="SITE" /> webguneak enkriptatzea erabiltzen du informazioa babesteko. Chromium <ph name="SITE" /> webgunera konektatzen saiatu denean, webguneak kredentzial desegokiak eta ezohikoak bidali ditu. Erasotzaile bat <ph name="SITE" /> webgunearen plantak egiten ari delako gerta daiteke hori, edo Wi-Fi sarean saioa hasteko pantailak konexioa eten duelako. Zure informazioa seguru dago, datuak trukatu aurretik eten baitu Chromium-ek konexioa.</translation>
 <translation id="9106062320799175032">Gehitu fakturazio-helbidea</translation>

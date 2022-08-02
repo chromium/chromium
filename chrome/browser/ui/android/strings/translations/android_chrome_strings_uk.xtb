@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">Історія веб-перегляду</translation>
 <translation id="2497852260688568942">Ваш адміністратор вимкнув синхронізацію</translation>
 <translation id="250020030759455918">Ви зможете переглядати статус входу на сайті <ph name="SITE_NAME" />, дані веб-перегляду й сайту в Chrome</translation>
+<translation id="2507178219579379057">Chrome шукає способи протидіяти рекламному спаму й шахрайству, а також обмежити обмін даними між сайтами. Chrome також <ph name="BEGIN_LINK" />визначає ваші інтереси<ph name="END_LINK" />, які можуть використовувати інші сайти для показу оголошень. Ви можете керувати своїми інтересами в налаштуваннях.</translation>
 <translation id="2513403576141822879">Інші налаштування конфіденційності, безпеки та збору даних доступні в розділі <ph name="BEGIN_LINK" />Синхронізація та сервіси Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Сканувати</translation>
 <translation id="2523184218357549926">Надсилає в Google URL-адреси відвіданих сторінок</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">Ліцензії ПЗ з відкритим кодом</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Які дані використовуються<ph name="END_BOLD" />. Ваша історія веб-перегляду – перелік сайтів, які ви відвідали через Chrome на цьому пристрої.</translation>
 <translation id="4263656433980196874">Інтерфейс надання згоди на голосовий пошук через Асистента відкрито на всю висоту</translation>
-<translation id="4266054596873078491">Увійдіть на цей сайт і в Chrome, використовуючи свій обліковий запис Google.</translation>
 <translation id="4269820728363426813">Копіювати адресу посилання</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Увімкніть блокування екрана в налаштуваннях Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Використовуючи Chrome, ви приймаєте <ph name="BEGIN_TOS_LINK" />Загальні положення та умови Google<ph name="END_TOS_LINK" /> і <ph name="BEGIN_ATOS_LINK" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_ATOS_LINK" />. Також застосовується <ph name="BEGIN_PRIVACY_LINK" />Політика конфіденційності<ph name="END_PRIVACY_LINK" />.</translation>

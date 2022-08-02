@@ -148,7 +148,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="4415566066719264597">Chromium laten uitvoeren op de achtergrond</translation>
 <translation id="4423735387467980091">Chromium aanpassen en beheren</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
-<translation id="4440114195512068100">Ga naar de <ph name="LINK_BEGIN" />instellingen van Chromium OS<ph name="LINK_END" /> om te kijken of je apparaat up-to-date is</translation>
 <translation id="452711251841752011">Welkom bij Chromium, nieuw browservenster geopend</translation>
 <translation id="4544142686420020088">Chromium is niet geüpdatet. Er is een fout opgetreden. <ph name="BEGIN_LINK" />Updateproblemen en mislukte updates voor Chromium verhelpen<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Doorgaan met een nieuw Chromium-profiel?</translation>
@@ -312,7 +311,6 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Hoe je je gegevens kunt beheren:<ph name="END_BOLD" /> Ter bescherming van je privacy verwijderen we automatisch interesses die ouder zijn dan 4 weken. Het kan gebeuren dat een interesse weer in de lijst komt te staan als je blijft browsen. Je kunt ook interesses verwijderen waarvan je niet wilt dat Chromium deze overweegt.</translation>
 <translation id="7937630085815544518">Je bent ingelogd bij Chromium als <ph name="USER_EMAIL_ADDRESS" />. Gebruik hetzelfde account om opnieuw in te loggen.</translation>
 <translation id="7975919845073681630">Dit is een tweede installatie van Chromium en kan niet als standaardbrowser worden ingesteld.</translation>
-<translation id="7982481011030453202">Kijk in de <ph name="LINK_BEGIN" />Chromium OS-instellingen<ph name="LINK_END" /> als je een instelling niet ziet op deze pagina.</translation>
 <translation id="7997934263947464652">Extensies, apps en thema's van onbekende bronnen kunnen schadelijk zijn voor je apparaat. Chromium raadt je aan ze alleen te installeren vanuit de <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="8013436988911883588">Zodra Chromium toegang heeft, kunnen websites je om toegang vragen.</translation>
 <translation id="80471789339884597">Bedankt voor het installeren. Je moet alle browsers opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>

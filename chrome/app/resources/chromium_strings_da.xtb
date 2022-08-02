@@ -146,7 +146,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4415566066719264597">Lad Chromium køre i baggrunden</translation>
 <translation id="4423735387467980091">Tilpas og kontrollér Chromium</translation>
 <translation id="4427306783828095590">Forbedret beskyttelse gør mere end at blokere phishing og malware</translation>
-<translation id="4440114195512068100">Du kan se, om en enhed er opdateret, ved at gå til <ph name="LINK_BEGIN" />indstillingerne for Chromium OS<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Velkommen til Chromium – Et nyt browservindue er åbnet</translation>
 <translation id="4544142686420020088">Chromium kunne ikke opdateres, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chromium og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Vil du fortsætte på en ny Chromium-profil?</translation>
@@ -311,8 +310,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Sådan kan du administrere dine data:<ph name="END_BOLD" /> Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dine personlige oplysninger Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chromium skal tage med i betragtning.</translation>
 <translation id="7937630085815544518">Du loggede ind på Chromium som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7975919845073681630">Dette er en sekundær installation af Chromium, og den kan ikke gøres til din standardbrowser.</translation>
-<translation id="7982481011030453202">Hvis en indstilling ikke vises på denne side, kan du kigge i <ph name="LINK_BEGIN" />
-      indstillingerne for Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Udvidelser, apps og temaer fra ukendte kilder kan skade din enhed. Chromium anbefaler, at de kun installeres via <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Når Chromium har adgang, kan websites bede dig om adgang.</translation>
 <translation id="80471789339884597">Tak for installationen. Du skal genstarte alle dine browsere, før du bruger <ph name="BUNDLE_NAME" />.</translation>

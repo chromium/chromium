@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Тип</translation>
 <translation id="2461822463642141190">Моментално</translation>
 <translation id="2480034874476596812">Рачно исклучи</translation>
+<translation id="248546197012830854">Уредот е офлајн. Поврзете се на Wi-Fi мрежа за да ги видите содржините за помош.</translation>
 <translation id="2491955442992294626">Копчињата не се тестираат кога користите друг прозорец</translation>
 <translation id="2493126929778606526">Вашите најдобри фотографии, избрани автоматски</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -241,7 +242,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крајна точка</translation>
 <translation id="3069085583900247081">Тестот не успеа</translation>
-<translation id="3076243757415932261">Компонентите се потврдуваат…</translation>
 <translation id="3083667275341675831">Дијагностика на поврзливоста</translation>
 <translation id="3084958266922136097">Оневозможете го заштитникот на екранот</translation>
 <translation id="3091839911843451378">Неуспешно - запрено</translation>
@@ -276,7 +276,6 @@
 <translation id="3369013195428705271">Дали сте сигурни дека сакате да ја исчистите сета историја на печатење? Тековните задачи за печатење нема да бидат избришани.</translation>
 <translation id="3383751554789092165">Променете ги податоците за уредот ако е потребно.</translation>
 <translation id="3404249063913988450">Овозможете го заштитникот на екранот</translation>
-<translation id="3404770484521709967">Компонентите се инсталирани правилно.</translation>
 <translation id="3413935475507503304">За да продолжите со ажурирањето, кликнете „Следно“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безбедност</translation>
@@ -396,7 +395,6 @@
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Подмрежна маска</translation>
 <translation id="4454245904991689773">Скенирај во</translation>
-<translation id="4472575034687746823">Започнете</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Не успеа да се пингува нестандардниот мрежен портал</translation>
 <translation id="4500213108254186382">Акцелерометар во капакот</translation>
@@ -664,6 +662,7 @@
 <translation id="6611280807952151149">Излези од поправката на <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Се извршува</translation>
 <translation id="6620487321149975369">Задачите за печатење ќе се појавуваат во историјата, освен ако не се отстранат рачно</translation>
+<translation id="6624819909909965616">Не може да се прикачи датотека поголема од 10 MB</translation>
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6644568396961840069">Не можеше да се зачува датотеката. Пробајте со друг екстерен капацитет или пробајте повторно подоцна.</translation>
 <translation id="6647510110698214773">Алгоритам за шифрирање</translation>
@@ -699,6 +698,7 @@
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6977381486153291903">Ревизија на фирмвер</translation>
 <translation id="6995564396478647735">Погрижете се „Заштитата од пишување“ да е вклучена</translation>
+<translation id="7005833343836210400">Уредот е офлајн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Уредот не е поврзан.</translation>
@@ -811,8 +811,8 @@
 <translation id="8063022551652308521">„Заштитата од пишување“ уште е исклучена. За да продолжите, вклучете ја „Заштитата од пишување“.</translation>
 <translation id="8075838845814659848">Преостанато полнење</translation>
 <translation id="8082366717211101304">Не може да се одреди со DNS од апликации на Android</translation>
-<translation id="8083281199617904460">Процесов на поправање е наменет за обучен техничар за поправки. Започнете само по замена на дефектните компоненти.</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
+<translation id="8094062939584182041">Дозволете Google да ви праќа е-пораки за проблемов</translation>
 <translation id="8104083085214006426">Користите отворена и небезбедна мрежа</translation>
 <translation id="8109786307828817014">Да се продолжи со неуспешните калибрации?</translation>
 <translation id="811820734797650957">(Android) Може да се испрати пинг до порталот</translation>

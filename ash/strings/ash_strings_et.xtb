@@ -84,6 +84,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1351937230027495976">Ahenda menüü</translation>
 <translation id="1364382257761975320">Chromebooki avamiseks kasutage oma sõrmejälge</translation>
+<translation id="1365866993922957110">Hangi automaatseid värskendusi</translation>
 <translation id="1372545819342940910">Salvesta töölaud hilisemaks</translation>
 <translation id="1383597849754832576">Kõnefaile ei saa alla laadida. Proovige hiljem uuesti.</translation>
 <translation id="1383876407941801731">Otsi</translation>
@@ -161,6 +162,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> vabastati</translation>
 <translation id="1836215606488044471">Assistent (laadimine …)</translation>
 <translation id="1838895407229022812">Öövalgus on väljas.</translation>
+<translation id="1862380676329487333">Värskenda ja logi välja</translation>
 <translation id="1864454756846565995">C-tüüpi USB-seade (tagumine port)</translation>
 <translation id="1879018240766558464">Inkognito aknaid praegu ei toetata. Muud rakendused salvestatakse.</translation>
 <translation id="1882814835921407042">Mobiilsidevõrku pole</translation>
@@ -562,6 +564,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="423685346499232137">Ei saa praegu sisu kopeerida ega kleepida</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
+<translation id="4247123849143712100">Värskenda ja lülita välja</translation>
 <translation id="4250229828105606438">Ekraanipilt</translation>
 <translation id="425364040945105958">SIM-kaarti pole</translation>
 <translation id="4261870227682513959">Kuvab märguandeseaded. Märguanded on välja lülitatud</translation>
@@ -921,6 +924,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on hallatud seanss, mida haldab <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> on ühendatud</translation>
 <translation id="6351032674660237738">RAKENDUSTE SOOVITUSED</translation>
+<translation id="6359587239691116345">Hankige uusimad funktsioonid ja turvatäiustused. Kui sellest värskendusest keeldute, ei pruugi teie seade enam korralikult töötada ning võite kogeda turva- ja toimivusprobleeme.</translation>
 <translation id="6376931439017688372">Bluetooth on sisse lülitatud</translation>
 <translation id="6381109794406942707">Seadme avamiseks sisestage oma PIN-kood.</translation>
 <translation id="639644700271529076">SUURTÄHELUKK on välja lülitatud</translation>
@@ -942,6 +946,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> nõuab, et värskendaksite seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi enne tähtaega</translation>
 <translation id="649452524636452238">Kiipkaardi PIN-kood</translation>
 <translation id="6495400115277918834">Pilt pildis käivitati, esiletõstmiseks vajutage klahvikombinatsiooni Alt + Tõstuklahv + V</translation>
+<translation id="6500896621837555595">Värskenda</translation>
 <translation id="6501401484702599040">Ekraani ülekandmine seadmesse <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Kaamera ühendus katkes, proovitakse uuesti ühendada.</translation>
 <translation id="6520517963145875092">Valige jäädvustatav aken</translation>
@@ -1219,6 +1224,7 @@ Uus installimine</translation>
 <translation id="8054466585765276473">Aku tööaja arvutamine.</translation>
 <translation id="8061464966246066292">Kõrge kontrast</translation>
 <translation id="8083540854303889870">Salvestatud hilisemaks</translation>
+<translation id="8091387634532529612">Automaatsed värskendused</translation>
 <translation id="8098591350844501178">Peata ekraani ülekandmine vastuvõtjasse <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sees, kõik rak.</translation>
 <translation id="8120151603115102514">Teie telefonil pole lukustuskuva. Chromebooki avamiseks sisestage parool.</translation>
@@ -1425,4 +1431,5 @@ Uus installimine</translation>
 <translation id="974545358917229949">Kuvatud on <ph name="RESULT_COUNT" /> tulemust päringule <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horisontaalpaigutus</translation>
 <translation id="990277280839877440">Aken <ph name="WINDOW_TITILE" /> on suletud.</translation>
+<translation id="996204416024568215">Hankige uusimad funktsioonid ja turvatäiustused. Värskendamine toimub taustal.</translation>
 </translationbundle>

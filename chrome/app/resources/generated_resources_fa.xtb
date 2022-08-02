@@ -1078,6 +1078,7 @@
 <translation id="1997616988432401742">گواهی‌نامه‌های شما</translation>
 <translation id="1999115740519098545">هنگام شروع به کار</translation>
 <translation id="2000419248597011803">برخی کوکی‌ها و جستجوها را از نوار نشانی و جعبه جستجو به موتور جستجوی پیش‌فرض ارسال می‌کند</translation>
+<translation id="2001148512690747464">هیچ دستگاه مجهز به «مرتبط‌سازی سریع» در <ph name="PRIMARY_EMAIL" /> ذخیره نشده است</translation>
 <translation id="2002109485265116295">بی‌درنگ</translation>
 <translation id="2003130567827682533">‏برای فعال کردن داده «<ph name="NAME" />»، ابتدا به شبکه Wi-Fi متصل شوید</translation>
 <translation id="2004697686368036666">ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند</translation>
@@ -1787,6 +1788,7 @@
 <translation id="2642111877055905627">توپ فوتبال</translation>
 <translation id="2643698698624765890">با کلیک کردن روی افزونه‌ها در منوی پنجره، برنامه‌های افزودنی نصب شده خود را مدیریت کنید.</translation>
 <translation id="2645047101481282803">دستگاهتان را <ph name="PROFILE_NAME" /> مدیریت می‌کند</translation>
+<translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{یک گذرواژه در این دستگاه وارد شد}one{{NUM_PASSWORDS} گذرواژه در این دستگاه وارد شد}other{{NUM_PASSWORDS} گذرواژه در این دستگاه وارد شد}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">‏Base64-ASCII رمزگذاری‌شده، زنجیره گواهی</translation>
 <translation id="2652129567809778422">گذرواژه را انتخاب کنید</translation>
@@ -2964,6 +2966,7 @@
 <translation id="3789841737615482174">نصب</translation>
 <translation id="3790417903123637354">مشکلی پیش آمد. بعداً دوباره امتحان کنید</translation>
 <translation id="379082410132524484">کارتتان منقضی شده است</translation>
+<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> افزونه</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{‏Chrome نرم‌افزار مضری در رایانه‌تان پیدا نکرد • ۱ روز قبل بررسی شد}one{‏Chrome نرم‌افزار مضری در رایانه‌تان پیدا نکرد • {NUM_DAYS} روز قبل بررسی شد}other{‏Chrome نرم‌افزار مضری در رایانه‌تان پیدا نکرد • {NUM_DAYS} روز قبل بررسی شد}}</translation>
 <translation id="379500251094592809">‏برای استفاده از «هم‌رسانی با اطراف»، مطمئن شوید قفل هر دو دستگاه باز باشد، دستگاه‌ها نزدیک یکدیگر باشند، و بلوتوث آن‌ها روشن باشد. اگر درحال هم‌رسانی با Chromebook هستید که در مخاطبینتان قرار ندارد، مطمئن شوید «نمایان برای اطراف» در آن روشن باشد (ناحیه نشانگر وضعیت را با انتخاب کردن زمان باز کنید، سپس «نمایان برای اطراف» را روشن کنید) <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">خاموش</translation>
@@ -4751,6 +4754,7 @@
 <translation id="5542750926112347543">کوکی‌های <ph name="DOMAIN" /> مسدود شدند</translation>
 <translation id="5542949973455282971">درحال اتصال به <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">در حال بررسی وضعیت...</translation>
+<translation id="5544482392629385159">دستگاه <ph name="DEVICE_INDEX" /> از <ph name="DEVICE_COUNT" />، <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">تولیدکننده تصویر</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{افزودن برگه به گروه}one{افزودن برگه‌ها به گروه}other{افزودن برگه‌ها به گروه}}</translation>
 <translation id="5545693483061321551">سایت‌ها نمی‌توانند از کوکی‌های شما برای دیدن فعالیت مرور شما در سایت‌های مختلف و برای مثال شخصی‌سازی آگهی‌ها استفاده کنند. ممکن است ویژگی‌های برخی‌از سایت‌ها کار نکند.</translation>
@@ -5552,6 +5556,7 @@
 <translation id="6333170995003625229">نشانی ایمیل یا گذرواژه‌تان تأیید نشد. دوباره برای ورود به سیستم تلاش کنید.</translation>
 <translation id="6335920438823100346">‏برای راه‌اندازی Linux، <ph name="MANAGER" /> از شما می‌خواهد از داده‌هایتان پشتیبان بگیرید و این Chromebook را به تنظیمات کارخانه بازنشانی کنید.</translation>
 <translation id="6336038146639916978">‏<ph name="MANAGER" /> اشکال‌زدایی «پل اشکال‌زدایی Android» ‏(ADB) را غیرفعال کرده است. با این کار، <ph name="DEVICE_TYPE" /> ظرف ۲۴ ساعت بازنشانی خواهد شد. از فایل‌هایی که مایلید نگه دارید پشتیبان‌گیری کنید.</translation>
+<translation id="6338402296920404442">توصیه می‌کنیم <ph name="FILENAME" /> را حذف کنید تا افراد دیگری که از این دستگاه استفاده می‌کنند نتوانند گذرواژه‌هایتان را ببینند.</translation>
 <translation id="6338981933082930623">همه سایت‌ها می‌توانند هرگونه آگهی را نمایش دهند</translation>
 <translation id="6339668969738228384">ایجاد نمایه جدیدی برای <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">‏پروتکل چاپ اینترنتی (IPPS)</translation>
@@ -6443,7 +6448,6 @@
 <translation id="7212097698621322584">پین کنونی‌تان را برای تغییر پین وارد کنید. اگر پین‌ خود را نمی‌دانید، باید کلید امنیتی را بازنشانی کنید و سپس پین جدیدی ایجاد کنید.</translation>
 <translation id="7213903639823314449">موتور جستجوی مورداستفاده در نوار نشانی</translation>
 <translation id="721490496276866468">درون‌بردن گذرواژه‌ها</translation>
-<translation id="7216595297012131718">زبان‌ها را براساس ترجیحتان مرتب کنید</translation>
 <translation id="7219473482981809164">چند نمایه پیدا کردیم که برای بارگیری دردسترس هستند. قبل‌از ادامه، نمایه‌های موردنظرتان را برای بارگیری انتخاب کنید.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{گذرواژه ضعیفی ندارید}=1{۱ گذرواژه ضعیف}one{{NUM_WEAK} گذرواژه ضعیف}other{{NUM_WEAK} گذرواژه ضعیف}}</translation>
 <translation id="7220019174139618249">گذرواژه‌ها در «<ph name="FOLDER" />» صادر نمی‌شوند</translation>
@@ -7626,6 +7630,7 @@
 <translation id="8338952601723052325">وب‌سایت برنامه‌نویس</translation>
 <translation id="8339059274628563283">داده‌های ذخیره‌شده محلی <ph name="SITE" /></translation>
 <translation id="833986336429795709">برای باز کردن این پیوند، برنامه‌ای انتخاب کنید</translation>
+<translation id="8340547030807793004">کنش‌های بیشتر برای <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">امتحان نکرده‌ام</translation>
 <translation id="8342861492835240085">انتخاب مجموعه</translation>
 <translation id="8345848587667658367">اکنون می‌توانید عکس‌ها، رسانه‌ها، اعلان‌ها، و برنامه‌های جدید تلفنتان را مشاهده کنید</translation>

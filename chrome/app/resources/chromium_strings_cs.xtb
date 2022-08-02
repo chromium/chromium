@@ -148,7 +148,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="4415566066719264597">Nechat Chromium běžet na pozadí</translation>
 <translation id="4423735387467980091">Přizpůsobit a ovládat Chromium</translation>
 <translation id="4427306783828095590">Vylepšená ochrana vás lépe ochrání před phishingem a malwarem</translation>
-<translation id="4440114195512068100">Pokud se chcete podívat, zda je zařízení aktualizované, přejděte do <ph name="LINK_BEGIN" />Nastavení systému ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Vítá vás Chromium; bylo otevřeno nové okno prohlížeče</translation>
 <translation id="4544142686420020088">Prohlížeč Chromium se neaktualizoval, něco se pokazilo. <ph name="BEGIN_LINK" />Vyřešte problémy se stahováním aktualizací prohlížeče Chromium a neúspěšnými aktualizacemi.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Pokračovat v novém profilu Chromium?</translation>
@@ -313,7 +312,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Jak můžete své údaje spravovat:<ph name="END_BOLD" /> Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud se zájmy nemají zohledňovat, můžete je z Chromia odstranit.</translation>
 <translation id="7937630085815544518">K prohlížeči Chromium jste byli přihlášeni s účtem <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7975919845073681630">Toto je druhá instalace prohlížeče Chromium. Tuto instalaci nelze nastavit jako výchozí prohlížeč.</translation>
-<translation id="7982481011030453202">Pokud některé nastavení na této stránce není zobrazeno, podívejte se do <ph name="LINK_BEGIN" />nastavení systému ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Rozšíření, aplikace a motivy z neznámých zdrojů mohou poškodit vaše zařízení. Chromium doporučuje instalovat je pouze z tohoto zdroje: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Až bude mít Chromium přístup, budou vás weby moci požádat o přístup.</translation>
 <translation id="80471789339884597">Děkujeme za instalaci aplikace <ph name="BUNDLE_NAME" />. Před jejím použitím je třeba restartovat všechny prohlížeče.</translation>

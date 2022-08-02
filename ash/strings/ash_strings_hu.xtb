@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1351937230027495976">Menü összecsukása</translation>
 <translation id="1364382257761975320">A Chromebook zárolásának feloldásához használja ujjlenyomatát.</translation>
+<translation id="1365866993922957110">Automatikus frissítések fogadása</translation>
 <translation id="1372545819342940910">Asztal mentése későbbre</translation>
 <translation id="1383597849754832576">Nem sikerült a beszédfájlok letöltése. Próbálja újra később.</translation>
 <translation id="1383876407941801731">Keresés</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> rögzítése feloldva</translation>
 <translation id="1836215606488044471">Segéd (betöltés…)</translation>
 <translation id="1838895407229022812">Az Éjszakai fény ki van kapcsolva.</translation>
+<translation id="1862380676329487333">Frissítés és kijelentkezés</translation>
 <translation id="1864454756846565995">C típusú USB-vel kompatibilis eszköz (hátsó port)</translation>
 <translation id="1879018240766558464">Az inkognitó ablakok jelenleg nem támogatottak. Az egyéb alkalmazásokat menti a rendszer.</translation>
 <translation id="1882814835921407042">Nincs mobilhálózat</translation>
@@ -562,6 +564,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="423685346499232137">Jelenleg nem lehet vágólapra másolni vagy beilleszteni tartalmakat</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>
+<translation id="4247123849143712100">Frissítés és leállítás</translation>
 <translation id="4250229828105606438">Képernyőkép</translation>
 <translation id="425364040945105958">Nincs SIM</translation>
 <translation id="4261870227682513959">Az értesítési beállítások megjelenítése. Az értesítések ki vannak kapcsolva</translation>
@@ -921,6 +924,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – <ph name="MANAGER" /> által kezelt munkamenet</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> csatlakoztatva</translation>
 <translation id="6351032674660237738">ALKALMAZÁSJAVASLATOK</translation>
+<translation id="6359587239691116345">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket. Ha elutasítja ezt a frissítést, akkor előfordulhat, hogy az eszköz a továbbiakban nem fog megfelelően működni, és biztonsággal, illetve teljesítménnyel kapcsolatos problémákat tapasztalhat.</translation>
 <translation id="6376931439017688372">A Bluetooth be van kapcsolva</translation>
 <translation id="6381109794406942707">Az eszköz feloldásához adja meg a PIN-kódot.</translation>
 <translation id="639644700271529076">A CAPS LOCK ki van kapcsolva</translation>
@@ -942,6 +946,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6491071886865974820">A(z) <ph name="MANAGER" /> megköveteli, hogy frissítse <ph name="DEVICE_TYPE" /> eszközét a határidőig</translation>
 <translation id="649452524636452238">Az intelligens kártya PIN-kódja</translation>
 <translation id="6495400115277918834">Kép a képben mód elindítva, a fókuszáláshoz nyomja le az Alt+Shift+V billentyűparancsot</translation>
+<translation id="6500896621837555595">Frissítés</translation>
 <translation id="6501401484702599040">Képernyő átküldése ide: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Kamera elveszítve. A kapcsolat helyreállítása folyamatban van.</translation>
 <translation id="6520517963145875092">Jelöljön ki egy ablakot a rögzítéshez</translation>
@@ -1219,6 +1224,7 @@ Frissen telepítve</translation>
 <translation id="8054466585765276473">Akkumulátor-időtartam kiszámítása.</translation>
 <translation id="8061464966246066292">Kontrasztos megjelenítés</translation>
 <translation id="8083540854303889870">Későbbre mentett</translation>
+<translation id="8091387634532529612">Automatikus frissítések</translation>
 <translation id="8098591350844501178">A képernyő „<ph name="RECEIVER_NAME" />” eszközre történő átküldésének leállítása</translation>
 <translation id="8113423164597455979">Be, összes app</translation>
 <translation id="8120151603115102514">Telefonján nincs beállítva lezárási képernyő. A Chromebook feloldásához írja be jelszavát.</translation>
@@ -1425,4 +1431,5 @@ Frissen telepítve</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> találat megjelenítése a következő lekérdezésre: <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Fekvő</translation>
 <translation id="990277280839877440">Bezárta a következő ablakot: <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">Szeretném megkapni a legújabb funkciókat és biztonsági fejlesztéseket. A frissítés a háttérben történik.</translation>
 </translationbundle>

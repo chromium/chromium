@@ -84,6 +84,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">I-collapse ang menu</translation>
 <translation id="1364382257761975320">Para i-unlock ang iyong Chromebook, gamitin ang fingerprint mo</translation>
+<translation id="1365866993922957110">Makatanggap ng mga awtomatikong update</translation>
 <translation id="1372545819342940910">I-save ang desk para sa ibang pagkakataon</translation>
 <translation id="1383597849754832576">Hindi ma-download ang mga speech file. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
@@ -161,6 +162,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1830308660060964064">Na-unpin ang <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Assistant (naglo-load...)</translation>
 <translation id="1838895407229022812">Naka-off ang Night Light.</translation>
+<translation id="1862380676329487333">I-update at mag-sign out</translation>
 <translation id="1864454756846565995">USB-C device (port sa rear)</translation>
 <translation id="1879018240766558464">Kasalukuyang hindi sinusuportahan ang mga Incognito window. Mase-save ang iba pang app.</translation>
 <translation id="1882814835921407042">Walang mobile network</translation>
@@ -561,6 +563,7 @@ Isaksak ang iyong device.</translation>
 <translation id="423685346499232137">Hindi makopya o ma-paste ang content sa ngayon</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
+<translation id="4247123849143712100">I-update at i-shut down</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Walang SIM</translation>
 <translation id="4261870227682513959">Ipakita ang mga setting ng notification. Naka-off ang mga notification</translation>
@@ -920,6 +923,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6338485349199627913">Ang <ph name="DISPLAY_NAME" /> ay isang session na pinapamahalaan ng <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Nakonekta ang <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">MGA IMINUMUNGKAHING APP</translation>
+<translation id="6359587239691116345">Makuha ang mga pinakabagong feature at pagpapahusay sa seguridad. Kung tatanggihan mo ang update na ito, posibleng hindi na gumana nang maayos ang iyong device, at posible kang makaranas ng mga isyu sa seguridad at performance.</translation>
 <translation id="6376931439017688372">Naka-on ang Bluetooth</translation>
 <translation id="6381109794406942707">Para i-unlock ang device, ilagay ang iyong PIN.</translation>
 <translation id="639644700271529076">Naka-off ang CAPS LOCK</translation>
@@ -941,6 +945,7 @@ Isaksak ang iyong device.</translation>
 <translation id="6491071886865974820">Hinihiling sa iyo ng <ph name="MANAGER" /> na i-update mo ang iyong <ph name="DEVICE_TYPE" /> bago ang deadline</translation>
 <translation id="649452524636452238">PIN ng smart card</translation>
 <translation id="6495400115277918834">Nasimulan ang picture-in-picture, pindutin ang Alt+Shift+V para mag-focus</translation>
+<translation id="6500896621837555595">I-update</translation>
 <translation id="6501401484702599040">Kina-cast ang screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Nawala ang camera, sinusubukang kumonekta ulit.</translation>
 <translation id="6520517963145875092">Pumili ng window na ika-capture</translation>
@@ -1218,6 +1223,7 @@ Kaka-install lang</translation>
 <translation id="8054466585765276473">Kinakalkula ang oras ng baterya.</translation>
 <translation id="8061464966246066292">Mataas na contrast</translation>
 <translation id="8083540854303889870">Naka-save para sa ibang pagkakataon</translation>
+<translation id="8091387634532529612">Mga awtomatikong update</translation>
 <translation id="8098591350844501178">Ihinto ang pag-cast ng screen sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Naka-on lahat</translation>
 <translation id="8120151603115102514">Walang lock screen ang iyong telepono. Para i-unlock ang iyong Chromebook, ilagay ang password.</translation>
@@ -1424,4 +1430,5 @@ Kaka-install lang</translation>
 <translation id="974545358917229949">Ipinapakita ang <ph name="RESULT_COUNT" /> (na) resulta para sa <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Landscape</translation>
 <translation id="990277280839877440">Isinara ang window na <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">Makuha ang mga pinakabagong feature at pagpapahusay sa seguridad. Nangyayari ang mga update sa background.</translation>
 </translationbundle>

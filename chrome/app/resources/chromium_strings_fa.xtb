@@ -145,7 +145,6 @@
 <translation id="4415566066719264597">‏اجازه به Chromium برای اجرا در پس‌زمینه</translation>
 <translation id="4423735387467980091">‏سفارشی کردن و کنترل Chromium</translation>
 <translation id="4427306783828095590">«محافظت بهبودیافته» کارهای بیشتری برای مسدود کردن رمزگیری و بدافزار انجام می‌دهد</translation>
-<translation id="4440114195512068100">‏برای اینکه ببینید دستگاهتان به‌روز است یا نه، به <ph name="LINK_BEGIN" />تنظیمات ChromiumOS<ph name="LINK_END" /> بروید</translation>
 <translation id="452711251841752011">‏به Chromium خوش‌آمدید؛ پنجره مرورگر جدید راه‌اندازی شد</translation>
 <translation id="4544142686420020088">‏Chromium به‌روزرسانی نشد؛ مشکلی پیش آمد. <ph name="BEGIN_LINK" />مشکلات به‌روزرسانی Chromium و به‌روزرسانی‌های ناموفق را برطرف کنید.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">‏در نمایه جدید Chromium ادامه می‌دهید؟</translation>
@@ -309,8 +308,6 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7877292582355102282">‏<ph name="BEGIN_BOLD" />چگونه می‌توانید داده‌هایتان را مدیریت کنید:<ph name="END_BOLD" /> برای محافظت از حریم خصوصی شما، علایقی را که قدیمی‌تر از ۴ هفته باشد به‌طور خودکار حذف می‌کنیم. وقتی به مرور کردن ادامه می‌دهید، ممکن است علاقه‌ای مجدداً به فهرست اضافه شود. یا می‌توانید علایقی را که نمی‌خواهید Chromium مدنظر قرار دهد حذف کنید.</translation>
 <translation id="7937630085815544518">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chromium شده‌اید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7975919845073681630">‏این نصب ثانویه Chromium است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
-<translation id="7982481011030453202">‏اگر تنظیمی در این صفحه نشان داده نمی‌شود، در <ph name="LINK_BEGIN" />
-      تنظیمات ChromiumOS<ph name="LINK_END" /> آن را جستجو کنید</translation>
 <translation id="7997934263947464652">‏افزونه‌ها، برنامه‌ها، و زمینه‌های دریافتی از منابع ناشناخته می‌توانند به دستگاهتان آسیب برسانند. Chromium توصیه می‌کند آن‌ها را فقط از <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> نصب کنید</translation>
 <translation id="8013436988911883588">‏وقتی Chromium دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
 <translation id="80471789339884597">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید همه مرورگرها را بازراه‌اندازی کنید.</translation>

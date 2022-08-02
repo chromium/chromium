@@ -241,7 +241,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端點</translation>
 <translation id="3069085583900247081">未通過測試</translation>
-<translation id="3076243757415932261">正在驗證組件…</translation>
 <translation id="3083667275341675831">連接性診斷</translation>
 <translation id="3084958266922136097">停用螢幕保護程式</translation>
 <translation id="3091839911843451378">失敗 - 已停止</translation>
@@ -276,7 +275,6 @@
 <translation id="3369013195428705271">您確定要清除所有列印記錄嗎？系統不會清除進行中的列印工作。</translation>
 <translation id="3383751554789092165">按需要變更裝置資訊。</translation>
 <translation id="3404249063913988450">啟用螢幕保護程式</translation>
-<translation id="3404770484521709967">組件已正確安裝。</translation>
 <translation id="3413935475507503304">如要繼續進行更新，請按一下 [下一步]。</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">安全性</translation>
@@ -396,7 +394,6 @@
 <translation id="445059817448385655">舊密碼</translation>
 <translation id="4453205916657964690">子網絡遮罩</translation>
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
-<translation id="4472575034687746823">開始使用</translation>
 <translation id="4479639480957787382">以太網絡</translation>
 <translation id="4483049906298469269">無法連線偵測非預設的網絡閘道</translation>
 <translation id="4500213108254186382">上蓋加速計</translation>
@@ -665,7 +662,7 @@
 <translation id="6618744767048954150">正在執行</translation>
 <translation id="6620487321149975369">除非您手動移除列印工作，否則列印工作會顯示在記錄中</translation>
 <translation id="6643016212128521049">清除</translation>
-<translation id="6644568396961840069">無法儲存檔案，請接上其他外部儲存裝置，或稍後再試。</translation>
+<translation id="6644568396961840069">無法儲存檔案。請插入其他外部儲存空間，或稍後再試。</translation>
 <translation id="6647510110698214773">加密演算法</translation>
 <translation id="6650062777702288430">假名/英數字元切換</translation>
 <translation id="6657585470893396449">密碼</translation>
@@ -811,7 +808,6 @@
 <translation id="8063022551652308521">「寫入保護」功能仍然關閉。如要繼續，請開啟該功能。</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
-<translation id="8083281199617904460">此維修程序應由經受訓練的維修技術員執行。需要先更換故障組件後才能開始維修。</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8104083085214006426">您正在使用開放且不安全的網絡</translation>
 <translation id="8109786307828817014">要使用無法校正的組件繼續操作嗎？</translation>

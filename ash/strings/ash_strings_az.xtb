@@ -84,6 +84,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1346748346194534595">Sağ</translation>
 <translation id="1351937230027495976">Menyunu yığcamlaşdırın</translation>
 <translation id="1364382257761975320">Chromebook'u kiliddən çıxarmaq üçün barmaq izinizi istifadə edin</translation>
+<translation id="1365866993922957110">Avtomatik güncəlləmələr alın</translation>
 <translation id="1372545819342940910">Sonra baxmaq üçün masanı yadda saxlayın</translation>
 <translation id="1383597849754832576">Nitq fayllarını endirmək olmur. Sonra yenidən cəhd edin.</translation>
 <translation id="1383876407941801731">Axtar</translation>
@@ -161,6 +162,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> çıxarıldı</translation>
 <translation id="1836215606488044471">Assistent (yüklənir...)</translation>
 <translation id="1838895407229022812">Gecə işığı deaktivdir.</translation>
+<translation id="1862380676329487333">Güncəlləyin və çıxın</translation>
 <translation id="1864454756846565995">USB-C cihazı (arxa port)</translation>
 <translation id="1879018240766558464">Anonim pəncərələr hazırda dəstəklənmir. Digər tətbiqlər yadda saxlanılacaq.</translation>
 <translation id="1882814835921407042">Mobil şəbəkə yoxdur</translation>
@@ -561,6 +563,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="423685346499232137">Hazırda məzmunu kopyalamaq və ya əlavə etmək mümkün deyil</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Ayarları açın</translation>
+<translation id="4247123849143712100">Güncəlləyin və söndürün</translation>
 <translation id="4250229828105606438">Skrinşot</translation>
 <translation id="425364040945105958">SIM yoxdur</translation>
 <translation id="4261870227682513959">Bildiriş ayarlarını göstərin. Bildirişlər deaktivdir</translation>
@@ -920,6 +923,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> sessiyası <ph name="MANAGER" /> tərəfindən idarə olunur</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> qoşulub</translation>
 <translation id="6351032674660237738">TƏTBİQ TƏKLİFLƏRİ</translation>
+<translation id="6359587239691116345">Ən son funksiyaları və təhlükəsizlik təkmilləşdirmələrini əldə edin. Bu güncəlləməni rədd etsəniz, cihazınız artıq düzgün işləməyə bilər və təhlükəsizlik və performans problemləri ilə üzləşə bilərsiniz.</translation>
 <translation id="6376931439017688372">Bluetooth aktivdir</translation>
 <translation id="6381109794406942707">Cihazı kiliddən çıxarmaq üçün PIN'nizi daxil edin.</translation>
 <translation id="639644700271529076">LOCK off CAPS</translation>
@@ -941,6 +945,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> son tarixdən əvvəl <ph name="DEVICE_TYPE" /> cihazını güncəlləməyinizi tələb edir</translation>
 <translation id="649452524636452238">Smart kart PIN-i</translation>
 <translation id="6495400115277918834">Şəkildə şəkil başladılıb, fokuslamaq üçün Alt+Shift+V düymələrinə basın</translation>
+<translation id="6500896621837555595">Güncəlləyin</translation>
 <translation id="6501401484702599040">Ekran <ph name="RECEIVER_NAME" /> üzərinə yayımlanır</translation>
 <translation id="6515727200518652613">Kamera itdi, yenidən qoşulmağa çalışır.</translation>
 <translation id="6520517963145875092">Çəkmək üçün pəncərə seçin</translation>
@@ -1218,6 +1223,7 @@ Yeni quraşdırma</translation>
 <translation id="8054466585765276473">Enerji vaxtı hesablanır.</translation>
 <translation id="8061464966246066292">Yüksək kontrast</translation>
 <translation id="8083540854303889870">Sonra üçün yadda saxlanıldı</translation>
+<translation id="8091387634532529612">Avtomatik güncəlləmələr</translation>
 <translation id="8098591350844501178">Ekranın <ph name="RECEIVER_NAME" /> üzrə yayımlanmasını dayandırın</translation>
 <translation id="8113423164597455979">Bütün tətbiqlərdə aktivdir</translation>
 <translation id="8120151603115102514">Telefonunuzun kilid ekranı yoxdur. Chromebook'u kiliddən çıxarmaq üçün parolu daxil edin.</translation>
@@ -1424,4 +1430,5 @@ Yeni quraşdırma</translation>
 <translation id="974545358917229949"><ph name="QUERY" /> üzrə <ph name="RESULT_COUNT" /> nəticə göstərilir</translation>
 <translation id="98515147261107953">Peyzaj</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> pəncərəsi bağlandı.</translation>
+<translation id="996204416024568215">Ən son funksiyaları və təhlükəsizlik təkmilləşdirmələrini əldə edin. Güncəlləmələr arxa fonda işləyir.</translation>
 </translationbundle>

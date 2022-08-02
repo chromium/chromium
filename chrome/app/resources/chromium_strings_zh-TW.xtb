@@ -146,7 +146,6 @@
 <translation id="4415566066719264597">讓 Chromium 在背景執行</translation>
 <translation id="4423735387467980091">自訂及控制 Chromium</translation>
 <translation id="4427306783828095590">強化防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
-<translation id="4440114195512068100">如要查看你的裝置是否為最新版本，請前往 <ph name="LINK_BEGIN" />Chromium OS 設定<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">歡迎使用 Chromium；新的瀏覽器視窗已開啟</translation>
 <translation id="4544142686420020088">發生錯誤，Chromium 未能更新。<ph name="BEGIN_LINK" />請修正 Chromium 更新問題與更新失敗項目。<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">要繼續使用新的 Chromium 設定檔嗎？</translation>
@@ -311,7 +310,6 @@ Chromium 無法復原你的設定。</translation>
 為保護個人隱私，我們會自動刪除 4 週以前的興趣喜好。視瀏覽內容而定，某個主題可能會再次顯示在你的興趣喜好清單中。或者，你可以移除不希望 Chromium 列在興趣喜好清單中的項目。</translation>
 <translation id="7937630085815544518">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chromium，請使用相同帳戶重新登入。</translation>
 <translation id="7975919845073681630">這是以並存形式安裝的次要 Chromium，無法設為您的預設瀏覽器。</translation>
-<translation id="7982481011030453202">如果這個頁面上未顯示設定，請檢查 <ph name="LINK_BEGIN" />Chromium OS 設定<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">來源不明的擴充功能、應用程式和主題可能會損害你的裝置。Chromium 建議你只透過 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安裝這些項目</translation>
 <translation id="8013436988911883588">Chromium 取得存取權後，網站將可要求你授予存取權。</translation>
 <translation id="80471789339884597">感謝你安裝本服務。你必須重新啟動所有瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>

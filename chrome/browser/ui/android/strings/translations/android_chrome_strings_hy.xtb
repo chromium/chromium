@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">Դիտարկումների պատմություն</translation>
 <translation id="2497852260688568942">Ձեր ադմինիստրատորն անջատել է համաժամացումը</translation>
 <translation id="250020030759455918">Դուք կտեսնեք ձեր <ph name="SITE_NAME" /> հաշվի մուտքի կարգավիճակը, այցելությունների պատմությունը և կայքի տվյալները Chrome-ում</translation>
+<translation id="2507178219579379057">Chrome-ն ուսումասիրում է եղանակները, որոնք թույլ են տալիս սահմանափակել սպամը, խարդախությունները և կայքերի միջև տեղեկությունների փոխանակումը։ Chrome-ը նաև <ph name="BEGIN_LINK" />որոշում է ձեր հետաքրքրությունները<ph name="END_LINK" />, որոնք կայքերը կարող են օգտագործել՝ ձեզ գովազդ ցուցադրելու համար։ Ձեր հետաքրքրությունները կարող եք կառավարել կարգավորումներում։</translation>
 <translation id="2513403576141822879"><ph name="BEGIN_LINK" />Համաժամացում և Google-ի ծառայություններ<ph name="END_LINK" /> բաժնում դուք կարող եք գտնել գաղտնիության, անվտանգության և տվյալների հավաքման հետ կապված լրացուցիչ կարգավորումներ։</translation>
 <translation id="2517472476991765520">Որոնել</translation>
 <translation id="2523184218357549926">Ձեր այցելած էջերի URL-ներն ուղարկում է Google-ին</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">Բաց կոդով ծրագրերի լիցենզիաներ</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Ինչ տվյալներ են օգտագործվում.<ph name="END_BOLD" /> ձեր այցելությունների պատմությունը այն կայքերի ցանկն է, որոնք դուք այցելել եք Chrome-ի միջոցով այս սարքում։</translation>
 <translation id="4263656433980196874">Օգնականի միջոցով ձայնային որոնման միջերեսը բացվում է ամբողջ բարձրությամբ</translation>
-<translation id="4266054596873078491">Մուտք գործեք այս կայքում և Chrome-ում ձեր Google հաշվով։</translation>
 <translation id="4269820728363426813">Պատճենել հղման հասցեն</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Միացնել էկրանի կողպումը Android-ի կարգավորումներում<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Օգտվելով Chrome-ից՝ դուք ընդունում եք <ph name="BEGIN_TOS_LINK" />Google-ի օգտագործման պայմանները<ph name="END_TOS_LINK" /> և <ph name="BEGIN_ATOS_LINK" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_ATOS_LINK" />։ Կիրառվում է նաև <ph name="BEGIN_PRIVACY_LINK" />Գաղտնիության քաղաքականությունը<ph name="END_PRIVACY_LINK" />։</translation>

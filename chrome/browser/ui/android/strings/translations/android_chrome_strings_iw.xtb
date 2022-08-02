@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2497852260688568942">מנהל המערכת שלך השבית את הסנכרון</translation>
 <translation id="250020030759455918">‏ב-Chrome יוצגו סטטוס הכניסה שלך ל-<ph name="SITE_NAME" />, נתוני הגלישה ונתוני האתר</translation>
+<translation id="2507178219579379057">‏ב-Chrome נבחנות דרכים חדשות להגביל ניסיונות הונאה, ספאם פרסומי ושיתוף בין אתרים. מערכת Chrome גם <ph name="BEGIN_LINK" />מעריכה מהם תחומי העניין שלך<ph name="END_LINK" />, ואתרים יוכלו להשתמש במידע הזה כדי להציג לך מודעות. אפשר לנהל את תחומי העניין בהגדרות.</translation>
 <translation id="2513403576141822879">‏אפשר למצוא הגדרות נוספות בנושא פרטיות, אבטחה ואיסוף נתונים בדף <ph name="BEGIN_LINK" />סנכרון ושירותי Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">סריקה</translation>
 <translation id="2523184218357549926">‏שליחת כתובות אתרים של דפים שבהם ביקרת ל-Google</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">רישיונות קוד פתוח</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />באילו נתונים נעשה שימוש:<ph name="END_BOLD" /> היסטוריית הגלישה – תיעוד האתרים שביקרת בהם באמצעות Chrome במכשיר הזה.</translation>
 <translation id="4263656433980196874">‏ההסכמה לחיפוש קולי של Assistant בממשק משתמש נפתחה בגובה מלא</translation>
-<translation id="4266054596873078491">‏יש להיכנס לאתר הזה ול-Chrome באמצעות חשבון Google שלך.</translation>
 <translation id="4269820728363426813">העתקת כתובת של קישור</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />להפעלת נעילת המסך בהגדרות Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">‏השימוש ב-Chrome מבטא הסכמה <ph name="BEGIN_TOS_LINK" />לתנאים ולהגבלות של Google<ph name="END_TOS_LINK" /> ו<ph name="BEGIN_ATOS_LINK" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_ATOS_LINK" />. גם <ph name="BEGIN_PRIVACY_LINK" />מדיניות הפרטיות<ph name="END_PRIVACY_LINK" /> חלה.</translation>

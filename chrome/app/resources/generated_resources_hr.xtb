@@ -897,6 +897,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="1829192082282182671">Zoom &amp;Out (Smanji)</translation>
 <translation id="1830550083491357902">Nije prijavljen</translation>
+<translation id="1831848493690504725">Ne možemo stupiti u kontakt s Googleom putem povezane mreže. Pokušajte odabrati drugu mrežu ili provjerite postavke mreže ili proxy postavke (ako koristite proxy).</translation>
 <translation id="1832459821645506983">U redu</translation>
 <translation id="1832511806131704864">Promjena telefona ažurirana je</translation>
 <translation id="1832848789136765277">Da biste uvijek mogli pristupati svojim podacima za sinkronizaciju, potvrdite da ste to vi</translation>
@@ -4738,6 +4739,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> traži</translation>
 <translation id="5534304873398226603">Odbaci fotografiju ili videozapis</translation>
 <translation id="5537725057119320332">Emitiraj</translation>
+<translation id="5539070192556911367">Google nije dostupan</translation>
 <translation id="5539221284352502426">Poslužitelj je odbio zaporku koju ste unijeli. Mogući su razlozi sljedeći: zaporka je prekratka. Zaporka mora sadržavati brojeve ili simbole. Zaporka mora biti različita od prethodnih zaporki.</translation>
 <translation id="5541694225089836610">Radnju je onemogućio administrator</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4801,6 +4803,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5585912436068747822">Formatiranje nije uspjelo</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Učitavanje aplikacija...</translation>
+<translation id="5590418976913374224">Reprodukcija zvuka pri pokretanju uređaja</translation>
 <translation id="5592595402373377407">Još nije dostupno dovoljno podataka.</translation>
 <translation id="5595307023264033512">Ukupna pohrana koju upotrebljavaju web-lokacije: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Uređivanje adrese</translation>
@@ -6346,6 +6349,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7102687220333134671">Automatska su ažuriranja uključena</translation>
 <translation id="7102832101143475489">Zahtjev je istekao</translation>
 <translation id="710640343305609397">Otvorite postavke mreže</translation>
+<translation id="7107609441453408294">Reprodukcija istog zvuka na svim zvučnicima</translation>
 <translation id="7108338896283013870">Sakrij preglednik</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7108933416628942903">Zaključaj odmah</translation>
@@ -6437,7 +6441,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7212097698621322584">Unesite svoj trenutačni PIN da biste ga promijenili. Ako ne znate PIN, vratite sigurnosni ključ na zadano, a zatim izradite novi PIN.</translation>
 <translation id="7213903639823314449">Tražilica koja se upotrebljava u adresnoj traci</translation>
 <translation id="721490496276866468">Uvoz zaporki</translation>
-<translation id="7216595297012131718">Poredajte jezike prema svojim preferencijama</translation>
 <translation id="7219473482981809164">Pronašli smo više profila dostupnih za preuzimanje. Prije nego što nastavite, odaberite one koje želite preuzeti.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nema slabih zaporki}=1{Jedna slaba zaporka}one{{NUM_WEAK} slaba zaporka}few{{NUM_WEAK} slabe zaporke}other{{NUM_WEAK} slabih zaporki}}</translation>
 <translation id="7220019174139618249">Izvoz zaporki u mapu "<ph name="FOLDER" />" nije moguć</translation>
@@ -6577,6 +6580,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7364745943115323529">Emitiranje...</translation>
 <translation id="7364796246159120393">Odaberi datoteku</translation>
 <translation id="7365076891350562061">Veličina monitora</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – prikvačeno</translation>
 <translation id="7366316827772164604">Traženje uređaja u blizini...</translation>
 <translation id="7366415735885268578">Dodavanje web-lokacije</translation>
 <translation id="7366909168761621528">Podaci o pregledavanju</translation>

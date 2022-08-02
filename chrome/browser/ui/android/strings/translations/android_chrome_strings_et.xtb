@@ -271,6 +271,7 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2496180316473517155">Sirvimise ajalugu</translation>
 <translation id="2497852260688568942">Administraator on sünkroonimise keelanud</translation>
 <translation id="250020030759455918">Näete Chrome'is oma saidi <ph name="SITE_NAME" /> sisselogimise olekut, sirvimisandmeid ja saidi andmeid</translation>
+<translation id="2507178219579379057">Chrome otsib võimalusi, kuidas rämpsreklaame, pettusi ja saitide vahelist jagamist piirata. Samuti <ph name="BEGIN_LINK" />prognoosib Chrome teie huvisid<ph name="END_LINK" />, mida saidid saavad kasutada teile reklaamide kuvamiseks. Saate oma huvisid seadetes hallata.</translation>
 <translation id="2513403576141822879">Privaatsuse, turvalisuse ning andmete kogumisega seotud lisaseadete nägemiseks avage valik <ph name="BEGIN_LINK" />Sünkroonimine ja Google'i teenused<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Kontrolli</translation>
 <translation id="2523184218357549926">Saadab Google'ile teie külastatud lehtede URL-id</translation>
@@ -586,7 +587,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="4256782883801055595">Avatud lähtekoodi litsentsid</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Milliseid andmeid kasutatakse?<ph name="END_BOLD" /> Teie sirvimisajalugu, selles seadmes Chrome'iga külastatud saitide andmed.</translation>
 <translation id="4263656433980196874">Assistendi häälotsingu sisu kasutajaliides on avatud täiskõrgusel</translation>
-<translation id="4266054596873078491">Logite sellele saidile ja Chrome'i sisse oma Google'i kontoga.</translation>
 <translation id="4269820728363426813">Kopeeri lingi aadress</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Androidi seadetes ekraaniluku sisselülitamine<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome'i kasutades nõustute <ph name="BEGIN_TOS_LINK" />Google'i teenusetingimustega<ph name="END_TOS_LINK" /> ning <ph name="BEGIN_ATOS_LINK" />Google Chrome'i ja Chrome OS-i lisateenusetingimustega<ph name="END_ATOS_LINK" />. Kehtivad ka <ph name="BEGIN_PRIVACY_LINK" />privaatsuseeskirjad<ph name="END_PRIVACY_LINK" />.</translation>

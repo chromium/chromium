@@ -144,7 +144,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="4415566066719264597">Permitir que Chromium se ejecute en segundo plano</translation>
 <translation id="4423735387467980091">Personaliza y controla Chromium</translation>
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor la suplantación de identidad (phishing) y el software malicioso.</translation>
-<translation id="4440114195512068100">Para saber si tu dispositivo está actualizado, ve a la <ph name="LINK_BEGIN" />configuración de Chromium OS<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Te damos la bienvenida a Chromium; se abrió una nueva ventana del navegador</translation>
 <translation id="4544142686420020088">No se actualizó Chromium porque se produjo un error. <ph name="BEGIN_LINK" />Soluciona los problemas de actualización y las actualizaciones con error de Chromium.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">¿Deseas continuar en un nuevo perfil de Chromium?</translation>
@@ -305,8 +304,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Cómo puedes administrar tu información:<ph name="END_BOLD" /> Para proteger tu privacidad, borramos los intereses automáticamente después de 4 semanas. Es posible que, a medida que navegues, un interés vuelva a aparecer en la lista. O bien, puedes quitar los intereses que no quieres que Chromium tenga en cuenta.</translation>
 <translation id="7937630085815544518">Accediste a Chromium con <ph name="USER_EMAIL_ADDRESS" />. Usa la misma cuenta para volver a acceder.</translation>
 <translation id="7975919845073681630">Como esta es una instalación secundaria de Chromium, no puede establecerse como tu navegador predeterminado.</translation>
-<translation id="7982481011030453202">Si no ves una opción de configuración en esta página, consulta la <ph name="LINK_BEGIN" />
-      configuración de Chromium OS<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Las extensiones, apps y temas de fuentes desconocidas pueden dañar tu dispositivo. Chromium recomienda instalarlas únicamente desde <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Una vez que Chromium tenga acceso, los sitios web podrán solicitarte acceso.</translation>
 <translation id="80471789339884597">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar todos los navegadores antes de usarlo.</translation>

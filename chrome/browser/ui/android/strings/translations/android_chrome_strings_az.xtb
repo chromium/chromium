@@ -271,6 +271,7 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="2496180316473517155">Brauzer tarixçəsi</translation>
 <translation id="2497852260688568942">Sinxronizasiya administratorunuz tərəfindən deaktiv edilib</translation>
 <translation id="250020030759455918">Chrome'da <ph name="SITE_NAME" /> üçün giriş statusu, baxış datası və sayt datanızı görəcəksiniz</translation>
+<translation id="2507178219579379057">Chrome reklam spamı, fırıldaqçılıq və saytlar arasında paylaşımı məhdudlaşdırmaq yollarını araşdırır. Chrome həmçinin saytların sizə reklam göstərmək üçün istifadə edə biləcəyi <ph name="BEGIN_LINK" />maraqlarınızı təxmin edir<ph name="END_LINK" />. Maraqlarınızı Ayarlarda idarə edə bilərsiniz.</translation>
 <translation id="2513403576141822879">Məxfilik, təhlükəsizlik və data toplanması ilə bağlı daha çox ayarlar üçün <ph name="BEGIN_LINK" />Sinxronizasiya və Google xidmətləri<ph name="END_LINK" /> səhifəsinə daxil olun</translation>
 <translation id="2517472476991765520">Skan edin</translation>
 <translation id="2523184218357549926">Daxil olduğunuz səhifələrin linkləri Google'a göndərilir</translation>
@@ -586,7 +587,6 @@ Baxış tarixçənizi (bütün saytlar və ya müəyyən bir sayt üçün) sildi
 <translation id="4256782883801055595">Açıq mənbə lisenziyaları</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Hansı data istifadə olunur:<ph name="END_BOLD" /> Baxış tarixçəniz, bu cihazda Chrome istifadə edərək ziyarət etdiyiniz saytların qeydi.</translation>
 <translation id="4263656433980196874">Assistentin səsli axtarış razılıq UI-si tam hündürlükdə açılıb</translation>
-<translation id="4266054596873078491">Google hesabınızla bu sayta və Chrome'a daxil olun.</translation>
 <translation id="4269820728363426813">Link ünvanını kopyalayın</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ayarlarında ekran kilidini aktiv edin<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome'u istifadə etməklə, <ph name="BEGIN_TOS_LINK" />Google Xidmət Şərtləri<ph name="END_TOS_LINK" /> və <ph name="BEGIN_ATOS_LINK" />Google Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_ATOS_LINK" /> ilə razılaşırsınız. <ph name="BEGIN_PRIVACY_LINK" />Məxfilik Siyasəti<ph name="END_PRIVACY_LINK" /> də tətbiq edilir.</translation>

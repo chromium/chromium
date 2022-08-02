@@ -1682,6 +1682,7 @@
 <translation id="5518670652865028077">Урлаг, энтертэйнмент</translation>
 <translation id="5519516356611866228">Таны өөрчилснөөр</translation>
 <translation id="5523118979700054094">Тохиргооны нэр</translation>
+<translation id="5525755241743357906">Хуулсан эсвэл зөөсөн файл</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS-н тохиргоонд хандалтын хэрэгслээ хувийн болгохын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="5528532273234423708">Гэрийн автоматжуулалт</translation>
 <translation id="55293785478302737">Ирмэгийг нь нийлүүлж үдэх</translation>
@@ -2933,6 +2934,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS-н тохиргоонд Chrome-г системийн өгөгдмөл хөтөч болгон тохируулахын тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="9096679202588811390">ТВ шоу, хөтөлбөр</translation>
 <translation id="9101630580131696064">Гарах цаасны тавиур 1</translation>
+<translation id="9102081333385212048">Таны хуулсан эсвэл зөөсөн файлуудыг дүн шинжилгээ хийлгэхээр Google Cloud эсвэл гуравдагч тал руу илгээдэг. Жишээ нь тэдгээрийг эмзэг өгөгдөл эсвэл хортой программтай эсэхийг скан хийж магадгүй.</translation>
 <translation id="9103537084693478942">Видео программ хангамж</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> ихэвчлэн таны мэдээллийг хамгаалах зорилгоор шифр ашигладаг. Энэ удаад Chromium <ph name="SITE" />-тай холбогдохыг оролдоход тус веб сайтаас хэвийн бус, буруу өгөгдөл илгээлээ. Халдагч <ph name="SITE" /> юм шиг дүр үзүүлж байгаа, эсвэл Wi-Fi-д нэвтрэх дэлгэц холболтод саад учруулсан байж болзошгүй. Chromium ямар нэгэн өгөгдөл солилцохоос өмнө холболтыг зогсоосон тул таны мэдээлэл аюулгүй.</translation>
 <translation id="9106062320799175032">Тооцооны хаяг нэмэх</translation>

@@ -14,8 +14,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1142745911746664600">Chrome nuk mund të përditësohet</translation>
 <translation id="1152920704813762236">Rreth ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Hape në Chrome</translation>
-<translation id="1178374936842835197">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
-        cilësimet e tua të Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Faleminderit që e instalove. Duhet të rinisësh shfletuesin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
@@ -123,7 +121,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3080151273017101988">Vazhdo ekzekutimin e aplikacioneve në sfond kur Google Chrome është i mbyllur</translation>
 <translation id="3089968997497233615">Ofrohet një version i ri dhe më i sigurt i Google Chrome.</translation>
 <translation id="3100998948628680988">Emërto profilin tënd të Chrome</translation>
-<translation id="3103390129666310801">Për të parë nëse pajisja jote është e përditësuar, shko te <ph name="LINK_BEGIN" />Cilësimet e Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Për të kontrolluar nëse fjalëkalimet e tjera janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
@@ -214,7 +211,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet macOS 10.13 e lart. Ky kompjuter përdor OS X 10.11.</translation>
 <translation id="5098668839038261629">Kur opsioni është aktiv, do të dalësh po ashtu nga Chrome</translation>
-<translation id="5112116809696021727">Për të parë nëse pajisja jote është e përditësuar, shko te <ph name="LINK_BEGIN" />Cilësimet e ChromeOS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Zbulo aplikacione, lojëra, shtesa dhe tema të mrekullueshme për Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizo profilin tënd të Chrome</translation>
 <translation id="5163087008893166964">Mirë se erdhe në Chrome. U hap një dritare e re e shfletuesit</translation>
@@ -254,8 +250,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5940385492829620908">Këtu janë materialet e tua të uebit, të faqeshënuesve dhe të tjera nga Chrome.</translation>
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
-<translation id="5959292945051687759">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
-        cilësimet e ChromeOS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>

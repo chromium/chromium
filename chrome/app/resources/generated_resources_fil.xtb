@@ -1082,6 +1082,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1997616988432401742">Iyong mga certificate</translation>
 <translation id="1999115740519098545">Sa startup</translation>
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
+<translation id="2001148512690747464">Walang device sa Mabilis na Pagpares na naka-save sa <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2002109485265116295">Real-time</translation>
 <translation id="2003130567827682533">Para i-activate ang data ng '<ph name="NAME" />,' kumonekta muna sa Wi-Fi network</translation>
 <translation id="2004697686368036666">Posibleng hindi gumana ang mga feature sa ilang site</translation>
@@ -1346,6 +1347,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2241053333139545397">Basahin at baguhin ang iyong data sa ilang website</translation>
 <translation id="2241634353105152135">Isang beses lang</translation>
 <translation id="2242687258748107519">Info ng File</translation>
+<translation id="2245296100676446525">I-on ang pag-sync para makuha ang iyong mga bookmark, password, history, at higit pa sa device na ito at sa iba pang device kung saan ka nagsi-sync.</translation>
 <translation id="2245603955208828424">Gamitin ang mga arrow key para magpalipat-lipat ng item nang kada titik</translation>
 <translation id="2246129643805925002">Awtomatikong nag-a-update ang iyong <ph name="DEVICE_TYPE" /> sa background para mabigyan ka ng mga pinakabagong feature at pagpapahusay sa seguridad. Puwede mong suriin ang mga kagustuhan sa update sa Mga Setting.</translation>
 <translation id="2246549592927364792">Kumuha ng mga paglalarawan ng larawan mula sa Google?</translation>
@@ -1790,6 +1792,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2642111877055905627">Bola ng soccer</translation>
 <translation id="2643698698624765890">Pamahalaan ang iyong mga extension sa pamamagitan ng pag-click sa Mga Extension sa menu na Window.</translation>
 <translation id="2645047101481282803">Pinapamahalaan ng <ph name="PROFILE_NAME" /> ang iyong device</translation>
+<translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{1 password ang na-import sa device na ito}one{{NUM_PASSWORDS} password ang na-import sa device na ito}other{{NUM_PASSWORDS} na password ang na-import sa device na ito}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
 <translation id="2652129567809778422">Pumili ng password</translation>
@@ -2967,6 +2970,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3790417903123637354">Nagkaproblema. Subukan ulit sa ibang pagkakataon</translation>
 <translation id="379082410132524484">Nag-expire na ang iyong card</translation>
+<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> (na) extension</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Walang nakitang mapaminsalang software ang Chrome sa iyong computer • Tiningnan 1 araw ang nakalipas}one{Walang nakitang mapaminsalang software ang Chrome sa iyong computer • Tiningnan {NUM_DAYS} na araw ang nakalipas}other{Walang nakitang mapaminsalang software ang Chrome sa iyong computer • Tiningnan {NUM_DAYS} araw ang nakalipas}}</translation>
 <translation id="379500251094592809">Para magamit ang Nearby Share, tiyaking naka-unlock at magkalapit ang dalawang device, at naka-on ang Bluetooth ng mga ito. Kung nagbabahagi ka sa isang Chromebook na wala sa iyong mga contact, tiyaking naka-on ang visibility ng Nearby nito (buksan ang lugar ng status sa pamamagitan ng pagpili ng oras, pagkatapos ay i-on ang visibility ng Nearby) <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Naka-off</translation>
@@ -4754,6 +4758,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5542750926112347543">Na-block ang cookies mula sa <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Kumokonekta sa <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Hinahanap ang status...</translation>
+<translation id="5544482392629385159">Device <ph name="DEVICE_INDEX" /> sa <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Renderer</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Magdagdag ng tab sa grupo}one{Magdagdag ng mga tab sa grupo}other{Magdagdag ng mga tab sa grupo}}</translation>
 <translation id="5545693483061321551">Hindi magagamit ng mga site ang cookies mo para makita ang iyong aktibidad sa pag-browse sa iba't ibang site, halimbawa, para mag-personalize ng mga ad. Posibleng hindi gumana ang mga feature sa ilang site.</translation>
@@ -5555,6 +5560,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6333170995003625229">Hindi ma-verify ang iyong email address o password. Subukang mag-sign in ulit.</translation>
 <translation id="6335920438823100346">Para simulan ang Linux, hihilingin sa iyo ng <ph name="MANAGER" /> na i-back up ang iyong data at i-reset ang Chromebook na ito sa mga factory setting.</translation>
 <translation id="6336038146639916978">Na-disable ng <ph name="MANAGER" /> ang pag-debug ng ADB. Ire-reset nito ang iyong <ph name="DEVICE_TYPE" /> pagkalipas ng 24 na oras. I-back up ang anumang file na gusto mong panatilihin.</translation>
+<translation id="6338402296920404442">Pag-isipang i-delete ang <ph name="FILENAME" />, para hindi makita ng iba pang gumagamit ng device na ito ang iyong mga password.</translation>
 <translation id="6338981933082930623">Puwedeng magpakita sa iyo ng anumang ad ang lahat ng site</translation>
 <translation id="6339668969738228384">Gumawa ng bagong profile para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -6446,7 +6452,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7212097698621322584">Ilagay ang kasalukuyan mong PIN para palitan ito. Kung hindi mo alam ang iyong PIN, kakailanganin mong i-reset ang security key, pagkatapos ay gumawa ng bagong PIN.</translation>
 <translation id="7213903639823314449">Search engine na ginamit sa address bar</translation>
 <translation id="721490496276866468">Mag-import ng mga password</translation>
-<translation id="7216595297012131718">Pagsunud-sunurin ang mga wika batay sa iyong kagustuhan</translation>
 <translation id="7219473482981809164">Marami kaming nakitang profile na available na i-download. Piliin ang mga profile na gusto mong i-download bago magpatuloy.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Walang mahinang password}=1{1 mahinang password}one{{NUM_WEAK} mahinang password}other{{NUM_WEAK} na mahinang password}}</translation>
 <translation id="7220019174139618249">Hindi ma-export ang mga password sa "<ph name="FOLDER" />"</translation>
@@ -7630,6 +7635,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8338952601723052325">Website ng developer</translation>
 <translation id="8339059274628563283">Lokal na naka-store na data ng <ph name="SITE" /></translation>
 <translation id="833986336429795709">Para buksan ang link na ito, pumili ng app</translation>
+<translation id="8340547030807793004">Higit pang pagkilos para sa <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">Hindi sinubukan</translation>
 <translation id="8342861492835240085">Pumili ng koleksyon</translation>
 <translation id="8345848587667658367">Puwede mo nang tingnan ang mga pinakabagong larawan, media, notification, at app ng iyong telepono</translation>

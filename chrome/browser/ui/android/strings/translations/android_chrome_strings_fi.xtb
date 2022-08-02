@@ -271,6 +271,7 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2497852260688568942">Järjestelmänvalvoja on poistanut synkronoinnin käytöstä.</translation>
 <translation id="250020030759455918">Näet kirjautumisen tilan, selausdatan ja sivustodatan (<ph name="SITE_NAME" />) Chromessa</translation>
+<translation id="2507178219579379057">Chrome tutkii tapoja rajoittaa mainosspämmäystä, petoksia ja sivustojen välistä jakamista. Chrome myös <ph name="BEGIN_LINK" />arvioi kiinnostuksen kohteitasi<ph name="END_LINK" />, joita sivustot voivat käyttää näyttääksesi sinulle mainoksia. Voit muuttaa kiinnostuksen kohteitasi asetuksista.</translation>
 <translation id="2513403576141822879">Näet lisää yksityisyyteen, tietoturvaan ja datankeruuseen liittyviä asetuksia <ph name="BEGIN_LINK" />Synkronointi ja Google-palvelut<ph name="END_LINK" /> ‑kohdassa.</translation>
 <translation id="2517472476991765520">Etsi</translation>
 <translation id="2523184218357549926">Lähettää avaamiesi sivujen URL-osoitteet Googlelle</translation>
@@ -586,7 +587,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="4256782883801055595">Avoimen lähdekoodin käyttöluvat</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Mitä dataa käytetään:<ph name="END_BOLD" /> Selaushistoriaasi ja listaa sivuista, joilla olet käynyt Chromella tällä laitteella</translation>
 <translation id="4263656433980196874">Assistantin puhehaun suostumus-UI avattu koko näytön kokoisena</translation>
-<translation id="4266054596873078491">Kirjaudu tälle sivustolle ja Chromeen Google-tililläsi.</translation>
 <translation id="4269820728363426813">Kopioi linkin osoite</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Laita näytön lukitus päälle Android-asetuksista<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Käyttämällä Chromea hyväksyt <ph name="BEGIN_TOS_LINK" />Googlen käyttöehdot<ph name="END_TOS_LINK" /> sekä <ph name="BEGIN_ATOS_LINK" />Google Chromen ja Chrome-käyttöjärjestelmän lisäkäyttöehdot<ph name="END_ATOS_LINK" />. Myös <ph name="BEGIN_PRIVACY_LINK" />tietosuojakäytäntöä<ph name="END_PRIVACY_LINK" /> sovelletaan.</translation>

@@ -14,8 +14,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1142745911746664600">Hindi ma-update ang Chrome</translation>
 <translation id="1152920704813762236">Tungkol sa ChromeOS</translation>
 <translation id="1154147086299354128">Buksan sa Chr&amp;ome</translation>
-<translation id="1178374936842835197">Kung hindi lumalabas ang isang setting sa page na ito, tingnan sa iyong <ph name="LINK_BEGIN" />
-        mga setting ng ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Salamat sa pag-install. Dapat mong i-restart ang iyong browser bago gamitin ang <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Ilunsad ulit para ma-update ang Chrome</translation>
 <translation id="1302523850133262269">Mangyaring maghintay habang ini-install ng Chrome ang mga pinakabagong update sa system.</translation>
@@ -124,7 +122,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3080151273017101988">Magpatuloy sa pagpapatakbo ng mga app sa background kapag nakasara ang Google Chrome</translation>
 <translation id="3089968997497233615">May available na bago, mas ligtas na bersyon ng Google Chrome.</translation>
 <translation id="3100998948628680988">Pangalanan ang iyong profile sa Chrome</translation>
-<translation id="3103390129666310801">Para makita kung up to date ang iyong device, pumunta sa <ph name="LINK_BEGIN" />Mga Setting ng ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Para makita kung ligtas ang iba mo pang password mula sa mga paglabag sa data at iba pang isyu sa seguridad, <ph name="BEGIN_LINK" />mag-sign in sa Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Magkakaroon ng bisa ang iyong mga pagbabago sa susunod na pagkakataong muli mong ilunsad ang Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
@@ -215,7 +212,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Para makakuha ng mga update sa Google Chrome sa hinaharap, kakailanganin mo ng macOS 10.13 o mas bago. Gumagamit ang computer na ito ng OS X 10.11.</translation>
 <translation id="5098668839038261629">Kapag naka-on, masa-sign out ka rin sa Chrome</translation>
-<translation id="5112116809696021727">Para makita kung up to date ang iyong device, pumunta sa <ph name="LINK_BEGIN" />Mga Setting ng ChromeOS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Tumuklas ng mahuhusay na app, laro, extension at tema para sa Google Chrome.</translation>
 <translation id="5139423532931106058">I-customize ang iyong profile sa Chrome</translation>
 <translation id="5163087008893166964">Welcome sa Chrome; binuksan ang bagong window ng browser</translation>
@@ -255,8 +251,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5940385492829620908">Makikita dito ang iyong web, mga bookmark at iba pang mga bagay-bagay sa Chrome.</translation>
 <translation id="5941711191222866238">I-minimize</translation>
 <translation id="5941830788786076944">Gawin ang Google Chrome na default browser</translation>
-<translation id="5959292945051687759">Kung hindi lumalabas ang isang setting sa page na ito, tingnan sa iyong <ph name="LINK_BEGIN" />
-      mga setting ng ChromeOS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Nagda-download... <ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6040143037577758943">Isara</translation>
 <translation id="6070348360322141662">Para sa karagdagang seguridad, ie-encrypt ng Google Chrome ang iyong data</translation>

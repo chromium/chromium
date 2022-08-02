@@ -84,6 +84,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1346748346194534595">Pa labi</translation>
 <translation id="1351937230027495976">Sakļaut izvēlni</translation>
 <translation id="1364382257761975320">Lai atbloķētu Chromebook datoru, izmantojiet pirksta nospiedumu.</translation>
+<translation id="1365866993922957110">Saņemt automātiskos atjauninājumus</translation>
 <translation id="1372545819342940910">Saglabāt darbvietu vēlākai izmantošanai</translation>
 <translation id="1383597849754832576">Nevar lejupielādēt automātisko subtitru failus. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
@@ -161,6 +162,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> tika atsprausti</translation>
 <translation id="1836215606488044471">Asistents (notiek ielāde...)</translation>
 <translation id="1838895407229022812">Nakts režīms ir izslēgts.</translation>
+<translation id="1862380676329487333">Atjaunināt un izrakstīties</translation>
 <translation id="1864454756846565995">USB-C ierīce (aizmugurējā pieslēgvieta)</translation>
 <translation id="1879018240766558464">Inkognito režīma logi pašlaik netiek atbalstīti. Citas lietotnes tiks saglabātas.</translation>
 <translation id="1882814835921407042">Nav mobilā tīkla</translation>
@@ -561,6 +563,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="423685346499232137">Pašlaik nevar kopēt vai ielīmēt saturu.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Atvērt iestatījumus</translation>
+<translation id="4247123849143712100">Atjaunināt un izslēgt</translation>
 <translation id="4250229828105606438">Ekrānuzņēmums</translation>
 <translation id="425364040945105958">Nav SIM kartes</translation>
 <translation id="4261870227682513959">Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti</translation>
@@ -920,6 +923,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ir pārvaldīta sesija, ko pārvalda <ph name="MANAGER" />.</translation>
 <translation id="6344138931392227467">Izveidots savienojums ar ierīci <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">LIETOTŅU IETEIKUMI</translation>
+<translation id="6359587239691116345">Iegūstiet jaunākās funkcijas un drošības uzlabojumus. Ja noraidīsiet šo atjauninājumu, iespējams, jūsu ierīce vairs nedarbosies pareizi un jūs saskarsieties ar drošības un veiktspējas problēmām.</translation>
 <translation id="6376931439017688372">Bluetooth ir ieslēgts</translation>
 <translation id="6381109794406942707">Lai atbloķētu ierīci, ievadiet PIN.</translation>
 <translation id="639644700271529076">Funkcija CAPS LOCK ir izslēgta.</translation>
@@ -941,6 +945,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> pieprasa, lai jūs atjauninātu ierīci <ph name="DEVICE_TYPE" /> pirms noteiktā termiņa</translation>
 <translation id="649452524636452238">Viedkartes PIN</translation>
 <translation id="6495400115277918834">Palaists režīms “attēls attēlā”; nospiediet taustiņu kombināciju Alt+Shift+V, lai fokusētu</translation>
+<translation id="6500896621837555595">Atjaunināt</translation>
 <translation id="6501401484702599040">Notiek ekrāna apraide šādā vietā: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Zudis savienojums ar kameru, tiek mēģināts atjaunot savienojumu.</translation>
 <translation id="6520517963145875092">Atlasiet logu, kura saturs jātver</translation>
@@ -1218,6 +1223,7 @@ Jauna instalācija</translation>
 <translation id="8054466585765276473">Notiek akumulatora darbības ilguma aprēķināšana.</translation>
 <translation id="8061464966246066292">Augsts kontrasts</translation>
 <translation id="8083540854303889870">Saglabāti vēlākai izmantošanai</translation>
+<translation id="8091387634532529612">Automātiskie atjauninājumi</translation>
 <translation id="8098591350844501178">Apturēt ekrāna apraidi uztvērējā “<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">Iesl. v. lietotnēs</translation>
 <translation id="8120151603115102514">Jūsu tālrunim nav iespējots bloķēšanas ekrāns. Lai atbloķētu Chromebook datoru, ievadiet paroli.</translation>
@@ -1424,4 +1430,5 @@ Jauna instalācija</translation>
 <translation id="974545358917229949">Tiek rādīti <ph name="RESULT_COUNT" /> rezultāti vaicājumam “<ph name="QUERY" />”</translation>
 <translation id="98515147261107953">Ainava</translation>
 <translation id="990277280839877440">Logs “<ph name="WINDOW_TITILE" />” ir aizvērts.</translation>
+<translation id="996204416024568215">Iegūstiet jaunākās funkcijas un drošības uzlabojumus. Atjauninājumi tiek veikti fonā.</translation>
 </translationbundle>

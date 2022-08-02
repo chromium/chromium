@@ -1069,6 +1069,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1997616988432401742">Tus certificados</translation>
 <translation id="1999115740519098545">Al abrir</translation>
 <translation id="2000419248597011803">Envía algunas cookies y búsquedas desde la barra de direcciones y el cuadro de búsqueda a tu buscador predeterminado</translation>
+<translation id="2001148512690747464">No hay dispositivos de Emparejamiento rápido guardados en <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2002109485265116295">En tiempo real</translation>
 <translation id="2003130567827682533">Para activar los datos de "<ph name="NAME" />", conéctate a una red Wi‑Fi</translation>
 <translation id="2004697686368036666">Es posible que las funciones de algunos sitios no funcionen</translation>
@@ -1333,6 +1334,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2241053333139545397">Leer y modificar tus datos en una serie de sitios web</translation>
 <translation id="2241634353105152135">Solo una vez</translation>
 <translation id="2242687258748107519">Información del archivo</translation>
+<translation id="2245296100676446525">Activa la sincronización para acceder a tus marcadores, tus contraseñas, tu historial y otras opciones desde este dispositivo y desde cualquier otro dispositivo en el que tengas la sincronización activada.</translation>
 <translation id="2245603955208828424">Usa las teclas de flecha para desplazarte por los elementos letra por letra</translation>
 <translation id="2246129643805925002">Tu <ph name="DEVICE_TYPE" /> se actualiza automáticamente en segundo plano para que disfrutes de las últimas funciones y mejoras de seguridad. Puedes revisar tus preferencias de actualización en Configuración.</translation>
 <translation id="2246549592927364792">¿Quieres obtener descripciones de imágenes de Google?</translation>
@@ -1775,6 +1777,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2642111877055905627">Balón de fútbol</translation>
 <translation id="2643698698624765890">Para gestionar tus extensiones, haz clic en la opción Extensiones del menú Ventana.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> gestiona tu dispositivo.</translation>
+<translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{1 contraseña importada a este dispositivo}other{{NUM_PASSWORDS} contraseñas importadas a este dispositivo}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">ASCII codificado en Base64, cadena de certificados</translation>
 <translation id="2652129567809778422">Seleccionar contraseña</translation>
@@ -2952,6 +2955,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3790417903123637354">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="379082410132524484">Tu tarjeta ha caducado</translation>
+<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> extensiones</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome no ha detectado software dañino en tu ordenador • Comprobado hace 1 día}other{Chrome no ha detectado software dañino en tu ordenador • Comprobado hace {NUM_DAYS} días}}</translation>
 <translation id="379500251094592809">Para usar la función Compartir con Nearby, asegúrate de que los dos dispositivos estén desbloqueados, se encuentren cerca y tengan el Bluetooth activado. Si vas a compartir archivos con un Chromebook que no está en tus contactos, comprueba que esté activa la visibilidad de Nearby (selecciona la hora para abrir el área de estado y luego activa la visibilidad de Nearby). <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Desactivado</translation>
@@ -4737,6 +4741,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5542750926112347543">Se han bloqueado las cookies de <ph name="DOMAIN" /></translation>
 <translation id="5542949973455282971">Conectando con <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Comprobando el estado...</translation>
+<translation id="5544482392629385159">Dispositivo <ph name="DEVICE_INDEX" /> de <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Renderizador</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Añadir pestaña al grupo}other{Añadir pestañas al grupo}}</translation>
 <translation id="5545693483061321551">Los sitios web no pueden usar cookies para ver tu actividad de navegación en otros sitios web con el objetivo de, por ejemplo, personalizar anuncios. Es posible que las funciones de algunos sitios no funcionen.</translation>
@@ -5538,6 +5543,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6333170995003625229">No se ha podido verificar tu dirección de correo o tu contraseña. Prueba a iniciar sesión de nuevo.</translation>
 <translation id="6335920438823100346">Para iniciar Linux, <ph name="MANAGER" /> necesita que crees una copia de seguridad de tus datos y restablezcas los ajustes de fábrica de este Chromebook.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha inhabilitado la depuración ADB. Se restablecerá tu <ph name="DEVICE_TYPE" /> dentro de 24 horas. Haz copias de seguridad de los archivos que quieras conservar.</translation>
+<translation id="6338402296920404442">Te recomendamos que elimines <ph name="FILENAME" /> para que otras personas que usen este dispositivo no puedan ver tus contraseñas.</translation>
 <translation id="6338981933082930623">Todos los sitios pueden mostrarte cualquier anuncio</translation>
 <translation id="6339668969738228384">Crear un perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impresión en Internet (IPPS)</translation>
@@ -6427,7 +6433,6 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7212097698621322584">Introduce tu PIN actual para cambiarlo. Si no sabes cuál es tu PIN, tendrás que restablecer la llave de seguridad y crear un nuevo PIN.</translation>
 <translation id="7213903639823314449">Buscador utilizado en la barra de direcciones</translation>
 <translation id="721490496276866468">Importar contraseñas</translation>
-<translation id="7216595297012131718">Ordena los idiomas según tus preferencias</translation>
 <translation id="7219473482981809164">Hemos encontrado varios perfiles disponibles para descargar. Selecciona los que quieras descargar antes de continuar.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{No hay contraseñas poco seguras}=1{1 contraseña poco segura}other{{NUM_WEAK} contraseñas poco seguras}}</translation>
 <translation id="7220019174139618249">No se pueden exportar contraseñas a la carpeta "<ph name="FOLDER" />"</translation>
@@ -7611,6 +7616,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8338952601723052325">Sitio web para desarrolladores</translation>
 <translation id="8339059274628563283"><ph name="SITE" /> ha almacenado datos de forma local</translation>
 <translation id="833986336429795709">Para abrir este enlace, elige una aplicación</translation>
+<translation id="8340547030807793004">Más acciones de <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">No lo he intentado</translation>
 <translation id="8342861492835240085">Seleccionar una colección</translation>
 <translation id="8345848587667658367">Ahora puedes consultar las fotos, el contenido multimedia, las notificaciones y las aplicaciones recientes de tu teléfono</translation>

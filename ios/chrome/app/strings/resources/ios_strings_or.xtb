@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">ପ୍ରିଣ୍ଟ ହେଲାନାହିଁ।</translation>
 <translation id="1125564390852150847">ନୂତନ ଟାବ୍ ତିଆରି କରନ୍ତୁ।</translation>
 <translation id="1126809382673880764">ବିପଦଜନକ ୱେବସାଇଟ୍, ଡାଉନଲୋଡ୍ ଏବଂ ଏକ୍ସଟେନ୍ସନଗୁଡ଼ିକ ଠାରୁ ଆପଣଙ୍କୁ ରକ୍ଷା କରେ ନାହିଁ। Gmail ଏବଂ Search ପରି ଅନ୍ୟ Google ସେବାଗୁଡ଼ିକରେ ସେଫ୍ ବ୍ରାଉଜିଂ ସୁବିଧା ଉପଲବ୍ଧ ଥିଲେ, ଆପଣ ଏବେ ବି ଏହି ସୁରକ୍ଷା ପାଇବେ।</translation>
+<translation id="1135212215217513471">iOS ପାଇଁ Chrome ପାଆନ୍ତୁ</translation>
 <translation id="1145536944570833626">ବିଦ୍ୟମାନ ଥିବା ଡାଟାକୁ ଡିଲିଟ୍ କରନ୍ତୁ।</translation>
 <translation id="1147031633655575115"><ph name="USER" /> ଭାବରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି</translation>
 <translation id="1154984953698510061">ଅନ୍ୟ ଟାବଗୁଡ଼ିକୁ ଦେଖନ୍ତୁ</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">ଆପଣ ଆପଣଙ୍କ ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟାକୁ ସର୍ବଦା ଆକ୍ସେସ୍ କରିପାରିବେ ତାହା ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="1870148520156231997">ପାସ୍‌ୱାର୍ଡ ପ୍ରକାଶ କରନ୍ତୁ</translation>
 <translation id="1872096359983322073">ଟର୍ଚ୍ଚ</translation>
+<translation id="1910975740091000991">iOS ପାଇଁ Chrome</translation>
 <translation id="1911619930368729126">Google ଡ୍ରାଇଭ୍‌ରେ ଅପ୍‌ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="1923342640370224680">ଶେଷ ଘଣ୍ଟାକର</translation>
 <translation id="1930989359703290198">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କୁ କେବଳ ନିର୍ଦ୍ଦିଷ୍ଟ କିଛି ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସାଇନ ଇନ କରିବାକୁ ଅନୁମତି ଦିଏ। ଅନୁମତି ଦିଆଯାଇନଥିବା ଆକାଉଣ୍ଟଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">ଆପଣ କପି କରିଥିବା ଟେକ୍ସଟ୍ ଖୋଜନ୍ତୁ</translation>
 <translation id="214201757571129614">ସାଇନ୍ ଇନ୍ କରନ୍ତୁ…</translation>
 <translation id="2149973817440762519">ବୁକମାର୍କ୍ ସମ୍ପାଦନ କରନ୍ତୁ</translation>
+<translation id="2155145621546387786">Chromeରେ ସେୟାର କରନ୍ତୁ</translation>
 <translation id="2175927920773552910">QR କୋଡ୍</translation>
 <translation id="2218443599109088993">ଜୁମ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="2230173723195178503">ୱେବ୍‌ପୃଷ୍ଠା ଲୋଡ୍ କରାଗଲା</translation>
@@ -406,7 +409,6 @@
 <translation id="4502566650163919158">ଏବେ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="4505980578794259603">ଶେଷଥର <ph name="TIME" /> ପୂର୍ବେ ଯାଞ୍ଚ କରାଯାଇଥିଲା।</translation>
 <translation id="4508750114462689118">ସାଇନ୍-ଇନ୍ ପ୍ରୋମୋକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="4511669830082467224">Google ମାଧ୍ୟମରେ ଇମେଜ ସନ୍ଧାନ କରନ୍ତୁ</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />ରେ ସେଭ୍‍ ହୋଇଥିବା ପାସ୍‍ୱର୍ଡଗୁଡ଼ିକ ଦେଖନ୍ତୁ ଏବଂ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="452750746583162491">ଆପଣଙ୍କ ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟାର ସମୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="4536418791685807335">ପୁଣି ସାଇନ୍ ଇନ୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>

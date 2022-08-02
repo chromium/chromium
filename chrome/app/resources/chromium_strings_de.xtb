@@ -146,7 +146,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4415566066719264597">Chromium im Hintergrund ausführen</translation>
 <translation id="4423735387467980091">Chromium anpassen und einstellen</translation>
 <translation id="4427306783828095590">Besserer Schutz vor Phishing und Malware durch erweitertes Safe Browsing</translation>
-<translation id="4440114195512068100">Du kannst anhand der <ph name="LINK_BEGIN" />Einstellungen von Chromium OS<ph name="LINK_END" /> sehen, ob dein Gerät auf dem neuesten Stand ist</translation>
 <translation id="452711251841752011">Willkommen bei Chromium; neues Browserfenster geöffnet</translation>
 <translation id="4544142686420020088">Chrome wurde aufgrund eines Fehlers nicht aktualisiert. Wie du Updateprobleme und Fehler bei der Aktualisierung von Chromium behebst, <ph name="BEGIN_LINK" />erfährst du hier<ph name="END_LINK" />.</translation>
 <translation id="454579500955453258">Mit einem neuen Chromium-Profil fortfahren?</translation>
@@ -310,7 +309,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />So kannst du deine Daten verwalten<ph name="END_BOLD" />: Zum Schutz deiner Daten löschen wir automatisch deine Interessen, die älter als vier Wochen sind. Je nach deinen Browsingaktivitäten können die Interessen wieder in der Liste erscheinen. Du kannst jedoch Interessen entfernen, die Chromium nicht berücksichtigen soll.</translation>
 <translation id="7937630085815544518">Du warst in Chromium als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7975919845073681630">Dies ist eine Zweitinstallation, daher kann Chromium nicht als Standardbrowser festgelegt werden.</translation>
-<translation id="7982481011030453202">Wenn du auf dieser Seite eine Einstellung nicht finden kannst, sieh in den <ph name="LINK_BEGIN" />Einstellungen von Chromium OS<ph name="LINK_END" /> nach</translation>
 <translation id="7997934263947464652">Erweiterungen, Apps und Designs aus unbekannten Quellen können Schäden auf deinem Gerät verursachen. Chromium empfiehlt, sie nur über den <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> zu installieren.</translation>
 <translation id="8013436988911883588">Sobald Chromium Zugriff hat, können Websites dich um Zugriff bitten.</translation>
 <translation id="80471789339884597">Vielen Dank für die Installation. Du musst alle Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>

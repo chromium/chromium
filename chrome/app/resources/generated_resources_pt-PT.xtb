@@ -895,6 +895,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1829129547161959350">Pinguim</translation>
 <translation id="1829192082282182671">Re&amp;duzir</translation>
 <translation id="1830550083491357902">Não tem sessão iniciada</translation>
+<translation id="1831848493690504725">Não é possível aceder ao Google através da rede ligada. Experimente escolher uma rede diferente ou verificar as definições de rede ou as definições de proxy (se estiver a usar um proxy).</translation>
 <translation id="1832459821645506983">Sim, aceito</translation>
 <translation id="1832511806131704864">Alteração de telemóvel atualizada</translation>
 <translation id="1832848789136765277">Para se certificar de que pode sempre aceder aos seus dados de sincronização, valide a sua identidade</translation>
@@ -2194,6 +2195,7 @@ Pretende pará-lo?</translation>
 <translation id="3021065318976393105">Estando a usar a bateria</translation>
 <translation id="3021066826692793094">Borboleta</translation>
 <translation id="3021678814754966447">&amp;Ver Origem da Moldura</translation>
+<translation id="3022361196600037287">O dispositivo <ph name="DEVICE" /> vai ser removido deste Chromebook e não vai ser guardado em <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Não entendido.</translation>
 <translation id="3023464535986383522">Selecionar para falar</translation>
 <translation id="3024374909719388945">Utilizar relógio de 24h</translation>
@@ -3732,6 +3734,7 @@ Pretende pará-lo?</translation>
 <translation id="4535127706710932914">Perfil Predefinido</translation>
 <translation id="4535767533210902251">O sensor de impressões digitais é a tecla superior direita no seu teclado. Toque levemente no mesmo com qualquer dedo.</translation>
 <translation id="4536140153723794651">Sites que podem utilizar cookies sempre</translation>
+<translation id="4536769240747010177">Capacidades de ligação (à Internet) via telemóvel:</translation>
 <translation id="4538417792467843292">Eliminar palavra</translation>
 <translation id="4538792345715658285">Instalada pela política da empresa.</translation>
 <translation id="4541123282641193691">Não foi possível validar a sua conta. Tente novamente ou reinicie o Chromebook.</translation>
@@ -3759,6 +3762,7 @@ Pretende pará-lo?</translation>
 <translation id="4561893854334016293">Nenhuma autorização alterada recentemente.</translation>
 <translation id="4562155214028662640">Adicionar impressão digital</translation>
 <translation id="4563210852471260509">O idioma de introdução inicial é chinês</translation>
+<translation id="4563382028841851106">Remover da conta</translation>
 <translation id="4563880231729913339">Dedo 3</translation>
 <translation id="4564245002465020751">Conclua a configuração no telemóvel</translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
@@ -4736,6 +4740,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> pretende</translation>
 <translation id="5534304873398226603">Rejeitar foto ou vídeo</translation>
 <translation id="5537725057119320332">Transmitir</translation>
+<translation id="5539070192556911367">Não é possível aceder ao Google</translation>
 <translation id="5539221284352502426">A palavra-passe introduzida foi rejeitada pelo servidor. Motivos possíveis: a palavra-passe é demasiado curta; a palavra-passe tem de incluir números ou símbolos; a palavra-passe tem de ser diferente das palavras-passe antigas.</translation>
 <translation id="5541694225089836610">A ação foi desativada pelo administrador.</translation>
 <translation id="5542132724887566711">Perfil</translation>
@@ -4799,6 +4804,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5585912436068747822">Falha na formatação</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">A carregar aplicações…</translation>
+<translation id="5590418976913374224">Reproduzir som no arranque do dispositivo</translation>
 <translation id="5592595402373377407">Ainda não estão disponíveis dados suficientes.</translation>
 <translation id="5595307023264033512">Armazenamento total usado pelos sites: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editar morada</translation>
@@ -6177,6 +6183,10 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6943939122536910181">Desligado de <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Selecionar</translation>
 <translation id="694592694773692225">O redirecionamento está bloqueado nesta página.</translation>
+<translation id="6947015141909171112">Está a ver receitas baseadas na sua atividade de pesquisa recente de receitas.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Pode gerir definições no menu do cartão ou ver mais opções em Personalizar o Chrome.</translation>
 <translation id="6949434160682548041">Palavra-passe (opcional)</translation>
 <translation id="6950627417367801484">Restaurar aplicações</translation>
 <translation id="6952242901357037157">Também pode mostrar palavras-passe da sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" /> aqui.</translation>
@@ -6344,6 +6354,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7102687220333134671">As atualizações automáticas estão ativadas</translation>
 <translation id="7102832101143475489">O pedido excedeu o tempo limite.</translation>
 <translation id="710640343305609397">Abrir definições de rede</translation>
+<translation id="7107609441453408294">Reproduzir o mesmo áudio através de todos os altifalantes</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7108933416628942903">Bloquear agora</translation>
@@ -6435,7 +6446,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>
 <translation id="7213903639823314449">Motor de pesquisa utilizado na barra de endereço</translation>
 <translation id="721490496276866468">Importar palavras-passe</translation>
-<translation id="7216595297012131718">Ordene idiomas com base na sua preferência</translation>
 <translation id="7219473482981809164">Encontrámos vários perfis disponíveis para transferência. Selecione os que quer transferir antes de prosseguir.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Sem palavras-passe fracas.}=1{1 palavra-passe fraca.}other{{NUM_WEAK} palavras-passe fracas.}}</translation>
 <translation id="7220019174139618249">Não é possível exportar as palavras-passe para "<ph name="FOLDER" />"</translation>
@@ -6575,6 +6585,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7364745943115323529">Transmitir...</translation>
 <translation id="7364796246159120393">Escolher ficheiro</translation>
 <translation id="7365076891350562061">Tamanho do monitor</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – Fixado</translation>
 <translation id="7366316827772164604">A procurar dispositivos próximos…</translation>
 <translation id="7366415735885268578">Adicionar um site</translation>
 <translation id="7366909168761621528">Dados de navegação</translation>
@@ -6971,6 +6982,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7737115349420013392">A sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"…</translation>
 <translation id="7737846262459425222">Pode alterar esta opção em qualquer altura em Definições &gt; Assistente Google &gt; Contexto do ecrã.</translation>
 <translation id="7737948071472253612">Sem autorização para utilizar a sua câmara</translation>
+<translation id="77381465218432215">Mostrar acentos e carateres especiais</translation>
 <translation id="7740996059027112821">Padrão</translation>
 <translation id="7741307896921365578">Ativa um painel lateral ao nível do navegador para obter uma forma útil e persistente de aceder à sua Lista de leitura e Marcadores.</translation>
 <translation id="7742558784808143689">Pretende limpar os dados e as autorizações do site <ph name="SITE_NAME" />, de todos os sites associados ao mesmo e das apps instaladas?</translation>
@@ -7761,6 +7773,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8486666913807228950">Motivo: a regra invertida <ph name="REVERT_RULE" /> foi encontrada na lista "Forçar abertura em".</translation>
 <translation id="848666842773560761">Uma app está a tentar aceder à câmara. Desligue o interruptor de privacidade da câmara para permitir o acesso.</translation>
 <translation id="8487678622945914333">Ampliar</translation>
+<translation id="8487699605742506766">Zona Wi-Fi</translation>
 <translation id="8489156414266187072">As sugestões pessoais apenas são mostradas na sua conta.</translation>
 <translation id="8490896350101740396">As seguintes aplicações de quiosque "<ph name="UPDATED_APPS" />" foram atualizadas. Reinicie o dispositivo para concluir o processo de atualização.</translation>
 <translation id="8492685019009920170">Toque no sensor de impressões digitais com o dedo. Os seus dados são armazenados em segurança e nunca saem do <ph name="DEVICE_TYPE" />.</translation>
@@ -8254,6 +8267,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" e mais 1 separador}other{"<ph name="TAB_TITLE" />" e mais # separadores}}</translation>
 <translation id="8977811652087512276">Palavra-passe incorreta ou ficheiro danificado</translation>
 <translation id="8978154919215542464">Ativar – sincronizar tudo</translation>
+<translation id="8978670037548431647">Atualizar capacidades de ligação (à Internet) via telemóvel</translation>
 <translation id="897939795688207351">Em <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Relatórios de comentários</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – falhou</translation>
@@ -8518,6 +8532,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="935854577147268200">O telemóvel com Smart Lock foi alterado. Introduza a palavra-passe para atualizar o Smart Lock. Da próxima vez, o telemóvel irá desbloquear o <ph name="DEVICE_TYPE" />. Desative o Smart Lock nas Definições.</translation>
 <translation id="936646668635477464">Câmara e microfone</translation>
 <translation id="936801553271523408">Dados de diagnóstico do sistema</translation>
+<translation id="937053962468712792">Remover o dispositivo <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Reparar extensão</translation>
 <translation id="938568644810664664">Experimente "OK Google, que música é esta?" ou "OK Google, o que está no meu ecrã?"</translation>
 <translation id="938623846785894166">Ficheiro invulgar</translation>

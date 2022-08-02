@@ -148,7 +148,6 @@ Izimvume ozinikezile kakade amawebhusayithi nama-app zingase zisebenze kule akha
 <translation id="4415566066719264597">Vumela i-Chromium isebenze ngemuva</translation>
 <translation id="4423735387467980091">Yenza ngokwezifiso uphinde ulawule i-Chromium</translation>
 <translation id="4427306783828095590">Isivikelo esithuthukisiwe senza okuningi ukuvimba ubugebengu bokweba imininingwane ebucayi kanye uhlelo olungayilungele ikhompyutha</translation>
-<translation id="4440114195512068100">Ukuze ubone uma ngabe idivayisi yakho isesikhathini, iya <ph name="LINK_BEGIN" />Kumasethingi we-ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Siyakwamukela ku-Chromium; iwindi elisha lesiphequluli livuliwe</translation>
 <translation id="4544142686420020088">I-Chromium ayibuyekezekanga, kunokuthile okungahambanga kahle. <ph name="BEGIN_LINK" />Lungisa izinkinga zokubuyekaza kwe-Chromium nezibuyekezo ezihlulekile.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Qhubeka kuphrofayela entsha ye-Chromium?</translation>
@@ -313,8 +312,6 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Ungayiphatha kanjani idatha yakho:<ph name="END_BOLD" /> Ukuze sivikele ubumfihlo bakho, sisula ngokuzenzakalelayo izintshisekelo zakho ezindala kunamaviki ama-4. Njengoba uqhubeka nokubhrawuza, intshisekelo ingase ivele ohlwini futhi. Noma ungasusa izithakazelo ongafuni ukuthi i-Chromium izicabangele.</translation>
 <translation id="7937630085815544518">Ubukade ungene ngemvume ku-Chromium njengo-<ph name="USER_EMAIL_ADDRESS" />. Sicela usebenzise i-akhawunti efanayo ukuze uphinde ungene ngemvume futhi.</translation>
 <translation id="7975919845073681630">Lokhu ukufakwa kwesibili kwe-Chromium, futhi akukwazi ukwenziwa isiphequluli sakho esizenzakalelayo.</translation>
-<translation id="7982481011030453202">Uma isethingi lingaveli kuleli khasi, bheka<ph name="LINK_BEGIN" />
-      kumasethingi wakho we-ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Izandiso, ama-app, namatimu asuka emithonjeni engaziwa angalimaza idivayisi yakho. I-Chromium incoma ukuzifaka kuphela zisuka ku-<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Uma i-Chromium inokufinyelela, amawebhusayithi azokwazi ukukucela ukufinyelela.</translation>
 <translation id="80471789339884597">Siyabonga ngokufaka. Kufanele uqalise kabusha wonke amabhrawuza akho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>

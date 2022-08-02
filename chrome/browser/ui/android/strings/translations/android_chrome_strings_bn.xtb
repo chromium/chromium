@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">ব্রাউজিং ইতিহাস</translation>
 <translation id="2497852260688568942">আপনার প্রশাসকের দ্বারা সিঙ্ক অক্ষম করা হয়েছে</translation>
 <translation id="250020030759455918">আপনি Chrome-এ <ph name="SITE_NAME" /> সাইটে নিজের সাইন-ইন স্ট্যাটাস, ব্রাউজিং ডেটা ও সাইট ডেটা দেখতে পাবেন</translation>
+<translation id="2507178219579379057">বিজ্ঞাপন স্প্যাম, জালিয়াতি ও দুটি সাইটের মধ্যে শেয়ার সীমিত করার বিভিন্ন উপায় Chrome এক্সপ্লোর করছে। এছাড়াও Chrome <ph name="BEGIN_LINK" />আপনার আগ্রহ অনুমান করতে পারে<ph name="END_LINK" /> যা ব্যবহার করে সাইট আপনাকে বিজ্ঞাপন দেখাতে পারে। সেটিংস থেকে আপনার আগ্রহের বিষয় ম্যানেজ করতে পারবেন।</translation>
 <translation id="2513403576141822879">আপনার গোপনীয়তা, নিরাপত্তা এবং ডেটা সংগ্রহের সাথে সম্পর্কযুক্ত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক এবং Google পরিষেবাগুলি<ph name="END_LINK" /> দেখুন</translation>
 <translation id="2517472476991765520">স্ক্যান করুন</translation>
 <translation id="2523184218357549926">আপনার দেখা পৃষ্ঠাগুলির ইউআরএল Google-এ পাঠায়</translation>
@@ -588,7 +589,6 @@
 <translation id="4256782883801055595">ওপেন সোর্স লাইসেন্স</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />কোন ডেটা ব্যবহার করা হয়:<ph name="END_BOLD" /> আপনার ব্রাউজিং ইতিহাস, এই ডিভাইসে Chrome ব্যবহার করে আপনি যে সাইটগুলি ভিজিট করেছেন তার একটি রেকর্ড।</translation>
 <translation id="4263656433980196874">Assistant-এ ভয়েস সার্চ করার সম্মতি দেওয়ার UI সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
-<translation id="4266054596873078491">আপনার Google অ্যাকাউন্ট দিয়ে এই সাইট ও Chrome-এ সাইন-ইন করুন।</translation>
 <translation id="4269820728363426813">লিঙ্ক অ্যাড্রেস কপি করুন</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android সেটিংসে স্ক্রিন লক চালু করুন<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome ব্যবহার করার মাধ্যমে, আপনি <ph name="BEGIN_TOS_LINK" />Google পরিষেবার শর্তাবলী<ph name="END_TOS_LINK" /> এবং <ph name="BEGIN_ATOS_LINK" />Google Chrome ও ChromeOS-এর পরিষেবার অতিরিক্ত শর্তাবলী<ph name="END_ATOS_LINK" /> মেনে নিচ্ছেন। এছাড়াও <ph name="BEGIN_PRIVACY_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_LINK" /> প্রযোজ্য।</translation>

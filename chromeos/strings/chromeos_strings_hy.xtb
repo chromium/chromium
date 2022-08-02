@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
 <translation id="3017079585324758401">Ֆոն</translation>
+<translation id="302435934487327038">Տեղադրումն ավարտված է</translation>
 <translation id="3027578600144895987">Փակել տեսախցիկը</translation>
 <translation id="3031560714565892478">Սարքը տեսախցիկ է։</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> մԱ</translation>
 <translation id="3056720590588772262">Վերջնակետ</translation>
 <translation id="3069085583900247081">Փորձարկումը ձախողվեց</translation>
-<translation id="3076243757415932261">Բաղադրիչները ստուգվում են…</translation>
 <translation id="3083667275341675831">Կապի դիագնոստիկա</translation>
 <translation id="3084958266922136097">Անջատել էկրանապահը</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
 <translation id="3383751554789092165">Անհրաժեշտության դեպքում փոխեք սարքի մասին տեղեկությունները։</translation>
 <translation id="3404249063913988450">Միացնել էկրանապահը</translation>
-<translation id="3404770484521709967">Տեղադրված են համատեղելի բաղադրիչներ։</translation>
 <translation id="3413935475507503304">Թարմացումը շարունակելու համար սեղմեք «Առաջ»։</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Հին գաղտնաբառը</translation>
 <translation id="4453205916657964690">Ենթացանցի դիմակ</translation>
 <translation id="4454245904991689773">Պահել</translation>
-<translation id="4472575034687746823">Սկսել</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
 <translation id="4500213108254186382">Արագացման չափիչ (կափարիչի)</translation>
@@ -664,6 +662,7 @@
 <translation id="6618744767048954150">Ստուգումն ընթացքում է</translation>
 <translation id="6620487321149975369">Տպելու առաջադրանքները կցուցադրվեն պատմության մեջ, եթե դրանք ձեռքով չեն հեռացվել</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
+<translation id="6644568396961840069">Չհաջողվեց պահել ֆայլը։ Փորձեք այլ արտաքին հիշողություն միացնել կամ կրկնեք ավելի ուշ։</translation>
 <translation id="6647510110698214773">Գաղտնագրման ալգորիթմ</translation>
 <translation id="6650062777702288430">Կանայի և տառաթվային նիշերի միջև անցում</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
@@ -809,7 +808,6 @@
 <translation id="8063022551652308521">Write Protect-ը դեռ անջատված է։ Շարունակելու համար միացրեք այն։</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
-<translation id="8083281199617904460">Վերանորոգումը պետք է իրականացվի որակավորված մասնագետի կողմից։ Նախքան սկսելը փոխեք թերի աշխատող բաղադրիչները։</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
 <translation id="8104083085214006426">Դուք օգտագործում եք բաց և ոչ անվտանգ ցանց</translation>
 <translation id="8109786307828817014">Շարունակե՞լ՝ չնայած որոշ չափաբերումների ձախողմանը</translation>

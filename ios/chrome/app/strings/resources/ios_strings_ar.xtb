@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">تعذّرت الطباعة.</translation>
 <translation id="1125564390852150847">إنشاء علامة تبويب جديدة.</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
+<translation id="1135212215217513471">‏الحصول على متصفِّح Chrome لنظام التشغيل iOS</translation>
 <translation id="1145536944570833626">يمكنك حذف البيانات الحالية.</translation>
 <translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" />.</translation>
 <translation id="1154984953698510061">الانتقال إلى علامات التبويب الأخرى</translation>
@@ -115,6 +116,7 @@
 <translation id="1832848789136765277">لضمان إمكانية الوصول دائمًا إلى البيانات التي تتم مزامنتها، عليك إثبات هويتك.</translation>
 <translation id="1870148520156231997">الكشف عن كلمة المرور</translation>
 <translation id="1872096359983322073">الكشاف</translation>
+<translation id="1910975740091000991">‏متصفِّح Chrome لنظام التشغيل iOS</translation>
 <translation id="1911619930368729126">‏التحميل إلى Google Drive</translation>
 <translation id="1923342640370224680">الساعة الأخيرة</translation>
 <translation id="1930989359703290198">تتيح لك مؤسستك تسجيل الدخول باستخدام حسابات معيَّنة فقط. ويتم إخفاء الحسابات غير المسموح بها. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -142,6 +144,7 @@
 <translation id="2139867232736819575">البحث عن النص الذي نسخته</translation>
 <translation id="214201757571129614">تسجيل الدخول…</translation>
 <translation id="2149973817440762519">تعديل الإشارة</translation>
+<translation id="2155145621546387786">‏مشاركة رابط تطبيق Chrome</translation>
 <translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
 <translation id="2218443599109088993">تصغير</translation>
 <translation id="2230173723195178503">تم تحميل الصفحة المطلوبة</translation>
@@ -408,7 +411,6 @@
 <translation id="4502566650163919158">التحقّق الآن</translation>
 <translation id="4505980578794259603">تاريخ آخر عملية تحقُّق: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">إغلاق عرض ترويجي لتسجيل الدخول</translation>
-<translation id="4511669830082467224">‏البحث باستخدام صورة مع Google</translation>
 <translation id="4526249700380860531">‏عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">مراجعة البيانات المتزامنة</translation>
 <translation id="4536418791685807335">حاول تسجيل الدخول مرة أخرى.</translation>

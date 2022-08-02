@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
 <translation id="1364382257761975320">Chromebook을 잠금 해제하려면 지문을 사용하세요.</translation>
+<translation id="1365866993922957110">자동 업데이트 받기</translation>
 <translation id="1372545819342940910">나중을 위해 데스크 저장</translation>
 <translation id="1383597849754832576">음성 파일을 다운로드할 수 없습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="1383876407941801731">검색</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> 고정 취소됨</translation>
 <translation id="1836215606488044471">어시스턴트(로드 중...)</translation>
 <translation id="1838895407229022812">야간 조명이 꺼졌습니다.</translation>
+<translation id="1862380676329487333">업데이트 및 로그아웃</translation>
 <translation id="1864454756846565995">USB-C 기기(후면 포트)</translation>
 <translation id="1879018240766558464">시크릿 창은 현재 지원되지 않습니다. 다른 앱은 저장됩니다.</translation>
 <translation id="1882814835921407042">모바일 네트워크 없음</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">현재 콘텐츠를 복사하거나 붙여넣을 수 없습니다.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">설정 열기</translation>
+<translation id="4247123849143712100">업데이트 및 종료</translation>
 <translation id="4250229828105606438">스크린샷</translation>
 <translation id="425364040945105958">SIM 없음</translation>
 <translation id="4261870227682513959">알림 설정을 표시합니다. 알림이 사용 중지되어 있습니다.</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> 세션은 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> 기기가 연결됨</translation>
 <translation id="6351032674660237738">앱 추천</translation>
+<translation id="6359587239691116345">최신 기능과 보안 개선 사항을 받습니다. 이 업데이트를 거부하면 기기가 더 이상 제대로 작동하지 않을 수 있으며 보안 및 성능 문제가 발생할 수 있습니다.</translation>
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
 <translation id="639644700271529076">CAPS LOCK이 꺼져 있음</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" />에서 기한 전에 <ph name="DEVICE_TYPE" /> 기기를 업데이트할 것을 요구합니다.</translation>
 <translation id="649452524636452238">스마트 카드 PIN</translation>
 <translation id="6495400115277918834">PIP 모드 시작됨, Alt+Shift+V 키를 눌러 포커스</translation>
+<translation id="6500896621837555595">업데이트</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />(으)로 화면 전송 중</translation>
 <translation id="6515727200518652613">카메라가 사라졌습니다. 다시 연결해 보세요.</translation>
 <translation id="6520517963145875092">캡처할 창을 선택하세요.</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">배터리 시간 계산 중</translation>
 <translation id="8061464966246066292">고대비</translation>
 <translation id="8083540854303889870">저장된 항목</translation>
+<translation id="8091387634532529612">자동 업데이트</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />에 화면 전송 중지</translation>
 <translation id="8113423164597455979">모든 앱에서 사용 중</translation>
 <translation id="8120151603115102514">휴대전화에 잠금 화면이 없습니다. Chromebook을 잠금 해제하려면 비밀번호를 입력하세요.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949"><ph name="QUERY" /> 검색결과 <ph name="RESULT_COUNT" />개 표시 중</translation>
 <translation id="98515147261107953">가로 방향</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> 창이 닫혔습니다.</translation>
+<translation id="996204416024568215">최신 기능과 보안 개선 사항을 받습니다. 업데이트는 백그라운드에서 이루어집니다.</translation>
 </translationbundle>

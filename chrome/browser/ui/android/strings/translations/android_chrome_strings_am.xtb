@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">ታሪክ አሰሳ</translation>
 <translation id="2497852260688568942">ስምረት በእርስዎ አስተዳዳሪ ተሰናክሏል</translation>
 <translation id="250020030759455918">የእርስዎን <ph name="SITE_NAME" /> በመለያ የመግባት ሁኔታ፣ የአሰሳ ውሂብ እና የጣቢያ ውሂብ በChrome ውስጥ ይመለከታሉ</translation>
+<translation id="2507178219579379057">Chrome የማስታወቂያ አይፈለጌ መልዕክትን፣ መጭበርበርን እና በጣቢያዎች መካከል መጋራትን የሚገድብባቸውን መንገዶች እያሰሰ ነው። እንዲሁም Chrome ጣቢያዎች ማስታወቂያዎችን ለእርስዎ ለማሳየት ሊጠቀሙባቸው የሚችሏቸውን <ph name="BEGIN_LINK" />የእርስዎን ዝንባሌዎች ይገምታል<ph name="END_LINK" />። የእርስዎን ዝንባሌዎች በቅንብሮች ውስጥ ማስተዳደር ይችላሉ።</translation>
 <translation id="2513403576141822879">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />ስምረት እና የGoogle አገልግሎቶች<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">ቃኝ</translation>
 <translation id="2523184218357549926">የሚጎበኙዋቸውን ገጾች ዩአርኤሎች ወደ Google ይልካል</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">የክፍት ምንጭ ፍቃዶች</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ምን ውሂብ ጥቅም ላይ እንደሚውል፦<ph name="END_BOLD" /> የአሰሳ ታሪክዎ፣ በዚህ መሣሪያ ላይ Chromeን ተጠቅመው የጎበኟቸው የጣቢያዎች መዝገብ።</translation>
 <translation id="4263656433980196874">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ በሙሉ ቁመት ተከፍቷል</translation>
-<translation id="4266054596873078491">በGoogle መለያዎ ወደዚህ ጣቢያ እና Chrome ይግቡ።</translation>
 <translation id="4269820728363426813">የአገናኝ አድራሻ ቅዳ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />በAndroid ቅንብሮች ውስጥ ማያ ገጽ መቆለፊያን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chromeን በመጠቀምዎ በ<ph name="BEGIN_TOS_LINK" />Google አገልግሎት ውል<ph name="END_TOS_LINK" /> እና <ph name="BEGIN_ATOS_LINK" />የGoogle Chrome እና የChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_ATOS_LINK" /> ይስማማሉ። እንዲሁም <ph name="BEGIN_PRIVACY_LINK" />የግላዊነት መመሪያው<ph name="END_PRIVACY_LINK" /> ይተገበራል።</translation>

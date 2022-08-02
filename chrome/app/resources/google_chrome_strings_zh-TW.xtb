@@ -12,7 +12,6 @@
 <translation id="1142745911746664600">無法更新 Chrome</translation>
 <translation id="1152920704813762236">關於 Chrome OS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
-<translation id="1178374936842835197">如果這個頁面上並未顯示你的設定，請檢查 <ph name="LINK_BEGIN" />ChromeOS Flex 設定<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
@@ -119,7 +118,6 @@
 <translation id="3080151273017101988">Google Chrome 關閉時繼續執行背景應用程式</translation>
 <translation id="3089968997497233615">Google Chrome 推出全新版本，安全性更勝以往。</translation>
 <translation id="3100998948628680988">為 Chrome 設定檔命名</translation>
-<translation id="3103390129666310801">如要查看你的裝置是否為最新版，請前往 <ph name="LINK_BEGIN" />ChromeOS Flex 設定<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">如要檢查你其他的密碼是否因資料侵害事件而遭到外洩，或是否有其他安全性問題，<ph name="BEGIN_LINK" />請登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3140883423282498090">你的變更將於下次重新啟動 Google Chrome 時生效。</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
@@ -210,7 +208,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">如要取得日後的 Google Chrome 更新，必須使用 macOS 10.13 以上版本。這部電腦目前版本為 OS X 10.11。</translation>
 <translation id="5098668839038261629">如果啟用此選項，系統也會將你從 Chrome 登出</translation>
-<translation id="5112116809696021727">如要查看裝置是否為最新版，請前往 <ph name="LINK_BEGIN" />Chrome OS 設定<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">幫你的 Google Chrome 物色各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="5139423532931106058">自訂 Chrome 設定檔</translation>
 <translation id="5163087008893166964">歡迎使用 Chrome；新的瀏覽器視窗已開啟</translation>
@@ -248,7 +245,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5940385492829620908">你瀏覽的網頁、書籤和其他 Chrome 設定都在這裡。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">使用 Google Chrome 做為我的預設瀏覽器</translation>
-<translation id="5959292945051687759">如果這個頁面上未顯示設定，請檢查 <ph name="LINK_BEGIN" />Chrome OS 設定<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">下載中… 還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6070348360322141662">為了提升安全性，Google Chrome 會將你的資料加密保護</translation>

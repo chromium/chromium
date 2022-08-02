@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">‏به‌روزرسانی Chrome امکان‌پذیر نیست</translation>
 <translation id="1152920704813762236">‏درباره ChromeOS</translation>
 <translation id="1154147086299354128">‏&amp;باز کردن در Chrome</translation>
-<translation id="1178374936842835197">‏اگر تنظیمی در این صفحه نشان داده نمی‌شود، در <ph name="LINK_BEGIN" />
-        تنظیمات ChromeOS Flex<ph name="LINK_END" /> به‌دنبالش بگردید</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
 <translation id="1278833599417554002">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="1302523850133262269">‏لطفاً صبر کنید تا Chrome جدیدترین به‌روزرسانی‌های سیستم را نصب کند.</translation>
@@ -120,7 +118,6 @@
 <translation id="3080151273017101988">‏ادامه اجرای برنامه‌ها در پس‌زمینه هنگامیکه Google Chrome بسته می‌شود</translation>
 <translation id="3089968997497233615">‏نسخه جدید و امن تری از Google Chrome موجود است.</translation>
 <translation id="3100998948628680988">‏نام‌گذاری نمایه Chrome</translation>
-<translation id="3103390129666310801">‏برای اینکه بدانید دستگاهتان به‌روز است یا نه، به <ph name="LINK_BEGIN" />تنظیمات ChromeOS Flex<ph name="LINK_END" /> بروید</translation>
 <translation id="3114643501466072395">‏برای بررسی اینکه از دیگر گذرواژه‌هایتان دربرابر نقض داده یا دیگر مشکلات امنیتی محافظت می‌شود یا نه، <ph name="BEGIN_LINK" />به سیستم Chrome وارد شوید<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">‏دفعه بعد که Google Chrome را مجدداً راه‌اندازی می‌کنید، این تغییرات اعمال می‌شوند.</translation>
 <translation id="3149510190863420837">‏برنامه‌های Chrome</translation>
@@ -211,7 +208,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">‏برای دریافت به‌روزرسانی‌های آتی Google Chrome، باید macOS نسخه ۱۰.۱۳ یا بالاتر داشته باشید. این رایانه از OS X نسخه ۱۰.۱۱ استفاده می‌کند.</translation>
 <translation id="5098668839038261629">‏وقتی روشن باشد، از سیستم Chrome نیز خارج خواهید شد</translation>
-<translation id="5112116809696021727">‏برای اینکه ببینید دستگاهتان به‌روز است یا نه، به <ph name="LINK_BEGIN" />تنظیمات ChromeOS<ph name="LINK_END" /> بروید</translation>
 <translation id="5132929315877954718">‏برنامه‌های کاربردی، بازی‌ها، افزونه‌ها و طرح‌های زمینه فوق‌العاده را برای Google Chrome کاوش کنید.</translation>
 <translation id="5139423532931106058">‏سفارشی کردن نمایه Chrome</translation>
 <translation id="5163087008893166964">‏به Chrome خوش‌آمدید؛ پنجره مرورگر جدید راه‌اندازی شد</translation>
@@ -247,8 +243,6 @@
 <translation id="5940385492829620908">‏وب، نشانک‌ها و موارد دیگر Chrome شما در اینجا هستند.</translation>
 <translation id="5941711191222866238">کوچک کردن</translation>
 <translation id="5941830788786076944">‏Google Chrome مرورگر پیش‌فرض شود</translation>
-<translation id="5959292945051687759">‏اگر تنظیمی در این صفحه نشان داده نمی‌شود، در <ph name="LINK_BEGIN" />
-      تنظیمات ChromeOS<ph name="LINK_END" /> آن را جستجو کنید</translation>
 <translation id="6003112304606738118">درحال بارگیری… <ph name="HOURS" /> ساعت باقی مانده است</translation>
 <translation id="6040143037577758943">بستن</translation>
 <translation id="6070348360322141662">‏برای امنیت بیشتر، Google Chrome داده‌های شما را رمزگذاری می‌کند</translation>

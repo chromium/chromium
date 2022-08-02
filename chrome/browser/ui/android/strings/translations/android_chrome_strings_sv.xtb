@@ -271,6 +271,7 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2497852260688568942">Synkronisering har inaktiverats av administratören</translation>
 <translation id="250020030759455918">Din inloggningsstatus, webbdata och webbplatsdata för <ph name="SITE_NAME" /> visas i Chrome</translation>
+<translation id="2507178219579379057">Chrome utforskar olika sätt att begränsa skräppost, bedrägerier och delning mellan webbplatser. Chrome <ph name="BEGIN_LINK" />uppskattar också dina intressen<ph name="END_LINK" />. Dessa kan användas på webbplatser för att visa annonser. Du kan hantera dina intressen i inställningarna.</translation>
 <translation id="2513403576141822879">Fler inställningar som rör integritet, säkerhet och datainsamling finns under <ph name="BEGIN_LINK" />Synkronisering och Googles tjänster<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Sök</translation>
 <translation id="2523184218357549926">Skickar webbadresserna till sidor du besöker till Google</translation>
@@ -587,7 +588,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="4256782883801055595">Licenser för öppen källkod</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Vilken data används:<ph name="END_BOLD" /> Webbhistoriken, där webbplatser som du besökt i Chrome på den här enheten registreras.</translation>
 <translation id="4263656433980196874">Användargränssnittet för samtycke till röstsökning med assistenten har öppnats över hela skärmen</translation>
-<translation id="4266054596873078491">Logga in på den här webbplatsen och i Chrome med ditt Google-konto.</translation>
 <translation id="4269820728363426813">Kopiera länkadress</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivera skärmlåset i Android-inställningar<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Genom att använda Chrome godkänner du <ph name="BEGIN_TOS_LINK" />Googles användarvillkor<ph name="END_TOS_LINK" /> och <ph name="BEGIN_ATOS_LINK" />de ytterligare användarvillkoren för Google Chrome och Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Integritetspolicyn<ph name="END_PRIVACY_LINK" /> gäller också.</translation>

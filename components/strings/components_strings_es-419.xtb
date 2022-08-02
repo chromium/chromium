@@ -1229,6 +1229,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4305666528087210886">No se pudo acceder a tu archivo</translation>
 <translation id="4306529830550717874">¿Quieres guardar la dirección?</translation>
 <translation id="4306812610847412719">portapapeles</translation>
+<translation id="4308567447483056043">Se ignora esta política porque el usuario no está afiliado. Para que se aplique esta política, la misma organización debe administrar el perfil y el navegador Chrome a través de la Consola del administrador.</translation>
 <translation id="4310070645992025887">Buscar tus Exploraciones</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (predeterminado)</translation>

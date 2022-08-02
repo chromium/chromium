@@ -25,6 +25,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1112015203684611006">Udskrift mislykkedes.</translation>
 <translation id="1125564390852150847">Opret ny fane.</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
+<translation id="1135212215217513471">Hent Chrome til iOS</translation>
 <translation id="1145536944570833626">Slet eksisterende data.</translation>
 <translation id="1147031633655575115">Logget ind som <ph name="USER" /></translation>
 <translation id="1154984953698510061">Se andre faner</translation>
@@ -113,6 +114,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1832848789136765277">Bekræft din identitet for at sikre, at du altid har adgang til dine synkroniserede data</translation>
 <translation id="1870148520156231997">Vis adgangskode</translation>
 <translation id="1872096359983322073">Lommelygte</translation>
+<translation id="1910975740091000991">Chrome til iOS</translation>
 <translation id="1911619930368729126">Upload til Google Drev</translation>
 <translation id="1923342640370224680">Den seneste time</translation>
 <translation id="1930989359703290198">Din organisation tillader kun login med bestemte konti. Konti, der ikke tillades, skjules. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="2139867232736819575">Søg efter tekst, du har kopieret</translation>
 <translation id="214201757571129614">Log ind…</translation>
 <translation id="2149973817440762519">Rediger bogmærke</translation>
+<translation id="2155145621546387786">Del Chrome</translation>
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2218443599109088993">Zoom ud</translation>
 <translation id="2230173723195178503">Websiden er indlæst</translation>
@@ -406,7 +409,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4502566650163919158">Tjek nu</translation>
 <translation id="4505980578794259603">Senest tjekket <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Luk loginkampagne</translation>
-<translation id="4511669830082467224">Søg efter billedet med Google</translation>
 <translation id="4526249700380860531">Se og administrer gemte adgangskoder på <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Gennemgå dine synkroniserede data</translation>
 <translation id="4536418791685807335">Prøv at logge ind igen.</translation>

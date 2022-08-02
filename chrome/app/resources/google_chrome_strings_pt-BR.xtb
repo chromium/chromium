@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Não é possível atualizar o Chrome</translation>
 <translation id="1152920704813762236">Sobre o ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Abrir no Chrome</translation>
-<translation id="1178374936842835197">Se uma configuração não aparecer nesta página, confira as <ph name="LINK_BEGIN" />
-        configurações do ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Agradecemos por fazer a instalação. É necessário reiniciar o navegador antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Reinicializar para atualizar o &amp;Chrome</translation>
 <translation id="1302523850133262269">Aguarde enquanto o Chrome instala as últimas atualizações do sistema.</translation>
@@ -120,7 +118,6 @@
 <translation id="3080151273017101988">Executar aplicativos em segundo plano quando o Google Chrome estiver fechado</translation>
 <translation id="3089968997497233615">Há uma versão nova e mais segura do Google Chrome disponível.</translation>
 <translation id="3100998948628680988">Nomear seu perfil do Chrome</translation>
-<translation id="3103390129666310801">Para conferir se o dispositivo está atualizado, acesse as <ph name="LINK_BEGIN" />Configurações do ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Para verificar se suas outras senhas estão protegidas contra violações de dados e outros problemas de segurança, <ph name="BEGIN_LINK" />faça login no Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Suas alterações terão efeito na próxima vez que você reiniciar o Google Chrome.</translation>
 <translation id="3149510190863420837">apps do Chrome</translation>
@@ -211,7 +208,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Para receber as próximas atualizações do Google Chrome, você vai precisar do macOS 10.13 ou versão mais recente. Este computador está usando o OS X 10.11.</translation>
 <translation id="5098668839038261629">Quando essa opção for ativada, sua conta será desconectada do Chrome</translation>
-<translation id="5112116809696021727">Para verificar se o dispositivo está atualizado, acesse as <ph name="LINK_BEGIN" />Configurações do ChromeOS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Descubra ótimos aplicativos, jogos, extensões e temas para o Google Chrome.</translation>
 <translation id="5139423532931106058">Personalize seu perfil do Chrome</translation>
 <translation id="5163087008893166964">Conheça o Chrome. Nova janela do navegador aberta</translation>
@@ -247,8 +243,6 @@
 <translation id="5940385492829620908">Sua Web, seus favoritos e demais conteúdo do Chrome estão aqui.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Fazer do Google Chrome o navegador padrão</translation>
-<translation id="5959292945051687759">Se uma configuração não for exibida nesta página, verifique as <ph name="LINK_BEGIN" />
-        configurações do ChromeOS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Fazendo o download… <ph name="HOURS" /> hora(s) restante(s)</translation>
 <translation id="6040143037577758943">Fechar</translation>
 <translation id="6070348360322141662">Para maior segurança, o Google Chrome criptografará seus dados</translation>

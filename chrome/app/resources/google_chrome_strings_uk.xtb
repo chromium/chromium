@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Не вдається оновити Chrome</translation>
 <translation id="1152920704813762236">Про ОС Chrome</translation>
 <translation id="1154147086299354128">&amp;Відкрити в Chrome</translation>
-<translation id="1178374936842835197">Якщо налаштування не з’явиться на цій сторінці, пошукайте його в <ph name="LINK_BEGIN" />
-        налаштуваннях ОС Chrome Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Дякуємо за встановлення. Щоб почати використовувати пакет <ph name="BUNDLE_NAME" />, потрібно перезапустити веб-переглядач.</translation>
 <translation id="1278833599417554002">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
@@ -120,7 +118,6 @@
 <translation id="3080151273017101988">Продовжувати роботу фонових програм, коли Google Chrome закрито</translation>
 <translation id="3089968997497233615">Доступна нова, безпечніша версія Google Chrome.</translation>
 <translation id="3100998948628680988">Додайте назву свого профілю Chrome</translation>
-<translation id="3103390129666310801">Щоб дізнатися, чи пристрій використовує актуальну версію операційної системи, перейдіть у <ph name="LINK_BEGIN" />налаштування ОС Chrome Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Щоб перевірити, чи відомі порушення безпеки даних або інші проблеми не заторкнули інші ваші паролі, <ph name="BEGIN_LINK" />увійдіть у Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Ваші зміни почнуть діяти після наступного перезапуску Google Chrome.</translation>
 <translation id="3149510190863420837">Додатки Chrome</translation>
@@ -211,7 +208,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система macOS 10.13 або новішої версії. На цьому комп’ютері встановлено OS X 10.11.</translation>
 <translation id="5098668839038261629">Якщо перемикач увімкнено, ви також автоматично вийдете зі свого облікового запису в Chrome</translation>
-<translation id="5112116809696021727">Щоб дізнатися, чи використовує пристрій актуальну версію операційної системи, перейдіть у <ph name="LINK_BEGIN" />налаштування ОС Chrome<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Знаходьте чудові додатки, ігри, розширення й теми для Google Chrome.</translation>
 <translation id="5139423532931106058">Налаштувати профіль Chrome</translation>
 <translation id="5163087008893166964">Вітаємо в Chrome! Відкрито нове вікно веб-переглядача</translation>
@@ -247,8 +243,6 @@
 <translation id="5940385492829620908">Тут містяться ваші веб-сторінки, закладки та інші дані Chrome.</translation>
 <translation id="5941711191222866238">Згорнути</translation>
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
-<translation id="5959292945051687759">Якщо налаштування немає на цій сторінці, пошукайте його в <ph name="LINK_BEGIN" />
-      налаштуваннях ОС Chrome<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6070348360322141662">Щоб підвищити безпеку, Google Chrome шифруватиме ваші дані</translation>

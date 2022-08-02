@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">પ્રકાર</translation>
 <translation id="2461822463642141190">વર્તમાન</translation>
 <translation id="2480034874476596812">મેન્યુઅલ રીતે બંધ કરો</translation>
+<translation id="248546197012830854">ડિવાઇસ ઑફલાઇન છે. સહાયક કન્ટેન્ટ જોવા માટે વાઇ-ફાઇ નેટવર્ક સાથે કનેક્ટ કરો.</translation>
 <translation id="2491955442992294626">જ્યારે તમે અન્ય વિન્ડોનો ઉપયોગ કરી રહ્યાં હો, ત્યારે કીનું પરીક્ષણ કરવામાં આવતું નથી</translation>
 <translation id="2493126929778606526">ઑટોમૅટિક રીતે પસંદ કરવામાં આવેલા તમારા શ્રેષ્ઠ ફોટા</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -241,7 +242,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">છેવટ</translation>
 <translation id="3069085583900247081">પરીક્ષણ નિષ્ફળ થયું</translation>
-<translation id="3076243757415932261">ઘટકો માન્ય કરી રહ્યાં છીએ...</translation>
 <translation id="3083667275341675831">કનેક્ટિવિટીના નિદાનો</translation>
 <translation id="3084958266922136097">સ્ક્રીન સેવર બંધ કરો</translation>
 <translation id="3091839911843451378">નિષ્ફળ થયું - પ્રિન્ટર બંધ થઈ ગયું છે</translation>
@@ -276,7 +276,6 @@
 <translation id="3369013195428705271">શું તમે ખરેખર પ્રિન્ટનો બધો ઇતિહાસ સાફ કરવા માગો છો? તમારી હાલની પ્રિન્ટ જોબ સાફ કરવામાં આવશે નહીં.</translation>
 <translation id="3383751554789092165">જરૂરિયાત પ્રમાણે ડિવાઇસની માહિતી બદલો.</translation>
 <translation id="3404249063913988450">સ્ક્રીન સેવર ચાલુ કરો</translation>
-<translation id="3404770484521709967">ઘટકો યોગ્ય રીતે ઇન્સ્ટૉલ કરવામાં આવ્યા છે.</translation>
 <translation id="3413935475507503304">અપડેટમાં આગળ વધવા માટે આગળ પર ક્લિક કરો.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">સુરક્ષા</translation>
@@ -396,7 +395,6 @@
 <translation id="445059817448385655">જૂનો પાસવર્ડ</translation>
 <translation id="4453205916657964690">સબનેટ માસ્ક</translation>
 <translation id="4454245904991689773">સ્કૅન કરીને અહીં સાચવો</translation>
-<translation id="4472575034687746823">શરૂ કરો</translation>
 <translation id="4479639480957787382">ઇથરનેટ</translation>
 <translation id="4483049906298469269">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="4500213108254186382">લિડ ઍક્સીલરોમીટર</translation>
@@ -663,6 +661,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" />ના રિપૅરની પ્રક્રિયામાંથી બહાર નીકળો</translation>
 <translation id="6618744767048954150">હજીપણ તપાસ થઈ રહી છે</translation>
 <translation id="6620487321149975369">જ્યાં સુધી પ્રિન્ટ કાર્યોને મેન્યુઅલી કાઢી નાખવામાં નહીં આવે, ત્યાં સુધી તે ઇતિહાસમાં દેખાશે</translation>
+<translation id="6624819909909965616">10 MB કરતાં મોટી ફાઇલ અપલોડ કરી શકાતી નથી</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
 <translation id="6644568396961840069">ફાઇલ સાચવી શકાઈ નથી. કોઈ અલગ બાહ્ય સ્ટોરેજ પ્લગ ઇન કરવાનો પ્રયાસ કરો અથવા થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6647510110698214773">એન્ક્રિપ્શન ઍલ્ગોરિધમ</translation>
@@ -698,6 +697,7 @@
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
 <translation id="6995564396478647735">ખાતરી કરો કે રાઇટ પ્રોટેક્ટ ચાલુ છે</translation>
+<translation id="7005833343836210400">ડિવાઇસ ઑફલાઇન છે</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
 <translation id="7041549558901442110">ડિવાઇસ કનેક્ટ થયું નથી.</translation>
@@ -810,8 +810,8 @@
 <translation id="8063022551652308521">રાઇટ પ્રોટેક્ટ હજી પણ બંધ છે. આગળ વધવા માટે, રાઇટ પ્રોટેક્ટ ચાલુ કરો.</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
-<translation id="8083281199617904460">રિપૅરની આ પ્રક્રિયા રિપૅરિંગ કરતા પ્રશિક્ષિત ટેક્નિશિયન દ્વારા કરવામાં આવે તે વધુ યોગ્ય છે. ખામીયુક્ત ઘટકોને બદલ્યા પછી જ શરૂઆત કરો.</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
+<translation id="8094062939584182041">Googleને આ સમસ્યા વિશે તમને ઇમેઇલ કરવાની મંજૂરી આપો</translation>
 <translation id="8104083085214006426">તમે ઓપન અને અસુરક્ષિત નેટવર્કનો ઉપયોગ કરી રહ્યાં છો</translation>
 <translation id="8109786307828817014">નિષ્ફળ ગયેલા કેલિબ્રેશન સાથે આગળ વધવા માગો છો?</translation>
 <translation id="811820734797650957">(Android) ગેટવેને પિંગ કરી શકાય છે</translation>

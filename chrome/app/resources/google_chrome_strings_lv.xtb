@@ -12,7 +12,6 @@
 <translation id="1142745911746664600">Nevar atjaunināt Chrome</translation>
 <translation id="1152920704813762236">Par Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Atvērt pārlūkā Chrome</translation>
-<translation id="1178374936842835197">Ja šajā lapā iestatījums nav pieejams, skatiet to <ph name="LINK_BEGIN" />Chrome OS Flex iestatījumos<ph name="LINK_END" />.</translation>
 <translation id="1203500561924088507">Pateicamies, ka veicāt instalēšanu. Pirms <ph name="BUNDLE_NAME" /> izmantošanas ir jārestartē pārlūkprogramma.</translation>
 <translation id="1278833599417554002">Atkārtoti palaist, lai atjauninātu &amp;Chrome</translation>
 <translation id="1302523850133262269">Lūdzu, uzgaidiet, kamēr Chrome instalē jaunākos sistēmas atjauninājumus.</translation>
@@ -120,7 +119,6 @@
 <translation id="3080151273017101988">Turpināt lietotņu izpildi fonā, kad Google Chrome ir aizvērts</translation>
 <translation id="3089968997497233615">Ir pieejama jauna un drošāka Google Chrome versija.</translation>
 <translation id="3100998948628680988">Chrome profila nosaukšana</translation>
-<translation id="3103390129666310801">Lai pārbaudītu, vai ierīce ir atjaunināta, pārejiet uz <ph name="LINK_BEGIN" />Chrome OS Flex iestatījumiem<ph name="LINK_END" />.</translation>
 <translation id="3114643501466072395">Lai pārbaudītu, vai jūsu pārējās paroles ir aizsargātas pret datu pārkāpumiem un citām drošības problēmām, <ph name="BEGIN_LINK" />pierakstieties pārlūkā Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Jūsu izmaiņas stāsies spēkā nākamajā reizē, kad atkārtoti palaidīsiet pārlūku Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome lietotnes</translation>
@@ -211,7 +209,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Lai saņemtu turpmākus Google Chrome atjauninājumus, ir nepieciešama operētājsistēma macOS 10.13 vai jaunāka versija. Šajā datorā tiek izmantota OS X 10.11 versija.</translation>
 <translation id="5098668839038261629">Iestatījumam esot ieslēgtam, jūs tiksiet izrakstīts arī no pārlūka Chrome.</translation>
-<translation id="5112116809696021727">Lai noskaidrotu, vai ierīce ir atjaunināta, pārejiet uz <ph name="LINK_BEGIN" />Chrome OS iestatījumiem<ph name="LINK_END" />.</translation>
 <translation id="5132929315877954718">Atklājiet lieliskas lietotnes, spēles, paplašinājumus un motīvus, ko varat izmantot pārlūkā Google Chrome.</translation>
 <translation id="5139423532931106058">Pielāgot Chrome profilu</translation>
 <translation id="5163087008893166964">Laipni lūdzam pārlūkā Chrome (tika atvērts jauns pārlūka logs)!</translation>
@@ -249,7 +246,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="5940385492829620908">Šeit atrodas jūsu tīmekļa saturs, grāmatzīmes un cits Chrome saturs.</translation>
 <translation id="5941711191222866238">Minimizēt</translation>
 <translation id="5941830788786076944">Izveidot Google Chrome par noklusējuma pārlūku</translation>
-<translation id="5959292945051687759">Ja iestatījums nav redzams šajā lapā, meklējiet to <ph name="LINK_BEGIN" />Chrome OS iestatījumos<ph name="LINK_END" />.</translation>
 <translation id="6003112304606738118">Notiek lejupielāde... Atlikušais laiks: <ph name="HOURS" /> stunda(-as).</translation>
 <translation id="6040143037577758943">Aizvērt</translation>
 <translation id="6070348360322141662">Papildu drošības nolūkos Google Chrome šifrēs jūsu datus.</translation>

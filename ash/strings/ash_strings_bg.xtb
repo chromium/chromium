@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1351937230027495976">Свиване на менюто</translation>
 <translation id="1364382257761975320">За да отключите своя Chromebook, използвайте отпечатъка си</translation>
+<translation id="1365866993922957110">Получаване на автоматични актуализации</translation>
 <translation id="1372545819342940910">Запазване на работния кът за по-късно</translation>
 <translation id="1383597849754832576">Файловете за говор не могат да бъдат изтеглени. Опитайте отново по-късно.</translation>
 <translation id="1383876407941801731">Търсене</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064">Освободихте <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Асистент (зарежда се...)</translation>
 <translation id="1838895407229022812">Функцията за нощно осветление е изключена.</translation>
+<translation id="1862380676329487333">Актуализиране и излизане от профила</translation>
 <translation id="1864454756846565995">USB-C устройство (задният порт)</translation>
 <translation id="1879018240766558464">Понастоящем не се поддържат прозорци в режим „инкогнито“. Другите приложения ще бъдат запазени.</translation>
 <translation id="1882814835921407042">Няма мобилна мрежа</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">В момента не можете да копирате, нито да поставяте съдържание</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
+<translation id="4247123849143712100">Актуализиране и изключване</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
 <translation id="425364040945105958">Няма SIM карта</translation>
 <translation id="4261870227682513959">Показване на настройките за известия. Известията са изключени</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913">„<ph name="DISPLAY_NAME" />“ е сесия, управлявана от <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Установена е връзка с(ъс) <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">ПРЕДЛОЖЕНИЯ ЗА ПРИЛОЖЕНИЯ</translation>
+<translation id="6359587239691116345">Получавайте най-новите функции и подобрения в сигурността. Ако отхвърлите тази актуализация, устройството ви може вече да не работи правилно и може да имате проблеми със сигурността и производителността.</translation>
 <translation id="6376931439017688372">Функцията за Bluetooth е включена</translation>
 <translation id="6381109794406942707">Въведете ПИН кода си, за да отключите устройството.</translation>
 <translation id="639644700271529076">„CAPS LOCK“ е изключен</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> изисква да актуализирате устройството си <ph name="DEVICE_TYPE" /> преди крайния срок</translation>
 <translation id="649452524636452238">ПИН за смарткартата</translation>
 <translation id="6495400115277918834">Режимът „Картина в картината“ стартира. Натиснете Alt+Shift+V за поставяне на фокуса</translation>
+<translation id="6500896621837555595">Актуализиране</translation>
 <translation id="6501401484702599040">Екранът се предава към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6515727200518652613">Връзката с камерата бе прекъсната. Прави се опит за възстановяването ѝ.</translation>
 <translation id="6520517963145875092">Изберете прозореца, който да се заснеме</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
 <translation id="8083540854303889870">Запазено за по-късно</translation>
+<translation id="8091387634532529612">Автоматични актуализации</translation>
 <translation id="8098591350844501178">Спиране на предаването на екрана към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="8113423164597455979">Вкл. за всички</translation>
 <translation id="8120151603115102514">Телефонът ви няма активирано заключване на екрана. За да отключите своя Chromebook, въведете паролата си.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949">Показани са <ph name="RESULT_COUNT" /> резултата за „<ph name="QUERY" />“</translation>
 <translation id="98515147261107953">Хоризонтално</translation>
 <translation id="990277280839877440">Прозорецът <ph name="WINDOW_TITILE" /> бе затворен.</translation>
+<translation id="996204416024568215">Получавайте най-новите функции и подобрения в сигурността. Актуализациите се извършват на заден план.</translation>
 </translationbundle>

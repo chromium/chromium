@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Tipo</translation>
 <translation id="2461822463642141190">Atual</translation>
 <translation id="2480034874476596812">Desativar manualmente</translation>
+<translation id="248546197012830854">O dispositivo está offline. Ligue-se à rede Wi-Fi para ver o conteúdo de ajuda.</translation>
 <translation id="2491955442992294626">As teclas não são testadas quando está a usar outra janela</translation>
 <translation id="2493126929778606526">As suas melhores fotos selecionadas automaticamente.</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -241,7 +242,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Ponto final</translation>
 <translation id="3069085583900247081">O teste falhou</translation>
-<translation id="3076243757415932261">A validar os componentes…</translation>
 <translation id="3083667275341675831">Diagnóstico de conetividade</translation>
 <translation id="3084958266922136097">Desativar proteção de ecrã</translation>
 <translation id="3091839911843451378">Falha – Parou</translation>
@@ -276,7 +276,6 @@
 <translation id="3369013195428705271">Tem a certeza de que pretende limpar todo o histórico de impressões? As suas tarefas de impressão em curso não serão limpas.</translation>
 <translation id="3383751554789092165">Altere as informações do dispositivo conforme necessário.</translation>
 <translation id="3404249063913988450">Ativar proteção de ecrã</translation>
-<translation id="3404770484521709967">Os componentes foram instalados corretamente.</translation>
 <translation id="3413935475507503304">Para prosseguir com a atualização, clique em Seguinte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Segurança</translation>
@@ -396,7 +395,6 @@
 <translation id="445059817448385655">Palavra-passe antiga</translation>
 <translation id="4453205916657964690">Máscara de sub-rede</translation>
 <translation id="4454245904991689773">Digitalizar para</translation>
-<translation id="4472575034687746823">Começar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Falha ao enviar ping ao gateway da rede não predefinida.</translation>
 <translation id="4500213108254186382">Acelerómetro da tampa</translation>
@@ -664,6 +662,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6611280807952151149">Sair da reparação do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6620487321149975369">As tarefas de impressão serão apresentadas no histórico, exceto se forem removidas manualmente.</translation>
+<translation id="6624819909909965616">Não é possível carregar um ficheiro com mais de 10 MB</translation>
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6644568396961840069">Não foi possível guardar o ficheiro. Experimente ligar um armazenamento externo diferente ou tente novamente mais tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de encriptação</translation>
@@ -699,6 +698,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revisão de firmware</translation>
 <translation id="6995564396478647735">Certifique-se de que a proteção contra escrita está ativada</translation>
+<translation id="7005833343836210400">O dispositivo está offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gere este dispositivo e tem acesso a todas as atividades do utilizador, incluindo páginas Web visitadas, palavras-passe e emails.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">O dispositivo não está ligado.</translation>
@@ -811,8 +811,8 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="8063022551652308521">A proteção contra escrita ainda está desativada. Para continuar, ative a proteção contra escrita.</translation>
 <translation id="8075838845814659848">Carregamento restante</translation>
 <translation id="8082366717211101304">Não é possível resolver o DNS a partir de apps Android</translation>
-<translation id="8083281199617904460">O processo de reparação deve ser realizado por um técnico de reparação qualificado. Comece apenas depois de substituir os componentes que estão a funcionar incorretamente.</translation>
 <translation id="808894953321890993">Alterar palavra-passe</translation>
+<translation id="8094062939584182041">Permitir que a Google lhe envie um email acerca deste problema</translation>
 <translation id="8104083085214006426">Está a utilizar uma rede aberta e insegura</translation>
 <translation id="8109786307828817014">Prosseguir com as calibrações com falha?</translation>
 <translation id="811820734797650957">(Android) É possível enviar ping ao gateway</translation>

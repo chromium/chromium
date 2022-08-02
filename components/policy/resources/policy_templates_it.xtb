@@ -2612,7 +2612,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
 <translation id="3709266154059827597">Configura blacklist per l'installazione delle estensioni</translation>
 <translation id="3711895659073496551">Sospensione</translation>
-<translation id="3715569262675717862">Autenticazione basata su certificati client</translation>
 <translation id="3717409415785131989">Se il criterio viene impostato su Enabled o se non viene configurato, in <ph name="PRODUCT_NAME" /> viene mostrata l'UI del nuovo fumetto dei download.
 
       Se il criterio viene impostato su Disabled, <ph name="PRODUCT_NAME" /> continua a mostrare l'UI della barra dei download precedente.</translation>
@@ -2992,13 +2991,6 @@ Avviso. È consigliabile mantenere attivati gli aggiornamenti automatici per con
 <translation id="410068710490553233">Consenti l'accesso ad altri Account Google</translation>
 <translation id="4101282687722389021">Timestamp UTC relativo all'ultimo aggiornamento della voce. Viene inviato sotto forma di stringa perché non rientrerebbe in un numero intero.</translation>
 <translation id="4103289232974211388">Reindirizza a IdP SAML dopo la conferma dell'utente</translation>
-<translation id="4105884561459127998">Consente di configurare il tipo di autenticazione per gli accessi SAML.
-
-      Se questa norma non viene impostata o è impostata sul valore predefinito (0), il comportamento degli accessi SAML è determinato dal browser sulla base di altri fattori. Nella situazione di base, l'autenticazione dell'utente e la protezione dei dati degli utenti memorizzati nella cache sono basate sulle password inserite manualmente dagli utenti.
-
-      Se questa norma è impostata su ClientCertificate (valore 1), l'autenticazione del certificato client viene utilizzata per gli utenti aggiunti di recente che accedono tramite SAML. Per questi utenti non vengono utilizzate password e i loro dati locali memorizzati nella cache vengono protetti mediante le chiavi crittografiche corrispondenti. Ad esempio, questa impostazione consente di configurare un'autenticazione dell'utente basata su smart card (considera che le app middleware per smart card devono essere installate tramite la norma DeviceLoginScreenExtensions).
-
-      Questa norma riguarda solo gli utenti che eseguono l'autenticazione utilizzando SAML.</translation>
 <translation id="4105989332710272578">Disattiva l'imposizione di Certificate Transparency per un elenco di URL</translation>
 <translation id="4114059938441379876">La configurazione del criterio consente di impostare l'URL per gli utenti per la modifica delle proprie password dopo aver visualizzato un avviso nel browser. Il servizio di protezione tramite password reindirizza gli utenti all'URL (solo protocolli HTTP e HTTPS) indicato tramite questo criterio. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente l'hash con salt della nuova password in questa pagina di modifica della password, segui queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 
@@ -4080,11 +4072,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se per questa norma viene impostato un elenco di identificatori di metodi di immissione, i metodi specificati saranno disponibili nella schermata di accesso. Verrà preselezionato il primo metodo di immissione specificato. Anche se il pod dell'utente è basato sulla schermata di accesso, oltre ai metodi di immissione specificati in questa norma sarà disponibile anche l'ultimo metodo usato dall'utente. Se questa norma non viene impostata, i metodi di immissione per la schermata di accesso saranno recuperati in base alla lingua in cui è visualizzata la schermata di accesso. I valori che non corrispondono a identificatori di metodi di immissione validi verranno ignorati.</translation>
 <translation id="5407008856008996384">Consenti l'accesso alle stampanti CUPS</translation>
 <translation id="5413051574966911176">Disattiva l'UI relativa alla connessione sul computer desktop host remoto quando è attiva una connessione</translation>
-<translation id="5417597818300833094">L'impostazione del criterio consente agli utenti di scegliere uno dei metodi di immissione per le sessioni <ph name="PRODUCT_OS_NAME" /> specificate.
-
-       Se il criterio non viene configurato o se è impostato su un elenco vuoto, gli utenti possono selezionare tutti i metodi di immissione supportati.
-
-      Nota: se il metodo di immissione corrente non è supportato, il criterio passa automaticamente al layout della tastiera hardware (se consentito) o alla prima voce valida in questo elenco. I metodi non supportati o non validi vengono ignorati.</translation>
 <translation id="5417906792459853336">Consente di segnalare informazioni sull'inventario delle applicazioni di un dispositivo e sul relativo utilizzo.
 
       Se il criterio viene impostato su false o non viene impostato, le informazioni non vengono segnalate.
@@ -4811,18 +4798,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6207607210601267301">Disattiva l'autenticazione senza PIN per l'host di accesso remoto</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
-<translation id="6210422374261465354">Ti consente di specificare le configurazioni per gli URL di autenticazione in <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Questi URL di autenticazione vengono trattati in modo speciale da <ph name="WEBVIEW_PRODUCT_NAME" />, in modo che durante l'autenticazione, quando una pagina web in <ph name="WEBVIEW_PRODUCT_NAME" />
-      indirizza agli URL di autenticazione, l'app di autenticazione dei provider di identità corrispondente che può gestire questo URL di autenticazione viene lanciata.
-
-      Questo flusso di lancio dell'app di autenticazione dei provider di identità viene utilizzato dai provider di identità per abilitare
-      i casi d'uso, come fornire SSO per le app o una miglior sicurezza, raccogliendo indicatori dei dispositivi Zero Trust per comprendere le impostazioni del dispositivo durante l'autenticazione.
-
-      Se non è installata alcuna app valida per la gestione dell'URL di autenticazione sul dispositivo, la navigazione continua in <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Un URL di autenticazione valido deve avere lo schema <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> e non deve contenere caratteri jolly.
-      </translation>
 <translation id="6212868225782276239">Vengono mostrate tutte le stampanti, tranne quelle indicate nella lista nera.</translation>
 <translation id="6220835555850906733">Se il criterio viene attivato o se non viene configurato, tutti gli output audio supportati sono consentiti sui dispositivi degli utenti.
 
@@ -6148,7 +6123,6 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="7554382342294940216">Se il criterio viene impostato su Attivato, <ph name="PRODUCT_OS_NAME" /> può aggirare qualsiasi proxy per l'autenticazione captive portal. Queste pagine web di autenticazione, a partire dalla pagina di accesso al captive portal fino al rilevamento di una connessione a Internet attiva da parte di Chrome, si aprono in una finestra separata, ignorando tutte le impostazioni del criterio e le limitazioni relative all'utente corrente. Questo criterio viene applicato soltanto se viene configurato un proxy (tramite criterio, estensione o da parte dell'utente in chrome://settings).
 
       Se viene impostato su Disattivato o se non viene configurato, qualsiasi pagina di autenticazione captive portal viene visualizzata in una nuova scheda del browser standard, in base alle impostazioni del proxy dell'utente corrente.</translation>
-<translation id="7566878661979235378">Tipo di autenticazione per gli accessi SAML</translation>
 <translation id="7567373982693549834">Questo criterio consente di controllare l'utilizzo delle app Android di fonti non attendibili (diverse dal Google Play Store) per ogni utente.
 
       Se il valore di questo criterio non viene impostato, la funzionalità viene considerata vietata.
@@ -7411,7 +7385,6 @@ Se la norma non viene impostata o viene impostata su false, la posizione non vie
 <translation id="8951350807133946005">Impostazione directory della cache su disco</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
-<translation id="8959992920425111821">Configurazione predefinita</translation>
 <translation id="8967125680876068695">Le app di Chrome sono state ritirate su Windows, Mac e Linux.
       Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> continuerà a consentire l'esecuzione delle app di Chrome su queste piattaforme fino alla data ultima del ritiro del supporto di queste app su tutte le piattaforme, vale a dire giugno 2022.
       Se questo criterio viene disattivato o se non viene configurato, potrebbe non essere consentita l'esecuzione delle app di Chrome, in base allo stato del ritiro graduale.

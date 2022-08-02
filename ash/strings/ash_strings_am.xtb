@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">ቀኝ</translation>
 <translation id="1351937230027495976">ምናሌ ሰብስብ</translation>
 <translation id="1364382257761975320">የእርስዎን Chromebook ለመክፈት የጣት አሻራዎን ይጠቀሙ</translation>
+<translation id="1365866993922957110">ራስ-ሰር ዝማኔዎችን ያግኙ</translation>
 <translation id="1372545819342940910">ዴስክን ለበኋላ አስቀምጥ</translation>
 <translation id="1383597849754832576">የንግግር ፋይሎችን ማውረድ አልተቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> ተላቋል</translation>
 <translation id="1836215606488044471">ረዳት (በመጫን ላይ...)</translation>
 <translation id="1838895407229022812">የምሽት ብርሃን ጠፍቷል።</translation>
+<translation id="1862380676329487333">አዘምን እና ዘግተህ ውጣ</translation>
 <translation id="1864454756846565995">USB-C መሣሪያ (የኋላ ወደብ)</translation>
 <translation id="1879018240766558464">ማንነት የማያሳውቁ መስኮቶች በአሁኑ ጊዜ አይደገፉም። ሌሎች መተግበሪያዎች ይቀመጣሉ።</translation>
 <translation id="1882814835921407042">ምንም ተንቀሳቃሽ ስልክ አውታረ መረብ የለም</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">በዚህ ጊዜ ላይ ይዘትን መቅዳት ወይም መለጠፍ አልተቻለም</translation>
 <translation id="4239069858505860023">ጂፒአርኤስ</translation>
 <translation id="4242533952199664413">ቅንብሮችን ክፈት</translation>
+<translation id="4247123849143712100">አዘምን እና ዝጋ</translation>
 <translation id="4250229828105606438">ቅጽበታዊ ገጽ እይታ</translation>
 <translation id="425364040945105958">ምንም ሲም የለም</translation>
 <translation id="4261870227682513959">የማሳወቂያ ቅንብሮችን አሳይ። ማሳወቂያዎች ጠፍተዋል</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> በ<ph name="MANAGER" /> የሚተዳደር ክፍለ-ጊዜ ነው</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ተገናኝቷል</translation>
 <translation id="6351032674660237738">የመተግበሪያ አስተያየት ጥቆማዎች</translation>
+<translation id="6359587239691116345">የቅርብ ጊዜ ባህሪያትን እና የደህንነት ማሻሻያዎችን ያግኙ። ይህን ዝማኔ ካልተቀበሉ የእርስዎ መሣሪያ ከእንግዲህ በትክክል ላይሰራ እና የደህንነት እና የአፈጻጸም ችግሮች ሊያጋጥሙዎት ይችላል።</translation>
 <translation id="6376931439017688372">ብሉቱዝ በርቷል</translation>
 <translation id="6381109794406942707">መሣሪያውን ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
 <translation id="639644700271529076">CAPS LOCK ጠፍቷል</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> ከቀነገደቡ በፊት እንዲያዘምኑት ይፈልግብዎታል።</translation>
 <translation id="649452524636452238">የዘመናዊ ካርድ ፒን</translation>
 <translation id="6495400115277918834">ሥዕል-ላይ-ሥዕል ተጀምሯል፣ ለማተኮር Alt+Shift+V</translation>
+<translation id="6500896621837555595">አዘምን</translation>
 <translation id="6501401484702599040">ማያ ገጹን ወደ <ph name="RECEIVER_NAME" /> Cast በማድረግ ላይ</translation>
 <translation id="6515727200518652613">ካሜራ ጠፍቷል፣ ዳግም ለማገናኘት በመሞከር ላይ።</translation>
 <translation id="6520517963145875092">ለመቅረጽ መስኮት ይምረጡ</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">የባትሪ ጊዜን በማስላት ላይ።</translation>
 <translation id="8061464966246066292">ከፍተኛ ንፅፅር</translation>
 <translation id="8083540854303889870">ለበኋላ የተቀመጠ</translation>
+<translation id="8091387634532529612">ራስ-ሰር ዝማኔዎች</translation>
 <translation id="8098591350844501178">ማያ ገጹን ወደ <ph name="RECEIVER_NAME" /> Cast ማድረግ አስቁም</translation>
 <translation id="8113423164597455979">በርቷል፣ ሁሉም መተግበሪያዎች</translation>
 <translation id="8120151603115102514">የእርስዎ ስልክ የማያ ገጽ መቆለፊያ የለውም። የእርስዎን Chromebook ለመክፈት የይለፍ ቃል ያስገቡ።</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949">ለ<ph name="RESULT_COUNT" /> ውጤቶችን ለ<ph name="QUERY" /> በማሳየት ላይ</translation>
 <translation id="98515147261107953">በወርድ</translation>
 <translation id="990277280839877440">መስኮት <ph name="WINDOW_TITILE" /> ተዘግቷል።</translation>
+<translation id="996204416024568215">የቅርብ ጊዜ ባህሪያትን እና የደህንነት ማሻሻያዎችን ያግኙ። ዝማኔዎች የሚደረጉት ከበስተጀርባ ነው።</translation>
 </translationbundle>

@@ -25,6 +25,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1112015203684611006">Neizdevās drukāt.</translation>
 <translation id="1125564390852150847">Izveidot jaunu cilni.</translation>
 <translation id="1126809382673880764">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Jūs joprojām saņemsiet drošas pārlūkošanas aizsardzību, ja tā ir pieejama, citos Google pakalpojumos, piemēram, Gmail un Meklēšana.</translation>
+<translation id="1135212215217513471">Iegūt Chrome operētājsistēmai iOS</translation>
 <translation id="1145536944570833626">Dzēst esošos datus.</translation>
 <translation id="1147031633655575115">Pierakstījies kā <ph name="USER" /></translation>
 <translation id="1154984953698510061">Skatīt citas cilnes</translation>
@@ -113,6 +114,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="1832848789136765277">Lai vienmēr varētu piekļūt saviem sinhronizētajiem datiem, apstipriniet savu identitāti.</translation>
 <translation id="1870148520156231997">Rādīt paroli</translation>
 <translation id="1872096359983322073">Lukturītis</translation>
+<translation id="1910975740091000991">Chrome iOS ierīcēm</translation>
 <translation id="1911619930368729126">Augšupielādēt Google diskā</translation>
 <translation id="1923342640370224680">Pēdējā stunda</translation>
 <translation id="1930989359703290198">Jūsu organizācija ir atļāvusi pierakstīšanos tikai ar noteiktiem kontiem. Konti, kas nav atļauti, ir paslēpti. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
@@ -140,6 +142,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2139867232736819575">Meklēt kopēto tekstu</translation>
 <translation id="214201757571129614">Pierakstīties…</translation>
 <translation id="2149973817440762519">Rediģēt grāmatzīmes</translation>
+<translation id="2155145621546387786">Koplietot Chrome</translation>
 <translation id="2175927920773552910">kvadrātkods</translation>
 <translation id="2218443599109088993">Tālināt</translation>
 <translation id="2230173723195178503">Tīmekļa lapa ielādēta</translation>
@@ -406,7 +409,6 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="4502566650163919158">Pārbaudīt tūlīt</translation>
 <translation id="4505980578794259603">Pārbaude pēdējoreiz veikta: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Aizvērt pierakstīšanās piedāvājumu</translation>
-<translation id="4511669830082467224">Meklēt attēlu ar Google</translation>
 <translation id="4526249700380860531">Skatīt un pārvaldīt saglabātās paroles vietnē <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Pārskatīt sinhronizētos datus</translation>
 <translation id="4536418791685807335">Mēģiniet pierakstīties vēlreiz.</translation>

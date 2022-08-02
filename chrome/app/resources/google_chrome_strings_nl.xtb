@@ -14,7 +14,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1142745911746664600">Kan Chrome niet updaten</translation>
 <translation id="1152920704813762236">Over Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Openen in Chrome</translation>
-<translation id="1178374936842835197">Als je een instelling niet ziet op deze pagina, kijk je in de <ph name="LINK_BEGIN" />instellingen van Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Bedankt voor het installeren. Je moet de browser opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
 <translation id="1278833599417554002">Opnieuw starten om &amp;Chrome te updaten</translation>
 <translation id="1302523850133262269">Wacht terwijl Chrome de nieuwste systeemupdates installeert.</translation>
@@ -122,7 +121,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3080151273017101988">Achtergrondapps blijven uitvoeren wanneer Google Chrome is gesloten</translation>
 <translation id="3089968997497233615">Er is een nieuwere, veiligere versie van Google Chrome beschikbaar.</translation>
 <translation id="3100998948628680988">Je Chrome-profiel een naam geven</translation>
-<translation id="3103390129666310801">Als je wilt nagaan of je apparaat up-to-date is, ga je naar de <ph name="LINK_BEGIN" />instellingen van Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Als je wilt checken of je andere wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Je wijzigingen worden toegepast als je Google Chrome opnieuw start.</translation>
 <translation id="3149510190863420837">Chrome-apps</translation>
@@ -213,7 +211,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Als je toekomstige Google Chrome-updates wilt krijgen, heb je macOS 10.13 of hoger nodig. Deze computer gebruikt OS X 10.11.</translation>
 <translation id="5098668839038261629">Als de schakelaar aanstaat, word je ook uitgelogd van Chrome</translation>
-<translation id="5112116809696021727">Ga naar de <ph name="LINK_BEGIN" />instellingen van Chrome OS<ph name="LINK_END" /> om te kijken of je apparaat up-to-date is</translation>
 <translation id="5132929315877954718">Ontdek fantastische apps, games, extensies en thema's voor Google Chrome.</translation>
 <translation id="5139423532931106058">Je Chrome-profiel aanpassen</translation>
 <translation id="5163087008893166964">Welkom bij Chrome, nieuw browservenster geopend</translation>
@@ -251,7 +248,6 @@ Sommige functies zijn wellicht niet beschikbaar. Geef een andere profieldirector
 <translation id="5940385492829620908">Hier vind je internet, bookmarks en andere Chrome-instellingen.</translation>
 <translation id="5941711191222866238">Minimaliseren</translation>
 <translation id="5941830788786076944">Google Chrome instellen als mijn standaardbrowser</translation>
-<translation id="5959292945051687759">Als je een instelling niet ziet op deze pagina, kijk je in de <ph name="LINK_BEGIN" />Chrome OS-instellingen<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Downloaden... Nog <ph name="HOURS" /> uur</translation>
 <translation id="6040143037577758943">Sluiten</translation>
 <translation id="6070348360322141662">Je gegevens worden voor extra beveiliging door Google Chrome versleuteld</translation>

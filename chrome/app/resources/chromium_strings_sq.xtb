@@ -148,7 +148,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4415566066719264597">Lejo që Chromium të ekzekutohet në sfond</translation>
 <translation id="4423735387467980091">Personalizo dhe kontrollo Chromium</translation>
 <translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
-<translation id="4440114195512068100">Për të parë nëse pajisja jote është e përditësuar, shko te <ph name="LINK_BEGIN" />Cilësimet e ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Mirë se erdhe në Chromium. U hap një dritare e re e shfletuesit</translation>
 <translation id="4544142686420020088">Chromium nuk u përditësua. Ndodhi një gabim. <ph name="BEGIN_LINK" />Rregullo problemet e përditësimit të Chromium dhe përditësimet e dështuara.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Të vazhdohet te një profil i ri i Chromium?</translation>
@@ -312,8 +311,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Si mund t'i menaxhosh të dhënat e tua:<ph name="END_BOLD" /> Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Ndryshe, mund të heqësh interesat që nuk dëshiron që Chromium të marrë parasysh.</translation>
 <translation id="7937630085815544518">Je identifikuar në Chromium si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7975919845073681630">Ky është instalim dytësor i Chromium dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
-<translation id="7982481011030453202">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
-        cilësimet e ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Shtesat, aplikacionet dhe temat nga burime të panjohura mund ta dëmtojnë pajisjen tënde. Chromium rekomandon që t'i instalosh ato vetëm nga<ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Pasi Chromium të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
 <translation id="80471789339884597">Faleminderit që e instalove. Duhet të rinisësh të gjithë shfletuesit e tu përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>

@@ -148,7 +148,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4415566066719264597">Neka Chromium radi u pozadini</translation>
 <translation id="4423735387467980091">Prilagodite Chromium i upravljajte njime</translation>
 <translation id="4427306783828095590">Poboljšana zaštita vas još bolje čuva od krađe identiteta i zlonamjernog softvera</translation>
-<translation id="4440114195512068100">Da vidite je li vaš uređaj ažuriran, idite u <ph name="LINK_BEGIN" />Postavke ChromiumOS-a<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Dobro došli u Chromium. Otvoren je novi prozor preglednika</translation>
 <translation id="4544142686420020088">Ažuriranje Chromiuma nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromiuma i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Želite li nastaviti na novom Chromium profilu?</translation>
@@ -313,8 +312,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kako možete upravljati svojim podacima:<ph name="END_BOLD" /> Da zaštitimo vašu privatnosti, automatski brišemo interesovanja koja su starija od 4 sedmice. Kada nastavite koristiti preglednik, interesovanje se može ponovo pojaviti na listi. Ili možete ukloniti interesovanja koja ne želite dati Chromiumu na razmatranje.</translation>
 <translation id="7937630085815544518">Bili ste prijavljeni na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti račun da se ponovo prijavite.</translation>
 <translation id="7975919845073681630">Ovo je sekundarno instaliranje Chromiuma i stoga on ne može biti vaš zadani preglednik.</translation>
-<translation id="7982481011030453202">Ako se postavka ne prikazuje na ovoj stranici, pogledajte u <ph name="LINK_BEGIN" />
-    postavkama ChromiumOS-a<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chromium preporučuje da ih instalirate samo iz: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kada Chromium dobije pristup, web lokacije će vam moći zatražiti pristup.</translation>
 <translation id="80471789339884597">Hvala što ste instalirali. Morate ponovo pokrenuti sve preglednike prije nego što možete koristiti <ph name="BUNDLE_NAME" />.</translation>

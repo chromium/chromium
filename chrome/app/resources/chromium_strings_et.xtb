@@ -146,7 +146,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4415566066719264597">Luba Chromiumil taustal töötada</translation>
 <translation id="4423735387467980091">Chromiumi kohandamine ja juhtimine</translation>
 <translation id="4427306783828095590">Täiustatud kaitse aitab andmepüüki ja pahavara paremini blokeerida</translation>
-<translation id="4440114195512068100">Kui soovite teada saada, kas teie seade on ajakohane, avage <ph name="LINK_BEGIN" />Chromium OS-i seaded<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Tere tulemast Chromiumi; avati uus brauseriaken</translation>
 <translation id="4544142686420020088">Chromiumit ei värskendatud, midagi läks valesti. <ph name="BEGIN_LINK" />Lahendage Chromiumi värskendamisprobleemid ja parandage ebaõnnestunud värskendused.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Kas jätkata uuel Chromiumi profiilil?</translation>
@@ -310,8 +309,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Kuidas saate oma andmeid hallata?<ph name="END_BOLD" /> Teie privaatsuse kaitsmiseks kustutame automaatselt huvid, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib huvi uuesti loendis ilmuda. Võite ka eemaldada huvid, mida te ei soovi lasta Chromiumil arvesse võtta.</translation>
 <translation id="7937630085815544518">Olite Chromiumisse sisse logitud kasutajana <ph name="USER_EMAIL_ADDRESS" />. Kasutage uuesti sisselogimiseks sama kontot.</translation>
 <translation id="7975919845073681630">See on Chromiumi sekundaarne install ja seda ei saa määrata vaikebrauseriks.</translation>
-<translation id="7982481011030453202">Kui seadet sellel lehel ei kuvata, vaadake oma <ph name="LINK_BEGIN" />
-      Chromium OS-i seadeid<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Tundmatutest allikatest pärinevad laiendused, rakendused ja teemad võivad teie seadet kahjustada. Chromium soovitab neid ainult järgmisest poest installida: <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8013436988911883588">Kui annate Chromiumile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.</translation>
 <translation id="80471789339884597">Täname teid installimise eest. Enne brauseri <ph name="BUNDLE_NAME" /> kasutamist peate taaskäivitama kõik brauserid.</translation>

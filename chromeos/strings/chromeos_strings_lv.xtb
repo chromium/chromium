@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ATSVAIDZINĀT</translation>
 <translation id="3009958530611748826">Atlasiet mapi, kurā saglabāt failus</translation>
 <translation id="3017079585324758401">Fons</translation>
+<translation id="302435934487327038">Instalēšana pabeigta</translation>
 <translation id="3027578600144895987">Aizvērt kameru</translation>
 <translation id="3031560714565892478">Ierīce ir videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Beigu punkts</translation>
 <translation id="3069085583900247081">Testēšana neizdevās</translation>
-<translation id="3076243757415932261">Notiek komponentu validēšana…</translation>
 <translation id="3083667275341675831">Savienojamības diagnostika</translation>
 <translation id="3084958266922136097">Atspējot ekrānsaudzētāju</translation>
 <translation id="3091839911843451378">Neizdevās — darbība apturēta</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Vai tiešām vēlaties notīrīt visu drukāšanas vēsturi? Netiks notīrīti drukas uzdevumi, kas tiek izpildīti.</translation>
 <translation id="3383751554789092165">Pēc vajadzības varat mainīt informāciju par ierīci.</translation>
 <translation id="3404249063913988450">Iespējot ekrānsaudzētāju</translation>
-<translation id="3404770484521709967">Komponenti ir instalēti pareizi.</translation>
 <translation id="3413935475507503304">Lai veiktu atjaunināšanu, noklikšķiniet uz “Tālāk”.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Drošība</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Iepriekšējā parole</translation>
 <translation id="4453205916657964690">Apakštīkla maska</translation>
 <translation id="4454245904991689773">Skenēto attēlu saglabāšanas vieta</translation>
-<translation id="4472575034687746823">Sākt darbu</translation>
 <translation id="4479639480957787382">tīkls Ethernet</translation>
 <translation id="4483049906298469269">Neizdevās ehotestēt tīkla vārteju, kas nav noklusējuma vārteja</translation>
 <translation id="4500213108254186382">Vāka akselerometrs</translation>
@@ -664,6 +662,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6618744767048954150">Notiek pārbaude</translation>
 <translation id="6620487321149975369">Drukas uzdevumi būs redzami vēsturē, ja vien tie netiks noņemti manuāli</translation>
 <translation id="6643016212128521049">Notīrīt</translation>
+<translation id="6644568396961840069">Nevarēja saglabāt failu. Pievienojiet citu ārējo atmiņu vai vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6647510110698214773">Šifrēšanas algoritms</translation>
 <translation id="6650062777702288430">Kana/burtciparu slēdzis</translation>
 <translation id="6657585470893396449">Parole</translation>
@@ -809,7 +808,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8063022551652308521">Aizsardzība pret rakstīšanu joprojām ir izslēgta. Lai turpinātu, ieslēdziet aizsardzību pret rakstīšanu.</translation>
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
-<translation id="8083281199617904460">Šāda veida labošana ir jāveic apmācītam labošanas speciālistam. Pirms sākšanas nomainiet komponentus, kuri nedarbojas pareizi.</translation>
 <translation id="808894953321890993">Mainīt paroli</translation>
 <translation id="8104083085214006426">Jūs izmantojat atvērtu un nedrošu tīklu</translation>
 <translation id="8109786307828817014">Vai turpināt, neņemot vērā kalibrēšanas kļūmes?</translation>

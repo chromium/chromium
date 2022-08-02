@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="2497852260688568942">Синхронизирането е деактивирано от администратора ви</translation>
 <translation id="250020030759455918">В Chrome ще виждате дали сте влезли в профила си в <ph name="SITE_NAME" />, както и съответните данни за сърфирането и сайта</translation>
+<translation id="2507178219579379057">Chrome проучва начини за ограничаване на рекламния спам, измамите и споделянето между сайтовете. Също така браузърът <ph name="BEGIN_LINK" />прогнозира интересите ви<ph name="END_LINK" />, които сайтовете могат да използват, за да ви показват реклами. Имате възможност да управлявате интересите си от настройките.</translation>
 <translation id="2513403576141822879">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране и услуги на Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Сканиране</translation>
 <translation id="2523184218357549926">Изпраща до Google URL адресите на страниците, които посещавате</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">Лицензи за отворен код</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Какви данни се използват<ph name="END_BOLD" />: Вашата история на сърфиране – списък на сайтовете, които сте посетили чрез Chrome на това устройство.</translation>
 <translation id="4263656433980196874">Потребителският интерфейс за даване на съгласие за ползване на Асистент при гласови търсения е отворен на пълната височина</translation>
-<translation id="4266054596873078491">Ще влезете в този сайт и в Chrome с профила си в Google.</translation>
 <translation id="4269820728363426813">Копиране на адреса на връзката</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Включете заключването на екрана от настройките на Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">С използването на Chrome приемате <ph name="BEGIN_TOS_LINK" />Общите условия на Google<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_ATOS_LINK" />. В сила е и <ph name="BEGIN_PRIVACY_LINK" />Декларацията за поверителност<ph name="END_PRIVACY_LINK" />.</translation>

@@ -14,8 +14,6 @@
 <translation id="1142745911746664600">Chrome ਅੱਪਡੇਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="1152920704813762236">ChromeOS ਬਾਰੇ</translation>
 <translation id="1154147086299354128">&amp;Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
-<translation id="1178374936842835197">ਜੇ ਸੈਟਿੰਗ ਇਸ ਪੰਨੇ 'ਤੇ ਨਹੀਂ ਦਿਸਦੀ, ਤਾਂ ਆਪਣੀਆਂ <ph name="LINK_BEGIN" />
-        ChromeOS Flex ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> ਵਿੱਚ ਦੇਖੋ</translation>
 <translation id="1203500561924088507">ਸਥਾਪਨਾ ਕਰਨ ਲਈ ਧੰਨਵਾਦ। <ph name="BUNDLE_NAME" /> ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੇ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="1278833599417554002">&amp;Chrome ਨੂੰ ਅੱਪਡੇਟ ਕਰਨ ਲਈ ਮੁੜ-ਲਾਂਚ ਕਰੋ</translation>
 <translation id="1302523850133262269">ਕਿਰਪਾ ਕਰਕੇ Chrome ਵੱਲੋਂ ਨਵੀਨਤਮ ਸਿਸਟਮ ਅੱਪਡੇਟਾਂ ਨੂੰ ਸਥਾਪਤ ਕੀਤੇ ਜਾਣ ਤੱਕ ਉਡੀਕ ਕਰੋ।</translation>
@@ -124,7 +122,6 @@
 <translation id="3080151273017101988">Google Chrome ਬੰਦ ਹੋਣ 'ਤੇ ਵੀ ਬੈਕਗ੍ਰਾਊਂਡ ਐਪਾਂ ਨੂੰ ਚਲਦੇ ਰਹਿਣ ਦਿਓ</translation>
 <translation id="3089968997497233615">Google Chrome ਦਾ ਇੱਕ ਨਵਾਂ, ਵੱਧ ਸੁਰੱਖਿਅਤ ਵਰਜਨ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="3100998948628680988">ਆਪਣੇ Chrome ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਨਾਮ ਦਿਓ</translation>
-<translation id="3103390129666310801">ਇਹ ਦੇਖਣ ਲਈ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ ਜਾਂ ਨਹੀਂ, <ph name="LINK_BEGIN" />ChromeOS Flex ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="3114643501466072395">ਇਹ ਜਾਂਚ ਕਰਨ ਲਈ ਕਿ ਤੁਹਾਡੇ ਹੋਰ ਪਾਸਵਰਡ ਡਾਟਾ ਉਲੰਘਣਾਵਾਂ ਅਤੇ ਹੋਰ ਸੁਰੱਖਿਆ ਸੰਬੰਧੀ ਸਮੱਸਿਆਵਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਹਨ ਜਾਂ ਨਹੀਂ, <ph name="BEGIN_LINK" />Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ<ph name="END_LINK" />।</translation>
 <translation id="3140883423282498090">ਤੁਹਾਡੀਆਂ ਤਬਦੀਲੀਆਂ ਤੁਹਾਡੇ ਵੱਲੋਂ ਅਗਲੀ ਵਾਰ Google Chrome ਨੂੰ ਮੁੜ-ਲਾਂਚ ਕਰਨ 'ਤੇ ਲਾਗੂ ਹੋਣਗੀਆਂ।</translation>
 <translation id="3149510190863420837">Chrome ਐਪਸ</translation>
@@ -215,7 +212,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Google Chrome ਸੰਬੰਧੀ ਭਵਿੱਖੀ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਤੁਹਾਨੂੰ macOS 10.13 ਜਾਂ ਇਸ ਤੋਂ ਬਾਅਦ ਵਾਲੇ ਵਰਜਨ ਦੀ ਲੋੜ ਪਵੇਗੀ। ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ OS X 10.11 ਵਰਜਨ ਵਰਤਿਆ ਜਾ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5098668839038261629">ਚਾਲੂ ਹੋਣ 'ਤੇ, ਤੁਹਾਨੂੰ Chrome ਤੋਂ ਵੀ ਸਾਈਨ-ਆਊਟ ਕਰ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
-<translation id="5112116809696021727">ਇਹ ਦੇਖਣ ਲਈ ਕਿ ਤੁਹਾਡਾ ਡੀਵਾਈਸ ਅੱਪ-ਟੂ-ਡੇਟ ਹੈ ਜਾਂ ਨਹੀਂ, <ph name="LINK_BEGIN" />ChromeOS ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="5132929315877954718">Google Chrome ਲਈ ਸ਼ਾਨਦਾਰ ਐਪਾਂ, ਗੇਮਾਂ, ਐਕਸਟੈਂਸ਼ਨਾਂ ਅਤੇ ਵਿਸ਼ੇ ਖੋਜੋ।</translation>
 <translation id="5139423532931106058">ਆਪਣੇ Chrome ਪ੍ਰੋਫਾਈਲ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="5163087008893166964">Chrome ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ; ਨਵੀਂ ਬ੍ਰਾਊਜ਼ਰ ਵਿੰਡੋ ਖੋਲ੍ਹੀ ਗਈ</translation>
@@ -255,8 +251,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="5940385492829620908">ਤੁਹਾਡੀ ਵੈੱਬ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ Chrome ਸਮੱਗਰੀ ਇੱਥੇ ਲਾਈਵ ਹੈ।</translation>
 <translation id="5941711191222866238">ਨਿਊਨਤਮ</translation>
 <translation id="5941830788786076944">Google Chrome ਨੂੰ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਬ੍ਰਾਊਜ਼ਰ ਬਣਾਓ</translation>
-<translation id="5959292945051687759">ਜੇ ਸੈਟਿੰਗ ਇਸ ਪੰਨੇ 'ਤੇ ਨਹੀਂ ਦਿਸਦੀ, ਤਾਂ ਆਪਣੀਆਂ <ph name="LINK_BEGIN" />
-        ChromeOS ਸੈਟਿੰਗਾਂ<ph name="LINK_END" /> ਵਿੱਚ ਦੇਖੋ</translation>
 <translation id="6003112304606738118">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ... <ph name="HOURS" /> ਘੰਟੇ ਬਾਕੀ</translation>
 <translation id="6040143037577758943">ਬੰਦ ਕਰੋ</translation>
 <translation id="6070348360322141662">ਬਿਹਤਰ ਸੁਰੱਖਿਆ ਲਈ, Google Chrome ਤੁਹਾਡੇ ਡਾਟੇ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰੇਗਾ</translation>

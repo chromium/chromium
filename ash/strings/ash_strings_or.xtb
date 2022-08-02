@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">ଡାହାଣ</translation>
 <translation id="1351937230027495976">ମେନୁକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
 <translation id="1364382257761975320">ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ୍ କରିବା ପାଇଁ, ଆପଣଙ୍କ ଟିପଚିହ୍ନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
+<translation id="1365866993922957110">ସ୍ୱଚାଳିତ ଅପଡେଟଗୁଡ଼ିକୁ ପାଆନ୍ତୁ</translation>
 <translation id="1372545819342940910">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ଡେସ୍କ ସେଭ କରନ୍ତୁ</translation>
 <translation id="1383597849754832576">ସ୍ପିଚ୍ ଫାଇଲଗୁଡ଼ିକୁ ଡାଉନଲୋଡ୍ କରାଯାଇପାରିବ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />କୁ ଅନ୍‌ପିନ୍ କରାଯାଇଛି</translation>
 <translation id="1836215606488044471">ଆସିଷ୍ଟାଣ୍ଟ (ଲୋଡ୍‌ ହେଉଛି...)</translation>
 <translation id="1838895407229022812">ନାଇଟ୍ ଲାଇଟ୍ ବନ୍ଦ ଅଛି।</translation>
+<translation id="1862380676329487333">ଅପଡେଟ କରି ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="1864454756846565995">USB-C ଡିଭାଇସ୍ (ପଛ ପୋର୍ଟ)</translation>
 <translation id="1879018240766558464">ବର୍ତ୍ତମାନ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋଗୁଡ଼ିକ ସମର୍ଥିତ ନୁହେଁ। ଅନ୍ୟ ଆପଗୁଡ଼ିକ ସେଭ ହୋଇଯିବ।</translation>
 <translation id="1882814835921407042">କୌଣସି ମୋବାଇଲ ନେଟୱାର୍କ ନାହିଁ</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">ଏହି ସମୟରେ ବିଷୟବସ୍ତୁକୁ କପି କିମ୍ବା ପେଷ୍ଟ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">ସେଟିଂସ୍‌ ଖୋଲନ୍ତୁ</translation>
+<translation id="4247123849143712100">ଅପଡେଟ କରି ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="4250229828105606438">ସ୍କ୍ରିନ୍‍ସଟ୍</translation>
 <translation id="425364040945105958">କୌଣସି SIM ନାହିଁ</translation>
 <translation id="4261870227682513959">ବିଜ୍ଞପ୍ତି ସେଟିଂସ୍ ଦେଖାନ୍ତୁ। ବିଜ୍ଞପ୍ତି ବନ୍ଦ ଅଛି</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ହେଉଛି <ph name="MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଥିବା ଏକ ପରିଚାଳିତ ସେସନ୍</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="6351032674660237738">ଆପ୍ ପରାମର୍ଶ</translation>
+<translation id="6359587239691116345">ନବୀନତମ ଫିଚର ଏବଂ ସୁରକ୍ଷା ଉନ୍ନତିଗୁଡ଼ିକୁ ପାଆନ୍ତୁ। ଯଦି ଆପଣ ଏହି ଅପଡେଟକୁ ଅଗ୍ରାହ୍ୟ କରନ୍ତି, ତେବେ ଆପଣଙ୍କ ଡିଭାଇସ ଆଉ ସଠିକ୍ ଭାବେ କାମ କରିନପାରେ ଏବଂ ଆପଣ ସୁରକ୍ଷା ଓ ପରଫରମାନ୍ସ ସମସ୍ୟାଗୁଡ଼ିକର ସମ୍ମୁଖୀନ ହୋଇପାରନ୍ତି।</translation>
 <translation id="6376931439017688372">ବ୍ଲୁଟୁଥ୍ ଚାଲୁ ଅଛି</translation>
 <translation id="6381109794406942707">ଡିଭାଇସକୁ ଅନଲକ୍ କରିବା ପାଇଁ ଆପଣଙ୍କର PIN ଲେଖନ୍ତୁ।</translation>
 <translation id="639644700271529076">କ୍ୟାପସ୍ ଲକ୍ ବନ୍ଦ ଅଛି</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> ପାଇଁ ଆପଣ ସମୟସୀମା ପୂର୍ବରୁ ଆପଣଙ୍କ <ph name="DEVICE_TYPE" />କୁ ଅପଡେଟ କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="649452524636452238">ସ୍ମାର୍ଟ କାର୍ଡ PIN</translation>
 <translation id="6495400115277918834">ପିକଚର-ଇନ-ପିକଚର ଆରମ୍ଭ ହୋଇଛି, ଫୋକସ କରିବାକୁ Alt+Shift+V ଦବାନ୍ତୁ</translation>
+<translation id="6500896621837555595">ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />କୁ ସ୍କ୍ରିନ୍ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="6515727200518652613">କ୍ୟାମେରା ଡିସକନେକ୍ଟ ହୋଇଯାଇଛି, ପୁଣି କନେକ୍ଟ କରିବା ପାଇଁ ଚେଷ୍ଟା କରାଯାଉଛି।</translation>
 <translation id="6520517963145875092">କ୍ୟାପଚର୍ କରିବାକୁ ଏକ ୱିଣ୍ଡୋ ଚୟନ କରନ୍ତୁ</translation>
@@ -1217,6 +1222,7 @@
 <translation id="8054466585765276473">ବ୍ୟାଟେରୀ ସମୟ ହିସାବ କରାଯାଉଛି।</translation>
 <translation id="8061464966246066292">ଉଚ୍ଚ କଣ୍ଟ୍ରାଷ୍ଟ</translation>
 <translation id="8083540854303889870">ପରବର୍ତ୍ତୀ ସମୟ ପାଇଁ ସେଭ କରାଯାଇଛି</translation>
+<translation id="8091387634532529612">ସ୍ୱଚାଳିତ ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" />ରେ ସ୍କ୍ରିନ୍‍ କାଷ୍ଟ କରିବା ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="8113423164597455979">ଚାଲୁ, ସବୁ ଆପ୍</translation>
 <translation id="8120151603115102514">ଆପଣଙ୍କ ଫୋନରେ ଏକ ଲକ ସ୍କ୍ରିନ ନାହିଁ। ଆପଣଙ୍କ Chromebookକୁ ଅନଲକ କରିବା ପାଇଁ ପାସୱାର୍ଡ ଲେଖନ୍ତୁ।</translation>
@@ -1423,4 +1429,5 @@
 <translation id="974545358917229949"><ph name="QUERY" /> ପାଇଁ <ph name="RESULT_COUNT" />ଟି ଫଳାଫଳ ଡିସ୍‌ପ୍ଲେ ହେଉଛି</translation>
 <translation id="98515147261107953">ଲ୍ୟାଣ୍ଡସ୍କେପ୍</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> ବନ୍ଦ କରାଯାଇଛି।</translation>
+<translation id="996204416024568215">ନବୀନତମ ଫିଚର ଏବଂ ସୁରକ୍ଷା ଉନ୍ନତିଗୁଡ଼ିକୁ ପାଆନ୍ତୁ। ପୃଷ୍ଠପଟରେ ଅପଡେଟଗୁଡ଼ିକ ହୋଇଥାଏ।</translation>
 </translationbundle>

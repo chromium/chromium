@@ -14,8 +14,6 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1142745911746664600">Ni ellir diweddaru Chrome</translation>
 <translation id="1152920704813762236">Ynghylch ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Agor yn Chrome</translation>
-<translation id="1178374936842835197">Os nad yw gosodiad yn ymddangos ar y dudalen hon, edrychwch yn eich <ph name="LINK_BEGIN" />
-      gosodiadau ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Diolch am osod. Rhaid i chi ailgychwyn eich porwr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Ail-lansiwch i ddiweddaru &amp;Chrome</translation>
 <translation id="1302523850133262269">Arhoswch dra bod Chrome yn gosod y diweddariadau system diweddaraf.</translation>
@@ -124,7 +122,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3080151273017101988">Parhau i redeg apiau cefndir pan fydd Google Chrome ar gau</translation>
 <translation id="3089968997497233615">Mae fersiwn newydd, fwy diogel o Google Chrome ar gael.</translation>
 <translation id="3100998948628680988">Enwch eich proffil Chrome</translation>
-<translation id="3103390129666310801">I weld a yw'ch dyfais yn gyfredol, ewch i <ph name="LINK_BEGIN" />Osodiadau ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">I wirio a yw'ch cyfrineiriau eraill yn ddiogel rhag toriadau data a phroblemau diogelwch eraill, <ph name="BEGIN_LINK" />mewngofnodwch i Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Bydd eich newidiadau yn dod i rym y tro nesaf y byddwch yn ail-lansio Google Chrome.</translation>
 <translation id="3149510190863420837">Apiau Chrome</translation>
@@ -215,7 +212,6 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen macOS 10.13 neu'n hwyrach arnoch. Mae'r cyfrifiadur hwn yn defnyddio OS X 10.11.</translation>
 <translation id="5098668839038261629">Pan fydd ymlaen, byddwch hefyd yn cael eich allgofnodi o Chrome</translation>
-<translation id="5112116809696021727">I weld a yw'ch dyfais yn gyfredol, ewch i <ph name="LINK_BEGIN" />Osodiadau ChromeOS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Darganfyddwch apiau, gemau, estyniadau a themâu gwych ar gyfer Google Chrome.</translation>
 <translation id="5139423532931106058">Personoleiddio'ch proffil Chrome</translation>
 <translation id="5163087008893166964">Croeso i Chrome; agorwyd ffenestr porwr newydd</translation>
@@ -255,8 +251,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="5940385492829620908">Mae'ch gwe, nodau tudalen, a phethau Chrome eraill yn byw yma.</translation>
 <translation id="5941711191222866238">Lleihau</translation>
 <translation id="5941830788786076944">Gwneud Google Chrome y porwr diofyn</translation>
-<translation id="5959292945051687759">Os nad yw gosodiad yn ymddangos ar y dudalen hon, edrychwch yn eich <ph name="LINK_BEGIN" />
-      gosodiadau ChromeOS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Wrthi'n lawrlwytho... Mae <ph name="HOURS" /> awr ar ôl</translation>
 <translation id="6040143037577758943">Cau</translation>
 <translation id="6070348360322141662">Er mwyn sicrhau mwy o ddiogelwch, bydd Google Chrome yn amgryptio eich data</translation>

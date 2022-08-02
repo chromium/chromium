@@ -25,6 +25,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1112015203684611006">Error en imprimir</translation>
 <translation id="1125564390852150847">Crea una pestanya nova.</translation>
 <translation id="1126809382673880764">No et protegeix contra baixades, extensions ni llocs web perillosos. Continuaràs obtenint protecció mitjançant Navegació segura, sempre que estigui disponible, en altres serveis de Google, com ara Gmail i la Cerca.</translation>
+<translation id="1135212215217513471">Baixa Chrome per a iOS</translation>
 <translation id="1145536944570833626">Suprimeix les dades existents.</translation>
 <translation id="1147031633655575115">Has iniciat la sessió com a <ph name="USER" /></translation>
 <translation id="1154984953698510061">Mostra les altres pestanyes</translation>
@@ -113,6 +114,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="1832848789136765277">Per assegurar-te de poder accedir a les dades sincronitzades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="1870148520156231997">Mostra la contrasenya</translation>
 <translation id="1872096359983322073">Llanterna</translation>
+<translation id="1910975740091000991">Chrome per a iOS</translation>
 <translation id="1911619930368729126">Penja a Google Drive</translation>
 <translation id="1923342640370224680">Darrera hora</translation>
 <translation id="1930989359703290198">La teva organització només et permet iniciar la sessió amb determinats comptes. Els comptes no admesos estan amagats. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2139867232736819575">Cerca el text que has copiat</translation>
 <translation id="214201757571129614">Inicia la sessió…</translation>
 <translation id="2149973817440762519">Edita l'adreça d'interès</translation>
+<translation id="2155145621546387786">Comparteix Chrome</translation>
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="2218443599109088993">Redueix</translation>
 <translation id="2230173723195178503">La pàgina web s'ha carregat</translation>
@@ -406,7 +409,6 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4502566650163919158">Comprova ara</translation>
 <translation id="4505980578794259603">Última comprovació: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Tanca la promoció d'inici de sessió</translation>
-<translation id="4511669830082467224">Cerca la imatge amb Google</translation>
 <translation id="4526249700380860531">Consulta i gestiona les contrasenyes desades a <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Revisa les teves dades sincronitzades</translation>
 <translation id="4536418791685807335">Prova d'iniciar la sessió de nou.</translation>

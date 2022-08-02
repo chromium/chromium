@@ -14,8 +14,6 @@
 <translation id="1142745911746664600">Не може да се ажурира Chrome</translation>
 <translation id="1152920704813762236">За Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Отвори во Chrome</translation>
-<translation id="1178374936842835197">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
-        поставките за ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Фала за инсталирањето. Мора да го рестартирате прелистувачот пред да користите <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Рестартирајте за да се ажурира &amp;Chrome</translation>
 <translation id="1302523850133262269">Почекајте додека Chrome ги инсталира последните системски ажурирања.</translation>
@@ -124,7 +122,6 @@
 <translation id="3080151273017101988">Продолжи со извршување апликации во заднина кога е затворен Google Chrome</translation>
 <translation id="3089968997497233615">Достапна е нова, побезбедна верзија на Google Chrome.</translation>
 <translation id="3100998948628680988">Именувајте го профилот на Chrome</translation>
-<translation id="3103390129666310801">За да видите дали уредот ви е ажуриран, одете во <ph name="LINK_BEGIN" />Поставките за ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">За да проверите дали другите ваши лозинки се заштитени од упад во податоците и други проблеми со безбедноста, <ph name="BEGIN_LINK" />најавете се на Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Вашите промени ќе делуваат со следното рестартирање на Google Chrome.</translation>
 <translation id="3149510190863420837">Апликации на Chrome</translation>
@@ -215,7 +212,6 @@
 <translation id="4990567037958725628">Google Chrome Канари</translation>
 <translation id="5037581483200764584">За да добивате идни ажурирања на Google Chrome, потребен ви е macOS 10.13 или понова верзија. Компјутеров користи OS X 10.11.</translation>
 <translation id="5098668839038261629">Кога е вклучено, ќе се одјавите и од Chrome</translation>
-<translation id="5112116809696021727">За да видите дали уредот ви е ажуриран, одете на <ph name="LINK_BEGIN" />Поставки за Chrome OS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Открива одлични апликации, игри, наставки и теми за Google Chrome.</translation>
 <translation id="5139423532931106058">Приспособете го вашиот профил на Chrome</translation>
 <translation id="5163087008893166964">Добре дојдовте на Chrome; отворен е нов прозорец во прелистувачот</translation>
@@ -255,8 +251,6 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="5940385492829620908">Вебот, обележувачите и останатите работи на Chrome живеат тука.</translation>
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5941830788786076944">Постави го Google Chrome за стандарден прелистувач</translation>
-<translation id="5959292945051687759">Ако некоја поставка не се прикажува на страницава, погледнете во <ph name="LINK_BEGIN" />
-    поставките за Chrome OS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Се презема… Уште <ph name="HOURS" /> ч.</translation>
 <translation id="6040143037577758943">Затвори</translation>
 <translation id="6070348360322141662">За дополнителна безбедност, Google Chrome ќе ги шифрира вашите податоци</translation>

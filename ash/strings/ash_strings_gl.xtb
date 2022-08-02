@@ -84,6 +84,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1364382257761975320">Para desbloquear o Chromebook, utiliza a impresión dixital</translation>
+<translation id="1365866993922957110">Recibir actualizacións automáticas</translation>
 <translation id="1372545819342940910">Gardar escritorio para máis tarde</translation>
 <translation id="1383597849754832576">Non se puideron descargar os ficheiros de voz. Téntao máis tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -161,6 +162,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> (soltouse)</translation>
 <translation id="1836215606488044471">Asistente (cargando...)</translation>
 <translation id="1838895407229022812">A función Luz nocturna está desactivada.</translation>
+<translation id="1862380676329487333">Actualizar e pechar sesión</translation>
 <translation id="1864454756846565995">Dispositivo USB‑C (porto posterior)</translation>
 <translation id="1879018240766558464">As ventás do modo de incógnito agora mesmo non son compatibles. Gardaranse outras aplicacións.</translation>
 <translation id="1882814835921407042">Non hai ningunha rede de telefonía móbil</translation>
@@ -562,6 +564,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="423685346499232137">Non se puido copiar ou pegar o contido neste momento</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
+<translation id="4247123849143712100">Actualizar e apagar</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425364040945105958">Non hai SIM</translation>
 <translation id="4261870227682513959">Mostrar a configuración de notificacións. Están desactivadas</translation>
@@ -921,6 +924,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6338485349199627913"><ph name="MANAGER" /> xestiona esta sesión (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="6344138931392227467">Conectouse o dispositivo (<ph name="DEVICE_NAME" />)</translation>
 <translation id="6351032674660237738">SUXESTIÓNS DE APLICACIÓNS</translation>
+<translation id="6359587239691116345">Goza das últimas funcións e melloras de seguranza. Se rexeitas esta actualización, é posible que o dispositivo deixe de funcionar adecuadamente e que teñas problemas de seguranza e de rendemento.</translation>
 <translation id="6376931439017688372">O Bluetooth está activado</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo escribe o PIN.</translation>
 <translation id="639644700271529076">O bloqueo de maiúsculas está desactivado</translation>
@@ -942,6 +946,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> require que actualices o teu dispositivo (<ph name="DEVICE_TYPE" />) antes de que finalice o prazo</translation>
 <translation id="649452524636452238">PIN da tarxeta intelixente</translation>
 <translation id="6495400115277918834">Iniciouse a función da pantalla superposta. Para enfocar esta pantalla, preme Alt + Maiúsculas + V</translation>
+<translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Emitindo pantalla en <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Perdeuse a conexión coa cámara; tentando conexión de novo.</translation>
 <translation id="6520517963145875092">Selecciona a ventá que queiras capturar</translation>
@@ -1219,6 +1224,7 @@ Nova instalación</translation>
 <translation id="8054466585765276473">Calculando o tempo da batería.</translation>
 <translation id="8061464966246066292">Alto contraste</translation>
 <translation id="8083540854303889870">Elementos gardados para máis tarde</translation>
+<translation id="8091387634532529612">Actualizacións automáticas</translation>
 <translation id="8098591350844501178">Deter a emisión da pantalla en: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Si, para todas</translation>
 <translation id="8120151603115102514">O teu teléfono non ten unha pantalla de bloqueo. Para desbloquear o Chromebook, escribe o contrasinal.</translation>
@@ -1425,4 +1431,5 @@ Nova instalación</translation>
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">Pechouse a ventá <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">Goza das últimas funcións e melloras de seguranza. As actualizacións realízanse en segundo plano.</translation>
 </translationbundle>

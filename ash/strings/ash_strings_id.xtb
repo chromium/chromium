@@ -84,6 +84,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1351937230027495976">Ciutkan menu</translation>
 <translation id="1364382257761975320">Untuk membuka kunci Chromebook, gunakan sidik jari</translation>
+<translation id="1365866993922957110">Dapatkan update otomatis</translation>
 <translation id="1372545819342940910">Simpan desktop untuk nanti</translation>
 <translation id="1383597849754832576">Tidak dapat mendownload file ucapan. Coba lagi nanti.</translation>
 <translation id="1383876407941801731">Telusuri</translation>
@@ -161,6 +162,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> telah dilepas pinnya</translation>
 <translation id="1836215606488044471">Asisten (sedang dimuat...)</translation>
 <translation id="1838895407229022812">Cahaya Malam nonaktif.</translation>
+<translation id="1862380676329487333">Update dan logout</translation>
 <translation id="1864454756846565995">Perangkat USB-C (port belakang)</translation>
 <translation id="1879018240766558464">Jendela Samaran saat ini tidak didukung. Aplikasi lainnya akan disimpan.</translation>
 <translation id="1882814835921407042">Tidak ada jaringan seluler</translation>
@@ -561,6 +563,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="423685346499232137">Saat ini tidak dapat menyalin atau menempelkan konten</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Buka setelan</translation>
+<translation id="4247123849143712100">Update dan matikan</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Tidak ada SIM</translation>
 <translation id="4261870227682513959">Tampilkan setelan notifikasi. Notifikasi nonaktif.</translation>
@@ -920,6 +923,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> adalah sesi terkelola yang dikelola oleh <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> terhubung</translation>
 <translation id="6351032674660237738">SARAN APLIKASI</translation>
+<translation id="6359587239691116345">Dapatkan fitur dan peningkatan keamanan terbaru. Jika Anda menolak update ini, perangkat mungkin tidak lagi berfungsi dengan baik dan Anda mungkin mengalami masalah keamanan dan performa.</translation>
 <translation id="6376931439017688372">Bluetooth aktif</translation>
 <translation id="6381109794406942707">Untuk membuka kunci perangkat, masukkan PIN Anda.</translation>
 <translation id="639644700271529076">CAPS LOCK tidak aktif</translation>
@@ -941,6 +945,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> mengharuskan Anda mengupdate <ph name="DEVICE_TYPE" /> sebelum tiba batas waktu</translation>
 <translation id="649452524636452238">PIN kartu smart</translation>
 <translation id="6495400115277918834">Picture-in-picture dimulai, Alt+Shift+V untuk memfokuskan</translation>
+<translation id="6500896621837555595">Update</translation>
 <translation id="6501401484702599040">Mentransmisi layar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Koneksi kamera terputus, mencoba menghubungkan kembali.</translation>
 <translation id="6520517963145875092">Pilih jendela untuk diambil gambarnya</translation>
@@ -1218,6 +1223,7 @@ Baru diinstal</translation>
 <translation id="8054466585765276473">Menghitung masa pakai baterai.</translation>
 <translation id="8061464966246066292">Kontras tinggi</translation>
 <translation id="8083540854303889870">Disimpan untuk nanti</translation>
+<translation id="8091387634532529612">Update otomatis</translation>
 <translation id="8098591350844501178">Hentikan casting layar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Aktif, semua</translation>
 <translation id="8120151603115102514">Ponsel Anda tidak memiliki layar kunci. Untuk membuka kunci Chromebook, masukkan sandi.</translation>
@@ -1424,4 +1430,5 @@ Baru diinstal</translation>
 <translation id="974545358917229949">Menampilkan <ph name="RESULT_COUNT" /> hasil untuk <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Lanskap</translation>
 <translation id="990277280839877440">Jendela <ph name="WINDOW_TITILE" /> menutup.</translation>
+<translation id="996204416024568215">Dapatkan fitur dan peningkatan keamanan terbaru. Update berlangsung di latar belakang.</translation>
 </translationbundle>

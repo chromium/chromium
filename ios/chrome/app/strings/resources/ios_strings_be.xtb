@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">Памылка друкавання.</translation>
 <translation id="1125564390852150847">Стварыць новую ўкладку.</translation>
 <translation id="1126809382673880764">Не абараняе ад небяспечных вэб-сайтаў, спамповак і пашырэнняў. Вы застаняцеся пад абаронай Бяспечнага прагляду пры карыстанні іншымі сэрвісамі Google, у якіх ён даступны, такімі як Gmail і Пошук.</translation>
+<translation id="1135212215217513471">Спампаваць Chrome для iOS</translation>
 <translation id="1145536944570833626">Выдаліць існуючыя даныя.</translation>
 <translation id="1147031633655575115">Вы ўвайшлі як <ph name="USER" /></translation>
 <translation id="1154984953698510061">Паглядзець іншыя ўкладкі</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">Каб не страціць доступ да сваіх сінхранізаваных даных, пацвердзіце сваю асобу</translation>
 <translation id="1870148520156231997">Паказаць пароль</translation>
 <translation id="1872096359983322073">Ліхтарык</translation>
+<translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Запампаваць на Google Дыск</translation>
 <translation id="1923342640370224680">За апошнюю гадзіну</translation>
 <translation id="1930989359703290198">Палітыка вашай арганізацыі дазваляе ўваходзіць у сістэмы, выкарыстоўваючы толькі пэўныя ўліковыя запісы. Уліковыя запісы, выкарыстоўваць якія не дазволена, не паказваюцца. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">Пошук скапіраванага тэксту</translation>
 <translation id="214201757571129614">Увайсці…</translation>
 <translation id="2149973817440762519">Рэдагаваць закладку</translation>
+<translation id="2155145621546387786">Абагуліць Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2218443599109088993">Паменшыць</translation>
 <translation id="2230173723195178503">Вэб-старонка загружана</translation>
@@ -406,7 +409,6 @@
 <translation id="4502566650163919158">Праверыць</translation>
 <translation id="4505980578794259603">Апошняя праверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Закрыць рэкламны элемент уваходу</translation>
-<translation id="4511669830082467224">Пошук відарыса ў Google</translation>
 <translation id="4526249700380860531">Праглядзець захаваныя паролі і кіраваць імі можна на старонцы <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Праверыць сінхранізаваныя даныя</translation>
 <translation id="4536418791685807335">Увайдзіце яшчэ раз.</translation>

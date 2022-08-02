@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ENDURNÝJA</translation>
 <translation id="3009958530611748826">Veldu möppu til að vista í</translation>
 <translation id="3017079585324758401">Bakgrunnur</translation>
+<translation id="302435934487327038">Uppsetningu lokið</translation>
 <translation id="3027578600144895987">Loka myndavélinni</translation>
 <translation id="3031560714565892478">Tækið er kvikmyndatökuvél.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endastaður</translation>
 <translation id="3069085583900247081">Próf mistókst</translation>
-<translation id="3076243757415932261">Íhlutir staðfestir…</translation>
 <translation id="3083667275341675831">Greining á tengigetu</translation>
 <translation id="3084958266922136097">Slökkva á skjávara</translation>
 <translation id="3091839911843451378">Mistókst – stöðvaðist</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Viltu örugglega hreinsa allan prentferil? Prentverk sem eru í gangi verða ekki hreinsuð.</translation>
 <translation id="3383751554789092165">Breyttu upplýsingum um tæki eftir þörfum.</translation>
 <translation id="3404249063913988450">Virkja skjávara</translation>
-<translation id="3404770484521709967">Íhlutir voru settir rétt upp.</translation>
 <translation id="3413935475507503304">Til að halda áfram að uppfæra skaltu smella á „Áfram“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Öryggi</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Eldra aðgangsorð</translation>
 <translation id="4453205916657964690">Undirnetssía</translation>
 <translation id="4454245904991689773">Skanna í</translation>
-<translation id="4472575034687746823">Hefjast handa</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ping-prófun ósjálfgefinnar netkerfisgáttar mistókst</translation>
 <translation id="4500213108254186382">Hraðamælir í loki</translation>
@@ -664,6 +662,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6618744767048954150">Í gangi</translation>
 <translation id="6620487321149975369">Prentverk birtast í ferli nema þau séu fjarlægð handvirkt</translation>
 <translation id="6643016212128521049">Hreinsa</translation>
+<translation id="6644568396961840069">Ekki var hægt að vista skrána. Prófaðu að tengjast við aðra ytri geymslu eða reyndu aftur síðar.</translation>
 <translation id="6647510110698214773">Dulkóðunarreiknirit</translation>
 <translation id="6650062777702288430">Skipta á milli kana/bók- og tölustafa</translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
@@ -809,7 +808,6 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8063022551652308521">Enn er slökkt á skrifvörn. Kveiktu á skrifvörn til að halda áfram.</translation>
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>
-<translation id="8083281199617904460">Viðgerðaferlið ætti að vera í höndum þjálfaðs sérfræðings. Ekki hefjast handa fyrr en biluðu íhlutirnir hafa verið fjarlægðir.</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8104083085214006426">Þú ert að nota opið og ótraust netkerfi</translation>
 <translation id="8109786307828817014">Halda áfram þrátt fyrir að kvörðun vanti?</translation>

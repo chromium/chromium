@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Chromeను అప్‌డేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="1152920704813762236">ChromeOS గురించి</translation>
 <translation id="1154147086299354128">&amp;Chromeలో తెరువు</translation>
-<translation id="1178374936842835197">ఈ పేజీలో సెట్టింగ్ కనిపించకపోతే, మీ <ph name="LINK_BEGIN" />
-        ChromeOS Flex సెట్టింగ్‌లు<ph name="LINK_END" /> ఆప్షన్‌లో చూడండి</translation>
 <translation id="1203500561924088507">ఇన్‌స్టాల్ చేసినందుకు ధన్యవాదాలు. <ph name="BUNDLE_NAME" />‌ను ఉపయోగించడానికి ముందు మీరు బ్రౌజర్‌ను తప్పకుండా రీస్టార్ట్ చేయాలి.</translation>
 <translation id="1278833599417554002">&amp;Chromeను అప్‌డేట్ చేయడానికి రీ-లాంచ్ చేయండి</translation>
 <translation id="1302523850133262269">దయచేసి Chrome తాజా సిస్టమ్ అప్‌డేట్‌లను ఇన్‌స్టాల్ చేస్తున్నప్పుడు వేచి ఉండండి.</translation>
@@ -120,7 +118,6 @@
 <translation id="3080151273017101988">Google Chromeను మూసివేసినపుడు, యాప్‌లను బ్యాక్‌గ్రౌండ్‌లో రన్ చేయడాన్ని కొనసాగించు</translation>
 <translation id="3089968997497233615">Google Chrome యొక్క కొత్తదైన, మరింత సురక్షిత వెర్షన్ అందుబాటులో ఉంది.</translation>
 <translation id="3100998948628680988">మీ Chrome ప్రొఫైల్‌కు పేరు పెట్టండి</translation>
-<translation id="3103390129666310801">మీ పరికరం అప్‌డేట్ అయ్యి ఉందో లేదో చూడటానికి, <ph name="LINK_BEGIN" />ChromeOS Flex సెట్టింగ్‌లకు<ph name="LINK_END" /> వెళ్లండి</translation>
 <translation id="3114643501466072395">డేటా ఉల్లంఘనల నుండి, ఇతర భద్రతా సమస్యల నుండి మీ ఇతర పాస్‌వర్డ్‌లు సురక్షితంగా ఉన్నాయో లేదో చెక్ చేయడానికి, <ph name="BEGIN_LINK" />Chromeకు సైన్ ఇన్ చేయండి<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">మీ మార్పులు మీరు Google Chromeను మళ్లీ ప్రారంభించినప్పుడు ప్రభావాన్ని చూపుతాయి.</translation>
 <translation id="3149510190863420837">Chrome యాప్‌లు</translation>
@@ -211,7 +208,6 @@
 <translation id="4990567037958725628">Google Chrome కేనరీ</translation>
 <translation id="5037581483200764584">భవిష్యత్తులో Google Chrome అప్‌డేట్‌లను పొందడానికి, మీకు macOS 10.13 లేదా ఆ తర్వాతి వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ OS X 10.11ను ఉపయోగిస్తోంది.</translation>
 <translation id="5098668839038261629">దీన్ని ఆన్ చేసినప్పుడు, మీరు Chrome నుండి కూడా సైన్ అవుట్ చేయబడతారు</translation>
-<translation id="5112116809696021727">మీ పరికరం అప్‌డేట్ అయ్యి ఉందో లేదో చూడటానికి, <ph name="LINK_BEGIN" />ChromeOS సెట్టింగ్‌లకు<ph name="LINK_END" /> వెళ్లండి</translation>
 <translation id="5132929315877954718">Google Chrome కోసం గొప్ప యాప్‌లు, ఆటలు, ఎక్స్‌టెన్షన్‌లు మరియు థీమ్‌లను కనుగొనండి.</translation>
 <translation id="5139423532931106058">మీ Chrome ప్రొఫైల్‌ను అనుకూలంగా మార్చండి</translation>
 <translation id="5163087008893166964">Chromeకు స్వాగతం; కొత్త బ్రౌజర్ విండో తెరవబడింది</translation>
@@ -247,8 +243,6 @@
 <translation id="5940385492829620908">మీ వెబ్, బుక్‌మార్క్‌లు మరియు ఇతర Chrome అంశాలు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
-<translation id="5959292945051687759">ఈ పేజీలో సెట్టింగ్ కనిపించకపోతే, మీ <ph name="LINK_BEGIN" />
-        ChromeOS సెట్టింగ్‌లు<ph name="LINK_END" /> ఆప్షన్‌లో చూడండి</translation>
 <translation id="6003112304606738118">డౌన్‌లోడ్ అవుతోంది... <ph name="HOURS" /> గంట(లు) సమయం మిగిలి ఉంది</translation>
 <translation id="6040143037577758943">మూసివేయి</translation>
 <translation id="6070348360322141662">అదనపు భద్రత దృష్ట్యా, Google Chrome మీ డేటాను ఎన్‌క్రిప్ట్ చేస్తుంది</translation>

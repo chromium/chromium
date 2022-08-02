@@ -2621,7 +2621,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Kolom 1 baris sudah tidak digunakan lagi dan akan dihapus di masa mendatang. Mulai gunakan kotak teks multibaris di bawah.)</translation>
 <translation id="3709266154059827597">Konfigurasikan daftar penginstalan ekstensi yang tidak diizinkan</translation>
 <translation id="3711895659073496551">Tangguhkan</translation>
-<translation id="3715569262675717862">Autentikasi berdasarkan sertifikat klien</translation>
 <translation id="3717409415785131989">Jika kebijakan disetel ke Aktif atau tidak disetel, UI balon download yang baru akan ditampilkan di <ph name="PRODUCT_NAME" />.
 
       Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan terus menampilkan UI rak download yang lama.</translation>
@@ -3003,13 +3002,6 @@ Jika kebijakan ini tidak disetel, setelan default-nya tidak diizinkan bagi pengg
 <translation id="410068710490553233">Mengizinkan Login ke Akun Google Tambahan</translation>
 <translation id="4101282687722389021">Stempel waktu UTC untuk terakhir kali entri ini diperbarui. Dikirim sebagai string karena stempel waktu tidak cocok dengan bilangan bulat</translation>
 <translation id="4103289232974211388">Alihkan ke SAML IdP setelah konfirmasi pengguna</translation>
-<translation id="4105884561459127998">Mengonfigurasi jenis autentikasi untuk login SAML.
-
-      Jika kebijakan ini tidak ditetapkan atau ditetapkan ke Default (nilai 0), perilaku login SAML ditentukan oleh browser yang bergantung pada faktor lain. Pada skenario yang paling dasar, autentikasi pengguna dan perlindungan data pengguna yang disimpan dalam cache didasarkan pada sandi yang secara manual dimasukkan oleh pengguna.
-
-      Jika kebijakan ini ditetapkan ke ClientCertificate (nilai 1), autentikasi sertifikat klien digunakan untuk pengguna yang baru ditambahkan yang login melalui SAML. Tidak ada sandi yang digunakan untuk pengguna tersebut, dan data lokalnya yang disimpan dalam cache dilindungi menggunakan kunci kriptografi yang sesuai. Misalnya, setelan ini memungkinkan konfigurasi kartu smart berdasarkan autentikasi pengguna (perlu diketahui bahwa aplikasi middleware kartu smart harus diinstal melalui kebijakan DeviceLoginScreenExtensions).
-
-      Kebijakan ini hanya memengaruhi pengguna yang melakukan autentikasi menggunakan SAML.</translation>
 <translation id="4105989332710272578">Nonaktifkan penerapan Transparansi Sertifikat untuk daftar URL</translation>
 <translation id="4114059938441379876">Menyetel kebijakan akan menentukan URL yang dapat dipakai pengguna untuk mengubah sandinya setelah melihat peringatan di browser. Layanan perlindungan sandi mengirimkan pengguna ke URL (hanya protokol HTTP dan HTTPS) yang Anda tentukan melalui kebijakan ini. Agar <ph name="PRODUCT_NAME" /> dapat merekam hash sandi baru yang dilengkapi salt dengan benar di halaman ubah sandi ini, pastikan halaman ubah sandi Anda mengikuti pedoman ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 
@@ -3204,6 +3196,13 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4347908978527632940">Jika nilai disetel ke "true" dan pengguna adalah pengguna yang dilindungi, aplikasi Android lainnya dapat mengajukan kueri batasan web pengguna melalui penyedia konten.
 
           Jika nilai disetel ke "false" atau tidak disetel, penyedia konten tidak mengembalikan informasi apa pun.</translation>
+<translation id="4357587374229381015">Menentukan nama parameter URL yang akan digunakan di halaman login IdP SAML untuk mengisi otomatis kolom nama pengguna.
+
+      Email pengguna yang dikaitkan dengan profil <ph name="PRODUCT_OS_NAME" />-nya akan digunakan sebagai nilai untuk parameter URL. Oleh karena itu, setelan ini harus dinonaktifkan jika pengguna diperkirakan akan menggunakan email yang berbeda dengan IdP SAML.
+
+      Jika setelan ini tidak ditetapkan, pengguna harus memasukkan nama penggunanya secara manual di halaman login IdP SAML.
+
+      Kebijakan ini memengaruhi autentikasi online di layar login dan layar kunci.</translation>
 <translation id="4363057787588706121">Mengizinkan penggabungan kebijakan yang ada dalam daftar dari sumber berbeda</translation>
 <translation id="4363101430102811068">Aktifkan deteksi kebocoran untuk kredensial yang dimasukkan</translation>
 <translation id="436581050240847513">Melaporkan antarmuka jaringan perangkat</translation>
@@ -4094,11 +4093,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan ini disetel ke daftar pengenal metode masukan, metode masukan yang diberikan akan tersedia di layar login. Metode masukan yang diberikan pertama telah dipilih sebelumnya. Sementara pod pengguna difokuskan pada layar login, metode masukan yang terakhir kali digunakan oleh pengguna akan tersedia, selain dari metode masukan yang diberikan oleh kebijakan ini. Jika kebijakan ini tidak disetel, metode masukan pada layar login akan diambil dari lokal yang menampilkan layar login. Pengenal metode masukan akan mengabaikan nilai yang tidak valid.</translation>
 <translation id="5407008856008996384">Mengizinkan akses ke printer CUPS</translation>
 <translation id="5413051574966911176">Nonaktifkan UI terkait koneksi pada desktop host jarak jauh saat koneksi aktif</translation>
-<translation id="5417597818300833094">Jika kebijakan disetel, pengguna akan dapat memilih salah satu metode input untuk sesi <ph name="PRODUCT_OS_NAME" /> yang Anda tentukan.
-
-       Jika kebijakan tidak disetel atau disetel ke daftar kosong, pengguna akan dapat memilih semua metode input yang didukung.
-
-      Catatan: Jika metode input saat ini tidak didukung, metode akan beralih ke tata letak keyboard hardware (jika diizinkan) atau entri pertama yang valid dalam daftar ini. Metode yang tidak valid atau tidak didukung akan diabaikan.</translation>
 <translation id="5417906792459853336">Melaporkan informasi untuk inventaris dan penggunaan aplikasi perangkat.
 
       Jika kebijakan ditetapkan ke salah, atau tidak ditetapkan, informasi tidak akan dilaporkan.
@@ -4837,18 +4831,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6207607210601267301">Nonaktifkan autentikasi tanpa PIN untuk host akses jarak jauh</translation>
 <translation id="6208896993204286313">Melaporkan Informasi Kebijakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Laporkan OS dan Informasi Versi <ph name="PRODUCT_NAME" /></translation>
-<translation id="6210422374261465354">Mengizinkan Anda menentukan konfigurasi untuk URL autentikasi di <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      URL Autentikasi ini akan diperlakukan khusus oleh <ph name="WEBVIEW_PRODUCT_NAME" />. Dengan begitu, saat halaman web dalam <ph name="WEBVIEW_PRODUCT_NAME" />
-      membuka URL autentikasi, aplikasi pengautentikasi Penyedia Identitas terkait yang dapat menangani URL autentikasi ini akan diluncurkan selama autentikasi berlangsung.
-
-      Alur peluncuran aplikasi pengautentikasi Penyedia Identitas ini akan digunakan oleh Penyedia Identitas untuk mengaktifkan
-      kasus penggunaan, seperti menyediakan SSO di seluruh aplikasi atau memberikan keamanan yang lebih baik dengan mengumpulkan sinyal perangkat zero-trust untuk memahami postur perangkat selama autentikasi.
-
-      Jika tidak ada aplikasi valid yang diinstal untuk menangani URL autentikasi di perangkat, navigasi akan dilanjutkan di <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      URL autentikasi yang valid harus memiliki skema <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> dan tidak boleh berisi karakter pengganti.
-      </translation>
 <translation id="6212868225782276239">Semua printer ditampilkan, kecuali printer yang tidak diizinkan.</translation>
 <translation id="6220835555850906733">Jika kebijakan disetel ke Aktif atau tidak disetel, semua output audio yang didukung di perangkat pengguna akan diizinkan.
 
@@ -6184,7 +6166,6 @@ Jika kebijakan ini tidak disetel atau kosong, pengguna dapat menyetel akun Googl
 <translation id="7554382342294940216">Jika kebijakan disetel ke Aktif, <ph name="PRODUCT_OS_NAME" /> akan diizinkan mengabaikan proxy apa pun untuk autentikasi captive portal. Halaman autentikasi ini, yang dimulai dari halaman login captive portal hingga Chrome mendeteksi koneksi internet yang berhasil, terbuka di jendela yang terpisah, yang mengabaikan semua setelan kebijakan dan batasan untuk pengguna saat ini. Kebijakan ini hanya berlaku jika proxy disiapkan (oleh kebijakan, ekstensi, atau pengguna di chrome://settings).
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, semua halaman autentikasi captive portal akan ditampilkan di tab browser baru (reguler), yang menggunakan setelan proxy pengguna saat ini.</translation>
-<translation id="7566878661979235378">Jenis autentikasi login SAML</translation>
 <translation id="7567373982693549834">Kebijakan ini mengontrol penggunaan aplikasi Android dari sumber yang tidak tepercaya (selain Google Play Store) untuk setiap pengguna.
 
       Jika nilai kebijakan ini tidak ditetapkan, fungsinya dianggap tidak diizinkan.
@@ -7455,7 +7436,6 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8951350807133946005">Setel direktori cache disk</translation>
 <translation id="8955719471735800169">Kembali ke atas</translation>
 <translation id="8956312248048980644">Mengizinkan pengelompokan cluster agen dengan kunci asal secara default.</translation>
-<translation id="8959992920425111821">Konfigurasi default</translation>
 <translation id="8967125680876068695">Aplikasi Chrome tidak digunakan lagi di Windows, Mac, dan Linux.
       Jika kebijakan ini diaktifkan, <ph name="PRODUCT_NAME" /> akan terus mengizinkan Aplikasi Chrome dijalankan di platform berikut hingga tanggal akhir saat dukungan Aplikasi Chrome dihapus di semua platform, yakni Juni 2022.
       Jika kebijakan ini dinonaktifkan atau tidak disetel, Aplikasi Chrome mungkin tidak diizinkan berjalan, bergantung pada status peluncuran penghentian.

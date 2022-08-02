@@ -1070,6 +1070,7 @@
 <translation id="3835233591525155343">तुमच्या डिव्हाइसचा वापर</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, नवीन Google दस्तऐवज झटपट तयार करण्यासाठी टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="385051799172605136">मागील</translation>
+<translation id="3853684360927654006">पासवर्डची क्लिष्टता कॅल्क्युलेटर</translation>
 <translation id="3858027520442213535">तारीख आणि वेळ अपडेट करा</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
@@ -1680,6 +1681,7 @@
 <translation id="5518670652865028077">कला आणि मनोरंजन</translation>
 <translation id="5519516356611866228">तुमच्या बदलांसह</translation>
 <translation id="5523118979700054094">धोरणाचे नाव</translation>
+<translation id="5525755241743357906">फाइल कॉपी केली किंवा हलवली</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, ChromeOS सेटिंग्जमध्ये तुमची अ‍ॅक्सेसिबिलिटी टूल पर्सनलाइझ करण्यासाठी, टॅब आणि त्यानंतर एंटर दाबा</translation>
 <translation id="5528532273234423708">होम ऑटोमेशन</translation>
 <translation id="55293785478302737">एज स्टिच</translation>
@@ -2933,6 +2935,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, iOS सेटिंग्जमध्ये Chrome ला सिस्टीमचा डीफॉल्ट ब्राउझर म्हणून सेट करण्यासाठी एंटर दाबा</translation>
 <translation id="9096679202588811390">टीव्हीवरील शो आणि कार्यक्रम</translation>
 <translation id="9101630580131696064">ट्रे १</translation>
+<translation id="9102081333385212048">तुम्ही कॉपी केलेल्या किंवा हलवलेल्या फाइल विश्लेषणासाठी Google Cloud किंवा तृतीय पक्षांकडे पाठवल्या जातात. उदाहरणार्थ, त्या संवेदनशील डेटा किंवा मालवेअरसाठी स्कॅन केल्या जाऊ शकतात.</translation>
 <translation id="9103537084693478942">व्हिडिओशी संबंधित सॉफ्टवेअर</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> तुमची माहिती संरक्षित करण्यासाठी सामान्यतः एंक्रिप्शन वापरते. Chromium ने यावेळी <ph name="SITE" /> शी कनेक्‍ट करण्‍याचा प्रयत्न केला तेव्‍हा, वेबसाइटने असामान्य आणि अयोग्य क्रेडेंशियल परत पाठवले. एकतर आक्रमणकर्ता <ph name="SITE" /> असल्याची बतावणी करण्याचा प्रयत्न करतो तेव्‍हा किंवा वाय-फाय साइन इन स्क्रीनने कनेक्शनमध्ये व्यत्यय आणले तेव्‍हा हे घडू शकते. कोणत्याही डेटाची अदलाबदल करण्यापूर्वी Chromium ने कनेक्शन थांबविल्यामुळे तुमची माहिती अद्याप सुरक्षित आहे.</translation>
 <translation id="9106062320799175032">बिलिंग पत्ता जोडा</translation>

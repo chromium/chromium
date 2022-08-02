@@ -84,6 +84,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1346748346194534595">De</translation>
 <translation id="1351937230027495976">Crebachu'r ddewislen</translation>
 <translation id="1364382257761975320">I ddatgloi eich Chromebook, defnyddiwch eich olion bysedd</translation>
+<translation id="1365866993922957110">Cael diweddariadau awtomatig</translation>
 <translation id="1372545819342940910">Cadw'r ddesg ar gyfer nes ymlaen</translation>
 <translation id="1383597849754832576">Methu â lawrlwytho ffeiliau lleferydd. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="1383876407941801731">Chwilio</translation>
@@ -161,6 +162,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1830308660060964064">Cafodd <ph name="ITEM_TITLE" /> ei ddadbinio</translation>
 <translation id="1836215606488044471">Assistant (wrthi'n llwytho...)</translation>
 <translation id="1838895407229022812">Mae Golau Nos wedi'i ddiffodd.</translation>
+<translation id="1862380676329487333">Diweddaru ac allgofnodi</translation>
 <translation id="1864454756846565995">Dyfais USB-C (porth cefn)</translation>
 <translation id="1879018240766558464">Ni chefnogir ffenestri anhysbys ar hyn o bryd. Bydd apiau eraill yn cael eu cadw.</translation>
 <translation id="1882814835921407042">Dim rhwydwaith symudol</translation>
@@ -561,6 +563,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="423685346499232137">Methu â chopïo na gludo cynnwys ar hyn o bryd</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
+<translation id="4247123849143712100">Diweddaru a diffodd</translation>
 <translation id="4250229828105606438">Sgrinlun</translation>
 <translation id="425364040945105958">Dim SIM</translation>
 <translation id="4261870227682513959">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd</translation>
@@ -920,6 +923,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6338485349199627913">Mae <ph name="DISPLAY_NAME" /> yn sesiwn a reolir gan <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Mae <ph name="DEVICE_NAME" /> wedi'i chysylltu</translation>
 <translation id="6351032674660237738">AWGRYMIADAU APIAU</translation>
+<translation id="6359587239691116345">Cewch y nodweddion a'r gwelliannau diogelwch diweddaraf. Os byddwch yn gwrthod y diweddariad hwn, mae'n bosib na fydd eich dyfais yn gweithio'n iawn mwyach ac mae'n bosib y byddwch yn profi problemau diogelwch a pherfformiad.</translation>
 <translation id="6376931439017688372">Mae Bluetooth ymlaen</translation>
 <translation id="6381109794406942707">Rhowch eich PIN i ddatgloi'r ddyfais hon.</translation>
 <translation id="639644700271529076">Mae'r CAPS LOCK wedi'i ddiffodd</translation>
@@ -941,6 +945,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6491071886865974820">Mae <ph name="MANAGER" /> gofyn i chi ddiweddaru eich <ph name="DEVICE_TYPE" /> cyn y dyddiad terfyn</translation>
 <translation id="649452524636452238">PIN cerdyn smart</translation>
 <translation id="6495400115277918834">Wedi cychwyn llun mewn llun, Alt+Shift+V i ffocysu</translation>
+<translation id="6500896621837555595">Diweddaru</translation>
 <translation id="6501401484702599040">Yn castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Mae'r camera wedi'i golli, wrthi'n ceisio ailgysylltu.</translation>
 <translation id="6520517963145875092">Dewiswch ffenestr i'w chipio</translation>
@@ -1218,6 +1223,7 @@ Gosodiad newydd</translation>
 <translation id="8054466585765276473">Wrthi'n cyfrifo amser y batri.</translation>
 <translation id="8061464966246066292">Cyferbyniad uchel</translation>
 <translation id="8083540854303889870">Cadwyd ar gyfer nes ymlaen</translation>
+<translation id="8091387634532529612">Diweddariadau awtomatig</translation>
 <translation id="8098591350844501178">Stopio castio'r sgrîn i <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Ymlaen, pob ap</translation>
 <translation id="8120151603115102514">Nid oes clo sgrîn ar eich ffôn. I ddatgloi eich Chromebook, rhowch eich cyfrinair.</translation>
@@ -1424,4 +1430,5 @@ Gosodiad newydd</translation>
 <translation id="974545358917229949">Wrthi'n dangos <ph name="RESULT_COUNT" /> o ganlyniadau ar gyfer <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Llorweddol</translation>
 <translation id="990277280839877440">Caewyd y ffenestr <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">Cewch y nodweddion a'r gwelliannau diogelwch diweddaraf. Mae diweddariadau yn digwydd yn y cefndir.</translation>
 </translationbundle>

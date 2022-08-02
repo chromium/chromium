@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="250020030759455918">‏ستظهر لك حالة تسجيل الدخول على <ph name="SITE_NAME" />، وبيانات التصفُّح وبيانات الموقع الإلكتروني في Chrome.</translation>
+<translation id="2507178219579379057">‏يعمل Chrome على استكشاف طرق للحد من الإعلانات غير المرغوب فيها وعمليات الاحتيال وعمليات مشاركة البيانات بين المواقع الإلكترونية. ويقدِّم Chrome أيضًا <ph name="BEGIN_LINK" />تقديرات حول اهتماماتك<ph name="END_LINK" /> التي يمكن للمواقع الإلكترونية استخدامها لعرض إعلانات لك. ويمكنك إدارة اهتماماتك من خلال الإعدادات.</translation>
 <translation id="2513403576141822879">‏لعرض مزيد من الإعدادات المتعلِّقة بالخصوصية والأمان وجمع البيانات، يُرجى الاطِّلاع على <ph name="BEGIN_LINK" />خدمات Google والمزامنة<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">فحص</translation>
 <translation id="2523184218357549926">‏يتم إرسال عناوين URL للصفحات التي تزورها إلى Google.</translation>
@@ -587,7 +588,6 @@
 <translation id="4256782883801055595">تراخيص البرامج المفتوحة المصدر</translation>
 <translation id="4262915912852657291">‏<ph name="BEGIN_BOLD" />البيانات المستخدَمة:<ph name="END_BOLD" /> سجلّ تصفُّحك، بالإضافة إلى سجلّ بالمواقع الإلكترونية التي زرتها باستخدام Chrome على هذا الجهاز</translation>
 <translation id="4263656433980196874">‏تم فتح واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google" بطول الشاشة.</translation>
-<translation id="4266054596873078491">‏سيتم تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chrome باستخدام حسابك على Google.</translation>
 <translation id="4269820728363426813">نسخ عنوان الرابط</translation>
 <translation id="4291407919474070700">‏<ph name="BEGIN_LINK" />تفعيل قفل الشاشة في إعدادات Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">‏يعني استخدامك لمتصفّح Chrome موافقتك على <ph name="BEGIN_TOS_LINK" />بنود خدمة Google<ph name="END_TOS_LINK" /> و<ph name="BEGIN_ATOS_LINK" />بنود الخدمة الإضافية لكل من متصفّح Google Chrome ونظام التشغيل Chrome<ph name="END_ATOS_LINK" />، علمًا بأنّ <ph name="BEGIN_PRIVACY_LINK" />سياسة الخصوصية<ph name="END_PRIVACY_LINK" /> تسري أيضًا.</translation>
