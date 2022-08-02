@@ -45,7 +45,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_media_playback_options.h"
 #include "content/renderer/content_security_policy_util.h"
-#include "content/renderer/frame_blame_context.h"
 #include "content/renderer/media/media_factory.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_platform_file.h"
@@ -490,7 +489,6 @@ class CONTENT_EXPORT RenderFrameImpl
       override;
   std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
   CreateResourceLoadInfoNotifierWrapper() override;
-  blink::BlameContext* GetFrameBlameContext() override;
   std::unique_ptr<blink::WebServiceWorkerProvider> CreateServiceWorkerProvider()
       override;
   blink::AssociatedInterfaceProvider* GetRemoteNavigationAssociatedInterfaces()
@@ -967,8 +965,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   void RegisterMojoInterfaces();
 
-  void InitializeBlameContext(RenderFrameImpl* parent_frame);
-
   // service_manager::mojom::InterfaceProvider:
   void GetInterface(const std::string& interface_name,
                     mojo::ScopedMessagePipeHandle interface_pipe) override;
@@ -1213,8 +1209,6 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Valid during the entire life time of the RenderFrame.
   std::unique_ptr<RenderAccessibilityManager> render_accessibility_manager_;
-
-  std::unique_ptr<FrameBlameContext> blame_context_;
 
   std::unique_ptr<blink::WeakWrapperResourceLoadInfoNotifier>
       weak_wrapper_resource_load_info_notifier_;

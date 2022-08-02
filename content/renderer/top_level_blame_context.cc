@@ -5,7 +5,6 @@
 #include "content/renderer/top_level_blame_context.h"
 
 #include "base/threading/platform_thread.h"
-#include "content/renderer/frame_blame_context.h"
 
 namespace content {
 

@@ -1438,7 +1438,6 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   RenderFrameImpl* render_frame = RenderFrameImpl::Create(
       agent_scheduling_group, params->routing_id, std::move(params->frame),
       std::move(params->interface_broker), devtools_frame_token);
-  render_frame->InitializeBlameContext(nullptr);
 
   WebLocalFrame* web_frame = WebLocalFrame::CreateMainFrame(
       web_view, render_frame, render_frame->blink_interface_registry_.get(),
@@ -1565,7 +1564,6 @@ void RenderFrameImpl::CreateFrame(
         std::move(browser_interface_broker), devtools_frame_token);
     // Since `parent_web_frame` is remote we do not provide a parent_frame
     // for initializing the BlameContext.
-    render_frame->InitializeBlameContext(/*parent_frame=*/nullptr);
     render_frame->unique_name_helper_.set_propagated_name(
         replicated_state->unique_name);
     WebFrame* opener = nullptr;
@@ -1599,7 +1597,6 @@ void RenderFrameImpl::CreateFrame(
     render_frame = RenderFrameImpl::Create(
         agent_scheduling_group, routing_id, std::move(frame_receiver),
         std::move(browser_interface_broker), devtools_frame_token);
-    render_frame->InitializeBlameContext(nullptr);
     web_frame = blink::WebLocalFrame::CreateProvisional(
         render_frame, render_frame->blink_interface_registry_.get(), token,
         previous_web_frame, replicated_state->frame_policy,
@@ -1783,7 +1780,6 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       selection_range_(gfx::Range::InvalidRange()),
       render_accessibility_manager_(
           std::make_unique<RenderAccessibilityManager>(this)),
-      blame_context_(nullptr),
       weak_wrapper_resource_load_info_notifier_(
           std::make_unique<blink::WeakWrapperResourceLoadInfoNotifier>(this)),
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -1887,12 +1883,6 @@ void RenderFrameImpl::Initialize(blink::WebFrame* parent) {
   agent_scheduling_group_.AddFrameRoute(
       routing_id_, this,
       GetTaskRunner(blink::TaskType::kInternalNavigationAssociated));
-}
-
-void RenderFrameImpl::InitializeBlameContext(RenderFrameImpl* parent_frame) {
-  DCHECK(!blame_context_);
-  blame_context_ = std::make_unique<FrameBlameContext>(this, parent_frame);
-  blame_context_->Initialize();
 }
 
 void RenderFrameImpl::GetInterface(
@@ -3311,11 +3301,6 @@ RenderFrameImpl::CreateResourceLoadInfoNotifierWrapper() {
       weak_wrapper_resource_load_info_notifier_->AsWeakPtr());
 }
 
-blink::BlameContext* RenderFrameImpl::GetFrameBlameContext() {
-  DCHECK(blame_context_);
-  return blame_context_.get();
-}
-
 std::unique_ptr<blink::WebServiceWorkerProvider>
 RenderFrameImpl::CreateServiceWorkerProvider() {
   // Bail-out if we are about to be navigated away.
@@ -3436,7 +3421,6 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       frame_unique_name);
   if (is_created_by_script)
     child_render_frame->unique_name_helper_.Freeze();
-  child_render_frame->InitializeBlameContext(this);
   blink::WebLocalFrame* web_frame = frame_->CreateLocalChild(
       scope, child_render_frame,
       child_render_frame->blink_interface_registry_.get(), frame_token);
