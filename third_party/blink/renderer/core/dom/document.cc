@@ -28,12 +28,6 @@
  */
 
 #include "third_party/blink/renderer/core/dom/document.h"
-// document.h is a widely included header and its size impacts build time
-// significantly. If you run into this limit, try using forward declarations
-// instead of including more headers. If that is infeasible, adjust the limit.
-// For more info, see
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 980000
 
 #include <memory>
 #include <utility>

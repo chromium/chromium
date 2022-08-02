@@ -4,15 +4,6 @@
 
 #include "ipc/ipc_message.h"
 
-#include "build/build_config.h"
-
-// ipc_message.h is a widely included header and its size can impact build time.
-// Try not to raise this limit unless necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#ifndef NACL_TC_REV
-#pragma clang max_tokens_here 600000
-#endif
-
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>

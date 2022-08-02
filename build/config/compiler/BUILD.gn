@@ -148,16 +148,6 @@ declare_args() {
   # The gold linker by default has text section splitting enabled.
   use_text_section_splitting = false
 
-  # Token limits may not be accurate for build configs not covered by the CQ,
-  # so only enable them by default for mainstream build configs.
-  enable_wmax_tokens =
-      !is_official_build && !(is_component_build && !is_debug) &&
-      !using_sanitizer &&
-      ((is_mac && target_cpu == "x64" && !use_system_xcode) ||
-       (is_linux && target_cpu == "x64") || (is_win && target_cpu == "x86") ||
-       (is_win && target_cpu == "x64") || (is_android && target_cpu == "arm") ||
-       (is_android && target_cpu == "arm64"))
-
   # Turn off the --call-graph-profile-sort flag for lld by default. Enable
   # selectively for targets where it's beneficial.
   enable_call_graph_profile_sort = chrome_pgo_phase == 2
@@ -1551,10 +1541,6 @@ config("default_warnings") {
       if (is_fuchsia) {
         # TODO(https://bugs.chromium.org/p/fuchsia/issues/detail?id=77383)
         cflags += [ "-Wno-deprecated-copy" ]
-      }
-
-      if (enable_wmax_tokens) {
-        cflags += [ "-Wmax-tokens" ]
       }
     }
   }

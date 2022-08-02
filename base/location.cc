@@ -4,24 +4,15 @@
 
 #include "base/location.h"
 
-#include "build/build_config.h"
-
-// location.h is a widely included header and its size can significantly impact
-// build time. Try not to raise this limit unless absolutely necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#ifndef NACL_TC_REV
-#pragma clang max_tokens_here 392000
-#endif
-
-#if defined(COMPILER_MSVC)
-#include <intrin.h>
-#endif
-
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+
+#if defined(COMPILER_MSVC)
+#include <intrin.h>
+#endif
 
 namespace base {
 

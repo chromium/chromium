@@ -4,11 +4,6 @@
 
 #include "content/public/browser/page_navigator.h"
 
-// page_navigator.h is a widely included header. Try not to raise this limit
-// unless necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 1150000
-
 #include "content/public/browser/navigation_handle.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"

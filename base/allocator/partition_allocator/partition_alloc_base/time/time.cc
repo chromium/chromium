@@ -4,15 +4,6 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_LINUX)
-// time.h is a widely included header and its size impacts build time.
-// Try not to raise this limit unless necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 490000
-#endif  // BUILDFLAG(IS_LINUX)
-
 #include <atomic>
 #include <cmath>
 #include <limits>

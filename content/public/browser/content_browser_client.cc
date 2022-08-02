@@ -4,13 +4,6 @@
 
 #include "content/public/browser/content_browser_client.h"
 
-// content_browser_client.h is a widely included header and its size impacts
-// build time significantly. If you run into this limit, try using forward
-// declarations instead of including more headers. If that is infeasible, adjust
-// the limit. For more info, see
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 1120000
-
 #include <utility>
 
 #include "base/callback_helpers.h"

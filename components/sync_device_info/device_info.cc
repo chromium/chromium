@@ -4,11 +4,6 @@
 
 #include "components/sync_device_info/device_info.h"
 
-// device_info.h's size can impact build time. Try not to raise this limit
-// unless absolutely necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#pragma clang max_tokens_here 611000
-
 #include <utility>
 
 #include "base/values.h"

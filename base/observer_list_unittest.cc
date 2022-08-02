@@ -4,17 +4,9 @@
 
 #include "base/observer_list.h"
 
-#include "base/memory/raw_ptr.h"
-
-// observer_list.h is a widely included header and its size has significant
-// impact on build time. Try not to raise this limit unless necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#ifndef NACL_TC_REV
-#pragma clang max_tokens_here 550000
-#endif
-
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"

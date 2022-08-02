@@ -3,15 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
-#include <atomic>
-#include <memory>
-
-// logging.h is a widely included header and its size has significant impact on
-// build time. Try not to raise this limit unless absolutely necessary. See
-// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
-#ifndef NACL_TC_REV
-#pragma clang max_tokens_here 480000
-#endif  // NACL_TC_REV
 
 #ifdef BASE_CHECK_H_
 #error "logging.h should not include check.h"
@@ -20,20 +11,23 @@
 #include <limits.h>
 #include <stdint.h>
 
+#include <atomic>
+#include <memory>
 #include <tuple>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/debug/crash_logging.h"
-#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
-#include "base/debug/leak_annotations.h"
-#endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 #include "base/immediate_crash.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+
+#if defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
+#include "base/debug/leak_annotations.h"
+#endif  // defined(LEAK_SANITIZER) && !BUILDFLAG(IS_NACL)
 
 #if BUILDFLAG(IS_WIN)
 #include <io.h>

@@ -1754,7 +1754,6 @@ source_set("browser") {
     "renderer_host/private_network_access_util.h",
     "renderer_host/recently_destroyed_hosts.cc",
     "renderer_host/recently_destroyed_hosts.h",
-    "renderer_host/render_frame_host.cc",
     "renderer_host/render_frame_host_csp_context.cc",
     "renderer_host/render_frame_host_csp_context.h",
     "renderer_host/render_frame_host_delegate.cc",
