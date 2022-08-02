@@ -160,6 +160,12 @@ class NodeLink : public msg::NodeMessageListener {
       SublinkId new_sublink,
       FragmentRef<RouterLinkState> new_link_state);
 
+  // Sends a request to allocate a new shared memory region and invokes
+  // `callback` once the request succeeds or fails. On failure, `callback` is
+  // invoke with an invalid DriverMemory object.
+  using RequestMemoryCallback = std::function<void(DriverMemory)>;
+  void RequestMemory(size_t size, RequestMemoryCallback callback);
+
   // Permanently deactivates this NodeLink. Once this call returns the NodeLink
   // will no longer receive transport messages. It may still be used to transmit
   // outgoing messages, but it cannot be reactivated. Transmissions over a
@@ -211,6 +217,8 @@ class NodeLink : public msg::NodeMessageListener {
   bool OnBypassPeerWithLink(msg::BypassPeerWithLink& bypass) override;
   bool OnStopProxyingToLocalPeer(msg::StopProxyingToLocalPeer& stop) override;
   bool OnFlushRouter(msg::FlushRouter& flush) override;
+  bool OnRequestMemory(msg::RequestMemory& request) override;
+  bool OnProvideMemory(msg::ProvideMemory& provide) override;
   void OnTransportError() override;
 
   const Ref<Node> node_;
@@ -234,6 +242,13 @@ class NodeLink : public msg::NodeMessageListener {
 
   using SublinkMap = absl::flat_hash_map<SublinkId, Sublink>;
   SublinkMap sublinks_ ABSL_GUARDED_BY(mutex_);
+
+  // Pending memory allocation request callbacks. Keyed by request size, when
+  // an incoming ProvideMemory message is received, the front of the list for
+  // that size is removed from the map and invoked with the new memory object.
+  using MemoryRequestMap =
+      absl::flat_hash_map<uint32_t, std::list<RequestMemoryCallback>>;
+  MemoryRequestMap pending_memory_requests_ ABSL_GUARDED_BY(mutex_);
 };
 
 }  // namespace ipcz

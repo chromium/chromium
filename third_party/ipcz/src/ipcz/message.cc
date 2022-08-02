@@ -160,6 +160,10 @@ uint32_t Message::AllocateGenericArray(size_t element_size,
 }
 
 uint32_t Message::AppendDriverObject(DriverObject object) {
+  if (!object.is_valid()) {
+    return internal::kInvalidDriverObjectIndex;
+  }
+
   const uint32_t index = checked_cast<uint32_t>(driver_objects_.size());
   driver_objects_.push_back(std::move(object));
   return index;
@@ -173,12 +177,17 @@ internal::DriverObjectArrayData Message::AppendDriverObjects(
   };
   driver_objects_.reserve(driver_objects_.size() + objects.size());
   for (auto& object : objects) {
+    ABSL_ASSERT(object.is_valid());
     driver_objects_.push_back(std::move(object));
   }
   return data;
 }
 
 DriverObject Message::TakeDriverObject(uint32_t index) {
+  if (index == internal::kInvalidDriverObjectIndex) {
+    return {};
+  }
+
   // Note that `index` has already been validated by now.
   ABSL_HARDENING_ASSERT(index < driver_objects_.size());
   return std::move(driver_objects_[index]);
@@ -344,10 +353,12 @@ bool Message::DeserializeFromTransport(
     switch (param.type) {
       case internal::ParamType::kDriverObject: {
         const uint32_t index = GetParamValueAt<uint32_t>(param.offset);
-        if (is_object_claimed[index]) {
-          return false;
+        if (index != internal::kInvalidDriverObjectIndex) {
+          if (is_object_claimed[index]) {
+            return false;
+          }
+          is_object_claimed[index] = true;
         }
-        is_object_claimed[index] = true;
         break;
       }
 

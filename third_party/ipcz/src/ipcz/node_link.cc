@@ -8,6 +8,7 @@
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <utility>
 
 #include "ipcz/box.h"
@@ -28,6 +29,7 @@
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "util/log.h"
 #include "util/ref_counted.h"
+#include "util/safe_math.h"
 
 namespace ipcz {
 
@@ -223,6 +225,18 @@ void NodeLink::AcceptBypassLink(
   accept.params().new_sublink = new_sublink;
   accept.params().new_link_state_fragment = link_state.release().descriptor();
   Transmit(accept);
+}
+
+void NodeLink::RequestMemory(size_t size, RequestMemoryCallback callback) {
+  const uint32_t size32 = checked_cast<uint32_t>(size);
+  {
+    absl::MutexLock lock(&mutex_);
+    pending_memory_requests_[size32].push_back(std::move(callback));
+  }
+
+  msg::RequestMemory request;
+  request.params().size = size32;
+  Transmit(request);
 }
 
 void NodeLink::Deactivate() {
@@ -528,6 +542,39 @@ bool NodeLink::OnFlushRouter(msg::FlushRouter& flush) {
   if (Ref<Router> router = GetRouter(flush.params().sublink)) {
     router->Flush(Router::kForceProxyBypassAttempt);
   }
+  return true;
+}
+
+bool NodeLink::OnRequestMemory(msg::RequestMemory& request) {
+  DriverMemory memory(node_->driver(), request.params().size);
+  msg::ProvideMemory provide;
+  provide.params().size = request.params().size;
+  provide.params().buffer =
+      provide.AppendDriverObject(memory.TakeDriverObject());
+  Transmit(provide);
+  return true;
+}
+
+bool NodeLink::OnProvideMemory(msg::ProvideMemory& provide) {
+  DriverMemory memory(provide.TakeDriverObject(provide.params().buffer));
+  RequestMemoryCallback callback;
+  {
+    absl::MutexLock lock(&mutex_);
+    auto it = pending_memory_requests_.find(provide.params().size);
+    if (it == pending_memory_requests_.end()) {
+      return false;
+    }
+
+    std::list<RequestMemoryCallback>& callbacks = it->second;
+    ABSL_ASSERT(!callbacks.empty());
+    callback = std::move(callbacks.front());
+    callbacks.pop_front();
+    if (callbacks.empty()) {
+      pending_memory_requests_.erase(it);
+    }
+  }
+
+  callback(std::move(memory));
   return true;
 }
 

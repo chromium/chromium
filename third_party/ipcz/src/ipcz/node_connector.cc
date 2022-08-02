@@ -132,9 +132,9 @@ class NodeConnectorForNonBrokerToBroker : public NodeConnector {
         NodeLinkMemory::Create(node_, buffer_memory.Map()));
     node_->SetAssignedName(connect.params().receiver_name);
     node_->SetBrokerLink(new_link);
-
-    // TODO: Support delegated allocation of shared memory.
-    ABSL_ASSERT((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) == 0);
+    if ((flags_ & IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE) != 0) {
+      node_->SetAllocationDelegate(new_link);
+    }
 
     AcceptConnection(std::move(new_link), LinkSide::kB,
                      connect.params().num_initial_portals);

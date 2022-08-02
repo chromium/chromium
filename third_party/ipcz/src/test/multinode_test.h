@@ -303,11 +303,12 @@ class MultinodeTest : public TestNodeType,
 #endif
 
 // TODO: Add other DriverMode enumerators here as support is landed.
-#define INSTANTIATE_MULTINODE_TEST_SUITE_P(suite) \
-  INSTANTIATE_TEST_SUITE_P(                       \
-      , suite,                                    \
-      ::testing::Values(                          \
-          ipcz::test::DriverMode::kSync,          \
-          ipcz::test::DriverMode::kAsync IPCZ_EXTRA_DRIVER_MODES))
+#define INSTANTIATE_MULTINODE_TEST_SUITE_P(suite)                    \
+  INSTANTIATE_TEST_SUITE_P(                                          \
+      , suite,                                                       \
+      ::testing::Values(ipcz::test::DriverMode::kSync,               \
+                        ipcz::test::DriverMode::kAsync,              \
+                        ipcz::test::DriverMode::kAsyncDelegatedAlloc \
+                            IPCZ_EXTRA_DRIVER_MODES))
 
 #endif  // IPCZ_SRC_TEST_MULTINODE_TEST_H_

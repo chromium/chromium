@@ -122,12 +122,25 @@ NodeName Node::GenerateRandomName() const {
   return name;
 }
 
+void Node::SetAllocationDelegate(Ref<NodeLink> link) {
+  absl::MutexLock lock(&mutex_);
+  ABSL_ASSERT(!allocation_delegate_link_);
+  allocation_delegate_link_ = std::move(link);
+}
+
 void Node::AllocateSharedMemory(size_t size,
                                 AllocateSharedMemoryCallback callback) {
-  // TODO: Implement delegated allocation when this Node is connected to another
-  // with the IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE flag set. For now we
-  // assume all nodes can perform direct allocation.
-  callback(DriverMemory(driver_, size));
+  Ref<NodeLink> delegate;
+  {
+    absl::MutexLock lock(&mutex_);
+    delegate = allocation_delegate_link_;
+  }
+
+  if (delegate) {
+    delegate->RequestMemory(size, std::move(callback));
+  } else {
+    callback(DriverMemory(driver_, size));
+  }
 }
 
 void Node::EstablishLink(const NodeName& name, EstablishLinkCallback callback) {
@@ -227,7 +240,7 @@ void Node::AcceptIntroduction(NodeLink& from_node_link,
 
   Ref<NodeLink> new_link = NodeLink::CreateInactive(
       WrapRefCounted(this), side, local_name, name, Type::kNormal,
-      remote_protocol_version, transport, std::move(memory));
+      remote_protocol_version, transport, memory);
   ABSL_ASSERT(new_link);
 
   std::vector<EstablishLinkCallback> callbacks;
@@ -290,13 +303,19 @@ void Node::DropLink(const NodeName& name) {
     link = std::move(it->second);
     node_links_.erase(it);
 
-    DVLOG(4) << "Node " << link->local_node_name().ToString() << " dropping "
+    const NodeName& local_name = link->local_node_name();
+    DVLOG(4) << "Node " << local_name.ToString() << " dropping "
              << " link to " << link->remote_node_name().ToString();
     if (link == broker_link_) {
-      DVLOG(4) << "Node " << link->local_node_name().ToString()
-               << " has lost its broker link";
+      DVLOG(4) << "Node " << local_name.ToString() << " lost its broker link";
       broker_link_.reset();
       lost_broker = true;
+    }
+
+    if (link == allocation_delegate_link_) {
+      DVLOG(4) << "Node " << local_name.ToString()
+               << " lost its allocation delegate";
+      allocation_delegate_link_.reset();
     }
   }
 
@@ -313,6 +332,7 @@ void Node::ShutDown() {
     absl::MutexLock lock(&mutex_);
     std::swap(node_links_, node_links);
     broker_link_.reset();
+    allocation_delegate_link_.reset();
   }
 
   for (const auto& entry : node_links) {

@@ -115,6 +115,10 @@ struct IPCZ_ALIGN(8) DriverObjectArrayData {
   uint32_t num_objects;
 };
 
+// Encodes an invalid driver object index. Any driver object field encoded as
+// this value will deserialize to an invalid DriverObject.
+constexpr uint32_t kInvalidDriverObjectIndex = 0xffffffff;
+
 // End of wire structure definitions. Anything below this line is not meant to
 // be encoded into messages.
 #pragma pack(pop)

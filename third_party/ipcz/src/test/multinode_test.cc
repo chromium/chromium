@@ -118,6 +118,9 @@ const IpczDriver& TestNode::GetDriver() const {
     case DriverMode::kAsync:
       return reference_drivers::kAsyncReferenceDriver;
 
+    case DriverMode::kAsyncDelegatedAlloc:
+      return reference_drivers::kAsyncReferenceDriver;
+
 #if BUILDFLAG(ENABLE_IPCZ_MULTIPROCESS_TESTS)
     case DriverMode::kMultiprocess:
       return reference_drivers::kMultiprocessReferenceDriver;
@@ -142,12 +145,15 @@ void TestNode::Initialize(DriverMode driver_mode,
 }
 
 void TestNode::ConnectToBroker(absl::Span<IpczHandle> portals) {
+  uint32_t flags = IPCZ_CONNECT_NODE_TO_BROKER;
+  if (driver_mode_ == DriverMode::kAsyncDelegatedAlloc) {
+    flags |= IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE;
+  }
   IpczDriverHandle transport =
       std::exchange(transport_, IPCZ_INVALID_DRIVER_HANDLE);
   ABSL_ASSERT(transport != IPCZ_INVALID_DRIVER_HANDLE);
-  const IpczResult result =
-      ipcz().ConnectNode(node(), transport, portals.size(),
-                         IPCZ_CONNECT_NODE_TO_BROKER, nullptr, portals.data());
+  const IpczResult result = ipcz().ConnectNode(
+      node(), transport, portals.size(), flags, nullptr, portals.data());
   ASSERT_EQ(IPCZ_RESULT_OK, result);
 }
 

@@ -98,6 +98,13 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // randomness.
   NodeName GenerateRandomName() const;
 
+  // Sets a NodeLink to use for asynchronous shared memory allocation requests.
+  // This is configured when the ConnectNode() API is called with
+  // IPCZ_CONNECT_NODE_TO_ALLOCATION_DELEGATE. Typically this is combined with
+  // IPCZ_CONNECT_NODE_TO_BROKER when connecting from a sandboxed process which
+  // cannot allocate its own shared memory regions.
+  void SetAllocationDelegate(Ref<NodeLink> link);
+
   // Requests allocation of a new shared memory object of the given size.
   // `callback` is invoked with the new object when allocation is complete.
   // This operation is asynchronous if allocation is delegated to another node,
@@ -167,6 +174,11 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // A link to the first broker this node connected to. If this link is broken,
   // the node will lose all its other links too.
   Ref<NodeLink> broker_link_ ABSL_GUARDED_BY(mutex_);
+
+  // A link over which all internal shared memory allocation is delegated. If
+  // null, this Node will always attempt to allocate shared memory directly
+  // through its ipcz driver.
+  Ref<NodeLink> allocation_delegate_link_ ABSL_GUARDED_BY(mutex_);
 
   // Lookup table of broker-assigned node names and links to those nodes. All of
   // these links and their associated names are received by the `broker_link_`
