@@ -55,6 +55,21 @@ void IndexedDBControlWrapper::BindIndexedDB(
   indexed_db_control_->BindIndexedDB(storage_key, std::move(receiver));
 }
 
+void IndexedDBControlWrapper::BindIndexedDBForBucket(
+    const storage::BucketLocator& bucket_locator,
+    mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindRemoteIfNeeded();
+  if (storage_policy_observer_) {
+    // TODO(https://crbug.com/1199077): Pass the real StorageKey once
+    // StoragePolicyObserver is migrated.
+    storage_policy_observer_->StartTrackingOrigin(
+        bucket_locator.storage_key.origin());
+  }
+  indexed_db_control_->BindIndexedDBForBucket(bucket_locator,
+                                              std::move(receiver));
+}
+
 void IndexedDBControlWrapper::GetUsage(GetUsageCallback usage_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindRemoteIfNeeded();

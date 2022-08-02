@@ -446,7 +446,7 @@ void IndexedDBFactoryImpl::HandleBackingStoreCorruption(
   IndexedDBBackingStore::RecordCorruptionInfo(path_base, saved_bucket_locator,
                                               sanitized_message);
   HandleBackingStoreFailure(bucket_locator);
-  // Note: DestroyBackingStore only deletes LevelDB files, leaving all others,
+  // Note: DestroyLevelDB only deletes LevelDB files, leaving all others,
   //       so our corruption info file will remain.
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.

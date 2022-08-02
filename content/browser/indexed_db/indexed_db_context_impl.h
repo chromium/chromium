@@ -87,6 +87,9 @@ class CONTENT_EXPORT IndexedDBContextImpl
   void BindIndexedDB(
       const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
+  void BindIndexedDBForBucket(
+      const storage::BucketLocator& bucket_locator,
+      mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) override;
   void GetUsage(GetUsageCallback usage_callback) override;
   void DeleteForStorageKey(const blink::StorageKey& storage_key,
                            DeleteForStorageKeyCallback callback) override;
@@ -237,7 +240,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // mojom::IndexedDBControl internal implementation:
   void BindIndexedDBImpl(
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
-      const absl::optional<storage::BucketLocator>& bucket_locator);
+      storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
   void GetUsageImpl(GetUsageCallback usage_callback);
   void ForceCloseImpl(
       const storage::mojom::ForceCloseReason reason,
@@ -254,8 +257,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   void ShutdownOnIDBSequence();
 
-  const base::FilePath GetFirstPartyDataPath() const;
-  const base::FilePath GetThirdPartyDataPath() const;
+  const base::FilePath GetLegacyDataPath() const;
   base::FilePath GetBlobStorePath(
       const storage::BucketLocator& bucket_locator) const;
   base::FilePath GetLevelDBPath(
@@ -282,6 +284,16 @@ class CONTENT_EXPORT IndexedDBContextImpl
 
   void GetOrCreateDefaultBucket(const blink::StorageKey& storage_key,
                                 DidGetBucketLocatorCallback callback);
+
+  // Finds IDB files in their legacy location, which is currently used for
+  // default buckets in first party contexts. Non-default buckets and default
+  // buckets in third party contexts, when partitioning is enabled, are returned
+  // by `FindIndexedDBFiles`.
+  const std::map<blink::StorageKey, base::FilePath> FindLegacyIndexedDBFiles();
+
+  // Reads IDB files from disk, looking in the directories where
+  // third-party-context IDB files are stored.
+  const std::map<storage::BucketId, base::FilePath> FindIndexedDBFiles();
 
   const scoped_refptr<base::SequencedTaskRunner> idb_task_runner_;
   IndexedDBDispatcherHost dispatcher_host_;

@@ -182,7 +182,6 @@ void IndexedDBInternalsHandler::DownloadBucketData(
              const std::string& callback_id) {
             // Is the connection count always zero after closing,
             // such that this can be simplified?
-            // TODO(crbug.com/1315371): Allow custom bucket names.
             control->GetConnectionCount(
                 bucket_id,
                 base::BindOnce(
@@ -194,7 +193,6 @@ void IndexedDBInternalsHandler::DownloadBucketData(
                       if (!handler)
                         return;
 
-                      // TODO(crbug.com/1315371): Allow custom bucket names.
                       control->DownloadBucketData(
                           bucket_id,
                           base::BindOnce(

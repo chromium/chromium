@@ -42,6 +42,10 @@ extern const base::FilePath::CharType kIndexedDBExtension[];
 extern const base::FilePath::CharType kIndexedDBFile[];
 extern const base::FilePath::CharType kLevelDBExtension[];
 
+// Returns whether the legacy (first-party/default-bucket) path should be used
+// for storing IDB files for the given bucket.
+bool ShouldUseLegacyFilePath(const storage::BucketLocator& bucket_locator);
+
 base::FilePath GetBlobStoreFileName(
     const storage::BucketLocator& bucket_locator);
 base::FilePath GetLevelDBFileName(const storage::BucketLocator& bucket_locator);

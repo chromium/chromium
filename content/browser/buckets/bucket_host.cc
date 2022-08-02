@@ -83,11 +83,10 @@ void BucketHost::Expires(ExpiresCallback callback) {
 
 void BucketHost::GetIdbFactory(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  // TODO(crbug.com/1338303): this just accesses the default bucket for now, but
-  // it should return a non-default bucket.
   bucket_manager_host_->GetStoragePartition()
       ->GetIndexedDBControl()
-      .BindIndexedDB(bucket_info_.storage_key, std::move(receiver));
+      .BindIndexedDBForBucket(bucket_info_.ToBucketLocator(),
+                              std::move(receiver));
 }
 
 void BucketHost::OnReceiverDisconnected() {

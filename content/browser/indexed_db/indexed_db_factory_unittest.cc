@@ -289,8 +289,6 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
           ->GetOrCreateBucketSync(
               storage::BucketInitParams::ForDefaultBucket(storage_key_3))
           ->ToBucketLocator();
-  bucket_locator_3.storage_key = storage_key_3;
-  bucket_locator_3.id = storage::BucketId::FromUnsafeValue(3);
   auto file_3 = context_->GetLevelDBPathForTesting(bucket_locator_3)
                     .AppendASCII("3.json");
   ASSERT_TRUE(CreateDirectory(file_3.DirName()));
@@ -310,10 +308,21 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   ASSERT_TRUE(CreateDirectory(file_4.DirName()));
   ASSERT_TRUE(base::WriteFile(file_4, std::string(10000, 'a')));
 
+  const blink::StorageKey storage_key_5 = storage_key_1;
+  storage::BucketInitParams params(storage_key_5, "inbox");
+  storage::BucketLocator bucket_locator_5 =
+      quota_manager()->GetOrCreateBucketSync(params)->ToBucketLocator();
+  auto file_5 = context_->GetLevelDBPathForTesting(bucket_locator_5)
+                    .AppendASCII("5.json");
+  ASSERT_TRUE(CreateDirectory(file_5.DirName()));
+  ASSERT_TRUE(base::WriteFile(file_5, std::string(20000, 'a')));
+  EXPECT_NE(file_5.DirName(), file_1.DirName());
+
   IndexedDBBucketStateHandle bucket_state1_handle;
   IndexedDBBucketStateHandle bucket_state2_handle;
   IndexedDBBucketStateHandle bucket_state3_handle;
   IndexedDBBucketStateHandle bucket_state4_handle;
+  IndexedDBBucketStateHandle bucket_state5_handle;
   leveldb::Status s;
 
   std::tie(bucket_state1_handle, s, std::ignore, std::ignore, std::ignore) =
@@ -344,6 +353,13 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
   EXPECT_TRUE(bucket_state4_handle.IsHeld()) << s.ToString();
   EXPECT_TRUE(s.ok()) << s.ToString();
 
+  std::tie(bucket_state5_handle, s, std::ignore, std::ignore, std::ignore) =
+      factory()->GetOrOpenBucketFactory(
+          bucket_locator_5, context()->GetDataPath(bucket_locator_5),
+          /*create_if_missing=*/true);
+  EXPECT_TRUE(bucket_state5_handle.IsHeld()) << s.ToString();
+  EXPECT_TRUE(s.ok()) << s.ToString();
+
   std::vector<storage::mojom::StorageUsageInfoPtr> origin_info;
   storage::mojom::IndexedDBControlAsyncWaiter sync_control(context());
   sync_control.GetUsage(&origin_info);
@@ -356,8 +372,10 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
       filesystem_proxy->ComputeDirectorySize(file_3.DirName());
   int64_t bucket_size_4 =
       filesystem_proxy->ComputeDirectorySize(file_4.DirName());
+  int64_t bucket_size_5 =
+      filesystem_proxy->ComputeDirectorySize(file_5.DirName());
 
-  // Since buckets 1 and 4 have the same origin, they merge when calling
+  // Since buckets 1, 4 and 5 have the same origin, they merge when calling
   // GetUsage.
   EXPECT_EQ(3ul, origin_info.size());
   for (const auto& info : origin_info) {
@@ -366,10 +384,12 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
       if (IsThirdPartyStoragePartitioningEnabled()) {
         // If third party storage partitioning is on, additional space is taken
         // by supporting files for the independent buckets.
-        EXPECT_EQ(info->total_size_bytes, bucket_size_1 + bucket_size_4);
+        EXPECT_EQ(info->total_size_bytes,
+                  bucket_size_1 + bucket_size_4 + bucket_size_5);
       } else {
         EXPECT_EQ(bucket_size_1, bucket_size_4);
-        EXPECT_EQ(info->total_size_bytes, bucket_size_1);
+        EXPECT_NE(bucket_size_1, bucket_size_5);
+        EXPECT_EQ(info->total_size_bytes, bucket_size_1 + bucket_size_5);
       }
     } else if (info->origin == bucket_locator_2.storage_key.origin()) {
       // This is the size of the 100 character file (bucket 2).
@@ -382,9 +402,9 @@ TEST_P(IndexedDBFactoryTestWithStoragePartitioning,
     }
   }
   if (IsThirdPartyStoragePartitioningEnabled()) {
-    EXPECT_EQ(4ul, factory()->GetOpenBuckets().size());
+    EXPECT_EQ(5ul, factory()->GetOpenBuckets().size());
   } else {
-    EXPECT_EQ(3ul, factory()->GetOpenBuckets().size());
+    EXPECT_EQ(4ul, factory()->GetOpenBuckets().size());
   }
 }
 
@@ -657,8 +677,11 @@ TEST_F(IndexedDBFactoryTest, InMemoryFactoriesStay) {
 
   const blink::StorageKey storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
-  auto bucket_locator = storage::BucketLocator();
-  bucket_locator.storage_key = storage_key;
+  storage::BucketLocator bucket_locator =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(storage_key))
+          ->ToBucketLocator();
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
@@ -694,16 +717,18 @@ TEST_F(IndexedDBFactoryTest, TooLongOrigin) {
   const blink::StorageKey too_long_storage_key =
       blink::StorageKey::CreateFromStringForTesting("http://" + origin +
                                                     ":81/");
-  auto too_long_bucket_locator = storage::BucketLocator();
-  too_long_bucket_locator.storage_key = too_long_storage_key;
+  storage::BucketLocator bucket_locator =
+      quota_manager()
+          ->GetOrCreateBucketSync(
+              storage::BucketInitParams::ForDefaultBucket(too_long_storage_key))
+          ->ToBucketLocator();
   IndexedDBBucketStateHandle bucket_state_handle;
   leveldb::Status s;
 
   std::tie(bucket_state_handle, s, std::ignore, std::ignore, std::ignore) =
-      factory()->GetOrOpenBucketFactory(
-          too_long_bucket_locator,
-          context()->GetDataPath(too_long_bucket_locator),
-          /*create_if_missing=*/true);
+      factory()->GetOrOpenBucketFactory(bucket_locator,
+                                        context()->GetDataPath(bucket_locator),
+                                        /*create_if_missing=*/true);
   EXPECT_FALSE(bucket_state_handle.IsHeld());
   EXPECT_TRUE(s.IsIOError());
 }
