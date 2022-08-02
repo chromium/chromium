@@ -53,13 +53,11 @@ class RTCSessionDescriptionRequestImpl final
  public:
   static RTCSessionDescriptionRequestImpl* Create(
       ExecutionContext*,
-      RTCCreateSessionDescriptionOperation,
       RTCPeerConnection*,
       V8RTCSessionDescriptionCallback*,
       V8RTCPeerConnectionErrorCallback*);
 
   RTCSessionDescriptionRequestImpl(ExecutionContext*,
-                                   RTCCreateSessionDescriptionOperation,
                                    RTCPeerConnection*,
                                    V8RTCSessionDescriptionCallback*,
                                    V8RTCPeerConnectionErrorCallback*);
@@ -76,7 +74,6 @@ class RTCSessionDescriptionRequestImpl final
  private:
   void Clear();
 
-  RTCCreateSessionDescriptionOperation operation_;
   Member<V8RTCSessionDescriptionCallback> success_callback_;
   Member<V8RTCPeerConnectionErrorCallback> error_callback_;
 

@@ -50,7 +50,6 @@ class RTCVoidRequestImpl final : public RTCVoidRequest,
                                  public ExecutionContextLifecycleObserver {
  public:
   RTCVoidRequestImpl(ExecutionContext*,
-                     absl::optional<RTCSetSessionDescriptionOperation>,
                      RTCPeerConnection*,
                      V8VoidFunction*,
                      V8RTCPeerConnectionErrorCallback*);
@@ -68,7 +67,6 @@ class RTCVoidRequestImpl final : public RTCVoidRequest,
  private:
   void Clear();
 
-  absl::optional<RTCSetSessionDescriptionOperation> operation_;
   Member<V8VoidFunction> success_callback_;
   Member<V8RTCPeerConnectionErrorCallback> error_callback_;
 

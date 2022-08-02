@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/modules/crypto/normalize_algorithm.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
-#include "third_party/blink/renderer/modules/peerconnection/call_setup_state_tracker.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_handler.h"
@@ -346,14 +345,6 @@ class MODULES_EXPORT RTCPeerConnection final
   // application assumes a format that differs from the actual default format.
   absl::optional<ComplexSdpCategory> CheckForComplexSdp(
       const ParsedSessionDescription&) const;
-
-  const CallSetupStateTracker& call_setup_state_tracker() const;
-  void NoteCallSetupStateEventPending(
-      RTCPeerConnection::SetSdpOperationType operation,
-      const RTCSessionDescriptionInit& description);
-  void NoteSessionDescriptionRequestCompleted(
-      RTCCreateSessionDescriptionOperation operation,
-      bool success);
   void NoteVoidRequestCompleted(RTCSetSessionDescriptionOperation operation,
                                 bool success);
   static void GenerateCertificateCompleted(
@@ -544,11 +535,6 @@ class MODULES_EXPORT RTCPeerConnection final
   webrtc::PeerConnectionInterface::IceGatheringState ice_gathering_state_;
   webrtc::PeerConnectionInterface::IceConnectionState ice_connection_state_;
   webrtc::PeerConnectionInterface::PeerConnectionState peer_connection_state_;
-  // TODO(https://crbug.com/857004): The trackers' metrics are currently not
-  // uploaded; either use the metrics it produces (i.e. revert
-  // https://chromium-review.googlesource.com/c/chromium/src/+/1991421) or
-  // delete all CallSetupStateTracker code for good.
-  CallSetupStateTracker call_setup_state_tracker_;
 
   // A map containing any track that is in use by the peer connection. This
   // includes tracks of |rtp_senders_| and |rtp_receivers_|.

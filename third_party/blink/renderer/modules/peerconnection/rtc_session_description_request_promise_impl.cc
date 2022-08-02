@@ -14,25 +14,20 @@
 namespace blink {
 
 RTCSessionDescriptionRequestPromiseImpl*
-RTCSessionDescriptionRequestPromiseImpl::Create(
-    RTCCreateSessionDescriptionOperation operation,
-    RTCPeerConnection* requester,
-    ScriptPromiseResolver* resolver,
-    const char* interface_name,
-    const char* property_name) {
+RTCSessionDescriptionRequestPromiseImpl::Create(RTCPeerConnection* requester,
+                                                ScriptPromiseResolver* resolver,
+                                                const char* interface_name,
+                                                const char* property_name) {
   return MakeGarbageCollected<RTCSessionDescriptionRequestPromiseImpl>(
-      operation, requester, resolver, interface_name, property_name);
+      requester, resolver, interface_name, property_name);
 }
 
 RTCSessionDescriptionRequestPromiseImpl::
-    RTCSessionDescriptionRequestPromiseImpl(
-        RTCCreateSessionDescriptionOperation operation,
-        RTCPeerConnection* requester,
-        ScriptPromiseResolver* resolver,
-        const char* interface_name,
-        const char* property_name)
-    : operation_(operation),
-      requester_(requester),
+    RTCSessionDescriptionRequestPromiseImpl(RTCPeerConnection* requester,
+                                            ScriptPromiseResolver* resolver,
+                                            const char* interface_name,
+                                            const char* property_name)
+    : requester_(requester),
       resolver_(resolver),
       interface_name_(interface_name),
       property_name_(property_name) {
@@ -46,7 +41,6 @@ RTCSessionDescriptionRequestPromiseImpl::
 void RTCSessionDescriptionRequestPromiseImpl::RequestSucceeded(
     RTCSessionDescriptionPlatform* platform_session_description) {
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
-    requester_->NoteSessionDescriptionRequestCompleted(operation_, true);
     auto* description =
         RTCSessionDescription::Create(platform_session_description);
     requester_->NoteSdpCreated(*description);
@@ -63,7 +57,6 @@ void RTCSessionDescriptionRequestPromiseImpl::RequestSucceeded(
 void RTCSessionDescriptionRequestPromiseImpl::RequestFailed(
     const webrtc::RTCError& error) {
   if (requester_ && requester_->ShouldFireDefaultCallbacks()) {
-    requester_->NoteSessionDescriptionRequestCompleted(operation_, false);
     ScriptState::Scope scope(resolver_->GetScriptState());
     ExceptionState exception_state(resolver_->GetScriptState()->GetIsolate(),
                                    ExceptionState::kExecutionContext,
