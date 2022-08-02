@@ -91,22 +91,6 @@ bool DrawYUVImageToSkSurface(const VideoFrame* video_frame,
   return true;
 }
 
-bool YUVPixmapsToSkSurface(GrDirectContext* gr_context,
-                           const VideoFrame* video_frame,
-                           const SkYUVAPixmaps yuva_pixmaps,
-                           sk_sp<SkSurface> surface,
-                           bool use_visible_rect) {
-  auto image =
-      SkImage::MakeFromYUVAPixmaps(gr_context, yuva_pixmaps, GrMipmapped::kNo,
-                                   false, SkColorSpace::MakeSRGB());
-
-  if (!image) {
-    return false;
-  }
-
-  return DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
-}
-
 }  // namespace
 
 VideoFrameYUVConverter::VideoFrameYUVConverter() = default;
@@ -134,8 +118,7 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
+    bool use_visible_rect) {
   DCHECK(video_frame);
   DCHECK(IsVideoFrameFormatSupported(*video_frame))
       << "VideoFrame has an unsupported YUV format " << video_frame->format();
@@ -150,7 +133,7 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrame(
     // Only SW VideoFrame direct uploading path use SkPixmap.
     return ConvertFromVideoFrameYUVWithGrContext(
         video_frame, raster_context_provider, dest_mailbox_holder,
-        internal_format, type, flip_y, use_visible_rect, use_sk_pixmap);
+        internal_format, type, flip_y, use_visible_rect);
   }
 
   auto* ri = raster_context_provider->RasterInterface();
@@ -174,12 +157,11 @@ bool VideoFrameYUVConverter::ConvertYUVVideoFrameToDstTextureNoCaching(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
+    bool use_visible_rect) {
   VideoFrameYUVConverter converter;
-  return converter.ConvertYUVVideoFrame(
-      video_frame, raster_context_provider, dest_mailbox_holder,
-      internal_format, type, flip_y, use_visible_rect, use_sk_pixmap);
+  return converter.ConvertYUVVideoFrame(video_frame, raster_context_provider,
+                                        dest_mailbox_holder, internal_format,
+                                        type, flip_y, use_visible_rect);
 }
 
 void VideoFrameYUVConverter::ReleaseCachedData() {
@@ -193,8 +175,7 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
+    bool use_visible_rect) {
   gpu::raster::RasterInterface* ri = raster_context_provider->RasterInterface();
   DCHECK(ri);
   ri->WaitSyncTokenCHROMIUM(dest_mailbox_holder.sync_token.GetConstData());
@@ -207,8 +188,7 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVWithGrContext(
 
   bool result = ConvertFromVideoFrameYUVSkia(
       video_frame, raster_context_provider, dest_mailbox_holder.texture_target,
-      dest_tex_id, internal_format, type, flip_y, use_visible_rect,
-      use_sk_pixmap);
+      dest_tex_id, internal_format, type, flip_y, use_visible_rect);
 
   if (dest_mailbox_holder.mailbox.IsSharedImage())
     ri->EndSharedImageAccessDirectCHROMIUM(dest_tex_id);
@@ -225,8 +205,7 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
     unsigned int internal_format,
     unsigned int type,
     bool flip_y,
-    bool use_visible_rect,
-    bool use_sk_pixmap) {
+    bool use_visible_rect) {
   // Rendering YUV textures to SkSurface by dst texture
   GrDirectContext* gr_context = raster_context_provider->GrContext();
   DCHECK(gr_context);
@@ -260,25 +239,16 @@ bool VideoFrameYUVConverter::ConvertFromVideoFrameYUVSkia(
     return false;
   }
 
-  bool result = false;
-  if (use_sk_pixmap) {
-    SkYUVAPixmaps yuva_pixmaps = holder_->VideoFrameToSkiaPixmaps(video_frame);
-    DCHECK(yuva_pixmaps.isValid());
-
-    result = YUVPixmapsToSkSurface(gr_context, video_frame, yuva_pixmaps,
-                                   surface, use_visible_rect);
-  } else {
     auto image =
         holder_->VideoFrameToSkImage(video_frame, raster_context_provider);
-    result =
+    bool result =
         DrawYUVImageToSkSurface(video_frame, image, surface, use_visible_rect);
 
     // Release textures to guarantee |holder_| doesn't hold read access on
     // textures it doesn't own.
     holder_->ReleaseTextures();
-  }
 
-  return result;
+    return result;
 }
 
 }  // namespace media

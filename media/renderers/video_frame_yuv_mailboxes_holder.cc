@@ -241,30 +241,6 @@ bool VideoFrameYUVMailboxesHolder::VideoFrameToPlaneSkSurfaces(
   return result;
 }
 
-SkYUVAPixmaps VideoFrameYUVMailboxesHolder::VideoFrameToSkiaPixmaps(
-    const VideoFrame* video_frame) {
-  yuva_info_ = VideoFrameGetSkYUVAInfo(video_frame);
-  num_planes_ = yuva_info_.planeDimensions(plane_sizes_);
-
-  // Create SkImageInfos with the appropriate color types for 8 bit unorm data
-  // based on plane config.
-  size_t row_bytes[kMaxPlanes];
-  for (size_t plane = 0; plane < num_planes_; ++plane) {
-    row_bytes[plane] = VideoFrame::RowBytes(plane, video_frame->format(),
-                                            plane_sizes_[plane].width());
-  }
-
-  SkYUVAPixmapInfo pixmaps_infos(yuva_info_, SkYUVAPixmaps::DataType::kUnorm8,
-                                 row_bytes);
-  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
-  for (size_t plane = 0; plane < num_planes_; ++plane) {
-    pixmaps[plane].reset(pixmaps_infos.planeInfo(plane),
-                         video_frame->data(plane),
-                         pixmaps_infos.rowBytes(plane));
-  }
-  return SkYUVAPixmaps::FromExternalPixmaps(yuva_info_, pixmaps);
-}
-
 void VideoFrameYUVMailboxesHolder::ImportTextures(bool for_surface) {
   DCHECK(!imported_textures_)
       << "Textures should always be released after converting video frame. "

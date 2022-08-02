@@ -46,8 +46,6 @@ class MEDIA_EXPORT VideoFrameYUVMailboxesHolder {
       viz::RasterContextProvider* raster_context_provider,
       sk_sp<SkSurface> surfaces[SkYUVAInfo::kMaxPlanes]);
 
-  SkYUVAPixmaps VideoFrameToSkiaPixmaps(const VideoFrame* video_frame);
-
   const SkYUVAInfo& yuva_info() const { return yuva_info_; }
 
   // Utility to convert a media pixel format to SkYUVAInfo.

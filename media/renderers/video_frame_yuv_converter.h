@@ -51,8 +51,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       unsigned int internal_format,
       unsigned int type,
       bool flip_y,
-      bool use_visible_rect,
-      bool use_sk_pixmap = false);
+      bool use_visible_rect);
 
   VideoFrameYUVConverter();
   ~VideoFrameYUVConverter();
@@ -63,8 +62,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
                             unsigned int internal_format = GL_RGBA,
                             unsigned int type = GL_UNSIGNED_BYTE,
                             bool flip_y = false,
-                            bool use_visible_rect = false,
-                            bool use_sk_pixmap = false);
+                            bool use_visible_rect = false);
   void ReleaseCachedData();
 
  private:
@@ -75,8 +73,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       unsigned int internal_format,
       unsigned int type,
       bool flip_y,
-      bool use_visible_rect,
-      bool use_sk_pixmap = false);
+      bool use_visible_rect);
   bool ConvertFromVideoFrameYUVSkia(
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,
@@ -85,8 +82,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       unsigned int internal_format,
       unsigned int type,
       bool flip_y,
-      bool use_visible_rect,
-      bool use_sk_pixmap);
+      bool use_visible_rect);
 
   std::unique_ptr<VideoFrameYUVMailboxesHolder> holder_;
 };
