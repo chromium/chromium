@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
+#include "third_party/blink/renderer/core/dom/toggle_data.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -163,6 +164,9 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   PopupData& EnsurePopupData();
   void RemovePopupData();
 
+  ToggleData* GetToggleData() const { return toggle_data_.get(); }
+  ToggleData& EnsureToggleData();
+
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
 
   void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
@@ -258,6 +262,7 @@ class ElementSuperRareData : public GarbageCollected<ElementSuperRareData> {
   AtomicString is_value_;
   Member<ResizeObserverSize> last_intrinsic_size_;
   Member<PopupData> popup_data_;
+  std::unique_ptr<ToggleData> toggle_data_;
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
   HasInvalidationFlags has_invalidation_flags_;
 };
@@ -553,6 +558,13 @@ class ElementRareData final : public NodeRareData {
   }
   PopupData& EnsurePopupData();
   void RemovePopupData();
+
+  ToggleData* GetToggleData() const {
+    if (super_rare_data_)
+      return super_rare_data_->GetToggleData();
+    return nullptr;
+  }
+  ToggleData& EnsureToggleData();
 
   DisplayLockContext* EnsureDisplayLockContext(Element* element) {
     return EnsureSuperRareData().EnsureDisplayLockContext(element);

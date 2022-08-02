@@ -112,6 +112,8 @@ class StylePropertyMap;
 class StylePropertyMapReadOnly;
 class StyleRecalcContext;
 class StyleRequest;
+class ToggleData;
+class ToggleRootList;
 class V8UnionBooleanOrScrollIntoViewOptions;
 
 enum class CSSPropertyID;
@@ -1196,6 +1198,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsDocumentElement() const;
 
   bool IsReplacedElementRespectingCSSOverflow() const;
+
+  ToggleData* GetToggleData();
+  ToggleData& EnsureToggleData();
+
+  // Create any toggles specified by 'toggle-root' that don't already exist on
+  // the element.
+  void CreateToggles(const ToggleRootList* toggle_roots);
 
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }

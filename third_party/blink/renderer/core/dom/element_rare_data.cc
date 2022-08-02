@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 
+#include <memory>
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
@@ -126,6 +127,16 @@ void ElementSuperRareData::RemovePopupData() {
 void ElementRareData::RemovePopupData() {
   if (super_rare_data_)
     super_rare_data_->RemovePopupData();
+}
+
+ToggleData& ElementSuperRareData::EnsureToggleData() {
+  if (!toggle_data_)
+    toggle_data_ = std::make_unique<ToggleData>();
+  return *toggle_data_;
+}
+
+ToggleData& ElementRareData::EnsureToggleData() {
+  return EnsureSuperRareData().EnsureToggleData();
 }
 
 ElementInternals& ElementSuperRareData::EnsureElementInternals(

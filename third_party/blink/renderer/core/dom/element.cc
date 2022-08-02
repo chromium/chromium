@@ -177,6 +177,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/toggle_root_list.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -8844,6 +8845,29 @@ const ComputedStyle* Element::StyleForPositionFallback(unsigned index) {
   if (!style)
     return nullptr;
   return base_style->AddCachedPositionFallbackStyle(std::move(style), index);
+}
+
+ToggleData* Element::GetToggleData() {
+  return HasRareData() ? GetElementRareData()->GetToggleData() : nullptr;
+}
+
+ToggleData& Element::EnsureToggleData() {
+  return EnsureElementRareData().EnsureToggleData();
+}
+
+void Element::CreateToggles(const ToggleRootList* toggle_roots) {
+  const auto& roots = toggle_roots->Roots();
+  DCHECK(!roots.IsEmpty());
+
+  auto& toggles = EnsureToggleData().Toggles();
+  for (const ToggleRoot& root : roots) {
+    // NOTE: The intent of this code is that we leave the table unmodified if
+    // the key is already present, as described in
+    // https://tabatkins.github.io/css-toggle/#toggle-creation and
+    // https://tabatkins.github.io/css-toggle/#toggles .  This is exactly what
+    // HashMap::insert() does.
+    toggles.insert(root.Name(), Toggle(root));
+  }
 }
 
 }  // namespace blink

@@ -15,6 +15,11 @@ namespace blink {
 
 enum class ToggleOverflow : uint8_t { kCycle = 0, kCycleOn = 1, kSticky = 2 };
 
+// This ToggleRoot class is used to represent both a value of the toggle-root
+// property, which the specification also calls a toggle specifier, and to
+// represent (via its derived class Toggle) what the specification calls a
+// toggle, which is state associated with the element.  (The former would be
+// const if WTF::Vector supported it, whereas the latter should not be.)
 class ToggleRoot {
   DISALLOW_NEW();
 
@@ -89,7 +94,7 @@ class ToggleRoot {
              ToggleScope scope)
       : name_(name),
         states_(states),
-        initial_state_(initial_state),
+        value_(initial_state),
         overflow_(overflow),
         is_group_(is_group),
         scope_(scope) {
@@ -97,31 +102,39 @@ class ToggleRoot {
     DCHECK_EQ(overflow_, overflow) << "sufficient field width";
   }
 
+ protected:
+  ToggleRoot()
+      : states_(1),
+        value_(0),
+        overflow_(ToggleOverflow::kCycle),
+        is_group_(false),
+        scope_(ToggleScope::kWide) {}
+
+ public:
   ToggleRoot(const ToggleRoot&) = default;
   ~ToggleRoot() = default;
 
   bool operator==(const ToggleRoot& other) const {
     return name_ == other.name_ && states_ == other.states_ &&
-           initial_state_ == other.initial_state_ &&
-           overflow_ == other.overflow_ && is_group_ == other.is_group_ &&
-           scope_ == other.scope_;
+           value_ == other.value_ && overflow_ == other.overflow_ &&
+           is_group_ == other.is_group_ && scope_ == other.scope_;
   }
   bool operator!=(const ToggleRoot& other) const { return !(*this == other); }
 
   const AtomicString& Name() const { return name_; }
   States StateSet() const { return states_; }
-  State InitialState() const { return initial_state_; }
+  State InitialState() const { return value_; }
   ToggleOverflow Overflow() const { return overflow_; }
   bool IsGroup() const { return is_group_; }
   ToggleScope Scope() const { return scope_; }
 
- private:
-  const AtomicString name_;
-  const States states_;
-  const State initial_state_;
-  const ToggleOverflow overflow_ : 2;
-  const bool is_group_ : 1;
-  const ToggleScope scope_ : 1;
+ protected:
+  AtomicString name_;
+  States states_;
+  State value_;
+  ToggleOverflow overflow_;
+  bool is_group_;
+  ToggleScope scope_;
 };
 
 }  // namespace blink
