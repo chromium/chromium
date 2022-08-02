@@ -1105,6 +1105,49 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
   }
 }
 
+// Tests that pressing `Enter` on save desk buttons does not save anything when
+// disabled.
+TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
+  // Prepare the test environment, like creating an app window which should be
+  // supported.
+  auto no_app_id_window = CreateAppWindow();
+  aura::Window* root_window = Shell::GetPrimaryRootWindow();
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  ASSERT_TRUE(
+      delegate->IsWindowSupportedForDeskTemplate(no_app_id_window.get()));
+
+  // Toggle overview and set the save desk buttons to disabled.
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+  auto* save_as_template_button =
+      GetSaveDeskAsTemplateButtonForRoot(root_window);
+  auto* save_for_later_button = GetSaveDeskForLaterButtonForRoot(root_window);
+  save_as_template_button->SetEnabled(false);
+  save_for_later_button->SetEnabled(false);
+  ASSERT_FALSE(save_as_template_button->GetEnabled());
+  ASSERT_FALSE(save_for_later_button->GetEnabled());
+
+  // Press `Enter` when `Save desk for later` button is highlighted.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(save_for_later_button->IsViewHighlighted());
+  ASSERT_FALSE(save_for_later_button->GetEnabled());
+  SendKey(ui::VKEY_RETURN);
+  SavedDeskPresenterTestApi(
+      GetOverviewGridList()[0]->overview_session()->saved_desk_presenter())
+      .MaybeWaitForModel();
+  ASSERT_FALSE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+
+  // Press `Enter` when `Save desk as a template` button is highlighted.
+  SendKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
+  ASSERT_TRUE(save_as_template_button->IsViewHighlighted());
+  ASSERT_FALSE(save_as_template_button->GetEnabled());
+  SendKey(ui::VKEY_RETURN);
+  SavedDeskPresenterTestApi(
+      GetOverviewGridList()[0]->overview_session()->saved_desk_presenter())
+      .MaybeWaitForModel();
+  ASSERT_FALSE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+}
+
 // Tests that clicking the save desk as template button shows the templates
 // grid.
 TEST_F(SavedDeskTest, SaveDeskAsTemplateButtonShowsDesksTemplatesGrid) {

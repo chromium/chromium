@@ -46,7 +46,8 @@ views::View* SaveDeskTemplateButton::GetView() {
 }
 
 void SaveDeskTemplateButton::MaybeActivateHighlightedView() {
-  callback_.Run();
+  if (GetEnabled())
+    callback_.Run();
 }
 
 void SaveDeskTemplateButton::MaybeCloseHighlightedView(bool primary_action) {}
