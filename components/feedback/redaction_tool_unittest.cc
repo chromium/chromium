@@ -366,6 +366,16 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("ssid=\"LittleTsunami\""));
   EXPECT_EQ("* SSID=<SSID: 5>", RedactCustomPatterns("* SSID=agnagna"));
 
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 6>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: \"GoogleGuest\""));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 7>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: 'GoogleGuest'"));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 8>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: GoogleGuest"));
+
   EXPECT_EQ("SerialNumber: <Serial: 1>",
             RedactCustomPatterns("SerialNumber: 1217D7EF"));
   EXPECT_EQ("serial  number: <Serial: 2>",

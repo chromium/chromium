@@ -53,6 +53,9 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     {"LocAC", "(\\bLocation area code: ')([0-9a-fA-F]+)(')",
      PIIType::kLocationInfo},
 
+    // Android. Must run first since this expression matches the replacement.
+    {"SSID", "(?i-s)(\\SSID: ['\"]??)(.+)(['\"]??)", PIIType::kSSID},
+
     // wpa_supplicant
     {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')", PIIType::kSSID},
     {"SSID", "(?i-s)(\\bssid[= ]\")(.+)(\")", PIIType::kSSID},
