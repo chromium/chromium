@@ -1275,12 +1275,10 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
   DCHECK(!IsReloadLoadType(frame_load_type));
   DCHECK(frame_->GetDocument());
   DCHECK(!is_browser_initiated || !is_synchronously_committed);
+  CHECK(frame_->IsNavigationAllowed());
 
   if (Page* page = frame_->GetPage())
     page->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
-
-  if (!frame_->IsNavigationAllowed())
-    return mojom::blink::CommitResult::Aborted;
 
   if (frame_->GetDocument()->IsFrameSet()) {
     // Navigations in a frameset are always cross-document. Renderer-initiated
