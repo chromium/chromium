@@ -318,6 +318,8 @@ crbug.com/angleproject/7079 [ mac passthrough angle-metal ] deqp/functional/gles
 crbug.com/angleproject/7234 [ mac passthrough angle-metal ] conformance2/textures/misc/integer-cubemap-texture-sampling.html [ Failure ]
 
 # Metal AMD
+crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/textureshadow/2d_array_linear_mipmap_nearest_greater_or_equal.html [ RetryOnFailure ]
+crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] conformance2/renderbuffers/multisampled-stencil-renderbuffer-initialization.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] conformance2/textures/misc/tex-srgb-mipmap.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] conformance2/textures/misc/tex-storage-compressed-formats.html [ Failure ]
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/pixelbufferobject.html [ Failure ]
@@ -524,6 +526,7 @@ crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gl
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/teximage3d_depth.html [ RetryOnFailure ]
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/texstorage2d_format_cube_01.html [ RetryOnFailure ]
 crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ RetryOnFailure ]
+crbug.com/1345782 [ mac amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/textureformat/sized_color_cube_npot_01.html [ RetryOnFailure ]
 
 crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/canvas/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1227762 [ bigsur amd-0x6821 angle-disabled no-passthrough skia-renderer-gl ] conformance2/textures/canvas_sub_rectangle/tex-2d-rgb5_a1-rgba-unsigned_byte.html [ Failure ]
