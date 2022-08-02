@@ -48,6 +48,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -574,6 +575,11 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
       base::kKeepAmPm);
   std::u16string battery = PowerStatus::Get()->GetAccessibleNameString(false);
   std::vector<std::u16string> status = {time, battery};
+
+  status.push_back(features::IsReleaseTrackUiEnabled() &&
+                           channel_indicator_view_->GetVisible()
+                       ? channel_indicator_view_->GetAccessibleNameString()
+                       : base::EmptyString16());
 
   status.push_back(network_tray_view_->GetVisible()
                        ? network_tray_view_->GetAccessibleNameString()

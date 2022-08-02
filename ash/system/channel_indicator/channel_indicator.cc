@@ -12,6 +12,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/version_info/channel.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -181,6 +182,16 @@ bool ChannelIndicatorView::IsLabelVisibleForTesting() {
 
 bool ChannelIndicatorView::IsImageViewVisibleForTesting() {
   return image_view() && image_view()->GetVisible();
+}
+
+std::u16string ChannelIndicatorView::GetAccessibleNameString() const {
+  if (image_view())
+    return image_view()->GetAccessibleName();
+
+  if (label())
+    return label()->GetAccessibleName();
+
+  return base::EmptyString16();
 }
 
 }  // namespace ash
