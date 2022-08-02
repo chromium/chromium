@@ -985,6 +985,9 @@
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
         ],
+        'swarming': {
+          'shards': 20,
+        },
       },
       'linux-chromeos-code-coverage': {
         'swarming': {
