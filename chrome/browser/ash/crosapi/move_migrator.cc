@@ -167,8 +167,8 @@ MoveMigrator::ResumeStep MoveMigrator::GetResumeStep(
     PrefService* local_state,
     const std::string& user_id_hash) {
   return static_cast<ResumeStep>(
-      local_state->GetDictionary(kMoveMigrationResumeStepPref)
-          ->FindIntKey(user_id_hash)
+      local_state->GetValueDict(kMoveMigrationResumeStepPref)
+          .FindInt(user_id_hash)
           .value_or(0));
 }
 
@@ -185,8 +185,8 @@ void MoveMigrator::SetResumeStep(PrefService* local_state,
 int MoveMigrator::UpdateResumeAttemptCountForUser(
     PrefService* local_state,
     const std::string& user_id_hash) {
-  int count = local_state->GetDictionary(kMoveMigrationResumeCountPref)
-                  ->FindIntPath(user_id_hash)
+  int count = local_state->GetValueDict(kMoveMigrationResumeCountPref)
+                  .FindIntByDottedPath(user_id_hash)
                   .value_or(0);
   count += 1;
   DictionaryPrefUpdate update(local_state, kMoveMigrationResumeCountPref);
