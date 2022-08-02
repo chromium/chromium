@@ -117,14 +117,12 @@ std::unique_ptr<ArcDefaultAppList::AppInfoMap> ReadAppsFromFileThread(
 
 // Returns true if default app |app_id| is marked as hidden in the prefs.
 bool IsAppHidden(const PrefService* prefs, const std::string& app_id) {
-  const base::Value* apps_dict = prefs->GetDictionary(kDefaultApps);
-  if (!apps_dict)
-    return false;
+  const base::Value::Dict& apps_dict = prefs->GetValueDict(kDefaultApps);
 
-  const base::Value* app_dict = apps_dict->FindDictKey(app_id);
+  const base::Value::Dict* app_dict = apps_dict.FindDict(app_id);
   if (!app_dict)
     return false;
-  return app_dict->FindBoolPath(kHidden).value_or(false);
+  return app_dict->FindBool(kHidden).value_or(false);
 }
 
 std::string GetBoardName(const base::FilePath& build_prop_path) {
