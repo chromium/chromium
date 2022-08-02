@@ -4796,18 +4796,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 <translation id="6207607210601267301">Uzaktan erişim ana makinesi için PIN'siz kimlik doğrulamayı devre dışı bırak</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> Politika Bilgilerini bildir</translation>
 <translation id="6210259502936598222">OS ve <ph name="PRODUCT_NAME" /> Sürümü Bilgilerini bildir</translation>
-<translation id="6210422374261465354"><ph name="WEBVIEW_PRODUCT_NAME" /> içindeki kimlik doğrulama URL'leriyle ilgili yapılandırmaları belirtmenizi sağlar.
-
-      <ph name="WEBVIEW_PRODUCT_NAME" /> bu kimlik doğrulama URL'lerini özel olarak ele alır. <ph name="WEBVIEW_PRODUCT_NAME" /> içindeki web sayfası, kimlik doğrulama sırasında kimlik doğrulama URL'lerine yönlendirildiğinde,
-      bu URL'yi işleyebilen ilgili Kimlik Sağlayıcılar'a ait kimlik doğrulayıcı uygulaması başlatılır.
-
-      Kimlik Sağlayıcılar'ın kimlik doğrulayıcı uygulamasını başlatmayla ilgili bu akış, Kimlik Sağlayıcılar tarafından kullanım alanlarını
-      (uygulamalar arasında TOA sağlama veya sıfır güvene sahip cihaz sinyalleri toplayarak daha iyi güvenlik sağlama gibi) etkinleştirerek kimlik doğrulama sırasında cihaz durumunu anlamak için kullanılır.
-
-      Kimlik doğrulama URL'sini işleyecek geçerli bir uygulama cihazda yüklü değilse yönlendirme işlemi <ph name="WEBVIEW_PRODUCT_NAME" /> içinde devam eder.
-
-      Geçerli kimlik doğrulama URL'si <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> şemasına sahip olmalı ve joker karakter içermemelidir.
-      </translation>
 <translation id="6212868225782276239">Kara listede olanlar hariç tüm yazıcılar gösterilir.</translation>
 <translation id="6220835555850906733">Politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak, kullanıcıların cihazlarında tüm desteklenen ses çıkışlarına izin verir.
 

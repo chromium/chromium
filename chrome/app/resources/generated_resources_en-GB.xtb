@@ -6188,6 +6188,10 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6943939122536910181">Disconnected from <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="694592694773692225">Redirect blocked on this page.</translation>
+<translation id="6947015141909171112">You’re seeing recipes based on your recent search activity for recipes.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        You can manage settings from the card menu or see more options in Customise Chrome.</translation>
 <translation id="6949434160682548041">Password (optional)</translation>
 <translation id="6950627417367801484">Restore apps</translation>
 <translation id="6952242901357037157">You can also show passwords from your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> here</translation>

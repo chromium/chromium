@@ -115,6 +115,7 @@
 <translation id="3594780231884063836">동영상 음소거</translation>
 <translation id="3596414637720633074">시크릿 모드에서 타사 쿠키 차단</translation>
 <translation id="3600792891314830896">소리를 재생하는 사이트 음소거</translation>
+<translation id="3628308229821498208">추천 검색어</translation>
 <translation id="3744111561329211289">백그라운드 동기화</translation>
 <translation id="3763247130972274048">10초를 건너뛰려면 동영상 왼쪽이나 오른쪽을 두 번 탭하세요.</translation>
 <translation id="3797520601150691162">특정 사이트에 어두운 테마를 적용하지 마세요.</translation>
@@ -226,6 +227,7 @@
 <translation id="6196640612572343990">타사 쿠키 차단</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> 옵션</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' 앱을 제거하시겠습니까?</translation>
+<translation id="6262191102408817757">마지막 탭 기준</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 차단됨</translation>
 <translation id="6270391203985052864">사이트에서 알림 전송 허용을 요청할 수 있음</translation>
 <translation id="6295158916970320988">모든 사이트</translation>

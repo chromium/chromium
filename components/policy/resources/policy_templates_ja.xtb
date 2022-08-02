@@ -4571,16 +4571,6 @@
 <translation id="6207607210601267301">リモート アクセスホストの PIN 入力なしの認証を無効にする</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> のポリシー情報に関するレポートを作成</translation>
 <translation id="6210259502936598222">OS と <ph name="PRODUCT_NAME" /> のバージョン情報に関するレポートを作成</translation>
-<translation id="6210422374261465354"><ph name="WEBVIEW_PRODUCT_NAME" /> で認証用 URL の設定を指定できます。
-
-      認証用 URL は <ph name="WEBVIEW_PRODUCT_NAME" /> によって特別に扱われ、認証中に <ph name="WEBVIEW_PRODUCT_NAME" /> のウェブページが認証用 URL に移動すると、この認証用 URL を処理できる ID プロバイダの認証システムアプリが起動されます。
-
-      ID プロバイダは、ID プロバイダの認証システムアプリを起動するこのフローを使用して、アプリ間での SSO 提供などのユースケースを可能にしたり、ゼロトラストのデバイス シグナルを収集して認証中のデバイスの状態を把握することでセキュリティを強化したりします。
-
-      デバイスに認証用 URL を処理するための有効なアプリがインストールされていない場合、ナビゲーションは <ph name="WEBVIEW_PRODUCT_NAME" /> で続行されます。
-
-      有効な認証用 URL には <ph name="HTTP_PROTOCOL" /> / <ph name="HTTPS_PROTOCOL" /> スキームが含まれている必要があります。ワイルドカードは含めないでください。
-      </translation>
 <translation id="6212868225782276239">ブラックリスト登録されている以外のすべてのプリンタを表示する。</translation>
 <translation id="6220835555850906733">このポリシーを有効に設定するか未設定のままにした場合、ユーザーのデバイスでサポートされているすべての音声出力が許可されます。
 

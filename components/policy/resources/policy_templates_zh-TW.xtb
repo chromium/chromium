@@ -4738,16 +4738,6 @@
 <translation id="6207607210601267301">針對遠端存取主機停用無 PIN 碼驗證機制</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
-<translation id="6210422374261465354">這項政策可讓你在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中指定驗證網址的設定。
-
-      <ph name="WEBVIEW_PRODUCT_NAME" /> 會將這些驗證網址視為特殊網址，因此在驗證過程中，當 <ph name="WEBVIEW_PRODUCT_NAME" /> 中的網頁導向至驗證網址時，系統就會啟動可處理這個驗證網址的識別資訊提供者驗證器應用程式。
-
-      透過這項啟動識別資訊提供者驗證器應用程式的流程，識別資訊提供者可以啟用其他用途，例如提供多個應用程式適用的單一登入 (SSO)，或是收集零信任的裝置信號來瞭解裝置在驗證過程中的狀態，藉此提供更完善的安全防護能力。
-
-      如果裝置上未安裝可處理驗證網址的有效應用程式，系統會繼續在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中導向網頁。
-
-      有效的驗證網址應採用 <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> 架構，且不得包含萬用字元。
-      </translation>
 <translation id="6212868225782276239">顯示所有印表機 (黑名單中的印表機除外)。</translation>
 <translation id="6220835555850906733">如果將這項政策設為啟用或不設定，系統會在使用者的裝置上允許所有支援的音訊輸出。
 

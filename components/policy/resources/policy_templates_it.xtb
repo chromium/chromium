@@ -4816,18 +4816,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 <translation id="6207607210601267301">Disattiva l'autenticazione senza PIN per l'host di accesso remoto</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>
-<translation id="6210422374261465354">Ti consente di specificare le configurazioni per gli URL di autenticazione in <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Questi URL di autenticazione vengono trattati in modo speciale da <ph name="WEBVIEW_PRODUCT_NAME" />, in modo che durante l'autenticazione, quando una pagina web in <ph name="WEBVIEW_PRODUCT_NAME" />
-      indirizza agli URL di autenticazione, l'app di autenticazione dei provider di identità corrispondente che può gestire questo URL di autenticazione viene lanciata.
-
-      Questo flusso di lancio dell'app di autenticazione dei provider di identità viene utilizzato dai provider di identità per abilitare
-      i casi d'uso, come fornire SSO per le app o una miglior sicurezza, raccogliendo indicatori dei dispositivi Zero Trust per comprendere le impostazioni del dispositivo durante l'autenticazione.
-
-      Se non è installata alcuna app valida per la gestione dell'URL di autenticazione sul dispositivo, la navigazione continua in <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Un URL di autenticazione valido deve avere lo schema <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> e non deve contenere caratteri jolly.
-      </translation>
 <translation id="6212868225782276239">Vengono mostrate tutte le stampanti, tranne quelle indicate nella lista nera.</translation>
 <translation id="6220835555850906733">Se il criterio viene attivato o se non viene configurato, tutti gli output audio supportati sono consentiti sui dispositivi degli utenti.
 
