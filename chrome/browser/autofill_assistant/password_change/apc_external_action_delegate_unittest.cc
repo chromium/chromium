@@ -420,8 +420,6 @@ TEST_F(ApcExternalActionDelegateTest,
 
 TEST_F(ApcExternalActionDelegateTest,
        ReceiveBasePromptAction_FromViewClickWithoutResultKey) {
-  // TODO: Check that we do not send a result if the result key field is not
-  // set.
   base::MockOnceCallback<void(
       const autofill_assistant::external::Result& result)>
       result_callback;
