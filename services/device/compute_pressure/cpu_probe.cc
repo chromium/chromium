@@ -14,6 +14,8 @@
 #include "services/device/compute_pressure/cpu_probe_linux.h"
 #elif BUILDFLAG(IS_WIN)
 #include "services/device/compute_pressure/cpu_probe_win.h"
+#elif BUILDFLAG(IS_MAC)
+#include "services/device/compute_pressure/cpu_probe_mac.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
@@ -58,6 +60,8 @@ std::unique_ptr<CpuProbe> CpuProbe::Create() {
   return CpuProbeLinux::Create();
 #elif BUILDFLAG(IS_WIN)
   return CpuProbeWin::Create();
+#elif BUILDFLAG(IS_MAC)
+  return CpuProbeMac::Create();
 #else
   return std::make_unique<NullCpuProbe>();
 #endif  // BUILDFLAG(IS_ANDROID)

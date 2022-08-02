@@ -1,45 +1,33 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/device/compute_pressure/cpu_probe_linux.h"
+#include "services/device/compute_pressure/cpu_probe_mac.h"
 
-#include <memory>
-#include <utility>
-#include <vector>
-
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
-#include "base/sequence_checker.h"
-#include "services/device/compute_pressure/procfs_stat_cpu_parser.h"
 
 namespace device {
 
 // static
-std::unique_ptr<CpuProbeLinux> CpuProbeLinux::Create() {
-  return base::WrapUnique(
-      new CpuProbeLinux(base::FilePath(ProcfsStatCpuParser::kProcfsStatPath)));
+std::unique_ptr<CpuProbeMac> CpuProbeMac::Create() {
+  return base::WrapUnique(new CpuProbeMac());
 }
 
-// static
-std::unique_ptr<CpuProbeLinux> CpuProbeLinux::CreateForTesting(
-    base::FilePath procfs_stat_path) {
-  return base::WrapUnique(new CpuProbeLinux(std::move(procfs_stat_path)));
-}
-
-CpuProbeLinux::CpuProbeLinux(base::FilePath procfs_stat_path)
-    : stat_parser_(std::move(procfs_stat_path)) {
+CpuProbeMac::CpuProbeMac() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-CpuProbeLinux::~CpuProbeLinux() = default;
+CpuProbeMac::~CpuProbeMac() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
 
-void CpuProbeLinux::Update() {
+void CpuProbeMac::Update() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  stat_parser_.Update();
-  const std::vector<CoreTimes>& per_core_times = stat_parser_.core_times();
+  processor_info_scanner_.Update();
+  const std::vector<CoreTimes>& per_core_times =
+      processor_info_scanner_.core_times();
 
   double utilization_sum = 0.0;
   int utilization_cores = 0;
@@ -56,7 +44,7 @@ void CpuProbeLinux::Update() {
     double core_utilization =
         core_times.TimeUtilization(last_per_core_times_[i]);
     if (core_utilization >= 0) {
-      // Only overwrite `last_per_core_times_` if the /proc/stat counters are
+      // Only overwrite `last_per_core_times_` if the cpu time counters are
       // monotonically increasing. Otherwise, discard the measurement.
       last_per_core_times_[i] = core_times;
 
@@ -72,13 +60,14 @@ void CpuProbeLinux::Update() {
   }
 }
 
-PressureSample CpuProbeLinux::LastSample() {
+PressureSample CpuProbeMac::LastSample() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   return last_sample_;
 }
 
-void CpuProbeLinux::InitializeCore(size_t core_index,
-                                   const CoreTimes& initial_core_times) {
+void CpuProbeMac::InitializeCore(size_t core_index,
+                                 const CoreTimes& initial_core_times) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(last_per_core_times_.size(), core_index);
 

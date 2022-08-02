@@ -54,4 +54,15 @@ source_set("compute_pressure") {
 
     all_dependent_configs = [ ":compute_pressure_win_linker_flags" ]
   }
+
+  if (is_mac) {
+    sources += [
+      "core_times.cc",
+      "core_times.h",
+      "cpu_probe_mac.cc",
+      "cpu_probe_mac.h",
+      "host_processor_info_scanner.cc",
+      "host_processor_info_scanner.h",
+    ]
+  }
 }
