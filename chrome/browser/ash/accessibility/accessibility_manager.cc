@@ -204,9 +204,9 @@ absl::optional<bool> GetDictationOfflineNudgePrefForLocale(
   if (dictation_locale.empty()) {
     return absl::nullopt;
   }
-  const base::Value* offline_nudges = profile->GetPrefs()->GetDictionary(
+  const base::Value::Dict& offline_nudges = profile->GetPrefs()->GetValueDict(
       prefs::kAccessibilityDictationLocaleOfflineNudge);
-  return offline_nudges->FindBoolPath(dictation_locale);
+  return offline_nudges.FindBoolByDottedPath(dictation_locale);
 }
 
 }  // namespace
