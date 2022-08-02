@@ -32,6 +32,10 @@ source_set("updater_executable") {
     "updater.rc",
   ]
 
+  # `updater.rc` does not process `#if BUILDFLAG(GOOGLE_CHROME_BRANDING)`
+  # correctly sometimes, especially seen with the `win10_chromium_x64_rel_ng`
+  # build bot. Explicitly defining `CHROME_BRANDED_TLB` is being done here as a
+  # workaround.
   if (is_chrome_branded) {
     defines = [ "CHROME_BRANDED_TLB=1" ]
   } else {
