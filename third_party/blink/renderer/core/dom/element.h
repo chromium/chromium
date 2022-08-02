@@ -575,6 +575,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // attributes in a start tag were added to the element.
   virtual void ParseAttribute(const AttributeModificationParams&);
 
+  void DefaultEventHandler(Event&) override;
+
   // Popup API related functions.
   void UpdatePopupAttribute(String);
   bool HasValidPopupAttribute() const;
@@ -1275,6 +1277,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // Similar to IsFocusableStyle, except that it will ensure that any deferred
   // work to create layout objects is completed (e.g. in display-locked trees).
   bool IsFocusableStyleAfterUpdate() const;
+
+  // Is the node descendant of this in something clickable/activatable, such
+  // that we shouldn't handle events targeting it?
+  bool IsClickableControl(Node*);
 
   // ClassAttributeChanged() and UpdateClassList() exist to share code between
   // ParseAttribute (called via setAttribute()) and SvgAttributeChanged (called
