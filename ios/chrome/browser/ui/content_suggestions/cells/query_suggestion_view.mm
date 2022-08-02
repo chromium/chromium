@@ -50,8 +50,6 @@ const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
     queryLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     queryLabel.translatesAutoresizingMaskIntoConstraints = NO;
     queryLabel.numberOfLines = 2;
-    queryLabel.adjustsFontSizeToFitWidth = YES;
-    queryLabel.minimumScaleFactor = 0.8;
     queryLabel.adjustsFontForContentSizeCategory = YES;
 
     if (!config) {
