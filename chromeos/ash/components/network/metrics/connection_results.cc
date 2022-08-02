@@ -7,7 +7,7 @@
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 ShillConnectResult ShillErrorToConnectResult(const std::string& error_name) {
   // Flimflam error options.
@@ -197,4 +197,4 @@ UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
   return UserInitiatedConnectResult::kUnknown;
 }
 
-}  // namespace chromeos
+}  // namespace ash

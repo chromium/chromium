@@ -235,7 +235,7 @@ base::Value ShillLogSource::ScrubAndExpandProperties(
 
   if (base::StartsWith(object_path, kServicePrefix,
                        base::CompareCase::SENSITIVE)) {
-    std::string log_name = chromeos::NetworkPathId(object_path);  // Not PII
+    std::string log_name = ash::NetworkPathId(object_path);  // Not PII
     dict.SetStringKey(shill::kNameProperty, log_name);
   } else if (base::StartsWith(object_path, kDevicePrefix,
                               base::CompareCase::SENSITIVE)) {

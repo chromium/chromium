@@ -456,7 +456,7 @@ class TetherServiceTest : public testing::Test {
   void SetCellularTechnologyStateEnabled(bool enabled) {
     network_state_handler()->SetTechnologyEnabled(
         NetworkTypePattern::Cellular(), enabled,
-        chromeos::network_handler::ErrorCallback());
+        network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
   }
 

@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 class NetworkEventLogTest : public testing::Test {
  public:
@@ -155,4 +155,4 @@ TEST_F(NetworkEventLogTest, NetworkGuidId) {
   EXPECT_EQ("wifi99_guid", NetworkGuidId("wifi99_guid"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

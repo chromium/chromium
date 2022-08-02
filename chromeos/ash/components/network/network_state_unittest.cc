@@ -21,7 +21,7 @@
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -488,4 +488,4 @@ TEST_F(NetworkStateTest, NonShillCellular) {
   EXPECT_EQ(kTestGuid, *dictionary.FindStringKey(shill::kGuidProperty));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -570,7 +570,7 @@ void SystemTrayClientImpl::ShowNetworkConfigure(const std::string& network_id) {
     LOG(ERROR) << "Network not found: " << network_id;
     return;
   }
-  if (network_state->type() == chromeos::kTypeTether &&
+  if (network_state->type() == ash::kTypeTether &&
       !network_state->tether_has_connected_to_host()) {
     ShowNetworkSettingsHelper(network_id, true /* show_configure */);
     return;

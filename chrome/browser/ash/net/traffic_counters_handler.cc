@@ -20,8 +20,6 @@ namespace ash {
 
 namespace {
 
-using chromeos::NetworkGuidId;
-
 // Interval duration to determine the auto reset check frequency.
 constexpr base::TimeDelta kResetCheckInterval = base::Hours(6);
 

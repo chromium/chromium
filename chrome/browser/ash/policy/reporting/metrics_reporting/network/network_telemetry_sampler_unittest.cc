@@ -129,7 +129,7 @@ class NetworkTelemetrySamplerTest : public ::testing::Test {
     auto* const ip_config_client =
         network_handler_test_helper_.ip_config_test();
     network_handler_test_helper_.manager_test()->AddTechnology(
-        ::chromeos::kTypeTether, true);
+        ::ash::kTypeTether, true);
 
     for (const auto& network_data : networks_data) {
       const std::string device_path = DevicePath(network_data.device_name);
@@ -406,7 +406,7 @@ TEST_F(NetworkTelemetrySamplerTest, MixTypesAndConfigurations) {
        kInterfaceName, "192.168.86.26" /* ip_address */,
        "192.168.86.2" /* gateway */, true /* is_visible */,
        true /* is_configured */},
-      {"guid3", shill::kStateReady, ::chromeos::kTypeTether,
+      {"guid3", shill::kStateReady, ::ash::kTypeTether,
        0 /* signal_strength */, "tether1", "192.168.86.27" /* ip_address */,
        "192.168.86.3" /* gateway */, true /* is_visible */,
        true /* is_configured */}};

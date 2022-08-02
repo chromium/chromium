@@ -126,7 +126,7 @@ void DeviceActions::SetWifiEnabled(bool enabled) {
   NET_LOG(USER) << __func__ << ":" << enabled;
   NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
       NetworkTypePattern::WiFi(), enabled,
-      chromeos::network_handler::ErrorCallback());
+      ash::network_handler::ErrorCallback());
 }
 
 void DeviceActions::SetBluetoothEnabled(bool enabled) {
