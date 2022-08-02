@@ -56,6 +56,7 @@ ts_library("build_ts") {
     ":gen_ts_files_from_html",
   ]
   composite = true
+  deps = [ "//ui/webui/resources/mojo:library" ]
 }
 
 resources_grd_file = "$target_gen_dir/resources.grd"
