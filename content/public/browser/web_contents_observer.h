@@ -73,6 +73,12 @@ struct Referrer;
 //   use `DocumentUserData` instead.
 // - Mojo interface implementations that have a 1 RenderFrameHost to many
 //   instances relationship can often use `DocumentService` instead.
+// - `base::WeakPtr<WebContents>` and `WeakDocumentPtr` can be used instead of
+//   manually clearing raw ptrs using observer methods like
+//   `WebContentsDestroyed` or `RenderFrameDeleted`. Similarly, don't create a
+//   `WebContentsObserver` just to be able to check for a null
+//   `WebContentsObserver::web_contents()`. Use a `base::WeakPtr<WebContents>`
+//   instead.
 //
 // These helpers can help avoid memory safety bugs, such as retaining a pointer
 // to a deleted RenderFrameHost, or other security issues, such as origin
