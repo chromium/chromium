@@ -94,10 +94,15 @@ class BatchElementCheckerBrowserTest
     return proto;
   }
 
-  static ElementConditionProto Match(Selector selector, bool strict = false) {
+  static ElementConditionProto Match(Selector selector,
+                                     bool strict = false,
+                                     std::string payload = "") {
     ElementConditionProto proto;
     *proto.mutable_match() = selector.proto;
     proto.set_require_unique_element(strict);
+    if (!payload.empty()) {
+      proto.set_payload(payload);
+    }
     return proto;
   }
 
@@ -110,7 +115,9 @@ class BatchElementCheckerBrowserTest
   // Run Observer BatchElementChecker on the provided conditions. The second
   // value in the pairs (bool) is the match expectation.
   void RunObserverBatchElementChecker(
-      const std::vector<std::pair<ElementConditionProto, bool>>& conditions) {
+      const std::vector<std::pair<ElementConditionProto, bool>>& conditions,
+      base::flat_set<std::string> expected_payloads = {},
+      base::TimeDelta max_wait_time = base::Seconds(30)) {
     base::RunLoop run_loop;
     BatchElementChecker checker;
     std::vector<bool> actual_results(conditions.size(), false);
@@ -122,27 +129,33 @@ class BatchElementCheckerBrowserTest
           conditions[i].first,
           base::BindOnce(&BatchElementCheckerBrowserTest::
                              ObserverBatchElementCheckerElementCallback,
-                         &actual_results, i));
+                         &actual_results, i, &expected_payloads));
     }
     checker.AddAllDoneCallback(base::BindOnce(
         &BatchElementCheckerBrowserTest::
             ObserverBatchElementCheckerAllDoneCallback,
         run_loop.QuitClosure(), &expected_results, &actual_results));
 
-    checker.EnableObserver(SelectorObserverDefaultSettings(base::Seconds(30)));
+    checker.EnableObserver(SelectorObserverDefaultSettings(max_wait_time));
     checker.Run(web_controller_.get());
     run_loop.Run();
+    EXPECT_EQ(expected_payloads.size(), 0u);
     EXPECT_EQ(web_controller_->pending_workers_.size(), 0u);
   }
 
   static void ObserverBatchElementCheckerElementCallback(
       std::vector<bool>* res,
       size_t i,
+      base::flat_set<std::string>* missing_payloads,
       const ClientStatus& status,
       const std::vector<std::string>& payloads,
       const std::vector<std::string>& tags,
       const base::flat_map<std::string, DomObjectFrameStack>& elms) {
     (*res)[i] = status.ok();
+    for (const std::string& payload : payloads) {
+      EXPECT_EQ(missing_payloads->erase(payload), 1u)
+          << "Got unexpected payload " << payload;
+    }
   }
 
   static void ObserverBatchElementCheckerAllDoneCallback(
@@ -209,6 +222,29 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,
                 Match(Selector({"#iframe", "#doesnotexist"}))})}),
       true  // Expected to match.
   }});
+
+  RunObserverBatchElementChecker(
+      {{
+          AnyOfConditions({// A visible element.
+                           Match(Selector({"#button"}), false, "a"),
+                           // A nonexistent element.
+                           Match(Selector({"#doesnotexist"}), false, "b")}),
+          true,  // Expected to match.
+      }},
+      /* expected_payloads= */ {"a"});
+
+  RunObserverBatchElementChecker(
+      {{
+          NoneOfConditions({// A visible element.
+                            Match(Selector({"#button"}), false, "a"),
+                            // A nonexistent element.
+                            Match(Selector({"#doesnotexist"}), false, "b")}),
+          false,  // Expected to not match.
+      }},
+      // Payload should be there even if root condition doesn't match.
+      /* expected_payloads= */ {"a"},
+      // Condition will never match, so no need to wait a long time for it.
+      /* max_wait_time= */ base::Milliseconds(1));
 }
 
 IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest,

@@ -833,7 +833,7 @@ void SelectorObserver::CheckTimeout() {
   if (pending_frame_injects_ == 0 && MaxTimeRemaining().is_zero()) {
     // We didn't didn't match the required condition in the allotted time. It
     // could be expected from the script perspective.
-    FailWithError(ClientStatus(ELEMENT_RESOLUTION_FAILED));
+    update_callback_.Run(ClientStatus(ELEMENT_RESOLUTION_FAILED), {}, this);
   }
 }
 

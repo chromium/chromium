@@ -173,9 +173,14 @@ void BatchElementChecker::OnResultsUpdated(
     const ClientStatus& status,
     const std::vector<SelectorObserver::Update>& updates,
     SelectorObserver* selector_observer) {
+  bool continue_checking = true;
   if (!status.ok()) {
-    CallAllCallbacksWithError(status);
-    return;
+    if (status.proto_status() == ELEMENT_RESOLUTION_FAILED) {
+      continue_checking = false;
+    } else {
+      CallAllCallbacksWithError(status);
+      return;
+    }
   }
   std::vector<size_t> updated_conditions_vector;
   // Apply updates
@@ -197,18 +202,17 @@ void BatchElementChecker::OnResultsUpdated(
   auto updated_conditions =
       base::flat_set<size_t>(std::move(updated_conditions_vector));
 
-  bool any_match = false;
   for (size_t condition_index : updated_conditions) {
     auto& condition = element_condition_checks_[condition_index];
     size_t index = 0;
     if (EvaluateElementPrecondition(condition.proto, condition.results, &index,
                                     nullptr, nullptr)
             .matches()) {
-      any_match = true;
+      continue_checking = false;
       break;
     }
   }
-  if (!any_match) {
+  if (continue_checking) {
     selector_observer->Continue();
     return;
   }
