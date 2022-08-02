@@ -3504,7 +3504,7 @@
 <translation id="431076611119798497">&amp;വിശദാംശങ്ങള്‍‌</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{ഒരു Google അക്കൗണ്ട്}other{<ph name="EXTRA_ACCOUNTS" /> Google അക്കൗണ്ടുകൾ}}</translation>
 <translation id="4312866146174492540">ബ്ലോക്ക് ചെയ്യുക (ഡിഫോൾട്ട്)</translation>
-<translation id="4314497418046265427">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> നിങ്ങളുടെ ഫോണുമായി കണക്റ്റ് ചെയ്യുമ്പോൾ കൂടുതൽ ഉൽപ്പാദനക്ഷമതയുള്ളവരായിരിക്കുക</translation>
+<translation id="4314497418046265427">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഫോണുമായി കണക്റ്റ് ചെയ്ത് കൂടുതൽ ഉൽപ്പാദനക്ഷമത കൈവരിക്കൂ</translation>
 <translation id="4314815835985389558">സമന്വയിപ്പിക്കൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="4315933848520197627">അക്കൗണ്ട് അൺലിങ്ക് ചെയ്യുക</translation>
 <translation id="4316850752623536204">ഡെവലപ്പർ വെബ്‌സൈറ്റ്</translation>
@@ -4063,7 +4063,6 @@
 <translation id="486635084936119914">ചില ഫയൽ തരങ്ങളെ ഡൗൺലോഡ് ചെയ്‌ത ശേഷം സ്വയം തുറക്കുക</translation>
 <translation id="4868281708609571334"><ph name="SUPERVISED_USER_NAME" /> എന്നയാളുടെ ശബ്‌ദം തിരിച്ചറിയാൻ Google Assistant-നെ പഠിപ്പിക്കുക</translation>
 <translation id="4868284252360267853">ഈ ഡയലോഗ് നിലവിൽ ഫോക്കസ് ചെയ്തിട്ടില്ല. ഈ ഡയലോഗ് ഫോക്കസ് ചെയ്യാൻ Command-Shift-Option A അമർത്തുക.</translation>
-<translation id="48704129375571883">കൂടുതൽ ഫീച്ചറുകൾ ചേർക്കുക</translation>
 <translation id="4870724079713069532">File Explorer-ൽ നിന്നോ മറ്റ് ആപ്പുകളിൽ നിന്നോ ഈ ആപ്പ് ഉപയോഗിച്ച് പിന്തുണയ്ക്കുന്ന ഫയലുകൾ നിങ്ങൾക്ക് തുറക്കാനും എഡിറ്റ് ചെയ്യാനുമാകും. ഡിഫോൾട്ടായി ഏതൊക്കെ ഫയലുകൾ തുറക്കാൻ ഈ ആപ്പിന് കഴിയുമെന്നത് നിയന്ത്രിക്കാൻ, <ph name="BEGIN_LINK" />Windows ക്രമീകരണത്തിലേക്ക് പോകുക<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">കോൺഫിഗറേഷൻ വിവരം ലഭിക്കാൻ അഡ്‌മിൻ നൽകിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="4870903493621965035">ജോടിയാക്കിയ ഉപകരണങ്ങളൊന്നുമില്ല</translation>
@@ -5675,7 +5674,7 @@
 <translation id="6466258437571594570">അറിയിപ്പുകൾ അയയ്ക്കാൻ അനുമതി ആവശ്യപ്പെട്ട് നിങ്ങളെ തടസ്സപ്പെടുത്തുന്നതിൽ നിന്ന് സൈറ്റുകളെ ബ്ലോക്ക് ചെയ്യുന്നു</translation>
 <translation id="6466988389784393586">&amp;എല്ലാ ബുക്ക്‍മാര്‍ക്കുകളും തുറക്കുക</translation>
 <translation id="6467304607960172345">പൂർണ്ണ സ്ക്രീൻ വീഡിയോകൾ ഒപ്‌റ്റിമൈസ് ചെയ്യുക</translation>
-<translation id="6467377768028664108">തുടർന്ന്, നിങ്ങളുടെ <ph name="DEVICE_TYPE" />-ന്:</translation>
+<translation id="6467377768028664108">തുടർന്ന്, <ph name="DEVICE_TYPE" />-ന് ഇവ ചെയ്യാനാകും:</translation>
 <translation id="6468485451923838994">ഫോണ്ടുകൾ</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ഫയലുകൾ</translation>
 <translation id="6469557521904094793">സെല്ലുലാർ നെറ്റ്‌വർക്ക് ഓണാക്കുക</translation>

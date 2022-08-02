@@ -429,15 +429,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3509391053705095206">No podemos encontrar tu teléfono. Verifica si está activado el Bluetooth del teléfono.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del mouse</translation>
 <translation id="3513798432020909783">Cuenta administrada por <ph name="MANAGER_EMAIL" /></translation>
-<translation id="3518604429872942239">Bandeja de estado, hora <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Actualiza el dispositivo en el transcurso de 1 minuto}other{Actualiza el dispositivo en el transcurso de # minutos}}</translation>
 <translation id="353086728817903341">Se estableció la conexión con <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3542066395059568317">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, haz clic con el botón derecho.</translation>

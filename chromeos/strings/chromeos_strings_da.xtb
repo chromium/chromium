@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Aktuel</translation>
 <translation id="2480034874476596812">Deaktiver manuelt</translation>
+<translation id="248546197012830854">Enheden er offline. Opret forbindelse til et Wi-Fi-netværk for at se hjælpeindhold.</translation>
 <translation id="2491955442992294626">Taster testes ikke, når du bruger et andet vindue</translation>
 <translation id="2493126929778606526">Dine bedste billeder udvælges automatisk</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -660,6 +661,7 @@
 <translation id="6611280807952151149">Afslut reparation af <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
+<translation id="6624819909909965616">Det er ikke muligt at uploade filer, der er større end 10 MB</translation>
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6644568396961840069">Filen kunne ikke gemmes. Prøv at tilslutte en anden ekstern lagerenhed, eller prøv igen senere.</translation>
 <translation id="6647510110698214773">Algoritme til kryptering</translation>
@@ -695,6 +697,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
 <translation id="6995564396478647735">Sørg for, at Skrivebeskyttet er slået til</translation>
+<translation id="7005833343836210400">Enheden er offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7040230719604914234">Udbyder</translation>
 <translation id="7041549558901442110">Enheden er ikke tilsluttet.</translation>
@@ -808,6 +811,7 @@
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="8082366717211101304">Der kan ikke udføres DNS-oversættelse fra Android-apps</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
+<translation id="8094062939584182041">Giv Google tilladelse til at kontakte dig via mail vedrørende dette problem</translation>
 <translation id="8104083085214006426">Du bruger et åbent og usikkert netværk</translation>
 <translation id="8109786307828817014">Vil du fortsætte på trods af mislykkede kalibreringer?</translation>
 <translation id="811820734797650957">(Android) Gatewayen kan pinges</translation>

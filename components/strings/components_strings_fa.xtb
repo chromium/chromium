@@ -1681,6 +1681,7 @@
 <translation id="5518670652865028077">هنر و سرگرمی</translation>
 <translation id="5519516356611866228">با تغییرات اعمال‌شده</translation>
 <translation id="5523118979700054094">نام خط‌مشی</translation>
+<translation id="5525755241743357906">فایل کپی یا منتقل شد</translation>
 <translation id="5526617258931667850">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای شخصی کردن ابزارهای دسترس‌پذیری در تنظیمات ChromeOS، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="5528532273234423708">خودکارسازی خانه</translation>
 <translation id="55293785478302737">دوختن لبه</translation>
@@ -2933,6 +2934,7 @@
 <translation id="9096425087209440047">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای تنظیم Chrome به‌عنوان مرورگر پیش‌فرض سیستم در تنظیمات iOS، کلید جهش و سپس ورود را فشار دهید</translation>
 <translation id="9096679202588811390">برنامه و نمایش تلویزیونی</translation>
 <translation id="9101630580131696064">سینی ۱</translation>
+<translation id="9102081333385212048">‏فایل‌هایی که کپی یا منتقل می‌کنید برای تجریه‌وتحلیل به Google Cloud یا اشخاص ثالث ارسال می‌شود. مثلاً ممکن است این فایل‌ها ازنظر وجود داده‌های حساس یا بدافزار اسکن شود.</translation>
 <translation id="9103537084693478942">نرم‌افزار ویدیو</translation>
 <translation id="9103872766612412690">‏<ph name="SITE" /> معمولاً برای محافظت از اطلاعات شما از رمزگذاری استفاده می‌کند. اما این بار که Chromium تلاش کرد به <ph name="SITE" /> متصل شود، وب‌سایت اعتبارنامه‌ای نامعمول و نادرست را برگرداند. ممکن است مهاجمی در تلاش باشد خود را به‌جای <ph name="SITE" /> معرفی کند یا یک صفحه ورود به سیستم Wi-Fi در ارتباط اختلال ایجاد کرده باشد. اطلاعات شما همچنان ایمن است، زیرا Chromium قبل از هرگونه تبادل داده، اتصال را متوقف کرد.</translation>
 <translation id="9106062320799175032">افزودن نشانی صورت‌حساب</translation>

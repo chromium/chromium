@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2461822463642141190">Trenutno</translation>
 <translation id="2480034874476596812">Ručno isključivanje</translation>
+<translation id="248546197012830854">Uređaj je offline. Povežite se s WiFi mrežom da vidite sadržaj za pomoć.</translation>
 <translation id="2491955442992294626">Ključevi se ne testiraju kada koristite drugi prozor</translation>
 <translation id="2493126929778606526">Vaše najbolje fotografije, automatski odabrane</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6611280807952151149">Izađi iz popravke uređaja <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Pokrenuto</translation>
 <translation id="6620487321149975369">Zadaci za štampanje će se pojaviti u historiji osim ako ih ne uklonite ručno</translation>
+<translation id="6624819909909965616">Nije moguće otpremiti fajl veći od 10 MB.</translation>
 <translation id="6643016212128521049">Obriši</translation>
 <translation id="6644568396961840069">Pohranjivanje fajla nije uspjelo. Pokušajte priključiti drugu vanjsku pohranu ili pokušajte ponovo kasnije.</translation>
 <translation id="6647510110698214773">Algoritam šifriranja</translation>
@@ -696,6 +698,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="6995564396478647735">Provjerite je li uključena Zaštita od pisanja</translation>
+<translation id="7005833343836210400">Uređaj je offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7041549558901442110">Uređaj nije povezan.</translation>
@@ -809,6 +812,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>
 <translation id="808894953321890993">Promijeni lozinku</translation>
+<translation id="8094062939584182041">Dozvolite Googleu da vam šalje e-poruke o ovom problemu</translation>
 <translation id="8104083085214006426">Koristite otvorenu i nezaštićenu mrežu</translation>
 <translation id="8109786307828817014">Nastaviti s neuspjelim kalibracijama?</translation>
 <translation id="811820734797650957">(Android) Pristupnik se može provjeriti pingom</translation>

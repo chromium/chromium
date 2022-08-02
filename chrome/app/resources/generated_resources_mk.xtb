@@ -907,6 +907,7 @@
 <translation id="1829129547161959350">Пингвин</translation>
 <translation id="1829192082282182671">Одзум&amp;ирај</translation>
 <translation id="1830550083491357902">Не сте најавени</translation>
+<translation id="1831848493690504725">Немаме пристап до Google преку поврзаната мрежа. Изберете друга мрежа или проверете ги поставките за мрежата или поставките за прокси (ако користите прокси).</translation>
 <translation id="1832459821645506983">Да, може</translation>
 <translation id="1832511806131704864">Промената на телефонот е ажурирана</translation>
 <translation id="1832848789136765277">За да можете секогаш да пристапувате до податоците од синхронизацијата, потврдете дека сте вие</translation>
@@ -4085,7 +4086,6 @@
 <translation id="486635084936119914">Отворај одредени типови датотеки автоматски по преземањето</translation>
 <translation id="4868281708609571334">Обучете го „Помошникот на Google“ да го препознава гласот на <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="4868284252360267853">Дијалогов не е нагласен во моментов. Притиснете Command-Shift-Опција A за да го нагласите дијалогов.</translation>
-<translation id="48704129375571883">Додајте дополнителни функции</translation>
 <translation id="4870724079713069532">Со апликацијава може да отворате и уредувате поддржани датотеки од File Explorer или од други апликации. За да контролирате кои датотеки стандардно се отвораат во апликацијава, одете на <ph name="BEGIN_LINK" />поставките за Windows<ph name="END_LINK" />.</translation>
 <translation id="4870758487381879312">Внесете лозинка што ви ја обезбедил администраторот за да добиете информации за конфигурацијата</translation>
 <translation id="4870903493621965035">Нема спарени уреди</translation>
@@ -4755,6 +4755,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> сака да</translation>
 <translation id="5534304873398226603">Отфрли фотографија или видео</translation>
 <translation id="5537725057119320332">Емитувај</translation>
+<translation id="5539070192556911367">Нема пристап до Google</translation>
 <translation id="5539221284352502426">Серверот ја одби лозинката што ја внесовте. Можни причини за тоа се: лозинката е премногу кратка; лозинката мора да содржи броеви или симболи; лозинката мора да се разликува од претходните лозинки.</translation>
 <translation id="5541694225089836610">Дејството е оневозможено од администраторот</translation>
 <translation id="5542132724887566711">Профил</translation>
@@ -4818,6 +4819,7 @@
 <translation id="5585912436068747822">Форматирањето не успеа</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Вчитување апликации…</translation>
+<translation id="5590418976913374224">Пуштај звук при стартување на уредот</translation>
 <translation id="5592595402373377407">Уште нема доволно достапни податоци.</translation>
 <translation id="5595307023264033512">Вкупен капацитет искористен од сајтовите: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Измени адреса</translation>
@@ -6368,6 +6370,7 @@
 <translation id="7102687220333134671">Автоматските ажурирања се вклучени</translation>
 <translation id="7102832101143475489">Барањето истече</translation>
 <translation id="710640343305609397">Отвори ги мрежните поставки</translation>
+<translation id="7107609441453408294">Пуштајте го истото аудио на сите звучници</translation>
 <translation id="7108338896283013870">Сокриј</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7108933416628942903">Заклучи сега</translation>
@@ -6598,6 +6601,7 @@
 <translation id="7364745943115323529">Емитувај...</translation>
 <translation id="7364796246159120393">Избери датотека</translation>
 <translation id="7365076891350562061">Големина на мониторот</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - Закачена</translation>
 <translation id="7366316827772164604">Се скенираат уреди во близина…</translation>
 <translation id="7366415735885268578">Додајте сајт</translation>
 <translation id="7366909168761621528">Податоци од прелистување</translation>

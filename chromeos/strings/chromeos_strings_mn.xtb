@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Төрөл</translation>
 <translation id="2461822463642141190">Одоогийн</translation>
 <translation id="2480034874476596812">Гар аргаар унтраах</translation>
+<translation id="248546197012830854">Төхөөрөмж офлайн байна. Тусламжийн контент харахын тулд Wi-Fi сүлжээнд холбогдоно уу.</translation>
 <translation id="2491955442992294626">Таныг өөр цонх ашиглаж байх үед товчийг шалгадаггүй</translation>
 <translation id="2493126929778606526">Автоматаар сонгогдсон таны шилдэг зургууд</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" />-н засвараас гарах</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6620487321149975369">Хэвлэлийн ажлыг гараар хасахгүй бол түүхэнд харагдана</translation>
+<translation id="6624819909909965616">10 МБ-аас том файл байршуулах боломжгүй</translation>
 <translation id="6643016212128521049">Цэвэрлэх</translation>
 <translation id="6644568396961840069">Файлыг хадгалж чадсангүй. Өөр гадаад хадгалах санд залгаж үзэх эсвэл дараа дахин оролдоно уу.</translation>
 <translation id="6647510110698214773">Шифрлэлтийн алгоритм</translation>
@@ -696,6 +698,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
 <translation id="6995564396478647735">Write Protect асаалттай эсэхийг шалгана уу</translation>
+<translation id="7005833343836210400">Төхөөрөмж офлайн байна</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Төхөөрөмж холбогдоогүй байна.</translation>
@@ -809,6 +812,7 @@
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="8082366717211101304">Android аппуудаас DNS-г шийдвэрлэх боломжгүй</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
+<translation id="8094062939584182041">Танд энэ асуудлын талаар имэйл илгээхийг Google-д зөвшөөрөх</translation>
 <translation id="8104083085214006426">Та нээлттэй бөгөөд найдваргүй сүлжээ ашиглаж байна</translation>
 <translation id="8109786307828817014">Амжилтгүй болсон тохируулгаар үргэлжлүүлэх үү?</translation>
 <translation id="811820734797650957">(Android) Гэйтвэй рүү пин илгээх боломжтой</translation>

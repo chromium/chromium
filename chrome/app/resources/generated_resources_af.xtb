@@ -906,6 +906,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1829129547161959350">Pikkewyn</translation>
 <translation id="1829192082282182671">Zoem uit</translation>
 <translation id="1830550083491357902">Nie aangemeld nie</translation>
+<translation id="1831848493690504725">Ons kan Google nie deur die gekoppelde netwerk bereik nie. Probeer ’n ander netwerk kies, of gaan jou netwerkinstellings of instaanbedienerinstellings (as jy ’n instaanbediener gebruik) na.</translation>
 <translation id="1832459821645506983">Ja, ek is in</translation>
 <translation id="1832511806131704864">Foonverandering is opgedateer</translation>
 <translation id="1832848789136765277">Verifieer dis jy om seker te maak dat jy altyd toegang tot jou gesinkroniseerde data het</translation>
@@ -4081,7 +4082,6 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="486635084936119914">Maak sekere lêertipes outomaties oop nadat dit afgelaai is</translation>
 <translation id="4868281708609571334">Leer Google Assistent om <ph name="SUPERVISED_USER_NAME" /> se stem te herken</translation>
 <translation id="4868284252360267853">Hierdie dialoog is nie tans gefokus nie. Druk Command-Shift-Option A om hierdie dialoog te fokus.</translation>
-<translation id="48704129375571883">Voeg bykomende kenmerke by</translation>
 <translation id="4870724079713069532">Jy kan met hierdie program gesteunde lêers uit die Verkenner of ander programme oopmaak en wysig. Gaan na <ph name="BEGIN_LINK" />Windows-instellings<ph name="END_LINK" /> om te beheer watter lêers hierdie program by verstek oopmaak.</translation>
 <translation id="4870758487381879312">Voer wagwoord wat deur admin goedgekeur is in om opstellinginligting te kry</translation>
 <translation id="4870903493621965035">Geen saamgebinde toestelle nie</translation>
@@ -4751,6 +4751,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> wil</translation>
 <translation id="5534304873398226603">Gooi foto of video weg</translation>
 <translation id="5537725057119320332">Saai uit</translation>
+<translation id="5539070192556911367">Kan Google nie bereik nie</translation>
 <translation id="5539221284352502426">Die wagwoord wat jy ingevoer het, is deur die bediener afgekeur. Die moontlike redes sluit in: Die wagwoord is te kort. Die wagwoord moet syfers of simbole insluit. Die wagwoord moet van vorige wagwoorde verskil.</translation>
 <translation id="5541694225089836610">Jou administrateur het hierdie handeling gedeaktiveer</translation>
 <translation id="5542132724887566711">Profiel</translation>
@@ -4814,6 +4815,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5585912436068747822">Kon nie formateer nie</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Laai tans programme …</translation>
+<translation id="5590418976913374224">Speel klank wanneer toestel begin</translation>
 <translation id="5592595402373377407">Nog nie genoeg data beskikbaar nie.</translation>
 <translation id="5595307023264033512">Totale berginggebruik deur werwe: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Wysig adres</translation>
@@ -6359,6 +6361,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7102687220333134671">Outomatiese opdaterings is aangeskakel</translation>
 <translation id="7102832101143475489">Die versoek het uitgetel</translation>
 <translation id="710640343305609397">Maak netwerkinstellings oop</translation>
+<translation id="7107609441453408294">Speel dieselfde oudio deur al die luidsprekers</translation>
 <translation id="7108338896283013870">Versteek</translation>
 <translation id="7108668606237948702">enter</translation>
 <translation id="7108933416628942903">Sluit nou</translation>
@@ -6589,6 +6592,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7364745943115323529">Saai uit</translation>
 <translation id="7364796246159120393">Kies lêer</translation>
 <translation id="7365076891350562061">Monitorgrootte</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> – vasgespeld</translation>
 <translation id="7366316827772164604">Soek tans toestelle in die omtrek …</translation>
 <translation id="7366415735885268578">Voeg 'n werf by</translation>
 <translation id="7366909168761621528">Blaaierdata</translation>

@@ -429,15 +429,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3509391053705095206">Methu â dod o hyd i'ch ffôn. Gwnewch yn siŵr bod Bluetooth eich ffôn wedi'i droi ymlaen.</translation>
 <translation id="3510164367642747937">Amlygu'r cyrchwr llygoden</translation>
 <translation id="3513798432020909783">Rheolir y cyfrif gan <ph name="MANAGER_EMAIL" /></translation>
-<translation id="3518604429872942239">Hambwrdd statws, amser <ph name="TIME" />,
-        <ph name="BATTERY" />
-        <ph name="NETWORK" />,
-        <ph name="MIC" />,
-        <ph name="CAMERA" />,
-        <ph name="MANAGED" />
-        <ph name="NOTIFICATION" />,
-        <ph name="IME" />
-        <ph name="LOCALE" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Diweddarwch y ddyfais o fewn 1 funud}zero{Diweddarwch y ddyfais o fewn # munud}two{Diweddarwch y ddyfais o fewn # funud}few{Diweddarwch y ddyfais o fewn # munud}many{Diweddarwch y ddyfais o fewn # munud}other{Diweddarwch y ddyfais o fewn # munud}}</translation>
 <translation id="353086728817903341">Wedi'i gysylltu â <ph name="NUM_DEVICES" /> o ddyfeisiau</translation>
 <translation id="3542066395059568317">Byddwch yn gweld argymhellion fel eich bod yn gallu parhau lle y gwnaethoch adael. Gallwch dde-glicio i dynnu argymhellion.</translation>

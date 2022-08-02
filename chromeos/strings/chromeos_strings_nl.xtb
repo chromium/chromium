@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Type</translation>
 <translation id="2461822463642141190">Huidig</translation>
 <translation id="2480034874476596812">Handmatig uitzetten</translation>
+<translation id="248546197012830854">Het apparaat is offline. Maak verbinding met een wifi-netwerk om Help-content te bekijken.</translation>
 <translation id="2491955442992294626">Toetsen worden niet getest als je een ander venster gebruikt</translation>
 <translation id="2493126929778606526">Je beste foto's, automatisch geselecteerd</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" />-reparatie afsluiten</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
 <translation id="6620487321149975369">Afdruktaken zie je in de geschiedenis, tenzij ze handmatig worden verwijderd</translation>
+<translation id="6624819909909965616">Je kunt geen bestanden uploaden die groter zijn dan 10 MB</translation>
 <translation id="6643016212128521049">Wissen</translation>
 <translation id="6644568396961840069">Kan bestand niet opslaan. Sluit een andere externe opslag aan of probeer het later opnieuw.</translation>
 <translation id="6647510110698214773">Versleutelingsalgoritme</translation>
@@ -696,6 +698,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmwarerevisie</translation>
 <translation id="6995564396478647735">Zorg dat schrijfbeveiliging aanstaat</translation>
+<translation id="7005833343836210400">Apparaat is offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Apparaat is niet verbonden.</translation>
@@ -809,6 +812,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
+<translation id="8094062939584182041">Toestaan dat Google je e-mail stuurt over dit probleem</translation>
 <translation id="8104083085214006426">Je gebruikt een open of niet-beveiligd netwerk</translation>
 <translation id="8109786307828817014">Doorgaan met mislukte kalibraties?</translation>
 <translation id="811820734797650957">(Android) Gateway kan worden gepingd</translation>

@@ -1071,6 +1071,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3835233591525155343">Korištenje vašeg uređaja</translation>
 <translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da brzo kreirate novi Google dokument</translation>
 <translation id="385051799172605136">Nazad</translation>
+<translation id="3853684360927654006">Kalkulator snage lozinke</translation>
 <translation id="3858027520442213535">Ažuriraj datum i vrijeme</translation>
 <translation id="3858860766373142691">Naziv</translation>
 <translation id="3872834068356954457">Nauka</translation>
@@ -1681,7 +1682,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5518670652865028077">Umjetnost i zabava</translation>
 <translation id="5519516356611866228">S vašim promjenama</translation>
 <translation id="5523118979700054094">Naziv pravila</translation>
-<translation id="5525755241743357906">Datoteka je kopirana ili premještena</translation>
+<translation id="5525755241743357906">Fajl je kopiran ili premješten</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da personalizirate alate za pristupačnost u postavkama ChromeOS-a</translation>
 <translation id="5528532273234423708">Kućna automatizacija</translation>
 <translation id="55293785478302737">Uvez uz rub</translation>
@@ -2613,7 +2614,7 @@ Dodatni detalji:
 <translation id="810875025413331850">Nije pronađen nijedan uređaj u blizini.</translation>
 <translation id="8116925261070264013">Isključen zvuk</translation>
 <translation id="8118489163946903409">Način plaćanja</translation>
-<translation id="8123046743443732598">Stolni računari</translation>
+<translation id="8123046743443732598">Računari</translation>
 <translation id="8124639700796374294">Dugme za prilagođavanje Chromea, pritisnite Enter da prilagodite izgled preglednika</translation>
 <translation id="8126056688005753476">Avanturistička putovanja</translation>
 <translation id="8127301229239896662">"<ph name="SOFTWARE_NAME" />" nije pravilno instaliran na vaš računar ili mrežu. Zamolite IT administratora da riješi taj problem.</translation>
@@ -2934,7 +2935,7 @@ Dodatni detalji:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da postavite Chrome kao zadani preglednik sistema u postavkama iOS-a</translation>
 <translation id="9096679202588811390">TV emisije i programi</translation>
 <translation id="9101630580131696064">Ladica 1</translation>
-<translation id="9102081333385212048">Datoteke koje kopirate ili premjestite šalju se Google Cloudu ili trećim stranama na analizu. Na primjer, mogu se pregledavati radi otkrivanja osjetljivih podataka ili zlonamjernog softvera.</translation>
+<translation id="9102081333385212048">Fajlovi koje kopirate ili premjestite se šalju na Google Cloud ili trećim stranama na analizu. Naprimjer, mogu se skenirati radi otkrivanja postojanja osjetljivih podataka ili zlonamjernog softvera.</translation>
 <translation id="9103537084693478942">Video softver</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> obično koristi šifriranje za zaštitu vaših informacija. Kada se Chromium ovaj put pokušao povezati s web lokacijom <ph name="SITE" />, web lokacija je vratila neobične i netačne akreditive. To se može dogoditi kada se napadač pokušava predstaviti kao web lokacija <ph name="SITE" /> ili kada vezu prekine ekran za prijavu na WiFi. Vaše informacije su i dalje sigurne jer je Chromium prekinuo vezu prije bilo kakve razmjene podataka.</translation>
 <translation id="9106062320799175032">Dodaj adresu za naplatu</translation>

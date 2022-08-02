@@ -1681,6 +1681,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5518670652865028077">Kuns en vermaak</translation>
 <translation id="5519516356611866228">Met jou veranderinge</translation>
 <translation id="5523118979700054094">Beleidnaam</translation>
+<translation id="5525755241743357906">Lêer is gekopieer of geskuif</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om jou toeganklikheidsnutsgoed in Chrome-bedryfstelselinstellings te personaliseer</translation>
 <translation id="5528532273234423708">Huisoutomatisering</translation>
 <translation id="55293785478302737">Randhegting</translation>
@@ -2933,6 +2934,7 @@ Bykomende besonderhede:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />; druk Tab en dan Enter om Chrome in iOS-instellings as die stelsel verstekblaaier te stel</translation>
 <translation id="9096679202588811390">TV-programme</translation>
 <translation id="9101630580131696064">Laai 1</translation>
+<translation id="9102081333385212048">Lêers wat jy kopieer of skuif, word vir ontleding na Google Cloud of derde partye toe gestuur. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word.</translation>
 <translation id="9103537084693478942">Videosagteware</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> gebruik gewoonlik enkripsie om jou inligting te beskerm. Toe Chromium hierdie keer aan <ph name="SITE" /> probeer koppel het, het die webwerf ongewone en verkeerde eiebewyse teruggestuur. Dit kan gebeur wanneer 'n aanvaller probeer voorgee om <ph name="SITE" /> te wees, óf wanneer 'n Wi-Fi-aanmeldskerm die verbinding onderbreek het. Jou inligting is steeds veilig, want Chromium het die verbinding gestaak voordat enige data uitgeruil is.</translation>
 <translation id="9106062320799175032">Voeg faktureringadres by</translation>

@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Uri</translation>
 <translation id="2461822463642141190">Kasalukuyan</translation>
 <translation id="2480034874476596812">Manual na i-off</translation>
+<translation id="248546197012830854">Offline ang device. Kumonekta sa Wi-Fi network para makita ang content ng tulong.</translation>
 <translation id="2491955442992294626">Hindi sinusubukan ang mga key kapag gumagamit ka ng ibang window</translation>
 <translation id="2493126929778606526">Ang iyong mga pinakamagandang larawang awtomatikong napili</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -661,6 +662,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6611280807952151149">Umalis sa pag-aayos ng <ph name="DEVICE_TYPE" /></translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
 <translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
+<translation id="6624819909909965616">Hindi makapag-upload ng file na mas malaki sa 10 MB</translation>
 <translation id="6643016212128521049">I-clear</translation>
 <translation id="6644568396961840069">Hindi ma-save ang file. Subukang magsaksak ng ibang external storage, o subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6647510110698214773">Algorithm ng pag-encrypt</translation>
@@ -696,6 +698,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
 <translation id="6995564396478647735">Tiyaking naka-on ang Write Protect</translation>
+<translation id="7005833343836210400">Offline ang device</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Hindi nakakonekta ang device.</translation>
@@ -809,6 +812,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
+<translation id="8094062939584182041">Payagan ang Google na mag-email sa iyo tungkol sa isyung ito</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
 <translation id="8109786307828817014">Magpatuloy sa mga hindi pag-calibrate?</translation>
 <translation id="811820734797650957">(Android) Puwedeng I-ping ang Gateway</translation>

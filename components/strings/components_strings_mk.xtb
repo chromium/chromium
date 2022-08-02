@@ -1682,6 +1682,7 @@
 <translation id="5518670652865028077">Уметност и забава</translation>
 <translation id="5519516356611866228">Со промените</translation>
 <translation id="5523118979700054094">Име на правило</translation>
+<translation id="5525755241743357906">Датотеката е копирана или преместена</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да ги персонализирате алатките за пристапност во поставките за Chrome OS</translation>
 <translation id="5528532273234423708">Автоматизација на домот</translation>
 <translation id="55293785478302737">Шиење на работ</translation>
@@ -2934,6 +2935,7 @@
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да го поставите Chrome како стандарден прелистувач на системот во поставките за iOS</translation>
 <translation id="9096679202588811390">ТВ-емисии и програми</translation>
 <translation id="9101630580131696064">Фиока 1</translation>
+<translation id="9102081333385212048">Датотеките што ги копирате или преместувате се испраќаат до Google Cloud или трети страни за анализа. На пример, можеби ќе се скенираат за да се провери дали содржат чувствителни податоци или злонамерен софтвер.</translation>
 <translation id="9103537084693478942">Видеософтвер</translation>
 <translation id="9103872766612412690"><ph name="SITE" /> обично користи шифрирање за да ги заштити вашите информации. Кога Chromium овој пат се обиде да се поврзе на <ph name="SITE" />, веб-сајтот врати невообичаени и неточни акредитиви. Ова може да се случи кога напаѓач се преправа дека е <ph name="SITE" /> или кога екран за најавување на Wi-Fi го прекинува поврзувањето. Вашите информации сѐ уште се безбедни, затоа што Chromium го запре поврзувањето пред да се разменат податоци.</translation>
 <translation id="9106062320799175032">Додајте адреса за наплата</translation>

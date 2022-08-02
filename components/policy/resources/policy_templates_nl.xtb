@@ -100,6 +100,7 @@
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
+<translation id="1100840127293327071">De optie om bestaande browsegegevens standaard te bewaren niet aanvinken</translation>
 <translation id="1105572260329131950">Standaardiconen gebruiken voor beveiligde verbindingen</translation>
 <translation id="1107538157073168076">Extensie voor inzichten uitzetten</translation>
 <translation id="1110426799149444997">Regio doorzoeken uitzetten voor <ph name="GOOGLE_LENS_PRODUCT_NAME" />.</translation>
@@ -744,6 +745,14 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 <translation id="1781356041596378058">Met dit beleid wordt ook de toegang tot de ontwikkelaarsopties van Android beheerd. Als je dit beleid instelt op 'True', hebben gebruikers geen toegang tot ontwikkelaarsopties. Als je dit beleid instelt op 'False' of niet instelt, hebben gebruikers toegang tot ontwikkelaarsopties door zeven keer op het buildnummer te tikken in de app Instellingen van Android.</translation>
 <translation id="1787790976045065845">Dit beleid is alleen van kracht als het beleid <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_POLICY_NAME" /> is ingesteld op <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" /> of <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" /> en een gebruiker die verificatie via een smartcard uitvoert, die smartcard verwijdert. Dit beleid geeft dan aan hoelang (in seconden) een melding wordt getoond waarin de gebruiker wordt geïnformeerd over de komende actie. Deze melding blokkeert het scherm. De actie wordt pas uitgevoerd nadat de melding is verlopen. De gebruiker kan voorkomen dat de actie wordt uitgevoerd door de smartcard terug te plaatsen voordat de melding verloopt. Als dit beleid is ingesteld op nul, wordt er geen melding getoond en wordt de actie meteen uitgevoerd.</translation>
 <translation id="1793346220873697538">Afdrukken met pincode standaard uitzetten</translation>
+<translation id="1794457906032475749">Als je dit beleid toepast, is de optie om bestaande browsegegevens te behouden bij het maken van een zakelijk profiel standaard aangevinkt.
+
+Als dit beleid niet is ingesteld of als je het niet toepast, wordt de optie om bestaande browsegegevens te behouden bij het maken van een zakelijk profiel niet standaard aangevinkt.
+
+Ongeacht de waarde kan de gebruiker bij het maken van een zakelijk profiel zelf bepalen of die bestaande browsegegevens wil bewaren.
+
+Dit beleid heeft geen effect als de optie om bestaande browsegegevens te behouden niet beschikbaar is. Dit gebeurt als scheiding voor zakelijke profielen strikt worden afgedwongen of als de gegevens afkomstig zijn van een al beheerd profiel.
+</translation>
 <translation id="179694024208061102">Als je het beleid toepast, probeert <ph name="PRODUCT_NAME" /> sommige URL's te openen in een alternatieve browser, zoals <ph name="IE_PRODUCT_NAME" />. Deze functie is ingesteld volgens de beleidsregels in de groep <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP" />.
 
       Als je dit beleid niet toepast of niet instelt, probeert <ph name="PRODUCT_NAME" /> geen toegewezen URL's in een alternatieve browser te openen.</translation>
@@ -1603,6 +1612,7 @@ Als dit beleid niet is ingesteld, staat het privacyscherm in eerste instantie ui
 
       In <ph name="MS_WIN_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die zijn gekoppeld aan een <ph name="MS_AD_NAME" />-domein, worden uitgevoerd in Windows 10 Pro of zijn ingeschreven voor Cloudbeheer voor de Chrome-browser. In <ph name="MAC_OS_NAME" /> is deze functionaliteit alleen beschikbaar voor instanties die via MDM worden beheerd of via MCX aan een domein zijn gekoppeld.</translation>
 <translation id="2623014935069176671">Wachten op initiële gebruikersactiviteit</translation>
+<translation id="2625026032335150744">De optie aanvinken om bestaande browsegegevens standaard te behouden</translation>
 <translation id="2625398797484317969">Beheert de instellingen voor Snelle antwoorden.</translation>
 <translation id="262740370354162807">Sturen van documenten naar <ph name="CLOUD_PRINT_NAME" /> aanzetten</translation>
 <translation id="2633084400146331575">Gesproken feedback aanzetten</translation>
@@ -2025,6 +2035,7 @@ Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="305106159605171619">Inkorting van user-agent uitgezet en kan niet worden aangezet door field trials of origin trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
+<translation id="3063302084011279315">Screencast uitzetten</translation>
 <translation id="3064530882228745118">CNAME-lookup tijdens Kerberos-verificatie gebruiken</translation>
 <translation id="3066446511111537292">Toestaan dat gekoppelde gebruikers van dit apparaat ADB-sideloading gebruiken</translation>
 <translation id="3070119171976169951">Voorkomen dat afbeeldingen van derden een verificatieprompt tonen</translation>
@@ -2241,6 +2252,7 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3255762580838224124">Als je het beleid instelt, wordt elk scherm naar de opgegeven stand gedraaid: elke keer dat er opnieuw wordt opgestart en de eerste keer dat het scherm wordt verbonden nadat de beleidswaarde is gewijzigd. Gebruikers kunnen na inloggen de rotatie van het scherm wijzigen op de pagina met instellingen, maar de rotatie wordt bij de volgende keer opnieuw opstarten weer teruggezet. Dit beleid is van toepassing op primaire en secundaire schermen.
 
       Als je het beleid niet instelt, is de standaardwaarde 0 graden en kunnen gebruikers dit wijzigen. In dat geval wordt de standaardwaarde niet opnieuw toegepast bij opnieuw opstarten.</translation>
+<translation id="3257786863492892609">Beheert het beleid voor Screencast.</translation>
 <translation id="3258380413685430793">Alle <ph name="FLASH_PLUGIN_NAME" />-content uitvoeren</translation>
 <translation id="325883417142483505">Als je het beleid instelt, wordt de lijst met zakelijke login-URL's (alleen HTTP- en HTTPS-protocollen) ingesteld. De service voor wachtwoordbeveiliging legt salted hashes van wachtwoorden op deze URL's vast en gebruikt ze om hergebruik van wachtwoorden te detecteren. Zorg dat je inlogpagina's voldoen aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de salted hashes van wachtwoorden juist worden vastgelegd.
 
@@ -3200,6 +3212,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="441686537793821907">Installatie van externe extensies blokkeren</translation>
 <translation id="4423597592074154136">Proxyinstellingen handmatig specificeren</translation>
 <translation id="4424004842303301809">Rapportage van gebeurtenissen ter voorkoming van datalekken uitzetten</translation>
+<translation id="4426601693403743089">Dogfood-versie van Screencast uitzetten voor gebruikers van Family Link</translation>
 <translation id="4427173305799125784">Er kunnen geen annotaties in pdf's worden gemaakt met de pdf-viewer</translation>
 <translation id="4432762137771104529">Uitgebreide rapportage van Safe Browsing aanzetten</translation>
 <translation id="443454694385851356">Verouderd (onbeveiligd)</translation>
@@ -4782,6 +4795,7 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
       Elk lijstitem van het beleid is een tekenreeks die een extensie-ID en optioneel een update-URL bevat, gescheiden door een puntkomma (<ph name="SEMICOLON" />). De extensie-ID is de tekenreeks van 32 letters die bijvoorbeeld op <ph name="CHROME_EXTENSIONS_LINK" /> kan worden gevonden als de ontwikkelaarsmodus actief is. De update-URL, indien opgegeven, moet verwijzen naar een XML-updatedocument voor het manifest, zoals beschreven op <ph name="LINK_TO_EXTENSION_DOC1" />. Standaard wordt de update-URL van de Chrome Web Store gebruikt (momenteel 'https://clients2.google.com/service/update2/crx'). Houd er rekening mee dat de update-URL die in dit beleid is ingesteld, alleen voor de eerste installatie wordt gebruikt. Daaropvolgende updates van de extensie gebruiken de update-URL die in het manifest van de extensie wordt aangegeven.
 
       Met <ph name="LOGIN_SCREEN_EXTENSION_POLICY_EXAMPLE" /> wordt de app <ph name="SMART_CARD_CONNECTOR_APP_NAME" /> bijvoorbeeld geïnstalleerd via de standaard update-URL van de Chrome Web Store. Ga naar <ph name="LINK_TO_EXTENSION_DOC2" /> voor meer informatie over de hosting van extensies.</translation>
+<translation id="6274202259872570803">Screencast</translation>
 <translation id="6275497712828649588">Beveiligingswaarschuwingen verbergen als er mogelijk schadelijke opdrachtregelmarkeringen worden gebruikt</translation>
 <translation id="6275833043726517413">Gebruik de verouderde <ph name="CORS" />-implementatie in plaats van de nieuwe <ph name="CORS" />.
 
@@ -4815,7 +4829,15 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 
       Het instellen van <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> heeft alleen effect als je <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> hebt ingesteld op False.</translation>
 <translation id="6305373713165475629">Als je dit beleid instelt, wordt de standaard kleurinstelling voor afdrukken overschreven. Als deze instelling niet beschikbaar is, wordt dit beleid genegeerd.</translation>
+<translation id="6308109234708949641">Met dit beleid kunnen gebruikers van Family Link gebruikmaken van de functie Screencast om schermopnamen te maken, hiervan transcripties te maken en ze te uploaden naar Drive.
+      Dit beleid is niet van toepassing voor andere gebruikerstypen.
+      Dit beleid heeft geen invloed op het <ph name="PROJECTOR_ENABLED_POLICY_NAME" />-beleid voor zakelijke gebruikers.
+
+      Als je het beleid toepast, wordt de dogfood-versie van Screencast aangezet voor gebruikers van Family Link.
+      Als je het beleid niet toepast, wordt de dogfood-versie van Screencast uitgezet voor gebruikers van Family Link.
+      Als je het beleid niet instelt, staat de dogfood-versie van Screencast standaard uit voor gebruikers van Family Link.</translation>
 <translation id="6310223829319187614">Automatisch aanvullen van domeinnaam bij inloggen van gebruiker aanzetten</translation>
+<translation id="6310756730808079944">Screencast aanzetten</translation>
 <translation id="631081324835911099">De gebruiker gedwongen uitloggen als het verificatietoken van zijn of haar account ongeldig wordt.
         Dit beleid kan de gebruiker beschermen tegen toegang tot beperkte content op webproperty's van Google.
         Als dit beleid is ingesteld op True, wordt de gebruiker uitgelogd zodra zijn of haar verificatietoken ongeldig wordt. Er wordt geprobeerd dit probleem met de token op te lossen.
@@ -5189,6 +5211,12 @@ Als je ervoor kiest het volgende te gebruiken:
           Als dit is ingesteld op False of niet is ingesteld, is het maken en inloggen van bewaakte gebruikers uitgezet. Alle bestaande bewaakte gebruikers worden verborgen.
 
           OPMERKING: het standaardgedrag voor zakelijke en consumentenapparaten verschilt: op consumentenapparaten zijn bewaakte gebruikers standaard aangezet, maar op zakelijke apparaten zijn ze standaard uitgezet.</translation>
+<translation id="6648746349186337075">Dit beleid geeft Screencast toestemming om schermopnamen te maken, er een transcript van te maken en ze te uploaden naar Drive voor zakelijke gebruikers.
+      Dit beleid is niet van toepassing voor gebruikers van Family Link.
+      Dit beleid heeft geen invloed op het <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME" />-beleid voor gebruikers van Family Link.
+
+      Als je het beleid toepast of niet instelt, staat Screencast aan.
+      Als je het beleid niet toepast, wordt Screencast uitgezet.</translation>
 <translation id="665023848306499203">Toestaan dat apparaten een specifieke versie selecteren waar ze naar worden geüpdatet</translation>
 <translation id="6652197835259177259">Instellingen voor lokaal beheerde gebruikers</translation>
 <translation id="6653897159826215341">Als je dit beleid toepast, opent <ph name="PRODUCT_NAME" /> het dialoogvenster voor afdrukken van het systeem in plaats van het geïntegreerde afdrukvoorbeeld als gebruikers iets willen afdrukken.
@@ -6090,6 +6118,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
       Als je het beleid toepast of niet instelt, wordt Eenheidsconversie van Snelle antwoorden aangezet.
       Als je het beleid niet toepast, wordt Eenheidsconversie van Snelle antwoorden uitgezet.</translation>
 <translation id="7587345076013230465">De gebruiker vragen om het clientcertificaat te selecteren als het beleid voor automatische selectie overeenkomt met meerdere certificaten op het inlogscherm</translation>
+<translation id="7587921466180902617">Dogfood-versie van Screencast aanzetten voor gebruikers van Family Link</translation>
 <translation id="759957074386651883">Safe Browsing-instellingen</translation>
 <translation id="7604169113182304895">Het is mogelijk dat Android-apps deze lijst op vrijwillige basis respecteren. Je kunt ze niet dwingen om de lijst te respecteren.</translation>
 <translation id="7612157962821894603">Markeringen voor het hele systeem die worden toegepast bij het starten van <ph name="PRODUCT_NAME" /></translation>
@@ -6336,6 +6365,7 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 
       De aanbevolen manier om het scherm te vergrendelen bij inactiviteit is de schermvergrendeling bij opschorting aanzetten en <ph name="PRODUCT_OS_NAME" /> opschorten na een inactieve periode. Gebruik dit beleid alleen als schermvergrendeling veel eerder moet plaatsvinden dan opschorting of als je helemaal niet wilt opschorten bij inactiviteit.</translation>
 <translation id="7895553628261067384">Externe toegang</translation>
+<translation id="7900469325540540107">Browsegegevens standaard bewaren als je een zakelijk profiel maakt</translation>
 <translation id="7902040092815978832">Numeriek toetsenbord tonen voor wachtwoord</translation>
 <translation id="7904177352786629708">Als je het beleid toepast, wordt CNAME-lookup overgeslagen. De servernaam wordt gebruikt zoals deze is opgegeven tijdens het genereren van de Kerberos SPN.
 
