@@ -272,22 +272,6 @@ ScriptPromise LockManager::request(ScriptState* script_state,
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
   }
 
-  if (!service_.is_bound()) {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        service_.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-
-    if (!service_.is_bound()) {
-      exception_state.ThrowTypeError("Service not available.");
-      return ScriptPromise();
-    }
-  }
-  if (!observer_.is_bound()) {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        observer_.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-  }
-
   mojom::blink::LockMode mode = Lock::StringToMode(options->mode());
 
   // 6. Otherwise, if name starts with U+002D HYPHEN-MINUS (-), then reject
@@ -361,6 +345,28 @@ void LockManager::RequestImpl(ScriptPromiseResolver* resolver,
                               const String& name,
                               V8LockGrantedCallback* callback,
                               mojom::blink::LockMode mode) {
+  ExecutionContext* context = resolver->GetExecutionContext();
+
+  if (!resolver->GetScriptState()->ContextIsValid()) {
+    return;
+  }
+
+  if (!service_.is_bound()) {
+    context->GetBrowserInterfaceBroker().GetInterface(
+        service_.BindNewPipeAndPassReceiver(
+            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+
+    if (!service_.is_bound()) {
+      resolver->Reject(
+          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+    }
+  }
+  if (!observer_.is_bound()) {
+    context->GetBrowserInterfaceBroker().GetInterface(
+        observer_.BindNewPipeAndPassReceiver(
+            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  }
+
   mojom::blink::LockManager::WaitMode wait =
       options->steal()         ? mojom::blink::LockManager::WaitMode::PREEMPT
       : options->ifAvailable() ? mojom::blink::LockManager::WaitMode::NO_WAIT
@@ -413,17 +419,6 @@ ScriptPromise LockManager::query(ScriptState* script_state,
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
   }
 
-  if (!service_.is_bound()) {
-    context->GetBrowserInterfaceBroker().GetInterface(
-        service_.BindNewPipeAndPassReceiver(
-            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
-
-    if (!service_.is_bound()) {
-      exception_state.ThrowTypeError("Service not available.");
-      return ScriptPromise();
-    }
-  }
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -435,6 +430,23 @@ ScriptPromise LockManager::query(ScriptState* script_state,
 }
 
 void LockManager::QueryImpl(ScriptPromiseResolver* resolver) {
+  ExecutionContext* context = resolver->GetExecutionContext();
+
+  if (!resolver->GetScriptState()->ContextIsValid()) {
+    return;
+  }
+
+  if (!service_.is_bound()) {
+    context->GetBrowserInterfaceBroker().GetInterface(
+        service_.BindNewPipeAndPassReceiver(
+            context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+
+    if (!service_.is_bound()) {
+      resolver->Reject(
+          MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError));
+    }
+  }
+
   service_->QueryState(WTF::Bind(
       [](ScriptPromiseResolver* resolver,
          Vector<mojom::blink::LockInfoPtr> pending,
