@@ -685,7 +685,16 @@ class CORE_EXPORT LocalFrame final
   void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect_in_dips);
   void RegisterWindowControlsOverlayChangedDelegate(
       WindowControlsOverlayChangedDelegate*);
-#endif
+  // For PWAs with display_overrides, these getters are information about the
+  // titlebar bounds sent over from the browser via UpdateWindowControlsOverlay
+  // in LocalMainFrame that are needed to persist the lifetime of the frame.
+  const gfx::Rect& GetWindowControlsOverlayRect() const {
+    return window_controls_overlay_rect_;
+  }
+  bool IsWindowControlsOverlayVisible() const {
+    return is_window_controls_overlay_visible_;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   SystemClipboard* GetSystemClipboard();
 
@@ -713,18 +722,6 @@ class CORE_EXPORT LocalFrame final
   // of subframes, `Owner()->frame()`, or in the case of the main frame,
   // `GetPage()->Frame()`). Must only be called on provisional frames.
   bool SwapIn();
-
-#if !BUILDFLAG(IS_ANDROID)
-  // For PWAs with display_overrides, these getters are information about the
-  // titlebar bounds sent over from the browser via UpdateWindowControlsOverlay
-  // in LocalMainFrame that are needed to persist the lifetime of the frame.
-  bool IsWindowControlsOverlayVisible() const {
-    return is_window_controls_overlay_visible_;
-  }
-  const gfx::Rect& GetWindowControlsOverlayRect() const {
-    return window_controls_overlay_rect_;
-  }
-#endif
 
   void LoadJavaScriptURL(const KURL& url);
 
@@ -840,6 +837,7 @@ class CORE_EXPORT LocalFrame final
 
 #if !BUILDFLAG(IS_ANDROID)
   void SetTitlebarAreaDocumentStyleEnvironmentVariables() const;
+  void MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
 #endif
 
   std::unique_ptr<FrameScheduler> frame_scheduler_;
@@ -962,6 +960,12 @@ class CORE_EXPORT LocalFrame final
 
 #if !BUILDFLAG(IS_ANDROID)
   bool is_window_controls_overlay_visible_ = false;
+  // |page_zoom_factor_| is asynchronously set sometimes (most prominently seen
+  // on mac) in |LocalFrame| via |PropagatePageZoomToNewlyAttachedFrame| on
+  // navigation. We need to store the window_controls_overlay_rect sent from the
+  // browser in dips so we can convert the rect to blink space coordinates when
+  // |page_zoom_factor_| gets updated this way.
+  gfx::Rect window_controls_overlay_rect_in_dips_;
   gfx::Rect window_controls_overlay_rect_;
   WeakMember<WindowControlsOverlayChangedDelegate>
       window_controls_overlay_changed_delegate_;

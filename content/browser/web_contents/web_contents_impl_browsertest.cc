@@ -5332,7 +5332,47 @@ IN_PROC_BROWSER_TEST_F(
   WaitForWindowControlsOverlayUpdate(web_contents, bounding_client_rect);
   ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 70);
 }
+
+IN_PROC_BROWSER_TEST_F(
+    WebContentsImplBrowserTestWindowControlsOverlayNonOneDeviceScaleFactor,
+    ValidateScaledCorrectlyAfterNavigate) {
+  auto* web_contents = shell()->web_contents();
+  GURL url(
+      R"(data:text/html,<body><div id=target style="position=absolute;
+      left: env(titlebar-area-x, 70px);
+      top: env(titlebar-area-y, 70px);
+      width: env(titlebar-area-width, 70px);
+      height: env(titlebar-area-height, 70px);"><p>Page1</p></div></body>)");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  WaitForLoadStop(web_contents);
+#if BUILDFLAG(IS_MAC)
+  // Device scale factor on MacOSX is always an integer.
+  ASSERT_EQ(2.0f,
+            web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
+#else
+  ASSERT_EQ(1.25f,
+            web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor());
 #endif
+
+  gfx::Rect bounding_client_rect = gfx::Rect(5, 10, 15, 20);
+  WaitForWindowControlsOverlayUpdate(web_contents, bounding_client_rect);
+  ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 70);
+
+  // Validate that the |bounding_client_rect| is scaled correctly on navigation.
+  GURL second_url(
+      R"(data:text/html,<body><div id=target style="position=absolute;
+      left: env(titlebar-area-x, 70px);
+      top: env(titlebar-area-y, 70px);
+      width: env(titlebar-area-width, 70px);
+      height: env(titlebar-area-height, 70px);"><p>Page2</p></div></body>)");
+
+  EXPECT_TRUE(NavigateToURL(shell(), second_url));
+  WaitForLoadStop(web_contents);
+
+  ValidateWindowsControlOverlayState(web_contents, bounding_client_rect, 70);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class RenderFrameCreatedObserver : public WebContentsObserver {
  public:
