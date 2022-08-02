@@ -671,6 +671,12 @@ void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
       // recorded only once. See `ClipboardHistory::OnDataChanged()` for further
       // explanation.
       base::RecordAction(base::UserMetricsAction("Ash_Clipboard_CopiedItem"));
+    } else {
+      // Pastes from clipboard history are already recorded in
+      // `PasteMenuItemData()`. Here, we record just pastes from the standard
+      // clipboard, to see how standard clipboard pastes interleave with
+      // clipboard history pastes.
+      base::RecordAction(base::UserMetricsAction("Ash_Clipboard_PastedItem"));
     }
 
     // Verify that this operation did not interleave with a clipboard history
