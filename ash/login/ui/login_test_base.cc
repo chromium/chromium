@@ -38,11 +38,13 @@ void LoginTestBase::ShowLockScreen() {
   base::RunLoop().RunUntilIdle();
 }
 
-void LoginTestBase::ShowLoginScreen() {
+void LoginTestBase::ShowLoginScreen(bool set_wallpaper) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   // The login screen can't be shown without a wallpaper.
-  Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
+  if (set_wallpaper)
+    Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
+
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
   // Allow focus to reach the appropriate View.
   base::RunLoop().RunUntilIdle();

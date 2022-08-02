@@ -35,7 +35,8 @@ class LoginTestBase : public NoSessionAshTestBase {
   // component needs to be able to talk directly to the lockscreen (e.g. getting
   // the ScreenType).
   void ShowLockScreen();
-  void ShowLoginScreen();
+  // If `set_wallpaper` is true, sets a wallpaper in the default color.
+  void ShowLoginScreen(bool set_wallpaper = true);
 
   // Sets the primary test widget. The widget can be retrieved using |widget()|.
   // This can be used to make a widget scoped to the whole test, e.g. if the
