@@ -25,10 +25,12 @@ class EndpointMetadataMatcher
   EndpointMetadataMatcher(
       testing::Matcher<std::vector<std::string>>
           supported_protocol_alpns_matcher,
-      testing::Matcher<EchConfigList> ech_config_list_matcher)
+      testing::Matcher<EchConfigList> ech_config_list_matcher,
+      testing::Matcher<std::string> target_name_matcher)
       : supported_protocol_alpns_matcher_(
             std::move(supported_protocol_alpns_matcher)),
-        ech_config_list_matcher_(std::move(ech_config_list_matcher)) {}
+        ech_config_list_matcher_(std::move(ech_config_list_matcher)),
+        target_name_matcher_(std::move(target_name_matcher)) {}
 
   ~EndpointMetadataMatcher() override = default;
 
@@ -50,6 +52,11 @@ class EndpointMetadataMatcher
                testing::Field("ech_config_list",
                               &ConnectionEndpointMetadata::ech_config_list,
                               ech_config_list_matcher_),
+               metadata, result_listener) &&
+           ExplainMatchResult(
+               testing::Field("target_name",
+                              &ConnectionEndpointMetadata::target_name,
+                              target_name_matcher_),
                metadata, result_listener);
   }
 
@@ -68,11 +75,14 @@ class EndpointMetadataMatcher
     os << "ConnectionEndpoint {\nsupported_protocol_alpns: "
        << testing::PrintToString(supported_protocol_alpns_matcher_)
        << "\nech_config_list: "
-       << testing::PrintToString(ech_config_list_matcher_) << "\n}";
+       << testing::PrintToString(ech_config_list_matcher_)
+       << "\ntarget_name: " << testing::PrintToString(target_name_matcher_)
+       << "\n}";
   }
 
   testing::Matcher<std::vector<std::string>> supported_protocol_alpns_matcher_;
   testing::Matcher<EchConfigList> ech_config_list_matcher_;
+  testing::Matcher<std::string> target_name_matcher_;
 };
 
 }  // namespace
@@ -80,10 +90,11 @@ class EndpointMetadataMatcher
 testing::Matcher<const ConnectionEndpointMetadata&>
 ExpectConnectionEndpointMetadata(
     testing::Matcher<std::vector<std::string>> supported_protocol_alpns_matcher,
-    testing::Matcher<EchConfigList> ech_config_list_matcher) {
-  return testing::MakeMatcher(
-      new EndpointMetadataMatcher(std::move(supported_protocol_alpns_matcher),
-                                  std::move(ech_config_list_matcher)));
+    testing::Matcher<EchConfigList> ech_config_list_matcher,
+    testing::Matcher<std::string> target_name_matcher) {
+  return testing::MakeMatcher(new EndpointMetadataMatcher(
+      std::move(supported_protocol_alpns_matcher),
+      std::move(ech_config_list_matcher), std::move(target_name_matcher)));
 }
 
 std::ostream& operator<<(
@@ -95,6 +106,8 @@ std::ostream& operator<<(
             << "\nech_config_list: "
             << testing::PrintToString(
                    connection_endpoint_metadata.ech_config_list)
+            << "\ntarget_name: "
+            << testing::PrintToString(connection_endpoint_metadata.target_name)
             << "\n}";
 }
 
