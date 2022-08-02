@@ -136,7 +136,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1126809382673880764">Não protege você contra sites, downloads e extensões perigosos. Você ainda terá a proteção do "Navegação segura", sempre que possível, em outros Serviços do Google, como o Gmail e a Pesquisa.</translation>
 <translation id="1128090040635299943">O Linux está sendo configurado no momento. A configuração vai levar alguns minutos.</translation>
 <translation id="1128591060186966949">Editar mecanismo de pesquisa</translation>
-<translation id="1129420403709586868">Veja os arquivos de mídia e fotos do smartphone</translation>
+<translation id="1129420403709586868">Ver os arquivos de mídia e fotos do smartphone</translation>
 <translation id="1129850422003387628">Gerenciar apps</translation>
 <translation id="113050636487300043">Escolha um nome e um tema de cores para diferenciar os perfis</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" />: parte do grupo <ph name="GROUP_NAME" /></translation>
@@ -2765,7 +2765,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3616741288025931835">&amp;Limpar dados de navegação...</translation>
 <translation id="3617891479562106823">Os planos de fundo estão indisponíveis. Tente novamente mais tarde.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3619962278978697442">Escolha uma delas cada vez que fizer login</translation>
+<translation id="3619962278978697442">Escolha uma opção toda vez que fizer login</translation>
 <translation id="3621807901162200696">Ajudar a melhorar os recursos e o desempenho do ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{um app}one{# app}other{# apps}}</translation>
 <translation id="362333465072914957">Esperando um certificado CA</translation>
@@ -3920,7 +3920,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="474609389162964566">Acesse o Google Assistente usando o "Ok Google"</translation>
 <translation id="4746351372139058112">Mensagens</translation>
 <translation id="4748783296226936791">Os sites geralmente se conectam a dispositivos HID para recursos que usam teclados diferentes, controles de jogos e outros dispositivos</translation>
-<translation id="4750185073185658673">Use o smartphone para revisar mais algumas permissões. Confira se o Bluetooth e o Wi-Fi dele estão ativados.</translation>
+<translation id="4750185073185658673">No smartphone, reveja se as permissões estão corretas. Confira se o Bluetooth e o Wi-Fi estão ativados.</translation>
 <translation id="4750394297954878236">Sugestões</translation>
 <translation id="475088594373173692">Primeiro usuário</translation>
 <translation id="4756378406049221019">Parar/Recarregar</translation>
@@ -4001,7 +4001,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4837128290434901661">Voltar a usar a Pesquisa Google?</translation>
 <translation id="4837926214103741331">Você não tem autorização para usar este dispositivo. Para permissão de login, entre em contato com o proprietário do dispositivo.</translation>
 <translation id="4837952862063191349">Para desbloquear e restaurar seus dados locais, digite sua senha antiga do <ph name="DEVICE_TYPE" />.</translation>
-<translation id="4838170306476614339">Veja os arquivos de mídia, fotos e notificações do smartphone</translation>
+<translation id="4838170306476614339">Ver os arquivos de mídia, fotos e notificações do smartphone</translation>
 <translation id="4838836835474292213">Acesso de leitura à área de transferência permitido</translation>
 <translation id="4838907349371614303">Senha atualizada</translation>
 <translation id="4839303808932127586">Sal&amp;var vídeo como...</translation>
@@ -4117,7 +4117,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4941074198479265146">Os sites geralmente se conectam a dispositivos MIDI para recursos como criação e edição de músicas</translation>
 <translation id="4941246025622441835">Usar essa requisição de dispositivo ao inscrever o dispositivo no gerenciamento corporativo:</translation>
 <translation id="4941627891654116707">Tamanho da fonte</translation>
-<translation id="4941963255146903244">Veja os arquivos de mídia, fotos e apps do smartphone</translation>
+<translation id="4941963255146903244">Ver os arquivos de mídia, fotos e apps do smartphone</translation>
 <translation id="494286511941020793">Ajuda da configuração de proxy</translation>
 <translation id="4943368462779413526">Futebol americano</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" quer se conectar a uma porta serial</translation>
@@ -5566,7 +5566,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="641469293210305670">Instalar atualizações e apps</translation>
 <translation id="6414878884710400018">Abrir preferências do sistema</translation>
 <translation id="6414888972213066896">Você perguntou ao seu responsável se pode visitar este site</translation>
-<translation id="6415900369006735853">Conecte-se à internet pelo smartphone</translation>
+<translation id="6415900369006735853">Conectar à Internet pelo smartphone</translation>
 <translation id="6416743254476733475">Permita ou bloqueie no seu computador.</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
 <translation id="6417468503703810114">Comportamento padrão</translation>
@@ -5984,7 +5984,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6815376457351236663">Abrir mesmo assim</translation>
 <translation id="6817174620439930047">Perguntar quando um site quiser usar mensagens exclusivas do sistema para acessar dispositivos MIDI (recomendado)</translation>
 <translation id="6818198425579322765">Idioma de origem da página</translation>
-<translation id="6818547713623251698">Veja os arquivos de mídia, fotos, notificações e apps do smartphone</translation>
+<translation id="6818547713623251698">Ver os arquivos de mídia, fotos, notificações e apps do smartphone</translation>
 <translation id="6818802132960437751">Proteção antivírus integrada</translation>
 <translation id="6818920801736417483">Salvar senhas?</translation>
 <translation id="6823174134746916417">Tocar para clicar no touchpad</translation>
@@ -6384,7 +6384,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7228523857728654909">Bloqueio de tela e login</translation>
 <translation id="7230222852462421043">&amp;Restaurar janela</translation>
 <translation id="7230787553283372882">Personalizar o tamanho do texto</translation>
-<translation id="7231260028442989757">Veja, dispense e responda às notificações do smartphone.</translation>
+<translation id="7231260028442989757">Ver, dispensar e responder às notificações do smartphone</translation>
 <translation id="7232750842195536390">Falha na renomeação</translation>
 <translation id="723343421145275488">Pesquisar imagens com <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Cancelando restauração do Linux</translation>
@@ -7226,7 +7226,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8037357227543935929">Perguntar (padrão)</translation>
 <translation id="803771048473350947">Arquivo</translation>
 <translation id="8041089156583427627">Enviar comentários</translation>
-<translation id="8041267120753677077">Faça streaming dos apps do seu smartphone</translation>
+<translation id="8041267120753677077">Fazer transmissão dos apps no seu smartphone</translation>
 <translation id="8042142357103597104">Opacidade do texto</translation>
 <translation id="8042331986490021244">Suas senhas são criptografadas no dispositivo antes de serem salvas no Gerenciador de senhas do Google</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> não está respondendo.</translation>
