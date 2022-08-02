@@ -73,8 +73,6 @@ extern const base::Feature kPasswordEditDialogWithDetails;
 extern const base::Feature kShowUPMErrorNotification;
 #endif
 extern const base::Feature kUnifiedPasswordManagerDesktop;
-extern const base::Feature kUsernameFirstFlow;
-extern const base::Feature kUsernameFirstFlowFilling;
 extern const base::Feature kUsernameFirstFlowFallbackCrowdsourcing;
 
 // All features parameters are in alphabetical order.

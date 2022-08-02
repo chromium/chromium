@@ -3062,8 +3062,6 @@ TEST_P(PasswordManagerTest, AutofillPredictionBeforeFormParsed) {
 // server predictions are not ignored and used for filling in case there are
 // multiple forms on a page, including forms that have UsernameFirstFlow votes.
 TEST_P(PasswordManagerTest, AutofillPredictionBeforeMultipleFormsParsed) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -3461,8 +3459,6 @@ TEST_P(PasswordManagerTest, StartLeakDetection) {
 
 // Check that a non-password form with SINGLE_USERNAME prediction is filled.
 TEST_P(PasswordManagerTest, FillSingleUsername) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -3550,9 +3546,6 @@ TEST_P(PasswordManagerTest,
 // Checks that username is suggested in the save prompt and saved on username
 // first flow if SINGLE_USERNAME server prediction is available.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
-
   PasswordForm saved_form(MakeSavedForm());
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_form)));
@@ -3605,9 +3598,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
 // Checks that possible single username value is not suggested in the save
 // prompt if SINGLE_USERNAME server prediction is not available.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
-
   PasswordForm saved_form(MakeSavedForm());
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_form)));
@@ -3659,8 +3649,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
 // credentials if a navigation that cannot be a result of form submission
 // happens between submitting single password and single username forms.
 TEST_P(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeEmptyConsumerWithForms(store_.get())));
 
@@ -3705,8 +3693,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowWithNavigationInTheMiddle) {
 //  Checks that username is filled on username first flow based on server and
 //  local predictions.
 TEST_P(PasswordManagerTest, UsernameFirstFlowFilling) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(
           WithArg<1>(InvokeConsumer(store_.get(), MakeSavedForm())));

@@ -101,10 +101,6 @@ bool FormContainsFieldWithName(const FormData& form,
   return false;
 }
 
-bool IsUsernameFirstFlowFeatureEnabled() {
-  return base::FeatureList::IsEnabled(features::kUsernameFirstFlow);
-}
-
 void LogUsingPossibleUsername(PasswordManagerClient* client,
                               bool is_used,
                               const char* message) {
@@ -749,8 +745,7 @@ bool PasswordFormManager::ProvisionallySave(
   votes_uploader_.clear_single_username_vote_data();
 
   // TODO(crbug.com/959776): Reset possible username after it's used.
-  if (IsUsernameFirstFlowFeatureEnabled() &&
-      parsed_submitted_form_->username_value.empty() &&
+  if (parsed_submitted_form_->username_value.empty() &&
       !parsed_submitted_form_->password_value.empty()) {
     if (IsPossibleSingleUsernameAvailable(possible_username)) {
       // Suggest the possible username value in a prompt if the server confirmed

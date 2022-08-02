@@ -6376,19 +6376,9 @@
     "expiry_milestone": 112
   },
   {
-    "name": "username-first-flow",
-    "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "username-first-flow-fallback-crowdsourcing",
     "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 105
-  },
-  {
-    "name": "username-first-flow-filling",
-    "owners": [ "kazinova@google.com", "kolos" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "uxstudy1",
