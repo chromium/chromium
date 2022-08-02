@@ -28,11 +28,6 @@ class ChildExitObserver;
 }  // namespace crash_reporter
 #endif  // BUILDFLAG(IS_ANDROID)
 
-namespace extensions {
-class ExtensionsClient;
-class ExtensionsBrowserClient;
-}  // namespace extensions
-
 #if defined(USE_AURA)
 namespace views {
 class ViewsDelegate;
@@ -76,7 +71,6 @@ class MetricsHelperImpl;
 }  // namespace metrics
 
 namespace shell {
-class AccessibilityServiceImpl;
 class CastBrowserProcess;
 class CastContentBrowserClient;
 
@@ -103,7 +97,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   external_mojo::BrokerService* broker_service();
   external_service_support::ExternalConnector* connector();
   external_service_support::ExternalConnector* media_connector();
-  AccessibilityServiceImpl* accessibility_service();
   CastWebService* web_service();
 
   // content::BrowserMainParts implementation:
@@ -146,7 +139,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 #endif  //  defined(USE_AURA)
   std::unique_ptr<CastWebService> web_service_;
   std::unique_ptr<DisplaySettingsManager> display_settings_manager_;
-  std::unique_ptr<AccessibilityServiceImpl> accessibility_service_;
 
 #if BUILDFLAG(IS_ANDROID)
   void StartPeriodicCrashReportUpload();
@@ -160,14 +152,6 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   // Tracks all media pipeline backends.
   std::unique_ptr<media::MediaPipelineBackendManager>
       media_pipeline_backend_manager_;
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  std::unique_ptr<extensions::ExtensionsClient> extensions_client_;
-  std::unique_ptr<extensions::ExtensionsBrowserClient>
-      extensions_browser_client_;
-  std::unique_ptr<PrefService> local_state_;
-  std::unique_ptr<PrefService> user_pref_service_;
-#endif
 
   std::unique_ptr<CastFeatureUpdateObserver> feature_update_observer_;
 

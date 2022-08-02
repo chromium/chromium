@@ -5,10 +5,6 @@ include_rules = [
   "+components/url_matcher",
   "+components/version_info",
   "+content/public/common",
-  "+extensions/common",
-  "+extensions/grit",
-  "+extensions/shell/common/api",
-  "+extensions/shell/grit",
   "+media",
   "+mojo/public/cpp/bindings",
   "+net/base",
@@ -17,7 +13,6 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/service_manager/public/cpp",
   "+third_party/blink/public/common",
-  "+ui/accessibility",
   "+ui/base",
   "+ui/gfx",
 ]

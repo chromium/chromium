@@ -42,8 +42,7 @@ std::unique_ptr<CastService> CastRuntimeContentBrowserClient::CreateCastService(
     media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager,
     CastWebService* web_service,
-    DisplaySettingsManager* display_settings_manager,
-    shell::AccessibilityServiceImpl* accessibility_service) {
+    DisplaySettingsManager* display_settings_manager) {
   DCHECK(!core_browser_cast_service_);
   auto network_context_getter = base::BindRepeating(
       [](CastRuntimeContentBrowserClient* client)

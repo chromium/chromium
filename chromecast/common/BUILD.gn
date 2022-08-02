@@ -106,31 +106,6 @@ cast_source_set("common") {
     "//url:url",
   ]
 
-  if (enable_chromecast_extensions) {
-    sources += [
-      "cast_extensions_api_provider.cc",
-      "cast_extensions_api_provider.h",
-      "cast_extensions_client.cc",
-      "cast_extensions_client.h",
-      "cast_redirect_manifest_handler.cc",
-      "cast_redirect_manifest_handler.h",
-      "extensions_api/cast_api_permissions.cc",
-      "extensions_api/cast_api_permissions.h",
-    ]
-
-    deps += [
-      "//chromecast/common/extensions_api:api",
-      "//chromecast/common/extensions_api:extensions_features",
-      "//components/version_info",
-      "//extensions:extensions_resources_grd_grit",
-      "//extensions/common",
-      "//extensions/common:core_api_provider",
-      "//extensions/common/api",
-      "//extensions/shell:resources",
-      "//extensions/shell:resources_grit",
-    ]
-  }
-
   if (!is_fuchsia) {
     deps += [ "//components/services/heap_profiling/public/cpp" ]
   }

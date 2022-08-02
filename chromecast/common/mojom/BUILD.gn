@@ -6,7 +6,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "accessibility.mojom",
     "activity_url_filter.mojom",
     "activity_window.mojom",
     "application_media_capabilities.mojom",

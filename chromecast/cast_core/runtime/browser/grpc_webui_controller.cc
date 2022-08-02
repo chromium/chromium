@@ -9,7 +9,6 @@
 #include "chromecast/browser/webui/cast_webui_message_handler.h"
 #include "chromecast/browser/webui/constants.h"
 #include "chromecast/cast_core/runtime/browser/grpc_resource_data_source.h"
-#include "chromecast/chromecast_buildflags.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -39,15 +38,13 @@ constexpr const char kContentSecurityPolicyOverride[] =
 
 namespace chromecast {
 
-#if !BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 // static
-std::unique_ptr<CastCoreWebUI> CastCoreWebUI::Create(
+std::unique_ptr<GrpcWebUIController> GrpcWebUIController::Create(
     content::WebUI* webui,
     const std::string host,
     cast::v2::CoreApplicationServiceStub* core_app_service_stub) {
-  return std::make_unique<CastCoreWebUI>(webui, host, core_app_service_stub);
+  return std::make_unique<GrpcWebUIController>(webui, host, core_app_service_stub);
 }
-#endif
 
 GrpcWebUIController::GrpcWebUIController(
     content::WebUI* webui,

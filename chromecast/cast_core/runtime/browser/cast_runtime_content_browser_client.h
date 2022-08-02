@@ -38,8 +38,7 @@ class CastRuntimeContentBrowserClient
       media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager,
       CastWebService* web_service,
-      DisplaySettingsManager* display_settings_manager,
-      shell::AccessibilityServiceImpl* accessibility_service) override;
+      DisplaySettingsManager* display_settings_manager) override;
   std::unique_ptr<::media::CdmFactory> CreateCdmFactory(
       ::media::mojom::FrameInterfaceFactory* frame_interfaces) override;
   bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;

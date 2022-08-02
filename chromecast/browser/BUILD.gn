@@ -103,8 +103,6 @@ group("browser") {
 
 cast_source_set("browser_base") {
   sources = [
-    "accessibility/accessibility_service_impl.cc",
-    "accessibility/accessibility_service_impl.h",
     "application_media_info_manager.cc",
     "application_media_info_manager.h",
     "audio_socket_broker.cc",
@@ -194,6 +192,7 @@ cast_source_set("browser_base") {
     "webui/cast_webui.h",
     "webui/cast_webui_controller_factory.cc",
     "webui/cast_webui_controller_factory.h",
+    "webui/cast_webui_default.cc",
     "webui/cast_webui_message_handler.cc",
     "webui/cast_webui_message_handler.h",
     "webui/constants.cc",
@@ -390,107 +389,6 @@ cast_source_set("browser_base") {
 
   if (enable_external_mojo_services) {
     deps += [ "//chromecast/external_mojo/broker_service" ]
-  }
-
-  if (enable_chromecast_extensions) {
-    sources += [
-      "cast_extension_message_filter.cc",
-      "cast_extension_message_filter.h",
-      "cast_extension_url_loader_factory.cc",
-      "cast_extension_url_loader_factory.h",
-      "extensions/api/accessibility_private/accessibility_extension_api.cc",
-      "extensions/api/accessibility_private/accessibility_extension_api.h",
-      "extensions/api/automation_internal/chromecast_automation_internal_api_delegate.cc",
-      "extensions/api/automation_internal/chromecast_automation_internal_api_delegate.h",
-      "extensions/api/bookmarks/bookmarks_api.cc",
-      "extensions/api/bookmarks/bookmarks_api.h",
-      "extensions/api/braille_display_private/braille_display_private_api.cc",
-      "extensions/api/braille_display_private/braille_display_private_api.h",
-      "extensions/api/command_line_private/command_line_private_api.cc",
-      "extensions/api/command_line_private/command_line_private_api.h",
-      "extensions/api/history/history_api.cc",
-      "extensions/api/history/history_api.h",
-      "extensions/api/identity/identity_api.cc",
-      "extensions/api/identity/identity_api.h",
-      "extensions/api/login_state/login_state.cc",
-      "extensions/api/login_state/login_state.h",
-      "extensions/api/notifications/notifications_api.cc",
-      "extensions/api/notifications/notifications_api.h",
-      "extensions/api/settings_private/settings_private_api.cc",
-      "extensions/api/settings_private/settings_private_api.h",
-      "extensions/api/tabs/tabs_api.cc",
-      "extensions/api/tabs/tabs_api.h",
-      "extensions/api/tabs/tabs_constants.cc",
-      "extensions/api/tabs/tabs_constants.h",
-      "extensions/api/tts/tts_extension_api.cc",
-      "extensions/api/tts/tts_extension_api.h",
-      "extensions/api/tts/tts_extension_api_constants.cc",
-      "extensions/api/tts/tts_extension_api_constants.h",
-      "extensions/cast_extension_host_delegate.cc",
-      "extensions/cast_extension_host_delegate.h",
-      "extensions/cast_extension_system.cc",
-      "extensions/cast_extension_system.h",
-      "extensions/cast_extension_system_factory.cc",
-      "extensions/cast_extension_system_factory.h",
-      "extensions/cast_extension_web_contents_observer.cc",
-      "extensions/cast_extension_web_contents_observer.h",
-      "extensions/cast_extensions_api_client.cc",
-      "extensions/cast_extensions_api_client.h",
-      "extensions/cast_extensions_browser_api_provider.cc",
-      "extensions/cast_extensions_browser_api_provider.h",
-      "extensions/cast_extensions_browser_client.cc",
-      "extensions/cast_extensions_browser_client.h",
-      "extensions/cast_kiosk_delegate.cc",
-      "extensions/cast_kiosk_delegate.h",
-      "extensions/cast_prefs.cc",
-      "extensions/cast_prefs.h",
-      "webui/cast_extension_webui.cc",
-      "webui/cast_extension_webui.h",
-    ]
-    if (use_aura) {
-      sources += [
-        "accessibility/accessibility_manager.h",
-        "accessibility/accessibility_manager_impl.cc",
-        "accessibility/accessibility_manager_impl.h",
-        "accessibility/accessibility_sound_player.h",
-        "accessibility/accessibility_sound_proxy.cc",
-        "accessibility/accessibility_sound_proxy.h",
-        "accessibility/touch_exploration_controller.cc",
-        "accessibility/touch_exploration_controller.h",
-        "accessibility/touch_exploration_manager.cc",
-        "accessibility/touch_exploration_manager.h",
-        "ui/aura/accessibility/automation_manager_aura.cc",
-        "ui/aura/accessibility/automation_manager_aura.h",
-        "ui/aura/accessibility/ax_tree_source_aura.cc",
-        "ui/aura/accessibility/ax_tree_source_aura.h",
-      ]
-
-      deps += [ "//build:chromeos_buildflags" ]
-    }
-
-    deps += [
-      "//chromecast/common/extensions_api:api",
-      "//components/guest_view/browser",
-      "//components/keyed_service/content",
-      "//components/pref_registry",
-      "//components/storage_monitor",
-      "//components/user_prefs:user_prefs",
-      "//components/version_info",
-      "//components/zoom",
-      "//extensions/browser",
-      "//extensions/browser:core_api_provider",
-      "//extensions/browser/api/messaging",
-      "//extensions/browser/updater",
-      "//extensions/common",
-      "//extensions/common:mojom",
-      "//extensions/common/api",
-      "//google_apis:google_apis",
-      "//ui/events:gesture_detection",
-      "//ui/views:views",
-      "//ui/wm/public:public",
-    ]
-  } else {
-    sources += [ "webui/cast_webui_default.cc" ]
   }
 
   configs += [ "//media/audio:platform_config" ]
@@ -734,14 +632,6 @@ cast_source_set("unittests") {
 
   if (!is_android) {
     sources += [ "cast_touch_device_manager_unittest.cc" ]
-  }
-
-  if (enable_chromecast_extensions && use_aura) {
-    sources += [ "accessibility/touch_exploration_controller_unittest.cc" ]
-    deps += [
-      "//ui/aura:test_support",
-      "//ui/events:test_support",
-    ]
   }
 }
 

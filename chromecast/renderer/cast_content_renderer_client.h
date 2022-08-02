@@ -19,11 +19,6 @@
 #include "media/base/audio_parameters.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace extensions {
-class ExtensionsClient;
-class CastExtensionsRendererClient;
-}  // namespace extensions
-
 namespace chromecast {
 class MemoryPressureObserverImpl;
 class UrlRewriteRulesProvider;
@@ -120,12 +115,6 @@ class CastContentRendererClient
       app_media_capabilities_observer_receiver_{this};
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<MemoryPressureObserverImpl> memory_pressure_observer_;
-#endif
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  std::unique_ptr<extensions::ExtensionsClient> extensions_client_;
-  std::unique_ptr<extensions::CastExtensionsRendererClient>
-      extensions_renderer_client_;
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

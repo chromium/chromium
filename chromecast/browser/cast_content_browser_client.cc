@@ -124,17 +124,6 @@
 #include "chromecast/media/audio/cast_audio_manager_alsa.h"  // nogncheck
 #endif  // defined(USE_ALSA)
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-#include "chromecast/browser/cast_extension_message_filter.h"      // nogncheck
-#include "chromecast/browser/cast_extension_url_loader_factory.h"  // nogncheck
-#include "extensions/browser/extension_message_filter.h"           // nogncheck
-#include "extensions/browser/extension_protocols.h"                // nogncheck
-#include "extensions/browser/extension_registry.h"                 // nogncheck
-#include "extensions/browser/guest_view/web_view/web_view_guest.h"  // nogncheck
-#include "extensions/browser/process_map.h"                         // nogncheck
-#include "extensions/common/constants.h"                            // nogncheck
-#endif
-
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
 #include "base/task/sequenced_task_runner.h"
 #include "chromecast/media/service/video_geometry_setter_service.h"
@@ -199,8 +188,7 @@ std::unique_ptr<CastService> CastContentBrowserClient::CreateCastService(
     media::VideoPlaneController* video_plane_controller,
     CastWindowManager* window_manager,
     CastWebService* web_service,
-    DisplaySettingsManager* display_settings_manager,
-    AccessibilityServiceImpl* accessibility_service) {
+    DisplaySettingsManager* display_settings_manager) {
   return std::make_unique<CastServiceSimple>(web_service);
 }
 
@@ -375,16 +363,6 @@ void CastContentBrowserClient::RenderProcessWillLaunch(
   // support.
   host->AddFilter(new cdm::CdmMessageFilterAndroid(true, true));
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  int render_process_id = host->GetID();
-  content::BrowserContext* browser_context =
-      cast_browser_main_parts_->browser_context();
-  host->AddFilter(new extensions::ExtensionMessageFilter(render_process_id,
-                                                         browser_context));
-  host->AddFilter(
-      new CastExtensionMessageFilter(render_process_id, browser_context));
-#endif
 }
 
 bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
@@ -412,21 +390,7 @@ bool CastContentBrowserClient::IsHandledURL(const GURL& url) {
 }
 
 void CastContentBrowserClient::SiteInstanceGotProcess(
-    content::SiteInstance* site_instance) {
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  // If this isn't an extension renderer there's nothing to do.
-  extensions::ExtensionRegistry* registry =
-      extensions::ExtensionRegistry::Get(site_instance->GetBrowserContext());
-  const extensions::Extension* extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(
-          site_instance->GetSiteURL());
-  if (!extension)
-    return;
-  extensions::ProcessMap::Get(cast_browser_main_parts_->browser_context())
-      ->Insert(extension->id(), site_instance->GetProcess()->GetID(),
-               site_instance->GetId());
-#endif
-}
+    content::SiteInstance* site_instance) {}
 
 void CastContentBrowserClient::AppendExtraCommandLineSwitches(
     base::CommandLine* command_line,
@@ -844,21 +808,6 @@ std::vector<std::unique_ptr<content::NavigationThrottle>>
 CastContentBrowserClient::CreateThrottlesForNavigation(
     content::NavigationHandle* handle) {
   std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  // If this isn't an extension renderer there's nothing to do.
-  content::SiteInstance* site_instance = handle->GetStartingSiteInstance();
-  if (site_instance) {
-    extensions::ExtensionRegistry* registry =
-        extensions::ExtensionRegistry::Get(site_instance->GetBrowserContext());
-    const extensions::Extension* extension =
-        registry->enabled_extensions().GetExtensionOrAppByURL(
-            site_instance->GetSiteURL());
-    if (extension) {
-      throttles.push_back(std::make_unique<DefaultNavigationThrottle>(
-          handle, content::NavigationThrottle::CANCEL_AND_IGNORE));
-    }
-  }
-#endif
 
   if (chromecast::IsFeatureEnabled(kEnableGeneralAudienceBrowsing)) {
     throttles.push_back(
@@ -872,20 +821,7 @@ CastContentBrowserClient::CreateThrottlesForNavigation(
 void CastContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
     int frame_tree_node_id,
     ukm::SourceIdObj ukm_source_id,
-    NonNetworkURLLoaderFactoryMap* factories) {
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  content::WebContents* web_contents =
-      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  auto* browser_context = web_contents->GetBrowserContext();
-  auto extension_factory =
-      extensions::CreateExtensionNavigationURLLoaderFactory(
-          browser_context, ukm_source_id,
-          !!extensions::WebViewGuest::FromWebContents(web_contents));
-  factories->emplace(extensions::kExtensionScheme,
-                     CastExtensionURLLoaderFactory::Create(
-                         browser_context, std::move(extension_factory)));
-#endif
-}
+    NonNetworkURLLoaderFactoryMap* factories) {}
 
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
@@ -898,15 +834,6 @@ void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
   }
   content::RenderFrameHost* frame_host =
       content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  auto* browser_context = frame_host->GetProcess()->GetBrowserContext();
-  auto extension_factory = extensions::CreateExtensionURLLoaderFactory(
-      render_process_id, render_frame_id);
-  factories->emplace(extensions::kExtensionScheme,
-                     CastExtensionURLLoaderFactory::Create(
-                         browser_context, std::move(extension_factory)));
-#endif
 
   factories->emplace(
       kChromeResourceScheme,
@@ -936,22 +863,12 @@ void CastContentBrowserClient::ConfigureNetworkContextParams(
 bool CastContentBrowserClient::DoesSiteRequireDedicatedProcess(
     content::BrowserContext* browser_context,
     const GURL& effective_site_url) {
-  // Always isolate extensions. This prevents site isolation from messing up
-  // URLs.
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  return effective_site_url.SchemeIs(extensions::kExtensionScheme);
-#else
   return false;
-#endif
 }
 
 bool CastContentBrowserClient::IsWebUIAllowedToMakeNetworkRequests(
     const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_CHROMECAST_WEBUI)
-  return cast_browser_main_parts_->web_service()->IsCastWebUIOrigin(origin);
-#else
   return false;
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_WEBUI)
 }
 
 bool CastContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(

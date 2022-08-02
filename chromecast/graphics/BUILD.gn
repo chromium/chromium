@@ -22,28 +22,6 @@ cast_source_set("graphics") {
 
   if (use_aura && !is_fuchsia) {
     sources += [
-      "accessibility/accessibility_cursor_ring_layer.cc",
-      "accessibility/accessibility_cursor_ring_layer.h",
-      "accessibility/accessibility_focus_ring.cc",
-      "accessibility/accessibility_focus_ring.h",
-      "accessibility/accessibility_focus_ring_controller.cc",
-      "accessibility/accessibility_focus_ring_controller.h",
-      "accessibility/accessibility_focus_ring_layer.cc",
-      "accessibility/accessibility_focus_ring_layer.h",
-      "accessibility/accessibility_highlight_layer.cc",
-      "accessibility/accessibility_highlight_layer.h",
-      "accessibility/accessibility_layer.cc",
-      "accessibility/accessibility_layer.h",
-      "accessibility/accessibility_observer.h",
-      "accessibility/focus_ring_controller.cc",
-      "accessibility/focus_ring_controller.h",
-      "accessibility/focus_ring_layer.cc",
-      "accessibility/focus_ring_layer.h",
-      "accessibility/fullscreen_magnification_controller.cc",
-      "accessibility/fullscreen_magnification_controller.h",
-      "accessibility/magnification_controller.h",
-      "accessibility/partial_magnification_controller.cc",
-      "accessibility/partial_magnification_controller.h",
       "cast_display_util.cc",
       "cast_display_util.h",
       "cast_focus_client_aura.cc",
@@ -137,8 +115,6 @@ cast_shared_library("libcast_graphics_1.0") {
 if (use_aura && !is_cast_audio_only && !is_fuchsia) {
   test("cast_graphics_unittests") {
     sources = [
-      "accessibility/accessibility_focus_ring_controller_unittest.cc",
-      "accessibility/partial_magnification_controller_unittest.cc",
       "cast_display_util_unittest.cc",
       "cast_focus_client_aura_test.cc",
       "cast_screen_unittest.cc",

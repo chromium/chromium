@@ -12,7 +12,6 @@ const char kEnableTrackControlAppRendererFeatureUse[] =
 const char kEnablePlayready[] = "playready";
 const char kEnableDevMode[] = "dev_mode";
 const char kDevModeOrigin[] = "dev_mode_origin";
-const char kEnableAccessibilityControls[] = "accessibility_controls";
 const char kEnableSystemGestures[] = "system_gestures";
 const char kEnableWindowControls[] = "enable_window_controls";
 const char kEnableSettingsUiMojo[] = "enable_settings_ui_mojo";

@@ -15,7 +15,6 @@
 #include "chromecast/base/cast_features.h"
 #include "chromecast/common/feature_constants.h"
 #include "chromecast/renderer/assistant_bindings.h"
-#include "chromecast/renderer/cast_accessibility_bindings.h"
 #include "chromecast/renderer/cast_demo_bindings.h"
 #include "chromecast/renderer/cast_window_manager_bindings.h"
 #include "chromecast/renderer/settings_ui_bindings.h"
@@ -112,12 +111,6 @@ void FeatureManager::ConfigureFeaturesInternal() {
   // decide.
   v8_bindings_.insert(
       new shell::CastWindowManagerBindings(render_frame(), this));
-  // Accessibility bindings will install themselves depending on the specific
-  // feature flags enabled, so we pass the feature manager through to let it
-  // decide.
-  v8_bindings_.insert(
-      new shell::CastAccessibilityBindings(render_frame(), this));
-
   if (FeatureEnabled(feature::kEnableDemoStandaloneMode)) {
     v8_bindings_.insert(new shell::CastDemoBindings(render_frame()));
   }

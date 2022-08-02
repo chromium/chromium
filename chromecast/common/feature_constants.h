@@ -24,10 +24,6 @@ extern const char kKeyAllowInsecureContent[];
 extern const char kEnableDevMode[];
 extern const char kDevModeOrigin[];
 
-// Permit changes to accessibility control settings?
-// (color inversion, high contrast text, etc.)
-extern const char kEnableAccessibilityControls[];
-
 // Permit subscription to platform system gesture events?
 extern const char kEnableSystemGestures[];
 

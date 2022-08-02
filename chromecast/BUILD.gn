@@ -611,26 +611,6 @@ if (!is_fuchsia) {
       "//ui/resources",
       "//ui/strings",
     ]
-
-    if (enable_chromecast_extensions) {
-      sources += [
-        "$root_gen_dir/chromecast/renderer/extensions_renderer_resources.pak",
-        "$root_gen_dir/extensions/extensions_renderer_resources.pak",
-        "$root_gen_dir/extensions/extensions_resources.pak",
-        "$root_gen_dir/extensions/shell/app_shell_resources.pak",
-      ]
-      deps += [
-        "//chromecast/renderer:extensions_resources",
-        "//extensions:extensions_resources",
-        "//extensions/shell:resources",
-      ]
-    }
-
-    if (chromecast_branding != "public") {
-      sources += [ "$root_gen_dir/chromecast/internal/cast_shell_internal.pak" ]
-
-      deps += [ "//chromecast/internal:cast_shell_internal_pak" ]
-    }
   }
 
   # Intermediate targets that repack grit resources by locale. For each locale
@@ -676,7 +656,6 @@ buildflag_header("chromecast_buildflags") {
     "DEFAULT_COMMAND_LINE_FLAGS=\"$_command_line_flags\"",
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
-    "ENABLE_CHROMECAST_EXTENSIONS=$enable_chromecast_extensions",
     "ENABLE_CHROMECAST_WEBUI=$enable_chromecast_webui",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "ENABLE_PLAYREADY=$enable_playready",

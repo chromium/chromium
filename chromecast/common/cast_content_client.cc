@@ -28,10 +28,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/url_util.h"
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-#include "extensions/common/constants.h"  // nogncheck
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #include "chromecast/common/media/cast_media_drm_bridge_client.h"
 #endif
@@ -136,13 +132,6 @@ void CastContentClient::SetActiveURL(const GURL& url, std::string top_origin) {
 
 void CastContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->standard_schemes.push_back(kChromeResourceScheme);
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  schemes->standard_schemes.push_back(extensions::kExtensionScheme);
-  // Treat as secure because we only load extension code written by us.
-  schemes->secure_schemes.push_back(extensions::kExtensionScheme);
-  schemes->service_worker_schemes.push_back(extensions::kExtensionScheme);
-  schemes->csp_bypassing_schemes.push_back(extensions::kExtensionScheme);
-#endif
 }
 
 std::u16string CastContentClient::GetLocalizedString(int message_id) {

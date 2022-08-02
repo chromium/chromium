@@ -5,7 +5,6 @@
 import("//build/config/chromecast_build.gni")
 import("//build/config/locales.gni")
 import("//components/cast_streaming/features.gni")
-import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 
 # These args blocks should contain arguments used within the //chromecast
@@ -186,10 +185,6 @@ if (!(is_ios || is_chromeos)) {
     "af",
     "ur",
   ]
-}
-
-declare_args() {
-  enable_chromecast_extensions = enable_extensions
 }
 
 # Use Chromecast CDMs for protected content. Some Android platforms use

@@ -80,7 +80,6 @@ class VideoResolutionPolicy;
 }
 
 namespace shell {
-class AccessibilityServiceImpl;
 class CastBrowserMainParts;
 class CastNetworkContexts;
 
@@ -117,8 +116,7 @@ class CastContentBrowserClient
       media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager,
       CastWebService* web_service,
-      DisplaySettingsManager* display_settings_manager,
-      AccessibilityServiceImpl* accessibility_service);
+      DisplaySettingsManager* display_settings_manager);
 
   virtual media::VideoModeSwitcher* GetVideoModeSwitcher();
 

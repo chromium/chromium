@@ -36,11 +36,9 @@
 #include "chromecast/base/metrics/cast_metrics_helper.h"
 #include "chromecast/base/metrics/grouped_histogram.h"
 #include "chromecast/base/version.h"
-#include "chromecast/browser/accessibility/accessibility_service_impl.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_content_browser_client.h"
-#include "chromecast/browser/cast_extension_url_loader_factory.h"
 #include "chromecast/browser/cast_feature_list_creator.h"
 #include "chromecast/browser/cast_feature_update_observer.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator.h"
@@ -119,7 +117,6 @@
 // gn check ignored on OverlayManagerCast as it's not a public ozone
 // header, but is exported to allow injecting the overlay-composited
 // callback.
-#include "chromecast/browser/accessibility/accessibility_manager_impl.h"
 #include "chromecast/browser/cast_display_configurator.h"  // nogncheck
 #include "chromecast/browser/devtools/cast_ui_devtools.h"
 #include "chromecast/graphics/cast_screen.h"
@@ -133,18 +130,6 @@
 #include "ui/views/views_delegate.h"  // nogncheck
 #else
 #include "chromecast/graphics/cast_window_manager_default.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-#include "chromecast/browser/extensions/api/tts/tts_extension_api.h"
-#include "chromecast/browser/extensions/cast_extension_system.h"
-#include "chromecast/browser/extensions/cast_extension_system_factory.h"
-#include "chromecast/browser/extensions/cast_extensions_browser_client.h"
-#include "chromecast/browser/extensions/cast_prefs.h"
-#include "chromecast/common/cast_extensions_client.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"  // nogncheck
-#include "extensions/browser/browser_context_keyed_service_factories.h"  // nogncheck
-#include "extensions/browser/extension_prefs.h"  // nogncheck
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
@@ -385,18 +370,6 @@ void AddDefaultCommandLineSwitches(base::CommandLine* command_line) {
   }
 }
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-// Instantiates all cast KeyedService factories, which is especially important
-// for services that should be created at profile creation time as compared to
-// lazily on first access.
-void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
-  extensions::EnsureBrowserContextKeyedServiceFactoriesBuilt();
-
-  extensions::CastExtensionSystemFactory::GetInstance();
-  CastExtensionURLLoaderFactory::EnsureShutdownNotifierFactoryBuilt();
-}
-#endif
-
 }  // namespace
 
 CastBrowserMainParts::CastBrowserMainParts(
@@ -471,11 +444,6 @@ external_service_support::ExternalConnector*
 CastBrowserMainParts::media_connector() {
   CHECK(media_connector_);
   return media_connector_.get();
-}
-
-AccessibilityServiceImpl* CastBrowserMainParts::accessibility_service() {
-  CHECK(accessibility_service_);
-  return accessibility_service_.get();
 }
 
 CastWebService* CastBrowserMainParts::web_service() {
@@ -665,11 +633,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   display_change_observer_ = std::make_unique<DisplayConfiguratorObserver>(
       cast_browser_process_->display_configurator(), window_manager_.get());
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  cast_browser_process_->SetAccessibilityManager(
-      std::make_unique<AccessibilityManagerImpl>(window_manager_.get()));
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-
 #else   // defined(USE_AURA)
   window_manager_ = std::make_unique<CastWindowManagerDefault>();
 #endif  // defined(USE_AURA)
@@ -686,10 +649,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       nullptr
 #endif  // defined(USE_AURA)
   );
-  cast_browser_process_->SetAccessibilityService(
-      std::make_unique<AccessibilityServiceImpl>(
-          cast_browser_process_->browser_context(),
-          display_settings_manager_.get()));
 
   web_service_ = std::make_unique<CastWebService>(
       cast_browser_process_->browser_context(), window_manager_.get());
@@ -703,40 +662,8 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
           cast_browser_process_->browser_context(), nullptr,
           cast_browser_process_->pref_service(), video_plane_controller_.get(),
           window_manager_.get(), web_service_.get(),
-          display_settings_manager_.get(),
-          cast_browser_process_->accessibility_service()));
+          display_settings_manager_.get()));
   cast_browser_process_->cast_service()->Initialize();
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  user_pref_service_ = extensions::cast_prefs::CreateUserPrefService(
-      cast_browser_process_->browser_context());
-
-  extensions_client_ = std::make_unique<extensions::CastExtensionsClient>();
-  extensions::ExtensionsClient::Set(extensions_client_.get());
-
-  extensions_browser_client_ =
-      std::make_unique<extensions::CastExtensionsBrowserClient>(
-          cast_browser_process_->browser_context(), user_pref_service_.get(),
-          cast_content_browser_client_->cast_network_contexts());
-  extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
-
-  EnsureBrowserContextKeyedServiceFactoriesBuilt();
-
-  extensions::CastExtensionSystem* extension_system =
-      static_cast<extensions::CastExtensionSystem*>(
-          extensions::ExtensionSystem::Get(
-              cast_browser_process_->browser_context()));
-
-  extension_system->InitForRegularProfile(true);
-  extension_system->Init();
-
-  extensions::ExtensionPrefs::Get(cast_browser_process_->browser_context());
-
-  // Force TTS to be available. It's lazy and this makes it eager.
-  // TODO(rdaum): There has to be a better way.
-  extensions::TtsAPI::GetFactoryInstance()->Get(
-      cast_browser_process_->browser_context());
-#endif
 
   // Initializing metrics service and network delegates must happen after cast
   // service is initialized because CastMetricsServiceClient,
@@ -817,15 +744,6 @@ void CastBrowserMainParts::PostMainMessageLoopRun() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
   cast_browser_process_->cast_service()->Stop();
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
-      browser_context());
-  extensions::ExtensionsBrowserClient::Set(nullptr);
-  extensions_browser_client_.reset();
-  user_pref_service_.reset();
-  cast_browser_process_->ClearAccessibilityManager();
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Android does not use native main MessageLoop.

@@ -26,11 +26,6 @@ class CastBrowserMetrics;
 
 namespace shell {
 
-#if defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-class AccessibilityManager;
-#endif  // defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-
-class AccessibilityServiceImpl;
 class CastBrowserContext;
 class CastContentBrowserClient;
 class CastDisplayConfigurator;
@@ -56,14 +51,6 @@ class CastBrowserProcess {
   void SetCastService(std::unique_ptr<CastService> cast_service);
 
 #if defined(USE_AURA)
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  void SetAccessibilityManager(
-      std::unique_ptr<AccessibilityManager> accessibility_manager);
-  void ClearAccessibilityManager();
-  void AccessibilityStateChanged(bool enabled);
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-
   void SetCastScreen(CastScreen* cast_screen);
   void SetDisplayConfigurator(
       std::unique_ptr<CastDisplayConfigurator> display_configurator);
@@ -76,8 +63,6 @@ class CastBrowserProcess {
       std::unique_ptr<RemoteDebuggingServer> remote_debugging_server);
   void SetConnectivityChecker(
       scoped_refptr<ConnectivityChecker> connectivity_checker);
-  void SetAccessibilityService(
-      std::unique_ptr<AccessibilityServiceImpl> accessibility_service);
 
   CastContentBrowserClient* browser_client() const {
     return cast_content_browser_client_;
@@ -89,13 +74,6 @@ class CastBrowserProcess {
   CastDisplayConfigurator* display_configurator() const {
     return display_configurator_.get();
   }
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  AccessibilityManager* accessibility_manager() const {
-    return accessibility_manager_.get();
-  }
-#endif  //  BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-
 #endif  // defined(USE_AURA)
   metrics::CastBrowserMetrics* cast_browser_metrics() const {
     return cast_browser_metrics_.get();
@@ -106,9 +84,6 @@ class CastBrowserProcess {
   }
   RemoteDebuggingServer* remote_debugging_server() const {
     return remote_debugging_server_.get();
-  }
-  AccessibilityServiceImpl* accessibility_service() const {
-    return accessibility_service_.get();
   }
 
  private:
@@ -130,12 +105,6 @@ class CastBrowserProcess {
   scoped_refptr<ConnectivityChecker> connectivity_checker_;
   std::unique_ptr<metrics::CastBrowserMetrics> cast_browser_metrics_;
   std::unique_ptr<RemoteDebuggingServer> remote_debugging_server_;
-  std::unique_ptr<AccessibilityServiceImpl> accessibility_service_;
-#if defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  // Destroyed in PostMainMessageLoopRun, just after CastService::Stop(). It's
-  // not clear why this has to be destroyed before CastService.
-  std::unique_ptr<AccessibilityManager> accessibility_manager_;
-#endif  // defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
   // Note: CastService must be destroyed before others.
   std::unique_ptr<CastService> cast_service_;

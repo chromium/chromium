@@ -10,7 +10,6 @@
 #include "chromecast/browser/audio_socket_broker.h"
 #include "chromecast/browser/cast_navigation_ui_data.h"
 #include "chromecast/browser/cast_web_contents.h"
-#include "chromecast/common/mojom/accessibility.mojom.h"
 #include "chromecast/common/mojom/activity_window.mojom.h"
 #include "chromecast/common/mojom/application_media_capabilities.mojom.h"
 #include "chromecast/common/mojom/assistant_messenger.mojom.h"
@@ -129,8 +128,6 @@ void PopulateCastFrameBinders(
       &BindFromCastWebContents<::chromecast::mojom::GestureSource>));
   binder_map->Add<::chromecast::mojom::SettingsPlatform>(base::BindRepeating(
       &BindFromCastWebContents<::chromecast::mojom::SettingsPlatform>));
-  binder_map->Add<mojom::CastAccessibilityService>(base::BindRepeating(
-      &BindFromCastWebContents<mojom::CastAccessibilityService>));
   binder_map->Add<mojom::CastDemo>(
       base::BindRepeating(&BindFromCastWebContents<mojom::CastDemo>));
 

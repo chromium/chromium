@@ -20,7 +20,6 @@
 #include "chromecast/public/media/media_capabilities_shlib.h"
 #include "chromecast/renderer/cast_url_loader_throttle_provider.h"
 #include "chromecast/renderer/cast_websocket_handshake_throttle_provider.h"
-#include "chromecast/renderer/js_channel_bindings.h"
 #include "chromecast/renderer/media/key_systems_cast.h"
 #include "chromecast/renderer/media/media_caps_observer_impl.h"
 #include "chromecast/renderer/url_rewrite_rules_provider.h"
@@ -54,16 +53,6 @@
 #else
 #include "chromecast/renderer/memory_pressure_observer_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-#include "chromecast/common/cast_extensions_client.h"
-#include "chromecast/renderer/cast_extensions_renderer_client.h"
-#include "content/public/common/content_constants.h"
-#include "extensions/common/common_manifest_handlers.h"  // nogncheck
-#include "extensions/common/extension_urls.h"            // nogncheck
-#include "extensions/renderer/dispatcher.h"              // nogncheck
-#include "extensions/renderer/extension_frame_helper.h"  // nogncheck
-#endif
 
 namespace chromecast {
 namespace shell {
@@ -143,17 +132,6 @@ void CastContentRendererClient::RenderThreadStarted() {
       command_line->GetSwitchValueNative(switches::kPreviousApp);
   if (!previous_app.empty())
     AppStateTracker::SetPreviousApp(previous_app);
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions_client_ = std::make_unique<extensions::CastExtensionsClient>();
-  extensions::ExtensionsClient::Set(extensions_client_.get());
-
-  extensions_renderer_client_ =
-      std::make_unique<extensions::CastExtensionsRendererClient>();
-  extensions::ExtensionsRendererClient::Set(extensions_renderer_client_.get());
-
-  thread->AddObserver(extensions_renderer_client_->GetDispatcher());
-#endif
 }
 
 void CastContentRendererClient::RenderFrameCreated(
@@ -181,20 +159,6 @@ void CastContentRendererClient::RenderFrameCreated(
         app_media_capabilities_observer_receiver_.BindNewPipeAndPassRemote());
   }
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions::Dispatcher* dispatcher =
-      extensions_renderer_client_->GetDispatcher();
-  // ExtensionFrameHelper destroys itself when the RenderFrame is destroyed.
-  new extensions::ExtensionFrameHelper(render_frame, dispatcher);
-
-  dispatcher->OnRenderFrameCreated(render_frame);
-#endif
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_OZONE)
-  // JsChannelBindings destroys itself when the RenderFrame is destroyed.
-  JsChannelBindings::Create(render_frame);
-#endif
-
   activity_url_filter_manager_->OnRenderFrameCreated(render_frame);
 
   // |base::Unretained| is safe here since the callback is triggered before the
@@ -209,20 +173,10 @@ void CastContentRendererClient::RenderFrameCreated(
 }
 
 void CastContentRendererClient::RunScriptsAtDocumentStart(
-    content::RenderFrame* render_frame) {
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentStart(
-      render_frame);
-#endif
-}
+    content::RenderFrame* render_frame) {}
 
 void CastContentRendererClient::RunScriptsAtDocumentEnd(
-    content::RenderFrame* render_frame) {
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentEnd(
-      render_frame);
-#endif
-}
+    content::RenderFrame* render_frame) {}
 
 void CastContentRendererClient::GetSupportedKeySystems(
     ::media::GetSupportedKeySystemsCB cb) {

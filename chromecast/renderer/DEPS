@@ -14,8 +14,6 @@ include_rules = [
   "+components/version_info",
   "+content/public/common",
   "+content/public/renderer",
-  "+extensions/common",
-  "+extensions/renderer",
   "+gin",
   "+media/base",
   "+media/media_buildflags.h",

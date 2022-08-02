@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "chromecast/browser/accessibility/accessibility_service_impl.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_network_contexts.h"
@@ -21,10 +20,6 @@
 #include "components/prefs/pref_service.h"
 
 #if defined(USE_AURA)
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-#include "chromecast/browser/accessibility/accessibility_manager.h"
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
 #include "chromecast/browser/cast_display_configurator.h"  // nogncheck
 #include "chromecast/graphics/cast_screen.h"
@@ -94,19 +89,6 @@ void CastBrowserProcess::SetDisplayConfigurator(
   display_configurator_ = std::move(display_configurator);
 }
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-void CastBrowserProcess::SetAccessibilityManager(
-    std::unique_ptr<AccessibilityManager> accessibility_manager) {
-  DCHECK(!accessibility_manager_);
-  accessibility_manager_ = std::move(accessibility_manager);
-}
-
-void CastBrowserProcess::ClearAccessibilityManager() {
-  accessibility_manager_.reset();
-}
-
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-
 #endif  // defined(USE_AURA)
 
 void CastBrowserProcess::SetMetricsServiceClient(
@@ -134,16 +116,5 @@ void CastBrowserProcess::SetConnectivityChecker(
   connectivity_checker_.swap(connectivity_checker);
 }
 
-void CastBrowserProcess::SetAccessibilityService(
-    std::unique_ptr<AccessibilityServiceImpl> accessibility_service) {
-  DCHECK(!accessibility_service_);
-  accessibility_service_ = std::move(accessibility_service);
-}
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-void CastBrowserProcess::AccessibilityStateChanged(bool enabled) {
-  cast_service_->AccessibilityStateChanged(enabled);
-}
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 }  // namespace shell
 }  // namespace chromecast

@@ -14,7 +14,6 @@
 #include "chromecast/base/cast_features.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/metrics/cast_metrics_helper.h"
-#include "chromecast/browser/accessibility/accessibility_service_impl.h"
 #include "chromecast/browser/cast_browser_process.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/lru_renderer_cache.h"
@@ -104,9 +103,6 @@ CastWebViewDefault::CastWebViewDefault(
                   : web_service->CreateWindow(params_->Clone())) {
   DCHECK(web_service_);
   DCHECK(window_);
-  cast_web_contents_.local_interfaces()
-      ->AddInterface<chromecast::shell::mojom::CastAccessibilityService>(
-          shell::CastBrowserProcess::GetInstance()->accessibility_service());
   window_->SetCastWebContents(&cast_web_contents_);
   web_contents_->SetDelegate(this);
 #if defined(USE_AURA)

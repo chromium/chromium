@@ -5,25 +5,6 @@
 import("//chromecast/chromecast.gni")
 import("//tools/grit/grit_rule.gni")
 
-grit("extensions_resources") {
-  source = "resources/extensions_renderer_resources.grd"
-  output_dir = "$root_gen_dir/chromecast/renderer"
-  output_name = "extensions_renderer_resources"
-  outputs = [
-    "grit/extensions_renderer_resources.h",
-    "extensions_renderer_resources.pak",
-  ]
-  grit_flags = [
-    "-E",
-    "mojom_root=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
-  deps = [
-    "//services/network/public/mojom:mojom_js",
-    "//url/mojom:url_mojom_gurl_js",
-    "//url/mojom:url_mojom_origin_js",
-  ]
-}
-
 group("renderer") {
   public_deps = [ ":renderer_base" ]
 
@@ -38,8 +19,6 @@ cast_source_set("renderer_base") {
     "activity_filtering_websocket_handshake_throttle.h",
     "assistant_bindings.cc",
     "assistant_bindings.h",
-    "cast_accessibility_bindings.cc",
-    "cast_accessibility_bindings.h",
     "cast_activity_url_filter_manager.cc",
     "cast_activity_url_filter_manager.h",
     "cast_content_renderer_client.cc",
@@ -59,8 +38,6 @@ cast_source_set("renderer_base") {
     "feature_manager.h",
     "feature_manager_on_associated_interface.cc",
     "feature_manager_on_associated_interface.h",
-    "js_channel_bindings.cc",
-    "js_channel_bindings.h",
     "native_bindings_helper.cc",
     "native_bindings_helper.h",
     "queryable_data_store.cc",
@@ -118,32 +95,6 @@ cast_source_set("renderer_base") {
     ]
   } else {
     deps += [ "//chromecast/media/audio:cast_audio_device_factory" ]
-  }
-
-  if (enable_chromecast_extensions) {
-    sources += [
-      "cast_extensions_dispatcher_delegate.cc",
-      "cast_extensions_dispatcher_delegate.h",
-      "cast_extensions_renderer_client.cc",
-      "cast_extensions_renderer_client.h",
-      "extensions/extension_hooks_delegate.cc",
-      "extensions/extension_hooks_delegate.h",
-      "extensions/tabs_hooks_delegate.cc",
-      "extensions/tabs_hooks_delegate.h",
-    ]
-
-    deps += [
-      "//chromecast/common",
-      "//chromecast/common/extensions_api:api",
-      "//chromecast/renderer:extensions_resources",
-      "//components/guest_view/renderer",
-      "//components/version_info:version_info",
-      "//extensions/common",
-      "//extensions/common:mojom",
-      "//extensions/common/api",
-      "//extensions/renderer",
-      "//gin:gin",
-    ]
   }
 }
 

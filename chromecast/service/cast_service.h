@@ -30,9 +30,6 @@ class CastService {
   void Start();
   void Stop();
 
-  // Notify out-of-process (non-chrome renderers) of accessibility state.
-  virtual void AccessibilityStateChanged(bool enabled);
-
  protected:
   CastService();
 
