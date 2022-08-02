@@ -115,16 +115,6 @@ void DataObserver::OnURLVisited(history::HistoryService* history_service,
   stop_reporting_callback_.Run();
 }
 
-void DataObserver::OnURLsModified(history::HistoryService* history_service,
-                                  const history::URLRows& changed_urls) {
-  for (const auto& row : changed_urls) {
-    if (!row.hidden())
-      delta_file_service_->PageAdded(row.url());
-  }
-
-  data_changed_callback_.Run();
-}
-
 void DataObserver::OnURLsDeleted(history::HistoryService* history_service,
                                  const history::DeletionInfo& deletion_info) {
   if (deletion_info.IsAllHistory()) {

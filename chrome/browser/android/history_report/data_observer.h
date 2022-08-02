@@ -76,8 +76,6 @@ class DataObserver : public bookmarks::BookmarkModelObserver,
                     ui::PageTransition transition,
                     const history::URLRow& row,
                     base::Time visit_time) override;
-  void OnURLsModified(history::HistoryService* history_service,
-                      const history::URLRows& changed_urls) override;
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
   void HistoryServiceBeingDeleted(
