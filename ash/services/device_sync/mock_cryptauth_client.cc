@@ -31,7 +31,7 @@ std::unique_ptr<CryptAuthClient> MockCryptAuthClientFactory::CreateInstance() {
 
   for (auto& observer : observer_list_)
     observer.OnCryptAuthClientCreated(client.get());
-  return std::move(client);
+  return client;
 }
 
 void MockCryptAuthClientFactory::AddObserver(Observer* observer) {

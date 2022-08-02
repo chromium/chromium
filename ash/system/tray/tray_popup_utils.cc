@@ -56,7 +56,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultCenterLayoutManager() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
-  return std::move(box_layout);
+  return box_layout;
 }
 
 // Creates a layout manager that positions Views horizontally. The Views will be
@@ -68,7 +68,7 @@ std::unique_ptr<views::LayoutManager> CreateDefaultEndsLayoutManager() {
       views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  return std::move(box_layout);
+  return box_layout;
 }
 
 std::unique_ptr<views::LayoutManager> CreateDefaultLayoutManager(

@@ -72,7 +72,7 @@ class TestConnectionAttempt
             std::move(success_callback), failure_callback, connection_priority);
     fake_operation_ = fake_operation.get();
 
-    return std::move(fake_operation);
+    return fake_operation;
   }
 
   FakeConnectToDeviceOperation<BleInitiatorFailureType>* fake_operation_ =

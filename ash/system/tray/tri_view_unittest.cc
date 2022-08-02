@@ -24,7 +24,7 @@ std::unique_ptr<views::LayoutManager> CreatePreferredSizeLayoutManager() {
       views::BoxLayout::Orientation::kHorizontal);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
-  return std::move(layout);
+  return layout;
 }
 
 }  // namespace

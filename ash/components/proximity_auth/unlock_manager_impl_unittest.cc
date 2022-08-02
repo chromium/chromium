@@ -135,7 +135,7 @@ class TestUnlockManager : public UnlockManagerImpl {
     proximity_monitor_destroyed_ = false;
 
     proximity_monitor_ = proximity_monitor.get();
-    return std::move(proximity_monitor);
+    return proximity_monitor;
   }
 
   void OnProximityMonitorDestroyed() { proximity_monitor_destroyed_ = true; }

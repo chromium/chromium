@@ -29,43 +29,43 @@ std::unique_ptr<google::protobuf::MessageLite> DecodedMessageToProto(
       std::unique_ptr<ConnectTetheringRequest> connect_request =
           std::make_unique<ConnectTetheringRequest>();
       connect_request->ParseFromString(decoded_message);
-      return std::move(connect_request);
+      return connect_request;
     }
     case MessageType::CONNECT_TETHERING_RESPONSE: {
       std::unique_ptr<ConnectTetheringResponse> connect_response =
           std::make_unique<ConnectTetheringResponse>();
       connect_response->ParseFromString(decoded_message);
-      return std::move(connect_response);
+      return connect_response;
     }
     case MessageType::DISCONNECT_TETHERING_REQUEST: {
       std::unique_ptr<DisconnectTetheringRequest> disconnect_request =
           std::make_unique<DisconnectTetheringRequest>();
       disconnect_request->ParseFromString(decoded_message);
-      return std::move(disconnect_request);
+      return disconnect_request;
     }
     case MessageType::KEEP_ALIVE_TICKLE: {
       std::unique_ptr<KeepAliveTickle> keep_alive_tickle =
           std::make_unique<KeepAliveTickle>();
       keep_alive_tickle->ParseFromString(decoded_message);
-      return std::move(keep_alive_tickle);
+      return keep_alive_tickle;
     }
     case MessageType::KEEP_ALIVE_TICKLE_RESPONSE: {
       std::unique_ptr<KeepAliveTickleResponse> keep_alive_tickle_response =
           std::make_unique<KeepAliveTickleResponse>();
       keep_alive_tickle_response->ParseFromString(decoded_message);
-      return std::move(keep_alive_tickle_response);
+      return keep_alive_tickle_response;
     }
     case MessageType::TETHER_AVAILABILITY_REQUEST: {
       std::unique_ptr<TetherAvailabilityRequest> tether_request =
           std::make_unique<TetherAvailabilityRequest>();
       tether_request->ParseFromString(decoded_message);
-      return std::move(tether_request);
+      return tether_request;
     }
     case MessageType::TETHER_AVAILABILITY_RESPONSE: {
       std::unique_ptr<TetherAvailabilityResponse> tether_response =
           std::make_unique<TetherAvailabilityResponse>();
       tether_response->ParseFromString(decoded_message);
-      return std::move(tether_response);
+      return tether_response;
     }
     default:
       return nullptr;

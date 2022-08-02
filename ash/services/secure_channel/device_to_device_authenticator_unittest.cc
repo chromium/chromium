@@ -140,7 +140,7 @@ class DeviceToDeviceAuthenticatorForTest : public DeviceToDeviceAuthenticator {
   std::unique_ptr<base::OneShotTimer> CreateTimer() override {
     auto timer = std::make_unique<base::MockOneShotTimer>();
     timer_ = timer.get();
-    return std::move(timer);
+    return timer;
   }
 
   // This instance is owned by the super class.

@@ -183,7 +183,7 @@ class FakeDeviceLoader final : public RemoteDeviceLoader {
       std::unique_ptr<FakeDeviceLoader> device_loader =
           std::make_unique<FakeDeviceLoader>();
       device_loader->remote_device_loader_factory_ = this;
-      return std::move(device_loader);
+      return device_loader;
     }
 
     void InvokeLastCallback(

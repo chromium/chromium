@@ -120,7 +120,7 @@ class TestableProximityAuthSystem : public ProximityAuthSystem {
     std::unique_ptr<FakeRemoteDeviceLifeCycle> life_cycle(
         new FakeRemoteDeviceLifeCycle(remote_device, local_device));
     life_cycle_ = life_cycle.get();
-    return std::move(life_cycle);
+    return life_cycle;
   }
 
   FakeRemoteDeviceLifeCycle* life_cycle_;

@@ -318,13 +318,13 @@ class ArcDataSnapshotdManagerBasicTest : public testing::Test {
   std::unique_ptr<ArcDataSnapshotdManager::Delegate> MakeDelegate() {
     auto delegate = std::make_unique<FakeDelegate>();
     delegate_ = delegate.get();
-    return std::move(delegate);
+    return delegate;
   }
 
   std::unique_ptr<ArcAppsTracker> MakeAppsTracker() {
     auto apps_tracker = std::make_unique<FakeAppsTracker>();
     apps_tracker_ = apps_tracker.get();
-    return std::move(apps_tracker);
+    return apps_tracker;
   }
 
   std::unique_ptr<FakeSnapshotSessionController> MakeSessionController() {

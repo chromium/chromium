@@ -16,7 +16,7 @@ std::unique_ptr<base::OneShotTimer> TestTimerFactory::CreateOneShotTimer() {
   DCHECK(!device_id_for_next_timer_.empty());
   auto mock_timer = std::make_unique<base::MockOneShotTimer>();
   device_id_to_timer_map_[device_id_for_next_timer_] = mock_timer.get();
-  return std::move(mock_timer);
+  return mock_timer;
 }
 
 }  // namespace tether

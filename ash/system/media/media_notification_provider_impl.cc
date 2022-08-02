@@ -95,7 +95,7 @@ MediaNotificationProviderImpl::GetMediaNotificationListView(
   base::UmaHistogramEnumeration(
       "Media.GlobalMediaControls.EntryPoint",
       global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray);
-  return std::move(notification_list_view);
+  return notification_list_view;
 }
 
 std::unique_ptr<views::View>

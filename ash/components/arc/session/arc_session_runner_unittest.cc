@@ -111,14 +111,14 @@ class ArcSessionRunnerTest : public testing::Test,
   static std::unique_ptr<ArcSession> CreateSuspendedArcSession() {
     auto arc_session = std::make_unique<FakeArcSession>();
     arc_session->SuspendBoot();
-    return std::move(arc_session);
+    return arc_session;
   }
 
   static std::unique_ptr<ArcSession> CreateBootFailureArcSession(
       ArcStopReason reason) {
     auto arc_session = std::make_unique<FakeArcSession>();
     arc_session->EnableBootFailureEmulation(reason);
-    return std::move(arc_session);
+    return arc_session;
   }
 
  private:
