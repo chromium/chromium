@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <set>
+#include <vector>
 
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -14,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -26,13 +27,6 @@ namespace {
 constexpr const char* kStartupMetrics[] = {
     "Startup.BrowserMessageLoopFirstIdle",
     "Startup.BrowserMessageLoopStartTime",
-
-// Not Desktop specific but flaky on some Android bots.
-// TODO(crbug.com/1252126): Figure out why.
-#if !BUILDFLAG(IS_ANDROID)
-    "Startup.LoadTime.ApplicationStartToChromeMain",
-    "Startup.LoadTime.ProcessCreateToApplicationStart",
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // Desktop specific metrics
 #if !BUILDFLAG(IS_ANDROID)
@@ -49,13 +43,32 @@ constexpr const char* kStartupMetrics[] = {
 #endif
 };
 
+void AddProcessCreateMetrics(std::vector<const char*>& v) {
+  v.push_back("Startup.LoadTime.ProcessCreateToApplicationStart");
+  v.push_back("Startup.LoadTime.ApplicationStartToChromeMain");
+}
+
 }  // namespace
 
 // Verify that startup histograms are logged on browser startup.
 IN_PROC_BROWSER_TEST_F(StartupMetricsTest, ReportsValues) {
+  std::vector<const char*> startup_metrics{std::begin(kStartupMetrics),
+                                           std::end(kStartupMetrics)};
+
+#if !BUILDFLAG(IS_ANDROID)
+  AddProcessCreateMetrics(startup_metrics);
+#else
+  // On Android these metrics are based on Process.getStartUptimeMillis() - not
+  // available before N.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_NOUGAT) {
+    AddProcessCreateMetrics(startup_metrics);
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   // Wait for all histograms to be recorded. The test will hit a RunLoop timeout
   // if a histogram is not recorded.
-  for (auto* const histogram : kStartupMetrics) {
+  for (auto* const histogram : startup_metrics) {
     SCOPED_TRACE(histogram);
 
     // Continue if histograms was already recorded.
