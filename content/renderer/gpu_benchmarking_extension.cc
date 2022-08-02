@@ -40,7 +40,6 @@
 #include "content/public/renderer/v8_value_converter.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "content/renderer/skia_benchmarking_extension.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
@@ -1434,8 +1433,9 @@ void GpuBenchmarking::Freeze() {
   GpuBenchmarkingContext context(render_frame_.get());
   // TODO(fmeawad): Instead of forcing a visibility change, only allow
   // freezing a page if it was already hidden.
-  context.web_view()->SetVisibilityState(PageVisibilityState::kHidden,
-                                         /*is_initial_state=*/false);
+  context.web_view()->SetVisibilityState(
+      blink::mojom::PageVisibilityState::kHidden,
+      /*is_initial_state=*/false);
   context.web_view()->SetPageFrozen(true);
 }
 

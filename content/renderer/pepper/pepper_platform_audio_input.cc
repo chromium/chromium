@@ -13,7 +13,6 @@
 #include "content/renderer/pepper/pepper_audio_input_host.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_source_parameters.h"
 #include "ppapi/shared_impl/ppb_audio_config_shared.h"

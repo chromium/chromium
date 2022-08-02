@@ -12,7 +12,6 @@
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/ppapi_preferences_builder.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
