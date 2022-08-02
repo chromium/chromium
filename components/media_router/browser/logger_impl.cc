@@ -19,7 +19,7 @@ namespace {
 constexpr size_t kEntriesCapacity = 1000;
 
 constexpr size_t kComponentMaxLength = 64;
-constexpr size_t kMessageMaxLength = 256;
+constexpr size_t kMessageMaxLength = 1024;
 constexpr size_t kSourceMaxLength = 64;
 
 const char* AsString(LoggerImpl::Severity severity) {
