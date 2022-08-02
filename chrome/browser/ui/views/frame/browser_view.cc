@@ -152,6 +152,7 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
@@ -2360,8 +2361,12 @@ bool BrowserView::IsToolbarVisible() const {
     show_fullscreen_toolbar = browser()->profile()->GetPrefs()->GetBoolean(
         prefs::kShowFullscreenToolbar);
   }
-  if (IsFullscreen() && !show_fullscreen_toolbar) {
-    return false;
+  // Immersive full screen makes it possible to display the toolbar when
+  // kShowFullscreenToolbar is not set.
+  if (!base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+    if (IsFullscreen() && !show_fullscreen_toolbar) {
+      return false;
+    }
   }
 #endif
   if (immersive_mode_controller_->ShouldHideTopViews())
@@ -3333,6 +3338,31 @@ views::View* BrowserView::CreateOverlayView() {
       std::make_unique<views::ViewTargeter>(overlay_view_targeter_.get()));
   return overlay_view_;
 }
+
+#if BUILDFLAG(IS_MAC)
+views::View* BrowserView::CreateMacOverlayView() {
+  views::Widget::InitParams params;
+  // Keep around overlay_widget_ and overlay_view_ until this
+  // BrowserView is deconstructed. overlay_view_ is used during BrowserView
+  // deconstruction.
+  // TODO(bur): Refactor usage of WIDGET_OWNS_NATIVE_WIDGET.
+  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.type = views::Widget::InitParams::TYPE_POPUP;
+  params.child = true;
+  params.parent = GetWidget()->GetNativeView();
+  overlay_widget_ = std::make_unique<ThemeCopyingWidget>(GetWidget());
+  overlay_widget_->Init(std::move(params));
+
+  std::unique_ptr<TopContainerOverlayView> overlay_view =
+      std::make_unique<TopContainerOverlayView>(weak_ptr_factory_.GetWeakPtr());
+  overlay_view_targeter_ = std::make_unique<OverlayViewTargeterDelegate>();
+  overlay_view->SetEventTargeter(
+      std::make_unique<views::ViewTargeter>(overlay_view_targeter_.get()));
+  overlay_view_ = overlay_view.get();
+  overlay_widget_->GetRootView()->AddChildView(std::move(overlay_view));
+  return overlay_view_;
+}
+#endif  // IS_MAC
 
 void BrowserView::OnWidgetDestroying(views::Widget* widget) {
   DCHECK(widget_observation_.IsObservingSource(widget));

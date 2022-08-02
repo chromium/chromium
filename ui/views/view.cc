@@ -988,7 +988,21 @@ void View::ConvertPointToTarget(const View* source,
     return;
 
   const View* root = GetHierarchyRoot(target);
+#if BUILDFLAG(IS_MAC)
+  // If the root views don't match make sure we are in the same widget tree.
+  // Full screen in macOS creates a child widget that hosts top chrome.
+  // TODO(bur): Remove this check when top chrome can be composited into its own
+  // NSView without the need for a new widget.
+  if (GetHierarchyRoot(source) != root) {
+    const Widget* source_top_level_widget =
+        source->GetWidget()->GetTopLevelWidget();
+    const Widget* target_top_level_widget =
+        target->GetWidget()->GetTopLevelWidget();
+    CHECK_EQ(source_top_level_widget, target_top_level_widget);
+  }
+#else  // IS_MAC
   CHECK_EQ(GetHierarchyRoot(source), root);
+#endif
 
   if (source != root)
     source->ConvertPointForAncestor(root, point);

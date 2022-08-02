@@ -184,6 +184,10 @@ class BrowserView : public BrowserWindow,
   // Container for the tabstrip, toolbar, etc.
   TopContainerView* top_container() { return top_container_; }
 
+#if BUILDFLAG(IS_MAC)
+  views::Widget* overlay_widget() { return overlay_widget_.get(); }
+#endif
+
   // Container for the web contents.
   views::View* contents_container() { return contents_container_; }
 
@@ -639,6 +643,9 @@ class BrowserView : public BrowserWindow,
   views::View* GetContentsView() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* CreateOverlayView() override;
+#if BUILDFLAG(IS_MAC)
+  views::View* CreateMacOverlayView();
+#endif
   void OnWindowBeginUserBoundsChange() override;
   void OnWindowEndUserBoundsChange() override;
   void OnWidgetMove() override;
@@ -979,6 +986,11 @@ class BrowserView : public BrowserWindow,
   // during immersive reveal.
   std::unique_ptr<views::ViewTargeterDelegate> overlay_view_targeter_;
   raw_ptr<views::View> overlay_view_ = nullptr;
+
+#if BUILDFLAG(IS_MAC)
+  // Used when calling CreateMacOverlayView().
+  std::unique_ptr<views::Widget> overlay_widget_;
+#endif
 
   // The Bookmark Bar View for this window. Lazily created. May be null for
   // non-tabbed browsers like popups. May not be visible.

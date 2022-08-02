@@ -34,6 +34,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/native_theme/native_theme_mac.h"
+#include "ui/views/cocoa/immersive_mode_delegate_mac.h"
 #include "ui/views/cocoa/text_input_host.h"
 #include "ui/views/cocoa/tooltip_manager_mac.h"
 #include "ui/views/controls/label.h"
@@ -213,16 +214,45 @@ std::map<uint64_t, NativeWidgetMacNSWindowHost*>& GetIdToWidgetHostImplMap() {
 
 uint64_t g_last_bridged_native_widget_id = 0;
 
+NSWindow* OriginalHostingWindowFromFullScreenWindow(
+    NSWindow* full_screen_window) {
+  if ([full_screen_window.delegate
+          conformsToProtocol:@protocol(ImmersiveModeDelegate)]) {
+    return base::mac::ObjCCastStrict<NSObject<ImmersiveModeDelegate>>(
+               full_screen_window.delegate)
+        .originalHostingWindow;
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // static
 NativeWidgetMacNSWindowHost* NativeWidgetMacNSWindowHost::GetFromNativeWindow(
     gfx::NativeWindow native_window) {
   NSWindow* window = native_window.GetNativeNSWindow();
+
+  // TODO(bur): Get tab dragging working.
+  // For tab dragging we need to map browser_view_->overlay_view_'s window to
+  // browser_view_'s window. However we can't do this all the time since
+  // browser_view_->overlay_view_ is a valid wigdet for some things. window =
+  // window.parentWindow ?: window;
+
   if (NativeWidgetMacNSWindow* widget_window =
           base::mac::ObjCCast<NativeWidgetMacNSWindow>(window)) {
     return GetFromId([widget_window bridgedNativeWidgetId]);
   }
+
+  // If the window is a system created NSToolbarFullScreenWindow we need to do
+  // some additional work to find the original window.
+  if ([window isKindOfClass:NSClassFromString(@"NSToolbarFullScreenWindow")]) {
+    NSWindow* original = OriginalHostingWindowFromFullScreenWindow(window);
+    if (NativeWidgetMacNSWindow* widget_window =
+            base::mac::ObjCCast<NativeWidgetMacNSWindow>(original)) {
+      return GetFromId([widget_window bridgedNativeWidgetId]);
+    }
+  }
+
   return nullptr;  // Not created by NativeWidgetMac.
 }
 
