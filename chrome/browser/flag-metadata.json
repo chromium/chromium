@@ -1120,6 +1120,11 @@
     "expiry_milestone": 112
   },
   {
+    "name": "customize-chrome-side-panel",
+    "owners": [ "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "dark-light-mode",
     "owners": [ "minch", "tclaiborne" ],
     "expiry_milestone": 110

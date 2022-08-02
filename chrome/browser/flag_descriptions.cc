@@ -130,6 +130,11 @@ const char kContentLanguagesInLanguagePickerDescription[] =
     "Enables bringing user's content languages that are translatable to the "
     "top of the list with all languages shown in the translate menu";
 
+const char kCustomizeChromeSidePanelName[] = "Customize Chrome Side Panel";
+const char KCustomizeChromeSidePanelDescription[] =
+    "Enables the ability to use Customize Chrome functionality from the "
+    "unified side panel on the New Tab Page.";
+
 const char kForceStartupSigninPromoName[] = "Force Start-up Signin Promo";
 const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "

@@ -58139,6 +58139,7 @@ from previous Chrome versions.
   <int value="-496989565"
       label="DesktopPWAsFlashAppNameInsteadOfOrigin:disabled"/>
   <int value="-496119023" label="WebXR:enabled"/>
+  <int value="-495991146" label="CustomizeChromeSidePanel:disabled"/>
   <int value="-495585885" label="enable-spdy-proxy-dev-auth-origin"/>
   <int value="-494722408" label="ContentSuggestionsLargeThumbnail:enabled"/>
   <int value="-494595710" label="LargeFaviconFromGoogle:disabled"/>
@@ -58673,6 +58674,7 @@ from previous Chrome versions.
   <int value="-131257916" label="OmniboxCompactSuggestions:disabled"/>
   <int value="-130318058" label="ExoGamepadVibration:enabled"/>
   <int value="-129823932" label="HardwareSecureDecryptionFallback:disabled"/>
+  <int value="-129384450" label="CustomizeChromeSidePanel:enabled"/>
   <int value="-129061954"
       label="AutofillEnableManualFallbackForVirtualCards:enabled"/>
   <int value="-128687277"

@@ -95,6 +95,9 @@ extern const char kCSSContainerQueriesDescription[];
 extern const char kContentLanguagesInLanguagePickerName[];
 extern const char kContentLanguagesInLanguagePickerDescription[];
 
+extern const char kCustomizeChromeSidePanelName[];
+extern const char KCustomizeChromeSidePanelDescription[];
+
 extern const char kDebugHistoryInterventionNoUserActivationName[];
 extern const char kDebugHistoryInterventionNoUserActivationDescription[];
 
