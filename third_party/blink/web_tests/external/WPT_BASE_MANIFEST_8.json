@@ -390349,6 +390349,13 @@
         {}
        ]
       ],
+      "contain-intrinsic-size-logical-003.html": [
+       "cbba1af81aae8838f33a1dcd643e81dbd29e9a9f",
+       [
+        null,
+        {}
+       ]
+      ],
       "parsing": {
        "contain-intrinsic-size-computed.html": [
         "c03b282699777728e36dba774ecd455d98745532",
