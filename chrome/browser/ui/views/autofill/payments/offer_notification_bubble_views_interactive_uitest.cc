@@ -18,6 +18,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -357,7 +358,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
           GetSubhistogramNameForOfferType() + ".FirstShow",
-      AutofillMetrics::OfferNotificationBubbleResultMetric::
+      autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED,
       1);
 
@@ -370,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
           GetSubhistogramNameForOfferType() + ".Reshows",
-      AutofillMetrics::OfferNotificationBubbleResultMetric::
+      autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED,
       1);
 }
@@ -386,7 +387,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
           GetSubhistogramNameForOfferType() + ".FirstShow",
-      AutofillMetrics::OfferNotificationBubbleResultMetric::
+      autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_CLOSED,
       1);
 
@@ -399,7 +400,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
           GetSubhistogramNameForOfferType() + ".Reshows",
-      AutofillMetrics::OfferNotificationBubbleResultMetric::
+      autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_CLOSED,
       1);
 }
@@ -418,7 +419,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
           GetSubhistogramNameForOfferType() + ".FirstShow",
-      AutofillMetrics::OfferNotificationBubbleResultMetric::
+      autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED,
       1);
 }
@@ -434,7 +435,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
           GetSubhistogramNameForOfferType() + ".FirstShow",
-      AutofillMetrics::OfferNotificationBubbleResultMetric::
+      autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
       1);
 
@@ -447,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.OfferNotificationBubbleResult." +
           GetSubhistogramNameForOfferType() + ".Reshows",
-      AutofillMetrics::OfferNotificationBubbleResultMetric::
+      autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
       1);
 }

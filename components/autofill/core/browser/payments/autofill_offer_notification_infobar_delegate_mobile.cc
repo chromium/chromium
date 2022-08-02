@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -38,21 +39,21 @@ AutofillOfferNotificationInfoBarDelegateMobile::
       network_icon_id_(CreditCard::IconResourceId(card.network())),
       deep_link_url_(offer_details_url),
       user_manually_closed_infobar_(false) {
-  AutofillMetrics::LogOfferNotificationInfoBarShown();
+  autofill_metrics::LogOfferNotificationInfoBarShown();
 }
 
 AutofillOfferNotificationInfoBarDelegateMobile::
     ~AutofillOfferNotificationInfoBarDelegateMobile() {
   if (!user_manually_closed_infobar_) {
-    AutofillMetrics::LogOfferNotificationInfoBarResultMetric(
-        AutofillMetrics::OfferNotificationInfoBarResultMetric::
+    autofill_metrics::LogOfferNotificationInfoBarResultMetric(
+        autofill_metrics::OfferNotificationInfoBarResultMetric::
             OFFER_NOTIFICATION_INFOBAR_IGNORED);
   }
 }
 
 void AutofillOfferNotificationInfoBarDelegateMobile::OnOfferDeepLinkClicked(
     GURL url) {
-  AutofillMetrics::LogOfferNotificationInfoBarDeepLinkClicked();
+  autofill_metrics::LogOfferNotificationInfoBarDeepLinkClicked();
   infobar()->owner()->OpenURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
 
@@ -87,15 +88,15 @@ std::u16string AutofillOfferNotificationInfoBarDelegateMobile::GetButtonLabel(
 }
 
 void AutofillOfferNotificationInfoBarDelegateMobile::InfoBarDismissed() {
-  AutofillMetrics::LogOfferNotificationInfoBarResultMetric(
-      AutofillMetrics::OfferNotificationInfoBarResultMetric::
+  autofill_metrics::LogOfferNotificationInfoBarResultMetric(
+      autofill_metrics::OfferNotificationInfoBarResultMetric::
           OFFER_NOTIFICATION_INFOBAR_CLOSED);
   user_manually_closed_infobar_ = true;
 }
 
 bool AutofillOfferNotificationInfoBarDelegateMobile::Accept() {
-  AutofillMetrics::LogOfferNotificationInfoBarResultMetric(
-      AutofillMetrics::OfferNotificationInfoBarResultMetric::
+  autofill_metrics::LogOfferNotificationInfoBarResultMetric(
+      autofill_metrics::OfferNotificationInfoBarResultMetric::
           OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED);
   user_manually_closed_infobar_ = true;
   return true;

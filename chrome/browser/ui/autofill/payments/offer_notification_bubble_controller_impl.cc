@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -125,36 +126,36 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
   UpdatePageActionIcon();
 
   // Log bubble result according to the closed reason.
-  AutofillMetrics::OfferNotificationBubbleResultMetric metric;
+  autofill_metrics::OfferNotificationBubbleResultMetric metric;
   switch (closed_reason) {
     case PaymentsBubbleClosedReason::kAccepted:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
+      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED;
       break;
     case PaymentsBubbleClosedReason::kClosed:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
+      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_CLOSED;
       break;
     case PaymentsBubbleClosedReason::kNotInteracted:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
+      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED;
       break;
     case PaymentsBubbleClosedReason::kLostFocus:
-      metric = AutofillMetrics::OfferNotificationBubbleResultMetric::
+      metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS;
       break;
     default:
       NOTREACHED();
       return;
   }
-  AutofillMetrics::LogOfferNotificationBubbleResultMetric(
+  autofill_metrics::LogOfferNotificationBubbleResultMetric(
       offer_->GetOfferType(), metric, is_user_gesture_);
 }
 
 void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
   promo_code_button_clicked_ = true;
 
-  AutofillMetrics::LogOfferNotificationBubblePromoCodeButtonClicked(
+  autofill_metrics::LogOfferNotificationBubblePromoCodeButtonClicked(
       offer_->GetOfferType());
 }
 
@@ -190,7 +191,7 @@ void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
             commerce::kCouponDisplayInterval.Get()) {
       bubble_state_ = BubbleState::kShowingIcon;
       UpdatePageActionIcon();
-      AutofillMetrics::LogOfferNotificationBubbleSuppressed(
+      autofill_metrics::LogOfferNotificationBubbleSuppressed(
           AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER);
       return;
     }
@@ -268,8 +269,8 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
   if (observer_for_testing_)
     observer_for_testing_->OnBubbleShown();
 
-  AutofillMetrics::LogOfferNotificationBubbleOfferMetric(offer_->GetOfferType(),
-                                                         is_user_gesture_);
+  autofill_metrics::LogOfferNotificationBubbleOfferMetric(
+      offer_->GetOfferType(), is_user_gesture_);
 }
 
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {

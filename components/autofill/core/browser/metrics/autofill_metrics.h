@@ -19,7 +19,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/autofill_profile_import_process.h"
 #include "components/autofill/core/browser/autofill_progress_dialog_type.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
@@ -45,7 +44,6 @@ class Autofill_CreditCardFill;
 namespace autofill {
 
 class AutofillField;
-class AutofillOfferData;
 class CreditCard;
 class FormEventLoggerBase;
 
@@ -293,36 +291,6 @@ class AutofillMetrics {
     // logging function is invoked before the closed reason is correctly set.
     SAVE_CARD_PROMPT_RESULT_UNKNOWN,
     NUM_SAVE_CARD_PROMPT_RESULT_METRICS,
-  };
-
-  // Metrics to track event when the offer notification bubble is closed.
-  enum class OfferNotificationBubbleResultMetric {
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-
-    // The user explicitly acknowledged the bubble by clicking the ok button.
-    OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED = 0,
-    // The user explicitly closed the prompt with the close button or ESC.
-    OFFER_NOTIFICATION_BUBBLE_CLOSED = 1,
-    // The user did not interact with the prompt.
-    OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED = 2,
-    // The prompt lost focus and was deactivated.
-    OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS = 3,
-    kMaxValue = OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
-  };
-
-  // Metrics to track event when the offer notification infobar is closed.
-  enum class OfferNotificationInfoBarResultMetric {
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-
-    // User acknowledged the infobar by clicking the ok button.
-    OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED = 0,
-    // User explicitly closed the infobar with the close button.
-    OFFER_NOTIFICATION_INFOBAR_CLOSED = 1,
-    // InfoBar was shown but user did not interact with the it.
-    OFFER_NOTIFICATION_INFOBAR_IGNORED = 2,
-    kMaxValue = OFFER_NOTIFICATION_INFOBAR_IGNORED,
   };
 
   // Metrics to track events in CardUnmaskAuthenticationSelectionDialog.
@@ -1460,21 +1428,6 @@ class AutofillMetrics {
   static void LogLocalCardMigrationPromptMetric(
       LocalCardMigrationOrigin local_card_migration_origin,
       LocalCardMigrationPromptMetric metric);
-  static void LogOfferNotificationBubbleOfferMetric(
-      AutofillOfferData::OfferType offer_type,
-      bool is_reshow);
-  static void LogOfferNotificationBubbleResultMetric(
-      AutofillOfferData::OfferType offer_type,
-      OfferNotificationBubbleResultMetric metric,
-      bool is_reshow);
-  static void LogOfferNotificationBubblePromoCodeButtonClicked(
-      AutofillOfferData::OfferType offer_type);
-  static void LogOfferNotificationBubbleSuppressed(
-      AutofillOfferData::OfferType offer_type);
-  static void LogOfferNotificationInfoBarDeepLinkClicked();
-  static void LogOfferNotificationInfoBarResultMetric(
-      OfferNotificationInfoBarResultMetric metric);
-  static void LogOfferNotificationInfoBarShown();
   static void LogProgressDialogResultMetric(
       bool is_canceled_by_user,
       AutofillProgressDialogType autofill_progress_dialog_type);
@@ -1734,9 +1687,6 @@ class AutofillMetrics {
       const std::vector<std::unique_ptr<CreditCard>>& server_cards,
       size_t server_card_count_with_card_art_image,
       base::TimeDelta disused_data_threshold);
-
-  // Logs whether the synced autofill offer data is valid.
-  static void LogSyncedOfferDataBeingValid(bool invalid);
 
   // Log the number of autofill credit card suggestions suppressed because they
   // have not been used for a long time and are expired. Note that these cards

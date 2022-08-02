@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
@@ -181,7 +182,7 @@ void AutofillWalletOfferSyncBridge::MergeRemoteData(
     if (offer_valid) {
       offer_data.push_back(AutofillOfferDataFromOfferSpecifics(specifics));
     }
-    AutofillMetrics::LogSyncedOfferDataBeingValid(offer_valid);
+    autofill_metrics::LogSyncedOfferDataBeingValid(offer_valid);
   }
 
   AutofillTable* table = GetAutofillTable();

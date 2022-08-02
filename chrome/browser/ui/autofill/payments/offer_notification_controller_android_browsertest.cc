@@ -14,6 +14,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -172,7 +173,7 @@ class OfferNotificationControllerAndroidBrowserTestForInfobar
   }
 
   void VerifyInfoBarResultMetric(
-      AutofillMetrics::OfferNotificationInfoBarResultMetric metric,
+      autofill_metrics::OfferNotificationInfoBarResultMetric metric,
       int count) {
     histogram_tester_.ExpectBucketCount(
         "Autofill.OfferNotificationInfoBarResult.CardLinkedOffer", metric,
@@ -196,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationControllerAndroidBrowserTestForInfobar,
 
   // Verify histogram counts.
   VerifyInfoBarResultMetric(
-      AutofillMetrics::OfferNotificationInfoBarResultMetric::
+      autofill_metrics::OfferNotificationInfoBarResultMetric::
           OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED,
       1);
 }
@@ -217,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationControllerAndroidBrowserTestForInfobar,
 
   // Verify histogram counts.
   VerifyInfoBarResultMetric(
-      AutofillMetrics::OfferNotificationInfoBarResultMetric::
+      autofill_metrics::OfferNotificationInfoBarResultMetric::
           OFFER_NOTIFICATION_INFOBAR_CLOSED,
       1);
 }

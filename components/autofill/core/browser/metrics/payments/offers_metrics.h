@@ -12,10 +12,35 @@
 
 namespace autofill::autofill_metrics {
 
-// Logs the offer data associated with a profile. This should be called each
-// time a Chrome profile is launched.
-void LogStoredOfferMetrics(
-    const std::vector<std::unique_ptr<AutofillOfferData>>& offers);
+// Metrics to track event when the offer notification bubble is closed.
+enum class OfferNotificationBubbleResultMetric {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+
+  // The user explicitly acknowledged the bubble by clicking the ok button.
+  OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED = 0,
+  // The user explicitly closed the prompt with the close button or ESC.
+  OFFER_NOTIFICATION_BUBBLE_CLOSED = 1,
+  // The user did not interact with the prompt.
+  OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED = 2,
+  // The prompt lost focus and was deactivated.
+  OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS = 3,
+  kMaxValue = OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS,
+};
+
+// Metrics to track event when the offer notification infobar is closed.
+enum class OfferNotificationInfoBarResultMetric {
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+
+  // User acknowledged the infobar by clicking the ok button.
+  OFFER_NOTIFICATION_INFOBAR_ACKNOWLEDGED = 0,
+  // User explicitly closed the infobar with the close button.
+  OFFER_NOTIFICATION_INFOBAR_CLOSED = 1,
+  // InfoBar was shown but user did not interact with the it.
+  OFFER_NOTIFICATION_INFOBAR_IGNORED = 2,
+  kMaxValue = OFFER_NOTIFICATION_INFOBAR_IGNORED,
+};
 
 // Metrics to track events related to the offers suggestions popup.
 enum class OffersSuggestionsPopupEvent {
@@ -63,6 +88,21 @@ enum class OffersSuggestionsEvent {
   kMaxValue = kOfferSuggestionSeeOfferDetailsSelectedOnce,
 };
 
+void LogOfferNotificationBubbleOfferMetric(
+    AutofillOfferData::OfferType offer_type,
+    bool is_reshow);
+
+void LogOfferNotificationBubblePromoCodeButtonClicked(
+    AutofillOfferData::OfferType offer_type);
+
+void LogOfferNotificationBubbleResultMetric(
+    AutofillOfferData::OfferType offer_type,
+    OfferNotificationBubbleResultMetric metric,
+    bool is_reshow);
+
+void LogOfferNotificationBubbleSuppressed(
+    AutofillOfferData::OfferType offer_type);
+
 // Log that the offers suggestions popup was shown. If |first_time_being_logged|
 // is true, it represents that it has not been logged yet for the promo code
 // offer field that the user is on, so additional logging is needed for the
@@ -72,6 +112,19 @@ void LogOffersSuggestionsPopupShown(bool first_time_being_logged);
 // Log the offers suggestions popup |event| for the corresponding |offer_type|.
 void LogIndividualOfferSuggestionEvent(OffersSuggestionsEvent event,
                                        AutofillOfferData::OfferType offer_type);
+
+void LogOfferNotificationInfoBarDeepLinkClicked();
+void LogOfferNotificationInfoBarResultMetric(
+    OfferNotificationInfoBarResultMetric metric);
+void LogOfferNotificationInfoBarShown();
+
+// Logs the offer data associated with a profile. This should be called each
+// time a Chrome profile is launched.
+void LogStoredOfferMetrics(
+    const std::vector<std::unique_ptr<AutofillOfferData>>& offers);
+
+// Logs whether the synced autofill offer data is valid.
+void LogSyncedOfferDataBeingValid(bool invalid);
 
 }  // namespace autofill::autofill_metrics
 
