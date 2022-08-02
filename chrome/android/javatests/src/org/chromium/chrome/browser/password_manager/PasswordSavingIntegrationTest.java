@@ -23,9 +23,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.password_manager.tests.utils.FakePasswordStoreAndroidBackend;
-import org.chromium.chrome.browser.password_manager.tests.utils.FakePasswordStoreAndroidBackendFactoryImpl;
-import org.chromium.chrome.browser.password_manager.tests.utils.FakePasswordSyncControllerDelegateFactoryImpl;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -85,6 +82,7 @@ public class PasswordSavingIntegrationTest {
         mActivityTestRule.startMainActivityOnBlankPage();
         PasswordManagerTestUtilsBridge.disableServerPredictions();
         mSigninTestRule.addTestAccountThenSigninAndEnableSync();
+
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(FORM_URL));
 
         TestThreadUtils.runOnUiThreadBlocking(

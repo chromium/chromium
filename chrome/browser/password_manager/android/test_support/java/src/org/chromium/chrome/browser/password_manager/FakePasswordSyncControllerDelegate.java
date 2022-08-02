@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.tests.utils;
+package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.password_manager.PasswordSyncControllerDelegate;
 
 /**
  * Fake {@link PasswordSyncControllerDelegate} to be used in integration tests.

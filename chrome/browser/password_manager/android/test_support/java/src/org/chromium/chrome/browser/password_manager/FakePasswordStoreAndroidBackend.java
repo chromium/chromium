@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.tests.utils;
+package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
 
@@ -15,8 +15,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Predicate;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
-import org.chromium.chrome.browser.password_manager.AndroidBackendErrorType;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.PasswordWithLocalData;
 import org.chromium.components.sync.protocol.PasswordSpecificsData;

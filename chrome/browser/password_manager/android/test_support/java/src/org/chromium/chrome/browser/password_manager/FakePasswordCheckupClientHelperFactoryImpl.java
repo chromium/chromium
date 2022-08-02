@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.tests.utils;
-
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper;
-import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelperFactory;
+package org.chromium.chrome.browser.password_manager;
 
 /**
  * The factory for creating a fake {@link PasswordCheckupClientHelper} to be used in integration

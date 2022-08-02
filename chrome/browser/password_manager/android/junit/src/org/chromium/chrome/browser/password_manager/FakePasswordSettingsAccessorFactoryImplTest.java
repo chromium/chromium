@@ -13,8 +13,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.password_manager.tests.utils.FakePasswordSettingsAccessor;
-import org.chromium.chrome.browser.password_manager.tests.utils.FakePasswordSettingsAccessorFactoryImpl;
 
 /** Tests for the methods of {@link FakePasswordSettingsAccessorFactoryImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)

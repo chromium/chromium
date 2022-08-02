@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.tests.utils;
-
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackend;
-import org.chromium.chrome.browser.password_manager.PasswordStoreAndroidBackendFactory;
+package org.chromium.chrome.browser.password_manager;
 
 /**
  * The factory for creating fake {@link PasswordStoreAndroidBackend} to be used in integration

@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.password_manager.tests.utils;
+package org.chromium.chrome.browser.password_manager;
 
 import android.accounts.Account;
 
 import com.google.common.base.Optional;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.password_manager.PasswordSettingsAccessor;
 
 /**
  * Fake {@link PasswordSettingsAccessor} to be used in integration tests.
