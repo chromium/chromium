@@ -15,12 +15,6 @@
 #include "base/values.h"
 #include "services/preferences/public/cpp/scoped_pref_update.h"
 
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}  // namespace base
-
 namespace prefs {
 
 // A wrapper around base::DictionaryValue that reports changes to its contents
@@ -99,8 +93,6 @@ class DictionaryValueUpdate {
                      const base::DictionaryValue** out_value) const;
   bool GetDictionary(base::StringPiece path,
                      std::unique_ptr<DictionaryValueUpdate>* out_value);
-  bool GetList(base::StringPiece path, const base::ListValue** out_value) const;
-  bool GetList(base::StringPiece path, base::ListValue** out_value);
 
   // Like Get(), but without special treatment of '.'.  This allows e.g. URLs to
   // be used as paths.

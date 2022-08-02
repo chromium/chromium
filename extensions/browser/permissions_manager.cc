@@ -49,15 +49,15 @@ void AddSiteToPrefs(ExtensionPrefs* extension_prefs,
                     const url::Origin& origin) {
   std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update =
       extension_prefs->CreatePrefUpdate(kUserPermissions);
-  base::ListValue* list = nullptr;
+  base::Value::List* list = nullptr;
 
-  bool pref_exists = (*update)->GetList(pref, &list);
+  bool pref_exists = (*update)->GetListWithoutPathExpansion(pref, &list);
   if (pref_exists) {
     list->Append(origin.Serialize());
   } else {
-    auto sites = std::make_unique<base::Value>(base::Value::Type::LIST);
-    sites->Append(origin.Serialize());
-    (*update)->Set(pref, std::move(sites));
+    base::Value::List sites;
+    sites.Append(origin.Serialize());
+    (*update)->SetKey(pref, base::Value(std::move(sites)));
   }
 }
 
@@ -67,9 +67,10 @@ void RemoveSiteFromPrefs(ExtensionPrefs* extension_prefs,
                          const url::Origin& origin) {
   std::unique_ptr<prefs::ScopedDictionaryPrefUpdate> update =
       extension_prefs->CreatePrefUpdate(kUserPermissions);
-  base::ListValue* list;
-  (*update)->GetList(pref, &list);
-  list->EraseListValue(base::Value(origin.Serialize()));
+  base::Value::List* list = nullptr;
+  (*update)->GetListWithoutPathExpansion(pref, &list);
+  DCHECK(list);
+  list->EraseValue(base::Value(origin.Serialize()));
 }
 
 // Returns sites from `pref` in `extension_prefs`.

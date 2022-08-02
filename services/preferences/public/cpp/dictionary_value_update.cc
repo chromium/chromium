@@ -183,17 +183,6 @@ bool DictionaryValueUpdate::GetDictionary(
   return true;
 }
 
-bool DictionaryValueUpdate::GetList(base::StringPiece path,
-                                    const base::ListValue** out_value) const {
-  return base::as_const(value_)->GetList(path, out_value);
-}
-
-bool DictionaryValueUpdate::GetList(base::StringPiece path,
-                                    base::ListValue** out_value) {
-  RecordPath(path);
-  return value_->GetList(path, out_value);
-}
-
 bool DictionaryValueUpdate::GetBooleanWithoutPathExpansion(
     base::StringPiece key,
     bool* out_value) const {
