@@ -254,6 +254,12 @@ void LoginRemoveAccountDialog::OnThemeChanged() {
               AshColorProvider::ContentLayerType::kTextColorPrimary));
     }
   }
+
+  if (management_disclosure_label_) {
+    management_disclosure_label_->SetEnabledColor(
+        AshColorProvider::Get()->GetContentLayerColor(
+            AshColorProvider::ContentLayerType::kTextColorPrimary));
+  }
 }
 
 void LoginRemoveAccountDialog::RequestFocus() {
