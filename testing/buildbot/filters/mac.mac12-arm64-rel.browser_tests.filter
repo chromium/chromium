@@ -98,7 +98,6 @@
 -SaveAsMhtml/SavePageOriginalVsSavedComparisonTest.NestedFrames/0
 -SavePageOriginalVsSavedComparisonTest.AboutBlank/0
 -SavePageOriginalVsSavedComparisonTest.CrossSiteObject/0
--SelectAllScreensTest.SelectAllScreensDisabledByDefault
 -SitePerProcessWebViewTest.ContentScript
 -SitePerProcessWebViewTest.ContentScriptInOOPIF
 -SSLUITest.BadCertFollowedByGoodCert
