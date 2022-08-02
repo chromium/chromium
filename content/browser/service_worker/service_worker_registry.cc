@@ -393,14 +393,7 @@ void ServiceWorkerRegistry::StoreRegistration(
   data->script = version->script_url();
   data->script_type = version->script_type();
   data->update_via_cache = registration->update_via_cache();
-  data->fetch_handler_type =
-      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
-  if (version->fetch_handler_existence() ==
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS) {
-    // TODO(crbug.com/1347319): implement other fetch_handler_type.
-    data->fetch_handler_type =
-        blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
-  }
+  data->fetch_handler_type = version->fetch_handler_type();
   data->version_id = version->version_id();
   data->last_update_check = registration->last_update_check();
   data->is_active = (version == registration->active_version());
@@ -890,11 +883,7 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
     version = base::MakeRefCounted<ServiceWorkerVersion>(
         registration.get(), data.script, data.script_type, data.version_id,
         std::move(version_reference), context_->AsWeakPtr());
-    version->set_fetch_handler_existence(
-        (data.fetch_handler_type ==
-         blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler)
-            ? ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST
-            : ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+    version->set_fetch_handler_type(data.fetch_handler_type);
     version->SetStatus(data.is_active ? ServiceWorkerVersion::ACTIVATED
                                       : ServiceWorkerVersion::INSTALLED);
     version->script_cache_map()->SetResources(resources);

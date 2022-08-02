@@ -445,8 +445,8 @@ CreateServiceWorkerRegistrationAndVersion(ServiceWorkerContextCore* context,
       storage::mojom::ServiceWorkerResourceRecord::New(resource_id, script,
                                                        /*size_bytes=*/100));
   version->script_cache_map()->SetResources(records);
-  version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::INSTALLED);
   registration->SetWaitingVersion(version);
   return registration;

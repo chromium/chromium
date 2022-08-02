@@ -192,8 +192,8 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
   // |version_| to null (as subsequent DoRequest() calls should not attempt to
   // install or update |version_|).
   void ActivateVersion() {
-    version_->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST);
+    version_->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNoHandler);
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
     version_ = nullptr;

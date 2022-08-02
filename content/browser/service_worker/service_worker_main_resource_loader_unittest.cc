@@ -444,8 +444,8 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
         GetStorageControl(), version_->script_url(), {} /* headers */,
         "I'm the body", "I'm the meta data"));
     version_->script_cache_map()->SetResources(records);
-    version_->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+    version_->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
     registration_->SetActiveVersion(version_);
 

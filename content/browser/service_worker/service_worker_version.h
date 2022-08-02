@@ -135,6 +135,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   using SimpleEventCallback =
       base::OnceCallback<void(blink::mojom::ServiceWorkerEventStatus)>;
   using FetchHandlerExistence = blink::mojom::FetchHandlerExistence;
+  using FetchHandlerType = blink::mojom::ServiceWorkerFetchHandlerType;
 
   // Current version status; some of the status (e.g. INSTALLED and ACTIVATED)
   // should be persisted unlike running status.
@@ -228,10 +229,10 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // This status is set to EXISTS or DOES_NOT_EXIST when the install event has
   // been executed in a new version or when an installed version is loaded from
   // the storage. When a new version is not installed yet, it is UNKNOWN.
-  FetchHandlerExistence fetch_handler_existence() const {
-    return fetch_handler_existence_;
-  }
-  void set_fetch_handler_existence(FetchHandlerExistence existence);
+  FetchHandlerExistence fetch_handler_existence() const;
+  // Returns the fetch handler type if set.  Otherwise, kNoHandler.
+  FetchHandlerType fetch_handler_type() const;
+  void set_fetch_handler_type(FetchHandlerType fetch_handler_type);
 
   base::TimeDelta TimeSinceNoControllees() const {
     return GetTickDuration(no_controllees_time_);
@@ -791,9 +792,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // EmbeddedWorkerInstance::Listener overrides:
   void OnScriptEvaluationStart() override;
   void OnStarting() override;
-  void OnStarted(
-      blink::mojom::ServiceWorkerStartStatus status,
-      blink::mojom::ServiceWorkerFetchHandlerType fetch_handler_type) override;
+  void OnStarted(blink::mojom::ServiceWorkerStartStatus status,
+                 FetchHandlerType fetch_handler_type) override;
   void OnStopping() override;
   void OnStopped(EmbeddedWorkerStatus old_status) override;
   void OnDetached(EmbeddedWorkerStatus old_status) override;
@@ -950,7 +950,7 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // "classic" or "module". Unless stated otherwise, it is "classic".
   // https://w3c.github.io/ServiceWorker/#dfn-type
   const blink::mojom::ScriptType script_type_;
-  FetchHandlerExistence fetch_handler_existence_;
+  absl::optional<FetchHandlerType> fetch_handler_type_;
   // The source of truth for navigation preload state is the
   // ServiceWorkerRegistration. |navigation_preload_state_| is essentially a
   // cached value because it must be looked up quickly and a live registration

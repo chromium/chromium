@@ -727,8 +727,8 @@ TEST_F(ServiceWorkerRegistryTest, StoreFindUpdateDeleteRegistration) {
           blink::mojom::ScriptType::kClassic, kVersionId,
           mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
           context()->AsWeakPtr());
-  live_version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  live_version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   live_version->SetStatus(ServiceWorkerVersion::INSTALLED);
   live_version->script_cache_map()->SetResources(resources);
   live_version->set_used_features(
@@ -2222,8 +2222,8 @@ TEST_F(ServiceWorkerRegistryOriginTrialsTest, FromMainScript) {
   records.push_back(
       storage::mojom::ServiceWorkerResourceRecord::New(1, kScript, 100));
   version->script_cache_map()->SetResources(records);
-  version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::INSTALLED);
   registration->SetActiveVersion(version);
 
@@ -2270,8 +2270,8 @@ class ServiceWorkerRegistryResourceTest : public ServiceWorkerRegistryTest {
         CreateNewServiceWorkerRegistration(registry(), options, key_);
     scoped_refptr<ServiceWorkerVersion> version = CreateNewServiceWorkerVersion(
         registry(), registration_.get(), script_, options.type);
-    version->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST);
+    version->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNoHandler);
     version->SetStatus(ServiceWorkerVersion::INSTALLED);
 
     std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources;
@@ -2515,8 +2515,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration) {
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
   records.push_back(CreateResourceRecord(10, live_version->script_url(), 100));
   live_version->script_cache_map()->SetResources(records);
-  live_version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  live_version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
 
   // Writing the registration should move the old version's resources to the
   // purgeable list but keep them available.
@@ -2561,8 +2561,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, UpdateRegistration_NoLiveVersion) {
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> records;
   records.push_back(CreateResourceRecord(10, live_version->script_url(), 100));
   live_version->script_cache_map()->SetResources(records);
-  live_version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  live_version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
 
   // Writing the registration should purge the old version's resources,
   // since it's not live.

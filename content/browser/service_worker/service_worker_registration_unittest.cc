@@ -351,15 +351,15 @@ TEST_F(ServiceWorkerRegistrationTest, NavigationPreload) {
   scoped_refptr<ServiceWorkerVersion> version_1 = CreateNewServiceWorkerVersion(
       context()->registry(), registration.get(), kScript,
       blink::mojom::ScriptType::kClassic);
-  version_1->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version_1->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   registration->SetActiveVersion(version_1);
   version_1->SetStatus(ServiceWorkerVersion::ACTIVATED);
   scoped_refptr<ServiceWorkerVersion> version_2 = CreateNewServiceWorkerVersion(
       context()->registry(), registration.get(), kScript,
       blink::mojom::ScriptType::kClassic);
-  version_2->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version_2->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   registration->SetWaitingVersion(version_2);
   version_2->SetStatus(ServiceWorkerVersion::INSTALLED);
 
@@ -406,8 +406,8 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
         CreateNewServiceWorkerVersion(context()->registry(),
                                       registration_.get(), kScript,
                                       blink::mojom::ScriptType::kClassic);
-    version_1->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+    version_1->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     registration_->SetActiveVersion(version_1);
     version_1->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
@@ -462,8 +462,8 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
     version_2->script_cache_map()->SetResources(records_2);
     version_2->SetMainScriptResponse(
         EmbeddedWorkerTestHelper::CreateMainScriptResponse());
-    version_2->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+    version_2->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     registration_->SetWaitingVersion(version_2);
 
     // Setup the Mojo implementation fakes for the renderer-side service worker.
@@ -903,8 +903,8 @@ class ServiceWorkerRegistrationObjectHostTest
     version->script_cache_map()->SetResources(records);
     version->SetMainScriptResponse(
         EmbeddedWorkerTestHelper::CreateMainScriptResponse());
-    version->set_fetch_handler_existence(
-        ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+    version->set_fetch_handler_type(
+        ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
     version->SetStatus(ServiceWorkerVersion::INSTALLING);
     return version;
   }

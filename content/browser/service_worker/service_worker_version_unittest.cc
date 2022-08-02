@@ -122,9 +122,8 @@ class ServiceWorkerVersionTest : public testing::Test {
     version_->script_cache_map()->SetResources(records);
     version_->SetMainScriptResponse(
         EmbeddedWorkerTestHelper::CreateMainScriptResponse());
-    if (GetFetchHandlerExistence() !=
-        ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN) {
-      version_->set_fetch_handler_existence(GetFetchHandlerExistence());
+    if (GetFetchHandlerType()) {
+      version_->set_fetch_handler_type(*GetFetchHandlerType());
     }
 
     // Make the registration findable via storage functions.
@@ -180,9 +179,9 @@ class ServiceWorkerVersionTest : public testing::Test {
     version_->SetTickClockForTesting(tick_clock);
   }
 
-  virtual ServiceWorkerVersion::FetchHandlerExistence GetFetchHandlerExistence()
-      const {
-    return ServiceWorkerVersion::FetchHandlerExistence::EXISTS;
+  virtual absl::optional<ServiceWorkerVersion::FetchHandlerType>
+  GetFetchHandlerType() const {
+    return ServiceWorkerVersion::FetchHandlerType::kNotSkippable;
   }
 
   // Make the client in a different process from the service worker when
@@ -1490,9 +1489,9 @@ TEST_F(ServiceWorkerVersionTest,
 
 class ServiceWorkerVersionNoFetchHandlerTest : public ServiceWorkerVersionTest {
  protected:
-  ServiceWorkerVersion::FetchHandlerExistence GetFetchHandlerExistence()
+  absl::optional<ServiceWorkerVersion::FetchHandlerType> GetFetchHandlerType()
       const override {
-    return ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST;
+    return ServiceWorkerVersion::FetchHandlerType::kNoHandler;
   }
 };
 

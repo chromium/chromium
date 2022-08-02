@@ -470,8 +470,8 @@ TEST_F(ServiceWorkerContextTest, Observer_ControlleeEvents) {
       2l /* dummy version id */,
       mojo::PendingRemote<storage::mojom::ServiceWorkerLiveVersionRef>(),
       context()->AsWeakPtr());
-  version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::EXISTS);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNotSkippable);
   version->SetStatus(ServiceWorkerVersion::ACTIVATED);
 
   ServiceWorkerRemoteContainerEndpoint endpoint;
@@ -529,8 +529,8 @@ TEST_F(ServiceWorkerContextTest, VersionActivatedObserver) {
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
-  version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNoHandler);
   version->SetStatus(ServiceWorkerVersion::Status::ACTIVATED);
   base::RunLoop().RunUntilIdle();
 
@@ -560,8 +560,8 @@ TEST_F(ServiceWorkerContextTest, VersionRedundantObserver) {
 
   TestServiceWorkerContextObserver observer(context_wrapper());
 
-  version->set_fetch_handler_existence(
-      ServiceWorkerVersion::FetchHandlerExistence::DOES_NOT_EXIST);
+  version->set_fetch_handler_type(
+      ServiceWorkerVersion::FetchHandlerType::kNoHandler);
   version->SetStatus(ServiceWorkerVersion::Status::REDUNDANT);
   base::RunLoop().RunUntilIdle();
 
