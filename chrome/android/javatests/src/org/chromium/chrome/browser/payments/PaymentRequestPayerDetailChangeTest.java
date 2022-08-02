@@ -15,13 +15,11 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
-import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.ui.modaldialog.ModalDialogProperties;
 
 import java.util.concurrent.TimeoutException;
 
@@ -44,12 +42,6 @@ public class PaymentRequestPayerDetailChangeTest implements MainActivityStartCal
                 new AutofillProfile("", "https://example.com", true, "" /* honorific prefix */,
                         "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
                         "US", "333-333-3333", "jon.doe@gmail.com", "en-US"));
-        helper.setCreditCard(new CreditCard("", "https://example.com", true /* isLocal */,
-                true /* isCached */, "Jon Doe", "5555555555554444", "" /* obfuscatedNumber */, "12",
-                "2050", "mastercard", R.drawable.mc_card, billing_address_id, "" /* serverId */));
-
-        mPaymentRequestTestRule.addPaymentAppFactory(
-                AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
     /**
@@ -58,16 +50,17 @@ public class PaymentRequestPayerDetailChangeTest implements MainActivityStartCal
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
     public void testPayerDetailChangeEvent() throws TimeoutException {
-        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        // Install a fake payment app. We only need one as we won't skip the PaymentRequest sheet
+        // due to requesting contact info as well.
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                "https://bobpay.com", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
+
+        mPaymentRequestTestRule.triggerUIAndWait(
+                "buy", mPaymentRequestTestRule.getReadyToPay());
+
         mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE,
-                mPaymentRequestTestRule.getPaymentResponseReady());
+                R.id.button_primary, mPaymentRequestTestRule.getPaymentResponseReady());
 
         mPaymentRequestTestRule.retryPaymentRequest("{}", mPaymentRequestTestRule.getReadyToPay());
 
@@ -82,11 +75,7 @@ public class PaymentRequestPayerDetailChangeTest implements MainActivityStartCal
                 R.id.editor_dialog_done_button, mPaymentRequestTestRule.getReadyToPay());
 
         mPaymentRequestTestRule.clickAndWait(
-                R.id.button_primary, mPaymentRequestTestRule.getReadyForUnmaskInput());
-        mPaymentRequestTestRule.setTextInCardUnmaskDialogAndWait(
-                R.id.card_unmask_input, "123", mPaymentRequestTestRule.getReadyToUnmask());
-        mPaymentRequestTestRule.clickCardUnmaskButtonAndWait(
-                ModalDialogProperties.ButtonType.POSITIVE, mPaymentRequestTestRule.getDismissed());
+                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
 
         mPaymentRequestTestRule.expectResultContains(
                 new String[] {"Jane Doe", "6502530000", "jane.doe@gmail.com"});

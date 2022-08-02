@@ -7,6 +7,10 @@
 var gPaymentResponse = null;
 var gRetryPromise = null;
 
+const bobPayMethod = Object.freeze({
+  supportedMethods: 'https://bobpay.com',
+});
+
 /**
  * Launches the PaymentRequest UI
  */
@@ -16,7 +20,7 @@ function buy() { // eslint-disable-line no-unused-vars
     requestPayerName: true,
     requestPayerPhone: true,
   };
-  getPaymentResponse(options)
+  getPaymentResponseWithMethod(options, [bobPayMethod])
       .then(function(response) {
         gPaymentResponse = response;
         var eventPromise = new Promise(function(resolve) {
