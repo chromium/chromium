@@ -459,7 +459,7 @@ void PacmanFramePainter::DrawPacman(base::TimeDelta elapsed_time,
     const SkRect full_frame = SkRect::MakeWH(width, height);
     paint.setARGB(255, 0, 127, 0);
     canvas.drawRect(full_frame, paint);
-    paint.setColor(SK_ColorGREEN);
+    paint.setColor(SkColors::kGreen);
   }
 
   // Draw a sweeping circle to show an animation.
