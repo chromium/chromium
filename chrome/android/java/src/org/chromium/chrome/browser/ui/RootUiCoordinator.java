@@ -246,7 +246,7 @@ public class RootUiCoordinator
     private final ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
-    private BottomSheetObserver mContextualSearchSuppressor;
+    private BottomSheetObserver mBottomSheetObserver;
     private final Supplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     protected final CallbackController mCallbackController;
     protected final BrowserControlsManager mBrowserControlsManager;
@@ -582,8 +582,8 @@ public class RootUiCoordinator
 
         if (mBottomSheetManager != null) mBottomSheetManager.onDestroy();
         if (mBottomSheetController != null) {
-            if (mContextualSearchSuppressor != null) {
-                mBottomSheetController.removeObserver(mContextualSearchSuppressor);
+            if (mBottomSheetObserver != null) {
+                mBottomSheetController.removeObserver(mBottomSheetObserver);
             }
             BottomSheetControllerFactory.detach(mBottomSheetController);
             mBottomSheetController.destroy();
@@ -664,7 +664,7 @@ public class RootUiCoordinator
     public void onPostInflationStartup() {
         initAppMenu();
         initDirectActionInitializer();
-        initContextualSearchSuppressor();
+        initBottomSheetObserver();
         if (mAppMenuCoordinator != null && mModalDialogManagerSupplier.hasValue()) {
             mModalDialogManagerObserver = new ModalDialogManagerObserver() {
                 @Override
@@ -1012,6 +1012,11 @@ public class RootUiCoordinator
                 public void onOverlayPanelShown() {
                     if (mFindToolbarManager != null) {
                         mFindToolbarManager.hideToolbar(false);
+                    }
+
+                    if (mPageZoomCoordinator != null) {
+                        // On show overlay panel, hide page zoom dialog
+                        mPageZoomCoordinator.hide();
                     }
                 }
 
@@ -1416,12 +1421,12 @@ public class RootUiCoordinator
     }
 
     /**
-     * Initializes a glue logic that suppresses Contextual Search while a Bottom Sheet feature is
-     * in action.
+     * Initializes a glue logic that suppresses Contextual Search and hides the Page Zoom slider
+     * while a Bottom Sheet feature is in action.
      */
-    private void initContextualSearchSuppressor() {
+    private void initBottomSheetObserver() {
         if (mBottomSheetController == null) return;
-        mContextualSearchSuppressor = new EmptyBottomSheetObserver() {
+        mBottomSheetObserver = new EmptyBottomSheetObserver() {
             private boolean mOpened;
 
             @Override
@@ -1436,6 +1441,9 @@ public class RootUiCoordinator
                                     mContextualSearchManagerSupplier.get();
                             if (manager != null) manager.onBottomSheetVisible(true);
                         }
+
+                        // On visible bottom sheet, hide page zoom dialog
+                        mPageZoomCoordinator.hide();
                         break;
                     case SheetState.HIDDEN:
                         mOpened = false;
@@ -1445,7 +1453,7 @@ public class RootUiCoordinator
                 }
             }
         };
-        mBottomSheetController.addObserver(mContextualSearchSuppressor);
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     public OneshotSupplier<IncognitoReauthController> getIncognitoReauthControllerSupplier() {

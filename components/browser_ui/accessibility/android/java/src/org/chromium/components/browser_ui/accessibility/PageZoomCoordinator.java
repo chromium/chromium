@@ -28,9 +28,11 @@ public class PageZoomCoordinator {
     private final Delegate mDelegate;
     private final PropertyModel mModel;
     private final PageZoomMediator mMediator;
+
     private WebContentsObserver mWebContentsObserver;
     private GestureListenerManager mGestureListenerManager;
     private GestureStateListener mGestureListener;
+
     private View mView;
 
     private static Boolean sShouldShowMenuItemForTesting;
@@ -106,7 +108,6 @@ public class PageZoomCoordinator {
                 hide();
             }
         };
-
         mGestureListenerManager.addListener(mGestureListener);
     }
 
@@ -115,7 +116,7 @@ public class PageZoomCoordinator {
      */
     public void hide() {
         // TODO(mschillaci): Add a FrameLayout wrapper so the view can be removed.
-        if (mView.getVisibility() == View.VISIBLE) {
+        if (mView != null && mView.getVisibility() == View.VISIBLE) {
             Animation animation = getOutAnimation();
             mView.startAnimation(animation);
             mView.setVisibility(View.GONE);
