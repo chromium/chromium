@@ -329,14 +329,12 @@ TEST(RuleSetTest, findBestRuleSetAndAdd_WhereMultiArg) {
   ASSERT_EQ(1u, rules->size());
 }
 
-TEST(RuleSetTest, LargeNumberOfAttributeRules) {
-  base::test::ScopedFeatureList feature_list;
+static void AddManyAttributeRules(base::test::ScopedFeatureList& feature_list,
+                                  css_test_helpers::TestStyleSheet& sheet) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{blink::features::
                                 kSubstringSetTreeForAttributeBuckets},
       /*disabled_features=*/{});
-
-  css_test_helpers::TestStyleSheet sheet;
 
   // Create more than 50 rules, in order to trigger building the Aho-Corasick
   // tree.
@@ -345,6 +343,13 @@ TEST(RuleSetTest, LargeNumberOfAttributeRules) {
     snprintf(buf, sizeof(buf), "[attr=\"value%d\"] {}", i);
     sheet.AddCSSRules(buf);
   }
+}
+
+TEST(RuleSetTest, LargeNumberOfAttributeRules) {
+  base::test::ScopedFeatureList feature_list;
+  css_test_helpers::TestStyleSheet sheet;
+  AddManyAttributeRules(feature_list, sheet);
+
   sheet.AddCSSRules("[otherattr=\"value\"] {}");
 
   RuleSet& rule_set = sheet.GetRuleSet();
@@ -367,26 +372,47 @@ TEST(RuleSetTest, LargeNumberOfAttributeRules) {
 
 TEST(RuleSetTest, LargeNumberOfAttributeRulesWithEmpty) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{blink::features::
-                                kSubstringSetTreeForAttributeBuckets},
-      /*disabled_features=*/{});
-
   css_test_helpers::TestStyleSheet sheet;
+  AddManyAttributeRules(feature_list, sheet);
 
-  // Create more than 50 rules, in order to trigger building the Aho-Corasick
-  // tree.
-  for (int i = 0; i < 100; ++i) {
-    char buf[256];
-    snprintf(buf, sizeof(buf), "[attr=\"value%d\"] {}", i);
-    sheet.AddCSSRules(buf);
-  }
   sheet.AddCSSRules("[attr=\"\"] {}");
 
   RuleSet& rule_set = sheet.GetRuleSet();
   const HeapVector<RuleData>* list = rule_set.AttrRules("attr");
   ASSERT_NE(nullptr, list);
   EXPECT_TRUE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
+}
+
+TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll) {
+  base::test::ScopedFeatureList feature_list;
+  css_test_helpers::TestStyleSheet sheet;
+  AddManyAttributeRules(feature_list, sheet);
+
+  // This should match everything, so we cannot reject anything.
+  sheet.AddCSSRules("[attr] {}");
+
+  RuleSet& rule_set = sheet.GetRuleSet();
+
+  const HeapVector<RuleData>* list = rule_set.AttrRules("attr");
+  ASSERT_NE(nullptr, list);
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
+}
+
+TEST(RuleSetTest, LargeNumberOfAttributeRulesWithCatchAll2) {
+  base::test::ScopedFeatureList feature_list;
+  css_test_helpers::TestStyleSheet sheet;
+  AddManyAttributeRules(feature_list, sheet);
+
+  // This should _also_ match everything, so we cannot reject anything.
+  sheet.AddCSSRules("[attr^=\"\"] {}");
+
+  RuleSet& rule_set = sheet.GetRuleSet();
+
+  const HeapVector<RuleData>* list = rule_set.AttrRules("attr");
+  ASSERT_NE(nullptr, list);
+  EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", "notfound"));
   EXPECT_FALSE(rule_set.CanIgnoreEntireList(list, "attr", ""));
 }
 
