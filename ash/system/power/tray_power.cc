@@ -12,7 +12,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/system/power/dual_role_notification.h"
 #include "ash/system/time/time_view.h"
@@ -118,11 +118,14 @@ void PowerTrayView::UpdateImage(bool icon_color_changed) {
     return;
   info_ = info;
 
+  if (!icon_color_changed)
+    return;
+
   // Note: The icon color (both fg and bg) changes when the UI in in OOBE mode.
   const SkColor icon_fg_color = TrayIconColor(session_state_);
   const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
       ShelfConfig::Get()->GetShelfControlButtonColor(),
-      AshColorProvider::Get()->GetBackgroundColor());
+      GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
 
   image_view()->SetImage(PowerStatus::GetBatteryImage(
       info, kUnifiedTrayBatteryIconSize, icon_bg_color, icon_fg_color));

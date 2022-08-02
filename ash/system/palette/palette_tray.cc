@@ -108,7 +108,11 @@ class BatteryView : public views::View {
     label_->SetEnabledColor(stylus_battery_delegate_.GetColorForBatteryLevel());
     TrayPopupUtils::SetLabelFontList(label_,
                                      TrayPopupUtils::FontStyle::kSmallTitle);
+  }
 
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
     stylus_battery_delegate_.SetBatteryUpdateCallback(base::BindRepeating(
         &BatteryView::OnBatteryLevelUpdated, base::Unretained(this)));
 
@@ -127,7 +131,8 @@ class BatteryView : public views::View {
     if (stylus_battery_delegate_.ShouldShowBatteryStatus() != GetVisible())
       SetVisible(stylus_battery_delegate_.ShouldShowBatteryStatus());
 
-    icon_->SetImage(stylus_battery_delegate_.GetBatteryImage());
+    icon_->SetImage(
+        stylus_battery_delegate_.GetBatteryImage(GetColorProvider()));
     label_->SetVisible(stylus_battery_delegate_.IsBatteryLevelLow() &&
                        stylus_battery_delegate_.IsBatteryStatusEligible() &&
                        !stylus_battery_delegate_.IsBatteryStatusStale() &&

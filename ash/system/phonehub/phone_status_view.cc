@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/phonehub/phone_hub_tray.h"
@@ -157,12 +158,15 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
 
   separator_->SetVisible(delegate->CanOpenConnectedDeviceSettings());
   settings_button_->SetVisible(delegate->CanOpenConnectedDeviceSettings());
-
-  Update();
 }
 
 PhoneStatusView::~PhoneStatusView() {
   phone_model_->RemoveObserver(this);
+}
+
+void PhoneStatusView::OnThemeChanged() {
+  TriView::OnThemeChanged();
+  Update();
 }
 
 void PhoneStatusView::OnModelChanged() {
@@ -241,7 +245,7 @@ void PhoneStatusView::UpdateBatteryStatus() {
 
   const SkColor icon_bg_color = color_utils::GetResultingPaintColor(
       ShelfConfig::Get()->GetShelfControlButtonColor(),
-      AshColorProvider::Get()->GetBackgroundColor());
+      GetColorProvider()->GetColor(kColorAshShieldAndBaseOpaque));
   const SkColor icon_fg_color = AshColorProvider::Get()->GetContentLayerColor(
       IsBatterySaverModeOn(phone_status)
           ? AshColorProvider::ContentLayerType::kIconColorWarning

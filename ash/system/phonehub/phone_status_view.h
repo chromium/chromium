@@ -37,6 +37,9 @@ class ASH_EXPORT PhoneStatusView : public TriView,
   PhoneStatusView(PhoneStatusView&) = delete;
   PhoneStatusView operator=(PhoneStatusView&) = delete;
 
+  // TriView:
+  void OnThemeChanged() override;
+
   // phonehub::PhoneHubModel::Observer:
   void OnModelChanged() override;
 

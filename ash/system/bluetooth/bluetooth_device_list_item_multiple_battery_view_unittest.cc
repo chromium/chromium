@@ -17,6 +17,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 namespace {
@@ -62,8 +63,13 @@ class BluetoothDeviceListItemMultipleBatteryViewTest : public AshTestBase {
 
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
+    widget_ = CreateTestWidget();
     bluetooth_device_list_multiple_battery_item_ =
         std::make_unique<BluetoothDeviceListItemMultipleBatteryView>();
+    // Add the item to widget hierarchy to make sure `ui::ColorProvider` will
+    // not be nullptr while getting colors.
+    widget_->GetContentsView()->AddChildView(
+        bluetooth_device_list_multiple_battery_item_.get());
   }
 
   void TearDown() override {
@@ -101,6 +107,7 @@ class BluetoothDeviceListItemMultipleBatteryViewTest : public AshTestBase {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<BluetoothDeviceListItemMultipleBatteryView>
       bluetooth_device_list_multiple_battery_item_;
 };
