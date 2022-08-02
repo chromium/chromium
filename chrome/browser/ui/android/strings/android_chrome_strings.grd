@@ -1250,143 +1250,143 @@ Your Google account may have other forms of browsing history like searches and a
         <ph name="NUMBER_OF_ITEMS">%1$s<ex>3</ex></ph> items deleted
       </message>
 
-      <!-- Privacy Review -->
-      <message name="IDS_PREFS_PRIVACY_REVIEW_TITLE" desc="The title of the privacy review menu item.">
+      <!-- Privacy Guide -->
+      <message name="IDS_PREFS_PRIVACY_GUIDE_TITLE" desc="The title of the privacy guide menu item.">
         Privacy guide
       </message>
-      <message name="IDS_PREFS_PRIVACY_REVIEW_SUMMARY" desc="The summary of the privacy menu item.">
+      <message name="IDS_PREFS_PRIVACY_GUIDE_SUMMARY" desc="The summary of the privacy menu item.">
         Review key privacy and security controls
       </message>
-      <message name="IDS_PRIVACY_REVIEW_WELCOME_TITLE" desc="Title on the welcome page of the privacy review.">
+      <message name="IDS_PRIVACY_GUIDE_WELCOME_TITLE" desc="Title on the welcome page of the privacy guide.">
         A guide of your privacy choices
       </message>
-      <message name="IDS_PRIVACY_REVIEW_WELCOME_DESCRIPTION" desc="Description on the welcome page of the privacy review.">
+      <message name="IDS_PRIVACY_GUIDE_WELCOME_DESCRIPTION" desc="Description on the welcome page of the privacy guide.">
         Take a guided tour of key privacy and security controls. For more options, go to individual settings.
       </message>
-      <message name="IDS_PRIVACY_REVIEW_START_BUTTON" desc="Text on the privacy review start button on the welcome screen.">
+      <message name="IDS_PRIVACY_GUIDE_START_BUTTON" desc="Text on the privacy guide start button on the welcome screen.">
         Let’s go
       </message>
-      <message name="IDS_PRIVACY_REVIEW_WHEN_ON" desc="Header of a description text that describes the behavior of a particular feature. This description is shown to users alongside the feature itself." meaning="Privacy Guide - feature benefits">
+      <message name="IDS_PRIVACY_GUIDE_WHEN_ON" desc="Header of a description text that describes the behavior of a particular feature. This description is shown to users alongside the feature itself." meaning="Privacy Guide - feature benefits">
         When on
       </message>
-      <message name="IDS_PRIVACY_REVIEW_THINGS_TO_CONSIDER" desc="Header of a text column that describes things users should consider about a feature. This description is shown to users alongside the feature itself." meaning="Privacy Guide - feature considerations">
+      <message name="IDS_PRIVACY_GUIDE_THINGS_TO_CONSIDER" desc="Header of a text column that describes things users should consider about a feature. This description is shown to users alongside the feature itself." meaning="Privacy Guide - feature considerations">
         Things to consider
       </message>
-      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_ONE" desc="First bullet point that describes the details of the MSBB toggle.">
+      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_ONE" desc="First bullet point that describes the details of the MSBB toggle.">
         You’ll browse faster because content is proactively loaded based on your current webpage visit
       </message>
-      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_TWO" desc="Second bullet point that describes the details of the MSBB toggle.">
+      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_TWO" desc="Second bullet point that describes the details of the MSBB toggle.">
         You’ll get improved suggestions in the address bar
       </message>
-      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_THREE" desc="Third bullet point that describes the details of the MSBB toggle.">
+      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_THREE" desc="Third bullet point that describes the details of the MSBB toggle.">
         URLs you visit are sent to Google to predict what sites you might visit next
       </message>
-      <message name="IDS_PRIVACY_REVIEW_MSBB_ITEM_FOUR" desc="Fourth bullet point that describes the details of the MSBB toggle.">
+      <message name="IDS_PRIVACY_GUIDE_MSBB_ITEM_FOUR" desc="Fourth bullet point that describes the details of the MSBB toggle.">
         If you also share Chrome usage reports, those reports include the URLs you visit
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SYNC_TOGGLE" desc="Title for the history sync toggle.">
+      <message name="IDS_PRIVACY_GUIDE_SYNC_TOGGLE" desc="Title for the history sync toggle.">
         History sync
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_ONE" desc="First bullet point that describes the details of the history sync toggle.">
+      <message name="IDS_PRIVACY_GUIDE_SYNC_ITEM_ONE" desc="First bullet point that describes the details of the history sync toggle.">
         You’ll have your history on all your synced devices so you can continue what you were doing
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_TWO" desc="Second bullet point that describes the details of the history sync toggle.">
+      <message name="IDS_PRIVACY_GUIDE_SYNC_ITEM_TWO" desc="Second bullet point that describes the details of the history sync toggle.">
         If Google is also your default search engine, you’ll see better, contextually relevant suggestions
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SYNC_ITEM_THREE" desc="Third bullet point that describes the details of the history sync toggle.">
+      <message name="IDS_PRIVACY_GUIDE_SYNC_ITEM_THREE" desc="Third bullet point that describes the details of the history sync toggle.">
         The URLs you visit are saved to your Google Account
       </message>
-      <message name="IDS_PRIVACY_REVIEW_COOKIES_INTRO" desc="Text introducing the cookies control.">
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_INTRO" desc="Text introducing the cookies control.">
         Choose when to block third-party cookies
       </message>
-      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_INCOGNITO_TITLE" desc="Title for the radio button for blocking third-party cookies in incognito.">
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_INCOGNITO_TITLE" desc="Title for the radio button for blocking third-party cookies in incognito.">
         Block while using incognito
       </message>
-      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_INCOGNITO_DESCRIPTION" desc="Description for the radio button for blocking third-party cookies in incognito.">
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_INCOGNITO_DESCRIPTION" desc="Description for the radio button for blocking third-party cookies in incognito.">
         While in incognito, sites can’t use your cookies to see your browsing activity across different sites, for example, to personalize ads. Features on some sites may break.
       </message>
-      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_ALWAYS_TITLE" desc="Title for the radio button for blocking third-party cookies always.">
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_ALWAYS_TITLE" desc="Title for the radio button for blocking third-party cookies always.">
         Block all the time
       </message>
-      <message name="IDS_PRIVACY_REVIEW_COOKIES_BLOCK_ALWAYS_DESCRIPTION" desc="Description for the radio button for blocking third-party cookies always.">
+      <message name="IDS_PRIVACY_GUIDE_COOKIES_BLOCK_ALWAYS_DESCRIPTION" desc="Description for the radio button for blocking third-party cookies always.">
         Sites can only use your cookies to see your browsing activity only on their own site
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_INTRO" desc="Text introducing the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SAFE_BROWSING_INTRO" desc="Text introducing the Safe Browsing control.">
         Choose your Safe Browsing protection
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_ENHANCED_TITLE" desc="Title for the radio button for the enhanced Safe Browsing.">
+      <message name="IDS_PRIVACY_GUIDE_SAFE_BROWSING_ENHANCED_TITLE" desc="Title for the radio button for the enhanced Safe Browsing.">
         Enhanced protection
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_ENHANCED_DESCRIPTION" desc="Description for the radio button for the enhanced Safe Browsing.">
+      <message name="IDS_PRIVACY_GUIDE_SAFE_BROWSING_ENHANCED_DESCRIPTION" desc="Description for the radio button for the enhanced Safe Browsing.">
         Faster, proactive protection against dangerous websites, downloads, and extensions
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_STANDARD_TITLE" desc="Title for the radio button for the standard Safe Browsing.">
+      <message name="IDS_PRIVACY_GUIDE_SAFE_BROWSING_STANDARD_TITLE" desc="Title for the radio button for the standard Safe Browsing.">
         Standard protection
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SAFE_BROWSING_STANDARD_DESCRIPTION" desc="Description for the radio button for the standard Safe Browsing.">
+      <message name="IDS_PRIVACY_GUIDE_SAFE_BROWSING_STANDARD_DESCRIPTION" desc="Description for the radio button for the standard Safe Browsing.">
         Standard protection against websites, downloads, and extensions that are known to be dangerous
       </message>
-      <message name="IDS_PRIVACY_REVIEW_FINISH_BUTTON" desc="Text on the button to finish the privacy review">
+      <message name="IDS_PRIVACY_GUIDE_FINISH_BUTTON" desc="Text on the button to finish the privacy guide">
         Finish
       </message>
-      <message name="IDS_PRIVACY_REVIEW_DONE_TITLE" desc="Title on the final page of the privacy review">
+      <message name="IDS_PRIVACY_GUIDE_DONE_TITLE" desc="Title on the final page of the privacy guide">
         Review complete!
       </message>
-      <message name="IDS_PRIVACY_REVIEW_DONE_DESCRIPTION" desc="Subtitle on the final page of the privacy review">
+      <message name="IDS_PRIVACY_GUIDE_DONE_DESCRIPTION" desc="Subtitle on the final page of the privacy guide">
         Explore more settings below or finish now
       </message>
-      <message name="IDS_PRIVACY_REVIEW_PRIVACY_SANDBOX_HEADING" desc="Title for the Privacy Sandbox item on the final page of the privacy review">
+      <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_HEADING" desc="Title for the Privacy Sandbox item on the final page of the privacy guide">
         Privacy Sandbox trial
       </message>
-      <message name="IDS_PRIVACY_REVIEW_PRIVACY_SANDBOX_DESCRIPTION" desc="Description for the Privacy Sandbox item on the final page of the privacy review">
+      <message name="IDS_PRIVACY_GUIDE_PRIVACY_SANDBOX_DESCRIPTION" desc="Description for the Privacy Sandbox item on the final page of the privacy guide">
         See how Chrome plans to safeguard you from cross-site tracking while preserving the open web
       </message>
-      <message name="IDS_PRIVACY_REVIEW_WEB_APP_ACTIVITY_HEADING" desc="Title for the Web and App Activity item on the final page of the privacy review">
+      <message name="IDS_PRIVACY_GUIDE_WEB_APP_ACTIVITY_HEADING" desc="Title for the Web and App Activity item on the final page of the privacy guide">
         Web &amp; App Activity
       </message>
-      <message name="IDS_PRIVACY_REVIEW_WEB_APP_ACTIVITY_DESCRIPTION" desc="Description for the Web and App Activity item on the final page of the privacy review">
+      <message name="IDS_PRIVACY_GUIDE_WEB_APP_ACTIVITY_DESCRIPTION" desc="Description for the Web and App Activity item on the final page of the privacy guide">
         Choose whether to include Chrome history for more personalized experiences in Google services
       </message>
-      <message name="IDS_PRIVACY_REVIEW_EXPLANATION_CONTENT_DESCRIPTION" desc="The content description for the privacy review explanation bottom sheet. Read as accessibility string when tapping on the bottom sheet.">
+      <message name="IDS_PRIVACY_GUIDE_EXPLANATION_CONTENT_DESCRIPTION" desc="The content description for the privacy guide explanation bottom sheet. Read as accessibility string when tapping on the bottom sheet.">
         Privacy guide explanation
       </message>
-      <message name="IDS_PRIVACY_REVIEW_EXPLANATION_OPENED_HALF" desc="The accessibility string read when the privacy review explanation bottom sheet is half opened.">
+      <message name="IDS_PRIVACY_GUIDE_EXPLANATION_OPENED_HALF" desc="The accessibility string read when the privacy guide explanation bottom sheet is half opened.">
         Privacy guide explanation opened at half height
       </message>
-      <message name="IDS_PRIVACY_REVIEW_EXPLANATION_OPENED_FULL" desc="The accessibility string read when the privacy review explanation bottom sheet is fully opened.">
+      <message name="IDS_PRIVACY_GUIDE_EXPLANATION_OPENED_FULL" desc="The accessibility string read when the privacy guide explanation bottom sheet is fully opened.">
         Privacy guide explanation opened at full height
       </message>
-      <message name="IDS_PRIVACY_REVIEW_EXPLANATION_CLOSED_DESCRIPTION" desc="The accessibility string read when the privacy review explanation bottom sheet is closed.">
+      <message name="IDS_PRIVACY_GUIDE_EXPLANATION_CLOSED_DESCRIPTION" desc="The accessibility string read when the privacy guide explanation bottom sheet is closed.">
         Privacy guide explanation closed
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_STANDARD_ITEM_ONE" desc="First bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_STANDARD_ITEM_ONE" desc="First bullet point that describes the details of the Safe Browsing control.">
         Detects and warns you about dangerous events when they happen
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_STANDARD_ITEM_TWO" desc="Second bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_STANDARD_ITEM_TWO" desc="Second bullet point that describes the details of the Safe Browsing control.">
         Checks URLs with a list of unsafe sites stored in Chrome
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_STANDARD_ITEM_THREE" desc="Third bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_STANDARD_ITEM_THREE" desc="Third bullet point that describes the details of the Safe Browsing control.">
         If a site tries to steal your password, or when you download a harmful file, Chrome may send URLs including bits of page content to Safe Browsing
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_ONE" desc="First bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_ONE" desc="First bullet point that describes the details of the Safe Browsing control.">
         Predicts and warns you about dangerous events before they happen
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_TWO" desc="Second bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_TWO" desc="Second bullet point that describes the details of the Safe Browsing control.">
         Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_THREE" desc="Third bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_THREE" desc="Third bullet point that describes the details of the Safe Browsing control.">
         Improves security for you and everyone on the web
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_FOUR" desc="Fourth bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_FOUR" desc="Fourth bullet point that describes the details of the Safe Browsing control.">
         Warns you if passwords are exposed in a data breach
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_FIVE" desc="Fifth bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_FIVE" desc="Fifth bullet point that describes the details of the Safe Browsing control.">
         Sends URLs to Safe Browsing to check them
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_SIX" desc="Sixth bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_SIX" desc="Sixth bullet point that describes the details of the Safe Browsing control.">
         Also sends a small sample of pages, downloads, extension activity, and system information to help discover new threats
       </message>
-      <message name="IDS_PRIVACY_REVIEW_SB_ENHANCED_ITEM_SEVEN" desc="Seventh bullet point that describes the details of the Safe Browsing control.">
+      <message name="IDS_PRIVACY_GUIDE_SB_ENHANCED_ITEM_SEVEN" desc="Seventh bullet point that describes the details of the Safe Browsing control.">
         Temporarily links this data to your Google Account when you’re signed in, to protect you across Google apps
       </message>
 

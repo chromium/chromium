@@ -63,7 +63,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:visibility="gone"
-            android:text="@string/privacy_review_finish_button"
+            android:text="@string/privacy_guide_finish_button"
             style="@style/FilledButton.Flat" />
 
     </LinearLayout>

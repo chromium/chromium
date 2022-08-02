@@ -4,6 +4,6 @@
      found in the LICENSE file. -->
 
 <resources>
-  <dimen name="privacy_review_illustration_height">120dp</dimen>
-  <dimen name="privacy_review_illustration_width">215dp</dimen>
+  <dimen name="privacy_guide_illustration_height">120dp</dimen>
+  <dimen name="privacy_guide_illustration_width">215dp</dimen>
 </resources>

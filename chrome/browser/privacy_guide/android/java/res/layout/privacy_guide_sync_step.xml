@@ -21,52 +21,46 @@
         <ImageView
             android:id="@+id/image"
             android:layout_marginVertical="16dp"
-            android:layout_height="@dimen/privacy_review_illustration_height"
-            android:layout_width="@dimen/privacy_review_illustration_width"
-            android:src="@drawable/privacy_review_msbb_image"
+            android:layout_height="@dimen/privacy_guide_illustration_height"
+            android:layout_width="@dimen/privacy_guide_illustration_width"
+            android:src="@drawable/privacy_guide_sync_image"
             android:importantForAccessibility="no" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/msbb_switch"
+            android:id="@+id/sync_switch"
             android:layout_marginHorizontal="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:showText="false"
-            android:text="@string/url_keyed_anonymized_data_title" />
+            android:text="@string/privacy_guide_sync_toggle" />
 
-        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleText="@string/privacy_review_when_on" />
+            app:titleText="@string/privacy_guide_when_on" />
 
-        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_flash_on_24dp"
-            app:summaryText="@string/privacy_review_msbb_item_one" />
+            app:iconImage="@drawable/ic_history_24dp"
+            app:summaryText="@string/privacy_guide_sync_item_one" />
 
-        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_lightbulb_24dp"
-            app:summaryText="@string/privacy_review_msbb_item_two" />
+            app:iconImage="@drawable/ic_dns_24dp"
+            app:summaryText="@string/privacy_guide_sync_item_two" />
 
-        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:titleText="@string/privacy_review_things_to_consider" />
+            app:titleText="@string/privacy_guide_things_to_consider" />
 
-        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
+        <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationItem
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:iconImage="@drawable/ic_link_24dp"
-            app:summaryText="@string/privacy_review_msbb_item_three" />
-
-        <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationItem
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:iconImage="@drawable/ic_bar_chart_24dp"
-            app:summaryText="@string/privacy_review_msbb_item_four" />
+            app:summaryText="@string/privacy_guide_sync_item_three" />
 
     </LinearLayout>
 

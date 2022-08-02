@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_review;
+package org.chromium.chrome.browser.privacy_guide;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,10 +18,10 @@ import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAu
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** Controls the behavior of the ViewPager to navigate between privacy review steps. */
-public class PrivacyReviewPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+/** Controls the behavior of the ViewPager to navigate between privacy guide steps. */
+public class PrivacyGuidePagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     /**
-     * The types of views supported. Each view corresponds to a step in the privacy review.
+     * The types of views supported. Each view corresponds to a step in the privacy guide.
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ViewType.COOKIES, ViewType.MSBB, ViewType.SAFE_BROWSING, ViewType.SYNC,
@@ -77,18 +77,17 @@ public class PrivacyReviewPagerAdapter extends RecyclerView.Adapter<RecyclerView
             LayoutInflater inflater = LayoutInflater.from(mView.getContext());
             if (clickedButtonId == mEnhancedProtection.getId()) {
                 displayBottomSheet(
-                        inflater.inflate(R.layout.privacy_review_sb_enhanced_explanation, null));
+                        inflater.inflate(R.layout.privacy_guide_sb_enhanced_explanation, null));
             } else if (clickedButtonId == mStandardProtection.getId()) {
                 displayBottomSheet(
-                        inflater.inflate(R.layout.privacy_review_sb_standard_explanation, null));
+                        inflater.inflate(R.layout.privacy_guide_sb_standard_explanation, null));
             } else {
                 assert false : "Should not be reached.";
             }
         }
 
         private void displayBottomSheet(View sheetContent) {
-            PrivacyReviewBottomSheetView bottomSheet =
-                    new PrivacyReviewBottomSheetView(sheetContent);
+            PrivacyGuideBottomSheetView bottomSheet = new PrivacyGuideBottomSheetView(sheetContent);
             mBottomSheetController.requestShowContent(bottomSheet, /* animate= */ true);
         }
     }
@@ -104,7 +103,7 @@ public class PrivacyReviewPagerAdapter extends RecyclerView.Adapter<RecyclerView
 
     private BottomSheetController mBottomSheetController;
 
-    public PrivacyReviewPagerAdapter(BottomSheetController controller) {
+    public PrivacyGuidePagerAdapter(BottomSheetController controller) {
         super();
         mBottomSheetController = controller;
     }
@@ -124,17 +123,17 @@ public class PrivacyReviewPagerAdapter extends RecyclerView.Adapter<RecyclerView
         switch (viewType) {
             case ViewType.MSBB:
                 return new MSBBViewHolder(
-                        inflater.inflate(R.layout.privacy_review_msbb_step, parent, false));
+                        inflater.inflate(R.layout.privacy_guide_msbb_step, parent, false));
             case ViewType.SYNC:
                 return new SyncViewHolder(
-                        inflater.inflate(R.layout.privacy_review_sync_step, parent, false));
+                        inflater.inflate(R.layout.privacy_guide_sync_step, parent, false));
             case ViewType.SAFE_BROWSING:
                 return new SafeBrowsingViewHolder(
-                        inflater.inflate(R.layout.privacy_review_sb_step, parent, false),
+                        inflater.inflate(R.layout.privacy_guide_sb_step, parent, false),
                         mBottomSheetController);
             case ViewType.COOKIES:
                 return new CookiesViewHolder(
-                        inflater.inflate(R.layout.privacy_review_cookies_step, parent, false));
+                        inflater.inflate(R.layout.privacy_guide_cookies_step, parent, false));
         }
         return null;
     }

@@ -12,9 +12,9 @@
         android:summary="@string/clear_browsing_data_summary"
         android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment"/>
     <Preference
-        android:key="privacy_review"
-        android:title="@string/prefs_privacy_review_title"
-        android:summary="@string/prefs_privacy_review_summary"/>
+        android:key="privacy_guide"
+        android:title="@string/prefs_privacy_guide_title"
+        android:summary="@string/prefs_privacy_guide_summary"/>
     <Preference
         android:key="safe_browsing"
         android:title="@string/prefs_safe_browsing_title"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_review;
+package org.chromium.chrome.browser.privacy_guide;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -18,29 +18,29 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.widget.ButtonCompat;
 
 /**
- * UI for the Privacy Review dialog in Privacy and security settings.
+ * UI for the Privacy Guide dialog in Privacy and security settings.
  */
-public class PrivacyReviewDialog {
+public class PrivacyGuideDialog {
     private LayoutInflater mLayoutInflater;
     private ViewGroup mContainer;
     private View mDialogView;
     private ViewPager2 mViewPager;
-    private PrivacyReviewPagerAdapter mPagerAdapter;
+    private PrivacyGuidePagerAdapter mPagerAdapter;
     private ButtonCompat mNextButton;
     private ButtonCompat mBackButton;
     private ButtonCompat mFinishButton;
     private BottomSheetController mBottomSheetController;
 
-    public PrivacyReviewDialog(
+    public PrivacyGuideDialog(
             Context context, ViewGroup container, BottomSheetController controller) {
         mContainer = container;
         mBottomSheetController = controller;
         mLayoutInflater = LayoutInflater.from(context);
-        mDialogView = mLayoutInflater.inflate(R.layout.privacy_review_dialog, null);
+        mDialogView = mLayoutInflater.inflate(R.layout.privacy_guide_dialog, null);
 
         Toolbar toolbar = (Toolbar) mDialogView.findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.prefs_privacy_review_title);
-        toolbar.inflateMenu(R.menu.privacy_review_toolbar_menu);
+        toolbar.setTitle(R.string.prefs_privacy_guide_title);
+        toolbar.inflateMenu(R.menu.privacy_guide_toolbar_menu);
         toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
 
         displayWelcomePage();
@@ -69,7 +69,7 @@ public class PrivacyReviewDialog {
     private void displayWelcomePage() {
         FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
         content.removeAllViews();
-        mLayoutInflater.inflate(R.layout.privacy_review_welcome, content);
+        mLayoutInflater.inflate(R.layout.privacy_guide_welcome, content);
 
         ButtonCompat welcomeButton = (ButtonCompat) mDialogView.findViewById(R.id.start_button);
         welcomeButton.setOnClickListener((View v) -> displayMainFlow());
@@ -78,10 +78,10 @@ public class PrivacyReviewDialog {
     private void displayMainFlow() {
         FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
         content.removeAllViews();
-        mLayoutInflater.inflate(R.layout.privacy_review_steps, content);
+        mLayoutInflater.inflate(R.layout.privacy_guide_steps, content);
 
         mViewPager = (ViewPager2) mDialogView.findViewById(R.id.review_viewpager);
-        mPagerAdapter = new PrivacyReviewPagerAdapter(mBottomSheetController);
+        mPagerAdapter = new PrivacyGuidePagerAdapter(mBottomSheetController);
         mViewPager.setAdapter(mPagerAdapter);
 
         mNextButton = (ButtonCompat) mDialogView.findViewById(R.id.next_button);
@@ -97,7 +97,7 @@ public class PrivacyReviewDialog {
     private void displayDonePage() {
         FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
         content.removeAllViews();
-        mLayoutInflater.inflate(R.layout.privacy_review_done, content);
+        mLayoutInflater.inflate(R.layout.privacy_guide_done, content);
 
         ButtonCompat doneButton = (ButtonCompat) mDialogView.findViewById(R.id.done_button);
         doneButton.setOnClickListener((View v) -> dismiss());

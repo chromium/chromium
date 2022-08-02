@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_review;
+package org.chromium.chrome.browser.privacy_guide;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -15,23 +15,22 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-/** A custom view for an item (icon + text) of a setting explanation for the privacy review. */
-public class PrivacyReviewExplanationItem extends LinearLayout {
-    public PrivacyReviewExplanationItem(Context context, AttributeSet attrs) {
+/** A custom view for an item (icon + text) of a setting explanation for the privacy guide. */
+public class PrivacyGuideExplanationItem extends LinearLayout {
+    public PrivacyGuideExplanationItem(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        View view = LayoutInflater.from(context).inflate(
-                R.layout.privacy_review_explanation_item, this);
+        View view =
+                LayoutInflater.from(context).inflate(R.layout.privacy_guide_explanation_item, this);
 
         TypedArray a = context.obtainStyledAttributes(
-                attrs, R.styleable.PrivacyReviewExplanationItem, 0, 0);
+                attrs, R.styleable.PrivacyGuideExplanationItem, 0, 0);
 
         TextView summary = (TextView) view.findViewById(R.id.summary);
-        summary.setText(a.getText(R.styleable.PrivacyReviewExplanationItem_summaryText));
+        summary.setText(a.getText(R.styleable.PrivacyGuideExplanationItem_summaryText));
 
-        Drawable icon = a.getDrawable(R.styleable.PrivacyReviewExplanationItem_iconImage);
-        ColorStateList tint =
-                a.getColorStateList(R.styleable.PrivacyReviewExplanationItem_iconTint);
+        Drawable icon = a.getDrawable(R.styleable.PrivacyGuideExplanationItem_iconImage);
+        ColorStateList tint = a.getColorStateList(R.styleable.PrivacyGuideExplanationItem_iconTint);
         if (icon != null && tint != null) {
             icon.setColorFilter(tint.getDefaultColor(), PorterDuff.Mode.SRC_IN);
         }

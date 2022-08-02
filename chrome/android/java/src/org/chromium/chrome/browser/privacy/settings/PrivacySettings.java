@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingSwitch
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings;
-import org.chromium.chrome.browser.privacy_review.PrivacyReviewDialog;
+import org.chromium.chrome.browser.privacy_guide.PrivacyGuideDialog;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxReferrer;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
@@ -63,7 +63,7 @@ public class PrivacySettings
     private static final String PREF_SYNC_AND_SERVICES_LINK = "sync_and_services_link";
     private static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
     private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
-    private static final String PREF_PRIVACY_REVIEW = "privacy_review";
+    private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
@@ -93,13 +93,13 @@ public class PrivacySettings
             });
         }
 
-        Preference privacyReviewPreference = findPreference(PREF_PRIVACY_REVIEW);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_REVIEW)) {
-            getPreferenceScreen().removePreference(privacyReviewPreference);
+        Preference privacyGuidePreference = findPreference(PREF_PRIVACY_GUIDE);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_GUIDE)) {
+            getPreferenceScreen().removePreference(privacyGuidePreference);
         } else {
-            // Display the privacy review dialog when the menu item is clicked.
-            privacyReviewPreference.setOnPreferenceClickListener(preference -> {
-                PrivacyReviewDialog dialog = new PrivacyReviewDialog(
+            // Display the privacy guide dialog when the menu item is clicked.
+            privacyGuidePreference.setOnPreferenceClickListener(preference -> {
+                PrivacyGuideDialog dialog = new PrivacyGuideDialog(
                         getContext(), mDialogContainer, mBottomSheetController);
                 dialog.show();
                 return true;

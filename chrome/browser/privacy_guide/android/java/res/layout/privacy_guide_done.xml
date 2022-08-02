@@ -27,9 +27,9 @@
             <ImageView
                 android:id="@+id/image"
                 android:layout_marginVertical="32dp"
-                android:layout_height="@dimen/privacy_review_illustration_height"
-                android:layout_width="@dimen/privacy_review_illustration_width"
-                android:src="@drawable/privacy_review_done_image"
+                android:layout_height="@dimen/privacy_guide_illustration_height"
+                android:layout_width="@dimen/privacy_guide_illustration_width"
+                android:src="@drawable/privacy_guide_done_image"
                 android:importantForAccessibility="no" />
 
             <TextView
@@ -38,7 +38,7 @@
                 android:layout_marginHorizontal="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/privacy_review_done_title"
+                android:text="@string/privacy_guide_done_title"
                 style="@style/TextAppearance.Headline.Primary" />
 
             <TextView
@@ -48,13 +48,13 @@
                 android:layout_marginBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/privacy_review_done_description"
+                android:text="@string/privacy_guide_done_description"
                 style="@style/TextAppearance.TextLarge.Secondary" />
 
-            <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:titleText="@string/privacy_review_privacy_sandbox_heading" />
+                app:titleText="@string/privacy_guide_privacy_sandbox_heading" />
 
             <TextView
                 android:id="@+id/privacy_sandbox_description"
@@ -62,20 +62,20 @@
                 android:layout_marginBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/privacy_review_privacy_sandbox_description"
+                android:text="@string/privacy_guide_privacy_sandbox_description"
                 style="@style/TextAppearance.TextMedium.Secondary" />
 
-            <org.chromium.chrome.browser.privacy_review.PrivacyReviewExplanationHeading
+            <org.chromium.chrome.browser.privacy_guide.PrivacyGuideExplanationHeading
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:titleText="@string/privacy_review_web_app_activity_heading" />
+                app:titleText="@string/privacy_guide_web_app_activity_heading" />
 
             <TextView
                 android:id="@+id/web_app_activity_description"
                 android:layout_marginHorizontal="16dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/privacy_review_web_app_activity_description"
+                android:text="@string/privacy_guide_web_app_activity_description"
                 style="@style/TextAppearance.TextMedium.Secondary" />
 
         </LinearLayout>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.privacy_review;
+package org.chromium.chrome.browser.privacy_guide;
 
 import android.view.View;
 
@@ -10,11 +10,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Bottom sheet view for displaying privacy review control explanations */
-public class PrivacyReviewBottomSheetView implements BottomSheetContent {
+/** Bottom sheet view for displaying privacy guide control explanations */
+public class PrivacyGuideBottomSheetView implements BottomSheetContent {
     private final View mContentView;
 
-    PrivacyReviewBottomSheetView(View contentView) {
+    PrivacyGuideBottomSheetView(View contentView) {
         mContentView = contentView;
     }
 
@@ -59,21 +59,21 @@ public class PrivacyReviewBottomSheetView implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.privacy_review_explanation_content_description;
+        return R.string.privacy_guide_explanation_content_description;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.privacy_review_explanation_closed_description;
+        return R.string.privacy_guide_explanation_closed_description;
     }
 
     @Override
     public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.privacy_review_explanation_opened_half;
+        return R.string.privacy_guide_explanation_opened_half;
     }
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.privacy_review_explanation_opened_full;
+        return R.string.privacy_guide_explanation_opened_full;
     }
 }
