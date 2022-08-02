@@ -328048,6 +328048,10 @@
      []
     ],
     "resources": {
+     "200.https.asis": [
+      "5b7c25f4ca03a20660506fa4a1f965e7cf633618",
+      []
+     ],
      "200_empty.asis": [
       "b5d10bda324528d1d85463b9a15a347f5c1faed9",
       []
@@ -390416,6 +390420,13 @@
       ],
       "contain-intrinsic-size-028.html": [
        "a25d19687d518f2293b191a118bba5d3c3ee4dd9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "contain-intrinsic-size-029.html": [
+       "6169a1a28799ad3148221cca044fc430c15ae5b0",
        [
         null,
         {}
@@ -522268,6 +522279,13 @@
     ],
     "script-rt-entries.html": [
      "cdd72bd1e25199085c8178b618a00200c86a3de9",
+     [
+      null,
+      {}
+     ]
+    ],
+    "secure-iframe-in-insecure-context.html": [
+     "87f4711146ce9a6b9a0bf87a2fa95fc6867bde92",
      [
       null,
       {}
