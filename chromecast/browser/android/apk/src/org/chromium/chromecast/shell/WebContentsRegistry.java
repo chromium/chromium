@@ -46,7 +46,7 @@ public class WebContentsRegistry {
     public static void initializeWebContents(
             WebContents webContents, ContentView contentView, WindowAndroid window) {
         for (WebContentsHolder holder : sSesionIdToWebContents.values()) {
-            if (holder.webContents.equals(webContents) && !webContents.isDestroyed()) {
+            if (holder.webContents.equals(webContents)) {
                 if (!holder.initialized) {
                     // TODO(derekjchow): productVersion
                     webContents.initialize("", ViewAndroidDelegate.createBasicDelegate(contentView),

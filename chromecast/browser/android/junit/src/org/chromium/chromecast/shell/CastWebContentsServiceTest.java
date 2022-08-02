@@ -141,6 +141,13 @@ public class CastWebContentsServiceTest {
     }
 
     @Test
+    public void testBroadcastsComponentClosedWhenUnbind() {
+        mServiceLifecycle.bind();
+        IntentFilter filter = filterFor(CastWebContentsIntentUtils.ACTION_ACTIVITY_STOPPED);
+        expectBroadcastedIntent(filter, () -> mServiceLifecycle.unbind());
+    }
+
+    @Test
     public void testDisplaysContentsOnBindAndReleasesOnUnbind() {
         ReactiveRecorder recordWebContentsPresentation =
                 ReactiveRecorder.record(mService.observeWebContentsStateForTesting());

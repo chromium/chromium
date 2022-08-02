@@ -100,8 +100,6 @@ public class CastWebContentsActivity extends Activity {
                 mIsFinishingState.andThen(mGotIntentState).map(Both::getSecond);
         Observable<?> createdAndNotTestingState =
                 mCreatedState.and(Observable.not(mIsTestingState));
-        Observable<?> startedAndNotTestingState =
-                mStartedState.and(Observable.not(mIsTestingState));
         createdAndNotTestingState.subscribe(x -> {
             // Register handler for web content stopped event while we have an Intent.
             IntentFilter filter = new IntentFilter();
@@ -115,6 +113,13 @@ public class CastWebContentsActivity extends Activity {
             CastBrowserHelper.initializeBrowser(getApplicationContext());
 
             setContentView(R.layout.cast_web_contents_activity);
+
+            mSurfaceHelperState.set(new CastWebContentsSurfaceHelper(
+                    CastWebContentsScopes.onLayoutActivity(this,
+                            (FrameLayout) findViewById(R.id.web_contents_container),
+                            CastSwitches.getSwitchValueColor(
+                                    CastSwitches.CAST_APP_BACKGROUND_COLOR, Color.BLACK)),
+                    (Uri uri) -> mIsFinishingState.set("Delayed teardown for URI: " + uri)));
         }));
 
         mSurfaceHelperState.subscribe((CastWebContentsSurfaceHelper surfaceHelper) -> {
@@ -159,23 +164,10 @@ public class CastWebContentsActivity extends Activity {
             Intent visible = CastWebContentsIntentUtils.onVisibilityChange(
                     instanceId, CastWebContentsIntentUtils.VISIBITY_TYPE_FULL_SCREEN);
             LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(visible);
-
             return () -> {
                 Intent hidden = CastWebContentsIntentUtils.onVisibilityChange(
                         instanceId, CastWebContentsIntentUtils.VISIBITY_TYPE_HIDDEN);
                 LocalBroadcastManager.getInstance(ctx).sendBroadcastSync(hidden);
-            };
-        });
-
-        startedAndNotTestingState.subscribe(x -> {
-            mSurfaceHelperState.set(new CastWebContentsSurfaceHelper(
-                    CastWebContentsScopes.onLayoutActivity(this,
-                            (FrameLayout) findViewById(R.id.web_contents_container),
-                            CastSwitches.getSwitchValueColor(
-                                    CastSwitches.CAST_APP_BACKGROUND_COLOR, Color.BLACK)),
-                    (Uri uri) -> mIsFinishingState.set("Delayed teardown for URI: " + uri)));
-            return () -> {
-                mSurfaceHelperState.reset();
             };
         });
 

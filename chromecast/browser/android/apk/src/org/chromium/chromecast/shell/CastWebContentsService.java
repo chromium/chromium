@@ -10,6 +10,7 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 
@@ -58,6 +59,9 @@ public class CastWebContentsService extends Service {
         });
         mWebContentsState.map(this::getMediaSessionImpl)
                 .subscribe(Observers.onEnter(MediaSessionImpl::requestSystemAudioFocus));
+        // Inform CastContentWindowAndroid we're detaching.
+        Observable<String> instanceIdState = mIntentState.map(Intent::getData).map(Uri::getPath);
+        instanceIdState.subscribe(Observers.onExit(CastWebContentsComponent::onComponentClosed));
 
         if (DEBUG) {
             mWebContentsState.subscribe(x -> {
