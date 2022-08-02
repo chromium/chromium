@@ -542,8 +542,10 @@ void DesksBarView::HandlePressEvent(DeskMiniView* mini_view,
 
   DeskNameView::CommitChanges(GetWidget());
 
-  gfx::PointF location = event.target()->GetScreenLocationF(event);
-  InitDragDesk(mini_view, location);
+  if (ui::EventTarget* target = event.target()) {
+    gfx::PointF location = target->GetScreenLocationF(event);
+    InitDragDesk(mini_view, location);
+  }
 }
 
 void DesksBarView::HandleLongPressEvent(DeskMiniView* mini_view,

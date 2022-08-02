@@ -95,6 +95,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/session_manager/session_manager_types.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -206,6 +207,12 @@ void DoubleClickOnView(const views::View* view,
   const gfx::Point view_center = view->GetBoundsInScreen().CenterPoint();
   event_generator->MoveMouseTo(view_center);
   event_generator->DoubleClickLeftButton();
+}
+
+void SendAccessibleActionToView(views::View* view, ax::mojom::Action action) {
+  ui::AXActionData action_data;
+  action_data.action = action;
+  view->HandleAccessibleAction(action_data);
 }
 
 void WaitForMilliseconds(int milliseconds) {
@@ -1197,6 +1204,20 @@ TEST_F(DesksTest, ActivateDeskFromOverview) {
                       event_generator);
     waiter.Wait();
     EXPECT_EQ(0, controller->GetActiveDeskIndex());
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+  }
+
+  // Test that using ChromeVox on a desk mini view does not crash.
+  {
+    EnterOverview();
+    const auto* overview_grid =
+        GetOverviewGridForRoot(Shell::GetPrimaryRootWindow());
+    DeskSwitchAnimationWaiter waiter;
+    SendAccessibleActionToView(
+        overview_grid->desks_bar_view()->mini_views()[1]->desk_preview(),
+        ax::mojom::Action::kDoDefault);
+    waiter.Wait();
+    EXPECT_EQ(1, controller->GetActiveDeskIndex());
     EXPECT_FALSE(overview_controller->InOverviewSession());
   }
 }
@@ -7750,8 +7771,8 @@ TEST_F(DesksCloseAllTest, CombineDesksTooltipIsUpdatedOnUserActions) {
   // Because the `DeskActionView` covers the centerpoint of the
   // `DeskPreviewView`, we need a new function to click and drag from a part of
   // the `DeskPreviewView` that isn't covered by the `DeskActionView`. We would
-  // not be able to simply modify `StartDragDeskPreview` because it takes a const
-  // `DeskMiniView`, which doesn't have access to its `DeskActionView`.
+  // not be able to simply modify `StartDragDeskPreview` because it takes a
+  // const `DeskMiniView`, which doesn't have access to its `DeskActionView`.
   auto start_drag_on_desk_preview_for_mini_view = [event_generator](
                                                       DeskMiniView* mini_view) {
     gfx::Point clickable_desk_preview_point =
