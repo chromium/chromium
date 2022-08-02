@@ -5,7 +5,6 @@
 #include "chrome/test/chromedriver/chrome/chrome_desktop_impl.h"
 
 #include <stddef.h>
-#include <memory>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -20,7 +19,6 @@
 #include "build/build_config.h"
 #include "chrome/test/chromedriver/chrome/device_metrics.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
-#include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 #include "chrome/test/chromedriver/chrome/devtools_http_client.h"
 #include "chrome/test/chromedriver/chrome/status.h"
@@ -157,21 +155,10 @@ Status ChromeDesktopImpl::WaitForPageToLoad(
     // https://code.google.com/p/chromedriver/issues/detail?id=1205
     device_metrics = nullptr;
   }
-
-  std::unique_ptr<DevToolsClientImpl> client;
-  Status status = CreateClient(id, &client);
-  if (status.IsError())
-    return status;
-  std::unique_ptr<WebViewImpl> web_view_tmp(new WebViewImpl(
+  std::unique_ptr<WebView> web_view_tmp(new WebViewImpl(
       id, w3c_compliant, nullptr, devtools_http_client_->browser_info(),
-      std::move(client), device_metrics, page_load_strategy()));
-  DevToolsClientImpl* parent =
-      static_cast<DevToolsClientImpl*>(devtools_websocket_client_.get());
-  status = web_view_tmp->AttachTo(parent);
-  if (status.IsError()) {
-    return status;
-  }
-  status = web_view_tmp->ConnectIfNecessary();
+      CreateClient(id), device_metrics, page_load_strategy()));
+  Status status = web_view_tmp->ConnectIfNecessary();
   if (status.IsError())
     return status;
 

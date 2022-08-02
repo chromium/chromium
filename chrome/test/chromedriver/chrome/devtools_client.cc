@@ -3,3 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
+
+bool DevToolsClient::IsMainPage() {
+  return GetRootClient() == this;
+}

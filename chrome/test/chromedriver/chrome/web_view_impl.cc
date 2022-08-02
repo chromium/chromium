@@ -369,11 +369,10 @@ WebViewImpl::WebViewImpl(const std::string& id,
   // Child WebViews should not have their own navigation_tracker, but defer
   // all related calls to their parent. All WebViews must have either parent_
   // or navigation_tracker_
-  if (!parent_) {
+  if (!parent_)
     navigation_tracker_ = std::unique_ptr<PageLoadStrategy>(
         PageLoadStrategy::Create(page_load_strategy, client_.get(), this,
                                  browser_info, dialog_manager_.get()));
-  }
   client_->SetOwner(this);
 }
 
@@ -389,8 +388,11 @@ WebViewImpl* WebViewImpl::CreateChild(const std::string& session_id,
   // hierarchy for DevToolsClientImpl is flat - there's a root which
   // sends/receives over the socket, and all child sessions are considered
   // its children (one level deep at most).
-  std::unique_ptr<DevToolsClientImpl> child_client =
-      std::make_unique<DevToolsClientImpl>(session_id, session_id);
+  DevToolsClientImpl* root_client =
+      static_cast<DevToolsClientImpl*>(client_.get()->GetRootClient());
+  std::unique_ptr<DevToolsClient> child_client(
+      std::make_unique<DevToolsClientImpl>(session_id, session_id,
+                                           root_client));
   WebViewImpl* child = new WebViewImpl(
       target_id, w3c_compliant_, this, browser_info_, std::move(child_client),
       nullptr,
@@ -416,30 +418,11 @@ bool WebViewImpl::WasCrashed() {
 }
 
 Status WebViewImpl::ConnectIfNecessary() {
-  // The root client must never be IsNull as it has an instance of socket_.
-  // The child client can be IsNull but, by definition, the view has a parent.
-  DCHECK(!client_->IsNull() || parent_ != nullptr);
-  if (client_->IsNull() && parent_ == nullptr) {
-    return Status{kUnknownError, "Root WebView cannot be IsNull"};
-  }
-
-  if (parent_ != nullptr && client_->IsNull()) {
-    DevToolsClientImpl* root_client = static_cast<DevToolsClientImpl*>(
-        parent_->client_.get()->GetRootClient());
-    DevToolsClientImpl* client =
-        static_cast<DevToolsClientImpl*>(client_.get());
-    Status status = client->AttachTo(root_client);
-    if (status.IsError()) {
-      return status;
-    }
-  }
-  DCHECK(!client_->IsNull());
   return client_->ConnectIfNecessary();
 }
 
-Status WebViewImpl::AttachTo(DevToolsClient* parent) {
-  return static_cast<DevToolsClientImpl*>(client_.get())
-      ->AttachTo(static_cast<DevToolsClientImpl*>(parent));
+Status WebViewImpl::SetUpDevTools() {
+  return client_->SetUpDevTools();
 }
 
 Status WebViewImpl::HandleReceivedEvents() {
@@ -610,12 +593,6 @@ Status WebViewImpl::EvaluateScriptWithTimeout(
   Status status = GetContextIdForFrame(this, frame, &context_id);
   if (status.IsError())
     return status;
-  // If the target associated with the current view or its ancestor is detached
-  // during the script execution we don't want deleting the current WebView
-  // because we are executing the code in its method.
-  // Instead we lock the WebView with target holder and only label the view as
-  // detached.
-  WebViewImplHolder target_holder(this);
   return internal::EvaluateScriptAndGetValue(
       client_.get(), context_id, expression, timeout, awaitPromise, result);
 }
@@ -1064,11 +1041,6 @@ Status WebViewImpl::WaitForPendingNavigations(const std::string& frame_id,
   const auto not_pending_navigation = base::BindRepeating(
       &WebViewImpl::IsNotPendingNavigation, base::Unretained(this), frame_id,
       base::Unretained(&timeout));
-  // If the target associated with the current view or its ancestor is detached
-  // while we are waiting for the pending navigation we don't want deleting the
-  // current WebView because we are executing the code in its method. Instead we
-  // lock the WebView with target holder and only label the view as detached.
-  WebViewImplHolder target_holder(this);
   Status status = client_->HandleEventsUntil(not_pending_navigation, timeout);
   if (status.code() == kTimeout && stop_load_on_timeout) {
     VLOG(0) << "Timed out. Stopping navigation...";

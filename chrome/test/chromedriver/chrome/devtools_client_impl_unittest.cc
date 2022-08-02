@@ -944,15 +944,12 @@ namespace {
 
 class MockSyncWebSocket5 : public SyncWebSocket {
  public:
-  MockSyncWebSocket5() : request_no_(0), connected_(false) {}
+  MockSyncWebSocket5() : request_no_(0) {}
   ~MockSyncWebSocket5() override {}
 
-  bool IsConnected() override { return connected_; }
+  bool IsConnected() override { return true; }
 
-  bool Connect(const GURL& url) override {
-    connected_ = true;
-    return true;
-  }
+  bool Connect(const GURL& url) override { return true; }
 
   bool Send(const std::string& message) override { return true; }
 
@@ -973,7 +970,6 @@ class MockSyncWebSocket5 : public SyncWebSocket {
 
  private:
   int request_no_;
-  bool connected_;
 };
 
 class OtherEventListener : public DevToolsEventListener {
@@ -1029,8 +1025,6 @@ TEST_F(DevToolsClientImplTest, ProcessOnEventFirst) {
   OnEventListener listener1(&client, &listener2);
   client.AddListener(&listener1);
   client.AddListener(&listener2);
-  Status status = client.ConnectIfNecessary();
-  ASSERT_EQ(kOk, status.code()) << status.message();
   base::DictionaryValue params;
   EXPECT_EQ(kOk, client.SendCommand("method", params).code());
 }
@@ -1106,15 +1100,12 @@ namespace {
 class MockSyncWebSocket6 : public MockSyncWebSocket {
  public:
   explicit MockSyncWebSocket6(std::list<std::string>* messages)
-      : messages_(messages), connected_(false) {}
+      : messages_(messages) {}
   ~MockSyncWebSocket6() override {}
 
-  bool IsConnected() override { return connected_; }
+  bool IsConnected() override { return true; }
 
-  bool Connect(const GURL& url) override {
-    connected_ = true;
-    return true;
-  }
+  bool Connect(const GURL& url) override { return true; }
 
   bool Send(const std::string& message) override { return true; }
 
@@ -1132,12 +1123,11 @@ class MockSyncWebSocket6 : public MockSyncWebSocket {
 
  private:
   raw_ptr<std::list<std::string>> messages_;
-  bool connected_;
 };
 
 class MockDevToolsEventListener : public DevToolsEventListener {
  public:
-  MockDevToolsEventListener() : expected_blocked_id_(-1) {}
+  MockDevToolsEventListener() : id_(1) {}
   ~MockDevToolsEventListener() override {}
 
   Status OnConnected(DevToolsClient* client) override { return Status(kOk); }
@@ -1145,12 +1135,10 @@ class MockDevToolsEventListener : public DevToolsEventListener {
   Status OnEvent(DevToolsClient* client,
                  const std::string& method,
                  const base::DictionaryValue& params) override {
-    DevToolsClientImpl* client_impl = static_cast<DevToolsClientImpl*>(client);
-    int msg_id = client_impl->NextMessageId();
-
+    id_++;
     Status status = client->SendCommand("hello", params);
-
-    if (msg_id == expected_blocked_id_) {
+    id_--;
+    if (id_ == 3) {
       EXPECT_EQ(kUnexpectedAlertOpen, status.code());
     } else {
       EXPECT_EQ(kOk, status.code());
@@ -1158,10 +1146,8 @@ class MockDevToolsEventListener : public DevToolsEventListener {
     return Status(kOk);
   }
 
-  void SetExpectedBlockedId(int value) { expected_blocked_id_ = value; }
-
  private:
-  int expected_blocked_id_;
+  int id_;
 };
 
 std::unique_ptr<SyncWebSocket> CreateMockSyncWebSocket6(
@@ -1176,8 +1162,6 @@ TEST_F(DevToolsClientImplTest, BlockedByAlert) {
   SyncWebSocketFactory factory =
       base::BindRepeating(&CreateMockSyncWebSocket6, &msgs);
   DevToolsClientImpl client("id", "", "http://url", factory);
-  Status status = client.ConnectIfNecessary();
-  ASSERT_EQ(kOk, status.code()) << status.message();
   msgs.push_back(
       "{\"method\": \"Page.javascriptDialogOpening\", \"params\": {}}");
   msgs.push_back("{\"id\": 2, \"result\": {}}");
@@ -1189,52 +1173,38 @@ TEST_F(DevToolsClientImplTest, BlockedByAlert) {
 TEST_F(DevToolsClientImplTest, CorrectlyDeterminesWhichIsBlockedByAlert) {
   // OUT                 | IN
   //                       FirstEvent
-  // hello (id1)
+  // hello (id=1)
   //                       SecondEvent
-  // hello (id2)
+  // hello (id=2)
   //                       ThirdEvent
-  // hello (id3)
+  // hello (id=3)
   //                       FourthEvent
-  // hello (id4)
-  //                       response for id1
+  // hello (id=4)
+  //                       response for 1
   //                       alert
-  // hello (id5)
-  // round trip command (id6)
-  //                       response for id2
-  //                       response for id4
-  //                       response for id5
-  //                       response for id6
+  // hello (id=5)
+  // round trip command (id=6)
+  //                       response for 2
+  //                       response for 4
+  //                       response for 5
+  //                       response for 6
   std::list<std::string> msgs;
   SyncWebSocketFactory factory =
       base::BindRepeating(&CreateMockSyncWebSocket6, &msgs);
   DevToolsClientImpl client("id", "", "http://url", factory);
   MockDevToolsEventListener listener;
   client.AddListener(&listener);
-  Status status = client.ConnectIfNecessary();
-  ASSERT_EQ(kOk, status.code()) << status.message();
-  int next_msg_id = client.NextMessageId();
   msgs.push_back("{\"method\": \"FirstEvent\", \"params\": {}}");
   msgs.push_back("{\"method\": \"SecondEvent\", \"params\": {}}");
   msgs.push_back("{\"method\": \"ThirdEvent\", \"params\": {}}");
   msgs.push_back("{\"method\": \"FourthEvent\", \"params\": {}}");
-  msgs.push_back((std::stringstream()
-                  << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
-                     .str());
+  msgs.push_back("{\"id\": 1, \"result\": {}}");
   msgs.push_back(
       "{\"method\": \"Page.javascriptDialogOpening\", \"params\": {}}");
-  msgs.push_back((std::stringstream()
-                  << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
-                     .str());
-  listener.SetExpectedBlockedId(next_msg_id++);
-  msgs.push_back((std::stringstream()
-                  << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
-                     .str());
-  msgs.push_back((std::stringstream()
-                  << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
-                     .str());
-  msgs.push_back((std::stringstream()
-                  << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
-                     .str());
+  msgs.push_back("{\"id\": 2, \"result\": {}}");
+  msgs.push_back("{\"id\": 4, \"result\": {}}");
+  msgs.push_back("{\"id\": 5, \"result\": {}}");
+  msgs.push_back("{\"id\": 6, \"result\": {}}");
   ASSERT_EQ(kOk, client.HandleReceivedEvents().code());
 }
 
@@ -1282,12 +1252,7 @@ TEST_F(DevToolsClientImplTest, ReceivesCommandResponse) {
   MockCommandListener listener2;
   client.AddListener(&listener1);
   client.AddListener(&listener2);
-  Status status = client.ConnectIfNecessary();
-  ASSERT_EQ(kOk, status.code()) << status.message();
-  int next_msg_id = client.NextMessageId();
-  msgs.push_back((std::stringstream()
-                  << "{\"id\": " << next_msg_id++ << ", \"result\": {}}")
-                     .str());
+  msgs.push_back("{\"id\": 1, \"result\": {}}");
   msgs.push_back("{\"method\": \"event\", \"params\": {}}");
   base::DictionaryValue params;
   ASSERT_EQ(kOk, client.SendCommand("cmd", params).code());
