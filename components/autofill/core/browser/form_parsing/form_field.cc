@@ -51,9 +51,11 @@ constexpr bool IsEmpty(const char16_t* s) {
 }  // namespace
 
 // static
-bool FormField::MatchesPattern(const base::StringPiece16& input,
-                               const base::StringPiece16& pattern,
-                               std::vector<std::u16string>* groups) {
+bool FormField::MatchesRegexWithCache(base::StringPiece16 input,
+                                      base::StringPiece16 pattern,
+                                      std::vector<std::u16string>* groups) {
+  // TODO(crbug.com/1309848): If ParseForm() is called from the same thread,
+  // use a thread-unsafe parser.
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
   const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(pattern);
   return autofill::MatchesRegex(input, *regex_pattern, groups);
@@ -398,19 +400,21 @@ bool FormField::Match(const AutofillField* field,
 
   const bool match_label =
       match_type.attributes.contains(MatchAttribute::kLabel);
-  if (match_label && MatchesPattern(label, pattern, capture_destination)) {
+  if (match_label &&
+      MatchesRegexWithCache(label, pattern, capture_destination)) {
     found_match = true;
     match_type_string = "Match in label";
     value = label;
   } else if (match_type.attributes.contains(MatchAttribute::kName) &&
-             MatchesPattern(name, pattern, capture_destination)) {
+             MatchesRegexWithCache(name, pattern, capture_destination)) {
     found_match = true;
     match_type_string = "Match in name";
     value = name;
   } else if (match_label &&
              base::FeatureList::IsEnabled(
                  features::kAutofillConsiderPlaceholderForParsing) &&
-             MatchesPattern(field->placeholder, pattern, capture_destination)) {
+             MatchesRegexWithCache(field->placeholder, pattern,
+                                   capture_destination)) {
     // TODO(crbug.com/1317961): The label and placeholder cases should logically
     // be grouped together. Placeholder is currently last, because for the finch
     // study we want the group assignment to happen as late as possible.

@@ -302,18 +302,18 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
   // Filter out years.
   const std::u16string kNumericalYearRe = u"[1-9][0-9][0-9][0-9]";
   for (const auto& option : field->options) {
-    if (MatchesPattern(option.value, kNumericalYearRe))
+    if (MatchesRegexWithCache(option.value, kNumericalYearRe))
       return false;
   }
   for (const auto& option : field->options) {
-    if (MatchesPattern(option.content, kNumericalYearRe))
+    if (MatchesRegexWithCache(option.content, kNumericalYearRe))
       return false;
   }
 
   // Look for numerical months.
   const std::u16string kNumericalMonthRe = u"12";
-  if (MatchesPattern(field->options.back().value, kNumericalMonthRe) ||
-      MatchesPattern(field->options.back().content, kNumericalMonthRe)) {
+  if (MatchesRegexWithCache(field->options.back().value, kNumericalMonthRe) ||
+      MatchesRegexWithCache(field->options.back().content, kNumericalMonthRe)) {
     return true;
   }
 
@@ -343,7 +343,7 @@ bool CreditCardField::LikelyCardYearSelectField(
   // numbers 1 to 9 as well in them, which we can filter on.
   const std::u16string kSingleDigitDateRe = u"\\b[1-9]\\b";
   for (const auto& option : field->options) {
-    if (MatchesPattern(option.content, kSingleDigitDateRe)) {
+    if (MatchesRegexWithCache(option.content, kSingleDigitDateRe)) {
       return false;
     }
   }
@@ -361,7 +361,7 @@ bool CreditCardField::LikelyCardYearSelectField(
   // expiration year, but show it in the context of a birth year selector.
   const std::u16string kBirthYearRe = u"(1999|99)";
   for (const auto& option : field->options) {
-    if (MatchesPattern(option.content, kBirthYearRe)) {
+    if (MatchesRegexWithCache(option.content, kBirthYearRe)) {
       return false;
     }
   }

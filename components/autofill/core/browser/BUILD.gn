@@ -104,7 +104,6 @@ static_library("browser") {
     "autofill_profile_sync_util.h",
     "autofill_profile_update_strike_database.cc",
     "autofill_profile_update_strike_database.h",
-    "autofill_regex_constants.cc",
     "autofill_regex_constants.h",
     "autofill_regexes.cc",
     "autofill_regexes.h",

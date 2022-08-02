@@ -165,7 +165,7 @@ bool PhoneField::LikelyAugmentedPhoneCountryCode(
   int total_positive_options = 0;
 
   for (const auto& option : field->options) {
-    if (MatchesPattern(option.content, kAugmentedPhoneCountryCodeRe))
+    if (MatchesRegexWithCache(option.content, kAugmentedPhoneCountryCodeRe))
       total_positive_options++;
   }
 

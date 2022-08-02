@@ -107,12 +107,13 @@ class FormField {
   // Only derived classes may instantiate.
   FormField() = default;
 
-  // Same as ::autofill::MatchesPattern(), but uses a different lock.
-  // TODO(crbug.com/1309848): If ParseForm() is called from the same thread,
-  // use a thread-unsafe parser.
-  static bool MatchesPattern(const base::StringPiece16& input,
-                             const base::StringPiece16& pattern,
-                             std::vector<std::u16string>* groups = nullptr);
+  // Calls MatchesRegex() with a thread-safe cache.
+  // Should not be called from the UI thread as it may be blocked on a worker
+  // thread.
+  static bool MatchesRegexWithCache(
+      base::StringPiece16 input,
+      base::StringPiece16 pattern,
+      std::vector<std::u16string>* groups = nullptr);
 
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills |match| with a pointer to the field.
