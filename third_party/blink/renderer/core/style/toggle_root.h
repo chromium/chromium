@@ -9,6 +9,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/renderer/core/style/toggle_group.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -81,6 +82,8 @@ class ToggleRoot {
     const NameType& AsName() const {
       return absl::get<std::size_t(Type::Name)>(value_);
     }
+
+    String ToString() const;
 
    private:
     absl::variant<IntegerType, NameType> value_;

@@ -72,6 +72,10 @@ class CORE_EXPORT CSSParserSelector {
     selector_->SetRelation(value);
   }
   void SetForPage() { selector_->SetForPage(); }
+  void SetToggle(const AtomicString& name,
+                 std::unique_ptr<ToggleRoot::State>&& value) {
+    selector_->SetToggle(name, std::move(value));
+  }
 
   void UpdatePseudoType(const AtomicString& value,
                         const CSSParserContext& context,

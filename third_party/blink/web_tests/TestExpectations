@@ -5047,6 +5047,7 @@ crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/multico
 crbug.com/1250716 external/wpt/css/css-toggle/toggle-creation.tentative.html [ Failure ]
 crbug.com/1250716 external/wpt/css/css-toggle/toggle-activation.tentative.html [ Failure ]
 crbug.com/1250716 external/wpt/css/css-toggle/toggle-activation-with-groups.tentative.html [ Failure ]
+crbug.com/1250716 external/wpt/css/css-toggle/toggle-pseudo-class.tentative.html [ Failure ]
 
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerwidth.html [ Crash Timeout ]

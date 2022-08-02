@@ -110,6 +110,7 @@ blink_core_sources_style = [
   "text_size_adjust.h",
   "toggle_group.h",
   "toggle_group_list.h",
+  "toggle_root.cc",
   "toggle_root.h",
   "toggle_root_list.h",
   "toggle_trigger.h",

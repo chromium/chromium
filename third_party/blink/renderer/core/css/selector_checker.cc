@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/dom/popup_data.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/dom/toggle.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
@@ -1562,6 +1563,29 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoRelativeAnchor:
       DCHECK(context.relative_anchor_element);
       return context.relative_anchor_element == &element;
+    case CSSSelector::kPseudoToggle: {
+      using State = ToggleRoot::State;
+
+      const AtomicString& name = selector.Argument();
+      const State* value = selector.ToggleValue();
+
+      auto [toggle, toggle_element] = element.FindToggleInScope(name);
+      DCHECK_EQ(!toggle, !toggle_element);
+      // An element matches :toggle() if the element is in scope for a toggle
+      // with the name given by <custom-ident>, and ...
+      if (!toggle)
+        return false;
+
+      if (value) {
+        // ... either the toggle’s value matches the provided <toggle-value>,
+        // ...
+        return toggle->ValueMatches(*value);
+      } else {
+        // ... or the <toggle-value> is omitted and the toggle is in any
+        // active value.
+        return !toggle->ValueMatches(State(0));
+      }
+    }
     case CSSSelector::kPseudoUnknown:
     default:
       NOTREACHED();

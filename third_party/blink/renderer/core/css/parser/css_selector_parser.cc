@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_observer.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -1049,6 +1050,40 @@ std::unique_ptr<CSSParserSelector> CSSSelectorParser::ConsumePseudo(
       if (ident.GetType() != kIdentToken || !block.AtEnd())
         return nullptr;
       selector->SetArgument(ident.Value().ToAtomicString());
+      return selector;
+    }
+    case CSSSelector::kPseudoToggle: {
+      using State = ToggleRoot::State;
+
+      const CSSParserToken& name = block.ConsumeIncludingWhitespace();
+      if (name.GetType() != kIdentToken ||
+          !css_parsing_utils::IsCustomIdent(name.Id())) {
+        return nullptr;
+      }
+      std::unique_ptr<State> value;
+      if (!block.AtEnd()) {
+        const CSSParserToken& value_token = block.ConsumeIncludingWhitespace();
+        switch (value_token.GetType()) {
+          case kIdentToken:
+            if (!css_parsing_utils::IsCustomIdent(value_token.Id()))
+              return nullptr;
+            value =
+                std::make_unique<State>(value_token.Value().ToAtomicString());
+            break;
+          case kNumberToken:
+            if (value_token.GetNumericValueType() != kIntegerValueType ||
+                value_token.NumericValue() < 0) {
+              return nullptr;
+            }
+            value = std::make_unique<State>(value_token.NumericValue());
+            break;
+          default:
+            return nullptr;
+        }
+      }
+      if (!block.AtEnd())
+        return nullptr;
+      selector->SetToggle(name.Value().ToAtomicString(), std::move(value));
       return selector;
     }
     default:

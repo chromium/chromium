@@ -194,6 +194,7 @@ bool SupportsInvalidation(CSSSelector::PseudoType type) {
     case CSSSelector::kPseudoPageTransitionImageWrapper:
     case CSSSelector::kPseudoPageTransitionIncomingImage:
     case CSSSelector::kPseudoPageTransitionOutgoingImage:
+    case CSSSelector::kPseudoToggle:
       return true;
     case CSSSelector::kPseudoUnknown:
     case CSSSelector::kPseudoLeftPage:
@@ -661,6 +662,7 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
       case CSSSelector::kPseudoMultiSelectFocus:
       case CSSSelector::kPseudoModal:
       case CSSSelector::kPseudoSelectorFragmentAnchor:
+      case CSSSelector::kPseudoToggle:
         return &EnsurePseudoInvalidationSet(selector.GetPseudoType(), type,
                                             position);
       case CSSSelector::kPseudoFirstOfType:
