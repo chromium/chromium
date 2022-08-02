@@ -60,13 +60,15 @@
   }
 </style>
 <div id="languagesSection">
-  <div class="cr-row continuation"
-    hidden="[[isHelpTextHidden_(languages.enabled.*)]]">
-    <div class="cr-padded-text">
-    <span>
+  <div class="cr-row continuation">
+    <h2 class="flex">
       $i18n{preferredLanguagesDesc}
-    </span>
-    </div>
+    </h2>
+    <cr-button id="addLanguages" class="header-aligned-button"
+        disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
+        on-click="onAddLanguagesTap_">
+      $i18n{addLanguages}
+    </cr-button>
   </div>
   <div class="list-frame vertical-list">
     <template is="dom-repeat" items="[[languages.enabled]]">
@@ -106,13 +108,6 @@
         </cr-icon-button>
       </div>
     </template>
-    <div class="list-item">
-      <a is="action-link" class="list-button" id="addLanguages"
-          disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
-          on-click="onAddLanguagesTap_">
-        $i18n{addLanguages}
-      </a>
-    </div>
   </div>
   <settings-toggle-button id="offerTranslateOtherLanguages"
       pref="{{prefs.translate.enabled}}"

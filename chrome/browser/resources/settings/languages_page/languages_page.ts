@@ -321,13 +321,6 @@ export class SettingsLanguagesPageElement extends
   }
 
   /**
-   * @return True if there are less than 2 languages.
-   */
-  private isHelpTextHidden_(): boolean {
-    return this.languages !== undefined && this.languages.enabled.length <= 1;
-  }
-
-  /**
    * @param languageCode The language code identifying a language.
    * @param translateTarget The target language.
    * @return 'target' if |languageCode| matches the target language,
