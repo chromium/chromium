@@ -75,8 +75,8 @@ class ManageMirrorSync extends HTMLElement {
    */
   private async onFolderExpanded(path: string) {
     const proxy = BrowserProxy.getInstance().handler;
-    const folderPaths =
-        (await proxy.getChildFolders({path})).paths.map(({path}) => path);
+    const childFolders = await proxy.getChildFolders({path});
+    const folderPaths = childFolders.paths.map(({path}) => path);
     this.folderSelector?.addChildFolders(folderPaths);
   }
 }
