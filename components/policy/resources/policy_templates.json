@@ -16636,7 +16636,7 @@
       'owners': ['andreydav@google.com', 'chromeos-commercial-identity@google.com'],
       'type': 'string',
       'schema': { 'type': 'string' },
-      'future_on': ['chrome_os'],
+      'supported_on': ['chrome_os:106-'],
       'supported_chrome_os_management': ['google_cloud' ],
       'device_only': True,
       'features': {
