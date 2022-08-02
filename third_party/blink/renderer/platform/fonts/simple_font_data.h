@@ -177,6 +177,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 
   void PlatformInit(bool subpixel_ascent_descent, const FontMetricsOverride&);
   void PlatformGlyphInit();
+  void PlatformGlyphInitVerticalUpright(Glyph cjk_water_glyph);
 
   scoped_refptr<SimpleFontData> CreateScaledFontData(const FontDescription&,
                                               float scale_factor) const;

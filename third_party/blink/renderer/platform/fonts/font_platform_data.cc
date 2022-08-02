@@ -299,6 +299,11 @@ SkFont FontPlatformData::CreateSkFont(bool should_use_subpixel_positioning,
 }
 #endif
 
+scoped_refptr<OpenTypeVerticalData> FontPlatformData::CreateVerticalData()
+    const {
+  return OpenTypeVerticalData::CreateUnscaled(typeface_);
+}
+
 IdentifiableToken FontPlatformData::ComputeTypefaceDigest() const {
   DCHECK(typeface_);
   int table_count = typeface_->countTables();

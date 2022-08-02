@@ -135,7 +135,8 @@ Font CreateTestFont(const AtomicString& family_name,
 Font CreateTestFont(const AtomicString& family_name,
                     const String& font_path,
                     float size,
-                    const FontDescription::VariantLigatures* ligatures) {
+                    const FontDescription::VariantLigatures* ligatures,
+                    void (*init_font_description)(FontDescription*)) {
   FontFamily family;
   family.SetFamily(family_name, FontFamily::Type::kFamilyName);
 
@@ -145,6 +146,8 @@ Font CreateTestFont(const AtomicString& family_name,
   font_description.SetComputedSize(size);
   if (ligatures)
     font_description.SetVariantLigatures(*ligatures);
+  if (init_font_description)
+    (*init_font_description)(&font_description);
 
   return Font(font_description, TestFontSelector::Create(font_path));
 }

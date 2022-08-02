@@ -61,6 +61,7 @@ namespace blink {
 
 class Font;
 class HarfBuzzFace;
+class OpenTypeVerticalData;
 
 class PLATFORM_EXPORT FontPlatformData {
   USING_FAST_MALLOC(FontPlatformData);
@@ -132,6 +133,8 @@ class PLATFORM_EXPORT FontPlatformData {
 
   SkFont CreateSkFont(bool should_use_subpixel_positioning = false,
                       const FontDescription* = nullptr) const;
+
+  scoped_refptr<OpenTypeVerticalData> CreateVerticalData() const;
 
   // Computes a digest from the typeface. The digest only depends on the
   // underlying font itself, and does not vary by the style (size, weight,

@@ -40,6 +40,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -175,11 +176,11 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
   DCHECK(face);
   if (int units_per_em = face->getUnitsPerEm())
     font_metrics_.SetUnitsPerEm(units_per_em);
-
 }
 
 void SimpleFontData::PlatformGlyphInit() {
-  SkTypeface* typeface = PlatformData().Typeface();
+  const FontPlatformData& platform_data = PlatformData();
+  SkTypeface* typeface = platform_data.Typeface();
   if (!typeface->countGlyphs()) {
     space_glyph_ = 0;
     space_width_ = 0;
@@ -204,10 +205,49 @@ void SimpleFontData::PlatformGlyphInit() {
   // It should be computed without shaping; i.e., it doesn't include font
   // features, ligatures/kerning, nor `letter-spacing`.
   // https://github.com/w3c/csswg-drafts/issues/5498#issuecomment-686902802
-  if (const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter))
+  const Glyph cjk_water_glyph = GlyphForCharacter(kCjkWaterCharacter);
+
+  // If `text-orientation: vertical-upright`, use the vertical metrics.
+  if (UNLIKELY(platform_data.Orientation() ==
+               FontOrientation::kVerticalUpright)) {
+    PlatformGlyphInitVerticalUpright(cjk_water_glyph);
+    return;
+  }
+
+  if (cjk_water_glyph)
     font_metrics_.SetIdeographicFullWidth(WidthForGlyph(cjk_water_glyph));
   else
     font_metrics_.SetIdeographicFullWidth(absl::nullopt);
+}
+
+void SimpleFontData::PlatformGlyphInitVerticalUpright(Glyph cjk_water_glyph) {
+  DCHECK_EQ(PlatformData().Orientation(), FontOrientation::kVerticalUpright);
+
+  if (!cjk_water_glyph) {
+    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
+    return;
+  }
+
+  // The vertical metrics is available only in |HarfBuzzFontData|, but it can't
+  // be constructed while initializing |SimpleFontData|. See crbug.com/784389.
+  const FontPlatformData& platform_data = PlatformData();
+  scoped_refptr<OpenTypeVerticalData> vertical_data =
+      platform_data.CreateVerticalData();
+  const FontMetrics& metrics = GetFontMetrics();
+  const int units_per_em =
+      platform_data.GetHarfBuzzFace()->UnitsPerEmFromHeadTable();
+  const float size_per_unit =
+      platform_data.size() / (units_per_em ? units_per_em : 1);
+  // Use a value for |height_fallback| that can detect the "fallback" case.
+  constexpr int height_fallback = 0;
+  vertical_data->SetScaleAndFallbackMetrics(
+      size_per_unit, metrics.FloatAscent(), height_fallback);
+  const float cjk_water_height = vertical_data->AdvanceHeight(cjk_water_glyph);
+  if (cjk_water_height == height_fallback) {
+    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
+    return;
+  }
+  font_metrics_.SetIdeographicFullWidth(cjk_water_height);
 }
 
 const SimpleFontData* SimpleFontData::FontDataForCharacter(UChar32) const {

@@ -20,7 +20,8 @@ namespace test {
 Font CreateTestFont(const AtomicString& family_name,
                     const String& font_path,
                     float size,
-                    const FontDescription::VariantLigatures* = nullptr);
+                    const FontDescription::VariantLigatures* = nullptr,
+                    void (*init_font_description)(FontDescription*) = nullptr);
 
 // Reads a font from raw font data, for use in fuzzing test only.
 Font CreateTestFont(const AtomicString& family_name,

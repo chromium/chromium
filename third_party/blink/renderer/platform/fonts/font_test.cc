@@ -16,6 +16,20 @@ using blink::test::CreateTestFont;
 
 namespace blink {
 
+namespace {
+
+Font CreateVerticalUprightTestFont(const AtomicString& family_name,
+                                   const String& font_path,
+                                   float size) {
+  return CreateTestFont(
+      family_name, font_path, size, /* ligatures */ nullptr,
+      [](FontDescription* font_description) {
+        font_description->SetOrientation(FontOrientation::kVerticalUpright);
+      });
+}
+
+}  // namespace
+
 class FontTest : public FontTestBase {
  public:
   Vector<int> GetExpandedRange(const String& text, bool ltr, int from, int to) {
@@ -34,6 +48,13 @@ class FontTest : public FontTestBase {
     font.ExpandRangeToIncludePartialGlyphs(text_run, &from, &to);
     return Vector<int>({from, to});
   }
+
+  Font CreateFontWithOrientation(const Font& base_font,
+                                 FontOrientation orientation) {
+    FontDescription font_description = base_font.GetFontDescription();
+    font_description.SetOrientation(orientation);
+    return Font(font_description);
+  }
 };
 
 TEST_F(FontTest, IdeographicFullWidthAhem) {
@@ -44,7 +65,7 @@ TEST_F(FontTest, IdeographicFullWidthAhem) {
   EXPECT_FALSE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
 }
 
-TEST_F(FontTest, IdeographicFullWidthCJKFull) {
+TEST_F(FontTest, IdeographicFullWidthCjkFull) {
   Font font = CreateTestFont(
       "M PLUS 1p",
       blink::test::BlinkWebTestsFontsTestDataPath("mplus-1p-regular.woff"), 16);
@@ -54,7 +75,7 @@ TEST_F(FontTest, IdeographicFullWidthCJKFull) {
   EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 16);
 }
 
-TEST_F(FontTest, IdeographicFullWidthCJKNarrow) {
+TEST_F(FontTest, IdeographicFullWidthCjkNarrow) {
   Font font = CreateTestFont("CSSHWOrientationTest",
                              blink::test::BlinkWebTestsFontsTestDataPath(
                                  "adobe-fonts/CSSHWOrientationTest.otf"),
@@ -63,6 +84,38 @@ TEST_F(FontTest, IdeographicFullWidthCJKNarrow) {
   ASSERT_TRUE(font_data);
   EXPECT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
   EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 8);
+}
+
+// A font that does not have the CJK "water" glyph.
+TEST_F(FontTest, IdeographicFullWidthUprightAhem) {
+  Font font =
+      CreateTestFont("Ahem", test::PlatformTestDataPath("Ahem.woff"), 16);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  ASSERT_TRUE(font_data);
+  EXPECT_FALSE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+}
+
+// A Japanese font, with the "water" glyph, but the `vmtx` table is missing.
+TEST_F(FontTest, IdeographicFullWidthUprightCjkNoVmtx) {
+  Font font = CreateVerticalUprightTestFont(
+      "M PLUS 1p",
+      blink::test::BlinkWebTestsFontsTestDataPath("mplus-1p-regular.woff"), 16);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  ASSERT_TRUE(font_data);
+  EXPECT_FALSE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+}
+
+// A Japanese font, with the "water" glyph, with the `vmtx` table.
+TEST_F(FontTest, IdeographicFullWidthUprightCjkVmtx) {
+  Font font =
+      CreateVerticalUprightTestFont("CSSHWOrientationTest",
+                                    blink::test::BlinkWebTestsFontsTestDataPath(
+                                        "adobe-fonts/CSSHWOrientationTest.otf"),
+                                    16);
+  const SimpleFontData* font_data = font.PrimaryFont();
+  ASSERT_TRUE(font_data);
+  ASSERT_TRUE(font_data->GetFontMetrics().IdeographicFullWidth().has_value());
+  EXPECT_EQ(*font_data->GetFontMetrics().IdeographicFullWidth(), 16);
 }
 
 TEST_F(FontTest, TextIntercepts) {
