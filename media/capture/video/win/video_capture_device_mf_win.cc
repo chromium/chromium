@@ -606,6 +606,9 @@ HRESULT CopyTextureToGpuMemoryBuffer(ID3D11Texture2D* texture,
   return S_OK;
 }
 
+// Destruction helper. Can't use base::DoNothingAs<> since ComPtr isn't POD.
+void DestroyCaptureEngine(Microsoft::WRL::ComPtr<IMFCaptureEngine>) {}
+
 }  // namespace
 
 class MFVideoCallback final
@@ -943,6 +946,15 @@ VideoCaptureDeviceMFWin::~VideoCaptureDeviceMFWin() {
   }
   if (video_callback_) {
     video_callback_->Shutdown();
+  }
+
+  // In case there's about to be a new device created with a different config,
+  // defer destruction of the IMFCaptureEngine since it force unloads a bunch of
+  // DLLs which are expensive to reload.
+  if (engine_) {
+    main_thread_task_runner_->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&DestroyCaptureEngine, std::move(engine_)),
+        base::Seconds(5));
   }
 }
 
