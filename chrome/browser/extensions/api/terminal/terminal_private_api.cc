@@ -217,7 +217,7 @@ void PrefChanged(Profile* profile, const std::string& pref_name) {
   }
   base::Value::List args;
   base::Value prefs(base::Value::Type::DICTIONARY);
-  prefs.SetKey(pref_name, profile->GetPrefs()->Get(pref_name)->Clone());
+  prefs.SetKey(pref_name, profile->GetPrefs()->GetValue(pref_name).Clone());
   args.Append(std::move(prefs));
   auto event = std::make_unique<extensions::Event>(
       extensions::events::TERMINAL_PRIVATE_ON_PREF_CHANGED,
@@ -745,7 +745,7 @@ ExtensionFunction::ResponseAction TerminalPrivateGetPrefsFunction::Run() {
       guest_os::RecordTerminalSettingsChangesUMAs(
           Profile::FromBrowserContext(browser_context()));
     }
-    result.SetKey(path, service->Get(path)->Clone());
+    result.SetKey(path, service->GetValue(path).Clone());
   }
   return RespondNow(OneArgument(std::move(result)));
 }
