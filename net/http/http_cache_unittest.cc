@@ -13519,8 +13519,7 @@ class HttpCacheSingleKeyedCacheTest : public HttpCacheTest {
       const MockTransaction& trans_info,
       const NetworkIsolationKey& network_isolation_key,
       const std::string& checksum) {
-    MockTransaction transaction(trans_info);
-    AddMockTransaction(&transaction);
+    ScopedMockTransaction transaction(trans_info);
 
     MockHttpRequest request(transaction);
     request.network_isolation_key = network_isolation_key;
