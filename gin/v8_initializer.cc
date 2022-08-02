@@ -302,6 +302,9 @@ void SetFlags(IsolateHolder::ScriptMode mode,
     if (int max_threads = features::kV8ConcurrentSparkplugMaxThreads.Get()) {
       SetV8FlagsFormatted("--concurrent-sparkplug-max-threads=%i", max_threads);
     }
+    SetV8FlagsIfOverridden(features::kV8ConcurrentSparkplugHighPriorityThreads,
+                           "--concurrent-sparkplug-high-priority-threads",
+                           "--no-concurrent-sparkplug-high-priority-threads");
   }
 
   if (base::FeatureList::IsEnabled(features::kV8FlushBytecode)) {

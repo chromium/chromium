@@ -89,7 +89,9 @@ const base::Feature kV8ConcurrentSparkplug{"V8ConcurrentSparkplug",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<int> kV8ConcurrentSparkplugMaxThreads{
     &kV8ConcurrentSparkplug, "V8ConcurrentSparkplugMaxThreads", 0};
-
+const base::Feature kV8ConcurrentSparkplugHighPriorityThreads{
+    "V8ConcurrentSparkplugHighPriorityThreads",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 // Makes sure the experimental Sparkplug compiler is only enabled if short
 // builtin calls are enabled too.
 const base::Feature kV8SparkplugNeedsShortBuiltinCalls{
