@@ -25,9 +25,15 @@ public class ServiceHelper {
     public static boolean bindService(
             Context context, Intent intent, ServiceConnection serviceConnection, int flags) {
         try {
-            return context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            boolean serviceBindingSuccess =
+                    context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            if (!serviceBindingSuccess) {
+                context.unbindService(serviceConnection);
+            }
+            return serviceBindingSuccess;
         } catch (ReceiverCallNotAllowedException e) {
             // If we're running in a BroadcastReceiver Context then we cannot bind to Services.
+            context.unbindService(serviceConnection);
             return false;
         }
     }
