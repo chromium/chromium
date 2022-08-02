@@ -4267,8 +4267,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.SiteForCookiesOK" enum="Boolean"
-    expires_after="2022-08-14">
+<histogram name="Net.RestrictedCookieManager.SiteForCookiesOK"
+    enum="BooleanMatched" expires_after="2023-01-01">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
@@ -4277,8 +4277,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.RestrictedCookieManager.TopFrameOriginOK" enum="Boolean"
-    expires_after="2023-01-01">
+<histogram name="Net.RestrictedCookieManager.TopFrameOriginOK"
+    enum="BooleanMatched" expires_after="2023-01-01">
   <owner>morlovich@chromium.org</owner>
   <owner>src/net/cookies/OWNERS</owner>
   <summary>
