@@ -131,12 +131,6 @@ export class TrustedAppRequestHandler extends RequestHandler {
     this.registerMethod('openFeedbackDialog', (args) => {
       return this.browserProxy_.openFeedbackDialog();
     });
-    this.registerMethod('getScreencast', (args) => {
-      if (!args || args.length != 1) {
-        return Promise.reject('Incorrect args for getScreencast');
-      }
-      return this.browserProxy_.getScreencast(args[0]);
-    });
   }
 }
 

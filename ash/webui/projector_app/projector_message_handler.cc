@@ -11,7 +11,6 @@
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
-#include "ash/webui/projector_app/projector_screencast.h"
 #include "ash/webui/projector_app/projector_xhr_sender.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -222,10 +221,6 @@ void ProjectorMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "openFeedbackDialog",
       base::BindRepeating(&ProjectorMessageHandler::OpenFeedbackDialog,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "getScreencast",
-      base::BindRepeating(&ProjectorMessageHandler::GetScreencast,
                           base::Unretained(this)));
 }
 
@@ -480,35 +475,6 @@ void ProjectorMessageHandler::GetPendingScreencasts(
       ProjectorAppClient::Get()->GetPendingScreencasts();
   ResolveJavascriptCallback(args[0],
                             ScreencastListToValue(pending_screencasts));
-}
-
-void ProjectorMessageHandler::GetScreencast(const base::Value::List& args) {
-  AllowJavascript();
-  // Two arguments. The first is callback id, and the second is the list
-  // containing the screencast container folder id.
-  DCHECK_EQ(args.size(), 2u);
-  const auto& requested_item_ids = args[1].GetList();
-  DCHECK_EQ(requested_item_ids.size(), 1u);
-
-  // 1. TODO(b/236857019): Locate the local path of container folder local path
-  // by server side file id.
-  // 2. TODO(b/236857019): Locate the local path of media file for given
-  // container folder path.
-  // 3. TODO(b/237089852) With the media file path, issues an open file request
-  // to retrieve video url.
-  // 4. TODO(b/236857019): Populate the screencast info and return the promise
-  // with it.
-  ProjectorScreencast screencast;
-  // 5. TODO(b/236857019): Investigate load screencast outside DriveFS. Finds a
-  // way (maybe by checking the pattern) to distinguish whether args[1] is a
-  // container folder id or path/blob uuid. Or add a separate API like
-  // GetScreencastByPath?
-  screencast.container_folder_id = requested_item_ids[0].GetString();
-  // Set the "name" with a random string for now.
-  // TODO(b/236857019) Gets screencast name by using DriveFS service.
-  screencast.name = "name";
-
-  ResolveJavascriptCallback(args[0], screencast.ToValue());
 }
 
 }  // namespace ash

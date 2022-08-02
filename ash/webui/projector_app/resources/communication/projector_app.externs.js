@@ -236,48 +236,6 @@ projectorApp.NewScreencastPreconditionState.prototype.state;
 projectorApp.NewScreencastPreconditionState.prototype.reasons;
 
 /**
- * Structure for Screencast video object.
- * @record
- * @struct
- */
-projectorApp.Video = function() {};
-
-/**
- * The source url of screencast video.
- * @type {string|undefined}
- */
-projectorApp.Video.prototype.srcUrl;
-
-/**
- * Structure for Screencast object.
- * @record
- * @struct
- */
-projectorApp.Screencast = function() {};
-
-/**
- * The container folder id of the screencast.
- * @type {string}
- */
-// TODO(b/236858194): Add the rest of the fields and refactor the Screencast
-// model in ../shared/screencast_model.d.ts to this file. Remove
-// PendingScreencast.
-projectorApp.Screencast.prototype.containerFolderId;
-
-/**
- * The name of the screencast.
- * @type {string}
- */
-projectorApp.Screencast.prototype.name;
-
-
-/**
- * The screencast video object.
- * @type {!projectorApp.Video}
- */
-projectorApp.Screencast.prototype.video;
-
-/**
  * The delegate interface that the Projector app can use to make requests to
  * chrome.
  * @record
@@ -383,16 +341,6 @@ projectorApp.ClientDelegate.prototype.setUserPref = function(
  * @return {!Promise}
  */
 projectorApp.ClientDelegate.prototype.openFeedbackDialog = function() {};
-
-// TODO(b/236860361): Support screencast located outside DriveFS by using path
-// or blob uuid.
-
-/**
- * Gets information about the specified screencast from DriveFS.
- * @param {string} screencastId The Drive item id of container folder.
- * @return {!Promise<!projectorApp.Screencast>}
- */
-projectorApp.ClientDelegate.prototype.getScreencast = function(screencastId) {};
 
 /**
  * The client Api for interacting with the Projector app instance.
