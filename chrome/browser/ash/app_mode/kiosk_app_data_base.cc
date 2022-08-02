@@ -96,7 +96,7 @@ void KioskAppDataBase::SaveIconToDictionary(DictionaryPrefUpdate& dict_update) {
   dict_update->SetStringPath(icon_path_key, icon_path_.value());
 }
 
-bool KioskAppDataBase::LoadFromDictionary(const base::Value& dict,
+bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict,
                                           bool lazy_icon_load) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   const std::string app_key =
@@ -105,11 +105,12 @@ bool KioskAppDataBase::LoadFromDictionary(const base::Value& dict,
   const std::string icon_path_key = app_key + '.' + kKeyIcon;
 
   // If there is no title stored, do not stop, sometimes only icon is cached.
-  const std::string* maybe_name = dict.FindStringPath(name_key);
+  const std::string* maybe_name = dict.FindStringByDottedPath(name_key);
   if (maybe_name)
     name_ = *maybe_name;
 
-  const std::string* icon_path_string = dict.FindStringPath(icon_path_key);
+  const std::string* icon_path_string =
+      dict.FindStringByDottedPath(icon_path_key);
   if (!icon_path_string) {
     return false;
   }

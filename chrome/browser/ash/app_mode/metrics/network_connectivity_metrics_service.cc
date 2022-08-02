@@ -70,24 +70,14 @@ void NetworkConnectivityMetricsService::NetworkConnectionStateChanged(
 }
 
 void NetworkConnectivityMetricsService::LogNetworkDrops(int network_drops) {
-  if (!prefs_->GetDictionary(prefs::kKioskMetrics)) {
-    prefs_->SetDict(prefs::kKioskMetrics, base::Value::Dict());
-  }
   prefs::ScopedDictionaryPrefUpdate update(prefs_, prefs::kKioskMetrics);
 
   update->SetInteger(kKioskNetworkDrops, network_drops);
 }
 
 void NetworkConnectivityMetricsService::ReportPreviousSessionNetworkDrops() {
-  const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
-  if (!metrics_value) {
-    LogNetworkDrops(0);
-    return;
-  }
-  const auto* metrics_dict = metrics_value->GetIfDict();
-  DCHECK(metrics_dict);
-
-  const auto* network_drops_value = metrics_dict->Find(kKioskNetworkDrops);
+  const auto& metrics_dict = prefs_->GetValueDict(prefs::kKioskMetrics);
+  const auto* network_drops_value = metrics_dict.Find(kKioskNetworkDrops);
   if (!network_drops_value) {
     LogNetworkDrops(0);
     return;

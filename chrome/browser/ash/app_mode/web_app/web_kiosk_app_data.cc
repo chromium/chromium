@@ -164,19 +164,19 @@ WebKioskAppData::~WebKioskAppData() = default;
 
 bool WebKioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* dict = local_state->GetDictionary(dictionary_name());
+  const base::Value::Dict& dict = local_state->GetValueDict(dictionary_name());
 
-  if (!LoadFromDictionary(*dict, /* lazy_icon_load= */ true))
+  if (!LoadFromDictionary(dict, /* lazy_icon_load= */ true))
     return false;
 
-  if (LoadLaunchUrlFromDictionary(*dict)) {
+  if (LoadLaunchUrlFromDictionary(dict)) {
     SetStatus(Status::kInstalled);
     return true;
   }
 
   // If the icon was previously downloaded using a different url and the app has
   // not been installed earlier, do not use that icon.
-  if (GetLastIconUrl(*dict) != icon_url_)
+  if (GetLastIconUrl(dict) != icon_url_)
     return false;
 
   // Wait while icon is loaded.
@@ -254,13 +254,14 @@ void WebKioskAppData::SetStatus(Status status, bool notify) {
     delegate_->OnKioskAppDataChanged(app_id());
 }
 
-bool WebKioskAppData::LoadLaunchUrlFromDictionary(const base::Value& dict) {
+bool WebKioskAppData::LoadLaunchUrlFromDictionary(
+    const base::Value::Dict& dict) {
   // All the previous keys should be present since this function is executed
   // after LoadFromDictionary().
   const std::string* launch_url_string =
-      dict.FindDictKey(KioskAppDataBase::kKeyApps)
-          ->FindDictKey(app_id())
-          ->FindStringKey(kKeyLaunchUrl);
+      dict.FindDict(KioskAppDataBase::kKeyApps)
+          ->FindDict(app_id())
+          ->FindString(kKeyLaunchUrl);
 
   if (!launch_url_string)
     return false;
@@ -269,13 +270,12 @@ bool WebKioskAppData::LoadLaunchUrlFromDictionary(const base::Value& dict) {
   return true;
 }
 
-GURL WebKioskAppData::GetLastIconUrl(const base::Value& dict) const {
+GURL WebKioskAppData::GetLastIconUrl(const base::Value::Dict& dict) const {
   // All the previous keys should be present since this function is executed
   // after LoadFromDictionary().
-  const std::string* icon_url_string =
-      dict.FindDictKey(KioskAppDataBase::kKeyApps)
-          ->FindDictKey(app_id())
-          ->FindStringKey(kKeyLastIconUrl);
+  const std::string* icon_url_string = dict.FindDict(KioskAppDataBase::kKeyApps)
+                                           ->FindDict(app_id())
+                                           ->FindString(kKeyLastIconUrl);
 
   return icon_url_string ? GURL(*icon_url_string) : GURL();
 }

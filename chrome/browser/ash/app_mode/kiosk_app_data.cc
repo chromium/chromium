@@ -374,9 +374,9 @@ network::mojom::URLLoaderFactory* KioskAppData::GetURLLoaderFactory() {
 
 bool KioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* dict = local_state->GetDictionary(dictionary_name());
+  const base::Value::Dict& dict = local_state->GetValueDict(dictionary_name());
 
-  if (!LoadFromDictionary(*dict))
+  if (!LoadFromDictionary(dict))
     return false;
 
   const std::string app_key = std::string(kKeyApps) + '.' + app_id();
@@ -384,7 +384,7 @@ bool KioskAppData::LoadFromCache() {
       app_key + '.' + kKeyRequiredPlatformVersion;
 
   const std::string* maybe_required_platform_version =
-      dict->FindStringPath(required_platform_version_key);
+      dict.FindStringByDottedPath(required_platform_version_key);
   if (!maybe_required_platform_version)
     return false;
 

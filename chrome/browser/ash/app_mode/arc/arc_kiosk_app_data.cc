@@ -42,9 +42,9 @@ bool ArcKioskAppData::operator==(const std::string& other_app_id) const {
 
 bool ArcKioskAppData::LoadFromCache() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::Value* dict = local_state->GetDictionary(dictionary_name());
+  const base::Value::Dict& dict = local_state->GetValueDict(dictionary_name());
 
-  return LoadFromDictionary(*dict);
+  return LoadFromDictionary(dict);
 }
 
 void ArcKioskAppData::SetCache(const std::string& name,

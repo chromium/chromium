@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "components/account_id/account_id.h"
 #include "ui/gfx/image/image_skia.h"
@@ -68,11 +69,11 @@ class WebKioskAppData : public KioskAppDataBase {
   class IconFetcher;
   void OnDidDownloadIcon(const SkBitmap& icon);
 
-  bool LoadLaunchUrlFromDictionary(const base::Value& dict);
+  bool LoadLaunchUrlFromDictionary(const base::Value::Dict& dict);
 
   // Returns the icon url of the icon that was being provided during previous
   // session.
-  GURL GetLastIconUrl(const base::Value& dict) const;
+  GURL GetLastIconUrl(const base::Value::Dict& dict) const;
 
   KioskAppDataDelegate* delegate_;  // not owned.
   Status status_;

@@ -77,23 +77,14 @@ void LowDiskMetricsService::LowDiskSpace(
 
 void LowDiskMetricsService::UpdateCurrentSessionLowDiskSeverity(
     KioskLowDiskSeverity severity) {
-  if (!prefs_->GetDictionary(prefs::kKioskMetrics)) {
-    prefs_->SetDict(prefs::kKioskMetrics, base::Value::Dict());
-  }
   prefs::ScopedDictionaryPrefUpdate update(prefs_, prefs::kKioskMetrics);
   update->SetInteger(kKioskLowDiskSeverity, static_cast<int>(severity));
 }
 
 void LowDiskMetricsService::ReportPreviousSessionLowDiskSeverity() {
-  const auto* metrics_value = prefs_->GetDictionary(prefs::kKioskMetrics);
-  if (!metrics_value) {
-    UpdateCurrentSessionLowDiskSeverity(low_disk_severity_);
-    return;
-  }
-  const auto* metrics_dict = metrics_value->GetIfDict();
-  DCHECK(metrics_dict);
+  const auto& metrics_dict = prefs_->GetValueDict(prefs::kKioskMetrics);
 
-  const auto* severity_value = metrics_dict->Find(kKioskLowDiskSeverity);
+  const auto* severity_value = metrics_dict.Find(kKioskLowDiskSeverity);
   if (!severity_value) {
     UpdateCurrentSessionLowDiskSeverity(low_disk_severity_);
     return;
