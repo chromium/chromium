@@ -45,6 +45,7 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
   ~NoteActionLaunchButtonTest() override = default;
 
   void SetUp() override {
+    set_start_session(true);
     LoginTestBase::SetUp();
 
     Shell::Get()->tray_action()->SetClient(

@@ -87,7 +87,6 @@ class LoginShelfViewTest : public LoginTestBase,
         &action_background_controller_factory_);
 
     // Guest Button is visible while session hasn't started.
-    set_start_session(false);
     LoginTestBase::SetUp();
     login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->GetLoginShelfView();
     Shell::Get()->tray_action()->SetClient(

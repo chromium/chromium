@@ -21,7 +21,7 @@ class LoginDataDispatcher;
 
 // Base test fixture for testing the views-based login and lock screens. This
 // class provides easy access to types which the login/lock frequently need.
-class LoginTestBase : public AshTestBase {
+class LoginTestBase : public NoSessionAshTestBase {
  public:
   LoginTestBase();
 

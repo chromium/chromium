@@ -520,7 +520,13 @@ TEST_F(PinRequestViewTest, BackwardTabKeyTraversal) {
   EXPECT_TRUE(HasFocusInAnyChildView(test_api.access_code_view()));
 }
 
-using PinRequestWidgetTest = PinRequestViewTest;
+class PinRequestWidgetTest : public PinRequestViewTest {
+ public:
+  PinRequestWidgetTest() { set_start_session(true); }
+  PinRequestWidgetTest(const PinRequestWidgetTest&) = delete;
+  PinRequestWidgetTest& operator=(const PinRequestWidgetTest&) = delete;
+  ~PinRequestWidgetTest() override = default;
+};
 
 // Tests that the widget is properly resized when tablet mode changes.
 TEST_F(PinRequestWidgetTest, WidgetResizingInTabletMode) {

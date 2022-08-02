@@ -22,7 +22,7 @@
 namespace ash {
 
 LoginTestBase::LoginTestBase()
-    : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    : NoSessionAshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
   user_manager::KnownUser::RegisterPrefs(local_state()->registry());
 }
 

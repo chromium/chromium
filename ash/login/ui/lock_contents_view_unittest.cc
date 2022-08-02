@@ -122,8 +122,8 @@ AuthDisabledData GetTestDisabledAuthData() {
 using LockContentsViewKeyboardUnitTest = LoginKeyboardTestBase;
 
 class LockContentsViewUnitTest : public LoginTestBase {
- protected:
-  LockContentsViewUnitTest() = default;
+ public:
+  LockContentsViewUnitTest() { set_start_session(true); }
   LockContentsViewUnitTest(LockContentsViewUnitTest&) = delete;
   LockContentsViewUnitTest& operator=(LockContentsViewUnitTest&) = delete;
   ~LockContentsViewUnitTest() override = default;
@@ -3318,7 +3318,6 @@ class LockContentsViewWithKioskLicenseTest : public LoginTestBase {
   ~LockContentsViewWithKioskLicenseTest() override = default;
 
   void SetUp() override {
-    set_start_session(false);
     LoginTestBase::SetUp();
     login_shelf_view_ = GetPrimaryShelf()->shelf_widget()->GetLoginShelfView();
     // Set initial states.
