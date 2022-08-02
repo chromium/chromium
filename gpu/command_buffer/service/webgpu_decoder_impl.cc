@@ -505,11 +505,17 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // It should be internally copyable so Chrome can internally perform
       // copies with it, but Javascript cannot (unless |usage| contains copy
       // src/dst).
+      // We also need RenderAttachment usage for clears, and TextureBinding for
+      // copyTextureForBrowser.
       WGPUDawnTextureInternalUsageDescriptor internal_usage_desc = {
           .chain = {.sType = WGPUSType_DawnTextureInternalUsageDescriptor},
           .internalUsage =
               static_cast<WGPUTextureUsageFlags>(WGPUTextureUsage_CopyDst) |
-              static_cast<WGPUTextureUsageFlags>(WGPUTextureUsage_CopySrc),
+              static_cast<WGPUTextureUsageFlags>(WGPUTextureUsage_CopySrc) |
+              static_cast<WGPUTextureUsageFlags>(
+                  WGPUTextureUsage_RenderAttachment) |
+              static_cast<WGPUTextureUsageFlags>(
+                  WGPUTextureUsage_TextureBinding),
       };
       WGPUTextureDescriptor texture_desc = {
           .nextInChain = &internal_usage_desc.chain,
