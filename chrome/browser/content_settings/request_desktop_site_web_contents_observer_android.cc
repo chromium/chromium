@@ -30,6 +30,12 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   if (!navigation_handle->IsInMainFrame()) {
     return;
   }
+  // Override UA for renderer initiated navigation only. UA override for browser
+  // initiated navigation is handled on Java side. This is to workaround known
+  // issues crbug.com/1265751 and crbug.com/1261939.
+  if (!navigation_handle->IsRendererInitiated()) {
+    return;
+  }
 
   const GURL& url = navigation_handle->GetParentFrameOrOuterDocument()
                         ? navigation_handle->GetParentFrameOrOuterDocument()
