@@ -14226,6 +14226,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}",
           "--additional-expectations",
           "../../third_party/blink/web_tests/ASANExpectations",
@@ -14266,6 +14267,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}",
           "--additional-expectations",
           "../../third_party/blink/web_tests/ASANExpectations",
@@ -14313,6 +14315,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}",
           "--additional-expectations",
           "../../third_party/blink/web_tests/LeakExpectations",
@@ -14353,6 +14356,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}",
           "--additional-expectations",
           "../../third_party/blink/web_tests/LeakExpectations",
@@ -14397,6 +14401,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}",
           "--additional-expectations",
           "../../third_party/blink/web_tests/MSANExpectations",
@@ -14440,6 +14445,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "--git-revision=${got_revision}",
           "--additional-expectations",
           "../../third_party/blink/web_tests/MSANExpectations",

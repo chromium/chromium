@@ -216,6 +216,13 @@
       },
     },
   },
+  'blink_tests_write_run_histories': {
+    '$mixin_append': {
+      'args': [
+        '--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json',
+      ],
+    },
+  },
   'bullhead': {
     'swarming': {
       'dimensions': {
