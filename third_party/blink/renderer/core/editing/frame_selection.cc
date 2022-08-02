@@ -154,7 +154,10 @@ wtf_size_t FrameSelection::CharacterIndexForPoint(
     return kNotFound;
   Element* const editable = RootEditableElementOrDocumentElement();
   DCHECK(editable);
-  return PlainTextRange::Create(*editable, range).Start();
+  PlainTextRange plain_text_range = PlainTextRange::Create(*editable, range);
+  if (plain_text_range.IsNull())
+    return kNotFound;
+  return plain_text_range.Start();
 }
 
 VisibleSelection FrameSelection::ComputeVisibleSelectionInDOMTreeDeprecated()
