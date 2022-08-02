@@ -41,8 +41,6 @@ namespace {
 
 enum class RequestMethod {
   kClassifyUrl,
-  kListFamilyMembers,
-  kRequestRestrictedUrlAccess,
 };
 
 constexpr char kClassifyUrlDataContentType[] =

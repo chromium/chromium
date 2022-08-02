@@ -65,10 +65,6 @@ class KidsChromeManagementClient : public KeyedService {
       std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
       KidsChromeManagementCallback callback);
 
-  // TODO(crbug.com/979618): implement ListFamilyMembers method.
-
-  // TODO(crbug.com/979619): implement RequestRestrictedURLAccess method.
-
  private:
   // Every request must be represented by an instance of this struct. It will be
   // added to a request list and its iterator will be passed along to the
