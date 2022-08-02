@@ -26,20 +26,13 @@ namespace {
 
 const char kLatestWebAppInstallSource[] = "latest_web_app_install_source";
 
-const base::DictionaryValue* GetWebAppDictionary(
-    const PrefService* pref_service,
-    const AppId& app_id) {
+const base::Value::Dict* GetWebAppDictionary(const PrefService* pref_service,
+                                             const AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value* web_apps_prefs =
-      pref_service->GetDictionary(prefs::kWebAppsPreferences);
-  if (!web_apps_prefs)
-    return nullptr;
+  const base::Value::Dict& web_apps_prefs =
+      pref_service->GetValueDict(prefs::kWebAppsPreferences);
 
-  const base::Value* web_app_prefs = web_apps_prefs->FindDictKey(app_id);
-  if (!web_app_prefs)
-    return nullptr;
-
-  return &base::Value::AsDictionaryValue(*web_app_prefs);
+  return web_apps_prefs.FindDict(app_id);
 }
 
 std::unique_ptr<prefs::DictionaryValueUpdate> UpdateWebAppDictionary(
@@ -130,9 +123,9 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
 bool GetBoolWebAppPref(const PrefService* pref_service,
                        const AppId& app_id,
                        base::StringPiece path) {
-  if (const base::DictionaryValue* web_app_prefs =
+  if (const base::Value::Dict* web_app_prefs =
           GetWebAppDictionary(pref_service, app_id)) {
-    return web_app_prefs->FindBoolPath(path).value_or(false);
+    return web_app_prefs->FindBoolByDottedPath(path).value_or(false);
   }
   return false;
 }
@@ -152,10 +145,10 @@ void UpdateBoolWebAppPref(PrefService* pref_service,
 absl::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                      const AppId& app_id,
                                      base::StringPiece path) {
-  const base::DictionaryValue* web_app_prefs =
+  const base::Value::Dict* web_app_prefs =
       GetWebAppDictionary(pref_service, app_id);
   if (web_app_prefs)
-    return web_app_prefs->FindIntPath(path);
+    return web_app_prefs->FindIntByDottedPath(path);
   return absl::nullopt;
 }
 
@@ -174,10 +167,10 @@ void UpdateIntWebAppPref(PrefService* pref_service,
 absl::optional<double> GetDoubleWebAppPref(const PrefService* pref_service,
                                            const AppId& app_id,
                                            base::StringPiece path) {
-  const base::DictionaryValue* web_app_prefs =
+  const base::Value::Dict* web_app_prefs =
       GetWebAppDictionary(pref_service, app_id);
   if (web_app_prefs)
-    return web_app_prefs->FindDoublePath(path);
+    return web_app_prefs->FindDoubleByDottedPath(path);
   return absl::nullopt;
 }
 
@@ -197,7 +190,7 @@ absl::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
                                              const AppId& app_id,
                                              base::StringPiece path) {
   if (const auto* web_app_prefs = GetWebAppDictionary(pref_service, app_id)) {
-    if (auto* value = web_app_prefs->FindPath(path))
+    if (auto* value = web_app_prefs->FindByDottedPath(path))
       return base::ValueToTime(value);
   }
 
@@ -303,15 +296,15 @@ bool ShouldShowIph(PrefService* pref_service, const AppId& app_id) {
     return false;
   }
 
-  auto* dict = pref_service->GetDictionary(prefs::kWebAppsAppAgnosticIphState);
+  const base::Value::Dict& dict =
+      pref_service->GetValueDict(prefs::kWebAppsAppAgnosticIphState);
 
   // Do not show IPH if the user ignored the last N+ promos for any app.
-  int global_ignored_count = dict->FindIntKey(kIphIgnoreCount).value_or(0);
+  int global_ignored_count = dict.FindInt(kIphIgnoreCount).value_or(0);
   if (global_ignored_count >= kIphMuteAfterConsecutiveAppAgnosticIgnores)
     return false;
   // Do not show IPH if the user ignored a promo for any app within N days.
-  auto global_last_ignore =
-      base::ValueToTime(dict->FindKey(kIphLastIgnoreTime));
+  auto global_last_ignore = base::ValueToTime(dict.Find(kIphLastIgnoreTime));
   if (TimeOccurredWithinDays(global_last_ignore,
                              kIphAppAgnosticMuteTimeSpanDays)) {
     return false;

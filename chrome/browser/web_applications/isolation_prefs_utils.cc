@@ -83,16 +83,14 @@ void RemoveAppIsolationState(PrefService* pref_service,
 const std::string* GetStorageIsolationKey(PrefService* pref_service,
                                           const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::Value* isolation_prefs =
-      pref_service->GetDictionary(prefs::kWebAppsIsolationState);
-  if (!isolation_prefs)
-    return nullptr;
+  const base::Value::Dict& isolation_prefs =
+      pref_service->GetValueDict(prefs::kWebAppsIsolationState);
 
-  const base::Value* origin_prefs =
-      isolation_prefs->FindDictKey(RemovePort(origin).Serialize());
+  const base::Value::Dict* origin_prefs =
+      isolation_prefs.FindDict(RemovePort(origin).Serialize());
   if (!origin_prefs)
     return nullptr;
-  return origin_prefs->FindStringKey(kStorageIsolationKey);
+  return origin_prefs->FindString(kStorageIsolationKey);
 }
 
 }  // namespace web_app

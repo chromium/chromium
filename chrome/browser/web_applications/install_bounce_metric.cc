@@ -56,21 +56,19 @@ absl::optional<InstallMetrics> ParseInstallMetricsFromPrefs(
     const web_app::AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  const base::Value* ids_to_metrics =
-      pref_service->GetDictionary(prefs::kWebAppInstallMetrics);
-  if (!ids_to_metrics)
-    return absl::nullopt;
+  const base::Value::Dict& ids_to_metrics =
+      pref_service->GetValueDict(prefs::kWebAppInstallMetrics);
 
-  const base::Value* metrics = ids_to_metrics->FindDictKey(app_id);
+  const base::Value::Dict* metrics = ids_to_metrics.FindDict(app_id);
   if (!metrics)
     return absl::nullopt;
 
   absl::optional<base::Time> timestamp =
-      ParseTime(metrics->FindKey(kInstallTimestamp));
+      ParseTime(metrics->Find(kInstallTimestamp));
   if (!timestamp)
     return absl::nullopt;
 
-  const base::Value* source = metrics->FindKey(kInstallSource);
+  const base::Value* source = metrics->Find(kInstallSource);
   if (!source || !source->is_int())
     return absl::nullopt;
 
