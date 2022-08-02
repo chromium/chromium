@@ -536,7 +536,7 @@ std::basic_string<CharT> DoReplaceStringPlaceholders(
     const std::vector<std::basic_string<CharT>>& subst,
     std::vector<size_t>* offsets) {
   size_t substitutions = subst.size();
-  DCHECK_LT(substitutions, 10U);
+  DCHECK_LT(substitutions, 11U);
 
   size_t sub_length = 0;
   for (const auto& cur : subst)
