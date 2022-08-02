@@ -17,6 +17,7 @@
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
+#include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 
@@ -75,9 +76,7 @@ void AddControlsColors(ui::ColorMixer& mixer,
   mixer[kColorAshHairlineBorderColor] =
       use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x24))
                      : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x24));
-  mixer[kColorAshControlBackgroundColorActive] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleBlue300)
-                     : ui::ColorTransform(gfx::kGoogleBlue600);
+  mixer[kColorAshControlBackgroundColorActive] = {cros_tokens::kColorProminent};
   mixer[kColorAshControlBackgroundColorInactive] =
       use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x1A))
                      : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0D));
@@ -91,12 +90,8 @@ void AddControlsColors(ui::ColorMixer& mixer,
       use_dark_color ? ui::ColorTransform(gfx::kGoogleGreen300)
                      : ui::ColorTransform(gfx::kGoogleGreen600);
   mixer[kColorAshFocusAuraColor] =
-      use_dark_color
-          ? ui::ColorTransform(SkColorSetA(gfx::kGoogleBlue300, 0x3D))
-          : ui::ColorTransform(SkColorSetA(gfx::kGoogleBlue600, 0x3D));
-  mixer[ui::kColorAshFocusRing] = use_dark_color
-                                      ? ui::ColorTransform(gfx::kGoogleBlue300)
-                                      : ui::ColorTransform(gfx::kGoogleBlue600);
+      ui::SetAlpha(cros_tokens::kColorProminent, 0x3D);
+  mixer[ui::kColorAshFocusRing] = {cros_tokens::kColorProminent};
 }
 
 // Mappings the Content layer colors for Material 2.
@@ -129,9 +124,7 @@ void AddContentColors(ui::ColorMixer& mixer,
   mixer[kColorAshTextColorPositive] =
       use_dark_color ? ui::ColorTransform(gfx::kGoogleGreen300)
                      : ui::ColorTransform(gfx::kGoogleGreen600);
-  mixer[kColorAshTextColorURL] = use_dark_color
-                                     ? ui::ColorTransform(gfx::kGoogleBlue300)
-                                     : ui::ColorTransform(gfx::kGoogleBlue600);
+  mixer[kColorAshTextColorURL] = {cros_tokens::kColorProminent};
   mixer[kColorAshIconColorPrimary] = {kColorAshTextColorPrimary};
   mixer[kColorAshIconColorSecondary] = {kColorAshTextColorSecondary};
   mixer[kColorAshIconColorAlert] = {kColorAshTextColorAlert};
@@ -170,8 +163,8 @@ void AddContentColors(ui::ColorMixer& mixer,
                                          ? ui::ColorTransform(SK_ColorWHITE)
                                          : ui::ColorTransform(SK_ColorBLACK);
   mixer[kColorAshBatteryBadgeColor] = {kColorAshButtonLabelColorPrimary};
-  mixer[kColorAshSwitchAccessInnerStrokeColor] =
-      ui::ColorTransform(gfx::kGoogleBlue300);
+  mixer[kColorAshSwitchAccessInnerStrokeColor] = {
+      cros_tokens::kColorProminentDark};
   mixer[kColorAshSwitchAccessOuterStrokeColor] =
       ui::ColorTransform(gfx::kGoogleBlue900);
   mixer[kColorAshProgressBarColorForeground] = {kColorAshTextColorURL};
@@ -375,7 +368,8 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   AddControlsColors(mixer, key);
   AddContentColors(mixer, key);
 
-  mixer[ui::kColorAshActionLabelFocusRingEdit] = {gfx::kGoogleBlue300};
+  mixer[ui::kColorAshActionLabelFocusRingEdit] = {
+      cros_tokens::kColorProminentDark};
   mixer[ui::kColorAshActionLabelFocusRingError] = {gfx::kGoogleRed300};
   mixer[ui::kColorAshActionLabelFocusRingHover] =
       ui::SetAlpha(gfx::kGoogleGrey200, 0x60);
@@ -386,15 +380,16 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAshAppListSeparator] =
       ui::SetAlpha(gfx::kGoogleGrey900, 0x24);
   mixer[ui::kColorAshArcInputMenuSeparator] = {SK_ColorGRAY};
-  mixer[ui::kColorAshEditFinishFocusRing] = {gfx::kGoogleBlue300};
+  mixer[ui::kColorAshEditFinishFocusRing] = {cros_tokens::kColorProminentDark};
   mixer[ui::kColorAshIconInOobe] = {kIconColorInOobe};
 
   // TODO(skau): Remove when dark/light mode launches.
-  mixer[ui::kColorAshAppListFocusRingCompat] = {gfx::kGoogleBlue600};
+  mixer[ui::kColorAshAppListFocusRingCompat] = {
+      cros_tokens::kColorProminentLight};
 
-  mixer[ui::kColorAshLightFocusRing] = {gfx::kGoogleBlue300};
+  mixer[ui::kColorAshLightFocusRing] = {cros_tokens::kColorProminentDark};
 
-  mixer[ui::kColorAshOnboardingFocusRing] = {gfx::kGoogleBlue300};
+  mixer[ui::kColorAshOnboardingFocusRing] = {cros_tokens::kColorProminentDark};
 
   if (!features::IsDarkLightModeEnabled()) {
     ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
