@@ -177,21 +177,17 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
 }
 
 bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
-  const base::Value* all_user_prefs_dict =
-      local_state_->GetDictionary(prefs::kEasyUnlockLocalStateUserPrefs);
-  if (!all_user_prefs_dict) {
-    PA_LOG(ERROR) << "Failed to find local state prefs for current user.";
-    return false;
-  }
-  const base::Value* current_user_prefs =
-      all_user_prefs_dict->FindDictKey(account_id_.GetUserEmail());
+  const base::Value::Dict& all_user_prefs_dict =
+      local_state_->GetValueDict(prefs::kEasyUnlockLocalStateUserPrefs);
+  const base::Value::Dict* current_user_prefs =
+      all_user_prefs_dict.FindDict(account_id_.GetUserEmail());
   if (!current_user_prefs) {
     PA_LOG(ERROR) << "Failed to find local state prefs for current user.";
     return false;
   }
 
   return current_user_prefs
-      ->FindBoolKey(prefs::kProximityAuthHasShownLoginDisabledMessage)
+      ->FindBool(prefs::kProximityAuthHasShownLoginDisabledMessage)
       .value_or(false);
 }
 

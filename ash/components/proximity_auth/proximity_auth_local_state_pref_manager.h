@@ -6,14 +6,11 @@
 #define ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_LOCAL_STATE_PREF_MANAGER_H_
 
 #include "ash/components/proximity_auth/proximity_auth_pref_manager.h"
+#include "base/values.h"
 #include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;
 class PrefService;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace proximity_auth {
 
@@ -61,7 +58,7 @@ class ProximityAuthLocalStatePrefManager : public ProximityAuthPrefManager {
   void SetHasShownLoginDisabledMessage(bool has_shown) override;
   bool HasShownLoginDisabledMessage() const override;
 
-  const base::Value* GetActiveUserPrefsDictionary() const;
+  const base::Value::Dict* GetActiveUserPrefsDictionary() const;
 
   // Contains local state preferences that outlive the lifetime of this object
   // and across process restarts. Not owned and must outlive this instance.
