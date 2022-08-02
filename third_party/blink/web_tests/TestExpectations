@@ -6529,12 +6529,6 @@ crbug.com/1283295 [ Mac ] fast/text-autosizing/hackernews-comments.html [ Failur
 
 # Sheriff 2021-12-30
 crbug.com/1229096 [ Win ] fast/scrolling/events/overscroll-event-fired-to-scrolled-element.html [ Failure Pass ]
-crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict-browser-navigate.js [ Pass Timeout ]
-crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict-js-navigate.js [ Pass Timeout ]
-crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-strict-js-subresource.js [ Pass Timeout ]
-crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-browser-navigate.js [ Pass Timeout ]
-crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-navigate.js [ Pass Timeout ]
-crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-setcookie-same-site-lax-js-subresource.js [ Pass Timeout ]
 
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
