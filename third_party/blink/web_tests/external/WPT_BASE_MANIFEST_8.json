@@ -231219,6 +231219,19 @@
        {}
       ]
      ],
+     "selectors-attr-many.html": [
+      "b38b8f52cfa7ef4290ecaa271b5bec95f676011d",
+      [
+       null,
+       [
+        [
+         "/css/selectors/selectors-attr-many-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "selectors-attr-white-space-001.html": [
       "62df884cf4558e7091efb35e2a390e2b53befe25",
       [
@@ -298806,6 +298819,10 @@
      ],
      "selector-structural-pseudo-root-ref.html": [
       "6523fd3b64fbf10693c9d6c9a05b2da6328d6684",
+      []
+     ],
+     "selectors-attr-many-ref.html": [
+      "7d8a9f6d89d103373f81fa2f09c478b12e49ee7b",
       []
      ],
      "selectors-attr-white-space-001-ref.html": [
@@ -390419,7 +390436,7 @@
        ]
       ],
       "contain-intrinsic-size-028.html": [
-       "a25d19687d518f2293b191a118bba5d3c3ee4dd9",
+       "baab21b2bd53ef28d988b9c813c3bacfe7448f3c",
        [
         null,
         {}
@@ -390433,7 +390450,7 @@
        ]
       ],
       "contain-intrinsic-size-logical-003.html": [
-       "cbba1af81aae8838f33a1dcd643e81dbd29e9a9f",
+       "59ae8328f2dfaba25094bdf90cf6c0bc1abbdee0",
        [
         null,
         {}
