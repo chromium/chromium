@@ -407,11 +407,8 @@ class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
     // TestGuestViewManager class to avoid all callers needing this cast.
     auto* manager = static_cast<TestGuestViewManager*>(
         TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // TestGuestViewManager::WaitForSingleGuestCreated can and will get called
-    // before a guest is created. Since GuestViewManager is usually not created
-    // until the first guest is created, this means that |manager| will be
-    // nullptr if trying to use the manager to wait for the first guest. Because
-    // of this, the manager must be created here if it does not already exist.
+    // Test code may access the TestGuestViewManager before it would be created
+    // during creation of the first guest.
     if (!manager) {
       manager = static_cast<TestGuestViewManager*>(
           GuestViewManager::CreateWithDelegate(
@@ -439,7 +436,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   auto* embedder_web_contents = GetActiveWebContents();
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
   WaitForLoadStart(guest_web_contents);
@@ -464,7 +462,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   auto* embedder_web_contents = GetActiveWebContents();
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
   WaitForLoadStart(guest_web_contents);
@@ -542,7 +541,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   auto* embedder_web_contents = GetActiveWebContents();
 
   // Verify the PDF has loaded.
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
   WaitForLoadStart(guest_web_contents);
@@ -589,7 +589,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   delayer.ResumeAttach();
   navigation_observer.Wait();
   auto* guest_web_contents2 =
-      GetGuestViewManager()->WaitForSingleGuestCreated();
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents2);
   EXPECT_NE(embedder_web_contents, guest_web_contents2);
   WaitForLoadStart(guest_web_contents2);
@@ -611,7 +611,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   ASSERT_TRUE(embedder_web_contents);
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
   WaitForLoadStart(guest_web_contents);
@@ -641,7 +642,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   ASSERT_TRUE(embedder_web_contents);
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
   WaitForLoadStart(guest_web_contents);
@@ -686,7 +688,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   ASSERT_TRUE(embedder_web_contents);
 
   // Verify the pdf has loaded.
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   EXPECT_NE(embedder_web_contents, guest_web_contents);
   WaitForLoadStart(guest_web_contents);
@@ -4580,7 +4583,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderAndFencedFrameTest,
           GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url);
   ASSERT_TRUE(fenced_frame_host);
 
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
   WaitForLoadStart(guest_web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(guest_web_contents));

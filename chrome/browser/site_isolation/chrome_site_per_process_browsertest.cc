@@ -326,7 +326,7 @@ class ChromeSitePerProcessPDFTest : public ChromeSitePerProcessTest {
 
     // Wait until the guest for PDF is created.
     content::WebContents* guest_web_contents =
-        test_guest_view_manager()->WaitForSingleGuestCreated();
+        test_guest_view_manager()->DeprecatedWaitForSingleGuestCreated();
 
     ResetTouchAction(
         guest_view::GuestViewBase::FromWebContents(guest_web_contents)
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessPDFTest,
 
   // Wait until the guest for PDF is created.
   content::WebContents* guest_web_contents =
-      test_guest_view_manager()->WaitForSingleGuestCreated();
+      test_guest_view_manager()->DeprecatedWaitForSingleGuestCreated();
 
   // Now detach the frame and observe that the guest is destroyed.
   content::WebContentsDestroyedWatcher observer(guest_web_contents);

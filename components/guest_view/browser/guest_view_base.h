@@ -196,6 +196,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // <iframe> which is cross process.
   virtual bool CanBeEmbeddedInsideCrossProcessFrames() const;
 
+  // TODO(crbug.com/1261928): Add a |GetGuestMainFrame| method to allow direct
+  // access to the GuestView's main frame, without using the guest inner
+  // WebContents which will soon be removed.
+
  protected:
   explicit GuestViewBase(content::WebContents* owner_web_contents);
 

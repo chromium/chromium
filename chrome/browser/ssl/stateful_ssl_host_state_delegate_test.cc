@@ -26,6 +26,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
@@ -933,17 +934,19 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   guest_view::TestGuestViewManager* guest_manager =
       static_cast<guest_view::TestGuestViewManager*>(
           guest_view::TestGuestViewManager::FromBrowserContext(profile));
-  content::WebContents* guest = guest_manager->WaitForSingleGuestCreated();
+  auto* guest = guest_manager->WaitForSingleGuestViewCreated();
   guest_manager->WaitUntilAttached(guest);
 
   // Store a certificate exception for the guest.
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
   scoped_refptr<net::X509Certificate> cert = GetOkCert();
-  state->AllowCert(kWWWGoogleHost, *cert, net::ERR_CERT_DATE_INVALID, guest);
-  EXPECT_EQ(content::SSLHostStateDelegate::ALLOWED,
-            state->QueryPolicy(kWWWGoogleHost, *cert,
-                               net::ERR_CERT_DATE_INVALID, guest));
-  EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, guest));
+  state->AllowCert(kWWWGoogleHost, *cert, net::ERR_CERT_DATE_INVALID,
+                   guest->web_contents());
+  EXPECT_EQ(
+      content::SSLHostStateDelegate::ALLOWED,
+      state->QueryPolicy(kWWWGoogleHost, *cert, net::ERR_CERT_DATE_INVALID,
+                         guest->web_contents()));
+  EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, guest->web_contents()));
 
   // Navigate to a non-app page and test that the exception is not carried over.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -980,14 +983,15 @@ IN_PROC_BROWSER_TEST_F(StatefulSSLHostStateDelegateExtensionTest,
   guest_view::TestGuestViewManager* guest_manager =
       static_cast<guest_view::TestGuestViewManager*>(
           guest_view::TestGuestViewManager::FromBrowserContext(profile));
-  content::WebContents* guest = guest_manager->WaitForSingleGuestCreated();
+  auto* guest = guest_manager->WaitForSingleGuestViewCreated();
   guest_manager->WaitUntilAttached(guest);
 
   // Store an HTTP exception for the guest.
   content::SSLHostStateDelegate* state = profile->GetSSLHostStateDelegate();
-  state->AllowHttpForHost(kWWWGoogleHost, guest);
-  EXPECT_TRUE(state->IsHttpAllowedForHost(kWWWGoogleHost, guest));
-  EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, guest));
+  state->AllowHttpForHost(kWWWGoogleHost, guest->web_contents());
+  EXPECT_TRUE(
+      state->IsHttpAllowedForHost(kWWWGoogleHost, guest->web_contents()));
+  EXPECT_TRUE(state->HasAllowException(kWWWGoogleHost, guest->web_contents()));
 
   // Navigate to a non-app page and test that the exception is not carried over.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(

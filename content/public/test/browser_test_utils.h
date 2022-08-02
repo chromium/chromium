@@ -255,14 +255,18 @@ void SimulateUnresponsiveRenderer(WebContents* web_contents,
 
 // Simulates clicking at the center of the given tab asynchronously; modifiers
 // may contain bits from WebInputEvent::Modifiers. Sends the event through
-// RenderWidgetHostInputEventRouter and thus can target OOPIFs.
+// RenderWidgetHostInputEventRouter and thus can target OOPIFs. If an OOPIF is
+// the intended target, ensure that its hit test data is available for routing,
+// using `WaitForHitTestData`, first.
 void SimulateMouseClick(WebContents* web_contents,
                         int modifiers,
                         blink::WebMouseEvent::Button button);
 
 // Simulates clicking at the point |point| of the given tab asynchronously;
 // modifiers may contain bits from WebInputEvent::Modifiers. Sends the event
-// through RenderWidgetHostInputEventRouter and thus can target OOPIFs.
+// through RenderWidgetHostInputEventRouter and thus can target OOPIFs. If an
+// OOPIF is the intended target, ensure that its hit test data is available for
+// routing, using `WaitForHitTestData`, first.
 void SimulateMouseClickAt(WebContents* web_contents,
                           int modifiers,
                           blink::WebMouseEvent::Button button,
@@ -1571,6 +1575,10 @@ class FrameDeletedObserver {
   ~FrameDeletedObserver();
 
   void Wait();
+
+  bool IsDeleted() const;
+
+  int GetFrameTreeNodeId() const;
 
  private:
   // Private impl struct which hides non public types including FrameTreeNode.

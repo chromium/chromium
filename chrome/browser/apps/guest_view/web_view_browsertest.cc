@@ -9,14 +9,11 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/containers/queue.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,12 +30,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/download/download_core_service.h"
-#include "chrome/browser/download/download_core_service_factory.h"
-#include "chrome/browser/download/download_history.h"
-#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/identifiability_metrics_test_util.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/profile_network_context_service.h"
@@ -50,18 +42,13 @@
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/recently_audible_helper.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/guest_view/browser/guest_view_manager.h"
@@ -78,17 +65,16 @@
 #include "content/public/browser/ax_event_notification_details.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
+#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/common/child_process_host.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
@@ -105,7 +91,6 @@
 #include "content/public/test/ppapi_test_utils.h"
 #include "content/public/test/test_file_error_injector.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
@@ -115,12 +100,10 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/native_app_window.h"
-#include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_embedder.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_urls.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/identifiability_metrics.h"
@@ -129,7 +112,6 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/client_cert_identity_test_util.h"
 #include "net/ssl/client_cert_store.h"
-#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -137,28 +119,20 @@
 #include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
-#include "services/network/public/cpp/features.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/switches.h"
-#include "ui/compositor/compositor.h"
-#include "ui/compositor/compositor_observer.h"
 #include "ui/display/display_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
-#include "ui/gl/gl_switches.h"
-#include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/view.h"
-#include "ui/views/widget/widget.h"
+#include "ui/gfx/geometry/point.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/public/browser/plugin_service.h"
-#include "content/public/common/webplugininfo.h"
 #include "content/public/test/ppapi_test_utils.h"
 #endif
 
@@ -411,6 +385,15 @@ bool IsShowingInterstitial(content::WebContents* tab) {
     return helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
            nullptr;
   }
+}
+
+// Wraps around the browser-initiated |NavigateToURL| to hide direct guest
+// WebContents access. For MPArch GuestView migration pre-work, we do not have
+// such a mechanism to trigger a browser-initiated navigation on GuestView or
+// guest RenderFrameHost.
+[[nodiscard]] bool BrowserInitNavigationToUrl(guest_view::GuestViewBase* guest,
+                                              const GURL& url) {
+  return NavigateToURL(guest->web_contents(), url);
 }
 
 }  // namespace
@@ -723,32 +706,6 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   }
 
-  content::WebContents* LoadGuest(const std::string& guest_path,
-                                  const std::string& app_path) {
-    GURL::Replacements replace_host;
-    replace_host.SetHostStr("localhost");
-
-    GURL guest_url = embedded_test_server()->GetURL(guest_path);
-    guest_url = guest_url.ReplaceComponents(replace_host);
-
-    ui_test_utils::UrlLoadObserver guest_observer(
-        guest_url, content::NotificationService::AllSources());
-
-    LoadAndLaunchPlatformApp(app_path.c_str(), "guest-loaded");
-
-    guest_observer.Wait();
-    content::Source<content::NavigationController> source =
-        guest_observer.source();
-    EXPECT_TRUE(source->DeprecatedGetWebContents()
-                    ->GetPrimaryMainFrame()
-                    ->GetProcess()
-                    ->IsForGuestsOnly());
-
-    content::WebContents* guest_web_contents =
-        source->DeprecatedGetWebContents();
-    return guest_web_contents;
-  }
-
   // Helper to load interstitial page in a <webview>.
   void InterstitialTestHelper() {
     // Start a HTTPS server so we can load an interstitial page inside guest.
@@ -778,11 +735,9 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
     ASSERT_TRUE(guest_loaded.WaitUntilSatisfied());
 
     // Wait for interstitial page to be shown in guest.
-    content::WebContents* guest_web_contents =
-        GetGuestViewManager()->WaitForSingleGuestCreated();
-    ASSERT_TRUE(guest_web_contents->GetPrimaryMainFrame()
-                    ->GetProcess()
-                    ->IsForGuestsOnly());
+    auto* guest_rfh =
+        GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+    ASSERT_TRUE(guest_rfh->GetProcess()->IsForGuestsOnly());
     GURL target_url = https_server.GetURL(
         "/extensions/platform_apps/web_view/interstitial_teardown/"
         "https_page.html");
@@ -819,7 +774,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
     launched_listener.set_failure_message("WebViewTest.FAILURE");
     LoadAndLaunchPlatformApp(app_path.c_str(), &launched_listener);
 
-    guest_web_contents_ = GetGuestViewManager()->WaitForSingleGuestCreated();
+    guest_view_ = GetGuestViewManager()->WaitForSingleGuestViewCreated();
   }
 
   void SendMessageToEmbedder(const std::string& message) {
@@ -836,36 +791,42 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
       listener = std::make_unique<ExtensionTestMessageListener>(wait_message);
     }
 
-    EXPECT_TRUE(
-        content::ExecuteScript(
-            GetGuestWebContents(),
-            base::StringPrintf("onAppCommand('%s');", message.c_str())));
+    EXPECT_TRUE(content::ExecuteScript(
+        GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated(),
+        base::StringPrintf("onAppCommand('%s');", message.c_str())));
 
     if (listener) {
       ASSERT_TRUE(listener->WaitUntilSatisfied());
     }
   }
 
-  void OpenContextMenu(content::WebContents* web_contents) {
+  // Opens the context menu by simulating a mouse right-click at (1,1) relative
+  // to the guest's |RenderWidgethostView|. The mouse event is forwarded
+  // directly to the guest RWHV.
+  void OpenContextMenu(content::RenderFrameHost* guest_main_frame) {
+    ASSERT_TRUE(guest_main_frame);
+
     blink::WebMouseEvent mouse_event(
         blink::WebInputEvent::Type::kMouseDown,
         blink::WebInputEvent::kNoModifiers,
         blink::WebInputEvent::GetStaticTimeStampForTests());
+
     mouse_event.button = blink::WebMouseEvent::Button::kRight;
+    // (1, 1) is chosen to make sure we click inside the guest.
     mouse_event.SetPositionInWidget(1, 1);
-    web_contents->GetPrimaryMainFrame()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->ForwardMouseEvent(mouse_event);
+
+    auto* guest_rwh = guest_main_frame->GetRenderWidgetHost();
+    guest_rwh->ForwardMouseEvent(mouse_event);
     mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
-    web_contents->GetPrimaryMainFrame()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->ForwardMouseEvent(mouse_event);
+    guest_rwh->ForwardMouseEvent(mouse_event);
   }
 
+  guest_view::GuestViewBase* GetGuestView() { return guest_view_; }
   content::WebContents* GetGuestWebContents() {
-    return guest_web_contents_;
+    return guest_view_->web_contents();
+  }
+  content::RenderFrameHost* GetGuestRenderFrameHost() {
+    return guest_view_->web_contents()->GetPrimaryMainFrame();
   }
 
   content::WebContents* GetEmbedderWebContents() {
@@ -878,8 +839,8 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
   TestGuestViewManager* GetGuestViewManager() {
     TestGuestViewManager* manager = static_cast<TestGuestViewManager*>(
         TestGuestViewManager::FromBrowserContext(browser()->profile()));
-    // TestGuestViewManager::WaitForSingleGuestCreated may and will get called
-    // before a guest is created.
+    // Test code may access the TestGuestViewManager before it would be created
+    // during creation of the first guest.
     if (!manager) {
       manager = static_cast<TestGuestViewManager*>(
           GuestViewManager::CreateWithDelegate(
@@ -890,8 +851,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
     return manager;
   }
 
-  WebViewTestBase()
-      : guest_web_contents_(nullptr), embedder_web_contents_(nullptr) {
+  WebViewTestBase() : guest_view_(nullptr), embedder_web_contents_(nullptr) {
     GuestViewManager::set_factory_for_testing(&factory_);
   }
 
@@ -916,7 +876,7 @@ class WebViewTestBase : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   // Note that these are only set if you launch app using LoadAppWithGuest().
-  raw_ptr<content::WebContents> guest_web_contents_;
+  raw_ptr<guest_view::GuestViewBase> guest_view_;
   raw_ptr<content::WebContents> embedder_web_contents_;
 };
 
@@ -1132,7 +1092,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, AudioMutesOnAttach) {
 
   SendMessageToEmbedder("create-guest");
   content::WebContents* guest =
-      GetGuestViewManager()->WaitForSingleGuestCreated();
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
 
   EXPECT_TRUE(embedder->IsAudioMuted());
   WebContentsAudioMutedObserver observer(guest);
@@ -1282,7 +1242,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, DisplayNoneSetSrc) {
                            "WebViewTest.LAUNCHED");
   // Navigate the guest while it's in "display: none" state.
   SendMessageToEmbedder("navigate-guest");
-  GetGuestViewManager()->WaitForSingleGuestCreated();
+  GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
 
   // Now attempt to navigate the guest again.
   SendMessageToEmbedder("navigate-guest");
@@ -1384,7 +1344,8 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, SelectShowHide) {
   ASSERT_TRUE(embedder_contents);
 
   std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_contents_list);
   ASSERT_EQ(1u, guest_contents_list.size());
   content::WebContents* guest_contents = guest_contents_list[0];
 
@@ -1638,14 +1599,14 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindow) {
   // that the two <webview>'s remain in the same BrowsingInstance and
   // StoragePartition.
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
-  ASSERT_EQ(2u, guest_contents_list.size());
-  content::WebContents* guest1 = guest_contents_list[0];
-  content::WebContents* guest2 = guest_contents_list[1];
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
+  auto* guest1 = guest_rfh_list[0];
+  auto* guest2 = guest_rfh_list[1];
   ASSERT_NE(guest1, guest2);
-  auto* guest_instance1 = guest1->GetPrimaryMainFrame()->GetSiteInstance();
-  auto* guest_instance2 = guest2->GetPrimaryMainFrame()->GetSiteInstance();
+  auto* guest_instance1 = guest1->GetSiteInstance();
+  auto* guest_instance2 = guest2->GetSiteInstance();
   EXPECT_TRUE(guest_instance1->IsGuest());
   EXPECT_TRUE(guest_instance2->IsGuest());
   EXPECT_EQ(guest_instance1->GetStoragePartitionConfig(),
@@ -1676,14 +1637,14 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, Shim_TestNewWindowNoReferrerLink) {
   // that both <webview>'s are in guest SiteInstances and in the same
   // StoragePartition.
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
-  std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
-  ASSERT_EQ(2u, guest_contents_list.size());
-  content::WebContents* guest1 = guest_contents_list[0];
-  content::WebContents* guest2 = guest_contents_list[1];
-  ASSERT_NE(guest1, guest2);
-  auto* guest_instance1 = guest1->GetPrimaryMainFrame()->GetSiteInstance();
-  auto* guest_instance2 = guest2->GetPrimaryMainFrame()->GetSiteInstance();
+  std::vector<content::RenderFrameHost*> guest_rfh_list;
+  GetGuestViewManager()->GetGuestRenderFrameHostList(&guest_rfh_list);
+  ASSERT_EQ(2u, guest_rfh_list.size());
+  auto* guest1_rfh = guest_rfh_list[0];
+  auto* guest2_rfh = guest_rfh_list[1];
+  ASSERT_NE(guest1_rfh, guest2_rfh);
+  auto* guest_instance1 = guest1_rfh->GetSiteInstance();
+  auto* guest_instance2 = guest2_rfh->GetSiteInstance();
   EXPECT_TRUE(guest_instance1->IsGuest());
   EXPECT_TRUE(guest_instance2->IsGuest());
   EXPECT_EQ(guest_instance1->GetStoragePartitionConfig(),
@@ -1752,7 +1713,8 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   // guests are different and the embedders are different, then we have four
   // distinct WebContents, as we expect.
   std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_contents_list);
   ASSERT_EQ(2u, guest_contents_list.size());
   content::WebContents* new_window_guest_contents = guest_contents_list[0];
 
@@ -1896,7 +1858,8 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, NewWindow_UpdateOpener) {
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
 
   std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_contents_list);
   ASSERT_EQ(2u, guest_contents_list.size());
   content::WebContents* guest1 = guest_contents_list[0];
   content::WebContents* guest2 = guest_contents_list[1];
@@ -1952,14 +1915,15 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
 
   content::WebContents* embedder = GetEmbedderWebContents();
   auto* unattached_guest = extensions::WebViewGuest::FromWebContents(
-      GetGuestViewManager()->GetLastGuestCreated());
+      GetGuestViewManager()->DeprecatedGetLastGuestCreated());
   ASSERT_TRUE(unattached_guest);
   ASSERT_EQ(embedder, unattached_guest->owner_web_contents());
   ASSERT_FALSE(unattached_guest->attached());
   ASSERT_FALSE(unattached_guest->embedder_web_contents());
 
   std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_contents_list);
   ASSERT_EQ(2u, guest_contents_list.size());
   content::WebContents* other_guest =
       (guest_contents_list[0] == unattached_guest->web_contents())
@@ -2193,7 +2157,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPage) {
   InterstitialTestHelper();
 
   content::WebContents* guest_web_contents =
-      GetGuestViewManager()->WaitForSingleGuestCreated();
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   EXPECT_TRUE(IsShowingInterstitial(guest_web_contents));
 }
 
@@ -2234,7 +2198,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, MAYBE_InterstitialPageDetach) {
   InterstitialTestHelper();
 
   content::WebContents* guest_web_contents =
-      GetGuestViewManager()->WaitForSingleGuestCreated();
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   EXPECT_TRUE(IsShowingInterstitial(guest_web_contents));
 
   // Navigate to about:blank.
@@ -2364,7 +2328,7 @@ class WebViewHttpsFirstModeTest : public WebViewTest {
 
     // Wait for guest navigation to complete.
     auto* guest_web_contents =
-        GetGuestViewManager()->WaitForSingleGuestCreated();
+        GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
     ASSERT_TRUE(guest_web_contents->GetPrimaryMainFrame()
                     ->GetProcess()
                     ->IsForGuestsOnly());
@@ -2397,7 +2361,8 @@ IN_PROC_BROWSER_TEST_P(WebViewHttpsFirstModeTest, GuestLoadsHttpsWithoutError) {
 
   // Page should load without any interstitial (and no crashing).
   auto* embedder_web_contents = GetFirstAppWindowWebContents();
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   EXPECT_FALSE(IsShowingInterstitial(guest_web_contents));
   EXPECT_FALSE(IsShowingInterstitial(embedder_web_contents));
 }
@@ -2416,7 +2381,8 @@ IN_PROC_BROWSER_TEST_P(WebViewHttpsFirstModeTest, GuestLoadsHttpWithoutError) {
 
   // Page should load without any interstitial (and no crashing).
   auto* embedder_web_contents = GetFirstAppWindowWebContents();
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   EXPECT_FALSE(IsShowingInterstitial(guest_web_contents));
   EXPECT_FALSE(IsShowingInterstitial(embedder_web_contents));
 }
@@ -2432,15 +2398,14 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ShimSrcAttribute) {
 // only. If it breaks then this is a bug in the prerenderer.
 IN_PROC_BROWSER_TEST_P(WebViewTest, NoPrerenderer) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  content::WebContents* guest_web_contents =
-      LoadGuest(
-          "/extensions/platform_apps/web_view/noprerenderer/guest.html",
-          "web_view/noprerenderer");
-  ASSERT_TRUE(guest_web_contents != nullptr);
+  LoadAndLaunchPlatformApp("web_view/noprerenderer", "guest-loaded");
+  auto* guest_rfh =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_rfh);
 
   NoStatePrefetchLinkManager* no_state_prefetch_link_manager =
       NoStatePrefetchLinkManagerFactory::GetForBrowserContext(
-          guest_web_contents->GetBrowserContext());
+          guest_rfh->GetBrowserContext());
   ASSERT_TRUE(no_state_prefetch_link_manager != nullptr);
   EXPECT_TRUE(no_state_prefetch_link_manager->IsEmpty());
 }
@@ -2450,8 +2415,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NoPrerenderer) {
 IN_PROC_BROWSER_TEST_P(WebViewTest, TaskManagerExistingWebView) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  LoadGuest("/extensions/platform_apps/web_view/task_manager/guest.html",
-            "web_view/task_manager");
+  LoadAndLaunchPlatformApp("web_view/task_manager", "guest-loaded");
+  ASSERT_TRUE(
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated());
 
   chrome::ShowTaskManager(browser());  // Show task manager AFTER guest loads.
 
@@ -2474,8 +2440,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TaskManagerNewWebView) {
 
   chrome::ShowTaskManager(browser());  // Show task manager BEFORE guest loads.
 
-  LoadGuest("/extensions/platform_apps/web_view/task_manager/guest.html",
-            "web_view/task_manager");
+  LoadAndLaunchPlatformApp("web_view/task_manager", "guest-loaded");
+  ASSERT_TRUE(
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated());
 
   const char* guest_title = "WebViewed test content";
   const char* app_name = "<webview> task manager test";
@@ -2734,7 +2701,7 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest, OpenURLFromTab_NewWindow_Abort) {
 
   // Verify that a new guest was created.
   content::WebContents* new_guest_web_contents =
-      GetGuestViewManager()->GetLastGuestCreated();
+      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
   EXPECT_NE(GetGuestWebContents(), new_guest_web_contents);
 
   // Verify that the new <webview> guest ends up at about:blank.
@@ -2756,7 +2723,8 @@ IN_PROC_BROWSER_TEST_P(WebViewNewWindowTest,
   GetGuestViewManager()->WaitForNumGuestsCreated(2);
 
   std::vector<content::WebContents*> guest_contents_list;
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_contents_list);
   ASSERT_EQ(2u, guest_contents_list.size());
   content::WebContents* guest1 = guest_contents_list[0];
   content::WebContents* guest2 = guest_contents_list[1];
@@ -2880,8 +2848,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_Basic) {
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_PreventDefault) {
   LoadAppWithGuest("web_view/context_menus/basic");
-
-  content::WebContents* guest_web_contents = GetGuestWebContents();
+  auto* guest_main_frame =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_main_frame);
   content::WebContents* embedder = GetEmbedderWebContents();
   ASSERT_TRUE(embedder);
 
@@ -2892,7 +2861,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_PreventDefault) {
   EXPECT_TRUE(content::ExecuteScript(embedder, "registerPreventDefault()"));
   ContextMenuShownObserver context_menu_shown_observer;
 
-  OpenContextMenu(guest_web_contents);
+  OpenContextMenu(guest_main_frame);
 
   EXPECT_TRUE(prevent_default_listener.WaitUntilSatisfied());
   // Expect the menu to not show up.
@@ -2901,7 +2870,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_PreventDefault) {
   // Now remove the preventDefault() and expect context menu to be shown.
   ExecuteScriptWaitForTitle(
       embedder, "removePreventDefault()", "PREVENT_DEFAULT_LISTENER_REMOVED");
-  OpenContextMenu(guest_web_contents);
+  OpenContextMenu(guest_main_frame);
 
   // We expect to see a context menu for the second call to |OpenContextMenu|.
   context_menu_shown_observer.Wait();
@@ -2912,7 +2881,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ContextMenusAPI_PreventDefault) {
 // also tests that the 'contextmenu' event is handled correctly.
 IN_PROC_BROWSER_TEST_P(WebViewTest, TestContextMenu) {
   LoadAppWithGuest("web_view/context_menus/basic");
-  content::WebContents* guest_web_contents = GetGuestWebContents();
+  auto* guest_main_frame =
+      GetGuestViewManager()->WaitForSingleGuestRenderFrameHostCreated();
+  ASSERT_TRUE(guest_main_frame);
 
   auto close_menu_and_stop_run_loop = [](base::OnceClosure closure,
                                          RenderViewContextMenu* context_menu) {
@@ -2927,7 +2898,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, TestContextMenu) {
   RenderViewContextMenu::RegisterMenuShownCallbackForTesting(
       base::BindOnce(close_menu_and_stop_run_loop, run_loop.QuitClosure()));
 
-  OpenContextMenu(guest_web_contents);
+  OpenContextMenu(guest_main_frame);
 
   // Wait for the context menu to be visible.
   run_loop.Run();
@@ -3330,9 +3301,9 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ConsoleMessage) {
 
 IN_PROC_BROWSER_TEST_P(WebViewTest, DownloadPermission) {
   ASSERT_TRUE(StartEmbeddedTestServer());  // For serving guest pages.
-  content::WebContents* guest_web_contents =
-      LoadGuest("/extensions/platform_apps/web_view/download/guest.html",
-                "web_view/download");
+  LoadAndLaunchPlatformApp("web_view/download", "guest-loaded");
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest_web_contents);
 
   std::unique_ptr<content::DownloadTestObserver> completion_observer(
@@ -3910,7 +3881,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestLoadDataAPI) {
   // resources belonging to the base URL's origin.
   if (content::SiteIsolationPolicy::IsSiteIsolationForGuestsEnabled()) {
     content::WebContents* guest =
-        GetGuestViewManager()->WaitForSingleGuestCreated();
+        GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
     ASSERT_TRUE(guest);
     content::RenderFrameHost* main_frame = guest->GetPrimaryMainFrame();
     EXPECT_TRUE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
@@ -4355,7 +4326,8 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, NestedGuestContainerBounds) {
 
   std::vector<content::WebContents*> guest_web_contents_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_web_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_web_contents_list);
   ASSERT_EQ(2u, guest_web_contents_list.size());
 
   content::WebContents* web_view_contents = guest_web_contents_list[0];
@@ -4378,7 +4350,8 @@ IN_PROC_BROWSER_TEST_P(WebViewPdfTest, ContextMenuNavigationInMimeHandlerView) {
 
   std::vector<content::WebContents*> guest_web_contents_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_web_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_web_contents_list);
   ASSERT_EQ(2u, guest_web_contents_list.size());
 
   content::WebContents* web_view_contents = guest_web_contents_list[0];
@@ -4450,7 +4423,8 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, NavigateGuestToWebviewAccessibleResource) {
 
   // Ensure that the <webview> process isn't considered an extension process,
   // even though the last committed URL is an extension URL.
-  content::WebContents* guest = GetGuestViewManager()->GetLastGuestCreated();
+  content::WebContents* guest =
+      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
   GURL guest_url(guest->GetLastCommittedURL());
   EXPECT_TRUE(guest_url.SchemeIs(extensions::kExtensionScheme));
 
@@ -4477,7 +4451,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, ReloadWebviewAccessibleResource) {
 
   content::WebContents* embedder_contents = GetEmbedderWebContents();
   content::WebContents* web_view_contents =
-      GetGuestViewManager()->GetLastGuestCreated();
+      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
   ASSERT_TRUE(embedder_contents);
   ASSERT_TRUE(web_view_contents);
 
@@ -4496,7 +4470,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, BlobInWebviewAccessibleResource) {
 
   content::WebContents* embedder_contents = GetEmbedderWebContents();
   content::WebContents* web_view_contents =
-      GetGuestViewManager()->GetLastGuestCreated();
+      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
   ASSERT_TRUE(embedder_contents);
   ASSERT_TRUE(web_view_contents);
 
@@ -4527,7 +4501,7 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, LoadWebviewInaccessibleResource) {
 
   content::WebContents* embedder_contents = GetEmbedderWebContents();
   content::WebContents* web_view_contents =
-      GetGuestViewManager()->GetLastGuestCreated();
+      GetGuestViewManager()->DeprecatedGetLastGuestCreated();
   ASSERT_TRUE(embedder_contents);
   ASSERT_TRUE(web_view_contents);
 
@@ -4617,10 +4591,10 @@ IN_PROC_BROWSER_TEST_P(WebViewTestNoDomAutomationController,
   TestHelper("testLoadWebviewInsideIframe",
              "web_view/load_webview_inside_iframe", NEEDS_TEST_SERVER);
 
-  ASSERT_TRUE(GetGuestViewManager()->GetLastGuestCreated());
+  ASSERT_TRUE(GetGuestViewManager()->DeprecatedGetLastGuestCreated());
 
   content::WebContentsDestroyedWatcher watcher(
-      GetGuestViewManager()->GetLastGuestCreated());
+      GetGuestViewManager()->DeprecatedGetLastGuestCreated());
 
   // Remove the iframe.
   content::ExecuteScriptAsync(GetEmbedderWebContents(),
@@ -4852,7 +4826,8 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest, TestGuestWheelScrollsBubble) {
 
   std::vector<content::WebContents*> guest_web_contents_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(1u);
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_web_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_web_contents_list);
   ASSERT_EQ(1u, guest_web_contents_list.size());
 
   content::WebContents* guest_contents = guest_web_contents_list[0];
@@ -4928,7 +4903,8 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTest,
 
   std::vector<content::WebContents*> guest_web_contents_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(1u);
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_web_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_web_contents_list);
   ASSERT_EQ(1u, guest_web_contents_list.size());
 
   content::WebContents* guest_contents = guest_web_contents_list[0];
@@ -5028,7 +5004,8 @@ IN_PROC_BROWSER_TEST_P(WebViewGuestScrollTouchTest,
 
   std::vector<content::WebContents*> guest_web_contents_list;
   GetGuestViewManager()->WaitForNumGuestsCreated(1u);
-  GetGuestViewManager()->GetGuestWebContentsList(&guest_web_contents_list);
+  GetGuestViewManager()->DeprecatedGetGuestWebContentsList(
+      &guest_web_contents_list);
   ASSERT_EQ(1u, guest_web_contents_list.size());
 
   content::WebContents* guest_contents = guest_web_contents_list[0];
@@ -5143,8 +5120,11 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), signin_url));
   auto* embedder_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  auto* attached_guest = GetGuestViewManager()->WaitForNextGuestCreated();
-  GetGuestViewManager()->WaitUntilAttached(attached_guest);
+  auto* attached_guest_view =
+      GetGuestViewManager()->WaitForNextGuestViewCreated();
+  GetGuestViewManager()->WaitUntilAttached(attached_guest_view);
+  auto* attached_guest =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   // Now add a new <webview> and wait until its guest WebContents is created.
   ASSERT_TRUE(ExecuteScript(embedder_web_contents,
                             "var webview = document.createElement('webview');"
@@ -5153,7 +5133,8 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
   // Right after this line, the guest is created but *not* attached (the
   // callback for 'GuestViewInternal.createGuest' is invoked after this line;
   // which is before attaching begins).
-  auto* unattached_guest = GetGuestViewManager()->GetLastGuestCreated();
+  auto* unattached_guest =
+      GetGuestViewManager()->GetLastGuestRenderFrameHostCreated();
   EXPECT_NE(unattached_guest, attached_guest);
   auto* find_helper =
       find_in_page::FindTabHelper::FromWebContents(embedder_web_contents);
@@ -5163,12 +5144,13 @@ IN_PROC_BROWSER_TEST_P(ChromeSignInWebViewTest,
   // Request for main frame of the tab.
   EXPECT_EQ(1U, pending.count(embedder_web_contents->GetPrimaryMainFrame()));
   // Request for main frame of the attached guest.
-  EXPECT_EQ(1U, pending.count(attached_guest->GetPrimaryMainFrame()));
+  EXPECT_EQ(1U, pending.count(attached_guest));
   // No request for the unattached guest.
-  EXPECT_EQ(0U, pending.count(unattached_guest->GetPrimaryMainFrame()));
+  EXPECT_EQ(0U, pending.count(unattached_guest));
   // Sanity-check: try the set returned for guest.
-  pending =
-      content::GetRenderFrameHostsWithPendingFindResults(unattached_guest);
+  // TODO(crbug.com/1261928): Remove the following for MPArch guest view.
+  pending = content::GetRenderFrameHostsWithPendingFindResults(
+      content::WebContents::FromRenderFrameHost(unattached_guest));
   EXPECT_TRUE(pending.empty());
 }
 
@@ -5802,8 +5784,9 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ErrorPageIsolation) {
 
   // Navigate to a normal page and then repeat the above with an
   // embedder-initiated navigation to an error page.
-  EXPECT_TRUE(NavigateToURL(
-      guest, embedded_test_server()->GetURL("b.test", "/iframe.html")));
+  EXPECT_TRUE(BrowserInitNavigationToUrl(
+      GetGuestView(),
+      embedded_test_server()->GetURL("b.test", "/iframe.html")));
   EXPECT_FALSE(guest->GetPrimaryMainFrame()->IsErrorDocument());
   EXPECT_NE(guest->GetPrimaryMainFrame()->GetSiteInstance(), error_instance);
 
@@ -5861,7 +5844,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, BrowsingInstanceSwap) {
   // navigation to force a BrowsingInstance swap.
   const GURL second_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
-  EXPECT_TRUE(NavigateToURL(guest, second_url));
+  EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), second_url));
   scoped_refptr<content::SiteInstance> second_instance =
       guest->GetPrimaryMainFrame()->GetSiteInstance();
 
@@ -5908,15 +5891,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest,
 
   // Load an app with a <webview> guest that starts at a data: URL.
   LoadAppWithGuest("web_view/simple");
-  content::WebContents* guest = GetGuestWebContents();
-  ASSERT_TRUE(guest);
+  ASSERT_TRUE(GetGuestView());
 
   // Start a navigation in the <webview> to a cross-site page and use a
   // browser-initiated navigation to force a BrowsingInstance swap.
   const GURL guest_url =
       embedded_test_server()->GetURL("a.test", "/title1.html");
   GuestProcessCreationObserver observer;
-  EXPECT_TRUE(NavigateToURL(guest, guest_url));
+  EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), guest_url));
 
   // This should only trigger creation of one additional guest process. There
   // used to be a bug where a speculative RenderFrameHost that was created
@@ -5953,7 +5935,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, NavigateToAboutBlank) {
   // BrowsingInstances as it's a cross-site browser-initiated navigation.
   const GURL second_url =
       embedded_test_server()->GetURL("b.test", "/title1.html");
-  EXPECT_TRUE(NavigateToURL(guest, second_url));
+  EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), second_url));
   scoped_refptr<content::SiteInstance> third_instance =
       guest->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_TRUE(third_instance->IsGuest());
@@ -5986,7 +5968,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, Shim_BlankWebview) {
   TestHelper("testBlankWebview", "web_view/shim", NO_TEST_SERVER);
 
   content::WebContents* guest =
-      GetGuestViewManager()->WaitForSingleGuestCreated();
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   ASSERT_TRUE(guest);
   scoped_refptr<content::SiteInstance> site_instance =
       guest->GetPrimaryMainFrame()->GetSiteInstance();
@@ -6029,7 +6011,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
       embedded_test_server()->GetURL("a.test", "/title1.html");
   {
     content::RenderFrameDeletedObserver deleted_observer(main_frame);
-    EXPECT_TRUE(NavigateToURL(guest, start_url));
+    EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), start_url));
     deleted_observer.WaitUntilDeleted();
     ASSERT_EQ(1u, web_view_renderer_state->guest_count_for_testing());
   }
@@ -6069,7 +6051,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScript) {
       embedded_test_server()->GetURL("b.test", "/title1.html");
   {
     content::RenderFrameDeletedObserver deleted_observer(main_frame);
-    EXPECT_TRUE(NavigateToURL(guest, second_url));
+    EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), second_url));
     deleted_observer.WaitUntilDeleted();
     ASSERT_EQ(1u, web_view_renderer_state->guest_count_for_testing());
   }
@@ -6137,7 +6119,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, ContentScriptInOOPIF) {
       embedded_test_server()->GetURL("a.test", "/iframe.html");
   {
     content::RenderFrameDeletedObserver deleted_observer(main_frame);
-    EXPECT_TRUE(NavigateToURL(guest, start_url));
+    EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), start_url));
     deleted_observer.WaitUntilDeleted();
 
     // There should be two guest frames at this point.
@@ -6178,7 +6160,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SubframeProcessReuse) {
   // Navigate <webview> to a cross-site page with a same-site iframe.
   const GURL start_url =
       embedded_test_server()->GetURL("a.test", "/iframe.html");
-  EXPECT_TRUE(NavigateToURL(guest, start_url));
+  EXPECT_TRUE(BrowserInitNavigationToUrl(GetGuestView(), start_url));
 
   // Navigate <webview> subframe cross-site.
   const GURL frame_url =
@@ -6195,7 +6177,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SubframeProcessReuse) {
                          "document.body.appendChild(w);",
                          start_url.spec().c_str())));
   GetGuestViewManager()->WaitForNumGuestsCreated(2u);
-  auto* guest2 = GetGuestViewManager()->GetLastGuestCreated();
+  auto* guest2 = GetGuestViewManager()->DeprecatedGetLastGuestCreated();
   EXPECT_TRUE(content::WaitForLoadStop(guest2));
   ASSERT_NE(guest, guest2);
 
@@ -6203,7 +6185,8 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessWebViewTest, SubframeProcessReuse) {
   // BrowsingInstances.
   const GURL second_guest_url =
       embedded_test_server()->GetURL("c.test", "/iframe.html");
-  EXPECT_TRUE(NavigateToURL(guest2, second_guest_url));
+  EXPECT_TRUE(BrowserInitNavigationToUrl(
+      GetGuestViewManager()->GetLastGuestViewCreated(), second_guest_url));
   EXPECT_NE(guest->GetPrimaryMainFrame()->GetSiteInstance(),
             guest2->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_NE(guest->GetPrimaryMainFrame()->GetProcess(),
@@ -6394,7 +6377,8 @@ IN_PROC_BROWSER_TEST_P(WebViewFencedFrameTest,
                        FencedFrameInGuestHasGuestSiteInstance) {
   TestHelper("testAddFencedFrame", "web_view/shim", NEEDS_TEST_SERVER);
 
-  auto* guest_web_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  auto* guest_web_contents =
+      GetGuestViewManager()->DeprecatedWaitForSingleGuestCreated();
   std::vector<content::RenderFrameHost*> rfhs =
       content::CollectAllRenderFrameHosts(
           guest_web_contents->GetPrimaryMainFrame());

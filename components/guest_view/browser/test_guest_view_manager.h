@@ -14,7 +14,8 @@
 #include "base/memory/raw_ptr.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/browser/guest_view_manager_factory.h"
-#include "content/public/test/test_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/test/browser_test_utils.h"
 
 namespace guest_view {
 
@@ -32,15 +33,32 @@ class TestGuestViewManager : public GuestViewManager {
 
   void WaitForLastGuestDeleted();
 
-  content::WebContents* WaitForSingleGuestCreated();
-  content::WebContents* WaitForNextGuestCreated();
+  // While the GuestViewBase directly represents a guest view, the
+  // RenderFrameHost version exposes the guest view's main frame for the ease of
+  // testing.
+  //
+  // All the WebContents versions APIs (here and on) will be removed during the
+  // MPArch migration. Consider using GuestViewBase or RenderFrameHost versions,
+  // unless necessary.
+  //
+  // TODO(crbug.com/1261928): Remove all the WebContents version.
+  GuestViewBase* WaitForSingleGuestViewCreated();
+  content::RenderFrameHost* WaitForSingleGuestRenderFrameHostCreated();
+  content::WebContents* DeprecatedWaitForSingleGuestCreated();
+
+  GuestViewBase* WaitForNextGuestViewCreated();
+  content::RenderFrameHost* WaitForNextGuestRenderFrameHostCreated();
+  content::WebContents* DeprecatedWaitForNextGuestCreated();
+
   void WaitForNumGuestsCreated(size_t count);
 
   void WaitForSingleViewGarbageCollected();
 
-  content::WebContents* GetLastGuestCreated();
+  GuestViewBase* GetLastGuestViewCreated();
+  content::RenderFrameHost* GetLastGuestRenderFrameHostCreated();
+  content::WebContents* DeprecatedGetLastGuestCreated();
 
-  void WaitUntilAttached(content::WebContents* web_contents);
+  void WaitUntilAttached(GuestViewBase* guest_view);
 
   // Returns the number of guests currently still alive at the time of calling
   // this method.
@@ -67,18 +85,18 @@ class TestGuestViewManager : public GuestViewManager {
   // Returns the last guest instance ID removed from the manager.
   int last_instance_id_removed() const { return last_instance_id_removed_; }
 
-  // Returns the list of guests WebContentses that were created by this
-  // manager.
-  void GetGuestWebContentsList(
+  // Returns the list of guests that were created by this manager.
+  void DeprecatedGetGuestWebContentsList(
       std::vector<content::WebContents*>* guest_web_contents_list);
+  void GetGuestRenderFrameHostList(
+      std::vector<content::RenderFrameHost*>* guest_render_frame_host_list);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GuestViewManagerTest, AddRemove);
 
-  // GuestViewManager override:
+  // guest_view::GuestViewManager:
   void AddGuest(int guest_instance_id,
                 content::WebContents* guest_web_contents) override;
-  void RemoveGuest(int guest_instance_id) override;
   void EmbedderProcessDestroyed(int embedder_process_id) override;
   void ViewGarbageCollected(int embedder_process_id,
                             int view_instance_id) override;
@@ -98,13 +116,15 @@ class TestGuestViewManager : public GuestViewManager {
   int num_views_garbage_collected_;
   bool waiting_for_guests_created_;
 
-  std::vector<std::unique_ptr<content::WebContentsDestroyedWatcher>>
-      guest_web_contents_watchers_;
-  scoped_refptr<content::MessageLoopRunner> created_message_loop_runner_;
-  scoped_refptr<content::MessageLoopRunner> num_created_message_loop_runner_;
+  // Tracks the life time of the GuestView's main FrameTreeNode. The main FTN
+  // has the same lifesspan as the GuestView.
+  std::vector<std::unique_ptr<content::FrameDeletedObserver>>
+      guest_view_watchers_;
+  std::unique_ptr<base::RunLoop> created_run_loop_;
+  std::unique_ptr<base::RunLoop> num_created_run_loop_;
   raw_ptr<GuestViewBase> waiting_for_attach_;
-  scoped_refptr<content::MessageLoopRunner> attached_message_loop_runner_;
-  scoped_refptr<content::MessageLoopRunner> gc_message_loop_runner_;
+  std::unique_ptr<base::RunLoop> attached_run_loop_;
+  std::unique_ptr<base::RunLoop> gc_run_loop_;
 };
 
 // Test factory for creating test instances of GuestViewManager.
