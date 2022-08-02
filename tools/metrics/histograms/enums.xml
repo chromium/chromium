@@ -40912,6 +40912,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4314" label="LinkRelPrefetchAsDocumentCrossOrigin"/>
   <int value="4315" label="PersistentQuotaType"/>
   <int value="4316" label="CrossOriginScrollIntoView"/>
+  <int value="4317" label="LinkRelCanonical"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
