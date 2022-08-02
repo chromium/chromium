@@ -25,8 +25,8 @@ constexpr char kOemDataLogName[] = "oemdata";
 ProbeService::Factory* ProbeService::Factory::test_factory_ = nullptr;
 
 // static
-std::unique_ptr<health::mojom::ProbeService> ProbeService::Factory::Create(
-    mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
+std::unique_ptr<crosapi::mojom::ProbeService> ProbeService::Factory::Create(
+    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
   if (test_factory_) {
     return test_factory_->CreateInstance(std::move(receiver));
   }
@@ -42,18 +42,18 @@ void ProbeService::Factory::SetForTesting(ProbeService::Factory* test_factory) {
 ProbeService::Factory::~Factory() = default;
 
 ProbeService::ProbeService(
-    mojo::PendingReceiver<health::mojom::ProbeService> receiver)
+    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver)
     : receiver_(this, std::move(receiver)) {}
 
 ProbeService::~ProbeService() = default;
 
 void ProbeService::ProbeTelemetryInfo(
-    const std::vector<health::mojom::ProbeCategoryEnum>& categories,
+    const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
   GetService()->ProbeTelemetryInfo(
       converters::ConvertCategoryVector(categories),
       base::BindOnce(
-          [](health::mojom::ProbeService::ProbeTelemetryInfoCallback callback,
+          [](crosapi::mojom::ProbeService::ProbeTelemetryInfoCallback callback,
              cros_healthd::mojom::TelemetryInfoPtr ptr) {
             std::move(callback).Run(
                 converters::ConvertProbePtr(std::move(ptr)));
@@ -68,7 +68,7 @@ void ProbeService::GetOemData(GetOemDataCallback callback) {
           [](GetOemDataCallback callback,
              absl::optional<std::string> oem_data) {
             std::move(callback).Run(
-                health::mojom::OemData::New(std::move(oem_data)));
+                crosapi::mojom::ProbeOemData::New(std::move(oem_data)));
           },
           std::move(callback)));
 }

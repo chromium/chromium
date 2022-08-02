@@ -33,15 +33,15 @@ class ProbeServiceTest : public testing::Test {
     DebugDaemonClient::Shutdown();
   }
 
-  health::mojom::ProbeServiceProxy* probe_service() const {
+  crosapi::mojom::ProbeServiceProxy* probe_service() const {
     return remote_probe_service_.get();
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
 
-  mojo::Remote<health::mojom::ProbeService> remote_probe_service_;
-  std::unique_ptr<ash::health::mojom::ProbeService> probe_service_{
+  mojo::Remote<crosapi::mojom::ProbeService> remote_probe_service_;
+  std::unique_ptr<crosapi::mojom::ProbeService> probe_service_{
       ProbeService::Factory::Create(
           remote_probe_service_.BindNewPipeAndPassReceiver())};
 };
@@ -65,18 +65,20 @@ TEST_F(ProbeServiceTest, ProbeTelemetryInfoSuccess) {
 
   base::RunLoop run_loop;
   probe_service()->ProbeTelemetryInfo(
-      {health::mojom::ProbeCategoryEnum::kBattery},
-      base::BindLambdaForTesting([&](health::mojom::TelemetryInfoPtr ptr) {
-        ASSERT_TRUE(ptr);
-        ASSERT_TRUE(ptr->battery_result);
-        ASSERT_TRUE(ptr->battery_result->is_battery_info());
-        ASSERT_TRUE(ptr->battery_result->get_battery_info());
-        ASSERT_TRUE(ptr->battery_result->get_battery_info()->cycle_count);
-        EXPECT_EQ(ptr->battery_result->get_battery_info()->cycle_count->value,
-                  kCycleCount);
+      {crosapi::mojom::ProbeCategoryEnum::kBattery},
+      base::BindLambdaForTesting(
+          [&](crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
+            ASSERT_TRUE(ptr);
+            ASSERT_TRUE(ptr->battery_result);
+            ASSERT_TRUE(ptr->battery_result->is_battery_info());
+            ASSERT_TRUE(ptr->battery_result->get_battery_info());
+            ASSERT_TRUE(ptr->battery_result->get_battery_info()->cycle_count);
+            EXPECT_EQ(
+                ptr->battery_result->get_battery_info()->cycle_count->value,
+                kCycleCount);
 
-        run_loop.Quit();
-      }));
+            run_loop.Quit();
+          }));
   run_loop.Run();
 }
 
@@ -85,7 +87,7 @@ TEST_F(ProbeServiceTest, ProbeTelemetryInfoSuccess) {
 TEST_F(ProbeServiceTest, GetOemDataSuccess) {
   base::RunLoop run_loop;
   probe_service()->GetOemData(
-      base::BindLambdaForTesting([&](health::mojom::OemDataPtr ptr) {
+      base::BindLambdaForTesting([&](crosapi::mojom::ProbeOemDataPtr ptr) {
         ASSERT_TRUE(ptr);
         ASSERT_TRUE(ptr->oem_data.has_value());
         EXPECT_EQ(ptr->oem_data.value(), "oemdata: response from GetLog");

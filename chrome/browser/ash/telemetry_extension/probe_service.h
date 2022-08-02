@@ -21,19 +21,19 @@ namespace cros_healthd {
 namespace mojom = ::chromeos::cros_healthd::mojom;
 }  // namespace cros_healthd
 
-class ProbeService : public health::mojom::ProbeService {
+class ProbeService : public crosapi::mojom::ProbeService {
  public:
   class Factory {
    public:
-    static std::unique_ptr<health::mojom::ProbeService> Create(
-        mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+    static std::unique_ptr<crosapi::mojom::ProbeService> Create(
+        mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
     static void SetForTesting(Factory* test_factory);
 
     virtual ~Factory();
 
    protected:
-    virtual std::unique_ptr<health::mojom::ProbeService> CreateInstance(
-        mojo::PendingReceiver<health::mojom::ProbeService> receiver) = 0;
+    virtual std::unique_ptr<crosapi::mojom::ProbeService> CreateInstance(
+        mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) = 0;
 
    private:
     static Factory* test_factory_;
@@ -45,11 +45,11 @@ class ProbeService : public health::mojom::ProbeService {
 
  private:
   explicit ProbeService(
-      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+      mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
 
-  // health::mojom::ProbeService override
+  // crosapi::mojom::ProbeService override
   void ProbeTelemetryInfo(
-      const std::vector<health::mojom::ProbeCategoryEnum>& categories,
+      const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
   void GetOemData(GetOemDataCallback callback) override;
 
@@ -66,7 +66,7 @@ class ProbeService : public health::mojom::ProbeService {
   // interface pipe before destroying pending response callbacks owned by
   // |service_|. It is an error to drop response callbacks which still
   // correspond to an open interface pipe.
-  mojo::Receiver<health::mojom::ProbeService> receiver_;
+  mojo::Receiver<crosapi::mojom::ProbeService> receiver_;
 };
 
 }  // namespace ash

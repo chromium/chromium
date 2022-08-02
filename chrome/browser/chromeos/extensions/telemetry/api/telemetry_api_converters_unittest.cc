@@ -20,7 +20,7 @@ namespace chromeos {
 namespace {
 
 namespace telemetry_api = ::chromeos::api::os_telemetry;
-namespace telemetry_service = ::ash::health::mojom;
+namespace telemetry_service = ::crosapi::mojom;
 
 }  // namespace
 
@@ -28,20 +28,20 @@ namespace converters {
 
 TEST(TelemetryApiConverters, CpuArchitectureEnum) {
   EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_UNKNOWN,
-            Convert(telemetry_service::CpuArchitectureEnum::kUnknown));
+            Convert(telemetry_service::ProbeCpuArchitectureEnum::kUnknown));
   EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_X86_64,
-            Convert(telemetry_service::CpuArchitectureEnum::kX86_64));
+            Convert(telemetry_service::ProbeCpuArchitectureEnum::kX86_64));
   EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_AARCH64,
-            Convert(telemetry_service::CpuArchitectureEnum::kAArch64));
+            Convert(telemetry_service::ProbeCpuArchitectureEnum::kAArch64));
   EXPECT_EQ(telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_ARMV7L,
-            Convert(telemetry_service::CpuArchitectureEnum::kArmv7l));
+            Convert(telemetry_service::ProbeCpuArchitectureEnum::kArmv7l));
 }
 
 TEST(TelemetryApiConverters, CpuCStateInfo) {
   constexpr char kName[] = "C0";
   constexpr uint64_t kTimeInStateSinceLastBootUs = 123456;
 
-  auto input = telemetry_service::CpuCStateInfo::New(
+  auto input = telemetry_service::ProbeCpuCStateInfo::New(
       kName, telemetry_service::UInt64Value::New(kTimeInStateSinceLastBootUs));
 
   auto result = ConvertPtr<telemetry_api::CpuCStateInfo>(std::move(input));
@@ -57,8 +57,8 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
   constexpr char kCpuCStateName[] = "C1";
   constexpr uint64_t kCpuCStateTime = (1 << 27) + 50000;
 
-  std::vector<telemetry_service::CpuCStateInfoPtr> expected_c_states;
-  expected_c_states.push_back(telemetry_service::CpuCStateInfo::New(
+  std::vector<telemetry_service::ProbeCpuCStateInfoPtr> expected_c_states;
+  expected_c_states.push_back(telemetry_service::ProbeCpuCStateInfo::New(
       kCpuCStateName, telemetry_service::UInt64Value::New(kCpuCStateTime)));
 
   constexpr uint32_t kMaxClockSpeedKhz = (1 << 30) + 10000;
@@ -66,7 +66,7 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
   constexpr uint32_t kScalingCurrentFrequencyKhz = (1 << 29) + 30000;
   constexpr uint64_t kIdleTime = (1ULL << 52) + 40000;
 
-  auto input = telemetry_service::LogicalCpuInfo::New(
+  auto input = telemetry_service::ProbeLogicalCpuInfo::New(
       telemetry_service::UInt32Value::New(kMaxClockSpeedKhz),
       telemetry_service::UInt32Value::New(kScalingMaxFrequencyKhz),
       telemetry_service::UInt32Value::New(kScalingCurrentFrequencyKhz),
@@ -103,8 +103,8 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   constexpr char kCpuCStateName[] = "C2";
   constexpr uint64_t kCpuCStateTime = (1 << 27) + 90000;
 
-  std::vector<telemetry_service::CpuCStateInfoPtr> expected_c_states;
-  expected_c_states.push_back(telemetry_service::CpuCStateInfo::New(
+  std::vector<telemetry_service::ProbeCpuCStateInfoPtr> expected_c_states;
+  expected_c_states.push_back(telemetry_service::ProbeCpuCStateInfo::New(
       kCpuCStateName, telemetry_service::UInt64Value::New(kCpuCStateTime)));
 
   constexpr uint32_t kMaxClockSpeedKhz = (1 << 30) + 80000;
@@ -112,8 +112,8 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
   constexpr uint32_t kScalingCurrentFrequencyKhz = (1 << 29) + 60000;
   constexpr uint64_t kIdleTime = (1ULL << 52) + 50000;
 
-  std::vector<telemetry_service::LogicalCpuInfoPtr> logical_cpus;
-  logical_cpus.push_back(telemetry_service::LogicalCpuInfo::New(
+  std::vector<telemetry_service::ProbeLogicalCpuInfoPtr> logical_cpus;
+  logical_cpus.push_back(telemetry_service::ProbeLogicalCpuInfo::New(
       telemetry_service::UInt32Value::New(kMaxClockSpeedKhz),
       telemetry_service::UInt32Value::New(kScalingMaxFrequencyKhz),
       telemetry_service::UInt32Value::New(kScalingCurrentFrequencyKhz),
@@ -122,8 +122,8 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
 
   constexpr char kModelName[] = "i9";
 
-  auto input = telemetry_service::PhysicalCpuInfo::New(kModelName,
-                                                       std::move(logical_cpus));
+  auto input = telemetry_service::ProbePhysicalCpuInfo::New(
+      kModelName, std::move(logical_cpus));
 
   auto result = ConvertPtr<telemetry_api::PhysicalCpuInfo>(std::move(input));
   ASSERT_TRUE(result.model_name);
@@ -176,15 +176,17 @@ TEST(TelemetryApiConverters, BatteryInfo) {
   constexpr char kManufacturerDate[] = "2020-07-30";
   constexpr double_t kTemperature = 7777777777777777;
 
-  telemetry_service::BatteryInfoPtr input = telemetry_service::BatteryInfo::New(
-      telemetry_service::Int64Value::New(kCycleCount),
-      telemetry_service::DoubleValue::New(kVoltageNow), kVendor, kSerialNumber,
-      telemetry_service::DoubleValue::New(kChargeFullDesign),
-      telemetry_service::DoubleValue::New(kChargeFull),
-      telemetry_service::DoubleValue::New(kVoltageMinDesign), kModelName,
-      telemetry_service::DoubleValue::New(kChargeNow),
-      telemetry_service::DoubleValue::New(kCurrentNow), kTechnology, kStatus,
-      kManufacturerDate, telemetry_service::UInt64Value::New(kTemperature));
+  telemetry_service::ProbeBatteryInfoPtr input =
+      telemetry_service::ProbeBatteryInfo::New(
+          telemetry_service::Int64Value::New(kCycleCount),
+          telemetry_service::DoubleValue::New(kVoltageNow), kVendor,
+          kSerialNumber, telemetry_service::DoubleValue::New(kChargeFullDesign),
+          telemetry_service::DoubleValue::New(kChargeFull),
+          telemetry_service::DoubleValue::New(kVoltageMinDesign), kModelName,
+          telemetry_service::DoubleValue::New(kChargeNow),
+          telemetry_service::DoubleValue::New(kCurrentNow), kTechnology,
+          kStatus, kManufacturerDate,
+          telemetry_service::UInt64Value::New(kTemperature));
 
   auto result = ConvertPtr<telemetry_api::BatteryInfo>(std::move(input));
   ASSERT_TRUE(result.cycle_count);
@@ -237,7 +239,7 @@ TEST(TelemetryApiConverters, OsVersion) {
   constexpr char kPatchNumber[] = "59.0";
   constexpr char kReleaseChannel[] = "stable-channel";
 
-  auto input = telemetry_service::OsVersion::New(
+  auto input = telemetry_service::ProbeOsVersion::New(
       kReleaseMilestone, kBuildNumber, kPatchNumber, kReleaseChannel);
 
   auto result = ConvertPtr<telemetry_api::OsVersionInfo>(std::move(input));
@@ -258,8 +260,8 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
   constexpr uint64_t kAvailableSpace = 3000000000000000;
   constexpr uint64_t kTotalSpace = 9000000000000000;
 
-  telemetry_service::StatefulPartitionInfoPtr input =
-      telemetry_service::StatefulPartitionInfo::New(
+  telemetry_service::ProbeStatefulPartitionInfoPtr input =
+      telemetry_service::ProbeStatefulPartitionInfo::New(
           telemetry_service::UInt64Value::New(kAvailableSpace),
           telemetry_service::UInt64Value::New(kTotalSpace));
 
@@ -273,8 +275,8 @@ TEST(TelemetryApiConverters, StatefulPartitionInfo) {
 }
 
 TEST(TelemetryApiConverters, StatefulPartitionInfoNullFields) {
-  telemetry_service::StatefulPartitionInfoPtr input =
-      telemetry_service::StatefulPartitionInfo::New<
+  telemetry_service::ProbeStatefulPartitionInfoPtr input =
+      telemetry_service::ProbeStatefulPartitionInfo::New<
           telemetry_service::UInt64ValuePtr, telemetry_service::UInt64ValuePtr>(
           nullptr, nullptr);
 

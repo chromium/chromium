@@ -15,7 +15,7 @@
 
 namespace ash {
 
-class FakeProbeService : public health::mojom::ProbeService {
+class FakeProbeService : public crosapi::mojom::ProbeService {
  public:
   class Factory : public ash::ProbeService::Factory {
    public:
@@ -27,16 +27,17 @@ class FakeProbeService : public health::mojom::ProbeService {
 
    protected:
     // ProbeService::Factory:
-    std::unique_ptr<health::mojom::ProbeService> CreateInstance(
-        mojo::PendingReceiver<health::mojom::ProbeService> receiver) override;
+    std::unique_ptr<crosapi::mojom::ProbeService> CreateInstance(
+        mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) override;
 
    private:
-    health::mojom::TelemetryInfoPtr telem_info_{
-        health::mojom::TelemetryInfo::New()};
+    crosapi::mojom::ProbeTelemetryInfoPtr telem_info_{
+        crosapi::mojom::ProbeTelemetryInfo::New()};
 
-    health::mojom::OemDataPtr oem_data_{health::mojom::OemData::New()};
+    crosapi::mojom::ProbeOemDataPtr oem_data_{
+        crosapi::mojom::ProbeOemData::New()};
 
-    std::vector<health::mojom::ProbeCategoryEnum> requested_categories_;
+    std::vector<crosapi::mojom::ProbeCategoryEnum> requested_categories_;
 
    private:
     std::unique_ptr<FakeProbeService> fake_service_;
@@ -47,43 +48,44 @@ class FakeProbeService : public health::mojom::ProbeService {
   FakeProbeService& operator=(const FakeProbeService&) = delete;
   ~FakeProbeService() override;
 
-  // health::mojom::ProbeService overrides.
+  // crosapi::mojom::ProbeService overrides.
   void ProbeTelemetryInfo(
-      const std::vector<health::mojom::ProbeCategoryEnum>& categories,
+      const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
 
   void GetOemData(GetOemDataCallback callback) override;
 
   // Sets the return value for |ProbeTelemetryInfo|.
   void SetProbeTelemetryInfoResponse(
-      health::mojom::TelemetryInfoPtr response_info);
+      crosapi::mojom::ProbeTelemetryInfoPtr response_info);
 
   // Sets the return value for |GetOemData|.
-  void SetOemDataResponse(health::mojom::OemDataPtr oem_data);
+  void SetOemDataResponse(crosapi::mojom::ProbeOemDataPtr oem_data);
 
   // Set expectation about the parameter that is passed to |ProbeTelemetryInfo|.
   void SetExpectedLastRequestedCategories(
-      std::vector<health::mojom::ProbeCategoryEnum>
+      std::vector<crosapi::mojom::ProbeCategoryEnum>
           expected_requested_categories);
 
  private:
   void BindPendingReceiver(
-      mojo::PendingReceiver<health::mojom::ProbeService> receiver);
+      mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver);
 
-  mojo::Receiver<health::mojom::ProbeService> receiver_;
+  mojo::Receiver<crosapi::mojom::ProbeService> receiver_;
 
   // Response for a call to |ProbeTelemetryInfo|.
-  health::mojom::TelemetryInfoPtr telem_info_{
-      health::mojom::TelemetryInfo::New()};
+  crosapi::mojom::ProbeTelemetryInfoPtr telem_info_{
+      crosapi::mojom::ProbeTelemetryInfo::New()};
 
   // Response for a call to |GetOemData|.
-  health::mojom::OemDataPtr oem_data_{health::mojom::OemData::New()};
+  crosapi::mojom::ProbeOemDataPtr oem_data_{
+      crosapi::mojom::ProbeOemData::New()};
 
   // Expectation about the parameter that is passed to |ProbeTelemetryInfo|.
-  std::vector<health::mojom::ProbeCategoryEnum> actual_requested_categories_;
+  std::vector<crosapi::mojom::ProbeCategoryEnum> actual_requested_categories_;
 
   // Actual passed parameter.
-  std::vector<health::mojom::ProbeCategoryEnum> expected_requested_categories_;
+  std::vector<crosapi::mojom::ProbeCategoryEnum> expected_requested_categories_;
 };
 
 }  // namespace ash

@@ -23,14 +23,14 @@ class RemoteProbeServiceStrategyAsh : public RemoteProbeServiceStrategy {
   ~RemoteProbeServiceStrategyAsh() override = default;
 
   // RemoteProbeServiceStrategy override:
-  mojo::Remote<ash::health::mojom::ProbeService>& GetRemoteService() override {
+  mojo::Remote<crosapi::mojom::ProbeService>& GetRemoteService() override {
     return remote_probe_service_;
   }
 
  private:
-  mojo::Remote<ash::health::mojom::ProbeService> remote_probe_service_;
+  mojo::Remote<crosapi::mojom::ProbeService> remote_probe_service_;
 
-  std::unique_ptr<ash::health::mojom::ProbeService> probe_service_;
+  std::unique_ptr<crosapi::mojom::ProbeService> probe_service_;
 };
 
 }  // namespace

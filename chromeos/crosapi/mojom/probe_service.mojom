@@ -13,40 +13,41 @@
 // (third-party telemetry extensions).
 
 // The subset is not as is but has the following differences:
-//   1) Introduce DoubleValue, Int64Value, UInt32Value, UInt64Value structs
-//      since numeric primitives are not nullable in Mojo.
-//   2) Make all fields in the following structures optional in case we want to
+//   1) Make all fields in the following structures optional in case we want to
 //      filter them out later:
-//           - NonRemovableBlockDeviceInfo
-//           - CpuCStateInfo
-//           - LogicalCpuInfo
-//           - PhysicalCpuInfo
-//           - CpuInfo
-//           - TimezoneInfo
-//           - MemoryInfo
-//           - BacklightInfo
-//           - FanInfo
-//           - StatefulPartitionInfo
-//           - BluetoothAdapterInfo
-//   3) NonRemovableBlockDeviceInfo:
-//      3.1) use uint32 to store manufacturer_id instead of uint8 in case we
+//           - ProbeNonRemovableBlockDeviceInfo
+//           - ProbeCpuCStateInfo
+//           - ProbeLogicalCpuInfo
+//           - ProbePhysicalCpuInfo
+//           - ProbeCpuInfo
+//           - ProbeTimezoneInfo
+//           - ProbeMemoryInfo
+//           - ProbeBacklightInfo
+//           - ProbeFanInfo
+//           - ProbeStatefulPartitionInfo
+//           - ProbeBluetoothAdapterInfo
+//   2) ProbeNonRemovableBlockDeviceInfo:
+//      2.1) use uint32 to store manufacturer_id instead of uint8 in case we
 //           want to extend manufacturer range.
-//      3.2) use string to store serial in a decimal numeral system instead
+//      2.2) use string to store serial in a decimal numeral system instead
 //           of uint32 in case we want to extend serial number range.
-//   4) LogicalCpuInfo:
-//      4.1) rename idle_time_user_hz to idle_time_ms and use milliseconds
+//   3) ProbeLogicalCpuInfo:
+//      3.1) rename idle_time_user_hz to idle_time_ms and use milliseconds
 //           instead of USER_HZ units, because USER_HZ system constant is not
 //           available in the web.
-//      4.2) use uint64 to store idle_time_ms instead of uint32, idle_time_ms
+//      3.2) use uint64 to store idle_time_ms instead of uint32, idle_time_ms
 //           can easily be more than uint32 range.
-//   5) MemoryInfo: use uint64 to store page_faults_since_last_boot instead of
-//      uint32, it can be more than uint32 range.
+//   4) ProbeMemoryInfo: use uint64 to store page_faults_since_last_boot instead
+//      of uint32, it can be more than uint32 range.
 
-module ash.health.mojom;
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Interface for getting device telemetry information. Implemented in
 // ash-chrome.
-[Stable, Uuid="f3dbbe3b-a810-43a9-889e-b130b4f94869"]
+[Stable, Uuid="f3dbbe3b-a810-43a9-889e-b130b4f94869",
+RenamedFrom="ash.health.mojom.ProbeService"]
 interface ProbeService {
   // Returns telemetry information for the desired categories.
   //
@@ -59,19 +60,19 @@ interface ProbeService {
   //                      the fields corresponding to the requested categories
   //                      will be non-null.
   ProbeTelemetryInfo@0(array<ProbeCategoryEnum> categories)
-      => (TelemetryInfo telemetry_info);
+      => (ProbeTelemetryInfo telemetry_info);
 
   // Returns OEM data.
   //
   // The response:
   // * |oem_data| - OEM data.
-  GetOemData@1() => (OemData oem_data);
+  GetOemData@1() => (ProbeOemData oem_data);
 };
 
 // An enumeration of each category of information that cros_healthd can report.
 //
 // Next ID: 12
-[Stable, Extensible]
+[Stable, Extensible, RenamedFrom="ash.health.mojom.ProbeCategoryEnum"]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 11,
   kBattery = 0,
@@ -91,8 +92,8 @@ enum ProbeCategoryEnum {
 // probing telemetry information.
 //
 // Next ID: 5
-[Stable, Extensible]
-enum ErrorType {
+[Stable, Extensible, RenamedFrom="ash.health.mojom.ErrorType"]
+enum ProbeErrorType {
   // Default value.
   [Default] kUnknown = 4,
   // An error reading a system file.
@@ -108,60 +109,20 @@ enum ErrorType {
 // Structure that contains error information for a telemetry probe.
 //
 // Next ID: 2
-[Stable]
+[Stable, RenamedFrom="ash.health.mojom.ProbeError"]
 struct ProbeError {
   // The type of error that occurred.
-  ErrorType type@0;
+  ProbeErrorType type@0;
   // A debug message with more information about the error. This string is not
   // intended to be shown to the user.
   string msg@1;
 };
 
-// Optional double field. Since primitives numeric types cannot be optional,
-// wrap double in a struct that can be nulled.
-[Stable]
-struct DoubleValue {
-  // The value of the double.
-  double value@0;
-};
-
-// Optional int64 field. Since primitives numeric types cannot be optional,
-// wrap int64 in a struct that can be nulled.
-[Stable]
-struct Int64Value {
-  // The value of the int64.
-  int64 value@0;
-};
-
-// Optional uint32 field. Since primitives numeric types cannot be optional,
-// wrap uint32 in a struct that can be nulled.
-[Stable]
-struct UInt32Value {
-  // The value of the uint32.
-  uint32 value@0;
-};
-
-// Optional uint64 field. Since primitives numeric types cannot be optional,
-// wrap uint64 in a struct that can be nulled.
-[Stable]
-struct UInt64Value {
-  // The value of the uint64.
-  uint64 value@0;
-};
-
-// Optional bool field. Since primitives numeric types cannot be optional,
-// wrap bool in a struct that can be nulled.
-[Stable]
-struct BoolValue {
-  // The value of the bool.
-  bool value@0;
-};
-
 // Information related to the main battery.
 //
 // Next ID: 14
-[Stable]
-struct BatteryInfo {
+[Stable, RenamedFrom="ash.health.mojom.BatteryInfo"]
+struct ProbeBatteryInfo {
   // Cycle count.
   Int64Value? cycle_count@0;
   // Current battery voltage (V)
@@ -198,10 +159,10 @@ struct BatteryInfo {
 
 // Battery probe result. Can either be populated with the BatteryInfo or an
 // error retrieving the information.
-[Stable]
-union BatteryResult {
+[Stable, RenamedFrom="ash.health.mojom.BatteryResult"]
+union ProbeBatteryResult {
   // Valid BatteryInfo. Null value if a battery is not present.
-  BatteryInfo? battery_info;
+  ProbeBatteryInfo? battery_info;
   // The error that occurred attempting to retrieve the BatteryInfo.
   ProbeError error;
 };
@@ -209,8 +170,8 @@ union BatteryResult {
 // Information related to a specific non-removable block device.
 //
 // Next ID: 12
-[Stable]
-struct NonRemovableBlockDeviceInfo {
+[Stable, RenamedFrom="ash.health.mojom.NonRemovableBlockDeviceInfo"]
+struct ProbeNonRemovableBlockDeviceInfo {
   // The path of this storage on the system. It is useful if caller needs to
   // correlate with other information.
   string? path@0;
@@ -244,10 +205,10 @@ struct NonRemovableBlockDeviceInfo {
 
 // Non-removable block device probe result. Can either be populated with the
 // NonRemovableBlockDeviceInfo or an error retrieving the information.
-[Stable]
-union NonRemovableBlockDeviceResult {
+[Stable, RenamedFrom="ash.health.mojom.NonRemovableBlockDeviceResult"]
+union ProbeNonRemovableBlockDeviceResult {
   // Valid NonRemovableBlockDeviceInfo.
-  array<NonRemovableBlockDeviceInfo> block_device_info;
+  array<ProbeNonRemovableBlockDeviceInfo> block_device_info;
   // The error that occurred attempting to retrieve the
   // NonRemovableBlockDeviceInfo.
   ProbeError error;
@@ -256,8 +217,8 @@ union NonRemovableBlockDeviceResult {
 // Cached VPD read from sysfs.
 //
 // Next ID: 4
-[Stable]
-struct CachedVpdInfo {
+[Stable, RenamedFrom="ash.health.mojom.CachedVpdInfo"]
+struct ProbeCachedVpdInfo {
   // Contents of /sys/firmware/vpd/rw/ActivateDate, if the device supports it.
   string? first_power_date@0;
   // Contents of /sys/firmware/vpd/ro/sku_number, if the device supports it.
@@ -270,10 +231,10 @@ struct CachedVpdInfo {
 
 // Cached VPD probe result. Can either be populated with the CachedVpdInfo or an
 // error retrieving the information.
-[Stable]
-union CachedVpdResult {
+[Stable, RenamedFrom="ash.health.mojom.CachedVpdResult"]
+union ProbeCachedVpdResult {
   // Valid CachedVpdInfo.
-  CachedVpdInfo vpd_info;
+  ProbeCachedVpdInfo vpd_info;
   // The error that occurred attempting to retrieve the CachedVpdInfo.
   ProbeError error;
 };
@@ -281,8 +242,8 @@ union CachedVpdResult {
 // Information about a CPU's C-states.
 //
 // Next ID: 2
-[Stable]
-struct CpuCStateInfo {
+[Stable, RenamedFrom="ash.health.mojom.CpuCStateInfo"]
+struct ProbeCpuCStateInfo {
   // Name of the state.
   string? name@0;
   // Time spent in the state since the last reboot, in microseconds.
@@ -292,8 +253,8 @@ struct CpuCStateInfo {
 // Information related to a particular logical CPU.
 //
 // Next ID: 5
-[Stable]
-struct LogicalCpuInfo {
+[Stable, RenamedFrom="ash.health.mojom.LogicalCpuInfo"]
+struct ProbeLogicalCpuInfo {
   // The max CPU clock speed in kHz.
   UInt32Value? max_clock_speed_khz@0;
   // Maximum frequency the CPU is allowed to run at, by policy.
@@ -303,25 +264,25 @@ struct LogicalCpuInfo {
   // Idle time since last boot, in milliseconds.
   UInt64Value? idle_time_ms@3;
   // Information about the logical CPU's time in various C-states.
-  array<CpuCStateInfo> c_states@4;
+  array<ProbeCpuCStateInfo> c_states@4;
 };
 
 // Information related to a particular physical CPU.
 //
 // Next ID: 2
-[Stable]
-struct PhysicalCpuInfo {
+[Stable, RenamedFrom="ash.health.mojom.PhysicalCpuInfo"]
+struct ProbePhysicalCpuInfo {
   // The CPU model name.
   string? model_name@0;
   // Logical CPUs corresponding to this physical CPU.
-  array<LogicalCpuInfo> logical_cpus@1;
+  array<ProbeLogicalCpuInfo> logical_cpus@1;
 };
 
 // An enumeration of CPU architectures.
 //
 // Next ID: 4
-[Stable, Extensible]
-enum CpuArchitectureEnum {
+[Stable, Extensible, RenamedFrom="ash.health.mojom.CpuArchitectureEnum"]
+enum ProbeCpuArchitectureEnum {
   [Default] kUnknown = 3,
   kX86_64 = 0,
   kAArch64 = 1,
@@ -331,23 +292,23 @@ enum CpuArchitectureEnum {
 // Information about the device's CPUs.
 //
 // Next ID: 3
-[Stable]
-struct CpuInfo {
+[Stable, RenamedFrom="ash.health.mojom.CpuInfo"]
+struct ProbeCpuInfo {
   // Number of total threads available.
   UInt32Value? num_total_threads@0;
   // The CPU architecture - it's assumed all of a device's CPUs share an
   // architecture.
-  CpuArchitectureEnum architecture@1;
+  ProbeCpuArchitectureEnum architecture@1;
   // Information about the device's physical CPUs.
-  array<PhysicalCpuInfo> physical_cpus@2;
+  array<ProbePhysicalCpuInfo> physical_cpus@2;
 };
 
 // CPU probe result. Can either be populated with the CpuInfo or an error
 // retrieving the information.
-[Stable]
-union CpuResult {
+[Stable, RenamedFrom="ash.health.mojom.CpuResult"]
+union ProbeCpuResult {
   // Valid CpuInfo.
-  CpuInfo cpu_info;
+  ProbeCpuInfo cpu_info;
   // The error that occurred attempting to retrieve the CpuInfo.
   ProbeError error;
 };
@@ -355,8 +316,8 @@ union CpuResult {
 // Timezone information.
 //
 // Next ID: 2
-[Stable]
-struct TimezoneInfo {
+[Stable, RenamedFrom="ash.health.mojom.TimezoneInfo"]
+struct ProbeTimezoneInfo {
   // The timezone of the device in POSIX standard.
   string? posix@0;
   // The timezone region of the device.
@@ -365,10 +326,10 @@ struct TimezoneInfo {
 
 // Timezone probe result. Can either be populated with the TimezoneInfo or an
 // error retrieving the information.
-[Stable]
-union TimezoneResult {
+[Stable, RenamedFrom="ash.health.mojom.TimezoneResult"]
+union ProbeTimezoneResult {
   // Valid TimezoneInfo.
-  TimezoneInfo timezone_info;
+  ProbeTimezoneInfo timezone_info;
   // The error that occurred attempting to retrieve the TimezoneInfo.
   ProbeError error;
 };
@@ -376,8 +337,8 @@ union TimezoneResult {
 // Memory information.
 //
 // Next ID: 4
-[Stable]
-struct MemoryInfo {
+[Stable, RenamedFrom="ash.health.mojom.MemoryInfo"]
+struct ProbeMemoryInfo {
   // Total memory, in KiB.
   UInt32Value? total_memory_kib@0;
   // Free memory, in KiB.
@@ -390,10 +351,10 @@ struct MemoryInfo {
 
 // Memory probe result. Can either be populated with the MemoryInfo or an
 // error retrieving the information.
-[Stable]
-union MemoryResult {
+[Stable, RenamedFrom="ash.health.mojom.MemoryResult"]
+union ProbeMemoryResult {
   // Valid MemoryInfo.
-  MemoryInfo memory_info;
+  ProbeMemoryInfo memory_info;
   // The error that occurred attempting to retrieve the MemoryInfo.
   ProbeError error;
 };
@@ -401,8 +362,8 @@ union MemoryResult {
 // Backlight information.
 //
 // Next ID: 3
-[Stable]
-struct BacklightInfo {
+[Stable, RenamedFrom="ash.health.mojom.BacklightInfo"]
+struct ProbeBacklightInfo {
   // Path to this backlight on the system. Useful if the caller needs to
   // correlate with other information.
   string? path@0;
@@ -414,27 +375,27 @@ struct BacklightInfo {
 
 // Backlight probe result. Can either be populated with the BacklightInfo or an
 // error retrieving the information.
-[Stable]
-union BacklightResult {
+[Stable, RenamedFrom="ash.health.mojom.BacklightResult"]
+union ProbeBacklightResult {
   // Valid BacklightInfo.
-  array<BacklightInfo> backlight_info;
+  array<ProbeBacklightInfo> backlight_info;
   // The error that occurred attempting to retrieve the BacklightInfo.
   ProbeError error;
 };
 
 // Fan information.
-[Stable]
-struct FanInfo {
+[Stable, RenamedFrom="ash.health.mojom.FanInfo"]
+struct ProbeFanInfo {
   // Fan speed in RPM.
   UInt32Value? speed_rpm@0;
 };
 
 // Fan probe result. Can either be populated with the FanInfo or an error
 // retrieving the information.
-[Stable]
-union FanResult {
+[Stable, RenamedFrom="ash.health.mojom.FanResult"]
+union ProbeFanResult {
   // A list of valid FanInfo.
-  array<FanInfo> fan_info;
+  array<ProbeFanInfo> fan_info;
   // The error that occurred attempting to retrieve the FanInfo.
   ProbeError error;
 };
@@ -442,8 +403,8 @@ union FanResult {
 // Stateful partition info
 //
 // Next ID: 2
-[Stable]
-struct StatefulPartitionInfo {
+[Stable, RenamedFrom="ash.health.mojom.StatefulPartitionInfo"]
+struct ProbeStatefulPartitionInfo {
   // Available space for user data storage in the device in bytes. Rounded down
   // to multiples of 100MiB (100 * 1024 * 1024 bytes).
   UInt64Value? available_space@0;
@@ -453,10 +414,10 @@ struct StatefulPartitionInfo {
 
 // Stateful partition probe result. Can either be populated with a valid
 // StatefulPartitionInfo or an error retrieving the information.
-[Stable]
-union StatefulPartitionResult {
+[Stable, RenamedFrom="ash.health.mojom.StatefulPartitionResult"]
+union ProbeStatefulPartitionResult {
   // A valid StatefulPartitionInfo.
-  StatefulPartitionInfo partition_info;
+  ProbeStatefulPartitionInfo partition_info;
   // The error that occurred attempting to retrieve the StatefulPartitionInfo.
   ProbeError error;
 };
@@ -464,8 +425,8 @@ union StatefulPartitionResult {
 // Information related to one of a device's Bluetooth adapters.
 //
 // Next ID: 4
-[Stable]
-struct BluetoothAdapterInfo {
+[Stable, RenamedFrom="ash.health.mojom.BluetoothAdapterInfo"]
+struct ProbeBluetoothAdapterInfo {
   // The name of the adapter.
   string? name@0;
   // The MAC address of the adapter.
@@ -478,10 +439,10 @@ struct BluetoothAdapterInfo {
 
 // Bluetooth probe result. Can either be populated with the BluetoothAdapterInfo
 // or an error retrieving the information.
-[Stable]
-union BluetoothResult {
+[Stable, RenamedFrom="ash.health.mojom.BluetoothResult"]
+union ProbeBluetoothResult {
   // Valid BluetoothAdapterInfo.
-  array<BluetoothAdapterInfo> bluetooth_adapter_info;
+  array<ProbeBluetoothAdapterInfo> bluetooth_adapter_info;
   // The error that occurred attempting to retrieve the BluetoothAdapterInfo.
   ProbeError error;
 };
@@ -489,8 +450,8 @@ union BluetoothResult {
 // OS Version information.
 // This structure decomposes a full version string
 // (e.g. "87.13544.59.0") into its parts.
-[Stable]
-struct OsVersion {
+[Stable, RenamedFrom="ash.health.mojom.OsVersion"]
+struct ProbeOsVersion {
   // The OS version release milestone (e.g. "87").
   string? release_milestone@0;
   // The OS version build number (e.g. "13544").
@@ -502,27 +463,27 @@ struct OsVersion {
 };
 
 // The OS information.
-[Stable]
-struct OsInfo {
+[Stable, RenamedFrom="ash.health.mojom.OsInfo"]
+struct ProbeOsInfo {
   // Contents of CrosConfig in /branding/oem-name.
   string? oem_name@0;
   // OS Version information.
-  [MinVersion=1] OsVersion? os_version@1;
+  [MinVersion=1] ProbeOsVersion? os_version@1;
 };
 
 // System Information.
-[Stable]
-struct SystemInfo {
+[Stable, RenamedFrom="ash.health.mojom.SystemInfo"]
+struct ProbeSystemInfo {
   // The info related to the OS.
-  OsInfo os_info@0;
+  ProbeOsInfo os_info@0;
 };
 
 // System probe result. Can either be populated with the SystemInfo or an
 // error retrieving the information.
-[Stable]
-union SystemResult {
+[Stable, RenamedFrom="ash.health.mojom.SystemResult"]
+union ProbeSystemResult {
   // Valid SystemInfo.
-  SystemInfo system_info;
+  ProbeSystemInfo system_info;
   // The error that occurred attempting to retrieve SystemInfo.
   ProbeError error;
 };
@@ -536,47 +497,47 @@ union SystemResult {
 // to fetch that information, but was unable to.
 //
 // Next ID: 11
-[Stable]
-struct TelemetryInfo {
+[Stable, RenamedFrom="ash.health.mojom.TelemetryInfo"]
+struct ProbeTelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
-  BatteryResult? battery_result@0;
+  ProbeBatteryResult? battery_result@0;
   // Information about all of the device's non-removable block devices. Only
   // present when kNonRemovableBlockDevices was included in the categories input
   // to ProbeTelemetryInfo.
-  NonRemovableBlockDeviceResult? block_device_result@1;
+  ProbeNonRemovableBlockDeviceResult? block_device_result@1;
   // Only present when kCachedVpdData was included in the categories input to
   // ProbeTelemetryInfo.
-  CachedVpdResult? vpd_result@2;
+  ProbeCachedVpdResult? vpd_result@2;
   // Information about each of the device's CPUs. Only present when kCpu was
   // included in the categories input to ProbeTelemetryInfo.
-  CpuResult? cpu_result@3;
+  ProbeCpuResult? cpu_result@3;
   // Information about the device's timezone. Only present when kTimezone was
   // included in the categories input to ProbeTelemetryInfo.
-  TimezoneResult? timezone_result@4;
+  ProbeTimezoneResult? timezone_result@4;
   // Information about the system's memory. Only present when kMemory was
   // included in the categories input to ProbeTelemetryInfo.
-  MemoryResult? memory_result@5;
+  ProbeMemoryResult? memory_result@5;
   // Information about all of the device's backlights. Only present when
   // kBacklight was included in the categories input to ProbeTelemetryInfo.
-  BacklightResult? backlight_result@6;
+  ProbeBacklightResult? backlight_result@6;
   // Information about each of the device's fans. Only present when kFan was
   // included in the categories input to ProbeTelemetryInfo.
-  FanResult? fan_result@7;
+  ProbeFanResult? fan_result@7;
   // Information about the stateful partition. Only present when
   // kStatefulPartition was included in the categories input to
   // ProbeTelemetryInfo.
-  StatefulPartitionResult? stateful_partition_result@8;
+  ProbeStatefulPartitionResult? stateful_partition_result@8;
   // Information about the device's Bluetooth adapters and devices. Only present
   // when kBluetooth was included in the categories input to ProbeTelemetryInfo.
-  BluetoothResult? bluetooth_result@9;
+  ProbeBluetoothResult? bluetooth_result@9;
   // Information about the system. Only present when kSystem was included in
   // the categories input to ProbeTelemetryInfo.
-  SystemResult? system_result@10;
+  ProbeSystemResult? system_result@10;
 };
 
 // Result of running /usr/share/cros/oemdata.sh script.
-[Stable]
-struct OemData {
+[Stable, RenamedFrom="ash.health.mojom.OemData"]
+struct ProbeOemData {
   string? oem_data@0;
 };

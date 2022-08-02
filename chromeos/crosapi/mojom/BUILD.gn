@@ -64,6 +64,7 @@ mojom("mojom") {
     "networking_attributes.mojom",
     "networking_private.mojom",
     "notification.mojom",
+    "nullable_primitives.mojom",
     "policy_namespace.mojom",
     "policy_service.mojom",
     "power.mojom",

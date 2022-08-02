@@ -26,7 +26,7 @@ class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
  protected:
   ~TelemetryApiFunctionBase() override;
 
-  mojo::Remote<ash::health::mojom::ProbeService>& GetRemoteService();
+  mojo::Remote<crosapi::mojom::ProbeService>& GetRemoteService();
 
  private:
   std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;
@@ -49,7 +49,7 @@ class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
@@ -67,7 +67,7 @@ class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
@@ -87,7 +87,7 @@ class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
@@ -105,7 +105,7 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::OemDataPtr ptr);
+  void OnResult(crosapi::mojom::ProbeOemDataPtr ptr);
 };
 
 class OsTelemetryGetOsVersionInfoFunction : public TelemetryApiFunctionBase {
@@ -125,7 +125,7 @@ class OsTelemetryGetOsVersionInfoFunction : public TelemetryApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
@@ -143,7 +143,7 @@ class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
 class OsTelemetryGetStatefulPartitionInfoFunction
@@ -164,7 +164,7 @@ class OsTelemetryGetStatefulPartitionInfoFunction
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+  void OnResult(crosapi::mojom::ProbeTelemetryInfoPtr ptr);
 };
 
 }  // namespace chromeos

@@ -21,14 +21,14 @@ namespace converters {
 namespace {
 
 namespace telemetry_api = ::chromeos::api::os_telemetry;
-namespace telemetry_service = ::ash::health::mojom;
+namespace telemetry_service = ::crosapi::mojom;
 
 }  // namespace
 
 namespace unchecked {
 
 telemetry_api::CpuCStateInfo UncheckedConvertPtr(
-    telemetry_service::CpuCStateInfoPtr input) {
+    telemetry_service::ProbeCpuCStateInfoPtr input) {
   telemetry_api::CpuCStateInfo result;
   if (input->name.has_value()) {
     result.name = std::make_unique<std::string>(input->name.value());
@@ -41,7 +41,7 @@ telemetry_api::CpuCStateInfo UncheckedConvertPtr(
 }
 
 telemetry_api::LogicalCpuInfo UncheckedConvertPtr(
-    telemetry_service::LogicalCpuInfoPtr input) {
+    telemetry_service::ProbeLogicalCpuInfoPtr input) {
   telemetry_api::LogicalCpuInfo result;
   if (input->max_clock_speed_khz) {
     result.max_clock_speed_khz =
@@ -65,7 +65,7 @@ telemetry_api::LogicalCpuInfo UncheckedConvertPtr(
 }
 
 telemetry_api::PhysicalCpuInfo UncheckedConvertPtr(
-    telemetry_service::PhysicalCpuInfoPtr input) {
+    telemetry_service::ProbePhysicalCpuInfoPtr input) {
   telemetry_api::PhysicalCpuInfo result;
   if (input->model_name.has_value()) {
     result.model_name =
@@ -77,7 +77,7 @@ telemetry_api::PhysicalCpuInfo UncheckedConvertPtr(
 }
 
 telemetry_api::BatteryInfo UncheckedConvertPtr(
-    telemetry_service::BatteryInfoPtr input) {
+    telemetry_service::ProbeBatteryInfoPtr input) {
   telemetry_api::BatteryInfo result;
   if (input->vendor.has_value()) {
     result.vendor =
@@ -130,7 +130,7 @@ telemetry_api::BatteryInfo UncheckedConvertPtr(
 }
 
 telemetry_api::OsVersionInfo UncheckedConvertPtr(
-    telemetry_service::OsVersionPtr input) {
+    telemetry_service::ProbeOsVersionPtr input) {
   telemetry_api::OsVersionInfo result;
 
   if (input->release_milestone) {
@@ -157,7 +157,7 @@ telemetry_api::OsVersionInfo UncheckedConvertPtr(
 }
 
 telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
-    telemetry_service::StatefulPartitionInfoPtr input) {
+    telemetry_service::ProbeStatefulPartitionInfoPtr input) {
   telemetry_api::StatefulPartitionInfo result;
   if (input->available_space) {
     result.available_space =
@@ -173,15 +173,15 @@ telemetry_api::StatefulPartitionInfo UncheckedConvertPtr(
 }  // namespace unchecked
 
 telemetry_api::CpuArchitectureEnum Convert(
-    telemetry_service::CpuArchitectureEnum input) {
+    telemetry_service::ProbeCpuArchitectureEnum input) {
   switch (input) {
-    case telemetry_service::CpuArchitectureEnum::kUnknown:
+    case telemetry_service::ProbeCpuArchitectureEnum::kUnknown:
       return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_UNKNOWN;
-    case telemetry_service::CpuArchitectureEnum::kX86_64:
+    case telemetry_service::ProbeCpuArchitectureEnum::kX86_64:
       return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_X86_64;
-    case telemetry_service::CpuArchitectureEnum::kAArch64:
+    case telemetry_service::ProbeCpuArchitectureEnum::kAArch64:
       return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_AARCH64;
-    case telemetry_service::CpuArchitectureEnum::kArmv7l:
+    case telemetry_service::ProbeCpuArchitectureEnum::kArmv7l:
       return telemetry_api::CpuArchitectureEnum::CPU_ARCHITECTURE_ENUM_ARMV7L;
   }
   NOTREACHED();

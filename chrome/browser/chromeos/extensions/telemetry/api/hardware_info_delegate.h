@@ -48,7 +48,7 @@ class HardwareInfoDelegate {
   void FallbackHandler(ManufacturerCallback done_cb,
                        std::string probe_service_result);
 
-  mojo::Remote<ash::health::mojom::ProbeService>& GetRemoteService();
+  mojo::Remote<crosapi::mojom::ProbeService>& GetRemoteService();
 
   std::unique_ptr<RemoteProbeServiceStrategy> remote_probe_service_strategy_;
 };

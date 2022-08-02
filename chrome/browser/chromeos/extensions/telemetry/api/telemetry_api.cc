@@ -27,7 +27,7 @@ TelemetryApiFunctionBase::TelemetryApiFunctionBase()
 
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 
-mojo::Remote<ash::health::mojom::ProbeService>&
+mojo::Remote<crosapi::mojom::ProbeService>&
 TelemetryApiFunctionBase::GetRemoteService() {
   return remote_probe_service_strategy_->GetRemoteService();
 }
@@ -43,11 +43,11 @@ void OsTelemetryGetBatteryInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetBatteryInfoFunction::OnResult, this);
 
   GetRemoteService()->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kBattery}, std::move(cb));
+      {crosapi::mojom::ProbeCategoryEnum::kBattery}, std::move(cb));
 }
 
 void OsTelemetryGetBatteryInfoFunction::OnResult(
-    ash::health::mojom::TelemetryInfoPtr ptr) {
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
   if (!ptr || !ptr->battery_result || !ptr->battery_result->is_battery_info()) {
     Respond(Error("API internal error"));
     return;
@@ -84,11 +84,11 @@ void OsTelemetryGetCpuInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetCpuInfoFunction::OnResult, this);
 
   GetRemoteService()->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kCpu}, std::move(cb));
+      {crosapi::mojom::ProbeCategoryEnum::kCpu}, std::move(cb));
 }
 
 void OsTelemetryGetCpuInfoFunction::OnResult(
-    ash::health::mojom::TelemetryInfoPtr ptr) {
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
   if (!ptr || !ptr->cpu_result || !ptr->cpu_result->is_cpu_info()) {
     Respond(Error("API internal error"));
     return;
@@ -118,11 +118,11 @@ void OsTelemetryGetMemoryInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetMemoryInfoFunction::OnResult, this);
 
   GetRemoteService()->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kMemory}, std::move(cb));
+      {crosapi::mojom::ProbeCategoryEnum::kMemory}, std::move(cb));
 }
 
 void OsTelemetryGetMemoryInfoFunction::OnResult(
-    ash::health::mojom::TelemetryInfoPtr ptr) {
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
   if (!ptr || !ptr->memory_result || !ptr->memory_result->is_memory_info()) {
     Respond(Error("API internal error"));
     return;
@@ -173,7 +173,7 @@ void OsTelemetryGetOemDataFunction::RunIfAllowed() {
 }
 
 void OsTelemetryGetOemDataFunction::OnResult(
-    ash::health::mojom::OemDataPtr ptr) {
+    crosapi::mojom::ProbeOemDataPtr ptr) {
   if (!ptr || !ptr->oem_data.has_value()) {
     Respond(Error("API internal error"));
     return;
@@ -198,11 +198,11 @@ void OsTelemetryGetOsVersionInfoFunction::RunIfAllowed() {
       base::BindOnce(&OsTelemetryGetOsVersionInfoFunction::OnResult, this);
 
   GetRemoteService()->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kSystem}, std::move(cb));
+      {crosapi::mojom::ProbeCategoryEnum::kSystem}, std::move(cb));
 }
 
 void OsTelemetryGetOsVersionInfoFunction::OnResult(
-    ash::health::mojom::TelemetryInfoPtr ptr) {
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
   if (!ptr || !ptr->system_result || !ptr->system_result->is_system_info()) {
     Respond(Error("API internal error"));
     return;
@@ -236,12 +236,11 @@ void OsTelemetryGetStatefulPartitionInfoFunction::RunIfAllowed() {
       &OsTelemetryGetStatefulPartitionInfoFunction::OnResult, this);
 
   GetRemoteService()->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kStatefulPartition},
-      std::move(cb));
+      {crosapi::mojom::ProbeCategoryEnum::kStatefulPartition}, std::move(cb));
 }
 
 void OsTelemetryGetStatefulPartitionInfoFunction::OnResult(
-    ash::health::mojom::TelemetryInfoPtr ptr) {
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
   if (!ptr || !ptr->stateful_partition_result ||
       !ptr->stateful_partition_result->is_partition_info()) {
     Respond(Error("API internal error"));
@@ -267,11 +266,11 @@ void OsTelemetryGetVpdInfoFunction::RunIfAllowed() {
   auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
 
   GetRemoteService()->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData}, std::move(cb));
+      {crosapi::mojom::ProbeCategoryEnum::kCachedVpdData}, std::move(cb));
 }
 
 void OsTelemetryGetVpdInfoFunction::OnResult(
-    ash::health::mojom::TelemetryInfoPtr ptr) {
+    crosapi::mojom::ProbeTelemetryInfoPtr ptr) {
   if (!ptr || !ptr->vpd_result || !ptr->vpd_result->is_vpd_info()) {
     Respond(Error("API internal error"));
     return;

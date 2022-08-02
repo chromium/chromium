@@ -26,29 +26,29 @@ namespace unchecked {
 // whether input pointer is nullptr.
 
 chromeos::api::os_telemetry::CpuCStateInfo UncheckedConvertPtr(
-    ash::health::mojom::CpuCStateInfoPtr input);
+    crosapi::mojom::ProbeCpuCStateInfoPtr input);
 
 chromeos::api::os_telemetry::LogicalCpuInfo UncheckedConvertPtr(
-    ash::health::mojom::LogicalCpuInfoPtr input);
+    crosapi::mojom::ProbeLogicalCpuInfoPtr input);
 
 chromeos::api::os_telemetry::PhysicalCpuInfo UncheckedConvertPtr(
-    ash::health::mojom::PhysicalCpuInfoPtr input);
+    crosapi::mojom::ProbePhysicalCpuInfoPtr input);
 
 // Note: Battery's serial number is not converted in this function because it is
 // guarded by a permission.
 chromeos::api::os_telemetry::BatteryInfo UncheckedConvertPtr(
-    ash::health::mojom::BatteryInfoPtr input);
+    crosapi::mojom::ProbeBatteryInfoPtr input);
 
 chromeos::api::os_telemetry::OsVersionInfo UncheckedConvertPtr(
-    ash::health::mojom::OsVersionPtr input);
+    crosapi::mojom::ProbeOsVersionPtr input);
 
 chromeos::api::os_telemetry::StatefulPartitionInfo UncheckedConvertPtr(
-    ash::health::mojom::StatefulPartitionInfoPtr input);
+    crosapi::mojom::ProbeStatefulPartitionInfoPtr input);
 
 }  // namespace unchecked
 
 chromeos::api::os_telemetry::CpuArchitectureEnum Convert(
-    ash::health::mojom::CpuArchitectureEnum input);
+    crosapi::mojom::ProbeCpuArchitectureEnum input);
 
 template <class OutputT, class InputT>
 std::vector<OutputT> ConvertPtrVector(std::vector<InputT> input) {

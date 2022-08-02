@@ -22,9 +22,9 @@ void FakeProbeService::Factory::SetCreateInstanceResponse(
   fake_service_ = std::move(fake_service);
 }
 
-std::unique_ptr<health::mojom::ProbeService>
+std::unique_ptr<crosapi::mojom::ProbeService>
 FakeProbeService::Factory::CreateInstance(
-    mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
   fake_service_->BindPendingReceiver(std::move(receiver));
   return std::move(fake_service_);
 }
@@ -39,7 +39,7 @@ FakeProbeService::~FakeProbeService() {
 }
 
 void FakeProbeService::ProbeTelemetryInfo(
-    const std::vector<health::mojom::ProbeCategoryEnum>& categories,
+    const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
   actual_requested_categories_.clear();
   actual_requested_categories_.insert(actual_requested_categories_.end(),
@@ -55,22 +55,23 @@ void FakeProbeService::GetOemData(GetOemDataCallback callback) {
 }
 
 void FakeProbeService::SetExpectedLastRequestedCategories(
-    std::vector<health::mojom::ProbeCategoryEnum>
+    std::vector<crosapi::mojom::ProbeCategoryEnum>
         expected_requested_categories) {
   expected_requested_categories_ = std::move(expected_requested_categories);
 }
 
 void FakeProbeService::SetProbeTelemetryInfoResponse(
-    health::mojom::TelemetryInfoPtr response_info) {
+    crosapi::mojom::ProbeTelemetryInfoPtr response_info) {
   telem_info_ = std::move(response_info);
 }
 
-void FakeProbeService::SetOemDataResponse(health::mojom::OemDataPtr oem_data) {
+void FakeProbeService::SetOemDataResponse(
+    crosapi::mojom::ProbeOemDataPtr oem_data) {
   oem_data_ = std::move(oem_data);
 }
 
 void FakeProbeService::BindPendingReceiver(
-    mojo::PendingReceiver<health::mojom::ProbeService> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::ProbeService> receiver) {
   receiver_.Bind(std::move(receiver));
 }
 

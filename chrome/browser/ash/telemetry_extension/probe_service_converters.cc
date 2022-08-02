@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 
 namespace ash {
@@ -20,31 +21,31 @@ namespace {
 namespace cros_healthd = ::ash::cros_healthd;
 
 cros_healthd::mojom::ProbeCategoryEnum Convert(
-    health::mojom::ProbeCategoryEnum input) {
+    crosapi::mojom::ProbeCategoryEnum input) {
   switch (input) {
-    case health::mojom::ProbeCategoryEnum::kUnknown:
+    case crosapi::mojom::ProbeCategoryEnum::kUnknown:
       return cros_healthd::mojom::ProbeCategoryEnum::kUnknown;
-    case health::mojom::ProbeCategoryEnum::kBattery:
+    case crosapi::mojom::ProbeCategoryEnum::kBattery:
       return cros_healthd::mojom::ProbeCategoryEnum::kBattery;
-    case health::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices:
+    case crosapi::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices:
       return cros_healthd::mojom::ProbeCategoryEnum::kNonRemovableBlockDevices;
-    case health::mojom::ProbeCategoryEnum::kCachedVpdData:
+    case crosapi::mojom::ProbeCategoryEnum::kCachedVpdData:
       return cros_healthd::mojom::ProbeCategoryEnum::kSystem;
-    case health::mojom::ProbeCategoryEnum::kCpu:
+    case crosapi::mojom::ProbeCategoryEnum::kCpu:
       return cros_healthd::mojom::ProbeCategoryEnum::kCpu;
-    case health::mojom::ProbeCategoryEnum::kTimezone:
+    case crosapi::mojom::ProbeCategoryEnum::kTimezone:
       return cros_healthd::mojom::ProbeCategoryEnum::kTimezone;
-    case health::mojom::ProbeCategoryEnum::kMemory:
+    case crosapi::mojom::ProbeCategoryEnum::kMemory:
       return cros_healthd::mojom::ProbeCategoryEnum::kMemory;
-    case health::mojom::ProbeCategoryEnum::kBacklight:
+    case crosapi::mojom::ProbeCategoryEnum::kBacklight:
       return cros_healthd::mojom::ProbeCategoryEnum::kBacklight;
-    case health::mojom::ProbeCategoryEnum::kFan:
+    case crosapi::mojom::ProbeCategoryEnum::kFan:
       return cros_healthd::mojom::ProbeCategoryEnum::kFan;
-    case health::mojom::ProbeCategoryEnum::kStatefulPartition:
+    case crosapi::mojom::ProbeCategoryEnum::kStatefulPartition:
       return cros_healthd::mojom::ProbeCategoryEnum::kStatefulPartition;
-    case health::mojom::ProbeCategoryEnum::kBluetooth:
+    case crosapi::mojom::ProbeCategoryEnum::kBluetooth:
       return cros_healthd::mojom::ProbeCategoryEnum::kBluetooth;
-    case health::mojom::ProbeCategoryEnum::kSystem:
+    case crosapi::mojom::ProbeCategoryEnum::kSystem:
       return cros_healthd::mojom::ProbeCategoryEnum::kSystem;
   }
   NOTREACHED();
@@ -54,20 +55,20 @@ cros_healthd::mojom::ProbeCategoryEnum Convert(
 
 namespace unchecked {
 
-health::mojom::ProbeErrorPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeErrorPtr UncheckedConvertPtr(
     cros_healthd::mojom::ProbeErrorPtr input) {
-  return health::mojom::ProbeError::New(Convert(input->type),
-                                        std::move(input->msg));
+  return crosapi::mojom::ProbeError::New(Convert(input->type),
+                                         std::move(input->msg));
 }
 
-health::mojom::UInt64ValuePtr UncheckedConvertPtr(
+crosapi::mojom::UInt64ValuePtr UncheckedConvertPtr(
     cros_healthd::mojom::NullableUint64Ptr input) {
-  return health::mojom::UInt64Value::New(input->value);
+  return crosapi::mojom::UInt64Value::New(input->value);
 }
 
-health::mojom::BatteryInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeBatteryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::BatteryInfoPtr input) {
-  return health::mojom::BatteryInfo::New(
+  return crosapi::mojom::ProbeBatteryInfo::New(
       Convert(input->cycle_count), Convert(input->voltage_now),
       std::move(input->vendor), std::move(input->serial_number),
       Convert(input->charge_full_design), Convert(input->charge_full),
@@ -78,21 +79,21 @@ health::mojom::BatteryInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->temperature)));
 }
 
-health::mojom::BatteryResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeBatteryResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BatteryResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::BatteryResult::Tag::kBatteryInfo:
-      return health::mojom::BatteryResult::NewBatteryInfo(
+      return crosapi::mojom::ProbeBatteryResult::NewBatteryInfo(
           ConvertProbePtr(std::move(input->get_battery_info())));
     case cros_healthd::mojom::BatteryResult::Tag::kError:
-      return health::mojom::BatteryResult::NewError(
+      return crosapi::mojom::ProbeBatteryResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::NonRemovableBlockDeviceInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeNonRemovableBlockDeviceInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::NonRemovableBlockDeviceInfoPtr input) {
-  return health::mojom::NonRemovableBlockDeviceInfo::New(
+  return crosapi::mojom::ProbeNonRemovableBlockDeviceInfo::New(
       std::move(input->path), Convert(input->size), std::move(input->type),
       Convert(static_cast<uint32_t>(input->manufacturer_id)),
       std::move(input->name), base::NumberToString(input->serial),
@@ -104,30 +105,32 @@ health::mojom::NonRemovableBlockDeviceInfoPtr UncheckedConvertPtr(
       ConvertProbePtr(std::move(input->discard_time_seconds_since_last_boot)));
 }
 
-health::mojom::NonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeNonRemovableBlockDeviceResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::NonRemovableBlockDeviceResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
         kBlockDeviceInfo:
-      return health::mojom::NonRemovableBlockDeviceResult::NewBlockDeviceInfo(
-          ConvertPtrVector<health::mojom::NonRemovableBlockDeviceInfoPtr>(
-              std::move(input->get_block_device_info())));
+      return crosapi::mojom::ProbeNonRemovableBlockDeviceResult::
+          NewBlockDeviceInfo(
+              ConvertPtrVector<
+                  crosapi::mojom::ProbeNonRemovableBlockDeviceInfoPtr>(
+                  std::move(input->get_block_device_info())));
     case cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::kError:
-      return health::mojom::NonRemovableBlockDeviceResult::NewError(
+      return crosapi::mojom::ProbeNonRemovableBlockDeviceResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::CachedVpdInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeCachedVpdInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::VpdInfoPtr input) {
-  return health::mojom::CachedVpdInfo::New(
+  return crosapi::mojom::ProbeCachedVpdInfo::New(
       std::move(input->activate_date), std::move(input->sku_number),
       std::move(input->serial_number), std::move(input->model_name));
 }
 
-health::mojom::CpuCStateInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeCpuCStateInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::CpuCStateInfoPtr input) {
-  return health::mojom::CpuCStateInfo::New(
+  return crosapi::mojom::ProbeCpuCStateInfo::New(
       std::move(input->name), Convert(input->time_in_state_since_last_boot_us));
 }
 
@@ -141,12 +144,12 @@ uint64_t UserHz() {
 
 }  // namespace
 
-health::mojom::LogicalCpuInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeLogicalCpuInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::LogicalCpuInfoPtr input) {
   return UncheckedConvertPtr(std::move(input), UserHz());
 }
 
-health::mojom::LogicalCpuInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeLogicalCpuInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::LogicalCpuInfoPtr input,
     uint64_t user_hz) {
   constexpr uint64_t kMillisecondsInSecond = 1000;
@@ -154,202 +157,205 @@ health::mojom::LogicalCpuInfoPtr UncheckedConvertPtr(
 
   DCHECK(user_hz != 0);
 
-  return health::mojom::LogicalCpuInfo::New(
+  return crosapi::mojom::ProbeLogicalCpuInfo::New(
       Convert(input->max_clock_speed_khz),
       Convert(input->scaling_max_frequency_khz),
       Convert(input->scaling_current_frequency_khz),
       Convert(idle_time_user_hz * kMillisecondsInSecond / user_hz),
-      ConvertPtrVector<health::mojom::CpuCStateInfoPtr>(
+      ConvertPtrVector<crosapi::mojom::ProbeCpuCStateInfoPtr>(
           std::move(input->c_states)));
 }
 
-health::mojom::PhysicalCpuInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbePhysicalCpuInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::PhysicalCpuInfoPtr input) {
-  return health::mojom::PhysicalCpuInfo::New(
+  return crosapi::mojom::ProbePhysicalCpuInfo::New(
       std::move(input->model_name),
-      ConvertPtrVector<health::mojom::LogicalCpuInfoPtr>(
+      ConvertPtrVector<crosapi::mojom::ProbeLogicalCpuInfoPtr>(
           std::move(input->logical_cpus)));
 }
 
-health::mojom::CpuInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeCpuInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::CpuInfoPtr input) {
-  return health::mojom::CpuInfo::New(
+  return crosapi::mojom::ProbeCpuInfo::New(
       Convert(input->num_total_threads), Convert(input->architecture),
-      ConvertPtrVector<health::mojom::PhysicalCpuInfoPtr>(
+      ConvertPtrVector<crosapi::mojom::ProbePhysicalCpuInfoPtr>(
           std::move(input->physical_cpus)));
 }
 
-health::mojom::CpuResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeCpuResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::CpuResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::CpuResult::Tag::kCpuInfo:
-      return health::mojom::CpuResult::NewCpuInfo(
+      return crosapi::mojom::ProbeCpuResult::NewCpuInfo(
           ConvertProbePtr(std::move(input->get_cpu_info())));
     case cros_healthd::mojom::CpuResult::Tag::kError:
-      return health::mojom::CpuResult::NewError(
+      return crosapi::mojom::ProbeCpuResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::TimezoneInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeTimezoneInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TimezoneInfoPtr input) {
-  return health::mojom::TimezoneInfo::New(input->posix, input->region);
+  return crosapi::mojom::ProbeTimezoneInfo::New(input->posix, input->region);
 }
 
-health::mojom::TimezoneResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeTimezoneResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::TimezoneResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::TimezoneResult::Tag::kTimezoneInfo:
-      return health::mojom::TimezoneResult::NewTimezoneInfo(
+      return crosapi::mojom::ProbeTimezoneResult::NewTimezoneInfo(
           ConvertProbePtr(std::move(input->get_timezone_info())));
     case cros_healthd::mojom::TimezoneResult::Tag::kError:
-      return health::mojom::TimezoneResult::NewError(
+      return crosapi::mojom::ProbeTimezoneResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::MemoryInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeMemoryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::MemoryInfoPtr input) {
-  return health::mojom::MemoryInfo::New(
+  return crosapi::mojom::ProbeMemoryInfo::New(
       Convert(input->total_memory_kib), Convert(input->free_memory_kib),
       Convert(input->available_memory_kib),
       Convert(static_cast<uint64_t>(input->page_faults_since_last_boot)));
 }
 
-health::mojom::MemoryResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeMemoryResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::MemoryResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::MemoryResult::Tag::kMemoryInfo:
-      return health::mojom::MemoryResult::NewMemoryInfo(
+      return crosapi::mojom::ProbeMemoryResult::NewMemoryInfo(
           ConvertProbePtr(std::move(input->get_memory_info())));
     case cros_healthd::mojom::MemoryResult::Tag::kError:
-      return health::mojom::MemoryResult::NewError(
+      return crosapi::mojom::ProbeMemoryResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::BacklightInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeBacklightInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::BacklightInfoPtr input) {
-  return health::mojom::BacklightInfo::New(std::move(input->path),
-                                           Convert(input->max_brightness),
-                                           Convert(input->brightness));
+  return crosapi::mojom::ProbeBacklightInfo::New(std::move(input->path),
+                                                 Convert(input->max_brightness),
+                                                 Convert(input->brightness));
 }
 
-health::mojom::BacklightResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeBacklightResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BacklightResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::BacklightResult::Tag::kBacklightInfo:
-      return health::mojom::BacklightResult::NewBacklightInfo(
-          ConvertPtrVector<health::mojom::BacklightInfoPtr>(
+      return crosapi::mojom::ProbeBacklightResult::NewBacklightInfo(
+          ConvertPtrVector<crosapi::mojom::ProbeBacklightInfoPtr>(
               std::move(input->get_backlight_info())));
     case cros_healthd::mojom::BacklightResult::Tag::kError:
-      return health::mojom::BacklightResult::NewError(
+      return crosapi::mojom::ProbeBacklightResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::FanInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeFanInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::FanInfoPtr input) {
-  return health::mojom::FanInfo::New(Convert(input->speed_rpm));
+  return crosapi::mojom::ProbeFanInfo::New(Convert(input->speed_rpm));
 }
 
-health::mojom::FanResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeFanResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::FanResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::FanResult::Tag::kFanInfo:
-      return health::mojom::FanResult::NewFanInfo(
-          ConvertPtrVector<health::mojom::FanInfoPtr>(
+      return crosapi::mojom::ProbeFanResult::NewFanInfo(
+          ConvertPtrVector<crosapi::mojom::ProbeFanInfoPtr>(
               std::move(input->get_fan_info())));
     case cros_healthd::mojom::FanResult::Tag::kError:
-      return health::mojom::FanResult::NewError(
+      return crosapi::mojom::ProbeFanResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::StatefulPartitionInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeStatefulPartitionInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::StatefulPartitionInfoPtr input) {
   constexpr uint64_t k100MiB = 100 * 1024 * 1024;
-  return health::mojom::StatefulPartitionInfo::New(
+  return crosapi::mojom::ProbeStatefulPartitionInfo::New(
       Convert(input->available_space / k100MiB * k100MiB),
       Convert(input->total_space));
 }
 
-health::mojom::StatefulPartitionResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeStatefulPartitionResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::StatefulPartitionResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::StatefulPartitionResult::Tag::kPartitionInfo:
-      return health::mojom::StatefulPartitionResult::NewPartitionInfo(
+      return crosapi::mojom::ProbeStatefulPartitionResult::NewPartitionInfo(
           ConvertProbePtr(std::move(input->get_partition_info())));
     case cros_healthd::mojom::StatefulPartitionResult::Tag::kError:
-      return health::mojom::StatefulPartitionResult::NewError(
+      return crosapi::mojom::ProbeStatefulPartitionResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::BluetoothAdapterInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeBluetoothAdapterInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::BluetoothAdapterInfoPtr input) {
-  return health::mojom::BluetoothAdapterInfo::New(
+  return crosapi::mojom::ProbeBluetoothAdapterInfo::New(
       std::move(input->name), std::move(input->address),
       Convert(input->powered), Convert(input->num_connected_devices));
 }
 
-health::mojom::BluetoothResultPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeBluetoothResultPtr UncheckedConvertPtr(
     cros_healthd::mojom::BluetoothResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::BluetoothResult::Tag::kBluetoothAdapterInfo:
-      return health::mojom::BluetoothResult::NewBluetoothAdapterInfo(
-          ConvertPtrVector<health::mojom::BluetoothAdapterInfoPtr>(
+      return crosapi::mojom::ProbeBluetoothResult::NewBluetoothAdapterInfo(
+          ConvertPtrVector<crosapi::mojom::ProbeBluetoothAdapterInfoPtr>(
               std::move(input->get_bluetooth_adapter_info())));
     case cros_healthd::mojom::BluetoothResult::Tag::kError:
-      return health::mojom::BluetoothResult::NewError(
+      return crosapi::mojom::ProbeBluetoothResult::NewError(
           ConvertProbePtr(std::move(input->get_error())));
   }
 }
 
-health::mojom::SystemInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeSystemInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsInfoPtr input) {
-  return health::mojom::SystemInfo::New(health::mojom::OsInfo::New(
+  return crosapi::mojom::ProbeSystemInfo::New(crosapi::mojom::ProbeOsInfo::New(
       std::move(input->oem_name),
       ConvertProbePtr(std::move(input->os_version))));
 }
 
-health::mojom::OsVersionPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeOsVersionPtr UncheckedConvertPtr(
     cros_healthd::mojom::OsVersionPtr input) {
-  return health::mojom::OsVersion::New(
+  return crosapi::mojom::ProbeOsVersion::New(
       std::move(input->release_milestone), std::move(input->build_number),
       std::move(input->patch_number), std::move(input->release_channel));
 }
 
-std::pair<health::mojom::CachedVpdInfoPtr, health::mojom::SystemInfoPtr>
+std::pair<crosapi::mojom::ProbeCachedVpdInfoPtr,
+          crosapi::mojom::ProbeSystemInfoPtr>
 UncheckedConvertPairPtr(cros_healthd::mojom::SystemInfoPtr input) {
   return std::make_pair(ConvertProbePtr(std::move(input->vpd_info)),
                         ConvertProbePtr(std::move(input->os_info)));
 }
 
-std::pair<health::mojom::CachedVpdResultPtr, health::mojom::SystemResultPtr>
+std::pair<crosapi::mojom::ProbeCachedVpdResultPtr,
+          crosapi::mojom::ProbeSystemResultPtr>
 UncheckedConvertPairPtr(cros_healthd::mojom::SystemResultPtr input) {
   switch (input->which()) {
     case cros_healthd::mojom::SystemResult::Tag::kSystemInfo: {
       auto output = ConvertProbePairPtr(std::move(input->get_system_info()));
-      return std::make_pair(
-          health::mojom::CachedVpdResult::NewVpdInfo(std::move(output.first)),
-          health::mojom::SystemResult::NewSystemInfo(std::move(output.second)));
+      return std::make_pair(crosapi::mojom::ProbeCachedVpdResult::NewVpdInfo(
+                                std::move(output.first)),
+                            crosapi::mojom::ProbeSystemResult::NewSystemInfo(
+                                std::move(output.second)));
     }
     case cros_healthd::mojom::SystemResult::Tag::kError: {
       auto system_error = ConvertProbePtr(std::move(input->get_error()));
       return std::make_pair(
-          health::mojom::CachedVpdResult::NewError(system_error.Clone()),
-          health::mojom::SystemResult::NewError(system_error.Clone()));
+          crosapi::mojom::ProbeCachedVpdResult::NewError(system_error.Clone()),
+          crosapi::mojom::ProbeSystemResult::NewError(system_error.Clone()));
     }
   }
 }
 
-health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
+crosapi::mojom::ProbeTelemetryInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::TelemetryInfoPtr input) {
   auto system_result_output =
       ConvertProbePairPtr(std::move(input->system_result));
 
-  return health::mojom::TelemetryInfo::New(
+  return crosapi::mojom::ProbeTelemetryInfo::New(
       ConvertProbePtr(std::move(input->battery_result)),
       ConvertProbePtr(std::move(input->block_device_result)),
       std::move(system_result_output.first),
@@ -365,59 +371,59 @@ health::mojom::TelemetryInfoPtr UncheckedConvertPtr(
 
 }  // namespace unchecked
 
-health::mojom::ErrorType Convert(cros_healthd::mojom::ErrorType input) {
+crosapi::mojom::ProbeErrorType Convert(cros_healthd::mojom::ErrorType input) {
   switch (input) {
     case cros_healthd::mojom::ErrorType::kUnknown:
-      return health::mojom::ErrorType::kUnknown;
+      return crosapi::mojom::ProbeErrorType::kUnknown;
     case cros_healthd::mojom::ErrorType::kFileReadError:
-      return health::mojom::ErrorType::kFileReadError;
+      return crosapi::mojom::ProbeErrorType::kFileReadError;
     case cros_healthd::mojom::ErrorType::kParseError:
-      return health::mojom::ErrorType::kParseError;
+      return crosapi::mojom::ProbeErrorType::kParseError;
     case cros_healthd::mojom::ErrorType::kSystemUtilityError:
-      return health::mojom::ErrorType::kSystemUtilityError;
+      return crosapi::mojom::ProbeErrorType::kSystemUtilityError;
     case cros_healthd::mojom::ErrorType::kServiceUnavailable:
-      return health::mojom::ErrorType::kServiceUnavailable;
+      return crosapi::mojom::ProbeErrorType::kServiceUnavailable;
   }
   NOTREACHED();
 }
 
-health::mojom::CpuArchitectureEnum Convert(
+crosapi::mojom::ProbeCpuArchitectureEnum Convert(
     cros_healthd::mojom::CpuArchitectureEnum input) {
   switch (input) {
     case cros_healthd::mojom::CpuArchitectureEnum::kUnknown:
-      return health::mojom::CpuArchitectureEnum::kUnknown;
+      return crosapi::mojom::ProbeCpuArchitectureEnum::kUnknown;
     case cros_healthd::mojom::CpuArchitectureEnum::kX86_64:
-      return health::mojom::CpuArchitectureEnum::kX86_64;
+      return crosapi::mojom::ProbeCpuArchitectureEnum::kX86_64;
     case cros_healthd::mojom::CpuArchitectureEnum::kAArch64:
-      return health::mojom::CpuArchitectureEnum::kAArch64;
+      return crosapi::mojom::ProbeCpuArchitectureEnum::kAArch64;
     case cros_healthd::mojom::CpuArchitectureEnum::kArmv7l:
-      return health::mojom::CpuArchitectureEnum::kArmv7l;
+      return crosapi::mojom::ProbeCpuArchitectureEnum::kArmv7l;
   }
   NOTREACHED();
 }
 
-health::mojom::BoolValuePtr Convert(bool input) {
-  return health::mojom::BoolValue::New(input);
+crosapi::mojom::BoolValuePtr Convert(bool input) {
+  return crosapi::mojom::BoolValue::New(input);
 }
 
-health::mojom::DoubleValuePtr Convert(double input) {
-  return health::mojom::DoubleValue::New(input);
+crosapi::mojom::DoubleValuePtr Convert(double input) {
+  return crosapi::mojom::DoubleValue::New(input);
 }
 
-health::mojom::Int64ValuePtr Convert(int64_t input) {
-  return health::mojom::Int64Value::New(input);
+crosapi::mojom::Int64ValuePtr Convert(int64_t input) {
+  return crosapi::mojom::Int64Value::New(input);
 }
 
-health::mojom::UInt32ValuePtr Convert(uint32_t input) {
-  return health::mojom::UInt32Value::New(input);
+crosapi::mojom::UInt32ValuePtr Convert(uint32_t input) {
+  return crosapi::mojom::UInt32Value::New(input);
 }
 
-health::mojom::UInt64ValuePtr Convert(uint64_t input) {
-  return health::mojom::UInt64Value::New(input);
+crosapi::mojom::UInt64ValuePtr Convert(uint64_t input) {
+  return crosapi::mojom::UInt64Value::New(input);
 }
 
 std::vector<cros_healthd::mojom::ProbeCategoryEnum> ConvertCategoryVector(
-    const std::vector<health::mojom::ProbeCategoryEnum>& input) {
+    const std::vector<crosapi::mojom::ProbeCategoryEnum>& input) {
   std::vector<cros_healthd::mojom::ProbeCategoryEnum> output;
   for (const auto element : input) {
     output.push_back(Convert(element));
