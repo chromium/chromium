@@ -726,12 +726,13 @@ class RawDevtoolsProtocolTest
   void RunDevTooledTest() override {
     devtools_client_->SetRawProtocolListener(this);
 
-    base::DictionaryValue message;
-    message.SetInteger("id", devtools_client_->GetNextRawDevToolsMessageId());
-    message.SetString("method", "Runtime.evaluate");
-    base::DictionaryValue params;
-    params.SetString("expression", "1+1");
-    message.SetKey("params", std::move(params));
+    base::Value::Dict message_dict;
+    message_dict.Set("id", devtools_client_->GetNextRawDevToolsMessageId());
+    message_dict.Set("method", "Runtime.evaluate");
+    base::Value::Dict params_dict;
+    params_dict.Set("expression", "1+1");
+    message_dict.Set("params", std::move(params_dict));
+    base::Value message(std::move(message_dict));
     std::string json_message;
     base::JSONWriter::Write(message, &json_message);
     devtools_client_->SendRawDevToolsMessage(json_message);
@@ -856,7 +857,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
           node_dict->SetString("layoutText", layout_node->GetLayoutText());
 
         if (layout_node->HasStyleIndex())
-          node_dict->SetInteger("styleIndex", layout_node->GetStyleIndex());
+          node_dict->GetDict().Set("styleIndex", layout_node->GetStyleIndex());
 
         if (layout_node->HasInlineTextNodes()) {
           base::Value::List inline_text_nodes;
