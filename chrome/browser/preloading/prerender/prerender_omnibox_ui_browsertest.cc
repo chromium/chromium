@@ -875,7 +875,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxSearchSuggestionUIBrowserTest,
           u"prerender222");
   EXPECT_FALSE(prefetch_status.has_value());
   histogram_tester.ExpectTotalCount(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch", 0);
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
+      0);
 
   content::RenderFrameHost* prerender_rfh =
       prerender_helper().GetPrerenderedMainFrameHost(host_id);

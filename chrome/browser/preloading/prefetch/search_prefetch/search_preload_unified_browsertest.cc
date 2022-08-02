@@ -1045,7 +1045,7 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest, DoNotRefetchSameTerms) {
   }
 
   histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kAttemptedQueryRecently, 1);
 }
 

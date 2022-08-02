@@ -314,7 +314,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                         GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kThrottled, 1);
   EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
@@ -393,7 +393,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kThrottled, 1);
   EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
@@ -487,7 +487,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
           base::ASCIIToUTF16(search_terms));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kThrottled, 1);
   EXPECT_FALSE(prefetch_status.has_value());
   content::SetBrowserClientForTesting(old_client);
@@ -573,22 +573,22 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_1"), GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_2"), GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchStarted, 2);
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_3"), GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchStarted, 3);
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("prefetch_4"), GetWebContents()));
   histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kMaxAttemptsReached, 1);
 
   auto prefetch_status =
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                         GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
 
   WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
@@ -715,7 +715,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                          GetWebContents()));
   histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kAttemptedQueryRecently, 1);
 }
 
@@ -732,7 +732,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest, BadURL) {
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                          GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms, 1);
 }
 
@@ -752,7 +752,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                          GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchDisabled, 1);
 }
 
@@ -771,7 +771,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
                                                         GetWebContents()));
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kPrefetchStarted, 1);
   auto prefetch_status =
       search_prefetch_service->GetSearchPrefetchStatusForTesting(
@@ -1265,7 +1265,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("other_query"), GetWebContents()));
   histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kErrorBackoff, 1);
 }
 
@@ -1645,7 +1645,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_FALSE(search_prefetch_service->MaybePrefetchURL(
       GetSearchServerQueryURL("other_query"), GetWebContents()));
   histogram_tester.ExpectBucketCount(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kErrorBackoff, 1);
 }
 
@@ -1933,7 +1933,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                                                          GetWebContents()));
 
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kJavascriptDisabled, 1);
 }
 
@@ -1957,7 +1957,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                                                          GetWebContents()));
 
   histogram_tester.ExpectUniqueSample(
-      "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+      "Omnibox.SearchPrefetch.PrefetchEligibilityReason2.SuggestionPrefetch",
       SearchPrefetchEligibilityReason::kJavascriptDisabled, 1);
 
   auto prefetch_status =

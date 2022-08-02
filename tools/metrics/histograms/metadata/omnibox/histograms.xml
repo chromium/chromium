@@ -2234,6 +2234,29 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Omnibox.{SearchPrefetch}.PrefetchEligibilityReason.{NavigationOrSuggestionPrefetch}"
     enum="SearchPrefetchEligibilityReason" expires_after="2023-05-02">
+  <obsolete>
+    This is deprecated as of 07/2022. Please use
+    Omnibox.SearchPrefetch.PrefetchEligibilityReason2.{NavigationOrSuggestionPrefetch}.
+  </obsolete>
+  <owner>ryansturm@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    {SearchPrefetch}
+
+    The reason that a search prefetch request issued when a user navigates to a
+    suggestion was not eligible to be prefetched (or 'Prefetched' if it was
+    prefetched).
+
+    {NavigationOrSuggestionPrefetch}
+  </summary>
+  <token key="SearchPrefetch" variants="SearchPrefetch"/>
+  <token key="NavigationOrSuggestionPrefetch"
+      variants="NavigationOrSuggestionPrefetch"/>
+</histogram>
+
+<histogram
+    name="Omnibox.{SearchPrefetch}.PrefetchEligibilityReason2.{NavigationOrSuggestionPrefetch}"
+    enum="SearchPrefetchEligibilityReason" expires_after="2023-05-02">
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
