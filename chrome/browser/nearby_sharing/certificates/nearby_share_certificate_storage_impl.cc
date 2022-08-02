@@ -616,15 +616,12 @@ void NearbyShareCertificateStorageImpl::ClearPublicCertificates(
 }
 
 bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
-  const base::Value* dict = pref_service_->Get(
+  const base::Value::Dict& dict = pref_service_->GetValueDict(
       prefs::kNearbySharingPublicCertificateExpirationDictPrefName);
   public_certificate_expirations_.clear();
-  if (!dict) {
-    return false;
-  }
 
-  public_certificate_expirations_.reserve(dict->DictSize());
-  for (const auto pair : dict->DictItems()) {
+  public_certificate_expirations_.reserve(dict.size());
+  for (const auto pair : dict) {
     absl::optional<std::string> id = DecodeString(pair.first);
     absl::optional<base::Time> expiration = base::ValueToTime(pair.second);
     if (!id || !expiration)
