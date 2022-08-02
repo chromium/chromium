@@ -126,30 +126,23 @@ The `--user-data-dir` flag takes precedence if both are present.
 
 ### Chrome Remote Desktop sessions (Linux)
 
-A single Chrome instance cannot show windows on multiple X displays, and two
-running Chrome instances cannot share the same user data directory.
-Therefore, it's desirable for Chrome to have a separate user data directory
-when running inside a [Chrome Remote
-Desktop](https://support.google.com/chrome/answer/1649523) (CRD) virtual session
-on a Linux host.
+[Chrome Remote
+Desktop](https://support.google.com/chrome/answer/1649523) (CRD) used to set
+`$CHROME_USER_DATA_DIR` or `$CHROME_CONFIG_HOME` on the virtual session on a
+Linux host, since a single Chrome instance cannot show windows on multiple X
+displays, and two running Chrome instances cannot share the same user data
+directory. However, with the obsolescence of `dbus-x11`, most modern Linux
+distros have lost the ability to simultaneously run multiple graphical sessions
+for the same user without running into difficult-to-trace dbus cross talk
+issues, and Chrome can only be run on a single X display per user in reality.
+Therefore, CRD no longer sets these environment variables for new installations
+after CRD host M105.
 
-By default, CRD achieves this by setting `$CHROME_USER_DATA_DIR` in the session.
-Unfortunately this means that inside the session we don't get separate defaults
-for different channels (Stable, Beta, Dev) or for Chrome vs. Chromium.  This can
-lead to profile version errors ("Your profile can not be used because it is from
-a newer version of Google Chrome").
-
-Since M61, this can be solved by setting `$CHROME_CONFIG_HOME` instead of
-`$CHROME_USER_DATA_DIR`. Specifically, put the following in
-`~/.chrome-remote-desktop-session`:
-
-```
-export CHROME_CONFIG_HOME="$HOME/.config/chrome-remote-desktop/chrome-config"
-unset CHROME_USER_DATA_DIR
-. /etc/chrome-remote-desktop-session
-```
-
-Then restart the host by running: `/etc/init.d/chrome-remote-desktop restart`
+The CRD host will continue to set these environment variables if either
+`chrome-config/` or `chrome-profile/` exists in
+`~/.config/chrome-remote-desktop/`. If you want to use the local Chrome profile
+in CRD sessions, quit Chrome and delete these folders from
+`~/.config/chrome-remote-desktop/`, then reboot the host device.
 
 ### Writing an AppleScript wrapper (Mac OS X)
 
