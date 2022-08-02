@@ -276,14 +276,16 @@ void SavedDeskIconContainer::CreateIconViewsFromIconIdentifiers(
     if (children().size() < kMaxIcons &&
         (icon_identifier == DeskTemplate::kIncognitoWindowIdentifier ||
          delegate->IsAppAvailable(icon_info.app_id))) {
-      SavedDeskIconView* icon_view =
-          AddChildView(views::Builder<SavedDeskIconView>()
-                           .SetBackground(views::CreateRoundedRectBackground(
-                               AshColorProvider::Get()->GetControlsLayerColor(
-                                   AshColorProvider::ControlsLayerType::
-                                       kControlBackgroundColorInactive),
-                               SavedDeskIconView::kIconViewSize / 2))
-                           .Build());
+      SavedDeskIconView* icon_view = AddChildView(
+          views::Builder<SavedDeskIconView>()
+              .SetBackground(views::CreateRoundedRectBackground(
+                  icon_info.count == 1
+                      ? SK_ColorTRANSPARENT
+                      : AshColorProvider::Get()->GetControlsLayerColor(
+                            AshColorProvider::ControlsLayerType::
+                                kControlBackgroundColorInactive),
+                  SavedDeskIconView::kIconViewSize / 2))
+              .Build());
       icon_view->SetIconIdentifierAndCount(icon_identifier, icon_info.app_id,
                                            icon_info.app_title, icon_info.count,
                                            /*show_plus=*/true);
