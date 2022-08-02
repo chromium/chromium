@@ -56,7 +56,7 @@ bool FormField::MatchesPattern(const base::StringPiece16& input,
                                std::vector<std::u16string>* groups) {
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
   const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(pattern);
-  return regex_pattern && autofill::MatchesRegex(input, *regex_pattern, groups);
+  return autofill::MatchesRegex(input, *regex_pattern, groups);
 }
 
 // static

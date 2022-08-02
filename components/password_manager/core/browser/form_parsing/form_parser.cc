@@ -85,24 +85,24 @@ AutocompleteFlag ExtractAutocompleteFlag(const std::string& attribute) {
 
 // Returns true if the |str| contains words related to CVC fields.
 bool StringMatchesCVC(const std::u16string& str) {
-  return autofill::MatchesPatternInMainThread(str, autofill::kCardCvcRe);
+  return autofill::MatchesRegex<autofill::kCardCvcRe>(str);
 }
 
 // Returns true if the |str| contains words related to SSN fields.
 bool StringMatchesSSN(const std::u16string& str) {
-  return autofill::MatchesPatternInMainThread(str, autofill::kSocialSecurityRe);
+  return autofill::MatchesRegex<autofill::kSocialSecurityRe>(str);
 }
 
 // Returns true if the |str| contains words related to one time password fields.
 bool StringMatchesOTP(const std::u16string& str) {
-  return autofill::MatchesPatternInMainThread(str, autofill::kOneTimePwdRe);
+  return autofill::MatchesRegex<autofill::kOneTimePwdRe>(str);
 }
 
 // Returns true if the |str| consists of one repeated non alphanumeric symbol.
 // This is likely a result of website modifying the value, and such value should
 // not be saved.
 bool StringMatchesHiddenValue(const std::u16string& str) {
-  return autofill::MatchesPatternInMainThread(str, autofill::kHiddenValueRe);
+  return autofill::MatchesRegex<autofill::kHiddenValueRe>(str);
 }
 
 // TODO(crbug.com/860700): Remove name and attribute checking once server-side

@@ -839,24 +839,21 @@ bool FormStructure::ShouldBeParsed(LogManager* log_manager) const {
   }
 
   // Rule out search forms.
-  if (MatchesPatternInMainThread(base::UTF8ToUTF16(target_url_.path_piece()),
-                                 kUrlSearchActionRe)) {
+  if (MatchesRegex<kUrlSearchActionRe>(
+          base::UTF8ToUTF16(target_url_.path_piece()))) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingUrlMatchesSearchRegex
                         << *this;
     return false;
   }
 
-  bool has_text_field = false;
-  for (const auto& it : *this) {
-    has_text_field |= it->form_control_type != "select-one";
-  }
-
+  bool has_text_field = base::ranges::any_of(*this, [](const auto& field) {
+    return field->form_control_type != "select-one";
+  });
   if (!has_text_field) {
     LOG_AF(log_manager) << LoggingScope::kAbortParsing
                         << LogMessage::kAbortParsingFormHasNoTextfield << *this;
   }
-
   return has_text_field;
 }
 

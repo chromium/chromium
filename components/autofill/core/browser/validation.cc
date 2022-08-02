@@ -154,7 +154,7 @@ bool IsValidEmailAddress(const std::u16string& text) {
   // E-Mail pattern as defined by the WhatWG. (4.10.7.1.5 E-Mail state)
   static constexpr char16_t kEmailPattern[] =
       u"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*$";
-  return MatchesPatternInMainThread(text, kEmailPattern);
+  return MatchesRegex<kEmailPattern>(text);
 }
 
 bool IsValidState(const std::u16string& text) {
@@ -169,7 +169,7 @@ bool IsPossiblePhoneNumber(const std::u16string& text,
 
 bool IsValidZip(const std::u16string& text) {
   static constexpr char16_t kZipPattern[] = u"^\\d{5}(-\\d{4})?$";
-  return MatchesPatternInMainThread(text, kZipPattern);
+  return MatchesRegex<kZipPattern>(text);
 }
 
 bool IsSSN(const std::u16string& text) {
@@ -290,16 +290,17 @@ bool IsValidForType(const std::u16string& value,
 
     case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR: {
-      const std::u16string pattern = type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
-                                         ? u"^[0-9]{1,2}[-/|]?[0-9]{2}$"
-                                         : u"^[0-9]{1,2}[-/|]?[0-9]{4}$";
+      static constexpr char16_t kDateYY[] = u"^[0-9]{1,2}[-/|]?[0-9]{2}$";
+      static constexpr char16_t kDateYYYY[] = u"^[0-9]{1,2}[-/|]?[0-9]{4}$";
 
       CreditCard temp;
       temp.SetExpirationDateFromString(value);
 
       // Expiration date was in an invalid format.
       if (temp.expiration_month() == 0 || temp.expiration_year() == 0 ||
-          !MatchesPatternInMainThread(value, pattern)) {
+          (type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR
+               ? !MatchesRegex<kDateYY>(value)
+               : !MatchesRegex<kDateYYYY>(value))) {
         if (error_message) {
           *error_message = l10n_util::GetStringUTF16(
               IDS_PAYMENTS_CARD_EXPIRATION_INVALID_VALIDATION_MESSAGE);
@@ -343,21 +344,20 @@ size_t GetCvcLengthForCardNetwork(const base::StringPiece card_network) {
 }
 
 bool IsUPIVirtualPaymentAddress(const std::u16string& value) {
-  return MatchesPatternInMainThread(value, kUPIVirtualPaymentAddressRe);
+  return MatchesRegex<kUPIVirtualPaymentAddressRe>(value);
 }
 
 bool IsInternationalBankAccountNumber(const std::u16string& value) {
   std::u16string no_spaces;
   base::RemoveChars(value, u" ", &no_spaces);
-  return MatchesPatternInMainThread(no_spaces,
-                                    kInternationalBankAccountNumberRe);
+  return MatchesRegex<kInternationalBankAccountNumberRe>(no_spaces);
 }
 
 bool IsPlausibleCreditCardCVCNumber(const std::u16string& value) {
-  return MatchesPatternInMainThread(value, kCreditCardCVCPattern);
+  return MatchesRegex<kCreditCardCVCPattern>(value);
 }
 
 bool IsPlausible4DigitExpirationYear(const std::u16string& value) {
-  return MatchesPatternInMainThread(value, kCreditCard4DigitExpYearPattern);
+  return MatchesRegex<kCreditCard4DigitExpYearPattern>(value);
 }
 }  // namespace autofill

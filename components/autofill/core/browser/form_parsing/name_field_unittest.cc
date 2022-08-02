@@ -221,19 +221,18 @@ TEST_P(NameFieldTest, HispanicLastNameRegexConverage) {
 
   for (const auto& string : first_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_TRUE(MatchesPatternInMainThread(string, kNameLastFirstRe, nullptr));
+    EXPECT_TRUE(MatchesRegex<kNameLastFirstRe>(string));
   }
 
   for (const auto& string : second_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_TRUE(MatchesPatternInMainThread(string, kNameLastSecondRe, nullptr));
+    EXPECT_TRUE(MatchesRegex<kNameLastSecondRe>(string));
   }
 
   for (const auto& string : neither_first_or_second_last_name_strings) {
     SCOPED_TRACE(string);
-    EXPECT_FALSE(MatchesPatternInMainThread(string, kNameLastFirstRe, nullptr));
-    EXPECT_FALSE(
-        MatchesPatternInMainThread(string, kNameLastSecondRe, nullptr));
+    EXPECT_FALSE(MatchesRegex<kNameLastFirstRe>(string));
+    EXPECT_FALSE(MatchesRegex<kNameLastSecondRe>(string));
   }
 }
 

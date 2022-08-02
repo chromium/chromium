@@ -11,14 +11,15 @@
 
 #include "base/barrier_callback.h"
 #include "base/callback.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/password_manager/android/password_manager_lifecycle_helper_impl.h"
 #include "chrome/browser/password_manager/android/password_store_android_backend_api_error_codes.h"
@@ -52,7 +53,6 @@ constexpr base::TimeDelta kAsyncTaskTimeout = base::Seconds(30);
 constexpr char kUPMActiveHistogram[] =
     "PasswordManager.UnifiedPasswordManager.ActiveStatus";
 
-using autofill::MatchesPatternInMainThread;
 using base::UTF8ToUTF16;
 using password_manager::GetExpressionForFederatedMatching;
 using password_manager::GetRegexForPSLFederatedMatching;
@@ -87,6 +87,14 @@ std::string FormToSignonRealmQuery(const PasswordFormDigest& form,
   return form.signon_realm;
 }
 
+bool MatchesRegexWithCache(base::StringPiece16 input,
+                           base::StringPiece16 regex) {
+  static base::NoDestructor<autofill::AutofillRegexCache> cache(
+      autofill::ThreadSafe(true));
+  const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(regex);
+  return autofill::MatchesRegex(input, *regex_pattern);
+}
+
 bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,
                                      const PasswordFormDigest& form_to_match,
                                      bool include_psl) {
@@ -101,22 +109,20 @@ bool MatchesIncludedPSLAndFederation(const PasswordForm& retrieved_login,
   if (include_psl) {
     const std::u16string psl_regex =
         UTF8ToUTF16(GetRegexForPSLMatching(form_to_match.signon_realm));
-    if (autofill::MatchesPatternInMainThread(retrieved_login_signon_realm,
-                                             psl_regex))
+    if (MatchesRegexWithCache(retrieved_login_signon_realm, psl_regex))
       return true;
     if (include_federated) {
       const std::u16string psl_federated_regex = UTF8ToUTF16(
           GetRegexForPSLFederatedMatching(form_to_match.signon_realm));
-      if (autofill::MatchesPatternInMainThread(retrieved_login_signon_realm,
-                                               psl_federated_regex))
+      if (MatchesRegexWithCache(retrieved_login_signon_realm,
+                                psl_federated_regex))
         return true;
     }
   } else if (include_federated) {
     const std::u16string federated_regex =
         UTF8ToUTF16("^" + GetExpressionForFederatedMatching(form_to_match.url));
     return include_federated &&
-           autofill::MatchesPatternInMainThread(retrieved_login_signon_realm,
-                                                federated_regex);
+           MatchesRegexWithCache(retrieved_login_signon_realm, federated_regex);
   }
   return false;
 }

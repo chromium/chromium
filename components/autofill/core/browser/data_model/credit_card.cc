@@ -563,8 +563,9 @@ void CreditCard::GetMatchingTypes(const std::u16string& text,
 }
 
 void CreditCard::SetInfoForMonthInputType(const std::u16string& value) {
+  static constexpr char16_t kDateRegex[] = u"^[0-9]{4}-[0-9]{1,2}$";
   // Check if |text| is "yyyy-mm" format first, and check normal month format.
-  if (!MatchesPatternInMainThread(value, u"^[0-9]{4}-[0-9]{1,2}$"))
+  if (!MatchesRegex<kDateRegex>(value))
     return;
 
   std::vector<base::StringPiece16> year_month = base::SplitStringPiece(
@@ -819,11 +820,12 @@ bool CreditCard::SetExpirationYearFromString(const std::u16string& text) {
 }
 
 void CreditCard::SetExpirationDateFromString(const std::u16string& text) {
+  static constexpr char16_t kDateRegex[] =
+      uR"(^\s*[0-9]{1,2}\s*[-/|]?\s*[0-9]{2,4}\s*$)";
   // Check that |text| fits the supported patterns: mmyy, mmyyyy, m-yy,
   // mm-yy, m-yyyy and mm-yyyy. Note that myy and myyyy matched by this pattern
   // but are not supported (ambiguous). Separators: -, / and |.
-  if (!MatchesPatternInMainThread(
-          text, uR"(^\s*[0-9]{1,2}\s*[-/|]?\s*[0-9]{2,4}\s*$)"))
+  if (!MatchesRegex<kDateRegex>(text))
     return;
 
   std::u16string month;

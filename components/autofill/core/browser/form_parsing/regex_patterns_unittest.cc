@@ -59,10 +59,12 @@ MatchPatternRefTestApi test_api(MatchPatternRef p) {
   return MatchPatternRefTestApi(p);
 }
 
-auto Matches(base::StringPiece16 pattern) {
-  return ::testing::Truly([pattern](base::StringPiece actual) {
-    return MatchesPatternInMainThread(base::UTF8ToUTF16(actual), pattern);
-  });
+auto Matches(base::StringPiece16 regex) {
+  icu::RegexPattern regex_pattern = *CompileRegex(regex);
+  return ::testing::Truly(
+      [regex_pattern = std::move(regex_pattern)](base::StringPiece actual) {
+        return MatchesRegex(base::UTF8ToUTF16(actual), regex_pattern);
+      });
 }
 
 auto Matches(MatchingPattern pattern) {

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/lock.h"
@@ -39,18 +40,17 @@ bool MatchesRegex(base::StringPiece16 input,
                   const icu::RegexPattern& regex_pattern,
                   std::vector<std::u16string>* groups = nullptr);
 
-// Calls MatchesRegex() after compiling the `regex` or retrieving it from a
-// cache.
+// Calls MatchesRegex() after compiling the `regex` on the first call and
+// retrieving it from a static variable in subsequent calls.
 //
-// This function is thread-safe. Nevertheless, it should only be called from the
-// main thread to avoid the UI being blocked on some worker task.
-//
-// TODO(crbug.com/1345089): Merge FormField::MatchesPattern() and this function
-// one into a single MatchesPattern() that distinguishes between the main thread
-// and worker threads.
-bool MatchesPatternInMainThread(base::StringPiece16 input,
-                                base::StringPiece16 regex,
-                                std::vector<std::u16string>* groups = nullptr);
+// This function is thread-safe.
+template <const char16_t regex[]>
+bool MatchesRegex(base::StringPiece16 input,
+                  std::vector<std::u16string>* groups = nullptr) {
+  static base::NoDestructor<std::unique_ptr<const icu::RegexPattern>>
+      regex_pattern(CompileRegex(regex));
+  return MatchesRegex(input, **regex_pattern, groups);
+}
 
 // A cache of compiled regex patterns. It can be configured to be thread-safe
 // (using a mutex) or not (in which case it uses a sequence checker).

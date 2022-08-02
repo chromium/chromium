@@ -232,16 +232,13 @@ AutofillUploadContents::ValueType GetValueType(
   if (credential_match != stored_credentials.end())
     return AutofillUploadContents::STORED_FOR_CURRENT_DOMAIN;
 
-  if (autofill::MatchesPatternInMainThread(username_value,
-                                           autofill::kEmailValueRe))
+  if (autofill::MatchesRegex<autofill::kEmailValueRe>(username_value))
     return AutofillUploadContents::EMAIL;
 
-  if (autofill::MatchesPatternInMainThread(username_value,
-                                           autofill::kPhoneValueRe))
+  if (autofill::MatchesRegex<autofill::kPhoneValueRe>(username_value))
     return AutofillUploadContents::PHONE;
 
-  if (autofill::MatchesPatternInMainThread(username_value,
-                                           autofill::kUsernameLikeValueRe))
+  if (autofill::MatchesRegex<autofill::kUsernameLikeValueRe>(username_value))
     return AutofillUploadContents::USERNAME_LIKE;
 
   if (username_value.find(' ') != std::u16string::npos)

@@ -1605,14 +1605,15 @@ void BrowserAutofillManager::MaybeTriggerRefillForExpirationDate(
   if (old_value == field.value)
     return;
 
-  const char16_t* kFormatRegEx = uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
+  static constexpr char16_t kFormatRegEx[] =
+      uR"(^(\d\d)(\s?[/-]?\s?)?(\d\d|\d\d\d\d)$)";
   std::vector<std::u16string> old_groups;
-  if (!MatchesPatternInMainThread(old_value, kFormatRegEx, &old_groups))
+  if (!MatchesRegex<kFormatRegEx>(old_value, &old_groups))
     return;
   DCHECK_EQ(old_groups.size(), 4u);
 
   std::vector<std::u16string> new_groups;
-  if (!MatchesPatternInMainThread(field.value, kFormatRegEx, &new_groups))
+  if (!MatchesRegex<kFormatRegEx>(field.value, &new_groups))
     return;
   DCHECK_EQ(new_groups.size(), 4u);
 

@@ -381,17 +381,15 @@ void CompanyInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
 }
 
 bool CompanyInfo::IsValidOrVerified(const std::u16string& value) const {
-  // TODO(crbug/1117296): retrieve regular expressions dynamically.
-  static const char* kBirthyearRe = "^(19|20)\\d{2}$";
-  static const char* kSocialTitleRe =
-      "^(Ms\\.?|Mrs\\.?|Mr\\.?|Miss|Mistress|Mister|"
-      "Frau|Herr|"
-      "Mlle|Mme|M\\.|"
-      "Dr\\.?|Prof\\.?)$";
+  static constexpr char16_t kBirthyearRe[] = u"^(19|20)\\d{2}$";
+  static constexpr char16_t kSocialTitleRe[] =
+      u"^(Ms\\.?|Mrs\\.?|Mr\\.?|Miss|Mistress|Mister|"
+      u"Frau|Herr|"
+      u"Mlle|Mme|M\\.|"
+      u"Dr\\.?|Prof\\.?)$";
   return (profile_ && profile_->IsVerified()) ||
-         (!MatchesPatternInMainThread(value, base::UTF8ToUTF16(kBirthyearRe)) &&
-          !MatchesPatternInMainThread(value,
-                                      base::UTF8ToUTF16(kSocialTitleRe)));
+         (!MatchesRegex<kBirthyearRe>(value) &&
+          !MatchesRegex<kSocialTitleRe>(value));
 }
 
 }  // namespace autofill

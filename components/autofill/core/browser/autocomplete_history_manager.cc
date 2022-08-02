@@ -51,9 +51,9 @@ bool IsTextField(const FormFieldData& field) {
 // that a different website or different form uses the same field name for a
 // totally different purpose.
 bool IsMeaningfulFieldName(const std::u16string& name) {
-  return !MatchesPatternInMainThread(
-      name,
-      u"^(((field|input)(_|-)?\\d+)|title|otp|tan)$|(cvc|cvn|cvv|captcha)");
+  static constexpr char16_t kRegex[] =
+      u"^(((field|input)(_|-)?\\d+)|title|otp|tan)$|(cvc|cvn|cvv|captcha)";
+  return !MatchesRegex<kRegex>(name);
 }
 
 }  // namespace

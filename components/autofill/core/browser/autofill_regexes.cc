@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 
 namespace {
 
@@ -59,14 +58,6 @@ bool MatchesRegex(base::StringPiece16 input,
     }
   }
   return matched;
-}
-
-bool MatchesPatternInMainThread(base::StringPiece16 input,
-                                base::StringPiece16 regex,
-                                std::vector<std::u16string>* groups) {
-  static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
-  const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(regex);
-  return MatchesRegex(input, *regex_pattern, groups);
 }
 
 AutofillRegexCache::AutofillRegexCache(ThreadSafe thread_safe)

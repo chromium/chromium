@@ -771,13 +771,14 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
   if (base::FeatureList::IsEnabled(
           features::kAutofillFillCreditCardAsPerFormatString)) {
     std::vector<std::u16string> groups;
-    const char16_t* kFormatRegEx = u"mm(\\s?[/-]?\\s?)?yy(yy)?";
-    //                                  ^^^^ optional white space
-    //                                      ^^^^^ optional separator
-    //                                           ^^^ optional white space
-    //                                                   ^^^^^ 4 digit year?
-    if (MatchesPatternInMainThread(field.placeholder, kFormatRegEx, &groups) ||
-        MatchesPatternInMainThread(field.label, kFormatRegEx, &groups)) {
+    static const char16_t kFormatRegEx[] = u"mm(\\s?[/-]?\\s?)?yy(yy)?";
+    //                                          ^^^^ opt white space
+    //                                              ^^^^^ opt separator
+    //                                                   ^^^ opt white space
+    //                                                           ^^^^^ 4 digit
+    //                                                                 year?
+    if (MatchesRegex<kFormatRegEx>(field.placeholder, &groups) ||
+        MatchesRegex<kFormatRegEx>(field.label, &groups)) {
       bool is_two_digit_year = groups[2].empty();
       std::u16string expiration_candidate =
           base::StrCat({month, groups[1],

@@ -145,10 +145,8 @@ std::u16string FindPossiblePhoneCountryCode(const std::u16string& text) {
   if (text.find(u"00") != std::u16string::npos ||
       text.find('+') != std::u16string::npos) {
     std::vector<std::u16string> captures;
-    if (MatchesPatternInMainThread(text, kAugmentedPhoneCountryCodeRe,
-                                   &captures)) {
+    if (MatchesRegex<kAugmentedPhoneCountryCodeRe>(text, &captures))
       return captures[1];
-    }
   }
 
   return std::u16string();
