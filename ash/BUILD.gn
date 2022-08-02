@@ -2986,6 +2986,7 @@ test("ash_unittests") {
     "wm/system_gesture_event_filter_unittest.cc",
     "wm/system_modal_container_layout_manager_unittest.cc",
     "wm/tablet_mode/accelerometer_test_data_literals.cc",
+    "wm/tablet_mode/tablet_mode_browser_window_drag_session_windows_hider_unittest.cc",
     "wm/tablet_mode/tablet_mode_controller_unittest.cc",
     "wm/tablet_mode/tablet_mode_toggle_fullscreen_event_handler_unittest.cc",
     "wm/tablet_mode/tablet_mode_window_manager_unittest.cc",

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "ash/ash_export.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -18,7 +19,7 @@ namespace ash {
 // launcher if home launcher is enabled. Only need to do so if we need
 // to scale up and down the source window when dragging a tab window out
 // of it.
-class TabletModeBrowserWindowDragSessionWindowsHider
+class ASH_EXPORT TabletModeBrowserWindowDragSessionWindowsHider
     : public aura::WindowObserver {
  public:
   TabletModeBrowserWindowDragSessionWindowsHider(aura::Window* source_window,
@@ -34,6 +35,8 @@ class TabletModeBrowserWindowDragSessionWindowsHider
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+
+  int GetWindowVisibilityMapSizeForTesting() const;
 
  private:
   // The window from which the drag originated.
