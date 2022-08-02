@@ -429,6 +429,12 @@ export function setUpdatedDailyRefreshImageAction():
   };
 }
 
+/**
+ * |image| may be null if no wallpaper is currently selected or an error
+ * occurred while fetching the image. This is rare but can still occur in some
+ * scenarios where no wallpaper has ever been selected and no default wallpaper
+ * is applied, for example.
+ */
 export type SetSelectedImageAction = Action&{
   name: WallpaperActionName.SET_SELECTED_IMAGE,
   image: CurrentWallpaper | null,

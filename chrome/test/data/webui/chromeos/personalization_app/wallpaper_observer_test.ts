@@ -54,6 +54,19 @@ suite('WallpaperObserverTest', function() {
     assertDeepEquals(wallpaperProvider.currentWallpaper, image);
   });
 
+  test('sets selected wallpaper if null', async () => {
+    // Make sure state starts as expected.
+    assertDeepEquals(emptyState(), personalizationStore.data);
+
+    personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
+    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(null);
+
+    const {image} =
+        await personalizationStore.waitForAction(
+            WallpaperActionName.SET_SELECTED_IMAGE) as SetSelectedImageAction;
+    assertEquals(null, image);
+  });
+
   test('skips updating OnWallpaperChange while in fullscreen', async () => {
     personalizationStore.data.wallpaper.fullscreen = true;
 

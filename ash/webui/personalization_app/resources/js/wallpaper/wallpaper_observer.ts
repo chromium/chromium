@@ -25,6 +25,10 @@ function initWallpaperObserver(
   return receiver;
 }
 
+/**
+ * @classdesc Implements interface |WallpaperObserver| generated from
+ * |personalization_app.mojom|. See comments there for method descriptions.
+ */
 export class WallpaperObserver implements WallpaperObserverInterface {
   /**
    * Create a new wallpaper observer instance if no instance currently running.
@@ -45,7 +49,7 @@ export class WallpaperObserver implements WallpaperObserverInterface {
   private receiver_: WallpaperObserverReceiver =
       initWallpaperObserver(getWallpaperProvider(), this);
 
-  onWallpaperChanged(currentWallpaper: CurrentWallpaper) {
+  onWallpaperChanged(currentWallpaper: CurrentWallpaper|null) {
     // Ignore updates while in fullscreen preview mode. The attribution
     // information is for the old (non-preview) wallpaper. This is because
     // setting an image in preview mode updates the image but not the stored
@@ -61,8 +65,9 @@ export class WallpaperObserver implements WallpaperObserverInterface {
       initialLoadTimeout = null;
     }
     store.dispatch(setSelectedImageAction(currentWallpaper));
-    if (currentWallpaper.type == WallpaperType.kDailyGooglePhotos ||
-        currentWallpaper.type == WallpaperType.kDefault) {
+    if (currentWallpaper &&
+        (currentWallpaper.type == WallpaperType.kDailyGooglePhotos ||
+         currentWallpaper.type == WallpaperType.kDefault)) {
       store.dispatch(setUpdatedDailyRefreshImageAction());
     }
     // Daily Refresh state should also get updated when wallpaper changes.
