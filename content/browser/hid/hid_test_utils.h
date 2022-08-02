@@ -39,7 +39,8 @@ class MockHidDelegate : public HidDelegate {
 
   void AddObserver(BrowserContext* browser_context,
                    Observer* observer) override;
-  void RemoveObserver(Observer* observer) override;
+  void RemoveObserver(BrowserContext* browser_context,
+                      Observer* observer) override;
 
   // MockHidDelegate does not register to receive device connection events. Use
   // these methods to broadcast device connections to all delegate observers.

@@ -86,7 +86,8 @@ class CONTENT_EXPORT HidDelegate {
   // object.
   virtual void AddObserver(BrowserContext* browser_context,
                            Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(BrowserContext* browser_context,
+                              Observer* observer) = 0;
 
   // Returns true if |origin| is allowed to bypass the HID blocklist and
   // access reports contained in FIDO collections.

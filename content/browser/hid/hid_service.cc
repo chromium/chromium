@@ -139,7 +139,7 @@ HidService::HidService(BrowserContext* browser_context,
 HidService::~HidService() {
   HidDelegate* delegate = GetContentClient()->browser()->GetHidDelegate();
   if (delegate)
-    delegate->RemoveObserver(this);
+    delegate->RemoveObserver(browser_context_, this);
 
   // The remaining watchers will be closed from this end.
   if (!watchers_.empty())

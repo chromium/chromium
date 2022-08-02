@@ -29,7 +29,8 @@ void MockHidDelegate::AddObserver(BrowserContext* browser_context,
   observer_list_.AddObserver(observer);
 }
 
-void MockHidDelegate::RemoveObserver(Observer* observer) {
+void MockHidDelegate::RemoveObserver(BrowserContext* browser_context,
+                                     Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
