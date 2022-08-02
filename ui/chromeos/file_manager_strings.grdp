@@ -1548,5 +1548,8 @@
   <message name="IDS_FILE_BROWSER_DLP_TOAST_BUTTON_LABEL" desc="Toast button label, learn more about data leak prevention policies.">
     Learn more
   </message>
+  <message name="IDS_FILE_BROWSER_DLP_RESTRICTION_DETAILS" desc="Context menu item that shows the DLP restriction details for the selected file.">
+    Restriction details
+  </message>
 
 </grit-part>
