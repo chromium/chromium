@@ -1275,7 +1275,7 @@ void LayoutBox::UpdateAfterLayout() {
 
 bool LayoutBox::ShouldUseAutoIntrinsicSize() const {
   DisplayLockContext* context = GetDisplayLockContext();
-  return context && context->IsAuto() && context->IsLocked();
+  return context && context->IsLocked();
 }
 
 bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
