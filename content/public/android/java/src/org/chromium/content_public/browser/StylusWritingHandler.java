@@ -19,9 +19,9 @@ import android.view.inputmethod.EditorInfo;
  */
 public interface StylusWritingHandler {
     /**
-     * @return true if stylus writing feature is enabled.
+     * @return true if soft keyboard can be shown during stylus writing.
      */
-    boolean isStylusWritingEnabled();
+    boolean canShowSoftKeyboard();
 
     /**
      * Requests to start stylus writing for input field in web page.

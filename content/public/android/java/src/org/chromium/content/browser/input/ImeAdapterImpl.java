@@ -577,7 +577,7 @@ public class ImeAdapterImpl
         // Block showing soft keyboard during stylus handwriting.
         int lastToolType = mWebContents.getEventForwarder().getLastToolType();
         if (mWebContents.getStylusWritingHandler() != null
-                && mWebContents.getStylusWritingHandler().isStylusWritingEnabled()
+                && !mWebContents.getStylusWritingHandler().canShowSoftKeyboard()
                 && (lastToolType == MotionEvent.TOOL_TYPE_STYLUS
                         || lastToolType == MotionEvent.TOOL_TYPE_ERASER)
                 && mTextInputType != TextInputType.PASSWORD
