@@ -18,12 +18,13 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   ~PageInfoCookiesContentView() override;
 
-  // PageInfoUI implementations.
-  void EnsureCookieInfo() override;
-
   void CookiesSettingsLinkClicked(const ui::Event& event);
 
  private:
+  // Ensures the cookie information UI is present, with placeholder information
+  // if necessary.
+  void EnsureCookieInfo();
+
   raw_ptr<PageInfo> presenter_;
 
   // The button that opens Cookie Dialog and displays a number of allowed sites.
