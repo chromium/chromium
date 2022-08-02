@@ -5449,30 +5449,6 @@ bool Element::hasAttributeNS(const AtomicString& namespace_uri,
   return GetElementData()->Attributes().Find(q_name);
 }
 
-void Element::DefaultEventHandler(Event& event) {
-  if (event.type() == event_type_names::kDOMActivate) {
-    // IsFocusableStyleAfterUpdate() may change the result of
-    // GetComputedStyle(), but it's also potentially expensive and we only
-    // want to call it if we have a toggle-trigger.
-    if (const ComputedStyle* style_before_update = GetComputedStyle()) {
-      if (style_before_update->ToggleTrigger() &&
-          IsFocusableStyleAfterUpdate() &&
-          !IsClickableControl(event.target()->ToNode())) {
-        if (const ComputedStyle* style = GetComputedStyle()) {
-          if (const ToggleTriggerList* toggle_triggers =
-                  style->ToggleTrigger()) {
-            for (const ToggleTrigger& trigger : toggle_triggers->Triggers()) {
-              FireToggleActivation(trigger);
-            }
-          }
-        }
-      }
-    }
-  }
-
-  ContainerNode::DefaultEventHandler(event);
-}
-
 bool Element::DelegatesFocus() const {
   return AuthorShadowRoot() && AuthorShadowRoot()->delegatesFocus();
 }
@@ -5834,23 +5810,6 @@ bool Element::IsAutofocusable() const {
   // https://svgwg.org/svg2-draft/struct.html#autofocusattribute
   return (IsHTMLElement() || IsSVGElement()) &&
          FastHasAttribute(html_names::kAutofocusAttr);
-}
-
-bool Element::IsClickableControl(Node* node) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return false;
-  if (element->IsFormControlElement())
-    return true;
-  Element* host = element->OwnerShadowHost();
-  if (host && host->IsFormControlElement())
-    return true;
-  while (node && this != node) {
-    if (node->HasActivationBehavior())
-      return true;
-    node = node->ParentOrShadowHostNode();
-  }
-  return false;
 }
 
 bool Element::ActivateDisplayLockIfNeeded(DisplayLockActivationReason reason) {
