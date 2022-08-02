@@ -44,6 +44,9 @@ class TutorialHistograms {
   // Records whether, when an IPH offered the tutorial, the user opted into
   // seeing the tutorial or not.
   virtual void RecordStartedFromWhatsNewPage(bool value) = 0;
+
+  // This is used for consistency-checking only.
+  virtual const std::string& GetTutorialPrefix() const = 0;
 };
 
 namespace internal {
@@ -81,6 +84,10 @@ class TutorialHistogramsImpl : public TutorialHistograms {
 
   void RecordStartedFromWhatsNewPage(bool value) override {
     UMA_HISTOGRAM_BOOLEAN(whats_new_page_name_, value);
+  }
+
+  const std::string& GetTutorialPrefix() const override {
+    return histogram_name_;
   }
 
  private:

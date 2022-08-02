@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/bind.h"
+#include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -37,6 +38,13 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType1);
 const char kTestElementName1[] = "ELEMENT_NAME_1";
 
 const ui::ElementContext kTestContext1(1);
+
+const TutorialIdentifier kTestTutorial1{"kTestTutorial1"};
+const TutorialIdentifier kTestTutorial2{"kTestTutorial2"};
+const TutorialIdentifier kTestTutorial3{"kTestTutorial3"};
+
+const char kHistogramName1[] = "histogram 1";
+const char kHistogramName2[] = "histogram 2";
 
 class TestTutorialService : public TutorialService {
  public:
@@ -79,7 +87,6 @@ void ClickRestartButton(HelpBubble* bubble) {
   help_bubble->SimulateButtonPress(button_index);
 }
 
-const TutorialIdentifier kTestTutorial1{"kTestTutorial1"};
 }  // namespace
 
 class TutorialTest : public testing::Test {};
@@ -131,7 +138,7 @@ TEST_F(TutorialTest, TutorialBuilder) {
       .Build();
 }
 
-TEST_F(TutorialTest, TutorialRegistryRegistersTutorials) {
+TEST_F(TutorialTest, RegisterTutorial) {
   std::unique_ptr<TutorialRegistry> registry =
       std::make_unique<TutorialRegistry>();
 
@@ -148,6 +155,128 @@ TEST_F(TutorialTest, TutorialRegistryRegistersTutorials) {
       std::make_unique<HelpBubbleFactoryRegistry>();
 
   registry->GetTutorialIdentifiers();
+}
+
+TEST_F(TutorialTest, RegisterMultipleTutorials) {
+  std::unique_ptr<TutorialRegistry> registry =
+      std::make_unique<TutorialRegistry>();
+
+  TutorialDescription::Step step(
+      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
+      std::string(), HelpBubbleArrow::kNone);
+
+  TutorialDescription description1;
+  description1.steps.push_back(step);
+  description1.histograms = MakeTutorialHistograms<kHistogramName1>(1);
+
+  TutorialDescription description2;
+  description2.steps.push_back(step);
+  description2.histograms = MakeTutorialHistograms<kHistogramName2>(1);
+
+  registry->AddTutorial(kTestTutorial1, std::move(description1));
+  registry->AddTutorial(kTestTutorial2, std::move(description2));
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial2));
+}
+
+TEST_F(TutorialTest, RegisterSameTutorialTwice) {
+  std::unique_ptr<TutorialRegistry> registry =
+      std::make_unique<TutorialRegistry>();
+
+  TutorialDescription::Step step(
+      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
+      std::string(), HelpBubbleArrow::kNone);
+
+  TutorialDescription description1;
+  description1.steps.push_back(step);
+  description1.histograms = MakeTutorialHistograms<kHistogramName1>(1);
+
+  TutorialDescription description2;
+  description2.steps.push_back(step);
+  description2.histograms = MakeTutorialHistograms<kHistogramName1>(1);
+
+  registry->AddTutorial(kTestTutorial1, std::move(description1));
+  registry->AddTutorial(kTestTutorial1, std::move(description2));
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
+}
+
+TEST_F(TutorialTest, RegisterTutorialsWithAndWithoutHistograms) {
+  std::unique_ptr<TutorialRegistry> registry =
+      std::make_unique<TutorialRegistry>();
+
+  TutorialDescription::Step step(
+      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
+      std::string(), HelpBubbleArrow::kNone);
+
+  TutorialDescription description1;
+  description1.steps.push_back(step);
+
+  TutorialDescription description2;
+  description2.steps.push_back(step);
+  description2.histograms = MakeTutorialHistograms<kHistogramName2>(1);
+
+  TutorialDescription description3;
+  description2.steps.push_back(step);
+
+  registry->AddTutorial(kTestTutorial1, std::move(description1));
+  registry->AddTutorial(kTestTutorial2, std::move(description2));
+  registry->AddTutorial(kTestTutorial3, std::move(description3));
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial1));
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial2));
+  EXPECT_TRUE(registry->IsTutorialRegistered(kTestTutorial3));
+}
+
+#if DCHECK_IS_ON()
+#define MAYBE_RegisterDifferentTutorialsWithSameHistogram \
+  RegisterDifferentTutorialsWithSameHistogram
+#else
+#define MAYBE_RegisterDifferentTutorialsWithSameHistogram \
+  DISABLED_RegisterDifferentTutorialsWithSameHistogram
+#endif
+
+TEST_F(TutorialTest, MAYBE_RegisterDifferentTutorialsWithSameHistogram) {
+  std::unique_ptr<TutorialRegistry> registry =
+      std::make_unique<TutorialRegistry>();
+
+  TutorialDescription::Step step(
+      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
+      std::string(), HelpBubbleArrow::kNone);
+
+  TutorialDescription description1;
+  description1.steps.push_back(step);
+  description1.histograms = MakeTutorialHistograms<kHistogramName1>(1);
+
+  TutorialDescription description2;
+  description2.steps.push_back(step);
+  description2.histograms = MakeTutorialHistograms<kHistogramName1>(1);
+
+  registry->AddTutorial(kTestTutorial1, std::move(description1));
+  EXPECT_DCHECK_DEATH(
+      registry->AddTutorial(kTestTutorial2, std::move(description2)));
+}
+
+TEST_F(TutorialTest, RegisterSameTutorialInMultipleRegistries) {
+  std::unique_ptr<TutorialRegistry> registry1 =
+      std::make_unique<TutorialRegistry>();
+  std::unique_ptr<TutorialRegistry> registry2 =
+      std::make_unique<TutorialRegistry>();
+
+  TutorialDescription::Step step(
+      0, IDS_OK, ui::InteractionSequence::StepType::kShown, kTestIdentifier1,
+      std::string(), HelpBubbleArrow::kNone);
+
+  TutorialDescription description1;
+  description1.steps.push_back(step);
+  description1.histograms = MakeTutorialHistograms<kHistogramName1>(1);
+
+  TutorialDescription description2;
+  description2.steps.push_back(step);
+  description2.histograms = MakeTutorialHistograms<kHistogramName1>(1);
+
+  registry1->AddTutorial(kTestTutorial1, std::move(description1));
+  registry2->AddTutorial(kTestTutorial1, std::move(description2));
+  EXPECT_TRUE(registry1->IsTutorialRegistered(kTestTutorial1));
+  EXPECT_TRUE(registry2->IsTutorialRegistered(kTestTutorial1));
 }
 
 TEST_F(TutorialTest, SingleInteractionTutorialRuns) {
