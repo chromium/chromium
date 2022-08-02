@@ -436,9 +436,7 @@ TabDragController::TabDragController()
       did_restore_window_(false),
       tab_strip_to_attach_to_after_exit_(nullptr),
       move_loop_widget_(nullptr),
-      is_mutating_(false),
-      attach_x_(-1),
-      attach_index_(-1) {
+      is_mutating_(false) {
   g_tab_drag_controller = this;
 }
 
@@ -1157,61 +1155,34 @@ void TabDragController::MoveAttached(const gfx::Point& point_in_screen,
         GetDraggedViewTabStripBounds(dragged_view_point),
         GetViewsMatchingDraggedContents(attached_context_), num_dragging_tabs(),
         group_);
-    bool do_move = true;
-    // While dragging within a tabstrip the expectation is the insertion index
-    // is based on the left edge of the tabs being dragged. OTOH when dragging
-    // into a new tabstrip (attaching) the expectation is the insertion index is
-    // based on the cursor. This proves problematic as insertion may change the
-    // size of the tabs, resulting in the index calculated before the insert
-    // differing from the index calculated after the insert. To alleviate this
-    // the index is chosen before insertion, and subsequently a new index is
-    // only used once the mouse moves enough such that the index changes based
-    // on the direction the mouse moved relative to |attach_x_| (smaller
-    // x-coordinate should yield a smaller index or larger x-coordinate yields a
-    // larger index).
-    if (attach_index_ != -1) {
-      gfx::Point tab_strip_point(point_in_screen);
-      views::View::ConvertPointFromScreen(attached_context_, &tab_strip_point);
-      const int new_x =
-          attached_context_->GetMirroredXInView(tab_strip_point.x());
-      if (new_x < attach_x_)
-        to_index = std::min(to_index, attach_index_);
-      else
-        to_index = std::max(to_index, attach_index_);
-      if (to_index != attach_index_)
-        attach_index_ = -1;  // Once a valid move is detected, don't constrain.
-      else
-        do_move = false;
+
+    WebContents* last_contents = drag_data_.back().contents;
+    int index_of_last_item =
+        attached_model->GetIndexOfWebContents(last_contents);
+    if (initial_move_) {
+      // TabDragContext determines if the tabs needs to be animated
+      // based on model position. This means we need to invoke
+      // LayoutDraggedTabsAt before changing the model.
+      attached_context_->LayoutDraggedViewsAt(
+          views, source_view_drag_data()->attached_view, dragged_view_point,
+          initial_move_);
+      did_layout = true;
     }
-    if (do_move) {
-      WebContents* last_contents = drag_data_.back().contents;
-      int index_of_last_item =
-          attached_model->GetIndexOfWebContents(last_contents);
-      if (initial_move_) {
-        // TabDragContext determines if the tabs needs to be animated
-        // based on model position. This means we need to invoke
-        // LayoutDraggedTabsAt before changing the model.
-        attached_context_->LayoutDraggedViewsAt(
-            views, source_view_drag_data()->attached_view, dragged_view_point,
-            initial_move_);
-        did_layout = true;
-      }
 
-      attached_model->MoveSelectedTabsTo(to_index);
+    attached_model->MoveSelectedTabsTo(to_index);
 
-      if (header_drag_) {
-        attached_model->MoveTabGroup(group_.value());
-      } else {
-        UpdateGroupForDraggedTabs();
-      }
+    if (header_drag_) {
+      attached_model->MoveTabGroup(group_.value());
+    } else {
+      UpdateGroupForDraggedTabs();
+    }
 
-      // Move may do nothing in certain situations (such as when dragging pinned
-      // tabs). Make sure the tabstrip actually changed before updating
-      // last_move_screen_loc_.
-      if (index_of_last_item !=
-          attached_model->GetIndexOfWebContents(last_contents)) {
-        last_move_screen_loc_ = point_in_screen.x();
-      }
+    // Move may do nothing in certain situations (such as when dragging pinned
+    // tabs). Make sure the tabstrip actually changed before updating
+    // last_move_screen_loc_.
+    if (index_of_last_item !=
+        attached_model->GetIndexOfWebContents(last_contents)) {
+      last_move_screen_loc_ = point_in_screen.x();
     }
   }
 
@@ -1342,14 +1313,6 @@ void TabDragController::Attach(TabDragContext* attached_context,
     // Insert at any valid index in the tabstrip. We'll fix up the insertion
     // index in MoveAttached() later.
     int index = attached_context_->GetPinnedTabCount();
-    attach_index_ = index;
-
-    gfx::Point tab_strip_point(point_in_screen);
-    views::View::ConvertPointFromScreen(attached_context_, &tab_strip_point);
-    tab_strip_point.set_x(
-        attached_context_->GetMirroredXInView(tab_strip_point.x()));
-    tab_strip_point.Offset(0, -mouse_offset_.y());
-    attach_x_ = tab_strip_point.x();
 
     base::AutoReset<bool> setter(&is_mutating_, true);
     for (size_t i = first_tab_index(); i < drag_data_.size(); ++i) {
@@ -1407,9 +1370,6 @@ void TabDragController::Attach(TabDragContext* attached_context,
   attached_context_tabs_closed_tracker_ =
       std::make_unique<DraggedTabsClosedTracker>(
           attached_context_->GetTabStripModel(), this);
-
-  if (attach_index_ != -1 && !header_drag_)
-    UpdateGroupForDraggedTabs();
 }
 
 std::unique_ptr<TabDragController> TabDragController::Detach(
@@ -1422,8 +1382,6 @@ std::unique_ptr<TabDragController> TabDragController::Detach(
   // Detaching may trigger the Widget bounds to change. Such bounds changes
   // should be ignored as they may lead to reentrancy and bad things happening.
   widget_observation_.Reset();
-
-  attach_index_ = -1;
 
   // Release ownership of the drag controller and mouse capture. When we
   // reattach ownership is transferred.
@@ -1761,6 +1719,9 @@ void TabDragController::AttachTabsToNewBrowserOnDrop() {
   // Attach() expects |attached_context_| to be nullptr;
   attached_context_ = nullptr;
   Attach(new_context, last_point_in_screen_, std::move(me));
+  // Run MoveAttached to ensure the insertion index and group membership make
+  // sense for this mouse position.
+  MoveAttached(last_point_in_screen_, true);
   browser->window()->Show();
 }
 
