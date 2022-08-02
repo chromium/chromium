@@ -3127,7 +3127,6 @@ void LocalFrameView::UpdateStyleAndLayoutIfNeededRecursive() {
   if (ShouldThrottleRendering() || !frame_->GetDocument()->IsActive())
     return;
 
-  ScopedFrameBlamer frame_blamer(frame_);
   TRACE_EVENT0("blink,benchmark",
                "LocalFrameView::updateStyleAndLayoutIfNeededRecursive");
 

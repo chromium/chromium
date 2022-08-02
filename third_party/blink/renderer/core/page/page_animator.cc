@@ -63,11 +63,9 @@ void PageAnimator::ServiceScriptedAnimations(
       GetAllDocuments(page_->MainFrame(), kAllDocuments);
 
   for (auto& document : documents) {
-    absl::optional<ScopedFrameBlamer> frame_blamer;
     // TODO(szager): The following logic evolved piecemeal, and this conditional
     // is suspect.
     if (!document->View() || !document->View()->CanThrottleRendering()) {
-      frame_blamer.emplace(document->GetFrame());
       TRACE_EVENT0("blink,rail", "PageAnimator::serviceScriptedAnimations");
     }
     if (!document->View()) {

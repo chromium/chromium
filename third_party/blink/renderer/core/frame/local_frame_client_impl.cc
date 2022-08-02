@@ -956,12 +956,6 @@ unsigned LocalFrameClientImpl::BackForwardLength() {
   return webview ? webview->HistoryListLength() : 0;
 }
 
-BlameContext* LocalFrameClientImpl::GetFrameBlameContext() {
-  if (WebLocalFrameClient* client = web_frame_->Client())
-    return client->GetFrameBlameContext();
-  return nullptr;
-}
-
 WebDevToolsAgentImpl* LocalFrameClientImpl::DevToolsAgent() {
   return WebLocalFrameImpl::FromFrame(web_frame_->GetFrame()->LocalFrameRoot())
       ->DevToolsAgentImpl();

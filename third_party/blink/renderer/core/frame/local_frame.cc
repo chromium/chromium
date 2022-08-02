@@ -1507,7 +1507,7 @@ LocalFrame::LocalFrame(LocalFrameClient* client,
             inheriting_agent_factory),
       frame_scheduler_(page.GetPageScheduler()->CreateFrameScheduler(
           this,
-          client->GetFrameBlameContext(),
+          nullptr,
           /*TODO(crbug.com/1170350): Set for portals*/ IsInFencedFrameTree(),
           IsMainFrame() ? FrameScheduler::FrameType::kMainFrame
                         : FrameScheduler::FrameType::kSubframe)),
@@ -1979,36 +1979,6 @@ FrameNavigationDisabler::FrameNavigationDisabler(LocalFrame& frame)
 
 FrameNavigationDisabler::~FrameNavigationDisabler() {
   frame_->EnableNavigation();
-}
-
-namespace {
-
-bool IsScopedFrameBlamerEnabled() {
-  // Must match the category used in content::FrameBlameContext.
-  static const auto* enabled =
-      TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED("blink");
-  return *enabled;
-}
-
-}  // namespace
-
-ScopedFrameBlamer::ScopedFrameBlamer(LocalFrame* frame)
-    : frame_(IsScopedFrameBlamerEnabled() ? frame : nullptr) {
-  if (LIKELY(!frame_))
-    return;
-  LocalFrameClient* client = frame_->Client();
-  if (!client)
-    return;
-  if (BlameContext* context = client->GetFrameBlameContext())
-    context->Enter();
-}
-
-void ScopedFrameBlamer::LeaveContext() {
-  LocalFrameClient* client = frame_->Client();
-  if (!client)
-    return;
-  if (BlameContext* context = client->GetFrameBlameContext())
-    context->Leave();
 }
 
 LocalFrame::LazyLoadImageSetting LocalFrame::GetLazyLoadImageSetting() const {

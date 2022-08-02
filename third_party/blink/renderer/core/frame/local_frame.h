@@ -1056,42 +1056,6 @@ class FrameNavigationDisabler {
   LocalFrame* frame_;
 };
 
-// A helper class for attributing cost inside a scope to a LocalFrame, with
-// output written to the trace log. The class is irrelevant to the core logic
-// of LocalFrame.  Sample usage:
-//
-// void foo(LocalFrame* frame)
-// {
-//     ScopedFrameBlamer frameBlamer(frame);
-//     TRACE_EVENT0("blink", "foo");
-//     // Do some real work...
-// }
-//
-// In Trace Viewer, we can find the cost of slice |foo| attributed to |frame|.
-// Design doc:
-// https://docs.google.com/document/d/15BB-suCb9j-nFt55yCFJBJCGzLg2qUm3WaSOPb8APtI/edit?usp=sharing
-//
-// This class is used in performance-sensitive code (like V8 entry), so care
-// should be taken to ensure that it has an efficient fast path (for the common
-// case where we are not tracking this).
-class ScopedFrameBlamer {
-  STACK_ALLOCATED();
-
- public:
-  explicit ScopedFrameBlamer(LocalFrame*);
-  ScopedFrameBlamer(const ScopedFrameBlamer&) = delete;
-  ScopedFrameBlamer& operator=(const ScopedFrameBlamer&) = delete;
-  ~ScopedFrameBlamer() {
-    if (UNLIKELY(frame_))
-      LeaveContext();
-  }
-
- private:
-  void LeaveContext();
-
-  LocalFrame* frame_;
-};
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_H_

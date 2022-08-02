@@ -216,9 +216,6 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // Services ------------------------------------------------------------
 
-  // Returns a blame context for attributing work belonging to this frame.
-  virtual BlameContext* GetFrameBlameContext() { return nullptr; }
-
   // Returns a BrowserInterfaceBrokerProxy the frame can use to request
   // interfaces from the browser.
   virtual blink::BrowserInterfaceBrokerProxy* GetBrowserInterfaceBroker();
