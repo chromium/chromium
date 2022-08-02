@@ -18,6 +18,7 @@
 #include "ash/wm/splitview/split_view_divider_handler_view.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/window_util.h"
 #include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
@@ -494,6 +495,7 @@ void SplitViewDivider::CreateDividerWidget(SplitViewController* controller) {
   divider_view_ = divider_widget_->SetContentsView(
       std::make_unique<DividerView>(controller, this));
   divider_widget_->SetBounds(GetDividerBoundsInScreen(false /* is_dragging */));
+  divider_widget_->GetNativeWindow()->SetProperty(kLockedToRootKey, true);
   divider_widget_->Show();
 }
 
