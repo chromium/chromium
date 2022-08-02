@@ -1037,6 +1037,10 @@ crbug.com/1299442 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/c
 crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-tiled-001.https.html [ Failure ]
 crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-010.https.html [ Failure ]
 crbug.com/1299442 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-interpolation-004.https.html [ Failure ]
+crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
+crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-002.https.html [ Failure ]
+crbug.com/1299442 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-006.https.html [ Failure ]
+crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-006.https.html [ Failure ]
 
 # ====== Paint team owned tests to here ======
 
@@ -1116,6 +1120,9 @@ crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-03
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-039.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-042.html [ Failure ]
 crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/block-aspect-ratio-043.html [ Failure ]
+
+# This one fails a DCHECK on Chromium infra but passes on wpt.fyi
+crbug.com/1343829 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-040.html [ Crash Pass ]
 
 crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-001.html [ Failure ]
 crbug.com/1335897 external/wpt/css/css-sizing/fit-content-length-percentage-002.html [ Failure ]
@@ -3352,7 +3359,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/worker-interception.https.html [ Pass ]
 
 # ====== Test expectations added to unblock wpt-importer ======
-crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-040.html [ Crash ]
 crbug.com/626703 external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/fetch/metadata/generated/worker-dedicated-constructor.sub.html [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/web-bundle/subresource-loading/script-reuse-web-bundle-resource.https.tentative.html [ Failure ]
@@ -3371,10 +3377,6 @@ crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css
 crbug.com/626703 [ Mac10.15 ] external/wpt/fullscreen/api/document-fullscreen-enabled-cross-origin.sub.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/debug-key.sub.https.html?include=trigger [ Failure Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/source-registration.sub.https.html?method=img&eligible [ Timeout ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-paint-error.https.html [ Failure ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-background-image-002.https.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-006.https.html [ Failure ]
-crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-006.https.html [ Failure ]
 crbug.com/626703 [ Win11 ] virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/trigger-data-sanitization.sub.https.html?source-type=navigation [ Failure Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/fenced-frame-mparch/wpt_internal/fenced_frame/key-scrolling.https.html [ Failure Timeout ]
 crbug.com/626703 virtual/attribution-reporting-debug-mode/wpt_internal/attribution-reporting/trigger-registration.sub.https.html?method=xhr [ Pass Timeout ]
