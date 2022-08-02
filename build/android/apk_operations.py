@@ -1648,6 +1648,8 @@ class _PrintCertsCommand(_Command):
 
   def Run(self):
     keytool = os.path.join(_JAVA_HOME, 'bin', 'keytool')
+    pem_certificate_pattern = re.compile(
+        r'-+BEGIN CERTIFICATE-+([\r\n0-9A-Za-z+/=]+)-+END CERTIFICATE-+[\r\n]*')
     if self.is_bundle:
       # Bundles are not signed until converted to .apks. The wrapper scripts
       # record which key will be used to sign though.
@@ -1667,14 +1669,14 @@ class _PrintCertsCommand(_Command):
         if self.args.full_cert:
           # Redirect stderr to hide a keytool warning about using non-standard
           # keystore format.
-          full_output = subprocess.check_output(
-              cmd + ['-rfc'], stderr=subprocess.STDOUT)
+          pem_encoded_certificate = subprocess.check_output(
+              cmd + ['-rfc'], stderr=subprocess.STDOUT).decode()
     else:
 
       def run_apksigner(min_sdk_version):
         cmd = [
             build_tools.GetPath('apksigner'), 'verify', '--min-sdk-version',
-            str(min_sdk_version), '--print-certs', '--verbose',
+            str(min_sdk_version), '--print-certs-pem', '--verbose',
             self.apk_helper.path
         ]
         logging.warning('Running: %s', ' '.join(cmd))
@@ -1716,25 +1718,23 @@ class _PrintCertsCommand(_Command):
       if not stdout:
         raise RuntimeError('apksigner was not able to verify APK')
 
-      print(stdout)
+      # Separate what the '--print-certs' flag would output vs. the additional
+      # signature output included by '--print-certs-pem'. The additional PEM
+      # output is only printed when self.args.full_cert is specified.
+      verification_hash_info = pem_certificate_pattern.sub('', stdout)
+      print(verification_hash_info)
       if self.args.full_cert:
-        if 'v1 scheme (JAR signing): true' not in stdout:
-          raise Exception(
-              'Cannot print full certificate because apk is not V1 signed.')
+        m = pem_certificate_pattern.search(stdout)
+        if not m:
+          raise Exception('apksigner did not print a certificate')
+        pem_encoded_certificate = m.group(0)
 
-        cmd = [keytool, '-printcert', '-jarfile', self.apk_helper.path, '-rfc']
-        # Redirect stderr to hide a keytool warning about using non-standard
-        # keystore format.
-        full_output = subprocess.check_output(cmd,
-                                              stderr=subprocess.STDOUT,
-                                              universal_newlines=True)
 
     if self.args.full_cert:
-      m = re.search(
-          r'-+BEGIN CERTIFICATE-+([\r\n0-9A-Za-z+/=]+)-+END CERTIFICATE-+',
-          full_output, re.MULTILINE)
+      m = pem_certificate_pattern.search(pem_encoded_certificate)
       if not m:
-        raise Exception('Unable to parse certificate:\n{}'.format(full_output))
+        raise Exception(
+            'Unable to parse certificate:\n{}'.format(pem_encoded_certificate))
       signature = re.sub(r'[\r\n]+', '', m.group(1))
       print()
       print('Full Signature:')
