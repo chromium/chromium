@@ -226,8 +226,6 @@ struct CookieWithAccessResult {
 // Keep defaults in here in sync with net/cookies/same_party_context.cc.
 struct SamePartyContext {
   SamePartyCookieContextType context_type = kCrossParty;
-  SamePartyCookieContextType ancestors_for_metrics_only = kCrossParty;
-  SamePartyCookieContextType top_resource_for_metrics_only = kCrossParty;
 };
 
 // Keep values here in sync with net::CookieChangeCause.

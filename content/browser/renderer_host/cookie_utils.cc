@@ -110,12 +110,6 @@ void EmitCookieWarningsAndMetrics(
   bool same_party_exclusion_overruled_samesite = false;
   bool same_party_inclusion_overruled_samesite = false;
 
-  bool samesite_none_cookie_required = false;
-  bool samesite_none_cookie_sameparty_included_by_top_resource = false;
-  bool samesite_none_cookie_sameparty_included_by_ancestors = false;
-  bool samesite_none_cookie_included_by_samesite_lax = false;
-  bool samesite_none_cookie_included_by_samesite_strict = false;
-
   bool samesite_cookie_inclusion_changed_by_cross_site_redirect = false;
 
   bool partitioned_cookies_exist = false;
@@ -175,31 +169,6 @@ void EmitCookieWarningsAndMetrics(
           status.HasWarningReason(
               net::CookieInclusionStatus::
                   WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE);
-
-      samesite_none_cookie_required =
-          samesite_none_cookie_required ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED);
-      samesite_none_cookie_sameparty_included_by_top_resource =
-          samesite_none_cookie_sameparty_included_by_top_resource ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::
-                  WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE);
-      samesite_none_cookie_sameparty_included_by_ancestors =
-          samesite_none_cookie_sameparty_included_by_ancestors ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::
-                  WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS);
-      samesite_none_cookie_included_by_samesite_lax =
-          samesite_none_cookie_included_by_samesite_lax ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::
-                  WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX);
-      samesite_none_cookie_included_by_samesite_strict =
-          samesite_none_cookie_included_by_samesite_strict ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::
-                  WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT);
 
       samesite_cookie_inclusion_changed_by_cross_site_redirect =
           samesite_cookie_inclusion_changed_by_cross_site_redirect ||
@@ -291,29 +260,6 @@ void EmitCookieWarningsAndMetrics(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh,
         blink::mojom::WebFeature::kSamePartyCookieInclusionOverruledSameSite);
-  }
-
-  if (samesite_none_cookie_required) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kSameSiteNoneRequired);
-  }
-  if (samesite_none_cookie_sameparty_included_by_top_resource) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh,
-        blink::mojom::WebFeature::kSameSiteNoneIncludedBySamePartyTopResource);
-  }
-  if (samesite_none_cookie_sameparty_included_by_ancestors) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh,
-        blink::mojom::WebFeature::kSameSiteNoneIncludedBySamePartyAncestors);
-  }
-  if (samesite_none_cookie_included_by_samesite_lax) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kSameSiteNoneIncludedBySameSiteLax);
-  }
-  if (samesite_none_cookie_included_by_samesite_strict) {
-    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-        rfh, blink::mojom::WebFeature::kSameSiteNoneIncludedBySameSiteStrict);
   }
 
   if (samesite_cookie_inclusion_changed_by_cross_site_redirect) {

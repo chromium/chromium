@@ -5,8 +5,9 @@
 #ifndef NET_COOKIES_SAME_PARTY_CONTEXT_H_
 #define NET_COOKIES_SAME_PARTY_CONTEXT_H_
 
+#include <ostream>
+
 #include "net/base/net_export.h"
-#include "net/cookies/cookie_constants.h"
 
 namespace net {
 
@@ -27,10 +28,7 @@ class NET_EXPORT SamePartyContext {
   };
 
   SamePartyContext() = default;
-  explicit SamePartyContext(Type type);
-  SamePartyContext(Type context_type,
-                   Type ancestors_for_metrics,
-                   Type top_resource_for_metrics);
+  explicit SamePartyContext(Type context_type);
 
   bool operator==(const SamePartyContext& other) const;
 
@@ -38,25 +36,11 @@ class NET_EXPORT SamePartyContext {
   // SameParty cookies. Default is not trusted, e.g. kCrossParty.
   Type context_type() const { return context_type_; }
 
-  // We store the type of the SameParty context if we inferred singleton sets,
-  // for the purpose of metrics.
-  Type ancestors_for_metrics_only() const {
-    return ancestors_for_metrics_only_;
-  }
-  // We also store the type of the SameParty context if it were computed using
-  // only the top frame and resource URL and inferred singleton sets, for the
-  // purpose of metrics.
-  Type top_resource_for_metrics_only() const {
-    return top_resource_for_metrics_only_;
-  }
-
   // Creates a SamePartyContext that is as permissive as possible.
   static SamePartyContext MakeInclusive();
 
  private:
   Type context_type_ = Type::kCrossParty;
-  Type ancestors_for_metrics_only_ = Type::kCrossParty;
-  Type top_resource_for_metrics_only_ = Type::kCrossParty;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

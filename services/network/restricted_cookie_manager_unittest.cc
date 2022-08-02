@@ -758,19 +758,13 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
 
   WaitForCallback();
 
-  EXPECT_THAT(
-      recorded_activity(),
-      ElementsAre(MatchesCookieOp(
-          mojom::CookieAccessDetails::Type::kRead, "https://example.com/test/",
-          net::SiteForCookies(),
-          CookieOrLine("cookie-name=cookie-value",
-                       mojom::CookieOrLine::Tag::kCookie),
-          testing::AllOf(
-              net::IsInclude(),
-              net::HasExactlyWarningReasonsForTesting(
-                  std::vector<net::CookieInclusionStatus::WarningReason>{
-                      net::CookieInclusionStatus::
-                          WARN_SAMESITE_NONE_REQUIRED})))));
+  EXPECT_THAT(recorded_activity(),
+              ElementsAre(MatchesCookieOp(
+                  mojom::CookieAccessDetails::Type::kRead,
+                  "https://example.com/test/", net::SiteForCookies(),
+                  CookieOrLine("cookie-name=cookie-value",
+                               mojom::CookieOrLine::Tag::kCookie),
+                  net::IsInclude())));
 
   // Disabing getting third-party cookies works correctly.
   cookie_settings_.set_block_third_party_cookies(true);
@@ -799,7 +793,7 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
                            mojom::CookieOrLine::Tag::kCookie),
               net::CookieInclusionStatus::MakeFromReasonsForTesting(
                   {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES},
-                  {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
+                  {}))));
 }
 
 TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
@@ -835,9 +829,7 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                {},
-                {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
+            net::CookieInclusionStatus())));
   }
 
   {
@@ -859,9 +851,7 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
             mojom::CookieAccessDetails::Type::kRead, kDefaultUrlWithPath,
             net::SiteForCookies(),
             CookieOrLine(cookie_name_field, mojom::CookieOrLine::Tag::kCookie),
-            net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                {},
-                {net::CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED}))));
+            net::CookieInclusionStatus())));
   }
 
   // Change the cookie with a new value so that a cookie access
@@ -909,17 +899,14 @@ TEST_P(RestrictedCookieManagerTest, FilteredCookieAccessEvents) {
 
     // A change in access result (blocked -> allowed) should generate a new
     // notification.
-    EXPECT_THAT(
-        recorded_activity(),
-        ElementsAre(testing::_, testing::_,
-                    MatchesCookieOp(
-                        mojom::CookieAccessDetails::Type::kRead,
-                        kDefaultUrlWithPath, net::SiteForCookies(),
-                        CookieOrLine(cookie_name_field,
-                                     mojom::CookieOrLine::Tag::kCookie),
-                        net::CookieInclusionStatus::MakeFromReasonsForTesting(
-                            {}, {net::CookieInclusionStatus::
-                                     WARN_SAMESITE_NONE_REQUIRED}))));
+    EXPECT_THAT(recorded_activity(),
+                ElementsAre(testing::_, testing::_,
+                            MatchesCookieOp(
+                                mojom::CookieAccessDetails::Type::kRead,
+                                kDefaultUrlWithPath, net::SiteForCookies(),
+                                CookieOrLine(cookie_name_field,
+                                             mojom::CookieOrLine::Tag::kCookie),
+                                net::CookieInclusionStatus())));
   }
 }
 
@@ -1020,8 +1007,6 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest, GetAllForUrlSameParty) {
     // warning reason and EXCLUDE_USER_PREFERENCES.
     std::vector<net::CookieInclusionStatus::WarningReason> expected_warnings = {
         net::CookieInclusionStatus::WARN_TREATED_AS_SAMEPARTY,
-        net::CookieInclusionStatus::
-            WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS,
     };
 
     EXPECT_THAT(
@@ -1223,18 +1208,12 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
 
   WaitForCallback();
 
-  EXPECT_THAT(
-      recorded_activity(),
-      ElementsAre(MatchesCookieOp(
-          mojom::CookieAccessDetails::Type::kChange, "https://example.com/",
-          net::SiteForCookies(),
-          CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
-          testing::AllOf(
-              net::IsInclude(),
-              net::HasExactlyWarningReasonsForTesting(
-                  std::vector<net::CookieInclusionStatus::WarningReason>{
-                      net::CookieInclusionStatus::
-                          WARN_SAMESITE_NONE_REQUIRED})))));
+  EXPECT_THAT(recorded_activity(),
+              ElementsAre(MatchesCookieOp(
+                  mojom::CookieAccessDetails::Type::kChange,
+                  "https://example.com/", net::SiteForCookies(),
+                  CookieOrLine("A=B", mojom::CookieOrLine::Tag::kCookie),
+                  net::IsInclude())));
 
   {
     // Not if third-party cookies are disabled, though.

@@ -84643,20 +84643,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="11" label="Lax to Cross context with Lax cookie; secure origin."/>
 </enum>
 
-<enum name="SameSiteNonePartyContextType">
-  <summary>
-    Indicates the strictest cookie semantics that could have included the given
-    SameSite=None cookie on this access.
-  </summary>
-  <int value="0" label="Requires SameSite=None"/>
-  <int value="1"
-      label="Included under SameParty if using top frame and resource URL
-             only"/>
-  <int value="2" label="Included under SameParty if using all ancestor frames"/>
-  <int value="3" label="Included under SameSite=Lax"/>
-  <int value="4" label="Included under SameSite=Strict"/>
-</enum>
-
 <enum name="SamlInSessionPasswordChangeEvent">
   <summary>
     Track how often we try to guide users through the in-session flow to change

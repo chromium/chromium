@@ -178,8 +178,7 @@ TEST_F(FirstPartySetsAccessDelegateDisabledTest, ComputeMetadata) {
   EXPECT_THAT(ComputeMetadataAndWait(kSet1Member1, &kSet1Member1,
                                      {kSet1Member1, kSet1Owner})
                   .context(),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
+              net::SamePartyContext(Type::kCrossParty));
 }
 
 TEST_F(FirstPartySetsAccessDelegateDisabledTest, FindOwner) {

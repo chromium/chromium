@@ -307,32 +307,6 @@ void ApplySameSiteCookieWarningToStatus(
   status->MaybeClearSameSiteWarning();
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SameSiteNonePartyContextType {
-  // SameSite=None was required in order for the cookie to be included.
-  kSameSiteNoneRequired = 0,
-  // The cookie would have been included if it were SameParty (using only the
-  // top frame and resource URL).
-  kSamePartyTopResource = 1,
-  // The cookie would have been included if it were SameParty (using the
-  // resource URL and all frame ancestors).
-  kSamePartyAncestors = 2,
-  // The cookie would have been included if it were SameSite=Lax.
-  kSameSiteLax = 3,
-  // The cookie would have been included if it were SameSite=Strict.
-  kSameSiteStrict = 4,
-  kMaxValue = kSameSiteStrict
-};
-
-void RecordSameSiteNoneReadContextMetric(SameSiteNonePartyContextType type) {
-  UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteNone.PartyContext.Read", type);
-}
-
-void RecordSameSiteNoneWriteContextMetric(SameSiteNonePartyContextType type) {
-  UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteNone.PartyContext.Write", type);
-}
-
 // Converts CookieSameSite to CookieSameSiteForMetrics by adding 1 to it.
 CookieSameSiteForMetrics CookieSameSiteToCookieSameSiteForMetrics(
     CookieSameSite enum_in) {
@@ -1171,47 +1145,6 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
     UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedRequestEffectiveSameSite",
                               effective_same_site,
                               CookieEffectiveSameSite::COUNT);
-
-    if (SameSite() == CookieSameSite::NO_RESTRICTION) {
-      SamePartyContext::Type top_resource =
-          options.same_party_context().top_resource_for_metrics_only();
-      SamePartyContext::Type ancestors =
-          options.same_party_context().ancestors_for_metrics_only();
-
-      if (top_resource == SamePartyContext::Type::kCrossParty) {
-        status.AddWarningReason(
-            CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED);
-        RecordSameSiteNoneReadContextMetric(
-            SameSiteNonePartyContextType::kSameSiteNoneRequired);
-      } else if (ancestors == SamePartyContext::Type::kCrossParty) {
-        status.AddWarningReason(
-            CookieInclusionStatus::
-                WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE);
-        RecordSameSiteNoneReadContextMetric(
-            SameSiteNonePartyContextType::kSamePartyTopResource);
-      } else if (cookie_inclusion_context <
-                 CookieOptions::SameSiteCookieContext::ContextType::
-                     SAME_SITE_LAX) {
-        status.AddWarningReason(
-            CookieInclusionStatus::
-                WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS);
-        RecordSameSiteNoneReadContextMetric(
-            SameSiteNonePartyContextType::kSamePartyAncestors);
-      } else if (cookie_inclusion_context <
-                 CookieOptions::SameSiteCookieContext::ContextType::
-                     SAME_SITE_STRICT) {
-        status.AddWarningReason(
-            CookieInclusionStatus::WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX);
-        RecordSameSiteNoneReadContextMetric(
-            SameSiteNonePartyContextType::kSameSiteLax);
-      } else {
-        status.AddWarningReason(
-            CookieInclusionStatus::
-                WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT);
-        RecordSameSiteNoneReadContextMetric(
-            SameSiteNonePartyContextType::kSameSiteStrict);
-      }
-    }
   }
 
   using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::
@@ -1414,42 +1347,6 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
     UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedResponseEffectiveSameSite",
                               access_result.effective_same_site,
                               CookieEffectiveSameSite::COUNT);
-
-    if (SameSite() == CookieSameSite::NO_RESTRICTION) {
-      SamePartyContext::Type top_resource =
-          options.same_party_context().top_resource_for_metrics_only();
-      SamePartyContext::Type ancestors =
-          options.same_party_context().ancestors_for_metrics_only();
-
-      if (top_resource == SamePartyContext::Type::kCrossParty) {
-        access_result.status.AddWarningReason(
-            CookieInclusionStatus::WARN_SAMESITE_NONE_REQUIRED);
-        RecordSameSiteNoneWriteContextMetric(
-            SameSiteNonePartyContextType::kSameSiteNoneRequired);
-      } else if (ancestors == SamePartyContext::Type::kCrossParty) {
-        access_result.status.AddWarningReason(
-            CookieInclusionStatus::
-                WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE);
-        RecordSameSiteNoneWriteContextMetric(
-            SameSiteNonePartyContextType::kSamePartyTopResource);
-      } else if (cookie_inclusion_context <
-                 CookieOptions::SameSiteCookieContext::ContextType::
-                     SAME_SITE_LAX) {
-        access_result.status.AddWarningReason(
-            CookieInclusionStatus::
-                WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS);
-        RecordSameSiteNoneWriteContextMetric(
-            SameSiteNonePartyContextType::kSamePartyAncestors);
-      } else {
-        // NB: unlike when sending a cookie, there's no distinction between
-        // SameSite=Lax and SameSite=Strict when setting a cookie.
-        access_result.status.AddWarningReason(
-            CookieInclusionStatus::
-                WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT);
-        RecordSameSiteNoneWriteContextMetric(
-            SameSiteNonePartyContextType::kSameSiteStrict);
-      }
-    }
   }
 
   using ContextRedirectTypeBug1221316 = CookieOptions::SameSiteCookieContext::

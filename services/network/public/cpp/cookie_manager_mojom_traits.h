@@ -370,14 +370,6 @@ struct StructTraits<network::mojom::SamePartyContextDataView,
       const net::SamePartyContext& s) {
     return s.context_type();
   }
-  static net::SamePartyContext::Type ancestors_for_metrics_only(
-      const net::SamePartyContext& s) {
-    return s.ancestors_for_metrics_only();
-  }
-  static net::SamePartyContext::Type top_resource_for_metrics_only(
-      const net::SamePartyContext& s) {
-    return s.top_resource_for_metrics_only();
-  }
 
   static bool Read(network::mojom::SamePartyContextDataView bundle,
                    net::SamePartyContext* out);

@@ -128,8 +128,7 @@ class FirstPartySetsManager {
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context,
-      const FirstPartySetsContextConfig& fps_context_config,
-      bool infer_singleton_sets) const;
+      const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Same as `FindOwner`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.
@@ -139,16 +138,14 @@ class FirstPartySetsManager {
                           base::TimeTicks enqueued_at) const;
 
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
-  // or `nullopt` if `site` has no owner. Must not return `nullopt` if
-  // `infer_singleton_sets` is true. `fps_context_config` is the configuration
-  // to be used in this context.
+  // or `nullopt` if `site` has no owner. `fps_context_config` is the
+  // configuration to be used in this context.
   //
   // This is synchronous, and must not be called until the instance is fully
   // initialized.
   const absl::optional<net::SchemefulSite> FindOwnerInternal(
       const net::SchemefulSite& site,
-      const FirstPartySetsContextConfig& fps_context_config,
-      bool infer_singleton_sets) const;
+      const FirstPartySetsContextConfig& fps_context_config) const;
 
   // Same as `FindOwners`, but plumbs the result into the callback. Must only be
   // called once the instance is fully initialized.

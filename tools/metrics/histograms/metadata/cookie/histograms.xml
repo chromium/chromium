@@ -770,22 +770,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.SameSiteNone.PartyContext.{AccessType}"
-    enum="SameSiteNonePartyContextType" expires_after="2023-06-15">
-  <owner>cfredric@chromium.org</owner>
-  <owner>kaustubhag@chromium.org</owner>
-  <summary>
-    The strictest semantics that could have included a particular SameSite=None
-    cookie for the {AccessType} in the current context.
-
-    Recorded once per included SameSite=None cookie per {AccessType}.
-  </summary>
-  <token key="AccessType">
-    <variant name="Read" summary="read"/>
-    <variant name="Write" summary="write"/>
-  </token>
-</histogram>
-
 <histogram name="Cookie.TimeBlockedOnLoad" units="ms"
     expires_after="2023-01-01">
   <owner>nharper@chromium.org</owner>

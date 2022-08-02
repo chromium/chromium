@@ -720,16 +720,7 @@ bool StructTraits<network::mojom::SamePartyContextDataView,
   if (!context.ReadContextType(&context_type))
     return false;
 
-  net::SamePartyContext::Type ancestors_for_metrics_only;
-  if (!context.ReadAncestorsForMetricsOnly(&ancestors_for_metrics_only))
-    return false;
-
-  net::SamePartyContext::Type top_resource_for_metrics_only;
-  if (!context.ReadTopResourceForMetricsOnly(&top_resource_for_metrics_only))
-    return false;
-
-  *out = net::SamePartyContext(context_type, ancestors_for_metrics_only,
-                               top_resource_for_metrics_only);
+  *out = net::SamePartyContext(context_type);
   return true;
 }
 

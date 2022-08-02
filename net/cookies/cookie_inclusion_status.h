@@ -188,26 +188,6 @@ class NET_EXPORT CookieInclusionStatus {
     // contexts, for cookies that are 'SameParty; SameSite=Lax'.)
     WARN_SAMEPARTY_INCLUSION_OVERRULED_SAMESITE = 11,
 
-    // This cookie was SameSite=None and was included, but would have been
-    // excluded if it had been SameParty and the SameParty context had been
-    // computed using *either* top & current or the whole ancestor tree.
-    WARN_SAMESITE_NONE_REQUIRED = 12,
-    // This cookie was SameSite=None, was included, would have been included if
-    // it had been SameParty and the SameParty context type had been computed
-    // with only the top frame & resource URL, but would have been excluded if
-    // the SameParty context type had been computed using all ancestor frames.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_TOP_RESOURCE = 13,
-    // This cookie was SameSite=None, was included, and would have been included
-    // if it had been SameParty and the SameParty context type had been computed
-    // using all ancestor frames.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMEPARTY_ANCESTORS = 14,
-    // This cookie was SameSite=None, was included, and would have been included
-    // if it had been SameSite=Lax.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX = 15,
-    // This cookie was SameSite=None, was included, and would have been included
-    // if it had been SameSite=Strict.
-    WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT = 16,
-
     // The cookie would have been included prior to the spec change considering
     // redirects in the SameSite context calculation
     // (https://github.com/httpwg/http-extensions/pull/1348)
@@ -218,16 +198,16 @@ class NET_EXPORT CookieInclusionStatus {
     // was actually used for the inclusion decision). This is not applied if
     // the context was downgraded but the cookie would have been
     // included/excluded in both cases.
-    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 17,
+    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 12,
 
     // The cookie exceeded the attribute size limit. RFC6265bis indicates that
     // large attributes should be ignored instead of causing the whole cookie
     // to be rejected. This is applied by the code that parses cookie lines and
     // notifies the user that an attribute value was ignored.
-    WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 18,
+    WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE = 13,
 
     // Cookie was set with a Domain attribute containing non ASCII characters.
-    WARN_DOMAIN_NON_ASCII = 19,
+    WARN_DOMAIN_NON_ASCII = 14,
 
     // This should be kept last.
     NUM_WARNING_REASONS

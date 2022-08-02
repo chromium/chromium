@@ -467,10 +467,6 @@ TEST(CookieManagerTraitsTest, RoundTrips_SamePartyContext) {
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
         same_party, copy));
     EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kSameParty);
-    EXPECT_EQ(copy.ancestors_for_metrics_only(),
-              net::SamePartyContext::Type::kSameParty);
-    EXPECT_EQ(copy.top_resource_for_metrics_only(),
-              net::SamePartyContext::Type::kSameParty);
   }
 
   {
@@ -480,10 +476,6 @@ TEST(CookieManagerTraitsTest, RoundTrips_SamePartyContext) {
     EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
         cross_party, copy));
     EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kCrossParty);
-    EXPECT_EQ(copy.ancestors_for_metrics_only(),
-              net::SamePartyContext::Type::kCrossParty);
-    EXPECT_EQ(copy.top_resource_for_metrics_only(),
-              net::SamePartyContext::Type::kCrossParty);
   }
 }
 
@@ -506,10 +498,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     EXPECT_TRUE(copy.return_excluded_cookies());
     EXPECT_EQ(net::SamePartyContext::Type::kCrossParty,
               copy.same_party_context().context_type());
-    EXPECT_EQ(net::SamePartyContext::Type::kCrossParty,
-              copy.same_party_context().ancestors_for_metrics_only());
-    EXPECT_EQ(net::SamePartyContext::Type::kCrossParty,
-              copy.same_party_context().top_resource_for_metrics_only());
     EXPECT_EQ(10u, copy.full_party_context_size());
     EXPECT_TRUE(copy.is_in_nontrivial_first_party_set());
   }
@@ -532,10 +520,6 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieOptions) {
     EXPECT_FALSE(copy.return_excluded_cookies());
     EXPECT_EQ(net::SamePartyContext::Type::kSameParty,
               copy.same_party_context().context_type());
-    EXPECT_EQ(net::SamePartyContext::Type::kSameParty,
-              copy.same_party_context().ancestors_for_metrics_only());
-    EXPECT_EQ(net::SamePartyContext::Type::kSameParty,
-              copy.same_party_context().top_resource_for_metrics_only());
     EXPECT_EQ(1u, copy.full_party_context_size());
     EXPECT_TRUE(copy.is_in_nontrivial_first_party_set());
   }

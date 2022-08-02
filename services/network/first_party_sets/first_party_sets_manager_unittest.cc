@@ -135,35 +135,16 @@ TEST_F(FirstPartySetsManagerDisabledTest, ComputeMetadata_InfersSingletons) {
   // Works if the site is provided with WSS scheme instead of HTTPS.
   EXPECT_THAT(
       ComputeMetadataAndWait(wss_member, &member, {member, example}).context(),
-      net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                            Type::kSameParty));
+      net::SamePartyContext(Type::kCrossParty));
 
   EXPECT_THAT(ComputeMetadataAndWait(example, &member, {member}).context(),
               net::SamePartyContext(Type::kCrossParty));
   EXPECT_THAT(ComputeMetadataAndWait(member, &example, {member}).context(),
               net::SamePartyContext(Type::kCrossParty));
-
-  // Top&resource differs from Ancestors.
-  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {example}).context(),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
-
-  // Metrics values infer singleton sets when appropriate.
-  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
-                                    Type::kSameParty));
-  EXPECT_THAT(ComputeMetadataAndWait(member, &example, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(ComputeMetadataAndWait(example, &member, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {example}).context(),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
 
   EXPECT_THAT(
       ComputeMetadataAndWait(member, &member, {member, example}).context(),
-      net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                            Type::kSameParty));
+      net::SamePartyContext(Type::kCrossParty));
 }
 
 TEST_F(FirstPartySetsManagerDisabledTest, FindOwner) {
@@ -792,41 +773,13 @@ TEST_F(PopulatedFirstPartySetsManagerTest, ComputeMetadata) {
             net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
                                        nullptr, &owner));
 
-  // Top&resource differs from Ancestors.
-  EXPECT_EQ(ComputeMetadataAndWait(member, &member, {nonmember}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                      Type::kSameParty),
-                &owner, &owner));
-
-  // Metrics values infer singleton sets when appropriate.
   EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {nonmember}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
-                                      Type::kSameParty),
-                nullptr, nullptr));
-  EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember1, {nonmember}),
             net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
                                        nullptr, nullptr));
-  EXPECT_EQ(ComputeMetadataAndWait(nonmember1, &nonmember, {nonmember}),
-            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
-                                       nullptr, nullptr));
-  EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {nonmember1}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                      Type::kSameParty),
-                nullptr, nullptr));
 
   EXPECT_EQ(ComputeMetadataAndWait(member, &member, {member, nonmember}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                      Type::kSameParty),
-                &owner, &owner));
-  EXPECT_EQ(ComputeMetadataAndWait(nonmember, &nonmember, {member, nonmember}),
-            net::FirstPartySetMetadata(
-                net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                      Type::kSameParty),
-                nullptr, nullptr));
+            net::FirstPartySetMetadata(net::SamePartyContext(Type::kCrossParty),
+                                       &owner, &owner));
 }
 
 TEST_F(PopulatedFirstPartySetsManagerTest, FindOwner) {
@@ -944,36 +897,16 @@ TEST_F(DisabledContextFirstPartySetsManagerTest, ComputeMetadata) {
   // Works if the site is provided with WSS scheme instead of HTTPS.
   EXPECT_THAT(
       ComputeMetadataAndWait(wss_member, &member, {member, example}).context(),
-      net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                            Type::kSameParty));
+      net::SamePartyContext(Type::kCrossParty));
 
   EXPECT_THAT(ComputeMetadataAndWait(example, &member, {member}).context(),
               net::SamePartyContext(Type::kCrossParty));
   EXPECT_THAT(ComputeMetadataAndWait(member, &example, {member}).context(),
               net::SamePartyContext(Type::kCrossParty));
-
-  // Top&resource differs from Ancestors.
-  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {example}).context(),
-
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
-
-  // Metrics values infer singleton sets when appropriate.
-  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty, Type::kSameParty,
-                                    Type::kSameParty));
-  EXPECT_THAT(ComputeMetadataAndWait(member, &example, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(ComputeMetadataAndWait(example, &member, {member}).context(),
-              net::SamePartyContext(Type::kCrossParty));
-  EXPECT_THAT(ComputeMetadataAndWait(member, &member, {example}).context(),
-              net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                                    Type::kSameParty));
 
   EXPECT_THAT(
       ComputeMetadataAndWait(member, &member, {member, example}).context(),
-      net::SamePartyContext(Type::kCrossParty, Type::kCrossParty,
-                            Type::kSameParty));
+      net::SamePartyContext(Type::kCrossParty));
 }
 
 class OverrideSetsFirstPartySetsManagerTest : public FirstPartySetsEnabledTest {
