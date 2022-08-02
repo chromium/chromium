@@ -4723,21 +4723,6 @@
             ]
         }
     ],
-    "HardwareToolbar": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ToolbarUseHardwareBitmapDraw"
-                    ]
-                }
-            ]
-        }
-    ],
     "HatsOnboardingExperience": [
         {
             "platforms": [
