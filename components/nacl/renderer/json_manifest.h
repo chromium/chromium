@@ -54,11 +54,11 @@ class JsonManifest {
 
  private:
   bool MatchesSchema(ErrorInfo* error_info);
-  bool GetKeyUrl(const base::DictionaryValue& dictionary,
+  bool GetKeyUrl(const base::Value::Dict& dictionary,
                  const std::string& key,
                  std::string* full_url,
                  PP_PNaClOptions* pnacl_options) const;
-  bool GetURLFromISADictionary(const base::DictionaryValue& parent_dictionary,
+  bool GetURLFromISADictionary(const base::Value::Dict& parent_dictionary,
                                const std::string& parent_key,
                                std::string* url,
                                PP_PNaClOptions* pnacl_options,
@@ -69,7 +69,7 @@ class JsonManifest {
   bool pnacl_debug_;
 
   // The dictionary of manifest information parsed in Init().
-  std::unique_ptr<base::DictionaryValue> dictionary_;
+  base::Value::Dict dictionary_;
 };
 
 }  // namespace nacl
