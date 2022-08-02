@@ -150,6 +150,7 @@ auto CreateFieldTypeMap(const FormData& form) {
 // A profile is a 6-bit integer, whose bits indicate different values of first
 // and last name, credit card number, expiration month, expiration year, CVC.
 using Profile = base::StrongAlias<struct ProfileTag, size_t>;
+using ::autofill::test::WithoutValues;
 
 // Fills the fields 0..5 of |form| with data according to |profile|, the
 // fields 6..11 with |profile|+1, etc.
@@ -166,13 +167,6 @@ FormData WithValues(FormData& form, Profile profile = Profile(0)) {
     form.fields[6 * i + 4].value = bitset.test(4) ? u"2083" : u"2087";
     form.fields[6 * i + 5].value = bitset.test(5) ? u"123" : u"456";
   }
-  return form;
-}
-
-// Clears the values of all fields in |form|.
-FormData WithoutValues(FormData form) {
-  for (FormFieldData& field : form.fields)
-    field.value.clear();
   return form;
 }
 

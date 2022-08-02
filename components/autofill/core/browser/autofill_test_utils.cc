@@ -100,6 +100,12 @@ FieldGlobalId MakeFieldGlobalId(RandomizeFrame randomize) {
   return {MakeLocalFrameToken(randomize), MakeFieldRendererId()};
 }
 
+FormData WithoutValues(FormData form) {
+  for (FormFieldData& field : form.fields)
+    field.value.clear();
+  return form;
+}
+
 void SetFormGroupValues(FormGroup& form_group,
                         const std::vector<FormGroupValue>& values) {
   for (const auto& value : values) {

@@ -86,6 +86,28 @@ class AutofillMetricsBaseTest : public testing::Test {
 
   void ResetDriverToCommitMetrics() { autofill_driver_.reset(); }
 
+  void ChangeTextField(const FormData& form,
+                       const FormFieldData& field,
+                       base::TimeTicks timestamp = {}) {
+    autofill_manager().OnTextFieldDidChange(form, field, gfx::RectF(),
+                                            timestamp);
+  }
+
+  void FillAutofillFormData(const FormData& form,
+                            base::TimeTicks timestamp = {}) {
+    autofill_manager().OnDidFillAutofillFormData(form, timestamp);
+  }
+
+  void SeeForm(const FormData& form) {
+    autofill_manager().OnFormsSeen({form}, {});
+  }
+
+  void SubmitForm(const FormData& form) {
+    autofill_manager().OnFormSubmitted(
+        form, /*known_success=*/false,
+        mojom::SubmissionSource::FORM_SUBMISSION);
+  }
+
   // Mocks a credit card fetching was completed. This mock starts from the
   // BrowserAutofillManager. Use these if your test does not depends on
   // OnDidGetRealPan but just need to mock the card fetching result (so that
