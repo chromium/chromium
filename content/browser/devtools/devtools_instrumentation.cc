@@ -1124,6 +1124,11 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildExclusionReasons(
     exclusion_reasons->push_back(protocol::Audits::CookieExclusionReasonEnum::
                                      ExcludeSamePartyCrossPartyContext);
   }
+  if (status.HasExclusionReason(
+          net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII)) {
+    exclusion_reasons->push_back(
+        protocol::Audits::CookieExclusionReasonEnum::ExcludeDomainNonASCII);
+  }
 
   return exclusion_reasons;
 }
@@ -1178,6 +1183,12 @@ std::unique_ptr<protocol::Array<protocol::String>> BuildWarningReasons(
                      WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE)) {
     warning_reasons->push_back(protocol::Audits::CookieWarningReasonEnum::
                                    WarnSameSiteLaxCrossDowngradeLax);
+  }
+
+  if (status.HasWarningReason(
+          net::CookieInclusionStatus::WARN_DOMAIN_NON_ASCII)) {
+    warning_reasons->push_back(
+        protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII);
   }
 
   return warning_reasons;

@@ -40,7 +40,9 @@ bool ShouldReportDevToolsIssueForStatus(
     const net::CookieInclusionStatus& status) {
   return status.ShouldWarn() ||
          status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
+             net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
 }
 
 }  // namespace
@@ -122,7 +124,8 @@ void EmitCookieWarningsAndMetrics(
 
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
-    if (ShouldReportDevToolsIssueForStatus(cookie->access_result.status)) {
+    const net::CookieInclusionStatus& status = cookie->access_result.status;
+    if (ShouldReportDevToolsIssueForStatus(status)) {
       devtools_instrumentation::ReportCookieIssue(
           root_frame_host, cookie, cookie_details->url,
           cookie_details->site_for_cookies,
@@ -133,7 +136,6 @@ void EmitCookieWarningsAndMetrics(
     }
 
     if (cookie->access_result.status.ShouldWarn()) {
-      const net::CookieInclusionStatus& status = cookie->access_result.status;
       samesite_treated_as_lax_cookies =
           samesite_treated_as_lax_cookies ||
           status.HasWarningReason(
@@ -175,14 +177,14 @@ void EmitCookieWarningsAndMetrics(
           status.HasWarningReason(
               net::CookieInclusionStatus::
                   WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
-
-      cookie_has_domain_non_ascii =
-          cookie_has_domain_non_ascii ||
-          status.HasWarningReason(
-              net::CookieInclusionStatus::WARN_DOMAIN_NON_ASCII) ||
-          status.HasExclusionReason(
-              net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
     }
+
+    cookie_has_domain_non_ascii =
+        cookie_has_domain_non_ascii ||
+        status.HasWarningReason(
+            net::CookieInclusionStatus::WARN_DOMAIN_NON_ASCII) ||
+        status.HasExclusionReason(
+            net::CookieInclusionStatus::EXCLUDE_DOMAIN_NON_ASCII);
 
     partitioned_cookies_exist =
         partitioned_cookies_exist ||

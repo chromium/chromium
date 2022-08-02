@@ -1342,5 +1342,11 @@
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--isolated-prerender-allow-all-domains"
     ]
+  },
+  {
+    "prefix": "cookie-reject-domain-non-ascii",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [ "http/tests/inspector-protocol/issues/cookie-domain-non-ascii.js" ],
+    "args": ["--enable-features=CookieDomainRejectNonASCII"]
   }
 ]

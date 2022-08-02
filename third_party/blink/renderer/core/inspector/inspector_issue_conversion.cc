@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_issue_conversion.h"
 
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -84,6 +85,8 @@ protocol::String BuildCookieExclusionReason(
       return protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteLax;
     case blink::mojom::blink::CookieExclusionReason::kExcludeSameSiteStrict:
       return protocol::Audits::CookieExclusionReasonEnum::ExcludeSameSiteStrict;
+    case blink::mojom::blink::CookieExclusionReason::kExcludeDomainNonASCII:
+      return protocol::Audits::CookieExclusionReasonEnum::ExcludeDomainNonASCII;
   }
 }
 
@@ -136,6 +139,8 @@ protocol::String BuildCookieWarningReason(
         kWarnAttributeValueExceedsMaxSize:
       return protocol::Audits::CookieWarningReasonEnum::
           WarnAttributeValueExceedsMaxSize;
+    case blink::mojom::blink::CookieWarningReason::kWarnDomainNonASCII:
+      return protocol::Audits::CookieWarningReasonEnum::WarnDomainNonASCII;
   }
 }
 

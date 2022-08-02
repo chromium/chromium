@@ -111,13 +111,17 @@ enum CookieOperation {
   kSetCookie, kReadCookie
 };
 
+// Reasons why a cookie was excluded from a cookie get or set operation,
+// see net/cookies/cookie_inclusion_status.h
 enum CookieExclusionReason {
   kExcludeSameSiteUnspecifiedTreatedAsLax,
   kExcludeSameSiteNoneInsecure,
   kExcludeSameSiteLax,
   kExcludeSameSiteStrict,
+  kExcludeDomainNonASCII,
 };
 
+// Reasons to warn about a cookie, see net/cookies/cookie_inclusion_status.h
 enum CookieWarningReason {
   kWarnSameSiteUnspecifiedCrossSiteContext,
   kWarnSameSiteNoneInsecure,
@@ -128,6 +132,7 @@ enum CookieWarningReason {
   kWarnSameSiteLaxCrossDowngradeStrict,
   kWarnSameSiteLaxCrossDowngradeLax,
   kWarnAttributeValueExceedsMaxSize,
+  kWarnDomainNonASCII,
 };
 
 // Specific information about |kCookieIssue| type issues.
