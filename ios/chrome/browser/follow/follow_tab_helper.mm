@@ -185,7 +185,7 @@ void FollowTabHelper::OnSuccessfulPageLoad(const GURL& url,
   // fetching);
   // 3. The IPH was shown too recently.
   if (!recommended_url_ || recommended_url_.absoluteString.length == 0 ||
-      !IsFollowIPHShownFrequencyEligible(recommended_url_)) {
+      !IsFollowIPHShownFrequencyEligible(recommended_url_.host)) {
     return;
   }
 
@@ -262,7 +262,7 @@ void FollowTabHelper::UpdateFollowMenuItem(FollowWebPageURLs* web_page_urls) {
 void FollowTabHelper::PresentFollowIPH() {
   DCHECK(follow_iph_presenter_);
   [follow_iph_presenter_ presentFollowWhileBrowsingIPH];
-  StoreFollowIPHPresentingTime(recommended_url_);
+  StoreFollowIPHDisplayEvent(recommended_url_.host);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FollowTabHelper)

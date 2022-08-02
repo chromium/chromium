@@ -27,8 +27,10 @@ NSTimeInterval const kFollowIPHAppearanceThresholdForSiteInSeconds =
 }  // namespace
 
 NSString* const kFollowIPHLastShownTime = @"FollowIPHLastShownTime";
-NSString* const kFollowIPHLastShownTimeForSite =
-    @"FollowIPHLastShownTimeForSite";
+NSString* const kFollowIPHPreviousDisplayEvents =
+    @"FollowIPHPreviousDisplayEvents";
+NSString* const kFollowIPHHost = @"host";
+NSString* const kFollowIPHDate = @"date";
 
 FollowActionState GetFollowActionState(web::WebState* webState) {
   // This method should be called only if the feature flag has been enabled.
@@ -62,62 +64,68 @@ FollowActionState GetFollowActionState(web::WebState* webState) {
 }
 
 #pragma mark - For Follow IPH
-bool IsFollowIPHShownFrequencyEligible(NSURL* RSSLink) {
+bool IsFollowIPHShownFrequencyEligible(NSString* host) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   NSDate* lastFollowIPHShownTime =
       [defaults objectForKey:kFollowIPHLastShownTime];
   // Return false if its too soon to show another IPH.
-  if ([[NSDate
+  if (lastFollowIPHShownTime &&
+      [[NSDate
           dateWithTimeIntervalSinceNow:-kFollowIPHAppearanceThresholdInSeconds]
-          compare:lastFollowIPHShownTime] == NSOrderedAscending)
+          compare:lastFollowIPHShownTime] == NSOrderedAscending) {
     return false;
+  }
 
-  NSDictionary<NSURL*, NSDate*>* lastFollowIPHShownTimeForSite =
-      [defaults objectForKey:kFollowIPHLastShownTimeForSite];
-  NSDate* lastIPHForSite = [lastFollowIPHShownTimeForSite objectForKey:RSSLink];
+  NSArray<NSDictionary*>* followIPHPreviousDisplayEvents =
+      [defaults objectForKey:kFollowIPHPreviousDisplayEvents];
+  NSDate* lastIPHDate;
+  for (NSDictionary* event in followIPHPreviousDisplayEvents) {
+    if ([[event objectForKey:kFollowIPHHost] isEqualToString:host]) {
+      lastIPHDate = [event objectForKey:kFollowIPHDate];
+      break;
+    }
+  }
+
   // Return true if it is long enough to show another IPH for this specific
   // site.
-  if (!lastIPHForSite ||
+  if (!lastIPHDate ||
       [[NSDate dateWithTimeIntervalSinceNow:
                    -kFollowIPHAppearanceThresholdForSiteInSeconds]
-          compare:lastIPHForSite] != NSOrderedAscending)
+          compare:lastIPHDate] != NSOrderedAscending) {
     return true;
+  }
 
   return false;
 }
 
-void StoreFollowIPHPresentingTime(NSURL* RSSLink) {
+void StoreFollowIPHDisplayEvent(NSString* host) {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary<NSURL*, NSDate*>* lastFollowIPHShownTimeForSite =
-      [defaults objectForKey:kFollowIPHLastShownTimeForSite];
+  NSArray<NSDictionary*>* followIPHPreviousDisplayEvents =
+      [defaults objectForKey:kFollowIPHPreviousDisplayEvents];
 
-  // Convert the dictionary to a mutable dictionary.
-  // If the dictionary value hasn't been set in user default, then create a
-  // mutable dictionary.
-  NSMutableDictionary<NSURL*, NSDate*>* mutablelLastFollowIPHShownTimeForSite =
-      lastFollowIPHShownTimeForSite
-          ? [lastFollowIPHShownTimeForSite mutableCopy]
-          : [[NSMutableDictionary<NSURL*, NSDate*> alloc] init];
+  NSMutableArray<NSDictionary*>* updatedDisplayEvents =
+      [[NSMutableArray alloc] init];
 
-  // Update the last follow IPH show time for `RSSLink`.
-  [mutablelLastFollowIPHShownTimeForSite setObject:[NSDate date]
-                                            forKey:RSSLink];
-
+  // Add object to the the recentEvents while cleaning up dictionary that has a
+  // date older than 1 day ago. Since the follow iph will show in a specific
+  // regularity, this clean up logic will not execute often
   NSDate* uselessDate =
       [NSDate dateWithTimeIntervalSinceNow:
                   -kFollowIPHAppearanceThresholdForSiteInSeconds];
-  // Clean up object that has a date older than 1 day ago. Since the follow iph
-  // will show less than 5 times a week, this clean up logic won't execute
-  // every time when page loaded.
-  // TODO(crbug.com/1340154): move the clean up logic to a more fitable place.
-  for (NSURL* key in mutablelLastFollowIPHShownTimeForSite) {
-    if ([[mutablelLastFollowIPHShownTimeForSite objectForKey:key]
-            compare:uselessDate] == NSOrderedAscending) {
-      [mutablelLastFollowIPHShownTimeForSite removeObjectForKey:key];
+
+  for (NSDictionary* event in followIPHPreviousDisplayEvents) {
+    if ([[event objectForKey:kFollowIPHDate] compare:uselessDate] !=
+        NSOrderedAscending) {
+      [updatedDisplayEvents addObject:event];
     }
   }
 
-  [defaults setObject:mutablelLastFollowIPHShownTimeForSite
-               forKey:kFollowIPHLastShownTimeForSite];
+  // Add the last follow IPH event.
+  NSDictionary* IPHPresentingEvent =
+      @{kFollowIPHHost : host, kFollowIPHDate : [NSDate date]};
+  [updatedDisplayEvents addObject:IPHPresentingEvent];
+
+  [defaults setObject:updatedDisplayEvents
+               forKey:kFollowIPHPreviousDisplayEvents];
   [defaults synchronize];
 }
