@@ -336,11 +336,6 @@ void FontMatchingMetrics::PublishUkmMetrics() {
           local_fonts_succeeded_.size() + local_fonts_failed_.size(),
           kUkmFontLoadCountBucketSpacing))
       .Record(ukm_recorder_);
-  UMA_HISTOGRAM_COUNTS_10000("Blink.Fonts.FontFamilyMatchAttempts.System",
-                             system_font_families_.size());
-  UMA_HISTOGRAM_COUNTS_10000(
-      "Blink.Fonts.FontMatchAttempts.System",
-      local_fonts_failed_.size() + local_fonts_succeeded_.size());
 }
 
 void FontMatchingMetrics::PublishEmojiGlyphMetrics() {

@@ -76,36 +76,6 @@ int32_t FontCache::status_font_height_ = 0;
 
 namespace {
 
-enum FallbackAgreementError {
-  kNoneFound,
-  kLegacyNoneFound,
-  kWinAPINoneFound,
-  kLegacyWinAPIDisagree
-};
-
-void LogUmaHistogramFallbackAgreemenError(
-    FallbackAgreementError agreement_error,
-    UBlockCode block_code) {
-  switch (agreement_error) {
-    case kLegacyNoneFound:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.LegacyNoneFound",
-                               block_code);
-      break;
-    case kWinAPINoneFound:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.WinAPINoneFound",
-                               block_code);
-      break;
-    case kLegacyWinAPIDisagree:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.LegacyWinAPIDisagree",
-                               block_code);
-      break;
-    case kNoneFound:
-      base::UmaHistogramSparse("Blink.Fonts.WinFallback.NoFallbackFound",
-                               block_code);
-      break;
-  }
-}
-
 int32_t EnsureMinimumFontHeightIfNeeded(int32_t font_height) {
   // Adjustment for codepage 936 to make the fonts more legible in Simplified
   // Chinese.  Please refer to LayoutThemeFontProviderWin.cpp for more
@@ -462,33 +432,8 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
   // where API fallback was previously available.
   if (RuntimeEnabledFeatures::LegacyWindowsDWriteFontFallbackEnabled() ||
       (!hardcoded_list_fallback_font && use_skia_font_fallback_)) {
-    scoped_refptr<SimpleFontData> dwrite_fallback_font =
-        GetDWriteFallbackFamily(font_description, character, fallback_priority);
-    if (dwrite_fallback_font) {
-      String dwrite_name =
-          dwrite_fallback_font->PlatformData().FontFamilyName();
-    }
-
-    UBlockCode block_code = ublock_getCode(character);
-    if (!hardcoded_list_fallback_font) {
-      LogUmaHistogramFallbackAgreemenError(kLegacyNoneFound, block_code);
-    }
-    if (!dwrite_fallback_font) {
-      LogUmaHistogramFallbackAgreemenError(kWinAPINoneFound, block_code);
-    }
-    if (hardcoded_list_fallback_font && dwrite_fallback_font) {
-      String hardcoded_family_name =
-          hardcoded_list_fallback_font->PlatformData().FontFamilyName();
-      String dwrite_family_name =
-          dwrite_fallback_font->PlatformData().FontFamilyName();
-      if (hardcoded_family_name != dwrite_family_name) {
-        LogUmaHistogramFallbackAgreemenError(kLegacyWinAPIDisagree, block_code);
-      }
-    }
-    if (!hardcoded_list_fallback_font && !dwrite_fallback_font) {
-      LogUmaHistogramFallbackAgreemenError(kNoneFound, block_code);
-    }
-    return dwrite_fallback_font;
+    return GetDWriteFallbackFamily(font_description, character,
+                                   fallback_priority);
   }
 
   return hardcoded_list_fallback_font;
