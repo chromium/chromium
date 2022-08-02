@@ -42,7 +42,7 @@ class AuctionDownloader {
                               scoped_refptr<net::HttpResponseHeaders> headers,
                               absl::optional<std::string> error)>;
 
-  // Starts loading the worklet script on construction. Callback will be invoked
+  // Starts loading `source_url` on construction. Callback will be invoked
   // asynchronously once the data has been fetched or an error has occurred.
   AuctionDownloader(network::mojom::URLLoaderFactory* url_loader_factory,
                     const GURL& source_url,
