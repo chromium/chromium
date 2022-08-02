@@ -11,6 +11,7 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
+#include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils.h"
 
 namespace ui {
@@ -96,7 +97,7 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
     return AXTextMarkerRangeToBaseValue(value, indexer);
 
   // Accessible object
-  if (IsNSAccessibilityElement(value) || IsAXUIElement(value)) {
+  if (AXElementWrapper::IsValidElement(value)) {
     return AXElementToBaseValue(value, indexer);
   }
 

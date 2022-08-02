@@ -181,6 +181,8 @@ source_set("platform") {
         "ax_utils_mac.mm",
         "inspect/ax_call_statement_invoker_mac.h",
         "inspect/ax_call_statement_invoker_mac.mm",
+        "inspect/ax_element_wrapper_mac.h",
+        "inspect/ax_element_wrapper_mac.mm",
         "inspect/ax_event_recorder_mac.h",
         "inspect/ax_event_recorder_mac.mm",
         "inspect/ax_inspect_utils_mac.h",

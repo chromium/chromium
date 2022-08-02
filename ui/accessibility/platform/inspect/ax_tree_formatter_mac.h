@@ -46,12 +46,12 @@ class AX_EXPORT AXTreeFormatterMac : public AXTreeFormatterBase {
   base::Value BuildTree(const id root) const;
   base::Value BuildTreeForAXUIElement(AXUIElementRef node) const;
 
-  void RecursiveBuildTree(const id node,
+  void RecursiveBuildTree(const AXElementWrapper& ax_element,
                           const NSRect& root_rect,
                           const AXTreeIndexerMac* indexer,
                           base::Value* dict) const;
 
-  void AddProperties(const id node,
+  void AddProperties(const AXElementWrapper& ax_element,
                      const NSRect& root_rect,
                      const AXTreeIndexerMac* indexer,
                      base::Value* dict) const;
@@ -62,7 +62,7 @@ class AX_EXPORT AXTreeFormatterMac : public AXTreeFormatterBase {
       const AXPropertyNode& property_node,
       const AXTreeIndexerMac* indexer) const;
 
-  base::Value PopulateLocalPosition(const id node,
+  base::Value PopulateLocalPosition(const AXElementWrapper& ax_element,
                                     const NSRect& root_rect) const;
 
   std::string ProcessTreeForOutput(
