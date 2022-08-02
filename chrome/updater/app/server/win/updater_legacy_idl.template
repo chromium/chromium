@@ -511,7 +511,7 @@ library UpdaterLegacyLib {
   importlib("stdole2.tlb");
 
   [
-    uuid(22181302-A8A6-4f84-A541-E5CBFC70CC43),
+    uuid(GOOGLEUPDATE3WEBUSERCLASS_CLSID),
     helpstring("GoogleUpdate3WebUserClass Class")
   ]
   coclass GoogleUpdate3WebUserClass
@@ -520,7 +520,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(8A1D4361-2C08-4700-A351-3EAA9CBFF5E4),
+    uuid(GOOGLEUPDATE3WEBSYSTEMCLASS_CLSID),
     helpstring("GoogleUpdate3WebSystemClass")
   ]
   coclass GoogleUpdate3WebSystemClass {
@@ -528,7 +528,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD),
+    uuid(POLICYSTATUSUSERCLASS_CLSID),
     helpstring("Policy Status for per-user applications.")
   ]
   coclass PolicyStatusUserClass {
@@ -536,7 +536,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(521FDB42-7130-4806-822A-FC5163FAD983),
+    uuid(POLICYSTATUSSYSTEMCLASS_CLSID),
     helpstring("Policy Status for system applications.")
   ]
   coclass PolicyStatusSystemClass {
@@ -544,7 +544,7 @@ library UpdaterLegacyLib {
   }
 
   [
-    uuid(ABC01078-F197-4b0b-ADBC-CFE684B39C82),
+    uuid(PROCESSLAUNCHERCLASS_CLSID),
     helpstring("ProcessLauncherClass Class")
   ]
   coclass ProcessLauncherClass {

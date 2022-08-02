@@ -19,12 +19,12 @@
 extern "C"   {
 #endif
 
-EXTERN_PROXY_FILE( updater_legacy_idl )
+EXTERN_PROXY_FILE( updater_legacy_idl_chrome_branded )
 
 
 PROXYFILE_LIST_START
 /* Start of list */
-  REFERENCE_PROXY_FILE( updater_legacy_idl ),
+  REFERENCE_PROXY_FILE( updater_legacy_idl_chrome_branded ),
 /* End of list */
 PROXYFILE_LIST_END
 

@@ -899,3 +899,4 @@ installs (per user)`.
 
 The updater then downloads and installs the application on all machines where
 the policy is deployed, and where the application is not already installed.
+

@@ -6,8 +6,8 @@
  /* File created by MIDL compiler version 8.xx.xxxx */
 /* at a redacted point in time
  */
-/* Compiler settings for ../../chrome/updater/app/server/win/updater_legacy_idl.template:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.xx.xxxx 
+/* Compiler settings for gen/chrome/updater/updater_legacy_idl_open_source.template:
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -36,8 +36,8 @@
 #include "ole2.h"
 #endif /*COM_NO_WINDOWS_H*/
 
-#ifndef __updater_legacy_idl_h__
-#define __updater_legacy_idl_h__
+#ifndef __updater_legacy_idl_open_source_h__
+#define __updater_legacy_idl_open_source_h__
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
@@ -276,7 +276,7 @@ extern "C"{
 #endif 
 
 
-/* interface __MIDL_itf_updater_legacy_idl_0000_0000 */
+/* interface __MIDL_itf_updater_legacy_idl_open_source_0000_0000 */
 /* [local] */ 
 
 typedef 
@@ -311,8 +311,8 @@ enum AppCommandStatus
     } ;
 
 
-extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_0000_0000_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_0000_0000_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_open_source_0000_0000_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_updater_legacy_idl_open_source_0000_0000_v0_0_s_ifspec;
 
 #ifndef __ICurrentState_INTERFACE_DEFINED__
 #define __ICurrentState_INTERFACE_DEFINED__
@@ -325,7 +325,7 @@ EXTERN_C const IID IID_ICurrentState;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("247954F9-9EDC-4E68-8CC3-150C2B89EADF")
+    MIDL_INTERFACE("BE5D3E90-A66C-4A0A-9B7B-1A6B9BF3971E")
     ICurrentState : public IDispatch
     {
     public:
@@ -639,7 +639,7 @@ EXTERN_C const IID IID_IGoogleUpdate3Web;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("494B20CF-282E-4BDD-9F5D-B70CB09D351E")
+    MIDL_INTERFACE("027234BD-61BB-4F5C-9386-7FE804171C8C")
     IGoogleUpdate3Web : public IDispatch
     {
     public:
@@ -777,7 +777,7 @@ EXTERN_C const IID IID_IAppBundleWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("DD42475D-6D46-496a-924E-BD5630B4CBBA")
+    MIDL_INTERFACE("D734C877-21F4-496E-B857-3E5B2E72E4CC")
     IAppBundleWeb : public IDispatch
     {
     public:
@@ -1085,7 +1085,7 @@ EXTERN_C const IID IID_IAppWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("18D0F672-18B4-48e6-AD36-6E6BF01DBBC4")
+    MIDL_INTERFACE("2C6218B9-088D-4D25-A4F8-570558124142")
     IAppWeb : public IDispatch
     {
     public:
@@ -1318,7 +1318,7 @@ EXTERN_C const IID IID_IAppCommandWeb;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("8476CE12-AE1F-4198-805C-BA0F9B783F57")
+    MIDL_INTERFACE("87DBF75E-F590-4802-93FD-F8D07800E2E9")
     IAppCommandWeb : public IDispatch
     {
     public:
@@ -1505,7 +1505,7 @@ EXTERN_C const IID IID_IPolicyStatus;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("F63F6F8B-ACD5-413C-A44B-0409136D26CB")
+    MIDL_INTERFACE("7D908375-C9D0-44C5-BB98-206F3C24A74C")
     IPolicyStatus : public IDispatch
     {
     public:
@@ -1745,7 +1745,7 @@ EXTERN_C const IID IID_IPolicyStatusValue;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("27634814-8E41-4C35-8577-980134A96544")
+    MIDL_INTERFACE("47C8886A-A4B5-4F6C-865A-41A207074DFA")
     IPolicyStatusValue : public IDispatch
     {
     public:
@@ -1927,7 +1927,7 @@ EXTERN_C const IID IID_IPolicyStatus2;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("34527502-D3DB-4205-A69B-789B27EE0414")
+    MIDL_INTERFACE("9D31EA63-2E06-4D41-98C7-CB1F307DB597")
     IPolicyStatus2 : public IDispatch
     {
     public:
@@ -2240,7 +2240,7 @@ EXTERN_C const IID IID_IPolicyStatus3;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("05A30352-EB25-45B6-8449-BCA7B0542CE5")
+    MIDL_INTERFACE("5C674FC1-80E3-48D2-987B-79D9D286065B")
     IPolicyStatus3 : public IPolicyStatus2
     {
     public:
@@ -2514,7 +2514,7 @@ EXTERN_C const IID IID_IProcessLauncher;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("128C2DA6-2BC0-44c0-B3F6-4EC22E647964")
+    MIDL_INTERFACE("EED70106-3604-4385-866E-6D540E99CA1A")
     IProcessLauncher : public IUnknown
     {
     public:
@@ -2628,7 +2628,7 @@ EXTERN_C const IID IID_IProcessLauncher2;
 
 #if defined(__cplusplus) && !defined(CINTERFACE)
     
-    MIDL_INTERFACE("D106AB5F-A70E-400E-A21B-96208C1D8DBB")
+    MIDL_INTERFACE("BAEE6326-C925-4FA4-AFE9-5FA69902B021")
     IProcessLauncher2 : public IProcessLauncher
     {
     public:
@@ -2761,7 +2761,7 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("22181302-A8A6-4f84-A541-E5CBFC70CC43")
+class DECLSPEC_UUID("75828ED1-7BE8-45D0-8950-AA85CBF74510")
 GoogleUpdate3WebUserClass;
 #endif
 
@@ -2769,7 +2769,7 @@ EXTERN_C const CLSID CLSID_GoogleUpdate3WebSystemClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("8A1D4361-2C08-4700-A351-3EAA9CBFF5E4")
+class DECLSPEC_UUID("283209B7-C761-41CA-BE8D-B5321CD78FD6")
 GoogleUpdate3WebSystemClass;
 #endif
 
@@ -2777,7 +2777,7 @@ EXTERN_C const CLSID CLSID_PolicyStatusUserClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("6DDCE70D-A4AE-4E97-908C-BE7B2DB750AD")
+class DECLSPEC_UUID("4DAC24AB-B340-4B7E-AD01-1504A7F59EEA")
 PolicyStatusUserClass;
 #endif
 
@@ -2785,7 +2785,7 @@ EXTERN_C const CLSID CLSID_PolicyStatusSystemClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("521FDB42-7130-4806-822A-FC5163FAD983")
+class DECLSPEC_UUID("83FE19AC-72A6-4A72-B136-724444121586")
 PolicyStatusSystemClass;
 #endif
 
@@ -2793,7 +2793,7 @@ EXTERN_C const CLSID CLSID_ProcessLauncherClass;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("ABC01078-F197-4b0b-ADBC-CFE684B39C82")
+class DECLSPEC_UUID("811A664F-703E-407C-A323-E6E31D1EFFA0")
 ProcessLauncherClass;
 #endif
 #endif /* __UpdaterLegacyLib_LIBRARY_DEFINED__ */

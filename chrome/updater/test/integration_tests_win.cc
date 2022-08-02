@@ -39,7 +39,6 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -646,36 +645,34 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
     Microsoft::WRL::ComPtr<IUpdater> updater;
     EXPECT_HRESULT_SUCCEEDED(updater_server.As(&updater));
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     Microsoft::WRL::ComPtr<IUnknown> updater_legacy_server;
-    EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
         scope == UpdaterScope::kSystem ? __uuidof(GoogleUpdate3WebSystemClass)
                                        : __uuidof(GoogleUpdate3WebUserClass),
         nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_legacy_server)));
     Microsoft::WRL::ComPtr<IGoogleUpdate3Web> google_update;
-    EXPECT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
+    ASSERT_HRESULT_SUCCEEDED(updater_legacy_server.As(&google_update));
     Microsoft::WRL::ComPtr<IAppBundleWeb> app_bundle;
     Microsoft::WRL::ComPtr<IDispatch> dispatch;
-    EXPECT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
+    ASSERT_HRESULT_SUCCEEDED(google_update->createAppBundleWeb(&dispatch));
     EXPECT_HRESULT_SUCCEEDED(dispatch.As(&app_bundle));
 
     Microsoft::WRL::ComPtr<IUnknown> policy_status_server;
-    EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+    ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
         scope == UpdaterScope::kSystem ? __uuidof(PolicyStatusSystemClass)
                                        : __uuidof(PolicyStatusUserClass),
         nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&policy_status_server)));
     Microsoft::WRL::ComPtr<IPolicyStatus2> policy_status2;
-    EXPECT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
+    ASSERT_HRESULT_SUCCEEDED(policy_status_server.As(&policy_status2));
     base::win::ScopedBstr updater_version;
-    EXPECT_HRESULT_SUCCEEDED(
+    ASSERT_HRESULT_SUCCEEDED(
         policy_status2->get_updaterVersion(updater_version.Receive()));
     EXPECT_STREQ(updater_version.Get(), kUpdaterVersionUtf16);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   }
 
   // IUpdaterInternal.
   Microsoft::WRL::ComPtr<IUnknown> updater_internal_server;
-  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
       scope == UpdaterScope::kSystem ? __uuidof(UpdaterInternalSystemClass)
                                      : __uuidof(UpdaterInternalUserClass),
       nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&updater_internal_server)));
@@ -683,23 +680,22 @@ void ExpectInterfacesRegistered(UpdaterScope scope) {
   EXPECT_HRESULT_SUCCEEDED(updater_internal_server.As(&updater_internal));
 }
 
-HRESULT InitializeBundle(UpdaterScope scope,
-                         Microsoft::WRL::ComPtr<IAppBundleWeb>& bundle_web) {
+void InitializeBundle(UpdaterScope scope,
+                      Microsoft::WRL::ComPtr<IAppBundleWeb>& bundle_web) {
   Microsoft::WRL::ComPtr<IGoogleUpdate3Web> update3web;
-  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(
+  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(
       scope == UpdaterScope::kSystem ? __uuidof(GoogleUpdate3WebSystemClass)
                                      : __uuidof(GoogleUpdate3WebUserClass),
       nullptr, CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&update3web)));
 
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
   Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  EXPECT_HRESULT_SUCCEEDED(update3web->createAppBundleWeb(&dispatch));
-  EXPECT_HRESULT_SUCCEEDED(dispatch.As(&bundle));
+  ASSERT_HRESULT_SUCCEEDED(update3web->createAppBundleWeb(&dispatch));
+  ASSERT_HRESULT_SUCCEEDED(dispatch.As(&bundle));
 
   EXPECT_HRESULT_SUCCEEDED(bundle->initialize());
 
   bundle_web = bundle;
-  return S_OK;
 }
 
 HRESULT DoLoopUntilDone(Microsoft::WRL::ComPtr<IAppBundleWeb> bundle,
@@ -866,7 +862,7 @@ HRESULT DoUpdate(UpdaterScope scope,
                  int expected_final_state,
                  HRESULT expected_error_code) {
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
-  EXPECT_HRESULT_SUCCEEDED(InitializeBundle(scope, bundle));
+  InitializeBundle(scope, bundle);
   EXPECT_HRESULT_SUCCEEDED(bundle->createInstalledApp(appid.Get()));
   EXPECT_HRESULT_SUCCEEDED(bundle->checkForUpdate());
   return DoLoopUntilDone(bundle, expected_final_state, expected_error_code);
@@ -909,10 +905,9 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
     return;
 
   Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
-  EXPECT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass),
+  ASSERT_HRESULT_SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass),
                                               nullptr, CLSCTX_LOCAL_SERVER,
                                               IID_PPV_ARGS(&process_launcher)));
-  EXPECT_TRUE(process_launcher);
 
   constexpr wchar_t kAppId1[] = L"{831EF4D0-B729-4F61-AA34-91526481799D}";
   constexpr wchar_t kCommandId[] = L"CmdExit0";
@@ -956,7 +951,7 @@ void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
   SetupAppCommand(scope, appid, commandid, temp_dir);
 
   Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
-  ASSERT_HRESULT_SUCCEEDED(InitializeBundle(scope, bundle));
+  InitializeBundle(scope, bundle);
   ASSERT_HRESULT_SUCCEEDED(
       bundle->createInstalledApp(base::win::ScopedBstr(appid).Get()));
 

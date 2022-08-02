@@ -33,6 +33,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
+#include "base/win/win_util.h"
 #include "chrome/updater/app/server/win/server.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
@@ -680,7 +681,8 @@ HRESULT LegacyAppCommandWebImpl::InitializeTypeInfo() {
           type_lib->GetTypeInfoOfGuid(__uuidof(IAppCommandWeb), &type_info_);
       FAILED(hr)) {
     LOG(ERROR) << __func__ << " ::GetTypeInfoOfGuid failed"
-               << ": " << std::hex << hr;
+               << ": " << std::hex << hr << ": IID_IAppCommand: "
+               << base::win::WStringFromGUID(__uuidof(IAppCommandWeb));
     return hr;
   }
 

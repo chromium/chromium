@@ -6,7 +6,7 @@
  /* File created by MIDL compiler version 8.xx.xxxx */
 /* at a redacted point in time
  */
-/* Compiler settings for ../../chrome/updater/app/server/win/updater_legacy_idl.template:
+/* Compiler settings for gen/chrome/updater/updater_legacy_idl_chrome_branded.template:
     Oicf, W1, Zp8, env=Win32 (32b run), target_arch=X86 8.xx.xxxx 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
@@ -47,7 +47,7 @@
 #endif /* __RPCPROXY_H_VERSION__ */
 
 
-#include "updater_legacy_idl.h"
+#include "updater_legacy_idl_chrome_branded.h"
 
 #define TYPE_FORMAT_STRING_SIZE   1131                              
 #define PROC_FORMAT_STRING_SIZE   2773                              
@@ -55,23 +55,23 @@
 #define TRANSMIT_AS_TABLE_SIZE    0            
 #define WIRE_MARSHAL_TABLE_SIZE   2            
 
-typedef struct _updater_legacy_idl_MIDL_TYPE_FORMAT_STRING
+typedef struct _updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING
     {
     short          Pad;
     unsigned char  Format[ TYPE_FORMAT_STRING_SIZE ];
-    } updater_legacy_idl_MIDL_TYPE_FORMAT_STRING;
+    } updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING;
 
-typedef struct _updater_legacy_idl_MIDL_PROC_FORMAT_STRING
+typedef struct _updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING
     {
     short          Pad;
     unsigned char  Format[ PROC_FORMAT_STRING_SIZE ];
-    } updater_legacy_idl_MIDL_PROC_FORMAT_STRING;
+    } updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING;
 
-typedef struct _updater_legacy_idl_MIDL_EXPR_FORMAT_STRING
+typedef struct _updater_legacy_idl_chrome_branded_MIDL_EXPR_FORMAT_STRING
     {
     long          Pad;
     unsigned char  Format[ EXPR_FORMAT_STRING_SIZE ];
-    } updater_legacy_idl_MIDL_EXPR_FORMAT_STRING;
+    } updater_legacy_idl_chrome_branded_MIDL_EXPR_FORMAT_STRING;
 
 
 static const RPC_SYNTAX_IDENTIFIER  _RpcTransferSyntax = 
@@ -130,9 +130,9 @@ ObjectType ## _unbind((ObjectType) pObject, ServerHandle);\
 #endif
 
 
-extern const updater_legacy_idl_MIDL_TYPE_FORMAT_STRING updater_legacy_idl__MIDL_TypeFormatString;
-extern const updater_legacy_idl_MIDL_PROC_FORMAT_STRING updater_legacy_idl__MIDL_ProcFormatString;
-extern const updater_legacy_idl_MIDL_EXPR_FORMAT_STRING updater_legacy_idl__MIDL_ExprFormatString;
+extern const updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_TypeFormatString;
+extern const updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_ProcFormatString;
+extern const updater_legacy_idl_chrome_branded_MIDL_EXPR_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_ExprFormatString;
 
 
 extern const MIDL_STUB_DESC Object_StubDesc;
@@ -226,7 +226,7 @@ extern const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
 #endif
 
 
-static const updater_legacy_idl_MIDL_PROC_FORMAT_STRING updater_legacy_idl__MIDL_ProcFormatString =
+static const updater_legacy_idl_chrome_branded_MIDL_PROC_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_ProcFormatString =
     {
         0,
         {
@@ -2698,7 +2698,7 @@ static const updater_legacy_idl_MIDL_PROC_FORMAT_STRING updater_legacy_idl__MIDL
         }
     };
 
-static const updater_legacy_idl_MIDL_TYPE_FORMAT_STRING updater_legacy_idl__MIDL_TypeFormatString =
+static const updater_legacy_idl_chrome_branded_MIDL_TYPE_FORMAT_STRING updater_legacy_idl_chrome_branded__MIDL_TypeFormatString =
     {
         0,
         {
@@ -3506,7 +3506,7 @@ static const USER_MARSHAL_ROUTINE_QUADRUPLE UserMarshalRoutines[ WIRE_MARSHAL_TA
 
 
 
-/* Standard interface: __MIDL_itf_updater_legacy_idl_0000_0000, ver. 0.0,
+/* Standard interface: __MIDL_itf_updater_legacy_idl_chrome_branded_0000_0000, ver. 0.0,
    GUID={0x00000000,0x0000,0x0000,{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00}} */
 
 
@@ -3550,7 +3550,7 @@ static const unsigned short ICurrentState_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO ICurrentState_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &ICurrentState_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3562,7 +3562,7 @@ static const MIDL_SERVER_INFO ICurrentState_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &ICurrentState_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3650,7 +3650,7 @@ static const unsigned short IGoogleUpdate3Web_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IGoogleUpdate3Web_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IGoogleUpdate3Web_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3662,7 +3662,7 @@ static const MIDL_SERVER_INFO IGoogleUpdate3Web_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IGoogleUpdate3Web_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3734,7 +3734,7 @@ static const unsigned short IAppBundleWeb_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IAppBundleWeb_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IAppBundleWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3746,7 +3746,7 @@ static const MIDL_SERVER_INFO IAppBundleWeb_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IAppBundleWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3843,7 +3843,7 @@ static const unsigned short IAppWeb_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IAppWeb_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IAppWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3855,7 +3855,7 @@ static const MIDL_SERVER_INFO IAppWeb_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IAppWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3932,7 +3932,7 @@ static const unsigned short IAppCommandWeb_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IAppCommandWeb_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IAppCommandWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -3944,7 +3944,7 @@ static const MIDL_SERVER_INFO IAppCommandWeb_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IAppCommandWeb_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4014,7 +4014,7 @@ static const unsigned short IPolicyStatus_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatus_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatus_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4026,7 +4026,7 @@ static const MIDL_SERVER_INFO IPolicyStatus_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatus_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4102,7 +4102,7 @@ static const unsigned short IPolicyStatusValue_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatusValue_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatusValue_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4114,7 +4114,7 @@ static const MIDL_SERVER_INFO IPolicyStatusValue_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatusValue_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4193,7 +4193,7 @@ static const unsigned short IPolicyStatus2_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatus2_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatus2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4205,7 +4205,7 @@ static const MIDL_SERVER_INFO IPolicyStatus2_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatus2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4307,7 +4307,7 @@ static const unsigned short IPolicyStatus3_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IPolicyStatus3_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatus3_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4319,7 +4319,7 @@ static const MIDL_SERVER_INFO IPolicyStatus3_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IPolicyStatus3_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4405,7 +4405,7 @@ static const unsigned short IProcessLauncher_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IProcessLauncher_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IProcessLauncher_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4417,7 +4417,7 @@ static const MIDL_SERVER_INFO IProcessLauncher_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IProcessLauncher_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4460,7 +4460,7 @@ static const unsigned short IProcessLauncher2_FormatStringOffsetTable[] =
 static const MIDL_STUBLESS_PROXY_INFO IProcessLauncher2_ProxyInfo =
     {
     &Object_StubDesc,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IProcessLauncher2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4472,7 +4472,7 @@ static const MIDL_SERVER_INFO IProcessLauncher2_ServerInfo =
     {
     &Object_StubDesc,
     0,
-    updater_legacy_idl__MIDL_ProcFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_ProcFormatString.Format,
     &IProcessLauncher2_FormatStringOffsetTable[-3],
     0,
     0,
@@ -4510,7 +4510,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0,
     0,
     0,
-    updater_legacy_idl__MIDL_TypeFormatString.Format,
+    updater_legacy_idl_chrome_branded__MIDL_TypeFormatString.Format,
     1, /* -error bounds_check flag */
     0x50002, /* Ndr library version */
     0,
@@ -4524,7 +4524,7 @@ static const MIDL_STUB_DESC Object_StubDesc =
     0
     };
 
-const CInterfaceProxyVtbl * const _updater_legacy_idl_ProxyVtblList[] = 
+const CInterfaceProxyVtbl * const _updater_legacy_idl_chrome_branded_ProxyVtblList[] = 
 {
     ( CInterfaceProxyVtbl *) &_IPolicyStatus2ProxyVtbl,
     ( CInterfaceProxyVtbl *) &_IAppCommandWebProxyVtbl,
@@ -4540,7 +4540,7 @@ const CInterfaceProxyVtbl * const _updater_legacy_idl_ProxyVtblList[] =
     0
 };
 
-const CInterfaceStubVtbl * const _updater_legacy_idl_StubVtblList[] = 
+const CInterfaceStubVtbl * const _updater_legacy_idl_chrome_branded_StubVtblList[] = 
 {
     ( CInterfaceStubVtbl *) &_IPolicyStatus2StubVtbl,
     ( CInterfaceStubVtbl *) &_IAppCommandWebStubVtbl,
@@ -4556,7 +4556,7 @@ const CInterfaceStubVtbl * const _updater_legacy_idl_StubVtblList[] =
     0
 };
 
-PCInterfaceName const _updater_legacy_idl_InterfaceNamesList[] = 
+PCInterfaceName const _updater_legacy_idl_chrome_branded_InterfaceNamesList[] = 
 {
     "IPolicyStatus2",
     "IAppCommandWeb",
@@ -4572,7 +4572,7 @@ PCInterfaceName const _updater_legacy_idl_InterfaceNamesList[] =
     0
 };
 
-const IID *  const _updater_legacy_idl_BaseIIDList[] = 
+const IID *  const _updater_legacy_idl_chrome_branded_BaseIIDList[] = 
 {
     &IID_IDispatch,
     &IID_IDispatch,
@@ -4589,27 +4589,27 @@ const IID *  const _updater_legacy_idl_BaseIIDList[] =
 };
 
 
-#define _updater_legacy_idl_CHECK_IID(n)	IID_GENERIC_CHECK_IID( _updater_legacy_idl, pIID, n)
+#define _updater_legacy_idl_chrome_branded_CHECK_IID(n)	IID_GENERIC_CHECK_IID( _updater_legacy_idl_chrome_branded, pIID, n)
 
-int __stdcall _updater_legacy_idl_IID_Lookup( const IID * pIID, int * pIndex )
+int __stdcall _updater_legacy_idl_chrome_branded_IID_Lookup( const IID * pIID, int * pIndex )
 {
     IID_BS_LOOKUP_SETUP
 
-    IID_BS_LOOKUP_INITIAL_TEST( _updater_legacy_idl, 11, 8 )
-    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl, 4 )
-    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl, 2 )
-    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl, 1 )
-    IID_BS_LOOKUP_RETURN_RESULT( _updater_legacy_idl, 11, *pIndex )
+    IID_BS_LOOKUP_INITIAL_TEST( _updater_legacy_idl_chrome_branded, 11, 8 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl_chrome_branded, 4 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl_chrome_branded, 2 )
+    IID_BS_LOOKUP_NEXT_TEST( _updater_legacy_idl_chrome_branded, 1 )
+    IID_BS_LOOKUP_RETURN_RESULT( _updater_legacy_idl_chrome_branded, 11, *pIndex )
     
 }
 
-const ExtendedProxyFileInfo updater_legacy_idl_ProxyFileInfo = 
+const ExtendedProxyFileInfo updater_legacy_idl_chrome_branded_ProxyFileInfo = 
 {
-    (PCInterfaceProxyVtblList *) & _updater_legacy_idl_ProxyVtblList,
-    (PCInterfaceStubVtblList *) & _updater_legacy_idl_StubVtblList,
-    (const PCInterfaceName * ) & _updater_legacy_idl_InterfaceNamesList,
-    (const IID ** ) & _updater_legacy_idl_BaseIIDList,
-    & _updater_legacy_idl_IID_Lookup, 
+    (PCInterfaceProxyVtblList *) & _updater_legacy_idl_chrome_branded_ProxyVtblList,
+    (PCInterfaceStubVtblList *) & _updater_legacy_idl_chrome_branded_StubVtblList,
+    (const PCInterfaceName * ) & _updater_legacy_idl_chrome_branded_InterfaceNamesList,
+    (const IID ** ) & _updater_legacy_idl_chrome_branded_BaseIIDList,
+    & _updater_legacy_idl_chrome_branded_IID_Lookup, 
     11,
     2,
     0, /* table of [async_uuid] interfaces */

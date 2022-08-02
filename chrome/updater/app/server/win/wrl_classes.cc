@@ -4,7 +4,6 @@
 
 #include <wrl/module.h>
 
-#include "build/branding_buildflags.h"
 #include "chrome/updater/app/server/win/com_classes.h"
 #include "chrome/updater/app/server/win/com_classes_legacy.h"
 
@@ -33,8 +32,6 @@ namespace updater {
 CoCreatableClassWithFactoryEx(UpdaterSystemClass,
                               Microsoft::WRL::SimpleClassFactory<UpdaterImpl>,
                               ActiveSystem);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 CoCreatableClassWithFactoryEx(
     GoogleUpdate3WebSystemClass,
     Microsoft::WRL::SimpleClassFactory<LegacyOnDemandImpl>,
@@ -47,13 +44,10 @@ CoCreatableClassWithFactoryEx(
     PolicyStatusSystemClass,
     Microsoft::WRL::SimpleClassFactory<PolicyStatusImpl>,
     ActiveSystem);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 CoCreatableClassWithFactoryEx(UpdaterUserClass,
                               Microsoft::WRL::SimpleClassFactory<UpdaterImpl>,
                               ActiveUser);
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 CoCreatableClassWithFactoryEx(
     GoogleUpdate3WebUserClass,
     Microsoft::WRL::SimpleClassFactory<LegacyOnDemandImpl>,
@@ -62,7 +56,6 @@ CoCreatableClassWithFactoryEx(
     PolicyStatusUserClass,
     Microsoft::WRL::SimpleClassFactory<PolicyStatusImpl>,
     ActiveUser);
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 CoCreatableClassWithFactoryEx(
     UpdaterInternalSystemClass,
