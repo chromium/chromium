@@ -157,6 +157,14 @@ class SelectorObserver : public WebControllerWorker {
       return second;
     }
   };
+
+  // Contains different identifiers about the frames we are observing.
+  struct FrameIds {
+    // The devtools object id of the iframe node that contains the frame. This
+    // devtools id therefore belongs to the parent frame.
+    std::string devtools_id;
+    content::GlobalRenderFrameHostId global_frame_id;
+  };
   enum class State {
     INITIALIZED = 0,
     RUNNING = 1,
@@ -187,8 +195,8 @@ class SelectorObserver : public WebControllerWorker {
   // Selector observer script api object id for each DomRoot
   base::flat_map<DomRoot, std::string> script_api_object_ids_;
 
-  // Object id's of containing iframes
-  base::flat_map<DomRoot, std::string> iframe_object_ids_;
+  // Devtools Object id's and render host global id's of containing iframes.
+  base::flat_map<DomRoot, FrameIds> frame_ids_;
 
   // Dom root for each selector's stretch: {selector_id, frame_depth} -> DomRoot
   base::flat_map<std::pair<SelectorId, size_t>, DomRoot> dom_roots_;

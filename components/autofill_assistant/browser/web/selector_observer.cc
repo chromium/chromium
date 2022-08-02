@@ -111,6 +111,12 @@ ClientStatus SelectorObserver::Start(base::OnceClosure finished_callback) {
 
   EnterState(State::RUNNING);
   const DomRoot root(/* frame_id = */ "", DomRoot::kUseMainDoc);
+  // Since it's the root frame, it doesn't belong to an iframe and doesn't have
+  // a devtools_id.
+  frame_ids_.emplace(
+      root, FrameIds{/* devtools_id= */ "",
+                     /* global_frame_id= */ web_contents_->GetPrimaryMainFrame()
+                         ->GetGlobalId()});
   ResolveObjectIdAndInjectFrame(root, 0);
 
   timeout_timer_ = std::make_unique<base::OneShotTimer>();
@@ -177,15 +183,18 @@ void SelectorObserver::OnGetElementsResponse(
     DomObjectFrameStack element_dom_object;
     element_dom_object.object_data.object_id = element_object_id_entry->second;
     element_dom_object.object_data.node_frame_id = dom_root.frame_id();
-
+    const auto entry = frame_ids_.find(dom_root);
+    if (entry != frame_ids_.end()) {
+      element_dom_object.render_frame_id = entry->second.global_frame_id;
+    }
     size_t depth = 1;
     std::string prev_frame_id = "";
     auto it = dom_roots_.find(std::make_pair(element.selector_id, depth++));
     while (it != dom_roots_.end() && it->second != dom_root) {
-      auto entry = iframe_object_ids_.find(it->second);
-      if (entry != iframe_object_ids_.end()) {
+      const auto entry = frame_ids_.find(it->second);
+      if (entry != frame_ids_.end()) {
         JsObjectIdentifier frame;
-        frame.object_id = entry->second;
+        frame.object_id = entry->second.devtools_id;
         frame.node_frame_id = prev_frame_id;
         element_dom_object.frame_stack.push_back(frame);
       }
@@ -363,6 +372,15 @@ void SelectorObserver::OnDescribeNodeDone(
       return;
     }
 
+    auto* const frame =
+        FindCorrespondingRenderFrameHost(node->GetFrameId(), web_contents_);
+    if (!frame) {
+      VLOG(1) << __func__ << " Failed to find corresponding owner frame.";
+      FailWithError(ClientStatus(FRAME_HOST_NOT_FOUND));
+      return;
+    }
+    const auto global_frame_id = frame->GetGlobalId();
+
     DomRoot dom_root;
     if (node->HasContentDocument()) {
       // If the frame has a ContentDocument it's considered a local frame.
@@ -373,7 +391,9 @@ void SelectorObserver::OnDescribeNodeDone(
       // OOP frame.
       dom_root = DomRoot(node->GetFrameId(), DomRoot::kUseMainDoc);
     }
-    iframe_object_ids_.emplace(dom_root, parent_object_id);
+    frame_ids_.emplace(dom_root,
+                       FrameIds{/* devtools_id= */ parent_object_id,
+                                /* global_frame_id= */ global_frame_id});
     InjectOrAddSelectorsToDomRoot(dom_root, frame_depth, selector_ids);
   } else if (node->HasShadowRoots()) {
     // We aren't entering a frame but a shadow dom.

@@ -296,7 +296,9 @@ IN_PROC_BROWSER_TEST_F(BatchElementCheckerBrowserTest, SelectorObserver) {
                                DomObjectFrameStack>& elements) {
         EXPECT_TRUE(status.ok());
         EXPECT_EQ(elements.size(), 1u);
-        EXPECT_EQ(elements.count(iframe_button_id), 1u);
+        const auto& entry = elements.find(iframe_button_id);
+        ASSERT_NE(entry, elements.end());
+        EXPECT_TRUE(entry->second.render_frame_id);
         run_loop.Quit();
       });
 
