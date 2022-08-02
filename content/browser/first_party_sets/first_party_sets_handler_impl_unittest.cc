@@ -33,6 +33,8 @@ using ::testing::UnorderedElementsAre;
 namespace content {
 namespace {
 using PolicyCustomization = FirstPartySetsHandlerImpl::PolicyCustomization;
+using FlattenedSets = FirstPartySetsHandlerImpl::FlattenedSets;
+using SingleSet = FirstPartySetParser::SingleSet;
 
 MATCHER_P(SerializesTo, want, "") {
   const std::string got = arg.Serialize();
@@ -852,6 +854,104 @@ TEST(FirstPartySetsProfilePolicyCustomizations,
                        Optional(SerializesTo("https://owner1.test"))),
                   Pair(SerializesTo("https://owner1.test"),
                        Optional(SerializesTo("https://owner1.test")))));
+}
+
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     TransitiveOverlap_TwoCommonOwners) {
+  // {owner1, {member1}} and {owner2, {member2}} transitively overlap with the
+  // existing set.
+  // owner1 takes ownership of the normalized addition set since it was
+  // provided first.
+  // The other addition sets are unaffected.
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner1.test", {"https://owner2.test"}}}),
+          FirstPartySetParser::ParsedPolicySetLists(
+              /*replacement_list=*/{},
+              {SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                         {net::SchemefulSite(GURL("https://member0.test"))}),
+               SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                         {net::SchemefulSite(GURL("https://member1.test"))}),
+               SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                         {net::SchemefulSite(GURL("https://member2.test"))}),
+               SingleSet(
+                   net::SchemefulSite(GURL("https://owner42.test")),
+                   {net::SchemefulSite(GURL("https://member42.test"))})})),
+      UnorderedElementsAre(
+          Pair(net::SchemefulSite(GURL("https://member0.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner0.test")))),
+          Pair(net::SchemefulSite(GURL("https://member1.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner1.test")))),
+          Pair(net::SchemefulSite(GURL("https://member2.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner1.test")))),
+          Pair(net::SchemefulSite(GURL("https://member42.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner42.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner0.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner0.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner1.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner1.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner2.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner1.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner42.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner42.test"))))));
+}
+
+TEST(FirstPartySetsProfilePolicyCustomizations,
+     TransitiveOverlap_TwoCommonMembers) {
+  // {owner1, {member1}} and {owner2, {member2}} transitively overlap with the
+  // existing set.
+  // owner2 takes ownership of the normalized addition set since it was
+  // provided first.
+  // The other addition sets are unaffected.
+  EXPECT_THAT(
+      FirstPartySetsHandlerImpl::ComputeEnterpriseCustomizations(
+          MakeFlattenedSetsFromMap(
+              {{"https://owner2.test", {"https://owner1.test"}}}),
+          FirstPartySetParser::ParsedPolicySetLists(
+              /*replacement_list=*/{},
+              {SingleSet(net::SchemefulSite(GURL("https://owner0.test")),
+                         {net::SchemefulSite(GURL("https://member0.test"))}),
+               SingleSet(net::SchemefulSite(GURL("https://owner2.test")),
+                         {net::SchemefulSite(GURL("https://member2.test"))}),
+               SingleSet(net::SchemefulSite(GURL("https://owner1.test")),
+                         {net::SchemefulSite(GURL("https://member1.test"))}),
+               SingleSet(
+                   net::SchemefulSite(GURL("https://owner42.test")),
+                   {net::SchemefulSite(GURL("https://member42.test"))})})),
+      UnorderedElementsAre(
+          Pair(net::SchemefulSite(GURL("https://member0.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner0.test")))),
+          Pair(net::SchemefulSite(GURL("https://member1.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner2.test")))),
+          Pair(net::SchemefulSite(GURL("https://member2.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner2.test")))),
+          Pair(net::SchemefulSite(GURL("https://member42.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner42.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner0.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner0.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner1.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner2.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner2.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner2.test")))),
+          Pair(net::SchemefulSite(GURL("https://owner42.test")),
+               absl::make_optional(
+                   net::SchemefulSite(GURL("https://owner42.test"))))));
 }
 
 // Existing set overlaps with both replacement and addition set.

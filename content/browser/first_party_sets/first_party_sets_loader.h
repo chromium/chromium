@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -29,8 +28,7 @@ class CONTENT_EXPORT FirstPartySetsLoader {
   using LoadCompleteOnceCallback = base::OnceCallback<void(
       base::flat_map<net::SchemefulSite, net::SchemefulSite>)>;
   using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
-  using SingleSet =
-      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
+  using SingleSet = FirstPartySetParser::SingleSet;
 
   explicit FirstPartySetsLoader(LoadCompleteOnceCallback on_load_complete);
 
@@ -54,19 +52,6 @@ class CONTENT_EXPORT FirstPartySetsLoader {
 
   // Close the file on thread pool that allows blocking.
   void DisposeFile(base::File sets_file);
-
-  // Handles addition sets which overlap by intersecting with the same existing
-  // set, known as a transitive-overlap.
-  //
-  // This uses a Union-Find algorithm to select the earliest-provided addition
-  // set as the representative of all other addition sets that
-  // transitively-overlap with it.
-  //
-  // The "earliest-provided" tie-breaker is determined using a set's index in
-  // `addition_sets`.
-  static std::vector<SingleSet> NormalizeAdditionSets(
-      const FlattenedSets& existing_sets,
-      const std::vector<SingleSet>& addition_sets);
 
  private:
   // Parses the contents of `raw_sets` as a collection of First-Party Set
