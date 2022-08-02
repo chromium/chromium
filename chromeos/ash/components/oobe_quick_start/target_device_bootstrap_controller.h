@@ -23,7 +23,7 @@ class TargetDeviceBootstrapController
   TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
   TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
       delete;
-  ~TargetDeviceBootstrapController();
+  ~TargetDeviceBootstrapController() override;
 
   struct Status {
     // TBD.
@@ -46,6 +46,18 @@ class TargetDeviceBootstrapController
   // TODO: Finalize api for frontend.
   void StartAdvertising();
   void StopAdvertising();
+
+  // TargetDeviceConnectionBroker::ConnectionLifecycleListener:
+  void OnUnacceptedConnectionInitiated(
+      const std::string& source_device_id,
+      base::WeakPtr<TargetDeviceConnectionBroker::UnacceptedConnection>
+          connection) override;
+  void OnConnectionAccepted(
+      const std::string& source_device_id,
+      base::WeakPtr<TargetDeviceConnectionBroker::AcceptedConnection>
+          connection) override;
+  void OnConnectionRejected(const std::string& source_device_id) override;
+  void OnConnectionClosed(const std::string& source_device_id) override;
 
  private:
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;

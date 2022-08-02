@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/oobe_quick_start/target_device_bootstrap_controller.h"
 
 #include "base/callback_helpers.h"
+#include "base/notreached.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 
 namespace ash::quick_start {
@@ -40,6 +41,34 @@ void TargetDeviceBootstrapController::StartAdvertising() {
 void TargetDeviceBootstrapController::StopAdvertising() {
   // TODO: Handle result callback
   connection_broker_->StopAdvertising(base::DoNothing());
+}
+
+void TargetDeviceBootstrapController::OnUnacceptedConnectionInitiated(
+    const std::string& source_device_id,
+    base::WeakPtr<TargetDeviceConnectionBroker::UnacceptedConnection>
+        connection) {
+  // TODO(b/239855593): Implement
+  NOTIMPLEMENTED();
+}
+
+void TargetDeviceBootstrapController::OnConnectionAccepted(
+    const std::string& source_device_id,
+    base::WeakPtr<TargetDeviceConnectionBroker::AcceptedConnection>
+        connection) {
+  // TODO(b/239855593): Implement
+  NOTIMPLEMENTED();
+}
+
+void TargetDeviceBootstrapController::OnConnectionRejected(
+    const std::string& source_device_id) {
+  // TODO(b/239855593): Implement
+  NOTIMPLEMENTED();
+}
+
+void TargetDeviceBootstrapController::OnConnectionClosed(
+    const std::string& source_device_id) {
+  // TODO(b/239855593): Implement
+  NOTIMPLEMENTED();
 }
 
 }  // namespace ash::quick_start
