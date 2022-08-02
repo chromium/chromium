@@ -394,6 +394,11 @@ _web_engine_excluded_files = [
 # browsing contexts, accessed via fuchsia.web.Context or fuchsia.web.FrameHost
 # capabilities.
 fuchsia_component("web_instance_component") {
+  manifest = "web_instance.cml"
+  data_deps = [ ":web_engine_exe" ]
+}
+
+fuchsia_component("web_instance_component_cfv1") {
   manifest = "web_instance.cmx"
   data_deps = [ ":web_engine_exe" ]
 }
@@ -417,6 +422,7 @@ fuchsia_package("web_engine") {
     ":context_provider_component",
     ":context_provider_component_v1",
     ":web_instance_component",
+    ":web_instance_component_cfv1",
   ]
   excluded_files = _web_engine_excluded_files
   excluded_dirs = FUCHSIA_PACKAGED_CONTENT_EMBEDDER_EXCLUDED_DIRS
@@ -436,7 +442,7 @@ fuchsia_package_installer("web_engine_installer") {
 # TODO(crbug.com/1010222): Remove the with-WebUI ContextProvider component
 # definition once all callers have migrated to launching instances directly as
 # Components, or the launcher supports relative component URLs.
-cmc_merge("context_provider_with_webui_manifest") {
+cmc_merge("context_provider_v1_with_webui_manifest") {
   sources = [
     "context_provider.cmx",
     "context_provider_with_webui.test-cmx-fragment",
@@ -444,8 +450,8 @@ cmc_merge("context_provider_with_webui_manifest") {
   output_name = "context_provider_with_webui.cmx"
 }
 
-fuchsia_component("context_provider_with_webui_component") {
-  deps = [ ":context_provider_with_webui_manifest" ]
+fuchsia_component("context_provider_v1_with_webui_component") {
+  deps = [ ":context_provider_v1_with_webui_manifest" ]
   manifest = "$target_out_dir/context_provider_with_webui.cmx"
   manifest_output_name = "context_provider"
   data_deps = [ ":web_engine_exe" ]
@@ -454,8 +460,8 @@ fuchsia_component("context_provider_with_webui_component") {
 fuchsia_package("web_engine_with_webui") {
   # TODO(fxbug.dev/100944): Add appropriate visibility when fixed.
   deps = [
-    ":context_provider_with_webui_component",
-    ":web_instance_component",
+    ":context_provider_v1_with_webui_component",
+    ":web_instance_component_cfv1",
     ":webui_resources",
   ]
   excluded_files = _web_engine_excluded_files

@@ -1,0 +1,114 @@
+{
+  include: [
+    "inspect/client.shard.cml",
+    "syslog/client.shard.cml",
+  ],
+  program: {
+    runner: "elf",
+    binary: "web_engine_exe",
+  },
+  capabilities: [
+    {
+      protocol: [
+        "fuchsia.web.Context",
+        "fuchsia.web.FrameHost",
+      ]
+    }
+  ],
+  expose: [
+    {
+      protocol: [
+        "fuchsia.web.Context",
+        "fuchsia.web.FrameHost",
+      ],
+      from: "self",
+    }
+  ],
+  use: [
+    {
+      directory: "config-data",
+      rights: [ "r*" ],
+      path: "/config/data",
+    },
+    {
+      directory: "command-line-config",
+      rights: [ "r*" ],
+      path: "/config/command-line",
+      availability: "optional",
+    },
+    {
+      // Required capabilities for all configurations.
+      protocol: [
+        "fuchsia.buildinfo.Provider",
+        "fuchsia.device.NameProvider",
+        "fuchsia.fonts.Provider",
+        "fuchsia.hwinfo.Product",
+        "fuchsia.intl.PropertyProvider",
+        "fuchsia.memorypressure.Provider",
+        "fuchsia.process.Launcher",
+        "fuchsia.sysmem.Allocator",
+      ]
+    },
+    {
+      // Optional capabilities, dependent on ContextFeatureFlags.
+      protocol: [
+
+        // Required by Frame.CreateView*(), unless HEADLESS is set.
+        "fuchsia.accessibility.semantics.SemanticsManager",
+        "fuchsia.ui.composition.Allocator",
+        "fuchsia.ui.composition.Flatland",
+        "fuchsia.ui.scenic.Scenic",
+
+        // Required by ContextFeatureFlags.NETWORK
+        "fuchsia.net.interfaces.State",
+        "fuchsia.net.name.Lookup",
+        "fuchsia.posix.socket.Provider",
+
+        // Required by ContextFeatureFlags.AUDIO
+        "fuchsia.media.Audio",
+        "fuchsia.media.AudioDeviceEnumerator",
+        "fuchsia.media.SessionAudioConsumerFactory",
+
+        // Required by ContextFeatureFlags.VULKAN
+        "fuchsia.vulkan.loader.Loader",
+
+        // Required by ContextFeatureFlags.HARDWARE_VIDEO_DECODER
+        "fuchsia.mediacodec.CodecFactory",
+
+        // Required by ContextFeatureFlags.WIDEVINE_CDM
+        "fuchsia.media.drm.Widevine",
+
+        // Required by CreateContextParams.playready_key_system
+        "fuchsia.media.drm.PlayReady",
+
+        // Required by ContextFeatureFlags.LEGACY_METRICS
+        "fuchsia.legacymetrics.MetricsRecorder",
+
+        // Required by ContextFeatureFlags.KEYBOARD
+        "fuchsia.ui.input3.Keyboard",
+
+        // Required by ContextFeatureFlags.VIRTUAL_KEYBOARD
+        "fuchsia.input.virtualkeyboard.ControllerCreator",
+
+        // Required by ???
+        "fuchsia.camera3.DeviceWatcher",
+        "fuchsia.media.ProfileProvider",
+
+        // Required by Frame.SetPreferredTheme(DEFAULT).
+        "fuchsia.settings.Display",
+
+      ],
+      availability: "optional",
+    },
+    {
+      storage: "cache",
+      path: "/cache",
+      availability: "optional",
+    },
+    {
+      storage: "data",
+      path: "/data",
+      availability: "optional",
+    },
+  ]
+}
