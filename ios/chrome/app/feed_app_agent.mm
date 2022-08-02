@@ -96,7 +96,9 @@
       registerForTaskWithIdentifier:kFeedBackgroundRefreshTaskIdentifier
                          usingQueue:nil
                       launchHandler:^(BGTask* task) {
-                        [weakSelf handleBackgroundRefreshTask:task];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                          [weakSelf handleBackgroundRefreshTask:task];
+                        });
                       }];
 }
 
