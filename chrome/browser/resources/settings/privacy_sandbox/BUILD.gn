@@ -14,7 +14,7 @@ if (optimize_webui) {
     input_files = [
       "privacy_sandbox/app.js",
       "privacy_sandbox/app.html.js",
-      "privacy_sandbox/icons.js",
+      "privacy_sandbox/icons.html.js",
       "privacy_sandbox/interest_item.js",
       "privacy_sandbox/interest_item.html.js",
       "privacy_sandbox/privacy_sandbox_browser_proxy.js",

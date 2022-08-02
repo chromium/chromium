@@ -261,6 +261,7 @@ non_web_component_files = [
   "privacy_page/privacy_guide/privacy_guide_browser_proxy.ts",
   "privacy_page/privacy_page_browser_proxy.ts",
   "privacy_page/security_keys_browser_proxy.ts",
+  "privacy_sandbox/icons.html.ts",
   "privacy_sandbox/privacy_sandbox_browser_proxy.ts",
   "relaunch_mixin.ts",
   "reset_page/reset_browser_proxy.ts",
@@ -337,6 +338,3 @@ css_wrapper_files = []
 foreach(f, css_files) {
   css_wrapper_files += [ f + ".ts" ]
 }
-
-# CSS/HTML wrapper files that are not auto-generated yet.
-css_wrapper_files_old = [ "privacy_sandbox/icons.ts" ]
