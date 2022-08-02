@@ -88,13 +88,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingHandler
   // this will call SCTAuditingReporter::Start() to initiate sending the report.
   // If the report is a hashdance report, |leaf_hash| should be set to the
   // Merkle tree leaf hash of a randomly selected SCT.
-  // Optionally takes in a BackoffEntry for recreating reporter state from
-  // persisted storage.
+  // Optionally takes in a BackoffEntry and a bool for whether the report has
+  // already been counted towards the max-reports limit, for recreating reporter
+  // state from persisted storage.
   void AddReporter(
       net::HashValue reporter_key,
       std::unique_ptr<sct_auditing::SCTClientReport> report,
       absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata,
-      std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr);
+      std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr,
+      bool already_counted = false);
 
   // Loads serialized reports from `serialized` and creates a new
   // SCTAuditingReporter for each (if a reporter for that report does not yet

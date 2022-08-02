@@ -55,6 +55,7 @@ const char kReporterKeyKey[] = "reporter_key";
 const char kBackoffEntryKey[] = "backoff_entry";
 const char kReportKey[] = "report";
 const char kSCTHashdanceMetadataKey[] = "sct_metadata";
+const char kAlreadyCountedKey[] = "counted_towards_report_limit";
 
 void RecordPopularSCTSkippedMetrics(bool popular_sct_skipped) {
   base::UmaHistogramBoolean("Security.SCTAuditing.OptOut.PopularSCTSkipped",
@@ -214,6 +215,8 @@ bool SCTAuditingHandler::SerializeData(std::string* output) {
         net::BackoffEntrySerializer::SerializeToValue(
             *reporter->backoff_entry(), base::Time::Now());
     report_entry.Set(kBackoffEntryKey, std::move(backoff_entry_value));
+    report_entry.Set(kAlreadyCountedKey,
+                     reporter->counted_towards_report_limit());
 
     std::string serialized_report;
     reporter->report()->SerializeToString(&serialized_report);
@@ -248,6 +251,8 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     const absl::optional<base::Value> sct_metadata_value =
         entry_dict->Extract(kSCTHashdanceMetadataKey);
     const base::Value* backoff_entry_value = entry_dict->Find(kBackoffEntryKey);
+    const absl::optional<bool> counted_towards_report_limit =
+        entry_dict->FindBool(kAlreadyCountedKey);
 
     if (!reporter_key_string || !report_string || !backoff_entry_value) {
       continue;
@@ -296,7 +301,8 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     }
 
     AddReporter(cache_key, std::move(audit_report), std::move(sct_metadata),
-                std::move(backoff_entry));
+                std::move(backoff_entry),
+                counted_towards_report_limit.value_or(false));
     ++num_reporters_deserialized;
   }
   base::UmaHistogramCounts100("Security.SCTAuditing.NumPersistedReportsLoaded",
@@ -318,7 +324,8 @@ void SCTAuditingHandler::AddReporter(
     net::HashValue reporter_key,
     std::unique_ptr<sct_auditing::SCTClientReport> report,
     absl::optional<SCTAuditingReporter::SCTHashdanceMetadata> sct_metadata,
-    std::unique_ptr<net::BackoffEntry> backoff_entry) {
+    std::unique_ptr<net::BackoffEntry> backoff_entry,
+    bool already_counted) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
   if (mode_ == mojom::SCTAuditingMode::kDisabled) {
     return;
@@ -334,7 +341,7 @@ void SCTAuditingHandler::AddReporter(
       base::BindRepeating(&SCTAuditingHandler::OnReporterStateUpdated,
                           GetWeakPtr()),
       base::BindOnce(&SCTAuditingHandler::OnReporterFinished, GetWeakPtr()),
-      std::move(backoff_entry));
+      std::move(backoff_entry), already_counted);
   reporter->Start();
   pending_reporters_.Put(reporter->key(), std::move(reporter));
 

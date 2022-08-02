@@ -1056,6 +1056,102 @@ TEST_F(SCTAuditingHandlerTest, ClearPendingReports) {
       "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo="));
 }
 
+// Test that the "counted_towards_report_limit" flag is correctly reapplied when
+// deserialize a persisted reporter. See crbug.com/1348313.
+TEST_F(SCTAuditingHandlerTest, PersistedDataWithReportAlreadyCounted) {
+  // Set up previously persisted data on disk:
+  // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
+  // - Empty SCTClientReport for origin "example.test:443".
+  // - A simple BackoffEntry.
+  // - A simple SCTHashdanceMetadata value.
+  // - The "already counted toward report limit" flag set to `true`.
+  std::string persisted_report =
+      R"(
+        [{
+          "reporter_key":
+            "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+          "report": "EhUKExIRCgxleGFtcGxlLnRlc3QQuwM=",
+          "backoff_entry": [2,0,"30000000","11644578625551798"],
+          "sct_metadata": {
+            "leaf_hash": "ZmFrZS1sZWFmLWhhc2g=",
+            "issued": "1659045681000000",
+            "log_id": "ZmFrZS1sb2ctaWQ=",
+            "log_mmd": "86400000000",
+            "cert_expiry": "1661724081000000"
+          },
+          "counted_towards_report_limit": true
+        }]
+      )";
+  ASSERT_TRUE(base::WriteFile(persistence_path_, persisted_report));
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
+
+  SCTAuditingHandler handler(network_context_.get(), persistence_path_);
+  handler.SetMode(mojom::SCTAuditingMode::kHashdance);
+  handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
+
+  // Wait for a lookup query request to be sent to ensure the persisted report
+  // has been deserialized and a new SCTAuditingReporter created.
+  WaitForRequests(1u);
+
+  auto* pending_reporters = handler.GetPendingReportersForTesting();
+  ASSERT_EQ(pending_reporters->size(), 1u);
+  // Reporter should have the `counted_toward_report_limit` flag set to `true`.
+  for (const auto& reporter : *pending_reporters) {
+    EXPECT_TRUE(reporter.second->counted_towards_report_limit());
+  }
+}
+
+// Test that when a persisted reporter is deserialized that does not have the
+// "counted_towards_report_limit" flag set, it gets defaulted to `false` in the
+// newly created SCTAuditingReporter. (This covers the case for existing
+// serialized data from versions before the flag was added.)
+// See crbug.com/1348313.
+TEST_F(SCTAuditingHandlerTest, PersistedDataWithoutReportAlreadyCounted) {
+  // Set up previously persisted data on disk:
+  // - Default-initialized net::HashValue(net::HASH_VALUE_SHA256)
+  // - Empty SCTClientReport for origin "example.test:443".
+  // - A simple BackoffEntry.
+  // - A simple SCTHashdanceMetadata value.
+  // - The "already counted toward report limit" not set.
+  std::string persisted_report =
+      R"(
+        [{
+          "reporter_key":
+            "sha256/qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqo=",
+          "report": "EhUKExIRCgxleGFtcGxlLnRlc3QQuwM=",
+          "backoff_entry": [2,0,"30000000","11644578625551798"],
+          "sct_metadata": {
+            "leaf_hash": "ZmFrZS1sZWFmLWhhc2g=",
+            "issued": "1659045681000000",
+            "log_id": "ZmFrZS1sb2ctaWQ=",
+            "log_mmd": "86400000000",
+            "cert_expiry": "1661724081000000"
+          }
+        }]
+      )";
+  ASSERT_TRUE(base::WriteFile(persistence_path_, persisted_report));
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
+  url_loader_factory_.Clone(factory_remote.InitWithNewPipeAndPassReceiver());
+
+  SCTAuditingHandler handler(network_context_.get(), persistence_path_);
+  handler.SetMode(mojom::SCTAuditingMode::kHashdance);
+  handler.SetURLLoaderFactoryForTesting(std::move(factory_remote));
+
+  // Wait for a lookup query request to be sent to ensure the persisted report
+  // has been deserialized and a new SCTAuditingReporter created.
+  WaitForRequests(1u);
+
+  auto* pending_reporters = handler.GetPendingReportersForTesting();
+  ASSERT_EQ(pending_reporters->size(), 1u);
+  // Reporter should have the `counted_toward_report_limit` flag set to `false`.
+  for (const auto& reporter : *pending_reporters) {
+    EXPECT_FALSE(reporter.second->counted_towards_report_limit());
+  }
+}
+
 class NoPersistenceSCTAuditingHandlerTest : public SCTAuditingHandlerTest {
  public:
   void SetUp() override {
