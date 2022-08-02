@@ -9,6 +9,8 @@
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "base/auto_reset.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
@@ -209,6 +211,34 @@ IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterBrowserTest,
   EXPECT_TRUE(record_data.has_user_added_event());
   EXPECT_TRUE(record_data.has_affiliated_user());
   EXPECT_TRUE(record_data.affiliated_user().has_user_email());
+  EXPECT_THAT(record_data.affiliated_user().user_email(),
+              StrEq(kTestUserEmail));
+}
+
+// Login as a new affiliated user and sign out so we are prepared to test for
+// user removed reporting from the login screen.
+IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterBrowserTest,
+                       PRE_ReportRemovedAffiliatedUser) {
+  const LoginManagerMixin::TestUserInfo user_info(test_account_id_);
+  const auto& context = LoginManagerMixin::CreateDefaultUserContext(user_info);
+  login_manager_mixin_.LoginAsNewRegularUser(context);
+  test::WaitForPrimaryUserSessionStart();
+  Shell::Get()->session_controller()->RequestSignOut();
+}
+
+IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterBrowserTest,
+                       ReportRemovedAffiliatedUser) {
+  MissiveClientTestObserver observer(Destination::ADDED_REMOVED_EVENTS);
+  ASSERT_TRUE(LoginScreenTestApi::RemoveUser(test_account_id_));
+
+  const Record& record = GetNextUserAddedRemovedRecord(&observer);
+  ::reporting::UserAddedRemovedRecord record_data;
+  ASSERT_TRUE(record_data.ParseFromString(record.data()));
+  ASSERT_TRUE(record_data.has_user_removed_event());
+  EXPECT_EQ(record_data.user_removed_event().reason(),
+            ::reporting::UserRemovalReason::LOCAL_USER_INITIATED);
+  ASSERT_TRUE(record_data.has_affiliated_user());
+  ASSERT_TRUE(record_data.affiliated_user().has_user_email());
   EXPECT_THAT(record_data.affiliated_user().user_email(),
               StrEq(kTestUserEmail));
 }
