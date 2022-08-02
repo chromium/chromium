@@ -12,7 +12,7 @@ namespace base {
 // Ensures that when FetchAndCacheSystemInfo() has not been called in the
 // process that a  DCHECK fires to alert the developer.
 //
-// TODO(crbug.com/1326322) Ensure the test passes on Fuchsia bots and
+// TODO(crbug.com/1326674) Ensure the test passes on Fuchsia bots and
 // re-enable.
 TEST(BuildInfoDeathTest,
      DISABLED_GetCachedBuildInfo_DcheckIfNotAlreadyFetched) {
@@ -29,14 +29,14 @@ TEST(BuildInfoDeathTest,
   FetchAndCacheSystemInfo();
 }
 
-// TODO(crbug.com/1326322) Ensure the test passes on Fuchsia bots and
+// TODO(crbug.com/1326674) Ensure the test passes on Fuchsia bots and
 // re-enable.
 TEST(BuildInfoTest, DISABLED_GetCachedBuildInfo_CheckExpectedValues) {
   // Ensure the cached BuildInfo is in a known state.
   ClearCachedSystemInfoForTesting();
   FetchAndCacheSystemInfo();
 
-  // TODO(crbug.com/1310358): Check for specific values once Fuchsia
+  // TODO(crbug.com/1326674): Check for specific values once Fuchsia
   // completes the requested changes to the data returned from the fake.
   EXPECT_TRUE(GetCachedBuildInfo().has_product_config());
   EXPECT_TRUE(GetCachedBuildInfo().has_board_config());
