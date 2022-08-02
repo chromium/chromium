@@ -1,10 +1,3 @@
-# (in PST)
-alemate@chromium.org
-
-# (in CET)
-antrim@chromium.org
-rsorokin@chromium.org
-raleksandrov@google.com
-rrsilva@google.com
+file://ash/login/OOBE_WEBUI_OWNERS
 
 per-file *security_token*=emaxx@chromium.org
