@@ -149,8 +149,8 @@ public class PriceTrackingFeaturesTest {
         when(mIdentityManagerMock.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
     }
 
-    private void setTabSyncStatus(boolean isSyncRequested, boolean hasSessions) {
-        when(mSyncServiceMock.isSyncRequested()).thenReturn(isSyncRequested);
+    private void setTabSyncStatus(boolean isSyncFeatureEnabled, boolean hasSessions) {
+        when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(isSyncFeatureEnabled);
         when(mSyncServiceMock.getActiveDataTypes())
                 .thenReturn(hasSessions ? CollectionUtil.newHashSet(ModelType.SESSIONS)
                                         : CollectionUtil.newHashSet(ModelType.AUTOFILL));

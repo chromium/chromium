@@ -70,7 +70,7 @@ public class PasswordViewingTypeTest {
     @SmallTest
     @Feature({"Sync"})
     public void testUserRedirectSyncSettings() {
-        when(mSyncService.isSyncRequested()).thenReturn(true);
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isUsingExplicitPassphrase()).thenReturn(false);
 
@@ -85,7 +85,7 @@ public class PasswordViewingTypeTest {
     @Test
     @SmallTest
     public void testSyncingNativePasswordView() {
-        when(mSyncService.isSyncRequested()).thenReturn(true);
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.isEngineInitialized()).thenReturn(true);
         when(mSyncService.isUsingExplicitPassphrase()).thenReturn(true);
 
@@ -100,7 +100,7 @@ public class PasswordViewingTypeTest {
     @Test
     @SmallTest
     public void testNonSyncingNativePasswordView() {
-        when(mSyncService.isSyncRequested()).thenReturn(false);
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         when(mSyncService.isEngineInitialized()).thenReturn(false);
         when(mSyncService.isUsingExplicitPassphrase()).thenReturn(false);
 

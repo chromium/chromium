@@ -178,7 +178,7 @@ public class ManageSyncSettingsTest {
         }
         // All data types have been unchecked, but Sync itself should still be
         // enabled.
-        Assert.assertTrue(SyncTestUtil.isSyncRequested());
+        Assert.assertTrue(SyncTestUtil.isSyncFeatureEnabled());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class ManageSyncSettingsTest {
         // Sync is requested to start. Toggling SyncEverything will call setChosenDataTypes with
         // empty set in the backend. But sync stop request should not be called.
         mSyncTestRule.togglePreference(getSyncEverything(fragment));
-        Assert.assertTrue(SyncTestUtil.isSyncRequested());
+        Assert.assertTrue(SyncTestUtil.isSyncFeatureEnabled());
     }
 
     @Test

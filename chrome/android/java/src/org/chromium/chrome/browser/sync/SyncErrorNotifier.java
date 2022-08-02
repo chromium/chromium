@@ -81,7 +81,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
     public void syncStateChanged() {
         ThreadUtils.assertOnUiThread();
 
-        if (!mSyncService.isSyncRequested()) {
+        if (!mSyncService.isSyncFeatureEnabled()) {
             cancelNotifications();
         } else if (shouldSyncAuthErrorBeShown()) {
             // Auth errors take precedence over passphrase errors.

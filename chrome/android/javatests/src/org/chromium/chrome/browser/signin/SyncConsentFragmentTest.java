@@ -69,7 +69,6 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -438,9 +437,10 @@ public class SyncConsentFragmentTest {
                     .getIdentityManager()
                     .hasPrimaryAccount(ConsentLevel.SYNC);
         }, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        Assert.assertTrue(SyncTestUtil.isSyncRequested());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { Assert.assertFalse(SyncService.get().isFirstSetupComplete()); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertTrue(SyncService.get().isSyncRequested());
+            Assert.assertFalse(SyncService.get().isFirstSetupComplete());
+        });
         // Close the SettingsActivity.
         onView(withId(R.id.cancel_button)).perform(click());
     }

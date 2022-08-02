@@ -243,7 +243,7 @@ public class ContextualSearchUma {
     public static void logTapResultsSeen(boolean wasPanelSeen) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.Tap.ResultsSeen", wasPanelSeen);
-        if (SyncService.get() != null && SyncService.get().isSyncRequested()) {
+        if (SyncService.get() != null && SyncService.get().isSyncFeatureEnabled()) {
             RecordHistogram.recordBooleanHistogram(
                     "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen", wasPanelSeen);
         }

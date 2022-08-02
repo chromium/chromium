@@ -169,7 +169,7 @@ public class SigninCheckerTest {
                 3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
-        Assert.assertTrue(SyncTestUtil.isSyncRequested());
+        Assert.assertTrue(SyncTestUtil.isSyncFeatureEnabled());
     }
 
     @Test
@@ -191,7 +191,7 @@ public class SigninCheckerTest {
                 3, SigninCheckerProvider.get().getNumOfChildAccountChecksDoneForTests());
         Assert.assertTrue(
                 actionTester.getActions().contains("Signin_Signin_WipeDataOnChildAccountSignin2"));
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
     }
 
     @Test

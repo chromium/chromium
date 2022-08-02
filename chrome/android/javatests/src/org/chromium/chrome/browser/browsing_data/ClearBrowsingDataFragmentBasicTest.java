@@ -105,7 +105,7 @@ public class ClearBrowsingDataFragmentBasicTest {
 
     private void setSyncable(boolean syncable) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            when(mMockSyncService.isSyncRequested()).thenReturn(syncable);
+            when(mMockSyncService.isSyncFeatureEnabled()).thenReturn(syncable);
             when(mMockSyncService.getActiveDataTypes())
                     .thenReturn(syncable
                                     ? CollectionUtil.newHashSet(ModelType.HISTORY_DELETE_DIRECTIVES)

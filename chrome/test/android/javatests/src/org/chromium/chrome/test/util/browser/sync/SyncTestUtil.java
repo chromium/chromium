@@ -35,19 +35,19 @@ public final class SyncTestUtil {
     private SyncTestUtil() {}
 
     /**
-     * Returns whether sync is requested.
-     */
-    public static boolean isSyncRequested() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> SyncService.get().isSyncRequested());
-    }
-
-    /**
      * Returns whether sync-the-feature can start.
      */
     public static boolean canSyncFeatureStart() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> SyncService.get().canSyncFeatureStart());
+    }
+
+    /**
+     * Returns whether sync-the-feature is enabled.
+     */
+    public static boolean isSyncFeatureEnabled() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> SyncService.get().isSyncFeatureEnabled());
     }
 
     /**

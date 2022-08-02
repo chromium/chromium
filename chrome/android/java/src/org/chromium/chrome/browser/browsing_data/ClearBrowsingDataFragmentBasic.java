@@ -225,7 +225,7 @@ public class ClearBrowsingDataFragmentBasic extends ClearBrowsingDataFragment {
 
     private boolean isHistorySyncEnabled() {
         SyncService syncService = SyncService.get();
-        return syncService != null && syncService.isSyncRequested()
+        return syncService != null && syncService.isSyncFeatureEnabled()
                 && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 

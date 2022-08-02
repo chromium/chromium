@@ -47,7 +47,7 @@ public class SyncTest {
 
         // Signing out should disable sync.
         mSyncTestRule.signOut();
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
 
         // Signing back in should re-enable sync.
         mSyncTestRule.signinAndEnableSync(accountInfo);
@@ -71,7 +71,7 @@ public class SyncTest {
 
         // Clearing server data should turn off sync and sign out of chrome.
         Assert.assertNull(mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
         CriteriaHelper.pollUiThread(
                 ()
                         -> !IdentityServicesProvider.get()
@@ -89,7 +89,7 @@ public class SyncTest {
 
         mSyncTestRule.stopSync();
         Assert.assertEquals(accountInfo, mSyncTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-        Assert.assertFalse(SyncTestUtil.isSyncRequested());
+        Assert.assertFalse(SyncTestUtil.isSyncFeatureEnabled());
 
         mSyncTestRule.startSyncAndWait();
     }
