@@ -33,9 +33,6 @@ extern const char kOverrideModelDefaultValue[];
 extern const char kBackoffThresholdKey[];
 extern const char kContentLanguagesDisableObserversParam[];
 
-// Notify sync to update data on language determined.
-extern const base::Feature kNotifySyncOnLanguageDetermined;
-
 // This feature uses the existing UI for the Full Page Translate bubble.
 extern const base::Feature kUseButtonTranslateBubbleUi;
 

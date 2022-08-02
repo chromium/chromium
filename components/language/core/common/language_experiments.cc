@@ -24,8 +24,6 @@ const base::Feature kAppLanguagePromptULP{"AppLanguagePromptULP",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kForceAppLanguagePrompt{"ForceAppLanguagePrompt",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kNotifySyncOnLanguageDetermined{
-    "NotifySyncOnLanguageDetermined", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDetailedLanguageSettings{"DetailedLanguageSettings",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDesktopDetailedLanguageSettings{

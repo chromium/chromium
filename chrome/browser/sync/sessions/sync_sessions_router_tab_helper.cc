@@ -89,9 +89,7 @@ void SyncSessionsRouterTabHelper::DidOpenRequestedURL(
 
 void SyncSessionsRouterTabHelper::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  if (base::FeatureList::IsEnabled(language::kNotifySyncOnLanguageDetermined)) {
-    NotifyRouter();
-  }
+  NotifyRouter();
 }
 
 void SyncSessionsRouterTabHelper::NotifyRouter(bool page_load_completed) {
