@@ -92,7 +92,8 @@ class VIZ_SERVICE_EXPORT SkiaOutputDeviceBufferQueue : public SkiaOutputDevice {
 
   // Given an overlay mailbox, returns the corresponding OverlayData* from
   // |overlays_|. Inserts an OverlayData if mailbox is not in |overlays_|.
-  OverlayData* GetOrCreateOverlayData(const gpu::Mailbox& mailbox);
+  OverlayData* GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
+                                      bool* is_existing = nullptr);
 
   std::unique_ptr<OutputPresenter> presenter_;
 

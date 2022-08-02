@@ -342,8 +342,11 @@ const gpu::Mailbox SkiaOutputDeviceBufferQueue::GetImageMailboxForColor(
 #endif
 
 SkiaOutputDeviceBufferQueue::OverlayData*
-SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(
-    const gpu::Mailbox& mailbox) {
+SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(const gpu::Mailbox& mailbox,
+                                                    bool* is_existing) {
+  if (is_existing)
+    *is_existing = false;
+
   if (!mailbox.IsSharedImage())
     return nullptr;
 
@@ -353,6 +356,8 @@ SkiaOutputDeviceBufferQueue::GetOrCreateOverlayData(
     // added to keep it alive. This ref will be removed, when the overlay is
     // replaced by a new frame.
     it->Ref();
+    if (is_existing)
+      *is_existing = true;
     return &*it;
   }
 
@@ -428,7 +433,9 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 #endif
 
     OutputPresenter::ScopedOverlayAccess* access = nullptr;
-    auto* overlay_data = GetOrCreateOverlayData(mailbox);
+    bool overlay_has_been_submitted;
+    auto* overlay_data =
+        GetOrCreateOverlayData(mailbox, &overlay_has_been_submitted);
     if (overlay_data) {
       access = overlay_data->scoped_read_access();
       pending_overlay_mailboxes_.emplace_back(mailbox);
@@ -436,6 +443,7 @@ void SkiaOutputDeviceBufferQueue::ScheduleOverlays(
 
     std::unique_ptr<gfx::GpuFence> acquire_fence;
     if (context_state_->GrContextIsGL() && access &&
+        !overlay_has_been_submitted &&
         (access->representation()->usage() &
          gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING) &&
         gl::GLFence::IsGpuFenceSupported()) {
