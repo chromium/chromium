@@ -3436,7 +3436,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="431076611119798497">&amp;Ayrıntılar</translation>
 <translation id="4312701113286993760">{COUNT,plural, =1{1 Google Hesabı}other{<ph name="EXTRA_ACCOUNTS" /> Google Hesabı}}</translation>
 <translation id="4312866146174492540">Engelle (varsayılan)</translation>
-<translation id="4314497418046265427">Telefonunuzu <ph name="DEVICE_TYPE" /> cihazınıza bağladığınızda daha üretken olun</translation>
+<translation id="4314497418046265427">Telefonunuzu <ph name="DEVICE_TYPE" /> cihazınıza bağlayarak üretkenliğinizi artırın</translation>
 <translation id="4314815835985389558">Senkronizasyonu yönetin</translation>
 <translation id="4315933848520197627">Hesabın Bağlantısını Kaldırın</translation>
 <translation id="4316850752623536204">Geliştirici Web Sitesi</translation>
@@ -5570,7 +5570,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6466258437571594570">Sitelerin bildirim gönderme isteğinde bulunarak işinizi bölmesi engellenir</translation>
 <translation id="6466988389784393586">Tüm Yer İşaretlerini &amp;Aç</translation>
 <translation id="6467304607960172345">Tam ekran videoları optimize et</translation>
-<translation id="6467377768028664108">O zaman <ph name="DEVICE_TYPE" /> cihazınız:</translation>
+<translation id="6467377768028664108">Bağlantı kurduğunuzda <ph name="DEVICE_TYPE" /> cihazınızla şunları yapabilirsiniz:</translation>
 <translation id="6468485451923838994">Yazı tipleri</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> Dosya</translation>
 <translation id="6469557521904094793">Hücresel ağı aç</translation>

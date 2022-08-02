@@ -2739,7 +2739,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3616741288025931835">&amp;Limpar dados de navegação...</translation>
 <translation id="3617891479562106823">Os planos de fundo estão indisponíveis. Tente novamente mais tarde.</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
-<translation id="3619962278978697442">Escolha uma delas cada vez que fizer login</translation>
+<translation id="3619962278978697442">Escolha uma opção toda vez que fizer login</translation>
 <translation id="3621807901162200696">Ajudar a melhorar os recursos e o desempenho do ChromeOS</translation>
 <translation id="362266093274784978">{COUNT,plural, =1{um app}one{# app}other{# apps}}</translation>
 <translation id="362333465072914957">Esperando um certificado CA</translation>
@@ -3887,7 +3887,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="474609389162964566">Acesse o Google Assistente usando o "Ok Google"</translation>
 <translation id="4746351372139058112">Mensagens</translation>
 <translation id="4748783296226936791">Os sites geralmente se conectam a dispositivos HID para recursos que usam teclados diferentes, controles de jogos e outros dispositivos</translation>
-<translation id="4750185073185658673">Use o smartphone para revisar mais algumas permissões. Confira se o Bluetooth e o Wi-Fi dele estão ativados.</translation>
+<translation id="4750185073185658673">No smartphone, reveja se as permissões estão corretas. Confira se o Bluetooth e o Wi-Fi estão ativados.</translation>
 <translation id="4750394297954878236">Sugestões</translation>
 <translation id="475088594373173692">Primeiro usuário</translation>
 <translation id="4756378406049221019">Parar/Recarregar</translation>
@@ -5532,7 +5532,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="641469293210305670">Instalar atualizações e apps</translation>
 <translation id="6414878884710400018">Abrir preferências do sistema</translation>
 <translation id="6414888972213066896">Você perguntou ao seu responsável se pode visitar este site</translation>
-<translation id="6415900369006735853">Conecte-se à internet pelo smartphone</translation>
+<translation id="6415900369006735853">Conectar à Internet pelo smartphone</translation>
 <translation id="6416743254476733475">Permita ou bloqueie no seu computador.</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
 <translation id="6417468503703810114">Comportamento padrão</translation>
@@ -6342,7 +6342,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7228523857728654909">Bloqueio de tela e login</translation>
 <translation id="7230222852462421043">&amp;Restaurar janela</translation>
 <translation id="7230787553283372882">Personalizar o tamanho do texto</translation>
-<translation id="7231260028442989757">Veja, dispense e responda às notificações do smartphone.</translation>
+<translation id="7231260028442989757">Ver, dispensar e responder às notificações do smartphone</translation>
 <translation id="7232750842195536390">Falha na renomeação</translation>
 <translation id="723343421145275488">Pesquisar imagens com <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Cancelando restauração do Linux</translation>
