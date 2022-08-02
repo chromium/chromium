@@ -32,5 +32,5 @@ use_runtime_vlog = true
 Build and run tests:
 
 ```sh
-autoninja -C out/Default chromeos_components_unittests && out/Default/chromeos_components_unittests --gtest_filter=*FuzzyTokenizedStringMatchTest.Benchmark* --v=1
+autoninja -C out/Default chromeos_unittests && out/Default/chromeos_unittests --gtest_filter=*FuzzyTokenizedStringMatchTest.Benchmark* --v=1
 ```
