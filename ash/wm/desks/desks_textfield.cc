@@ -16,6 +16,7 @@
 #include "ui/views/accessibility/accessibility_paint_checks.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
 
@@ -135,6 +136,20 @@ void DesksTextfield::OnFocus() {
 void DesksTextfield::OnBlur() {
   GetRenderText()->SetElideBehavior(gfx::ELIDE_TAIL);
   views::Textfield::OnBlur();
+
+  // Avoid having the focus restored to the same DeskNameView when the desk bar
+  // widget is refocused. Use a post task to avoid calling
+  // `FocusManager::SetStoredFocusView()` while `FocusManager::ClearFocus()` is
+  // still being activated. In this case, we want to set the stored focus view
+  // to nullptr after the stack of the call to `FocusManager::ClearFocus()`
+  // returns completely.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<views::Widget> w) {
+                       if (w)
+                         w->GetFocusManager()->SetStoredFocusView(nullptr);
+                     },
+                     GetWidget()->GetWeakPtr()));
 }
 
 void DesksTextfield::OnDragEntered(const ui::DropTargetEvent& event) {

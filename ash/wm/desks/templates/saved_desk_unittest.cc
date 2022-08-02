@@ -2660,6 +2660,61 @@ TEST_F(SavedDeskTest, TemplatesNameHitTest) {
   }
 }
 
+// Tests that it can unfocus the desk name view and saved desk name view from
+// active status on clicking library button when we stay in templates grid.
+TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
+  // Save an entry in the templates grid.
+  AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now(),
+           DeskTemplateType::kTemplate);
+
+  OpenOverviewAndShowTemplatesGrid();
+  // Expect we stay in the templates grid.
+  auto* overview_grid = GetOverviewSession()->GetGridWithRootWindow(
+      Shell::GetPrimaryRootWindow());
+  ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+
+  DeskNameView* desk_name_view =
+      overview_grid->desks_bar_view()->mini_views().back()->desk_name_view();
+  // Tests if the desk name view rename can work correctly.
+  // Click the new desk name view which will be focused.
+  ClickOnView(desk_name_view);
+  EXPECT_TRUE(overview_grid->IsDeskNameBeingModified());
+  EXPECT_TRUE(desk_name_view->HasFocus());
+  EXPECT_TRUE(desk_name_view->HasSelection());
+
+  // Click Library button again to unfocus the desk name view when we stay in
+  // the templates grid.
+  ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+  ShowDesksTemplatesGrids();
+  ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+  EXPECT_TRUE(overview_grid->IsDesksBarViewActive());
+  EXPECT_FALSE(desk_name_view->HasFocus());
+
+  // Tests if the saved desk name view rename can work correctly.
+  // Click the desk name view at first, and then click the saved desk name view,
+  // and finally click the Library button.
+  ClickOnView(desk_name_view);
+  EXPECT_TRUE(overview_grid->IsDeskNameBeingModified());
+  EXPECT_TRUE(desk_name_view->HasFocus());
+  EXPECT_TRUE(desk_name_view->HasSelection());
+
+  SavedDeskNameView* saved_name_view =
+      GetItemViewFromTemplatesGrid(0)->name_view();
+  ClickOnView(saved_name_view);
+  EXPECT_TRUE(overview_grid->IsTemplateNameBeingModified());
+  EXPECT_TRUE(saved_name_view->HasFocus());
+  EXPECT_TRUE(saved_name_view->HasSelection());
+
+  ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+  ShowDesksTemplatesGrids();
+
+  // Check if the desk name view and the saved desk name view are all unfocused.
+  ASSERT_TRUE(overview_grid->IsShowingDesksTemplatesGrid());
+  EXPECT_TRUE(overview_grid->IsDesksBarViewActive());
+  EXPECT_FALSE(desk_name_view->HasFocus());
+  EXPECT_FALSE(saved_name_view->HasFocus());
+}
+
 // Tests that accessibility overrides are set as expected.
 TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInOverview) {
   auto window = CreateTestWindow(gfx::Rect(100, 100));
