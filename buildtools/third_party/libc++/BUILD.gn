@@ -73,6 +73,7 @@ target(_libcxx_target_type, "libc++") {
   sources = [
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
+    "trunk/src/assert.cpp",
     "trunk/src/atomic.cpp",
     "trunk/src/barrier.cpp",
     "trunk/src/bind.cpp",
@@ -114,7 +115,6 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/valarray.cpp",
     "trunk/src/variant.cpp",
     "trunk/src/vector.cpp",
-    "trunk/src/verbose_abort.cpp",
   ]
   include_dirs = [ "trunk/src" ]
   if (is_win) {
