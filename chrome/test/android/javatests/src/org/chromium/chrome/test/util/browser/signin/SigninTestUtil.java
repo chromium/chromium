@@ -149,9 +149,12 @@ public final class SigninTestUtil {
         ThreadUtils.assertOnBackgroundThread();
         CallbackHelper callbackHelper = new CallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IdentityServicesProvider.get()
-                    .getSigninManager(Profile.getLastUsedRegularProfile())
-                    .signOut(signoutReason, callbackHelper::notifyCalled, false);
+            final SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(
+                    Profile.getLastUsedRegularProfile());
+            signinManager.runAfterOperationInProgress(
+                    ()
+                            -> signinManager.signOut(
+                                    signoutReason, callbackHelper::notifyCalled, false));
         });
         try {
             callbackHelper.waitForFirst();
