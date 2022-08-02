@@ -13273,6 +13273,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Yes"/>
 </enum>
 
+<enum name="BooleanZipHasAES">
+  <int value="0" label="Zip does not have AES"/>
+  <int value="1" label="Zip has AES"/>
+</enum>
+
 <enum name="BootstrapTaskRunnerType">
   <int value="0" label="Posts at back of queue"/>
   <int value="1" label="Posts at front of queue"/>

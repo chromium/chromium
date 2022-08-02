@@ -55,6 +55,9 @@ void AnalyzeZipFile(base::File zip_file,
   bool timeout = false;
   results->file_count = 0;
   results->directory_count = 0;
+
+  bool has_encrypted = false;
+  bool has_aes_encrypted = false;
   while (const zip::ZipReader::Entry* const entry = reader.Next()) {
     if (base::Time::Now() - start_time >
         base::Milliseconds(kZipAnalysisTimeoutMs)) {
@@ -82,6 +85,14 @@ void AnalyzeZipFile(base::File zip_file,
       results->directory_count++;
     else
       results->file_count++;
+
+    has_encrypted |= entry->is_encrypted;
+    has_aes_encrypted |= entry->uses_aes_encryption;
+  }
+
+  if (has_encrypted) {
+    base::UmaHistogramBoolean("SBClientDownload.EncryptedZipUsesAes",
+                              has_aes_encrypted);
   }
 
   if (timeout) {

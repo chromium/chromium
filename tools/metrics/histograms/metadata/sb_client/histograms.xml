@@ -263,6 +263,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientDownload.EncryptedZipUsesAes" enum="BooleanZipHasAES"
+    expires_after="2023-01-15">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a downloaded ZIP contains any AES-encryped content. This is
+    logged once for every downloaded ZIP containing any encrypted content.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.ExtractDocumentFeaturesTimeMedium" units="ms"
     expires_after="2022-10-16">
   <obsolete>
