@@ -282,7 +282,7 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
           profile(), g_browser_process->metrics_service(),
           user_manager::UserManager::Get()));
 
-  if (base::FeatureList::IsEnabled(::features::kCrosPrivacyHub))
+  if (ash::features::IsCrosPrivacyHubEnabled())
     web_ui->AddMessageHandler(std::make_unique<PrivacyHubHandler>());
 
   if (IsSecureDnsAvailable())
@@ -339,8 +339,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean("isQuickDimEnabled",
                           ash::features::IsQuickDimEnabled());
 
-  html_source->AddBoolean("showPrivacyHub", base::FeatureList::IsEnabled(
-                                                ::features::kCrosPrivacyHub));
+  html_source->AddBoolean("showPrivacyHub",
+                          ash::features::IsCrosPrivacyHubEnabled());
 
   html_source->AddString(
       "smartPrivacyDesc",

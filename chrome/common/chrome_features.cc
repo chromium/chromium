@@ -193,10 +193,6 @@ const base::Feature kCryptohomeUserDataAuthKillswitch{
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Enables Privacy Hub for ChromeOS.
-const base::Feature kCrosPrivacyHub{"CrosPrivacyHub",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables parsing and enforcing Data Leak Prevention policy rules that
 // restricts usage of some system features, e.g.clipboard, screenshot, etc.
 // for confidential content.

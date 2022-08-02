@@ -340,6 +340,10 @@ const base::Feature kConsumerAutoUpdateToggleAllowed{
 const base::Feature kCrosNextWMP{"CrosNextWMP",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables Privacy Hub for ChromeOS.
+const base::Feature kCrosPrivacyHub{"CrosPrivacyHub",
+                                    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If enabled, replaces the `DeskMiniView` legacy desk close button and behavior
 // with a button to close desk and windows and a button to combine desks (the
 // legacy behavior).
@@ -1817,6 +1821,10 @@ bool IsLauncherItemColorSyncEnabled() {
 
 bool IsConsumerAutoUpdateToggleAllowed() {
   return base::FeatureList::IsEnabled(kConsumerAutoUpdateToggleAllowed);
+}
+
+bool IsCrosPrivacyHubEnabled() {
+  return base::FeatureList::IsEnabled(kCrosPrivacyHub);
 }
 
 bool IsCrosNextWMPEnabled() {
