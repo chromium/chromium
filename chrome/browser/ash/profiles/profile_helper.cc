@@ -23,6 +23,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -80,6 +81,10 @@ class ProfileHelperImpl : public ProfileHelper {
 
   // Returns OffTheRecord profile for use during signing phase.
   Profile* GetSigninProfile();
+
+  // Returns OffTheRecord profile for use during online authentication on the
+  // lock screen.
+  Profile* GetLockScreenProfile();
 
   // ProfileHelper overrides
   base::FilePath GetActiveUserProfileDir() override;
@@ -215,6 +220,11 @@ base::FilePath ProfileHelper::GetLockScreenProfileDir() {
 }
 
 // static
+Profile* ProfileHelper::GetLockScreenProfile() {
+  return GetImpl()->GetLockScreenProfile();
+}
+
+// static
 bool ProfileHelper::IsLockScreenProfile(const Profile* profile) {
   return profile && IsLockScreenProfilePath(profile->GetBaseName());
 }
@@ -322,6 +332,16 @@ Profile* ProfileHelperImpl::GetSigninProfile() {
   Profile* profile = Profile::FromBrowserContext(
       browser_context_helper_->delegate()->DeprecatedGetBrowserContext(
           GetSigninProfileDir()));
+  if (!profile)
+    return nullptr;
+  return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+}
+
+Profile* ProfileHelperImpl::GetLockScreenProfile() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  DCHECK(profile_manager);
+  Profile* profile =
+      profile_manager->GetProfileByPath(GetLockScreenProfileDir());
   if (!profile)
     return nullptr;
   return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);

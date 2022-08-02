@@ -134,12 +134,16 @@ void LockScreenReauthHandler::LoadAuthenticatorParam() {
 }
 
 void LockScreenReauthHandler::LoadGaia(const login::GaiaContext& context) {
+  LOG_ASSERT(Profile::FromWebUI(web_ui()) ==
+             ProfileHelper::Get()->GetLockScreenProfile());
   // Start a new session with SigninPartitionManager, generating a unique
   // StoragePartition.
   login::SigninPartitionManager* signin_partition_manager =
       login::SigninPartitionManager::Factory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()));
 
+  // TODO(http://crbug/1348126): we should also close signin session after the
+  // flow is finished.
   signin_partition_manager->StartSigninSession(
       web_ui()->GetWebContents(),
       base::BindOnce(&LockScreenReauthHandler::LoadGaiaWithPartition,

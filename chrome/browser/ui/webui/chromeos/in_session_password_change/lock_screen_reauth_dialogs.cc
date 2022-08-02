@@ -127,9 +127,8 @@ void LockScreenStartReauthDialog::OnProfileCreated(
     Profile* profile,
     Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED) {
-    profile_ = profile;
-    g_dialog->ShowSystemDialogForBrowserContext(
-        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    profile_ = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+    g_dialog->ShowSystemDialogForBrowserContext(profile_);
     const NetworkStateInformer::State state = network_state_informer_->state();
     // Show network or captive portal screen if needed.
     // TODO(crbug.com/1237407): Handle other states in NetworkStateInformer

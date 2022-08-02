@@ -4,20 +4,27 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/users/test_users.h"
+#include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"
@@ -28,12 +35,15 @@
 #include "components/account_id/account_id.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/cookies/canonical_cookie.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -46,6 +56,10 @@ constexpr char kTestAuthLSIDCookie2[] = "fake-auth-LSID-cookie-1";
 constexpr char kTestRefreshToken[] = "fake-refresh-token";
 constexpr char kWifiServicePath[] = "/service/wifi1";
 constexpr char kEthServicePath[] = "/service/eth1";
+
+constexpr char kSAMLIdPCookieName[] = "saml";
+constexpr char kSAMLIdPCookieValue[] = "value";
+constexpr char kAffiliationID[] = "test id";
 
 void ErrorCallbackFunction(base::OnceClosure run_loop_quit_closure,
                            const std::string& error_name,
@@ -125,6 +139,14 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
   void Login() { logged_in_user_mixin_.LogInUser(); }
 
+  void LoginWithoutUpdatingPolicies() {
+    logged_in_user_mixin_.LogInUser(/*issue_any_scope_token=*/false,
+                                    /*wait_for_active_session=*/true,
+                                    /*request_policy_update=*/false);
+  }
+
+  AccountId GetAccountId() { return logged_in_user_mixin_.GetAccountId(); }
+
   absl::optional<LockScreenReauthDialogTestHelper>
   StartSamlAndWaitForIdpPageLoad() {
     absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
@@ -142,6 +164,23 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
 
     reauth_dialog_helper->WaitForIdpPageLoad();
     return reauth_dialog_helper;
+  }
+
+  // Go through online authentication (with saml) flow on the lock screen.
+  void UnlockWithSAML() {
+    absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+        StartSamlAndWaitForIdpPageLoad();
+
+    // Fill-in the SAML IdP form and submit.
+    test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
+    signin_frame_js.CreateVisibilityWaiter(true, {"Email"})->Wait();
+    signin_frame_js.TypeIntoPath(FakeGaiaMixin::kEnterpriseUser1, {"Email"});
+    signin_frame_js.TypeIntoPath("actual_password", {"Password"});
+    signin_frame_js.TapOn("Submit");
+
+    // Ensures that the re-auth dialog is closed.
+    reauth_dialog_helper->WaitForReauthDialogToClose();
+    ScreenLockerTester().WaitForUnlock();
   }
 
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_; }
@@ -177,19 +216,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, Login) {
   // Lock the screen and trigger the lock screen SAML reauth dialog.
   ScreenLockerTester().Lock();
 
-  absl::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
-      StartSamlAndWaitForIdpPageLoad();
-
-  // Fill-in the SAML IdP form and submit.
-  test::JSChecker signin_frame_js = reauth_dialog_helper->SigninFrameJS();
-  signin_frame_js.CreateVisibilityWaiter(true, {"Email"})->Wait();
-  signin_frame_js.TypeIntoPath(FakeGaiaMixin::kEnterpriseUser1, {"Email"});
-  signin_frame_js.TypeIntoPath("actual_password", {"Password"});
-  signin_frame_js.TapOn("Submit");
-
-  // Ensures that the re-auth dialog is closed.
-  reauth_dialog_helper->WaitForReauthDialogToClose();
-  ScreenLockerTester().WaitForUnlock();
+  UnlockWithSAML();
 }
 
 // Tests the cancel button in Verify Screen.
@@ -803,6 +830,116 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
   reauth_dialog_helper->ExpectVerifyAccountScreenHidden();
+}
+
+// Fixture which allows to test transfer of saml cookies during online
+// reauthentication on the lock screen.
+class SAMLCookieTransferTest : public LockscreenWebUiTest {
+ public:
+  SAMLCookieTransferTest() {
+    device_state_.set_skip_initial_policy_setup(true);
+  }
+
+  SAMLCookieTransferTest(const SAMLCookieTransferTest&) = delete;
+  SAMLCookieTransferTest& operator=(const SAMLCookieTransferTest&) = delete;
+
+  ~SAMLCookieTransferTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    SessionManagerClient::InitializeFakeInMemory();
+    LockscreenWebUiTest::SetUpInProcessBrowserTestFixture();
+
+    policy::DevicePolicyCrosTestHelper device_policy_test_helper;
+    // Enable DeviceTransferSAMLCookies policy.
+    device_policy_test_helper.device_policy()
+        ->payload()
+        .mutable_saml_settings()
+        ->set_transfer_saml_cookies(true);
+    // Make user affiliated - this is another condition required to transfer
+    // saml cookies.
+    std::set<std::string> device_affiliation_ids;
+    device_affiliation_ids.insert(kAffiliationID);
+    auto affiliation_helper = policy::AffiliationTestHelper::CreateForCloud(
+        FakeSessionManagerClient::Get());
+    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetDeviceAffiliationIDs(
+        &device_policy_test_helper, device_affiliation_ids)));
+    policy::UserPolicyBuilder user_policy_builder;
+    ASSERT_NO_FATAL_FAILURE((affiliation_helper.SetUserAffiliationIDs(
+        &user_policy_builder, GetAccountId(), device_affiliation_ids)));
+  }
+
+  // Add some random cookie to user partition. This is needed because during
+  // online reauthentication on the lock screen we transfer cookies only if it
+  // is a subsequent login. To detect "subsequent login", we check if user's
+  // cookie jar is not empty. These tests do not simulate online authentication
+  // on sign-in screen which is why we need to add a cookie manually with this
+  // method.
+  void AddCookieToUserPartition() {
+    constexpr char kRandomCookieName[] = "random_cookie";
+    constexpr char kRandomCookieValue[] = "random_cookie_value";
+
+    Profile* profile = ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetActiveUser());
+    ASSERT_TRUE(profile);
+    net::CookieOptions options;
+    options.set_include_httponly();
+    profile->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->SetCanonicalCookie(
+            *net::CanonicalCookie::CreateSanitizedCookie(
+                fake_saml_idp()->GetSamlPageUrl(), kRandomCookieName,
+                kRandomCookieValue, ".example.com", /*path=*/std::string(),
+                /*creation_time=*/base::Time(),
+                /*expiration_time=*/base::Time(),
+                /*last_access_time=*/base::Time(), /*secure=*/true,
+                /*http_only=*/false, net::CookieSameSite::NO_RESTRICTION,
+                net::COOKIE_PRIORITY_DEFAULT, /*same_party=*/false,
+                /*partition_key=*/absl::nullopt),
+            fake_saml_idp()->GetSamlPageUrl(), options, base::DoNothing());
+    ExpectCookieInUserProfile(kRandomCookieName, kRandomCookieValue);
+  }
+
+  void ExpectCookieInUserProfile(const std::string& cookie_name,
+                                 const std::string& cookie_value) {
+    Profile* profile = ProfileHelper::Get()->GetProfileByUser(
+        user_manager::UserManager::Get()->GetActiveUser());
+    net::CookieList cookie_list_;
+    base::RunLoop run_loop;
+    profile->GetDefaultStoragePartition()
+        ->GetCookieManagerForBrowserProcess()
+        ->GetAllCookies(base::BindLambdaForTesting(
+            [&](const std::vector<net::CanonicalCookie>& cookies) {
+              cookie_list_ = cookies;
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    EXPECT_GT(cookie_list_.size(), 0);
+
+    const auto saml_cookie_iterator = base::ranges::find(
+        cookie_list_, cookie_name,
+        [](const net::CanonicalCookie& cookie) { return cookie.Name(); });
+    EXPECT_NE(saml_cookie_iterator, cookie_list_.end());
+    EXPECT_EQ(cookie_value, saml_cookie_iterator->Value());
+  }
+
+ private:
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+// Test transfer of saml cookies during online reauth on the lock screen
+IN_PROC_BROWSER_TEST_F(SAMLCookieTransferTest, CookieTransfer) {
+  fake_saml_idp()->SetCookieValue(kSAMLIdPCookieValue);
+  fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
+
+  LoginWithoutUpdatingPolicies();
+  AddCookieToUserPartition();
+
+  ScreenLockerTester().Lock();
+
+  UnlockWithSAML();
+
+  ExpectCookieInUserProfile(kSAMLIdPCookieName, kSAMLIdPCookieValue);
 }
 
 }  // namespace ash

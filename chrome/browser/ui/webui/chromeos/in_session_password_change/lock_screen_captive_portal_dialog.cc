@@ -21,9 +21,9 @@ LockScreenCaptivePortalDialog::LockScreenCaptivePortalDialog()
 LockScreenCaptivePortalDialog::~LockScreenCaptivePortalDialog() = default;
 
 void LockScreenCaptivePortalDialog::Show(Profile& profile) {
+  DCHECK(ProfileHelper::IsLockScreenProfile(&profile));
   if (!is_running_) {
-    ShowSystemDialogForBrowserContext(
-        profile.GetPrimaryOTRProfile(/*create_if_needed=*/true));
+    ShowSystemDialogForBrowserContext(&profile);
     is_running_ = true;
   }
   if (on_shown_callback_for_testing_) {

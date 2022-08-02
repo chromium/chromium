@@ -124,6 +124,19 @@ content::StoragePartition* GetSigninPartition() {
   return signin_partition_manager->GetCurrentStoragePartition();
 }
 
+content::StoragePartition* GetLockScreenPartition() {
+  Profile* lock_screen_profile = ProfileHelper::GetLockScreenProfile();
+  // TODO(http://crbug/1348126): dependency on SigninPartitionManager should be
+  // refactored after we clarify when and how do we clear data from the lock
+  // screen profile.
+  SigninPartitionManager* partition_manager =
+      SigninPartitionManager::Factory::GetForBrowserContext(
+          lock_screen_profile);
+  if (!partition_manager->IsInSigninSession())
+    return nullptr;
+  return partition_manager->GetCurrentStoragePartition();
+}
+
 network::mojom::NetworkContext* GetSigninNetworkContext() {
   content::StoragePartition* signin_partition = GetSigninPartition();
 

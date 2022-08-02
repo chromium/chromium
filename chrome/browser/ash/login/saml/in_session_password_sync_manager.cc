@@ -194,9 +194,10 @@ void InSessionPasswordSyncManager::CheckCredentials(
     PasswordChangedCallback callback) {
   user_context_ = user_context;
   password_changed_callback_ = std::move(callback);
-  content::StoragePartition* signin_partition = login::GetSigninPartition();
-  if (!signin_partition) {
-    LOG(ERROR) << "The sign-in partition is not available yet";
+  content::StoragePartition* lock_screen_partition =
+      login::GetLockScreenPartition();
+  if (!lock_screen_partition) {
+    LOG(ERROR) << "The lock screen partition is not available yet";
     OnCookiesTransfered();
     return;
   }
@@ -211,7 +212,7 @@ void InSessionPasswordSyncManager::CheckCredentials(
   }
 
   ProfileAuthData::Transfer(
-      signin_partition, primary_profile_->GetDefaultStoragePartition(),
+      lock_screen_partition, primary_profile_->GetDefaultStoragePartition(),
       false /*transfer_auth_cookies_on_first_login*/,
       transfer_saml_auth_cookies_on_subsequent_login,
       base::BindOnce(&InSessionPasswordSyncManager::OnCookiesTransfered,

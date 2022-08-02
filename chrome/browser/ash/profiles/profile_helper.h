@@ -100,6 +100,10 @@ class ProfileHelper
   // Returns the path that corresponds to the lockscreen profile.
   static base::FilePath GetLockScreenProfileDir();
 
+  // Returns OffTheRecord profile for use during online authentication on the
+  // lock screen.
+  static Profile* GetLockScreenProfile();
+
   // Returns true if |profile| is the lockscreen profile.
   static bool IsLockScreenProfile(const Profile* profile);
 

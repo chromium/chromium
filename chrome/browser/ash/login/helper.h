@@ -97,6 +97,10 @@ class NetworkStateHelper {
 // webui is torn down.
 content::StoragePartition* GetSigninPartition();
 
+// Returns the storage partition for the lock screen webview. Can return nullptr
+// if the lock screen partition is not available.
+content::StoragePartition* GetLockScreenPartition();
+
 // Returns the network context for the sign-in webview. Note the function
 // returns nullptr if the sign-in partition is not available yet, or if sign-in
 // webui is torn down.
