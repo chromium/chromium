@@ -27,7 +27,7 @@ class GeometryMapperTransformCacheTest : public testing::Test {
   }
 
   static bool HasScreenTransform(const TransformPaintPropertyNode& node) {
-    return !!node.GetTransformCache().screen_transform_;
+    return node.GetTransformCache().ScreenTransformIsValid();
   }
 
   static void Check2dTranslationToRoot(const TransformPaintPropertyNode& node,

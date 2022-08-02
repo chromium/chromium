@@ -50,11 +50,11 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
   // These getters must be called after UpdateScreenTransform() when screen
   // transform data is really needed.
   const TransformationMatrix& to_screen() const {
-    DCHECK(screen_transform_);
+    DCHECK(ScreenTransformIsValid());
     return screen_transform_->to_screen;
   }
   const TransformationMatrix& projection_from_screen() const {
-    DCHECK(screen_transform_);
+    DCHECK(ScreenTransformIsValid());
     return screen_transform_->projection_from_screen;
   }
   bool projection_from_screen_is_valid() const {
@@ -65,13 +65,19 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
            screen_transform_->projection_from_screen_is_valid;
   }
   void ApplyToScreen(TransformationMatrix& m) const {
-    if (UNLIKELY(screen_transform_))
+#if DCHECK_IS_ON()
+    CheckScreenTransformUpdated();
+#endif
+    if (UNLIKELY(ScreenTransformIsValid()))
       m.Multiply(to_screen());
     else
       ApplyToPlaneRoot(m);
   }
   void ApplyProjectionFromScreen(TransformationMatrix& m) const {
-    if (UNLIKELY(screen_transform_))
+#if DCHECK_IS_ON()
+    CheckScreenTransformUpdated();
+#endif
+    if (UNLIKELY(ScreenTransformIsValid()))
       m.Multiply(projection_from_screen());
     else
       ApplyFromPlaneRoot(m);
@@ -138,6 +144,10 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
 #endif
 
   void Update(const TransformPaintPropertyNode&);
+
+  bool ScreenTransformIsValid() const {
+    return screen_transform_ && screen_transform_->is_valid;
+  }
 
   static unsigned s_global_generation;
 
@@ -218,6 +228,7 @@ class PLATFORM_EXPORT GeometryMapperTransformCache {
     TransformationMatrix projection_from_screen;
     bool projection_from_screen_is_valid = false;
     bool has_animation = false;
+    bool is_valid = false;
   };
   std::unique_ptr<ScreenTransform> screen_transform_;
 
