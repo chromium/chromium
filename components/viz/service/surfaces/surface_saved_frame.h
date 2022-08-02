@@ -51,6 +51,7 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
     // Texture representation.
     gpu::Mailbox mailbox;
     gpu::SyncToken sync_token;
+    gfx::ColorSpace color_space;
 
     // Software bitmap representation.
     SkBitmap bitmap;

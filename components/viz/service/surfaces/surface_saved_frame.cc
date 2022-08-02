@@ -344,6 +344,7 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
     auto output_copy_texture = *output_copy->GetTextureResult();
     slot->mailbox = output_copy_texture.planes[0].mailbox;
     slot->sync_token = output_copy_texture.planes[0].sync_token;
+    slot->color_space = output_copy_texture.color_space;
 
     CopyOutputResult::ReleaseCallbacks release_callbacks =
         output_copy->TakeTextureOwnership();
@@ -412,6 +413,9 @@ SurfaceSavedFrame::OutputCopyResult::operator=(OutputCopyResult&& other) {
 
   sync_token = std::move(other.sync_token);
   other.sync_token = gpu::SyncToken();
+
+  color_space = std::move(other.color_space);
+  other.color_space = gfx::ColorSpace();
 
   bitmap = std::move(other.bitmap);
   other.bitmap = SkBitmap();
