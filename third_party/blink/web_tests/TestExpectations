@@ -7092,14 +7092,8 @@ crbug.com/1348447 [ Linux ] virtual/third-party-storage-partitioning/external/wp
 crbug.com/1347675 virtual/fenced-frame-mparch/wpt_internal/fenced_frame/fragment-navigation.https.html [ Pass Timeout ]
 
 # Sheriff 2022-08-01
-crbug.com/1348835 [ Linux ] virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass ]
-crbug.com/1348835 [ Mac ] virtual/threaded-no-composited-antialiasing/animations/sample-on-last-keyframe.html [ Failure Pass ]
-
 # TODO(crbug.com/1225773): Re-enable this test
 crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-model-2/unhandled-promise-rejections/promise-rejection-event-during-parse.html [ Skip ]
 
 # Flaky timeouts on WebKit Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Pass Timeout ]
-
-# TODO(crbug.com/1348836): Re-enable this test
-crbug.com/1348836 external/wpt/accessibility/crashtests/aria-owns-fallback-content.html [ Skip ]
