@@ -55,11 +55,12 @@ std::string GetPerDisplayPref(PrefService* prefs,
   std::string pref_key = base::NumberToString(display_id);
   bool has_per_display_prefs = false;
   if (!pref_key.empty()) {
-    const base::Value* shelf_prefs =
-        prefs->GetDictionary(prefs::kShelfPreferences);
-    const base::Value* display_pref = shelf_prefs->FindDictKey(pref_key);
+    const base::Value::Dict& shelf_prefs =
+        prefs->GetValueDict(prefs::kShelfPreferences);
+    const base::Value::Dict* display_pref = shelf_prefs.FindDict(pref_key);
     if (display_pref) {
-      const std::string* per_display_value = display_pref->FindStringPath(path);
+      const std::string* per_display_value =
+          display_pref->FindStringByDottedPath(path);
       if (per_display_value)
         return *per_display_value;
     }
@@ -67,7 +68,7 @@ std::string GetPerDisplayPref(PrefService* prefs,
     // If the pref for the specified display is not found, scan the whole prefs
     // and check if the prefs for other display is already specified.
     std::string unused_value;
-    for (const auto iter : shelf_prefs->DictItems()) {
+    for (const auto iter : shelf_prefs) {
       if (iter.second.is_dict() && iter.second.FindStringPath(path)) {
         has_per_display_prefs = true;
         break;
@@ -92,15 +93,14 @@ void SetPerDisplayPref(PrefService* prefs,
     return;
 
   // Avoid DictionaryPrefUpdate's notifications for read but unmodified prefs.
-  const base::Value* current_shelf_prefs =
-      prefs->GetDictionary(prefs::kShelfPreferences);
-  DCHECK(current_shelf_prefs);
+  const base::Value::Dict& current_shelf_prefs =
+      prefs->GetValueDict(prefs::kShelfPreferences);
   std::string display_key = base::NumberToString(display_id);
-  const base::Value* current_display_prefs =
-      current_shelf_prefs->FindDictKey(display_key);
+  const base::Value::Dict* current_display_prefs =
+      current_shelf_prefs.FindDict(display_key);
   if (current_display_prefs) {
     const std::string* current_value =
-        current_display_prefs->FindStringPath(pref_key);
+        current_display_prefs->FindStringByDottedPath(pref_key);
     if (current_value && *current_value == value)
       return;
   }
