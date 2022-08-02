@@ -1921,9 +1921,8 @@ void FormStructure::RationalizeRepeatedFields(
 void FormStructure::RationalizeFieldTypePredictions(LogManager* log_manager) {
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
-  for (const auto& field : fields_) {
+  for (const auto& field : fields_)
     field->SetTypeTo(field->Type());
-  }
   RationalizeTypeRelationships(log_manager);
 }
 
