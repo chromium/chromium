@@ -119,7 +119,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   bool IsMediaSessionAudioFocusDebugAvailable() const;
   bool IsMediaSessionControllerAvailable() const;
   bool IsMetricsReportingAvailable() const;
-  bool IsScreenManagerAvailable() const;
   bool IsSensorHalClientAvailable() const;
   bool IsStableVideoDecoderFactoryAvailable() const;
 
@@ -222,10 +221,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosService {
   void BindRemoteAppsLacrosBridge(
       mojo::PendingReceiver<
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge> receiver);
-
-  // This may be called on any thread.
-  void BindScreenManagerReceiver(
-      mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver);
 
   // This may be called on any thread.
   void BindSensorHalClient(

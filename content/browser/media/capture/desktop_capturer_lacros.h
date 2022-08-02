@@ -69,9 +69,6 @@ class DesktopCapturerLacros : public webrtc::DesktopCapturer {
   // Thus, we do not worry about thread safety when invoking callback_.
   raw_ptr<Callback> callback_ = nullptr;
 
-  // The remote connection to the screen manager.
-  mojo::Remote<crosapi::mojom::ScreenManager> screen_manager_;
-
   // A remote for an ash interface that is responsible for either capturing
   // screen snapshots or window snapshots.
   mojo::Remote<crosapi::mojom::SnapshotCapturer> snapshot_capturer_;

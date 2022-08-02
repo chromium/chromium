@@ -67,13 +67,12 @@ VideoCaptureDeviceProxyLacros::VideoCaptureDeviceProxyLacros(
   // late shut-down. This class should never be used in those two times.
   auto* lacros_service = chromeos::LacrosService::Get();
   DCHECK(lacros_service);
-  DCHECK(lacros_service->IsScreenManagerAvailable());
-  lacros_service->BindScreenManagerReceiver(
-      screen_manager_.BindNewPipeAndPassReceiver());
+  DCHECK(lacros_service->IsAvailable<crosapi::mojom::ScreenManager>());
 
-  screen_manager_.set_disconnect_handler(base::BindOnce(
-      &VideoCaptureDeviceProxyLacros::OnFatalError, base::Unretained(this),
-      "Mojo connection to screen manager was closed"));
+  lacros_service->GetRemote<crosapi::mojom::ScreenManager>()
+      .set_disconnect_handler(base::BindOnce(
+          &VideoCaptureDeviceProxyLacros::OnFatalError, base::Unretained(this),
+          "Mojo connection to screen manager was closed"));
 }
 
 VideoCaptureDeviceProxyLacros::~VideoCaptureDeviceProxyLacros() {
@@ -98,14 +97,17 @@ void VideoCaptureDeviceProxyLacros::AllocateAndStartWithReceiver(
     return;
   }
 
+  auto* lacros_service = chromeos::LacrosService::Get();
   switch (capture_id_.type) {
     case DesktopMediaID::TYPE_SCREEN:
-      screen_manager_->GetScreenVideoCapturer(
-          device_.BindNewPipeAndPassReceiver(), capture_id_.id);
+      lacros_service->GetRemote<crosapi::mojom::ScreenManager>()
+          ->GetScreenVideoCapturer(device_.BindNewPipeAndPassReceiver(),
+                                   capture_id_.id);
       break;
     case DesktopMediaID::TYPE_WINDOW:
-      screen_manager_->GetWindowVideoCapturer(
-          device_.BindNewPipeAndPassReceiver(), capture_id_.id);
+      lacros_service->GetRemote<crosapi::mojom::ScreenManager>()
+          ->GetWindowVideoCapturer(device_.BindNewPipeAndPassReceiver(),
+                                   capture_id_.id);
       break;
     case DesktopMediaID::TYPE_NONE:
     case DesktopMediaID::TYPE_WEB_CONTENTS:

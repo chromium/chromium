@@ -88,8 +88,6 @@ void DesktopCapturerLacros::Start(Callback* callback) {
   // late shut-down. This class should never be used in those two times.
   auto* lacros_service = chromeos::LacrosService::Get();
   DCHECK(lacros_service);
-  lacros_service->BindScreenManagerReceiver(
-      screen_manager_.BindNewPipeAndPassReceiver());
 
   // Lacros can assume that Ash is at least M88.
   int version =
@@ -97,11 +95,11 @@ void DesktopCapturerLacros::Start(Callback* callback) {
   CHECK_GE(version, 1);
 
   if (capture_type_ == kScreen) {
-    screen_manager_->GetScreenCapturer(
-        snapshot_capturer_.BindNewPipeAndPassReceiver());
+    lacros_service->GetRemote<crosapi::mojom::ScreenManager>()
+        ->GetScreenCapturer(snapshot_capturer_.BindNewPipeAndPassReceiver());
   } else {
-    screen_manager_->GetWindowCapturer(
-        snapshot_capturer_.BindNewPipeAndPassReceiver());
+    lacros_service->GetRemote<crosapi::mojom::ScreenManager>()
+        ->GetWindowCapturer(snapshot_capturer_.BindNewPipeAndPassReceiver());
   }
 }
 

@@ -420,6 +420,9 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::ResourceManager,
                   &crosapi::mojom::Crosapi::BindResourceManager,
                   Crosapi::MethodMinVersions::kBindResourceManagerMinVersion>();
+  ConstructRemote<crosapi::mojom::ScreenManager,
+                  &crosapi::mojom::Crosapi::BindScreenManager,
+                  Crosapi::MethodMinVersions::kBindScreenManagerMinVersion>();
   ConstructRemote<crosapi::mojom::SelectFile,
                   &crosapi::mojom::Crosapi::BindSelectFile,
                   Crosapi::MethodMinVersions::kBindSelectFileMinVersion>();
@@ -576,13 +579,6 @@ bool LacrosService::IsMetricsReportingAvailable() const {
              Crosapi::MethodMinVersions::kBindMetricsReportingMinVersion;
 }
 
-bool LacrosService::IsScreenManagerAvailable() const {
-  absl::optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindScreenManagerMinVersion;
-}
-
 bool LacrosService::IsSensorHalClientAvailable() const {
   absl::optional<uint32_t> version = CrosapiVersion();
   return version &&
@@ -686,14 +682,6 @@ void LacrosService::BindRemoteAppsLacrosBridge(
           chromeos::remote_apps::mojom::RemoteAppsLacrosBridge>,
       &crosapi::mojom::Crosapi::BindRemoteAppsLacrosBridge>(
       std::move(receiver));
-}
-
-void LacrosService::BindScreenManagerReceiver(
-    mojo::PendingReceiver<crosapi::mojom::ScreenManager> pending_receiver) {
-  DCHECK(IsScreenManagerAvailable());
-  BindPendingReceiverOrRemote<
-      mojo::PendingReceiver<crosapi::mojom::ScreenManager>,
-      &crosapi::mojom::Crosapi::BindScreenManager>(std::move(pending_receiver));
 }
 
 void LacrosService::BindSensorHalClient(
