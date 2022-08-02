@@ -189,8 +189,14 @@ TEST_F(NetworkStateTest, CaptivePortalState) {
       base::HexEncode(network_name.c_str(), network_name.length());
   EXPECT_TRUE(SetStringProperty(shill::kWifiHexSsid, hex_ssid));
 
-  // State != portal -> portal_state() == kOnline
+  // State != portal or online -> portal_state() == kUnknown
   EXPECT_TRUE(SetStringProperty(shill::kStateProperty, shill::kStateReady));
+  SignalInitialPropertiesReceived();
+  EXPECT_EQ(network_state_.GetPortalState(),
+            NetworkState::PortalState::kUnknown);
+
+  // State == online -> portal_state() == kOnline
+  EXPECT_TRUE(SetStringProperty(shill::kStateProperty, shill::kStateOnline));
   SignalInitialPropertiesReceived();
   EXPECT_EQ(network_state_.GetPortalState(),
             NetworkState::PortalState::kOnline);

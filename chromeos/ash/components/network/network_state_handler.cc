@@ -44,10 +44,7 @@ constexpr char kReasonUpdateDeviceIPConfig[] = "UpdateDeviceIPConfig";
 constexpr char kReasonTether[] = "Tether Change";
 
 bool ConnectionStateChanged(const NetworkState* network,
-                            const std::string& prev_connection_state,
-                            NetworkState::PortalState prev_portal_state) {
-  if (network->GetPortalState() != prev_portal_state)
-    return true;
+                            const std::string& prev_connection_state) {
   std::string connection_state = network->connection_state();
   bool prev_idle = prev_connection_state.empty() ||
                    prev_connection_state == shill::kStateIdle;
@@ -570,9 +567,9 @@ void NetworkStateHandler::SetNetworkChromePortalState(
   NetworkState* network = GetModifiableNetworkState(service_path);
   if (!network)
     return;
-  bool was_captive_portal = network->IsCaptivePortal();
+  auto prev_portal_state = network->GetPortalState();
   network->set_chrome_portal_state(portal_state);
-  if (was_captive_portal == network->IsCaptivePortal())
+  if (prev_portal_state == network->GetPortalState())
     return;
   network_list_sorted_ = false;
   OnNetworkConnectionStateChanged(network);
@@ -995,8 +992,7 @@ void NetworkStateHandler::SetTetherNetworkStateConnectionState(
   tether_network_state->SetConnectionState(connection_state);
   network_list_sorted_ = false;
 
-  if (ConnectionStateChanged(tether_network_state, prev_connection_state,
-                             tether_network_state->GetPortalState())) {
+  if (ConnectionStateChanged(tether_network_state, prev_connection_state)) {
     NET_LOG(EVENT) << "Changing connection state for Tether network with GUID "
                    << guid << ". Old state: " << prev_connection_state << ", "
                    << "New state: " << connection_state;
@@ -1429,7 +1425,6 @@ void NetworkStateHandler::UpdateNetworkStateProperties(
   DCHECK(network);
   bool network_property_updated = false;
   std::string prev_connection_state = network->connection_state();
-  NetworkState::PortalState prev_portal_state = network->GetPortalState();
   bool metered = false;
   bool had_icccid_before_update = !network->iccid().empty();
   for (const auto iter : properties.DictItems()) {
@@ -1456,8 +1451,7 @@ void NetworkStateHandler::UpdateNetworkStateProperties(
   // Notify observers of NetworkState changes.
   if (network_property_updated || network->update_requested()) {
     // Signal connection state changed after all properties have been updated.
-    if (ConnectionStateChanged(network, prev_connection_state,
-                               prev_portal_state)) {
+    if (ConnectionStateChanged(network, prev_connection_state)) {
       // Also notifies that the default network changed if this is the default.
       OnNetworkConnectionStateChanged(network);
     } else if (network->path() == default_network_path_ &&
@@ -1486,7 +1480,6 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
     return;
   }
   std::string prev_connection_state = network->connection_state();
-  NetworkState::PortalState prev_portal_state = network->GetPortalState();
   std::string prev_profile_path = network->profile_path();
   bool had_icccid_before_update = !network->iccid().empty();
   changed |= network->PropertyChanged(key, value);
@@ -1504,8 +1497,7 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
 
   if (key == shill::kStateProperty || key == shill::kVisibleProperty) {
     network_list_sorted_ = false;
-    if (ConnectionStateChanged(network, prev_connection_state,
-                               prev_portal_state)) {
+    if (ConnectionStateChanged(network, prev_connection_state)) {
       notify_connection_state = true;
       notify_active = true;
       if (notify_default)

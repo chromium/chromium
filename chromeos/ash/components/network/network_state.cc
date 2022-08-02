@@ -419,6 +419,10 @@ void NetworkState::SetConnectionState(const std::string& connection_state) {
     // important (i.e. not a normal auto connect).
     connect_requested_ = true;
   }
+  if (shill_portal_state_ == PortalState::kUnknown &&
+      connection_state_ == shill::kStateOnline) {
+    shill_portal_state_ = PortalState::kOnline;
+  }
 }
 
 bool NetworkState::IsManagedByPolicy() const {
@@ -669,8 +673,10 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
                               : PortalState::kPortal;
   } else if (connection_state_ == shill::kStatePortalSuspected) {
     shill_portal_state_ = PortalState::kPortalSuspected;
-  } else {
+  } else if (connection_state_ == shill::kStateOnline) {
     shill_portal_state_ = PortalState::kOnline;
+  } else {
+    shill_portal_state_ = PortalState::kUnknown;
   }
 
   UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkStateResult",
