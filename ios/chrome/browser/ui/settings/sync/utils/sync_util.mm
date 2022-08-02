@@ -30,7 +30,7 @@ namespace {
 // as a ratio of the number of active sync users.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-enum InfobarSyncError {
+enum InfobarSyncError : uint8_t {
   SYNC_SIGN_IN_NEEDS_UPDATE = 1,
   // DEPRECATED. No longer recorded.
   // SYNC_SERVICE_UNAVAILABLE = 2
