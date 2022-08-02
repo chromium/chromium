@@ -244,7 +244,7 @@ class CC_EXPORT CompositorFrameReportingController {
 
   // Container that stores the EventLatency stage latency predictions based on
   // previous event traces.
-  CompositorFrameReporter::EventLatencyPredictions event_latency_predictions_;
+  CompositorFrameReporter::EventLatencyInfo event_latency_predictions_;
 };
 
 }  // namespace cc

@@ -26,6 +26,8 @@ constexpr char kTraceCategory[] = "cc,benchmark";
 constexpr int kNumOfStages = static_cast<int>(StageType::kStageTypeCount);
 constexpr int kNumDispatchStages =
     static_cast<int>(EventMetrics::DispatchStage::kMaxValue);
+constexpr base::TimeDelta kDefaultLatencyPredictionDeviationThreshold =
+    base::Milliseconds(8.33);
 }  // namespace
 
 CompositorFrameReportingController::CompositorFrameReportingController(
@@ -38,8 +40,8 @@ CompositorFrameReportingController::CompositorFrameReportingController(
       previous_latency_predictions_main_(kNumOfStages, base::Microseconds(-1)),
       previous_latency_predictions_impl_(kNumOfStages, base::Microseconds(-1)),
       event_latency_predictions_(
-          CompositorFrameReporter::EventLatencyPredictions(
-              kNumDispatchStages)) {
+          CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
+                                                    kNumOfStages)) {
   if (should_report_ukm) {
     // UKM metrics should be reported if and only if `latency_ukm_reporter` is
     // set on `global_trackers_`.
@@ -481,6 +483,10 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
     reporter->TerminateFrame(termination_status,
                              details.presentation_feedback.timestamp);
 
+    base::TimeDelta frame_interval =
+        details.presentation_feedback.interval.is_zero()
+            ? kDefaultLatencyPredictionDeviationThreshold
+            : (details.presentation_feedback.interval) / 2;
     switch (reporter->get_reporter_type()) {
       case CompositorFrameReporter::ReporterType::kImpl:
         reporter->CalculateStageLatencyPrediction(
@@ -510,7 +516,8 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
 
       // TODO(crbug.com/1334827): Consider using a separate container to
       // differentiate event predictions with and without a main dispatch stage.
-      reporter->CalculateEventLatencyPrediction(event_latency_predictions_);
+      reporter->CalculateEventLatencyPrediction(event_latency_predictions_,
+                                                frame_interval);
 
       // For presented frames, if `reporter` was cloned from another reporter,
       // and the original reporter is still alive, then check whether the cloned

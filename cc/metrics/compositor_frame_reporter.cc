@@ -554,15 +554,14 @@ CompositorFrameReporter::StageData::StageData(StageType stage_type,
 CompositorFrameReporter::StageData::StageData(const StageData&) = default;
 CompositorFrameReporter::StageData::~StageData() = default;
 
-CompositorFrameReporter::EventLatencyPredictions::EventLatencyPredictions() =
-    default;
-CompositorFrameReporter::EventLatencyPredictions::EventLatencyPredictions(
-    const int num_dispatch_stages)
+CompositorFrameReporter::EventLatencyInfo::EventLatencyInfo(
+    const int num_dispatch_stages,
+    const int num_compositor_stages)
     : dispatch_durations(num_dispatch_stages, base::Microseconds(-1)),
       transition_duration(base::Microseconds(-1)),
+      compositor_durations(num_compositor_stages, base::Microseconds(-1)),
       total_duration(base::Microseconds(-1)) {}
-CompositorFrameReporter::EventLatencyPredictions::~EventLatencyPredictions() =
-    default;
+CompositorFrameReporter::EventLatencyInfo::~EventLatencyInfo() = default;
 
 void CompositorFrameReporter::StartStage(
     CompositorFrameReporter::StageType stage_type,
@@ -1310,13 +1309,14 @@ void CompositorFrameReporter::CalculateStageLatencyPrediction(
 }
 
 void CompositorFrameReporter::CalculateEventLatencyPrediction(
-    CompositorFrameReporter::EventLatencyPredictions&
-        event_latency_predictions) {
+    CompositorFrameReporter::EventLatencyInfo& predicted_event_latency,
+    base::TimeDelta prediction_deviation_threshold) {
   if (events_metrics_.empty())
     return;
 
   // TODO(crbug.com/1334827): Explore calculating predictions for multiple
-  // events.
+  // events. Currently only kGestureScrollUpdate event predictions
+  // are being calculated, consider including other stages in future changes.
   auto& event_metrics = events_metrics_.front();
 
   base::TimeTicks dispatch_start_time =
@@ -1345,8 +1345,9 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
   if (total_dispatch_duration.is_negative())
     return;
 
-  std::vector<base::TimeDelta> actual_dispatch_durations(
-      kNumDispatchStages, base::Microseconds(-1));
+  CompositorFrameReporter::EventLatencyInfo actual_event_latency(
+      kNumDispatchStages, kNumOfStages);
+  actual_event_latency.total_duration = base::Microseconds(0);
 
   // Determine dispatch stage durations.
   base::TimeTicks previous_timetick = dispatch_start_time;
@@ -1361,14 +1362,15 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
       // previous_timetick.
       if (current_timetick > previous_timetick) {
         base::TimeDelta stage_duration = current_timetick - previous_timetick;
-        actual_dispatch_durations[static_cast<int>(stage) - 1] = stage_duration;
+        actual_event_latency.dispatch_durations[static_cast<int>(stage) - 1] =
+            stage_duration;
+        actual_event_latency.total_duration += stage_duration;
         previous_timetick = current_timetick;
       }
     }
   }
 
   // Determine dispatch-to-compositor transition stage duration.
-  base::TimeDelta actual_transition_duration;
   auto stage_it = std::find_if(
       stage_history_.begin(), stage_history_.end(),
       [dispatch_end_time](const CompositorFrameReporter::StageData& stage) {
@@ -1376,35 +1378,66 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
       });
   if (stage_it != stage_history_.end()) {
     if (dispatch_end_time < stage_it->start_time) {
-      actual_transition_duration = stage_it->start_time - dispatch_end_time;
+      base::TimeDelta stage_duration = stage_it->start_time - dispatch_end_time;
+      actual_event_latency.transition_duration = stage_duration;
+      actual_event_latency.total_duration += stage_duration;
     }
   }
+
+  // Determine compositor stage durations, which start from stage_it for
+  // EventLatency.
+  for (auto stage = stage_it; stage != stage_history_.end(); stage++) {
+    base::TimeDelta stage_duration = stage->end_time - stage->start_time;
+    if (stage_duration.is_positive()) {
+      actual_event_latency
+          .compositor_durations[static_cast<int>(stage->stage_type)] =
+          stage_duration;
+      actual_event_latency.total_duration += stage_duration;
+    }
+  }
+
+  // TODO(crbug.com/1334827): Implement attribution for the substage with the
+  // highest latency.
 
   // Calculate new dispatch stage predictions.
   base::TimeDelta predicted_total_duration = base::Microseconds(0);
   for (int i = 0; i < kNumDispatchStages; i++) {
-    if (actual_dispatch_durations[i].is_positive()) {
-      event_latency_predictions.dispatch_durations[i] =
-          CalculateWeightedAverage(
-              event_latency_predictions.dispatch_durations[i],
-              actual_dispatch_durations[i]);
+    if (actual_event_latency.dispatch_durations[i].is_positive()) {
+      predicted_event_latency.dispatch_durations[i] = CalculateWeightedAverage(
+          predicted_event_latency.dispatch_durations[i],
+          actual_event_latency.dispatch_durations[i]);
     }
-    if (event_latency_predictions.dispatch_durations[i].is_positive()) {
-      predicted_total_duration +=
-          event_latency_predictions.dispatch_durations[i];
+    if (predicted_event_latency.dispatch_durations[i].is_positive()) {
+      predicted_total_duration += predicted_event_latency.dispatch_durations[i];
     }
   }
 
   // Calculate new dispatch-to-compositor transition stage predictions.
-  if (actual_transition_duration.is_positive()) {
-    event_latency_predictions.transition_duration =
-        CalculateWeightedAverage(event_latency_predictions.transition_duration,
-                                 actual_transition_duration);
-    if (event_latency_predictions.transition_duration.is_positive())
-      predicted_total_duration += event_latency_predictions.transition_duration;
+  if (actual_event_latency.transition_duration.is_positive()) {
+    predicted_event_latency.transition_duration =
+        CalculateWeightedAverage(predicted_event_latency.transition_duration,
+                                 actual_event_latency.transition_duration);
+    if (predicted_event_latency.transition_duration.is_positive())
+      predicted_total_duration += predicted_event_latency.transition_duration;
   }
 
-  event_latency_predictions.total_duration = predicted_total_duration;
+  // Calculate new compositor stage predictions.
+  // TODO(crbug.com/1334827): Explore using existing PipelineReporter
+  // predictions for the compositor stage.
+  for (int i = 0; i < kNumOfStages; i++) {
+    if (actual_event_latency.compositor_durations[i].is_positive()) {
+      predicted_event_latency.compositor_durations[i] =
+          CalculateWeightedAverage(
+              predicted_event_latency.compositor_durations[i],
+              actual_event_latency.compositor_durations[i]);
+    }
+    if (predicted_event_latency.compositor_durations[i].is_positive()) {
+      predicted_total_duration +=
+          predicted_event_latency.compositor_durations[i];
+    }
+  }
+
+  predicted_event_latency.total_duration = predicted_total_duration;
 }
 
 void CompositorFrameReporter::SetPartialUpdateDecider(

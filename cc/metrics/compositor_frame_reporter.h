@@ -148,14 +148,15 @@ class CC_EXPORT CompositorFrameReporter {
     ~StageData();
   };
 
-  struct CC_EXPORT EventLatencyPredictions {
+  struct CC_EXPORT EventLatencyInfo {
     std::vector<base::TimeDelta> dispatch_durations;
     base::TimeDelta transition_duration;
+    std::vector<base::TimeDelta> compositor_durations;
     base::TimeDelta total_duration;
-    EventLatencyPredictions();
-    explicit EventLatencyPredictions(const int num_dispatch_stages);
-    EventLatencyPredictions(const EventLatencyPredictions&);
-    ~EventLatencyPredictions();
+    EventLatencyInfo(const int num_dispatch_stages,
+                     const int num_compositor_stages);
+    EventLatencyInfo(const EventLatencyInfo&);
+    ~EventLatencyInfo();
   };
 
   using SmoothThread = FrameInfo::SmoothThread;
@@ -375,8 +376,8 @@ class CC_EXPORT CompositorFrameReporter {
   // Sets EventLatency stage duration predictions based on previous trace
   // durations using exponentially weighted averages.
   void CalculateEventLatencyPrediction(
-      CompositorFrameReporter::EventLatencyPredictions&
-          event_latency_predictions);
+      CompositorFrameReporter::EventLatencyInfo& predicted_event_latency,
+      base::TimeDelta prediction_deviation_threshold);
 
   ReporterType get_reporter_type() { return reporter_type_; }
 
