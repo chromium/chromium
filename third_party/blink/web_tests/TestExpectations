@@ -289,10 +289,6 @@ crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
 crbug.com/1247131 virtual/automatic-lazy-frame-loading/wpt_internal/lazyembed/* [ Pass ]
 crbug.com/1247131 wpt_internal/lazyembed/* [ Skip ]
 
-# These tests require the mparch based fenced frames.
-crbug.com/1260483 http/tests/inspector-protocol/fenced-frame/* [ Skip ]
-crbug.com/1260483 virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/* [ Pass ]
-
 # Ref test with very minor differences. We need fuzzy matching for our ref tests,
 # or upstream this to WPT.
 crbug.com/1185506 svg/text/textpath-pattern.svg [ Failure Pass ]
@@ -4219,9 +4215,6 @@ crbug.com/1194557 fast/beacon/beacon-basic.html [ Failure Pass ]
 # crbug.com/1194557 annotation as soon as crbug.com/1270207 has been fixed.
 crbug.com/1270207 virtual/portals/http/tests/devtools/portals/portals-sources-activate.js [ Skip ]
 
-# This test passes only when the JXL feature is enabled.
-crbug.com/1161994 http/tests/inspector-protocol/emulation/emulation-set-disabled-image-types-jxl.js [ Failure Pass ]
-
 crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success-and-failure.html [ Timeout ]
 crbug.com/874302 external/wpt/wasm/serialization/module/broadcastchannel-success.html [ Timeout ]
 
@@ -4237,9 +4230,6 @@ crbug.com/985520 virtual/focusless-spat-nav/fast/spatial-navigation/focusless/sn
 
 # User-Agent is not able to be set on XHR/fetch
 crbug.com/571722 external/wpt/xhr/preserve-ua-header-on-redirect.htm [ Failure ]
-
-# Sheriff failures 2017-03-10
-crbug.com/741210 [ Mac ] inspector-protocol/emulation/device-emulation-restore.js [ Failure ]
 
 # Sheriff failures 2017-03-21
 crbug.com/703518 http/tests/devtools/tracing/worker-js-frames.js [ Failure Pass ]
@@ -4573,12 +4563,6 @@ crbug.com/785955 http/tests/credentialmanagement/tools/virtual-authenticator-env
 
 # Sheriff 2018-04-11
 crbug.com/831796 fast/events/autoscroll-in-textfield.html [ Failure Pass ]
-
-# First party DevTools issues only work in the first-party-sets virtual suite
-crbug.com/1179186 http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Skip ]
-crbug.com/1179186 http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Skip ]
-crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-cookie-same-party-issue.js [ Pass ]
-crbug.com/1179186 virtual/first-party-sets/http/tests/inspector-protocol/network/blocked-setcookie-same-party-cross-party-issue.js [ Pass ]
 
 # Sheriff 2018-04-13
 crbug.com/833655 [ Linux ] media/controls/closed-captions-dynamic-update.html [ Skip ]
