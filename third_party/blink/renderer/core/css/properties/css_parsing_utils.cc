@@ -5672,32 +5672,18 @@ CSSValue* ConsumeContainerType(CSSParserTokenRange& range) {
   if (CSSValue* value = ConsumeIdent<CSSValueID::kNormal>(range))
     return value;
 
-  CSSValue* style = nullptr;
-  CSSValue* size = nullptr;
-  while (!range.AtEnd()) {
-    if (!size) {
-      size = ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize>(range);
-      if (size)
-        continue;
-    }
-    if (RuntimeEnabledFeatures::CSSStyleQueriesEnabled()) {
-      if (!style) {
-        style = ConsumeIdent<CSSValueID::kStyle>(range);
-        if (style)
-          continue;
-      }
-    }
-    return nullptr;
+  if (CSSValue* value =
+          ConsumeIdent<CSSValueID::kSize, CSSValueID::kInlineSize>(range)) {
+    // Note that StyleBuilderConverter::ConvertFlags requires that values
+    // other than the ZeroValue appear in a CSSValueList, hence we return a list
+    // with one item here. Also note that the full grammar will require multiple
+    // list items in the future, if we add support for non-size container types.
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*value);
+    return list;
   }
-  if (!size && !style)
-    return nullptr;
 
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (style)
-    list->Append(*style);
-  if (size)
-    list->Append(*size);
-  return list;
+  return nullptr;
 }
 
 CSSValue* ConsumeSVGPaint(CSSParserTokenRange& range,

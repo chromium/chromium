@@ -2359,9 +2359,9 @@
     {
       name: "container-type",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
-      keywords: ["normal", "inline-size", "size", "style"],
+      keywords: ["normal", "inline-size", "size"],
       field_group: "*",
-      field_size: 3,
+      field_size: 2,
       field_template: "primitive",
       default_value: "kContainerTypeNormal",
       type_name: "unsigned",

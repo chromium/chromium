@@ -15,13 +15,8 @@ test_valid_value('container-type', 'inherit');
 test_valid_value('container-type', 'unset');
 test_valid_value('container-type', 'revert');
 test_valid_value('container-type', 'normal');
-test_valid_value('container-type', 'style');
 test_valid_value('container-type', 'size');
 test_valid_value('container-type', 'inline-size');
-
-test_valid_value('container-type', 'inline-size style', 'style inline-size');
-test_valid_value('container-type', 'style inline-size');
-test_valid_value('container-type', 'style size');
 
 test_invalid_value('container-type', 'none');
 test_invalid_value('container-type', 'auto');
@@ -42,4 +37,8 @@ test_invalid_value('container-type', '#fff');
 test_invalid_value('container-type', '1px');
 test_invalid_value('container-type', 'default');
 test_invalid_value('container-type', 'size nonsense');
+test_invalid_value('container-type', 'style');
+test_invalid_value('container-type', 'inline-size style', 'style inline-size');
+test_invalid_value('container-type', 'style inline-size');
+test_invalid_value('container-type', 'style size');
 </script>

@@ -23,7 +23,6 @@ test_valid_value('container', 'size');
 test_valid_value('container', 'block-size / size');
 test_valid_value('container', 'inline-size / inline-size');
 test_valid_value('container', 'size / size');
-test_valid_value('container', 'none / size style', 'none / style size');
 test_valid_value('container', 'foo');
 test_valid_value('container', 'foo / normal', 'foo');
 test_valid_value('container', 'foo bar / size');
@@ -60,4 +59,5 @@ test_invalid_value('container', 'name / block-size');
 test_invalid_value('container', ' NAME  / block-size', 'NAME / block-size');
 test_invalid_value('container', 'NAME/block-size','NAME / block-size');
 test_invalid_value('container', 'block-size / block-size');
+test_invalid_value('container', 'none / size style');
 </script>

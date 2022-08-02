@@ -2036,17 +2036,12 @@ const CSSValue* ContainerType::CSSValueFromComputedStyleInternal(
             kContainerTypeBlockSize);
   if (style.ContainerType() == kContainerTypeNormal)
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
-
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (style.ContainerType() & kContainerTypeStyle)
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kStyle));
-  if ((style.ContainerType() & kContainerTypeSize) == kContainerTypeSize) {
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
-  } else if ((style.ContainerType() & kContainerTypeSize) ==
-             kContainerTypeInlineSize) {
-    list->Append(*CSSIdentifierValue::Create(CSSValueID::kInlineSize));
-  }
-  return list;
+  if (style.ContainerType() == kContainerTypeSize)
+    return CSSIdentifierValue::Create(CSSValueID::kSize);
+  if (style.ContainerType() == kContainerTypeInlineSize)
+    return CSSIdentifierValue::Create(CSSValueID::kInlineSize);
+  NOTREACHED();
+  return nullptr;
 }
 
 namespace {

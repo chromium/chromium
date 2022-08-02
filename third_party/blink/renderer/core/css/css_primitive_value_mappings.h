@@ -1650,8 +1650,6 @@ inline EContainerType CSSIdentifierValue::ConvertTo() const {
       return kContainerTypeInlineSize;
     case CSSValueID::kSize:
       return kContainerTypeSize;
-    case CSSValueID::kStyle:
-      return kContainerTypeStyle;
     default:
       break;
   }
