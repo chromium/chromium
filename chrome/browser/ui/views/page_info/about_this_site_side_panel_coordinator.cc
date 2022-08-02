@@ -47,11 +47,7 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
   auto* registry = SidePanelRegistry::Get(web_contents());
 
   // Check if the view is already registered.
-  if (registry->GetEntryForId(SidePanelEntry::Id::kAboutThisSite) &&
-      about_this_site_side_panel_view_) {
-    // The user issued a follow-up AboutThisPage query.
-    about_this_site_side_panel_view_->OpenUrl(params);
-  } else {
+  if (!registry->GetEntryForId(SidePanelEntry::Id::kAboutThisSite)) {
     const int icon_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
         ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
     auto entry = std::make_unique<SidePanelEntry>(
@@ -61,8 +57,13 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
                                        ui::kColorIcon, icon_size),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView,
-            base::Unretained(this), params));
+            base::Unretained(this)));
     registry->Register(std::move(entry));
+  }
+
+  if (about_this_site_side_panel_view_) {
+    // Load params in view if view still exists.
+    about_this_site_side_panel_view_->OpenUrl(params);
   }
 
   if (side_panel_coordinator->GetCurrentEntryId() !=
@@ -82,15 +83,16 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
   SidePanelRegistry::Get(web_contents())
       ->Deregister(SidePanelEntry::Id::kAboutThisSite);
   about_this_site_side_panel_view_ = nullptr;
+  last_url_params_.reset();
 }
 
 std::unique_ptr<views::View>
-AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView(
-    const content::OpenURLParams& params) {
+AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
   DCHECK(GetBrowserView());
+  DCHECK(last_url_params_);
   auto side_panel_view_ =
       std::make_unique<AboutThisSiteSidePanelView>(GetBrowserView());
-  side_panel_view_->OpenUrl(params);
+  side_panel_view_->OpenUrl(*last_url_params_);
   about_this_site_side_panel_view_ = side_panel_view_->AsWeakPtr();
   return side_panel_view_;
 }

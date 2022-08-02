@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -41,12 +42,13 @@ class AboutThisSideSidePanelCoordinator
 
   BrowserView* GetBrowserView() const;
 
-  std::unique_ptr<views::View> CreateAboutThisSiteWebView(
-      const content::OpenURLParams& params);
+  std::unique_ptr<views::View> CreateAboutThisSiteWebView();
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  absl::optional<content::OpenURLParams> last_url_params_;
 
   base::WeakPtr<AboutThisSiteSidePanelView> about_this_site_side_panel_view_;
 
