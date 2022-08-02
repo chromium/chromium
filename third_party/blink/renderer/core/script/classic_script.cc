@@ -47,7 +47,10 @@ KURL SanitizeBaseUrl(const KURL& raw_base_url,
   return raw_base_url;
 }
 
-String SourceMapUrlFromResponse(const ResourceResponse& response) {
+}  // namespace
+
+String ClassicScript::SourceMapUrlFromResponse(
+    const ResourceResponse& response) {
   String source_map_url = response.HttpHeaderField(http_names::kSourceMap);
   if (!source_map_url.IsEmpty())
     return source_map_url;
@@ -55,8 +58,6 @@ String SourceMapUrlFromResponse(const ResourceResponse& response) {
   // Try to get deprecated header.
   return response.HttpHeaderField(http_names::kXSourceMap);
 }
-
-}  // namespace
 
 KURL ClassicScript::StripFragmentIdentifier(const KURL& url) {
   if (url.IsEmpty())
@@ -68,6 +69,16 @@ KURL ClassicScript::StripFragmentIdentifier(const KURL& url) {
   KURL copy = url;
   copy.RemoveFragmentIdentifier();
   return copy;
+}
+
+KURL ClassicScript::SourceUrlFromResource(const ScriptResource& resource) {
+  return StripFragmentIdentifier(resource.Url());
+}
+
+SanitizeScriptErrors ClassicScript::ShouldSanitizeScriptErrors(
+    const ResourceResponse& response) {
+  return response.IsCorsSameOrigin() ? SanitizeScriptErrors::kDoNotSanitize
+                                     : SanitizeScriptErrors::kSanitize;
 }
 
 ClassicScript* ClassicScript::Create(
@@ -109,11 +120,9 @@ ClassicScript* ClassicScript::CreateFromResource(
   // We lose the encoding information from ScriptResource.
   // Not sure if that matters.
   return MakeGarbageCollected<ClassicScript>(
-      source, StripFragmentIdentifier(resource->Url()), base_url, fetch_options,
+      source, SourceUrlFromResource(*resource), base_url, fetch_options,
       ScriptSourceLocationType::kExternalFile,
-      resource->GetResponse().IsCorsSameOrigin()
-          ? SanitizeScriptErrors::kDoNotSanitize
-          : SanitizeScriptErrors::kSanitize,
+      ShouldSanitizeScriptErrors(resource->GetResponse()),
       resource->CacheHandler(), TextPosition::MinimumPosition(), streamer,
       not_streamed_reason, cache_consumer,
       SourceMapUrlFromResponse(resource->GetResponse()));

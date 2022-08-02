@@ -626,12 +626,19 @@ class StubScriptCacheConsumerClient final
     : public GarbageCollected<StubScriptCacheConsumerClient>,
       public ScriptCacheConsumerClient {
  public:
-  explicit StubScriptCacheConsumerClient(base::OnceClosure finish_closure)
-      : finish_closure_(std::move(finish_closure)) {}
+  StubScriptCacheConsumerClient(base::OnceClosure finish_closure,
+                                v8::Isolate* isolate)
+      : finish_closure_(std::move(finish_closure)), isolate_(isolate) {}
 
   void NotifyCacheConsumeFinished() override {
     cache_consume_finished_ = true;
     std::move(finish_closure_).Run();
+  }
+
+  const ParkableString& GetSourceText() override { return source_text_; }
+
+  v8::ScriptOrigin GetScriptOrigin() override {
+    return v8::ScriptOrigin(isolate_, V8String(isolate_, ""));
   }
 
   bool cache_consume_finished() { return cache_consume_finished_; }
@@ -639,6 +646,8 @@ class StubScriptCacheConsumerClient final
  private:
   base::OnceClosure finish_closure_;
   bool cache_consume_finished_ = false;
+  ParkableString source_text_;
+  v8::Isolate* isolate_;
 };
 
 }  // namespace
@@ -660,7 +669,7 @@ TEST_F(V8ScriptRunnerTest, successfulOffThreadCodeCache) {
   EXPECT_NE(cache_consumer, nullptr);
 
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
-      run_loop_.QuitClosure());
+      run_loop_.QuitClosure(), scope.GetIsolate());
   cache_consumer->NotifyClientWaiting(consumer_client,
                                       base::ThreadTaskRunnerHandle::Get());
 
@@ -708,7 +717,7 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithDifferentSource) {
   EXPECT_NE(cache_consumer, nullptr);
 
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
-      run_loop_.QuitClosure());
+      run_loop_.QuitClosure(), scope.GetIsolate());
   cache_consumer->NotifyClientWaiting(consumer_client,
                                       base::ThreadTaskRunnerHandle::Get());
 
@@ -762,7 +771,7 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
   EXPECT_NE(cache_consumer, nullptr);
 
   auto* consumer_client = MakeGarbageCollected<StubScriptCacheConsumerClient>(
-      run_loop_.QuitClosure());
+      run_loop_.QuitClosure(), scope.GetIsolate());
   cache_consumer->NotifyClientWaiting(consumer_client,
                                       base::ThreadTaskRunnerHandle::Get());
 

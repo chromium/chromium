@@ -80,7 +80,7 @@ class CORE_EXPORT ScriptCacheConsumer final
   // Also, may return nullptr if no consume task was ever created.
   v8::ScriptCompiler::ConsumeCodeCacheTask* TakeV8ConsumeTask(
       CachedMetadata* cached_metadata) {
-    CHECK_EQ(state_, kFinishedAndReady);
+    CHECK_EQ(state_, kCalledFinishCallback);
     if (cached_metadata != cached_metadata_) {
       consume_task_.reset();
       return nullptr;
@@ -103,14 +103,27 @@ class CORE_EXPORT ScriptCacheConsumer final
   //                     '--------.---------'
   //     NotifyClientWaiting()    |     RunTaskOffThread()
   //                              v
-  //                        kBothFinished
+  //                      kFinishedAndReady
+  //                              |
+  //                              | RunTaskOffThread(), RunMergeTaskOffThread(),
+  //                              | or NotifyClientWaiting()
+  //                              v
+  //                    kMergeDoneOrNotNeeded
+  //                              |
+  //                              | CallFinishCallback()
+  //                              v
+  //                    kCalledFinishCallback
   //
   // These states are represented as a bit field.
   enum State {
     kRunning = 0,
     kConsumeFinished = 0b10,
     kClientReady = 0b01,
-    kFinishedAndReady = 0b11
+    kFinishedAndReady = 0b11,
+    kMergeDoneOrNotNeededBit = 0b100,
+    kMergeDoneOrNotNeeded = kFinishedAndReady | kMergeDoneOrNotNeededBit,
+    kCalledFinishCallbackBit = 0b1000,
+    kCalledFinishCallback = kMergeDoneOrNotNeeded | kCalledFinishCallbackBit,
   };
   static_assert(
       (kConsumeFinished & kClientReady) == 0,
@@ -119,15 +132,15 @@ class CORE_EXPORT ScriptCacheConsumer final
       (kConsumeFinished | kClientReady) == kFinishedAndReady,
       "kFinishedAndReady has to mean kConsumeFinished and kClientReady");
 
-  // Advance the state with either the kConsumeFinished or the kClientReady
-  // bit. Returns the new state, which is either the given state or
-  // kFinishedAndReady.
+  // Advance the state by setting a single bit. Returns the new state.
   State AdvanceState(State new_state_bit);
 
   // Helper methods for running the consume task off-thread and posting back
   // from it.
   void RunTaskOffThread();
-  void CallFinishCallback(const char* trace_name);
+  void RunMergeTaskOffThread();
+  void PostFinishCallbackTask();
+  void CallFinishCallback();
 
   // The cached metadata storing the code cache. This is held by the consumer
   // to keep the cached data alive even if it is cleared on the script resource.
@@ -150,6 +163,8 @@ class CORE_EXPORT ScriptCacheConsumer final
 
   // Keep the script resource dentifier for event tracing.
   const uint64_t script_resource_identifier_;
+
+  const char* finish_trace_name_ = nullptr;
 
   // The state of this ScriptCacheConsumer, advanced atomically when this
   // consume task completes, and when the resource completes.

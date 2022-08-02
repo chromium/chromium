@@ -20,6 +20,12 @@ class CORE_EXPORT ClassicScript final : public Script {
  public:
   // For `source_url`.
   static KURL StripFragmentIdentifier(const KURL&);
+  static KURL SourceUrlFromResource(const ScriptResource& resource);
+
+  static String SourceMapUrlFromResponse(const ResourceResponse& response);
+
+  static SanitizeScriptErrors ShouldSanitizeScriptErrors(
+      const ResourceResponse& response);
 
   // For scripts specified in the HTML spec or for tests.
   // Please leave spec comments and spec links that explain given argument

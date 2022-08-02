@@ -74,7 +74,10 @@ class CORE_EXPORT ClassicPendingScript final : public PendingScript,
   KURL UrlForTracing() const override;
   void DisposeInternal() override;
 
+  // ScriptCacheConsumerClient:
   void NotifyCacheConsumeFinished() override;
+  const ParkableString& GetSourceText() override;
+  v8::ScriptOrigin GetScriptOrigin() override;
 
   void SetNotStreamingReasonForTest(ScriptStreamer::NotStreamingReason reason) {
     not_streamed_reason_ = reason;

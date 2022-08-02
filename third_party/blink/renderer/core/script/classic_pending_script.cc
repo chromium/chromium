@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -49,6 +50,16 @@ InlineScriptStreamer* GetInlineScriptStreamer(const String& source,
   return scriptable_parser->TakeInlineScriptStreamer(source);
 }
 
+}  // namespace
+
+namespace {
+// The base URL for external classic script is
+//
+// <spec href="https://html.spec.whatwg.org/C/#concept-script-base-url">
+// ... the URL from which the script was obtained, ...</spec>
+KURL BaseUrl(const ScriptResource& resource) {
+  return resource.GetResponse().ResponseUrl();
+}
 }  // namespace
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-classic-script">
@@ -310,6 +321,43 @@ void ClassicPendingScript::NotifyCacheConsumeFinished() {
   AdvanceReadyState(kReady);
 }
 
+const ParkableString& ClassicPendingScript::GetSourceText() {
+  // This method is an implementation of a virtual function defined by
+  // ScriptCacheConsumerClient, and is only used for external scripts.
+  CHECK(is_external_);
+
+  return To<ScriptResource>(GetResource())->SourceText();
+}
+
+v8::ScriptOrigin ClassicPendingScript::GetScriptOrigin() {
+  // This method is an implementation of a virtual function defined by
+  // ScriptCacheConsumerClient, and is only used for external scripts.
+  CHECK(is_external_);
+
+  v8::Isolate* isolate = GetElement()->GetExecutionContext()->GetIsolate();
+  auto* resource = To<ScriptResource>(GetResource());
+  const KURL& source_url = ClassicScript::SourceUrlFromResource(*resource);
+  TextPosition script_start_position = TextPosition::MinimumPosition();
+  SanitizeScriptErrors sanitize_script_errors =
+      ClassicScript::ShouldSanitizeScriptErrors(resource->GetResponse());
+  String source_map_url =
+      ClassicScript::SourceMapUrlFromResponse(resource->GetResponse());
+  const KURL& base_url = BaseUrl(*resource);
+  const ReferrerScriptInfo referrer_info(base_url, options_);
+  v8::Local<v8::Data> host_defined_options =
+      referrer_info.ToV8HostDefinedOptions(isolate, source_url);
+  return v8::ScriptOrigin(
+      isolate, V8String(isolate, source_url),
+      script_start_position.line_.ZeroBasedInt(),
+      script_start_position.column_.ZeroBasedInt(),
+      sanitize_script_errors == SanitizeScriptErrors::kDoNotSanitize, -1,
+      V8String(isolate, source_map_url),
+      sanitize_script_errors == SanitizeScriptErrors::kSanitize,
+      false,  // is_wasm
+      false,  // is_module
+      host_defined_options);
+}
+
 void ClassicPendingScript::Trace(Visitor* visitor) const {
   visitor->Trace(cache_consumer_);
   ResourceClient::Trace(visitor);
@@ -410,11 +458,7 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
                          TRACE_EVENT_FLAG_FLOW_IN, "not_streamed_reason",
                          not_streamed_reason);
 
-  // The base URL for external classic script is
-  //
-  // <spec href="https://html.spec.whatwg.org/C/#concept-script-base-url">
-  // ... the URL from which the script was obtained, ...</spec>
-  const KURL& base_url = resource->GetResponse().ResponseUrl();
+  const KURL& base_url = BaseUrl(*resource);
   return ClassicScript::CreateFromResource(resource, base_url, options_,
                                            streamer, not_streamed_reason,
                                            cache_consumer_);
