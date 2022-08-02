@@ -57538,6 +57538,8 @@ from previous Chrome versions.
   <int value="-871784177" label="DeprecateMenagerieAPI:enabled"/>
   <int value="-871520682"
       label="AccessibilityInternalsPageImprovements:enabled"/>
+  <int value="-871450829"
+      label="ThreadedScrollPreventRenderingStarvation:disabled"/>
   <int value="-870994173" label="NtpChromeCartModule:enabled"/>
   <int value="-870120067" label="EnableSearchBoxSelection:enabled"/>
   <int value="-868138290" label="CrostiniPortForwarding:disabled"/>
@@ -60289,6 +60291,8 @@ from previous Chrome versions.
   <int value="890560037" label="always-enable-hdcp"/>
   <int value="892899792" label="MaterialDesignIncognitoNTP:disabled"/>
   <int value="894434593" label="TabRestoreSubMenus:enabled"/>
+  <int value="895337957"
+      label="ThreadedScrollPreventRenderingStarvation:enabled"/>
   <int value="896506516"
       label="enable-canvas-context-lost-in-background (obsolete)"/>
   <int value="898311758" label="ReaderMode:disabled"/>

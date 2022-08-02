@@ -812,6 +812,7 @@ android_library("common_java") {
     "//services/network/public:features_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/common:common_java",
+    "//third_party/blink/renderer/platform/scheduler:blink_scheduler_java",
   ]
   srcjar_deps = [
     ":common_java_features_srcjar",

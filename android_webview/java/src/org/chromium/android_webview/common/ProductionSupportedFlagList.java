@@ -7,6 +7,7 @@ package org.chromium.android_webview.common;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BaseSwitches;
 import org.chromium.blink_public.common.BlinkFeatures;
+import org.chromium.blink_scheduler.BlinkSchedulerFeatures;
 import org.chromium.cc.base.CcSwitches;
 import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -340,6 +341,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.SCROLL_UPDATE_OPTIMIZATIONS,
                     "Enable scroll update optimizations. See https://crbug.com/1346789."),
             Flag.baseFeature(BaseFeatures.ALIGN_WAKE_UPS, "Align delayed wake ups at 125 Hz"),
+            Flag.baseFeature(BlinkSchedulerFeatures.THREADED_SCROLL_PREVENT_RENDERING_STARVATION,
+                    "Enable rendering starvation-prevention during threaded scrolling."
+                            + " See https://crbug.com/1315279."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

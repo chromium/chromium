@@ -63,7 +63,22 @@ This outputs Java String constants which represent the name of the
     }
     ```
 
-3. The generated file `out/Default/gen/.../org/chromium/foo/FooFeatures.java`
+3. Add a `deps` entry to `"common_java"` in `"//android_webview/BUILD.gn"` if
+   creating a new `android_library` in the previous step:
+
+   ```gn
+   android_library("common_java") {
+     ...
+
+     deps = [
+       ...
+       "//path/to:foo_java",
+       ...
+     ]
+   }
+   ```
+
+4. The generated file `out/Default/gen/.../org/chromium/foo/FooFeatures.java`
    would contain:
 
     ```java
