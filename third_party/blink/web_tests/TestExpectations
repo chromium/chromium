@@ -4763,9 +4763,6 @@ crbug.com/806357 virtual/threaded/fast/events/pointerevents/pinch/pointerevent_t
 # Trooper 2019-03-19
 crbug.com/943388 [ Win ] http/tests/devtools/network/network-recording-after-reload-with-screenshots-enabled.js [ Failure Pass ]
 
-# Sheriff 2019-03-20
-crbug.com/943969 [ Win ] inspector-protocol/css/css-get-media-queries.js [ Failure Pass ]
-
 # Sheriff 2019-03-25
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.js [ Failure Pass ]
 crbug.com/945665 http/tests/devtools/elements/styles-3/styles-add-new-rule.js [ Failure Pass Timeout ]
