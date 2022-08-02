@@ -14,7 +14,11 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process.h"
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.h"
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/enterprise/connectors/device_trust/browser/browser_device_trust_connector_service.h"
+#endif  // BUILDFLAG(IS_MAC)
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
@@ -63,8 +67,13 @@ KeyedService* DeviceTrustConnectorServiceFactory::BuildServiceInstanceFor(
     auto* key_manager = g_browser_process->browser_policy_connector()
                             ->chrome_browser_cloud_management_controller()
                             ->GetDeviceTrustKeyManager();
+#if BUILDFLAG(IS_MAC)
+    service = new MacDeviceTrustConnectorService(
+        key_manager, profile->GetPrefs(), g_browser_process->local_state());
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     service = new BrowserDeviceTrustConnectorService(key_manager,
                                                      profile->GetPrefs());
+#endif  // BUILDFLAG(IS_MAC)
   }
 #else
   service = new DeviceTrustConnectorService(profile->GetPrefs());

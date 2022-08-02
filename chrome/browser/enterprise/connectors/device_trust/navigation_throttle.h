@@ -34,8 +34,6 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
 
   using AttestationCallback = base::OnceCallback<void(const std::string&)>;
 
-  explicit DeviceTrustNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
   DeviceTrustNavigationThrottle(DeviceTrustService* device_trust_service,
                                 content::NavigationHandle* navigation_handle);
 

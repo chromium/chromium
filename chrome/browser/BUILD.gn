@@ -6239,6 +6239,13 @@ static_library("browser") {
     ]
   }
 
+  if (is_mac) {
+    sources += [
+      "enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.cc",
+      "enterprise/connectors/device_trust/browser/mac_device_trust_connector_service.h",
+    ]
+  }
+
   if (is_linux || is_win || is_mac) {
     sources += [
       "enterprise/connectors/analysis/content_analysis_sdk_manager.cc",

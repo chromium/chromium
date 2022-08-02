@@ -27,16 +27,6 @@ bool ConnectorPolicyHasValues(PrefService* profile_prefs) {
 
 }  // namespace
 
-// static
-bool DeviceTrustConnectorService::IsConnectorEnabled(
-    PrefService* profile_prefs) {
-  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs) {
-    return false;
-  }
-
-  return ConnectorPolicyHasValues(profile_prefs);
-}
-
 DeviceTrustConnectorService::DeviceTrustConnectorService(
     PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
@@ -46,7 +36,9 @@ DeviceTrustConnectorService::DeviceTrustConnectorService(
 DeviceTrustConnectorService::~DeviceTrustConnectorService() = default;
 
 bool DeviceTrustConnectorService::IsConnectorEnabled() const {
-  return DeviceTrustConnectorService::IsConnectorEnabled(profile_prefs_);
+  if (!IsDeviceTrustConnectorFeatureEnabled() || !profile_prefs_)
+    return false;
+  return ConnectorPolicyHasValues(profile_prefs_);
 }
 
 void DeviceTrustConnectorService::Initialize() {

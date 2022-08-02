@@ -89,11 +89,6 @@ class DeviceTrustConnectorServiceTest
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_P(DeviceTrustConnectorServiceTest, Static_IsConnectorEnabled) {
-  EXPECT_EQ(is_attestation_flow_enabled(),
-            DeviceTrustConnectorService::IsConnectorEnabled(&prefs_));
-}
-
 TEST_P(DeviceTrustConnectorServiceTest, IsConnectorEnabled_Update) {
   auto service = CreateService();
   service->Initialize();

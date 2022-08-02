@@ -30,7 +30,7 @@ class BrowserDeviceTrustConnectorService : public DeviceTrustConnectorService {
   ~BrowserDeviceTrustConnectorService() override;
 
  protected:
-  // Hook that can is called to notify that the policy changed and the connector
+  // Hook that is called to notify that the policy changed and the connector
   // became, or is still, enabled.
   void OnConnectorEnabled() override;
 
