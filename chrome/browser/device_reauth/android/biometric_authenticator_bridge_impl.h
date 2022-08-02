@@ -23,7 +23,8 @@ class BiometricAuthenticatorBridgeImpl : public BiometricAuthenticatorBridge {
   BiometricAuthenticatorBridgeImpl&& operator=(
       const BiometricAuthenticatorBridgeImpl&&) = delete;
 
-  device_reauth::BiometricsAvailability CanAuthenticate() override;
+  device_reauth::BiometricsAvailability CanAuthenticateWithBiometric() override;
+  bool CanAuthenticateWithBiometricOrScreenLock() override;
 
   // Starts the authentication.
   void Authenticate(

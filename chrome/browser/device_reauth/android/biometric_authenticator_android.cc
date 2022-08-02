@@ -108,7 +108,12 @@ BiometricAuthenticatorAndroid::~BiometricAuthenticatorAndroid() {}
 
 bool BiometricAuthenticatorAndroid::CanAuthenticate(
     device_reauth::BiometricAuthRequester requester) {
-  BiometricsAvailability availability = bridge_->CanAuthenticate();
+  if (requester ==
+      device_reauth::BiometricAuthRequester::kIncognitoReauthPage) {
+    return bridge_->CanAuthenticateWithBiometricOrScreenLock();
+  }
+
+  BiometricsAvailability availability = bridge_->CanAuthenticateWithBiometric();
   LogCanAuthenticate(requester, availability);
   return availability == BiometricsAvailability::kAvailable;
 }

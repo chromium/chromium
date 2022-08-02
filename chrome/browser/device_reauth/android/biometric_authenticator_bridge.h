@@ -51,7 +51,11 @@ class BiometricAuthenticatorBridge {
   virtual ~BiometricAuthenticatorBridge() = default;
 
   // Checks whether biometrics are available.
-  virtual device_reauth::BiometricsAvailability CanAuthenticate() = 0;
+  virtual device_reauth::BiometricsAvailability
+  CanAuthenticateWithBiometric() = 0;
+
+  // Checks whether biometrics OR screen lock are available.
+  virtual bool CanAuthenticateWithBiometricOrScreenLock() = 0;
 
   // Trigges an authentication flow based on biometrics, with the
   // screen lock as fallback. Note: this only supports one authentication

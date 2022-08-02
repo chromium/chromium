@@ -55,7 +55,7 @@ class BiometricAuthenticatorBridge {
 
     @CalledByNative
     @BiometricsAvailability
-    int canAuthenticate() {
+    int canAuthenticateWithBiometric() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             return BiometricsAvailability.ANDROID_VERSION_NOT_SUPPORTED;
         }
@@ -75,6 +75,22 @@ class BiometricAuthenticatorBridge {
             default:
                 return BiometricsAvailability.OTHER_ERROR;
         }
+    }
+
+    /**
+     * A general method to check whether we can authenticate either via biometrics or screen lock.
+     *
+     * True, if either biometrics are enrolled or screen lock is setup, false otherwise.
+     */
+    @CalledByNative
+    boolean canAuthenticateWithBiometricOrScreenLock() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            return false;
+        }
+
+        @BiometricsAvailability
+        int availability = canAuthenticateWithBiometric();
+        return (availability == BiometricsAvailability.AVAILABLE) || hasScreenLockSetUp();
     }
 
     @CalledByNative
