@@ -344,17 +344,17 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // entries. New items MUST be added at the end of the list, and kMaxValue
   // should be updated to the last value.
   //
-  // COOKIE_SOURCE_(NON)SECURE_COOKIE_(NON)CRYPTOGRAPHIC_SCHEME means
+  // CookieSource::k(Non)SecureCookie(Non)CryptographicScheme means
   // that a cookie was set or overwritten from a URL with the given type
   // of scheme. This enum should not be used when cookies are *cleared*,
   // because its purpose is to understand if Chrome can deprecate the
   // ability of HTTP urls to set/overwrite Secure cookies.
-  enum CookieSource : uint8_t {
-    COOKIE_SOURCE_SECURE_COOKIE_CRYPTOGRAPHIC_SCHEME = 0,
-    COOKIE_SOURCE_SECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME,
-    COOKIE_SOURCE_NONSECURE_COOKIE_CRYPTOGRAPHIC_SCHEME,
-    COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME,
-    kMaxValue = COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME
+  enum class CookieSource : uint8_t {
+    kSecureCookieCryptographicScheme = 0,
+    kSecureCookieNoncryptographicScheme,
+    kNonsecureCookieCryptographicScheme,
+    kNonsecureCookieNoncryptographicScheme,
+    kMaxValue = kNonsecureCookieNoncryptographicScheme
   };
 
   // Enum for collecting metrics on how frequently a cookie is sent to the same

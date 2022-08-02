@@ -1564,11 +1564,11 @@ void CookieMonster::SetCanonicalCookie(
       CookieSource cookie_source_sample =
           (source_url.SchemeIsCryptographic()
                ? (cc->IsSecure()
-                      ? COOKIE_SOURCE_SECURE_COOKIE_CRYPTOGRAPHIC_SCHEME
-                      : COOKIE_SOURCE_NONSECURE_COOKIE_CRYPTOGRAPHIC_SCHEME)
+                      ? CookieSource::kSecureCookieCryptographicScheme
+                      : CookieSource::kNonsecureCookieCryptographicScheme)
                : (cc->IsSecure()
-                      ? COOKIE_SOURCE_SECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME
-                      : COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME));
+                      ? CookieSource::kSecureCookieNoncryptographicScheme
+                      : CookieSource::kNonsecureCookieNoncryptographicScheme));
       UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceScheme",
                                 cookie_source_sample);
 

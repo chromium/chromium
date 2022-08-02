@@ -3323,21 +3323,21 @@ TEST_F(CookieMonsterTest, CookieSourceHistogram) {
   histograms.ExpectTotalCount(cookie_source_histogram, 1);
   histograms.ExpectBucketCount(
       cookie_source_histogram,
-      CookieMonster::COOKIE_SOURCE_SECURE_COOKIE_CRYPTOGRAPHIC_SCHEME, 1);
+      CookieMonster::CookieSource::kSecureCookieCryptographicScheme, 1);
 
   // Set a non-secure cookie on a cryptographic scheme.
   EXPECT_TRUE(SetCookie(cm.get(), https_www_foo_.url(), "C=D; path=/;"));
   histograms.ExpectTotalCount(cookie_source_histogram, 2);
   histograms.ExpectBucketCount(
       cookie_source_histogram,
-      CookieMonster::COOKIE_SOURCE_NONSECURE_COOKIE_CRYPTOGRAPHIC_SCHEME, 1);
+      CookieMonster::CookieSource::kNonsecureCookieCryptographicScheme, 1);
 
   // Set a secure cookie on a non-cryptographic scheme.
   EXPECT_FALSE(SetCookie(cm.get(), http_www_foo_.url(), "D=E; path=/; Secure"));
   histograms.ExpectTotalCount(cookie_source_histogram, 2);
   histograms.ExpectBucketCount(
       cookie_source_histogram,
-      CookieMonster::COOKIE_SOURCE_SECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME, 0);
+      CookieMonster::CookieSource::kSecureCookieNoncryptographicScheme, 0);
 
   // Overwrite a secure cookie (set by a cryptographic scheme) on a
   // non-cryptographic scheme.
@@ -3345,10 +3345,10 @@ TEST_F(CookieMonsterTest, CookieSourceHistogram) {
   histograms.ExpectTotalCount(cookie_source_histogram, 2);
   histograms.ExpectBucketCount(
       cookie_source_histogram,
-      CookieMonster::COOKIE_SOURCE_SECURE_COOKIE_CRYPTOGRAPHIC_SCHEME, 1);
+      CookieMonster::CookieSource::kSecureCookieCryptographicScheme, 1);
   histograms.ExpectBucketCount(
       cookie_source_histogram,
-      CookieMonster::COOKIE_SOURCE_SECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME, 0);
+      CookieMonster::CookieSource::kSecureCookieNoncryptographicScheme, 0);
 
   // Test that attempting to clear a secure cookie on a http:// URL does
   // nothing.
@@ -3367,7 +3367,7 @@ TEST_F(CookieMonsterTest, CookieSourceHistogram) {
   histograms.ExpectTotalCount(cookie_source_histogram, 4);
   histograms.ExpectBucketCount(
       cookie_source_histogram,
-      CookieMonster::COOKIE_SOURCE_NONSECURE_COOKIE_NONCRYPTOGRAPHIC_SCHEME, 1);
+      CookieMonster::CookieSource::kNonsecureCookieNoncryptographicScheme, 1);
 }
 
 // Test that inserting the first cookie for a key and deleting the last cookie
