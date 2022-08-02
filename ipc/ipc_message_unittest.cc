@@ -130,7 +130,7 @@ TEST(IPCMessageTest, DictionaryValue) {
   base::DictionaryValue input;
   input.SetKey("null", base::Value());
   input.SetBoolean("bool", true);
-  input.SetInteger("int", 42);
+  input.GetDict().Set("int", 42);
   input.SetKey("int.with.dot", base::Value(43));
 
   base::DictionaryValue subdict;

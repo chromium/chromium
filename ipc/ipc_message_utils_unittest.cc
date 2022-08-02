@@ -235,8 +235,8 @@ TEST(IPCMessageUtilsTest, StrongAlias) {
 
 TEST(IPCMessageUtilsTest, LegacyDictValueConversion) {
   base::DictionaryValue dict_value;
-  dict_value.SetInteger("path1", 42);
-  dict_value.SetInteger("path2", 84);
+  dict_value.GetDict().Set("path1", 42);
+  dict_value.GetDict().Set("path2", 84);
   base::ListValue subvalue;
   subvalue.Append(1234);
   subvalue.Append(5678);
