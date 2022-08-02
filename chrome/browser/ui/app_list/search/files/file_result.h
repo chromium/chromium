@@ -61,10 +61,6 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
   // the thumbnail.
   void RequestThumbnail(ash::ThumbnailLoader* thumbnail_loader);
 
-  // Asynchronously sets the details string for this result to a Drive-esque
-  // justification string, eg. "You opened yesterday".
-  void SetDetailsToJustificationString();
-
   void set_drive_id(const absl::optional<std::string>& drive_id) {
     drive_id_ = drive_id;
   }
@@ -75,11 +71,6 @@ class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
 
   // Callback for the result of RequestThumbnail's call to the ThumbnailLoader.
   void OnThumbnailLoaded(const SkBitmap* bitmap, base::File::Error error);
-
-  // Callback for the result of SetDetailsToJustificationString to
-  // GetJustificationStringAsync.
-  void OnJustificationStringReturned(
-      absl::optional<std::u16string> justification);
 
   void UpdateIcon();
 

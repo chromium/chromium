@@ -38,23 +38,21 @@ namespace app_list {
 namespace {
 
 constexpr char kSchema[] = "zero_state_file://";
-
-constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
-
 constexpr size_t kMaxLocalFiles = 10u;
+constexpr base::TimeDelta kSaveDelay = base::Seconds(3);
 
 // Given the output of MrfuCache::GetAll, partition files into:
 // - valid files that exist on-disk and have been modified in the last
 //   |max_last_modified_time| days
 // - invalid files, otherwise.
-internal::ValidAndInvalidResults ValidateFiles(
+ZeroStateFileProvider::ValidAndInvalidResults ValidateFiles(
     const std::vector<std::pair<std::string, float>>& ranker_results,
     const base::TimeDelta& max_last_modified_time) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  internal::ScoredResults valid;
-  internal::Results invalid;
+  std::vector<ZeroStateFileProvider::FileInfo> valid_results;
+  std::vector<base::FilePath> invalid_results;
   const base::Time now = base::Time::Now();
   for (const auto& path_score : ranker_results) {
     // We use FilePath::FromUTF8Unsafe to decode the filepath string. As per its
@@ -66,12 +64,13 @@ internal::ValidAndInvalidResults ValidateFiles(
     base::File::Info info;
     if (base::PathExists(path) && base::GetFileInfo(path, &info) &&
         (now - info.last_modified <= max_last_modified_time)) {
-      valid.emplace_back(path, path_score.second);
+      valid_results.emplace_back(path, path_score.second, info.last_accessed,
+                                 info.last_modified);
     } else {
-      invalid.emplace_back(path);
+      invalid_results.emplace_back(path);
     }
   }
-  return {valid, invalid};
+  return {valid_results, invalid_results};
 }
 
 // TODO(crbug.com/1258415): This exists to reroute results depending on which
@@ -87,6 +86,17 @@ bool IsDriveDisabled(Profile* profile) {
 }
 
 }  // namespace
+
+ZeroStateFileProvider::FileInfo::FileInfo(const base::FilePath& path,
+                                          float score,
+                                          const base::Time& last_accessed,
+                                          const base::Time& last_modified)
+    : path(path),
+      score(score),
+      last_accessed(last_accessed),
+      last_modified(last_modified) {}
+
+ZeroStateFileProvider::FileInfo::~FileInfo() = default;
 
 ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
     : profile_(profile),
@@ -161,8 +171,7 @@ void ZeroStateFileProvider::StartZeroState() {
                      weak_factory_.GetWeakPtr()));
 }
 
-void ZeroStateFileProvider::SetSearchResults(
-    internal::ValidAndInvalidResults results) {
+void ZeroStateFileProvider::SetSearchResults(ValidAndInvalidResults results) {
   // Delete invalid results from the ranker.
   for (const base::FilePath& path : results.second)
     files_ranker_->Delete(path.value());
@@ -170,18 +179,19 @@ void ZeroStateFileProvider::SetSearchResults(
   // Sort valid results high-to-low by score.
   auto& valid_results = results.first;
   std::sort(valid_results.begin(), valid_results.end(),
-            [](const auto& a, const auto& b) { return a.second > b.second; });
+            [](const auto& a, const auto& b) { return a.score > b.score; });
 
   // Use valid results for search results.
   SearchProvider::Results new_results;
   for (size_t i = 0; i < std::min(valid_results.size(), kMaxLocalFiles); ++i) {
-    const auto& filepath = valid_results[i].first;
-    double score = valid_results[i].second;
+    const auto& filepath = valid_results[i].path;
+    const double score = valid_results[i].score;
+    const absl::optional<std::u16string> details = GetJustificationString(
+        valid_results[i].last_accessed, valid_results[i].last_modified);
     auto result = std::make_unique<FileResult>(
-        kSchema, filepath, absl::nullopt,
+        kSchema, filepath, details,
         ash::AppListSearchResultType::kZeroStateFile, GetDisplayType(), score,
         std::u16string(), FileResult::Type::kFile, profile_);
-    result->SetDetailsToJustificationString();
     // TODO(crbug.com/1258415): Only generate thumbnails if the old launcher is
     // enabled. We should implement new thumbnail logic for Continue results if
     // necessary.
@@ -190,9 +200,6 @@ void ZeroStateFileProvider::SetSearchResults(
     }
     new_results.push_back(std::move(result));
   }
-
-  if (app_list_features::IsForceShowContinueSectionEnabled())
-    AppendFakeSearchResults(&new_results);
 
   UMA_HISTOGRAM_TIMES("Apps.AppList.ZeroStateFileProvider.Latency",
                       base::TimeTicks::Now() - query_start_time_);
@@ -221,19 +228,6 @@ void ZeroStateFileProvider::OnFilesOpened(
     }
 
     files_ranker_->Use(file_open.path.value());
-  }
-}
-
-void ZeroStateFileProvider::AppendFakeSearchResults(Results* results) {
-  constexpr int kTotalFakeFiles = 3;
-  for (int i = 0; i < kTotalFakeFiles; ++i) {
-    results->emplace_back(std::make_unique<FileResult>(
-        kSchema,
-        base::FilePath(FILE_PATH_LITERAL(
-            base::StrCat({"Fake-file-", base::NumberToString(i), ".png"}))),
-        u"-", ash::AppListSearchResultType::kZeroStateFile,
-        ash::SearchResultDisplayType::kContinue, 0.1f, std::u16string(),
-        FileResult::Type::kFile, profile_));
   }
 }
 
