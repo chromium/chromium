@@ -128,6 +128,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
@@ -824,8 +825,9 @@ public class RootUiCoordinator
                 }
             };
 
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                    profile, mActivity, TemplateUrlServiceFactory.get(), historyClustersDelegate);
+            mHistoryClustersCoordinator = new HistoryClustersCoordinator(profile, mActivity,
+                    TemplateUrlServiceFactory.get(), historyClustersDelegate,
+                    ChromeAccessibilityUtil.get());
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }

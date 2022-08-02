@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.history_clusters;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.geq;
@@ -18,6 +19,7 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -42,6 +44,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -59,6 +62,7 @@ import org.chromium.chrome.browser.history_clusters.HistoryClustersItemPropertie
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -67,6 +71,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 import org.chromium.url.ShadowGURL;
@@ -125,6 +130,10 @@ public class HistoryClustersMediatorTest {
     private TabCreator mTabCreator;
     @Mock
     private HistoryClustersMetricsLogger mMetricsLogger;
+    @Mock
+    private AccessibilityUtil mAccessibilityUtil;
+    @Mock
+    private Configuration mConfiguration;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
@@ -155,6 +164,8 @@ public class HistoryClustersMediatorTest {
         doReturn(mResources).when(mContext).getResources();
         doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
         doReturn(mLayoutManager).when(mRecyclerView).getLayoutManager();
+        mConfiguration.keyboard = Configuration.KEYBOARD_NOKEYS;
+        doReturn(mConfiguration).when(mResources).getConfiguration();
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
 
@@ -238,7 +249,7 @@ public class HistoryClustersMediatorTest {
 
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
-                mSelectionDelegate, mMetricsLogger);
+                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1", "url1.com/", new ArrayList<>(),
                 new ArrayList<>(), mGurl1, 123L, new ArrayList<>());
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2", "url2.com/", new ArrayList<>(),
@@ -281,7 +292,11 @@ public class HistoryClustersMediatorTest {
         // call both.
         mMediator.setQueryState(QueryState.forQuery("query", ""));
         mMediator.startQuery("query");
-        assertEquals(mModelList.size(), 0);
+        assertEquals(1, mModelList.size());
+        ListItem spinnerItem = mModelList.get(0);
+        assertEquals(spinnerItem.type, ItemType.MORE_PROGRESS);
+        assertEquals(spinnerItem.model.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE),
+                State.LOADING);
 
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
@@ -313,6 +328,55 @@ public class HistoryClustersMediatorTest {
         assertTrue(relatedSearchesModel.getAllSetProperties().containsAll(
                 Arrays.asList(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
                         HistoryClustersItemProperties.RELATED_SEARCHES)));
+    }
+
+    @Test
+    public void testScrollToLoadDisabled() {
+        mConfiguration.keyboard = Configuration.KEYBOARD_12KEY;
+        mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
+                mModelList, mToolbarModel, mHistoryClustersDelegate, mClock, mTemplateUrlService,
+                mSelectionDelegate, mMetricsLogger, mAccessibilityUtil);
+
+        Promise<HistoryClustersResult> promise = new Promise<>();
+        doReturn(promise).when(mBridge).queryClusters("query");
+        Promise<HistoryClustersResult> secondPromise = new Promise();
+        doReturn(secondPromise).when(mBridge).loadMoreClusters("query");
+
+        mMediator.setQueryState(QueryState.forQuery("query", ""));
+        mMediator.startQuery("query");
+
+        assertEquals(1, mModelList.size());
+        ListItem spinnerItem = mModelList.get(0);
+        assertEquals(spinnerItem.type, ItemType.MORE_PROGRESS);
+        assertEquals(spinnerItem.model.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE),
+                State.LOADING);
+
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        spinnerItem = mModelList.get(mModelList.size() - 1);
+        assertEquals(spinnerItem.type, ItemType.MORE_PROGRESS);
+        assertEquals(spinnerItem.model.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE),
+                State.BUTTON);
+
+        mMediator.onScrolled(mRecyclerView, 1, 1);
+        verify(mBridge, Mockito.never()).loadMoreClusters("query");
+
+        spinnerItem.model.get(HistoryClustersItemProperties.CLICK_HANDLER).onClick(null);
+        ShadowLooper.idleMainLooper();
+
+        verify(mBridge).loadMoreClusters("query");
+        spinnerItem = mModelList.get(mModelList.size() - 1);
+        assertEquals(spinnerItem.type, ItemType.MORE_PROGRESS);
+        assertEquals(spinnerItem.model.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE),
+                State.LOADING);
+
+        fulfillPromise(secondPromise, mHistoryClustersFollowupResultWithQuery);
+        // There should no longer be a spinner or "load more" button once all possible results for
+        // the current query have been loaded.
+        for (int i = 0; i < mModelList.size(); i++) {
+            ListItem item = mModelList.get(i);
+            assertNotEquals(item.type, ItemType.MORE_PROGRESS);
+        }
     }
 
     @Test
@@ -393,14 +457,17 @@ public class HistoryClustersMediatorTest {
         mMediator.setQueryState(QueryState.forQuery("pan", ""));
         mMediator.onSearchTextChanged("pan");
 
-        assertEquals(mModelList.size(), 0);
+        assertEquals(mModelList.size(), 1);
+        ListItem spinnerItem = mModelList.get(0);
+        assertEquals(spinnerItem.type, ItemType.MORE_PROGRESS);
+        assertEquals(spinnerItem.model.get(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE),
+                State.LOADING);
         verify(mBridge).queryClusters("pan");
 
         doReturn(new Promise<>()).when(mBridge).queryClusters("");
-        mModelList.add(new ListItem(42, new PropertyModel()));
+
         mMediator.onEndSearch();
 
-        assertEquals(mModelList.size(), 0);
         verify(mBridge).queryClusters("");
     }
 
