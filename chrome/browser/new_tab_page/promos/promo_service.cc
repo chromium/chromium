@@ -256,9 +256,10 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
 
   DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
   double now = base::Time::Now().ToDeltaSinceWindowsEpoch().InSecondsF();
-  // TODO(crbug.com/1003508): verify that promo_id belongs to valid promo.
   update->SetDoubleKey(promo_id, now);
 
+  // Check if the promo id to be blocked is the same as the promo id of the
+  // current promo being served.
   if (promo_data_ && promo_data_->promo_id == promo_id) {
     promo_data_ = PromoData();
     promo_status_ = Status::OK_BUT_BLOCKED;
