@@ -1242,6 +1242,7 @@ if (!is_android) {
       "//components/bookmarks/browser",
       "//components/bookmarks/common",
       "//components/bookmarks/managed",
+      "//components/breadcrumbs/core:feature_flags",
       "//components/browser_sync",
       "//components/browsing_data/content",
       "//components/browsing_data/core",
