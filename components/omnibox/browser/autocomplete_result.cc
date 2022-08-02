@@ -83,7 +83,7 @@ struct MatchGURLHash {
 // static
 size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 #if BUILDFLAG(IS_ANDROID)
-  constexpr size_t kDefaultMaxAutocompleteMatches = 8;
+  constexpr size_t kDefaultMaxAutocompleteMatches = 10;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 15;
 #elif BUILDFLAG(IS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
