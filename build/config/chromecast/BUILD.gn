@@ -45,11 +45,6 @@ config("ldconfig") {
     ldflags = [ "-Wl,-rpath=${target_rpath}" ]
   }
 
-  if (chromecast_branding != "public") {
-    # Some internal x64 builds need additional rpath and dynamic-linker config.
-    configs += [ "//chromecast/internal/build/config/ldconfig" ]
-  }
-
   # Binaries which don't live in the same directory as Chrome component
   # libraries may still depend on them. Explicitly add the component library
   # directory to the rpath for the component build.
