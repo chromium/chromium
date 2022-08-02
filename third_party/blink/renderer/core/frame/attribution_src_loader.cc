@@ -410,7 +410,7 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
     absl::optional<net::structured_headers::Dictionary> dict =
         net::structured_headers::ParseDictionary(
             StringUTF8Adaptor(header_value).AsStringPiece());
-    if (!dict) {
+    if (!dict || dict->contains(kAttributionEligibleNavigationSource)) {
       LogAuditIssue(local_frame_->DomWindow(),
                     AttributionReportingIssueType::kInvalidEligibleHeader,
                     /*element=*/nullptr, request_id,
@@ -420,14 +420,10 @@ bool AttributionSrcLoader::MaybeRegisterAttributionHeaders(
 
     const bool allows_event_source =
         dict->contains(kAttributionEligibleEventSource);
-    const bool allows_navigation_source =
-        dict->contains(kAttributionEligibleNavigationSource);
     const bool allows_trigger = dict->contains(kAttributionEligibleTrigger);
 
     // TODO(johnidel): Consider logging a devtools issue here for early exits.
-    if (allows_navigation_source) {
-      return false;
-    } else if (allows_event_source && allows_trigger) {
+    if (allows_event_source && allows_trigger) {
       // We use an undetermined SrcType which indicates either a source or
       // trigger may be registered.
       src_type = SrcType::kUndetermined;
