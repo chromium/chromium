@@ -350,7 +350,9 @@ void TextInput::ExtendSelectionAndDelete(size_t before, size_t after) {
                                    gfx::Range(utf16_start, utf16_end));
 }
 
-void TextInput::EnsureCaretNotInRect(const gfx::Rect& rect) {}
+void TextInput::EnsureCaretNotInRect(const gfx::Rect& rect) {
+  delegate_->OnVirtualKeyboardOccludedBoundsChanged(rect);
+}
 
 bool TextInput::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
   return false;
@@ -438,6 +440,7 @@ void TextInput::OnKeyboardVisible(const gfx::Rect& keyboard_rect) {
 }
 
 void TextInput::OnKeyboardHidden() {
+  delegate_->OnVirtualKeyboardOccludedBoundsChanged({});
   delegate_->OnVirtualKeyboardVisibilityChanged(false);
 }
 

@@ -13,6 +13,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ime/dummy_text_input_client.h"
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/init/input_method_initializer.h"
@@ -229,6 +230,8 @@ class TextInputClientForTesting : public DummyTextInputClient {
   gfx::Range selection_range;
   std::u16string surrounding_text;
 
+  absl::optional<gfx::Rect> caret_not_in_rect;
+
  protected:
   void SetCompositionText(const CompositionText& composition) override {
     composition_text = composition.text;
@@ -288,6 +291,10 @@ class TextInputClientForTesting : public DummyTextInputClient {
       return false;
     *text = surrounding_text.substr(range.GetMin(), range.length());
     return true;
+  }
+
+  void EnsureCaretNotInRect(const gfx::Rect& rect) override {
+    caret_not_in_rect = rect;
   }
 };
 
@@ -1064,6 +1071,17 @@ TEST_F(InputMethodAuraLinuxTest, SetPreeditRegionCompositionEndTest) {
 
   test_result_->ExpectAction("compositionend");
   test_result_->Verify();
+}
+
+TEST_F(InputMethodAuraLinuxTest, OnSetVirtualKeyboardOccludedBounds) {
+  auto client =
+      std::make_unique<TextInputClientForTesting>(TEXT_INPUT_TYPE_TEXT);
+  input_method_auralinux_->SetFocusedTextInputClient(client.get());
+
+  constexpr gfx::Rect kBounds(10, 20, 300, 400);
+  input_method_auralinux_->OnSetVirtualKeyboardOccludedBounds(kBounds);
+
+  EXPECT_EQ(client->caret_not_in_rect, kBounds);
 }
 
 TEST_F(InputMethodAuraLinuxTest, GetVirtualKeyboardController) {

@@ -82,19 +82,23 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   void OnSetPreeditRegion(int32_t index,
                           uint32_t length,
                           const std::vector<SpanStyle>& spans) override;
-
   void OnClearGrammarFragments(const gfx::Range& range) override;
   void OnAddGrammarFragment(const GrammarFragment& fragment) override;
   void OnSetAutocorrectRange(const gfx::Range& range) override;
-
+  void OnSetVirtualKeyboardOccludedBounds(
+      const gfx::Rect& screen_bounds) override;
   void OnInputPanelState(uint32_t state) override;
   void OnModifiersMap(std::vector<std::string> modifiers_map) override;
 
  private:
-  void Focus();
-  void Blur();
+  void Focus(bool skip_virtual_keyboard_update);
+  void Blur(bool skip_virtual_keyboard_update);
   void UpdatePreeditText(const std::u16string& preedit_text);
-  void MaybeUpdateActivated();
+  // If |skip_virtual_keyboard_update| is true, no virtual keyboard show/hide
+  // requests will be sent. This is used to prevent flickering the virtual
+  // keyboard when it would be immediately reshown anyway, e.g. when changing
+  // focus from one text input to another.
+  void MaybeUpdateActivated(bool skip_virtual_keyboard_update);
 
   const raw_ptr<WaylandConnection>
       connection_;  // TODO(jani) Handle this better

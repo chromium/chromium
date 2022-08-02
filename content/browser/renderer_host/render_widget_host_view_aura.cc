@@ -1535,8 +1535,11 @@ void RenderWidgetHostViewAura::EnsureCaretNotInRect(
   keyboard_occluded_bounds_ = rect_in_screen;
 
   // If keyboard is disabled, reset the insets_.
-  if (keyboard_occluded_bounds_.IsEmpty())
-    insets_ = gfx::Insets();
+  if (keyboard_occluded_bounds_.IsEmpty()) {
+    SetInsets(gfx::Insets());
+  } else {
+    UpdateInsetsWithVirtualKeyboardEnabled();
+  }
 
   aura::Window* top_level_window = window_->GetToplevelWindow();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2453,11 +2456,11 @@ void RenderWidgetHostViewAura::InternalSetBounds(const gfx::Rect& rect) {
 void RenderWidgetHostViewAura::UpdateInsetsWithVirtualKeyboardEnabled() {
   // Update insets if the keyboard is shown.
   if (!keyboard_occluded_bounds_.IsEmpty()) {
-    insets_ = gfx::Insets::TLBR(
+    SetInsets(gfx::Insets::TLBR(
         0, 0,
         gfx::IntersectRects(GetViewBounds(), keyboard_occluded_bounds_)
             .height(),
-        0);
+        0));
   }
 }
 

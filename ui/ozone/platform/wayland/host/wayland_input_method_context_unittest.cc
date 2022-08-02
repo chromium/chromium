@@ -28,6 +28,7 @@
 
 using ::testing::_;
 using ::testing::DoAll;
+using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::SaveArg;
 using ::testing::Values;
@@ -85,6 +86,11 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     was_on_set_preedit_region_called_ = true;
   }
 
+  void OnSetVirtualKeyboardOccludedBounds(
+      const gfx::Rect& screen_bounds) override {
+    virtual_keyboard_bounds_ = screen_bounds;
+  }
+
   bool was_on_commit_called() const { return was_on_commit_called_; }
 
   bool was_on_confirm_composition_text_called() const {
@@ -116,6 +122,10 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
     return last_on_delete_surrounding_text_args_;
   }
 
+  const absl::optional<gfx::Rect>& virtual_keyboard_bounds() const {
+    return virtual_keyboard_bounds_;
+  }
+
  private:
   bool was_on_commit_called_ = false;
   bool was_on_confirm_composition_text_called_ = false;
@@ -126,6 +136,7 @@ class TestInputMethodContextDelegate : public LinuxInputMethodContextDelegate {
   bool was_on_set_autocorrect_range_called_ = false;
   absl::optional<std::pair<size_t, size_t>>
       last_on_delete_surrounding_text_args_;
+  absl::optional<gfx::Rect> virtual_keyboard_bounds_;
 };
 
 class WaylandInputMethodContextTest : public WaylandTest {
@@ -190,6 +201,7 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   // Scenario 1: InputMethod focus is set, then Keyboard focus is set.
   // Unset them in the reversed order.
 
+  InSequence s;
   EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource())).Times(0);
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_NONE,
@@ -206,15 +218,15 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
-  EXPECT_CALL(*zwp_text_input_, Deactivate());
   EXPECT_CALL(*zwp_text_input_, HideInputPanel());
+  EXPECT_CALL(*zwp_text_input_, Deactivate());
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
   connection_->ScheduleFlush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
-  EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
   EXPECT_CALL(*zwp_text_input_, HideInputPanel()).Times(0);
+  EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_TEXT,
                                      ui::TEXT_INPUT_TYPE_NONE);
   connection_->ScheduleFlush();
@@ -239,16 +251,16 @@ TEST_P(WaylandInputMethodContextTest, ActivateDeactivate) {
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
-  EXPECT_CALL(*zwp_text_input_, Deactivate());
   EXPECT_CALL(*zwp_text_input_, HideInputPanel());
+  EXPECT_CALL(*zwp_text_input_, Deactivate());
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_TEXT,
                                      ui::TEXT_INPUT_TYPE_NONE);
   connection_->ScheduleFlush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
-  EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
   EXPECT_CALL(*zwp_text_input_, HideInputPanel()).Times(0);
+  EXPECT_CALL(*zwp_text_input_, Deactivate()).Times(0);
   connection_->wayland_window_manager()->SetKeyboardFocusedWindow(nullptr);
   connection_->ScheduleFlush();
   Sync();
@@ -589,6 +601,13 @@ TEST_P(WaylandInputMethodContextTest, OnSetAutocorrectRange) {
       input_method_context_delegate_->was_on_set_autocorrect_range_called());
 }
 
+TEST_P(WaylandInputMethodContextTest, OnSetVirtualKeyboardOccludedBounds) {
+  const gfx::Rect bounds(10, 20, 300, 400);
+  input_method_context_->OnSetVirtualKeyboardOccludedBounds(bounds);
+  Sync();
+  EXPECT_EQ(input_method_context_delegate_->virtual_keyboard_bounds(), bounds);
+}
+
 TEST_P(WaylandInputMethodContextTest, DisplayVirtualKeyboard) {
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   EXPECT_TRUE(input_method_context_->DisplayVirtualKeyboard());
@@ -635,6 +654,7 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
   // Because there is no keyboard, Activate is called as soon as InputMethod's
   // TextInputClient focus is met.
 
+  InSequence s;
   EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource()));
   EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
   input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_NONE,
@@ -643,10 +663,35 @@ TEST_P(WaylandInputMethodContextNoKeyboardTest, ActivateDeactivate) {
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);
 
-  EXPECT_CALL(*zwp_text_input_, Deactivate());
   EXPECT_CALL(*zwp_text_input_, HideInputPanel());
+  EXPECT_CALL(*zwp_text_input_, Deactivate());
   input_method_context_->UpdateFocus(false, ui::TEXT_INPUT_TYPE_TEXT,
                                      ui::TEXT_INPUT_TYPE_NONE);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+}
+
+TEST_P(WaylandInputMethodContextNoKeyboardTest, UpdateFocusBetweenTextFields) {
+  // Because there is no keyboard, Activate is called as soon as InputMethod's
+  // TextInputClient focus is met.
+
+  InSequence s;
+  EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource()));
+  EXPECT_CALL(*zwp_text_input_, ShowInputPanel());
+  input_method_context_->UpdateFocus(true, ui::TEXT_INPUT_TYPE_NONE,
+                                     ui::TEXT_INPUT_TYPE_TEXT);
+  connection_->ScheduleFlush();
+  Sync();
+  Mock::VerifyAndClearExpectations(zwp_text_input_);
+
+  // Make sure virtual keyboard is not unnecessarily hidden.
+  EXPECT_CALL(*zwp_text_input_, HideInputPanel()).Times(0);
+  EXPECT_CALL(*zwp_text_input_, Deactivate());
+  EXPECT_CALL(*zwp_text_input_, Activate(surface_->resource()));
+  EXPECT_CALL(*zwp_text_input_, ShowInputPanel()).Times(0);
+  input_method_context_->UpdateFocus(false, ui::TEXT_INPUT_TYPE_TEXT,
+                                     ui::TEXT_INPUT_TYPE_TEXT);
   connection_->ScheduleFlush();
   Sync();
   Mock::VerifyAndClearExpectations(zwp_text_input_);

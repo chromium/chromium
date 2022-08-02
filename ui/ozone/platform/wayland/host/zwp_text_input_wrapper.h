@@ -86,6 +86,11 @@ class ZWPTextInputWrapperClient {
   // |range| is in UTF-16 code range.
   virtual void OnSetAutocorrectRange(const gfx::Range& range) = 0;
 
+  // Called when the virtual keyboard's occluded bounds is updated.
+  // The bounds are in screen DIP.
+  virtual void OnSetVirtualKeyboardOccludedBounds(
+      const gfx::Rect& screen_bounds) = 0;
+
   // Called when the visibility state of the input panel changed.
   // There's no detailed spec of |state|, and no actual implementor except
   // components/exo is found in the world at this moment.

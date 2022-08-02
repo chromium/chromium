@@ -120,6 +120,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   // Sets the autocorrect range in the text input client.
   // |range| is in UTF-16 code range.
   virtual void OnSetAutocorrectRange(const gfx::Range& range) = 0;
+
+  // Sets the virtual keyboard's occluded bounds in screen DIP.
+  virtual void OnSetVirtualKeyboardOccludedBounds(
+      const gfx::Rect& screen_bounds) = 0;
 };
 
 }  // namespace ui

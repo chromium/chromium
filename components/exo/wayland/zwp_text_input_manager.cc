@@ -106,6 +106,20 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     wl_client_flush(client());
   }
 
+  void OnVirtualKeyboardOccludedBoundsChanged(
+      const gfx::Rect& screen_bounds) override {
+    if (!extended_text_input_)
+      return;
+
+    if (wl_resource_get_version(extended_text_input_) >=
+        ZCR_EXTENDED_TEXT_INPUT_V1_SET_VIRTUAL_KEYBOARD_OCCLUDED_BOUNDS_SINCE_VERSION) {
+      zcr_extended_text_input_v1_send_set_virtual_keyboard_occluded_bounds(
+          extended_text_input_, screen_bounds.x(), screen_bounds.y(),
+          screen_bounds.width(), screen_bounds.height());
+      wl_client_flush(client());
+    }
+  }
+
   void SetCompositionText(const ui::CompositionText& composition) override {
     SendPreeditStyle(composition.text, composition.ime_text_spans);
 

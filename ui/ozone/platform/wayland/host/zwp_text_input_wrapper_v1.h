@@ -116,25 +116,29 @@ class ZWPTextInputWrapperV1 : public ZWPTextInputWrapper {
       struct zcr_extended_text_input_v1* extended_text_input,
       int32_t index,
       uint32_t length);
-
   static void OnClearGrammarFragments(
       void* data,
       struct zcr_extended_text_input_v1* extended_text_input,
       uint32_t start,
       uint32_t end);
-
   static void OnAddGrammarFragment(
       void* data,
       struct zcr_extended_text_input_v1* extended_text_input,
       uint32_t start,
       uint32_t end,
       const char* suggestion);
-
   static void OnSetAutocorrectRange(
       void* data,
       struct zcr_extended_text_input_v1* extended_text_input,
       uint32_t start,
       uint32_t end);
+  static void OnSetVirtualKeyboardOccludedBounds(
+      void* data,
+      struct zcr_extended_text_input_v1* extended_text_input,
+      int32_t x,
+      int32_t y,
+      int32_t width,
+      int32_t height);
 
   const raw_ptr<WaylandConnection> connection_;
   wl::Object<zwp_text_input_v1> obj_;

@@ -51,6 +51,11 @@ class TextInput : public ui::TextInputClient,
     // Called when the virtual keyboard visibility state has changed.
     virtual void OnVirtualKeyboardVisibilityChanged(bool is_visible) = 0;
 
+    // Called when the virtual keyboard's occluded bounds has changed.
+    // The bounds are in screen DIP.
+    virtual void OnVirtualKeyboardOccludedBoundsChanged(
+        const gfx::Rect& screen_bounds) = 0;
+
     // Set the 'composition text' of the current text input.
     virtual void SetCompositionText(const ui::CompositionText& composition) = 0;
 

@@ -84,6 +84,10 @@ class MockTextInputDelegate : public TextInput::Delegate {
               SetAutocorrectRange,
               (base::StringPiece16, const gfx::Range&),
               ());
+  MOCK_METHOD(void,
+              OnVirtualKeyboardOccludedBoundsChanged,
+              (const gfx::Rect&),
+              ());
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {
@@ -766,6 +770,19 @@ TEST_F(TextInputTest, GetAutocorrect) {
       AddGrammarFragment(base::StringPiece16(surrounding_text), fragments[1]))
       .Times(1);
   text_input()->AddGrammarFragments(fragments);
+}
+
+TEST_F(TextInputTest, EnsureCaretNotInRect) {
+  const gfx::Rect bounds(10, 20, 300, 400);
+  EXPECT_CALL(*delegate(), OnVirtualKeyboardOccludedBoundsChanged(bounds));
+  text_input()->EnsureCaretNotInRect(bounds);
+}
+
+TEST_F(TextInputTest, OnKeyboardHidden) {
+  const gfx::Rect bounds;
+  EXPECT_CALL(*delegate(), OnVirtualKeyboardOccludedBoundsChanged(bounds));
+  EXPECT_CALL(*delegate(), OnVirtualKeyboardVisibilityChanged(false));
+  text_input()->OnKeyboardHidden();
 }
 
 }  // anonymous namespace

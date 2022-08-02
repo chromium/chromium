@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_text_input_extension_v1" version="4">
+  <interface name="zcr_text_input_extension_v1" version="5">
     <description summary="extends text_input to support richer operations">
       Allows a text_input to sends more variation of operations to support
       richer features, such as set_preedit_region.
@@ -57,7 +57,7 @@
 
   </interface>
 
-  <interface name="zcr_extended_text_input_v1" version="4">
+  <interface name="zcr_extended_text_input_v1" version="5">
     <description summary="extension of text_input protocol">
       The zcr_extended_text_input_v1 interface extends the text_input interface
       to support more rich operations on text_input.
@@ -258,6 +258,27 @@
       <arg name="width" type="uint" />
       <arg name="height" type="uint" />
     </request>
+
+    <!-- Version 5 -->
+
+    <event name="set_virtual_keyboard_occluded_bounds" since="5">
+      <description summary="Sets the virtual keyboard's occluded bounds.">
+        This event tells the client about the part of the virtual keyboard's
+        bounds that occludes the text input's window, in screen DIP coordinates.
+        In order for the text input to make proper use of this information, it
+        needs to know its window's screen DIP bounds via another interface such
+        as the aura-shell.
+
+        The occluded bounds may be smaller than the keyboard's visual bounds.
+
+        When the virtual keyboard is hidden or floating, empty bounds are sent,
+        i.e. with zero width and height.
+      </description>
+      <arg name="x" type="int"/>
+      <arg name="y" type="int"/>
+      <arg name="width" type="int"/>
+      <arg name="height" type="int"/>
+    </event>
 
   </interface>
 </protocol>
