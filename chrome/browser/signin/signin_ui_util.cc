@@ -494,13 +494,6 @@ void RecordProfileMenuViewShown(Profile* profile) {
   } else if (profile->IsIncognitoProfile()) {
     base::RecordAction(base::UserMetricsAction("ProfileMenu_Opened_Incognito"));
   }
-
-  base::TimeTicks last_shown =
-      AvatarButtonUserData::GetAnimatedIdentityLastShown(profile);
-  if (!last_shown.is_null()) {
-    base::UmaHistogramLongTimes("Profile.Menu.OpenedAfterAvatarAnimation",
-                                base::TimeTicks::Now() - last_shown);
-  }
 }
 
 void RecordProfileMenuClick(Profile* profile) {

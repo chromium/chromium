@@ -377,18 +377,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.Menu.OpenedAfterAvatarAnimation" units="ms"
-    expires_after="2022-08-28">
-  <owner>droger@chromium.org</owner>
-  <owner>jkrcal@chromium.org</owner>
-  <summary>
-    When the profile menu is opened, after the identity animation was shown,
-    this records the time since the animation was shown. In the control group
-    for the identity pill experiment, this is still recorded as the time since
-    the animation *would have been* shown.
-  </summary>
-</histogram>
-
 <histogram name="Profile.NetUserCount" enum="ProfileNetUserCount"
     expires_after="2023-01-01">
   <owner>rogerta@chromium.org</owner>
