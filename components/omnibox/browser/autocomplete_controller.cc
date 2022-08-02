@@ -147,6 +147,22 @@ void RecordMatchDeletion(const AutocompleteMatch& match) {
   }
 }
 
+// Return if preservation is enabled for sync/async updates, and this is a
+// sync/async update. Sync updates may have a minimum input length as well.
+bool ShouldPreserveDefault(bool in_start, size_t input_length) {
+  if (in_start) {
+    static const size_t min_input_length =
+        OmniboxFieldTrial::
+            kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength
+                .Get();
+    return min_input_length >= 0 &&
+           input_length >= static_cast<size_t>(min_input_length);
+  } else {
+    return OmniboxFieldTrial::
+        kAutocompleteStabilityPreserveDefaultForAsyncUpdates.Get();
+  }
+}
+
 }  // namespace
 
 // static
@@ -895,16 +911,11 @@ void AutocompleteController::UpdateResult(
   if (perform_tab_match)
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
 
-  // Sort the matches and trim to a small number of "best" matches. Do this only
-  // if preservation is enabled for sync/async updates, and this is a sync/async
-  // update.
+  // Sort the matches and trim to a small number of "best" matches.
+  // Conditionally preserve the default match.
   const AutocompleteMatch* preserve_default_match = nullptr;
-  if ((in_start_
-           ? OmniboxFieldTrial::
-                 kAutocompleteStabilityPreserveDefaultForSyncUpdates.Get()
-           : OmniboxFieldTrial::
-                 kAutocompleteStabilityPreserveDefaultForAsyncUpdates.Get()) &&
-      last_default_match) {
+  if (last_default_match &&
+      ShouldPreserveDefault(in_start_, input_.text().length())) {
     preserve_default_match = &last_default_match.value();
   }
   result_.SortAndCull(input_, template_url_service_, preserve_default_match);

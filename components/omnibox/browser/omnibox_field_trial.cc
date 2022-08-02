@@ -731,11 +731,11 @@ const base::FeatureParam<bool>
         &omnibox::kAutocompleteStability,
         "AutocompleteStabilityPreserveDefaultAfterTransfer",
         false);
-const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultForSyncUpdates(
+const base::FeatureParam<int>
+    kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength(
         &omnibox::kAutocompleteStability,
-        "AutocompleteStabilityPreserveDefaultForSyncUpdates",
-        false);
+        "AutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength",
+        -1);
 const base::FeatureParam<bool>
     kAutocompleteStabilityPreserveDefaultForAsyncUpdates(
         &omnibox::kAutocompleteStability,

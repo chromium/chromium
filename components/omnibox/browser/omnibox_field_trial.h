@@ -479,9 +479,12 @@ extern const char kOmniboxUIUnelideURLOnHoverThresholdMsParam[];
 // preserves the default.
 extern const base::FeatureParam<bool>
     kAutocompleteStabilityPreserveDefaultAfterTransfer;
-// Whether to preserve the default suggestion during sync updates.
-extern const base::FeatureParam<bool>
-    kAutocompleteStabilityPreserveDefaultForSyncUpdates;
+// The minimum input length for which to preserve the default suggestion during
+// sync updates. If 0, all sync updates preserve the default suggestion,
+// regardless of input length. If <0, no sync updates preserve the default
+// suggestion; i.e. control behavior.
+extern const base::FeatureParam<int>
+    kAutocompleteStabilityPreserveDefaultForSyncUpdatesMinInputLength;
 // Whether to preserve the default suggestion during async updates. It doesn't
 // make too much sense to enable preservation for sync but not async
 // updates. True by default.
