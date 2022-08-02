@@ -19,7 +19,9 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "content/browser/android/app_web_message_port.h"
+#include "content/browser/android/message_payload.h"
 #endif
 
 using blink::MessagePortChannel;
@@ -77,11 +79,13 @@ void MessagePortProvider::PostMessageToFrame(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& source_origin,
     const base::android::JavaParamRef<jstring>& target_origin,
-    const base::android::JavaParamRef<jstring>& data,
+    const base::android::JavaParamRef<jobject>& payload,
     const base::android::JavaParamRef<jobjectArray>& ports) {
   PostMessageToFrameInternal(
       page, ToString16(env, source_origin), ToString16(env, target_origin),
-      ToString16(env, data), android::AppWebMessagePort::Release(env, ports));
+      android::ConvertToWebMessagePayloadFromJava(
+          base::android::ScopedJavaLocalRef<jobject>(payload)),
+      android::AppWebMessagePort::Release(env, ports));
 }
 #endif
 

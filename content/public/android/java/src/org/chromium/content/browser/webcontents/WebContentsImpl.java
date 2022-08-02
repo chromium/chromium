@@ -711,9 +711,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         if (targetOrigin.equals("*")) {
             targetOrigin = "";
         }
-        WebContentsImplJni.get().postMessageToMainFrame(mNativeWebContentsAndroid,
-                messagePayload.getAsString(), sourceOrigin, targetOrigin,
-                ports);
+        WebContentsImplJni.get().postMessageToMainFrame(
+                mNativeWebContentsAndroid, messagePayload, sourceOrigin, targetOrigin, ports);
     }
 
     @Override
@@ -1125,7 +1124,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void evaluateJavaScriptForTests(
                 long nativeWebContentsAndroid, String script, JavaScriptCallback callback);
         void addMessageToDevToolsConsole(long nativeWebContentsAndroid, int level, String message);
-        void postMessageToMainFrame(long nativeWebContentsAndroid, String message,
+        void postMessageToMainFrame(long nativeWebContentsAndroid, MessagePayload payload,
                 String sourceOrigin, String targetOrigin, MessagePort[] ports);
         boolean hasAccessedInitialDocument(long nativeWebContentsAndroid);
         int getThemeColor(long nativeWebContentsAndroid);

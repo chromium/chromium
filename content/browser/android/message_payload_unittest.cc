@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/android/message_payload.h"
+#include <cstddef>
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,25 +15,24 @@ namespace {
 
 TEST(MessagePayloadTest, SelfTest_String) {
   std::u16string string = u"Hello";
-  blink::TransferableMessage message = blink::EncodeWebMessagePayload(string);
 
-  auto generated_message =
-      android::CreateTransferableMessageFromJavaMessagePayload(
-          android::CreateJavaMessagePayload(message));
-  EXPECT_EQ(message.encoded_message.size(),
-            generated_message.encoded_message.size());
-  for (size_t i = 0; i != message.encoded_message.size(); ++i) {
-    EXPECT_EQ(message.encoded_message[i], generated_message.encoded_message[i]);
-  }
+  auto generated_message = android::ConvertToWebMessagePayloadFromJava(
+      android::ConvertWebMessagePayloadToJava(string));
+  EXPECT_EQ(blink::WebMessagePayload(string), generated_message);
 }
 
-TEST(MessagePayloadTest, SelfTest_InvalidString) {
-  blink::TransferableMessage message;
-  // Construct invalid message.
-  message.owned_encoded_message = {0x1, 0x2, 0x3};
-  message.encoded_message = message.owned_encoded_message;
-  auto java_msg = android::CreateJavaMessagePayload(message);
-  EXPECT_TRUE(java_msg.is_null());
+TEST(MessagePayloadTest, SelfTest_ArrayBuffer) {
+  std::vector<uint8_t> data(200, 0XFF);
+  auto generated_message = android::ConvertToWebMessagePayloadFromJava(
+      android::ConvertWebMessagePayloadToJava(data));
+  EXPECT_EQ(blink::WebMessagePayload(data), generated_message);
+}
+
+TEST(MessagePayloadTest, SelfTest_ArrayBufferEmpty) {
+  std::vector<uint8_t> data;
+  auto generated_message = android::ConvertToWebMessagePayloadFromJava(
+      android::ConvertWebMessagePayloadToJava(data));
+  EXPECT_EQ(blink::WebMessagePayload(data), generated_message);
 }
 
 }  // namespace
