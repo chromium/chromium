@@ -125,7 +125,7 @@ class ToggleRoot {
   bool operator!=(const ToggleRoot& other) const { return !(*this == other); }
 
   const AtomicString& Name() const { return name_; }
-  States StateSet() const { return states_; }
+  const States& StateSet() const { return states_; }
   State InitialState() const { return value_; }
   ToggleOverflow Overflow() const { return overflow_; }
   bool IsGroup() const { return is_group_; }
