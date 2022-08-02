@@ -17,6 +17,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/test/event_generator.h"
 #include "url/url_constants.h"
 
@@ -39,27 +40,25 @@ class AccessibilityLiveSiteTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    // TODO: this logic currently doesn't work and the test never passes due to
-    // inability to lookup docs.google.com. To avoid depending on external
-    // resources, browser tests don't allow non-local DNS queries by default.
-    // Override this for this specific manual test suite.
-    scoped_refptr<net::RuleBasedHostResolverProc> resolver =
-        new net::RuleBasedHostResolverProc(host_resolver());
-    resolver->AllowDirectLookup("*.google.com");
-    resolver->AllowDirectLookup("*.gstatic.com");
-    mock_host_resolver_override_ =
-        std::make_unique<net::ScopedDefaultHostResolverProc>(resolver.get());
-  }
+    // To avoid depending on external resources, browser tests don't allow
+    // non-local DNS queries by default. Override this for this specific manual
+    // test suite.
+    host_resolver()->AllowDirectLookup("*.google.com");
+    host_resolver()->AllowDirectLookup("*.gstatic.com");
 
-  void TearDownInProcessBrowserTestFixture() override {
-    mock_host_resolver_override_.reset();
+    // TODO (accessibility): Provide a way to disable the pop up dialog.
+    // Disable kEnhancedNetworkVoices to avoid its pop up dialog.
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kEnhancedNetworkVoices);
+
+    InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
   test::SpeechMonitor speech_monitor_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
-  std::unique_ptr<net::ScopedDefaultHostResolverProc>
-      mock_host_resolver_override_;
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // This is a sanity check / integration test that Select-to-speak works
