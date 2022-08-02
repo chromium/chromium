@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
 
+#include "base/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
@@ -36,6 +37,17 @@ namespace {
 // The maximum time to wait for DOM features to be collected, in milliseconds.
 const int kDomFeatureTimeoutMs = 3000;
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+void ExtractVisualFeaturesAndReplyOnUIThread(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(std::unique_ptr<VisualFeatures>)>
+        ui_thread_callback) {
+  std::unique_ptr<VisualFeatures> visual_features =
+      visual_utils::ExtractVisualFeatures(bitmap);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(ui_thread_callback),
+                                std::move(visual_features)));
+}
 
 }  // namespace
 
@@ -149,8 +161,7 @@ void PasswordProtectionRequestContent::GetDomFeatures() {
 void PasswordProtectionRequestContent::OnGetDomFeatures(
     mojom::PhishingDetectorResult result,
     const std::string& verdict) {
-  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
-  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (dom_features_collection_complete_)
     return;
 
@@ -194,8 +205,7 @@ void PasswordProtectionRequestContent::OnGetDomFeatures(
 }
 
 void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
-  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
-  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   if (!dom_features_collection_complete_) {
     dom_features_collection_complete_ = true;
     if (IsVisualFeaturesEnabled()) {
@@ -268,24 +278,21 @@ void PasswordProtectionRequestContent::CollectVisualFeatures() {
 
 void PasswordProtectionRequestContent::OnScreenshotTaken(
     const SkBitmap& screenshot) {
-  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
-  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-
   // Do the feature extraction on a worker thread, to avoid blocking the UI.
-  base::ThreadPool::PostTaskAndReplyWithResult(
+  auto ui_thread_callback = base::BindOnce(
+      &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
+      AsWeakPtr());
+  base::ThreadPool::PostTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&visual_utils::ExtractVisualFeatures, screenshot),
-      base::BindOnce(
-          &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
-          AsWeakPtr()));
+      base::BindOnce(&ExtractVisualFeaturesAndReplyOnUIThread, screenshot,
+                     std::move(ui_thread_callback)));
 }
 
 void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
     std::unique_ptr<VisualFeatures> visual_features) {
-  // TODO(https://crbug.com/1309124): Convert to DCHECK() once crash is fixed.
-  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   request_proto_->mutable_visual_features()->Swap(visual_features.get());
 

@@ -209,24 +209,25 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // Copies the given subset of the view's surface, optionally scales it, and
   // returns the result as a bitmap via the provided callback. This is meant for
   // one-off snapshots. For continuous video capture of the surface, please use
-  // CreateVideoCapturer() instead.
+  // `CreateVideoCapturer()` instead.
   //
-  // |src_rect| is either the subset of the view's surface, in view coordinates,
+  // `src_rect` is either the subset of the view's surface, in view coordinates,
   // or empty to indicate that all of it should be copied. This is NOT the same
-  // coordinate system as that used GetViewBounds() (https://crbug.com/73362).
+  // coordinate system as that used `GetViewBounds()` (https://crbug.com/73362).
   //
-  // |output_size| is the size of the resulting bitmap, or empty to indicate no
+  // `output_size` is the size of the resulting bitmap, or empty to indicate no
   // scaling is desired. If an empty size is provided, note that the resulting
-  // bitmap's size may not be the same as |src_rect.size()| due to the pixel
+  // bitmap's size may not be the same as `src_rect.size()` due to the pixel
   // scale used by the underlying device.
   //
-  // |callback| is guaranteed to be run, either synchronously or at some point
+  // `callback` is guaranteed to be run, either synchronously or at some point
   // in the future (depending on the platform implementation and the current
-  // state of the Surface). If the copy failed, the bitmap's drawsNothing()
-  // method will return true.
+  // state of the Surface). If the copy failed, the bitmap's `drawsNothing()`
+  // method will return true. `callback` isn't guaranteed to run on the same
+  // task sequence as this method was called from.
   //
-  // If the view's renderer is suspended (see WasOccluded()), this may result in
-  // copying old data or failing.
+  // If the view's renderer is suspended (see `WasOccluded()`), this may result
+  // in copying old data or failing.
   virtual void CopyFromSurface(
       const gfx::Rect& src_rect,
       const gfx::Size& output_size,
