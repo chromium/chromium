@@ -40,9 +40,29 @@ class CollectedCookiesViews : public views::DialogDelegateView,
                               public views::TabbedPaneListener,
                               public views::TreeViewController {
  public:
+  // Used for UMA histogram to record types of actions done by the user in
+  // the "Cookies in use" dialog. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
+  enum class CookiesInUseDialogAction {
+    kDialogOpened = 0,
+    kSingleCookieDeleted = 1,
+    kCookiesFolderDeleted = 2,
+    kFolderDeleted = 3,
+    kSiteDeleted = 4,
+    kSiteBlocked = 5,
+    kSiteAllowed = 6,
+    kSiteClearedOnExit = 7,
+    kMaxValue = kSiteClearedOnExit,
+  };
+
   METADATA_HEADER(CollectedCookiesViews);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTabbedPaneElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockedCookiesTreeElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowedCookiesTreeElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBlockButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAllowButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRemoveButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kClearOnExitButtonId);
 
   CollectedCookiesViews(const CollectedCookiesViews&) = delete;
   CollectedCookiesViews& operator=(const CollectedCookiesViews&) = delete;
@@ -89,6 +109,10 @@ class CollectedCookiesViews : public views::DialogDelegateView,
   void ShowCookieInfo();
 
   void AddContentException(views::TreeView* tree_view, ContentSetting setting);
+
+  void DeleteSelectedCookieNode();
+
+  static void RecordDialogAction(CookiesInUseDialogAction action);
 
   // The web contents.
   raw_ptr<content::WebContents> web_contents_;

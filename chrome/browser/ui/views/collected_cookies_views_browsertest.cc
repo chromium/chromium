@@ -4,17 +4,43 @@
 
 #include <stddef.h>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
+#include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
+#include "base/time/time.h"
+#include "chrome/browser/browsing_data/browsing_data_remover_browsertest_base.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/collected_cookies_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/infobars/content/content_infobar_manager.h"
+#include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/tabbed_pane/tabbed_pane.h"
+#include "ui/views/controls/tree/tree_view.h"
+#include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/button_test_api.h"
+#include "ui/views/test/widget_test.h"
+#include "ui/views/test/widget_test_api.h"
+
+namespace {
+const char kCookiesDialogHistogramName[] = "Privacy.CookiesInUseDialog.Action";
+constexpr std::array<const char*, 7> kSiteDataTypes{
+    "Cookie", "LocalStorage",  "SessionStorage", "IndexedDb",
+    "WebSql", "ServiceWorker", "CacheStorage"};
+
+}  // namespace
 
 class CollectedCookiesViewsTest : public InProcessBrowserTest {
  public:
@@ -109,4 +135,251 @@ IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsTest, CloseDialogAndReopen) {
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
   // If the test didn't crash, it has passed.
+}
+
+class CollectedCookiesViewsMetricsTest : public InProcessBrowserTest {
+ public:
+  CollectedCookiesViewsMetricsTest() = default;
+
+  CollectedCookiesViewsMetricsTest(const CollectedCookiesViewsMetricsTest&) =
+      delete;
+  CollectedCookiesViewsMetricsTest& operator=(
+      const CollectedCookiesViewsMetricsTest&) = delete;
+
+  ~CollectedCookiesViewsMetricsTest() override = default;
+
+  // InProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    base::FilePath path;
+    base::PathService::Get(content::DIR_TEST_DATA, &path);
+    embedded_test_server()->ServeFilesFromDirectory(path);
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("/browsing_data/site_data.html")));
+
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    SetupSiteData(web_contents);
+  }
+
+  void ClickButton(ui::ElementIdentifier button_id) {
+    auto* button =
+        static_cast<views::Button*>(GetViewByElementIdentifier(button_id));
+    ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                         ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi(button).NotifyClick(event);
+  }
+
+  views::View* GetViewByElementIdentifier(ui::ElementIdentifier id) {
+    return ui::ElementTracker::GetElementTracker()
+        ->GetFirstMatchingElement(id, browser()->window()->GetElementContext())
+        ->AsA<views::TrackedElementViews>()
+        ->view();
+  }
+
+  void RunUntilIdle() {
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+
+  void SetupSiteData(content::WebContents* web_contents) {
+    for (const char* data_type : kSiteDataTypes) {
+      SetDataForType(data_type, web_contents);
+      EXPECT_TRUE(HasDataForType(data_type, web_contents));
+    }
+  }
+
+  void SetDataForType(const std::string& type,
+                      content::WebContents* web_contents) {
+    if (!web_contents)
+      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(RunScriptAndGetBool("set" + type + "()", web_contents))
+        << "Couldn't create data for: " << type;
+  }
+
+  bool HasDataForType(const std::string& type,
+                      content::WebContents* web_contents) {
+    if (!web_contents)
+      web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    return RunScriptAndGetBool("has" + type + "()", web_contents);
+  }
+
+  bool RunScriptAndGetBool(const std::string& script,
+                           content::WebContents* web_contents) {
+    EXPECT_TRUE(web_contents);
+    bool data;
+    EXPECT_TRUE(
+        content::ExecuteScriptAndExtractBool(web_contents, script, &data));
+    return data;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, OpenDialog) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_actions;
+  const std::string open_action = "CookiesInUseDialog.Opened";
+
+  // The histogram should start empty and no actions recorded.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+  EXPECT_EQ(0, user_actions.GetActionCount(open_action));
+
+  // Open Cookies in use dialog.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 1);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(
+          CollectedCookiesViews::CookiesInUseDialogAction::kDialogOpened),
+      1);
+  EXPECT_EQ(1, user_actions.GetActionCount(open_action));
+}
+
+IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, DeleteFolder) {
+  base::HistogramTester histograms;
+  // The histogram should start empty.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+
+  // Open Cookies in use dialog.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+
+  // Wait until data is loaded.
+  RunUntilIdle();
+
+  auto* allowed_cookies_tree =
+      static_cast<views::TreeView*>(GetViewByElementIdentifier(
+          CollectedCookiesViews::kAllowedCookiesTreeElementId));
+
+  auto* model = static_cast<CookiesTreeModel*>(allowed_cookies_tree->model());
+  allowed_cookies_tree->Expand(model->GetRoot());
+  // Select the last folder in the list.
+  auto* site_node = model->GetChildren(model->GetRoot()).back();
+  allowed_cookies_tree->SetSelectedNode(model->GetChildren(site_node).back());
+  // Delete folder.
+  ClickButton(CollectedCookiesViews::kRemoveButtonId);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(
+          CollectedCookiesViews::CookiesInUseDialogAction::kFolderDeleted),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, RemoveButton) {
+  base::HistogramTester histograms;
+  base::UserActionTester user_actions;
+  const std::string remove_action = "CookiesInUseDialog.RemoveButtonClicked";
+
+  // The histogram should start empty and no actions recorded.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+  EXPECT_EQ(0, user_actions.GetActionCount(remove_action));
+
+  // Opening Cookies in use dialog.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+
+  // Wait until data is loaded.
+  RunUntilIdle();
+
+  // Click remove on site level which is automatically selected upon dialog
+  // spawn.
+  ClickButton(CollectedCookiesViews::kRemoveButtonId);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(
+          CollectedCookiesViews::CookiesInUseDialogAction::kSiteDeleted),
+      1);
+  EXPECT_EQ(1, user_actions.GetActionCount(remove_action));
+}
+
+IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, BlockAllowSite) {
+  base::HistogramTester histograms;
+
+  // The histogram should start empty.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+
+  // Opening Cookies in use dialog.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+
+  // Wait until data is loaded.
+  RunUntilIdle();
+
+  // Block site.
+  ClickButton(CollectedCookiesViews::kBlockButtonId);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(
+          CollectedCookiesViews::CookiesInUseDialogAction::kSiteBlocked),
+      1);
+  // Close Cookies in use Dialog.
+  CollectedCookiesViews::GetDialogForTesting(web_contents)
+      ->GetWidget()
+      ->Close();
+  // Reload site.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/browsing_data/site_data.html")));
+  // Re-open Cookies in use dialog.
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+
+  // Select blocked tab.
+  auto* tabbed_pane = static_cast<views::TabbedPane*>(
+      GetViewByElementIdentifier(CollectedCookiesViews::kTabbedPaneElementId));
+  tabbed_pane->SelectTabAt(1);
+  // Allow site.
+  ClickButton(CollectedCookiesViews::kAllowButtonId);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(
+          CollectedCookiesViews::CookiesInUseDialogAction::kSiteAllowed),
+      1);
+}
+
+IN_PROC_BROWSER_TEST_F(CollectedCookiesViewsMetricsTest, BlockClearOnExit) {
+  base::HistogramTester histograms;
+
+  // The histogram should start empty.
+  histograms.ExpectTotalCount(kCookiesDialogHistogramName, 0);
+
+  // Opening Cookies in use dialog.
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+
+  // Wait until data is loaded.
+  RunUntilIdle();
+
+  // Block site.
+  ClickButton(CollectedCookiesViews::kBlockButtonId);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(
+          CollectedCookiesViews::CookiesInUseDialogAction::kSiteBlocked),
+      1);
+  // Close Cookies in use Dialog.
+  CollectedCookiesViews::GetDialogForTesting(web_contents)
+      ->GetWidget()
+      ->Close();
+  // Reload site.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/browsing_data/site_data.html")));
+  // Re-open Cookies in use dialog.
+  web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  CollectedCookiesViews::CreateAndShowForWebContents(web_contents);
+
+  // Select blocked tab.
+  auto* tabbed_pane = static_cast<views::TabbedPane*>(
+      GetViewByElementIdentifier(CollectedCookiesViews::kTabbedPaneElementId));
+  tabbed_pane->SelectTabAt(1);
+  // Clear site on exit.
+  ClickButton(CollectedCookiesViews::kClearOnExitButtonId);
+  histograms.ExpectBucketCount(
+      kCookiesDialogHistogramName,
+      static_cast<int>(
+          CollectedCookiesViews::CookiesInUseDialogAction::kSiteClearedOnExit),
+      1);
 }
