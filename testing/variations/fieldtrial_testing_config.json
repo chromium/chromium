@@ -3422,6 +3422,36 @@
             ]
         }
     ],
+    "DesktopOmniboxPostAutocompletion": [
+        {
+            "platforms": [
+                "android",
+                "chromeos_lacros",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AutocompleteStabilityAsyncProvidersFirst": "true",
+                        "AutocompleteStabilityDontCopyDoneProviders": "true",
+                        "AutocompleteStabilityPreserveDefaultAfterTransfer": "true",
+                        "AutocompleteStabilityPreserveDefaultForAsyncUpdates": "false",
+                        "AutocompleteStabilityPreserveDefaultForSyncUpdates": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxAutocompleteStability",
+                        "OmniboxDocumentProviderDedupingOptimization",
+                        "OmniboxStrippedGurlOptimization"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxRichAutocompletion": [
         {
             "platforms": [
@@ -6373,28 +6403,6 @@
                     ],
                     "disable_features": [
                         "OmniboxTriggerForPrerender2"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OmniboxStrippedGurlOptimizations": [
-        {
-            "platforms": [
-                "android",
-                "chromeos_lacros",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxDocumentProviderDedupingOptimization",
-                        "OmniboxStrippedGurlOptimization"
                     ]
                 }
             ]

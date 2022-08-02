@@ -169,9 +169,11 @@ void AutocompleteResult::TransferOldMatches(const AutocompleteInput& input,
   // input changes, e.g. 'gooooooooo[oogle.com]'.
   if (OmniboxFieldTrial::kAutocompleteStabilityDontCopyDoneProviders.Get()) {
     old_matches->matches_.erase(
-        base::ranges::remove_if(
-            *old_matches,
-            [](const auto& old_match) { return old_match.provider->done(); }),
+        base::ranges::remove_if(*old_matches,
+                                [](const auto& old_match) {
+                                  return old_match.provider &&
+                                         old_match.provider->done();
+                                }),
         old_matches->matches_.end());
   }
 
