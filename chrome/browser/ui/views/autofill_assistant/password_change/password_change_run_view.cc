@@ -28,8 +28,6 @@
 
 namespace {
 
-// TODO(crbug.com/1322419): Where possible, replace these constants by values
-// obtained from the global layout provider.
 constexpr int kTopIconSize = 96;
 
 // Helper method that creates a button container and sets the appropriate
@@ -83,7 +81,6 @@ void PasswordChangeRunView::Show() {
 }
 
 void PasswordChangeRunView::CreateView() {
-  // TODO(crbug.com/1322419): Add IDs to elements.
   DCHECK(controller_);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
