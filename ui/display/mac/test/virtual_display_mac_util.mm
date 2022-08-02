@@ -155,9 +155,7 @@ API_AVAILABLE(macos(10.14))
 
 namespace {
 
-static bool g_during_warm_up = false;
-
-base::flat_set<int64_t> g_unexpected_display_ids;
+static bool g_need_display_removal_workaround = true;
 
 // A global singleton that tracks the current set of mocked displays.
 std::map<int64_t, base::scoped_nsobject<CGVirtualDisplay>> g_display_map
@@ -212,14 +210,6 @@ base::scoped_nsobject<CGVirtualDisplay> CreateVirtualDisplay(int width,
     return base::scoped_nsobject<CGVirtualDisplay>();
 
   return display;
-}
-
-void DealWithUnexpectedDisplay(int64_t id) {
-  if (g_unexpected_display_ids.count(id)) {
-    g_unexpected_display_ids.erase(id);
-  } else {
-    g_unexpected_display_ids.insert(id);
-  }
 }
 
 // This method detects whether the local machine is running headless.
@@ -299,34 +289,15 @@ VirtualDisplayMacUtil::~VirtualDisplayMacUtil() {
   display::Screen::GetScreen()->RemoveObserver(this);
 }
 
-void VirtualDisplayMacUtil::WarmUp() {
-  constexpr int kMaxRetryCount = 4;
-
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
-  // [D]CHECK() ASAP when the TEST is stable.
-  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__ << " - start.";
-
-  base::AutoReset<bool> auto_reset(&g_during_warm_up, true);
-
-  int retry_count = 0;
-  do {
-    for (int64_t display_id : {1, 2}) {
-      AddDisplay(display_id, k1920x1080);
-    }
-    RemoveAllDisplays();
-
-    retry_count++;
-  } while (!g_unexpected_display_ids.empty() && retry_count <= kMaxRetryCount);
-
-  // TODO(crbug.com/1126278): Please remove this log or replace it with
-  // [D]CHECK() ASAP when the TEST is stable.
-  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__ << " - end.";
-}
-
 int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
                                           const DisplayParams& display_params) {
   if (@available(macos 10.14, *)) {
-    bool need_warm_up = NeedWarmUp();
+    // When there are no virtual displays at all, the first virtual display
+    // added will use the default resolution provided by the system. Adding and
+    // removing a temporary virtual display will fix the resolution of the first
+    // display that was previously added.
+    // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
+    bool need_display_resolution_workaround = g_display_map.empty();
 
     DCHECK(display_params.IsValid());
 
@@ -357,8 +328,8 @@ int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
     DCHECK(!g_display_map[id]);
     g_display_map[id] = display;
 
-    if (need_warm_up) {
-      int64_t tmp_id = AddDisplay(0, display_params);
+    if (need_display_resolution_workaround) {
+      int64_t tmp_id = AddDisplay(0, k1920x1080);
       RemoveDisplay(tmp_id);
     }
 
@@ -371,6 +342,28 @@ void VirtualDisplayMacUtil::RemoveDisplay(int64_t display_id) {
   if (@available(macos 10.14, *)) {
     auto it = g_display_map.find(display_id);
     DCHECK(it != g_display_map.end());
+
+    // The first display removal has known flaky timeouts if removed
+    // individually. Remove another display simultaneously during the first
+    // display removal.
+    // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
+    if (g_need_display_removal_workaround) {
+      const int64_t tmp_display_id = AddDisplay(0, k1920x1080);
+      auto tmp_it = g_display_map.find(tmp_display_id);
+      DCHECK(tmp_it != g_display_map.end());
+
+      waiting_for_ids_.insert(display_id);
+      waiting_for_ids_.insert(tmp_display_id);
+
+      g_display_map.erase(it);
+      g_display_map.erase(tmp_it);
+
+      g_need_display_removal_workaround = false;
+
+      StartWaiting();
+
+      return;
+    }
 
     g_display_map.erase(it);
 
@@ -525,7 +518,11 @@ void VirtualDisplayMacUtil::OnDisplayRemoved(
 
 void VirtualDisplayMacUtil::OnDisplayAddedOrRemoved(int64_t id) {
   if (!waiting_for_ids_.count(id)) {
-    DealWithUnexpectedDisplay(id);
+    // TODO(crbug.com/1126278): Please remove this log or replace it with
+    // [D]CHECK() ASAP when the TEST is stable.
+    LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
+              << " - unexpected display id: " << id << ".";
+
     return;
   }
 
@@ -534,7 +531,7 @@ void VirtualDisplayMacUtil::OnDisplayAddedOrRemoved(int64_t id) {
     return;
   }
 
-  run_loop_->Quit();
+  StopWaiting();
 }
 
 void VirtualDisplayMacUtil::RemoveAllDisplays() {
@@ -550,16 +547,18 @@ void VirtualDisplayMacUtil::RemoveAllDisplays() {
       return;
     }
 
-    auto iter = g_display_map.begin();
-    while (iter != g_display_map.end()) {
-      waiting_for_ids_.insert(iter->first);
-      iter++;
+    if (display_count == 1 && g_need_display_removal_workaround) {
+      RemoveDisplay(g_display_map.begin()->first);
+      return;
+    }
+
+    for (const auto& [id, display] : g_display_map) {
+      waiting_for_ids_.insert(id);
     }
 
     g_display_map.clear();
 
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
+    StartWaiting();
   }
 }
 
@@ -569,27 +568,26 @@ void VirtualDisplayMacUtil::WaitForDisplay(int64_t id, bool added) {
     return;
   }
 
+  waiting_for_ids_.insert(id);
+
   // TODO(crbug.com/1126278): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
   LOG(INFO) << "VirtualDisplayMacUtil::" << __func__ << " - display id: " << id
             << "(added: " << added << "). Start waiting.";
 
-  waiting_for_ids_.insert(id);
-
-  run_loop_ = std::make_unique<base::RunLoop>();
-  run_loop_->Run();
+  StartWaiting();
 }
 
-bool VirtualDisplayMacUtil::NeedWarmUp() {
-  if (g_during_warm_up) {
-    return false;
-  }
+void VirtualDisplayMacUtil::StartWaiting() {
+  DCHECK(!run_loop_);
+  run_loop_ = std::make_unique<base::RunLoop>();
+  run_loop_->Run();
+  run_loop_.reset();
+}
 
-  if (@available(macos 10.14, *)) {
-    return g_display_map.empty();
-  }
-
-  return false;
+void VirtualDisplayMacUtil::StopWaiting() {
+  DCHECK(run_loop_);
+  run_loop_->Quit();
 }
 
 }  // namespace display::test

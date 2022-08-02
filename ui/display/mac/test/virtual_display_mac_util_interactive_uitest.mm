@@ -31,18 +31,8 @@ class VirtualDisplayMacUtilInteractiveUitest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 };
 
-TEST_F(VirtualDisplayMacUtilInteractiveUitest, WarmUp) {
-  int display_count = display::Screen::GetScreen()->GetNumDisplays();
-
-  display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-  virtual_display_mac_util.WarmUp();
-
-  EXPECT_EQ(display::Screen::GetScreen()->GetNumDisplays(), display_count);
-}
-
 TEST_F(VirtualDisplayMacUtilInteractiveUitest, AddDisplay) {
   display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-  virtual_display_mac_util.WarmUp();
 
   int64_t id = virtual_display_mac_util.AddDisplay(
       1, display::test::VirtualDisplayMacUtil::k1920x1080);
@@ -55,7 +45,6 @@ TEST_F(VirtualDisplayMacUtilInteractiveUitest, AddDisplay) {
 
 TEST_F(VirtualDisplayMacUtilInteractiveUitest, RemoveDisplay) {
   display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-  virtual_display_mac_util.WarmUp();
 
   int64_t id = virtual_display_mac_util.AddDisplay(
       1, display::test::VirtualDisplayMacUtil::k1920x1080);
@@ -80,7 +69,6 @@ TEST_F(VirtualDisplayMacUtilInteractiveUitest, HotPlug) {
   std::unique_ptr<display::test::VirtualDisplayMacUtil>
       virtual_display_mac_util =
           std::make_unique<display::test::VirtualDisplayMacUtil>();
-  virtual_display_mac_util->WarmUp();
 
   virtual_display_mac_util->AddDisplay(
       1, display::test::VirtualDisplayMacUtil::k1920x1080);

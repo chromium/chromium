@@ -262,7 +262,6 @@ IN_PROC_BROWSER_TEST_P(PopupBrowserTest, MAYBE_AboutBlankCrossScreenPlacement) {
     GTEST_SKIP() << "Skipping test for unsupported MacOS version.";
   }
   display::test::VirtualDisplayMacUtil virtual_display_mac_util;
-  virtual_display_mac_util.WarmUp();
   virtual_display_mac_util.AddDisplay(
       1, display::test::VirtualDisplayMacUtil::k1920x1080);
 #else

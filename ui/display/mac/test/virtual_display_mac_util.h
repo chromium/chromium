@@ -31,12 +31,14 @@ class VirtualDisplayMacUtil : public display::DisplayObserver {
   VirtualDisplayMacUtil(const VirtualDisplayMacUtil&) = delete;
   VirtualDisplayMacUtil& operator=(const VirtualDisplayMacUtil&) = delete;
 
-  void WarmUp();
-
   // `display_id` is only used to label the virtual display. This function
   // returns the generated display::Display id, which can be used with the
   // Screen instance or passed to `RemoveDisplay`.
   int64_t AddDisplay(int64_t display_id, const DisplayParams& display_params);
+  // `RemoveDisplay()` may add and remove another temporary virtual display as a
+  // workaround for known flaky timeouts awaiting the first removal of a single
+  // display.
+  // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
   void RemoveDisplay(int64_t display_id);
 
   // Check whether the related CoreGraphics APIs are available in the current
@@ -99,7 +101,8 @@ class VirtualDisplayMacUtil : public display::DisplayObserver {
   // Return immediately if the display is already available.
   void WaitForDisplay(int64_t id, bool added);
 
-  bool NeedWarmUp();
+  void StartWaiting();
+  void StopWaiting();
 
   base::flat_set<int64_t> waiting_for_ids_;
   std::unique_ptr<base::RunLoop> run_loop_;
