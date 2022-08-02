@@ -255,6 +255,7 @@ crbug.com/1302406 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_
 crbug.com/1302406 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Rot_270 [ RetryOnFailure ]
 crbug.com/1302406 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ RetryOnFailure ]
 crbug.com/1302406 [ android android-chromium android-nexus-5x ] Pixel_Video_MP4_FourColors_Rot_180 [ RetryOnFailure ]
+crbug.com/1191282 [ android android-chromium android-nexus-5x ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 
 # Mark all webview tests as RetryOnFailure due to Nexus 5x driver bug.
 crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryOnFailure ]
