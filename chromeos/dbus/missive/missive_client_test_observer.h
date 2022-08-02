@@ -34,13 +34,16 @@ class MissiveClientTestObserver
   void OnRecordEnqueued(::reporting::Priority priority,
                         const ::reporting::Record& record) override;
 
-  // Wait for next |::reporting::Record| to be enqueued and return it along with
-  // the corresponding |::reporting::Priority|.
+  // Wait for next |::reporting::Record| to be enqueued, remove it, and return
+  // it along with the corresponding |::reporting::Priority|. Returns
+  // immediately if a record is present in the queue. Times out if a
+  // record does not arrive after a period of time.
   std::tuple<::reporting::Priority, ::reporting::Record>
   GetNextEnqueuedRecord();
 
-  // Return true if there is no new enqueued records that was not consumed by
-  // |GetNextEnqueuedRecord()|.
+  // Returns true immediately if there any records in the queue. Return false
+  // otherwise. Does not wait for new records to arrive. Intended to be called
+  // after GetNextEnqueuedRecord().
   bool HasNewEnqueuedRecords();
 
  private:
