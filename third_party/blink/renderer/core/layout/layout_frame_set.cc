@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/frame_edge_info.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
+#include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -344,37 +346,16 @@ void LayoutFrameSet::ComputeEdgeInfo() {
   wtf_size_t cols = cols_.sizes_.size();
   for (wtf_size_t r = 0; r < rows; ++r) {
     for (wtf_size_t c = 0; c < cols; ++c) {
-      FrameEdgeInfo edge_info;
-      if (child->IsFrameSet())
-        edge_info = To<LayoutFrameSet>(child)->EdgeInfo();
+      const auto* node = child->GetNode();
+      if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(node))
+        FillFromEdgeInfo(frame_set->EdgeInfo(), r, c);
       else
-        edge_info = To<LayoutFrame>(child)->EdgeInfo();
-      FillFromEdgeInfo(edge_info, r, c);
+        FillFromEdgeInfo(To<HTMLFrameElement>(node)->EdgeInfo(), r, c);
       child = child->NextSibling();
       if (!child)
         return;
     }
   }
-}
-
-FrameEdgeInfo LayoutFrameSet::EdgeInfo() const {
-  NOT_DESTROYED();
-  FrameEdgeInfo result(FrameSet()->NoResize(), true);
-
-  int rows = FrameSet()->TotalRows();
-  int cols = FrameSet()->TotalCols();
-  if (rows && cols) {
-    result.SetPreventResize(kLeftFrameEdge, cols_.prevent_resize_[0]);
-    result.SetAllowBorder(kLeftFrameEdge, cols_.allow_border_[0]);
-    result.SetPreventResize(kRightFrameEdge, cols_.prevent_resize_[cols]);
-    result.SetAllowBorder(kRightFrameEdge, cols_.allow_border_[cols]);
-    result.SetPreventResize(kTopFrameEdge, rows_.prevent_resize_[0]);
-    result.SetAllowBorder(kTopFrameEdge, rows_.allow_border_[0]);
-    result.SetPreventResize(kBottomFrameEdge, rows_.prevent_resize_[rows]);
-    result.SetAllowBorder(kBottomFrameEdge, rows_.allow_border_[rows]);
-  }
-
-  return result;
 }
 
 void LayoutFrameSet::UpdateLayout() {

@@ -36,12 +36,6 @@ LayoutFrame::LayoutFrame(HTMLFrameElement* frame)
   SetInline(false);
 }
 
-FrameEdgeInfo LayoutFrame::EdgeInfo() const {
-  NOT_DESTROYED();
-  auto* element = To<HTMLFrameElement>(GetNode());
-  return FrameEdgeInfo(element->NoResize(), element->HasFrameBorder());
-}
-
 void LayoutFrame::ImageChanged(WrappedImagePtr image, CanDeferInvalidation) {
   NOT_DESTROYED();
   if (const CursorList* cursors = StyleRef().Cursors()) {

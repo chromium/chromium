@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
+#include "third_party/blink/renderer/core/html/frame_edge_info.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -231,6 +232,28 @@ void HTMLFrameSetElement::ParseAttribute(
   } else {
     HTMLElement::ParseAttribute(params);
   }
+}
+
+FrameEdgeInfo HTMLFrameSetElement::EdgeInfo() const {
+  FrameEdgeInfo result(NoResize(), true);
+
+  wtf_size_t rows_count = TotalRows();
+  wtf_size_t cols_count = TotalCols();
+  DCHECK_GT(rows_count, 0u);
+  DCHECK_GT(cols_count, 0u);
+  const auto* object = To<LayoutFrameSet>(GetLayoutObject());
+  DCHECK(object) << "This must be called while LayoutFrameSet is attached.";
+  const LayoutFrameSet::GridAxis& cols = object->Columns();
+  result.SetPreventResize(kLeftFrameEdge, cols.prevent_resize_[0]);
+  result.SetAllowBorder(kLeftFrameEdge, cols.allow_border_[0]);
+  result.SetPreventResize(kRightFrameEdge, cols.prevent_resize_[cols_count]);
+  result.SetAllowBorder(kRightFrameEdge, cols.allow_border_[cols_count]);
+  const LayoutFrameSet::GridAxis& rows = object->Rows();
+  result.SetPreventResize(kTopFrameEdge, rows.prevent_resize_[0]);
+  result.SetAllowBorder(kTopFrameEdge, rows.allow_border_[0]);
+  result.SetPreventResize(kBottomFrameEdge, rows.prevent_resize_[rows_count]);
+  result.SetAllowBorder(kBottomFrameEdge, rows.allow_border_[rows_count]);
+  return result;
 }
 
 bool HTMLFrameSetElement::LayoutObjectIsNeeded(
