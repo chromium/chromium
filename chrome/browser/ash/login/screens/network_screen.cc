@@ -42,6 +42,7 @@ std::string NetworkScreen::GetResultString(Result result) {
       return "Back";
     case Result::NOT_APPLICABLE:
     case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
+    case Result::NOT_APPLICABLE_CONNECTED_DEMO:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -256,7 +257,7 @@ bool NetworkScreen::UpdateStatusIfConnectedToEthernet() {
   if (is_hidden()) {
     // Screen not shown yet: skipping it.
     if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
-      exit_callback_.Run(Result::CONNECTED_DEMO);
+      exit_callback_.Run(Result::NOT_APPLICABLE_CONNECTED_DEMO);
     } else {
       if (chromeos::features::IsOobeConsolidatedConsentEnabled()) {
         exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
