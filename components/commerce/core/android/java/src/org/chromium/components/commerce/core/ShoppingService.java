@@ -24,7 +24,7 @@ public class ShoppingService {
         public final long amountMicros;
         public final String countryCode;
 
-        ProductInfo(String title, GURL imageUrl, long productClusterId, long offerId,
+        public ProductInfo(String title, GURL imageUrl, long productClusterId, long offerId,
                 String currencyCode, long amountMicros, String countryCode) {
             this.title = title;
             this.imageUrl = imageUrl;

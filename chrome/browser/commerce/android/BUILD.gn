@@ -8,15 +8,24 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/commerce/PriceUtils.java",
+    "java/src/org/chromium/chrome/browser/commerce/ShoppingFeatures.java",
     "java/src/org/chromium/chrome/browser/commerce/ShoppingServiceFactory.java",
   ]
 
   deps = [
+    "//base:base_java",
     "//base:jni_java",
     "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
     "//components/commerce/core/android:core_java",
     "//components/payments/content/android:java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 

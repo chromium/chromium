@@ -15,7 +15,8 @@ import com.google.common.primitives.UnsignedLongs;
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.commerce.shopping_list.ShoppingDataProviderBridge;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.PriceTrackableOffer;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
 import org.chromium.components.power_bookmarks.ProductPrice;
@@ -69,19 +71,11 @@ public class PowerBookmarkUtils {
         if (tab == null) return false;
         if (sPriceTrackingEligibleForTesting != null) return sPriceTrackingEligibleForTesting;
 
-        return getPriceTrackingMetadataForTab(tab) != null;
-    }
+        ShoppingService service =
+                ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+        if (service == null) return false;
 
-    /**
-     * Gets the price tracking metadata for the given tab.
-     * @param tab The tab to lookup the metadata for.
-     * @return The {@link PowerBookmarkMeta} for the given tab or null.
-     */
-    public static @Nullable PowerBookmarkMeta getPriceTrackingMetadataForTab(@Nullable Tab tab) {
-        if (tab == null) return null;
-        if (sPowerBookmarkMetaForTesting != null) return sPowerBookmarkMetaForTesting;
-
-        return ShoppingDataProviderBridge.getForWebContents(tab.getWebContents());
+        return service.getAvailableProductInfoForUrl(tab.getUrl()) != null;
     }
 
     /**
@@ -93,11 +87,16 @@ public class PowerBookmarkUtils {
      */
     public static List<BookmarkId> getBookmarkIdsWithSharedClusterIdForTab(
             @Nullable Tab tab, BookmarkBridge bookmarkBridge) {
-        if (tab == null) return new ArrayList<>();
-        PowerBookmarkMeta meta = getPriceTrackingMetadataForTab(tab);
-        if (meta == null || meta.getType() != PowerBookmarkType.SHOPPING) return new ArrayList<>();
-        return getBookmarkIdsForClusterId(
-                meta.getShoppingSpecifics().getProductClusterId(), bookmarkBridge);
+        ShoppingService service =
+                ShoppingServiceFactory.getForProfile(Profile.getLastUsedRegularProfile());
+
+        if (tab == null || service == null) return new ArrayList<>();
+
+        ShoppingService.ProductInfo info = service.getAvailableProductInfoForUrl(tab.getUrl());
+
+        if (info == null) return new ArrayList<>();
+
+        return getBookmarkIdsForClusterId(info.productClusterId, bookmarkBridge);
     }
 
     /**

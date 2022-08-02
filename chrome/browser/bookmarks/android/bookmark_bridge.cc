@@ -29,7 +29,7 @@
 #include "chrome/browser/android/reading_list/reading_list_manager_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -46,6 +46,7 @@
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
@@ -920,7 +921,6 @@ void BookmarkBridge::MoveBookmark(
 ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jobject>& j_web_contents,
     const JavaParamRef<jobject>& j_parent_id_obj,
     jint index,
     const JavaParamRef<jstring>& j_title,
@@ -931,21 +931,38 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddBookmark(
   int type = JavaBookmarkIdGetType(env, j_parent_id_obj);
   const BookmarkNode* parent = GetNodeByID(bookmark_id, type);
 
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+
   const BookmarkNode* new_node = bookmark_model_->AddNewURL(
       parent, static_cast<size_t>(index),
-      base::android::ConvertJavaStringToUTF16(env, j_title),
-      *url::GURLAndroid::ToNativeGURL(env, j_url));
+      base::android::ConvertJavaStringToUTF16(env, j_title), *url);
 
-  auto* web_contents =
-      content::WebContents::FromJavaWebContents(j_web_contents);
+  commerce::ShoppingService* service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_);
 
   // TODO(crbug.com/1247352): Move to platform-independent location.
-  if (web_contents && base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-    shopping_list::ShoppingDataProvider* data_provider =
-        shopping_list::ShoppingDataProvider::FromWebContents(web_contents);
-    std::unique_ptr<PowerBookmarkMeta> meta =
-        data_provider ? data_provider->GetCurrentMetadata() : nullptr;
-    if (meta) {
+  // TODO(1345462): This should be implemented as a data provider for bookmarks
+  //                once it is available.
+  if (service && base::FeatureList::IsEnabled(commerce::kShoppingList)) {
+    absl::optional<commerce::ProductInfo> info =
+        service->GetAvailableProductInfoForUrl(*url.get());
+    if (info.has_value()) {
+      std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
+          std::make_unique<power_bookmarks::PowerBookmarkMeta>();
+      meta->set_type(power_bookmarks::SHOPPING);
+      meta->mutable_lead_image()->set_url(info->image_url.spec());
+
+      power_bookmarks::ShoppingSpecifics* specifics =
+          meta->mutable_shopping_specifics();
+      specifics->set_title(info->title);
+      specifics->mutable_current_price()->set_amount_micros(
+          info->amount_micros);
+      specifics->mutable_current_price()->set_currency_code(
+          info->currency_code);
+      specifics->set_product_cluster_id(info->product_cluster_id);
+      specifics->set_offer_id(info->offer_id);
+      specifics->set_country_code(info->country_code);
+
       power_bookmarks::SetNodePowerBookmarkMeta(bookmark_model_, new_node,
                                                 std::move(meta));
     }

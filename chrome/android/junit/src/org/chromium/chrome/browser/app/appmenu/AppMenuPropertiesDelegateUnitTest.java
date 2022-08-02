@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -85,6 +86,7 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.power_bookmarks.PowerBookmarkType;
@@ -98,6 +100,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
@@ -165,6 +168,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock
     private IncognitoReauthController mIncognitoReauthControllerMock;
+    @Mock
+    private ShoppingService mShoppingService;
 
     private OneshotSupplierImpl<IncognitoReauthController> mIncognitoReauthControllerSupplier =
             new OneshotSupplierImpl<>();
@@ -221,6 +226,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                 mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
                 mLayoutStateProviderSupplier, mStartSurfaceSupplier, mBookmarkBridgeSupplier,
                 mIncognitoReauthControllerSupplier));
+
+        ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
     private void setupFeatureDefaults() {
@@ -804,6 +811,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                 .when(mBookmarkBridge)
                 .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
         Long clusterId = 1L;
+        doReturn(new ShoppingService.ProductInfo("", new GURL(""), clusterId, 0, "", 0, ""))
+                .when(mShoppingService)
+                .getAvailableProductInfoForUrl(any());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setType(PowerBookmarkType.SHOPPING)
@@ -821,6 +831,27 @@ public class AppMenuPropertiesDelegateUnitTest {
                 startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
         verify(stopPriceTrackingMenuItem).setVisible(true);
         verify(stopPriceTrackingMenuItem).setEnabled(true);
+        verify(startPriceTrackingMenuItem).setVisible(false);
+    }
+
+    @Test
+    public void enablePriceTrackingItemRow_PriceTrackingEnabled_NoProductInfo() {
+        setShoppingListItemRowEnabled(true);
+
+        PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
+        doReturn(true).when(mBookmarkBridge).isEditBookmarksEnabled();
+
+        BookmarkId bookmarkId = mock(BookmarkId.class);
+        doReturn(bookmarkId).when(mBookmarkBridge).getUserBookmarkIdForTab(any());
+        doReturn(new ArrayList<BookmarkId>())
+                .when(mBookmarkBridge)
+                .getBookmarksOfType(eq(PowerBookmarkType.SHOPPING));
+
+        MenuItem startPriceTrackingMenuItem = mock(MenuItem.class);
+        MenuItem stopPriceTrackingMenuItem = mock(MenuItem.class);
+        mAppMenuPropertiesDelegate.updatePriceTrackingMenuItemRow(
+                startPriceTrackingMenuItem, stopPriceTrackingMenuItem, mTab);
+        verify(stopPriceTrackingMenuItem).setVisible(false);
         verify(startPriceTrackingMenuItem).setVisible(false);
     }
 

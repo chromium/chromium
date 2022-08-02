@@ -22,7 +22,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
@@ -972,7 +972,7 @@ public class BookmarkBridge {
     }
 
     /**
-     * Add a new bookmark to a specific position below parent
+     * Add a new bookmark to a specific position below parent.
      *
      * @param parent Folder where to add. Must be a normal editable folder, instead of a partner
      *               bookmark folder or a managed bookmark folder or root node of the entire
@@ -984,24 +984,6 @@ public class BookmarkBridge {
      *         not editable), returns null.
      */
     public BookmarkId addBookmark(BookmarkId parent, int index, String title, GURL url) {
-        return addBookmark(/*webContents=*/null, parent, index, title, url);
-    }
-
-    /**
-     * Add a new bookmark.
-     *
-     * @param webContents A {@link WebContents} associated with the page being bookmarked.
-     * @param parent Folder where to add. Must be a normal editable folder, instead of a partner
-     *               bookmark folder or a managed bookmark folder or root node of the entire
-     *               bookmark model.
-     * @param index The position where the bookmark will be placed in parent folder
-     * @param title Title of the new bookmark. If empty, the URL will be used as the title.
-     * @param url Url of the new bookmark
-     * @return Id of the added node. If adding failed (index is invalid, string is null, parent is
-     *         not editable), returns null.
-     */
-    public BookmarkId addBookmark(
-            WebContents webContents, BookmarkId parent, int index, String title, GURL url) {
         ThreadUtils.assertOnUiThread();
         assert parent.getType() == BookmarkType.NORMAL;
         assert index >= 0;
@@ -1012,7 +994,7 @@ public class BookmarkBridge {
 
         if (TextUtils.isEmpty(title)) title = url.getSpec();
         return BookmarkBridgeJni.get().addBookmark(
-                mNativeBookmarkBridge, this, webContents, parent, index, title, url);
+                mNativeBookmarkBridge, this, parent, index, title, url);
     }
 
     /** Record the user action for adding a bookmark. */
@@ -1405,8 +1387,8 @@ public class BookmarkBridge {
         void removeAllUserBookmarks(long nativeBookmarkBridge, BookmarkBridge caller);
         void moveBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId bookmarkId,
                 BookmarkId newParentId, int index);
-        BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller,
-                WebContents webContents, BookmarkId parent, int index, String title, GURL url);
+        BookmarkId addBookmark(long nativeBookmarkBridge, BookmarkBridge caller, BookmarkId parent,
+                int index, String title, GURL url);
         BookmarkId addToReadingList(
                 long nativeBookmarkBridge, BookmarkBridge caller, String title, GURL url);
         BookmarkItem getReadingListItem(long nativeBookmarkBridge, BookmarkBridge caller, GURL url);
