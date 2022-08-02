@@ -2709,23 +2709,6 @@ const FeatureEntry::FeatureVariation kCheckOfflineCapabilityVariations[] = {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-const FeatureEntry::FeatureParam kCategoricalSearch_Unranked[] = {
-    {"ranking", "none"}};
-
-const FeatureEntry::FeatureParam kCategoricalSearch_ByItem[] = {
-    {"ranking", "item"}};
-
-const FeatureEntry::FeatureParam kCategoricalSearch_ByUsage[] = {
-    {"ranking", "usage"}};
-
-const FeatureEntry::FeatureVariation kCategoricalSearchVariations[] = {
-    {"Unranked", kCategoricalSearch_Unranked,
-     std::size(kCategoricalSearch_Unranked), nullptr},
-    {"By item", kCategoricalSearch_ByItem, std::size(kCategoricalSearch_ByItem),
-     nullptr},
-    {"By usage", kCategoricalSearch_ByUsage,
-     std::size(kCategoricalSearch_ByUsage), nullptr}};
-
 const FeatureEntry::FeatureParam kProductivityLauncher_WithoutContinue[] = {
     {"enable_continue", "false"}};
 
@@ -7325,14 +7308,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMacAddressRandomizationName,
      flag_descriptions::kMacAddressRandomizationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kMacAddressRandomization)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"categorical-search", flag_descriptions::kCategoricalSearchName,
-     flag_descriptions::kCategoricalSearchDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(app_list_features::kCategoricalSearch,
-                                    kCategoricalSearchVariations,
-                                    "LauncherCategoricalSearch")},
 
     {"search-result-inline-icon",
      flag_descriptions::kSearchResultInlineIconName,

@@ -764,11 +764,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "categorical-search",
-    "owners": [ "tby", "thanhdng", "wrong" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "cct-brand-transparency",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 110
