@@ -3560,8 +3560,14 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Verify that the page will be evicted upon accessibility events if the
 // flag to evict on ax events is off, and evicted otherwise.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_EvictOnAccessibilityEventsOrNot \
+  DISABLED_EvictOnAccessibilityEventsOrNot
+#else
+#define MAYBE_EvictOnAccessibilityEventsOrNot EvictOnAccessibilityEventsOrNot
+#endif
 IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
-                       EvictOnAccessibilityEventsOrNot) {
+                       MAYBE_EvictOnAccessibilityEventsOrNot) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
