@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
@@ -314,4 +315,40 @@ TEST_F(H265ParserTest, SliceHeaderParsing) {
   EXPECT_TRUE(shdr.slice_loop_filter_across_slices_enabled_flag);
 }
 
+TEST_F(H265ParserTest, SliceHeaderParsingNoValidationOnFirstSliceInFrame) {
+  LoadParserFile("bear.hevc");
+  H265SliceHeader curr_slice_header;
+  H265SliceHeader last_slice_header;
+
+  while (true) {
+    H265NALU nalu;
+    H265Parser::Result result = parser_.AdvanceToNextNALU(&nalu);
+    ASSERT_TRUE(result == H265Parser::kOk || result == H265Parser::kEOStream);
+    if (result == H265Parser::kEOStream)
+      break;
+
+    switch (nalu.nal_unit_type) {
+      case H265NALU::TRAIL_R:
+        [[fallthrough]];
+      case H265NALU::IDR_W_RADL:
+        result = parser_.ParseSliceHeader(nalu, &curr_slice_header,
+                                          &last_slice_header);
+        EXPECT_EQ(result, H265Parser::kOk);
+        last_slice_header = curr_slice_header;
+        break;
+      case H265NALU::SPS_NUT:
+        int sps_id;
+        EXPECT_EQ(parser_.ParseSPS(&sps_id), H265Parser::kOk);
+        EXPECT_NE(parser_.GetSPS(sps_id), nullptr);
+        break;
+      case H265NALU::PPS_NUT:
+        int pps_id;
+        EXPECT_EQ(parser_.ParsePPS(nalu, &pps_id), H265Parser::kOk);
+        EXPECT_NE(parser_.GetPPS(pps_id), nullptr);
+        break;
+      default:
+        break;
+    }
+  }
+}
 }  // namespace media
