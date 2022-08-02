@@ -316,21 +316,16 @@ bool IsEligibleForLazyEmbeds(const KURL& url, const Document& document) {
 }
 
 const base::TimeDelta GetLazyEmbedsTimeoutMs() {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutomaticLazyFrameLoadingToEmbeds)) {
-    return base::Milliseconds(
-        features::kTimeoutMillisForLazyEmbeds.default_value);
-  }
-
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kAutomaticLazyFrameLoadingToEmbeds));
   static const base::TimeDelta timeout_ms =
       base::Milliseconds(features::kTimeoutMillisForLazyEmbeds.Get());
   return timeout_ms;
 }
 
 const base::TimeDelta GetLazyAdsTimeoutMs() {
-  if (!base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds))
-    return base::Milliseconds(features::kTimeoutMillisForLazyAds.default_value);
-
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds));
   static const base::TimeDelta timeout_ms =
       base::Milliseconds(features::kTimeoutMillisForLazyAds.Get());
   return timeout_ms;
