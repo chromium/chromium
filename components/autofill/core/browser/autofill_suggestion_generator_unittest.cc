@@ -426,26 +426,28 @@ TEST_F(AutofillSuggestionGeneratorTest,
   std::vector<Suggestion> promo_code_suggestions =
       AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
           promo_code_offers);
-  EXPECT_TRUE(promo_code_suggestions.size() == 3);
+  EXPECT_TRUE(promo_code_suggestions.size() == 4);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value, u"test_promo_code_1");
   EXPECT_EQ(promo_code_suggestions[0].label, u"test_value_prop_text_1");
-  EXPECT_EQ(absl::get<std::string>(promo_code_suggestions[0].payload), "1");
+  EXPECT_EQ(promo_code_suggestions[0].GetPayload<std::string>(), "1");
   EXPECT_EQ(promo_code_suggestions[0].frontend_id,
             POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
 
   EXPECT_EQ(promo_code_suggestions[1].main_text.value, u"test_promo_code_2");
   EXPECT_EQ(promo_code_suggestions[1].label, u"test_value_prop_text_2");
-  EXPECT_EQ(absl::get<std::string>(promo_code_suggestions[1].payload), "2");
+  EXPECT_EQ(promo_code_suggestions[1].GetPayload<std::string>(), "2");
   EXPECT_EQ(promo_code_suggestions[1].frontend_id,
             POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY);
 
-  EXPECT_EQ(promo_code_suggestions[2].main_text.value,
+  EXPECT_EQ(promo_code_suggestions[2].frontend_id, POPUP_ITEM_ID_SEPARATOR);
+
+  EXPECT_EQ(promo_code_suggestions[3].main_text.value,
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
-  EXPECT_EQ(absl::get<GURL>(promo_code_suggestions[2].payload),
+  EXPECT_EQ(promo_code_suggestions[3].GetPayload<GURL>(),
             offer1.GetOfferDetailsUrl().spec());
-  EXPECT_EQ(promo_code_suggestions[2].frontend_id,
+  EXPECT_EQ(promo_code_suggestions[3].frontend_id,
             POPUP_ITEM_ID_SEE_PROMO_CODE_DETAILS);
 }
 

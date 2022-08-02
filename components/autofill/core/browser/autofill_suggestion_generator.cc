@@ -209,6 +209,13 @@ AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
   // one suggestion with a valid offer details url before adding the footer.
   DCHECK(suggestions.size() > 0);
   if (!footer_offer_details_url.is_empty()) {
+    // Add the footer separator since we will now have a footer in the offers
+    // suggestions popup.
+    suggestions.emplace_back();
+    suggestions.back().frontend_id = POPUP_ITEM_ID_SEPARATOR;
+
+    // Add the footer suggestion that navigates the user to the promo code
+    // details page in the offers suggestions popup.
     suggestions.emplace_back(l10n_util::GetStringUTF16(
         IDS_AUTOFILL_PROMO_CODE_SUGGESTIONS_FOOTER_TEXT));
     Suggestion& suggestion = suggestions.back();
