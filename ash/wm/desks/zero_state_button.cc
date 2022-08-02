@@ -55,7 +55,7 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text, bool set_text)
 
 DeskButtonBase::DeskButtonBase(const std::u16string& text,
                                bool set_text,
-                               int border_corder_radius,
+                               int border_corner_radius,
                                int corner_radius)
     : LabelButton(base::BindRepeating(&DeskButtonBase::OnButtonPressed,
                                       base::Unretained(this)),
@@ -79,11 +79,11 @@ DeskButtonBase::DeskButtonBase(const std::u16string& text,
   SetAccessibleName(text);
   SetTooltipText(text);
 
-  auto border = std::make_unique<WmHighlightItemBorder>(border_corder_radius);
+  auto border = std::make_unique<WmHighlightItemBorder>(border_corner_radius);
   border_ptr_ = border.get();
   SetBorder(std::move(border));
   views::InstallRoundRectHighlightPathGenerator(this, GetInsets(),
-                                                border_corder_radius);
+                                                corner_radius);
   SetInstallFocusRingOnFocus(false);
 
   UpdateBorderState();
