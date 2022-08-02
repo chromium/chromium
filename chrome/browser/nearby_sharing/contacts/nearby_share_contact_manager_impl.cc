@@ -266,9 +266,8 @@ void NearbyShareContactManagerImpl::AddDownloadContactsObserver(
 std::set<std::string> NearbyShareContactManagerImpl::GetAllowedContacts()
     const {
   std::set<std::string> allowlist;
-  for (const base::Value& id :
-       pref_service_->Get(prefs::kNearbySharingAllowedContactsPrefName)
-           ->GetListDeprecated()) {
+  for (const base::Value& id : pref_service_->GetValueList(
+           prefs::kNearbySharingAllowedContactsPrefName)) {
     allowlist.insert(id.GetString());
   }
   return allowlist;
