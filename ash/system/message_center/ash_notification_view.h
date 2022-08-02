@@ -68,7 +68,6 @@ class ASH_EXPORT AshNotificationView
   void GroupedNotificationsPreferredSizeChanged();
 
   // message_center::MessageView:
-  void AbortAllLayerAnimations() override;
   void AddGroupNotification(
       const message_center::Notification& notification) override;
   void PopulateGroupNotifications(
