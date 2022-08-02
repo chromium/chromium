@@ -503,8 +503,7 @@ TEST_F(HistorySyncBridgeTest, UploadsNewLocalVisit) {
 
   // Notify the bridge about the visit - it should be sent to the processor.
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row.transition, url_row,
-      visit_row.visit_time);
+      /*history_backend=*/nullptr, url_row, visit_row);
 
   const std::string storage_key =
       HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
@@ -540,8 +539,7 @@ TEST_F(HistorySyncBridgeTest, UploadsUpdatedLocalVisit) {
 
   // Notify the bridge about the visit - it should be sent to the processor.
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row.transition, url_row,
-      visit_row.visit_time);
+      /*history_backend=*/nullptr, url_row, visit_row);
 
   const std::string storage_key =
       HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
@@ -605,11 +603,11 @@ TEST_F(HistorySyncBridgeTest, UploadsLocalVisitWithRedirects) {
 
   // Notify the bridge about all of the visits.
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row1.transition, url_row1, visit_time);
+      /*history_backend=*/nullptr, url_row1, visit_row1);
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row2.transition, url_row2, visit_time);
+      /*history_backend=*/nullptr, url_row2, visit_row2);
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row3.transition, url_row3, visit_time);
+      /*history_backend=*/nullptr, url_row3, visit_row3);
 
   // The whole chain should have resulting in a single entity being Put().
   const std::string storage_key =
@@ -647,11 +645,9 @@ TEST_F(HistorySyncBridgeTest, UntracksEntitiesAfterCommit) {
 
   // Notify the bridge about the visits - they should be sent to the processor.
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row1.transition, url_row1,
-      visit_row1.visit_time);
+      /*history_backend=*/nullptr, url_row1, visit_row1);
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row2.transition, url_row2,
-      visit_row2.visit_time);
+      /*history_backend=*/nullptr, url_row2, visit_row2);
 
   EXPECT_EQ(processor()->GetEntities().size(), 2u);
   // The metadata for these entities should now be tracked.
@@ -706,8 +702,7 @@ TEST_F(HistorySyncBridgeTest, DoesNotUntrackEntityPendingCommit) {
 
   // Notify the bridge about the visit.
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row1.transition, url_row1,
-      visit_row1.visit_time);
+      /*history_backend=*/nullptr, url_row1, visit_row1);
 
   EXPECT_EQ(processor()->GetEntities().size(), 1u);
 
@@ -738,11 +733,9 @@ TEST_F(HistorySyncBridgeTest, UntracksEntityOnIndividualDeletion) {
 
   // Notify the bridge about the visits - they should be sent to the processor.
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row1.transition, url_row1,
-      visit_row1.visit_time);
+      /*history_backend=*/nullptr, url_row1, visit_row1);
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row2.transition, url_row2,
-      visit_row2.visit_time);
+      /*history_backend=*/nullptr, url_row2, visit_row2);
   ASSERT_EQ(GetAllMetadata().size(), 2u);
 
   EXPECT_EQ(processor()->GetEntities().size(), 2u);
@@ -774,11 +767,9 @@ TEST_F(HistorySyncBridgeTest, UntracksAllEntitiesOnAllHistoryDeletion) {
 
   // Notify the bridge about the visits - they should be sent to the processor.
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row1.transition, url_row1,
-      visit_row1.visit_time);
+      /*history_backend=*/nullptr, url_row1, visit_row1);
   bridge()->OnURLVisited(
-      /*history_backend=*/nullptr, visit_row2.transition, url_row2,
-      visit_row2.visit_time);
+      /*history_backend=*/nullptr, url_row2, visit_row2);
   ASSERT_EQ(GetAllMetadata().size(), 2u);
 
   EXPECT_EQ(processor()->GetEntities().size(), 2u);

@@ -98,27 +98,6 @@ bool TestHistoryBackendForSync::GetLastVisitByTime(base::Time visit_time,
   return visit_row->visit_id != 0;
 }
 
-bool TestHistoryBackendForSync::GetMostRecentVisitsForURL(URLID id,
-                                                          int max_visits,
-                                                          VisitVector* visits) {
-  // HistorySyncBridge only ever asks for the single most-recent visit.
-  DCHECK_EQ(max_visits, 1);
-
-  visits->clear();
-  for (const VisitRow& candidate : visits_) {
-    if (candidate.url_id == id) {
-      if (visits->empty()) {
-        visits->push_back(candidate);
-      } else if (candidate.visit_time > (*visits)[0].visit_time ||
-                 (candidate.visit_time == (*visits)[0].visit_time &&
-                  candidate.visit_id > (*visits)[0].visit_id)) {
-        (*visits)[0] = candidate;
-      }
-    }
-  }
-  return !visits->empty();
-}
-
 VisitVector TestHistoryBackendForSync::GetRedirectChain(VisitRow visit) {
   VisitVector result;
   result.push_back(visit);

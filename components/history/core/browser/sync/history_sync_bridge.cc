@@ -40,7 +40,8 @@ enum class SyncHistoryDatabaseError {
   kApplySyncChangesWriteMetadata = 1,
   kOnDatabaseError = 2,
   kLoadMetadata = 3,
-  kOnURLVisitedGetVisit = 4,
+  // Deprecated (call site was removed):
+  // kOnURLVisitedGetVisit = 4,
   kOnURLsDeletedReadMetadata = 5,
   kOnVisitUpdatedGetURL = 6,
   kGetAllDataReadMetadata = 7,
@@ -468,11 +469,9 @@ std::string HistorySyncBridge::GetStorageKey(
 }
 
 void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
-                                     ui::PageTransition transition,
-                                     const URLRow& row,
-                                     base::Time visit_time) {
+                                     const URLRow& url_row,
+                                     const VisitRow& visit_row) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
-  DCHECK_GE(row.typed_count(), 0);
 
   if (processing_syncer_changes_) {
     return;  // These are changes originating from us, ignore.
@@ -481,18 +480,6 @@ void HistorySyncBridge::OnURLVisited(HistoryBackend* history_backend,
   if (!change_processor()->IsTrackingMetadata()) {
     return;  // Sync processor not yet ready, don't sync.
   }
-
-  std::vector<VisitRow> visits;
-  if (!history_backend_->GetMostRecentVisitsForURL(row.id(), /*max_visits=*/1,
-                                                   &visits)) {
-    RecordDatabaseError(SyncHistoryDatabaseError::kOnURLVisitedGetVisit);
-    return;
-  }
-  if (visits.size() != 1) {
-    RecordDatabaseError(SyncHistoryDatabaseError::kOnURLVisitedGetVisit);
-    return;
-  }
-  const VisitRow& visit_row = visits[0];
 
   // If this visit is not the end of a redirect chain, ignore it. Note that
   // visits that are not part of a redirect chain are considered to be both

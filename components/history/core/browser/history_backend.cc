@@ -1108,20 +1108,20 @@ std::pair<URLID, VisitID> HistoryBackend::AddPageVisit(
     visit_info.originator_referring_visit = *originator_referring_visit;
   if (originator_opener_visit.has_value())
     visit_info.originator_opener_visit = *originator_opener_visit;
-  VisitID visit_id = db_->AddVisit(&visit_info, visit_source);
+  visit_info.visit_id = db_->AddVisit(&visit_info, visit_source);
 
   if (visit_info.visit_time < first_recorded_time_)
     first_recorded_time_ = visit_info.visit_time;
 
   // Broadcast a notification of the visit.
-  if (visit_id) {
-    NotifyURLVisited(transition, url_info, time);
+  if (visit_info.visit_id) {
+    NotifyURLVisited(url_info, visit_info);
   } else {
     DVLOG(0) << "Failed to build visit insert statement:  "
              << "url_id = " << url_id;
   }
 
-  return std::make_pair(url_id, visit_id);
+  return std::make_pair(url_id, visit_info.visit_id);
 }
 
 void HistoryBackend::AddPagesWithDetails(const URLRows& urls,
@@ -2739,13 +2739,13 @@ void HistoryBackend::NotifyFaviconsChanged(const std::set<GURL>& page_urls,
   delegate_->NotifyFaviconsChanged(page_urls, icon_url);
 }
 
-void HistoryBackend::NotifyURLVisited(ui::PageTransition transition,
-                                      const URLRow& row,
-                                      base::Time visit_time) {
+void HistoryBackend::NotifyURLVisited(const URLRow& url_row,
+                                      const VisitRow& visit_row) {
   for (HistoryBackendObserver& observer : observers_)
-    observer.OnURLVisited(this, transition, row, visit_time);
+    observer.OnURLVisited(this, url_row, visit_row);
 
-  delegate_->NotifyURLVisited(transition, row, visit_time);
+  delegate_->NotifyURLVisited(visit_row.transition, url_row,
+                              visit_row.visit_time);
 }
 
 void HistoryBackend::NotifyURLsModified(const URLRows& changed_urls,

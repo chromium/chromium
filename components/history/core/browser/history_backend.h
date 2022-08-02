@@ -517,9 +517,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   bool GetVisitsForURL(URLID id, VisitVector* visits);
 
   // Fetches up to `max_visits` most recent visits for the passed URL.
-  bool GetMostRecentVisitsForURL(URLID id,
-                                 int max_visits,
-                                 VisitVector* visits) override;
+  bool GetMostRecentVisitsForURL(URLID id, int max_visits, VisitVector* visits);
 
   // For each element in `urls`, updates the pre-existing URLRow in the database
   // with the same ID; or ignores the element if no such row exists. Returns the
@@ -814,9 +812,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // HistoryBackendNotifier:
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override;
-  void NotifyURLVisited(ui::PageTransition transition,
-                        const URLRow& row,
-                        base::Time visit_time) override;
+  void NotifyURLVisited(const URLRow& url_row,
+                        const VisitRow& visit_row) override;
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;

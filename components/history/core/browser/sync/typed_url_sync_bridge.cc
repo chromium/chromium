@@ -373,12 +373,11 @@ bool TypedURLSyncBridge::SupportsGetStorageKey() const {
 }
 
 void TypedURLSyncBridge::OnURLVisited(HistoryBackend* history_backend,
-                                      ui::PageTransition transition,
-                                      const URLRow& row,
-                                      base::Time visit_time) {
+                                      const URLRow& url_row,
+                                      const VisitRow& visit_row) {
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(sync_metadata_database_);
-  DCHECK_GE(row.typed_count(), 0);
+  DCHECK_GE(url_row.typed_count(), 0);
 
   if (processing_syncer_changes_) {
     return;  // These are changes originating from us, ignore.
@@ -387,14 +386,14 @@ void TypedURLSyncBridge::OnURLVisited(HistoryBackend* history_backend,
   if (!change_processor()->IsTrackingMetadata()) {
     return;  // Sync processor not yet ready, don't sync.
   }
-  if (!ShouldSyncVisit(row.typed_count(), transition)) {
+  if (!ShouldSyncVisit(url_row.typed_count(), visit_row.transition)) {
     return;
   }
 
   std::unique_ptr<syncer::MetadataChangeList> metadata_change_list =
       CreateMetadataChangeList();
 
-  UpdateSyncFromLocal(row, /*is_from_expiration=*/false,
+  UpdateSyncFromLocal(url_row, /*is_from_expiration=*/false,
                       metadata_change_list.get());
 }
 
