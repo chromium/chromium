@@ -307,7 +307,8 @@ def GrepForActions(path, actions):
   else:
     action_re = USER_METRICS_ACTION_RE
 
-  finder = ActionNameFinder(path, open(path).read(), action_re)
+  finder = ActionNameFinder(path,
+                            open(path, encoding='utf-8').read(), action_re)
   while True:
     try:
       action_name = finder.FindNextAction()
@@ -321,7 +322,7 @@ def GrepForActions(path, actions):
     return
 
   line_number = 0
-  for line in open(path):
+  for line in open(path, encoding='utf-8'):
     line_number = line_number + 1
     if COMPUTED_ACTION_RE.search(line):
       # Warn if this file shouldn't be calling RecordComputedAction.
@@ -376,7 +377,7 @@ def GrepForWebUIActions(path, actions):
   close_called = False
   try:
     parser = WebUIActionsParser(actions)
-    parser.feed(open(path).read())
+    parser.feed(open(path, encoding='utf-8').read())
     # An exception can be thrown by parser.close(), so do it in the try to
     # ensure the path of the file being parsed gets printed if that happens.
     close_called = True
@@ -402,8 +403,9 @@ def GrepForDevToolsActions(path, actions):
   if ext != '.js':
     return
 
-  finder = ActionNameFinder(path, open(path).read(),
-      USER_METRICS_ACTION_RE_DEVTOOLS)
+  finder = ActionNameFinder(path,
+                            open(path, encoding='utf-8').read(),
+                            USER_METRICS_ACTION_RE_DEVTOOLS)
   while True:
     try:
       action_name = finder.FindNextAction()
