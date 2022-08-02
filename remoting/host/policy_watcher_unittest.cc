@@ -325,7 +325,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.SetStringKey(key::kRemoteAccessHostUdpPortRange, "");
     dict.SetKey(key::kRemoteAccessHostClientDomainList, base::ListValue());
     dict.SetKey(key::kRemoteAccessHostDomainList, base::ListValue());
-    dict.SetInteger(key::kRemoteAccessHostClipboardSizeBytes, -1);
+    dict.GetDict().Set(key::kRemoteAccessHostClipboardSizeBytes, -1);
     dict.SetBoolKey(key::kRemoteAccessHostAllowRemoteSupportConnections, true);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     dict.SetBoolKey(key::kRemoteAccessHostMatchUsername, false);

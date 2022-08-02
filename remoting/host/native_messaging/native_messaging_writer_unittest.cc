@@ -38,8 +38,9 @@ void NativeMessagingWriterTest::SetUp() {
 }
 
 TEST_F(NativeMessagingWriterTest, GoodMessage) {
-  base::DictionaryValue message;
-  message.SetInteger("foo", 42);
+  base::Value::Dict dict;
+  dict.Set("foo", 42);
+  base::Value message(std::move(dict));
   EXPECT_TRUE(writer_->WriteMessage(message));
 
   // Read from the pipe and verify the content.
@@ -64,9 +65,10 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
 }
 
 TEST_F(NativeMessagingWriterTest, SecondMessage) {
-  base::DictionaryValue message1;
-  base::DictionaryValue message2;
-  message2.SetInteger("foo", 42);
+  base::Value message1(base::Value::Dict{});
+  base::Value::Dict dict2;
+  dict2.Set("foo", 42);
+  base::Value message2(std::move(dict2));
   EXPECT_TRUE(writer_->WriteMessage(message1));
   EXPECT_TRUE(writer_->WriteMessage(message2));
   writer_.reset(nullptr);
@@ -93,7 +95,7 @@ TEST_F(NativeMessagingWriterTest, FailedWrite) {
   // Close the read end so that writing fails immediately.
   read_file_.Close();
 
-  base::DictionaryValue message;
+  base::Value message(base::Value::Dict{});
   EXPECT_FALSE(writer_->WriteMessage(message));
 }
 

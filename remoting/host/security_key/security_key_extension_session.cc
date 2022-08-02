@@ -188,15 +188,17 @@ void SecurityKeyExtensionSession::SendMessageToClient(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(client_stub_);
 
-  base::DictionaryValue request;
-  request.SetString(kMessageType, kDataMessage);
-  request.SetInteger(kConnectionId, connection_id);
+  base::Value::Dict request_dict;
+  request_dict.Set(kMessageType, kDataMessage);
+  request_dict.Set(kConnectionId, connection_id);
 
   base::ListValue bytes;
   for (auto& byte : data) {
     bytes.Append(static_cast<unsigned char>(byte));
   }
-  request.SetKey(kDataPayload, std::move(bytes));
+  request_dict.Set(kDataPayload, std::move(bytes));
+
+  base::Value request(std::move(request_dict));
 
   std::string request_json;
   CHECK(base::JSONWriter::Write(request, &request_json));
