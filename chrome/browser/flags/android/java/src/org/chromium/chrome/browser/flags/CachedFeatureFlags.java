@@ -51,6 +51,7 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true)
                     .put(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION, false)
                     .put(ChromeFeatureList.BACK_GESTURE_REFACTOR, false)
+                    .put(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, false)
                     .put(ChromeFeatureList.CCT_INCOGNITO, true)
                     .put(ChromeFeatureList.CCT_INCOGNITO_AVAILABLE_TO_THIRD_PARTY, false)
                     .put(ChromeFeatureList.CCT_REMOVE_REMOTE_VIEW_IDS, true)

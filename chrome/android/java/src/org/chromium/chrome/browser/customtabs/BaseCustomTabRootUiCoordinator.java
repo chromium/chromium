@@ -8,6 +8,7 @@ import android.graphics.Rect;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.jank_tracker.DummyJankTracker;
@@ -29,10 +30,13 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
+import org.chromium.chrome.browser.customtabs.features.branding.BrandingController;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
@@ -64,6 +68,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     private final Supplier<BrowserServicesIntentDataProvider> mIntentDataProvider;
 
     private CustomTabHeightStrategy mCustomTabHeightStrategy;
+
+    // Created only when ChromeFeatureList.CctBrandTransparency is enabled.
+    // TODO(https://crbug.com/1343056): Make it part of the ctor.
+    private @Nullable BrandingController mBrandingController;
 
     /**
      * Construct a new BaseCustomTabRootUiCoordinator.
@@ -153,6 +161,12 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mToolbarCoordinator = customTabToolbarCoordinator;
         mNavigationController = customTabNavigationController;
         mIntentDataProvider = intentDataProvider;
+
+        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_BRAND_TRANSPARENCY)
+                && intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
+                && !intentDataProvider.get().isIncognito()) {
+            mBrandingController = new BrandingController();
+        }
     }
 
     @Override
@@ -166,6 +180,9 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         View coordinator = mActivity.findViewById(R.id.coordinator);
         mCustomTabHeightStrategy.onToolbarInitialized(
                 coordinator, toolbar, mIntentDataProvider.get().getPartialTabToolbarCornerRadius());
+        if (mBrandingController != null) {
+            mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
+        }
         toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
     }
 
@@ -254,6 +271,16 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
     @Override
     protected boolean canDrawOutsideScreen() {
         return mCustomTabHeightStrategy.canDrawOutsideScreen();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        if (mBrandingController != null) {
+            mBrandingController.destroy();
+            mBrandingController = null;
+        }
     }
 
     /**
