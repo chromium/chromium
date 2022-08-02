@@ -14,7 +14,7 @@ class Window;
 namespace chromeos {
 
 // This interface handles float/unfloat a window.
-// The singleton that implements the interface is provided by Ash.
+// The singleton that implements the interface is provided by Ash and Lacros.
 class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FloatControllerBase {
  public:
   virtual ~FloatControllerBase();

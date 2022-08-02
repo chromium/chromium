@@ -13,6 +13,7 @@ namespace chromeos {
 class TabletState;
 }
 
+class FloatControllerLacros;
 class ImmersiveContextLacros;
 class SnapControllerLacros;
 
@@ -30,6 +31,7 @@ class ChromeBrowserMainExtraPartsViewsLacros
   // ChromeBrowserMainExtraParts overrides.
   void PreProfileInit() override;
 
+  std::unique_ptr<FloatControllerLacros> float_controller_;
   std::unique_ptr<ImmersiveContextLacros> immersive_context_;
   std::unique_ptr<SnapControllerLacros> snap_controller_;
   std::unique_ptr<chromeos::TabletState> tablet_state_;

@@ -5470,6 +5470,8 @@ static_library("browser") {
       "lacros/feedback_util.h",
       "lacros/field_trial_observer.cc",
       "lacros/field_trial_observer.h",
+      "lacros/float_controller_lacros.cc",
+      "lacros/float_controller_lacros.h",
       "lacros/for_which_extension_type.cc",
       "lacros/for_which_extension_type.h",
       "lacros/force_installed_tracker_lacros.cc",
