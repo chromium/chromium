@@ -273,7 +273,7 @@ DownloadBubbleRowView::DownloadBubbleRowView(
                     views::LayoutAlignment::kStart,
                     views::TableLayout::kFixedSize,
                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
-  // Download name/status labels
+  // Download name label (primary_label_)
   layout->AddPaddingColumn(views::TableLayout::kFixedSize, icon_label_spacing)
       .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
                  1.0f, views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
@@ -312,6 +312,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY));
   primary_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   primary_label_->SetCanProcessEventsWithinSubtree(false);
+  primary_label_->SetMultiLine(true);
+  primary_label_->SetAllowCharacterBreak(true);
 
   main_button_holder_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   cancel_button_ =
@@ -369,6 +371,8 @@ DownloadBubbleRowView::DownloadBubbleRowView(
   // The 4 columns are filename text, Padding, Main Button, Subpage Icon.
   secondary_label_->SetProperty(views::kTableColAndRowSpanKey, gfx::Size(4, 1));
   secondary_label_->SetCanProcessEventsWithinSubtree(false);
+  secondary_label_->SetMultiLine(true);
+  secondary_label_->SetAllowCharacterBreak(true);
 
   // TODO(bhatiarohit): Remove the progress bar holder view here.
   // Currently the animation does not show up on deep scanning without
@@ -445,6 +449,17 @@ void DownloadBubbleRowView::OnMouseCaptureLost() {
   }
 }
 
+gfx::Size DownloadBubbleRowView::CalculatePreferredSize() const {
+  // TODO(crbug.com/1349528): The size constraint is not passed down from the
+  // views tree in the first round of layout, so setting a fixed width to bound
+  // the view. This is assuming that the row view is loaded inside a bubble. It
+  // will break if the row view is loaded inside a different parent view.
+  int fixed_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+                        views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                    GetLayoutInsets(DOWNLOAD_ROW).width();
+  return {fixed_width, GetHeightForWidth(fixed_width)};
+}
+
 void DownloadBubbleRowView::OnWillChangeFocus(views::View* before,
                                               views::View* now) {
   if (now) {
@@ -464,6 +479,9 @@ void DownloadBubbleRowView::UpdateQuickActionsVisibilityAndFocus(
     GetActionButtonForCommand(ui_info_.quick_actions.back().command)
         ->RequestFocus();
   }
+  // Resize is needed because the height of the primary_label_ can change when
+  // the quick actions are shown.
+  navigation_handler_->ResizeDialog();
 }
 
 void DownloadBubbleRowView::Layout() {
@@ -549,11 +567,6 @@ void DownloadBubbleRowView::UpdateLabels() {
 
   hover_button_->SetAccessibleName(base::JoinString(
       {primary_label_->GetText(), secondary_label_->GetText()}, u" "));
-  // TODO(crbug.com/1326181): Below is a workaround for single line labels.
-  // Remove the tooltip text once `primary_label_` and `secondary_label_` can
-  // display multiline text.
-  hover_button_->SetTooltipText(base::JoinString(
-      {primary_label_->GetText(), secondary_label_->GetText()}, u"\n"));
 
   if (GetWidget()) {
     secondary_label_->SetEnabledColor(
@@ -588,6 +601,10 @@ void DownloadBubbleRowView::RecordDownloadDisplayed() {
 
 void DownloadBubbleRowView::OnDownloadUpdated() {
   UpdateRow(/*initial_setup=*/false);
+  // Resize is needed because the height of the row can change when the text
+  // (primary_label_ or secondary_label_) is updated.
+  PreferredSizeChanged();
+  navigation_handler_->ResizeDialog();
 }
 
 void DownloadBubbleRowView::OnDownloadOpened() {

@@ -55,6 +55,7 @@ class DownloadBubbleRowView : public views::View,
   Views GetChildrenInZOrder() override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
+  gfx::Size CalculatePreferredSize() const override;
 
   // Overrides views::FocusChangeListener
   void OnWillChangeFocus(views::View* before, views::View* now) override;
