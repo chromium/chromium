@@ -28,7 +28,6 @@
 
 namespace blink {
 
-class FrameEdgeInfo;
 class HTMLDimension;
 class HTMLFrameSetElement;
 
@@ -133,8 +132,6 @@ class LayoutFrameSet final : public LayoutBox {
                   const Vector<HTMLDimension>&,
                   const Vector<int>& deltas,
                   int available_space);
-  void ComputeEdgeInfo();
-  void FillFromEdgeInfo(const FrameEdgeInfo&, int r, int c);
   void PositionFrames();
 
   LayoutObjectChildList children_;

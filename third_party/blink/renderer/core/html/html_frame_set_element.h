@@ -32,6 +32,7 @@
 
 namespace blink {
 
+class FrameEdgeInfo;
 class MouseEvent;
 
 class HTMLFrameSetElement final : public HTMLElement {
@@ -54,6 +55,7 @@ class HTMLFrameSetElement final : public HTMLElement {
   }
   int Border() const { return HasFrameBorder() ? border_ : 0; }
   FrameEdgeInfo EdgeInfo() const;
+  void CollectEdgeInfo();
 
   bool HasBorderColor() const { return border_color_set_; }
 
@@ -121,6 +123,10 @@ class HTMLFrameSetElement final : public HTMLElement {
                         ResizeAxis& resize_axis);
   int SplitPosition(const LayoutFrameSet::GridAxis& axis, int split) const;
   int HitTestSplit(const LayoutFrameSet::GridAxis& axis, int position) const;
+
+  void FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
+                        wtf_size_t r,
+                        wtf_size_t c);
 
   Vector<HTMLDimension> row_lengths_;
   Vector<HTMLDimension> col_lengths_;

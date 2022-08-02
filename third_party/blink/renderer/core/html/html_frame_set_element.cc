@@ -256,6 +256,60 @@ FrameEdgeInfo HTMLFrameSetElement::EdgeInfo() const {
   return result;
 }
 
+void HTMLFrameSetElement::FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
+                                           wtf_size_t r,
+                                           wtf_size_t c) {
+  auto* object = To<LayoutFrameSet>(GetLayoutObject());
+  LayoutFrameSet::GridAxis& cols = object->cols_;
+  if (edge_info.AllowBorder(kLeftFrameEdge))
+    cols.allow_border_[c] = true;
+  if (edge_info.AllowBorder(kRightFrameEdge))
+    cols.allow_border_[c + 1] = true;
+  if (edge_info.PreventResize(kLeftFrameEdge))
+    cols.prevent_resize_[c] = true;
+  if (edge_info.PreventResize(kRightFrameEdge))
+    cols.prevent_resize_[c + 1] = true;
+
+  LayoutFrameSet::GridAxis& rows = object->rows_;
+  if (edge_info.AllowBorder(kTopFrameEdge))
+    rows.allow_border_[r] = true;
+  if (edge_info.AllowBorder(kBottomFrameEdge))
+    rows.allow_border_[r + 1] = true;
+  if (edge_info.PreventResize(kTopFrameEdge))
+    rows.prevent_resize_[r] = true;
+  if (edge_info.PreventResize(kBottomFrameEdge))
+    rows.prevent_resize_[r + 1] = true;
+}
+
+void HTMLFrameSetElement::CollectEdgeInfo() {
+  auto* object = To<LayoutFrameSet>(GetLayoutObject());
+  LayoutFrameSet::GridAxis& cols = object->cols_;
+  LayoutFrameSet::GridAxis& rows = object->rows_;
+  cols.prevent_resize_.Fill(NoResize());
+  cols.allow_border_.Fill(false);
+  rows.prevent_resize_.Fill(NoResize());
+  rows.allow_border_.Fill(false);
+
+  LayoutObject* child = object->FirstChild();
+  if (!child)
+    return;
+
+  wtf_size_t rows_count = TotalRows();
+  wtf_size_t cols_count = TotalCols();
+  for (wtf_size_t r = 0; r < rows_count; ++r) {
+    for (wtf_size_t c = 0; c < cols_count; ++c) {
+      const auto* node = child->GetNode();
+      if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(node))
+        FillFromEdgeInfo(frame_set->EdgeInfo(), r, c);
+      else
+        FillFromEdgeInfo(To<HTMLFrameElement>(node)->EdgeInfo(), r, c);
+      child = child->NextSibling();
+      if (!child)
+        return;
+    }
+  }
+}
+
 bool HTMLFrameSetElement::LayoutObjectIsNeeded(
     const ComputedStyle& style) const {
   // For compatibility, frames layoutObject even when display: none is set.

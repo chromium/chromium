@@ -305,57 +305,7 @@ void LayoutFrameSet::NotifyFrameEdgeInfoChanged() {
   // FIXME: We should only recompute the edge info with respect to the frame
   // that changed and its adjacent frame(s) instead of recomputing the edge info
   // for the entire frameset.
-  ComputeEdgeInfo();
-}
-
-void LayoutFrameSet::FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
-                                      int r,
-                                      int c) {
-  NOT_DESTROYED();
-  if (edge_info.AllowBorder(kLeftFrameEdge))
-    cols_.allow_border_[c] = true;
-  if (edge_info.AllowBorder(kRightFrameEdge))
-    cols_.allow_border_[c + 1] = true;
-  if (edge_info.PreventResize(kLeftFrameEdge))
-    cols_.prevent_resize_[c] = true;
-  if (edge_info.PreventResize(kRightFrameEdge))
-    cols_.prevent_resize_[c + 1] = true;
-
-  if (edge_info.AllowBorder(kTopFrameEdge))
-    rows_.allow_border_[r] = true;
-  if (edge_info.AllowBorder(kBottomFrameEdge))
-    rows_.allow_border_[r + 1] = true;
-  if (edge_info.PreventResize(kTopFrameEdge))
-    rows_.prevent_resize_[r] = true;
-  if (edge_info.PreventResize(kBottomFrameEdge))
-    rows_.prevent_resize_[r + 1] = true;
-}
-
-void LayoutFrameSet::ComputeEdgeInfo() {
-  NOT_DESTROYED();
-  rows_.prevent_resize_.Fill(FrameSet()->NoResize());
-  rows_.allow_border_.Fill(false);
-  cols_.prevent_resize_.Fill(FrameSet()->NoResize());
-  cols_.allow_border_.Fill(false);
-
-  LayoutObject* child = FirstChild();
-  if (!child)
-    return;
-
-  wtf_size_t rows = rows_.sizes_.size();
-  wtf_size_t cols = cols_.sizes_.size();
-  for (wtf_size_t r = 0; r < rows; ++r) {
-    for (wtf_size_t c = 0; c < cols; ++c) {
-      const auto* node = child->GetNode();
-      if (const auto* frame_set = DynamicTo<HTMLFrameSetElement>(node))
-        FillFromEdgeInfo(frame_set->EdgeInfo(), r, c);
-      else
-        FillFromEdgeInfo(To<HTMLFrameElement>(node)->EdgeInfo(), r, c);
-      child = child->NextSibling();
-      if (!child)
-        return;
-    }
-  }
+  FrameSet()->CollectEdgeInfo();
 }
 
 void LayoutFrameSet::UpdateLayout() {
@@ -387,7 +337,7 @@ void LayoutFrameSet::UpdateLayout() {
 
   LayoutBox::UpdateLayout();
 
-  ComputeEdgeInfo();
+  FrameSet()->CollectEdgeInfo();
 
   UpdateAfterLayout();
 
