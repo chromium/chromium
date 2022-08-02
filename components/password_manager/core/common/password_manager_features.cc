@@ -177,7 +177,11 @@ const base::Feature kPasswordStrengthIndicator = {
     "PasswordStrengthIndicator", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Enables biometric authentication in settings
+// Enables biometric authentication before form filling.
+const base::Feature kBiometricAuthenticationForFilling = {
+    "BiometricAuthenticationForFilling", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables biometric authentication in settings.
 const base::Feature kEnableBiometricAuthenticationInSettings = {
     "EnableBiometricAuthenticationInSettings",
     base::FEATURE_DISABLED_BY_DEFAULT};

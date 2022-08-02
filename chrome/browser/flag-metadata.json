@@ -619,6 +619,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "biometric-authentication-for-filling",
+    "owners": ["sygiet@google.com", "vsemeniuk@google.com"],
+    "expiry_milestone": 111
+  },
+  {
     "name": "biometric-reauth-password-filling",
     "owners": [ "ioanap", "vsemeniuk@google.com" ],
     "expiry_milestone": 108

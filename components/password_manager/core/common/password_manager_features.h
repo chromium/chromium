@@ -56,6 +56,7 @@ extern const base::Feature kPasswordStrengthIndicator;
 extern const base::Feature kRecoverFromNeverSaveAndroid;
 extern const base::Feature kSecondaryServerFieldPredictions;
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+extern const base::Feature kBiometricAuthenticationForFilling;
 extern const base::Feature kEnableBiometricAuthenticationInSettings;
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

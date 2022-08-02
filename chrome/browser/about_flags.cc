@@ -8979,6 +8979,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(translate::kDesktopPartialTranslate)},
 #endif
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    {"biometric-authentication-for-filling",
+     flag_descriptions::kBiometricAuthenticationForFillingName,
+     flag_descriptions::kBiometricAuthenticationForFillingDescription,
+     kOsMac | kOsWin,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kBiometricAuthenticationForFilling)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

@@ -4330,6 +4330,10 @@ const char kEnableBiometricAuthenticationInSettingsName[] =
     "Biometric authentication in settings";
 const char kEnableBiometricAuthenticationInSettingsDescription[] =
     "Enables biometric authentication in settings to view/edit/copy a password";
+const char kBiometricAuthenticationForFillingName[] =
+    "Biometric authentication reauth before filling";
+const char kBiometricAuthenticationForFillingDescription[] =
+    "Enables biometric authentication before filling form data";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // ChromeOS -------------------------------------------------------------------
