@@ -18,7 +18,7 @@ import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
  * @return {!Promise} Promise to be fulfilled on success.
  */
 async function sendOpenFileDialogKey(name, key, dialog) {
-  await remoteCall.callRemoteTestUtil('selectFile', dialog, [name]);
+  await remoteCall.waitUntilSelected(dialog, name);
   await remoteCall.callRemoteTestUtil('fakeKeyDown', dialog, key);
 }
 
@@ -32,7 +32,7 @@ async function sendOpenFileDialogKey(name, key, dialog) {
  * @return {!Promise} Promise to be fulfilled on success.
  */
 async function clickOpenFileDialogButton(name, button, dialog) {
-  await remoteCall.callRemoteTestUtil('selectFile', dialog, [name]);
+  await remoteCall.waitUntilSelected(dialog, name);
   await remoteCall.waitForElement(dialog, button);
   const event = [button, 'click'];
   await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
@@ -132,7 +132,7 @@ async function saveFileDialogClickOkButton(volume, name) {
   const caller = getCaller();
 
   const closer = async (appId) => {
-    await remoteCall.callRemoteTestUtil('selectFile', appId, [name]);
+    await remoteCall.waitUntilSelected(appId, name);
     await repeatUntil(async () => {
       const element =
           await remoteCall.waitForElement(appId, '#filename-input-textbox');
@@ -175,9 +175,9 @@ async function openFileDialogExpectOkButtonDisabled(
   const disabledOkButton = '.button-panel button.ok:disabled';
   const cancelButton = '.button-panel button.cancel';
   const closer = async (dialog) => {
-    await remoteCall.callRemoteTestUtil('selectFile', dialog, [enabledName]);
+    await remoteCall.waitUntilSelected(dialog, enabledName);
     await remoteCall.waitForElement(dialog, okButton);
-    await remoteCall.callRemoteTestUtil('selectFile', dialog, [name]);
+    await remoteCall.waitUntilSelected(dialog, name);
     await remoteCall.waitForElement(dialog, disabledOkButton);
     clickOpenFileDialogButton(name, cancelButton, dialog);
   };

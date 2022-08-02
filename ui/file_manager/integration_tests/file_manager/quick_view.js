@@ -160,9 +160,7 @@ async function waitQuickViewClose(appId) {
  */
 async function openQuickView(appId, name) {
   // Select file |name| in the file list.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [name]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, name);
 
   // Press the space key.
   const space = ['#file-list', ' ', false, false, false];
@@ -395,10 +393,7 @@ testcase.openQuickViewViaContextMenuSingleSelection = async () => {
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
 
   // Select the file in the file list.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, [ENTRIES.hello.nameText]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Check: clicking the context menu "Get Info" should open Quick View.
   await openQuickViewViaContextMenu(appId, ENTRIES.hello.nameText);

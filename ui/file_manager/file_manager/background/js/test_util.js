@@ -109,7 +109,7 @@ test.util.sync.selectFile = (contentWindow, filename) => {
     test.util.sync.fakeKeyDown(
         contentWindow, '#file-list', 'ArrowDown', false, false, false);
   }
-  console.error('Failed to select file "' + filename + '"');
+  console.warn('Failed to select file "' + filename + '"');
   return false;
 };
 

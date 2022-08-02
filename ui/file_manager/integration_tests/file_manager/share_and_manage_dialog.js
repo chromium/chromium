@@ -32,9 +32,7 @@ async function shareWithOthersExpectBrowserURL(
   }
 
   // Select the given |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Right-click to show the context menu.
   chrome.test.assertTrue(
@@ -79,9 +77,7 @@ async function manageWithDriveExpectBrowserURL(
   }
 
   // Select the given |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the entry to be selected.
   chrome.test.assertTrue(
@@ -188,9 +184,7 @@ testcase.shareDirectoryTeamDrive = async () => {
   await remoteCall.waitForFileListChange(appId, BASIC_DRIVE_ENTRY_SET.length);
 
   // Select the given |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the entry to be selected.
   chrome.test.assertTrue(

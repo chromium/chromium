@@ -360,8 +360,7 @@ testcase.formatDialogGearMenu = async () => {
   await remoteCall.callRemoteTestUtil('focus', appId, ['#file-list']);
 
   // Click an item in the list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Click on the gear menu button.
   await remoteCall.waitAndClickElement(appId, '#gear-button:not([hidden])');

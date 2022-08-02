@@ -396,7 +396,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
   const caller = getCaller();
   await sendTestMessage({name: 'useCellularNetwork'});
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   await repeatUntil(() => {
     return navigator.connection.type != 'cellular' ?
         pending(caller, 'Network state is not changed to cellular.') :
@@ -591,9 +591,7 @@ testcase.driveAvailableOfflineGearMenu = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Select a file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Wait for the entry to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -629,9 +627,7 @@ testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Select a file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'photos');
 
   // Wait for the entry to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -748,9 +744,7 @@ testcase.driveLinkToDirectory = async () => {
       ]));
 
   // Select the link
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['G']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'G');
   await remoteCall.waitForElement(appId, '.table-row[selected]');
 
   // Open the link

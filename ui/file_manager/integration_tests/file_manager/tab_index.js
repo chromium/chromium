@@ -135,8 +135,7 @@ testcase.tabindexFocusDirectorySelected = async () => {
   await remoteCall.callRemoteTestUtil('foregroundFake', appId, [fakeData]);
 
   // Select the directory named 'photos'.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']));
+  await remoteCall.waitUntilSelected(appId, 'photos');
 
   await Promise.all([
 
@@ -256,7 +255,7 @@ testcase.tabindexOpenDialogDownloads = async () => {
   ];
   return tabindexFocus(
       {type: 'openFile'}, 'downloads', BASIC_LOCAL_ENTRY_SET, async (appId) => {
-        await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+        await remoteCall.waitUntilSelected(appId, 'hello.txt');
         await remoteCall.isolateBannerForTesting(
             appId, 'holding-space-welcome-banner');
       }, ['#ok-button:not([disabled])'], tabindexIds);
@@ -281,7 +280,7 @@ testcase.tabindexOpenDialogDrive = async () => {
   ];
   return tabindexFocus(
       {type: 'openFile'}, 'drive', BASIC_DRIVE_ENTRY_SET, async (appId) => {
-        await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+        await remoteCall.waitUntilSelected(appId, 'hello.txt');
         await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
       }, ['#ok-button:not([disabled])'], tabindexIds);
 };

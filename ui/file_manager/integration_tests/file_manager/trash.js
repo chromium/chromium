@@ -237,10 +237,7 @@ testcase.trashRestoreFromTrashShortcut = async () => {
   await navigateWithDirectoryTree(appId, '/Trash');
 
   // Select file.
-  const deleted = ['My files › Downloads › hello.txt'];
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, deleted),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'My files › Downloads › hello.txt');
 
   // Press 'Delete' key.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(

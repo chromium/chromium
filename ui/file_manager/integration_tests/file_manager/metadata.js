@@ -349,10 +349,7 @@ testcase.metadataDocumentsProvider = async () => {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Select file hello.txt in the file list.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, [ENTRIES.hello.nameText]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Check that a request for content metadata completes.
   const result = await await remoteCall.callRemoteTestUtil(

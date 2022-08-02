@@ -754,6 +754,30 @@ export class RemoteCallFilesApp extends RemoteCall {
   }
 
   /**
+   * Returns a promise that repeatedly checks for a file with the given
+   * name to be selected in the app window with the given ID. Typical
+   * use
+   *
+   * await remoteCall.waitUntilSelected('file#0', 'hello.txt');
+   * ... // either the test timed out or hello.txt is currently selected.
+   *
+   * @param {string} appId App window Id.
+   * @param {string} fileName the name of the file to be selected.
+   * @return {Promise<boolean>} Promise that indicates if selection was
+   *     successful.
+   */
+  waitUntilSelected(appId, fileName) {
+    const caller = getCaller();
+    return repeatUntil(async () => {
+      const selected =
+          await this.callRemoteTestUtil('selectFile', appId, [fileName]);
+      if (!selected) {
+        return pending(caller, `File ${fileName} not yet selected`);
+      }
+    });
+  }
+
+  /**
    * Waits until the current directory is changed.
    * @param {string} appId App window Id.
    * @param {string} expectedPath Path to be changed to.

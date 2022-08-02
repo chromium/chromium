@@ -32,10 +32,7 @@ async function sniffedFileOpen(path, entry) {
     // in the browser.
 
     // Select the file.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil(
-            'selectFile', appId, [entry.targetPath]),
-        'selectFile failed');
+    await remoteCall.waitUntilSelected(appId, entry.targetPath);
 
     // Right-click the selected file.
     await remoteCall.waitAndRightClick(appId, '.table-row[selected]');

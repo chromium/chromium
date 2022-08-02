@@ -916,8 +916,7 @@ testcase.fileDisplayCheckSelectWithFakeItemSelected = async () => {
       await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.hello], []);
 
   // Select ENTRIES.hello.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Select all.
   const ctrlA = ['#file-list', 'a', true, false, false];

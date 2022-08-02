@@ -288,8 +288,7 @@ testcase.showPasteIntoCurrentFolder = async () => {
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
 
   // 2. Selecting a single regular file
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['#gear-button']));
@@ -307,8 +306,7 @@ testcase.showPasteIntoCurrentFolder = async () => {
   await remoteCall.waitForElement(appId, '#gear-menu[hidden]');
 
   // 3. When ready to paste a file
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Ctrl-C to copy the selected file
   await remoteCall.fakeKeyDown(appId, '#file-list', 'c', true, false, false);

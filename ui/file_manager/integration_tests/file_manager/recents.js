@@ -227,8 +227,7 @@ async function verifyBreadcrumbsPath(appId, expectedPath) {
  */
 async function rightClickContextMenu(appId, fileName, commandId) {
   // Select the item.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [fileName]));
+  await remoteCall.waitUntilSelected(appId, fileName);
 
   // Right-click the selected file.
   await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
@@ -893,8 +892,8 @@ testcase.recentsNoRenameForPlayFiles = async () => {
   await remoteCall.waitForFiles(appId, files);
 
   // Select the item.
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [RECENT_MODIFIED_ANDROID_DOCUMENT.nameText]));
+  await remoteCall.waitUntilSelected(
+      appId, RECENT_MODIFIED_ANDROID_DOCUMENT.nameText);
 
   // Right-click the selected file.
   await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
@@ -912,7 +911,7 @@ testcase.recentsNoRenameForPlayFiles = async () => {
 testcase.recentsAllowCutForDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.directoryA], []);
-  const files = TestEntryInfo.getExpectedRows([ENTRIES.beautiful]);
+  const files = [ENTRIES.beautiful.getExpectedRow()];
   const newFolderBreadcrumb =
       `/My files/Downloads/${ENTRIES.directoryA.nameText}`;
 

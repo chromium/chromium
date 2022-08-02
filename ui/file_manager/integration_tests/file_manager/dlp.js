@@ -29,8 +29,7 @@ testcase.transferShowDlpToast = async () => {
   await remoteCall.waitForElement(appId, usbVolumeQuery);
 
   // Select the file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(

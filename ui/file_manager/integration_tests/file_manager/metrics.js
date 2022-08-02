@@ -118,7 +118,7 @@ testcase.metricsRecordUpdateAvailableApps = async () => {
   await remoteCall.callRemoteTestUtil('overrideTasks', appId, [fakeTasks]);
 
   // Select the file.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['file-1.txt']);
+  await remoteCall.waitUntilSelected(appId, 'file-1.txt');
 
   // Wait for the tasks calculation to complete, updating the "Open" button.
   await remoteCall.waitForElement(appId, '#tasks[get-tasks-completed]');

@@ -26,9 +26,7 @@ async function maybeCopyToClipboard(appId, commandId, file = 'hello.txt') {
   if (!/^paste/.test(commandId)) {
     return;
   }
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [file]),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, file);
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');
@@ -42,8 +40,7 @@ async function maybeCopyToClipboard(appId, commandId, file = 'hello.txt') {
  */
 async function selectFile(appId, path) {
   // Select the file |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]));
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -82,8 +79,7 @@ async function checkContextMenu(commandId, path, expectedEnabledState) {
   await maybeCopyToClipboard(appId, commandId);
 
   // Select the file |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]));
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -433,9 +429,7 @@ testcase.checkContextMenuForRenameInput = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Select the file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Press Ctrl+Enter key to rename the file.
   const key = ['#file-list', 'Enter', true, false, false];
@@ -586,8 +580,7 @@ async function checkMyFilesRootItemContextMenu(itemName, commandStates) {
       {ignoreFileSize: true, ignoreLastModifiedTime: true});
 
   // Select the item.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [itemName]));
+  await remoteCall.waitUntilSelected(appId, itemName);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -699,8 +692,7 @@ async function checkDocumentsProviderContextMenu(
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Select the file |path|.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [path]));
+  await remoteCall.waitUntilSelected(appId, path);
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -792,8 +784,7 @@ async function checkRecentsContextMenu(
     await remoteCall.waitForElement(appId, '#file-list li[selected]');
   } else {
     // Select the item.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil('selectFile', appId, [fileName]));
+    await remoteCall.waitUntilSelected(appId, fileName);
 
     // Wait for the file to be selected.
     await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -850,8 +841,7 @@ testcase.checkContextMenuFocus = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Select the file |path|.
-  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['hello.txt']));
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Wait for the file to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');

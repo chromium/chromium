@@ -151,8 +151,7 @@ testcase.searchHidingTextEntryField = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select an entry in the file list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Click the toolbar search button.
   await remoteCall.waitAndClickElement(appId, '#search-button');

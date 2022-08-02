@@ -839,10 +839,7 @@ testcase.dirContextMenuZip = async () => {
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the ZIP file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, ['archive.zip']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
 
   // Press the Enter key to mount the ZIP file.
   const key = ['#file-list', 'Enter', false, false, false];
@@ -878,10 +875,7 @@ testcase.dirContextMenuZipEject = async () => {
       RootPath.DOWNLOADS, [ENTRIES.zipArchive], []);
 
   // Select the ZIP file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil(
-          'selectFile', appId, ['archive.zip']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, ENTRIES.zipArchive.nameText);
 
   // Press the Enter key to mount the ZIP file.
   const key = ['#file-list', 'Enter', false, false, false];
@@ -1001,9 +995,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
   {
     // Select and copy photos directory into the clipboard to test
     // paste-into-folder command.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']),
-        'selectFile failed');
+    await remoteCall.waitUntilSelected(appId, ENTRIES.photos.nameText);
     chrome.test.assertTrue(
         !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
         'execCommand failed');
@@ -1046,9 +1038,7 @@ testcase.dirContextMenuMyFilesWithPaste = async () => {
     await navigateWithDirectoryTree(appId, '/My files/Downloads');
     // Select and copy photosT file into the clipboard to test
     // paste-into-folder command.
-    chrome.test.assertTrue(
-        !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['photosT']),
-        'selectFile failed');
+    await remoteCall.waitUntilSelected(appId, 'photosT');
     chrome.test.assertTrue(
         !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
         'execCommand failed');
@@ -1647,9 +1637,7 @@ testcase.dirContextMenuMyDrive = async () => {
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');
@@ -1726,9 +1714,7 @@ testcase.dirContextMenuSharedDrive = async () => {
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');
@@ -1874,9 +1860,7 @@ testcase.dirContextMenuComputers = async () => {
 
   // Select and copy hello.txt into the clipboard to test paste-into-folder
   // command.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   chrome.test.assertTrue(
       !!await remoteCall.callRemoteTestUtil('execCommand', appId, ['copy']),
       'execCommand failed');

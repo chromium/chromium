@@ -41,8 +41,7 @@ testcase.toolbarDeleteButtonOpensDeleteConfirmDialog = async () => {
       await setupAndWaitUntilReady(RootPath.DRIVE, [], [ENTRIES.desktop]);
 
   // Select My Desktop Background.png
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.desktop.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.desktop.nameText);
 
   // Click the toolbar Delete button.
   await remoteCall.simulateUiClick(appId, '#delete-button');
@@ -85,8 +84,7 @@ testcase.toolbarDeleteButtonKeepFocus = async () => {
   await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
 
   // Select hello.txt
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [ENTRIES.hello.nameText]));
+  await remoteCall.waitUntilSelected(appId, ENTRIES.hello.nameText);
 
   // Click the toolbar Delete button.
   await remoteCall.simulateUiClick(appId, '#delete-button');
@@ -136,8 +134,7 @@ testcase.toolbarDeleteEntry = async () => {
       appId, beforeDeletion, {ignoreLastModifiedTime: true});
 
   // Select My Desktop Background.png
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['My Desktop Background.png']));
+  await remoteCall.waitUntilSelected(appId, 'My Desktop Background.png');
 
   // Click delete button in the toolbar.
   if (await sendTestMessage({name: 'isTrashEnabled'}) === 'true') {
@@ -256,8 +253,7 @@ testcase.toolbarMultiMenuFollowsButton = async () => {
       'overrideTasks', appId, [DOWNLOADS_FAKE_TASKS]);
 
   // Select an entry in the file list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Click the toolbar search button.
   await remoteCall.waitAndClickElement(appId, '#search-button');
@@ -309,8 +305,7 @@ testcase.toolbarSharesheetButtonWithSelection = async () => {
   const entry = ENTRIES.hello;
 
   // Select an entry in the file list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   await remoteCall.waitAndClickElement(
       appId, '#sharesheet-button:not([hidden])');
@@ -350,8 +345,7 @@ testcase.toolbarSharesheetContextMenuWithSelection = async () => {
   const entry = ENTRIES.hello;
 
   // Select an entry in the file list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   chrome.test.assertTrue(!!await remoteCall.waitAndRightClick(
       appId, '#file-list .table-row[selected]'));

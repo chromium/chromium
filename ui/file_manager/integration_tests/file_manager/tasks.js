@@ -112,8 +112,7 @@ async function setupTaskTest(rootPath, fakeTasks) {
  */
 async function executeDefaultTask(appId, descriptor) {
   // Select file.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']));
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Double-click the file.
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
@@ -141,7 +140,7 @@ async function defaultTaskDialog(appId, descriptor) {
   ];
 
   // Select file.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Click the change default menu.
   await remoteCall.waitForElement(appId, '#tasks[multiple]');
@@ -276,7 +275,7 @@ testcase.changeDefaultDialogScrollList = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
 
   // Select file.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Click the change default task menu.
   await remoteCall.waitForElement(appId, '#tasks[multiple]');
@@ -350,11 +349,11 @@ testcase.noActionBarOpenForDirectories = async () => {
   const appId = await setupTaskTest(RootPath.DOWNLOADS, tasks);
 
   // Select file and ensure action bar open is shown.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   await remoteCall.waitForElement(appId, '#tasks:not([hidden])');
 
   // Select dir and ensure action bar open is hidden, but context menu is shown.
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']);
+  await remoteCall.waitUntilSelected(appId, 'photos');
   await remoteCall.waitForElement(appId, '#tasks[hidden]');
   chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
       'fakeMouseRightClick', appId, ['#file-list .table-row[selected]']));

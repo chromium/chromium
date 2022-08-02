@@ -219,10 +219,7 @@ testcase.myFilesFolderRename = async () => {
   await selectMyFiles(appId);
 
   // Select Downloads via file list.
-  const downloads = ['Downloads'];
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, downloads),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'Downloads');
 
   // Open Downloads via file list.
   const fileListItem = '#file-list .table-row';
@@ -235,10 +232,7 @@ testcase.myFilesFolderRename = async () => {
   await remoteCall.waitForFiles(appId, [ENTRIES.photos.getExpectedRow()]);
 
   // Select photos via file list.
-  const folder = ['photos'];
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, folder),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'photos');
 
   // Press Ctrl+Enter for start renaming.
   const key2 = [fileListItem, 'Enter', true, false, false];
@@ -371,16 +365,14 @@ testcase.myFilesToolbarDelete = async () => {
   await selectMyFiles(appId);
 
   // Select Downloads folder in list.
-  chrome.test.assertTrue(
-      await remoteCall.callRemoteTestUtil('selectFile', appId, ['Downloads']));
+  await remoteCall.waitUntilSelected(appId, 'Downloads');
 
   // Test that the delete button isn't visible.
   const hiddenDeleteButton = '#delete-button[hidden]';
   await remoteCall.waitForElement(appId, hiddenDeleteButton);
 
   // Select fake entry Linux files folder in list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['Linux files']));
+  await remoteCall.waitUntilSelected(appId, 'Linux files');
 
   // Test that the delete button isn't visible.
   await remoteCall.waitForElement(appId, hiddenDeleteButton);
@@ -392,8 +384,7 @@ testcase.myFilesToolbarDelete = async () => {
   await selectMyFiles(appId);
 
   // Select real Linux files folder in list.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, ['Linux files']));
+  await remoteCall.waitUntilSelected(appId, 'Linux files');
 
   // Test that the delete button isn't visible.
   await remoteCall.waitForElement(appId, hiddenDeleteButton);

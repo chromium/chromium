@@ -170,8 +170,8 @@ async function transferBetweenVolumes(transferInfo) {
       'focus', appId, ['#file-list:not([hidden])']);
 
   // Select the source file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [transferInfo.fileToTransfer.nameText]));
+  await remoteCall.waitUntilSelected(
+      appId, transferInfo.fileToTransfer.nameText);
 
   // Copy the file.
   const transferCommand = transferInfo.isMove ? 'cut' : 'copy';
@@ -988,8 +988,7 @@ testcase.transferDeletedFile = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
@@ -1044,8 +1043,7 @@ testcase.transferInfoIsRemembered = async () => {
   let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select the file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
@@ -1095,8 +1093,7 @@ testcase.transferToUsbHasDestinationText = async () => {
   await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
 
   // Select the file.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
@@ -1138,8 +1135,7 @@ testcase.transferDismissedErrorIsRemembered = async () => {
   let appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS, [entry], []);
 
   // Select a file to copy.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'selectFile', appId, [entry.nameText]));
+  await remoteCall.waitUntilSelected(appId, entry.nameText);
 
   // Copy the file.
   chrome.test.assertTrue(
