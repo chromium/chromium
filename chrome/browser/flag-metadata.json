@@ -976,7 +976,7 @@
   {
     "name": "content-languages-in-language-picker",
     "owners": [ "sclittle", "basiaz@google.com", "chrome-language@google.com" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "content-suggestions-ui-module-refresh",
