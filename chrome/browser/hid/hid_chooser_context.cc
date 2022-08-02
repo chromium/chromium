@@ -388,7 +388,6 @@ void HidChooserContext::RevokeObjectPermission(const url::Origin& origin,
 void HidChooserContext::GrantDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  DCHECK(base::Contains(devices_, device.guid));
   if (CanStorePersistentEntry(device)) {
     GrantObjectPermission(origin, DeviceInfoToValue(device));
   } else {
@@ -400,7 +399,6 @@ void HidChooserContext::GrantDevicePermission(
 void HidChooserContext::RevokeDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {
-  DCHECK(base::Contains(devices_, device.guid));
   if (CanStorePersistentEntry(device)) {
     RevokePersistentDevicePermission(origin, device);
   } else {
@@ -432,9 +430,11 @@ void HidChooserContext::RevokeEphemeralDevicePermission(
   if (it != ephemeral_devices_.end()) {
     std::set<std::string>& devices = it->second;
     for (auto guid = devices.begin(); guid != devices.end();) {
-      DCHECK(base::Contains(devices_, *guid));
-
-      if (devices_[*guid]->physical_device_id != device.physical_device_id) {
+      auto device_it = devices_.find(*guid);
+      if (device_it == devices_.end()) {
+        continue;
+      }
+      if (device_it->second->physical_device_id != device.physical_device_id) {
         ++guid;
         continue;
       }

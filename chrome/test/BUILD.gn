@@ -6468,6 +6468,7 @@ test("unit_tests") {
       "../browser/enterprise/signals/client_certificate_fetcher_unittest.cc",
       "../browser/first_run/first_run_unittest.cc",
       "../browser/font_family_cache_unittest.cc",
+      "../browser/hid/chrome_hid_delegate_unittest.cc",
       "../browser/hid/hid_chooser_context_unittest.cc",
       "../browser/hid/hid_policy_allowed_devices_unittest.cc",
       "../browser/importer/profile_writer_unittest.cc",

@@ -546,6 +546,13 @@ TestRenderFrameHost::CreateWebBluetoothServiceForTesting() {
   return RenderFrameHostImpl::GetWebBluetoothServiceForTesting();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+void TestRenderFrameHost::CreateHidServiceForTesting(
+    mojo::PendingReceiver<blink::mojom::HidService> receiver) {
+  RenderFrameHostImpl::GetHidService(std::move(receiver));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 void TestRenderFrameHost::SendCommitNavigation(
     mojom::NavigationClient* navigation_client,
     NavigationRequest* navigation_request,
