@@ -679,10 +679,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, RemoteAppsNotSynced) {
   EXPECT_TRUE(item->GetMetadata()->is_ephemeral);
 
   // Remote app sync item not added to local storage.
-  const base::Value* local_items =
-      profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
-  const base::Value* dict_item =
-      local_items->FindKeyOfType(kId1, base::Value::Type::DICTIONARY);
+  const base::Value::Dict& local_items =
+      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
+  const base::Value::Dict* dict_item = local_items.FindDict(kId1);
   EXPECT_FALSE(dict_item);
 
   // Remote app sync item not uploaded to sync data.
@@ -724,10 +723,9 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, RemoteFoldersNotSynced) {
   EXPECT_TRUE(item->GetMetadata()->is_ephemeral);
 
   // Remote folder sync item not added to local storage.
-  const base::Value* local_items =
-      profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
-  const base::Value* dict_item =
-      local_items->FindKeyOfType(kId1, base::Value::Type::DICTIONARY);
+  const base::Value::Dict& local_items =
+      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
+  const base::Value::Dict* dict_item = local_items.FindDict(kId1);
   EXPECT_FALSE(dict_item);
 
   // Remote folder sync item not uploaded to sync data.
