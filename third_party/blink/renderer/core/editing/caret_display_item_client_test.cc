@@ -516,24 +516,6 @@ TEST_P(CaretDisplayItemClientTest, InsertSpaceToWhiteSpacePreWrap) {
   EXPECT_EQ(PhysicalRect(70, 0, 1, 10), CaretLocalRect());
 }
 
-// http://crbug.com/1330093
-TEST_P(CaretDisplayItemClientTest, CaretAtStartInWhiteSpacePreWrapRTL) {
-  LoadNoto();
-  SetBodyInnerHTML(
-      "<style>"
-      "  body { margin: 0; padding: 0; }"
-      "  div { white-space: pre-wrap; width: 90px; margin: 0; padding: 5px; "
-      "  font: 20px NotoArabic }"
-      "</style>"
-      "<div dir=rtl contenteditable>&#1575;&#1582;&#1578;&#1576;&#1585; "
-      "</div>");
-
-  const Element& div = *GetDocument().QuerySelector("div");
-  const Position& position = Position::FirstPositionInNode(div);
-  const PhysicalRect& rect = ComputeCaretRect(PositionWithAffinity(position));
-  EXPECT_EQ(94, rect.X());
-}
-
 class ParameterizedComputeCaretRectTest
     : public EditingTestBase,
       private ScopedLayoutNGForTest,
