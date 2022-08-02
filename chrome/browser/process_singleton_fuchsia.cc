@@ -38,6 +38,11 @@ bool ProcessSingleton::Create() {
   return true;
 }
 
+void ProcessSingleton::StartWatching() {
+  // TODO(crbug.com/1235293)
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 void ProcessSingleton::Cleanup() {
   // TODO(crbug.com/1235293)
   NOTIMPLEMENTED_LOG_ONCE();

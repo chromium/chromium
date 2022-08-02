@@ -42,6 +42,12 @@ class ChromeProcessSingleton {
   // PROFILE_IN_USE if it happens to use the same profile directory.
   ProcessSingleton::NotifyResult NotifyOtherProcessOrCreate();
 
+  // Start watching for notifications from other processes. After this call,
+  // the notifications sent by other process can be processed. This call
+  // requires the browser threads (UI / IO) to be created. Requests that occur
+  // before calling StartWatching(...) will be blocked and may timeout.
+  void StartWatching();
+
   // Clear any lock state during shutdown.
   void Cleanup();
 

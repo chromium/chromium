@@ -60,6 +60,7 @@ class ProcessSingletonPosixTest : public testing::Test {
     using ProcessSingleton::NotifyOtherProcessWithTimeoutOrCreate;
     using ProcessSingleton::OverrideCurrentPidForTesting;
     using ProcessSingleton::OverrideKillCallbackForTesting;
+    using ProcessSingleton::StartWatching;
 
    private:
     bool NotificationCallback(const base::CommandLine& command_line,
@@ -248,6 +249,7 @@ class ProcessSingletonPosixTest : public testing::Test {
     process_singleton_on_thread_ = CreateProcessSingleton();
     ASSERT_EQ(ProcessSingleton::PROCESS_NONE,
               process_singleton_on_thread_->NotifyOtherProcessOrCreate());
+    process_singleton_on_thread_->StartWatching();
   }
 
   void DestructProcessSingleton() {

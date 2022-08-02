@@ -31,6 +31,10 @@ ProcessSingleton::NotifyResult
   return process_singleton_.NotifyOtherProcessOrCreate();
 }
 
+void ChromeProcessSingleton::StartWatching() {
+  process_singleton_.StartWatching();
+}
+
 void ChromeProcessSingleton::Cleanup() {
   process_singleton_.Cleanup();
 }

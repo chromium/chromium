@@ -430,6 +430,8 @@ bool ProcessSingleton::Create() {
   return window_.hwnd() != NULL;
 }
 
+void ProcessSingleton::StartWatching() {}
+
 void ProcessSingleton::Cleanup() {
 }
 
