@@ -1368,14 +1368,16 @@ textarea[dir=auto i] {
 }
 
 dialog:not([open]) {
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     display: none;
 }
 
 dialog {
     display: block;
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: absolute;
-    left: 0;
-    right: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
     width: fit-content;
     height: fit-content;
     margin: auto;
@@ -1386,13 +1388,14 @@ dialog {
 }
 
 dialog:modal {
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     position: fixed;
     overflow: auto;
-    top: 0;
-    bottom: 0;
-    /* 6px + 2em = border + padding, as by default box-sizing is content-box. */
+    inset-block-start: 0;
+    inset-block-end: 0;
     max-width: calc(100% - 6px - 2em);
     max-height: calc(100% - 6px - 2em);
+    /* https://github.com/w3c/csswg-drafts/issues/6939#issuecomment-1016679588 */
     user-select: text;
     visibility: visible;
 }
@@ -1405,6 +1408,7 @@ dialog::backdrop {
     right: 0;
     bottom: 0;
     left: 0;
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
     background: rgba(0,0,0,0.1)
 }
 
