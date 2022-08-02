@@ -42,9 +42,6 @@ class BluetoothMetricsProvider : public metrics::MetricsProvider {
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
   void GetBluetoothAvailability();
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  BluetoothStackName bluetooth_stack_name_ = BluetoothStackName::kUnknown;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // bluetooth_availability_ is initialized to BLUETOOTH_AVAILABILITY_ERROR here
   // as a precaution to the asynchronized fetch of Bluetooth adapter
   // availability. This variable gets updated only once during the class

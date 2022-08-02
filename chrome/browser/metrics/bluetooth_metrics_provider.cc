@@ -32,7 +32,10 @@ void BluetoothMetricsProvider::ProvideCurrentSessionData(
                                 bluetooth_availability_);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  base::UmaHistogramEnumeration("Bluetooth.StackName", bluetooth_stack_name_);
+  base::UmaHistogramEnumeration("Bluetooth.StackName",
+                                floss::features::IsFlossEnabled()
+                                    ? BluetoothStackName::kFloss
+                                    : BluetoothStackName::kBlueZ);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
@@ -78,10 +81,8 @@ void BluetoothMetricsProvider::GetBluetoothAvailability() {
   bool is_initialized;
 
   if (floss::features::IsFlossEnabled()) {
-    bluetooth_stack_name_ = BluetoothStackName::kFloss;
     is_initialized = floss::FlossDBusManager::IsInitialized();
   } else {
-    bluetooth_stack_name_ = BluetoothStackName::kBlueZ;
     is_initialized = bluez::BluezDBusManager::IsInitialized();
   }
 
