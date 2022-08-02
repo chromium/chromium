@@ -530,8 +530,14 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     private void setupResetSitePreference() {
         Preference preference = findPreference(PREF_RESET_SITE);
-        int titleResId = mHideNonPermissionPreferences ? R.string.page_info_permissions_reset
+        int titleResId;
+        if (SiteSettingsFeatureList.isEnabled(SiteSettingsFeatureList.SITE_DATA_IMPROVEMENTS)) {
+            titleResId = mHideNonPermissionPreferences ? R.string.page_info_permissions_reset
+                                                       : R.string.website_reset_full;
+        } else {
+            titleResId = mHideNonPermissionPreferences ? R.string.page_info_permissions_reset
                                                        : R.string.website_reset;
+        }
         preference.setTitle(titleResId);
         preference.setOrder(mMaxPermissionOrder + 1);
         preference.setOnPreferenceClickListener(this);

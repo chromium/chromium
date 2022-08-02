@@ -10,4 +10,4 @@
     android:layout_height="wrap_content"
     android:contentDescription="@string/webstorage_clear_data_dialog_title"
     android:src="@drawable/ic_delete_white_24dp"
-    app:tint="@color/default_icon_color_accent1_tint_list"/>
+    app:tint="@macro/default_icon_color"/>

@@ -41,7 +41,22 @@ public class WebsiteGroupPreference extends ChromeImageViewPreference {
         // favicon becomes available.
         setIcon(new ColorDrawable(Color.TRANSPARENT));
         setTitle(mSiteGroup.getTitle());
+        setImageView(
+                R.drawable.ic_delete_white_24dp, R.string.webstorage_clear_data_dialog_title, null);
         updateSummary();
+    }
+
+    public boolean representsOneWebsite() {
+        return mSiteGroup.hasOneOrigin();
+    }
+
+    public void putSingleSiteIntoExtras(String key) {
+        if (!representsOneWebsite()) return;
+        getExtras().putSerializable(key, mSiteGroup.getWebsites().get(0));
+    }
+
+    public void putGroupSiteIntoExtras(String key) {
+        getExtras().putSerializable(key, mSiteGroup);
     }
 
     @Override

@@ -158,6 +158,9 @@
   <message name="IDS_SUMMARY_WITH_ONE_BULLET" desc="Used to generate a summary that consists of two parts, separated by a bullet.">
     <ph name="FIRST_PART">%1$s<ex>http</ex></ph> • <ph name="SECOND_PART">%2$s<ex>10 MB</ex></ph>
   </message>
+  <message name="IDS_DOMAIN_SETTINGS_TITLE" desc="Title of the domain-level Site Settings page.">
+    Settings for <ph name="DOMAIN">%1$s<ex>google.com</ex></ph>
+  </message>
 
   <!-- Site settings: Possible permission values for a single site -->
 
@@ -250,6 +253,9 @@
   </message>
   <message name="IDS_WEBSITE_RESET" desc="The label for the button allowing users to clear all data and reset the permissions for a website.">
     Clear &amp; reset
+  </message>
+  <message name="IDS_WEBSITE_RESET_FULL" desc="The label for the button allowing users to clear all data and reset the permissions for a website.">
+    Clear data &amp; reset permissions
   </message>
   <message name="IDS_WEBSITE_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about clearing all data and reset the permissions for a site.">
     Are you sure you want to clear all local data, including cookies, and reset all permissions for this website?

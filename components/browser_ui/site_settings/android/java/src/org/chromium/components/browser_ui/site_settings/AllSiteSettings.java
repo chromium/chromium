@@ -273,19 +273,34 @@ public class AllSiteSettings extends SiteSettingsPreferenceFragment
         return false;
     }
 
+    private int getNavigationSource() {
+        return getArguments().getInt(
+                SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
+    }
+
     @Override
     public boolean onPreferenceTreeClick(Preference preference) {
+        // Store in a local variable; otherwise the linter complains.
+        final String extraKey = SettingsNavigationSource.EXTRA_KEY;
         if (preference instanceof WebsitePreference) {
             WebsitePreference website = (WebsitePreference) preference;
             website.setFragment(SingleWebsiteSettings.class.getName());
-
             // EXTRA_SITE re-uses already-fetched permissions, which we can only use if the Website
             // was populated with data for all permission types.
             website.putSiteIntoExtras(SingleWebsiteSettings.EXTRA_SITE);
-
-            int navigationSource = getArguments().getInt(
-                    SettingsNavigationSource.EXTRA_KEY, SettingsNavigationSource.OTHER);
-            website.getExtras().putInt(SettingsNavigationSource.EXTRA_KEY, navigationSource);
+            website.getExtras().putInt(extraKey, getNavigationSource());
+        } else if (preference instanceof WebsiteGroupPreference) {
+            WebsiteGroupPreference group = (WebsiteGroupPreference) preference;
+            if (group.representsOneWebsite()) {
+                group.setFragment(SingleWebsiteSettings.class.getName());
+                // EXTRA_SITE re-uses already-fetched permissions, which we can only use if the
+                // Website was populated with data for all permission types.
+                group.putSingleSiteIntoExtras(SingleWebsiteSettings.EXTRA_SITE);
+            } else {
+                group.setFragment(GroupedWebsitesSettings.class.getName());
+                group.putGroupSiteIntoExtras(GroupedWebsitesSettings.EXTRA_GROUP);
+            }
+            group.getExtras().putInt(extraKey, getNavigationSource());
         }
 
         return super.onPreferenceTreeClick(preference);

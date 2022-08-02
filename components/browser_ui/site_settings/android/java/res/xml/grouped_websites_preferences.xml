@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <PreferenceCategory
+        android:key="site_heading"
+        android:title="@string/website_settings_site_category" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="site_title" />
+    <PreferenceCategory
+        android:key="site_usage"
+        android:title="@string/website_settings_usage_category" />
+    <org.chromium.components.browser_ui.site_settings.ClearWebsiteStorage
+        android:key="clear_data"
+        android:title="@string/webstorage_clear_data_dialog_title"
+        android:positiveButtonText="@string/webstorage_clear_data_dialog_ok_button"
+        android:negativeButtonText="@string/cancel"
+        android:widgetLayout="@layout/clear_storage" />
+    <PreferenceCategory
+        android:key="sites_in_group" />
+    <org.chromium.components.browser_ui.settings.ButtonPreference
+        android:key="reset_site_button"
+        android:title="@string/website_reset_full" />
+</PreferenceScreen>
