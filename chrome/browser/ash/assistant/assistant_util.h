@@ -12,7 +12,7 @@ class Profile;
 namespace assistant {
 
 // Returns whether Google Assistant feature is allowed for given |profile|.
-chromeos::assistant::AssistantAllowedState IsAssistantAllowedForProfile(
+ash::assistant::AssistantAllowedState IsAssistantAllowedForProfile(
     const Profile* profile);
 
 void OverrideIsGoogleDeviceForTesting(bool is_google_device);

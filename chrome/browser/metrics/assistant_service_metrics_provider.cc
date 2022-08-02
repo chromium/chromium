@@ -17,17 +17,17 @@ void AssistantServiceMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto_unused) {
   if (assistant::IsAssistantAllowedForProfile(
           ProfileManager::GetActiveUserProfile()) !=
-      chromeos::assistant::AssistantAllowedState::ALLOWED) {
+      ash::assistant::AssistantAllowedState::ALLOWED) {
     return;
   }
 
   UMA_HISTOGRAM_BOOLEAN(
       "Assistant.ServiceEnabledUserCount",
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          chromeos::assistant::prefs::kAssistantEnabled));
+          ash::assistant::prefs::kAssistantEnabled));
 
   UMA_HISTOGRAM_BOOLEAN(
       "Assistant.ContextEnabledUserCount",
       ProfileManager::GetActiveUserProfile()->GetPrefs()->GetBoolean(
-          chromeos::assistant::prefs::kAssistantContextEnabled));
+          ash::assistant::prefs::kAssistantContextEnabled));
 }

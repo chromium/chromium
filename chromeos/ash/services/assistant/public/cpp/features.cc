@@ -7,9 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 
-namespace chromeos {
-namespace assistant {
-namespace features {
+namespace ash::assistant::features {
 
 const base::Feature kAssistantAudioEraser{"AssistantAudioEraser",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
@@ -99,6 +97,4 @@ bool IsLibAssistantV2Enabled() {
   return base::FeatureList::IsEnabled(kEnableLibAssistantV2);
 }
 
-}  // namespace features
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant::features

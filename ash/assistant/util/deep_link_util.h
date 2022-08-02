@@ -14,15 +14,15 @@
 
 class GURL;
 
-namespace chromeos {
-namespace assistant {
-enum class AssistantEntryPoint;
+namespace chromeos::assistant {
 enum class AssistantQuerySource;
-}  // namespace assistant
-}  // namespace chromeos
+}
 
 namespace ash {
 namespace assistant {
+
+enum class AssistantEntryPoint;
+
 namespace util {
 
 // Enumeration of deep link types.
@@ -79,9 +79,8 @@ enum class ReminderAction {
 // Returns a new deep link, having appended or replaced the entry point param
 // from the original |deep_link| with |entry_point|.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-GURL AppendOrReplaceEntryPointParam(
-    const GURL& deep_link,
-    chromeos::assistant::AssistantEntryPoint entry_point);
+GURL AppendOrReplaceEntryPointParam(const GURL& deep_link,
+                                    AssistantEntryPoint entry_point);
 
 // Returns a new deep link, having appended or replaced the query source param
 // from the original |deep_link| with |query_source|.
@@ -135,9 +134,9 @@ absl::optional<bool> GetDeepLinkParamAsBool(
 // desired parameter is not found or is not mappable to an Assistant entry
 // point, an empty value is returned.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-absl::optional<chromeos::assistant::AssistantEntryPoint>
-GetDeepLinkParamAsEntryPoint(const std::map<std::string, std::string>& params,
-                             DeepLinkParam param);
+absl::optional<AssistantEntryPoint> GetDeepLinkParamAsEntryPoint(
+    const std::map<std::string, std::string>& params,
+    DeepLinkParam param);
 
 // Returns a specific GURL |param| from the given parameters. If the desired
 // parameter is not found, an absent value is returned.

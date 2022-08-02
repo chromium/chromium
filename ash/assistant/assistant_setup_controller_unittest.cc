@@ -28,7 +28,7 @@ TEST_F(AssistantSetupControllerTest, ShouldCloseAssistantUiWhenOnboarding) {
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
 
-  SetConsentStatus(chromeos::assistant::prefs::ConsentStatus::kUnknown);
+  SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
 
   ClickOnAndWait(opt_in_view());
@@ -43,7 +43,7 @@ TEST_F(AssistantSetupControllerTest,
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
 
-  SetConsentStatus(chromeos::assistant::prefs::ConsentStatus::kUnknown);
+  SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
 
   ClickOnAndWait(opt_in_view());
@@ -56,7 +56,7 @@ TEST_F(AssistantSetupControllerTest,
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
 
-  SetConsentStatus(chromeos::assistant::prefs::ConsentStatus::kUnknown);
+  SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
 
   ClickOnAndWait(opt_in_view());
@@ -73,7 +73,7 @@ TEST_F(AssistantSetupControllerTest,
   ShowAssistantUi(AssistantEntryPoint::kUnspecified);
   EXPECT_TRUE(IsVisible());
 
-  SetConsentStatus(chromeos::assistant::prefs::ConsentStatus::kUnknown);
+  SetConsentStatus(assistant::prefs::ConsentStatus::kUnknown);
   EXPECT_TRUE(opt_in_view()->GetVisible());
 
   ClickOnAndWait(opt_in_view());

@@ -10,14 +10,12 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace chromeos {
+namespace ash {
+
 namespace assistant {
 enum class AssistantEntryPoint;
 enum class AssistantExitPoint;
 }  // namespace assistant
-}  // namespace chromeos
-
-namespace ash {
 
 enum class AssistantVisibility;
 
@@ -26,8 +24,8 @@ enum class AssistantVisibility;
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModelObserver
     : public base::CheckedObserver {
  public:
-  using AssistantEntryPoint = chromeos::assistant::AssistantEntryPoint;
-  using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
+  using AssistantEntryPoint = assistant::AssistantEntryPoint;
+  using AssistantExitPoint = assistant::AssistantExitPoint;
 
   AssistantUiModelObserver(const AssistantUiModelObserver&) = delete;
   AssistantUiModelObserver& operator=(const AssistantUiModelObserver&) = delete;

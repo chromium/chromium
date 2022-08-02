@@ -13,8 +13,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Subscribes to App list events.
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AppListEventSubscriber
@@ -78,7 +77,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) DeviceActions {
       AppListEventSubscriber* subscriber) = 0;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::AppListEventSubscriber;
+using ::ash::assistant::DeviceActions;
+}  // namespace chromeos::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_DEVICE_ACTIONS_H_

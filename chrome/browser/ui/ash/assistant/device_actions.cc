@@ -101,8 +101,7 @@ std::vector<AndroidAppInfo> GetAppsInfo() {
 }
 
 void NotifyAndroidAppListRefreshed(
-    base::ObserverList<chromeos::assistant::AppListEventSubscriber>*
-        subscribers) {
+    base::ObserverList<ash::assistant::AppListEventSubscriber>* subscribers) {
   std::vector<AndroidAppInfo> android_apps_info = GetAppsInfo();
   for (auto& subscriber : *subscribers)
     subscriber.OnAndroidAppListRefreshed(android_apps_info);
@@ -232,7 +231,7 @@ void DeviceActions::LaunchAndroidIntent(const std::string& intent) {
 }
 
 void DeviceActions::AddAndFireAppListEventSubscriber(
-    chromeos::assistant::AppListEventSubscriber* subscriber) {
+    ash::assistant::AppListEventSubscriber* subscriber) {
   auto* prefs = ArcAppListPrefs::Get(ProfileManager::GetActiveUserProfile());
   if (prefs && prefs->package_list_initial_refreshed()) {
     std::vector<AndroidAppInfo> android_apps_info = GetAppsInfo();
@@ -246,7 +245,7 @@ void DeviceActions::AddAndFireAppListEventSubscriber(
 }
 
 void DeviceActions::RemoveAppListEventSubscriber(
-    chromeos::assistant::AppListEventSubscriber* subscriber) {
+    ash::assistant::AppListEventSubscriber* subscriber) {
   app_list_subscribers_.RemoveObserver(subscriber);
 }
 

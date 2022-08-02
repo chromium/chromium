@@ -4,14 +4,10 @@
 
 #include "chromeos/ash/services/assistant/public/cpp/switches.h"
 
-namespace chromeos {
-namespace assistant {
-namespace switches {
+namespace ash::assistant::switches {
 
 const char kForceAssistantOnboarding[] = "force-assistant-onboarding";
 const char kRedirectLibassistantLogging[] = "redirect-libassistant-logging";
 const char kDisableLibAssistantLogfile[] = "disable-libassistant-logfile";
 
-}  // namespace switches
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant::switches

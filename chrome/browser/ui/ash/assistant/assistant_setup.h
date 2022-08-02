@@ -44,7 +44,7 @@ class AssistantSetup : public ash::AssistantSetup,
  private:
   // ash::AssistantStateObserver:
   void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+      ash::assistant::AssistantStatus status) override;
 
   void SyncSettingsState();
   void OnGetSettingsResponse(const std::string& settings);

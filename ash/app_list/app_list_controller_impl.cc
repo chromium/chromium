@@ -83,8 +83,8 @@
 
 namespace ash {
 
-using chromeos::assistant::AssistantEntryPoint;
-using chromeos::assistant::AssistantExitPoint;
+using assistant::AssistantEntryPoint;
+using assistant::AssistantExitPoint;
 
 namespace {
 
@@ -982,7 +982,7 @@ void AppListControllerImpl::OnKeyboardVisibilityChanged(const bool is_visible) {
 }
 
 void AppListControllerImpl::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
+    assistant::AssistantStatus status) {
   UpdateAssistantVisibility();
 }
 
@@ -991,7 +991,7 @@ void AppListControllerImpl::OnAssistantSettingsEnabled(bool enabled) {
 }
 
 void AppListControllerImpl::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState state) {
+    assistant::AssistantAllowedState state) {
   UpdateAssistantVisibility();
 }
 
@@ -1525,10 +1525,8 @@ bool AppListControllerImpl::IsAssistantAllowedAndEnabled() const {
 
   auto* state = AssistantState::Get();
   return state->settings_enabled().value_or(false) &&
-         state->allowed_state() ==
-             chromeos::assistant::AssistantAllowedState::ALLOWED &&
-         state->assistant_status() !=
-             chromeos::assistant::AssistantStatus::NOT_READY;
+         state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
+         state->assistant_status() != assistant::AssistantStatus::NOT_READY;
 }
 
 bool AppListControllerImpl::ShouldShowSuggestedContentInfo() const {

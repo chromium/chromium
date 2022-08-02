@@ -6197,7 +6197,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-assistant-dsp", flag_descriptions::kEnableGoogleAssistantDspName,
      flag_descriptions::kEnableGoogleAssistantDspDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::assistant::features::kEnableDspHotword)},
+     FEATURE_VALUE_TYPE(ash::assistant::features::kEnableDspHotword)},
 
     {"deprecate-assistant-stylus-features",
      flag_descriptions::kDeprecateAssistantStylusFeaturesName,
@@ -6274,8 +6274,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-assistant-stereo-input",
      flag_descriptions::kEnableGoogleAssistantStereoInputName,
      flag_descriptions::kEnableGoogleAssistantStereoInputDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::assistant::features::kEnableStereoAudioInput)},
+     FEATURE_VALUE_TYPE(ash::assistant::features::kEnableStereoAudioInput)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-gpu-service-logging",
@@ -6657,7 +6656,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-assistant-routines",
      flag_descriptions::kEnableAssistantRoutinesName,
      flag_descriptions::kEnableAssistantRoutinesDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::assistant::features::kAssistantRoutines)},
+     FEATURE_VALUE_TYPE(ash::assistant::features::kAssistantRoutines)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -6833,7 +6832,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kDeviceForceScheduledReboot)},
     {"enable-assistant-aec", flag_descriptions::kEnableGoogleAssistantAecName,
      flag_descriptions::kEnableGoogleAssistantAecDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::assistant::features::kAssistantAudioEraser)},
+     FEATURE_VALUE_TYPE(ash::assistant::features::kAssistantAudioEraser)},
 #endif
 
 #if BUILDFLAG(IS_WIN)

@@ -587,24 +587,23 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::PREF_TYPE_NUMBER;
 
   // Google Assistant.
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantConsentStatus] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantConsentStatus] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantDisabledByPolicy] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantDisabledByPolicy] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantEnabled] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantContextEnabled] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantContextEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantHotwordAlwaysOn] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantHotwordAlwaysOn] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantHotwordEnabled] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantHotwordEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)
-      [chromeos::assistant::prefs::kAssistantVoiceMatchEnabledDuringOobe] =
-          settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantLaunchWithMicOpen] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantVoiceMatchEnabledDuringOobe] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
-  (*s_allowlist)[chromeos::assistant::prefs::kAssistantNotificationEnabled] =
+  (*s_allowlist)[ash::assistant::prefs::kAssistantLaunchWithMicOpen] =
+      settings_api::PrefType::PREF_TYPE_BOOLEAN;
+  (*s_allowlist)[ash::assistant::prefs::kAssistantNotificationEnabled] =
       settings_api::PrefType::PREF_TYPE_BOOLEAN;
 
   // Quick Answers.
@@ -1256,7 +1255,7 @@ bool PrefsUtil::IsPrefPrimaryUserControlled(const std::string& pref_name) {
 
 bool PrefsUtil::IsHotwordDisabledForChildUser(const std::string& pref_name) {
   const std::string& hotwordEnabledPref =
-      chromeos::assistant::prefs::kAssistantHotwordEnabled;
+      ash::assistant::prefs::kAssistantHotwordEnabled;
   if (!profile_->IsChild() || pref_name != hotwordEnabledPref)
     return false;
 

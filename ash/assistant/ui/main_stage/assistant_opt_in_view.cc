@@ -40,8 +40,7 @@ views::StyledLabel::RangeStyleInfo CreateStyleInfo(
 }
 
 std::u16string GetAction(int consent_status) {
-  return consent_status ==
-                 chromeos::assistant::prefs::ConsentStatus::kUnauthorized
+  return consent_status == assistant::prefs::ConsentStatus::kUnauthorized
              ? l10n_util::GetStringUTF16(
                    IDS_ASH_ASSISTANT_OPT_IN_ASK_ADMINISTRATOR)
              : l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_OPT_IN_GET_STARTED);
@@ -146,7 +145,7 @@ void AssistantOptInView::InitLayout() {
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
 
   UpdateLabel(AssistantState::Get()->consent_status().value_or(
-      chromeos::assistant::prefs::ConsentStatus::kUnknown));
+      assistant::prefs::ConsentStatus::kUnknown));
 }
 
 void AssistantOptInView::UpdateLabel(int consent_status) {

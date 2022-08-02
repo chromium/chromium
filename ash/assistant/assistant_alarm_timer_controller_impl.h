@@ -49,7 +49,7 @@ class AssistantAlarmTimerControllerImpl
   ~AssistantAlarmTimerControllerImpl() override;
 
   // Provides a pointer to the |assistant| owned by AssistantService.
-  void SetAssistant(chromeos::assistant::Assistant* assistant);
+  void SetAssistant(assistant::Assistant* assistant);
 
   // AssistantAlarmTimerController:
   const AssistantAlarmTimerModel* GetModel() const override;
@@ -64,8 +64,7 @@ class AssistantAlarmTimerControllerImpl
       const std::map<std::string, std::string>& params) override;
 
   // AssistantStateObserver:
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
 
   // AssistantAlarmTimerModelObserver:
   void OnTimerAdded(const chromeos::assistant::AssistantTimer& timer) override;
@@ -91,7 +90,7 @@ class AssistantAlarmTimerControllerImpl
   std::map<std::string, base::OneShotTimer> tickers_;
 
   // Owned by AssistantService.
-  chromeos::assistant::Assistant* assistant_;
+  assistant::Assistant* assistant_;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

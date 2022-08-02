@@ -44,7 +44,7 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::features::IsWaitSchedulingEnabled;
+using assistant::features::IsWaitSchedulingEnabled;
 
 // Android.
 constexpr char kAndroidIntentScheme[] = "intent://";

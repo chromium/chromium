@@ -40,7 +40,7 @@ class ASH_PUBLIC_EXPORT AssistantController {
   virtual base::WeakPtr<AssistantController> GetWeakPtr() = 0;
 
   // Provides a reference to the underlying |assistant| service.
-  virtual void SetAssistant(chromeos::assistant::Assistant* assistant) = 0;
+  virtual void SetAssistant(assistant::Assistant* assistant) = 0;
 
   // Methods below may only be called after |SetAssistant| is called.
   // Show speaker id enrollment flow.

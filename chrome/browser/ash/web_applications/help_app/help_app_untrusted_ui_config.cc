@@ -118,11 +118,11 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       !ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices().empty());
   // Checks if the Google Assistant is allowed on this device by going through
   // policies.
-  chromeos::assistant::AssistantAllowedState assistant_allowed_state =
-      assistant::IsAssistantAllowedForProfile(profile);
-  source->AddBoolean("assistantAllowed",
-                     assistant_allowed_state ==
-                         chromeos::assistant::AssistantAllowedState::ALLOWED);
+  assistant::AssistantAllowedState assistant_allowed_state =
+      ::assistant::IsAssistantAllowedForProfile(profile);
+  source->AddBoolean(
+      "assistantAllowed",
+      assistant_allowed_state == assistant::AssistantAllowedState::ALLOWED);
   source->AddBoolean("assistantEnabled",
                      AssistantState::Get()->settings_enabled().value_or(false));
   source->AddBoolean("playStoreEnabled",

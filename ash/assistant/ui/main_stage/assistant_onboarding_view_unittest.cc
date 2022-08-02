@@ -83,8 +83,7 @@ void FindDescendentByClassName(views::View* parent, T** result) {
 // Mocks -----------------------------------------------------------------------
 
 class MockAssistantInteractionSubscriber
-    : public testing::NiceMock<
-          chromeos::assistant::AssistantInteractionSubscriber> {
+    : public testing::NiceMock<assistant::AssistantInteractionSubscriber> {
  public:
   explicit MockAssistantInteractionSubscriber(Assistant* service) {
     scoped_subscriber_.Observe(service);
@@ -98,8 +97,7 @@ class MockAssistantInteractionSubscriber
               (override));
 
  private:
-  chromeos::assistant::ScopedAssistantInteractionSubscriber scoped_subscriber_{
-      this};
+  assistant::ScopedAssistantInteractionSubscriber scoped_subscriber_{this};
 };
 
 // ScopedShowUi ----------------------------------------------------------------
@@ -110,7 +108,7 @@ class ScopedShowUi {
       : original_visibility_(
             AssistantUiController::Get()->GetModel()->visibility()) {
     AssistantUiController::Get()->ShowUi(
-        chromeos::assistant::AssistantEntryPoint::kUnspecified);
+        assistant::AssistantEntryPoint::kUnspecified);
   }
 
   ScopedShowUi(const ScopedShowUi&) = delete;
@@ -120,7 +118,7 @@ class ScopedShowUi {
     switch (original_visibility_) {
       case AssistantVisibility::kClosed:
         AssistantUiController::Get()->CloseUi(
-            chromeos::assistant::AssistantExitPoint::kUnspecified);
+            assistant::AssistantExitPoint::kUnspecified);
         return;
       case AssistantVisibility::kVisible:
         // No action necessary.

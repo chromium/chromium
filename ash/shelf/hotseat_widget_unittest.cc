@@ -105,9 +105,9 @@ class HotseatWidgetTest
     if (is_assistant_enabled_) {
       assistant_test_api_->SetAssistantEnabled(true);
       assistant_test_api_->GetAssistantState()->NotifyFeatureAllowed(
-          chromeos::assistant::AssistantAllowedState::ALLOWED);
+          assistant::AssistantAllowedState::ALLOWED);
       assistant_test_api_->GetAssistantState()->NotifyStatusChanged(
-          chromeos::assistant::AssistantStatus::READY);
+          assistant::AssistantStatus::READY);
 
       assistant_test_api_->WaitUntilIdle();
     }
@@ -138,7 +138,7 @@ class HotseatWidgetTest
     if (!navigation_buttons_shown_in_tablet_mode_ &&
         Shell::Get()->tablet_mode_controller()->InTabletMode()) {
       AssistantUiController::Get()->ShowUi(
-          chromeos::assistant::AssistantEntryPoint::kLongPressLauncher);
+          assistant::AssistantEntryPoint::kLongPressLauncher);
       return;
     }
 

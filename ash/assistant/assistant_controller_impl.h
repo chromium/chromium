@@ -81,7 +81,7 @@ class ASH_EXPORT AssistantControllerImpl
   void OpenAssistantSettings() override;
   void OpenUrl(const GURL& url, bool in_background, bool from_server) override;
   base::WeakPtr<ash::AssistantController> GetWeakPtr() override;
-  void SetAssistant(chromeos::assistant::Assistant* assistant) override;
+  void SetAssistant(assistant::Assistant* assistant) override;
   void StartSpeakerIdEnrollmentFlow() override;
   void SendAssistantFeedback(bool assistant_debug_info_allowed,
                              const std::string& feedback_description,
@@ -140,8 +140,7 @@ class ASH_EXPORT AssistantControllerImpl
   void NotifyUrlOpened(const GURL& url, bool from_server);
 
   // AssistantStateObserver:
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
   void OnLockedFullScreenStateChanged(bool enabled) override;
 
   // AssistantInterfaceBinder implementation:
@@ -158,7 +157,7 @@ class ASH_EXPORT AssistantControllerImpl
 
   // |assistant_| can be nullptr if libassistant creation is not yet completed,
   // i.e. it cannot take a request.
-  chromeos::assistant::Assistant* assistant_ = nullptr;
+  assistant::Assistant* assistant_ = nullptr;
 
   // Assistant sub-controllers.
   AssistantAlarmTimerControllerImpl assistant_alarm_timer_controller_{this};

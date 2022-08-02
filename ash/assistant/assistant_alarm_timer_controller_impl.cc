@@ -293,7 +293,7 @@ AssistantAlarmTimerControllerImpl::~AssistantAlarmTimerControllerImpl() {
 }
 
 void AssistantAlarmTimerControllerImpl::SetAssistant(
-    chromeos::assistant::Assistant* assistant) {
+    assistant::Assistant* assistant) {
   assistant_ = assistant;
 }
 
@@ -361,10 +361,10 @@ void AssistantAlarmTimerControllerImpl::OnDeepLinkReceived(
 }
 
 void AssistantAlarmTimerControllerImpl::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
+    assistant::AssistantStatus status) {
   // If LibAssistant is no longer running we need to clear our cache to
   // accurately reflect LibAssistant alarm/timer state.
-  if (status == chromeos::assistant::AssistantStatus::NOT_READY)
+  if (status == assistant::AssistantStatus::NOT_READY)
     model_.RemoveAllTimers();
 }
 

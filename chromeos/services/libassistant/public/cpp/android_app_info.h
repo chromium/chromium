@@ -52,4 +52,10 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AndroidAppInfo {
 }  // namespace assistant
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::assistant {
+using ::chromeos::assistant::AndroidAppInfo;
+using ::chromeos::assistant::AppStatus;
+}  // namespace ash::assistant
+
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ANDROID_APP_INFO_H_

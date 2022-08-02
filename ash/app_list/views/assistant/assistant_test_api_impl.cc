@@ -143,15 +143,14 @@ aura::Window* AssistantTestApiImpl::root_window() {
 void AssistantTestApiImpl::EnableAssistantAndWait() {
   SetAssistantEnabled(true);
   GetAssistantState()->NotifyFeatureAllowed(
-      chromeos::assistant::AssistantAllowedState::ALLOWED);
-  GetAssistantState()->NotifyStatusChanged(
-      chromeos::assistant::AssistantStatus::READY);
+      assistant::AssistantAllowedState::ALLOWED);
+  GetAssistantState()->NotifyStatusChanged(assistant::AssistantStatus::READY);
   WaitUntilIdle();
 }
 
 void AssistantTestApiImpl::SetAssistantEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      chromeos::assistant::prefs::kAssistantEnabled, enabled);
+      assistant::prefs::kAssistantEnabled, enabled);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->settings_enabled(), enabled)
@@ -162,7 +161,7 @@ void AssistantTestApiImpl::SetAssistantEnabled(bool enabled) {
 
 void AssistantTestApiImpl::SetScreenContextEnabled(bool enabled) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      chromeos::assistant::prefs::kAssistantContextEnabled, enabled);
+      assistant::prefs::kAssistantContextEnabled, enabled);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->context_enabled(), enabled)
@@ -181,9 +180,9 @@ void AssistantTestApiImpl::StartOverview() {
 }
 
 void AssistantTestApiImpl::SetConsentStatus(
-    chromeos::assistant::prefs::ConsentStatus consent_status) {
+    assistant::prefs::ConsentStatus consent_status) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
-      chromeos::assistant::prefs::kAssistantConsentStatus, consent_status);
+      assistant::prefs::kAssistantConsentStatus, consent_status);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->consent_status(), consent_status)
@@ -199,10 +198,10 @@ void AssistantTestApiImpl::SetNumberOfSessionsWhereOnboardingShown(
 }
 
 void AssistantTestApiImpl::SetOnboardingMode(
-    chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode) {
+    assistant::prefs::AssistantOnboardingMode onboarding_mode) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetString(
-      chromeos::assistant::prefs::kAssistantOnboardingMode,
-      chromeos::assistant::prefs::ToOnboardingModeString(onboarding_mode));
+      assistant::prefs::kAssistantOnboardingMode,
+      assistant::prefs::ToOnboardingModeString(onboarding_mode));
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->onboarding_mode(), onboarding_mode)
@@ -213,7 +212,7 @@ void AssistantTestApiImpl::SetOnboardingMode(
 
 void AssistantTestApiImpl::SetPreferVoice(bool value) {
   Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetBoolean(
-      chromeos::assistant::prefs::kAssistantLaunchWithMicOpen, value);
+      assistant::prefs::kAssistantLaunchWithMicOpen, value);
 
   // Ensure the value has taken effect.
   ASSERT_EQ(GetAssistantState()->launch_with_mic_open(), value)

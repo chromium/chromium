@@ -13,8 +13,7 @@
 #include "chromeos/services/libassistant/public/mojom/speaker_id_enrollment_controller.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) SpeakerIdEnrollmentClient
     : public chromeos::libassistant::mojom::SpeakerIdEnrollmentClient {
@@ -78,7 +77,12 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantSettings {
   virtual void SyncSpeakerIdEnrollmentStatus() = 0;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::AssistantSettings;
+using ::ash::assistant::SpeakerIdEnrollmentClient;
+}  // namespace chromeos::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_SETTINGS_H_

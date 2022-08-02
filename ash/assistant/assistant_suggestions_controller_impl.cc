@@ -29,9 +29,9 @@ namespace ash {
 
 namespace {
 
+using assistant::prefs::AssistantOnboardingMode;
 using chromeos::assistant::AssistantSuggestion;
 using chromeos::assistant::AssistantSuggestionType;
-using chromeos::assistant::prefs::AssistantOnboardingMode;
 
 // Conversation starters -------------------------------------------------------
 

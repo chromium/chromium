@@ -43,11 +43,10 @@ class TestAshWebViewFactory;
 // Helper class to make testing the Assistant Ash UI easier.
 class AssistantAshTestBase : public AshTestBase {
  public:
-  using AssistantEntryPoint = chromeos::assistant::AssistantEntryPoint;
-  using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
-  using AssistantOnboardingMode =
-      chromeos::assistant::prefs::AssistantOnboardingMode;
-  using ConsentStatus = chromeos::assistant::prefs::ConsentStatus;
+  using AssistantEntryPoint = assistant::AssistantEntryPoint;
+  using AssistantExitPoint = assistant::AssistantExitPoint;
+  using AssistantOnboardingMode = assistant::prefs::AssistantOnboardingMode;
+  using ConsentStatus = assistant::prefs::ConsentStatus;
 
   AssistantAshTestBase();
   explicit AssistantAshTestBase(base::test::TaskEnvironment::TimeSource time);

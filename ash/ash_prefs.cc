@@ -117,7 +117,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
 
   // Provide prefs registered in the browser for ash_unittests.
   if (for_test) {
-    chromeos::assistant::prefs::RegisterProfilePrefs(registry);
+    assistant::prefs::RegisterProfilePrefs(registry);
     quick_answers::prefs::RegisterProfilePrefs(registry);
     registry->RegisterBooleanPref(prefs::kMouseReverseScroll, false);
     registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);

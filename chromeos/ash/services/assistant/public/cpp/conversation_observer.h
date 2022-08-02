@@ -11,8 +11,7 @@
 #include "chromeos/services/libassistant/public/mojom/conversation_observer.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Default implementation of |mojom::ConversationObserver|, which allow child
 // child classes to only implement handlers they are interested in.
@@ -47,7 +46,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) ConversationObserver
       remote_observer_{this};
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::ConversationObserver;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_CONVERSATION_OBSERVER_H_

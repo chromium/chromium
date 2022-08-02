@@ -35,8 +35,7 @@ AssistantState::~AssistantState() {
   g_assistant_state = nullptr;
 }
 
-void AssistantState::NotifyStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
+void AssistantState::NotifyStatusChanged(assistant::AssistantStatus status) {
   if (assistant_status_ == status)
     return;
 
@@ -44,7 +43,7 @@ void AssistantState::NotifyStatusChanged(
 }
 
 void AssistantState::NotifyFeatureAllowed(
-    chromeos::assistant::AssistantAllowedState state) {
+    assistant::AssistantAllowedState state) {
   if (allowed_state_ == state)
     return;
 

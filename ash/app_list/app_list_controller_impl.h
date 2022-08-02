@@ -250,11 +250,10 @@ class ASH_EXPORT AppListControllerImpl
   void OnWallpaperPreviewEnded() override;
 
   // AssistantStateObserver:
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState state) override;
+      assistant::AssistantAllowedState state) override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;

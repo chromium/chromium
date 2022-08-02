@@ -51,8 +51,7 @@ constexpr char kClipboardNudgeName[] = "ClipboardContextualNudge";
 
 bool IsAssistantAvailable() {
   AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() ==
-             chromeos::assistant::AssistantAllowedState::ALLOWED &&
+  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
          state->settings_enabled().value_or(false);
 }
 

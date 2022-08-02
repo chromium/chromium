@@ -34,7 +34,7 @@ class LibassistantContractChecker;
 //     assistant_service()->SetInteractionResponse(std::move(response));
 class InteractionResponse {
  public:
-  using Resolution = chromeos::assistant::AssistantInteractionResolution;
+  using Resolution = assistant::AssistantInteractionResolution;
   class Response;
 
   InteractionResponse();
@@ -52,7 +52,7 @@ class InteractionResponse {
   // |resolution| to |AssistantInteractionSubscriber::OnInteractionFinished|.
   InteractionResponse* AddResolution(Resolution resolution);
 
-  void SendTo(chromeos::assistant::AssistantInteractionSubscriber* receiver);
+  void SendTo(assistant::AssistantInteractionSubscriber* receiver);
 
  private:
   void AddResponse(std::unique_ptr<Response> responses);
@@ -71,7 +71,7 @@ class InteractionResponse {
 //    - Finish a conversation before starting a new one.
 //    - Not send any responses (text, card, ...) before starting or after
 //      finishing an interaction.
-class TestAssistantService : public chromeos::assistant::Assistant {
+class TestAssistantService : public assistant::Assistant {
  public:
   TestAssistantService();
 
@@ -97,11 +97,11 @@ class TestAssistantService : public chromeos::assistant::Assistant {
   void StartVoiceInteraction() override;
   void StopActiveInteraction(bool cancel_conversation) override;
   void AddAssistantInteractionSubscriber(
-      chromeos::assistant::AssistantInteractionSubscriber* subscriber) override;
+      assistant::AssistantInteractionSubscriber* subscriber) override;
   void RemoveAssistantInteractionSubscriber(
-      chromeos::assistant::AssistantInteractionSubscriber* subscriber) override;
+      assistant::AssistantInteractionSubscriber* subscriber) override;
   void AddRemoteConversationObserver(
-      chromeos::assistant::ConversationObserver* observer) override {}
+      assistant::ConversationObserver* observer) override {}
   mojo::PendingReceiver<chromeos::libassistant::mojom::NotificationDelegate>
   GetPendingNotificationDelegate() override;
   void RetrieveNotification(
@@ -137,7 +137,7 @@ class TestAssistantService : public chromeos::assistant::Assistant {
 
   absl::optional<bool> dark_mode_enabled_;
 
-  base::ObserverList<chromeos::assistant::AssistantInteractionSubscriber>
+  base::ObserverList<assistant::AssistantInteractionSubscriber>
       interaction_subscribers_;
   bool running_active_interaction_ = false;
 

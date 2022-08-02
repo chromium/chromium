@@ -6,6 +6,8 @@
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_DEVICE_SETTINGS_HOST_H_
 
 #include "base/component_export.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
 #include "chromeos/services/libassistant/public/mojom/device_settings_delegate.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -17,7 +19,6 @@ class AssistantNotificationController;
 namespace chromeos {
 namespace assistant {
 
-class DeviceActions;
 class ServiceContext;
 
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) DeviceSettingsHost
