@@ -12,6 +12,8 @@
 #include "services/device/compute_pressure/pressure_sample.h"
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "services/device/compute_pressure/cpu_probe_linux.h"
+#elif BUILDFLAG(IS_WIN)
+#include "services/device/compute_pressure/cpu_probe_win.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
@@ -54,6 +56,8 @@ std::unique_ptr<CpuProbe> CpuProbe::Create() {
   return nullptr;
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return CpuProbeLinux::Create();
+#elif BUILDFLAG(IS_WIN)
+  return CpuProbeWin::Create();
 #else
   return std::make_unique<NullCpuProbe>();
 #endif  // BUILDFLAG(IS_ANDROID)
