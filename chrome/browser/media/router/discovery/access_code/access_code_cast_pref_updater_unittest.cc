@@ -55,8 +55,8 @@ class AccessCodeCastPrefUpdaterTest : public testing::Test {
 TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictRecorded) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
   pref_updater()->UpdateDevicesDict(cast_sink);
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDevices);
-  auto* sink_id_dict = dict->FindKey(cast_sink.id());
+  auto& dict = prefs()->GetValueDict(prefs::kAccessCodeCastDevices);
+  auto* sink_id_dict = dict.Find(cast_sink.id());
   EXPECT_EQ(*sink_id_dict, CreateValueDictFromMediaSinkInternal(cast_sink));
 }
 
@@ -76,8 +76,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDevicesDictOverwrite) {
   // existing pref.
   pref_updater()->UpdateDevicesDict(cast_sink1);
 
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDevices);
-  auto* sink_id_dict = dict->FindKey(cast_sink.id());
+  auto& dict = prefs()->GetValueDict(prefs::kAccessCodeCastDevices);
+  auto* sink_id_dict = dict.Find(cast_sink.id());
   EXPECT_NE(*sink_id_dict, CreateValueDictFromMediaSinkInternal(cast_sink));
   EXPECT_EQ(*sink_id_dict, CreateValueDictFromMediaSinkInternal(cast_sink1));
 }
@@ -86,8 +86,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDict) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
-  auto* time_of_addition = dict->FindKey(cast_sink.id());
+  auto& dict = prefs()->GetValueDict(prefs::kAccessCodeCastDeviceAdditionTime);
+  auto* time_of_addition = dict.Find(cast_sink.id());
   EXPECT_TRUE(time_of_addition);
 }
 
@@ -95,14 +95,14 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestUpdateDeviceAddedTimeDictOverwrite) {
   MediaSinkInternal cast_sink = CreateCastSink(1);
 
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
+  auto& dict = prefs()->GetValueDict(prefs::kAccessCodeCastDeviceAdditionTime);
   auto initial_time_of_addition =
-      base::ValueToTime(dict->FindKey(cast_sink.id())).value();
+      base::ValueToTime(dict.Find(cast_sink.id())).value();
 
   task_env().AdvanceClock(base::Seconds(10));
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
   auto final_time_of_addition =
-      base::ValueToTime(dict->FindKey(cast_sink.id())).value();
+      base::ValueToTime(dict.Find(cast_sink.id())).value();
 
   // Expect the two times of addition to be different, and the second time to be
   // greater.
@@ -128,8 +128,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDevicesDict) {
   pref_updater()->UpdateDevicesDict(cast_sink);
 
   pref_updater()->RemoveSinkIdFromDevicesDict(cast_sink.id());
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDevices);
-  EXPECT_FALSE(dict->FindKey(cast_sink.id()));
+  auto& dict = prefs()->GetValueDict(prefs::kAccessCodeCastDevices);
+  EXPECT_FALSE(dict.Find(cast_sink.id()));
   pref_updater()->RemoveSinkIdFromDevicesDict(cast_sink2.id());
 }
 
@@ -140,8 +140,8 @@ TEST_F(AccessCodeCastPrefUpdaterTest, TestRemoveSinkIdFromDeviceAddedTimeDict) {
   pref_updater()->UpdateDeviceAddedTimeDict(cast_sink.id());
 
   pref_updater()->RemoveSinkIdFromDeviceAddedTimeDict(cast_sink.id());
-  auto* dict = prefs()->GetDictionary(prefs::kAccessCodeCastDeviceAdditionTime);
-  EXPECT_FALSE(dict->FindKey(cast_sink.id()));
+  auto& dict = prefs()->GetValueDict(prefs::kAccessCodeCastDeviceAdditionTime);
+  EXPECT_FALSE(dict.Find(cast_sink.id()));
 
   pref_updater()->RemoveSinkIdFromDeviceAddedTimeDict(cast_sink2.id());
 }
