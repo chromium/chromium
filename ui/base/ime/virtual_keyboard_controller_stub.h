@@ -6,11 +6,14 @@
 #define UI_BASE_IME_VIRTUAL_KEYBOARD_CONTROLLER_STUB_H_
 
 #include "base/component_export.h"
+#include "base/observer_list.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
+#include "ui/base/ime/virtual_keyboard_controller_observer.h"
 
 namespace ui {
 
-// This class provides a stub VirtualKeyboardController.
+// TODO(aluh): Rename to fake.
+// This class provides a fake VirtualKeyboardController with minimal behavior.
 class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerStub final
     : public VirtualKeyboardController {
  public:
@@ -28,6 +31,10 @@ class COMPONENT_EXPORT(UI_BASE_IME) VirtualKeyboardControllerStub final
   void AddObserver(VirtualKeyboardControllerObserver* observer) override;
   void RemoveObserver(VirtualKeyboardControllerObserver* observer) override;
   bool IsKeyboardVisible() override;
+
+ private:
+  base::ObserverList<VirtualKeyboardControllerObserver>::Unchecked observers_;
+  bool visible_ = false;
 };
 
 }  // namespace ui

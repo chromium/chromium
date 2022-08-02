@@ -3,28 +3,42 @@
 // found in the LICENSE file.
 
 #include "ui/base/ime/virtual_keyboard_controller_stub.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
 // VirtualKeyboardControllerStub member definitions.
-VirtualKeyboardControllerStub::VirtualKeyboardControllerStub() {}
+VirtualKeyboardControllerStub::VirtualKeyboardControllerStub() = default;
 
-VirtualKeyboardControllerStub::~VirtualKeyboardControllerStub() {}
+VirtualKeyboardControllerStub::~VirtualKeyboardControllerStub() = default;
 
 bool VirtualKeyboardControllerStub::DisplayVirtualKeyboard() {
-  return false;
+  visible_ = true;
+  for (auto& observer : observers_) {
+    observer.OnKeyboardVisible({});
+  }
+  return true;
 }
 
-void VirtualKeyboardControllerStub::DismissVirtualKeyboard() {}
+void VirtualKeyboardControllerStub::DismissVirtualKeyboard() {
+  visible_ = false;
+  for (auto& observer : observers_) {
+    observer.OnKeyboardHidden();
+  }
+}
 
 void VirtualKeyboardControllerStub::AddObserver(
-    VirtualKeyboardControllerObserver* observer) {}
+    VirtualKeyboardControllerObserver* observer) {
+  observers_.AddObserver(observer);
+}
 
 void VirtualKeyboardControllerStub::RemoveObserver(
-    VirtualKeyboardControllerObserver* observer) {}
+    VirtualKeyboardControllerObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 bool VirtualKeyboardControllerStub::IsKeyboardVisible() {
-  return false;
+  return visible_;
 }
 
 }  // namespace ui

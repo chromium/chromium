@@ -9511,6 +9511,9 @@ if (!is_android) {
         sources += [ "../browser/pdf/pdf_extension_interactive_uitest.cc" ]
         deps += [ ":pdf_extension_test_utils" ]
       }
+      if (is_chromeos) {
+        sources += [ "../browser/ui/views/toolbar/browser_app_menu_button_interactive_uitest_chromeos.cc" ]
+      }
       if (is_linux || is_chromeos_lacros) {
         # Desktop linux.
         sources -= [

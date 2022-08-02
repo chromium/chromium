@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/geometry/rect.h"
@@ -52,7 +53,7 @@ class InputMethod {
   typedef int32_t NativeEventResult;
 #endif
 
-  virtual ~InputMethod() {}
+  virtual ~InputMethod() = default;
 
   // Sets the key event dispatcher used by this InputMethod instance. It should
   // only be called by an object which manages the whole UI.
@@ -148,8 +149,12 @@ class InputMethod {
   // Set screen bounds of a on-screen keyboard.
   virtual void SetOnScreenKeyboardBounds(const gfx::Rect& new_bounds) {}
 
-  // Return the keyboard controller; used only on Windows.
+  // Return the keyboard controller.
   virtual VirtualKeyboardController* GetVirtualKeyboardController() = 0;
+
+  // Sets a keyboard controller for testing.
+  virtual void SetVirtualKeyboardControllerForTesting(
+      std::unique_ptr<VirtualKeyboardController> controller) {}
 };
 
 }  // namespace ui

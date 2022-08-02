@@ -118,6 +118,11 @@ VirtualKeyboardController* InputMethodBase::GetVirtualKeyboardController() {
   return keyboard_controller_.get();
 }
 
+void InputMethodBase::SetVirtualKeyboardControllerForTesting(
+    std::unique_ptr<VirtualKeyboardController> controller) {
+  keyboard_controller_ = std::move(controller);
+}
+
 bool InputMethodBase::IsTextInputClientFocused(const TextInputClient* client) {
   return client && (client == GetTextInputClient());
 }

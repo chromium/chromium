@@ -438,6 +438,9 @@ bool InputMethodAuraLinux::IsCandidatePopupOpen() const {
 
 VirtualKeyboardController*
 InputMethodAuraLinux::GetVirtualKeyboardController() {
+  // This should only be not null when set via testing.
+  if (auto* controller = InputMethodBase::GetVirtualKeyboardController())
+    return controller;
   return context_->GetVirtualKeyboardController();
 }
 

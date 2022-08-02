@@ -45,9 +45,10 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/virtual_keyboard_controller.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 bool BrowserAppMenuButton::g_open_app_immediately_for_testing = false;
@@ -73,11 +74,14 @@ void BrowserAppMenuButton::ShowMenu(int run_types) {
   if (IsMenuShowing())
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
-  if (keyboard_client->is_keyboard_visible())
-    keyboard_client->HideKeyboard(ash::HideReason::kSystem);
-#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  if (auto* input_method = GetInputMethod()) {
+    if (auto* controller = input_method->GetVirtualKeyboardController();
+        controller && controller->IsKeyboardVisible()) {
+      input_method->SetVirtualKeyboardVisibilityIfEnabled(false);
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   Browser* browser = toolbar_view_->browser();
 
