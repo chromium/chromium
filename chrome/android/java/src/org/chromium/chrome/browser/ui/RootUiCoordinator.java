@@ -125,6 +125,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -297,6 +298,7 @@ public class RootUiCoordinator
     private final BackPressManager mBackPressManager;
     @Nullable
     private PageZoomCoordinator mPageZoomCoordinator;
+    private AppMenuObserver mAppMenuObserver;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -556,6 +558,10 @@ public class RootUiCoordinator
         if (mAppMenuCoordinator != null) {
             mAppMenuCoordinator.unregisterAppMenuBlocker(this);
             mAppMenuCoordinator.unregisterAppMenuBlocker(mAppMenuBlocker);
+
+            if (mAppMenuObserver != null) {
+                mAppMenuCoordinator.getAppMenuHandler().removeObserver(mAppMenuObserver);
+            }
             mAppMenuCoordinator.destroy();
         }
 
@@ -1230,6 +1236,19 @@ public class RootUiCoordinator
             mAppMenuCoordinator.registerAppMenuBlocker(mAppMenuBlocker);
 
             mAppMenuSupplier.set(mAppMenuCoordinator);
+
+            mAppMenuObserver = new AppMenuObserver() {
+                @Override
+                public void onMenuVisibilityChanged(boolean isVisible) {
+                    if (isVisible && mPageZoomCoordinator != null) {
+                        mPageZoomCoordinator.hide();
+                    }
+                }
+
+                @Override
+                public void onMenuHighlightChanged(boolean highlighting) {}
+            };
+            mAppMenuCoordinator.getAppMenuHandler().addObserver(mAppMenuObserver);
         }
     }
 
