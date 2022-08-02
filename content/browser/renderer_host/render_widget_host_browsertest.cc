@@ -923,8 +923,16 @@ class RenderWidgetHostDelegatedInkMetadataTest
 
 // Confirm that using the |updateInkTrailStartPoint| JS API results in the
 // |request_points_for_delegated_ink_| flag being set on the RWHVB.
+// TODO(crbug.com/1344023). Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FlagGetsSetFromRenderFrameMetadata \
+  DISABLED_FlagGetsSetFromRenderFrameMetadata
+#else
+#define MAYBE_FlagGetsSetFromRenderFrameMetadata \
+  FlagGetsSetFromRenderFrameMetadata
+#endif
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
-                       FlagGetsSetFromRenderFrameMetadata) {
+                       MAYBE_FlagGetsSetFromRenderFrameMetadata) {
   ASSERT_TRUE(ExecJs(shell()->web_contents(), R"(
       let presenter = null;
       navigator.ink.requestPresenter().then(e => { presenter = e; });
@@ -980,8 +988,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
 
 // If the DelegatedInkTrailPresenter creates a metadata that has the same
 // timestamp as the previous one, it does not set the metadata.
+// TODO(crbug.com/1344023). Flaky.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
-                       DuplicateMetadata) {
+                       DISABLED_DuplicateMetadata) {
   ASSERT_TRUE(ExecJs(shell()->web_contents(), R"(
       let presenter = null;
       navigator.ink.requestPresenter().then(e => { presenter = e; });
