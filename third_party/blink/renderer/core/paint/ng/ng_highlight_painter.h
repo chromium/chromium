@@ -250,7 +250,7 @@ class CORE_EXPORT NGHighlightPainter {
   Node* node_;
   const AutoDarkMode foreground_auto_dark_mode_;
   const AutoDarkMode background_auto_dark_mode_;
-  const DocumentMarkerVector markers_;
+  DocumentMarkerVector markers_;
   DocumentMarkerVector target_;
   DocumentMarkerVector spelling_;
   DocumentMarkerVector grammar_;

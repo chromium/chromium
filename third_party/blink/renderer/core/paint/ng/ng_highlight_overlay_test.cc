@@ -326,6 +326,40 @@ TEST_F(NGHighlightOverlayTest, ComputeParts) {
                 HighlightPart{orig, 14, 18, {orig}},
             }))
       << "should not crash if there is a gap in active layers";
+
+  // 0     6   10   15   20
+  // brown fxo oevr lazy dgo
+  //  [ ]                       originating, changed!
+  //                            ::highlight(foo), as above
+  //                            ::highlight(bar), as above
+  //       [ ] [  ]      [ ]    ::spelling-error, as above
+  //                            ::target-text, as above
+  //                            ::selection, as above
+
+  NGTextFragmentPaintInfo originating3{"", 1, 4};
+
+  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating3, layers, edges4),
+            (Vector<HighlightPart>{
+                HighlightPart{orig, 1, 4, {orig}},
+            }))
+      << "correct when first edge starts after end of originating fragment";
+
+  // 0     6   10   15   20
+  // brown fxo oevr lazy dgo today
+  //                          [ ]     originating, changed!
+  //                                  ::highlight(foo), as above
+  //                                  ::highlight(bar), as above
+  //       [ ] [  ]      [ ]          ::spelling-error, as above
+  //                                  ::target-text, as above
+  //                                  ::selection, as above
+
+  NGTextFragmentPaintInfo originating4{"", 25, 28};
+
+  EXPECT_EQ(NGHighlightOverlay::ComputeParts(originating4, layers, edges4),
+            (Vector<HighlightPart>{
+                HighlightPart{orig, 25, 28, {orig}},
+            }))
+      << "correct when last edge ends before start of originating fragment";
 }
 
 }  // namespace blink
