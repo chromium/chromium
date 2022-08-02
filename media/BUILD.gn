@@ -29,6 +29,7 @@ buildflag_header("media_buildflags") {
     "ENABLE_DAV1D_DECODER=$enable_dav1d_decoder",
     "ENABLE_AV1_DECODER=$enable_av1_decoder",
     "ENABLE_PLATFORM_DOLBY_VISION=$enable_platform_dolby_vision",
+    "ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION=$enable_platform_encrypted_dolby_vision",
     "ENABLE_FFMPEG=$media_use_ffmpeg",
     "ENABLE_FFMPEG_VIDEO_DECODERS=$enable_ffmpeg_video_decoders",
     "ENABLE_PLATFORM_HEVC=$enable_platform_hevc",

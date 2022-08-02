@@ -718,6 +718,18 @@ bool SourceBufferState::OnNewConfigs(
                << " config: " << video_config.AsHumanReadableString();
       DCHECK(video_config.IsValidConfig());
 
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+      // Only encrypted Dolby Vision (DV) is supported, so require the config
+      // to be for an encrypted track.
+      if (video_config.codec() == VideoCodec::kDolbyVision &&
+          !video_config.is_encrypted()) {
+        MEDIA_LOG(ERROR, media_log_)
+            << "MSE playback of DolbyVision is only supported via platform "
+               "decryptor, but the provided DV track is not encrypted.";
+        return false;
+      }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
       const auto& it = std::find(expected_vcodecs.begin(),
                                  expected_vcodecs.end(), video_config.codec());
       if (it == expected_vcodecs.end()) {

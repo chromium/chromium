@@ -150,6 +150,32 @@ bool IsSupportedMediaType(const std::string& container_mime_type,
   std::vector<std::string> codec_vector;
   media::SplitCodecs(codecs, &codec_vector);
 
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+  // Encrypted DolbyVision (DV) is supported under this build flag, but it is
+  // not supported for clear playback or when using ClearKey. Remove the DV
+  // codec strings to avoid asking IsSupported*MediaFormat() about DV. EME
+  // support for DV is described via KeySystemProperties::GetSupportedCodecs().
+  // TODO(crbug.com/1156282): Decouple the rest of clear vs EME codec support.
+  if (!use_aes_decryptor &&
+      base::ToLowerASCII(container_mime_type) == "video/mp4" &&
+      !codec_vector.empty()) {
+    std::vector<std::string> filtered_codec_vector;
+    for (const auto& codec : codec_vector) {
+      media::VideoCodecProfile profile;
+      uint8_t level_idc;
+      if (!ParseDolbyVisionCodecId(codec, &profile, &level_idc))
+        filtered_codec_vector.push_back(codec);
+    }
+    codec_vector = std::move(filtered_codec_vector);
+
+    // Avoid calling IsSupported*MediaFormat() with an empty vector. For
+    // "video/mp4", this will return MaybeSupported, which we would otherwise
+    // consider "false" below.
+    if (codec_vector.empty())
+      return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
   // AesDecryptor decrypts the stream in the demuxer before it reaches the
   // decoder so check whether the media format is supported when clear.
   media::SupportsType support_result =

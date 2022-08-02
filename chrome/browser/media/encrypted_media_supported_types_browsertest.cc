@@ -179,6 +179,12 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     av1_codecs_.push_back("av01.0.04M.08");        // 8 bit
     av1_codecs_.push_back("av01.0.00M.10.0.112");  // 10 bit
 
+    // Dolby Vision codec string:
+    // https://professional.dolby.com/siteassets/content-creation/dolby-vision-for-content-creators/dolby-vision-streams-within-the-http-live-streaming-format-v2.0-13-november-2018.pdf
+    // [Dolby_Vision_fourCC].[Dovi_Profile_ID].[Dovi_Level_ID]
+    // For example: "dvhe.05.07"
+    dolby_vision_codecs_.push_back("dvhe.05.07");
+
     // Extended codecs are used, so make sure generic ones fail. These will be
     // tested against all init data types as they should always fail to be
     // supported.
@@ -228,6 +234,10 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     return vp9_profile2_codecs_;
   }
   const CodecVector& av1_codecs() const { return av1_codecs_; }
+  const CodecVector& dolby_vision_codecs() const {
+    return dolby_vision_codecs_;
+  }
+
   const CodecVector& invalid_codecs() const { return invalid_codecs_; }
 
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
@@ -478,6 +488,7 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   CodecVector vp9_profile0_codecs_;
   CodecVector vp9_profile2_codecs_;
   CodecVector av1_codecs_;
+  CodecVector dolby_vision_codecs_;
   CodecVector invalid_codecs_;
 };
 
@@ -563,11 +574,12 @@ class EncryptedMediaSupportedTypesWidevineHwSecureTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EncryptedMediaSupportedTypesWidevineTest::SetUpCommandLine(command_line);
-    // Pretend that we support hardware secure decryption for vp8 and vp9, but
-    // not for avc1. This will also pretend that there is support for vorbis
-    // audio.
+    // Pretend that we support hardware secure decryption for vp8, vp9 and
+    // dolbyvision, but not for avc1. This will also pretend that there is
+    // support for vorbis audio.
     command_line->AppendSwitchASCII(
-        switches::kOverrideHardwareSecureCodecsForTesting, "vp8,vp9,vorbis");
+        switches::kOverrideHardwareSecureCodecsForTesting,
+        "vp8,vp9,dolbyvision,vorbis");
   }
 };
 
@@ -1492,6 +1504,15 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
   EXPECT_WV_HW_SECURE_PERSISTENT_SESSION(IsSessionTypeSupported(
       kWidevine, SessionType::kPersistentLicense, "HW_SECURE_ALL"));
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
+                       DolbyVision) {
+  EXPECT_WV(IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType,
+                                   dolby_vision_codecs(),
+                                   SessionType::kTemporary, "HW_SECURE_ALL"));
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineHwSecureTest,
                        WidevineExperiment) {

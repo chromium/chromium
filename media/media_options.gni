@@ -66,11 +66,15 @@ declare_args() {
 
   # Enable Dolby Vision demuxing. Enable by default for Chromecast. Actual
   # decoding must be provided by the platform. Note some Dolby Vision profiles
-  # which are encoded using HEVC require |enable_platform_hevc| to be enabled.
+  # which are encoded using HEVC require `enable_platform_hevc` to be enabled.
   #
   # TODO(crbug.com/1336055): Revisit the default value for this setting as it
   # applies to video-capable devices.
   enable_platform_dolby_vision = proprietary_codecs && is_cast_media_device
+
+  # Enable platform support of encrypted Dolby Vision. Clear Dolby Vision is
+  # still not supported. The actual support depends on platform capability.
+  enable_platform_encrypted_dolby_vision = false
 
   # Enable HLS with SAMPLE-AES decryption.
   #
@@ -129,6 +133,9 @@ assert(
 assert(
     !enable_platform_dolby_vision || proprietary_codecs,
     "proprietary_codecs=true is required for enable_platform_dolby_vision=true.")
+assert(
+    !enable_platform_encrypted_dolby_vision || enable_platform_dolby_vision,
+    "enable_platform_dolby_vision=true is required for enable_platform_encrypted_dolby_vision=true.")
 assert(!enable_hls_sample_aes || proprietary_codecs,
        "proprietary_codecs=true is required for enable_hls_sample_aes=true.")
 assert(

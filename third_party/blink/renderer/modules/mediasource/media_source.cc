@@ -582,12 +582,58 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     return false;
   }
 
+  String codecs = content_type.Parameter("codecs");
+  ContentType filtered_content_type = content_type;
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+  // Here, we special-case when encrypted Dolby Vision (DV) is supported but
+  // clear DV is not supported. isTypeSupported(fully qualified type with DV
+  // codec) should say false on such platform, but addSourceBuffer(same) and
+  // changeType(same) shouldn't fail just due to having DV codec. We use
+  // `enforce_codec_specificity` to understand if we are servicing
+  // isTypeSupported (if true) vs addSourceBuffer or changeType (if false). When
+  // `enforce_codec_specificity` is false, we'll remove any detected DV codec
+  // from the codecs in the `filtered_content_type`.
+  if (!enforce_codec_specificity) {
+    // Remove any detected DolbyVision codec from the query to GetSupportsType.
+    std::string filtered_codecs;
+    std::vector<std::string> parsed_codec_ids;
+    media::SplitCodecs(codecs.Ascii(), &parsed_codec_ids);
+    bool first = true;
+    for (const auto& codec_id : parsed_codec_ids) {
+      bool is_codec_ambiguous;
+      media::VideoCodec video_codec = media::VideoCodec::kUnknown;
+      media::VideoCodecProfile profile;
+      uint8_t level = 0;
+      media::VideoColorSpace color_space;
+      if (media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
+                                       &is_codec_ambiguous, &video_codec,
+                                       &profile, &level, &color_space) &&
+          !is_codec_ambiguous &&
+          video_codec == media::VideoCodec::kDolbyVision) {
+        continue;
+      }
+      if (first)
+        first = false;
+      else
+        filtered_codecs += ",";
+      filtered_codecs += codec_id;
+    }
+
+    std::string filtered_type =
+        mime_type.Ascii() + "; codecs=\"" + filtered_codecs + "\"";
+    DVLOG(1) << __func__ << " filtered_type=" << filtered_type;
+    filtered_content_type =
+        ContentType(String::FromUTF8(filtered_type.c_str()));
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
   // Note: MediaSource.isTypeSupported() returning true implies that
   // HTMLMediaElement.canPlayType() will return "maybe" or "probably" since it
   // does not make sense for a MediaSource to support a type the
   // HTMLMediaElement knows it cannot play.
   auto get_supports_type_result =
-      HTMLMediaElement::GetSupportsType(content_type);
+      HTMLMediaElement::GetSupportsType(filtered_content_type);
   if (get_supports_type_result == MIMETypeRegistry::kNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
@@ -612,7 +658,6 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // specificity is and will be retained for isTypeSupported.
   // TODO(crbug.com/535738): Actually relax the codec-specifity for aSB() and
   // cT() (which is when |enforce_codec_specificity| is false).
-  String codecs = content_type.Parameter("codecs");
   MIMETypeRegistry::SupportsType supported =
       MIMETypeRegistry::SupportsMediaSourceMIMEType(mime_type, codecs);
 

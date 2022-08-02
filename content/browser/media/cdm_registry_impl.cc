@@ -104,6 +104,8 @@ GetHardwareSecureCapabilityOverriddenFromCommandLine() {
       video_codecs.emplace(media::VideoCodec::kH264, kAllProfiles);
     else if (codec == "hevc")
       video_codecs.emplace(media::VideoCodec::kHEVC, kAllProfiles);
+    else if (codec == "dolbyvision")
+      video_codecs.emplace(media::VideoCodec::kDolbyVision, kAllProfiles);
     else if (codec == "mp4a")
       audio_codecs.push_back(media::AudioCodec::kAAC);
     else if (codec == "vorbis")
