@@ -339,6 +339,33 @@ chromium-metrics-reviews@google.com.
   <token key="OOBEGestureNavigationPage" variants="OOBEGestureNavigationPage"/>
 </histogram>
 
+<histogram
+    name="OOBE.HidDetectionScreen.BluetoothPairing.Duration.{PairingResult}"
+    units="ms" expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records how long it takes for a pairing attempt, initiated automatically
+    during the OOBE HID detection screen, to finish. If the user needed to go
+    through an auth process during pairing, the time the user took to confirm
+    that is included.
+  </summary>
+  <token key="PairingResult">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram name="OOBE.HidDetectionScreen.BluetoothPairing.Result"
+    enum="BooleanSuccess" expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records success or failure of a pairing attempt (initiated automatically by
+    the OOBE HID detection screen) to a HID.
+  </summary>
+</histogram>
+
 <histogram name="OOBE.HidDetectionScreen.BluetoothPairingAttempts"
     units="attempts" expires_after="2023-05-06">
   <owner>gordonseto@google.com</owner>

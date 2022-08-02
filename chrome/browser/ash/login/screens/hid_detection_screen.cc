@@ -417,15 +417,26 @@ void HIDDetectionScreen::ConnectBTDevice(device::BluetoothDevice* device) {
     keyboard_is_pairing_ = true;
   }
   ++num_pairing_attempts_;
-  device->Connect(this, base::BindOnce(&HIDDetectionScreen::OnConnect,
-                                       weak_ptr_factory_.GetWeakPtr(),
-                                       device->GetAddress(), device_type));
+  pairing_device_id_to_timer_map_[device->GetDeviceID()] =
+      std::make_unique<base::ElapsedTimer>();
+
+  device->Connect(
+      this, base::BindOnce(&HIDDetectionScreen::OnConnect,
+                           weak_ptr_factory_.GetWeakPtr(), device->GetAddress(),
+                           device_type, device->GetDeviceID()));
 }
 
 void HIDDetectionScreen::OnConnect(
     const std::string& address,
     device::BluetoothDeviceType device_type,
+    uint16_t device_id,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
+  DCHECK(base::Contains(pairing_device_id_to_timer_map_, device_id));
+  hid_detection::RecordBluetoothPairingResult(
+      !error_code.has_value(),
+      pairing_device_id_to_timer_map_[device_id]->Elapsed());
+  pairing_device_id_to_timer_map_.erase(device_id);
+
   if (DeviceIsPointing(device_type))
     mouse_is_pairing_ = false;
   if (DeviceIsKeyboard(device_type)) {

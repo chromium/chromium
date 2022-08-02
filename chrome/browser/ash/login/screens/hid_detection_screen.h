@@ -13,12 +13,14 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/wizard_context.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/components/hid_detection/hid_detection_manager.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -203,6 +205,7 @@ class HIDDetectionScreen : public BaseScreen,
   void OnConnect(
       const std::string& address,
       device::BluetoothDeviceType device_type,
+      uint16_t device_id,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code);
 
   // Sends a notification to the Web UI of the status of available Bluetooth/USB
@@ -273,6 +276,10 @@ class HIDDetectionScreen : public BaseScreen,
   size_t num_pairing_attempts_ = 0;
 
   std::unique_ptr<hid_detection::HidDetectionManager> hid_detection_manager_;
+
+  // Map that contains the start times of pairings for devices.
+  base::flat_map<uint16_t, std::unique_ptr<base::ElapsedTimer>>
+      pairing_device_id_to_timer_map_;
 
   base::WeakPtrFactory<HIDDetectionScreen> weak_ptr_factory_{this};
 };

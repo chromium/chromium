@@ -5,6 +5,7 @@
 #include "ash/components/hid_detection/hid_detection_utils.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -90,6 +91,20 @@ void RecordHidDisconnected(const device::mojom::InputDeviceInfo& device) {
 void RecordBluetoothPairingAttempts(size_t attempts) {
   base::UmaHistogramCounts100(
       "OOBE.HidDetectionScreen.BluetoothPairingAttempts", attempts);
+}
+
+void RecordBluetoothPairingResult(bool success,
+                                  base::TimeDelta pairing_duration) {
+  base::UmaHistogramCustomTimes(
+      base::StrCat({"OOBE.HidDetectionScreen.BluetoothPairing.Duration.",
+                    success ? "Success" : "Failure"}),
+      pairing_duration,
+      /*min=*/base::Milliseconds(1),
+      /*max=*/base::Seconds(30), /*buckets=*/50);
+
+  // Also record the pairing result metric.
+  base::UmaHistogramBoolean("OOBE.HidDetectionScreen.BluetoothPairing.Result",
+                            success);
 }
 
 }  // namespace ash::hid_detection

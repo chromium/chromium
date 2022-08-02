@@ -9,7 +9,9 @@
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
@@ -151,9 +153,18 @@ class HIDDetectionScreenChromeboxTest
         "OOBE.HidDetectionScreen.BluetoothPairingAttempts", count, 1);
   }
 
-  void AssetBluetoothPairingAttemptsMetricCount(int count) {
+  void AssertBluetoothPairingAttemptsMetricCount(int count) {
     histogram_tester_.ExpectTotalCount(
         "OOBE.HidDetectionScreen.BluetoothPairingAttempts", count);
+  }
+
+  void AssertBluetoothPairingResult(bool success, int count) {
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({"OOBE.HidDetectionScreen.BluetoothPairing.Duration.",
+                      success ? "Success" : "Failure"}),
+        count);
+    histogram_tester_.ExpectBucketCount(
+        "OOBE.HidDetectionScreen.BluetoothPairing.Result", success, count);
   }
 
   bool HasPendingConnectCallback() const {
@@ -326,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
   InvokePendingConnectCallback(/*success=*/false);
 
   // Bluetooth pairing attempt counts should only emit after the welcome screen.
-  AssetBluetoothPairingAttemptsMetricCount(/*count=*/0);
+  AssertBluetoothPairingAttemptsMetricCount(/*count=*/0);
 
   ContinueToWelcomeScreen();
   AssertBluetoothPairingAttemptsCount(/*count=*/3);
@@ -345,6 +356,8 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
   SimulateBluetoothDeviceDiscovered(device::BluetoothDeviceType::MOUSE);
   ASSERT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/true);
+  AssertBluetoothPairingResult(/*success=*/true, /*count=*/1);
+
   SimulatePointerHidConnected(device::mojom::InputDeviceType::TYPE_BLUETOOTH);
   SimulateBluetoothDeviceDiscovered(device::BluetoothDeviceType::MOUSE);
   ASSERT_FALSE(HasPendingConnectCallback());
@@ -352,9 +365,15 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest,
   SimulateBluetoothDeviceDiscovered(device::BluetoothDeviceType::KEYBOARD);
   ASSERT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/false);
+  AssertBluetoothPairingResult(/*success=*/false, /*count=*/1);
+
+  SimulateBluetoothDeviceDiscovered(device::BluetoothDeviceType::KEYBOARD);
+  ASSERT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback(/*success=*/false);
+  AssertBluetoothPairingResult(/*success=*/false, /*count=*/2);
 
   ContinueToWelcomeScreen();
-  AssertBluetoothPairingAttemptsCount(/*count=*/2);
+  AssertBluetoothPairingAttemptsCount(/*count=*/3);
 }
 
 IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
