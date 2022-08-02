@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/value_iterators.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -121,15 +122,16 @@ class HostZoomMapBrowserTest : public InProcessBrowserTest {
 
   std::vector<std::string> GetHostsWithZoomLevelsFromPrefs() {
     PrefService* prefs = browser()->profile()->GetPrefs();
-    const base::Value* dictionaries =
-        prefs->GetDictionary(prefs::kPartitionPerHostZoomLevels);
+    const base::Value::Dict& dictionaries =
+        prefs->GetValueDict(prefs::kPartitionPerHostZoomLevels);
     std::string partition_key =
         ChromeZoomLevelPrefs::GetPartitionKeyForTesting(base::FilePath());
-    const base::Value* values = dictionaries->FindDictPath(partition_key);
+    const base::Value::Dict* values =
+        dictionaries.FindDictByDottedPath(partition_key);
     std::vector<std::string> results;
     if (values) {
-      for (const auto it : values->DictItems())
-        results.push_back(it.first);
+      for (const auto key_value_pair : *values)
+        results.push_back(key_value_pair.first);
     }
     return results;
   }
