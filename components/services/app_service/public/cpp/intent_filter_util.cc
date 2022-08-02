@@ -174,8 +174,7 @@ apps::IntentFilterPtr MakeIntentFilterForUrlScope(const GURL& url) {
   intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, url.host(),
                                          apps::PatternMatchType::kNone);
 
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kPattern,
-                                         url.path(),
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, url.path(),
                                          apps::PatternMatchType::kPrefix);
 
   return intent_filter;
@@ -194,7 +193,7 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForUrlScope(const GURL& url) {
   AddSingleValueCondition(apps::mojom::ConditionType::kHost, url.host(),
                           apps::mojom::PatternMatchType::kNone, intent_filter);
 
-  AddSingleValueCondition(apps::mojom::ConditionType::kPattern, url.path(),
+  AddSingleValueCondition(apps::mojom::ConditionType::kPath, url.path(),
                           apps::mojom::PatternMatchType::kPrefix,
                           intent_filter);
 
@@ -215,8 +214,8 @@ int GetFilterMatchLevel(const apps::mojom::IntentFilterPtr& intent_filter) {
       case apps::mojom::ConditionType::kHost:
         match_level += static_cast<int>(apps::IntentFilterMatchLevel::kHost);
         break;
-      case apps::mojom::ConditionType::kPattern:
-        match_level += static_cast<int>(apps::IntentFilterMatchLevel::kPattern);
+      case apps::mojom::ConditionType::kPath:
+        match_level += static_cast<int>(apps::IntentFilterMatchLevel::kPath);
         break;
       case apps::mojom::ConditionType::kMimeType:
       case apps::mojom::ConditionType::kFile:
@@ -346,7 +345,7 @@ bool IsSupportedLinkForApp(const std::string& app_id,
       case apps::ConditionType::kHost:
         host = true;
         break;
-      case apps::ConditionType::kPattern:
+      case apps::ConditionType::kPath:
         pattern = true;
         break;
       default:
@@ -373,7 +372,7 @@ bool IsSupportedLinkForApp(const std::string& app_id,
   bool action = false;
   bool scheme = false;
   bool host = false;
-  bool pattern = false;
+  bool path = false;
   for (auto& condition : intent_filter->conditions) {
     switch (condition->condition_type) {
       case apps::mojom::ConditionType::kAction:
@@ -396,14 +395,14 @@ bool IsSupportedLinkForApp(const std::string& app_id,
       case apps::mojom::ConditionType::kHost:
         host = true;
         break;
-      case apps::mojom::ConditionType::kPattern:
-        pattern = true;
+      case apps::mojom::ConditionType::kPath:
+        path = true;
         break;
       default:
         break;
     }
 
-    if (action && scheme && host && pattern) {
+    if (action && scheme && host && path) {
       return true;
     }
   }
@@ -417,12 +416,12 @@ size_t IntentFilterUrlMatchLength(const apps::IntentFilterPtr& intent_filter,
   if (!intent.MatchFilter(intent_filter)) {
     return 0;
   }
-  // If the filter matches, all URL components match, so a kPattern condition
+  // If the filter matches, all URL components match, so a kPath condition
   // matches and we add up the length of the filter's URL components (scheme,
   // host, path).
   size_t path_length = 0;
   for (const apps::ConditionPtr& condition : intent_filter->conditions) {
-    if (condition->condition_type == apps::ConditionType::kPattern) {
+    if (condition->condition_type == apps::ConditionType::kPath) {
       for (const apps::ConditionValuePtr& value : condition->condition_values) {
         switch (value->match_type) {
           case apps::PatternMatchType::kLiteral:

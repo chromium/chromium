@@ -61,7 +61,7 @@ absl::optional<std::string> GetIntentConditionValueByType(
       return intent->url.has_value()
                  ? absl::optional<std::string>(intent->url->host())
                  : absl::nullopt;
-    case apps::mojom::ConditionType::kPattern:
+    case apps::mojom::ConditionType::kPath:
       return intent->url.has_value()
                  ? absl::optional<std::string>(intent->url->path())
                  : absl::nullopt;

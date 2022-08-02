@@ -269,7 +269,7 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForWebApp_WebApp_HasUrlFilter) {
 
   {
     const Condition& condition = *filter->conditions[3];
-    EXPECT_EQ(condition.condition_type, ConditionType::kPattern);
+    EXPECT_EQ(condition.condition_type, ConditionType::kPath);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               PatternMatchType::kPrefix);
@@ -325,7 +325,7 @@ TEST_F(IntentUtilsTest, CreateWebAppIntentFilters_WebApp_HasUrlFilter) {
 
   {
     const apps::mojom::Condition& condition = *filter->conditions[3];
-    EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kPattern);
+    EXPECT_EQ(condition.condition_type, apps::mojom::ConditionType::kPath);
     ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               apps::mojom::PatternMatchType::kPrefix);
@@ -1003,7 +1003,7 @@ TEST_F(IntentUtilsTest, ConvertArcIntentFilter_ConvertsSimpleGlobToPrefix) {
       apps_util::CreateIntentFilterForArc(filter_with_path);
 
   for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::ConditionType::kPattern) {
+    if (condition->condition_type == apps::ConditionType::kPath) {
       EXPECT_EQ(4u, condition->condition_values.size());
       EXPECT_EQ(apps::ConditionValue("/foo", apps::PatternMatchType::kPrefix),
                 *condition->condition_values[0]);
@@ -1045,7 +1045,7 @@ TEST_F(IntentUtilsTest,
       apps_util::ConvertArcToAppServiceIntentFilter(filter_with_path);
 
   for (auto& condition : app_service_filter->conditions) {
-    if (condition->condition_type == apps::mojom::ConditionType::kPattern) {
+    if (condition->condition_type == apps::mojom::ConditionType::kPath) {
       EXPECT_EQ(4u, condition->condition_values.size());
       EXPECT_EQ(apps_util::MakeConditionValue(
                     "/foo", apps::mojom::PatternMatchType::kPrefix),

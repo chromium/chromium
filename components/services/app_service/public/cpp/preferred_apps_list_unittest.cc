@@ -23,21 +23,21 @@ const char kAppId3[] = "hahahahaha";
 
 class PreferredAppListTest : public testing::Test {
  protected:
-  apps::IntentFilterPtr MakePatternFilter(const std::string& pattern,
-                                          apps::PatternMatchType match_type) {
+  apps::IntentFilterPtr MakePathFilter(const std::string& pattern,
+                                       apps::PatternMatchType match_type) {
     auto intent_filter =
         apps_util::MakeSchemeAndHostOnlyFilter("https", "www.google.com");
-    intent_filter->AddSingleValueCondition(apps::ConditionType::kPattern,
-                                           pattern, match_type);
+    intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, pattern,
+                                           match_type);
     return intent_filter;
   }
 
-  apps::mojom::IntentFilterPtr CreatePatternFilter(
+  apps::mojom::IntentFilterPtr CreatePathFilter(
       const std::string& pattern,
       apps::mojom::PatternMatchType match_type) {
     auto intent_filter =
         apps_util::CreateSchemeAndHostOnlyFilter("https", "www.google.com");
-    apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kPattern,
+    apps_util::AddSingleValueCondition(apps::mojom::ConditionType::kPath,
                                        pattern, match_type, intent_filter);
     return intent_filter;
   }
@@ -160,11 +160,11 @@ TEST_F(PreferredAppListTest, MultipleConditionValues) {
 // Test for more than one pattern available, we can find the correct match.
 TEST_F(PreferredAppListTest, DifferentPatterns) {
   auto intent_filter_literal =
-      MakePatternFilter("/bc", apps::PatternMatchType::kLiteral);
+      MakePathFilter("/bc", apps::PatternMatchType::kLiteral);
   auto intent_filter_prefix =
-      MakePatternFilter("/a", apps::PatternMatchType::kPrefix);
+      MakePathFilter("/a", apps::PatternMatchType::kPrefix);
   auto intent_filter_glob =
-      MakePatternFilter("/c.*d", apps::PatternMatchType::kGlob);
+      MakePathFilter("/c.*d", apps::PatternMatchType::kGlob);
 
   preferred_apps_.AddPreferredApp(kAppId1, intent_filter_literal);
   preferred_apps_.AddPreferredApp(kAppId2, intent_filter_prefix);
@@ -409,11 +409,11 @@ TEST_F(PreferredAppListTest, DeleteMultipleConditionValues) {
 // Test for more than one pattern available, we can delete the filter.
 TEST_F(PreferredAppListTest, DeleteDifferentPatterns) {
   auto intent_filter_literal =
-      MakePatternFilter("/bc", apps::PatternMatchType::kLiteral);
+      MakePathFilter("/bc", apps::PatternMatchType::kLiteral);
   auto intent_filter_prefix =
-      MakePatternFilter("/a", apps::PatternMatchType::kPrefix);
+      MakePathFilter("/a", apps::PatternMatchType::kPrefix);
   auto intent_filter_glob =
-      MakePatternFilter("/c.*d", apps::PatternMatchType::kGlob);
+      MakePathFilter("/c.*d", apps::PatternMatchType::kGlob);
 
   preferred_apps_.AddPreferredApp(kAppId1, intent_filter_literal);
   preferred_apps_.AddPreferredApp(kAppId2, intent_filter_prefix);

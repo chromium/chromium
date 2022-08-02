@@ -892,7 +892,7 @@ arc::IntentFilter ConvertAppServiceToArcIntentFilter(
               /*host=*/condition_value->value, /*port=*/0);
         }
         break;
-      case apps::ConditionType::kPattern:
+      case apps::ConditionType::kPath:
         for (auto& condition_value : condition->condition_values) {
           arc::mojom::PatternType match_type;
           switch (condition_value->match_type) {
@@ -1026,7 +1026,7 @@ apps::IntentFilterPtr CreateIntentFilterForArc(
   }
   if (!path_condition_values.empty()) {
     auto path_condition = std::make_unique<apps::Condition>(
-        apps::ConditionType::kPattern, std::move(path_condition_values));
+        apps::ConditionType::kPath, std::move(path_condition_values));
     intent_filter->conditions.push_back(std::move(path_condition));
   }
 
@@ -1136,7 +1136,7 @@ apps::mojom::IntentFilterPtr ConvertArcToAppServiceIntentFilter(
         MakeConditionValue("/", apps::mojom::PatternMatchType::kPrefix));
   }
   if (!path_condition_values.empty()) {
-    auto path_condition = MakeCondition(apps::mojom::ConditionType::kPattern,
+    auto path_condition = MakeCondition(apps::mojom::ConditionType::kPath,
                                         std::move(path_condition_values));
     intent_filter->conditions.push_back(std::move(path_condition));
   }

@@ -428,7 +428,7 @@ TEST_F(IntentUtilTest, FilterMatchLevelMojom) {
   EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_url),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
                 static_cast<int>(apps::IntentFilterMatchLevel::kHost) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kPattern));
+                static_cast<int>(apps::IntentFilterMatchLevel::kPath));
   EXPECT_EQ(apps_util::GetFilterMatchLevel(filter_scheme_and_host_only),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
                 static_cast<int>(apps::IntentFilterMatchLevel::kHost));
@@ -461,7 +461,7 @@ TEST_F(IntentUtilTest, FilterMatchLevel) {
   EXPECT_EQ(filter_url->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
                 static_cast<int>(apps::IntentFilterMatchLevel::kHost) +
-                static_cast<int>(apps::IntentFilterMatchLevel::kPattern));
+                static_cast<int>(apps::IntentFilterMatchLevel::kPath));
   EXPECT_EQ(filter_scheme_and_host_only->GetFilterMatchLevel(),
             static_cast<int>(apps::IntentFilterMatchLevel::kScheme) +
                 static_cast<int>(apps::IntentFilterMatchLevel::kHost));
