@@ -53,8 +53,8 @@ void FastCheckoutViewImpl::OnDismiss(JNIEnv* env) {
 }
 
 void FastCheckoutViewImpl::Show(
-    base::span<const autofill::AutofillProfile> autofill_profiles,
-    base::span<const autofill::CreditCard> credit_cards) {
+    const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+    const std::vector<autofill::CreditCard*>& credit_cards) {
   if (!RecreateJavaObject()) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a waiting
@@ -72,7 +72,7 @@ void FastCheckoutViewImpl::Show(
     Java_FastCheckoutBridge_setAutofillProfile(
         env, autofill_profiles_array, i,
         CreateFastCheckoutAutofillProfile(
-            env, autofill_profiles[i],
+            env, *autofill_profiles[i],
             g_browser_process->GetApplicationLocale()));
   }
 
@@ -82,7 +82,7 @@ void FastCheckoutViewImpl::Show(
     Java_FastCheckoutBridge_setCreditCard(
         env, credit_cards_array, i,
         CreateFastCheckoutCreditCard(
-            env, credit_cards[i], g_browser_process->GetApplicationLocale()));
+            env, *credit_cards[i], g_browser_process->GetApplicationLocale()));
   }
 
   Java_FastCheckoutBridge_showBottomSheet(

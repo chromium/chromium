@@ -8,6 +8,9 @@
 #include "chrome/browser/ui/fast_checkout/fast_checkout_controller.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/fast_checkout/fast_checkout_view.h"
+#include "components/autofill/core/browser/personal_data_manager.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -48,11 +51,28 @@ class FastCheckoutControllerImpl : public FastCheckoutController {
   void OnDismiss() override;
   gfx::NativeView GetNativeView() override;
 
+ protected:
+  // Methods below are protected (rather than private) and virtual for
+  // testing.
+
+  // Gets or creates (if needed) the FastCheckoutView associated with this
+  // controller.
+  virtual FastCheckoutView* GetOrCreateView();
+
+  // Returns the current active personal data manager.
+  virtual autofill::PersonalDataManager* GetPersonalDataManager();
+
  private:
   // Weak pointer to the WebContents this class is tied to.
   const raw_ptr<content::WebContents> web_contents_;
 
+  // View used to communicate with the Android frontend. It's non-null between
+  // Show() and OnDismiss()/OnOptionsSelected().
+  std::unique_ptr<FastCheckoutView> view_;
+
   // The delegate of UI events. It must outlive `this`.
   const raw_ptr<Delegate> delegate_;
+
+  base::WeakPtrFactory<FastCheckoutController> weak_ptr_factory_{this};
 };
 #endif  // CHROME_BROWSER_UI_FAST_CHECKOUT_FAST_CHECKOUT_CONTROLLER_IMPL_H_

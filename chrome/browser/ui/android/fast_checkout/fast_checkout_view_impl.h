@@ -29,8 +29,8 @@ class FastCheckoutViewImpl : public FastCheckoutView {
   void OnDismiss(JNIEnv* env);
 
   // FastCheckoutView:
-  void Show(base::span<const autofill::AutofillProfile> autofill_profiles,
-            base::span<const autofill::CreditCard> credit_cards) override;
+  void Show(const std::vector<autofill::AutofillProfile*>& autofill_profiles,
+            const std::vector<autofill::CreditCard*>& credit_cards) override;
 
  private:
   // Returns either true if the java counterpart of this bridge is initialized
