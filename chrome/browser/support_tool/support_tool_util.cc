@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/system_logs/iwlwifi_dump_log_source.h"
 #include "chrome/browser/ash/system_logs/touch_log_source.h"
 #include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
+#include "chrome/browser/support_tool/ash/shill_data_collector.h"
 #include "chrome/browser/support_tool/ash/ui_hierarchy_data_collector.h"
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)
 #include "chrome/browser/ash/system_logs/reven_log_source.h"
@@ -129,6 +130,9 @@ std::unique_ptr<SupportToolHandler> GetSupportToolHandler(
               std::make_unique<system_logs::LacrosLogFilesLogSource>(
                   log_base_path, lacrosUserLogKey)));
         }
+        break;
+      case support_tool::CHROMEOS_SHILL:
+        handler->AddDataCollector(std::make_unique<ShillDataCollector>());
         break;
       case support_tool::CHROMEOS_REVEN:
 #if BUILDFLAG(IS_CHROMEOS_WITH_HW_DETAILS)

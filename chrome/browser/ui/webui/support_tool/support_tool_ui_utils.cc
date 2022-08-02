@@ -33,6 +33,7 @@ const char kWindowTitle[] = "Window Titles";
 const char kURL[] = "URLs";
 const char kSerial[] = "Device & Component Serial Numbers";
 const char kRemovableStorage[] = "Removable Storage Names";
+const char kEAP[] = "EAP Network Authentication Information";
 
 const char kPiiItemDescriptionKey[] = "piiTypeDescription";
 const char kPiiItemDetectedDataKey[] = "detectedData";

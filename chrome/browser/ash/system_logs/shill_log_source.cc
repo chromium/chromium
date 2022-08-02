@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/system_logs/shill_log_pii_identifiers.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
@@ -35,40 +36,10 @@ std::string GetString(const base::Value* value) {
   return value->GetString();
 }
 
-// Masked properties match src/platform2/modem-utilities/connectivity.
-// Note: We rely on intelligent anonymous replacements for IP and MAC addresses
-// and BSSID in components/feedback/anonymizer_tool.cc.
-constexpr std::array<const char*, 19> kMaskedList = {
-    // Masked for devices only in ScrubAndExpandProperties:
-    // shill::kAddress,
-    shill::kCellularPPPUsernameProperty,
-    shill::kEapAnonymousIdentityProperty,
-    shill::kEapIdentityProperty,
-    shill::kEapPinProperty,
-    shill::kEapSubjectAlternativeNameMatchProperty,
-    shill::kEapSubjectMatchProperty,
-    shill::kEquipmentIdProperty,
-    shill::kEsnProperty,
-    shill::kIccidProperty,
-    shill::kImeiProperty,
-    shill::kImsiProperty,
-    shill::kMdnProperty,
-    shill::kMeidProperty,
-    shill::kMinProperty,
-    // Replaced with logging id for services only in ScrubAndExpandProperties:
-    // shill::kName,
-    shill::kSSIDProperty,
-    shill::kUsageURLProperty,
-    shill::kWifiHexSsid,
-    // UIData extracts properties into sub dictionaries, so look for the base
-    // property names.
-    "HexSSID",
-    "Identity",
-};
-
 constexpr char kMaskedString[] = "*** MASKED ***";
 
-// Recursively scrubs dictionaries, masking any values in kMaskedList.
+// Recursively scrubs dictionaries, masking any values in
+// system_logs::MakeFixedFlatMap.
 void ScrubDictionary(base::Value* dict) {
   if (!dict->is_dict())
     return;
@@ -76,7 +47,9 @@ void ScrubDictionary(base::Value* dict) {
     base::Value& value = entry.second;
     if (value.is_dict()) {
       ScrubDictionary(&entry.second);
-    } else if (base::Contains(kMaskedList, entry.first) &&
+    } else if (base::Contains(system_logs::kShillPIIMaskedMap, entry.first) &&
+               system_logs::kShillPIIMaskedMap.at(entry.first) !=
+                   feedback::PIIType::kNone &&
                (!value.is_string() || !value.GetString().empty())) {
       entry.second = base::Value(kMaskedString);
     }

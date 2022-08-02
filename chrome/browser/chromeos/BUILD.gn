@@ -1918,6 +1918,8 @@ source_set("chromeos") {
     "../ash/system_logs/network_health_source.h",
     "../ash/system_logs/reven_log_source.cc",
     "../ash/system_logs/reven_log_source.h",
+    "../ash/system_logs/shill_log_pii_identifiers.cc",
+    "../ash/system_logs/shill_log_pii_identifiers.h",
     "../ash/system_logs/shill_log_source.cc",
     "../ash/system_logs/shill_log_source.h",
     "../ash/system_logs/single_debug_daemon_log_source.cc",

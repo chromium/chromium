@@ -112,6 +112,8 @@ std::string GetDataCollectorName(
       return "DBus Details";
     case support_tool::CHROMEOS_NETWORK_ROUTES:
       return "Chrome OS Network Routes";
+    case support_tool::CHROMEOS_SHILL:
+      return "Chrome OS Shill";
     default:
       return "Error: Undefined";
   }

@@ -28,6 +28,7 @@ extern const char kWindowTitle[];
 extern const char kURL[];
 extern const char kSerial[];
 extern const char kRemovableStorage[];
+extern const char kEAP[];
 
 // String keys of the fields of PIIDataItem dictionary that Support Tool UI
 // stores the detected PII to display it to user.

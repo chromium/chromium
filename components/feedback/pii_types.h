@@ -49,7 +49,8 @@ enum class PIIType {
   kSerial,
   // SSID (Service Set Identifier) of wifi networks can be detected in the logs
   // provided by wpa_supplicant and shill. BSSID (Basic Service Set Identifier)
-  // of a wifi service, is also categorized under this.
+  // of a wifi service, is also categorized under this. This type also contains
+  // custom names of WiFi, cellular, Ethernet, etc.
   kSSID,
   // Stable identifiers. Contains information in these main categories:
   // 1- Universal Unique Identifiers (UUIDs): UUID can also be given by 'blkid',
@@ -62,6 +63,8 @@ enum class PIIType {
   // Volume labels presented in the 'blkid' tool, and as part of removable
   // media paths shown in various logs such as cros-disks (in syslog).
   kVolumeLabel,
+  // Extensible Authentication Protocol (EAP) properties provided by shill.
+  kEAP,
 };
 
 }  // namespace feedback
