@@ -98,10 +98,6 @@ group("absl_component_deps") {
   # TODO(https://crbug.com/1114625): Fix build errors and remove this section.
   if (is_nacl) {
     public_deps -= [
-      "//third_party/abseil-cpp/absl/container:flat_hash_map",
-      "//third_party/abseil-cpp/absl/container:flat_hash_set",
-      "//third_party/abseil-cpp/absl/container:node_hash_map",
-      "//third_party/abseil-cpp/absl/container:node_hash_set",
       "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
     ]
   }
