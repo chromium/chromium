@@ -34,7 +34,7 @@ void WontCompile() {
       static_cast<WeakPtr<DerivedProducer> >(ptr);
 }
 
-#elif defined(NCTEST_AUTO_REF_DOWNCAST)  // [r"fatal error: non-const lvalue reference to type 'WeakPtr<base::DerivedProducer>' cannot bind to a value of unrelated type 'WeakPtr<base::Producer>'"]
+#elif defined(NCTEST_AUTO_REF_DOWNCAST)  // [r"fatal error: non-const lvalue reference to type 'WeakPtr<DerivedProducer>' cannot bind to a value of unrelated type 'WeakPtr<Producer>'"]
 
 void WontCompile() {
   Producer f;
@@ -42,7 +42,7 @@ void WontCompile() {
   WeakPtr<DerivedProducer>& derived_ptr = ptr;
 }
 
-#elif defined(NCTEST_STATIC_REF_DOWNCAST)  // [r"fatal error: non-const lvalue reference to type 'WeakPtr<base::DerivedProducer>' cannot bind to a value of unrelated type 'WeakPtr<base::Producer>'"]
+#elif defined(NCTEST_STATIC_REF_DOWNCAST)  // [r"fatal error: non-const lvalue reference to type 'WeakPtr<DerivedProducer>' cannot bind to a value of unrelated type 'WeakPtr<Producer>'"]
 
 void WontCompile() {
   Producer f;
@@ -115,14 +115,14 @@ void WontCompile() {
   WeakPtr<Unrelated> ptr = AsWeakPtr<Unrelated>(&f);
 }
 
-#elif defined(NCTEST_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::Unrelated>::value': AsWeakPtr argument must inherit from SupportsWeakPtr"]
+#elif defined(NCTEST_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::Unrelated>::value': AsWeakPtr argument must inherit from SupportsWeakPtr"]
 
 void WontCompile() {
   Unrelated f;
   WeakPtr<Unrelated> ptr = AsWeakPtr(&f);
 }
 
-#elif defined(NCTEST_DERIVED_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::DerivedUnrelated>::value': AsWeakPtr argument must inherit from SupportsWeakPtr"]
+#elif defined(NCTEST_DERIVED_COMPLETELY_UNRELATED_HELPER)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of<base::internal::SupportsWeakPtrBase, base::DerivedUnrelated>::value': AsWeakPtr argument must inherit from SupportsWeakPtr"]
 
 void WontCompile() {
   DerivedUnrelated f;

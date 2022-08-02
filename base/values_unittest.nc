@@ -44,7 +44,7 @@ void F() {
   list.Append(ptr);
 }
 
-#elif defined(NCTEST_VALUE_CTOR_INT64_T)  // [r"fatal error: ambiguous conversion for functional-style cast from 'int64_t' \(aka '.+?'\) to 'base::Value'"]
+#elif defined(NCTEST_VALUE_CTOR_INT64_T)  // [r"fatal error: ambiguous conversion for functional-style cast from 'int64_t' \(aka '.+?'\) to 'Value'"]
 
 Value F(int64_t value) {
   return Value(value);
@@ -74,7 +74,7 @@ Value::List F(int64_t value) {
   return list;
 }
 
-#elif defined(NCTEST_VALUEVIEW_FROM_CONST_NON_CHAR_POINTER)  // [r"fatal error: conversion function from 'const int \*' to 'base::ValueView' invokes a deleted function"]
+#elif defined(NCTEST_VALUEVIEW_FROM_CONST_NON_CHAR_POINTER)  // [r"fatal error: conversion function from 'const int \*' to 'ValueView' invokes a deleted function"]
 
 void F() {
   const int* ptr = nullptr;
@@ -82,7 +82,7 @@ void F() {
   G(v);
 }
 
-#elif defined(NCTEST_VALUEVIEW_FROM_NON_CHAR_POINTER)  // [r"fatal error: conversion function from 'int \*' to 'base::ValueView' invokes a deleted function"]
+#elif defined(NCTEST_VALUEVIEW_FROM_NON_CHAR_POINTER)  // [r"fatal error: conversion function from 'int \*' to 'ValueView' invokes a deleted function"]
 
 void F() {
   int* ptr = nullptr;

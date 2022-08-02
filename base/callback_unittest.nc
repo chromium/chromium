@@ -27,7 +27,7 @@ void WontCompile() {
   c1 == c2;
 }
 
-#elif defined(NCTEST_CONSTRUCTION_FROM_SUBTYPE)  // [r"fatal error: no viable conversion from 'RepeatingCallback<base::Parent \(\)>' to 'RepeatingCallback<base::Child \(\)>'"]
+#elif defined(NCTEST_CONSTRUCTION_FROM_SUBTYPE)  // [r"fatal error: no viable conversion from 'RepeatingCallback<Parent \(\)>' to 'RepeatingCallback<Child \(\)>'"]
 
 // Construction of RepeatingCallback<A> from RepeatingCallback<B> if A is
 // supertype of B.
@@ -49,7 +49,7 @@ void WontCompile() {
   cb_a = cb_b;
 }
 
-#elif defined(NCTEST_ONCE_THEN_MISMATCH)  // [r"static_assert failed due to requirement '.+': \|then\| callback's parameter must be constructible from return type of \|this\|\."]
+#elif defined(NCTEST_ONCE_THEN_MISMATCH)  // [r"static assertion failed due to requirement '.+': \|then\| callback's parameter must be constructible from return type of \|this\|\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type. Here we would pass `int*` to `float*`.
@@ -59,7 +59,7 @@ void WontCompile() {
   std::move(original).Then(std::move(then));
 }
 
-#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static_assert failed due to requirement '.+': \|then\| callback cannot accept parameters if \|this\| has a void return type\."]
+#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static assertion failed due to requirement '.+': \|then\| callback cannot accept parameters if \|this\| has a void return type\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type. Here we would pass `void` to `float`.
@@ -69,7 +69,7 @@ void WontCompile() {
   std::move(original).Then(std::move(then));
 }
 
-#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static_assert failed due to requirement '.+': \|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
+#elif defined(NCTEST_ONCE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static assertion failed due to requirement '.+': \|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type. Here we would pass `int` to `void`.
@@ -79,7 +79,7 @@ void WontCompile() {
   std::move(original).Then(std::move(then));
 }
 
-#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH)  // [r"static_assert failed due to requirement '.+': \|then\| callback's parameter must be constructible from return type of \|this\|\."]
+#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH)  // [r"static assertion failed due to requirement '.+': \|then\| callback's parameter must be constructible from return type of \|this\|\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type.  Here we would pass `int*` to `float*`.
@@ -89,7 +89,7 @@ void WontCompile() {
   std::move(original).Then(std::move(then));
 }
 
-#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static_assert failed due to requirement '.+': \|then\| callback cannot accept parameters if \|this\| has a void return type\."]
+#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static assertion failed due to requirement '.+': \|then\| callback cannot accept parameters if \|this\| has a void return type\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type. Here we would pass `void` to `float`.
@@ -99,7 +99,7 @@ void WontCompile() {
   std::move(original).Then(std::move(then));
 }
 
-#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static_assert failed due to requirement '.+': \|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
+#elif defined(NCTEST_REPEATINGRVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static assertion failed due to requirement '.+': \|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type. Here we would pass `int` to `void`.
@@ -109,7 +109,7 @@ void WontCompile() {
   std::move(original).Then(std::move(then));
 }
 
-#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH)  // [r"static_assert failed due to requirement '.+': \|then\| callback's parameter must be constructible from return type of \|this\|\."]
+#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH)  // [r"static assertion failed due to requirement '.+': \|then\| callback's parameter must be constructible from return type of \|this\|\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type.  Here we would pass `int*` to `float*`.
@@ -119,7 +119,7 @@ void WontCompile() {
   original.Then(then);
 }
 
-#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static_assert failed due to requirement '.+': \|then\| callback cannot accept parameters if \|this\| has a void return type\."]
+#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_RESULT)  // [r"fatal error: static assertion failed due to requirement '.+': \|then\| callback cannot accept parameters if \|this\| has a void return type\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type. Here we would pass `void` to `float`.
@@ -129,7 +129,7 @@ void WontCompile() {
   original.Then(then);
 }
 
-#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static_assert failed due to requirement '.+': \|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
+#elif defined(NCTEST_REPEATINGLVALUE_THEN_MISMATCH_VOID_PARAM)  // [r"fatal error: static assertion failed due to requirement '.+': \|then\| callback must accept exactly one parameter if \|this\| has a non-void return type\."]
 
 // Calling Then() with a callback that can't receive the original
 // callback's return type. Here we would pass `int` to `void`.

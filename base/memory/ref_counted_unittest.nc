@@ -15,7 +15,7 @@ class InitialRefCountIsZero : public base::RefCounted<InitialRefCountIsZero> {
   ~InitialRefCountIsZero() {}
 };
 
-#if defined(NCTEST_ADOPT_REF_TO_ZERO_START)  // [r"fatal error: static_assert failed due to requirement 'std::is_same<base::subtle::StartRefCountFromOneTag, base::subtle::StartRefCountFromZeroTag>::value': Use AdoptRef only if the reference count starts from one\."]
+#if defined(NCTEST_ADOPT_REF_TO_ZERO_START)  // [r"fatal error: static assertion failed due to requirement 'std::is_same<base::subtle::StartRefCountFromOneTag, base::subtle::StartRefCountFromZeroTag>::value': Use AdoptRef only if the reference count starts from one\."]
 
 void WontCompile() {
   AdoptRef(new InitialRefCountIsZero());
@@ -23,7 +23,7 @@ void WontCompile() {
 
 #endif
 
-#if defined(NCTEST_WRONG_REFCOUNT_BASE_CLASS)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCounted<U>, but U is not a base of T\."]
+#if defined(NCTEST_WRONG_REFCOUNT_BASE_CLASS)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCounted<U>, but U is not a base of T\."]
 
 class Foo : public base::RefCounted<Foo> {
  private:
@@ -43,7 +43,7 @@ void WontCompile() {
 
 #endif
 
-#if defined(NCTEST_WRONG_REFCOUNT_THREADSAFE_BASE_CLASS)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCountedThreadSafe<U>, but U is not a base of T\."]
+#if defined(NCTEST_WRONG_REFCOUNT_THREADSAFE_BASE_CLASS)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCountedThreadSafe<U>, but U is not a base of T\."]
 
 class Foo : public base::RefCountedThreadSafe<Foo> {
  private:
@@ -63,7 +63,7 @@ void WontCompile() {
 
 #endif
 
-#if defined(NCTEST_WRONG_REFCOUNT_ON_SEQUENCE_BASE_CLASS)  // [r"fatal error: static_assert failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCountedDeleteOnSequence<U>, but U is not a base of T\."]
+#if defined(NCTEST_WRONG_REFCOUNT_ON_SEQUENCE_BASE_CLASS)  // [r"fatal error: static assertion failed due to requirement 'std::is_base_of_v<base::Foo, base::Bar>': T implements RefCountedDeleteOnSequence<U>, but U is not a base of T\."]
 
 class Foo : public base::RefCountedDeleteOnSequence<Foo> {
  private:
@@ -85,7 +85,7 @@ void WontCompile() {
 
 #endif
 
-#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE)  // [r"fatal error: static_assert failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
+#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE)  // [r"fatal error: static assertion failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
 
 class Base : public base::RefCounted<Base> {
  protected:
@@ -104,7 +104,7 @@ void WontCompile() {
 
 #endif
 
-#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE_THREADSAFE)  // [r"fatal error: static_assert failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
+#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE_THREADSAFE)  // [r"fatal error: static assertion failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
 
 class Base : public base::RefCountedThreadSafe<Base> {
  protected:
@@ -123,7 +123,7 @@ void WontCompile() {
 
 #endif
 
-#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE_SEQUENCE)  // [r"fatal error: static_assert failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
+#if defined(NCTEST_SUBCLASS_OVERRIDES_REFCOUNT_PREFERENCE_SEQUENCE)  // [r"fatal error: static assertion failed due to requirement .*: It's unsafe to override the ref count preference\. Please remove REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE from subclasses\."]
 
 class Base : public base::RefCountedDeleteOnSequence<Base> {
  protected:

@@ -35,11 +35,11 @@ import zlib
 # https://chromium.googlesource.com/chromium/src/+/main/docs/updating_clang.md
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
-CLANG_REVISION = 'llvmorg-15-init-17529-ga210f404'
+CLANG_REVISION = 'llvmorg-16-init-572-gdde41c6c'
 CLANG_SUB_REVISION = 1
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
-RELEASE_VERSION = '15.0.0'
+RELEASE_VERSION = '16.0.0'
 # TODO(crbug.com/1347737): Bump to 16.0.0 in next Clang roll.
 
 CDS_URL = os.environ.get('CDS_CLANG_BUCKET_OVERRIDE',

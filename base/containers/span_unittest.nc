@@ -55,7 +55,7 @@ void WontCompile() {
   span<int, 3> static_span(dynamic_span);
 }
 
-#elif defined(NCTEST_DERIVED_TO_BASE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<base::Base \*>'"]
+#elif defined(NCTEST_DERIVED_TO_BASE_CONVERSION_DISALLOWED)  // [r"fatal error: no matching constructor for initialization of 'span<Base \*>'"]
 
 // Internally, this is represented as a pointer to pointers to Derived. An
 // implicit conversion to a pointer to pointers to Base must not be allowed.
