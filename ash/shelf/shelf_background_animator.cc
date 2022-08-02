@@ -18,6 +18,7 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/time/time.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_palette.h"
@@ -192,7 +193,8 @@ void ShelfBackgroundAnimator::CreateAnimator(
   }
 
   animator_ = std::make_unique<gfx::SlideAnimation>(this);
-  animator_->SetSlideDuration(duration);
+  animator_->SetSlideDuration(
+      ui::ScopedAnimationDurationScaleMode::duration_multiplier() * duration);
 }
 
 void ShelfBackgroundAnimator::StopAnimator() {

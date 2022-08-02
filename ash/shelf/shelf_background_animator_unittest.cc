@@ -20,6 +20,7 @@
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/color_palette.h"
 
@@ -197,6 +198,9 @@ TEST_F(ShelfBackgroundAnimatorTest,
        MultipleAnimateCallsToSameTargetAreIgnored) {
   PaintBackground(ShelfBackgroundType::kMaximized);
   SetColorValuesOnObserver(kDummyColor);
+
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   animator_->PaintBackground(ShelfBackgroundType::kDefaultBg,
                              AnimationChangeType::ANIMATE);
   WaitForAnimationCompletion();
@@ -251,6 +255,8 @@ TEST_F(ShelfBackgroundAnimatorTest, FullscreenAppListBackground) {
 
 TEST_F(ShelfBackgroundAnimatorTest,
        AnimatorIsDetroyedWhenCompletingSuccessfully) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   PaintBackground(ShelfBackgroundType::kMaximized,
                   AnimationChangeType::ANIMATE);
   EXPECT_TRUE(test_api_->animator());
@@ -261,6 +267,8 @@ TEST_F(ShelfBackgroundAnimatorTest,
 
 TEST_F(ShelfBackgroundAnimatorTest,
        AnimatorDestroyedWhenChangingBackgroundImmediately) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   PaintBackground(ShelfBackgroundType::kMaximized,
                   AnimationChangeType::ANIMATE);
   EXPECT_TRUE(test_api_->animator());
@@ -273,6 +281,9 @@ TEST_F(ShelfBackgroundAnimatorTest,
 // Verify that existing animator is used when animating to the previous state.
 TEST_F(ShelfBackgroundAnimatorTest,
        ExistingAnimatorIsReusedWhenAnimatingToPreviousState) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   // First PaintBackground() must be immediate so that the
   // ShelfBackgroundAnimator has its color set correctly.
   PaintBackground(ShelfBackgroundType::kDefaultBg,
@@ -293,6 +304,9 @@ TEST_F(ShelfBackgroundAnimatorTest,
 // the same as the previous background.
 TEST_F(ShelfBackgroundAnimatorTest,
        ExistingAnimatorNotReusedWhenTargetBackgroundNotPreviousBackground) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
   PaintBackground(ShelfBackgroundType::kAppList, AnimationChangeType::ANIMATE);
 
   const gfx::SlideAnimation* animator = test_api_->animator();
