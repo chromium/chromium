@@ -11,13 +11,18 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.BinderThread;
 
+import org.chromium.base.Log;
+import org.chromium.blink.mojom.StylusWritingGestureAction;
+import org.chromium.blink.mojom.StylusWritingGestureData;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
+import org.chromium.mojo_base.mojom.String16;
 
 /**
  * This class implements the Direct Writing service callback interface that gets registered to the
@@ -28,6 +33,27 @@ import org.chromium.content_public.browser.StylusWritingImeCallback;
 class DirectWritingServiceCallback
         extends android.widget.directwriting.IDirectWritingServiceCallback.Stub {
     public static final String BUNDLE_KEY_SHOW_KEYBOARD = "showKeyboard";
+    private static final String TAG = "DWCallbackImpl";
+
+    // The following GESTURE_ and ACTION_ constants are defined as per the bundle data sent by the
+    // Direct Writing service when any gesture is recognized.
+    private static final String GESTURE_ACTION_RECOGNITION_INFO = "recognition_info";
+    private static final String GESTURE_BUNDLE_KEY_START_POINT = "start_point";
+    private static final String GESTURE_BUNDLE_KEY_END_POINT = "end_point";
+    private static final String GESTURE_BUNDLE_KEY_LOWEST_POINT = "lowest_point";
+    private static final String GESTURE_BUNDLE_KEY_HIGHEST_POINT = "highest_point";
+    private static final String GESTURE_BUNDLE_KEY_GESTURE_TYPE = "gesture_type";
+    private static final String GESTURE_BUNDLE_KEY_TEXT_ALTERNATIVE = "text_alternative";
+    private static final String GESTURE_BUNDLE_KEY_TEXT_INSERTION = "text_insertion";
+
+    // Gesture types in Bundle for GESTURE_BUNDLE_KEY_GESTURE_TYPE
+    private static final String GESTURE_TYPE_BACKSPACE = "backspace";
+    private static final String GESTURE_TYPE_ZIGZAG = "zigzag";
+    private static final String GESTURE_TYPE_V_SPACE = "v_space";
+    private static final String GESTURE_TYPE_WEDGE_SPACE = "wedge_space";
+    private static final String GESTURE_TYPE_U_TYPE_REMOVE_SPACE = "u_type_remove_space";
+    private static final String GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE = "arch_type_remove_space";
+
     private EditorInfo mEditorInfo;
     private int mLastSelectionStart;
     private int mLastSelectionEnd;
@@ -55,7 +81,11 @@ class DirectWritingServiceCallback
                     mStylusWritingImeCallback.showSoftKeyboard();
                     break;
                 case DirectWritingConstants.MSG_TEXT_VIEW_EXTRA_COMMAND:
-                    // TODO(mahesh.ma): Add DW recognized gesture handling logic here.
+                    String action = (String) msg.obj;
+                    if (action.equals(GESTURE_ACTION_RECOGNITION_INFO)) {
+                        Bundle gestureBundle = msg.getData();
+                        handleDwGesture(gestureBundle);
+                    }
                     break;
                 case DirectWritingConstants.MSG_FORCE_HIDE_KEYBOARD:
                     mStylusWritingImeCallback.hideKeyboard();
@@ -65,6 +95,81 @@ class DirectWritingServiceCallback
             }
         }
     };
+
+    private void handleDwGesture(Bundle bundle) {
+        if (mStylusWritingImeCallback == null) return;
+        String gestureType = bundle.getString(GESTURE_BUNDLE_KEY_GESTURE_TYPE, "");
+        Log.d(TAG, "Received Direct Writing gesture of type: " + gestureType);
+        if (TextUtils.isEmpty(gestureType)) return;
+
+        // When the gesture recognized is not at a valid character position in the HTML input field,
+        // then the text alternative would be inserted at the current cursor position.
+        String textAlternative = bundle.getString(GESTURE_BUNDLE_KEY_TEXT_ALTERNATIVE, "");
+        float[] startPoint;
+
+        // Populate gesture data as applicable for different gestures recognized.
+        StylusWritingGestureData gestureData = new StylusWritingGestureData();
+
+        if (gestureType.equals(GESTURE_TYPE_BACKSPACE) || gestureType.equals(GESTURE_TYPE_ZIGZAG)) {
+            startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_START_POINT);
+            float[] endPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT);
+            // Clamp x-coordinates of gesture to Editable bounds in order to allow delete gesture
+            // even if delete strokes cross editable bounds.
+            startPoint[0] = Math.max(startPoint[0], mEditableBounds.left);
+            endPoint[0] = Math.min(endPoint[0], mEditableBounds.right);
+
+            gestureData.endPoint = toMojoPoint(endPoint);
+            gestureData.action = StylusWritingGestureAction.DELETE_TEXT;
+        } else if (gestureType.equals(GESTURE_TYPE_V_SPACE)) {
+            startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_LOWEST_POINT);
+            populateDataForAddSpaceOrTextGesture(gestureData, bundle);
+        } else if (gestureType.equals(GESTURE_TYPE_WEDGE_SPACE)) {
+            startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_HIGHEST_POINT);
+            populateDataForAddSpaceOrTextGesture(gestureData, bundle);
+        } else if (gestureType.equals(GESTURE_TYPE_U_TYPE_REMOVE_SPACE)
+                || gestureType.equals(GESTURE_TYPE_ARCH_TYPE_REMOVE_SPACE)) {
+            startPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_START_POINT);
+            float[] endPoint = bundle.getFloatArray(GESTURE_BUNDLE_KEY_END_POINT);
+
+            gestureData.endPoint = toMojoPoint(endPoint);
+            gestureData.action = StylusWritingGestureAction.REMOVE_SPACES;
+        } else {
+            return; // Not an expected gesture.
+        }
+
+        // Populate the common data for all the gestures.
+        gestureData.startPoint = toMojoPoint(startPoint);
+        gestureData.textAlternative = javaStringToMojoString(textAlternative);
+
+        mStylusWritingImeCallback.handleStylusWritingGestureAction(gestureData);
+    }
+
+    private static org.chromium.gfx.mojom.Point toMojoPoint(float[] endPoint) {
+        org.chromium.gfx.mojom.Point point = new org.chromium.gfx.mojom.Point();
+        point.x = (int) endPoint[0];
+        point.y = (int) endPoint[1];
+        return point;
+    }
+
+    private static void populateDataForAddSpaceOrTextGesture(
+            StylusWritingGestureData gestureData, Bundle gestureBundle) {
+        String textToInsert = gestureBundle.getString(GESTURE_BUNDLE_KEY_TEXT_INSERTION, "");
+        // Insert space character when text to insert is empty inside gesture.
+        if (TextUtils.isEmpty(textToInsert)) textToInsert = " ";
+
+        gestureData.textToInsert = javaStringToMojoString(textToInsert);
+        gestureData.action = StylusWritingGestureAction.ADD_SPACE_OR_TEXT;
+    }
+
+    private static String16 javaStringToMojoString(String string) {
+        short[] data = new short[string.length()];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (short) string.charAt(i);
+        }
+        String16 mojoString = new String16();
+        mojoString.data = data;
+        return mojoString;
+    }
 
     void updateInputState(String text, int selectionStart, int selectionEnd) {
         mLastText = text;
