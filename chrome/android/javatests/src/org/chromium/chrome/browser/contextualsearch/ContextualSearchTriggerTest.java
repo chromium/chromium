@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -272,9 +273,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         assertLoadedNoUrl();
     }
 
-    /**
-     * Tests that a long-press gesture followed by a tap does not select.
-     */
+    /** Tests that a long-press gesture followed by a tap does not select. */
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
@@ -288,6 +287,20 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         clickWordNode("states-far");
         waitForGestureToClosePanelAndAssertNoSelection();
         assertLoadedNoUrl();
+    }
+
+    /** Tests suppression of any triggering on small view heights. */
+    @Test
+    @SmallTest
+    @Feature({"ContextualSearch"})
+    @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW)
+    public void testIsSuppressedOnViewHeight() {
+        // Should not be suppressed with a large value (in pixels).
+        final int ridiculouslyShort = 100;
+        Assert.assertFalse(mContextualSearchManager.isSuppressed(ridiculouslyShort));
+        final int ridiculouslyTall = 50000;
+        Assert.assertTrue(mContextualSearchManager.isSuppressed(ridiculouslyTall));
     }
 
     //============================================================================================
