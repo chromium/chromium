@@ -75,19 +75,19 @@ class ULPMetricsLogger {
 
   // Returns an enum that indicates whether `language` is present in
   // `ulp_languages` and, if so, whether it was the first entry.
-  virtual ULPLanguageStatus DetermineLanguageStatus(
+  static ULPLanguageStatus DetermineLanguageStatus(
       const std::string& language,
       const std::vector<std::string>& ulp_languages);
 
   // Returns a number from 0-100 that indicates the ratio of ulp_languages that
   // are present in accept_languages. Only language bases are compared (e.g
   // pt-BR == pt-MZ).
-  virtual int ULPLanguagesInAcceptLanguagesRatio(
+  static int ULPLanguagesInAcceptLanguagesRatio(
       const std::vector<std::string> accept_languages,
       const std::vector<std::string> ulp_languages);
 
   // Returns a vector with languages that do not have a ULP base language match.
-  virtual std::vector<std::string> RemoveULPLanguages(
+  static std::vector<std::string> RemoveULPLanguages(
       const std::vector<std::string> languages,
       const std::vector<std::string> ulp_languages);
 };
