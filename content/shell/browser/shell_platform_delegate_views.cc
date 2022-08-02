@@ -99,9 +99,11 @@ class ShellView : public views::BoxLayoutView,
   void SetWebContents(WebContents* web_contents, const gfx::Size& size) {
     // If there was a previous WebView in this Shell it should be removed and
     // deleted.
-    if (web_view_)
-      contents_view_->RemoveChildViewT(web_view_.get());
-
+    if (web_view_) {
+      // ExtractAsDangling clears the underlying pointer and returns another
+      // raw_ptr instance that is allowed to dangle.
+      contents_view_->RemoveChildViewT(web_view_.ExtractAsDangling().get());
+    }
     views::Builder<views::View>(contents_view_)
         .AddChild(views::Builder<views::WebView>()
                       .CopyAddressTo(&web_view_)
@@ -304,7 +306,7 @@ class ShellView : public views::BoxLayoutView,
 
   // Contents view contains the web contents view
   raw_ptr<views::View> contents_view_ = nullptr;
-  raw_ptr<views::WebView, DanglingUntriaged> web_view_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
 };
 
 BEGIN_METADATA(ShellView, views::View)
