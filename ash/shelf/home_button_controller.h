@@ -56,7 +56,7 @@ class HomeButtonController : public AppListControllerObserver,
 
   // AssistantStateObserver:
   void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState) override;
+      assistant::AssistantAllowedState) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
 
   // AssistantUiModelObserver:

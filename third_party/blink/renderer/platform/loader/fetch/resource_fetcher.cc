@@ -1073,7 +1073,6 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
     if (auto info = resource_timing_info_map_.Take(resource)) {
       PopulateAndAddResourceTimingInfo(resource, info,
                                        /*response_end=*/base::TimeTicks::Now());
-      Context().AddResourceTiming(*info);
     }
     return resource;
   }
@@ -1965,10 +1964,8 @@ void ResourceFetcher::HandleLoaderFinish(Resource* resource,
 
   if (scoped_refptr<ResourceTimingInfo> info =
           resource_timing_info_map_.Take(resource)) {
-    if (resource->GetResponse().ShouldPopulateResourceTiming()) {
+    if (resource->GetResponse().ShouldPopulateResourceTiming())
       PopulateAndAddResourceTimingInfo(resource, info, response_end);
-      Context().AddResourceTiming(*info);
-    }
   }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
@@ -2021,10 +2018,8 @@ void ResourceFetcher::HandleLoaderError(Resource* resource,
   RemoveResourceLoader(resource->Loader());
 
   if (scoped_refptr<ResourceTimingInfo> info =
-          resource_timing_info_map_.Take(resource)) {
+          resource_timing_info_map_.Take(resource))
     PopulateAndAddResourceTimingInfo(resource, info, finish_time);
-    Context().AddResourceTiming(*info);
-  }
 
   resource->VirtualTimePauser().UnpauseVirtualTime();
   // If the preload was cancelled due to an HTTP error, we don't want to request
@@ -2383,6 +2378,9 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
     Resource* resource,
     scoped_refptr<ResourceTimingInfo> info,
     base::TimeTicks response_end) {
+  if (resource->GetResourceRequest().IsFromOriginDirtyStyleSheet())
+    return;
+
   const KURL& initial_url =
       resource->GetResourceRequest().GetRedirectInfo().has_value()
           ? resource->GetResourceRequest().GetRedirectInfo()->original_url
@@ -2402,6 +2400,7 @@ void ResourceFetcher::PopulateAndAddResourceTimingInfo(
   info->SetInitialURL(initial_url);
   info->SetFinalResponse(resource->GetResponse());
   info->SetLoadResponseEnd(response_end);
+  Context().AddResourceTiming(*info);
 }
 
 SubresourceWebBundle* ResourceFetcher::GetMatchingBundle(

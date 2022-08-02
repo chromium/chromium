@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -52,6 +53,10 @@ class TestTouchPassthroughManager : public TouchPassthroughManager {
   std::vector<std::string> event_log_;
   base::TimeTicks previous_time_;
   bool button_down_ = false;
+
+  // This is needed to prevent a DCHECK failure when OnAccessibilityApiUsage
+  // is called in BrowserAccessibility::GetRole.
+  content::BrowserTaskEnvironment task_environment_;
 
   void SendHitTest(
       const gfx::Point& point_in_frame_pixels,

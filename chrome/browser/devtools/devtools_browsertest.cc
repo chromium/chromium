@@ -989,24 +989,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsTest, TestShowScriptsTab) {
   RunTest("testShowScriptsTab", kDebuggerTestPage);
 }
 
-// Tests that scripts tab is populated with inspected scripts even if it
-// hadn't been shown by the moment inspected paged refreshed.
-// @see http://crbug.com/26312
-// This test is flaky on windows and linux asan. See https://crbug.com/1013003
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TestScriptsTabIsPopulatedOnInspectedPageRefresh \
-  DISABLED_TestScriptsTabIsPopulatedOnInspectedPageRefresh
-#else
-#define MAYBE_TestScriptsTabIsPopulatedOnInspectedPageRefresh \
-  TestScriptsTabIsPopulatedOnInspectedPageRefresh
-#endif
-IN_PROC_BROWSER_TEST_F(DevToolsTest,
-                       MAYBE_TestScriptsTabIsPopulatedOnInspectedPageRefresh) {
-  RunTest("testScriptsTabIsPopulatedOnInspectedPageRefresh",
-          kDebuggerTestPage);
-}
-
 // Tests that chrome.devtools extension is correctly exposed.
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                        TestDevToolsExtensionAPI) {

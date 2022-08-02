@@ -214,7 +214,7 @@ const base::Feature kDataLeakPreventionFilesRestriction{
 // browser by default. Users can still enable link capturing for apps through
 // the intent picker or settings.
 const base::Feature kDefaultLinkCapturingInBrowser{
-    "DefaultLinkCapturingInBrowser", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DefaultLinkCapturingInBrowser", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

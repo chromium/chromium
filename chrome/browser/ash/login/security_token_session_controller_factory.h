@@ -8,14 +8,14 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/login/security_token_session_controller.h"
 #include "chrome/browser/certificate_provider/certificate_provider_service_factory.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
 namespace login {
 
 class SecurityTokenSessionControllerFactory
-    : public BrowserContextKeyedServiceFactory {
+    : public ProfileKeyedServiceFactory {
  public:
   static SecurityTokenSessionController* GetForBrowserContext(
       content::BrowserContext* browser_context);
@@ -35,8 +35,6 @@ class SecurityTokenSessionControllerFactory
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
 };

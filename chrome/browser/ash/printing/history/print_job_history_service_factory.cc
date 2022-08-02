@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/printing/history/print_job_reporting_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -34,9 +33,7 @@ PrintJobHistoryServiceFactory* PrintJobHistoryServiceFactory::GetInstance() {
 }
 
 PrintJobHistoryServiceFactory::PrintJobHistoryServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PrintJobHistoryService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PrintJobHistoryService") {
   DependsOn(CupsPrintJobManagerFactory::GetInstance());
   DependsOn(PrintJobReportingServiceFactory::GetInstance());
 }

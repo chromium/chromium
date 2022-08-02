@@ -271,6 +271,7 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="2497852260688568942">Synkronisering er deaktiveret af din administrator.</translation>
 <translation id="250020030759455918">Du kan se loginstatus, browserdata og websiteoplysninger for <ph name="SITE_NAME" /> i Chrome</translation>
+<translation id="2507178219579379057">Chrome kigger nærmere på, hvordan spam, svindel og deling mellem websites kan begrænses. Chrome <ph name="BEGIN_LINK" />estimerer også dine interesser<ph name="END_LINK" />, som websites kan bruge til at vise dig annoncer. Du kan administrere dine interesser i indstillingerne.</translation>
 <translation id="2513403576141822879">Du kan finde flere indstillinger vedrørende privatliv, sikkerhed og dataindsamling ved at gå til <ph name="BEGIN_LINK" />Synkronisering og Google-tjenester<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Scan</translation>
 <translation id="2523184218357549926">Sender webadresser på de sider, du besøger, til Google</translation>
@@ -586,7 +587,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="4256782883801055595">Open source-licenser</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Disse data bruges:<ph name="END_BOLD" /> Din browserhistorik, dvs. en oversigt over, hvilke websites du har besøgt i Chrome på denne enhed.</translation>
 <translation id="4263656433980196874">Brugerfladen for samtykke i forbindelse med stemmesøgning i Assistent er åbnet i fuld højde</translation>
-<translation id="4266054596873078491">Log ind på dette website og i Chrome med din Google-konto.</translation>
 <translation id="4269820728363426813">Kopiér linkadresse</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Aktivér skærmlåsen i Android-indstillingerne<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Når du bruger Chrome, accepterer du <ph name="BEGIN_TOS_LINK" />Googles servicevilkår<ph name="END_TOS_LINK" /> og de <ph name="BEGIN_ATOS_LINK" />yderligere servicevilkår for Google Chrome og Chrome OS<ph name="END_ATOS_LINK" />. <ph name="BEGIN_PRIVACY_LINK" />Privatlivspolitikken<ph name="END_PRIVACY_LINK" /> er også gældende.</translation>

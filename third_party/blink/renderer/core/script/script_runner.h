@@ -88,11 +88,20 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
     task_runner_ = task_runner;
   }
 
+  // Returns true until all force in-order scripts are evaluated.
+  // pending_force_in_order_scripts_ can be empty a little earlier than that.
+  bool HasForceInOrderScripts() const {
+    return pending_force_in_order_scripts_count_ > 0;
+  }
+
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "ScriptRunner"; }
 
   // PendingScriptClient
   void PendingScriptFinished(PendingScript*) override;
+
+  void ExecuteForceInOrderPendingScript(PendingScript*);
+  void ExecuteParserBlockingScriptsBlockedByForceInOrder();
 
  private:
   // Execute the given pending script.
@@ -112,6 +121,12 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   // The value represents the `DelayReason`s that the script is waiting for
   // before its evaluation.
   HeapHashMap<Member<PendingScript>, DelayReasons> pending_async_scripts_;
+
+  HeapDeque<Member<PendingScript>> pending_force_in_order_scripts_;
+  // The number of force in-order scripts that aren't yet evaluated. This is
+  // different from pending_force_in_order_scripts_.size() == the number of
+  // force in-order scripts that aren't yet scheduled to evaluate.
+  wtf_size_t pending_force_in_order_scripts_count_ = 0;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

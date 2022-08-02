@@ -793,8 +793,7 @@ class ExtensionPrefs : public KeyedService {
       bool extensions_disabled,
       const std::vector<EarlyExtensionPrefsObserver*>& early_observers);
 
-  // Gets or sets profile wide ExtensionPrefs.
-  const base::Value* GetPref(const PrefMap& pref) const;
+  // Sets profile wide ExtensionPrefs.
   void SetPref(const PrefMap& pref, std::unique_ptr<base::Value> value);
 
   // Updates ExtensionPrefs for a specific extension.

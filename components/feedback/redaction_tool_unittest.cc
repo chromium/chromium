@@ -113,6 +113,8 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "255.300.255.255", PIIType::kNone},
     {"3-1.2.3.4",  // USB path, not an IP address.
      "3-1.2.3.4", PIIType::kNone},
+    {"Revision: 81600.0000.00.29.19.16_DO",  // Modem firmware
+     "Revision: 81600.0000.00.29.19.16_DO", PIIType::kNone},
     {"aaaa123.123.45.4aaa",  // IP address.
      "aaaa<IPv4: 23>aaa", PIIType::kIPAddress},
     {"11:11;11::11",  // IP address.
@@ -364,6 +366,16 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
             RedactCustomPatterns("ssid=\"LittleTsunami\""));
   EXPECT_EQ("* SSID=<SSID: 5>", RedactCustomPatterns("* SSID=agnagna"));
 
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 6>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: \"GoogleGuest\""));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 7>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: 'GoogleGuest'"));
+  EXPECT_EQ("Specifier: <ArcNetworkFactory#1> SSID: <SSID: 8>",
+            RedactCustomPatterns(
+                "Specifier: <ArcNetworkFactory#1> SSID: GoogleGuest"));
+
   EXPECT_EQ("SerialNumber: <Serial: 1>",
             RedactCustomPatterns("SerialNumber: 1217D7EF"));
   EXPECT_EQ("serial  number: <Serial: 2>",
@@ -432,6 +444,26 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
 
   // USB Path - not an actual IPv4 Address
   EXPECT_EQ("4-3.3.3.3", RedactCustomPatterns("4-3.3.3.3"));
+
+  // ModemManager modem firmware revisions - not actual IPv4 Addresses
+  EXPECT_EQ("Revision: 81600.0000.00.29.19.16_DO",
+            RedactCustomPatterns("Revision: 81600.0000.00.29.19.16_DO"));
+  EXPECT_EQ("Revision: 11.608.09.01.21",
+            RedactCustomPatterns("Revision: 11.608.09.01.21"));
+  EXPECT_EQ("Revision: 11.208.09.01.21",
+            RedactCustomPatterns("Revision: 11.208.09.01.21"));
+  EXPECT_EQ("Revision: BD_3GHAP673A4V1.0.0B02",
+            RedactCustomPatterns("Revision: BD_3GHAP673A4V1.0.0B02"));
+  EXPECT_EQ("Revision: 2.5.21Hd (Date: Jun 17 2008, Time: 12:30:47)",
+            RedactCustomPatterns(
+                "Revision: 2.5.21Hd (Date: Jun 17 2008, Time: 12:30:47)"));
+  EXPECT_EQ(
+      "Revision: 9.5.05.01-02  [2006-10-20 17:19:09]",
+      RedactCustomPatterns("Revision: 9.5.05.01-02  [2006-10-20 17:19:09]"));
+  EXPECT_EQ("Revision: LQA0021.1.1_M573A",
+            RedactCustomPatterns("Revision: LQA0021.1.1_M573A"));
+  EXPECT_EQ("Revision: 10.10.10.10",
+            RedactCustomPatterns("Revision: 10.10.10.10"));
 
   EXPECT_EQ("<URL: 1>", RedactCustomPatterns("http://example.com/foo?test=1"));
   EXPECT_EQ("Foo <URL: 2> Bar",

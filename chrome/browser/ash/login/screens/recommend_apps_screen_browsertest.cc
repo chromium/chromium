@@ -382,15 +382,14 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, BasicSelection) {
   WaitForScreenExit();
   EXPECT_EQ(RecommendAppsScreen::Result::SELECTED, screen_result_.value());
 
-  const base::Value* fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->Get(
+  const base::Value::List& fast_reinstall_packages =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
           arc::prefs::kArcFastAppReinstallPackages);
-  ASSERT_TRUE(fast_reinstall_packages);
 
   base::Value expected_pref_value(base::Value::Type::LIST);
   expected_pref_value.Append("test.app.foo.app1");
   expected_pref_value.Append("test.app.foo.app2");
-  EXPECT_EQ(expected_pref_value, *fast_reinstall_packages);
+  EXPECT_EQ(expected_pref_value, fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SelectionChange) {
@@ -443,14 +442,13 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SelectionChange) {
   WaitForScreenExit();
   EXPECT_EQ(RecommendAppsScreen::Result::SELECTED, screen_result_.value());
 
-  const base::Value* fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->Get(
+  const base::Value::List& fast_reinstall_packages =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
           arc::prefs::kArcFastAppReinstallPackages);
-  ASSERT_TRUE(fast_reinstall_packages);
 
   base::Value expected_pref_value(base::Value::Type::LIST);
   expected_pref_value.Append("test.app.foo.app2");
-  EXPECT_EQ(expected_pref_value, *fast_reinstall_packages);
+  EXPECT_EQ(expected_pref_value, fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SkipWithSelectedApps) {
@@ -495,11 +493,10 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SkipWithSelectedApps) {
   WaitForScreenExit();
   EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
 
-  const base::Value* fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->Get(
+  const base::Value::List& fast_reinstall_packages =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
           arc::prefs::kArcFastAppReinstallPackages);
-  ASSERT_TRUE(fast_reinstall_packages);
-  EXPECT_EQ(base::Value(base::Value::Type::LIST), *fast_reinstall_packages);
+  EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
@@ -553,11 +550,10 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, SkipWithNoAppsSelected) {
   WaitForScreenExit();
   EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
 
-  const base::Value* fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->Get(
+  const base::Value::List& fast_reinstall_packages =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
           arc::prefs::kArcFastAppReinstallPackages);
-  ASSERT_TRUE(fast_reinstall_packages);
-  EXPECT_EQ(base::Value(base::Value::Type::LIST), *fast_reinstall_packages);
+  EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest,
@@ -605,11 +601,10 @@ IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, NoRecommendedApps) {
   WaitForScreenExit();
   EXPECT_EQ(RecommendAppsScreen::Result::SKIPPED, screen_result_.value());
 
-  const base::Value* fast_reinstall_packages =
-      ProfileManager::GetActiveUserProfile()->GetPrefs()->Get(
+  const base::Value::List& fast_reinstall_packages =
+      ProfileManager::GetActiveUserProfile()->GetPrefs()->GetValueList(
           arc::prefs::kArcFastAppReinstallPackages);
-  ASSERT_TRUE(fast_reinstall_packages);
-  EXPECT_EQ(base::Value(base::Value::Type::LIST), *fast_reinstall_packages);
+  EXPECT_EQ(base::Value(base::Value::Type::LIST), fast_reinstall_packages);
 }
 
 IN_PROC_BROWSER_TEST_P(RecommendAppsScreenTest, ParseError) {

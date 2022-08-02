@@ -13,6 +13,8 @@ struct Environment {
   base::AtExitManager at_exit_manager;
 };
 
+Environment* environment = new Environment();
+
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   const std::string test_data(reinterpret_cast<const char*>(data), size);
   network::ParseClientHintToDelegatedThirdPartiesHeader(

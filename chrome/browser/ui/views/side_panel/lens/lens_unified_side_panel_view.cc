@@ -127,8 +127,8 @@ bool LensUnifiedSidePanelView::HandleContextMenu(
 }
 
 void LensUnifiedSidePanelView::OpenUrl(const content::OpenURLParams& params) {
-  GetWebContents()->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(params));
+  side_panel_url_params_ = std::make_unique<content::OpenURLParams>(params);
+  MaybeLoadURLWithParams();
 }
 
 void LensUnifiedSidePanelView::DidOpenRequestedURL(
@@ -202,6 +202,33 @@ void LensUnifiedSidePanelView::CreateAndInstallFooter() {
 
   // Install footer.
   AddChildView(std::move(footer));
+}
+
+void LensUnifiedSidePanelView::MaybeLoadURLWithParams() {
+  // Ensure the side panel view has a width before loading URL. If side panel is
+  // still closed (width == 0), defer loading the URL to
+  // LensUnifiedSidePanelView::OnViewBoundsChanged. The nullptr check ensures we
+  // don't rerender the same page on a unrelated resize event.
+  if (width() == 0 || !side_panel_url_params_)
+    return;
+
+  // Manually set web contents to the size of side panel view on initial load.
+  // This prevents a bug in Lens Web that renders the page as if it was 0px
+  // wide.
+  GetWebContents()->Resize(bounds());
+  GetWebContents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(*side_panel_url_params_));
+  side_panel_url_params_.reset();
+}
+
+void LensUnifiedSidePanelView::OnBoundsChanged(
+    const gfx::Rect& previous_bounds) {
+  // If side panel is closed when we first try to render the URL, we must wait
+  // until side panel is opened. This method is called once side panel view goes
+  // from 0px wide to ~320px wide. Rendering the page after side panel view
+  // fully opens prevents a race condition which causes the page to load before
+  // side panel is open causing the page to render as if it were 0px wide.
+  MaybeLoadURLWithParams();
 }
 
 void LensUnifiedSidePanelView::SetContentVisible(bool visible) {

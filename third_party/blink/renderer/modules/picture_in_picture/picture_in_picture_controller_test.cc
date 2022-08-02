@@ -554,9 +554,9 @@ TEST_F(PictureInPictureControllerTest, CreateDocumentPictureInPictureWindow) {
   EXPECT_EQ(nullptr, PictureInPictureControllerImpl::From(GetDocument())
                          .pictureInPictureWindow());
 
-  // Enable the PictureInPictureV2 flag.
+  // Enable the DocumentPictureInPictureAPI flag.
   ScopedPictureInPictureAPIForTest scoped_dependency(true);
-  ScopedPictureInPictureV2ForTest scoped_feature(true);
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
 
   V8TestingScope scope;
   KURL url = KURL("https://example.com/");

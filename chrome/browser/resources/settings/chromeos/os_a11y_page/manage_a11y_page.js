@@ -265,7 +265,10 @@ class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
             'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
       },
 
-      /** @protected */
+      /**
+       * Whether the user is in guest mode.
+       * @protected
+       */
       isGuest_: {
         type: Boolean,
         value() {

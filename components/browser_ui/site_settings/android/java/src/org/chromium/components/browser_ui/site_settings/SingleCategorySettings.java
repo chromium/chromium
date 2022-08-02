@@ -218,14 +218,11 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     private boolean isOnBlockList(WebsitePreference website) {
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        for (@SiteSettingsCategory.Type int i = 0; i < SiteSettingsCategory.Type.NUM_ENTRIES; i++) {
-            if (!mCategory.showSites(i)) continue;
-            @ContentSettingValues
-            Integer contentSetting = website.site().getContentSetting(
-                    browserContextHandle, SiteSettingsCategory.contentSettingsType(i));
-            if (contentSetting != null) {
-                return ContentSettingValues.BLOCK == contentSetting;
-            }
+        @ContentSettingValues
+        Integer contentSetting = website.site().getContentSetting(
+                browserContextHandle, mCategory.getContentSettingsType());
+        if (contentSetting != null) {
+            return ContentSettingValues.BLOCK == contentSetting;
         }
         return false;
     }
@@ -247,7 +244,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         if (!mGroupByAllowBlock) return;
 
         int resourceId;
-        if (mCategory.showSites(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             // REQUEST_DESKTOP_SITE has its own Allowed list header.
             resourceId = R.string.website_settings_allowed_group_heading_request_desktop_site;
         } else if (toggleValue) {
@@ -272,9 +269,9 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         // Set the title and arrow icons for the header.
         int resourceId;
-        if (mCategory.showSites(SiteSettingsCategory.Type.SOUND)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
             resourceId = R.string.website_settings_blocked_group_heading_sound;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             resourceId = R.string.website_settings_blocked_group_heading_request_desktop_site;
         } else {
             resourceId = R.string.website_settings_blocked_group_heading;
@@ -327,8 +324,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                     browserContextHandle, getArguments().getString(EXTRA_CATEGORY, ""));
         }
 
-        if (mCategory.showSites(SiteSettingsCategory.Type.ALL_SITES)
-                || mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.ALL_SITES
+                || mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             throw new IllegalArgumentException("Use AllSiteSettings instead.");
         }
 
@@ -406,7 +403,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.menu_id_site_settings_help) {
-            if (mCategory.showSites(SiteSettingsCategory.Type.PROTECTED_MEDIA)) {
+            if (mCategory.getType() == SiteSettingsCategory.Type.PROTECTED_MEDIA) {
                 getSiteSettingsDelegate().launchProtectedContentHelpAndFeedbackActivity(
                         getActivity());
             } else {
@@ -443,7 +440,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                 website_pref.getExtras().putInt(
                         SettingsNavigationSource.EXTRA_KEY, navigationSource);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                    && mCategory.showSites(SiteSettingsCategory.Type.NOTIFICATIONS)) {
+                    && mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
                 // In  Android O+, users can manage Notification channels through App Info. If this
                 // is the case we send the user directly to Android Settings to modify the
                 // Notification exception.
@@ -475,7 +472,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
             for (@SiteSettingsCategory.Type int type = 0;
                     type < SiteSettingsCategory.Type.NUM_ENTRIES; type++) {
-                if (!mCategory.showSites(type)) {
+                if (mCategory.getType() != type) {
                     continue;
                 }
 
@@ -573,21 +570,21 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         int resource = 0;
-        if (mCategory.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS) {
             resource = R.string.website_settings_add_site_description_automatic_downloads;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.BACKGROUND_SYNC)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.BACKGROUND_SYNC) {
             resource = R.string.website_settings_add_site_description_background_sync;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.JAVASCRIPT)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT) {
             resource = WebsitePreferenceBridge.isCategoryEnabled(
                                browserContextHandle, ContentSettingsType.JAVASCRIPT)
                     ? R.string.website_settings_add_site_description_javascript_block
                     : R.string.website_settings_add_site_description_javascript_allow;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.SOUND)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
             resource = WebsitePreferenceBridge.isCategoryEnabled(
                                browserContextHandle, ContentSettingsType.SOUND)
                     ? R.string.website_settings_add_site_description_sound_block
                     : R.string.website_settings_add_site_description_sound_allow;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.COOKIES)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
             if (mRequiresFourStateSetting) {
                 resource = cookieSettingsExceptionShouldBlock()
                         ? R.string.website_settings_add_site_description_cookies_block
@@ -598,11 +595,11 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                         ? R.string.website_settings_add_site_description_cookies_block
                         : R.string.website_settings_add_site_description_cookies_allow;
             }
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
             assert WebsitePreferenceBridge.isCategoryEnabled(
                     browserContextHandle, ContentSettingsType.AUTO_DARK_WEB_CONTENT);
             resource = R.string.website_settings_add_site_description_auto_dark_block;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.FEDERATED_IDENTITY_API)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.FEDERATED_IDENTITY_API) {
             resource = WebsitePreferenceBridge.isCategoryEnabled(
                                browserContextHandle, ContentSettingsType.FEDERATED_IDENTITY_API)
                     ? R.string.website_settings_add_site_description_federated_identity_block
@@ -644,7 +641,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         int setting;
-        if (mCategory.showSites(SiteSettingsCategory.Type.COOKIES) && mRequiresFourStateSetting) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES && mRequiresFourStateSetting) {
             setting = cookieSettingsExceptionShouldBlock() ? ContentSettingValues.BLOCK
                                                            : ContentSettingValues.ALLOW;
         } else {
@@ -666,7 +663,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
         getInfoForOrigins();
 
-        if (mCategory.showSites(SiteSettingsCategory.Type.SOUND)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
             if (setting == ContentSettingValues.BLOCK) {
                 RecordUserAction.record("SoundContentSetting.MuteBy.PatternException");
             } else {
@@ -689,21 +686,21 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
         boolean allowSpecifyingExceptions = false;
-        if (mCategory.showSites(SiteSettingsCategory.Type.SOUND)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.SOUND) {
             allowSpecifyingExceptions = true;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.JAVASCRIPT)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.JAVASCRIPT) {
             allowSpecifyingExceptions = true;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.COOKIES)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.COOKIES) {
             allowSpecifyingExceptions = true;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.BACKGROUND_SYNC)
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.BACKGROUND_SYNC
                 && !WebsitePreferenceBridge.isCategoryEnabled(
                         browserContextHandle, ContentSettingsType.BACKGROUND_SYNC)) {
             allowSpecifyingExceptions = true;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS)
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS
                 && !WebsitePreferenceBridge.isCategoryEnabled(
                         browserContextHandle, ContentSettingsType.AUTOMATIC_DOWNLOADS)) {
             allowSpecifyingExceptions = true;
-        } else if (mCategory.showSites(SiteSettingsCategory.Type.FEDERATED_IDENTITY_API)) {
+        } else if (mCategory.getType() == SiteSettingsCategory.Type.FEDERATED_IDENTITY_API) {
             allowSpecifyingExceptions = true;
         }
         if (allowSpecifyingExceptions) {
@@ -754,7 +751,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                     (PreferenceGroup) getPreferenceScreen().findPreference(MANAGED_GROUP);
 
             Set<String> delegatedOrigins =
-                    mCategory.showSites(SiteSettingsCategory.Type.NOTIFICATIONS)
+                    mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS
                     ? getSiteSettingsDelegate().getAllDelegatedNotificationOrigins()
                     : Collections.emptySet();
 
@@ -773,7 +770,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
 
             // For the ads permission, the Allowed list should appear first. Default
             // collapsed settings should not change.
-            if (mCategory.showSites(SiteSettingsCategory.Type.ADS)) {
+            if (mCategory.getType() == SiteSettingsCategory.Type.ADS) {
                 blockedGroup.setOrder(allowedGroup.getOrder() + 1);
             }
 
@@ -929,7 +926,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             configureBinaryToggle(binaryToggle, contentType);
         }
 
-        if (!mCategory.showSites(SiteSettingsCategory.Type.COOKIES)) {
+        if (mCategory.getType() != SiteSettingsCategory.Type.COOKIES) {
             screen.removePreference(screen.findPreference(COOKIE_INFO_TEXT_KEY));
         }
 
@@ -950,7 +947,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         }
 
         // Configure/hide the notifications secondary controls, as needed.
-        if (mCategory.showSites(SiteSettingsCategory.Type.NOTIFICATIONS)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.NOTIFICATIONS) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
                 notificationsVibrate.setOnPreferenceChangeListener(this);
             } else {
@@ -970,7 +967,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         }
 
         // Configure/hide the desktop site secondary controls, as needed.
-        if (mCategory.showSites(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE)
+        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
                 && ContentFeatureList.isEnabled(
                         ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)) {
             mDesktopSitePeripheralPref.setOnPreferenceChangeListener(this);
@@ -982,7 +979,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         }
 
         // Only show the link that explains protected content settings when needed.
-        if (mCategory.showSites(SiteSettingsCategory.Type.PROTECTED_MEDIA)
+        if (mCategory.getType() == SiteSettingsCategory.Type.PROTECTED_MEDIA
                 && getSiteSettingsDelegate().isHelpAndFeedbackEnabled()) {
             explainProtectedMediaKey.setOnPreferenceClickListener(preference -> {
                 getSiteSettingsDelegate().launchProtectedContentHelpAndFeedbackActivity(
@@ -1068,7 +1065,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         // Set summary on or off.
         BrowserContextHandle browserContextHandle =
                 getSiteSettingsDelegate().getBrowserContextHandle();
-        if (mCategory.showSites(SiteSettingsCategory.Type.DEVICE_LOCATION)
+        if (mCategory.getType() == SiteSettingsCategory.Type.DEVICE_LOCATION
                 && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
             binaryToggle.setSummaryOn(ContentSettingsResources.getGeolocationAllowedSummary());
         } else {
@@ -1173,8 +1170,8 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
                             site.setContentSetting(browserContextHandle, contentSettingsType,
                                     ContentSettingValues.DEFAULT);
 
-                            if (mCategory.showSites(
-                                        SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT)) {
+                            if (mCategory.getType()
+                                    == SiteSettingsCategory.Type.AUTO_DARK_WEB_CONTENT) {
                                 AutoDarkMetrics.recordAutoDarkSettingsChangeSource(
                                         AutoDarkSettingsChangeSource.SITE_SETTINGS_EXCEPTION_LIST,
                                         false);

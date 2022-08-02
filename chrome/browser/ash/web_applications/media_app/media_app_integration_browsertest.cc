@@ -1621,7 +1621,7 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationWithFilesAppTest, CheckArcWritable) {
       storage::FileSystemMountOption(), temp_dir.GetPath()));
   file_manager::VolumeManager::Get(profile())->AddVolumeForTesting(
       temp_dir.GetPath(), file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE,
-      chromeos::DEVICE_TYPE_UNKNOWN, true /* read_only */);
+      ash::DeviceType::kUnknown, true /* read_only */);
 
   // Copy the test image into the new filesystem.
   base::FilePath image_path = temp_dir.GetPath().Append(kFileJpeg640x480);

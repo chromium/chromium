@@ -23,7 +23,7 @@
 
 namespace {
 
-using chromeos::assistant::AssistantAllowedState;
+using ::ash::assistant::AssistantAllowedState;
 
 bool g_override_is_google_device = false;
 
@@ -111,7 +111,7 @@ bool IsAssistantAllowedForLocale(const Profile* profile) {
 
 bool IsAssistantDisabledByPolicy(const Profile* profile) {
   return profile->GetPrefs()->GetBoolean(
-      chromeos::assistant::prefs::kAssistantDisabledByPolicy);
+      ash::assistant::prefs::kAssistantDisabledByPolicy);
 }
 
 bool IsEmailDomainSupported(const Profile* profile) {

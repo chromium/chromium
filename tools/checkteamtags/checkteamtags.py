@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -14,7 +14,7 @@ import os
 import posixpath
 import re
 import sys
-import urllib2
+import urllib.request
 
 from collections import defaultdict
 
@@ -89,7 +89,7 @@ def validate_mappings(options, args):
   Returns:
     A string containing the details of any multi-team per component.
   """
-  mappings_file = json.load(urllib2.urlopen(options.current_mapping_url))
+  mappings_file = json.load(urllib.request.urlopen(options.current_mapping_url))
   new_dir_to_component = mappings_file.get('dir-to-component', {})
   new_dir_to_team = mappings_file.get('dir-to-team', {})
 
@@ -233,8 +233,10 @@ Examples:
   levels = [logging.ERROR, logging.INFO, logging.DEBUG]
   logging.basicConfig(level=levels[min(len(levels) - 1, options.verbose)])
 
-  errors = filter(None, [check_owners(*rel_and_full_paths(options.root, f))
-                         for f in args])
+  errors = list(
+      filter(None,
+             [check_owners(*rel_and_full_paths(options.root, f))
+              for f in args]))
 
   warnings = None
   if not errors:

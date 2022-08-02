@@ -26,15 +26,14 @@ namespace {
 
 typedef struct {
   // Vertical spacing between stackView and cell contentView.
-  const CGFloat kStackViewVerticalPadding;
+  const CGFloat kStackViewTopPadding;
+  const CGFloat kStackViewBottomPadding;
   // Trailing margin for content.
   const CGFloat kStackViewTrailingMargin;
   // Spacing within content stack view.
   const CGFloat kContentStackViewSubViewSpacing;
   // Spacing within text stack view.
   const CGFloat kTextStackViewSubViewSpacing;
-  // Size for the imageView width and height.
-  const CGFloat kImageViewWidthHeight;
   // Margins for the primary button.
   const CGFloat kButtonTitleHorizontalContentInset;
   const CGFloat kButtonTitleVerticalContentInset;
@@ -46,11 +45,11 @@ typedef struct {
 } PromoStyleValues;
 
 const PromoStyleValues kStandardPromoStyle = {
-    11.0,  // kStackViewVerticalPadding
+    11.0,  // kStackViewTopPadding
+    11.0,  // kStackViewBottomPadding
     16.0,  // kStackViewTrailingMargin
     13.0,  // kContentStackViewSubViewSpacing
     13.0,  // kTextStackViewSubViewSpacing
-    32.0,  // kImageViewWidthHeight
     12.0,  // kButtonTitleHorizontalContentInset
     8.0,   // kButtonTitleVerticalContentInset
     8.0,   // kButtonCornerRadius
@@ -58,12 +57,27 @@ const PromoStyleValues kStandardPromoStyle = {
     0.0,   // kCloseButtonTopMargin
 };
 
-const PromoStyleValues kCompactPromoStyle = {
-    18.0,  // kStackViewVerticalPadding
+// TODO(crbug.com/1331010): We may remove these styles if we don't launch them
+// with the feed promo.
+const PromoStyleValues kTitledPromoStyle = {
+    14.0,  // kStackViewTopPadding
+    27.0,  // kStackViewBottomPadding
+    16.0,  // kStackViewTrailingMargin
+    13.0,  // kContentStackViewSubViewSpacing
+    13.0,  // kTextStackViewSubViewSpacing
+    30.0,  // kButtonTitleHorizontalContentInset
+    8.0,   // kButtonTitleVerticalContentInset
+    8.0,   // kButtonCornerRadius
+    -9.0,  // kCloseButtonTrailingMargin
+    9.0,   // kCloseButtonTopMargin
+};
+
+const PromoStyleValues kTitledCompactPromoStyle = {
+    18.0,  // kStackViewTopPadding
+    18.0,  // kStackViewBottomPadding
     41.0,  // kStackViewTrailingMargin
     17.0,  // kContentStackViewSubViewSpacing
     4.0,   // kTextStackViewSubViewSpacing
-    56.0,  // kImageViewWidthHeight
     0.0,   // kButtonTitleHorizontalContentInset
     0.0,   // kButtonTitleVerticalContentInset
     0.0,   // kButtonCornerRadius
@@ -71,16 +85,17 @@ const PromoStyleValues kCompactPromoStyle = {
     9.0,   // kCloseButtonTopMargin
 };
 
-// UI Refresh Constants:
 // Horizontal padding for label and buttons.
 constexpr CGFloat kHorizontalPadding = 40;
 // Horizontal spacing between stackView and cell contentView.
 constexpr CGFloat kStackViewHorizontalPadding = 16.0;
-
 // Non-profile icon background corner radius.
 constexpr CGFloat kNonProfileIconCornerRadius = 14;
 // Size for the close button width and height.
 constexpr CGFloat kCloseButtonWidthHeight = 24;
+// Size of the signin promo image.
+constexpr CGFloat kProfileImageHeightWidth = 32.0;
+constexpr CGFloat kNonProfileImageHeightWidth = 56.0;
 }
 
 @interface SigninPromoView ()
@@ -96,10 +111,14 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
 // Contains all the text elements of the promo (title,body and buttons).
 @property(nonatomic, strong) UIStackView* textVerticalStackView;
 // Constraints for the different layout styles.
+@property(nonatomic, weak)
+    NSArray<NSLayoutConstraint*>* currentLayoutConstraints;
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* standardLayoutConstraints;
 @property(nonatomic, strong)
-    NSArray<NSLayoutConstraint*>* compactLayoutConstraints;
+    NSArray<NSLayoutConstraint*>* titledLayoutConstraints;
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* titledCompactLayoutConstraints;
 // Constraints for the image size.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* imageConstraints;
 @end
@@ -208,7 +227,7 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
     ]];
 
     // Default layout style.
-    _compactLayout = NO;
+    _promoViewStyle = SigninPromoViewStyleStandard;
     [self updateLayoutForStyle];
     // Default mode.
     _mode = SigninPromoViewModeNoAccounts;
@@ -226,21 +245,18 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
 - (void)setProfileImage:(UIImage*)image {
   DCHECK_NE(self.mode, SigninPromoViewModeNoAccounts);
   [self updateImageSizeForProfileImage:YES];
-  DCHECK_EQ(kStandardPromoStyle.kImageViewWidthHeight, image.size.height);
-  DCHECK_EQ(kStandardPromoStyle.kImageViewWidthHeight, image.size.width);
+  DCHECK_EQ(kProfileImageHeightWidth, image.size.height);
+  DCHECK_EQ(kProfileImageHeightWidth, image.size.width);
   self.imageView.image =
-      CircularImageFromImage(image, kStandardPromoStyle.kImageViewWidthHeight);
+      CircularImageFromImage(image, kProfileImageHeightWidth);
   self.backgroundColor = nil;
   self.imageView.layer.cornerRadius = 0;
 }
 
 - (void)setNonProfileImage:(UIImage*)image {
   [self updateImageSizeForProfileImage:NO];
-  CGFloat imageSize = self.compactLayout
-                          ? kCompactPromoStyle.kImageViewWidthHeight
-                          : kStandardPromoStyle.kImageViewWidthHeight;
-  DCHECK_EQ(imageSize, image.size.width);
-  DCHECK_EQ(imageSize, image.size.height);
+  DCHECK_EQ(kNonProfileImageHeightWidth, image.size.height);
+  DCHECK_EQ(kNonProfileImageHeightWidth, image.size.width);
   self.imageView.image = image;
   self.imageView.backgroundColor = [UIColor colorNamed:kSolidPrimaryColor];
   self.imageView.layer.cornerRadius = kNonProfileIconCornerRadius;
@@ -297,12 +313,12 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
 
 #pragma mark - Setters
 
-// Sets layout style and updates layout accordingly.
-- (void)setCompactLayout:(BOOL)compactLayout {
-  if (_compactLayout == compactLayout) {
+// Sets promo style and updates layout accordingly.
+- (void)setPromoViewStyle:(SigninPromoViewStyle)promoViewStyle {
+  if (_promoViewStyle == promoViewStyle) {
     return;
   }
-  _compactLayout = compactLayout;
+  _promoViewStyle = promoViewStyle;
   [self updateLayoutForStyle];
 }
 
@@ -334,12 +350,10 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
       // Content padding.
       [self.contentStackView.topAnchor
           constraintEqualToAnchor:self.topAnchor
-                         constant:kStandardPromoStyle
-                                      .kStackViewVerticalPadding],
+                         constant:kStandardPromoStyle.kStackViewTopPadding],
       [self.contentStackView.bottomAnchor
           constraintEqualToAnchor:self.bottomAnchor
-                         constant:-kStandardPromoStyle
-                                       .kStackViewVerticalPadding],
+                         constant:-kStandardPromoStyle.kStackViewBottomPadding],
       [self.contentStackView.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
                          constant:-kStandardPromoStyle
@@ -356,117 +370,189 @@ constexpr CGFloat kCloseButtonWidthHeight = 24;
   return _standardLayoutConstraints;
 }
 
-// Constraints specific to compact layout.
-- (NSArray<NSLayoutConstraint*>*)compactLayoutConstraints {
-  if (!_compactLayoutConstraints) {
-    _compactLayoutConstraints = @[
+// Constraints specific to titled layout.
+- (NSArray<NSLayoutConstraint*>*)titledLayoutConstraints {
+  if (!_titledLayoutConstraints) {
+    _titledLayoutConstraints = @[
       // Content padding.
       [self.contentStackView.topAnchor
           constraintEqualToAnchor:self.topAnchor
-                         constant:kCompactPromoStyle.kStackViewVerticalPadding],
+                         constant:kTitledPromoStyle.kStackViewTopPadding],
       [self.contentStackView.bottomAnchor
           constraintEqualToAnchor:self.bottomAnchor
-                         constant:-kCompactPromoStyle
-                                       .kStackViewVerticalPadding],
+                         constant:-kTitledPromoStyle.kStackViewBottomPadding],
       [self.contentStackView.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kCompactPromoStyle.kStackViewTrailingMargin],
+                         constant:-kTitledPromoStyle.kStackViewTrailingMargin],
       [self.closeButton.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor
-                         constant:kCompactPromoStyle
+                         constant:kTitledPromoStyle.kCloseButtonTrailingMargin],
+      [self.closeButton.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:kTitledPromoStyle.kCloseButtonTopMargin],
+    ];
+  }
+  return _titledLayoutConstraints;
+}
+
+// Constraints specific to titled compact layout.
+- (NSArray<NSLayoutConstraint*>*)titledCompactLayoutConstraints {
+  if (!_titledCompactLayoutConstraints) {
+    _titledCompactLayoutConstraints = @[
+      // Content padding.
+      [self.contentStackView.topAnchor
+          constraintEqualToAnchor:self.topAnchor
+                         constant:kTitledCompactPromoStyle
+                                      .kStackViewTopPadding],
+      [self.contentStackView.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor
+                         constant:-kTitledCompactPromoStyle
+                                       .kStackViewBottomPadding],
+      [self.contentStackView.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:-kTitledCompactPromoStyle
+                                       .kStackViewTrailingMargin],
+      [self.closeButton.trailingAnchor
+          constraintEqualToAnchor:self.trailingAnchor
+                         constant:kTitledCompactPromoStyle
                                       .kCloseButtonTrailingMargin],
       [self.closeButton.topAnchor
           constraintEqualToAnchor:self.topAnchor
-                         constant:kCompactPromoStyle.kCloseButtonTopMargin],
+                         constant:kTitledCompactPromoStyle
+                                      .kCloseButtonTopMargin],
     ];
   }
-  return _compactLayoutConstraints;
+  return _titledCompactLayoutConstraints;
 }
 
 #pragma mark - Private
 
 // Updates layout for current layout style.
 - (void)updateLayoutForStyle {
-  if (self.compactLayout) {
-    // Lays out content for compact view.
-    self.contentStackView.axis = UILayoutConstraintAxisHorizontal;
-    self.contentStackView.spacing =
-        kCompactPromoStyle.kContentStackViewSubViewSpacing;
-    self.textVerticalStackView.alignment = UIStackViewAlignmentLeading;
-    self.textVerticalStackView.spacing =
-        kCompactPromoStyle.kTextStackViewSubViewSpacing;
-    self.textLabel.textAlignment = NSTextAlignmentNatural;
-    self.secondaryButton.hidden = YES;
+  NSArray<NSLayoutConstraint*>* constraintsToActivate;
+  switch (self.promoViewStyle) {
+    case SigninPromoViewStyleStandard: {
+      // Lays out content vertically for standard view.
+      self.contentStackView.axis = UILayoutConstraintAxisVertical;
+      self.contentStackView.spacing =
+          kStandardPromoStyle.kContentStackViewSubViewSpacing;
+      self.textVerticalStackView.alignment = UIStackViewAlignmentCenter;
+      self.textVerticalStackView.spacing =
+          kStandardPromoStyle.kTextStackViewSubViewSpacing;
+      self.textLabel.textAlignment = NSTextAlignmentCenter;
+      self.secondaryButton.hidden = NO;
 
-    // Configures fonts for compact layout.
-    self.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    self.textLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
-    self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+      // Configures fonts for standard layout.
+      self.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
+      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      self.textLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+      self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
-    // In the compact layout, the primary button is plain.
-    [self.primaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
-                             forState:UIControlStateNormal];
-    self.primaryButton.backgroundColor = nil;
-    self.primaryButton.layer.cornerRadius =
-        kCompactPromoStyle.kButtonCornerRadius;
-    self.primaryButton.clipsToBounds = NO;
-    self.primaryButton.contentEdgeInsets =
-        UIEdgeInsetsMake(kCompactPromoStyle.kButtonTitleVerticalContentInset,
-                         kCompactPromoStyle.kButtonTitleHorizontalContentInset,
-                         kCompactPromoStyle.kButtonTitleVerticalContentInset,
-                         kCompactPromoStyle.kButtonTitleHorizontalContentInset);
+      // In the standard layout, the button has a background.
+      [self.primaryButton
+          setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+               forState:UIControlStateNormal];
+      self.primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+      self.primaryButton.layer.cornerRadius =
+          kStandardPromoStyle.kButtonCornerRadius;
+      self.primaryButton.clipsToBounds = YES;
+      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+          kStandardPromoStyle.kButtonTitleVerticalContentInset,
+          kStandardPromoStyle.kButtonTitleHorizontalContentInset,
+          kStandardPromoStyle.kButtonTitleVerticalContentInset,
+          kStandardPromoStyle.kButtonTitleHorizontalContentInset);
 
-    // Applies constraints for compact layout.
-    [NSLayoutConstraint deactivateConstraints:self.standardLayoutConstraints];
-    [NSLayoutConstraint activateConstraints:self.compactLayoutConstraints];
-  } else {
-    // Lays out content vertically for standard view.
-    self.contentStackView.axis = UILayoutConstraintAxisVertical;
-    self.contentStackView.spacing =
-        kStandardPromoStyle.kContentStackViewSubViewSpacing;
-    self.textVerticalStackView.alignment = UIStackViewAlignmentCenter;
-    self.textVerticalStackView.spacing =
-        kStandardPromoStyle.kTextStackViewSubViewSpacing;
-    self.textLabel.textAlignment = NSTextAlignmentCenter;
+      constraintsToActivate = self.standardLayoutConstraints;
+      break;
+    }
+    case SigninPromoViewStyleTitled: {
+      // Lays out content vertically for standard view.
+      self.contentStackView.axis = UILayoutConstraintAxisVertical;
+      self.contentStackView.spacing =
+          kTitledPromoStyle.kContentStackViewSubViewSpacing;
+      self.textVerticalStackView.alignment = UIStackViewAlignmentCenter;
+      self.textVerticalStackView.spacing =
+          kTitledPromoStyle.kTextStackViewSubViewSpacing;
+      self.textLabel.textAlignment = NSTextAlignmentCenter;
+      self.secondaryButton.hidden = YES;
 
-    // Configures fonts for standard layout.
-    self.titleLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleTitle3];
-    self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-    self.textLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-    self.textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      // Configures fonts for titled layout.
+      self.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      self.textLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
+      self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
-    // In the standard layout, the button has a background.
-    [self.primaryButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-                             forState:UIControlStateNormal];
-    self.primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
-    self.primaryButton.layer.cornerRadius =
-        kStandardPromoStyle.kButtonCornerRadius;
-    self.primaryButton.clipsToBounds = YES;
-    self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
-        kStandardPromoStyle.kButtonTitleVerticalContentInset,
-        kStandardPromoStyle.kButtonTitleHorizontalContentInset,
-        kStandardPromoStyle.kButtonTitleVerticalContentInset,
-        kStandardPromoStyle.kButtonTitleHorizontalContentInset);
+      // In the standard layout, the button has a background.
+      [self.primaryButton
+          setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+               forState:UIControlStateNormal];
+      self.primaryButton.backgroundColor = [UIColor colorNamed:kBlueColor];
+      self.primaryButton.layer.cornerRadius =
+          kTitledPromoStyle.kButtonCornerRadius;
+      self.primaryButton.clipsToBounds = YES;
+      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+          kTitledPromoStyle.kButtonTitleVerticalContentInset,
+          kTitledPromoStyle.kButtonTitleHorizontalContentInset,
+          kTitledPromoStyle.kButtonTitleVerticalContentInset,
+          kTitledPromoStyle.kButtonTitleHorizontalContentInset);
 
-    // Applies constraints for standard layout.
-    [NSLayoutConstraint deactivateConstraints:self.compactLayoutConstraints];
-    [NSLayoutConstraint activateConstraints:self.standardLayoutConstraints];
+      constraintsToActivate = self.titledLayoutConstraints;
+      break;
+    }
+    case SigninPromoViewStyleTitledCompact: {
+      // Lays out content for titled compact view.
+      self.contentStackView.axis = UILayoutConstraintAxisHorizontal;
+      self.contentStackView.spacing =
+          kTitledCompactPromoStyle.kContentStackViewSubViewSpacing;
+      self.textVerticalStackView.alignment = UIStackViewAlignmentLeading;
+      self.textVerticalStackView.spacing =
+          kTitledCompactPromoStyle.kTextStackViewSubViewSpacing;
+      self.textLabel.textAlignment = NSTextAlignmentNatural;
+      self.secondaryButton.hidden = YES;
+
+      // Configures fonts for titled compact layout.
+      self.titleLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+      self.textLabel.font =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
+      self.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+
+      // In the titled compact layout, the primary button is plain.
+      [self.primaryButton setTitleColor:[UIColor colorNamed:kBlueColor]
+                               forState:UIControlStateNormal];
+      self.primaryButton.backgroundColor = nil;
+      self.primaryButton.layer.cornerRadius =
+          kTitledCompactPromoStyle.kButtonCornerRadius;
+      self.primaryButton.clipsToBounds = NO;
+      self.primaryButton.contentEdgeInsets = UIEdgeInsetsMake(
+          kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+          kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset,
+          kTitledCompactPromoStyle.kButtonTitleVerticalContentInset,
+          kTitledCompactPromoStyle.kButtonTitleHorizontalContentInset);
+
+      constraintsToActivate = self.titledCompactLayoutConstraints;
+      break;
+    }
   }
+  // Removes previous constraints and activates new ones.
+  [NSLayoutConstraint deactivateConstraints:self.currentLayoutConstraints];
+  self.currentLayoutConstraints = constraintsToActivate;
+  [NSLayoutConstraint activateConstraints:self.currentLayoutConstraints];
   [self layoutIfNeeded];
 }
 
 // Updates image size constraints based on if it is a profile avatar.
 - (void)updateImageSizeForProfileImage:(BOOL)isProfileImage {
   CGFloat imageSize;
-  if (self.compactLayout && !isProfileImage) {
-    imageSize = kCompactPromoStyle.kImageViewWidthHeight;
+  if (isProfileImage) {
+    imageSize = kProfileImageHeightWidth;
   } else {
-    imageSize = kStandardPromoStyle.kImageViewWidthHeight;
+    imageSize = kNonProfileImageHeightWidth;
   }
 
   [NSLayoutConstraint deactivateConstraints:self.imageConstraints];

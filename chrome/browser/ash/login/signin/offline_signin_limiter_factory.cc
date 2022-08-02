@@ -7,7 +7,6 @@
 #include "base/time/clock.h"
 #include "chrome/browser/ash/login/signin/offline_signin_limiter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -33,9 +32,7 @@ void OfflineSigninLimiterFactory::SetClockForTesting(base::Clock* clock) {
 }
 
 OfflineSigninLimiterFactory::OfflineSigninLimiterFactory()
-    : BrowserContextKeyedServiceFactory(
-          "OfflineSigninLimiter",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("OfflineSigninLimiter") {}
 
 OfflineSigninLimiterFactory::~OfflineSigninLimiterFactory() {}
 

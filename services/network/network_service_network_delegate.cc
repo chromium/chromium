@@ -280,7 +280,8 @@ bool NetworkServiceNetworkDelegate::OnCanQueueReportingReport(
     const url::Origin& origin) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
-      .IsFullCookieAccessAllowed(origin.GetURL(), origin.GetURL());
+      .IsFullCookieAccessAllowed(origin.GetURL(), origin.GetURL(),
+                                 QueryReason::kSiteStorage);
 }
 
 void NetworkServiceNetworkDelegate::OnCanSendReportingReports(
@@ -312,7 +313,8 @@ bool NetworkServiceNetworkDelegate::OnCanSetReportingClient(
     const GURL& endpoint) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
-      .IsFullCookieAccessAllowed(origin.GetURL(), origin.GetURL());
+      .IsFullCookieAccessAllowed(origin.GetURL(), origin.GetURL(),
+                                 QueryReason::kSiteStorage);
 }
 
 bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
@@ -320,7 +322,8 @@ bool NetworkServiceNetworkDelegate::OnCanUseReportingClient(
     const GURL& endpoint) const {
   return network_context_->cookie_manager()
       ->cookie_settings()
-      .IsFullCookieAccessAllowed(origin.GetURL(), origin.GetURL());
+      .IsFullCookieAccessAllowed(origin.GetURL(), origin.GetURL(),
+                                 QueryReason::kSiteStorage);
 }
 
 int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(

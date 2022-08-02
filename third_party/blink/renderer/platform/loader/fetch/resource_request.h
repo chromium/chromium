@@ -471,11 +471,6 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetInspectorId(uint64_t inspector_id) { inspector_id_ = inspector_id; }
   uint64_t InspectorId() const { return inspector_id_; }
 
-  // Temporary for metrics. True if the request was initiated by a stylesheet
-  // that is not origin-clean:
-  // https://drafts.csswg.org/cssom-1/#concept-css-style-sheet-origin-clean-flag
-  //
-  // TODO(crbug.com/898497): Remove this when there is enough data.
   bool IsFromOriginDirtyStyleSheet() const {
     return is_from_origin_dirty_style_sheet_;
   }

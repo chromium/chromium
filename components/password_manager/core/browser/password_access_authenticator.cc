@@ -33,7 +33,7 @@ void PasswordAccessAuthenticator::EnsureUserIsAuthenticated(
   // This is to address crbug.com/1317549. If the current time is earlier than the
   // `last_authentication_time_`, `last_authentication_time_` is invalid.
   // So need ForceUserReauthentication()
-  if (last_authentication_time_ < base::Time::Now() && 
+  if (last_authentication_time_ < base::Time::Now() &&
       base::Time::Now() <= last_authentication_time_ + kAuthValidityPeriod) {
     LogPasswordSettingsReauthResult(ReauthResult::kSkipped);
     std::move(callback).Run(true);
@@ -48,7 +48,10 @@ void PasswordAccessAuthenticator::ForceUserReauthentication(
   os_reauth_call_.Run(
       purpose,
       base::BindOnce(&PasswordAccessAuthenticator::OnUserReauthenticationResult,
-                     base::Unretained(this), std::move(callback)));
+                     base::Unretained(this),
+                     metrics_util::TimeCallback(
+                         std::move(callback),
+                         "PasswordManager.Settings.AuthenticationTime")));
 }
 
 void PasswordAccessAuthenticator::OnUserReauthenticationResult(

@@ -26,7 +26,7 @@ class Profile;
 
 // Class to handle all Assistant in-browser-process functionalities.
 class AssistantBrowserDelegateImpl
-    : public chromeos::assistant::AssistantBrowserDelegate,
+    : public ash::assistant::AssistantBrowserDelegate,
       public signin::IdentityManager::Observer,
       public session_manager::SessionManagerObserver,
       public ash::AssistantStateObserver {
@@ -42,7 +42,7 @@ class AssistantBrowserDelegateImpl
 
   // chromeos::assistant::AssisantClient overrides:
   void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus new_status) override;
+      ash::assistant::AssistantStatus new_status) override;
   void RequestAssistantVolumeControl(
       mojo::PendingReceiver<ash::mojom::AssistantVolumeControl> receiver)
       override;
@@ -87,7 +87,7 @@ class AssistantBrowserDelegateImpl
 
   // ash::AssistantStateObserver:
   void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState allowed_state) override;
+      ash::assistant::AssistantAllowedState allowed_state) override;
 
   // Called when the application is terminating
   void OnAppTerminating();

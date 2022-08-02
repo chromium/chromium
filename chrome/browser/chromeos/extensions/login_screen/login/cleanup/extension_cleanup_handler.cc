@@ -135,10 +135,10 @@ void ExtensionCleanupHandler::ReinstallExtensions() {
 std::unordered_set<std::string>
 ExtensionCleanupHandler::GetCleanupExemptExtensions() {
   std::unordered_set<std::string> exempt_extensions;
-  const base::Value* exempt_list = profile_->GetPrefs()->GetList(
+  const base::Value::List& exempt_list = profile_->GetPrefs()->GetValueList(
       prefs::kRestrictedManagedGuestSessionExtensionCleanupExemptList);
 
-  for (const base::Value& value : exempt_list->GetListDeprecated()) {
+  for (const base::Value& value : exempt_list) {
     exempt_extensions.insert(value.GetString());
   }
   return exempt_extensions;

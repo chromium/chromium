@@ -156,7 +156,7 @@ absl::optional<std::string> Intent::GetIntentConditionValueByType(
       return url.has_value() ? absl::optional<std::string>(url->host())
                              : absl::nullopt;
     }
-    case ConditionType::kPattern: {
+    case ConditionType::kPath: {
       return url.has_value() ? absl::optional<std::string>(url->path())
                              : absl::nullopt;
     }

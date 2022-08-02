@@ -2582,4 +2582,14 @@ bool ServiceWorkerGlobalScope::IsInFencedFrame() const {
          mojom::blink::AncestorFrameType::kFencedFrame;
 }
 
+mojom::blink::ServiceWorkerFetchHandlerType
+ServiceWorkerGlobalScope::FetchHandlerType() {
+  EventListenerVector* elv = GetEventListeners(event_type_names::kFetch);
+  if (!elv) {
+    return mojom::blink::ServiceWorkerFetchHandlerType::kNoHandler;
+  }
+  // TODO(crbug.com/1347319): implement nop handler detection.
+  return mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable;
+}
+
 }  // namespace blink

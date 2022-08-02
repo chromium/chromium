@@ -44,7 +44,6 @@ void DlpDragDropNotifier::WarnOnDrop(
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 
-  drop_cb_ = std::move(drop_cb);
   auto proceed_cb = base::BindRepeating(&DlpDragDropNotifier::ProceedPressed,
                                         base::Unretained(this));
   auto cancel_cb = base::BindRepeating(&DlpDragDropNotifier::CancelPressed,
@@ -53,11 +52,17 @@ void DlpDragDropNotifier::WarnOnDrop(
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
                     std::move(proceed_cb), std::move(cancel_cb));
+
+  SetPasteCallback(base::BindOnce(
+      [](base::OnceClosure paste_cb, bool drop) {
+        if (drop)
+          std::move(paste_cb).Run();
+      },
+      std::move(drop_cb)));
 }
 
 void DlpDragDropNotifier::ProceedPressed(views::Widget* widget) {
-  if (drop_cb_)
-    std::move(drop_cb_).Run();
+  RunPasteCallback();
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
@@ -66,8 +71,6 @@ void DlpDragDropNotifier::CancelPressed(views::Widget* widget) {
 }
 
 void DlpDragDropNotifier::OnWidgetDestroying(views::Widget* widget) {
-  drop_cb_.Reset();
-
   DlpDataTransferNotifier::OnWidgetDestroying(widget);
 }
 

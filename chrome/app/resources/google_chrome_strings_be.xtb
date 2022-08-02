@@ -14,7 +14,6 @@
 <translation id="1142745911746664600">Не ўдаецца абнавіць Chrome</translation>
 <translation id="1152920704813762236">Пра Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Адкрыць у браўзеры Chrome</translation>
-<translation id="1178374936842835197">Калі налада адсутнічае на гэтай старонцы, перайдзіце ў <ph name="LINK_BEGIN" />налады Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Дзякуй, што ўсталявалі <ph name="BUNDLE_NAME" />. Каб завяршыць усталяванне, перазапусціце браўзер.</translation>
 <translation id="1278833599417554002">Перазапусціць, каб абнавіць &amp;Chrome</translation>
 <translation id="1302523850133262269">Пачакайце, пакуль Chrome усталюе апошнія абнаўленні сістэмы.</translation>
@@ -122,7 +121,6 @@
 <translation id="3080151273017101988">Працягваць выконваць фонавыя праграмы, калі Google Chrome закрыты</translation>
 <translation id="3089968997497233615">Ёсць новая, больш бяспечная версія Google Chrome.</translation>
 <translation id="3100998948628680988">Дайце назву свайму профілю Chrome</translation>
-<translation id="3103390129666310801">Каб даведацца, ці абноўлена прылада, адкрыйце <ph name="LINK_BEGIN" />Налады Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Каб праверыць, ці не пагражае вашым іншым паролям раскрыццё ў выніку ўцечкі даных або іншых праблем з бяспекай, <ph name="BEGIN_LINK" />увайдзіце ў Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Змены ўступяць у сілу пасля перазапуску Google Chrome.</translation>
 <translation id="3149510190863420837">Праграмы Chrome</translation>
@@ -213,7 +211,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Каб атрымліваць наступныя абнаўленні Google Chrome, вам патрэбная версія macOS 10.13 ці пазнейшая. На гэтым камп'ютары выкарыстоўваецца OS X 10.11.</translation>
 <translation id="5098668839038261629">Калі гэты параметр уключаны, будзе выконвацца таксама выхад з вашага ўліковага запісу ў Chrome</translation>
-<translation id="5112116809696021727">Каб даведацца, ці знаходзіцца прылада ў актуальным стане, адкрыйце <ph name="LINK_BEGIN" />Налады Chrome OS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Адкрывайце для сябе выдатныя праграмы, гульні, пашырэнні і тэмы для Google Chrome.</translation>
 <translation id="5139423532931106058">Наладзьце свой профіль Chrome</translation>
 <translation id="5163087008893166964">Вітаем у Chrome! Адкрыта новае акно браўзера</translation>
@@ -253,7 +250,6 @@
 <translation id="5940385492829620908">Тут знаходзяцца вашы вэб-старонкі, закладкі і іншыя даныя браўзера Chrome.</translation>
 <translation id="5941711191222866238">Згарнуць</translation>
 <translation id="5941830788786076944">Зрабіць Google Chrome стандартным браўзерам</translation>
-<translation id="5959292945051687759">Калі налада адсутнічае на гэтай старонцы, перайдзіце ў <ph name="LINK_BEGIN" />налады Chrome OS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Ідзе спампоўванне… Застаецца <ph name="HOURS" /> гадз</translation>
 <translation id="6040143037577758943">Закрыць</translation>
 <translation id="6070348360322141662">Для дадатковай бяспекі Google Chrome будзе шыфраваць вашы даныя</translation>

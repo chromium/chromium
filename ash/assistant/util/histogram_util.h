@@ -17,18 +17,15 @@ namespace util {
 
 // Increment number of queries fired for each entry point.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-void IncrementAssistantQueryCountForEntryPoint(
-    chromeos::assistant::AssistantEntryPoint entry_point);
+void IncrementAssistantQueryCountForEntryPoint(AssistantEntryPoint entry_point);
 
 // Record the entry point where Assistant UI becomes visible.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-void RecordAssistantEntryPoint(
-    chromeos::assistant::AssistantEntryPoint entry_point);
+void RecordAssistantEntryPoint(AssistantEntryPoint entry_point);
 
 // Record the exit point where Assistant UI becomes invisible.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-void RecordAssistantExitPoint(
-    chromeos::assistant::AssistantExitPoint exit_point);
+void RecordAssistantExitPoint(AssistantExitPoint exit_point);
 
 // Count the number of times buttons are clicked on Assistant UI.
 COMPONENT_EXPORT(ASSISTANT_UTIL)

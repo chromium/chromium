@@ -8,10 +8,8 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_tpm_key_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -53,9 +51,9 @@ EasyUnlockTpmKeyManager* EasyUnlockTpmKeyManagerFactory::GetForUser(
 }
 
 EasyUnlockTpmKeyManagerFactory::EasyUnlockTpmKeyManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "EasyUnlockTpmKeyManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {}
 
 EasyUnlockTpmKeyManagerFactory::~EasyUnlockTpmKeyManagerFactory() {}
 
@@ -71,11 +69,6 @@ KeyedService* EasyUnlockTpmKeyManagerFactory::BuildServiceInstanceFor(
   return new EasyUnlockTpmKeyManager(
       user ? user->GetAccountId() : EmptyAccountId(),
       user ? user->username_hash() : std::string(), GetLocalState());
-}
-
-content::BrowserContext* EasyUnlockTpmKeyManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace ash

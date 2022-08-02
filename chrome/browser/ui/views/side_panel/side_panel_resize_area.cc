@@ -37,7 +37,7 @@ void SidePanelResizeHandle::OnThemeChanged() {
   const int icon_size = 16;
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
       kDragHandleIcon, icon_size,
-      GetColorProvider()->GetColor(kColorSidePanelContentAreaSeparator));
+      GetColorProvider()->GetColor(kColorToolbarContentAreaSeparator));
   SetImage(icon);
 }
 

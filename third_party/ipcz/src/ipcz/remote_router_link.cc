@@ -84,7 +84,7 @@ void RemoteRouterLink::SetLinkState(FragmentRef<RouterLinkState> state) {
     MarkSideStable();
   }
   if (Ref<Router> router = node_link()->GetRouter(sublink_)) {
-    router->Flush();
+    router->Flush(Router::kForceProxyBypassAttempt);
   }
 }
 
@@ -96,8 +96,12 @@ RouterLinkState* RemoteRouterLink::GetLinkState() const {
   return link_state_.load(std::memory_order_acquire);
 }
 
-bool RemoteRouterLink::HasLocalPeer(const Router& router) {
-  return false;
+Ref<Router> RemoteRouterLink::GetLocalPeer() {
+  return nullptr;
+}
+
+RemoteRouterLink* RemoteRouterLink::AsRemoteRouterLink() {
+  return this;
 }
 
 void RemoteRouterLink::AcceptParcel(Parcel& parcel) {

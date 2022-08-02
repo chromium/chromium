@@ -111,3 +111,9 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
     }
   }
 }
+
+void StartSurfaceRecentTabBrowserAgent::TitleWasSet(web::WebState* web_state) {
+  for (auto& observer : observers_) {
+    observer.MostRecentTabTitleUpdated(web_state->GetTitle());
+  }
+}

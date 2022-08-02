@@ -6,11 +6,8 @@
 
 #include "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_cell.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
@@ -270,17 +267,6 @@ initWithCollectionController:
 }
 
 #pragma mark - UIGestureRecognizerDelegate
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
-       shouldReceiveTouch:(UITouch*)touch {
-  BOOL isMostVisitedCell =
-      content_suggestions::nearestAncestor(
-          touch.view, [ContentSuggestionsMostVisitedCell class]) != nil;
-  BOOL isMostVisitedActionCell =
-      content_suggestions::nearestAncestor(
-          touch.view, [ContentSuggestionsMostVisitedActionCell class]) != nil;
-  return !isMostVisitedCell && !isMostVisitedActionCell;
-}
 
 - (UIView*)nearestAncestorOfView:(UIView*)view withClass:(Class)aClass {
   if (!view) {

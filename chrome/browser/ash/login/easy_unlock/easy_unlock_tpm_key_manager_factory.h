@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -22,8 +22,7 @@ namespace ash {
 class EasyUnlockTpmKeyManager;
 
 // Singleton factory that builds and owns all EasyUnlockTpmKeyManager services.
-class EasyUnlockTpmKeyManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class EasyUnlockTpmKeyManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static EasyUnlockTpmKeyManagerFactory* GetInstance();
 
@@ -43,8 +42,6 @@ class EasyUnlockTpmKeyManagerFactory
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

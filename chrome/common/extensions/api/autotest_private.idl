@@ -278,9 +278,6 @@ namespace autotestPrivate {
   };
 
   dictionary LacrosInfo {
-    // True iff lacros is running currently. TODO(neis): Remove once the Tast
-    // use has been eliminated.
-    boolean isRunning;
     // The state of lacros.
     LacrosState state;
     // True iff keepalive is enabled for lacros.

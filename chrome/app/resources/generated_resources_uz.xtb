@@ -2195,6 +2195,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3021065318976393105">Batareya quvvatida ishlayotganda</translation>
 <translation id="3021066826692793094">Kapalak</translation>
 <translation id="3021678814754966447">Freym kodini ko‘rish</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> qurilmasi bu Chromebookdan olib tashlanadi va <ph name="PRIMARY_EMAIL" /> hisobiga saqlanmaydi.</translation>
 <translation id="3022978424994383087">Yana bir marta qaytaring</translation>
 <translation id="3023464535986383522">Teginib tinglash</translation>
 <translation id="3024374909719388945">24 soatli vaqt formatidan foydalanish</translation>
@@ -3734,6 +3735,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4535127706710932914">Birlamchi profil</translation>
 <translation id="4535767533210902251">Barmoq izi sensori klaviaturaning tepa oʻng burchagidagi tugma. Istalgan barmoq bilan unga asta tegining.</translation>
 <translation id="4536140153723794651">Har doim cookie fayllarini ishlata oladigan saytlar</translation>
+<translation id="4536769240747010177">Modem rejimi imkoniyati:</translation>
 <translation id="4538417792467843292">So‘zni o‘chirish</translation>
 <translation id="4538792345715658285">Korporativ siyosatga ko‘ra o‘rnatilgan.</translation>
 <translation id="4541123282641193691">Hisobingizni tekshirib bo‘lmadi. Qayta urinib ko‘ring yoki Chromebook qurilmangizni o‘chirib yoqing.</translation>
@@ -3761,6 +3763,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="4561893854334016293">Yaqin orada ruxsatlar oʻzgarmagan</translation>
 <translation id="4562155214028662640">Barmoq izi qo‘shish</translation>
 <translation id="4563210852471260509">Boshlang‘ich matn kiritish tili xitoycha</translation>
+<translation id="4563382028841851106">Hisobdan olib tashlash</translation>
 <translation id="4563880231729913339">3-barmoq</translation>
 <translation id="4564245002465020751">Telefoningizni sozlashni tamomlang</translation>
 <translation id="4565377596337484307">Parolni berkitish</translation>
@@ -6178,6 +6181,10 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6943939122536910181"><ph name="DEVICE" /> qurilmasidan uzildi</translation>
 <translation id="6945221475159498467">Tanlash</translation>
 <translation id="694592694773692225">Bu sahifada yo‘naltirish bloklandi.</translation>
+<translation id="6947015141909171112">Retseptlar oxirgi qidiruv tarixi asosida chiqyapti.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Sozlamalarni kartochka menyusidan boshqarishingiz yoki boshqa sozlamalarnini “Chromeni moslash” orqali koʻrishingiz mumkin.</translation>
 <translation id="6949434160682548041">Parol (ixtiyoriy)</translation>
 <translation id="6950627417367801484">Ilovalarni tiklash</translation>
 <translation id="6952242901357037157">Shuningdek, bu yerda <ph name="BEGIN_LINK" />Google hisobingizdagi<ph name="END_LINK" /> parollarni chiqarish mumkin</translation>
@@ -6436,7 +6443,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7212097698621322584">PIN kodni oʻzgartirish uchun joriy kodni kiriting. PIN kodni bilmasangiz, avval elektron kalit sozlamalarini qayta tiklab, keyingina yangi PIN belgilash mumkin.</translation>
 <translation id="7213903639823314449">Qidiruv tizimi manzillar qatorida ishlatiladi</translation>
 <translation id="721490496276866468">Parollarni import qilish</translation>
-<translation id="7216595297012131718">Tillar tartibi parametrlaringizga asoslangan</translation>
 <translation id="7219473482981809164">Yuklab olish mumkin bir necha profil topildi. Yuklab olish uchun ulardan birini tanlang.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Hech qaysi parolingiz kuchsiz emas}=1{1 ta kuchsiz parol aniqlandi}other{{NUM_WEAK} ta kuchsiz parol aniqlandi}}</translation>
 <translation id="7220019174139618249">Parollar “<ph name="FOLDER" />” jildiga eksport qilinmadi</translation>
@@ -6972,6 +6978,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7737115349420013392">“<ph name="DEVICE_NAME" />” bilan ulanmoqda...</translation>
 <translation id="7737846262459425222">Buni istalgan vaqt Sozlamalar &gt; Google Assistent &gt; Ekran konteksti orqali oʻzgartirish mumkin.</translation>
 <translation id="7737948071472253612">Kamerangizdan foydalanish taqiqlangan</translation>
+<translation id="77381465218432215">Urgʻu va maxsus belgilarni chiqarish</translation>
 <translation id="7740996059027112821">Standart</translation>
 <translation id="7741307896921365578">Mutolaa roʻyxati va bukmarklarni qulay ochish uchun brauzer darajasidagi yon panelni yoqadi.</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" /> saytlari, ruxsatlari, unga kiruvchi saytlar va oʻrnatilgan ilovalar tozalansinmi?</translation>
@@ -7760,6 +7767,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8486666913807228950">Sababi: “Majburiy ochish” roʻyxatida <ph name="REVERT_RULE" /> teskari qoida topildi.</translation>
 <translation id="848666842773560761">Ilova kameradan foydalanmoqchi. Ruxsat berish uchun kamera maxfiylik qoidasini faolsizlantiring.</translation>
 <translation id="8487678622945914333">Yaqinlashtirish</translation>
+<translation id="8487699605742506766">Hotspot</translation>
 <translation id="8489156414266187072">Shaxsiy takliflar faqat sizning hisobda chiqadi</translation>
 <translation id="8490896350101740396">Quyidagi kiosk ilovalar "<ph name="UPDATED_APPS" />" yangilandi. Yangilash jarayonini tugallash uchun qurilmani qayta yuklang.</translation>
 <translation id="8492685019009920170">Barmoq izi skaneriga barmoqni tekizing. Maʼlumotlaringiz himoya ostida va faqat <ph name="DEVICE_TYPE" /> qurilmangizda saqlanadi.</translation>
@@ -8253,6 +8261,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{“<ph name="TAB_TITLE" />”}=1{“<ph name="TAB_TITLE" />” va yana 1 ta varaq}other{“<ph name="TAB_TITLE" />” va yana # ta varaq}}</translation>
 <translation id="8977811652087512276">Parol xato yoki fayl shikastlangan</translation>
 <translation id="8978154919215542464">Yoniq (hamma narsani sinxronlash)</translation>
+<translation id="8978670037548431647">Modem rejimi imkoniyatlarini yangilash</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> saytida</translation>
 <translation id="8980345560318123814">Fikr va mulohaza hisobotlari</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – ishdan chiqdi</translation>
@@ -8517,6 +8526,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="935854577147268200">Smart Lock funksiyasi yoqilgan telefon oʻzgardi. Smart Lock funksiyasini yangilash uchun parolni kiriting. Keyingi safar telefoningiz <ph name="DEVICE_TYPE" /> qurilmasini qulfdan chiqara oladi. Sozlamalar orqali Smart Lock funksiyasini faolsizlantirish mumkin.</translation>
 <translation id="936646668635477464">Kamera va mikrofon</translation>
 <translation id="936801553271523408">Tizim diagnostik ma’lumotlari</translation>
+<translation id="937053962468712792"><ph name="DEVICE" /> qurilmasi <ph name="PRIMARY_EMAIL" /> hisobidan olib tashlansinmi?</translation>
 <translation id="93766956588638423">Kengaytmani ta’mirlash</translation>
 <translation id="938568644810664664">“Ok Google, bu qaysi tarona?” yoki “Ok Google, ekranimda nima bor?” deb soʻrashingiz mumkin</translation>
 <translation id="938623846785894166">Shubhali fayl</translation>

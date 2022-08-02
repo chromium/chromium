@@ -63,7 +63,7 @@ class ASH_EXPORT AssistantTestApi {
   virtual void SetTabletMode(bool enable) = 0;
 
   // Changes the user preference controlling the status of user consent.
-  virtual void SetConsentStatus(chromeos::assistant::prefs::ConsentStatus) = 0;
+  virtual void SetConsentStatus(assistant::prefs::ConsentStatus) = 0;
 
   // Sets the number of user sessions where Assistant onboarding was shown.
   virtual void SetNumberOfSessionsWhereOnboardingShown(
@@ -71,7 +71,7 @@ class ASH_EXPORT AssistantTestApi {
 
   // Changes the user preference controlling the mode of the onboarding UX.
   virtual void SetOnboardingMode(
-      chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode) = 0;
+      assistant::prefs::AssistantOnboardingMode onboarding_mode) = 0;
 
   // Changes the user setting controlling whether the user prefers voice or
   // keyboard (internally called |kAssistantLaunchWithMicOpen|).

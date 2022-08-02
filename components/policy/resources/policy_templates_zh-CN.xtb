@@ -2565,7 +2565,6 @@
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（我们已弃用并将于日后移除单行字段。请开始使用下面的多行文本框。）</translation>
 <translation id="3709266154059827597">配置扩展程序安装黑名单</translation>
 <translation id="3711895659073496551">暂停</translation>
-<translation id="3715569262675717862">基于客户端证书的身份验证</translation>
 <translation id="3717409415785131989">如果此政策已启用或未设置，<ph name="PRODUCT_NAME" />中会显示新的下载气泡界面。
 
       如果此政策已停用，<ph name="PRODUCT_NAME" />一直显示旧的下载任务栏界面。</translation>
@@ -2945,13 +2944,6 @@
 <translation id="410068710490553233">允许登录其他 Google 帐号</translation>
 <translation id="4101282687722389021">时间戳（采用世界协调时间），用于表明此条目的上次更新时间。将以字符串的形式发送，因为该时间戳不能表示为整数</translation>
 <translation id="4103289232974211388">用户确认后重定向至 SAML IdP</translation>
-<translation id="4105884561459127998">为 SAML 登录配置身份验证类型。
-
-      如果此政策设为“Default”（值是 0）或未设置，浏览器将会根据其他因素决定 SAML 登录行为。在最基本的情景中，浏览器会根据用户手动输入的密码来验证用户的身份并保护缓存的用户数据。
-
-      如果此政策设为“ClientCertificate”（值是 1），那么对于所有通过 SAML 登录的新增用户，浏览器都会使用客户端证书（而非密码）来验证他们的身份，并会使用相应的加密密钥来保护与他们相关的本地缓存数据。例如，此设置允许配置基于智能卡的用户身份验证机制（请注意，智能卡中间件应用必须通过 DeviceLoginScreenExtensions 政策进行安装）。
-
-      此政策仅会影响那些使用 SAML 验证身份的用户。</translation>
 <translation id="4105989332710272578">对于指定的一系列网址，不强制要求必须符合证书透明度政策</translation>
 <translation id="4114059938441379876">通过设置此政策，您可以配置当浏览器显示警告后，供用户更改密码的网址。密码保护服务会将用户转到您通过此政策指定的网址（仅限 HTTP 和 HTTPS 协议）。为了使 <ph name="PRODUCT_NAME" /> 能够在这个密码更改页面上正确捕获新密码的加盐哈希值，请务必确保该页面遵循了这些准则 ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms )。
 
@@ -3135,6 +3127,13 @@
 <translation id="4347908978527632940">如果设为 true 且该用户是受监管用户，则其他 Android 应用可以通过内容提供方查询该用户的网络限制。
 
           如果设为 false 或未设置，则内容提供方不会返回任何信息。</translation>
+<translation id="4357587374229381015">指定将用于在 SAML IdP 登录页面上自动填充用户名字段的网址参数名称。
+
+      与用户的 <ph name="PRODUCT_OS_NAME" /> 个人资料关联的电子邮件地址将用作网址参数的值。因此，如果用户需要在 SAML IdP 页面上使用不同的电子邮件地址，此设置应被停用。
+
+      如果此设置未配置，用户将需要在 SAML IdP 登录页面上手动输入用户名。
+
+      此政策会影响登录屏幕和锁定的屏幕上的在线身份验证。</translation>
 <translation id="4363057787588706121">允许合并具有多个不同来源的列表政策</translation>
 <translation id="4363101430102811068">针对输入的凭据启用泄露检测功能</translation>
 <translation id="436581050240847513">报告设备网络接口</translation>
@@ -4020,11 +4019,6 @@
       如果此政策设为一个输入法标识符列表，登录屏幕上将会提供所有已指定的输入法以供选用。系统将会预先选择所指定的第一种输入法。当登录屏幕上显示已激活的用户操作大图标时，屏幕上除了会提供通过此政策指定的各种输入法外，还会提供相应用户最近一次用过的输入法。如果此政策未设置，系统则会根据显示登录屏幕时使用的语言区域提供登录屏幕上的输入法。系统将会忽略无效的输入法标识符。</translation>
 <translation id="5407008856008996384">允许访问 CUPS 打印机</translation>
 <translation id="5413051574966911176">禁止远程主机桌面在处于已连接状态时显示与连接相关的界面</translation>
-<translation id="5417597818300833094">通过设置此政策，您可允许用户从您为 <ph name="PRODUCT_OS_NAME" />会话指定的输入法中选择其一。
-
-       如果此政策设为一个空列表或未设置，用户将可以选择所有受支持的输入法。
-
-      注意：如果当前输入法不受支持，它会切换为硬件键盘布局（如果允许）或此列表中的第一个有效条目。无效输入法或不受支持的输入法将被忽略。</translation>
 <translation id="5417906792459853336">此政策旨在报告与设备的应用清单及使用情况有关的信息。
 
       如果此政策设为 false 或未设置，系统将不会报告这些信息。
@@ -4740,16 +4734,6 @@
 <translation id="6207607210601267301">针对远程访问主机停用无 PIN 码身份验证</translation>
 <translation id="6208896993204286313">报告 <ph name="PRODUCT_NAME" /> 政策信息</translation>
 <translation id="6210259502936598222">报告操作系统和 <ph name="PRODUCT_NAME" /> 版本信息</translation>
-<translation id="6210422374261465354">让您能在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中为身份验证网址指定配置。
-
-      这些身份验证网址将被 <ph name="WEBVIEW_PRODUCT_NAME" /> 视为特殊网址，因此在身份验证期间，当网页在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中被导航到身份验证网址时，系统将会启动可处理此身份验证网址的相应身份提供方身份验证器应用。
-
-      身份提供方将使用上述身份提供方身份验证器应用启动流程来支持一些使用情形（例如提供跨应用式单点登录）或通过以下方式提供更高的安全性：在身份验证期间收集零信任设备信号以了解设备状态。
-
-      如果设备上未安装任何用于处理身份验证网址的有效应用，导航将在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中继续。
-
-      有效的身份验证网址应采用 <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> 架构，且不应包含通配符。
-      </translation>
 <translation id="6212868225782276239">系统会显示除黑名单中所列打印机之外的所有打印机。</translation>
 <translation id="6220835555850906733">如果此政策已启用或未设置，用户将能在其设备上使用所有受支持的音频输出。
 
@@ -6069,7 +6053,6 @@
 <translation id="7554382342294940216">如果此政策已启用，系统会允许 <ph name="PRODUCT_OS_NAME" />在进行强制门户身份验证时跳过所有代理。这些身份验证网页（即在 Chrome 检测到成功建立互联网连接之前，从强制门户登录页面开始的所有网页）都会在单独的窗口中打开，并会忽略针对当前用户的所有政策设置和限制。仅当已设置了代理时（通过政策或扩展程序设置，或者由用户在 chrome://settings 中设置），此政策才会生效。
 
       如果此政策已停用或未设置，任何强制门户身份验证页面都将在新的常规浏览器标签页中显示，并会使用当前用户的代理设置。</translation>
-<translation id="7566878661979235378">SAML 登录身份验证类型</translation>
 <translation id="7567373982693549834">此政策可以控制每个用户对来源不受信任（来自 Google Play 商店之外）的 Android 应用的使用。
 
       如果未设置此政策的值，则系统会视为不允许使用此功能。
@@ -7326,7 +7309,6 @@
 <translation id="8951350807133946005">设置磁盘缓存目录</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
-<translation id="8959992920425111821">默认配置</translation>
 <translation id="8967125680876068695">在 Windows、Mac 和 Linux 上，Chrome 应用已被弃用。
       如果此政策已启用，<ph name="PRODUCT_NAME" /> 会允许 Chrome 应用在这些平台上继续运行，直到从所有平台上移除对 Chrome 应用的支持的截止日期（2022 年 6 月）来临为止。
       如果此政策已停用或未设置，Chrome 应用可能会无法运行，具体取决于弃用安排的状态。

@@ -263,7 +263,7 @@ Status CheckSessionCreated(Session* session) {
   if (status.IsError())
     return Status(kSessionNotCreated, status);
 
-  base::ListValue args;
+  base::Value::List args;
   std::unique_ptr<base::Value> result(new base::Value(0));
   status = web_view->CallFunction(session->GetCurrentFrameId(),
                                   "function(s) { return 1; }", args, &result);
@@ -735,7 +735,7 @@ Status ExecuteClose(Session* session,
     session->quit = true;
     status = session->chrome->Quit();
     if (status.IsOk())
-      *value = std::make_unique<base::ListValue>();
+      *value = std::make_unique<base::Value>(base::Value::Type::LIST);
   }
 
   return status;
@@ -793,7 +793,7 @@ Status ExecuteSwitchToWindow(Session* session,
   } else {
     // Check if any of the tab window names match |name|.
     const char* kGetWindowNameScript = "function() { return window.name; }";
-    base::ListValue args;
+    base::Value::List args;
     for (std::list<std::string>::const_iterator it = web_view_ids.begin();
          it != web_view_ids.end(); ++it) {
       std::unique_ptr<base::Value> result;
@@ -1191,14 +1191,14 @@ Status ExecuteSetWindowSize(Session* session,
 Status ExecuteGetAvailableLogTypes(Session* session,
                                    const base::DictionaryValue& params,
                                    std::unique_ptr<base::Value>* value) {
-  std::unique_ptr<base::ListValue> types(new base::ListValue());
+  std::unique_ptr<base::Value::List> types(new base::Value::List());
   std::vector<WebDriverLog*> logs = session->GetAllLogs();
   for (std::vector<WebDriverLog*>::const_iterator log = logs.begin();
        log != logs.end();
        ++log) {
     types->Append((*log)->type());
   }
-  *value = std::move(types);
+  *value = std::make_unique<base::Value>(base::Value(std::move(*types)));
   return Status(kOk);
 }
 

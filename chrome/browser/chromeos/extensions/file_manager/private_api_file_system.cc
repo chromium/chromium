@@ -1117,6 +1117,35 @@ void FileManagerPrivateInternalGetDlpMetadataFunction::OnGetDlpMetadata(
           converted_list)));
 }
 
+FileManagerPrivateShowDlpRestrictionDetailsFunction::
+    FileManagerPrivateShowDlpRestrictionDetailsFunction() = default;
+
+FileManagerPrivateShowDlpRestrictionDetailsFunction::
+    ~FileManagerPrivateShowDlpRestrictionDetailsFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateShowDlpRestrictionDetailsFunction::Run() {
+  if (!base::FeatureList::IsEnabled(
+          features::kDataLeakPreventionFilesRestriction)) {
+    return RespondNow(NoArguments());
+  }
+
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager || !rules_manager->IsFilesPolicyEnabled()) {
+    return RespondNow(NoArguments());
+  }
+
+  using extensions::api::file_manager_private::ShowDlpRestrictionDetails::
+      Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  // TODO(crbug.com/1346254): Show the modal.
+
+  return RespondNow(NoArguments());
+}
+
 FileManagerPrivateInternalStartCopyFunction::
     FileManagerPrivateInternalStartCopyFunction() = default;
 

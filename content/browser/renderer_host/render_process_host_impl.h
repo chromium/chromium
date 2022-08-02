@@ -298,7 +298,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const GlobalRenderFrameHostId& render_frame_host_id,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
   void BindBucketManagerHostForWorker(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) override;
   void ForceCrash() override;
   std::string GetInfoForBrowserContextDestructionCrashReporting() override;

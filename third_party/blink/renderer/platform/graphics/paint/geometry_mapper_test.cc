@@ -31,21 +31,18 @@ class GeometryMapperTest : public testing::Test,
   void LocalToAncestorVisualRectInternal(
       const PropertyTreeStateOrAlias& local_state,
       const PropertyTreeStateOrAlias& ancestor_state,
-      FloatClipRect& mapping_rect,
-      bool& success) {
+      FloatClipRect& mapping_rect) {
     GeometryMapper::LocalToAncestorVisualRectInternalForTesting(
-        local_state.Unalias(), ancestor_state.Unalias(), mapping_rect, success);
+        local_state.Unalias(), ancestor_state.Unalias(), mapping_rect);
   }
 
   void LocalToAncestorVisualRectForCompositingOverlap(
       const PropertyTreeStateOrAlias& local_state,
       const PropertyTreeStateOrAlias& ancestor_state,
-      FloatClipRect& mapping_rect,
-      bool& success) {
+      FloatClipRect& mapping_rect) {
     GeometryMapper::
         LocalToAncestorVisualRectInternalForCompositingOverlapForTesting(
-            local_state.Unalias(), ancestor_state.Unalias(), mapping_rect,
-            success);
+            local_state.Unalias(), ancestor_state.Unalias(), mapping_rect);
   }
 
   void CheckMappings();
@@ -84,17 +81,13 @@ INSTANTIATE_PAINT_TEST_SUITE_P(GeometryMapperTest);
 
 void GeometryMapperTest::CheckLocalToAncestorVisualRect() {
   FloatClipRect actual_visual_rect(input_rect);
-  bool success = false;
   LocalToAncestorVisualRectInternal(local_state, ancestor_state,
-                                    actual_visual_rect, success);
-  DCHECK(success);
+                                    actual_visual_rect);
   EXPECT_CLIP_RECT_EQ(expected_visual_rect, actual_visual_rect);
 
   actual_visual_rect = FloatClipRect(input_rect);
-  success = false;
   LocalToAncestorVisualRectForCompositingOverlap(local_state, ancestor_state,
-                                                 actual_visual_rect, success);
-  DCHECK(success);
+                                                 actual_visual_rect);
   EXPECT_CLIP_RECT_EQ(expected_visual_rect_expanded_for_compositing
                           ? *expected_visual_rect_expanded_for_compositing
                           : expected_visual_rect,
@@ -858,15 +851,12 @@ TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
   transform2_and_clip_state.SetTransform(*transform2);
   transform2_and_clip_state.SetClip(*clip);
 
-  bool success;
   input_rect = gfx::RectF(0, 0, 100, 100);
   FloatClipRect result(input_rect);
   LocalToAncestorVisualRectInternal(transform1_state, transform2_and_clip_state,
-                                    result, success);
-  // Fails, because the clip of the destination state is not an ancestor of the
-  // clip of the source state. Known bugs pre-LayoutNGBlockFragmentation would
-  // make such a query. In such cases, no clips are applied.
-  EXPECT_TRUE(success);
+                                    result);
+  // Because the clip of the destination state is not an ancestor of the clip
+  // of the source state, no clips are applied.
   FloatClipRect expected(gfx::RectF(-100, 0, 100, 100));
   expected.ClearIsTight();
   EXPECT_CLIP_RECT_EQ(expected, result);

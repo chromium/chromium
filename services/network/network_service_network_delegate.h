@@ -45,6 +45,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
   }
 
  private:
+  using QueryReason = CookieSettings::QueryReason;
   // net::NetworkDelegateImpl implementation.
   int OnBeforeURLRequest(net::URLRequest* request,
                          net::CompletionOnceCallback callback,

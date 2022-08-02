@@ -6,7 +6,6 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/ash/printing/history/print_job_reporting_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -24,9 +23,7 @@ PrintJobReportingServiceFactory::GetInstance() {
 }
 
 PrintJobReportingServiceFactory::PrintJobReportingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PrintJobReportingServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PrintJobReportingServiceFactory") {}
 
 PrintJobReportingServiceFactory::~PrintJobReportingServiceFactory() = default;
 

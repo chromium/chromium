@@ -2678,16 +2678,17 @@ void MediaStreamManager::InitializeMaybeAsync(
   // attach.
   g_media_stream_manager_tls_ptr.Pointer()->Set(this);
 
-  audio_input_device_manager_ = new AudioInputDeviceManager(audio_system_);
+  audio_input_device_manager_ =
+      base::MakeRefCounted<AudioInputDeviceManager>(audio_system_);
   audio_input_device_manager_->RegisterListener(this);
 
   // We want to be notified of IO message loop destruction to delete the thread
   // and the device managers.
   base::CurrentThread::Get()->AddDestructionObserver(this);
 
-  video_capture_manager_ =
-      new VideoCaptureManager(std::move(video_capture_provider),
-                              base::BindRepeating(&SendVideoCaptureLogMessage));
+  video_capture_manager_ = base::MakeRefCounted<VideoCaptureManager>(
+      std::move(video_capture_provider),
+      base::BindRepeating(&SendVideoCaptureLogMessage));
   video_capture_manager_->RegisterListener(this);
 
   // Using base::Unretained(this) is safe because |this| owns and therefore

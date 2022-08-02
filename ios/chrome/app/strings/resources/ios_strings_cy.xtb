@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">Wedi methu ag argraffu.</translation>
 <translation id="1125564390852150847">Creu tab newydd.</translation>
 <translation id="1126809382673880764">Nid yw'n eich amddiffyn rhag gwefannau peryglus, lawrlwythiadau nac estyniadau. Byddwch yn dal i gael amddiffyniad Pori'n Ddiogel, lle mae ar gael, mewn gwasanaethau Google eraill, megis Gmail a Search.</translation>
+<translation id="1135212215217513471">Cael Chrome ar gyfer iOS</translation>
 <translation id="1145536944570833626">Dileu'r data presennol.</translation>
 <translation id="1147031633655575115">Wedi mewngofnodi fel <ph name="USER" /></translation>
 <translation id="1154984953698510061">Gweld Tabiau Eraill</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">I wneud yn siŵr eich bod bob amser yn gallu cael mynediad at eich data cysoni, cadarnhewch mai chi sydd yno</translation>
 <translation id="1870148520156231997">Datgelu'r Cyfrinair</translation>
 <translation id="1872096359983322073">Tortsh</translation>
+<translation id="1910975740091000991">Chrome ar gyfer iOS</translation>
 <translation id="1911619930368729126">Uwchlwytho i Google Drive</translation>
 <translation id="1923342640370224680">Awr Ddiwethaf</translation>
 <translation id="1930989359703290198">Mae eich sefydliad yn caniatáu i chi fewngofnodi gyda rhai cyfrifon yn unig. Mae cyfrifon na chaniateir yn cael eu cuddio. <ph name="BEGIN_LINK" />Dysgu Rhagor<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">Chwilio am Destun y Gwnaethoch ei Gopïo</translation>
 <translation id="214201757571129614">Mewngofnodi…</translation>
 <translation id="2149973817440762519">Golygu Nod Tudalen</translation>
+<translation id="2155145621546387786">Rhannu Chrome</translation>
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2218443599109088993">Pellhau</translation>
 <translation id="2230173723195178503">Mae tudalen we wedi'i llwytho</translation>
@@ -406,7 +409,6 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="4502566650163919158">Gwirio Nawr</translation>
 <translation id="4505980578794259603">Gwiriwyd ddiwethaf: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Cau'r anogwr mewngofnodi</translation>
-<translation id="4511669830082467224">Chwilio llun gyda Google</translation>
 <translation id="4526249700380860531">Gallwch weld a rheoli cyfrineiriau sydd wedi'u cadw yn <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Adolygwch eich data a gysonwyd</translation>
 <translation id="4536418791685807335">Rhowch gynnig arall ar fewngofnodi.</translation>

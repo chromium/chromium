@@ -28,8 +28,8 @@ class ASH_PUBLIC_EXPORT AssistantState : public AssistantStateBase {
 
   ~AssistantState() override;
 
-  void NotifyStatusChanged(chromeos::assistant::AssistantStatus status);
-  void NotifyFeatureAllowed(chromeos::assistant::AssistantAllowedState state);
+  void NotifyStatusChanged(assistant::AssistantStatus status);
+  void NotifyFeatureAllowed(assistant::AssistantAllowedState state);
   void NotifyLocaleChanged(const std::string& locale);
   void NotifyArcPlayStoreEnabledChanged(bool enabled);
   void NotifyLockedFullScreenStateChanged(bool enabled);

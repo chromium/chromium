@@ -41,8 +41,20 @@ class MockDlpDragDropNotifier : public DlpDragDropNotifier {
   MOCK_METHOD2(CloseWidget,
                void(views::Widget* widget, views::Widget::ClosedReason reason));
 
+  void SetPasteCallback(base::OnceCallback<void(bool)> paste_cb) override {
+    paste_cb_ = std::move(paste_cb);
+  }
+
+  void RunPasteCallback() override {
+    DCHECK(paste_cb_);
+    std::move(paste_cb_).Run(true);
+  }
+
   using DlpDragDropNotifier::CancelPressed;
   using DlpDragDropNotifier::ProceedPressed;
+
+ private:
+  base::OnceCallback<void(bool)> paste_cb_;
 };
 
 }  // namespace

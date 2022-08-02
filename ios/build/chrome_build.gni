@@ -42,7 +42,7 @@ declare_args() {
   ios_enable_screen_time = true
 
   # Enable background fetch mode for feed refresh.
-  ios_enable_background_mode = false
+  ios_enable_background_mode = true
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
@@ -95,8 +95,6 @@ if (breakpad_enabled) {
   breakpad_enabled_as_int = 0
   is_official_release = false
 }
-
-ios_enable_background_mode = !is_official_release
 
 chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
 chromium_handoff_id = "$ios_app_bundle_id_prefix.chrome.handoff"

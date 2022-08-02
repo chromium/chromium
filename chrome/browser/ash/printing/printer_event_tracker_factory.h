@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_PRINTING_PRINTER_EVENT_TRACKER_FACTORY_H_
 #define CHROME_BROWSER_ASH_PRINTING_PRINTER_EVENT_TRACKER_FACTORY_H_
 
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace ash {
 
 class PrinterEventTracker;
 
-class PrinterEventTrackerFactory : public BrowserContextKeyedServiceFactory {
+class PrinterEventTrackerFactory : public ProfileKeyedServiceFactory {
  public:
   static PrinterEventTrackerFactory* GetInstance();
   static PrinterEventTracker* GetForBrowserContext(
@@ -35,8 +35,6 @@ class PrinterEventTrackerFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

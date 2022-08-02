@@ -14,8 +14,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1142745911746664600">Ezin da eguneratu Chrome</translation>
 <translation id="1152920704813762236">Chrome OS-ri buruz</translation>
 <translation id="1154147086299354128">&amp;Ireki Chrome-n</translation>
-<translation id="1178374936842835197">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />
-        ChromeOS Flex-en ezarpenetan<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Eskerrik asko instalatzeagatik. <ph name="BUNDLE_NAME" /> erabiltzeko, arakatzailea berrabiarazi behar duzu.</translation>
 <translation id="1278833599417554002">Abiaraz ezazu berriro &amp;Chrome eguneratzeko</translation>
 <translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
@@ -123,7 +121,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3080151273017101988">Mantendu atzeko planoko aplikazioak abian Google Chrome ixten denean</translation>
 <translation id="3089968997497233615">Google Chrome-ren bertsio berriagoa eta seguruagoa erabilgarri dago.</translation>
 <translation id="3100998948628680988">Eman izen bat Chrome-ko profilari</translation>
-<translation id="3103390129666310801">Gailua eguneratuta dagoen ikusteko, joan <ph name="LINK_BEGIN" />ChromeOS Flex-en ezarpenetara<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Gainerako pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazoen aurka babestuta dauden egiaztatzeko, <ph name="BEGIN_LINK" />hasi saioa Chrome-n<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Aldaketek Google Chrome abiarazten duzun hurrengo aldian izango dute eragina.</translation>
 <translation id="3149510190863420837">Chrome-ren aplikazioak</translation>
@@ -214,7 +211,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, macOS 10.13 edo berriago bat beharko duzu. Ordenagailu hau OS X 10.11 erabiltzen ari da.</translation>
 <translation id="5098668839038261629">Aktibatuta dagoenean, Chrome-ko saioa ere amaituko da</translation>
-<translation id="5112116809696021727">Gailua eguneratuta dagoen ikusteko, joan <ph name="LINK_BEGIN" />Chrome OS-ren ezarpenetara<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Ezagutu Google Chrome-rako aplikazio, joko, luzapen eta gai bikainak.</translation>
 <translation id="5139423532931106058">Pertsonalizatu Chrome-ko profila</translation>
 <translation id="5163087008893166964">Ongi etorri Chrome-ra; beste leiho bat ireki da arakatzailean</translation>
@@ -254,7 +250,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="5940385492829620908">Zure weba, laster-markak eta Chrome-n dituzun beste gauzak hemen bizi dira.</translation>
 <translation id="5941711191222866238">Minimizatu</translation>
 <translation id="5941830788786076944">Ezarri Google Chrome arakatzaile lehenetsi gisa</translation>
-<translation id="5959292945051687759">Ezarpenen bat orri honetan agertzen ez bada, bila ezazu <ph name="LINK_BEGIN" />Chrome OS-ren ezarpenetan<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Deskargatzen… <ph name="HOURS" /> ordu geratzen dira.</translation>
 <translation id="6040143037577758943">Itxi</translation>
 <translation id="6070348360322141662">Segurtasun gehiago izateko, Google Chrome-k datuak enkriptatuko ditu</translation>

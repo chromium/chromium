@@ -14,8 +14,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1142745911746664600">Kan nie Chrome opdateer nie</translation>
 <translation id="1152920704813762236">Meer oor Chrome-bedryfstelsel</translation>
 <translation id="1154147086299354128">&amp;Maak in Chrome oop</translation>
-<translation id="1178374936842835197">Kyk in jou Chrome OS Flex-instellings as ’n instelling <ph name="LINK_BEGIN" />
-        nie op jou bladsy wys nie<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Dankie dat jy geïnstalleer het. Jy moet jou blaaier herbegin voordat jy <ph name="BUNDLE_NAME" /> gebruik.</translation>
 <translation id="1278833599417554002">Begin weer om &amp;Chrome op te dateer</translation>
 <translation id="1302523850133262269">Wag asseblief terwyl Chrome die jongste stelselopdaterings installeer.</translation>
@@ -124,7 +122,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3080151273017101988">Hou aan om agtergrondprogramme te laat loop wanneer Google Chrome toe is</translation>
 <translation id="3089968997497233615">Daar is 'n nuwe, veiliger weergawe van Google Chrome beskikbaar.</translation>
 <translation id="3100998948628680988">Gee jou Chrome-profiel 'n naam</translation>
-<translation id="3103390129666310801">Gaan na <ph name="LINK_BEGIN" />Chrome OS Flex-instellings<ph name="LINK_END" /> om te kyk of jou toestel bygewerk is.</translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />Meld by Chrome aan<ph name="END_LINK" /> om te kyk of jou ander wagwoorde teen dataskendings en ander sekuriteitkwessies beveilig word.</translation>
 <translation id="3140883423282498090">Jou veranderinge sal die volgende keer wanneer jy Google Chrome herbegin, in werking tree.</translation>
 <translation id="3149510190863420837">Chrome-programme</translation>
@@ -215,7 +212,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="4990567037958725628">Google Chrome Kanarie</translation>
 <translation id="5037581483200764584">Jy het macOS 10.13 of nuwer nodig om in die toekoms Google Chrome-opdaterings te kry. Hierdie rekenaar gebruik OS X 10.11.</translation>
 <translation id="5098668839038261629">Wanneer dit aan is, sal jy ook by Chrome afgemeld word</translation>
-<translation id="5112116809696021727">Gaan na <ph name="LINK_BEGIN" />Chrome-bedryfstelselinstellings<ph name="LINK_END" /> om te sien of jou toestel bygewerk is</translation>
 <translation id="5132929315877954718">Ontdek wonderlike programme, speletjies, uitbreidings en temas vir Google Chrome.</translation>
 <translation id="5139423532931106058">Pasmaak jou Chrome-profiel</translation>
 <translation id="5163087008893166964">Welkom by Chrome; nuwe blaaiervenster is oopgemaak</translation>
@@ -255,8 +251,6 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="5940385492829620908">Jou web, boekmerke en ander Chrome-goed woon hier.</translation>
 <translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5941830788786076944">Maak Google Chrome die verstekblaaier</translation>
-<translation id="5959292945051687759">As ’n instelling nie op hierdie bIadsy verskyn nie, kan jy in jou <ph name="LINK_BEGIN" />
-        Chrome-bedryfstelselinstellings<ph name="LINK_END" /> kyk</translation>
 <translation id="6003112304606738118">Laai tans af … <ph name="HOURS" /> uur oor</translation>
 <translation id="6040143037577758943">Maak toe</translation>
 <translation id="6070348360322141662">Google Chrome sal jou data enkripteer vir bykomende sekuriteit</translation>

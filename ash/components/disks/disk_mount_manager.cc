@@ -1094,13 +1094,13 @@ std::string DiskMountManager::MountConditionToString(MountCondition condition) {
 // static
 std::string DiskMountManager::DeviceTypeToString(DeviceType type) {
   switch (type) {
-    case DEVICE_TYPE_USB:
+    case DeviceType::kUSB:
       return "usb";
-    case DEVICE_TYPE_SD:
+    case DeviceType::kSD:
       return "sd";
-    case DEVICE_TYPE_OPTICAL_DISC:
+    case DeviceType::kOpticalDisc:
       return "optical";
-    case DEVICE_TYPE_MOBILE:
+    case DeviceType::kMobile:
       return "mobile";
     default:
       return "unknown";

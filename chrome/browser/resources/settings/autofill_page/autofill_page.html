@@ -57,6 +57,18 @@
           <settings-password-check prefs="{{prefs}}"></settings-password-check>
         </settings-subpage>
       </template>
+      <if expr="is_win">
+        <template is="dom-if" route-path="/passkeys">
+          <settings-subpage
+              associated-control="[[$$('#passwordManagerButton')]]"
+              page-title="$i18n{managePasskeysTitle}"
+              search-label="$i18n{managePasskeysSearch}"
+              search-term="{{passkeyFilter_}}">
+            <settings-passkeys-subpage filter="[[passkeyFilter_]]">
+            </settings-passkeys-subpage>
+          </settings-subpage>
+        </template>
+      </if>
       <template is="dom-if" if="[[enablePasswordViewPage_]]">
         <template is="dom-if" route-path="/passwords/view">
           <settings-subpage page-title="[[credential.urls.shown]]"

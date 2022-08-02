@@ -52,7 +52,7 @@ class ApcClientImpl : public content::WebContentsUserData<ApcClientImpl>,
       absl::optional<DebugRunInformation> debug_run_information) override;
   void Stop(bool success) override;
   bool IsRunning() const override;
-  void PromptForConsent() override;
+  void PromptForConsent(OnboardingResultCallback callback) override;
   void RevokeConsent(const std::vector<int>& description_grd_ids) override;
 
  protected:

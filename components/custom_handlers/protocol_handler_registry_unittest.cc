@@ -157,9 +157,9 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   }
 
   int InPrefHandlerCount() {
-    const base::Value* in_pref_handlers = GetPrefs()->GetList(
+    const base::Value::List& in_pref_handlers = GetPrefs()->GetValueList(
         custom_handlers::prefs::kRegisteredProtocolHandlers);
-    return static_cast<int>(in_pref_handlers->GetListDeprecated().size());
+    return static_cast<int>(in_pref_handlers.size());
   }
 
   int InMemoryHandlerCount() {

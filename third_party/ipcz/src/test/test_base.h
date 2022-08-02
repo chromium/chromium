@@ -101,6 +101,16 @@ class TestBase {
   // both `a` and `b`, and then this waits to read the same message from both.
   void VerifyEndToEndLocal(IpczHandle a, IpczHandle b);
 
+  // Waits until `portal` is backed by a Router which is connected directly to
+  // its peer portal's Router on another node, with no proxies in between. Must
+  // be called on each portal of the portal pair in order to properly verify a
+  // direct route end-to-end.
+  void WaitForDirectRemoteLink(IpczHandle portal);
+
+  // Waits for portals `a` and `b` to become direct local peers, after any
+  // potential proxies in between are eliminated.
+  void WaitForDirectLocalLink(IpczHandle a, IpczHandle b);
+
  private:
   static void HandleEvent(const IpczTrapEvent* event);
 

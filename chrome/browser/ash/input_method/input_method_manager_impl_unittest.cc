@@ -21,6 +21,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/mock_candidate_window_controller.h"
 #include "chrome/browser/ash/input_method/mock_input_method_engine.h"
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
@@ -28,6 +29,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/uloc.h"
@@ -1512,6 +1514,47 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsAndExtensions) {
   EXPECT_THAT(manager_->GetActiveIMEState()->GetEnabledInputMethodIds(),
               testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng"),
                                    ImeIdFromEngineId(kNaclMozcJpId)));
+}
+
+TEST_F(InputMethodManagerImplTest, EnableAllowedInputMethodsInKiosk) {
+  // Login as a kiosk app user.
+  const std::string user_id = "kiosk@account.user";
+  const std::string user_email = user_id;
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId(user_email, user_id);
+
+  ash::FakeChromeUserManager* fake_user_manager =
+      static_cast<ash::FakeChromeUserManager*>(
+          user_manager::UserManager::Get());
+  fake_user_manager->AddKioskAppUser(account_id);
+  fake_user_manager->LoginUser(account_id);
+
+  // First, setup xkb:fr::fra input method
+  std::string original_input_method(ImeIdFromEngineId("xkb:fr::fra"));
+  ASSERT_TRUE(
+      manager_->GetActiveIMEState()->EnableInputMethod(original_input_method));
+  manager_->GetActiveIMEState()->ChangeInputMethod(original_input_method,
+                                                   false);
+  EXPECT_THAT(manager_->GetActiveIMEState()->GetCurrentInputMethod().id(),
+              original_input_method);
+
+  // Also allow xkb:us::eng and xkb:de::ger.
+  std::vector<std::string> allowed = {"xkb:us::eng", "xkb:de::ger"};
+  EXPECT_TRUE(manager_->GetActiveIMEState()->SetAllowedInputMethods(allowed));
+
+  // Fix enabled languages according to allowed languages filter.
+  manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(
+      manager_->GetActiveIMEState()->GetEnabledInputMethodIds());
+
+  // Check that all allowed languages are enabled languages.
+  EXPECT_THAT(manager_->GetActiveIMEState()->GetEnabledInputMethodIds(),
+              testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng"),
+                                   ImeIdFromEngineId("xkb:de::ger")));
+  EXPECT_THAT(manager_->GetActiveIMEState()->GetAllowedInputMethodIds(),
+              testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng"),
+                                   ImeIdFromEngineId("xkb:de::ger")));
+  // Logout kiosk app user.
+  fake_user_manager->RemoveUserFromList(account_id);
 }
 
 TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedInputMethods) {

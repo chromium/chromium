@@ -46,7 +46,7 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
   }
 
   void CreateDisk(const std::string& device_path,
-                  chromeos::DeviceType device_type,
+                  ash::DeviceType device_type,
                   bool is_parent,
                   bool has_media,
                   bool on_boot_device) {
@@ -62,7 +62,7 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
   void CreateDisk(const std::string& device_path,
                   const std::string& vendor_name,
                   const std::string& product_name,
-                  chromeos::DeviceType device_type,
+                  ash::DeviceType device_type,
                   bool is_parent,
                   bool has_media,
                   bool on_boot_device) {
@@ -112,11 +112,11 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
 // that are parents, have media and are not boot devices.  Other flags are
 // uninteresting or should not occur for these device types.
 TEST_F(RemovableStorageProviderChromeOsUnitTest, GetAllDevices) {
-  CreateDisk(kDevicePathUSB, chromeos::DEVICE_TYPE_USB, true, true, false);
-  CreateDisk(kDevicePathSD, chromeos::DEVICE_TYPE_SD, true, true, false);
-  CreateDisk("/dev/NotParent", chromeos::DEVICE_TYPE_USB, false, true, false);
-  CreateDisk("/dev/NoMedia", chromeos::DEVICE_TYPE_USB, true, false, false);
-  CreateDisk("/dev/OnBootDevice", chromeos::DEVICE_TYPE_USB, true, true, true);
+  CreateDisk(kDevicePathUSB, ash::DeviceType::kUSB, true, true, false);
+  CreateDisk(kDevicePathSD, ash::DeviceType::kSD, true, true, false);
+  CreateDisk("/dev/NotParent", ash::DeviceType::kUSB, false, true, false);
+  CreateDisk("/dev/NoMedia", ash::DeviceType::kUSB, true, false, false);
+  CreateDisk("/dev/OnBootDevice", ash::DeviceType::kUSB, true, true, true);
 
   RemovableStorageProvider::GetAllDevices(
       base::BindOnce(&RemovableStorageProviderChromeOsUnitTest::DevicesCallback,
@@ -134,10 +134,8 @@ TEST_F(RemovableStorageProviderChromeOsUnitTest, GetAllDevices) {
 
 // Tests that a USB drive with an empty vendor and product gets a generic name.
 TEST_F(RemovableStorageProviderChromeOsUnitTest, EmptyProductAndModel) {
-  CreateDisk(
-      kDevicePathUSB, "", "", chromeos::DEVICE_TYPE_USB, true, true, false);
-  CreateDisk(
-      kDevicePathSD, "", "", chromeos::DEVICE_TYPE_SD, true, true, false);
+  CreateDisk(kDevicePathUSB, "", "", ash::DeviceType::kUSB, true, true, false);
+  CreateDisk(kDevicePathSD, "", "", ash::DeviceType::kSD, true, true, false);
 
   RemovableStorageProvider::GetAllDevices(
       base::BindOnce(&RemovableStorageProviderChromeOsUnitTest::DevicesCallback,

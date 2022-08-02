@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/constants.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/hover_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,8 +50,6 @@ bool g_allow_testing_dialogs = false;
 ExtensionsMenuView* g_extensions_dialog = nullptr;
 
 constexpr int EXTENSIONS_SETTINGS_ID = 42;
-
-constexpr int kSettingsIconSize = 16;
 
 bool CompareExtensionMenuItemViews(const InstalledExtensionMenuItemView* a,
                                    const InstalledExtensionMenuItemView* b) {
@@ -177,8 +176,7 @@ void ExtensionsMenuView::Populate() {
   // InstalledExtensionMenuItemView using the same horizontal border size and
   // image-label spacing. This dependency should probably be more explicit.
   constexpr int kSettingsIconHorizontalPadding =
-      (InstalledExtensionMenuItemView::kIconSize.width() - kSettingsIconSize) /
-      2;
+      (kMenuExtensionIconSize.width() - kMenuIconSize) / 2;
 
   footer->SetBorder(views::CreateEmptyBorder(
       footer->GetInsets() +
@@ -188,7 +186,7 @@ void ExtensionsMenuView::Populate() {
   footer->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(vector_icons::kSettingsIcon,
-                                     ui::kColorIcon, kSettingsIconSize));
+                                     ui::kColorIcon, kMenuIconSize));
 
   manage_extensions_button_ = footer.get();
   AddChildView(std::move(footer));

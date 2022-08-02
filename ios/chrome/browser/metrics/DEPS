@@ -8,6 +8,13 @@ specific_include_rules = {
   "metrics_app_interface\.mm": [
     "+third_party/zlib/google/compression_utils.h",
   ],
+  "ios_feed_enabled_metrics_provider.mm": [
+    "+components/feed/core/shared_prefs/pref_names.h",
+    "+ios/chrome/browser/ui/ntp/new_tab_page_feature.h",
+  ],
+  "ios_feed_enabled_metrics_provider_unittest.mm": [
+    "+components/feed/core/shared_prefs/pref_names.h",
+  ],
 
   # TODO(crbug.com/1294160): Remove these dependencies.
   "^incognito_usage_app_state_agent.mm": [

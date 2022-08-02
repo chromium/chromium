@@ -1287,16 +1287,29 @@ int flush;
        Note: a memory error from inflate() is non-recoverable.
      */
   inf_leave:
-   /* We write a defined value in the unused space to help mark
+#if defined(ZLIB_DEBUG)
+   /* XXX(cavalcantii): I put this in place back in 2017 to help debug faulty
+    * client code relying on undefined behavior when chunk_copy first landed.
+    *
+    * It is save to say after all these years that Chromium code is well
+    * behaved and works fine with the optimization, therefore we can enable
+    * this only for DEBUG builds.
+    *
+    * We write a defined value in the unused space to help mark
     * where the stream has ended. We don't use zeros as that can
     * mislead clients relying on undefined behavior (i.e. assuming
     * that the data is over when the buffer has a zero/null value).
+    *
+    * The basic idea is that if client code is not relying on the zlib context
+    * to inform the amount of decompressed data, but instead reads the output
+    * buffer until a zero/null is found, it will fail faster and harder
+    * when the remaining of the buffer is marked with a symbol (e.g. 0x55).
     */
    if (left >= CHUNKCOPY_CHUNK_SIZE)
       memset(put, 0x55, CHUNKCOPY_CHUNK_SIZE);
    else
       memset(put, 0x55, left);
-
+#endif
     RESTORE();
     if (state->wsize || (out != strm->avail_out && state->mode < BAD &&
             (state->mode < CHECK || flush != Z_FINISH)))

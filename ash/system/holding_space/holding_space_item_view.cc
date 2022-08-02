@@ -495,10 +495,12 @@ void HoldingSpaceItemView::UpdatePrimaryAction() {
   }
 
   // Cancel.
-  // NOTE: Only download type items currently support cancellation.
+  // NOTE: Only in-progress items currently support cancellation.
   const bool is_item_in_progress = !item()->progress().IsComplete();
   primary_action_cancel_->SetVisible(
-      is_item_in_progress && HoldingSpaceItem::IsDownload(item()->type()));
+      is_item_in_progress &&
+      base::Contains(item()->in_progress_commands(),
+                     HoldingSpaceCommandId::kCancelItem));
 
   // Pin.
   const bool is_item_pinned =

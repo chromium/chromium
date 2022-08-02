@@ -120,7 +120,7 @@ void AssistantViewDelegateImpl::OnSuggestionPressed(
 bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
   // UI developers need to be able to force the onboarding flow.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::assistant::switches::kForceAssistantOnboarding)) {
+          assistant::switches::kForceAssistantOnboarding)) {
     return true;
   }
 

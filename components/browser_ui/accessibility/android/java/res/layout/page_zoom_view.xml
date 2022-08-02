@@ -9,6 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/page_zoom_background"
+    android:elevation="@dimen/page_zoom_view_elevation"
     android:gravity="center"
     android:orientation="horizontal" >
 

@@ -126,7 +126,7 @@ class ShoppingServiceTestBase : public testing::Test {
   void DidNavigateAway(WebWrapper* web, const GURL& url);
   void WebWrapperDestroyed(WebWrapper* web);
   static void MergeProductInfoData(ProductInfo* info,
-                                   base::Value& on_page_data_map);
+                                   const base::Value::Dict& on_page_data_map);
 
   // Get the count of the number of tabs a particular URL is open in from the
   // product info cache.

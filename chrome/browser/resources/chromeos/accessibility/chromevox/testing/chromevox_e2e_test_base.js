@@ -46,6 +46,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
   async setUpDeferred() {
     await super.setUpDeferred();
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
+    await importModule(
+        'BrailleInterface', '/chromevox/common/braille/braille_interface.js');
   }
 };
 

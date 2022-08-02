@@ -626,7 +626,7 @@ WizardController::CreateScreens() {
       base::BindRepeating(&WizardController::OnKioskAutolaunchScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<LocaleSwitchScreen>(
-      oobe_ui->GetView<LocaleSwitchScreenHandler>(),
+      oobe_ui->GetView<LocaleSwitchScreenHandler>()->AsWeakPtr(),
       base::BindRepeating(&WizardController::OnLocaleSwitchScreenExit,
                           weak_factory_.GetWeakPtr())));
   append(std::make_unique<TermsOfServiceScreen>(

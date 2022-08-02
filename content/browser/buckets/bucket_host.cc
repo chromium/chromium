@@ -38,7 +38,8 @@ void BucketHost::Persist(PersistCallback callback) {
   }
 
   if (receivers_.current_context().GetPermissionStatus(
-          blink::PermissionType::DURABLE_STORAGE) ==
+          blink::PermissionType::DURABLE_STORAGE,
+          bucket_info_.storage_key.origin()) ==
       blink::mojom::PermissionStatus::GRANTED) {
     GetQuotaManagerProxy()->UpdateBucketPersistence(
         bucket_info_.id, /*persistent=*/true,
@@ -82,15 +83,11 @@ void BucketHost::Expires(ExpiresCallback callback) {
 
 void BucketHost::GetIdbFactory(
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver) {
-  StoragePartitionImpl* partition =
-      receivers_.current_context().GetStoragePartition();
-  if (!partition)
-    return;
-
   // TODO(crbug.com/1338303): this just accesses the default bucket for now, but
   // it should return a non-default bucket.
-  partition->GetIndexedDBControl().BindIndexedDB(bucket_info_.storage_key,
-                                                 std::move(receiver));
+  bucket_manager_host_->GetStoragePartition()
+      ->GetIndexedDBControl()
+      .BindIndexedDB(bucket_info_.storage_key, std::move(receiver));
 }
 
 void BucketHost::OnReceiverDisconnected() {

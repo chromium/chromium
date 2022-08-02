@@ -460,10 +460,12 @@ void EcheTray::InitBubble() {
   static_cast<views::BoxLayout*>(bubble_view->GetLayoutManager())
       ->set_inside_border_insets(kBubblePadding);
 
-  // The layer is needed to draw the header non-opaquely that is needed to
-  // match the phone hub behavior.
-  header_view->SetPaintToLayer();
-  header_view->layer()->SetFillsBoundsOpaquely(false);
+  // In dark light mode, we switch TrayBubbleView to use a textured layer
+  // instead of solid color layer, so no need to create an extra layer here.
+  if (!features::IsDarkLightModeEnabled()) {
+    header_view->SetPaintToLayer();
+    header_view->layer()->SetFillsBoundsOpaquely(false);
+  }
 
   AshWebView::InitParams params;
   params.can_record_media = true;

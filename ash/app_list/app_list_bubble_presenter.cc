@@ -47,7 +47,7 @@
 namespace ash {
 namespace {
 
-using chromeos::assistant::AssistantExitPoint;
+using assistant::AssistantExitPoint;
 
 // Maximum amount of time to spend refreshing zero state search results before
 // opening the launcher.

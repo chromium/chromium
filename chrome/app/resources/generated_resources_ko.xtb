@@ -1081,6 +1081,7 @@
 <translation id="1997616988432401742">내 인증서</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
+<translation id="2001148512690747464"><ph name="PRIMARY_EMAIL" />에 저장된 빠른 페어링 기기가 없습니다.</translation>
 <translation id="2002109485265116295">실시간</translation>
 <translation id="2003130567827682533">'<ph name="NAME" />' 데이터를 활성화하려면 먼저 Wi-Fi 네트워크에 연결하세요.</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
@@ -1345,6 +1346,7 @@
 <translation id="2241053333139545397">여러 웹사이트의 데이터를 읽고 변경</translation>
 <translation id="2241634353105152135">한 번만</translation>
 <translation id="2242687258748107519">파일 정보</translation>
+<translation id="2245296100676446525">동기화를 사용 설정하여 이 기기 및 동기화 중인 모든 곳에서 북마크, 비밀번호, 방문 기록 등을 사용하세요.</translation>
 <translation id="2245603955208828424">화살표 키를 사용하여 글자 단위로 항목을 이동하세요</translation>
 <translation id="2246129643805925002">최신 기능과 보안 개선사항을 제공하기 위해 <ph name="DEVICE_TYPE" /> 업데이트는 백그라운드에서 자동으로 실행됩니다. 설정에서 업데이트 환경설정을 확인할 수 있습니다.</translation>
 <translation id="2246549592927364792">Google에서 이미지 설명을 가져올까요?</translation>
@@ -1790,6 +1792,7 @@
 <translation id="2642111877055905627">축구공</translation>
 <translation id="2643698698624765890">창 메뉴에서 확장 프로그램을 클릭하여 확장 프로그램을 관리할 수 있습니다.</translation>
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" />님이 관리하는 기기입니다</translation>
+<translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{비밀번호 1개를 이 기기로 가져왔습니다.}other{비밀번호 {NUM_PASSWORDS}개를 이 기기로 가져왔습니다.}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-인코딩 ASCII, 인증서 체인</translation>
 <translation id="2652129567809778422">비밀번호 선택</translation>
@@ -2967,6 +2970,7 @@
 <translation id="3789841737615482174">설치</translation>
 <translation id="3790417903123637354">문제가 발생했습니다. 나중에 다시 시도해 보세요.</translation>
 <translation id="379082410132524484">카드가 만료됨</translation>
+<translation id="3792973596468118484">확장 프로그램 <ph name="NUM_EXTENSIONS" />개</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • 1일 전 확인}other{Chrome이 컴퓨터에서 유해 소프트웨어를 발견하지 못함 • {NUM_DAYS}일 전 확인}}</translation>
 <translation id="379500251094592809">Nearby Share를 사용하려면 두 기기가 모두 잠금 해제되어 있고 서로 가까이에 있으며 블루투스가 켜져 있어야 합니다. 연락처에 없는 Chromebook과 공유하려면 Nearby 전체 공개가 사용 설정되어 있는지 확인하세요. 시간을 선택하여 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">사용 안함</translation>
@@ -4752,6 +4756,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" />의 쿠키를 차단함</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" />에 연결 중</translation>
 <translation id="5543983818738093899">상태 확인 중...</translation>
+<translation id="5544482392629385159">기기 <ph name="DEVICE_INDEX" />/<ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">렌더러</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
 <translation id="5545693483061321551">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하는 데 쿠키를 사용할 수 없습니다. 일부 사이트에서는 기능이 작동하지 않을 수 있습니다.</translation>
@@ -5553,6 +5558,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6333170995003625229">이메일 또는 비밀번호를 확인할 수 없습니다. 다시 로그인해 주세요.</translation>
 <translation id="6335920438823100346">Linux를 시작하려면 <ph name="MANAGER" />의 요건에 따라 데이터를 백업하고 이 Chromebook을 초기화해야 합니다.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" />(으)로 인해 ADB 디버깅이 사용 중지되었습니다. 24시간 후 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 유지하고 싶은 파일이 있으면 백업해 주세요.</translation>
+<translation id="6338402296920404442">이 기기를 사용하는 다른 사용자가 내 비밀번호를 볼 수 없도록 <ph name="FILENAME" /> 기기를 삭제해 보세요.</translation>
 <translation id="6338981933082930623">모든 사이트에서 광고를 표시할 수 있음</translation>
 <translation id="6339668969738228384"><ph name="USER_EMAIL_ADDRESS" />의 새 프로필을 만드세요.</translation>
 <translation id="6340071272923955280">인터넷 인쇄 프로토콜(IPPS)</translation>
@@ -6442,7 +6448,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7212097698621322584">PIN을 변경하려면 현재 PIN을 입력하세요. PIN을 모르는 경우 보안 키를 재설정한 다음 새 PIN을 만들어야 합니다.</translation>
 <translation id="7213903639823314449">주소 표시줄에서 사용되는 검색엔진</translation>
 <translation id="721490496276866468">비밀번호 가져오기</translation>
-<translation id="7216595297012131718">원하는 대로 언어를 정렬하세요.</translation>
 <translation id="7219473482981809164">다운로드할 수 있는 프로필이 여러 개 확인되었습니다. 계속하기 전에 다운로드할 프로필을 선택하세요.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{취약한 비밀번호 없음}=1{취약한 비밀번호 1개}other{취약한 비밀번호 {NUM_WEAK}개}}</translation>
 <translation id="7220019174139618249">'<ph name="FOLDER" />'(으)로 비밀번호를 내보낼 수 없음</translation>
@@ -7627,6 +7632,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8338952601723052325">개발자 웹사이트</translation>
 <translation id="8339059274628563283"><ph name="SITE" />에 로컬 저장된 데이터</translation>
 <translation id="833986336429795709">이 링크를 열려면 앱을 선택하세요.</translation>
+<translation id="8340547030807793004"><ph name="DEVICE" />의 작업 메뉴 더보기</translation>
 <translation id="8342221978608739536">사용해 보지 않음</translation>
 <translation id="8342861492835240085">컬렉션 선택</translation>
 <translation id="8345848587667658367">이제 휴대전화의 최근 사진, 미디어, 알림, 앱을 확인할 수 있습니다.</translation>

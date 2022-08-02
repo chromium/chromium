@@ -43,8 +43,7 @@ bool CheckListValue(const std::string& key, const base::Value& value) {
 
 }  // namespace
 
-namespace chromeos {
-namespace internal {
+namespace ash::internal {
 
 // Class to manage Shill service property changed observers. Observers are
 // added on construction and removed on destruction. Runs the handler when
@@ -164,8 +163,8 @@ void ShillPropertyHandler::SetTechnologyEnabled(
         prohibited_technologies_.end()) {
       NET_LOG(ERROR) << "Attempt to enable prohibited network technology: "
                      << technology;
-      chromeos::network_handler::RunErrorCallback(std::move(error_callback),
-                                                  "prohibited_technologies");
+      network_handler::RunErrorCallback(std::move(error_callback),
+                                        "prohibited_technologies");
       NetworkMetricsHelper::LogEnableTechnologyResult(technology,
                                                       /*success=*/false);
       return;
@@ -680,5 +679,4 @@ void ShillPropertyHandler::GetIPConfigCallback(
   listener_->UpdateIPConfigProperties(type, path, ip_config_path, *properties);
 }
 
-}  // namespace internal
-}  // namespace chromeos
+}  // namespace ash::internal

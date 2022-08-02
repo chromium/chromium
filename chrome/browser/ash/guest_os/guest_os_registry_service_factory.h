@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_REGISTRY_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,7 +14,7 @@ namespace guest_os {
 
 class GuestOsRegistryService;
 
-class GuestOsRegistryServiceFactory : public BrowserContextKeyedServiceFactory {
+class GuestOsRegistryServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static guest_os::GuestOsRegistryService* GetForProfile(Profile* profile);
   static GuestOsRegistryServiceFactory* GetInstance();

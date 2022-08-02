@@ -9,7 +9,7 @@ namespace apps {
 APP_ENUM_TO_STRING(ConditionType,
                    kScheme,
                    kHost,
-                   kPattern,
+                   kPath,
                    kAction,
                    kMimeType,
                    kFile)
@@ -147,8 +147,8 @@ int IntentFilter::GetFilterMatchLevel() {
       case ConditionType::kHost:
         match_level += static_cast<int>(IntentFilterMatchLevel::kHost);
         break;
-      case ConditionType::kPattern:
-        match_level += static_cast<int>(IntentFilterMatchLevel::kPattern);
+      case ConditionType::kPath:
+        match_level += static_cast<int>(IntentFilterMatchLevel::kPath);
         break;
       case ConditionType::kMimeType:
       case ConditionType::kFile:
@@ -217,7 +217,7 @@ std::set<std::string> IntentFilter::GetSupportedLinksForAppManagement() {
     }
 
     // For path conditions we add each value to the |paths| set.
-    if (condition->condition_type == ConditionType::kPattern) {
+    if (condition->condition_type == ConditionType::kPath) {
       for (auto& condition_value : condition->condition_values) {
         std::string value = condition_value->value;
         // Glob and literal patterns can be printed exactly, but prefix
@@ -361,8 +361,8 @@ ConditionType ConvertMojomConditionTypeToConditionType(
       return ConditionType::kScheme;
     case apps::mojom::ConditionType::kHost:
       return ConditionType::kHost;
-    case apps::mojom::ConditionType::kPattern:
-      return ConditionType::kPattern;
+    case apps::mojom::ConditionType::kPath:
+      return ConditionType::kPath;
     case apps::mojom::ConditionType::kAction:
       return ConditionType::kAction;
     case apps::mojom::ConditionType::kMimeType:
@@ -379,8 +379,8 @@ apps::mojom::ConditionType ConvertConditionTypeToMojomConditionType(
       return apps::mojom::ConditionType::kScheme;
     case ConditionType::kHost:
       return apps::mojom::ConditionType::kHost;
-    case ConditionType::kPattern:
-      return apps::mojom::ConditionType::kPattern;
+    case ConditionType::kPath:
+      return apps::mojom::ConditionType::kPath;
     case ConditionType::kAction:
       return apps::mojom::ConditionType::kAction;
     case ConditionType::kMimeType:

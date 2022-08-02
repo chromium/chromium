@@ -118,6 +118,10 @@ export function helpContentTestSuite() {
     assertTrue(!!title);
     assertEquals('Top help content', title.textContent);
 
+    // Vierfy the description Icon is in the page.
+    const descriptionIcon = getElement('#helpContentIcon');
+    assertTrue(!!descriptionIcon);
+
     verifyPopularHelpContent();
   });
 

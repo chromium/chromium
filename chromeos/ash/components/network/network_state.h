@@ -184,8 +184,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
     return shill_connect_error_;
   }
 
-  PortalState portal_state() const { return portal_state_; }
-
   // Returns true if the network is managed by policy (determined by
   // |onc_source_|).
   bool IsManagedByPolicy() const;
@@ -219,10 +217,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // service.
   bool IsNonShillCellularNetwork() const;
 
-  // Returns true if Shill has detected a captive portal state.
-  bool IsShillCaptivePortal() const;
+  PortalState shill_portal_state() const { return shill_portal_state_; }
 
-  // Returns true if Shill or Chrome have detected a captive portal state.
+  // Returns the captive portal state for the network, prioritizing Chrome
+  // portal detection results if set.
+  PortalState GetPortalState() const;
+
+  // Returns true if GetPortalState is not unknown or online.
+  // TODO(b/207069182): Deprecate and use GetPortalState directly.
   bool IsCaptivePortal() const;
 
   // Returns true if the security type is non-empty and not 'none'.
@@ -303,6 +305,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   void SetVpnProvider(const std::string& id, const std::string& type);
 
+  void set_chrome_portal_state(PortalState portal_state) {
+    chrome_portal_state_ = portal_state;
+  }
+
   // Set to true if the network is a member of Manager.Services.
   bool visible_ = false;
 
@@ -366,8 +372,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string tether_carrier_;
   int battery_percentage_ = 0;
 
-  // Portal state is derived from connection_state_ and Shill portal properties.
-  PortalState portal_state_ = PortalState::kUnknown;
+  PortalState shill_portal_state_ = PortalState::kUnknown;
+  PortalState chrome_portal_state_ = PortalState::kUnknown;
 
   // Whether the current device has already connected to the tether host device
   // providing the hotspot corresponding to this NetworkState.
@@ -383,10 +389,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Set while a network connect request is queued. Cleared on connect or
   // if the request is aborted.
   bool connect_requested_ = false;
-
-  // Set by NetworkStateHandler if Chrome detects a captive portal state.
-  // See IsCaptivePortal() for details.
-  bool is_chrome_captive_portal_ = false;
 };
 
 }  // namespace ash

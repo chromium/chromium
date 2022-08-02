@@ -17,6 +17,7 @@
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_network_context.h"
+#include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_proxy_configurator.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
@@ -181,7 +182,14 @@ PrefetchService::PrefetchService(BrowserContext* browser_context)
               PrefetchProxyHost(delegate_
                                     ? delegate_->GetDefaultPrefetchProxyHost()
                                     : GURL("")),
-              delegate_ ? delegate_->GetAPIKey() : "")) {}
+              delegate_ ? delegate_->GetAPIKey() : "")),
+      origin_prober_(std::make_unique<PrefetchOriginProber>(
+          browser_context_,
+          PrefetchDNSCanaryCheckURL(
+              delegate_ ? delegate_->GetDefaultDNSCanaryCheckURL() : GURL("")),
+          PrefetchTLSCanaryCheckURL(
+              delegate_ ? delegate_->GetDefaultTLSCanaryCheckURL()
+                        : GURL("")))) {}
 
 PrefetchService::~PrefetchService() = default;
 
@@ -633,7 +641,22 @@ void PrefetchService::StartSinglePrefetch(
   prefetch_container->TakeURLLoader(std::move(loader));
   num_active_prefetches_++;
 
-  // TODO(https://crbug.com/1299059): Run canary checks if needed.
+  PrefetchDocumentManager* prefetch_document_manager =
+      prefetch_container->GetPrefetchDocumentManager();
+  if (!prefetch_container->IsDecoy() &&
+      (!prefetch_document_manager ||
+       !prefetch_document_manager->HaveCanaryChecksStarted())) {
+    // Make sure canary checks have run so we know the result by the time we
+    // want to use the prefetch. Checking the canary cache can be a slow and
+    // blocking operation (see crbug.com/1266018), so we only do this for the
+    // first non-decoy prefetch we make on the page.
+    // TODO(crbug.com/1266018): once this bug is fixed, fire off canary check
+    // regardless of whether the request is a decoy or not.
+    origin_prober_->RunCanaryChecksIfNeeded();
+
+    if (prefetch_document_manager)
+      prefetch_document_manager->OnCanaryChecksStarted();
+  }
 
   // Start a spare renderer now so that it will be ready by the time it is
   // useful to have.

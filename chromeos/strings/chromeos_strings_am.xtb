@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3017079585324758401">ጀርባ</translation>
+<translation id="302435934487327038">መጫን ተጠናቅቋል</translation>
 <translation id="3027578600144895987">ካሜራን ዝጋ</translation>
 <translation id="3031560714565892478">መሣሪያ የቪዲዮ ካሜራ ነው።</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
 <translation id="3056720590588772262">የማለቂያ ነጥብ</translation>
 <translation id="3069085583900247081">ሙከራ አልተሳካም</translation>
-<translation id="3076243757415932261">ክፍለ-አባላትን በማረጋገጥ ላይ...</translation>
 <translation id="3083667275341675831">የግንኙነት ምርመራዎች</translation>
 <translation id="3084958266922136097">የማያ ገጽ ማቆያን አሰናክል</translation>
 <translation id="3091839911843451378">አልተሳካም - ተቋርጧል</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">እርግጠኛ ነዎት ሁሉንም የህትመት ታሪክ ማጥፋት ይፈልጋሉ? በመካሄድ ላይ ያሉ የህትመት ስራዎችዎ አይጠፉም።</translation>
 <translation id="3383751554789092165">የመሣሪያ መረጃን እንደ አስፈላጊነቱ ይቀይሩ።</translation>
 <translation id="3404249063913988450">የማያ ገጽ ማቆያን አንቃ</translation>
-<translation id="3404770484521709967">ክፍለ-አካላት በትክክል ተጭነዋል።</translation>
 <translation id="3413935475507503304">በዝማኔው ለመቀጠል ቀጣይ የሚለውን ጠቅ ያድርጉ።</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">የቀድሞው የይለፍ ቃል</translation>
 <translation id="4453205916657964690">ሰብኔት ማስክ</translation>
 <translation id="4454245904991689773">ቃኝ ወደ</translation>
-<translation id="4472575034687746823">ይጀምሩ</translation>
 <translation id="4479639480957787382">ኢተርኔት</translation>
 <translation id="4483049906298469269">ነባሪ ያልሆነውን የአውታረ መረብ አግባቢ ፍኖት ፒንግ ማድረግ አልተሳካም</translation>
 <translation id="4500213108254186382">የክዳን የፍጥነት መለኪያ መሣሪያ</translation>
@@ -664,6 +662,7 @@
 <translation id="6618744767048954150">በማሄድ ላይ</translation>
 <translation id="6620487321149975369">የህትመት ስራዎች በሰው ካልተወገዱ በቀር በታሪክ ውስጥ ይታያሉ</translation>
 <translation id="6643016212128521049">አጽዳ</translation>
+<translation id="6644568396961840069">ፋይሉን ማስቀመጥ አልቻለም። የተለየ ውጫዊ ማከማቻ ለመሰካት ይሞክሩ ወይም በኋላ ላይ በድጋሚ ይሞክሩ።</translation>
 <translation id="6647510110698214773">የምስጠራ ስልተ-ቀመር</translation>
 <translation id="6650062777702288430">የካና/ፊደል-ቁጥራዊ መቀየሪያ</translation>
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
@@ -809,7 +808,6 @@
 <translation id="8063022551652308521">ከማየት ውጪ የማይፈቅድ አሁንም እንደጠፋ ነው። ለመቀጠል ከማየት ውጪ የማይፈቅድን ያብሩት።</translation>
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>
-<translation id="8083281199617904460">ይህ የጥገና ሂደት ለሰለጠነ የጥገና ቴክኒሺያን የታሰበ ነው። የተበላሹ ክፍለ-አካላትን ከተኩ በኋላ ብቻ ይጀምሩ።</translation>
 <translation id="808894953321890993">የይለፍ ቃል ለውጥ</translation>
 <translation id="8104083085214006426">ክፍት እና ደህንነቱ ያልተጠበቀ አውታረ መረብ እየተጠቀሙ ነው</translation>
 <translation id="8109786307828817014">ካልተሳኩ ማስተካከሎች ጋር ይቀጥል?</translation>

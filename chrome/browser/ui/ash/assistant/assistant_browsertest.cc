@@ -58,7 +58,7 @@ class AssistantBrowserTest : public MixinBasedInProcessBrowserTest {
   AssistantBrowserTest() {
     // TODO(b/190633242): enable sandbox in browser tests.
     feature_list_.InitAndDisableFeature(
-        chromeos::assistant::features::kEnableLibAssistantSandbox);
+        ash::assistant::features::kEnableLibAssistantSandbox);
 
     // Do not log to file in test. Otherwise multiple tests may create/delete
     // the log file at the same time. See http://crbug.com/1307868.

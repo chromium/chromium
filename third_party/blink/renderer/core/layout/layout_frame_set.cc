@@ -26,7 +26,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/frame_edge_info.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
+#include "third_party/blink/renderer/core/html/html_frame_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/layout/layout_frame.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -96,6 +98,7 @@ void LayoutFrameSet::LayOutAxis(GridAxis& axis,
 
   available_len = max(available_len, 0);
 
+  DCHECK_EQ(axis.sizes_.size(), deltas.size());
   int* grid_layout = axis.sizes_.data();
 
   if (grid.IsEmpty()) {
@@ -302,78 +305,7 @@ void LayoutFrameSet::NotifyFrameEdgeInfoChanged() {
   // FIXME: We should only recompute the edge info with respect to the frame
   // that changed and its adjacent frame(s) instead of recomputing the edge info
   // for the entire frameset.
-  ComputeEdgeInfo();
-}
-
-void LayoutFrameSet::FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
-                                      int r,
-                                      int c) {
-  NOT_DESTROYED();
-  if (edge_info.AllowBorder(kLeftFrameEdge))
-    cols_.allow_border_[c] = true;
-  if (edge_info.AllowBorder(kRightFrameEdge))
-    cols_.allow_border_[c + 1] = true;
-  if (edge_info.PreventResize(kLeftFrameEdge))
-    cols_.prevent_resize_[c] = true;
-  if (edge_info.PreventResize(kRightFrameEdge))
-    cols_.prevent_resize_[c + 1] = true;
-
-  if (edge_info.AllowBorder(kTopFrameEdge))
-    rows_.allow_border_[r] = true;
-  if (edge_info.AllowBorder(kBottomFrameEdge))
-    rows_.allow_border_[r + 1] = true;
-  if (edge_info.PreventResize(kTopFrameEdge))
-    rows_.prevent_resize_[r] = true;
-  if (edge_info.PreventResize(kBottomFrameEdge))
-    rows_.prevent_resize_[r + 1] = true;
-}
-
-void LayoutFrameSet::ComputeEdgeInfo() {
-  NOT_DESTROYED();
-  rows_.prevent_resize_.Fill(FrameSet()->NoResize());
-  rows_.allow_border_.Fill(false);
-  cols_.prevent_resize_.Fill(FrameSet()->NoResize());
-  cols_.allow_border_.Fill(false);
-
-  LayoutObject* child = FirstChild();
-  if (!child)
-    return;
-
-  wtf_size_t rows = rows_.sizes_.size();
-  wtf_size_t cols = cols_.sizes_.size();
-  for (wtf_size_t r = 0; r < rows; ++r) {
-    for (wtf_size_t c = 0; c < cols; ++c) {
-      FrameEdgeInfo edge_info;
-      if (child->IsFrameSet())
-        edge_info = To<LayoutFrameSet>(child)->EdgeInfo();
-      else
-        edge_info = To<LayoutFrame>(child)->EdgeInfo();
-      FillFromEdgeInfo(edge_info, r, c);
-      child = child->NextSibling();
-      if (!child)
-        return;
-    }
-  }
-}
-
-FrameEdgeInfo LayoutFrameSet::EdgeInfo() const {
-  NOT_DESTROYED();
-  FrameEdgeInfo result(FrameSet()->NoResize(), true);
-
-  int rows = FrameSet()->TotalRows();
-  int cols = FrameSet()->TotalCols();
-  if (rows && cols) {
-    result.SetPreventResize(kLeftFrameEdge, cols_.prevent_resize_[0]);
-    result.SetAllowBorder(kLeftFrameEdge, cols_.allow_border_[0]);
-    result.SetPreventResize(kRightFrameEdge, cols_.prevent_resize_[cols]);
-    result.SetAllowBorder(kRightFrameEdge, cols_.allow_border_[cols]);
-    result.SetPreventResize(kTopFrameEdge, rows_.prevent_resize_[0]);
-    result.SetAllowBorder(kTopFrameEdge, rows_.allow_border_[0]);
-    result.SetPreventResize(kBottomFrameEdge, rows_.prevent_resize_[rows]);
-    result.SetAllowBorder(kBottomFrameEdge, rows_.allow_border_[rows]);
-  }
-
-  return result;
+  FrameSet()->CollectEdgeInfo();
 }
 
 void LayoutFrameSet::UpdateLayout() {
@@ -387,16 +319,12 @@ void LayoutFrameSet::UpdateLayout() {
 
   unsigned cols = FrameSet()->TotalCols();
   unsigned rows = FrameSet()->TotalRows();
-  Vector<int>& rows_deltas = rows_.deltas_;
-  Vector<int>& cols_deltas = cols_.deltas_;
+  const Vector<int>& rows_deltas = FrameSet()->RowDeltas();
+  const Vector<int>& cols_deltas = FrameSet()->ColDeltas();
 
   if (rows_.sizes_.size() != rows || cols_.sizes_.size() != cols) {
     rows_.Resize(rows);
-    rows_deltas.resize(rows);
-    rows_deltas.Fill(0);
     cols_.Resize(cols);
-    cols_deltas.resize(cols);
-    cols_deltas.Fill(0);
   }
 
   LayoutUnit border_thickness(FrameSet()->Border());
@@ -409,7 +337,7 @@ void LayoutFrameSet::UpdateLayout() {
 
   LayoutBox::UpdateLayout();
 
-  ComputeEdgeInfo();
+  FrameSet()->CollectEdgeInfo();
 
   UpdateAfterLayout();
 

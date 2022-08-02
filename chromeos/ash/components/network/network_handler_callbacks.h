@@ -14,8 +14,7 @@
 #include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-namespace network_handler {
+namespace ash::network_handler {
 
 COMPONENT_EXPORT(CHROMEOS_NETWORK) extern const char kDBusFailedError[];
 
@@ -58,12 +57,11 @@ void ShillErrorCallbackFunction(const std::string& error_name,
                                 const std::string& dbus_error_name,
                                 const std::string& dbus_error_message);
 
-}  // namespace network_handler
-}  // namespace chromeos
+}  // namespace ash::network_handler
 
-namespace ash {
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace network_handler = ::chromeos::network_handler;
-}  // namespace ash
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+namespace network_handler = ::ash::network_handler;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_HANDLER_CALLBACKS_H_

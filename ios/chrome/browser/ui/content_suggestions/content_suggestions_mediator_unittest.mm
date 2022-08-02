@@ -68,12 +68,6 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
 class ContentSuggestionsMediatorTest : public PlatformTest {
  public:
   ContentSuggestionsMediatorTest() {
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatures(
-        {kSingleCellContentSuggestions, kContentSuggestionsHeaderMigration,
-         kContentSuggestionsUIViewControllerMigration},
-        {});
-
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
@@ -186,7 +180,7 @@ TEST_F(ContentSuggestionsMediatorTest, TestOpenReadingList) {
 TEST_F(ContentSuggestionsMediatorTest, TestOpenMostVisited) {
   GURL url = GURL("http://chromium.org");
   ContentSuggestionsMostVisitedItem* item =
-      [[ContentSuggestionsMostVisitedItem alloc] initWithType:0];
+      [[ContentSuggestionsMostVisitedItem alloc] init];
   item.URL = url;
   histogram_tester_->ExpectUniqueSample(
       "IOS.ContentSuggestions.ActionOnNTP",

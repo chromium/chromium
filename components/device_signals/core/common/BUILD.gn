@@ -17,6 +17,7 @@ static_library("common") {
     "file_system_service.cc",
     "hashing_utils.cc",
     "hashing_utils.h",
+    "platform_delegate.cc",
     "signals_constants.cc",
   ]
 

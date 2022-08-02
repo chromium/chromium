@@ -16,6 +16,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.graphics.Bitmap;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -27,7 +29,6 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -55,6 +56,9 @@ public class ContextMenuHeaderMediatorTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
     PerformanceHintsObserver.Natives mMockPerformanceHintsObserverJni;
@@ -73,7 +77,7 @@ public class ContextMenuHeaderMediatorTest {
 
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.setupActivity(TestActivity.class);
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mMockPerformanceHintsObserverJni);
         mocker.mock(LargeIconBridgeJni.TEST_HOOKS, mMockLargeIconBridgeJni);

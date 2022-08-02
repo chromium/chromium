@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/app_types_util.h"
 #include "components/exo/shell_surface_util.h"
 
 namespace exo {
@@ -17,7 +18,13 @@ class DefaultSecurityDelegate : public SecurityDelegate {
  public:
   ~DefaultSecurityDelegate() override = default;
 
+  // SecurityDelegate:
   std::string GetSecurityContext() const override { return ""; }
+  bool CanLockPointer(aura::Window* toplevel) const override {
+    // TODO(b/200896773): Move this out from exo's default security delegate
+    // define in client's security delegates.
+    return ash::IsArcWindow(toplevel) || ash::IsLacrosWindow(toplevel);
+  }
 };
 
 }  // namespace
@@ -37,6 +44,10 @@ bool SecurityDelegate::CanSelfActivate(aura::Window* window) const {
   // Unfortunately, several clients don't have their own SecurityDelegate yet,
   // so we will continue to use the old exo::Permissions stuff until they do.
   return HasPermissionToActivate(window);
+}
+
+bool SecurityDelegate::CanLockPointer(aura::Window* window) const {
+  return false;
 }
 
 }  // namespace exo

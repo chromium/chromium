@@ -75,6 +75,9 @@ class PromoService : public KeyedService {
   // Marks |promo_id| as blocked from being shown again.
   void BlocklistPromo(const std::string& promo_id);
 
+  // Unmarks |promo_id| as blocked and allows it to be shown again.
+  void UndoBlocklistPromo(const std::string& promo_id);
+
   GURL GetLoadURLForTesting() const;
 
  protected:

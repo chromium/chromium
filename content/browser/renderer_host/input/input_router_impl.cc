@@ -569,11 +569,10 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
                 info->set_trace_id(latency_info.trace_id());
                 info->set_step(ChromeLatencyInfo::STEP_SEND_INPUT_EVENT_UI);
 
-                tracing::FillFlowEvent(
-                    ctx,
-                    perfetto::protos::pbzero::
-                        TrackEvent_LegacyEvent_FlowDirection_FLOW_INOUT,
-                    latency_info.trace_id());
+                tracing::FillFlowEvent(ctx,
+                                       perfetto::protos::pbzero::TrackEvent::
+                                           LegacyEvent::FLOW_INOUT,
+                                       latency_info.trace_id());
               });
 
   output_stream_validator_.Validate(input_event);

@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">ডানে</translation>
 <translation id="1351937230027495976">মেনুটি আড়াল করুন</translation>
 <translation id="1364382257761975320">Chromebook আনলক করতে, আপনার ফিঙ্গারপ্রিন্ট ব্যবহার করুন</translation>
+<translation id="1365866993922957110">অটোমেটিক আপডেট পান</translation>
 <translation id="1372545819342940910">পরে ব্যবহার করার জন্য ডেস্ক সেভ করুন</translation>
 <translation id="1383597849754832576">স্পিচ ফাইল ডাউনলোড করা যাবে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="1383876407941801731">Search</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> আনপিন করা হয়েছে</translation>
 <translation id="1836215606488044471">সহায়ক (লোড হচ্ছে...)</translation>
 <translation id="1838895407229022812">নাইট লাইট ফিচার বন্ধ করা আছে।</translation>
+<translation id="1862380676329487333">আপডেট করে সাইন-আউট করুন</translation>
 <translation id="1864454756846565995">USB-C ডিভাইস (পিছনের পোর্ট)</translation>
 <translation id="1879018240766558464">বর্তমানে ছদ্মবেশী উইন্ডো ব্যবহারের সুবিধা নেই। অন্যান্য অ্যাপ সেভ করা হবে।</translation>
 <translation id="1882814835921407042">মোবাইল নেটওয়ার্ক নেই</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">এই মুহূর্তে কন্টেন্ট কপি বা পেস্ট করা যাচ্ছে না</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
+<translation id="4247123849143712100">আপডেট করে বন্ধ করুন</translation>
 <translation id="4250229828105606438">স্ক্রিনশট</translation>
 <translation id="425364040945105958">কোনও সিম নেই</translation>
 <translation id="4261870227682513959">বিজ্ঞপ্তি সেটিংস দেখান। বিজ্ঞপ্তি বন্ধ আছে</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> এমন একটি ম্যানেজ করা সেশন যা <ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> কানেক্ট করা হয়েছে</translation>
 <translation id="6351032674660237738">অ্যাপের প্রস্তাবনা</translation>
+<translation id="6359587239691116345">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান। আপনি এই আপডেটটি বাতিল করলে, আপনার ডিভাইস আর সঠিকভাবে কাজ নাও করতে পারে এবং আপনি নিরাপত্তা এবং পারফর্ম্যান্স সংক্রান্ত সমস্যার সম্মুখীন হতে পারেন।</translation>
 <translation id="6376931439017688372">ব্লুটুথ চালু আছে</translation>
 <translation id="6381109794406942707">ডিভাইস আনলক করতে, আপনার পিন এন্টার করুন।</translation>
 <translation id="639644700271529076">CAPS LOCK বন্ধ আছে</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> আপনাকে ডেডলাইনের আগে <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>
 <translation id="6495400115277918834">ছবির-মধ্যে-ছবি ফিচার চালু করা হয়েছে, ফোকাস করতে Alt+Shift+V প্রেস করুন</translation>
+<translation id="6500896621837555595">আপডেট করুন</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা হচ্ছে</translation>
 <translation id="6515727200518652613">ক্যামেরা ডিসকানেক্ট হয়ে গেছে, আবার কানেক্ট করার চেষ্টা করা হচ্ছে।</translation>
 <translation id="6520517963145875092">ছবি তুলতে একটি উইন্ডো বেছে নিন</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">ব্যাটারি সময় গণনা করা হচ্ছে।</translation>
 <translation id="8061464966246066292">উচ্চ বৈসাদৃশ্য</translation>
 <translation id="8083540854303889870">পরবর্তী সময়ের জন্য সেভ করুন</translation>
+<translation id="8091387634532529612">অটোমেটিক আপডেট</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> এ স্ক্রিন কাস্ট করা বন্ধ করুন</translation>
 <translation id="8113423164597455979">সমস্ত অ্যাপে</translation>
 <translation id="8120151603115102514">আপনার ফোনে লক স্ক্রিন নেই। Chromebook আনলক করতে, পাসওয়ার্ড লিখুন।</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949"><ph name="QUERY" />-এর জন্য <ph name="RESULT_COUNT" />টি ফলাফল দেখানো হচ্ছে</translation>
 <translation id="98515147261107953">ল্যান্ডস্কেপ</translation>
 <translation id="990277280839877440">উইন্ডো <ph name="WINDOW_TITILE" /> বন্ধ করা আছে।</translation>
+<translation id="996204416024568215">লেটেস্ট ফিচার এবং নিরাপত্তা সংক্রান্ত উন্নতি পান। ব্যাকগ্রাউন্ডে আপডেট চলতে থাকবে।</translation>
 </translationbundle>

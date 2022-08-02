@@ -71,11 +71,13 @@ struct SearchPrefetchEligibilityReasonRecorder {
   ~SearchPrefetchEligibilityReasonRecorder() {
     if (navigation_prefetch_) {
       UMA_HISTOGRAM_ENUMERATION(
-          "Omnibox.SearchPrefetch.PrefetchEligibilityReason.NavigationPrefetch",
+          "Omnibox.SearchPrefetch.PrefetchEligibilityReason2."
+          "NavigationPrefetch",
           reason_);
     } else {
       UMA_HISTOGRAM_ENUMERATION(
-          "Omnibox.SearchPrefetch.PrefetchEligibilityReason.SuggestionPrefetch",
+          "Omnibox.SearchPrefetch.PrefetchEligibilityReason2."
+          "SuggestionPrefetch",
           reason_);
     }
   }
@@ -159,26 +161,8 @@ bool SearchPrefetchService::MaybePrefetchURL(
 
   SearchPrefetchEligibilityReasonRecorder recorder(navigation_prefetch);
 
-  if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
-    recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
-    return false;
-  }
-
-  if (!profile_->GetPrefs() ||
-      !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
-    recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
-    return false;
-  }
-
-  auto* content_settings =
-      HostContentSettingsMapFactory::GetForProfile(profile_);
-  if (!content_settings ||
-      content_settings->GetContentSetting(
-          url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
-    recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
-    return false;
-  }
-
+  // Check for search terms before checking for any other eligibility reasons
+  // for Prefetch to exit early.
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   if (!template_url_service ||
@@ -200,6 +184,26 @@ bool SearchPrefetchService::MaybePrefetchURL(
   if (search_terms.size() == 0) {
     recorder.reason_ =
         SearchPrefetchEligibilityReason::kNotDefaultSearchWithTerms;
+    return false;
+  }
+
+  if (!prefetch::IsSomePreloadingEnabled(*profile_->GetPrefs())) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kPrefetchDisabled;
+    return false;
+  }
+
+  if (!profile_->GetPrefs() ||
+      !profile_->GetPrefs()->GetBoolean(prefs::kWebKitJavascriptEnabled)) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
+    return false;
+  }
+
+  auto* content_settings =
+      HostContentSettingsMapFactory::GetForProfile(profile_);
+  if (!content_settings ||
+      content_settings->GetContentSetting(
+          url, url, ContentSettingsType::JAVASCRIPT) == CONTENT_SETTING_BLOCK) {
+    recorder.reason_ = SearchPrefetchEligibilityReason::kJavascriptDisabled;
     return false;
   }
 

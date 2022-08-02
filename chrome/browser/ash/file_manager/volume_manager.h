@@ -152,7 +152,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   static std::unique_ptr<Volume> CreateForTesting(
       const base::FilePath& path,
       VolumeType volume_type,
-      chromeos::DeviceType device_type,
+      ash::DeviceType device_type,
       bool read_only,
       const base::FilePath& device_path,
       const std::string& drive_label,
@@ -180,7 +180,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   }
   Source source() const { return source_; }
   VolumeType type() const { return type_; }
-  chromeos::DeviceType device_type() const { return device_type_; }
+  ash::DeviceType device_type() const { return device_type_; }
   const base::FilePath& source_path() const { return source_path_; }
   const base::FilePath& mount_path() const { return mount_path_; }
   const base::FilePath& remote_mount_path() const { return remote_mount_path_; }
@@ -237,7 +237,7 @@ class Volume : public base::SupportsWeakPtr<Volume> {
   VolumeType type_;
 
   // The type of device. (e.g. USB, SD card, DVD etc.)
-  chromeos::DeviceType device_type_;
+  ash::DeviceType device_type_ = ash::DeviceType::kUnknown;
 
   // The source path of the volume.
   // E.g.:
@@ -429,7 +429,7 @@ class VolumeManager : public KeyedService,
   // type. Assumes that the mount point is already registered.
   void AddVolumeForTesting(const base::FilePath& path,
                            VolumeType volume_type,
-                           chromeos::DeviceType device_type,
+                           ash::DeviceType device_type,
                            bool read_only,
                            const base::FilePath& device_path = base::FilePath(),
                            const std::string& drive_label = "",
@@ -442,7 +442,7 @@ class VolumeManager : public KeyedService,
   void RemoveVolumeForTesting(
       const base::FilePath& path,
       VolumeType volume_type,
-      chromeos::DeviceType device_type,
+      ash::DeviceType device_type,
       bool read_only,
       const base::FilePath& device_path = base::FilePath(),
       const std::string& drive_label = "",

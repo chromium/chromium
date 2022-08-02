@@ -10,8 +10,8 @@ ADDRESS_HOME_CITY | billCity | *City: |  | billingShippingSame_1-default
 ADDRESS_HOME_STATE | billState | *State: | AL | billingShippingSame_1-default
 ADDRESS_HOME_ZIP | billZipCode | *Zip Code: |  | billingShippingSame_1-default
 PHONE_HOME_CITY_CODE | billDayPhonePart1 | *Day Phone: |  | billingShippingSame_1-default
-PHONE_HOME_NUMBER | billDayPhonePart2 | *Day Phone: |  | billingShippingSame_1-default
-PHONE_HOME_NUMBER | billDayPhonePart3 | *Day Phone: |  | billingShippingSame_1-default
+PHONE_HOME_NUMBER_PREFIX | billDayPhonePart2 | *Day Phone: |  | billingShippingSame_1-default
+PHONE_HOME_NUMBER_SUFFIX | billDayPhonePart3 | *Day Phone: |  | billingShippingSame_1-default
 EMAIL_ADDRESS | billEmail | *Email Address: |  | billingShippingSame_1-default
 UNKNOWN_TYPE | sendMeEmail | Yes, please send me emails about news, special offers, exclusives and promotions from Advance Auto Parts. See our | checked | billingShippingSame_1-default
 UNKNOWN_TYPE | billPassword | Password: |  | billingShippingSame_1-default
@@ -24,9 +24,9 @@ ADDRESS_HOME_CITY | shipCity | *City: |  | shipFirstName_2-default
 ADDRESS_HOME_STATE | shipState | *State: | AL | shipFirstName_2-default
 ADDRESS_HOME_ZIP | shipZipCode | *Zip Code: |  | shipFirstName_2-default
 PHONE_HOME_CITY_CODE | shipDayPhonePart1 | *Day Phone: |  | shipFirstName_2-default
-PHONE_HOME_NUMBER | shipDayPhonePart2 | *Day Phone: |  | shipFirstName_2-default
-PHONE_HOME_NUMBER | shipDayPhonePart3 | *Day Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER_PREFIX | shipDayPhonePart2 | *Day Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER_SUFFIX | shipDayPhonePart3 | *Day Phone: |  | shipFirstName_2-default
 PHONE_HOME_CITY_CODE | shipNightPhonePart1 | Night Phone: |  | shipFirstName_2-default
-PHONE_HOME_NUMBER | shipNightPhonePart2 | Night Phone: |  | shipFirstName_2-default
-PHONE_HOME_NUMBER | shipNightPhonePart3 | Night Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER_PREFIX | shipNightPhonePart2 | Night Phone: |  | shipFirstName_2-default
+PHONE_HOME_NUMBER_SUFFIX | shipNightPhonePart3 | Night Phone: |  | shipFirstName_2-default
 UNKNOWN_TYPE | zipCode |  |  | zipCode_1-default

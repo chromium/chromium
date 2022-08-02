@@ -83,10 +83,22 @@ class MockDlpClipboardNotifier : public DlpClipboardNotifier {
   MOCK_METHOD2(CloseWidget,
                void(views::Widget* widget, views::Widget::ClosedReason reason));
 
+  void SetPasteCallback(base::OnceCallback<void(bool)> paste_cb) override {
+    paste_cb_ = std::move(paste_cb);
+  }
+
+  void RunPasteCallback() override {
+    DCHECK(paste_cb_);
+    std::move(paste_cb_).Run(true);
+  }
+
   using DlpClipboardNotifier::BlinkProceedPressed;
   using DlpClipboardNotifier::CancelWarningPressed;
   using DlpClipboardNotifier::ProceedPressed;
   using DlpClipboardNotifier::ResetUserWarnSelection;
+
+ private:
+  base::OnceCallback<void(bool)> paste_cb_;
 };
 
 }  // namespace
@@ -236,15 +248,15 @@ TEST_F(DlpClipboardNotifierTest, BlinkProceedSavedHistory) {
                           views::Widget::ClosedReason::kAcceptButtonClicked))
       .Times(3);
 
-  notifier.SetBlinkPasteCallbackForTesting(callback.Get());
+  notifier.SetPasteCallback(callback.Get());
   EXPECT_CALL(callback, Run(true));
   notifier.BlinkProceedPressed(url_dst1, nullptr);
 
-  notifier.SetBlinkPasteCallbackForTesting(callback.Get());
+  notifier.SetPasteCallback(callback.Get());
   EXPECT_CALL(callback, Run(true));
   notifier.BlinkProceedPressed(url_dst2, nullptr);
 
-  notifier.SetBlinkPasteCallbackForTesting(callback.Get());
+  notifier.SetPasteCallback(callback.Get());
   EXPECT_CALL(callback, Run(true));
   notifier.BlinkProceedPressed(url_dst3, nullptr);
 

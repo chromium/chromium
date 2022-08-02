@@ -255,7 +255,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
       XcodeVersionNotFoundError: If the given Xcode version does not exist.
       XCTestPlugInNotFoundError: If the .xctest PlugIn does not exist.
     """
-    kwargs['retries'] = kwargs.get('retries') or 1
+    kwargs['retries'] = kwargs.get('retries') or 0
     super(SimulatorParallelTestRunner,
           self).__init__(app_path, iossim_path, platform, version, out_dir,
                          **kwargs)

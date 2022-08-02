@@ -128,17 +128,6 @@ def GetANGLERenderer(gpu_info: tgi.GPUInfo) -> str:
   return retval
 
 
-def GetSwiftShaderGLRenderer(gpu_info: tgi.GPUInfo) -> str:
-  if gpu_info and gpu_info.aux_attributes:
-    gl_renderer = gpu_info.aux_attributes.get('gl_renderer')
-    # Filter out ANGLE on top of SwiftShader Vulkan,
-    # as we are only interested in SwiftShader GL
-    if (gl_renderer and 'ANGLE' not in gl_renderer
-        and 'SwiftShader' in gl_renderer):
-      return 'swiftshader-gl'
-  return 'no-swiftshader-gl'
-
-
 def GetCommandDecoder(gpu_info: tgi.GPUInfo) -> str:
   if gpu_info and gpu_info.aux_attributes and \
       gpu_info.aux_attributes.get('passthrough_cmd_decoder', False):

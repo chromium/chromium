@@ -11,8 +11,8 @@
 #include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_form_structure.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "form_structure_test_api.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -134,10 +134,10 @@ void TestBrowserAutofillManager::AddSeenForm(
     field.value = std::u16string();
   }
 
-  std::unique_ptr<TestFormStructure> form_structure =
-      std::make_unique<TestFormStructure>(
-          preserve_values_in_form_structure ? form : form_with_empty_fields);
-  form_structure->SetFieldTypes(heuristic_types, server_types);
+  auto form_structure = std::make_unique<FormStructure>(
+      preserve_values_in_form_structure ? form : form_with_empty_fields);
+  FormStructureTestApi(form_structure.get())
+      .SetFieldTypes(heuristic_types, server_types);
   form_structure->identify_sections_for_testing();
   AddSeenFormStructure(std::move(form_structure));
 

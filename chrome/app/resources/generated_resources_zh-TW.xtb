@@ -895,6 +895,7 @@
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
 <translation id="1830550083491357902">未登入</translation>
+<translation id="1831848493690504725">系統無法透過已連線的網路連上 Google，建議你選擇其他網路，或是檢查網路設定或 Proxy 設定 (如果使用 Proxy 的話)。</translation>
 <translation id="1832459821645506983">是，我同意</translation>
 <translation id="1832511806131704864">手機變更已更新</translation>
 <translation id="1832848789136765277">為確保你可以隨時存取同步處理的資料，請驗證你的身分</translation>
@@ -4734,6 +4735,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" />要求下列權限：</translation>
 <translation id="5534304873398226603">捨棄相片或影片</translation>
 <translation id="5537725057119320332">投放</translation>
+<translation id="5539070192556911367">無法連上 Google</translation>
 <translation id="5539221284352502426">輸入的密碼遭到伺服器拒絕。可能的原因包括：密碼長度不足、密碼必須包含數字或符號、新舊密碼必須有所不同。</translation>
 <translation id="5541694225089836610">你的管理員停用了這個動作</translation>
 <translation id="5542132724887566711">設定檔</translation>
@@ -4797,6 +4799,7 @@
 <translation id="5585912436068747822">無法格式化</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">正在載入應用程式...</translation>
+<translation id="5590418976913374224">裝置開啟時播放音效</translation>
 <translation id="5592595402373377407">目前還沒有足夠的資料。</translation>
 <translation id="5595307023264033512">網站使用的總儲存空間：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">編輯地址</translation>
@@ -6338,6 +6341,7 @@
 <translation id="7102687220333134671">自動更新功能已開啟</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="710640343305609397">開啟網路設定</translation>
+<translation id="7107609441453408294">透過所有揚聲器播放相同的音訊</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108668606237948702">輸入</translation>
 <translation id="7108933416628942903">立即鎖定</translation>
@@ -6429,7 +6433,6 @@
 <translation id="7212097698621322584">請輸入目前的 PIN 碼以進行變更。如果你不知道自己的 PIN 碼，請重設安全金鑰，然後建立新的 PIN 碼。</translation>
 <translation id="7213903639823314449">網址列中使用的搜尋引擎</translation>
 <translation id="721490496276866468">匯入密碼</translation>
-<translation id="7216595297012131718">根據你的偏好設定排列語言順序</translation>
 <translation id="7219473482981809164">我們發現多個可供下載的設定檔。請先選取你要下載的設定檔再繼續。</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{未發現低強度密碼}=1{有 1 組低強度密碼}other{有 {NUM_WEAK} 組低強度密碼}}</translation>
 <translation id="7220019174139618249">無法將密碼匯出到「<ph name="FOLDER" />」</translation>
@@ -6569,6 +6572,7 @@
 <translation id="7364745943115323529">投放...</translation>
 <translation id="7364796246159120393">選擇檔案</translation>
 <translation id="7365076891350562061">顯示器大小</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - 已固定</translation>
 <translation id="7366316827772164604">正在尋找附近的裝置...</translation>
 <translation id="7366415735885268578">新增網站</translation>
 <translation id="7366909168761621528">瀏覽資料</translation>

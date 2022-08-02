@@ -14,7 +14,6 @@
 
 namespace base {
 class DictionaryValue;
-class ListValue;
 class Value;
 }
 
@@ -84,31 +83,31 @@ class WebViewImpl : public WebView {
                         std::unique_ptr<base::Value>* result) override;
   Status CallFunctionWithTimeout(const std::string& frame,
                                  const std::string& function,
-                                 const base::ListValue& args,
+                                 const base::Value::List& args,
                                  const base::TimeDelta& timeout,
                                  std::unique_ptr<base::Value>* result);
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override;
   Status CallAsyncFunction(const std::string& frame,
                            const std::string& function,
-                           const base::ListValue& args,
+                           const base::Value::List& args,
                            const base::TimeDelta& timeout,
                            std::unique_ptr<base::Value>* result) override;
   Status CallUserSyncScript(const std::string& frame,
                             const std::string& script,
-                            const base::ListValue& args,
+                            const base::Value::List& args,
                             const base::TimeDelta& timeout,
                             std::unique_ptr<base::Value>* result) override;
   Status CallUserAsyncFunction(const std::string& frame,
                                const std::string& function,
-                               const base::ListValue& args,
+                               const base::Value::List& args,
                                const base::TimeDelta& timeout,
                                std::unique_ptr<base::Value>* result) override;
   Status GetFrameByFunction(const std::string& frame,
                             const std::string& function,
-                            const base::ListValue& args,
+                            const base::Value::List& args,
                             std::string* out_frame) override;
   Status DispatchMouseEvents(const std::vector<MouseEvent>& events,
                              const std::string& frame,
@@ -190,7 +189,7 @@ class WebViewImpl : public WebView {
   Status TraverseHistoryWithJavaScript(int delta);
   Status CallAsyncFunctionInternal(const std::string& frame,
                                    const std::string& function,
-                                   const base::ListValue& args,
+                                   const base::Value::List& args,
                                    bool is_user_supplied,
                                    const base::TimeDelta& timeout,
                                    std::unique_ptr<base::Value>* result);
@@ -279,14 +278,14 @@ Status ParseCallFunctionResult(const base::Value& temp_result,
 Status GetBackendNodeIdFromFunction(DevToolsClient* client,
                                     const std::string& context_id,
                                     const std::string& function,
-                                    const base::ListValue& args,
+                                    const base::Value::List& args,
                                     bool* found_node,
                                     int* backend_node_id,
                                     bool w3c_compliant);
 Status GetFrameIdFromFunction(DevToolsClient* client,
                               const std::string& context_id,
                               const std::string& function,
-                              const base::ListValue& args,
+                              const base::Value::List& args,
                               bool* found_node,
                               std::string* frame_id,
                               bool w3c_compliant);

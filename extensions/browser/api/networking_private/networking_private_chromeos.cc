@@ -575,8 +575,8 @@ void NetworkingPrivateChromeOS::GetCaptivePortalStatus(
             ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE));
     return;
   }
-  ash::NetworkState::PortalState portal_state = network->portal_state();
-  std::move(success_callback).Run(PortalStatusString(portal_state));
+  std::move(success_callback)
+      .Run(PortalStatusString(network->GetPortalState()));
 }
 
 void NetworkingPrivateChromeOS::UnlockCellularSim(
@@ -761,7 +761,7 @@ void NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type,
 
   NET_LOG(USER) << __func__ << ":" << type;
   GetStateHandler()->SetTechnologyEnabled(
-      pattern, true, chromeos::network_handler::ErrorCallback());
+      pattern, true, ash::network_handler::ErrorCallback());
 
   std::move(callback).Run(true);
 }
@@ -772,7 +772,7 @@ void NetworkingPrivateChromeOS::DisableNetworkType(const std::string& type,
 
   NET_LOG(USER) << __func__ << ":" << type;
   GetStateHandler()->SetTechnologyEnabled(
-      pattern, false, chromeos::network_handler::ErrorCallback());
+      pattern, false, ash::network_handler::ErrorCallback());
 
   std::move(callback).Run(true);
 }

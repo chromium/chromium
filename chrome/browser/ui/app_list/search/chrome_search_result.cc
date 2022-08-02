@@ -169,6 +169,11 @@ void ChromeSearchResult::SetIsRecommendation(bool is_recommendation) {
   SetSearchResultMetadata();
 }
 
+void ChromeSearchResult::SetSkipUpdateAnimation(bool skip_update_animation) {
+  metadata_->skip_update_animation = skip_update_animation;
+  SetSearchResultMetadata();
+}
+
 void ChromeSearchResult::SetIcon(const IconInfo& icon) {
   icon.icon.EnsureRepsForSupportedScales();
   metadata_->icon = icon;

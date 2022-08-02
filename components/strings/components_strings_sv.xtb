@@ -1228,6 +1228,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4305666528087210886">Ingen åtkomst till filen</translation>
 <translation id="4306529830550717874">Vill du spara adressen?</translation>
 <translation id="4306812610847412719">urklipp</translation>
+<translation id="4308567447483056043">Den här principen ignoreras eftersom användaren inte är kopplad. Om denna policy ska tillämpas måste webbläsaren Chrome och profilen hanteras av samma organisation via administratörskonsolen.</translation>
 <translation id="4310070645992025887">Sök bland dina sökningar</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blockera (standard)</translation>

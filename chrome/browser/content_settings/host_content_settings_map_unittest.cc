@@ -45,6 +45,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using QueryReason = content_settings::CookieSettings::QueryReason;
 using ::testing::_;
 using ::testing::MockFunction;
 using ::testing::Return;
@@ -530,18 +531,18 @@ TEST_F(HostContentSettingsMapTest, HostTrimEndingDotCheck) {
 
   GURL host_ending_with_dot("http://example.com./");
 
-  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(host_ending_with_dot,
-                                                         host_ending_with_dot));
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
+      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_DEFAULT);
-  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(host_ending_with_dot,
-                                                         host_ending_with_dot));
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
+      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
   host_content_settings_map->SetContentSettingDefaultScope(
       host_ending_with_dot, GURL(), ContentSettingsType::COOKIES,
       CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
-      host_ending_with_dot, host_ending_with_dot));
+      host_ending_with_dot, host_ending_with_dot, QueryReason::kSetting));
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             host_content_settings_map->GetContentSetting(

@@ -377,10 +377,6 @@ ChromeSearchResult* SearchControllerImplNew::GetResultByTitleForTest(
   return nullptr;
 }
 
-int SearchControllerImplNew::GetLastQueryLength() const {
-  return last_query_.size();
-}
-
 void SearchControllerImplNew::Train(LaunchData&& launch_data) {
   launch_data.query = base::UTF16ToUTF8(last_query_);
 

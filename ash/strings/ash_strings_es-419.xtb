@@ -84,6 +84,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1364382257761975320">Para desbloquear la Chromebook, utiliza la huella dactilar</translation>
+<translation id="1365866993922957110">Obtener actualizaciones automáticas</translation>
 <translation id="1372545819342940910">Guardar el escritorio para más tarde</translation>
 <translation id="1383597849754832576">No se pueden descargar los videos de Subtitulado instantáneo. Vuelve a intentarlo más tarde.</translation>
 <translation id="1383876407941801731">Buscar</translation>
@@ -161,6 +162,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1830308660060964064">Se dejó de fijar <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">Asistente (cargando…)</translation>
 <translation id="1838895407229022812">La luz nocturna está apagada.</translation>
+<translation id="1862380676329487333">Actualizar y salir</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (puerto trasero)</translation>
 <translation id="1879018240766558464">Por el momento, las ventanas de incógnito no son compatibles. Se guardarán las demás apps.</translation>
 <translation id="1882814835921407042">Sin red móvil</translation>
@@ -562,6 +564,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="423685346499232137">En este momento no se puede copiar ni pegar contenido</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
+<translation id="4247123849143712100">Actualizar y apagar</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425364040945105958">No hay ninguna tarjeta SIM</translation>
 <translation id="4261870227682513959">Mostrar la configuración de las notificaciones: Están desactivadas</translation>
@@ -921,6 +924,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> es una sesión administrada por <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">El dispositivo <ph name="DEVICE_NAME" /> está conectado</translation>
 <translation id="6351032674660237738">SUGERENCIAS DE APPS</translation>
+<translation id="6359587239691116345">Obtén las funciones y mejoras de seguridad más recientes. Si rechazas esta actualización, es posible que el dispositivo ya no funcione de manera adecuada y que tengas problemas de seguridad y rendimiento.</translation>
 <translation id="6376931439017688372">Se activó la conexión Bluetooth</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, ingresa el PIN.</translation>
 <translation id="639644700271529076">El bloqueo de mayúsculas está desactivado.</translation>
@@ -942,6 +946,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> antes de la fecha límite</translation>
 <translation id="649452524636452238">PIN de la tarjeta inteligente</translation>
 <translation id="6495400115277918834">Se inició el modo pantalla en pantalla; presiona Alt+Mayúsculas+V para enfocar</translation>
+<translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Transmitiendo pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Se desconectó la cámara. Intentando volver a establecer la conexión.</translation>
 <translation id="6520517963145875092">Selecciona una ventana que quieras capturar</translation>
@@ -1219,6 +1224,7 @@ Nueva instalación</translation>
 <translation id="8054466585765276473">Calculando duración de la batería...</translation>
 <translation id="8061464966246066292">Contraste alto</translation>
 <translation id="8083540854303889870">Guardados para después</translation>
+<translation id="8091387634532529612">Actualizaciones automáticas</translation>
 <translation id="8098591350844501178">Detener la transmisión de la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, para todas</translation>
 <translation id="8120151603115102514">Tu teléfono no tiene una pantalla de bloqueo. Para desbloquear la Chromebook, ingresa la contraseña.</translation>
@@ -1425,4 +1431,5 @@ Nueva instalación</translation>
 <translation id="974545358917229949">Mostrando <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">Se cerró la ventana <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">Obtén las funciones y mejoras de seguridad más recientes. Las actualizaciones se realizan en segundo plano.</translation>
 </translationbundle>

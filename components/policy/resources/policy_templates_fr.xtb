@@ -2610,7 +2610,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Le champ constitué d'une seule ligne est abandonné et va être supprimé prochainement. Utilisez à la place la zone de texte à plusieurs lignes ci-dessous.)</translation>
 <translation id="3709266154059827597">Configurer la liste noire d'installation des extensions</translation>
 <translation id="3711895659073496551">Arrêter</translation>
-<translation id="3715569262675717862">Authentification basée sur les certificats client</translation>
 <translation id="3717409415785131989">Si cette règle est activée ou n'est pas configurée, la nouvelle interface utilisateur de la bulle de téléchargement est affichée dans <ph name="PRODUCT_NAME" />.
 
       Si elle est désactivée, <ph name="PRODUCT_NAME" /> continue d'afficher l'ancienne interface utilisateur du répertoire de téléchargement.</translation>
@@ -2990,13 +2989,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="410068710490553233">Autoriser la connexion à d'autres comptes Google</translation>
 <translation id="4101282687722389021">Horodatage UTC de la dernière mise à jour de cette entrée. Il est envoyé sous forme de chaîne, car il ne tiendrait pas dans un entier.</translation>
 <translation id="4103289232974211388">Rediriger vers le fournisseur d'identité SAML après confirmation de l'utilisateur</translation>
-<translation id="4105884561459127998">Configure le type d'authentification pour les connexions SAML.
-
-      Si cette règle n'est pas configurée ou si elle est définie sur "Par défaut" (valeur 0), le comportement des connexions SAML est déterminé par le navigateur en fonction d'autres facteurs. Dans le cas le plus élémentaire, l'authentification des utilisateurs et la protection des données utilisateur mises en cache reposent sur les mots de passe saisis manuellement par les utilisateurs.
-
-      Si cette règle est définie sur "ClientCertificate" (valeur 1), l'authentification par certificat client est utilisée pour les nouveaux utilisateurs ajoutés qui se connectent via SAML. Ces derniers n'emploient pas de mot de passe, et leurs données locales mises en cache sont protégées par les clés de chiffrement correspondantes. Par exemple, ce paramètre permet de configurer l'authentification des utilisateurs par carte à puce (notez que les applications middleware utilisant une carte à puce doivent être installées conformément à la règle DeviceLoginScreenAppInstallList).
-
-      Cette règle ne concerne que les utilisateurs qui s'authentifient avec SAML.</translation>
 <translation id="4105989332710272578">Désactiver l'application des règles de transparence des certificats pour une liste d'URL</translation>
 <translation id="4114059938441379876">Permet de spécifier l'URL à laquelle les utilisateurs doivent modifier leur mot de passe après avoir lu l'avertissement affiché dans le navigateur. Le service de protection par mot de passe redirige les utilisateurs vers l'URL (protocoles HTTP et HTTPS uniquement) que vous avez indiquée dans cette règle. Pour que <ph name="PRODUCT_NAME" /> enregistre correctement la copie hachée et après salage du nouveau mot de passe sur la page de modification de celui-ci, vérifiez si cette page respecte bien les consignes indiquées sur https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
@@ -3179,6 +3171,13 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 <translation id="4347908978527632940">Si la valeur est définie sur "True" et si l'utilisateur est supervisé, d'autres applications Android peuvent envoyer une requête concernant les restrictions Web de ce dernier via un fournisseur de contenu.
 
           Si la valeur est définie sur "False" ou si elle n'est pas définie, le fournisseur de contenu n'envoie aucune information.</translation>
+<translation id="4357587374229381015">Indique un nom de paramètre d'URL qui sera utilisé sur la page de connexion de l'IdP SAML pour renseigner automatiquement le champ du nom d'utilisateur.
+
+      L'adresse e-mail de l'utilisateur associée au profil <ph name="PRODUCT_OS_NAME" /> sera utilisée comme valeur du paramètre d'URL. Ce paramètre doit donc être désactivé si les utilisateurs doivent utiliser des adresses e-mail différentes avec l'IdP SAML.
+
+      Si ce paramètre n'est pas défini, les utilisateurs devront saisir manuellement leur nom d'utilisateur sur la page de connexion de l'IdP SAML.
+
+      Cette règle affecte l'authentification en ligne sur les écrans de connexion et de verrouillage.</translation>
 <translation id="4363057787588706121">Autoriser la fusion de règles répertoriées qui proviennent de sources différentes</translation>
 <translation id="4363101430102811068">Autorise la détection de fuite pour les identifiants saisis</translation>
 <translation id="436581050240847513">Générer un rapport sur les interfaces réseau de l'appareil</translation>
@@ -4062,11 +4061,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est définie sur une liste d'identifiants de modes de saisie, les modes de saisie indiqués sont disponibles sur l'écran de connexion. Le premier mode de saisie proposé est présélectionné. Lorsqu'un profil utilisateur est actif sur l'écran de connexion, le dernier mode de saisie utilisé par l'utilisateur est disponible en plus des modes de saisie fournis par cette règle. Si cette règle n'est pas définie, les modes de saisie sur l'écran de connexion sont dérivés des paramètres régionaux dans lesquels cet écran est affiché. Les valeurs qui ne constituent pas des identifiants de modes de saisie valides sont ignorées.</translation>
 <translation id="5407008856008996384">Permet d'autoriser l'accès aux imprimantes CUPS</translation>
 <translation id="5413051574966911176">Désactiver l'interface utilisateur liée à la connexion sur le bureau de l'hôte à distance lorsqu'une connexion est active</translation>
-<translation id="5417597818300833094">Permet aux utilisateurs de sélectionner l'un des modes de saisie que vous spécifiez pour les sessions <ph name="PRODUCT_OS_NAME" />.
-
-       Si cette règle n'est pas configurée ou qu'aucun mode de saisie n'est indiqué dans la liste, les utilisateurs peuvent en choisir un parmi tous ceux compatibles.
-
-      Remarque : Si le mode de saisie actuel n'est pas compatible, la disposition du clavier matériel (si elle est autorisée) ou la première entrée valide dans cette liste est utilisée. Les modes de saisie non valides ou incompatibles sont ignorés.</translation>
 <translation id="5417906792459853336">Transmet des informations concernant l'inventaire et l'utilisation des applications d'un appareil.
 
       Si la règle est définie sur "False" ou n'est pas configurée, ces informations ne sont pas transmises.
@@ -4797,18 +4791,6 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 <translation id="6207607210601267301">Désactiver l'authentification sans code PIN pour l'hôte d'accès à distance</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
-<translation id="6210422374261465354">Permet de spécifier les configurations pour les URL d'authentification dans <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Ces URL d'authentification seraient traitées spécialement par <ph name="WEBVIEW_PRODUCT_NAME" />, de sorte que durant l'authentification, lorsque la page Web dans <ph name="WEBVIEW_PRODUCT_NAME" />
-      navigue vers les URL d'authentification, l'appli d'authentification des fournisseurs d'identité correspondants qui peut traiter cette URL d'authentification est lancée.
-
-      Ce flux de lancement de l'appli d'authentification des fournisseurs d'identité serait utilisé par les fournisseurs d'identité pour activer
-      les cas d'utilisation comme la fourniture du SSO dans les applis ou pour proposer une meilleure protection en récoltant les signaux d'appareil zéro confiance pour comprendre la position de l'appareil lors de l'authentification.
-
-      Si aucune appli valide n'est installée pour gérer l'URL d'authentification sur l'appareil, la navigation se poursuivra dans <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Une URL d'authentification valide doit avoir le schéma <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> et ne doit pas comporter de caractère générique.
-      </translation>
 <translation id="6212868225782276239">Toutes les imprimantes sont affichées à l'exception de celles qui sont répertoriées dans la liste noire.</translation>
 <translation id="6220835555850906733">Si cette règle est activée ou si elle n'est pas configurée, toutes les sorties audio compatibles sur les appareils des utilisateurs sont autorisées.
 
@@ -6130,7 +6112,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="7554382342294940216">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> ignore tout proxy pour l'authentification du portail captif. Ces pages Web d'authentification (à partir de la page de connexion au portail captif jusqu'à ce que Chrome détecte une connexion Internet réussie) s'ouvrent dans une fenêtre distincte, sans tenir compte de l'ensemble des règles et des restrictions en place pour l'utilisateur actuel. Cette règle ne s'applique que si un proxy est configuré (par une règle, une extension ou l'utilisateur dans chrome://settings).
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, toutes les pages d'authentification du portail captif sont affichées dans un nouvel onglet (normal) du navigateur, en utilisant les paramètres proxy de l'utilisateur actuel.</translation>
-<translation id="7566878661979235378">Type d'authentification pour les connexions SAML</translation>
 <translation id="7567373982693549834">Cette règle permet de contrôler l'utilisation des applications Android provenant de sources non approuvées (autres que le Google Play Store) au niveau de chaque utilisateur.
 
       Si la valeur de cette règle n'est pas définie, la règle est considérée comme non autorisée.
@@ -7400,7 +7381,6 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
 <translation id="8951350807133946005">Définir le répertoire du cache disque</translation>
 <translation id="8955719471735800169">Haut de page</translation>
 <translation id="8956312248048980644">Autorise par défaut le clustering d'agents selon l'origine.</translation>
-<translation id="8959992920425111821">Configuration par défaut</translation>
 <translation id="8967125680876068695">Les applis Chrome sont obsolètes sur Windows, Mac et Linux.
       Si cette règle est activée, <ph name="PRODUCT_NAME" /> permettra toujours aux applis Chrome de s'exécuter sur ces plates-formes jusqu'en juin 2022, date à laquelle elles ne seront plus compatibles sur aucune plate-forme.
       Si cette règle est désactivée ou qu'elle n'est pas configurée, il se peut que les applis Chrome ne soient pas autorisées à s'exécuter, selon l'état d'avancement du processus d'abandon.

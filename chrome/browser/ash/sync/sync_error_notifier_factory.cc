@@ -8,14 +8,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
 SyncErrorNotifierFactory::SyncErrorNotifierFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SyncErrorNotifier",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SyncErrorNotifier") {
   DependsOn(SyncServiceFactory::GetInstance());
 }
 

@@ -68,9 +68,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   static MultiUserWindowManagerImpl* Get();
 
-  // Called when the active account change is complete.
-  void OnDidSwitchActiveAccount();
-
   // MultiUserWindowManager:
   void SetWindowOwner(aura::Window* window,
                       const AccountId& account_id) override;
@@ -82,8 +79,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
   const AccountId& GetUserPresentingWindow(
       const aura::Window* window) const override;
   const AccountId& CurrentAccountId() const override;
-  void AddObserver(MultiUserWindowManagerObserver* observer) override;
-  void RemoveObserver(MultiUserWindowManagerObserver* observer) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -233,8 +228,6 @@ class ASH_EXPORT MultiUserWindowManagerImpl
 
   // The animation between users.
   std::unique_ptr<UserSwitchAnimator> animation_;
-
-  base::ObserverList<MultiUserWindowManagerObserver>::Unchecked observers_;
 };
 
 }  // namespace ash

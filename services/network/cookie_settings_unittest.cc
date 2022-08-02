@@ -21,6 +21,8 @@
 namespace network {
 namespace {
 
+using QueryReason = CookieSettings::QueryReason;
+
 using testing::_;
 using testing::ElementsAre;
 using testing::IsEmpty;
@@ -57,10 +59,13 @@ std::unique_ptr<net::CanonicalCookie> MakeCanonicalCookie(
       cookie_partition_key);
 }
 
-class CookieSettingsTest : public testing::Test {
+class CookieSettingsTest : public testing::TestWithParam<bool> {
  public:
   CookieSettingsTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    features_.InitWithFeatureState(net::features::kStorageAccessAPI,
+                                   IsStorageAccessAPIEnabled());
+  }
 
   ContentSettingPatternSource CreateSetting(
       const std::string& primary_pattern,
@@ -77,46 +82,61 @@ class CookieSettingsTest : public testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
+  bool IsStorageAccessAPIEnabled() const { return GetParam(); }
+
+  // Assumes that cookie access would be blocked if not for a Storage Access API
+  // grant.
+  ContentSetting SettingWithStorageAccessGrantOverride() const {
+    return IsStorageAccessAPIEnabled() ? CONTENT_SETTING_ALLOW
+                                       : CONTENT_SETTING_BLOCK;
+  }
+
  private:
+  base::test::ScopedFeatureList features_;
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(CookieSettingsTest, GetCookieSettingDefault) {
+TEST_P(CookieSettingsTest, GetCookieSettingDefault) {
   CookieSettings settings;
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSetting) {
+TEST_P(CookieSettingsTest, GetCookieSetting) {
   CookieSettings settings;
   settings.set_content_settings(
       {CreateSetting(kURL, kURL, CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingMustMatchBothPatterns) {
+TEST_P(CookieSettingsTest, GetCookieSettingMustMatchBothPatterns) {
   CookieSettings settings;
   // This setting needs kOtherURL as the secondary pattern.
   settings.set_content_settings(
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_BLOCK)});
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
 
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingGetsFirstSetting) {
+TEST_P(CookieSettingsTest, GetCookieSettingGetsFirstSetting) {
   CookieSettings settings;
   settings.set_content_settings(
       {CreateSetting(kURL, kURL, CONTENT_SETTING_BLOCK),
        CreateSetting(kURL, kURL, CONTENT_SETTING_SESSION_ONLY)});
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingDontBlockThirdParty) {
+TEST_P(CookieSettingsTest, GetCookieSettingDontBlockThirdParty) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
 
@@ -124,7 +144,8 @@ TEST_F(CookieSettingsTest, GetCookieSettingDontBlockThirdParty) {
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(false);
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
@@ -133,27 +154,29 @@ TEST_F(CookieSettingsTest, GetCookieSettingDontBlockThirdParty) {
       1);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingBlockThirdParty) {
+TEST_P(CookieSettingsTest, GetCookieSettingBlockThirdParty) {
   CookieSettings settings;
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingDontBlockThirdPartyWithException) {
+TEST_P(CookieSettingsTest, GetCookieSettingDontBlockThirdPartyWithException) {
   CookieSettings settings;
   settings.set_content_settings(
       {CreateSetting(kURL, kOtherURL, CONTENT_SETTING_ALLOW)});
   settings.set_block_third_party_cookies(true);
-  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kURL), GURL(kOtherURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
 }
 
 // The Storage Access API should unblock storage access that would otherwise be
 // blocked.
-TEST_F(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
+TEST_P(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
   GURL top_level_url = GURL(kURL);
   GURL url = GURL(kOtherURL);
   GURL third_url = GURL(kDomainURL);
@@ -172,34 +195,41 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
   // When requesting our setting for the embedder/top-level combination our
   // grant is for access should be allowed. For any other domain pairs access
   // should still be blocked.
-  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
+                                      QueryReason::kCookies),
+            SettingWithStorageAccessGrantOverride());
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
-      static_cast<int>(net::cookie_util::StorageAccessResult::
-                           ACCESS_ALLOWED_STORAGE_ACCESS_GRANT),
+      static_cast<int>(
+          IsStorageAccessAPIEnabled()
+              ? net::cookie_util::StorageAccessResult::
+                    ACCESS_ALLOWED_STORAGE_ACCESS_GRANT
+              : net::cookie_util::StorageAccessResult::ACCESS_BLOCKED),
       1);
 
   // Invalid pair the |top_level_url| granting access to |url| is now
   // being loaded under |url| as the top level url.
-  EXPECT_EQ(settings.GetCookieSetting(top_level_url, url, nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(top_level_url, url, nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 2);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
       static_cast<int>(net::cookie_util::StorageAccessResult::
                            ACCESS_ALLOWED_STORAGE_ACCESS_GRANT),
-      1);
+      IsStorageAccessAPIEnabled() ? 1 : 0);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
       static_cast<int>(net::cookie_util::StorageAccessResult::ACCESS_BLOCKED),
-      1);
+      IsStorageAccessAPIEnabled() ? 1 : 2);
 
   // Invalid pairs where a |third_url| is used.
-  EXPECT_EQ(settings.GetCookieSetting(url, third_url, nullptr),
-            CONTENT_SETTING_BLOCK);
-  EXPECT_EQ(settings.GetCookieSetting(third_url, top_level_url, nullptr),
+  EXPECT_EQ(
+      settings.GetCookieSetting(url, third_url, nullptr, QueryReason::kCookies),
+      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(settings.GetCookieSetting(third_url, top_level_url, nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 
   // If cookies are globally blocked, SAA grants should be ignored.
@@ -208,7 +238,8 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
         {CreateSetting("*", "*", CONTENT_SETTING_BLOCK)});
     settings.set_block_third_party_cookies(true);
     base::HistogramTester histogram_tester;
-    EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
+    EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
+                                        QueryReason::kCookies),
               CONTENT_SETTING_BLOCK);
     histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
     histogram_tester.ExpectBucketCount(
@@ -220,7 +251,7 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAUnblocks) {
 
 // Subdomains of the granted embedding url should not gain access if a valid
 // grant exists.
-TEST_F(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
+TEST_P(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
   GURL top_level_url = GURL(kURL);
   GURL url = GURL(kDomainURL);
 
@@ -232,17 +263,18 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
   settings.set_storage_access_grants(
       {CreateSetting(kDomain, top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
-  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
+                                      QueryReason::kCookies),
+            SettingWithStorageAccessGrantOverride());
 
-  EXPECT_EQ(
-      settings.GetCookieSetting(GURL(kSubDomainURL), top_level_url, nullptr),
-      CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(settings.GetCookieSetting(GURL(kSubDomainURL), top_level_url,
+                                      nullptr, QueryReason::kCookies),
+            CONTENT_SETTING_BLOCK);
 }
 
 // Subdomains of the granted top level url should not grant access if a valid
 // grant exists.
-TEST_F(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
+TEST_P(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
   GURL top_level_url = GURL(kDomainURL);
   GURL url = GURL(kURL);
 
@@ -254,16 +286,18 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
   settings.set_storage_access_grants(
       {CreateSetting(url.host(), kDomain, CONTENT_SETTING_ALLOW)});
 
-  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
+                                      QueryReason::kCookies),
+            SettingWithStorageAccessGrantOverride());
 
-  EXPECT_EQ(settings.GetCookieSetting(url, GURL(kSubDomainURL), nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(url, GURL(kSubDomainURL), nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
 // Any Storage Access API grant should not override an explicit setting to block
 // cookie access.
-TEST_F(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
+TEST_P(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
   GURL top_level_url = GURL(kURL);
   GURL url = GURL(kOtherURL);
 
@@ -274,12 +308,13 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
   settings.set_storage_access_grants(
       {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
 
-  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
 // Once a grant expires access should no longer be given.
-TEST_F(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
+TEST_P(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   GURL top_level_url = GURL(kURL);
   GURL url = GURL(kOtherURL);
 
@@ -296,36 +331,38 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   // When requesting our setting for the embedder/top-level combination our
   // grant is for access should be allowed. For any other domain pairs access
   // should still be blocked.
-  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
-            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
+                                      QueryReason::kCookies),
+            SettingWithStorageAccessGrantOverride());
 
   // If we fastforward past the expiration of our grant the result should be
   // CONTENT_SETTING_BLOCK now.
   FastForwardTime(base::Seconds(101));
-  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr),
+  EXPECT_EQ(settings.GetCookieSetting(url, top_level_url, nullptr,
+                                      QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSettings) {
+TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSettings) {
   CookieSettings settings;
   EXPECT_FALSE(settings.CreateDeleteCookieOnExitPredicate());
 }
 
-TEST_F(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSessionOnly) {
+TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateNoSessionOnly) {
   CookieSettings settings;
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW)});
   EXPECT_FALSE(settings.CreateDeleteCookieOnExitPredicate());
 }
 
-TEST_F(CookieSettingsTest, CreateDeleteCookieOnExitPredicateSessionOnly) {
+TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateSessionOnly) {
   CookieSettings settings;
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_SESSION_ONLY)});
   EXPECT_TRUE(settings.CreateDeleteCookieOnExitPredicate().Run(kURL, false));
 }
 
-TEST_F(CookieSettingsTest, CreateDeleteCookieOnExitPredicateAllow) {
+TEST_P(CookieSettingsTest, CreateDeleteCookieOnExitPredicateAllow) {
   CookieSettings settings;
   settings.set_content_settings(
       {CreateSetting("*", "*", CONTENT_SETTING_ALLOW),
@@ -333,7 +370,7 @@ TEST_F(CookieSettingsTest, CreateDeleteCookieOnExitPredicateAllow) {
   EXPECT_FALSE(settings.CreateDeleteCookieOnExitPredicate().Run(kURL, false));
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingSecureOriginCookiesAllowed) {
+TEST_P(CookieSettingsTest, GetCookieSettingSecureOriginCookiesAllowed) {
   CookieSettings settings;
   settings.set_secure_origin_cookies_allowed_schemes({"chrome"});
   settings.set_block_third_party_cookies(true);
@@ -341,23 +378,23 @@ TEST_F(CookieSettingsTest, GetCookieSettingSecureOriginCookiesAllowed) {
   EXPECT_EQ(
       settings.GetCookieSetting(GURL("https://foo.com") /* url */,
                                 GURL("chrome://foo") /* first_party_url */,
-                                nullptr /* source */),
+                                nullptr /* source */, QueryReason::kCookies),
       CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(
       settings.GetCookieSetting(GURL("chrome://foo") /* url */,
                                 GURL("https://foo.com") /* first_party_url */,
-                                nullptr /* source */),
+                                nullptr /* source */, QueryReason::kCookies),
       CONTENT_SETTING_BLOCK);
 
   EXPECT_EQ(
       settings.GetCookieSetting(GURL("http://foo.com") /* url */,
                                 GURL("chrome://foo") /* first_party_url */,
-                                nullptr /* source */),
+                                nullptr /* source */, QueryReason::kCookies),
       CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingWithThirdPartyCookiesAllowedScheme) {
+TEST_P(CookieSettingsTest, GetCookieSettingWithThirdPartyCookiesAllowedScheme) {
   CookieSettings settings;
   settings.set_third_party_cookies_allowed_schemes({"chrome-extension"});
   settings.set_block_third_party_cookies(true);
@@ -365,23 +402,23 @@ TEST_F(CookieSettingsTest, GetCookieSettingWithThirdPartyCookiesAllowedScheme) {
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("http://foo.com") /* url */,
                 GURL("chrome-extension://foo") /* first_party_url */,
-                nullptr /* source */),
+                nullptr /* source */, QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("http://foo.com") /* url */,
                 GURL("other-scheme://foo") /* first_party_url */,
-                nullptr /* source */),
+                nullptr /* source */, QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 
   EXPECT_EQ(
       settings.GetCookieSetting(GURL("chrome-extension://foo") /* url */,
                                 GURL("http://foo.com") /* first_party_url */,
-                                nullptr /* source */),
+                                nullptr /* source */, QueryReason::kCookies),
       CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, GetCookieSettingMatchingSchemeCookiesAllowed) {
+TEST_P(CookieSettingsTest, GetCookieSettingMatchingSchemeCookiesAllowed) {
   CookieSettings settings;
   settings.set_matching_scheme_cookies_allowed_schemes({"chrome-extension"});
   settings.set_block_third_party_cookies(true);
@@ -389,23 +426,23 @@ TEST_F(CookieSettingsTest, GetCookieSettingMatchingSchemeCookiesAllowed) {
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("chrome-extension://bar") /* url */,
                 GURL("chrome-extension://foo") /* first_party_url */,
-                nullptr /* source */),
+                nullptr /* source */, QueryReason::kCookies),
             CONTENT_SETTING_ALLOW);
 
   EXPECT_EQ(settings.GetCookieSetting(
                 GURL("http://foo.com") /* url */,
                 GURL("chrome-extension://foo") /* first_party_url */,
-                nullptr /* source */),
+                nullptr /* source */, QueryReason::kCookies),
             CONTENT_SETTING_BLOCK);
 
   EXPECT_EQ(
       settings.GetCookieSetting(GURL("chrome-extension://foo") /* url */,
                                 GURL("http://foo.com") /* first_party_url */,
-                                nullptr /* source */),
+                                nullptr /* source */, QueryReason::kCookies),
       CONTENT_SETTING_BLOCK);
 }
 
-TEST_F(CookieSettingsTest, LegacyCookieAccessDefault) {
+TEST_P(CookieSettingsTest, LegacyCookieAccessDefault) {
   CookieSettings settings;
 
   EXPECT_EQ(settings.GetSettingForLegacyCookieAccess(kDomain),
@@ -414,7 +451,7 @@ TEST_F(CookieSettingsTest, LegacyCookieAccessDefault) {
             settings.GetCookieAccessSemanticsForDomain(kDomain));
 }
 
-TEST_F(CookieSettingsTest, CookieAccessSemanticsForDomain) {
+TEST_P(CookieSettingsTest, CookieAccessSemanticsForDomain) {
   CookieSettings settings;
   settings.set_content_settings_for_legacy_cookie_access(
       {CreateSetting(kDomain, "*", CONTENT_SETTING_ALLOW)});
@@ -435,7 +472,7 @@ TEST_F(CookieSettingsTest, CookieAccessSemanticsForDomain) {
   }
 }
 
-TEST_F(CookieSettingsTest, CookieAccessSemanticsForDomainWithWildcard) {
+TEST_P(CookieSettingsTest, CookieAccessSemanticsForDomainWithWildcard) {
   CookieSettings settings;
   settings.set_content_settings_for_legacy_cookie_access(
       {CreateSetting(kDomainWildcardPattern, "*", CONTENT_SETTING_ALLOW)});
@@ -456,7 +493,7 @@ TEST_F(CookieSettingsTest, CookieAccessSemanticsForDomainWithWildcard) {
   }
 }
 
-TEST_F(CookieSettingsTest, IsPrivacyModeEnabled) {
+TEST_P(CookieSettingsTest, IsPrivacyModeEnabled) {
   base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
@@ -545,7 +582,7 @@ class SamePartyCookieSettingsTest : public CookieSettingsTest {
   base::test::ScopedFeatureList features_;
 };
 
-TEST_F(SamePartyCookieSettingsTest, IsPrivacyModeEnabled) {
+TEST_P(SamePartyCookieSettingsTest, IsPrivacyModeEnabled) {
   base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
@@ -579,7 +616,7 @@ TEST_F(SamePartyCookieSettingsTest, IsPrivacyModeEnabled) {
               IsEmpty());
 }
 
-TEST_F(CookieSettingsTest, IsCookieAccessible) {
+TEST_P(CookieSettingsTest, IsCookieAccessible) {
   base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
@@ -621,7 +658,7 @@ TEST_F(CookieSettingsTest, IsCookieAccessible) {
               ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
 }
 
-TEST_F(SamePartyCookieSettingsTest, IsCookieAccessible) {
+TEST_P(SamePartyCookieSettingsTest, IsCookieAccessible) {
   base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
@@ -676,7 +713,7 @@ TEST_F(SamePartyCookieSettingsTest, IsCookieAccessible) {
               ElementsAre(base::Bucket(/*min=*/0, /*count=*/1)));
 }
 
-TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
+TEST_P(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
 
@@ -738,7 +775,7 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_PartitionedCookies) {
       url::Origin::Create(GURL(kOtherURL))));
 }
 
-TEST_F(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
+TEST_P(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
   base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
@@ -796,7 +833,7 @@ TEST_F(CookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
               ElementsAre(base::Bucket(/*min=*/1, /*count=*/1)));
 }
 
-TEST_F(SamePartyCookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
+TEST_P(SamePartyCookieSettingsTest, AnnotateAndMoveUserBlockedCookies) {
   base::HistogramTester histogram_tester;
   CookieSettings settings;
   settings.set_block_third_party_cookies(true);
@@ -898,7 +935,7 @@ net::CookieAccessResultList MakeUnpartitionedAndPartitionedCookies() {
 
 }  // namespace
 
-TEST_F(CookieSettingsTest,
+TEST_P(CookieSettingsTest,
        AnnotateAndMoveUserBlockedCookies_PartitionedCookies) {
   CookieSettings settings;
 
@@ -1003,6 +1040,11 @@ TEST_F(CookieSettingsTest,
                           net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES),
                       _, _, _))));
 }
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */, CookieSettingsTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         SamePartyCookieSettingsTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace network

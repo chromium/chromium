@@ -844,6 +844,9 @@ testcase.zipExtractFromReadOnly = async () => {
   // Make sure read-only indicator on toolbar is visible.
   await remoteCall.waitForElement(appId, '#read-only-indicator:not([hidden])');
 
+  // Make sure the file we are about to select is present.
+  await remoteCall.waitForFiles(appId, [entry.getExpectedRow()]);
+
   // Select the ZIP file.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'selectFile', appId, [entry.nameText]));

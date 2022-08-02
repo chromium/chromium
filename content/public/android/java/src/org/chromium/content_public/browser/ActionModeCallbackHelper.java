@@ -44,17 +44,9 @@ public abstract class ActionModeCallbackHelper {
     }
 
     /**
-     * Tell if the platform supports floating type action mode. Used not to repeatedly
-     * attempt the creation if the request fails once at the beginning. Also check
-     * platform version since the floating type is supported only on M or later version
-     * of Android platform.
-     */
-    public abstract boolean supportsFloatingActionMode();
-
-    /**
      * Empty {@link ActionMode.Callback} that does nothing. Used for {@link #EMPTY_CALLBACK}.
      */
-    private static class EmptyActionCallback implements ActionMode.Callback {
+    private static class EmptyActionCallback extends ActionMode.Callback2 {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             return false;
@@ -72,6 +64,9 @@ public abstract class ActionModeCallbackHelper {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {}
+
+        @Override
+        public void onGetContentRect(ActionMode mode, View view, Rect outRect) {}
     };
 
     /**

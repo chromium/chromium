@@ -251,6 +251,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 // source migration is finished.
 namespace ash {
 using ::chromeos::ShillManagerClient;
+using ::chromeos::ShillPropertyChangedObserver;
 }
 
 #endif  // CHROMEOS_DBUS_SHILL_SHILL_MANAGER_CLIENT_H_

@@ -180,6 +180,10 @@ void WebRuntimeFeatures::EnableDevicePosture(bool enable) {
   RuntimeEnabledFeatures::SetDevicePostureEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableDocumentPictureInPictureAPI(bool enable) {
+  RuntimeEnabledFeatures::SetDocumentPictureInPictureAPIEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableRemoveMobileViewportDoubleTap(bool enable) {
   RuntimeEnabledFeatures::SetRemoveMobileViewportDoubleTapEnabled(enable);
 }
@@ -287,10 +291,6 @@ void WebRuntimeFeatures::EnablePictureInPicture(bool enable) {
 
 void WebRuntimeFeatures::EnablePictureInPictureAPI(bool enable) {
   RuntimeEnabledFeatures::SetPictureInPictureAPIEnabled(enable);
-}
-
-void WebRuntimeFeatures::EnablePictureInPictureV2(bool enable) {
-  RuntimeEnabledFeatures::SetPictureInPictureV2Enabled(enable);
 }
 
 void WebRuntimeFeatures::EnablePointerLockOptions(bool enable) {

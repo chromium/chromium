@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
@@ -56,8 +57,13 @@ void SubFeatureOptInView::RefreshDescription(int description_string_id) {
 }
 
 void SubFeatureOptInView::InitLayout() {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  // The dark light mode, we switch TrayBubbleView to use a textured layer
+  // instead of solid color layer, so no need to create an extra layer here.
+  if (!features::IsDarkLightModeEnabled()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+
   const SkColor border_color = AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kSeparatorColor);
   SetBorder(views::CreateRoundedRectBorder(

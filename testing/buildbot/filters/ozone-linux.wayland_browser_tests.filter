@@ -53,4 +53,5 @@
 # dialog object to instantly close and causes these tests to fail. Until a
 # solution is introduced with wayland support or a workaround can be discovered
 # in the browser tests, simply disable them.
+-AccessCodeCastDialogBrowserTest.*
 -AccessCodeCastHandlerBrowserTest.*

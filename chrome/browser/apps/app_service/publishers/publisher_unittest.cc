@@ -166,7 +166,7 @@ apps::IntentFilters CreateIntentFilters() {
   values4.push_back(std::make_unique<apps::ConditionValue>(
       url.path(), apps::PatternMatchType::kPrefix));
   filter->conditions.push_back(std::make_unique<apps::Condition>(
-      apps::ConditionType::kPattern, std::move(values4)));
+      apps::ConditionType::kPath, std::move(values4)));
 
   filters.push_back(std::move(filter));
 

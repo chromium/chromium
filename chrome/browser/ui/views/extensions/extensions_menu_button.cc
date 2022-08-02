@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/constants.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -72,9 +72,7 @@ content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {
 
 void ExtensionsMenuButton::UpdateState() {
   SetImage(Button::STATE_NORMAL,
-           controller_
-               ->GetIcon(GetCurrentWebContents(),
-                         InstalledExtensionMenuItemView::kIconSize)
+           controller_->GetIcon(GetCurrentWebContents(), kMenuExtensionIconSize)
                .AsImageSkia());
   SetText(controller_->GetActionName());
   SetTooltipText(controller_->GetTooltip(GetCurrentWebContents()));
@@ -82,11 +80,8 @@ void ExtensionsMenuButton::UpdateState() {
   // The horizontal insets reasonably align the extension icons with text inside
   // the dialog. Note that |kIconSize| also contains space for badging, so we
   // can't trivially use dialog-text insets (empty space inside the icon).
-  constexpr auto kBorderInsets =
-      gfx::Insets::VH((InstalledExtensionMenuItemView::kMenuItemHeightDp -
-                       InstalledExtensionMenuItemView::kIconSize.height()) /
-                          2,
-                      12);
+  constexpr auto kBorderInsets = gfx::Insets::VH(
+      (kMenuItemHeightDp - kMenuExtensionIconSize.height()) / 2, 12);
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
 }
 

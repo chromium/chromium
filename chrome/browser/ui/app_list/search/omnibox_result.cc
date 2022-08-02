@@ -114,6 +114,8 @@ OmniboxResult::OmniboxResult(Profile* profile,
 
   SetIsOmniboxSearch(
       crosapi::OptionalBoolIsTrue(search_result_->is_omnibox_search));
+  SetSkipUpdateAnimation(search_result_->metrics_type ==
+                         CrosApiSearchResult::MetricsType::kSearchWhatYouTyped);
 
   UpdateIcon();
   UpdateTitleAndDetails();

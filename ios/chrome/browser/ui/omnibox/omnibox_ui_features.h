@@ -21,4 +21,7 @@ extern const char kOmniboxPasteButtonParameterBlueIconCapsule[];
 // PasteButton on suggestion row, blue color with icon/text and capsule shape.
 extern const char kOmniboxPasteButtonParameterBlueFullCapsule[];
 
+// Feature flag to enable paste button on the omnibox keyboard accessories.
+extern const base::Feature kOmniboxKeyboardPasteButton;
+
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_UI_FEATURES_H_

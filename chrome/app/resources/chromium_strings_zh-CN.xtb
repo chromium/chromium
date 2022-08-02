@@ -146,7 +146,6 @@
 <translation id="4415566066719264597">让 Chromium 在后台运行</translation>
 <translation id="4423735387467980091">自定义及控制 Chromium</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
-<translation id="4440114195512068100">如需确认您设备上的操作系统是否是最新版本，请前往 <ph name="LINK_BEGIN" />Chromium 操作系统设置<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">欢迎使用 Chromium；已打开新的浏览器窗口</translation>
 <translation id="4544142686420020088">Chromium 未能更新，因为出了点问题。<ph name="BEGIN_LINK" />请解决导致 Chromium 更新失败的问题<ph name="END_LINK" />。</translation>
 <translation id="454579500955453258">使用一份新的 Chromium 个人资料继续浏览？</translation>
@@ -310,7 +309,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />您可以如何管理自己的数据<ph name="END_BOLD" />：为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chromium 考虑范围的兴趣。</translation>
 <translation id="7937630085815544518">您之前登录 Chromium 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7975919845073681630">这是 Chromium 的并行安装，您无法将此浏览器设为默认浏览器。</translation>
-<translation id="7982481011030453202">如果此页面中未显示某项设置，请在 <ph name="LINK_BEGIN" />Chromium 操作系统设置<ph name="LINK_END" />中查找</translation>
 <translation id="7997934263947464652">来源不明的扩展程序、应用和主题可能会危害您的设备。Chromium 建议只从 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />安装这些内容</translation>
 <translation id="8013436988911883588">一旦 Chromium 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
 <translation id="80471789339884597">感谢您完成安装。您必须重启所有浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>

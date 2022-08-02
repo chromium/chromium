@@ -44,7 +44,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   const AssistantNotificationModel* model() const { return &model_; }
 
   // Provides a pointer to the |assistant| owned by AssistantController.
-  void SetAssistant(chromeos::assistant::Assistant* assistant);
+  void SetAssistant(assistant::Assistant* assistant);
 
   // AssistantNotificationController:
   void RemoveNotificationById(const std::string& id, bool from_server) override;
@@ -79,7 +79,7 @@ class ASH_EXPORT AssistantNotificationControllerImpl
   AssistantNotificationExpiryMonitor expiry_monitor_;
 
   // Owned by AssistantService
-  chromeos::assistant::Assistant* assistant_ = nullptr;
+  assistant::Assistant* assistant_ = nullptr;
 
   const message_center::NotifierId notifier_id_;
 

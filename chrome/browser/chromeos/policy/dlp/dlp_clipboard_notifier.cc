@@ -214,9 +214,6 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
   const std::u16string host_name =
       base::UTF8ToUTF16(data_src->GetURL()->host());
 
-  blink_paste_cb_ = std::move(paste_cb);
-  Observe(web_contents);
-
   auto proceed_cb =
       base::BindRepeating(&DlpClipboardNotifier::BlinkProceedPressed,
                           base::Unretained(this), CloneEndpoint(data_dst));
@@ -227,6 +224,8 @@ void DlpClipboardNotifier::WarnOnBlinkPaste(
   ShowWarningBubble(l10n_util::GetStringFUTF16(
                         IDS_POLICY_DLP_CLIPBOARD_WARN_ON_PASTE, host_name),
                     std::move(proceed_cb), std::move(cancel_cb));
+  SetPasteCallback(std::move(paste_cb));
+  Observe(web_contents);
 }
 
 bool DlpClipboardNotifier::DidUserApproveDst(
@@ -237,11 +236,6 @@ bool DlpClipboardNotifier::DidUserApproveDst(
 bool DlpClipboardNotifier::DidUserCancelDst(
     const ui::DataTransferEndpoint* const data_dst) {
   return HasEndpoint(cancelled_dsts_, data_dst);
-}
-
-void DlpClipboardNotifier::SetBlinkPasteCallbackForTesting(
-    base::OnceCallback<void(bool)> paste_cb) {
-  blink_paste_cb_ = std::move(paste_cb);
 }
 
 void DlpClipboardNotifier::ProceedPressed(
@@ -255,10 +249,8 @@ void DlpClipboardNotifier::ProceedPressed(
 void DlpClipboardNotifier::BlinkProceedPressed(
     const ui::DataTransferEndpoint& data_dst,
     views::Widget* widget) {
-  DCHECK(!blink_paste_cb_.is_null());
-
   approved_dsts_.push_back(data_dst);
-  std::move(blink_paste_cb_).Run(true);
+  RunPasteCallback();
   CloseWidget(widget, views::Widget::ClosedReason::kAcceptButtonClicked);
 }
 
@@ -295,10 +287,7 @@ void DlpClipboardNotifier::OnClipboardDataChanged() {
 }
 
 void DlpClipboardNotifier::OnWidgetDestroying(views::Widget* widget) {
-  if (!blink_paste_cb_.is_null()) {
-    std::move(blink_paste_cb_).Run(false);
-    Observe(nullptr);
-  }
+  Observe(nullptr);
   DlpDataTransferNotifier::OnWidgetDestroying(widget);
 }
 

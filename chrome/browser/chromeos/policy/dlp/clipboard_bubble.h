@@ -72,9 +72,17 @@ class ClipboardWarnBubble : public ClipboardBubbleView {
 
   void SetProceedCallback(base::RepeatingCallback<void()> cb);
 
+  void set_paste_cb(base::OnceCallback<void(bool)> paste_cb) {
+    paste_cb_ = std::move(paste_cb);
+  }
+
+  base::OnceCallback<void(bool)> get_paste_cb() { return std::move(paste_cb_); }
+
  private:
   raw_ptr<views::LabelButton> cancel_button_ = nullptr;
   raw_ptr<views::LabelButton> paste_button_ = nullptr;
+  // Paste callback.
+  base::OnceCallback<void(bool)> paste_cb_;
 };
 
 }  // namespace policy

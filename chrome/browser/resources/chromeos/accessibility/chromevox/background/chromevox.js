@@ -6,6 +6,8 @@
  * @fileoverview Defines a global object.
  */
 
+import {BrailleInterface} from '../common/braille/braille_interface.js';
+
 export class ChromeVox {
   /**
    * Returns whether sticky mode is on, taking both the global sticky mode

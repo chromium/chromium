@@ -1073,6 +1073,7 @@
 <translation id="3835233591525155343">آپ کے آلے کا استعمال</translation>
 <translation id="3848487483475744267">‏<ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />، تیزی سے ایک نیا Google Doc تخلیق کرنے کیلئے Tab، پھر Enter دبائیں</translation>
 <translation id="385051799172605136">پیچھے</translation>
+<translation id="3853684360927654006">پاس ورڈ کی مضبوطی کا کیلکولیٹر</translation>
 <translation id="3858027520442213535">تاریخ اور وقت اپ ڈیٹ کریں</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3872834068356954457">سائنس</translation>
@@ -1683,6 +1684,7 @@
 <translation id="5518670652865028077">آرٹس اور تفریح</translation>
 <translation id="5519516356611866228">آپ کی تبدیلیوں کے ساتھ</translation>
 <translation id="5523118979700054094">پالیسی کا نام</translation>
+<translation id="5525755241743357906">فائل کو کاپی یا منتقل کیا گیا ہے</translation>
 <translation id="5526617258931667850">‏<ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />، ChromeOS کی ترتیبات میں اپنی ایکسیسبیلٹی کے ٹولز کو ذاتی نوعیت کا بنانے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="5528532273234423708">ہوم آٹومیشن</translation>
 <translation id="55293785478302737">کنارے کی سلائی</translation>
@@ -2936,6 +2938,7 @@
 <translation id="9096425087209440047">‏<ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />، iOS کی ترتیبات میں Chrome کو سسٹم کے ڈیفالٹ براؤزر کے بطور سیٹ کرنے کے لیے ٹیب پھر Enter دبائیں</translation>
 <translation id="9096679202588811390">‏TV شوز اور پروگرامز</translation>
 <translation id="9101630580131696064">ٹرے 1</translation>
+<translation id="9102081333385212048">‏جن فائلز کو آپ کاپی یا منتقل کرتے ہیں وہ Google کلاؤڈ یا فریقین ثالث کو تجزیے کیلئے بھیجی جاتی ہیں۔ مثال کے طور پر، انہیں حساس ڈیٹا یا میلوئیر کیلئے اسکین کیا جا سکتا ہے۔</translation>
 <translation id="9103537084693478942">ویڈیو سافٹ ویئر</translation>
 <translation id="9103872766612412690">‏<ph name="SITE" /> عام طور پر آپ کی معلومات کے تحفظ کیلئے مرموز کاری کا استعمال کرتی ہے۔ اس بار جب Chromium نے <ph name="SITE" /> سے منسلک ہونے کی کوشش کی تو ویب سائٹ
 نے خلاف معمول اور غلط اسناد واپس بھیجے۔ یہ اس وقت ہو سکتا ہے جب کوئی حملہ آور <ph name="SITE" /> بننے کا بھیس بنا رہا ہو یا ایک Wi-Fi سائن ان اسکرین نے کنکشن میں خلل ڈالا ہو۔ آپ کی معلومات اب بھی محفوظ ہے کیونکہ Chromium نے کسی ڈیٹا کا تبادلہ ہونے سے پہلے کنکشن روک دیا۔</translation>

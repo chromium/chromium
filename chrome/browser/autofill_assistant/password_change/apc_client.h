@@ -21,6 +21,7 @@ class WebContents;
 // Abstract interface to encapsulate an automated password change (APC) flow.
 class ApcClient {
  public:
+  using OnboardingResultCallback = base::OnceCallback<void(bool)>;
   using ResultCallback = base::OnceCallback<void(bool)>;
 
   // Additional script parameters for scripts started in a debug mode. These
@@ -74,7 +75,10 @@ class ApcClient {
   // Prompts the user to give consent to use Autofill Assistant. Does nothing
   // if consent has either been given already or there is an ongoing APC run in
   // this `WebContents`.
-  virtual void PromptForConsent() = 0;
+  // `callback` is called with a parameter that indicates whether consent has
+  // been given.
+  virtual void PromptForConsent(
+      OnboardingResultCallback callback = base::DoNothing()) = 0;
 
   // Revokes consent to use Autofill Assistant, where `description_grd_ids` are
   // the resource ids of the text on the description labels.

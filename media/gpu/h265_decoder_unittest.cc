@@ -524,4 +524,11 @@ TEST_F(H265DecoderTest, SetStreamRetry) {
   EXPECT_TRUE(decoder_->Flush());
 }
 
+TEST_F(H265DecoderTest, DecodeMultiFrameInput) {
+  SetInputFrameFiles({"bear.hevc"});
+  EXPECT_EQ(AcceleratedVideoDecoder::kConfigChange, Decode());
+  EXPECT_EQ(AcceleratedVideoDecoder::kRanOutOfStreamData, Decode());
+  EXPECT_TRUE(decoder_->Flush());
+}
+
 }  // namespace media

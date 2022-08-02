@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
@@ -64,9 +63,8 @@ UserPrivateTokenKeyPermissionsManagerServiceFactory::GetInstance() {
 
 UserPrivateTokenKeyPermissionsManagerServiceFactory::
     UserPrivateTokenKeyPermissionsManagerServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "UserPrivateTokenKeyPermissionsManagerService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "UserPrivateTokenKeyPermissionsManagerService") {
   DependsOn(PlatformKeysServiceFactory::GetInstance());
 }
 

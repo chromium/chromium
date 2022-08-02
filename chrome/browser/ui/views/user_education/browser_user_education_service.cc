@@ -113,6 +113,8 @@ class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
 }  // namespace
 
 const char kTabGroupTutorialId[] = "Tab Group Tutorial";
+const char kTabGroupWithExistingGroupTutorialId[] =
+    "Tab Group With Existing Group Tutorial";
 
 user_education::HelpBubbleDelegate* GetHelpBubbleDelegate() {
   static base::NoDestructor<BrowserHelpBubbleDelegate> delegate;
@@ -268,15 +270,30 @@ void MaybeRegisterChromeTutorials(
   if (tutorial_registry.IsTutorialRegistered(kTabGroupTutorialId))
     return;
 
-  {  // Tab Group Tutorial
-    TutorialDescription description;
+  {  // Tab Group Tutorials
 
-    // The initial step.
+    // The Description for kTabGroupTutorialId.
+    TutorialDescription without_group_description;
+
+    // The Description for kTabGroupWithExistingGroupTutorialId.
+    TutorialDescription with_group_description;
+
+    // The initial step. This is the only step that differs between
+    // kTabGroupTutorialId and kTabGroupWithExistingGroupTutorialId.
     TutorialDescription::Step create_tabgroup_step(
         0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kNone);
-    description.steps.emplace_back(create_tabgroup_step);
+    without_group_description.steps.emplace_back(create_tabgroup_step);
+
+    TutorialDescription::Step create_tabgroup_with_existing_group_step(
+        0, IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP,
+        ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
+        std::string(), HelpBubbleArrow::kNone);
+    without_group_description.steps.emplace_back(
+        create_tabgroup_with_existing_group_step);
+    with_group_description.steps.emplace_back(
+        create_tabgroup_with_existing_group_step);
 
     // Getting the new tab group (hidden step).
     TutorialDescription::Step new_tab_group_step(
@@ -290,7 +307,8 @@ void MaybeRegisterChromeTutorials(
                   element, base::StringPiece(kTabGroupHeaderElementName));
               return true;
             }));
-    description.steps.emplace_back(std::move(new_tab_group_step));
+    without_group_description.steps.emplace_back(new_tab_group_step);
+    with_group_description.steps.emplace_back(new_tab_group_step);
 
     // The menu step.
     TutorialDescription::Step bubble_menu_edit_step(
@@ -299,40 +317,47 @@ void MaybeRegisterChromeTutorials(
         std::string(), HelpBubbleArrow::kLeftCenter,
         ui::CustomElementEventType(),
         /*must_remain_visible =*/false);
-    description.steps.emplace_back(std::move(bubble_menu_edit_step));
+    without_group_description.steps.emplace_back(bubble_menu_edit_step);
+    with_group_description.steps.emplace_back(bubble_menu_edit_step);
 
     TutorialDescription::Step bubble_menu_edit_ended_step(
         0, 0, ui::InteractionSequence::StepType::kHidden,
         kTabGroupEditorBubbleId, std::string(), HelpBubbleArrow::kNone,
         ui::CustomElementEventType(),
         /*must_remain_visible =*/false);
-    description.steps.emplace_back(std::move(bubble_menu_edit_ended_step));
+    without_group_description.steps.emplace_back(bubble_menu_edit_ended_step);
+    with_group_description.steps.emplace_back(bubble_menu_edit_ended_step);
 
     // Drag tab into the group.
     TutorialDescription::Step drag_tab_into_group_step(
         0, IDS_TUTORIAL_TAB_GROUP_DRAG_TAB,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kNone);
-    description.steps.emplace_back(std::move(drag_tab_into_group_step));
+    without_group_description.steps.emplace_back(drag_tab_into_group_step);
+    with_group_description.steps.emplace_back(drag_tab_into_group_step);
 
     TutorialDescription::Step successfully_drag_tab_into_group_step(
         0, 0, ui::InteractionSequence::StepType::kCustomEvent,
         ui::ElementIdentifier(), std::string(), HelpBubbleArrow::kTopCenter,
         kTabGroupedCustomEventId, /*must_remain_visible =*/true);
-    description.steps.emplace_back(
-        std::move(successfully_drag_tab_into_group_step));
+    without_group_description.steps.emplace_back(
+        successfully_drag_tab_into_group_step);
+    with_group_description.steps.emplace_back(
+        successfully_drag_tab_into_group_step);
 
     // Click to collapse the tab group.
     TutorialDescription::Step collapse_step(
         0, IDS_TUTORIAL_TAB_GROUP_COLLAPSE,
         ui::InteractionSequence::StepType::kShown, ui::ElementIdentifier(),
         kTabGroupHeaderElementName, HelpBubbleArrow::kTopCenter);
-    description.steps.emplace_back(std::move(collapse_step));
+    without_group_description.steps.emplace_back(collapse_step);
+    with_group_description.steps.emplace_back(collapse_step);
 
     TutorialDescription::Step detect_collapse_step(
         0, 0, ui::InteractionSequence::StepType::kActivated,
         kTabGroupHeaderElementId, std::string(), HelpBubbleArrow::kNone);
-    description.steps.emplace_back(std::move(detect_collapse_step));
+    without_group_description.steps.emplace_back(detect_collapse_step);
+    with_group_description.steps.emplace_back(detect_collapse_step);
 
     // Completion of the tutorial.
     TutorialDescription::Step success_step(
@@ -340,11 +365,19 @@ void MaybeRegisterChromeTutorials(
         IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION,
         ui::InteractionSequence::StepType::kShown, kTabStripRegionElementId,
         std::string(), HelpBubbleArrow::kNone);
-    description.steps.emplace_back(std::move(success_step));
+    without_group_description.steps.emplace_back(success_step);
+    with_group_description.steps.emplace_back(success_step);
 
-    description.histograms =
+    without_group_description.histograms =
         user_education::MakeTutorialHistograms<kTabGroupTutorialMetricPrefix>(
-            description.steps.size());
-    tutorial_registry.AddTutorial(kTabGroupTutorialId, std::move(description));
+            without_group_description.steps.size());
+    tutorial_registry.AddTutorial(kTabGroupTutorialId,
+                                  std::move(without_group_description));
+
+    with_group_description.histograms =
+        user_education::MakeTutorialHistograms<kTabGroupTutorialMetricPrefix>(
+            with_group_description.steps.size());
+    tutorial_registry.AddTutorial(kTabGroupWithExistingGroupTutorialId,
+                                  std::move(with_group_description));
   }
 }

@@ -1033,10 +1033,7 @@ TEST_F(FormStructureTestImpl, HeuristicsAutocompleteAttributePhoneTypes) {
          .field_count = 3,
          .autofill_count = 3},
         {.expected_html_type = {HTML_TYPE_TEL_LOCAL, HTML_TYPE_TEL_LOCAL_PREFIX,
-                                HTML_TYPE_TEL_LOCAL_SUFFIX},
-         .expected_phone_part = {AutofillField::IGNORED,
-                                 AutofillField::PHONE_PREFIX,
-                                 AutofillField::PHONE_SUFFIX}}}});
+                                HTML_TYPE_TEL_LOCAL_SUFFIX}}}});
 }
 
 // The heuristics and server predictions should run if there are more than two
@@ -2166,13 +2163,11 @@ TEST_F(FormStructureTestImpl, ThreePartPhoneNumber) {
   ASSERT_EQ(4U, form_structure->field_count());
   ASSERT_EQ(4U, form_structure->autofill_count());
 
-  // Area code.
   EXPECT_EQ(PHONE_HOME_CITY_CODE, form_structure->field(0)->heuristic_type());
-  // Phone number suffix.
-  EXPECT_EQ(PHONE_HOME_NUMBER, form_structure->field(1)->heuristic_type());
-  // Phone number suffix.
-  EXPECT_EQ(PHONE_HOME_NUMBER, form_structure->field(2)->heuristic_type());
-  // Phone extension.
+  EXPECT_EQ(PHONE_HOME_NUMBER_PREFIX,
+            form_structure->field(1)->heuristic_type());
+  EXPECT_EQ(PHONE_HOME_NUMBER_SUFFIX,
+            form_structure->field(2)->heuristic_type());
   EXPECT_EQ(PHONE_HOME_EXTENSION, form_structure->field(3)->heuristic_type());
 }
 

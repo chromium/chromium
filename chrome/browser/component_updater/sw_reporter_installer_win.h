@@ -39,7 +39,7 @@ constexpr char kSwReporterComponentId[] = "gkmgaooipdjhmangpemjhigmamcehddo";
 // numeric values should never be reused. Please keep in sync with
 // "SoftwareReporterConfigurationError" in
 // src/tools/metrics/histograms/enums.xml.
-enum SoftwareReporterConfigurationError {
+enum SoftwareReporterConfigurationError : uint8_t {
   kBadTag = 0,
   kBadParams = 1,
   kMissingParams = 2,

@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">දක්ෂිණාවර්ත</translation>
 <translation id="1351937230027495976">මෙනුව හකුළන්න</translation>
 <translation id="1364382257761975320">ඔබගේ Chromebook අගුලු හැරීමට, ඔබගේ ඇඟිලි සලකුණ භාවිත කරන්න</translation>
+<translation id="1365866993922957110">ස්වයංක්‍රීය යාවත්කාලීන ලබා ගන්න</translation>
 <translation id="1372545819342940910">පසුවට මේසය සුරකින්න</translation>
 <translation id="1383597849754832576">කථන ගොනු බාගැනීමට නොහැකිය. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> නො-අමුණා ඇත</translation>
 <translation id="1836215606488044471">සහායක (පූරණය වේ...)</translation>
 <translation id="1838895407229022812">රාත්‍රී ආලෝකය අක්‍රියයි.</translation>
+<translation id="1862380676329487333">යාවත්කාලීන කර වරන්න</translation>
 <translation id="1864454756846565995">USB-C උපාංගය (පසුපස තොට)</translation>
 <translation id="1879018240766558464">අප්‍රසිද්ධ කවුළු දැනට සහාය නොදක්වයි. වෙනත් යෙදුම් සුරකිනු ඇත.</translation>
 <translation id="1882814835921407042">ජංගම ජාලයක් නැත</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">මෙම අවස්ථාවේදී අන්තර්ගතය පිටපත් කිරීමට හෝ ඇලවීමට නොහැකිය</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">සැකසීම් විවෘත කරන්න</translation>
+<translation id="4247123849143712100">යාවත්කාලීන කර වසා දමන්න</translation>
 <translation id="4250229828105606438">තිරරූපය</translation>
 <translation id="425364040945105958">SIM නැත</translation>
 <translation id="4261870227682513959">දැනුම් දීම් සැකසීම් පෙන්වන්න. දැනුම් දීම් ක්‍රියාවිරහිතයි</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> යනු <ph name="MANAGER" /> විසින් කළමනාකරණය කරනු ලබන කළමනාකරණය කළ සැසියකි</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> සම්බන්ධිතයි</translation>
 <translation id="6351032674660237738">යෙදුම් යෝජනා</translation>
+<translation id="6359587239691116345">නවතම විශේෂාංග සහ ආරක්ෂක වැඩි දියුණු කිරීම් ලබා ගන්න. ඔබ මෙම යාවත්කාලීනය ප්‍රතික්ෂේප කරන්නේ නම්, ඔබේ උපාංගය තවදුරටත් නිසි ලෙස ක්‍රියා නොකරන අතර ඔබ ආරක්ෂක සහ කාර්ය සාධන ගැටලු අත්විඳිය හැක.</translation>
 <translation id="6376931439017688372">බ්ලූටූත් ක්‍රියාත්මකයි</translation>
 <translation id="6381109794406942707">උපාංගය අගුලු ඇරීමට, ඔබේ රහස් අංකය ඇතුළත් කරන්න.</translation>
 <translation id="639644700271529076">කැප්ස් ලොක් අක්‍රීයයි</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> හට නියමිත වේලාවට පෙර ඔබ ඔබගේ <ph name="DEVICE_TYPE" /> යාවත්කාලීන කිරීම අවශ්‍යයි</translation>
 <translation id="649452524636452238">ස්මාර්ට් කාඩ්පත් රහස් අංකය</translation>
 <translation id="6495400115277918834">පින්තූරයක් තුළ පින්තූරයක් ආරම්භ විය, නාභිගත කිරීමට Alt+Shift+V</translation>
+<translation id="6500896621837555595">යාවත්කාලීන කරන්න</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> වෙත තිරය විකාශය කරමින්</translation>
 <translation id="6515727200518652613">කැමරාව නැති විය, නැවත සම්බන්ධ වීමට උත්සාහ කරමින්.</translation>
 <translation id="6520517963145875092">ග්‍රහණය කිරීමට කවුළුවක් තෝරන්න</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">බැටරි කාලය ගණනය කර‍මින්.</translation>
 <translation id="8061464966246066292">අධිවිභේදනය</translation>
 <translation id="8083540854303889870">පසුවට සුරකින ලදි</translation>
+<translation id="8091387634532529612">ස්වයංක්‍රීය යාවත්කාලීන</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> වෙත තිරය විකාශය නවතන්න</translation>
 <translation id="8113423164597455979">සියලු යෙදුම් සක්‍රිය.</translation>
 <translation id="8120151603115102514">ඔබගේ දුරකථනයට අගුලු තිරයක් නොමැත. ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949"><ph name="QUERY" /> සඳහා ප්‍රතිඵල <ph name="RESULT_COUNT" />ක් දක්වමින්</translation>
 <translation id="98515147261107953">තිරස්</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> කවුළුව වසා ඇත.</translation>
+<translation id="996204416024568215">නවතම විශේෂාංග සහ ආරක්ෂක වැඩි දියුණු කිරීම් ලබා ගන්න. යාවත්කාලීන කිරීම් පසුබිමේ සිදු වේ.</translation>
 </translationbundle>

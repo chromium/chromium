@@ -60,6 +60,7 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.ui.test.util.ViewUtils;
 
 /**
  * UI tests for general developer UI functionality. Significant subcomponents (ex. Fragments) may
@@ -79,6 +80,7 @@ public class DeveloperUiTest {
 
     private void launchHomeFragment() {
         mRule.launchActivity(null);
+        ViewUtils.waitForView(withId(R.id.fragment_home));
 
         // Only start recording intents after launching the MainActivity.
         Intents.init();
@@ -87,6 +89,12 @@ public class DeveloperUiTest {
         // done after launching the activity.
         intending(not(IntentMatchers.isInternal()))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+    }
+
+    private void openOptionsMenu() {
+        openActionBarOverflowOrOptionsMenu(
+                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        ViewUtils.waitForView(withId(R.id.nav_menu_group));
     }
 
     @Before
@@ -132,6 +140,7 @@ public class DeveloperUiTest {
 
         // HomeFragment -> CrashesListFragment
         onView(withId(R.id.navigation_crash_ui)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_crashes_list));
         onView(withId(R.id.fragment_home)).check(doesNotExist());
         onView(withId(R.id.fragment_crashes_list)).check(matches(isDisplayed()));
         onView(withId(R.id.navigation_home))
@@ -143,6 +152,7 @@ public class DeveloperUiTest {
 
         // CrashesListFragment -> FlagsFragment
         onView(withId(R.id.navigation_flags_ui)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_flags));
         onView(withId(R.id.fragment_crashes_list)).check(doesNotExist());
         onView(withId(R.id.fragment_flags)).check(matches(isDisplayed()));
         onView(withId(R.id.navigation_home))
@@ -154,6 +164,7 @@ public class DeveloperUiTest {
 
         // FlagsFragment -> HomeFragment
         onView(withId(R.id.navigation_home)).perform(click());
+        ViewUtils.waitForView(withId(R.id.fragment_home));
         onView(withId(R.id.fragment_flags)).check(doesNotExist());
         onView(withId(R.id.fragment_home)).check(matches(isDisplayed()));
         onView(withId(R.id.navigation_home))
@@ -173,8 +184,7 @@ public class DeveloperUiTest {
 
         launchHomeFragment();
 
-        openActionBarOverflowOrOptionsMenu(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        openOptionsMenu();
         onView(withText("Change WebView Provider")).check(matches(isDisplayed()));
         onView(withText("Change WebView Provider")).perform(click());
         intended(IntentMatchers.hasAction(Settings.ACTION_WEBVIEW_SETTINGS));
@@ -189,8 +199,7 @@ public class DeveloperUiTest {
 
         launchHomeFragment();
 
-        openActionBarOverflowOrOptionsMenu(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        openOptionsMenu();
         onView(withId(R.id.options_menu_switch_provider)).check(doesNotExist());
     }
 
@@ -200,9 +209,9 @@ public class DeveloperUiTest {
     public void testMenuOptions_reportBug() throws Throwable {
         launchHomeFragment();
 
-        openActionBarOverflowOrOptionsMenu(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        openOptionsMenu();
 
+        ViewUtils.waitForView(withText("Report WebView Bug"));
         onView(withText("Report WebView Bug")).check(matches(isDisplayed()));
         onView(withText("Report WebView Bug")).perform(click());
         intended(allOf(IntentMatchers.hasAction(Intent.ACTION_VIEW),
@@ -231,8 +240,7 @@ public class DeveloperUiTest {
                         IntentMatchers.hasData(hasParamWithValue("id", TEST_WEBVIEW_PACKAGE_NAME))))
                 .respondWith(new ActivityResult(Activity.RESULT_OK, null));
 
-        openActionBarOverflowOrOptionsMenu(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        openOptionsMenu();
         onView(withText("Check for WebView updates")).check(matches(isDisplayed()));
         onView(withText("Check for WebView updates")).perform(click());
 
@@ -248,8 +256,7 @@ public class DeveloperUiTest {
     public void testMenuOptions_aboutDevTools() throws Throwable {
         launchHomeFragment();
 
-        openActionBarOverflowOrOptionsMenu(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        openOptionsMenu();
 
         onView(withText("About WebView DevTools")).check(matches(isDisplayed()));
         onView(withText("About WebView DevTools")).perform(click());
@@ -266,8 +273,7 @@ public class DeveloperUiTest {
     public void testMenuOptions_components() throws Throwable {
         launchHomeFragment();
 
-        openActionBarOverflowOrOptionsMenu(
-                InstrumentationRegistry.getInstrumentation().getTargetContext());
+        openOptionsMenu();
 
         onView(withText("Components")).check(matches(isDisplayed()));
         onView(withText("Components")).perform(click());

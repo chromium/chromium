@@ -161,8 +161,7 @@ ZeroStateDriveProvider::ZeroStateDriveProvider(
       max_last_modified_time_(base::Days(base::GetFieldTrialParamByFeatureAsInt(
           ash::features::kProductivityLauncher,
           "max_last_modified_time",
-          8))),
-      enabled_(ash::features::IsProductivityLauncherEnabled()) {
+          8))) {
   DCHECK(profile_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -197,7 +196,7 @@ void ZeroStateDriveProvider::OnFileSystemMounted() {
       ash::features::kProductivityLauncher,
       "itemsuggest_query_on_filesystem_mounted", true);
 
-  if (kUpdateCache && enabled_) {
+  if (kUpdateCache) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ZeroStateDriveProvider::MaybeUpdateCache,
@@ -262,9 +261,6 @@ void ZeroStateDriveProvider::Start(const std::u16string& query) {
 void ZeroStateDriveProvider::StartZeroState() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ClearResultsSilently();
-
-  if (!enabled_)
-    return;
 
   // Exit if drive fs isn't mounted, as we launch results via drive fs.
   if (!drive_service_ || !drive_service_->IsMounted()) {
@@ -398,9 +394,6 @@ void ZeroStateDriveProvider::OnCacheUpdated() {
 }
 
 void ZeroStateDriveProvider::MaybeUpdateCache() {
-  if (!enabled_)
-    return;
-
   if (base::Time::Now() - kFirstUpdateDelay > construction_time_) {
     item_suggest_cache_.UpdateCache();
   }

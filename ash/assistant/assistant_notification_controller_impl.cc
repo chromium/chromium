@@ -98,7 +98,7 @@ AssistantNotificationControllerImpl::~AssistantNotificationControllerImpl() {
 }
 
 void AssistantNotificationControllerImpl::SetAssistant(
-    chromeos::assistant::Assistant* assistant) {
+    assistant::Assistant* assistant) {
   receiver_.reset();
 
   assistant_ = assistant;

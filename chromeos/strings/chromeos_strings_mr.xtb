@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">प्रकार</translation>
 <translation id="2461822463642141190">सद्य</translation>
 <translation id="2480034874476596812">मॅन्युअली बंद करा</translation>
+<translation id="248546197012830854">डिव्हाइस ऑफलाइन आहे. मदत आशय पाहण्यासाठी वाय-फायशी कनेक्ट करा.</translation>
 <translation id="2491955442992294626">तुम्ही दुसरी विंडो वापरत असताना, कीची चाचणी केली जात नाही</translation>
 <translation id="2493126929778606526">तुमचे सर्वोत्तम फोटो, आपोआप निवडले</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -241,7 +242,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">एंडपॉइंट</translation>
 <translation id="3069085583900247081">चाचणी करता आली नाही</translation>
-<translation id="3076243757415932261">घटकांची पडताळणी करत आहे...</translation>
 <translation id="3083667275341675831">कनेक्टिव्हिटी निदान</translation>
 <translation id="3084958266922136097">स्क्रीन सेव्हर बंद करा</translation>
 <translation id="3091839911843451378">अयशस्वी झाले - थांबले आहे</translation>
@@ -276,7 +276,6 @@
 <translation id="3369013195428705271">तुम्हाला तुमचा सर्व प्रिंट इतिहास नक्की साफ करायचा आहे का? तुमची सुरू असलेली प्रिंट कार्ये साफ केली जाणार नाहीत.</translation>
 <translation id="3383751554789092165">आवश्यकतेनुसार डिव्हाइसची माहिती बदला.</translation>
 <translation id="3404249063913988450">स्क्रीन सेव्हर सुरू करा</translation>
-<translation id="3404770484521709967">घटक योग्यरीत्या इंस्टॉल केले आहेत.</translation>
 <translation id="3413935475507503304">अपडेटसह पुढे सुरू ठेवण्यासाठी, पुढील वर क्लिक करा.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">सुरक्षितता</translation>
@@ -396,7 +395,6 @@
 <translation id="445059817448385655">जुना पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">येथे स्कॅन करा</translation>
-<translation id="4472575034687746823">सुरुवात करा</translation>
 <translation id="4479639480957787382">इथरनेट</translation>
 <translation id="4483049906298469269">डीफॉल्ट नसलेला नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="4500213108254186382">लिड अ‍ॅक्सेलेरोमीटर</translation>
@@ -664,6 +662,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> दुरुस्तीमधून बाहेर पडा</translation>
 <translation id="6618744767048954150">रन होत आहे</translation>
 <translation id="6620487321149975369">प्रिंट जॉब मॅन्‍युअली काढून टाकेपर्यंत इतिहासामध्ये दिसतील</translation>
+<translation id="6624819909909965616">१० MB पेक्षा मोठी फाइल अपलोड करू शकत नाही</translation>
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6644568396961840069">फाइल सेव्ह करता आली नाही. वेगळ्या बाह्य स्टोरेजमध्ये प्लग इन करण्याचा प्रयत्न करा किंवा नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="6647510110698214773">एंक्रिप्शन अल्गोरिदम</translation>
@@ -699,6 +698,7 @@
 <translation id="6965382102122355670">ठीक आहे</translation>
 <translation id="6977381486153291903">फर्मवेयर पुनरावृत्ती</translation>
 <translation id="6995564396478647735">राइट प्रोटेक्ट सुरू असल्याची खात्री करा</translation>
+<translation id="7005833343836210400">डिव्हाइस ऑफलाइन आहे</translation>
 <translation id="7028979494427204405">हे डिव्हाइस <ph name="MANAGER" /> व्यवस्थापित करतो आणि भेट दिलेली वेबपेज, पासवर्ड आणि ईमेलसह सर्व वापरकर्ता अ‍ॅक्टिव्हिटीचा त्याला अ‍ॅक्सेस आहे.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7041549558901442110">डिव्हाइस हे कनेक्ट केलेले नाही.</translation>
@@ -811,8 +811,8 @@
 <translation id="8063022551652308521">राइट प्रोटेक्ट बंद आहे. पुढे सुरू ठेवण्यासाठी, राइट प्रोटेक्ट सुरू करा.</translation>
 <translation id="8075838845814659848">शिल्लक चार्जिंग</translation>
 <translation id="8082366717211101304">Android अ‍ॅप्सवरून DNS चे निराकरण करू शकत नाही</translation>
-<translation id="8083281199617904460">ही दुरुस्ती प्रक्रिया प्रशिक्षित दुरुस्ती तंत्रज्ञांसाठी आहे. खराब झालेले घटक बदलल्यानंतरच सुरू करा.</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
+<translation id="8094062939584182041">या समस्येविषयी तुम्हाला ईमेल पाठवण्याची Google ला अनुमती द्या</translation>
 <translation id="8104083085214006426">तुम्ही खुले आणि असुरक्षित नेटवर्क वापरत आहात</translation>
 <translation id="8109786307828817014">अयशस्वी कॅलिब्रेशनसह पुढे सुरू ठेवायचे का?</translation>
 <translation id="811820734797650957">(Android) गेटवे ला पिंग केले जाऊ शकते</translation>

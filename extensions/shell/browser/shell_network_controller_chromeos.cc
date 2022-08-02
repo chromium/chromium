@@ -118,7 +118,7 @@ void ShellNetworkController::SetCellularAllowRoaming(bool allow_roaming) {
   for (const ash::NetworkState* network : network_list) {
     handler->network_configuration_handler()->SetShillProperties(
         network->path(), properties, base::DoNothing(),
-        chromeos::network_handler::ErrorCallback());
+        ash::network_handler::ErrorCallback());
   }
 }
 

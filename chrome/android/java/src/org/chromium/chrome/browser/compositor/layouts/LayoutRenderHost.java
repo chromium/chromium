@@ -53,11 +53,6 @@ public interface LayoutRenderHost {
     void pushDebugRect(Rect rect, int color);
 
     /**
-     * Loads the persistent textures if they are not loaded already.
-     */
-    void loadPersitentTextureDataIfNeeded();
-
-    /**
      * @return The {@link ResourceManager}.
      */
     ResourceManager getResourceManager();

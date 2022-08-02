@@ -42,7 +42,9 @@ class AnimationAbortHandle;
 // being animated on since the Layers ultimately own the objects that run the
 // animation. Otherwise, developers may need to use weak pointers or force
 // animations to be cancelled in the object’s destructor to prevent accessing
-// destroyed objects.
+// destroyed objects. Note that aborted notifications can be sent during the
+// destruction process. Therefore subclasses that own the Layers may actually be
+// destroyed before the OnAborted callback is run.
 
 class VIEWS_EXPORT AnimationBuilder {
  public:

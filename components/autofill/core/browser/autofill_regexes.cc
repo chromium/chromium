@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/i18n/unicodestring.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 
 namespace {
@@ -23,83 +24,82 @@ constexpr int kMaxStringLength = 5000;
 
 namespace autofill {
 
-AutofillRegexes::AutofillRegexes(ThreadSafe thread_safe)
+std::unique_ptr<const icu::RegexPattern> CompileRegex(
+    base::StringPiece16 regex) {
+  const icu::UnicodeString icu_regex(false, regex.data(), regex.length());
+  UErrorCode status = U_ZERO_ERROR;
+  std::unique_ptr<icu::RegexPattern> regex_pattern = base::WrapUnique(
+      icu::RegexPattern::compile(icu_regex, UREGEX_CASE_INSENSITIVE, status));
+  DCHECK(U_SUCCESS(status));
+  return regex_pattern;
+}
+
+bool MatchesRegex(base::StringPiece16 input,
+                  const icu::RegexPattern& regex_pattern,
+                  std::vector<std::u16string>* groups) {
+  if (input.size() > kMaxStringLength)
+    return false;
+
+  UErrorCode status = U_ZERO_ERROR;
+  // `icu_input` must outlive `regex_matcher` because it holds a reference to
+  // it.
+  icu::UnicodeString icu_input(false, input.data(), input.length());
+  std::unique_ptr<icu::RegexMatcher> regex_matcher =
+      base::WrapUnique(regex_pattern.matcher(icu_input, status));
+  UBool matched = regex_matcher->find(0, status);
+  DCHECK(U_SUCCESS(status));
+
+  if (matched && groups) {
+    int32_t matched_groups = regex_matcher->groupCount();
+    groups->resize(matched_groups + 1);
+    for (int32_t i = 0; i < matched_groups + 1; ++i) {
+      icu::UnicodeString match_unicode = regex_matcher->group(i, status);
+      DCHECK(U_SUCCESS(status));
+      (*groups)[i] = base::i18n::UnicodeStringToString16(match_unicode);
+    }
+  }
+  return matched;
+}
+
+bool MatchesPatternInMainThread(base::StringPiece16 input,
+                                base::StringPiece16 regex,
+                                std::vector<std::u16string>* groups) {
+  static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
+  const icu::RegexPattern* regex_pattern = cache->GetRegexPattern(regex);
+  return MatchesRegex(input, *regex_pattern, groups);
+}
+
+AutofillRegexCache::AutofillRegexCache(ThreadSafe thread_safe)
     : thread_safe_(thread_safe) {
   if (!thread_safe_)
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-AutofillRegexes::~AutofillRegexes() {
+AutofillRegexCache::~AutofillRegexCache() {
   if (!thread_safe_)
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-icu::RegexMatcher* AutofillRegexes::GetMatcher(
-    const base::StringPiece16& pattern) {
-  if (!thread_safe_)
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto it = matchers_.find(pattern);
-  if (it == matchers_.end()) {
-    const icu::UnicodeString icu_pattern(false, pattern.data(),
-                                         pattern.length());
-
-    UErrorCode status = U_ZERO_ERROR;
-    auto matcher = std::make_unique<icu::RegexMatcher>(
-        icu_pattern, UREGEX_CASE_INSENSITIVE, status);
-
-    auto result = matchers_.insert(std::make_pair(pattern, std::move(matcher)));
-    DCHECK(result.second);
-    it = result.first;
-    DCHECK(U_SUCCESS(status));
-  }
-  return it->second.get();
-}
-
-bool AutofillRegexes::MatchesPattern(const base::StringPiece16& input,
-                                     const base::StringPiece16& pattern,
-                                     std::vector<std::u16string>* groups) {
-  if (input.size() > kMaxStringLength)
-    return false;
-
-  auto Match = [&]() {
-    UErrorCode status = U_ZERO_ERROR;
-    // `icu_input` must outlive `matcher` because it holds a reference to it.
-    icu::UnicodeString icu_input(false, input.data(), input.length());
-    icu::RegexMatcher* matcher = GetMatcher(pattern);
-    matcher->reset(icu_input);
-    UBool matched = matcher->find(0, status);
-    DCHECK(U_SUCCESS(status));
-
-    if (matched && groups) {
-      int32_t matched_groups = matcher->groupCount();
-      groups->resize(matched_groups + 1);
-
-      for (int32_t i = 0; i < matched_groups + 1; ++i) {
-        icu::UnicodeString match_unicode = matcher->group(i, status);
-        DCHECK(U_SUCCESS(status));
-        (*groups)[i] = base::i18n::UnicodeStringToString16(match_unicode);
-      }
+const icu::RegexPattern* AutofillRegexCache::GetRegexPattern(
+    base::StringPiece16 regex) {
+  auto GetOrCreate = [&]() {
+    auto it = cache_.find(regex);
+    if (it == cache_.end()) {
+      bool success;
+      std::tie(it, success) =
+          cache_.emplace(std::u16string(regex), CompileRegex(regex));
+      DCHECK(success);
     }
-
-    return matched;
+    DCHECK(it != cache_.end());
+    DCHECK(it->second.get());
+    return it->second.get();
   };
-
   if (!thread_safe_) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return Match();
+    return GetOrCreate();
   }
-
   base::AutoLock lock(lock_);
-  return Match();
-}
-
-bool MatchesPatternInMainThread(const base::StringPiece16& input,
-                                const base::StringPiece16& pattern,
-                                std::vector<std::u16string>* groups) {
-  static base::NoDestructor<AutofillRegexes> g_autofill_regexes(
-      ThreadSafe(true));
-  return g_autofill_regexes->MatchesPattern(input, pattern, groups);
+  return GetOrCreate();
 }
 
 }  // namespace autofill

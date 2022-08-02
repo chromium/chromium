@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -16,7 +16,7 @@ class AuthErrorObserver;
 // Singleton that owns all AuthErrorObserver and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated AuthErrorObserver.
-class AuthErrorObserverFactory : public BrowserContextKeyedServiceFactory {
+class AuthErrorObserverFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of AuthErrorObserver associated with this
   // `profile` (creates one if none exists).

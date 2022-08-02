@@ -21,7 +21,7 @@ class FakeBruschettaLauncher : public BruschettaLauncher {
   void set_ensure_running_result(BruschettaResult result) { result_ = result; }
 
  private:
-  BruschettaResult result_;
+  BruschettaResult result_ = BruschettaResult::kSuccess;
 };
 
 }  // namespace bruschetta

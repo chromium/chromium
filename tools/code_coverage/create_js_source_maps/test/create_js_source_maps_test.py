@@ -3,6 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import base64
 import json
 import os
 import shutil
@@ -10,12 +11,14 @@ import sys
 import tempfile
 import unittest
 
+from parameterized import parameterized
 from pathlib import Path
 
 _HERE_DIR = Path(__file__).parent.resolve()
 _SOURCE_MAP_PROCESSOR = (_HERE_DIR.parent /
                          'create_js_source_maps.js').resolve()
 _SOURCE_MAP_TRANSLATOR = (_HERE_DIR / 'translate_source_map.js').resolve()
+_SOURCE_MAP_PREFIX = b'//# sourceMappingURL=data:application/json;base64,'
 
 _NODE_PATH = (_HERE_DIR.parent.parent.parent.parent / 'third_party' /
               'node').resolve()
@@ -48,7 +51,8 @@ class CreateSourceMapsTest(unittest.TestCase):
     assert isinstance(result['column'], int)
     return result['line'], result['column']
 
-  def testPostProcessedFile(self):
+  @parameterized.expand([(True, ), (False, )])
+  def testPostProcessedFile(self, inline_sourcemap):
     ''' Test that a known starting file translates back correctly
 
     Assume we start with the following file:
@@ -82,12 +86,32 @@ class CreateSourceMapsTest(unittest.TestCase):
                                                  suffix=".js")
     os.write(input_fd, file_after_preprocess)
     os.close(input_fd)
-    node.RunNode([str(_SOURCE_MAP_PROCESSOR), input_file_name])
-    map_path = input_file_name + ".map"
+    output_file_name = input_file_name + ".out"
+    node.RunNode([
+        str(_SOURCE_MAP_PROCESSOR),
+        input_file_name,
+        output_file_name,
+    ] + (["--inline-sourcemaps"] if inline_sourcemap else []))
+
+    if inline_sourcemap:
+      with open(output_file_name, 'rb') as output_file:
+        output = output_file.read()
+      output_lines = output.splitlines()
+
+      # Check source map was appended properly.
+      self.assertGreaterEqual(len(output_lines), 1)
+      self.assertEqual(file_after_preprocess,
+                       output[:-(len(output_lines[-1]) + 1)])
+      self.assertTrue(output_lines[-1].startswith(_SOURCE_MAP_PREFIX))
+
+      source_map = base64.b64decode(output_lines[-1][len(_SOURCE_MAP_PREFIX):])
+    else:
+      with open(output_file_name) as map_file:
+        source_map = map_file.read()
 
     # Check mappings:
     # Line 1 is before any removed lines, so it still maps to line 1
-    line, column = self._translate(map_path, 1, 2)
+    line, column = self._translate(source_map, 1, 2)
     self.assertEqual(line, 1)
     # Column number always snaps back to the column number of the most recent
     # mapping point, so it's zero not the correct column number. This seems to
@@ -95,17 +119,17 @@ class CreateSourceMapsTest(unittest.TestCase):
     self.assertEqual(column, 0)
 
     # Original line 5 ends up on translated line 3
-    line, column = self._translate(map_path, 3, 2)
+    line, column = self._translate(source_map, 3, 2)
     self.assertEqual(line, 5)
     self.assertEqual(column, 0)
 
     # Original line 10 ends up on line 5
-    line, column = self._translate(map_path, 5, 2)
+    line, column = self._translate(source_map, 5, 2)
     self.assertEqual(line, 10)
     self.assertEqual(column, 0)
 
     # Original line 11 ends up on line 6
-    line, column = self._translate(map_path, 6, 2)
+    line, column = self._translate(source_map, 6, 2)
     self.assertEqual(line, 11)
     self.assertEqual(column, 0)
 

@@ -40,7 +40,7 @@ class AssistantTextSearchProvider : public SearchProvider,
 
   // ash::AssistantStateObserver:
   void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState allowed_state) override;
+      ash::assistant::AssistantAllowedState allowed_state) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
 
   // Invoke to update results based on current state.

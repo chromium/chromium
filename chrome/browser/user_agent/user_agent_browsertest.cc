@@ -139,4 +139,39 @@ INSTANTIATE_TEST_SUITE_P(ReduceUserAgentFeature,
                          UserAgentBrowserTest,
                          ::testing::Bool());
 
+class ReduceUserAgentPlatformBrowserTest : public InProcessBrowserTest {
+ public:
+  ReduceUserAgentPlatformBrowserTest() = default;
+
+  void SetUp() override {
+    std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
+    feature_list->InitializeFromCommandLine(
+        "ReduceUserAgentMinorVersion,ReduceUserAgentPlatformOsCpu", "");
+    scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
+    InProcessBrowserTest::SetUp();
+  }
+
+  content::WebContents* web_contents() const {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ReduceUserAgentPlatformBrowserTest, NavigatorPlatform) {
+  // We should not reduce android navigator.platform in phase 5.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_NE("Linux x86_64",
+            content::EvalJs(web_contents(), "navigator.platform"));
+#elif BUILDFLAG(IS_MAC)
+  EXPECT_EQ("MacIntel", content::EvalJs(web_contents(), "navigator.platform"));
+#elif BUILDFLAG(IS_WIN)
+  EXPECT_EQ("Win32", content::EvalJs(web_contents(), "navigator.platform"));
+#else
+  EXPECT_EQ("Linux x86_64",
+            content::EvalJs(web_contents(), "navigator.platform"));
+#endif
+}
+
 }  // namespace policy

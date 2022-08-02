@@ -14,6 +14,8 @@
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "chromeos/ash/services/assistant/public/cpp/conversation_observer.h"
 #include "chromeos/services/libassistant/public/cpp/android_app_info.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/services/libassistant/public/cpp/assistant_feedback.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_interaction_metadata.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
 #include "chromeos/services/libassistant/public/mojom/notification_delegate.mojom-forward.h"
@@ -22,10 +24,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
-namespace chromeos {
-namespace assistant {
-
-struct AssistantFeedback;
+namespace ash::assistant {
 
 // Subscribes to Assistant's interaction event. These events are server driven
 // in response to the user's direct interaction with the assistant. Responses
@@ -182,7 +181,13 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantService {
   virtual Assistant* GetAssistant() = 0;
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::Assistant;
+using ::ash::assistant::AssistantInteractionSubscriber;
+using ::ash::assistant::AssistantService;
+}  // namespace chromeos::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_SERVICE_H_

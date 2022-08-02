@@ -67,8 +67,8 @@ TEST(PhoneNumberTest, Matcher) {
                      {u"16502345678", {PHONE_HOME_WHOLE_NUMBER}},
                      {u"650", {PHONE_HOME_CITY_CODE}},
                      {u"2345678", {PHONE_HOME_NUMBER}},
-                     {u"234", {PHONE_HOME_NUMBER}},
-                     {u"5678", {PHONE_HOME_NUMBER}},
+                     {u"234", {PHONE_HOME_NUMBER_PREFIX}},
+                     {u"5678", {PHONE_HOME_NUMBER_SUFFIX}},
                      {u"2345", {}},
                      {u"6502345678", {PHONE_HOME_CITY_AND_NUMBER}},
                      {u"(650)2345678", {PHONE_HOME_CITY_AND_NUMBER}}});
@@ -272,8 +272,8 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
 
   PhoneNumber::PhoneCombineHelper number6;
   EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
-  EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"234"));
-  EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"5682"));
+  EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_NUMBER_PREFIX), u"234"));
+  EXPECT_TRUE(number6.SetInfo(AutofillType(PHONE_HOME_NUMBER_SUFFIX), u"5682"));
   EXPECT_TRUE(number6.ParseNumber(profile, "en-US", &parsed_phone));
   EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 
@@ -281,8 +281,8 @@ TEST(PhoneNumberTest, PhoneCombineHelper) {
   // based on the app locale.
   PhoneNumber::PhoneCombineHelper number7;
   EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_CITY_CODE), u"650"));
-  EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"234"));
-  EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER), u"5682"));
+  EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER_PREFIX), u"234"));
+  EXPECT_TRUE(number7.SetInfo(AutofillType(PHONE_HOME_NUMBER_SUFFIX), u"5682"));
   EXPECT_TRUE(number7.ParseNumber(AutofillProfile(), "en-US", &parsed_phone));
   EXPECT_EQ(u"(650) 234-5682", parsed_phone);
 }

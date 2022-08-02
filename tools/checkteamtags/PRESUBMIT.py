@@ -35,7 +35,7 @@ def _RunUnitTests(input_api, output_api):
                                              'checkteamtags')
   test_runner = input_api.os_path.join(checkteamtags_dir, 'run_tests')
   return_code = input_api.subprocess.call(
-      [input_api.python_executable, test_runner])
+      [input_api.python3_executable, test_runner])
   if return_code:
     message = 'Checkteamtags unit tests did not all pass.'
     return [output_api.PresubmitError(message)]

@@ -1080,6 +1080,7 @@ class ContextMenuIncognitoFilterComponentUpdaterExperimentBrowserTest
     // rules above are ignored.
     AddClassification(classifications.add_classifications(), "foo.com",
                       FilterClassification_SiteRole_SOURCE,
+                      FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
                       {"plzblockexperiment"}, {}, {dummy_experiment});
 
     component_updater::UrlParamClassificationComponentInstallerPolicy::
@@ -1169,14 +1170,17 @@ class ContextMenuIncognitoFilterComponentUpdaterAdditiveExperimentBrowserTest
     // expected.
     FilterClassifications classifications;
     AddClassification(classifications.add_classifications(), "foo.com",
-                      FilterClassification_SiteRole_SOURCE, {"plzblock1"}, {},
-                      {kDefaultTag, dummy_experiment});
+                      FilterClassification_SiteRole_SOURCE,
+                      FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                      {"plzblock1"}, {}, {kDefaultTag, dummy_experiment});
     AddClassification(classifications.add_classifications(), "127.0.0.1",
                       FilterClassification_SiteRole_DESTINATION,
+                      FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
                       {"plzblock", "plzblockredirect"}, {},
                       {kDefaultTag, dummy_experiment});
     AddClassification(classifications.add_classifications(), "foo.com",
                       FilterClassification_SiteRole_SOURCE,
+                      FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
                       {"plzblockexperiment"}, {}, {dummy_experiment});
 
     component_updater::UrlParamClassificationComponentInstallerPolicy::

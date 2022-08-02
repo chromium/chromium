@@ -44,7 +44,8 @@ class HttpsOnlyModeUpgradeTabHelper
 
  private:
   enum class State {
-    // Initial state.
+    // Initial state. The navigation hasn't started yet, or started but hasn't
+    // been upgraded because it's already HTTPS or a non-HTTP scheme.
     kNone,
     // The navigation is stopped to start an upgraded navigation.
     kStoppedToUpgrade,

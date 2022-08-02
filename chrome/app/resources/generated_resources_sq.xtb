@@ -1331,6 +1331,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2241053333139545397">Lexo dhe ndrysho të dhënat e tua në një numër sajtesh uebi</translation>
 <translation id="2241634353105152135">Vetëm një herë</translation>
 <translation id="2242687258748107519">Informacioni i skedarit</translation>
+<translation id="2245296100676446525">Aktivizo sinkronizimin për të marrë faqeshënuesit, fjalëkalimet, historikun etj. në këtë pajisje dhe në çdo vend tjetër ku po sinkronizon.</translation>
 <translation id="2245603955208828424">Përdor tastet e shigjetave për të lëvizur nëpër artikuj sipas shkronjave</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> përditësohet automatikisht në sfond për të të dhënë përmirësimet më të fundit të veçorive dhe sigurisë. Mund t'i shqyrtosh preferencat e përditësimeve te "Cilësimet".</translation>
 <translation id="2246549592927364792">Të merren përshkrimet e imazhit nga Google?</translation>
@@ -6430,7 +6431,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve"
 <translation id="7212097698621322584">Fut kodin PIN aktual për ta ndryshuar. Nëse nuk e di kodin PIN, duhet të rivendosësh çelësin e sigurisë, dhe më pas të krijosh një kod të ri PIN.</translation>
 <translation id="7213903639823314449">Motori i kërkimit i përdorur në shiritin e adresës</translation>
 <translation id="721490496276866468">Importo fjalëkalimet</translation>
-<translation id="7216595297012131718">Renditi gjuhët sipas preferencës tënde</translation>
 <translation id="7219473482981809164">Kemi gjetur disa profile të disponueshme për t'u shkarkuar. Zgjidh ata që dëshiron të shkarkosh përpara se të vazhdosh.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Asnjë fjalëkalim i dobët}=1{1 fjalëkalim i dobët}other{{NUM_WEAK} fjalëkalime të dobëta}}</translation>
 <translation id="7220019174139618249">Fjalëkalimet nuk mund të eksportohen te "<ph name="FOLDER" />"</translation>

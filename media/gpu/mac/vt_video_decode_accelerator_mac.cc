@@ -2046,9 +2046,9 @@ bool VTVideoDecodeAccelerator::ProcessFrame(const Frame& frame) {
     // Request new pictures.
     picture_size_ = frame.image_size;
 
-    // TODO(https://crbug.com/1210994): Remove XRGB support, and expose only
+    // TODO(https://crbug.com/1210994): Remove RGBAF16 support, and expose only
     // PIXEL_FORMAT_NV12 and PIXEL_FORMAT_YUV420P10.
-    picture_format_ = PIXEL_FORMAT_XRGB;
+    picture_format_ = PIXEL_FORMAT_RGBAF16;
     if (base::FeatureList::IsEnabled(kMultiPlaneVideoToolboxSharedImages)) {
       // TODO(https://crbug.com/1233228): The UV planes of P010 frames cannot
       // be represented in the current gfx::BufferFormat.
@@ -2098,7 +2098,7 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
       planes.push_back(gfx::BufferPlane::Y);
       planes.push_back(gfx::BufferPlane::UV);
       break;
-    case PIXEL_FORMAT_XRGB:
+    case PIXEL_FORMAT_RGBAF16:
       planes.push_back(gfx::BufferPlane::DEFAULT);
       break;
     default:
@@ -2115,8 +2115,8 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     // TODO(https://crbug.com/1108909): BGRA is not an appropriate value for
     // these parameters.
     const viz::ResourceFormat viz_resource_format =
-        (picture_format_ == PIXEL_FORMAT_XRGB)
-            ? viz::ResourceFormat::BGRA_8888
+        (picture_format_ == PIXEL_FORMAT_RGBAF16)
+            ? viz::ResourceFormat::RGBA_F16
             : viz::GetResourceFormat(plane_buffer_format);
     const GLenum gl_format = viz::GLDataFormat(viz_resource_format);
 

@@ -16,8 +16,7 @@ class MockAssistantState : public ash::AssistantState {
   MockAssistantState& operator=(const MockAssistantState&) = delete;
   ~MockAssistantState() override;
 
-  void SetAllowedState(
-      chromeos::assistant::AssistantAllowedState allowed_state);
+  void SetAllowedState(assistant::AssistantAllowedState allowed_state);
 
   void SetSettingsEnabled(bool enabled);
 };

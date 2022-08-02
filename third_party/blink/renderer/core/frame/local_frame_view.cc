@@ -288,7 +288,17 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       unique_id_(NewUniqueObjectId()),
       layout_shift_tracker_(MakeGarbageCollected<LayoutShiftTracker>(this)),
       paint_timing_detector_(MakeGarbageCollected<PaintTimingDetector>(this)),
-      mobile_friendliness_checker_(MobileFriendlinessChecker::Create(*this))
+      mobile_friendliness_checker_(
+          // Only run the mobile friendliness checker for the outermost main
+          // frame. The checker will iterate through all local frames in the
+          // current blink::Page. Also skip the mobile friendliness checks for
+          // "non-ordinary" pages by checking IsLocalFrameClientImpl(), since
+          // it's not useful to generate mobile friendliness metrics for
+          // devtools, svg, etc.
+          GetFrame().Client()->IsLocalFrameClientImpl() &&
+                  GetFrame().IsOutermostMainFrame()
+              ? MakeGarbageCollected<MobileFriendlinessChecker>(*this)
+              : nullptr)
 #if DCHECK_IS_ON()
       ,
       is_updating_descendant_dependent_flags_(false),

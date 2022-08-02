@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/guest_os/guest_os_mime_types_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace guest_os {
 
@@ -25,9 +24,7 @@ GuestOsMimeTypesServiceFactory* GuestOsMimeTypesServiceFactory::GetInstance() {
 }
 
 GuestOsMimeTypesServiceFactory::GuestOsMimeTypesServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "GuestOsMimeTypesService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("GuestOsMimeTypesService") {}
 
 GuestOsMimeTypesServiceFactory::~GuestOsMimeTypesServiceFactory() = default;
 

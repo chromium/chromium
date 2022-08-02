@@ -1075,6 +1075,7 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1997616988432401742">Dine sertifikater</translation>
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
+<translation id="2001148512690747464">Ingen enheter med Rask sammenkobling er lagret for <ph name="PRIMARY_EMAIL" /></translation>
 <translation id="2002109485265116295">Sanntid</translation>
 <translation id="2003130567827682533">For å aktivere «<ph name="NAME" />»-dataene må du først koble til et Wi-Fi-nettverk</translation>
 <translation id="2004697686368036666">Det kan hende at funksjoner på noen nettsteder ikke fungerer</translation>
@@ -1784,6 +1785,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2642111877055905627">Fotball</translation>
 <translation id="2643698698624765890">Du kan administrere utvidelsene dine ved å klikke på Utvidelser i vindusmenyen.</translation>
 <translation id="2645047101481282803">Enheten administreres av <ph name="PROFILE_NAME" /></translation>
+<translation id="2645270499129074468">{NUM_PASSWORDS,plural, =1{1 passord er importert til denne enheten}other{{NUM_PASSWORDS} passord er importert til denne enheten}}</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649045351178520408">Base64-kodet ASCII, sertifikatkjede</translation>
 <translation id="2652129567809778422">Velg passord</translation>
@@ -2961,6 +2963,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3790417903123637354">Noe gikk galt. Prøv på nytt senere</translation>
 <translation id="379082410132524484">Kortet ditt er utløpt</translation>
+<translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> utvidelser</translation>
 <translation id="3793588272211751505">{NUM_DAYS,plural, =1{Chrome fant ingen skadelig programvare på datamaskinen • sjekket for 1 dag siden}other{Chrome fant ingen skadelig programvare på datamaskinen • sjekket for {NUM_DAYS} dager siden}}</translation>
 <translation id="379500251094592809">For å bruke nærdeling, kontrollér at begge enhetene er låst opp, er i nærheten av hverandre og har Bluetooth påslått. Hvis du deler med en Chromebook som ikke er i kontaktene dine, må du sørge for at den har nærdeling påslått (åpne statusfeltet ved å velge klokkeslettet, og slå på Nærdeling). <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="379509625511193653">Av</translation>
@@ -4744,6 +4747,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5542750926112347543">Informasjonskapsler fra <ph name="DOMAIN" /> er blokkert</translation>
 <translation id="5542949973455282971">Kobler til <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Sjekker statusen …</translation>
+<translation id="5544482392629385159">Enhet <ph name="DEVICE_INDEX" /> av <ph name="DEVICE_COUNT" />, <ph name="DEVICE_NAME" /></translation>
 <translation id="554517701842997186">Gjengivelse</translation>
 <translation id="5545335608717746497">{NUM_TABS,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
 <translation id="5545693483061321551">Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser. Det kan hende at funksjoner på noen nettsteder ikke fungerer.</translation>
@@ -5545,6 +5549,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6333170995003625229">Kunne ikke bekrefte e-postadressen eller passordet. Prøv å logge på igjen.</translation>
 <translation id="6335920438823100346">Før du kan starte Linux, krever <ph name="MANAGER" /> at du sikkerhetskopierer dataene dine og tilbakestiller Chromebook til fabrikkstandard.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> har slått av ADB-feilsøking. <ph name="DEVICE_TYPE" /> blir tilbakestilt om 24 timer. Sikkerhetskopiér eventuelle filer du vil ta vare på.</translation>
+<translation id="6338402296920404442">Du bør vurdere å slette <ph name="FILENAME" />, slik at andre som bruker denne enheten, ikke kan se passordene dine.</translation>
 <translation id="6338981933082930623">Alle nettsteder kan vise deg alle slags annonser</translation>
 <translation id="6339668969738228384">Opprett en ny profil for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Internet Printing Protocol (IPPS)</translation>
@@ -6434,7 +6439,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7212097698621322584">Skriv inn den nåværende PIN-koden for å endre den. Hvis du ikke kan PIN-koden, må du tilbakestille sikkerhetsnøkkelen og deretter opprette en ny PIN-kode.</translation>
 <translation id="7213903639823314449">Søkemotoren som brukes i adressefeltet</translation>
 <translation id="721490496276866468">Importer passord</translation>
-<translation id="7216595297012131718">Velg ønsket språkrekkefølge</translation>
 <translation id="7219473482981809164">Vi fant flere profiler som er tilgjengelige for nedlasting. Velg de du vil laste ned, før du går videre.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Ingen svake passord}=1{1 svakt passord}other{{NUM_WEAK} svake passord}}</translation>
 <translation id="7220019174139618249">Kan ikke eksportere passord til «<ph name="FOLDER" />»</translation>
@@ -7617,6 +7621,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8338952601723052325">Utviklernettsted</translation>
 <translation id="8339059274628563283">Data lagret lokalt på <ph name="SITE" /></translation>
 <translation id="833986336429795709">For å åpne denne linken, velg en app</translation>
+<translation id="8340547030807793004">Flere handlinger for <ph name="DEVICE" /></translation>
 <translation id="8342221978608739536">Prøvde ikke</translation>
 <translation id="8342861492835240085">Velg en samling</translation>
 <translation id="8345848587667658367">Nå kan du se telefonens nylige bilder, medier, varsler og apper</translation>

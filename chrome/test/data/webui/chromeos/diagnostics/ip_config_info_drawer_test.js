@@ -72,6 +72,22 @@ export function ipConfigInfoDrawerTestSuite() {
         .header;
   }
 
+  /**
+   * @suppress {visibility}
+   * @param {number} prefix
+   * @return {!Promise}
+   */
+  function setRoutingPrefix(prefix) {
+    assertTrue(
+        !!ipConfigInfoDrawerElement.network &&
+        !!ipConfigInfoDrawerElement.network.ipConfig);
+
+    ipConfigInfoDrawerElement.network.ipConfig.routingPrefix = prefix;
+    ipConfigInfoDrawerElement.notifyPath('network.ipConfig.routingPrefix');
+
+    return flushTasks();
+  }
+
   test('IpConfigInfoDrawerInitialized', () => {
     return initializeIpConfigInfoDrawerElement().then(() => {
       assertTrue(isVisible(getDrawerToggle()));
@@ -109,7 +125,6 @@ export function ipConfigInfoDrawerTestSuite() {
   });
 
   test('ConfigDrawerOpenDisplaysSubnetMaskBasedOnNetwork', () => {
-    const expectedSubnetMask = '255.255.255.0';
     return initializeIpConfigInfoDrawerElement(fakeWifiNetwork)
         // Opening drawer to test visibility and content of data points.
         .then(() => getDrawerToggle().click())
@@ -117,7 +132,31 @@ export function ipConfigInfoDrawerTestSuite() {
           dx_utils.assertDataPointHasExpectedHeaderAndValue(
               ipConfigInfoDrawerElement, '#subnetMask',
               ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
-              expectedSubnetMask);
+              '255.255.255.0');
+
+          return setRoutingPrefix(0);
+        })
+        .then(() => {
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#subnetMask',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              '');
+
+          return setRoutingPrefix(32);
+        })
+        .then(() => {
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#subnetMask',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              '255.255.255.255');
+
+          return setRoutingPrefix(33);
+        })
+        .then(() => {
+          dx_utils.assertDataPointHasExpectedHeaderAndValue(
+              ipConfigInfoDrawerElement, '#subnetMask',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerSubnetMask'),
+              '');
         });
   });
 

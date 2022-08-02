@@ -144,7 +144,8 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
 bool ExtensionSpecialStoragePolicy::IsStorageSessionOnly(const GURL& origin) {
   if (!cookie_settings_)
     return false;
-  return cookie_settings_->IsCookieSessionOnly(origin);
+  return cookie_settings_->IsCookieSessionOnly(
+      origin, content_settings::CookieSettings::QueryReason::kSiteStorage);
 }
 
 bool ExtensionSpecialStoragePolicy::HasSessionOnlyOrigins() {

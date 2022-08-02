@@ -464,7 +464,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
         QuicChromiumClientSession* session);
 
     void OnPathValidationSuccess(
-        std::unique_ptr<quic::QuicPathValidationContext> context) override;
+        std::unique_ptr<quic::QuicPathValidationContext> context,
+        quic::QuicTime start_time) override;
 
     void OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) override;
@@ -483,7 +484,8 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
         QuicChromiumClientSession* session);
 
     void OnPathValidationSuccess(
-        std::unique_ptr<quic::QuicPathValidationContext> context) override;
+        std::unique_ptr<quic::QuicPathValidationContext> context,
+        quic::QuicTime start_time) override;
 
     void OnPathValidationFailure(
         std::unique_ptr<quic::QuicPathValidationContext> context) override;

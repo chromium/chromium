@@ -84,6 +84,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1346748346194534595">Højre</translation>
 <translation id="1351937230027495976">Skjul menu</translation>
 <translation id="1364382257761975320">Hvis du vil låse din Chromebook op, skal du bruge dit fingeraftryk</translation>
+<translation id="1365866993922957110">Få automatiske opdateringer</translation>
 <translation id="1372545819342940910">Gem skrivebord til senere</translation>
 <translation id="1383597849754832576">Talefilerne kan ikke downloades. Prøv igen senere.</translation>
 <translation id="1383876407941801731">Søg</translation>
@@ -161,6 +162,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> blev frigjort</translation>
 <translation id="1836215606488044471">Assistent (indlæser...)</translation>
 <translation id="1838895407229022812">Nattelys er slået fra.</translation>
+<translation id="1862380676329487333">Opdater, og log ud</translation>
 <translation id="1864454756846565995">USB-C-enhed (port bagpå)</translation>
 <translation id="1879018240766558464">Inkognitovinduer understøttes ikke i øjeblikket. Andre apps gemmes.</translation>
 <translation id="1882814835921407042">Intet mobilnetværk</translation>
@@ -561,6 +563,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="423685346499232137">Det er ikke muligt at kopiere eller indsætte indhold på nuværende tidspunkt</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
+<translation id="4247123849143712100">Opdater, og sluk</translation>
 <translation id="4250229828105606438">Screenshot</translation>
 <translation id="425364040945105958">Intet SIM-kort</translation>
 <translation id="4261870227682513959">Vis indstillinger for notifikationer. Notifikationer er slået fra</translation>
@@ -920,6 +923,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en session, der administreres af <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> er forbundet</translation>
 <translation id="6351032674660237738">APPFORSLAG</translation>
+<translation id="6359587239691116345">Få de nyeste funktioner og sikkerhedsforbedringer. Hvis du afviser denne opdatering, fungerer din enhed muligvis ikke længere korrekt, og du kan opleve problemer med sikkerheden og ydeevnen.</translation>
 <translation id="6376931439017688372">Bluetooth er slået til</translation>
 <translation id="6381109794406942707">Angiv din pinkode for at låse enheden op.</translation>
 <translation id="639644700271529076">CAPS LOCK er deaktiveret</translation>
@@ -941,6 +945,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" />, før fristen udløber</translation>
 <translation id="649452524636452238">Pinkode til chipkort</translation>
 <translation id="6495400115277918834">Integreret billede blev startet – tryk på Alt + Shift + V for at fokusere på dette</translation>
+<translation id="6500896621837555595">Opdater</translation>
 <translation id="6501401484702599040">Caster skærmen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Forbindelsen til kameraet blev afbrudt. Genopretter forbindelsen.</translation>
 <translation id="6520517963145875092">Vælg et vindue, der skal tages billede af</translation>
@@ -1218,6 +1223,7 @@ Installeret for nylig</translation>
 <translation id="8054466585765276473">Beregner batteritid.</translation>
 <translation id="8061464966246066292">Høj kontrast</translation>
 <translation id="8083540854303889870">Gemt til senere</translation>
+<translation id="8091387634532529612">Automatiske opdateringer</translation>
 <translation id="8098591350844501178">Stop skærmcast til <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Til, alle apps</translation>
 <translation id="8120151603115102514">Du har ikke aktiveret en låseskærm på din telefon. Angiv din adgangskode for at låse din Chromebook op.</translation>
@@ -1424,4 +1430,5 @@ Installeret for nylig</translation>
 <translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Liggende</translation>
 <translation id="990277280839877440">Vinduet <ph name="WINDOW_TITILE" /> blev lukket.</translation>
+<translation id="996204416024568215">Få de nyeste funktioner og sikkerhedsforbedringer. Opdateringerne foregår i baggrunden.</translation>
 </translationbundle>

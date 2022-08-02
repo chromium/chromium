@@ -100,8 +100,8 @@ void AppWebMessagePort::PostMessage(
   DCHECK(descriptor_.IsValid());
   DCHECK(connector_);
   blink::TransferableMessage transferable_message =
-      CreateTransferableMessageFromJavaMessagePayload(
-          base::android::ScopedJavaLocalRef<jobject>(j_message_payload));
+      blink::EncodeWebMessagePayload(ConvertToWebMessagePayloadFromJava(
+          base::android::ScopedJavaLocalRef<jobject>(j_message_payload)));
   transferable_message.ports =
       blink::MessagePortChannel::CreateFromHandles(Release(env, j_ports));
 
@@ -139,16 +139,24 @@ bool AppWebMessagePort::Accept(mojo::Message* message) {
   blink::TransferableMessage transferable_message;
   if (!blink::mojom::TransferableMessage::DeserializeFromMessage(
           std::move(*message), &transferable_message)) {
+    // Decode mojo message failed.
     return false;
   }
+  auto optional_payload =
+      blink::DecodeToWebMessagePayload(transferable_message);
+  if (!optional_payload) {
+    // Unsupported or invalid payload.
+    return true;
+  }
+  const auto& payload = optional_payload.value();
+
   auto j_ports = CreateJavaMessagePort(
       blink::MessagePortChannel::ReleaseHandles(transferable_message.ports));
   base::android::ScopedJavaLocalRef<jobject> j_message =
-      CreateJavaMessagePayload(transferable_message);
-  if (j_message) {
-    JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AppWebMessagePort_onMessage(env, GetJavaObj(env), j_message, j_ports);
-  }
+      ConvertWebMessagePayloadToJava(payload);
+  DCHECK(j_message);
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_AppWebMessagePort_onMessage(env, GetJavaObj(env), j_message, j_ports);
   return true;
 }
 

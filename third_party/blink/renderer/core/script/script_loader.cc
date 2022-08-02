@@ -220,6 +220,12 @@ bool ShouldForceDeferScript() {
   return base::FeatureList::IsEnabled(features::kForceDeferScriptIntervention);
 }
 
+// Determine if the script should be executed via
+// ScriptSchedulingType::kForceInOrder approach. The script will be loaded
+// asynchronously, executed with in-order (crbug.com/1344772).
+bool ShouldForceInOrderScript() {
+  return base::FeatureList::IsEnabled(features::kForceInOrderScript);
+}
 }  // namespace
 
 ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
@@ -963,6 +969,21 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
     return true;
   }
 
+  // Check for external script that should be force in-order.
+  // Not only the pending scripts that would be marked (without the
+  // intervention) as ScriptSchedulingType::kParserBlocking or kInOrder, but
+  // also the scripts that would be marked as kAsync are put into the force
+  // in-order queue in ScriptRunner because we have to guarantee the execution
+  // order of the scripts.
+  if (GetScriptType() == ScriptTypeAtPrepare::kClassic &&
+      element_->HasSourceAttribute() && ShouldForceInOrderScript() &&
+      IsA<HTMLDocument>(context_window->document())) {
+    context_window->document()->GetScriptRunner()->QueueScriptForExecution(
+        TakePendingScript(ScriptSchedulingType::kForceInOrder));
+
+    return true;
+  }
+
   // <spec step="26.B">If the script's type is "classic", and the element has a
   // src attribute, and the element has been flagged as "parser-inserted", and
   // the element does not have an async attribute ...</spec>
@@ -1074,6 +1095,19 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
     will_be_parser_executed_ = true;
     // <spec step="26.E">... Set the element's "ready to be parser-executed"
     // flag. ...</spec>
+    ready_to_be_parser_executed_ = true;
+
+    return true;
+  }
+
+  // If ScriptRunner still has ForceInOrder scripts not executed yet, attempt to
+  // mark the inline script as parser blocking so that the inline script is
+  // evaluated after the ForceInOrder scripts are evaluated.
+  // TODO(crbug.com/1344772): Clean up this code block.
+  if (!element_->HasSourceAttribute() && parser_inserted_ &&
+      context_window->document()->GetScriptRunner()->HasForceInOrderScripts()) {
+    DCHECK(base::FeatureList::IsEnabled(features::kForceInOrderScript));
+    will_be_parser_executed_ = true;
     ready_to_be_parser_executed_ = true;
 
     return true;

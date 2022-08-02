@@ -62,9 +62,6 @@ public class CompositorVisibilityTest {
         public void pushDebugRect(Rect rect, int color) {}
 
         @Override
-        public void loadPersitentTextureDataIfNeeded() {}
-
-        @Override
         public ResourceManager getResourceManager() {
             return null;
         }

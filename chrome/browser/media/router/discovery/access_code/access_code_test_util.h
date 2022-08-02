@@ -54,6 +54,8 @@ class MockAccessCodeCastSinkService : public AccessCodeCastSinkService {
               (override));
 };
 
+MediaRoute CreateRouteForTesting(const MediaSinkInternal& sink);
+
 }  // namespace media_router
 
 #endif  // CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_ACCESS_CODE_ACCESS_CODE_TEST_UTIL_H_

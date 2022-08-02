@@ -2,37 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <map>
 #include <string>
 
-#include "base/bind.h"
-#include "base/strings/escape.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/bind.h"
+#import "base/strings/escape.h"
+#import "base/strings/string_util.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "components/security_interstitials/core/https_only_mode_metrics.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/security_interstitials/core/https_only_mode_metrics.h"
+#import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_app_interface.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_test_helper.h"
-#include "ios/chrome/browser/metrics/metrics_app_interface.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
-#include "ios/components/security_interstitials/https_only_mode/feature.h"
+#import "ios/components/security_interstitials/https_only_mode/feature.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/testing/embedded_test_server_handlers.h"
-#include "ios/web/common/features.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -89,6 +89,14 @@ const char kInterstitialText[] =
              @"Timer is still running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is unexpectedly running");
+
+  // Omnibox HTTPS Upgrades shouldn't handle this navigation.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                                 kEventHistogram)],
+      @"Omnibox HTTPS Upgrades unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a successful upgrade.
@@ -120,6 +128,14 @@ const char kInterstitialText[] =
              @"Timer is still running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is unexpectedly running");
+
+  // Omnibox HTTPS Upgrades shouldn't handle this navigation.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                                 kEventHistogram)],
+      @"Omnibox HTTPS Upgrades unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a failed upgrade.
@@ -151,6 +167,14 @@ const char kInterstitialText[] =
              @"Timer is still running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is unexpectedly running");
+
+  // Omnibox HTTPS Upgrades shouldn't handle this navigation.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                                 kEventHistogram)],
+      @"Omnibox HTTPS Upgrades unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a timed-out upgrade.
@@ -182,6 +206,14 @@ const char kInterstitialText[] =
              @"Timer is still running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is unexpectedly running");
+
+  // Omnibox HTTPS Upgrades shouldn't handle this navigation.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectTotalCount:0
+              forHistogram:@(security_interstitials::omnibox_https_upgrades::
+                                 kEventHistogram)],
+      @"Omnibox HTTPS Upgrades unexpectedly recorded a histogram event");
 }
 
 #pragma mark - Tests
@@ -189,7 +221,7 @@ const char kInterstitialText[] =
 // Disable the feature and navigate to an HTTP URL directly. Since the feature
 // is disabled, this should load the HTTP URL even though the upgraded HTTPS
 // version serves good SSL.
-- (void)testUpgrade_FeatureDisabled_NoUpgrade {
+- (void)test_FeatureDisabled_ShouldNotUpgrade {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
 
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
@@ -202,7 +234,7 @@ const char kInterstitialText[] =
 }
 
 // Tests that navigations to localhost URLs aren't upgraded.
-- (void)testUpgrade_Localhost_NoUpgrade {
+- (void)test_Localhost_ShouldNotUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -216,9 +248,20 @@ const char kInterstitialText[] =
   [self assertNoUpgrade];
 }
 
+// Navigate to an HTTPS URL directly. The navigation shouldn't be upgraded.
+- (void)test_GoodHTTPS_ShouldNotUpgrade {
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                      useFakeHTTPS:true];
+
+  GURL testURL = self.goodHTTPSServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
+  [self assertNoUpgrade];
+}
+
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL.
 // This should end up loading the HTTPS version of the URL.
-- (void)testUpgrade_GoodHTTPS {
+- (void)test_HTTPWithGoodHTTPS_ShouldUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -230,7 +273,7 @@ const char kInterstitialText[] =
 
 // Navigate to an HTTP URL by clicking a link. This should end up loading the
 // HTTPS version of the URL.
-- (void)testUpgrade_GoodHTTPS_LinkClick {
+- (void)test_HTTPWithGoodHTTPS_LinkClick_ShouldUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
   int HTTPPort = self.testServer->port();
@@ -250,7 +293,7 @@ const char kInterstitialText[] =
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves good SSL
 // which redirects to the original HTTP URL. This should show the interstitial.
-- (void)testUpgrade_HTTPSRedirectsToHTTP {
+- (void)test_HTTPSRedirectsToHTTP_ShouldFallback {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -284,7 +327,7 @@ const char kInterstitialText[] =
 // Tests that prerendered navigations that should be upgraded are cancelled.
 // This test is adapted from testTapPrerenderSuggestions() in
 // prerender_egtest.mm.
-- (void)testUpgrade_BadHTTPS_PrerenderCanceled {
+- (void)test_BadHTTPS_ShouldCancelPrerender {
   // TODO(crbug.com/793306): Re-enable the test on iPad once the alternate
   // letters problem is fixed.
   if ([ChromeEarlGrey isIPadIdiom]) {
@@ -359,7 +402,7 @@ const char kInterstitialText[] =
 
 // Navigate to an HTTP URL and allowlist the URL. Then clear browsing data.
 // This should clear the HTTP allowlist.
-- (void)testUpgrade_RemoveBrowsingData_ShouldClearAllowlist {
+- (void)test_RemoveBrowsingData_ShouldClearAllowlist {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -397,7 +440,7 @@ const char kInterstitialText[] =
 
 // Click on the "Learn more" link in the interstitial. This should open a
 // new tab.
-- (void)testUpgrade_LearnMore_ShouldOpenNewTab {
+- (void)test_ClickLearnMore_ShouldOpenNewTab {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -421,7 +464,7 @@ const char kInterstitialText[] =
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Reloading the page should show the interstitial again.
-- (void)testUpgrade_BadHTTPS_ReloadInterstitial {
+- (void)test_BadHTTPS_ReloadInterstitial {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -438,7 +481,7 @@ const char kInterstitialText[] =
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves slow SSL.
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Reloading the page should show the interstitial again.
-- (void)testUpgrade_SlowHTTPS_ReloadInterstitial {
+- (void)test_SlowHTTPS_ReloadInterstitial {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
@@ -459,7 +502,7 @@ const char kInterstitialText[] =
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Click through the interstitial, then reload the page. The HTTP page should
 // be shown.
-- (void)testUpgrade_BadHTTPS_ProceedInterstitial_Allowlisted {
+- (void)test_BadHTTPS_ProceedInterstitial_Allowlisted {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -522,7 +565,7 @@ const char kInterstitialText[] =
 // loading SSL page. The upgrade will be cancelled and the HTTPS-Only mode
 // interstitial will be shown. Click through the interstitial, then reload the
 // page. The HTTP page should be shown.
-- (void)testUpgrade_SlowHTTPS_ProceedInterstitial_Allowlisted {
+- (void)test_SlowHTTPS_ProceedInterstitial_Allowlisted {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
@@ -556,7 +599,7 @@ const char kInterstitialText[] =
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.
 // The upgrade will fail and the HTTPS-Only mode interstitial will be shown.
 // Tap Go back on the interstitial.
-- (void)testUpgrade_BadHTTPS_GoBack {
+- (void)test_BadHTTPS_GoBack {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -583,7 +626,7 @@ const char kInterstitialText[] =
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves a slow
 // loading HTTPS page. The upgrade will be cancelled and the HTTPS-Only mode
 // interstitial will be shown. Tap Go back on the interstitial.
-- (void)testUpgrade_SlowHTTPS_GoBack {
+- (void)test_SlowHTTPS_GoBack {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS
@@ -613,7 +656,7 @@ const char kInterstitialText[] =
 // Navigate to an HTTP URL and click through the interstitial. Then,
 // navigate to a new page and go back. This should load the HTTP URL
 // without showing the interstitial again.
-- (void)testUpgrade_BadHTTPS_GoBackToAllowlistedSite {
+- (void)test_BadHTTPS_GoBackToAllowlistedSite {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
 
@@ -646,7 +689,7 @@ const char kInterstitialText[] =
 // Navigate to an HTTP URL with a slow HTTPS upgrade, click through the
 // interstitial. Then, navigate to a new page and go back. This should load the
 // HTTP URL without showing the interstitial again.
-- (void)testUpgrade_SlowHTTPS_GoBackToAllowlistedSite {
+- (void)test_SlowHTTPS_GoBackToAllowlistedSite {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
                                       useFakeHTTPS:true];
   // Set the fallback delay to zero. This will immediately stop the HTTPS

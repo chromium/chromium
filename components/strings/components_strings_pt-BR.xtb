@@ -1228,6 +1228,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4305666528087210886">Não foi possível acessar seu arquivo</translation>
 <translation id="4306529830550717874">Salvar endereço?</translation>
 <translation id="4306812610847412719">área de transferência</translation>
+<translation id="4308567447483056043">Esta política é ignorada porque o usuário não é afiliado. Para que ela seja aplicada, o navegador Chrome e o perfil precisam ser gerenciados no Admin Console pela mesma organização.</translation>
 <translation id="4310070645992025887">Pesquisar suas jornadas</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquear (padrão)</translation>
@@ -1680,6 +1681,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5518670652865028077">Artes e entretenimento</translation>
 <translation id="5519516356611866228">Com suas modificações</translation>
 <translation id="5523118979700054094">Nome da política</translation>
+<translation id="5525755241743357906">O arquivo foi copiado ou movido</translation>
 <translation id="5526617258931667850"><ph name="MANAGE_CHROMEOS_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para personalizar as ferramentas de acessibilidade nas configurações do ChromeOS</translation>
 <translation id="5528532273234423708">Automação residencial</translation>
 <translation id="55293785478302737">Costurar borda</translation>
@@ -2933,6 +2935,7 @@ Mais detalhes:
 <translation id="9096425087209440047"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />. Pressione Tab e depois Enter para definir o Chrome como o navegador padrão do sistema nas configurações do iOS</translation>
 <translation id="9096679202588811390">Programas de TV</translation>
 <translation id="9101630580131696064">Bandeja 1</translation>
+<translation id="9102081333385212048">Os arquivos copiados ou movidos são enviados ao Google Cloud ou a terceiros para análise. Por exemplo, eles podem ser verificados em busca de dados sensíveis ou malware.</translation>
 <translation id="9103537084693478942">Software de vídeo</translation>
 <translation id="9103872766612412690">O site <ph name="SITE" /> geralmente usa criptografia para proteger suas informações. Quando o Chromium tentou se conectar a <ph name="SITE" /> dessa vez, o website retornou credenciais
 incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser <ph name="SITE" /> ou quando uma tela de login por Wi-Fi interrompeu a conexão. Suas informações ainda estão protegidas, porque o Chromium interrompeu a conexão antes que os dados fossem trocados.</translation>

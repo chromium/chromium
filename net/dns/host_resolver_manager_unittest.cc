@@ -10653,13 +10653,15 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQuery) {
       resolve_context_->host_cache()));
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(
-                      testing::SizeIs(2),
-                      ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                          dns_protocol::kHttpsServiceDefaultAlpn))),
-                  ExpectEndpointResult(testing::SizeIs(2)))));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::ElementsAre(
+          ExpectEndpointResult(
+              testing::SizeIs(2),
+              ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)),
+          ExpectEndpointResult(testing::SizeIs(2)))));
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
@@ -10703,13 +10705,15 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithNonstandardPort) {
       resolve_context_->host_cache()));
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(
-                      testing::SizeIs(2),
-                      ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                          dns_protocol::kHttpsServiceDefaultAlpn))),
-                  ExpectEndpointResult(testing::SizeIs(2)))));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::ElementsAre(
+          ExpectEndpointResult(
+              testing::SizeIs(2),
+              ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)),
+          ExpectEndpointResult(testing::SizeIs(2)))));
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
@@ -10811,7 +10815,7 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithAlpnAndEch) {
               ExpectConnectionEndpointMetadata(
                   testing::UnorderedElementsAre(
                       "foo1", "foo2", dns_protocol::kHttpsServiceDefaultAlpn),
-                  testing::ElementsAreArray(kEch))),
+                  testing::ElementsAreArray(kEch), kName)),
           ExpectEndpointResult(testing::SizeIs(2)))));
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
@@ -10898,13 +10902,15 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryWithMatchingPort) {
       resolve_context_->host_cache()));
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(
-                      testing::SizeIs(2),
-                      ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                          dns_protocol::kHttpsServiceDefaultAlpn))),
-                  ExpectEndpointResult(testing::SizeIs(2)))));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::ElementsAre(
+          ExpectEndpointResult(
+              testing::SizeIs(2),
+              ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)),
+          ExpectEndpointResult(testing::SizeIs(2)))));
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
@@ -11533,13 +11539,15 @@ TEST_F(HostResolverManagerDnsTest, HttpsInAddressQueryForWssScheme) {
       resolve_context_->host_cache()));
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(
-                      testing::SizeIs(2),
-                      ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                          dns_protocol::kHttpsServiceDefaultAlpn))),
-                  ExpectEndpointResult(testing::SizeIs(2)))));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::ElementsAre(
+          ExpectEndpointResult(
+              testing::SizeIs(2),
+              ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)),
+          ExpectEndpointResult(testing::SizeIs(2)))));
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
@@ -11979,13 +11987,15 @@ TEST_F(HostResolverManagerDnsTest, HttpsInInsecureAddressQuery) {
 
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(
-                      testing::SizeIs(2),
-                      ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                          dns_protocol::kHttpsServiceDefaultAlpn))),
-                  ExpectEndpointResult(testing::SizeIs(2)))));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::ElementsAre(
+          ExpectEndpointResult(
+              testing::SizeIs(2),
+              ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)),
+          ExpectEndpointResult(testing::SizeIs(2)))));
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),
@@ -13143,13 +13153,15 @@ TEST_F(HostResolverManagerDnsTest,
   dns_client_->CompleteDelayedTransactions();
   EXPECT_THAT(response.result_error(), IsOk());
   EXPECT_TRUE(response.request()->GetAddressResults());
-  EXPECT_THAT(response.request()->GetEndpointResults(),
-              testing::Pointee(testing::ElementsAre(
-                  ExpectEndpointResult(
-                      testing::SizeIs(2),
-                      ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                          dns_protocol::kHttpsServiceDefaultAlpn))),
-                  ExpectEndpointResult(testing::SizeIs(2)))));
+  EXPECT_THAT(
+      response.request()->GetEndpointResults(),
+      testing::Pointee(testing::ElementsAre(
+          ExpectEndpointResult(
+              testing::SizeIs(2),
+              ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+                  testing::IsEmpty(), kName)),
+          ExpectEndpointResult(testing::SizeIs(2)))));
   EXPECT_FALSE(response.request()->GetTextResults());
   EXPECT_FALSE(response.request()->GetHostnameResults());
   EXPECT_THAT(response.request()->GetExperimentalResultsForTesting(),

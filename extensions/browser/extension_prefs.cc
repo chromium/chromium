@@ -1813,15 +1813,6 @@ void ExtensionPrefs::ClearLastLaunchTimes() {
   }
 }
 
-const base::Value* ExtensionPrefs::GetPref(const PrefMap& pref) const {
-  DCHECK_EQ(PrefScope::kProfile, pref.scope);
-  const base::Value* pref_value = prefs_->Get(pref.name);
-  DCHECK(CheckPrefType(pref.type, pref_value))
-      << "PrefType does not match the value type of the stored value for "
-      << pref.name;
-  return pref_value;
-}
-
 void ExtensionPrefs::SetPref(const PrefMap& pref,
                              std::unique_ptr<base::Value> value) {
   DCHECK_EQ(PrefScope::kProfile, pref.scope);

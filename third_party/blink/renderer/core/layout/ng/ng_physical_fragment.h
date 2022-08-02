@@ -695,9 +695,10 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned depends_on_percentage_block_size_ : 1;
   mutable unsigned children_valid_ : 1;
 
-  // The following bitfield is only to be used by NGPhysicalLineBoxFragment
+  // The following bitfields are only to be used by NGPhysicalLineBoxFragment
   // (it's defined here to save memory, since that class has no bitfields).
   unsigned has_propagated_descendants_ : 1;
+  unsigned has_hanging_ : 1;
 
   const unsigned type_ : 1;           // NGFragmentType
   const unsigned sub_type_ : 4;       // NGBoxType, NGTextType, or NGLineBoxType

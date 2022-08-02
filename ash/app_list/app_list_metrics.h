@@ -79,7 +79,7 @@ enum AppListPeekingToFullscreenSource {
 // The different ways the app list can be shown. These values are written to
 // logs.  New enum values can be added, but existing enums must never be
 // renumbered or deleted and reused.
-enum AppListShowSource {
+enum AppListShowSource : uint8_t {
   kSearchKey = 0,
   kShelfButton = 1,
   kSwipeFromShelf = 2,

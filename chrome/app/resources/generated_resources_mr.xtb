@@ -905,6 +905,7 @@
 <translation id="1829129547161959350">पेंग्विन</translation>
 <translation id="1829192082282182671">झूम &amp;कमी करा</translation>
 <translation id="1830550083491357902">साइन इन केलेले नाही</translation>
+<translation id="1831848493690504725">आम्ही कनेक्ट केलेल्या नेटवर्कद्वारे Google शी कनेक्ट करू शकत नाही. दुसरे नेटवर्क निवडण्याचा प्रयत्न करा किंवा तुमची नेटवर्क सेटिंग्ज अथवा प्रॉक्सी सेटिंग्ज तपासा (तुम्ही प्रॉक्सी वापरत असल्यास).</translation>
 <translation id="1832459821645506983">होय, मी तयार आहे</translation>
 <translation id="1832511806131704864">फोन बदल अपडेट झाला</translation>
 <translation id="1832848789136765277">तुम्ही तुमचा सिंक डेटा कधीही ॲक्सेस करू शकता याची खात्री करण्यासाठी, हे तुम्हीच आहात याची पडताळणी करा</translation>
@@ -2207,6 +2208,7 @@
 <translation id="3021065318976393105">बॅटरीवर असताना</translation>
 <translation id="3021066826692793094">फुलपाखरू</translation>
 <translation id="3021678814754966447">फ्रेम स्रोत &amp;पहा</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> हे या Chromebook वरून काढून टाकले जाईल आणि <ph name="PRIMARY_EMAIL" /> मध्ये सेव्ह केले जाणार नाही.</translation>
 <translation id="3022978424994383087">ते समजू शकले नाही.</translation>
 <translation id="3023464535986383522">बोलण्यासाठी निवडा</translation>
 <translation id="3024374909719388945">24-तासांचे घड्याळ वापरा</translation>
@@ -3744,6 +3746,7 @@
 <translation id="4535127706710932914">डीफॉल्ट प्रोफाइल</translation>
 <translation id="4535767533210902251">तुमच्या कीबोर्डवर सर्वात वर उजवीकडे फिंगरप्रिंट सेन्सर आहे. कोणत्याही बोटाने त्याला हळुवार स्पर्श करा.</translation>
 <translation id="4536140153723794651">नेहमी कुकी वापरू शकणार्‍या साइट</translation>
+<translation id="4536769240747010177">टेदरिंग क्षमता:</translation>
 <translation id="4538417792467843292">शब्द हटवा </translation>
 <translation id="4538792345715658285">एंटरप्राइज धोरणाद्वारे इंस्टॉल केले.</translation>
 <translation id="4541123282641193691">तुमच्या खात्याची पडताळणी करता आली नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमचे Chromebook रीस्टार्ट करा.</translation>
@@ -3771,6 +3774,7 @@
 <translation id="4561893854334016293">नुकत्याच बदललेल्या परवानग्या नाहीत</translation>
 <translation id="4562155214028662640">फिंगरप्रिंट जोडा</translation>
 <translation id="4563210852471260509">चीनी आरंभिक इनपुट भाषा आहे</translation>
+<translation id="4563382028841851106">खात्यामधून काढून टाका</translation>
 <translation id="4563880231729913339">तिसरे बोट</translation>
 <translation id="4564245002465020751">तुमच्या फोनवर सेट करणे पूर्ण करा</translation>
 <translation id="4565377596337484307">पासवर्ड लपवा</translation>
@@ -4748,6 +4752,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> ला हे करायचे आहे</translation>
 <translation id="5534304873398226603">फोटो किंवा व्हिडिओ टाकून द्या</translation>
 <translation id="5537725057119320332">कास्ट करा</translation>
+<translation id="5539070192556911367">Google शी कनेक्ट करू शकत नाही</translation>
 <translation id="5539221284352502426">तुम्ही टाकलेला पासवर्ड सर्व्हरने नाकारला होता. संभाव्य कारणांमध्ये याचा समावेश आहे: पासवर्ड खूप लहान आहे. पासवर्डमध्ये संख्या किंवा आयकन असणे आवश्यक आहे. पासवर्ड आधीच्या पासवर्डपेक्षा वेगळा असणे आवश्यक आहे.</translation>
 <translation id="5541694225089836610">तुमच्या ॲडमिनिस्ट्रेटरने क्रिया बंद केली आहे</translation>
 <translation id="5542132724887566711">प्रोफाइल</translation>
@@ -4811,6 +4816,7 @@
 <translation id="5585912436068747822">स्वरुपन अयशस्वी</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ॲप्स लोड करीत आहे...</translation>
+<translation id="5590418976913374224">डिव्हाइस स्टार्टअप झाल्यावर आवाज प्ले करा</translation>
 <translation id="5592595402373377407">अद्याप पुरेसा डेटा उपलब्ध नाही.</translation>
 <translation id="5595307023264033512">साइटनी वापरलेले एकूण स्टोरेज: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">पत्ता संपादित करा</translation>
@@ -6189,6 +6195,10 @@
 <translation id="6943939122536910181"><ph name="DEVICE" /> वरून डिस्कनेक्ट केले आहे</translation>
 <translation id="6945221475159498467">निवडा</translation>
 <translation id="694592694773692225">या पेजवर रीडिरेक्‍ट ब्लॉक केले.</translation>
+<translation id="6947015141909171112">तुम्हाला तुमच्या अलीकडील पाककृतींच्या शोध अ‍ॅक्टिव्हिटीच्या आधारावर पाककृती दिसत आहेत.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        तुम्ही कार्ड मेनूमधून सेटिंग्ज व्यवस्थापित करू शकता किंवा Chrome कस्टमाइझ करा यामध्ये आणखी पर्याय पाहू शकता.</translation>
 <translation id="6949434160682548041">पासवर्ड (पर्यायी)</translation>
 <translation id="6950627417367801484">ॲप्स रिस्टोअर करा</translation>
 <translation id="6952242901357037157">तुम्ही येथे तुमच्या <ph name="BEGIN_LINK" />Google खाते<ph name="END_LINK" /> मधील पासवर्डदेखील दाखवू शकता</translation>
@@ -6356,6 +6366,7 @@
 <translation id="7102687220333134671">स्वयंचलित अपडेट सुरू केली आहेत</translation>
 <translation id="7102832101143475489">विनंतीची वेळ संपली</translation>
 <translation id="710640343305609397">नेटवर्क सेटिंग्ज उघडा</translation>
+<translation id="7107609441453408294">सर्व स्पीकरमधून समान ऑडिओ प्ले करा</translation>
 <translation id="7108338896283013870">लपवा</translation>
 <translation id="7108668606237948702">प्रविष्‍ट करा</translation>
 <translation id="7108933416628942903">आता लॉक करा</translation>
@@ -6447,7 +6458,6 @@
 <translation id="7212097698621322584">बदलण्यासाठी तुमचा सध्याचा पिन एंटर करा. तुम्हाला तुमचा पिन माहित नसल्यास, तुम्हाला तुमची सिक्युरिटी की रीसेट करणे आवश्यक असेल, त्यानंतर तुम्ही नविन पिन तयार करू शकता.</translation>
 <translation id="7213903639823314449">अ‍ॅड्रेस बारमध्ये शोध इंजीन वापरले आहे</translation>
 <translation id="721490496276866468">पासवर्ड इंपोर्ट करा</translation>
-<translation id="7216595297012131718">आपल्या प्राधान्याच्या आधारावर भाषांची क्रमवारी लावा</translation>
 <translation id="7219473482981809164">आम्हाला डाउनलोड करण्यासाठी एकाहून अधिक प्रोफाइल आढळल्या. पुढे जाण्यापूर्वी तुम्हाला डाउनलोड करायच्या असलेल्या प्रोफाइल निवडा.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{एकही कमकुवत पासवर्ड नाही}=1{एक कमकुवत पासवर्ड}other{{NUM_WEAK} कमकुवत पासवर्ड}}</translation>
 <translation id="7220019174139618249">पासवर्ड "<ph name="FOLDER" />" वर एक्सपोर्ट करू शकत नाही</translation>
@@ -6587,6 +6597,7 @@
 <translation id="7364745943115323529">कास्ट करा...</translation>
 <translation id="7364796246159120393">फाइल निवडा</translation>
 <translation id="7365076891350562061">मॉनिटरचा आकार</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - पिन केले</translation>
 <translation id="7366316827772164604">जवळपासची डिव्हाइस स्कॅन करत आहे...</translation>
 <translation id="7366415735885268578">एक साइट जोडा</translation>
 <translation id="7366909168761621528">ब्राउझिंग डेटा</translation>
@@ -6983,6 +6994,7 @@
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" सोबत पेअर करत आहे...</translation>
 <translation id="7737846262459425222">तुम्ही हे सेटिंग्ज &gt; Google Assistant &gt;स्क्रीन संदर्भ येथे कधीही बदलू शकता.</translation>
 <translation id="7737948071472253612">तुमचा कॅमेरा वापरण्याची अनुमती नाही</translation>
+<translation id="77381465218432215">आघातचिन्ह आणि विशेष वर्ण दाखवा</translation>
 <translation id="7740996059027112821">साधारण</translation>
 <translation id="7741307896921365578">तुमची वाचन सूची आणि बुकमार्क ॲक्सेस करण्यासाठी, उपयुक्त आणि कायमचा मार्ग मिळवण्यासाठी, ब्राउझर पातळीवर साइड पॅनल सुरू करते.</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" /> साठी आणि त्याच्या अंतर्गत सर्व साइटसाठी साइट डेटा व परवानग्या साफ करायच्या का?</translation>
@@ -7771,6 +7783,7 @@
 <translation id="8486666913807228950">कारण: "फोर्स ओपन इन" सूचीमध्ये इन्व्हर्टेड रुल<ph name="REVERT_RULE" /> आढळला होता.</translation>
 <translation id="848666842773560761">एखादे अ‍ॅप कॅमेरा अ‍ॅक्सेस करण्याचा प्रयत्न करत आहे. अ‍ॅक्सेस करण्याची अनुमती देण्यासाठी कॅमेरा प्रायव्हसी स्विच बंद करा.</translation>
 <translation id="8487678622945914333">झूम इन करा</translation>
+<translation id="8487699605742506766">हॉटस्पॉट</translation>
 <translation id="8489156414266187072">वैयक्तिक सूचना फक्त तुमच्या खात्यावर दाखवल्या जातात</translation>
 <translation id="8490896350101740396">खालील कियोस्क अ‍ॅप्स "<ph name="UPDATED_APPS" />" अपडेट करण्यात आले आहेत. कृपया अपडेट प्रक्रिया पूर्ण करण्यासाठी डिव्हाइस रीबूट करा.</translation>
 <translation id="8492685019009920170">तुमच्या बोटाने फिंगरप्रिंट सेन्सरला स्पर्श करा. तुमचा डेटा सुरक्षितपणे स्टोअर केला आहे आणि तुमच्या <ph name="DEVICE_TYPE" /> मध्येच राहील.</translation>
@@ -8265,6 +8278,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" आणि इतर एक टॅब}other{"<ph name="TAB_TITLE" />" आणि इतर # टॅब}}</translation>
 <translation id="8977811652087512276">चुकीचा पासवर्ड किंवा करप्ट फाइल</translation>
 <translation id="8978154919215542464">ऑन - सर्वकाही सिंक करत आहे</translation>
+<translation id="8978670037548431647">टेदरिंग क्षमता रिफ्रेश करा</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> वर</translation>
 <translation id="8980345560318123814">फीडबॅक अहवाल</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - क्रॅश झाले</translation>
@@ -8529,6 +8543,7 @@
 <translation id="935854577147268200">Smart Lock फोन बदलला आहे. Smart Lock अपडेट करण्यासाठी तुमचा पासवर्ड एंटर करा. पुढील वेळेस तुमचा फोन तुमचे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता</translation>
 <translation id="936646668635477464">कॅमेरा आणि मायक्रोफोन</translation>
 <translation id="936801553271523408">सिस्टम निदान डेटा</translation>
+<translation id="937053962468712792"><ph name="PRIMARY_EMAIL" /> मधून <ph name="DEVICE" /> काढून टाकायचे आहे का?</translation>
 <translation id="93766956588638423">एक्स्टेंशन दुरुस्त करा</translation>
 <translation id="938568644810664664">“Ok Google, हे कोणते गाणे आहे?” किंवा “Ok Google, माझ्या स्क्रीनवर काय आहे?” असे म्हणून पहा</translation>
 <translation id="938623846785894166">असामान्य फाइल</translation>

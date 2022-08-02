@@ -96,14 +96,18 @@ bool ApcClientImpl::IsRunning() const {
   return is_running_;
 }
 
-void ApcClientImpl::PromptForConsent() {
-  if (is_running_)
+void ApcClientImpl::PromptForConsent(OnboardingResultCallback callback) {
+  if (is_running_) {
+    // If a run is ongoing and beyond the onboarding stage, consent must have
+    // been given.
+    std::move(callback).Run(onboarding_coordinator_ == nullptr);
     return;
+  }
   is_running_ = true;
 
   onboarding_coordinator_ = CreateOnboardingCoordinator();
-  onboarding_coordinator_->PerformOnboarding(
-      base::BindOnce(&ApcClientImpl::Stop, base::Unretained(this)));
+  onboarding_coordinator_->PerformOnboarding(std::move(callback).Then(
+      base::BindOnce(&ApcClientImpl::Stop, base::Unretained(this), false)));
 }
 
 void ApcClientImpl::RevokeConsent(const std::vector<int>& description_grd_ids) {
@@ -118,6 +122,7 @@ void ApcClientImpl::RevokeConsent(const std::vector<int>& description_grd_ids) {
 // `success` indicates whether onboarding was successful, i.e. whether consent
 // has been given.
 void ApcClientImpl::OnOnboardingComplete(bool success) {
+  onboarding_coordinator_.reset();
   if (!success) {
     Stop(/*success=*/false);
     return;

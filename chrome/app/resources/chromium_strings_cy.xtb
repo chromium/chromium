@@ -148,7 +148,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="4415566066719264597">Caniatáu i Chromium Rhedeg yn y Cefndir</translation>
 <translation id="4423735387467980091">Personoleiddio a rheoli Chromium</translation>
 <translation id="4427306783828095590">Mae gwell amddiffyniad yn gwneud rhagor i rwystro gwe-rwydo a drwgwedd</translation>
-<translation id="4440114195512068100">I weld a yw'ch dyfais yn gyfoes, ewch i <ph name="LINK_BEGIN" />Osodiadau ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="452711251841752011">Croeso i Chromium; agorwyd ffenestr porwr newydd</translation>
 <translation id="4544142686420020088">Ni ddiweddarwyd Chromium, aeth rhywbeth o'i le. <ph name="BEGIN_LINK" />Datrys problemau diweddaru Chromium a diweddariadau a fethwyd.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Parhau mewn proffil Chromium newydd?</translation>
@@ -313,8 +312,6 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="7877292582355102282"><ph name="BEGIN_BOLD" />Sut gallwch reoli eich data:<ph name="END_BOLD" /> Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Neu gallwch gael gwared ar ddiddordebau nad ydych am i Chromium eu hystyried.</translation>
 <translation id="7937630085815544518">Roeddech wedi'ch mewngofnodi i Chromium fel <ph name="USER_EMAIL_ADDRESS" />. Defnyddiwch yr un cyfrif i fewngofnodi eto.</translation>
 <translation id="7975919845073681630">Gosodiad eilaidd o Chromium yw hwn, ac ni ellir ei wneud yn borwr diofyn i chi.</translation>
-<translation id="7982481011030453202">Os nad yw gosodiad yn ymddangos ar y dudalen hon, edrychwch yn eich <ph name="LINK_BEGIN" />
-      gosodiadau ChromiumOS<ph name="LINK_END" /></translation>
 <translation id="7997934263947464652">Gall estyniadau, apiau a themâu o ffynonellau anhysbys niweidio'ch dyfais. Mae Chromium yn argymell eu gosod o'r <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> yn unig</translation>
 <translation id="8013436988911883588">Unwaith y bydd gan Chromium fynediad, bydd gwefannau yn gallu gofyn i chi am fynediad.</translation>
 <translation id="80471789339884597">Diolch am osod. Rhaid i chi ailgychwyn eich holl borwyr cyn defnyddio <ph name="BUNDLE_NAME" />.</translation>

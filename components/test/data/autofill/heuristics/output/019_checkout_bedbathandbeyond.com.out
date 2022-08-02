@@ -8,14 +8,14 @@ ADDRESS_HOME_CITY | city | *City |  | first_nm_1-default
 ADDRESS_HOME_STATE | addr_state | *State |  | first_nm_1-default
 ADDRESS_HOME_ZIP | zip | *Zip Code |  | first_nm_1-default
 PHONE_HOME_CITY_CODE | day_phone_part1 | *Day phone |  | first_nm_1-default
-PHONE_HOME_NUMBER | day_phone_part2 | *Day phone |  | first_nm_1-default
-PHONE_HOME_NUMBER | day_phone_part3 | *Day phone |  | first_nm_1-default
+PHONE_HOME_NUMBER_PREFIX | day_phone_part2 | *Day phone |  | first_nm_1-default
+PHONE_HOME_NUMBER_SUFFIX | day_phone_part3 | *Day phone |  | first_nm_1-default
 PHONE_HOME_CITY_CODE | eve_phone_part1 | Evening phone |  | first_nm_1-default
-PHONE_HOME_NUMBER | eve_phone_part2 | Evening phone |  | first_nm_1-default
-PHONE_HOME_NUMBER | eve_phone_part3 | Evening phone |  | first_nm_1-default
+PHONE_HOME_NUMBER_PREFIX | eve_phone_part2 | Evening phone |  | first_nm_1-default
+PHONE_HOME_NUMBER_SUFFIX | eve_phone_part3 | Evening phone |  | first_nm_1-default
 PHONE_HOME_CITY_CODE | mob_phone_part1 | Mobile phone |  | first_nm_1-default
-PHONE_HOME_NUMBER | mob_phone_part2 | Mobile phone |  | first_nm_1-default
-PHONE_HOME_NUMBER | mob_phone_part3 | Mobile phone |  | first_nm_1-default
+PHONE_HOME_NUMBER_PREFIX | mob_phone_part2 | Mobile phone |  | first_nm_1-default
+PHONE_HOME_NUMBER_SUFFIX | mob_phone_part3 | Mobile phone |  | first_nm_1-default
 EMAIL_ADDRESS | email_addr | *Email |  | first_nm_1-default
 EMAIL_ADDRESS | retype_email_addr | *Re-type email |  | first_nm_1-default
 UNKNOWN_TYPE | promo_email_flag | Receive information on special offers and new arrivals at Bed Bath & Beyond. | Y | first_nm_1-default
@@ -31,9 +31,9 @@ ADDRESS_HOME_CITY | ship_city | *City |  | ship_first_nm_2-default
 ADDRESS_HOME_STATE | ship_addr_state | *State |  | ship_first_nm_2-default
 ADDRESS_HOME_ZIP | ship_zip | *Zip Code |  | ship_first_nm_2-default
 PHONE_HOME_CITY_CODE | ship_day_phone_part1 | *Day phone |  | ship_first_nm_2-default
-PHONE_HOME_NUMBER | ship_day_phone_part2 | *Day phone |  | ship_first_nm_2-default
-PHONE_HOME_NUMBER | ship_day_phone_part3 | *Day phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER_PREFIX | ship_day_phone_part2 | *Day phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER_SUFFIX | ship_day_phone_part3 | *Day phone |  | ship_first_nm_2-default
 PHONE_HOME_CITY_CODE | ship_eve_phone_part1 | Evening phone |  | ship_first_nm_2-default
-PHONE_HOME_NUMBER | ship_eve_phone_part2 | Evening phone |  | ship_first_nm_2-default
-PHONE_HOME_NUMBER | ship_eve_phone_part3 | Evening phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER_PREFIX | ship_eve_phone_part2 | Evening phone |  | ship_first_nm_2-default
+PHONE_HOME_NUMBER_SUFFIX | ship_eve_phone_part3 | Evening phone |  | ship_first_nm_2-default
 UNKNOWN_TYPE | email | Privacy policy - Your Privacy Rights | enter your email address | email_1-default

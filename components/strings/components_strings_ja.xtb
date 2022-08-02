@@ -1228,6 +1228,7 @@
 <translation id="4305666528087210886">ファイルにアクセスできませんでした</translation>
 <translation id="4306529830550717874">住所を保存しますか？</translation>
 <translation id="4306812610847412719">クリップボード</translation>
+<translation id="4308567447483056043">ユーザーが関連付けられていないため、このポリシーは無視されます。このポリシーを適用するには、Chrome ブラウザとプロフィールが管理コンソールを介して同じ組織によって管理されている必要があります。</translation>
 <translation id="4310070645992025887">ジャーニーを検索</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">ブロック（デフォルト）</translation>

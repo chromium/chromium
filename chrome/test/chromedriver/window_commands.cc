@@ -103,7 +103,7 @@ Status IntToStringButton(int button, std::string& out) {
 
 Status GetUrl(WebView* web_view, const std::string& frame, std::string* url) {
   std::unique_ptr<base::Value> value;
-  base::ListValue args;
+  base::Value::List args;
   Status status = web_view->CallFunction(
       frame, "function() { return document.URL; }", args, &value);
   if (status.IsError())
@@ -308,7 +308,7 @@ Status ScrollCoordinateInToView(
     Session* session, WebView* web_view, int x, int y, int* offset_x,
     int* offset_y) {
   std::unique_ptr<base::Value> value;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(x);
   args.Append(y);
   Status status = web_view->CallFunction(
@@ -372,7 +372,7 @@ Status WindowViewportSize(Session* session,
   DCHECK(innerWidth);
   DCHECK(innerHeight);
   std::unique_ptr<base::Value> value;
-  base::ListValue args;
+  base::Value::List args;
   Status status =
       web_view->CallFunction(std::string(),
                              "function() {"
@@ -788,9 +788,7 @@ Status ExecuteExecuteScript(Session* session,
   } else if (script == ":endProfile") {
     return web_view->EndProfile(value);
   } else {
-    const base::ListValue* args;
-    if (!params.GetList("args", &args))
-      return Status(kInvalidArgument, "'args' must be a list");
+    const base::Value::List* args = params.GetDict().FindList("args");
     // Need to support line oriented comment
     if (script.find("//") != std::string::npos)
       script = script + "\n";
@@ -812,9 +810,7 @@ Status ExecuteExecuteAsyncScript(Session* session,
   std::string script;
   if (!params.GetString("script", &script))
     return Status(kInvalidArgument, "'script' must be a string");
-  const base::ListValue* args;
-  if (!params.GetList("args", &args))
-    return Status(kInvalidArgument, "'args' must be a list");
+  const base::Value::List* args = params.GetDict().FindList("args");
 
   // Need to support line oriented comment
   if (script.find("//") != std::string::npos)
@@ -875,7 +871,7 @@ Status ExecuteSwitchToFrame(Session* session,
   }
 
   std::string script;
-  base::ListValue args;
+  base::Value::List args;
   const base::DictionaryValue* id_dict;
   if (id->GetAsDictionary(&id_dict)) {
     std::string element_id;
@@ -934,7 +930,7 @@ Status ExecuteSwitchToFrame(Session* session,
       "function(frame, id) {"
       "  frame.setAttribute('cd_frame_id_', id);"
       "}";
-  base::ListValue new_args;
+  base::Value::List new_args;
   new_args.Append(element->Clone());
   new_args.Append(chrome_driver_id);
   result.reset(NULL);
@@ -961,7 +957,7 @@ Status ExecuteGetTitle(Session* session,
                        std::unique_ptr<base::Value>* value,
                        Timeout* timeout) {
   const char kGetTitleScript[] = "function() {  return document.title;}";
-  base::ListValue args;
+  base::Value::List args;
   return web_view->CallFunction(std::string(), kGetTitleScript, args, value);
 }
 
@@ -973,7 +969,7 @@ Status ExecuteGetPageSource(Session* session,
   const char kGetPageSource[] =
       " () => (document.documentElement || {}).outerHTML || ''";
 
-  base::ListValue args;
+  base::Value::List args;
   return web_view->CallFunction(
       session->GetCurrentFrameId(), kGetPageSource, args, value);
 }
@@ -1348,12 +1344,11 @@ Status ProcessInputActionSequence(
     }
   }
 
-  const base::ListValue* actions;
-  if (!action_sequence->GetList("actions", &actions))
-    return Status(kInvalidArgument, "'actions' must be an array");
+  const base::Value::List* actions =
+      action_sequence->GetDict().FindList("actions");
 
-  std::unique_ptr<base::ListValue> actions_result(new base::ListValue);
-  for (const base::Value& action_item_value : actions->GetList()) {
+  std::unique_ptr<base::Value::List> actions_result(new base::Value::List);
+  for (const base::Value& action_item_value : *actions) {
     std::unique_ptr<base::DictionaryValue> action(new base::DictionaryValue());
     base::Value::Dict& action_dict = action->GetDict();
 
@@ -1572,14 +1567,11 @@ Status ExecutePerformActions(Session* session,
                              std::unique_ptr<base::Value>* value,
                              Timeout* timeout) {
   // extract action sequence
-  const base::ListValue* actions_input;
-
-  if (!params.GetList("actions", &actions_input))
-    return Status(kInvalidArgument, "'actions' must be an array");
+  const base::Value::List* actions_input = params.GetDict().FindList("actions");
 
   // the processed actions
   std::vector<std::vector<std::unique_ptr<base::DictionaryValue>>> actions_list;
-  for (const base::Value& action_sequence : actions_input->GetList()) {
+  for (const base::Value& action_sequence : *actions_input) {
     // process input action sequence
     if (!action_sequence.is_dict())
       return Status(kInvalidArgument, "each argument must be a dictionary");
@@ -2031,9 +2023,8 @@ Status ExecuteSendKeysToActiveElement(Session* session,
                                       const base::DictionaryValue& params,
                                       std::unique_ptr<base::Value>* value,
                                       Timeout* timeout) {
-  const base::ListValue* key_list;
-  if (!params.GetList("value", &key_list))
-    return Status(kInvalidArgument, "'value' must be a list");
+  const base::Value::List* key_list;
+  key_list = params.GetDict().FindList("value");
   return SendKeysOnWindow(
       web_view, key_list, false, &session->sticky_modifiers);
 }
@@ -2047,13 +2038,12 @@ Status ExecuteGetStorageItem(const char* storage,
   std::string key;
   if (!params.GetString("key", &key))
     return Status(kInvalidArgument, "'key' must be a string");
-  base::ListValue args;
+  base::Value::List args;
   args.Append(key);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
       base::StringPrintf("function(key) { return %s[key]; }", storage),
-      args,
-      value);
+      std::move(args), value);
 }
 
 Status ExecuteGetStorageKeys(const char* storage,
@@ -2086,7 +2076,7 @@ Status ExecuteSetStorageItem(const char* storage,
   std::string storage_value;
   if (!params.GetString("value", &storage_value))
     return Status(kInvalidArgument, "'value' must be a string");
-  base::ListValue args;
+  base::Value::List args;
   args.Append(key);
   args.Append(storage_value);
   return web_view->CallFunction(
@@ -2105,7 +2095,7 @@ Status ExecuteRemoveStorageItem(const char* storage,
   std::string key;
   if (!params.GetString("key", &key))
     return Status(kInvalidArgument, "'key' must be a string");
-  base::ListValue args;
+  base::Value::List args;
   args.Append(key);
   return web_view->CallFunction(
       session->GetCurrentFrameId(),

@@ -461,7 +461,7 @@ TEST_F(NetworkDeviceHandlerTest, RequirePin) {
       CellularMetricsLogger::kSimPinRequireLockSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinRequireLockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, EnterPinOnManagedDevice) {
@@ -496,13 +496,13 @@ TEST_F(NetworkDeviceHandlerTest, EnterPinOnManagedDevice) {
       CellularMetricsLogger::kManagedSimPinUnlockSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kManagedSimPinUnlockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kUnrestrictedSimPinUnlockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kRestrictedSimPinUnlockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 0);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 0);
 
   network_device_handler_->SetAllowCellularSimLock(
       /*allow_cellular_sim_lock=*/false);
@@ -519,7 +519,7 @@ TEST_F(NetworkDeviceHandlerTest, EnterPinOnManagedDevice) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kRestrictedSimPinUnlockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, EnterPinOnUnmanagedDevice) {
@@ -553,13 +553,13 @@ TEST_F(NetworkDeviceHandlerTest, EnterPinOnUnmanagedDevice) {
       CellularMetricsLogger::kUnmanagedSimPinUnlockSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kUnmanagedSimPinUnlockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kUnrestrictedSimPinUnlockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 0);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 0);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kRestrictedSimPinUnlockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 0);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 0);
 }
 
 TEST_F(NetworkDeviceHandlerTest, UnblockPinOnManagedDevice) {
@@ -596,13 +596,13 @@ TEST_F(NetworkDeviceHandlerTest, UnblockPinOnManagedDevice) {
       CellularMetricsLogger::kManagedSimPinUnblockSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kManagedSimPinUnblockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kUnrestrictedSimPinUnblockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kRestrictedSimPinUnblockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 0);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 0);
 
   network_device_handler_->SetAllowCellularSimLock(
       /*allow_cellular_sim_lock=*/false);
@@ -618,7 +618,7 @@ TEST_F(NetworkDeviceHandlerTest, UnblockPinOnManagedDevice) {
   base::RunLoop().RunUntilIdle();
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kRestrictedSimPinUnblockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, UnblockPinOnUnmanagedDevice) {
@@ -655,13 +655,13 @@ TEST_F(NetworkDeviceHandlerTest, UnblockPinOnUnmanagedDevice) {
       CellularMetricsLogger::kUnmanagedSimPinUnblockSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kUnmanagedSimPinUnblockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 1);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kUnrestrictedSimPinUnblockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 0);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 0);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kRestrictedSimPinUnblockSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 0);
+      CellularMetricsLogger::SimPinOperationResult::kErrorDeviceMissing, 0);
 
   histogram_tester.ExpectTotalCount(
       CellularMetricsLogger::kSimPinRemoveLockSuccessHistogram, 0);
@@ -707,7 +707,7 @@ TEST_F(NetworkDeviceHandlerTest, ChangePin) {
       CellularMetricsLogger::kSimPinChangeSuccessHistogram, 2);
   histogram_tester.ExpectBucketCount(
       CellularMetricsLogger::kSimPinChangeSuccessHistogram,
-      CellularMetricsLogger::SimPinOperationResult::kErrorUnknown, 1);
+      CellularMetricsLogger::SimPinOperationResult::kErrorIncorrectPin, 1);
 }
 
 TEST_F(NetworkDeviceHandlerTest, RequirePinBlockedByPolicy) {

@@ -245,40 +245,48 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
 
-  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list != nullptr);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+    ASSERT_EQ(2u, entries_list.size());
 
-  ASSERT_EQ(2u, entries_list->GetListDeprecated().size());
+    std::string s0 = entries_list[0].GetString();
+    std::string s1 = entries_list[1].GetString();
 
-  std::string s0 = entries_list->GetListDeprecated()[0].GetString();
-  std::string s1 = entries_list->GetListDeprecated()[1].GetString();
-
-  EXPECT_TRUE(s0 == kFlags1 || s1 == kFlags1);
-  EXPECT_TRUE(s0 == kFlags2 || s1 == kFlags2);
+    EXPECT_TRUE(s0 == kFlags1 || s1 == kFlags1);
+    EXPECT_TRUE(s0 == kFlags2 || s1 == kFlags2);
+  }
 
   // Remove one entry, check the other's still around.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
 
-  entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list != nullptr);
-  ASSERT_EQ(1u, entries_list->GetListDeprecated().size());
-  s0 = entries_list->GetListDeprecated()[0].GetString();
-  EXPECT_TRUE(s0 == kFlags1);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+    ASSERT_EQ(1u, entries_list.size());
+    std::string s0 = entries_list[0].GetString();
+    EXPECT_TRUE(s0 == kFlags1);
+  }
 }
 
 TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   // Add two entries, check the pref exists.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
-  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list != nullptr);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+    ASSERT_EQ(2u, entries_list.size());
+  }
 
   // Remove both, the pref should have been removed completely.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, false);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
-  entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  EXPECT_TRUE(entries_list == nullptr ||
-              entries_list->GetListDeprecated().size() == 0);
+  {
+    const base::Value::List& entries_list =
+        prefs_.GetValueList(prefs::kAboutFlagsEntries);
+    EXPECT_TRUE(entries_list.empty());
+  }
 }
 
 TEST_F(FlagsStateTest, CombineOriginListValues) {
@@ -577,12 +585,12 @@ TEST_F(FlagsStateTest, PersistAndPrune) {
   EXPECT_FALSE(command_line.HasSwitch(kSwitch3));
 
   // FeatureEntry 3 should show still be persisted in preferences though.
-  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list);
-  EXPECT_EQ(2U, entries_list->GetListDeprecated().size());
-  std::string s0 = entries_list->GetListDeprecated()[0].GetString();
+  const base::Value::List& entries_list =
+      prefs_.GetValueList(prefs::kAboutFlagsEntries);
+  EXPECT_EQ(2U, entries_list.size());
+  std::string s0 = entries_list[0].GetString();
   EXPECT_EQ(kFlags1, s0);
-  std::string s1 = entries_list->GetListDeprecated()[1].GetString();
+  std::string s1 = entries_list[1].GetString();
   EXPECT_EQ(kFlags3, s1);
 }
 
@@ -629,12 +637,12 @@ TEST_F(FlagsStateTest, CheckValues) {
 #endif
 
   // And it should persist.
-  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  ASSERT_TRUE(entries_list);
-  EXPECT_EQ(2U, entries_list->GetListDeprecated().size());
-  std::string s0 = entries_list->GetListDeprecated()[0].GetString();
+  const base::Value::List& entries_list =
+      prefs_.GetValueList(prefs::kAboutFlagsEntries);
+  EXPECT_EQ(2U, entries_list.size());
+  std::string s0 = entries_list[0].GetString();
   EXPECT_EQ(kFlags1, s0);
-  std::string s1 = entries_list->GetListDeprecated()[1].GetString();
+  std::string s1 = entries_list[1].GetString();
   EXPECT_EQ(kFlags2, s1);
 }
 

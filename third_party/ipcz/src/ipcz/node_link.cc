@@ -442,7 +442,7 @@ bool NodeLink::OnAcceptBypassLink(msg::AcceptBypassLink& accept) {
   }
 
   return receiver->AcceptBypassLink(
-      WrapRefCounted(this), accept.params().new_sublink, std::move(link_state),
+      *this, accept.params().new_sublink, std::move(link_state),
       accept.params().inbound_sequence_length_from_bypassed_link);
 }
 
@@ -477,9 +477,9 @@ bool NodeLink::OnBypassPeerWithLink(msg::BypassPeerWithLink& bypass) {
   if (link_state.is_null()) {
     return false;
   }
-  return router->BypassPeerWithLink(*this, bypass.params().new_sublink,
-                                    std::move(link_state),
-                                    bypass.params().inbound_sequence_length);
+  return router->AcceptBypassLink(*this, bypass.params().new_sublink,
+                                  std::move(link_state),
+                                  bypass.params().inbound_sequence_length);
 }
 
 bool NodeLink::OnStopProxyingToLocalPeer(msg::StopProxyingToLocalPeer& stop) {
@@ -494,7 +494,7 @@ bool NodeLink::OnStopProxyingToLocalPeer(msg::StopProxyingToLocalPeer& stop) {
 
 bool NodeLink::OnFlushRouter(msg::FlushRouter& flush) {
   if (Ref<Router> router = GetRouter(flush.params().sublink)) {
-    router->Flush();
+    router->Flush(Router::kForceProxyBypassAttempt);
   }
   return true;
 }

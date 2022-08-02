@@ -16,7 +16,7 @@ const char ImageEncoderUtils::kDefaultRequestedMimeType[] = "image/png";
 
 namespace {
 // This enum is used in a UMA histogram; the values should not be changed.
-enum RequestedImageMimeType {
+enum RequestedImageMimeType : uint8_t {
   kRequestedImageMimeTypePng = 0,
   kRequestedImageMimeTypeJpeg = 1,
   kRequestedImageMimeTypeWebp = 2,

@@ -5,6 +5,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 
 #include <memory>
+#include <set>
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
@@ -242,12 +243,17 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
 
-  // Update paused state.
-  model().UpdateItem(item_ptr->id())->SetPaused(true);
+  // Update in-progress commands.
+  std::set<HoldingSpaceCommandId> in_progress_commands;
+  in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetInProgressCommands(in_progress_commands);
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kPaused);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(),
+            UpdatedField::kInProgressCommands);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
-  EXPECT_TRUE(item_ptr->IsPaused());
+  EXPECT_EQ(item_ptr->in_progress_commands(), in_progress_commands);
 
   // Update progress.
   model()
@@ -285,29 +291,30 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Atomic) {
             cros_styles::ColorName::kTextColorAlert);
 
   // Update all attributes.
+  in_progress_commands.insert(HoldingSpaceCommandId::kPauseItem);
   updated_file_path = base::FilePath("again_updated_file_path");
   updated_file_system_url = GURL("filesystem::again_updated_file_system_url");
   model()
       .UpdateItem(item_ptr->id())
       ->SetAccessibleName(u"updated_accessible_name")
       .SetBackingFile(updated_file_path, updated_file_system_url)
+      .SetInProgressCommands(in_progress_commands)
       .SetText(u"updated_text")
       .SetSecondaryText(u"updated_secondary_text")
       .SetSecondaryTextColor(cros_styles::ColorName::kTextColorWarning)
-      .SetPaused(false)
       .SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/75, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(),
             UpdatedField::kAccessibleName | UpdatedField::kBackingFile |
-                UpdatedField::kPaused | UpdatedField::kProgress |
+                UpdatedField::kInProgressCommands | UpdatedField::kProgress |
                 UpdatedField::kSecondaryText |
                 UpdatedField::kSecondaryTextColor | UpdatedField::kText);
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 1);
   EXPECT_EQ(item_ptr->GetAccessibleName(), u"updated_accessible_name");
   EXPECT_EQ(item_ptr->file_path(), updated_file_path);
   EXPECT_EQ(item_ptr->file_system_url(), updated_file_system_url);
-  EXPECT_FALSE(item_ptr->IsPaused());
+  EXPECT_EQ(item_ptr->in_progress_commands(), in_progress_commands);
   EXPECT_EQ(item_ptr->progress().GetValue(), 0.75f);
   EXPECT_EQ(item_ptr->GetText(), u"updated_text");
   EXPECT_EQ(item_ptr->secondary_text(), u"updated_secondary_text");
@@ -343,22 +350,22 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Noop) {
       .UpdateItem(item_ptr->id())
       ->SetAccessibleName(absl::nullopt)
       .SetBackingFile(item_ptr->file_path(), item_ptr->file_system_url())
+      .SetInProgressCommands({})
       .SetText(absl::nullopt)
       .SetSecondaryText(absl::nullopt)
       .SetSecondaryTextColor(absl::nullopt)
-      .SetPaused(item_ptr->IsPaused())
       .SetProgress(item_ptr->progress());
   EXPECT_EQ(observation.TakeUpdatedItemCount(), 0);
 }
 
-// Verifies that updating item paused state works as intended.
-TEST_P(HoldingSpaceModelTest, UpdateItem_Pause) {
+// Verifies that updating item in-progress commands as intended.
+TEST_P(HoldingSpaceModelTest, UpdateItem_InProgressCommands) {
   ScopedModelObservation observation(&model());
 
   // Verify the `model()` is initially empty.
   EXPECT_EQ(model().items().size(), 0u);
 
-  // Create a holding space `item`.
+  // Create an in-progress holding space `item`.
   auto item = HoldingSpaceItem::CreateFileBackedItem(
       /*type=*/GetParam(), base::FilePath("file_path"),
       GURL("filesystem::file_system_url"),
@@ -371,49 +378,57 @@ TEST_P(HoldingSpaceModelTest, UpdateItem_Pause) {
   EXPECT_EQ(model().items().size(), 1u);
   EXPECT_EQ(model().items()[0].get(), item_ptr);
 
-  // Verify the item is not paused.
-  EXPECT_FALSE(item_ptr->IsPaused());
+  // Verify the item has no in-progress commands.
+  EXPECT_TRUE(item_ptr->in_progress_commands().empty());
 
-  // Attempt to update pause to `false`. This should no-op.
-  model().UpdateItem(item_ptr->id())->SetPaused(false);
+  // Attempt to update in-progress commands to empty. This should no-op.
+  model().UpdateItem(item_ptr->id())->SetInProgressCommands({});
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
   EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
-  EXPECT_FALSE(item_ptr->IsPaused());
+  EXPECT_TRUE(item_ptr->in_progress_commands().empty());
 
-  // Update pause to `true`.
-  model().UpdateItem(item_ptr->id())->SetPaused(true);
-  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kPaused);
-  EXPECT_TRUE(item_ptr->IsPaused());
-
-  // Update pause to `false`.
-  model().UpdateItem(item_ptr->id())->SetPaused(false);
-  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
-  EXPECT_EQ(observation.TakeLastUpdatedFields(), UpdatedField::kPaused);
-  EXPECT_FALSE(item_ptr->IsPaused());
-
-  // Update pause to `true` and progress to completion. Because the item is no
-  // longer in progress, it should no longer be paused.
+  // Update in-progress commands.
+  std::set<HoldingSpaceCommandId> in_progress_commands;
+  in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
   model()
       .UpdateItem(item_ptr->id())
-      ->SetPaused(true)
+      ->SetInProgressCommands(in_progress_commands);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(),
+            UpdatedField::kInProgressCommands);
+  EXPECT_EQ(item_ptr->in_progress_commands(), in_progress_commands);
+
+  // Update in-progress commands again.
+  in_progress_commands.insert(HoldingSpaceCommandId::kPauseItem);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetInProgressCommands(in_progress_commands);
+  EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
+  EXPECT_EQ(observation.TakeLastUpdatedFields(),
+            UpdatedField::kInProgressCommands);
+  EXPECT_EQ(item_ptr->in_progress_commands(), in_progress_commands);
+
+  // Update in-progress commands and progress to completion. Because the item is
+  // no longer in progress, in-progress commands should be empty.
+  in_progress_commands.insert(HoldingSpaceCommandId::kResumeItem);
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetInProgressCommands(in_progress_commands)
       .SetProgress(
           HoldingSpaceProgress(/*current_bytes=*/100, /*total_bytes=*/100));
   EXPECT_EQ(observation.TakeLastUpdatedItem(), item_ptr);
   EXPECT_EQ(observation.TakeLastUpdatedFields(),
-            UpdatedField::kPaused | UpdatedField::kProgress);
+            UpdatedField::kInProgressCommands | UpdatedField::kProgress);
   EXPECT_TRUE(item_ptr->progress().IsComplete());
-  EXPECT_FALSE(item_ptr->IsPaused());
+  EXPECT_TRUE(item_ptr->in_progress_commands().empty());
 
-  // Attempts to update pause should no-op for completed items.
-  model().UpdateItem(item_ptr->id())->SetPaused(true);
+  // Attempts to update in-progress commands should no-op for completed items.
+  model()
+      .UpdateItem(item_ptr->id())
+      ->SetInProgressCommands(in_progress_commands);
   EXPECT_FALSE(observation.TakeLastUpdatedItem());
   EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
-  EXPECT_FALSE(item_ptr->IsPaused());
-  model().UpdateItem(item_ptr->id())->SetPaused(false);
-  EXPECT_FALSE(observation.TakeLastUpdatedItem());
-  EXPECT_EQ(observation.TakeLastUpdatedFields(), 0u);
-  EXPECT_FALSE(item_ptr->IsPaused());
+  EXPECT_TRUE(item_ptr->in_progress_commands().empty());
 }
 
 // Verifies that updating item progress works as intended.

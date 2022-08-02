@@ -74,8 +74,8 @@ void AssistantFooterView::InitLayout() {
   // Initial view state is based on user consent state.
   const bool consent_given =
       AssistantState::Get()->consent_status().value_or(
-          chromeos::assistant::prefs::ConsentStatus::kUnknown) ==
-      chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted;
+          assistant::prefs::ConsentStatus::kUnknown) ==
+      assistant::prefs::ConsentStatus::kActivityControlAccepted;
 
   // Suggestion container.
   suggestion_container_ =
@@ -106,7 +106,7 @@ void AssistantFooterView::OnAssistantConsentStatusChanged(int consent_status) {
 
   const bool consent_given =
       consent_status ==
-      chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted;
+      assistant::prefs::ConsentStatus::kActivityControlAccepted;
 
   // When the consent state changes, we need to hide/show the appropriate views.
   views::View* hide_view =
@@ -159,8 +159,8 @@ bool AssistantFooterView::OnAnimationEnded(
     const ui::CallbackLayerAnimationObserver& observer) {
   const bool consent_given =
       AssistantState::Get()->consent_status().value_or(
-          chromeos::assistant::prefs::ConsentStatus::kUnknown) ==
-      chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted;
+          assistant::prefs::ConsentStatus::kUnknown) ==
+      assistant::prefs::ConsentStatus::kActivityControlAccepted;
 
   // Only the view relevant to our consent state should process events.
   suggestion_container_->SetCanProcessEventsWithinSubtree(consent_given);

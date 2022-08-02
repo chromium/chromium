@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <memory>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
@@ -96,6 +97,22 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
     kLoop         // Same as LINEAR, except the animation repeats after it ends.
   };
 
+  // An animation goes through a single "cycle" when it's played from one
+  // timestamp to another. After reaching the final timestamp, it may either
+  // loop back to the initial timestamp again, or even play in reverse depending
+  // on the style described above.
+  struct COMPONENT_EXPORT(UI_LOTTIE) CycleBoundaries {
+    // Returns the range [0, animation.GetAnimationDuration()).
+    static CycleBoundaries FullCycle(const Animation& animation);
+
+    // The cycle's range is [start_offset, end_offset). |start_offset| must be
+    // < |end_offset|, and both must be in the range
+    // [0, GetAnimationDuration()]. They represent non-normalized timestamps in
+    // the animation.
+    base::TimeDelta start_offset;
+    base::TimeDelta end_offset;
+  };
+
   struct COMPONENT_EXPORT(UI_LOTTIE) PlaybackConfig {
     // By default, loop from the beginning of the animation to the end.
     static PlaybackConfig CreateDefault(const Animation& animation);
@@ -104,11 +121,24 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
     static PlaybackConfig CreateWithStyle(Style style,
                                           const Animation& animation);
 
-    // The animation will be scheduled to play from the |start_offset| to
-    // |start_offset| + |duration|. The values will be clamped so as to not go
-    // out of bounds.
-    base::TimeDelta start_offset;
-    base::TimeDelta duration;
+    PlaybackConfig();
+    PlaybackConfig(std::vector<CycleBoundaries> scheduled_cycles, Style style);
+    PlaybackConfig(const PlaybackConfig& other);
+    PlaybackConfig& operator=(const PlaybackConfig& other);
+    ~PlaybackConfig();
+
+    // Set of cycles that the animation will iterate through in the order they
+    // appear. Must not be empty. After reaching the last entry in
+    // |scheduled_cycles|, the animation will continue re-using the last entry's
+    // boundaries in all future cycles.
+    //
+    // Example: {[0, T), [T/2, 3T/4)}. In the first cycle, the animation will
+    // play starting at time 0 until it reaches timestamp T. After that, it will
+    // loop back to timestamp T/2 and play until 3T/4. The [T/2, 3T/4) cycle
+    // repeats indefinitely until the animation is stopped.
+    //
+    // If |style| is kLinear, |scheduled_cycles| must have exactly one entry.
+    std::vector<CycleBoundaries> scheduled_cycles;
     Style style = Style::kLoop;
   };
 
@@ -214,13 +244,12 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // reverse flag is set, the progress runs in reverse.
   class COMPONENT_EXPORT(UI_LOTTIE) TimerControl final {
    public:
-    TimerControl(const base::TimeDelta& offset,
-                 const base::TimeDelta& cycle_duration,
+    TimerControl(std::vector<CycleBoundaries> scheduled_cycles,
                  const base::TimeDelta& total_duration,
                  const base::TimeTicks& start_timestamp,
                  bool should_reverse,
                  float playback_speed);
-    ~TimerControl() = default;
+    ~TimerControl();
     TimerControl(const TimerControl&) = delete;
     TimerControl& operator=(const TimerControl&) = delete;
 
@@ -240,15 +269,12 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
    private:
     friend class AnimationTest;
 
-    // Time duration from 0 which marks the beginning of a cycle.
-    const base::TimeDelta start_offset_;
+    // Only applies to throbbing animations, for which every even numbered
+    // cycle plays forwards, and every odd numbered cycle plays reversed.
+    bool IsPlayingInReverse() const;
 
-    // Time duration from 0 which marks the end of a cycle.
-    const base::TimeDelta end_offset_;
-
-    // Time duration for one cycle. This is essentially a cache of the
-    // difference between |end_offset_| - |start_offset_|.
-    const base::TimeDelta cycle_duration_;
+    // See comments in |PlaybackConfig::scheduled_cycles|.
+    const std::vector<CycleBoundaries> scheduled_cycles_;
 
     // Total duration of all cycles.
     const base::TimeDelta total_duration_;
@@ -256,21 +282,22 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
     // The timetick at which |progress_| was updated last.
     base::TimeTicks previous_tick_;
 
-    // The progress of the timer. This is a monotonically increasing value.
-    base::TimeDelta progress_;
-
     // This is the progress of the timer in the current cycle.
     base::TimeDelta current_cycle_progress_;
 
     // If true, the progress will go into reverse after each cycle. This is used
     // for throbbing animations.
-    bool should_reverse_ = false;
+    const bool should_reverse_ = false;
 
     // The number of times each |cycle_duration_| is covered by the timer.
     int completed_cycles_ = 0;
 
     // See comments above SetPlaybackSpeed().
     float playback_speed_ = 1.f;
+
+    // The boundaries of the current cycle. This is a copy of one of the entries
+    // in |scheduled_cycles_|.
+    CycleBoundaries current_cycle_;
   };
 
   void InitTimer(const base::TimeTicks& timestamp);
@@ -282,6 +309,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
       float t,
       sk_sp<SkImage>&,
       SkSamplingOptions&);
+  void VerifyPlaybackConfigIsValid(const PlaybackConfig& playback_config) const;
 
   // Manages the timeline for the current playing animation.
   std::unique_ptr<TimerControl> timer_control_;

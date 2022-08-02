@@ -142,7 +142,6 @@
 <translation id="4415566066719264597">‏السماح بتشغيل Chromium في الخلفية</translation>
 <translation id="4423735387467980091">‏تخصيص Chromium والتحكم فيه</translation>
 <translation id="4427306783828095590">يؤدي تفعيل إعداد "الحماية المُحسَّنة" إلى حظر التصيّد الاحتيالي والبرامج الضارّة.</translation>
-<translation id="4440114195512068100">‏للتأكُّد من أنّ جهازك يستخدم أحدث إصدار، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات نظام التشغيل Chromium<ph name="LINK_END" />.</translation>
 <translation id="452711251841752011">‏مرحبًا بك في Chromium. تم فتح نافذة متصفّح جديدة.</translation>
 <translation id="4544142686420020088">‏تعذّر تحديث Chromium بسبب حدوث خطأ. <ph name="BEGIN_LINK" />حلّ مشاكل تحديث Chrome وتعذُّر التحديثات<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">‏هل تريد المتابعة باستخدام ملف شخصي جديد على Chromium؟</translation>
@@ -307,8 +306,6 @@
 <translation id="7877292582355102282">‏<ph name="BEGIN_BOLD" />كيفية إدارة بياناتك:<ph name="END_BOLD" /> لحماية خصوصيتك، نحذف تلقائيًا اهتماماتك التي يمر عليها أكثر من أربعة أسابيع. وفي حال بحثت عن أحد الاهتمامات مرّة آخرى، سيظهر في القائمة من جديد. يمكنك إزالة الاهتمامات التي لا تريد أن يضيفها Chromium إلى قائمة اهتماماتك.</translation>
 <translation id="7937630085815544518">‏تم تسجيل دخولك إلى Chromium باعتبارك <ph name="USER_EMAIL_ADDRESS" />. يُرجى استخدام الحساب نفسه لتسجيل الدخول مرة أخرى.</translation>
 <translation id="7975919845073681630">‏هذا تثبيت ثانوي من Chromium، ولا يمكن جعله متصفحك التلقائي.</translation>
-<translation id="7982481011030453202">‏في حال عدم عرض إعدادات على هذه الصفحة، انتقِل إلى <ph name="LINK_BEGIN" />
-    إعدادات نظام التشغيل Chromium<ph name="LINK_END" />.</translation>
 <translation id="7997934263947464652">‏إنّ الإضافات والتطبيقات والمظاهر الواردة من مصادر غير معروفة يمكن أن تتسبّب في إلحاق الضرر بجهازك. ينصح Chromium بإجراء عملية التثبيت من خلال <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> فقط.</translation>
 <translation id="8013436988911883588">‏بعد حصول Chromium على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.</translation>
 <translation id="80471789339884597">شكرًا على التثبيت. عليك إعادة تشغيل جميع المتصفِّحات قبل استخدام <ph name="BUNDLE_NAME" />.</translation>

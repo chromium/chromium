@@ -555,7 +555,7 @@ TEST_F(IntegrationTest, MultipleUpdateAllsMultipleNetRequests) {
   Clean();
 }
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN)
 TEST_F(IntegrationTest, LegacyUpdate3Web) {
   ScopedServer test_server(test_commands_);
   Install();
@@ -624,7 +624,7 @@ TEST_F(IntegrationTest, UninstallCmdLine) {
   WaitForUpdaterExit();
   ExpectClean();
 }
-#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(IntegrationTest, UnregisterUninstalledApp) {
   Install();

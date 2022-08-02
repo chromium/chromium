@@ -51,16 +51,6 @@ using ::testing::Return;
 
 namespace media_router {
 
-namespace {
-MediaRoute CreateRouteForTesting(const MediaSinkInternal& sink) {
-  std::string sink_id = sink.id();
-  std::string route_id =
-      "urn:x-org.chromium:media:route:1/" + sink_id + "/http://foo.com";
-  return MediaRoute(route_id, MediaSource("access_code"), sink_id,
-                    "access_sink", true);
-}
-}  // namespace
-
 using SinkSource = CastDeviceCountMetrics::SinkSource;
 using MockBoolCallback = base::MockCallback<base::OnceCallback<void(bool)>>;
 using MockAddSinkResultCallback = base::MockCallback<
@@ -270,7 +260,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 
   // Expect cast sink is NOT removed from the media router since it
   // is not an access code sink.
-  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
+  access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
       &cast_sink1);
   EXPECT_CALL(*mock_cast_media_sink_service_impl(),
               DisconnectAndRemoveSink(cast_sink1))
@@ -288,7 +278,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
       media_route_access.media_route_id());
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 
-  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
+  access_code_cast_sink_service_->HandleMediaRouteRemovedByAccessCode(
       &access_code_sink2);
   // Expect that there is a pending attempt to examine the sink to see if it
   // should be expired.
@@ -314,44 +304,6 @@ TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouter) {
   EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, Eq(cast_sink1.id())));
   access_code_cast_sink_service_->OpenChannelIfNecessary(
       cast_sink1, mock_callback.Get(), true);
-  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
-}
-
-TEST_F(AccessCodeCastSinkServiceTest, AddExistingSinkToMediaRouterWithRoute) {
-  // When an existing sink has an existing route, ensure that that route is
-  // terminated before the caller is alerted to the successful discovery.
-  MediaSinkInternal cast_sink1 = CreateCastSink(1);
-  cast_sink1.cast_data().discovery_type =
-      CastDiscoveryType::kAccessCodeManualEntry;
-
-  MediaRoute media_route_cast = CreateRouteForTesting(cast_sink1);
-
-  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated(
-      {media_route_cast});
-  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
-
-  EXPECT_CALL(*router_, GetCurrentRoutes())
-      .WillOnce(Return(std::vector<MediaRoute>{media_route_cast}));
-  EXPECT_CALL(*router_, TerminateRoute(media_route_cast.media_route_id()));
-  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
-              OpenChannel(cast_sink1, _, SinkSource::kAccessCode, _, _))
-      .Times(0);
-
-  MockAddSinkResultCallback mock_callback;
-  EXPECT_CALL(mock_callback, Run(AddSinkResultCode::OK, _));
-
-  access_code_cast_sink_service_->OpenChannelIfNecessary(
-      cast_sink1, mock_callback.Get(), true);
-
-  access_code_cast_sink_service_->media_routes_observer_->OnRoutesUpdated({});
-  // Since a route has been removed, there should be a pending task to examine
-  // whether the route's sink is an access code sink.
-  EXPECT_EQ(
-      access_code_cast_sink_service_->media_routes_observer_->removed_route_id_,
-      media_route_cast.media_route_id());
-
-  access_code_cast_sink_service_->HandleMediaRouteDiscoveredByAccessCode(
-      &cast_sink1);
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
 }
 
@@ -1159,6 +1111,79 @@ TEST_F(AccessCodeCastSinkServiceTest, DiscoverSinkWithNoMediaRouter) {
   access_code_cast_sink_service_->DiscoverSink("", mock_callback.Get());
 
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest,
+       TestCheckMediaSinkForExpirationNoExpiration) {
+  // Demonstrates that checking a media sink for expiration will return if it
+  // hasn't expired yet.
+
+  const MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  SetDeviceDurationPrefForTest(base::Seconds(100));
+
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+  // Expect that CheckMediaSinkForExpiration() will simply return since the
+  // timer has not expired yet.
+  access_code_cast_sink_service_->CheckMediaSinkForExpiration(cast_sink1.id());
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+}
+
+TEST_F(AccessCodeCastSinkServiceTest,
+       TestCheckMediaSinkForExpirationBeforeDelay) {
+  // Demonstrates that checking a media sink for expiration will fire it before
+  // OnExpiration is called because of the kExpirationDelay.
+
+  const MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  SetDeviceDurationPrefForTest(base::Seconds(0));
+
+  mock_cast_media_sink_service_impl()->AddSinkForTest(cast_sink1);
+  access_code_cast_sink_service_->SetExpirationTimer(&cast_sink1);
+  access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink1);
+  mock_time_task_runner()->FastForwardUntilNoTasksRemain();
+
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+
+  // There is a brief delay that is added to any expiration timer. We want to
+  // check the time between the delay and zero seconds (instant expiration) to
+  // ensure that we can manually trigger this expiration and override the delay.
+  task_environment_.AdvanceClock(
+      AccessCodeCastSinkService::kExpirationTimerDelay - base::Seconds(10));
+  EXPECT_TRUE(access_code_cast_sink_service_
+                  ->current_session_expiration_timers_[cast_sink1.id()]
+                  ->IsRunning());
+
+  access_code_cast_sink_service_->CheckMediaSinkForExpiration(cast_sink1.id());
+  EXPECT_TRUE(access_code_cast_sink_service_->current_session_expiration_timers_
+                  .empty());
+
+  // The sink should now be removed from the media router.
+  EXPECT_CALL(*mock_cast_media_sink_service_impl(),
+              DisconnectAndRemoveSink(cast_sink1));
+  FastForwardUiAndIoTasks();
+  content::RunAllTasksUntilIdle();
+  FastForwardUiAndIoTasks();
+
+  // The sink did expire in this situation so it should not exist in the pref
+  // service.
+  EXPECT_TRUE(
+      access_code_cast_sink_service_->pref_updater_->GetDeviceAddedTimeDict()
+          ->GetDict()
+          .empty());
+  EXPECT_TRUE(access_code_cast_sink_service_->pref_updater_->GetDevicesDict()
+                  ->GetDict()
+                  .empty());
 }
 
 }  // namespace media_router

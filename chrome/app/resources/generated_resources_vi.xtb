@@ -6449,7 +6449,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7212097698621322584">Nhập mã PIN hiện tại của bạn để thay đổi. Nếu không nhớ mã PIN, thì bạn cần đặt lại khóa bảo mật rồi tạo mã PIN mới.</translation>
 <translation id="7213903639823314449">Công cụ tìm kiếm được dùng trong thanh địa chỉ</translation>
 <translation id="721490496276866468">Nhập mật khẩu</translation>
-<translation id="7216595297012131718">Sắp xếp ngôn ngữ dựa trên lựa chọn ưu tiên của bạn</translation>
 <translation id="7219473482981809164">Chúng tôi phát hiện có nhiều hồ sơ cho bạn tải xuống. Hãy chọn những hồ sơ mà bạn muốn tải xuống trước khi tiếp tục.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Không có mật khẩu yếu}=1{1 mật khẩu yếu}other{{NUM_WEAK} mật khẩu yếu}}</translation>
 <translation id="7220019174139618249">Không thể xuất mật khẩu sang "<ph name="FOLDER" />"</translation>

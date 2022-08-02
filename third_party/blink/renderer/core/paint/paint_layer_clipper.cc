@@ -293,7 +293,7 @@ void PaintLayerClipper::CalculateBackgroundClipRectWithGeometryMapper(
     destination_property_tree_state.SetClip(context.root_fragment->PreClip());
   } else {
     destination_property_tree_state.SetClip(
-        context.root_fragment->PostOverflowClip());
+        context.root_fragment->ContentsClip());
   }
 
   // The background rect applies all clips *above* m_layer, but not the overflow

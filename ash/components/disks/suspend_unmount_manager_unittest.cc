@@ -76,23 +76,21 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
       DiskMountManager::MountPointInfo("/dummy/device/usb", kDummyMountPathUsb,
                                        MountType::kDevice,
                                        MOUNT_CONDITION_NONE),
-      kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_USB,
-      1024 * 1024, false /* is_parent */, false /* has_media */,
-      false /* on_boot_device */, true /* on_removable_device */,
-      kFileSystemType);
+      kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kUSB, 1024 * 1024,
+      false /* is_parent */, false /* has_media */, false /* on_boot_device */,
+      true /* on_removable_device */, kFileSystemType);
   disk_mount_manager_.CreateDiskEntryForMountDevice(
       DiskMountManager::MountPointInfo("/dummy/device/sd", kDummyMountPathSd,
                                        MountType::kDevice,
                                        MOUNT_CONDITION_NONE),
-      kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_SD,
-      1024 * 1024, false /* is_parent */, false /* has_media */,
-      false /* on_boot_device */, true /* on_removable_device */,
-      kFileSystemType);
+      kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kSD, 1024 * 1024,
+      false /* is_parent */, false /* has_media */, false /* on_boot_device */,
+      true /* on_removable_device */, kFileSystemType);
   disk_mount_manager_.CreateDiskEntryForMountDevice(
       DiskMountManager::MountPointInfo(
           "/dummy/device/unknown", kDummyMountPathUnknown, MountType::kDevice,
           MOUNT_CONDITION_NONE),
-      kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_UNKNOWN,
+      kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kUnknown,
       1024 * 1024, false /* is_parent */, false /* has_media */,
       false /* on_boot_device */, true /* on_removable_device */,
       kFileSystemType);
@@ -125,10 +123,9 @@ TEST_F(SuspendUnmountManagerTest, CancelAndSuspendAgain) {
       DiskMountManager::MountPointInfo("/dummy/device", kDummyMountPath,
                                        MountType::kDevice,
                                        MOUNT_CONDITION_NONE),
-      kDeviceId, kDeviceLabel, kVendor, kProduct, chromeos::DEVICE_TYPE_USB,
-      1024 * 1024, false /* is_parent */, false /* has_media */,
-      false /* on_boot_device */, true /* on_removable_device */,
-      kFileSystemType);
+      kDeviceId, kDeviceLabel, kVendor, kProduct, DeviceType::kUSB, 1024 * 1024,
+      false /* is_parent */, false /* has_media */, false /* on_boot_device */,
+      true /* on_removable_device */, kFileSystemType);
   disk_mount_manager_.SetupDefaultReplies();
   FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);

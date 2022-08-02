@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">ବ୍ରାଉଜିଂ ଇତିବୃତ୍ତି</translation>
 <translation id="2497852260688568942">ଆପଣଙ୍କର ବ୍ୟବସ୍ଥାପକଙ୍କ ଦ୍ୱାରା ସିଙ୍କ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="250020030759455918">ଆପଣ <ph name="SITE_NAME" />ରେ ଆପଣଙ୍କ ସାଇନ୍-ଇନ୍ ସ୍ଥିତି, ବ୍ରାଉଜିଂ ଡାଟା ଏବଂ ସାଇଟ୍ ଡାଟା, Chromeରେ ଦେଖିବେ</translation>
+<translation id="2507178219579379057">ବିଜ୍ଞାପନ ସ୍ପାମ, ଠକାମୀ ଏବଂ ସାଇଟଗୁଡ଼ିକ ମଧ୍ୟରେ ସେୟାରିଂକୁ ସୀମିତ କରିବାର ଉପାୟଗୁଡ଼ିକୁ Chrome ଏକ୍ସପ୍ଲୋର କରୁଛି। Chrome ମଧ୍ୟ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକୁ ଆକଳନ କରେ<ph name="END_LINK" /> ଯାହାକୁ ସାଇଟଗୁଡ଼ିକ ଆପଣଙ୍କ ବିଜ୍ଞାପନଗୁଡ଼ିକୁ ଦେଖାଇବା ପାଇଁ ବ୍ୟବହାର କରିପାରିବେ। ଆପଣ ସେଟିଂସରେ ଆପଣଙ୍କ ରୁଚିଗୁଡ଼ିକୁ ପରିଚାଳନା କରିପାରିବେ।</translation>
 <translation id="2513403576141822879">ଗୋପନୀୟତା, ସୁରକ୍ଷା ଏବଂ ଡାଟା ସଂଗ୍ରହ ସହ ସମ୍ବନ୍ଧିତ ଅଧିକ ସେଟିଂସ୍ ପାଇଁ <ph name="BEGIN_LINK" />ସିଙ୍କ ଓ Google ସେବା<ph name="END_LINK" /> ଦେଖନ୍ତୁ</translation>
 <translation id="2517472476991765520">ସ୍କାନ୍ କରନ୍ତୁ</translation>
 <translation id="2523184218357549926">Googleକୁ ଆପଣ ଭିଜିଟ୍ କରିଥିବା ପୃଷ୍ଠାର URL ପଠାଏ</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">ମୁକ୍ତ ଉତ୍ସ ଲାଇସେନ୍ସ</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />କେଉଁ ଡାଟା ବ୍ୟବହାର କରାଯାଏ:<ph name="END_BOLD" /> ଆପଣଙ୍କ ବ୍ରାଉଜିଂ ଇତିହାସ, ଏହି ଡିଭାଇସରେ Chrome ବ୍ୟବହାର କରି ଆପଣ ଭିଜିଟ କରିଥିବା ସାଇଟଗୁଡ଼ିକର ଏହା ହେଉଛି ଏକ ରେକର୍ଡ।</translation>
 <translation id="4263656433980196874">Assistantର ଭଏସ୍ ମାଧ୍ୟମରେ ସନ୍ଧାନ ପାଇଁ ସମ୍ମତିର ui ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରେ ଖୋଲିଛି</translation>
-<translation id="4266054596873078491">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ଏହି ସାଇଟ ଏବଂ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="4269820728363426813">ଲିଙ୍କ୍ ଠିକଣା କପି କରନ୍ତୁ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Android ସେଟିଂସରେ ସ୍କ୍ରିନ ଲକ ଚାଲୁ କରନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome ବ୍ୟବହାର କରି, ଆପଣ <ph name="BEGIN_TOS_LINK" />Google ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_TOS_LINK" /> ଏବଂ <ph name="BEGIN_ATOS_LINK" />Google Chrome ଏବଂ ChromeOSର ଅତିରିକ୍ତ ସେବାର ସର୍ତ୍ତାବଳୀ<ph name="END_ATOS_LINK" />ରେ ସମ୍ମତ ହୁଅନ୍ତି। <ph name="BEGIN_PRIVACY_LINK" />ଗୋପନୀୟତା ନୀତି<ph name="END_PRIVACY_LINK" /> ମଧ୍ୟ ଲାଗୁ ହୁଏ।</translation>

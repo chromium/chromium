@@ -26,6 +26,8 @@
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
+using QueryReason = content_settings::CookieSettings::QueryReason;
+
 class CookieControlsBubbleViewTest : public DialogBrowserTest {
  public:
   CookieControlsBubbleViewTest() = default;
@@ -116,14 +118,16 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, MAYBE_NotWorkingClicked) {
   // Block 3p cookies.
   SetThirdPartyCookieBlocking(true);
   GURL origin = embedded_test_server()->GetURL("a.com", "/");
-  EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
+  EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(
+      origin, nullptr, QueryReason::kCookies));
 
   // Open bubble.
   ShowUi("NotWorkingClicked");
 
   // Allow cookies for this site by accepting bubble.
   AcceptBubble();
-  EXPECT_TRUE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
+  EXPECT_TRUE(cookie_settings()->IsThirdPartyAccessAllowed(
+      origin, nullptr, QueryReason::kCookies));
 }
 
 // Test opening cookie controls bubble while 3p cookies are allowed for this
@@ -134,14 +138,16 @@ IN_PROC_BROWSER_TEST_F(CookieControlsBubbleViewTest, BlockingDisabled) {
   GURL origin = embedded_test_server()->GetURL("a.com", "/");
   cookie_settings()->SetThirdPartyCookieSetting(
       origin, ContentSetting::CONTENT_SETTING_ALLOW);
-  EXPECT_TRUE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
+  EXPECT_TRUE(cookie_settings()->IsThirdPartyAccessAllowed(
+      origin, nullptr, QueryReason::kCookies));
 
   // Show bubble.
   ShowUi("");
 
   // Block cookies again by accepting the bubble.
   AcceptBubble();
-  EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(origin, nullptr));
+  EXPECT_FALSE(cookie_settings()->IsThirdPartyAccessAllowed(
+      origin, nullptr, QueryReason::kCookies));
 }
 
 // ==================== Pixel tests ====================

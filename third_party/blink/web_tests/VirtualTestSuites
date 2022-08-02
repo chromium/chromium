@@ -834,6 +834,7 @@
     "prefix": "third-party-storage-partitioning",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
+      "wpt_internal/file-system-api",
       "wpt_internal/storage/quota/partitioned-webkitTemporaryStorage-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitPersistentStorage-quota-usage-details.tentative.sub.html",
       "wpt_internal/storage/quota/partitioned-webkitStorageInfo-temporary-quota-usage-details.tentative.sub.html",
@@ -850,7 +851,8 @@
       "external/wpt/webstorage/localstorage-basic-partitioned.tentative.sub.html",
       "external/wpt/webmessaging/broadcastchannel/cross-partition.https.tentative.html",
       "external/wpt/IndexedDB",
-      "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html"
+      "external/wpt/webstorage/localstorage-about-blank-3P-iframe-opens-3P-window.partitioned.tentative.html",
+      "fast/filesystem"
     ],
     "args": [ "--enable-features=ThirdPartyStoragePartitioning" ]
   },
@@ -1262,8 +1264,8 @@
     "prefix": "document-pip",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [],
-    "args": ["--enable-features=PictureInPictureV2",
-             "--enable-blink-features=PictureInPictureV2"]
+    "args": ["--enable-features=DocumentPictureInPictureAPI",
+             "--enable-blink-features=DocumentPictureInPictureAPI"]
   },
   {
     "prefix": "origin-agent-cluster-default",
@@ -1304,6 +1306,12 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/html/semantics/scripting-1/the-script-element/defer-script/"],
     "args": ["--enable-features=ForceDeferScriptIntervention"]
+  },
+  {
+    "prefix": "force-in-order-script",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/in-order-script-scheduling"],
+    "args": ["--enable-features=ForceInOrderScript"]
   },
   {
     "prefix": "threaded-preload-scanner",

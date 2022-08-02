@@ -128,7 +128,9 @@ class RouterLinkTest : public testing::Test,
     switch (GetParam()) {
       case RouterLinkTestMode::kLocal:
         std::tie(a_link_, b_link_) =
-            LocalRouterLink::ConnectRouters(LinkType::kCentral, {a_, b_});
+            LocalRouterLink::CreatePair(LinkType::kCentral, {a_, b_});
+        a_->SetOutwardLink(a_link_);
+        b_->SetOutwardLink(b_link_);
         break;
 
       case RouterLinkTestMode::kRemote: {
@@ -169,7 +171,7 @@ class RouterLinkTest : public testing::Test,
 };
 
 TEST_P(RouterLinkTest, Locking) {
-  EXPECT_EQ(RouterLinkState::kUnstable, link_status());
+  link_state().status = RouterLinkState::kUnstable;
 
   // No locking can take place until both sides are marked stable.
   EXPECT_FALSE(a_link().TryLockForBypass(kTestPeer1Name));
@@ -217,6 +219,8 @@ TEST_P(RouterLinkTest, Locking) {
 }
 
 TEST_P(RouterLinkTest, FlushOtherSideIfWaiting) {
+  link_state().status = RouterLinkState::kUnstable;
+
   // FlushOtherSideIfWaiting() does nothing if the other side is not, in fact,
   // waiting for something.
   EXPECT_FALSE(a_link().FlushOtherSideIfWaiting());

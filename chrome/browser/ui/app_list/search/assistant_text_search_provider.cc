@@ -27,7 +27,7 @@ namespace app_list {
 
 namespace {
 
-using chromeos::assistant::AssistantAllowedState;
+using ::ash::assistant::AssistantAllowedState;
 
 constexpr char kIdPrefix[] = "googleassistant_text://";
 
@@ -113,7 +113,7 @@ void AssistantTextSearchProvider::OnAssistantControllerDestroying() {
 }
 
 void AssistantTextSearchProvider::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState allowed_state) {
+    AssistantAllowedState allowed_state) {
   UpdateResults();
 }
 

@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">ປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="2497852260688568942">ການຊິ້ງຂໍ້ມູນຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="250020030759455918">ທ່ານຈະເຫັນສະຖານະການເຂົ້າສູ່ລະບົບ <ph name="SITE_NAME" />, ຂໍ້ມູນການທ່ອງເວັບ ແລະ ຂໍ້ມູນເວັບໄຊຂອງທ່ານໃນ Chrome</translation>
+<translation id="2507178219579379057">Chrome ກຳລັງສຳຫຼວດວິທີຈຳກັດສະແປມໂຄສະນາ, ການສໍ້ໂກງ ແລະ ການແບ່ງປັນລະຫວ່າງເວັບໄຊ. ນອກຈາກນັ້ນ, Chrome ຍັງຈະ <ph name="BEGIN_LINK" />ຄາດຄະເນຄວາມສົນໃຈຂອງທ່ານ<ph name="END_LINK" /> ທີ່ເວັບໄຊຕ່າງໆຈະໃຊ້ເພື່ອສະແດງໂຄສະນາໃຫ້ທ່ານເຫັນນຳ. ທ່ານສາມາດຈັດການຄວາມສົນໃຈຂອງທ່ານໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="2513403576141822879">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບຂໍ້ມູນ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການຊິ້ງຂໍ້ມູນ ແລະ ການບໍລິການຂອງ Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">ສະແກນ</translation>
 <translation id="2523184218357549926">ສົ່ງ URL ຂອງໜ້າຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງໃຫ້ Google</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">ໃບ​ອະ​ນຸ​ຍາດ Open source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />ມີການໃຊ້ຂໍ້ມູນໃດ:<ph name="END_BOLD" /> ປະຫວັດການທ່ອງເວັບຂອງທ່ານ, ບັນທຶກຂອງເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງໂດຍໃຊ້ Chrome ຢູ່ອຸປະກອນນີ້.</translation>
 <translation id="4263656433980196874">ສ່ວນຕິດຕໍ່ຜູ້ໃຊ້ສຳລັບຄຳຍິນຍອມການຊອກຫາດ້ວຍສຽງຂອງຜູ້ຊ່ວຍທີ່ເປີດຢູ່ທີ່ຄວາມສູງເຕັມຈໍ</translation>
-<translation id="4266054596873078491">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ ແລະ Chrome ດ້ວຍບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="4269820728363426813">ກັອບປີ້ທີ່ຢູ່ລິ້ງ</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />ເປີດໃຊ້ການລັອກໜ້າຈໍໃນການຕັ້ງຄ່າ Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">ໂດຍການໃຊ້ Chrome, ແມ່ນຖືວ່າທ່ານຍອມຮັບ <ph name="BEGIN_TOS_LINK" />ຂໍ້ກຳນົດບໍລິການ Google<ph name="END_TOS_LINK" /> ແລະ <ph name="BEGIN_ATOS_LINK" />ຂໍ້ກຳນົດບໍລິການເພີ່ມເຕີມ Google Chrome ແລະ ChromeOS<ph name="END_ATOS_LINK" />. ຈະນຳໃຊ້ <ph name="BEGIN_PRIVACY_LINK" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວ<ph name="END_PRIVACY_LINK" /> ນຳ.</translation>

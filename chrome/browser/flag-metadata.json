@@ -764,11 +764,6 @@
     "expiry_milestone": 105
   },
   {
-    "name": "categorical-search",
-    "owners": [ "tby", "thanhdng", "wrong" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "cct-brand-transparency",
     "owners": [ "wenyufu" ],
     "expiry_milestone": 110
@@ -979,19 +974,9 @@
     "expiry_milestone": 105
   },
   {
-    "name": "content-suggestions-header-migration",
-    "owners": [ "thegreenfrog@google.com", "adamta@google.com" ],
-    "expiry_milestone": 105
-  },
-  {
     "name": "content-suggestions-ui-module-refresh",
     "owners": [ "thegreenfrog@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 108
-  },
-  {
-    "name": "content-suggestions-uiviewcontroller-migration",
-    "owners": [ "thegreenfrog@google.com", "adamta@google.com" ],
-    "expiry_milestone": 106
   },
   {
     "name": "context-menu-popup-style",
@@ -1289,7 +1274,7 @@
   {
     "name": "disable-camera-frame-rotation-at-source",
     "owners": [ "chromeos-camera-eng@google.com" ],
-    "expiry_milestone": 104
+    "expiry_milestone": 110
   },
   {
     "name": "disable-cancel-all-touches",
@@ -4704,6 +4689,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "omnibox-keyboard-paste-button",
+    "owners": ["christianxu", "stkhapugin", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "omnibox-max-url-matches",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 110
@@ -5816,11 +5806,6 @@
     "expiry_milestone": 106
   },
   {
-    "name": "single-cell-content-suggestions",
-    "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
-    "expiry_milestone": 106
-  },
-  {
     "name": "single-ntp",
     "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
     "expiry_milestone": 106
@@ -6650,6 +6635,6 @@
       // For MacOS and Windows
       "video-cmi-mpp@google.com"
     ],
-    "expiry_milestone": 109
+    "expiry_milestone": 110
   }
 ]

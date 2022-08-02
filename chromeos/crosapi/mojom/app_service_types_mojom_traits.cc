@@ -548,8 +548,8 @@ EnumTraits<crosapi::mojom::ConditionType, apps::ConditionType>::ToMojom(
       return crosapi::mojom::ConditionType::kScheme;
     case apps::ConditionType::kHost:
       return crosapi::mojom::ConditionType::kHost;
-    case apps::ConditionType::kPattern:
-      return crosapi::mojom::ConditionType::kPattern;
+    case apps::ConditionType::kPath:
+      return crosapi::mojom::ConditionType::kPath;
     case apps::ConditionType::kAction:
       return crosapi::mojom::ConditionType::kAction;
     case apps::ConditionType::kMimeType:
@@ -586,8 +586,8 @@ bool EnumTraits<crosapi::mojom::ConditionType, apps::ConditionType>::FromMojom(
     case crosapi::mojom::ConditionType::kHost:
       *output = apps::ConditionType::kHost;
       return true;
-    case crosapi::mojom::ConditionType::kPattern:
-      *output = apps::ConditionType::kPattern;
+    case crosapi::mojom::ConditionType::kPath:
+      *output = apps::ConditionType::kPath;
       return true;
     case crosapi::mojom::ConditionType::kAction:
       *output = apps::ConditionType::kAction;

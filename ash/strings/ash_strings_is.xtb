@@ -84,6 +84,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1346748346194534595">Réttsælis</translation>
 <translation id="1351937230027495976">Draga valmynd saman</translation>
 <translation id="1364382257761975320">Notaðu fingrafar til að taka Chromebook úr lás</translation>
+<translation id="1365866993922957110">Fá sjálfvirkar uppfærslur</translation>
 <translation id="1372545819342940910">Vista skrifborð til síðari nota</translation>
 <translation id="1383597849754832576">Ekki er hægt að sækja talskrár. Reyndu aftur síðar.</translation>
 <translation id="1383876407941801731">Leita</translation>
@@ -161,6 +162,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> var losað</translation>
 <translation id="1836215606488044471">Aðstoðarmaður (hleður...)</translation>
 <translation id="1838895407229022812">Slökkt er á næturljósi.</translation>
+<translation id="1862380676329487333">Uppfæra og skrá út</translation>
 <translation id="1864454756846565995">USB-C-tæki (tengi að aftan)</translation>
 <translation id="1879018240766558464">Huliðsgluggar eru ekki studdir eins og er. Önnur forrit verða vistuð.</translation>
 <translation id="1882814835921407042">Ekkert farsímakerfi</translation>
@@ -561,6 +563,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="423685346499232137">Ekki hægt að afrita og líma efni eins og stendur</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
+<translation id="4247123849143712100">Uppfæra og slökkva</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
 <translation id="425364040945105958">Ekkert SIM-kort</translation>
 <translation id="4261870227682513959">Sýna tilkynningastillingar. Slökkt er á tilkynningum</translation>
@@ -920,6 +923,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er stýrð lota sem <ph name="MANAGER" /> hefur umsjón með</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> tengd</translation>
 <translation id="6351032674660237738">TILLÖGUR AÐ FORRITUM</translation>
+<translation id="6359587239691116345">Fáðu nýjustu eiginleikana og öryggisúrbætur. Ef þú hafnar þessari uppfærslu er hugsanlegt að tækið þitt virki ekki lengur rétt og vandamál varðandi öryggi og afköst gætu komið upp.</translation>
 <translation id="6376931439017688372">Kveikt er á Bluetooth</translation>
 <translation id="6381109794406942707">Til að opna tækið skaltu slá inn PIN-númerið þitt.</translation>
 <translation id="639644700271529076">Slökkt er á HÁSTAFALÁS</translation>
@@ -941,6 +945,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> krefst þess að þú uppfærir <ph name="DEVICE_TYPE" /> áður en fresturinn rennur út</translation>
 <translation id="649452524636452238">PIN-númer snjallkorts</translation>
 <translation id="6495400115277918834">Mynd í mynd er hafin, ýttu á Alt+Shift+V til að setja í fókus</translation>
+<translation id="6500896621837555595">Uppfæra</translation>
 <translation id="6501401484702599040">Sendir út skjáinn til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Myndavél horfin, reynir að tengjast aftur.</translation>
 <translation id="6520517963145875092">Veldu glugga til að mynda</translation>
@@ -1218,6 +1223,7 @@ Ný uppsetning</translation>
 <translation id="8054466585765276473">Reiknar rafhlöðuendingu.</translation>
 <translation id="8061464966246066292">Mikil birtuskil</translation>
 <translation id="8083540854303889870">Vistað til síðari nota</translation>
+<translation id="8091387634532529612">Sjálfvirkar uppfærslur</translation>
 <translation id="8098591350844501178">Hætta að senda skjáinn út í <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Öll forrit</translation>
 <translation id="8120151603115102514">Síminn þinn er ekki með lásskjá. Sláðu inn aðgangsorð til að taka Chromebook úr lás.</translation>
@@ -1424,4 +1430,5 @@ Ný uppsetning</translation>
 <translation id="974545358917229949">Sýnir niðurstöður <ph name="RESULT_COUNT" /> fyrir „<ph name="QUERY" />“</translation>
 <translation id="98515147261107953">Langsnið</translation>
 <translation id="990277280839877440">Glugganum „<ph name="WINDOW_TITILE" />“ lokað.</translation>
+<translation id="996204416024568215">Fáðu nýjustu eiginleikana og öryggisúrbætur. Uppfærslur fara fram í bakgrunninum.</translation>
 </translationbundle>

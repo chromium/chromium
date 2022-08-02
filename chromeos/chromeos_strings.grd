@@ -2777,22 +2777,22 @@ Try tapping the mic to ask me anything.
         Confirm
       </message>
       <!-- Landing page -->
-      <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" desc="Title for the landing page at the start of RMA.">
+      <message name="IDS_SHIMLESS_RMA_LANDING_PAGE_TITLE" translateable="false" desc="Title for the landing page at the start of RMA.">
         <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> repair
       </message>
-      <message name="IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING" desc="Warning that RMA is only for qualified technicians.">
+      <message name="IDS_SHIMLESS_RMA_AUTHORIZED_TECH_ONLY_WARNING" translateable="false" desc="Warning that RMA is only for qualified technicians.">
         This repair process is intended for a trained repair technician. Start only after replacing the malfunctioning components.
       </message>
-      <message name="IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS" desc="Checking that device components are approved for this device.">
+      <message name="IDS_SHIMLESS_RMA_VALIDATING_COMPONENTS" translateable="false" desc="Checking that device components are approved for this device.">
         Validating components...
       </message>
-      <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SUCCESS" desc="Successfully checked that device components are approved for this device.">
+      <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_SUCCESS" translateable="false" desc="Successfully checked that device components are approved for this device.">
         Components are installed correctly.
       </message>
       <message name="IDS_SHIMLESS_RMA_VALIDATED_COMPONENTS_FAIL" desc="Validation check found that device components are NOT approved for this device.">
         <ph name="LINK_BEGIN">&lt;a id="unqualifiedComponentsLink"&gt;</ph>Unqualified components<ph name="LINK_END">&lt;/a&gt;</ph> detected. If you choose to confirm this has been installed, please do so now.
       </message>
-      <message name="IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL" desc="The label for the button to start the RMA process.">
+      <message name="IDS_SHIMLESS_RMA_GET_STARTED_BUTTON_LABEL" translateable="false" desc="The label for the button to start the RMA process.">
         Get started
       </message>
       <message name="IDS_SHIMLESS_RMA_UNQUALIFIED_COMPONENTS_TITLE" desc="The title for the dialog showing the list of components unqualfiied by ChromeOS.">

@@ -271,6 +271,7 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2496180316473517155">Hanes pori</translation>
 <translation id="2497852260688568942">Mae Cysoni wedi'i analluogi gan eich gweinyddwr</translation>
 <translation id="250020030759455918">Byddwch yn gweld eich statws mewngofnodi, pori data, a data gwefan <ph name="SITE_NAME" /> yn Chrome</translation>
+<translation id="2507178219579379057">Mae Chrome yn archwilio ffyrdd o gyfyngu ar sothach hysbysebion, twyll a rhannu rhwng gwefannau. Mae Chrome hefyd yn <ph name="BEGIN_LINK" />amcangyfrif eich diddordebau<ph name="END_LINK" /> y gall gwefannau eu defnyddio i ddangos hysbysebion i chi. Gallwch reoli'ch diddordebau yn y gosodiadau.</translation>
 <translation id="2513403576141822879">Am ragor o osodiadau sy'n ymwneud â phreifatrwydd, diogelwch a chasglu data, gweler <ph name="BEGIN_LINK" />Cysoni a gwasanaethau Google<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Sganio</translation>
 <translation id="2523184218357549926">Yn anfon URL o dudalennau rydych yn ymweld â nhw at Google</translation>
@@ -586,7 +587,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="4256782883801055595">Trwyddedau ffynhonnell agored</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Pa ddata a ddefnyddir:<ph name="END_BOLD" /> Eich hanes pori, cofnod o wefannau rydych wedi ymweld â nhw drwy ddefnyddio Chrome ar y ddyfais hon.</translation>
 <translation id="4263656433980196874">Agorwyd UI cydsyniad chwilio â llais Assistant ar uchder llawn</translation>
-<translation id="4266054596873078491">Mewngofnodi i'r wefan hon a Chrome gyda'ch Cyfrif Google.</translation>
 <translation id="4269820728363426813">Copïo cyfeiriad y ddolen</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Trowch glo sgrîn ymlaen yn y gosodiadau Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Drwy ddefnyddio Chrome, rydych yn cytuno i <ph name="BEGIN_TOS_LINK" />Delerau Gwasanaeth Google<ph name="END_TOS_LINK" />, a <ph name="BEGIN_ATOS_LINK" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_ATOS_LINK" />. Mae'r <ph name="BEGIN_PRIVACY_LINK" />Polisi Preifatrwydd<ph name="END_PRIVACY_LINK" /> hefyd yn berthnasol.</translation>

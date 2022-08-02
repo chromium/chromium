@@ -7,9 +7,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
-namespace assistant {
-namespace switches {
+namespace ash::assistant::switches {
 
 // NOTE: Switches are reserved for developer-facing options. End-user facing
 // features should use base::Feature. See features.h.
@@ -29,8 +27,11 @@ extern const char kRedirectLibassistantLogging[];
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 extern const char kDisableLibAssistantLogfile[];
 
-}  // namespace switches
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant::switches
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+namespace switches = ::ash::assistant::switches;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_SWITCHES_H_

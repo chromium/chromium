@@ -57,13 +57,13 @@ constexpr const char* kGoogleGstaticAppIds[] = {
 
 // ContainsAppIdByHash returns true iff the SHA-256 hash of one of the
 // elements of |list| equals |hash|.
-bool ContainsAppIdByHash(const base::Value& list,
+bool ContainsAppIdByHash(const base::Value::List& list,
                          const std::vector<uint8_t>& hash) {
   if (hash.size() != crypto::kSHA256Length) {
     return false;
   }
 
-  for (const auto& i : list.GetListDeprecated()) {
+  for (const auto& i : list) {
     const std::string& s = i.GetString();
     if (s.find('/') == std::string::npos) {
       // No slashes mean that this is a webauthn RP ID, not a U2F AppID.
@@ -170,12 +170,12 @@ CryptotokenPrivateIsAppIdHashInEnterpriseContextFunction::Run() {
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const PrefService* const prefs = profile->GetPrefs();
-  const base::Value* const permit_attestation =
-      prefs->GetList(prefs::kSecurityKeyPermitAttestation);
+  const base::Value::List& permit_attestation =
+      prefs->GetValueList(prefs::kSecurityKeyPermitAttestation);
 
   return RespondNow(ArgumentList(
       cryptotoken_private::IsAppIdHashInEnterpriseContext::Results::Create(
-          ContainsAppIdByHash(*permit_attestation, params->app_id_hash))));
+          ContainsAppIdByHash(permit_attestation, params->app_id_hash))));
 }
 
 CryptotokenPrivateCanAppIdGetAttestationFunction::
@@ -200,10 +200,10 @@ CryptotokenPrivateCanAppIdGetAttestationFunction::Run() {
   // prompt is shown.
   Profile* const profile = Profile::FromBrowserContext(browser_context());
   const PrefService* const prefs = profile->GetPrefs();
-  const base::Value* const permit_attestation =
-      prefs->GetList(prefs::kSecurityKeyPermitAttestation);
+  const base::Value::List& permit_attestation =
+      prefs->GetValueList(prefs::kSecurityKeyPermitAttestation);
 
-  for (const auto& entry : permit_attestation->GetListDeprecated()) {
+  for (const auto& entry : permit_attestation) {
     if (entry.GetString() == app_id)
       return RespondNow(OneArgument(base::Value(true)));
   }

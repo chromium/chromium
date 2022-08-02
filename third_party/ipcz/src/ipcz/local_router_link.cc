@@ -18,10 +18,17 @@ namespace ipcz {
 
 class LocalRouterLink::SharedState : public RefCounted {
  public:
-  SharedState(LinkType type, Ref<Router> router_a, Ref<Router> router_b)
+  SharedState(LinkType type,
+              LocalRouterLink::InitialState initial_state,
+              Ref<Router> router_a,
+              Ref<Router> router_b)
       : type_(type),
         router_a_(std::move(router_a)),
-        router_b_(std::move(router_b)) {}
+        router_b_(std::move(router_b)) {
+    if (initial_state == LocalRouterLink::kStable) {
+      link_state_.status = RouterLinkState::kStable;
+    }
+  }
 
   LinkType type() const { return type_; }
 
@@ -63,14 +70,14 @@ class LocalRouterLink::SharedState : public RefCounted {
 };
 
 // static
-RouterLink::Pair LocalRouterLink::ConnectRouters(LinkType type,
-                                                 const Router::Pair& routers) {
+RouterLink::Pair LocalRouterLink::CreatePair(LinkType type,
+                                             const Router::Pair& routers,
+                                             InitialState initial_state) {
   ABSL_ASSERT(type == LinkType::kCentral || type == LinkType::kBridge);
-  auto state = MakeRefCounted<SharedState>(type, routers.first, routers.second);
+  auto state = MakeRefCounted<SharedState>(type, initial_state, routers.first,
+                                           routers.second);
   auto a = AdoptRef(new LocalRouterLink(LinkSide::kA, state));
   auto b = AdoptRef(new LocalRouterLink(LinkSide::kB, state));
-  routers.first->SetOutwardLink(a);
-  routers.second->SetOutwardLink(b);
   return {a, b};
 }
 
@@ -87,8 +94,12 @@ RouterLinkState* LocalRouterLink::GetLinkState() const {
   return &state_->link_state();
 }
 
-bool LocalRouterLink::HasLocalPeer(const Router& router) {
-  return state_->GetRouter(side_.opposite()).get() == &router;
+Ref<Router> LocalRouterLink::GetLocalPeer() {
+  return state_->GetRouter(side_.opposite());
+}
+
+RemoteRouterLink* LocalRouterLink::AsRemoteRouterLink() {
+  return nullptr;
 }
 
 void LocalRouterLink::AcceptParcel(Parcel& parcel) {
@@ -136,7 +147,7 @@ void LocalRouterLink::Unlock() {
 bool LocalRouterLink::FlushOtherSideIfWaiting() {
   const LinkSide other_side = side_.opposite();
   if (state_->link_state().ResetWaitingBit(other_side)) {
-    state_->GetRouter(other_side)->Flush();
+    state_->GetRouter(other_side)->Flush(Router::kForceProxyBypassAttempt);
     return true;
   }
   return false;

@@ -12,6 +12,8 @@
 // ash/.
 #include "ash/components/audio/cras_audio_handler.h"
 #include "base/memory/scoped_refptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chromeos/ash/services/assistant/public/cpp/device_actions.h"
 
 namespace ash {
 class AssistantAlarmTimerController;
@@ -30,8 +32,6 @@ class SequencedTaskRunner;
 
 namespace chromeos {
 namespace assistant {
-
-class DeviceActions;
 
 // Context object passed around so classes can access some of the |Service|
 // functionality without directly depending on the |Service| class.

@@ -90,8 +90,27 @@ class TestCommandHandler : public BrowserCommandHandler {
     tutorial_service_ = service;
   }
 
+  void SetBrowserSupportsTabGroups(bool is_supported) {
+    tab_groups_feature_supported_ = is_supported;
+  }
+
+  void SetBrowserHasTabGroups(bool has_tab_groups) {
+    has_tab_groups_ = has_tab_groups;
+  }
+
+ protected:
+  bool BrowserSupportsTabGroups() override {
+    return tab_groups_feature_supported_;
+  }
+
+  bool BrowserHasTabGroups() override { return has_tab_groups_; }
+
+ private:
   user_education::TutorialService* tutorial_service_;
   std::unique_ptr<CommandUpdater> command_updater_;
+
+  bool tab_groups_feature_supported_ = true;
+  bool has_tab_groups_ = false;
 };
 
 class TestTutorialService : public user_education::TutorialService {
@@ -424,15 +443,39 @@ TEST_F(BrowserCommandHandlerTest, StartTabGroupTutorialCommand) {
   user_education::TutorialRegistry registry;
   MockTutorialService service(&registry, bubble_factory_registry.get());
   command_handler_->SetTutorialService(&service);
+
+  // If the browsers Tab Strip does not support tutorials, dont run the command.
+  command_handler_->SetBrowserSupportsTabGroups(false);
+  EXPECT_FALSE(CanExecuteCommand(Command::kStartTabGroupTutorial));
+
+  // If the browser supports tab groups and has a tutorial service it should
+  // allow running commands.
+  command_handler_->SetBrowserSupportsTabGroups(true);
   EXPECT_TRUE(CanExecuteCommand(Command::kStartTabGroupTutorial));
 
-  // The StartTabGroupTutorial command should start the tab group tutorial.
+  // The StartTabGroupTutorial command should start the tab group tutorial. if
+  // there are no tab groups in the tabstrip
+  command_handler_->SetBrowserHasTabGroups(false);
   ClickInfoPtr info = ClickInfo::New();
   EXPECT_CALL(service, StartTutorial(kTabGroupTutorialId, kTestContext1,
                                      testing::_, testing::_))
       .WillOnce(testing::Return(true));
   EXPECT_CALL(service, LogStartedFromWhatsNewPage(kTabGroupTutorialId, true));
   EXPECT_TRUE(ExecuteCommand(Command::kStartTabGroupTutorial, std::move(info)));
+
+  // The StartTabGroupTutorial command should start the "existing tab groups"
+  // tab group tutorial. if there are tab groups in the tabstrip
+  {
+    command_handler_->SetBrowserHasTabGroups(true);
+    ClickInfoPtr info = ClickInfo::New();
+    EXPECT_CALL(service, StartTutorial(kTabGroupWithExistingGroupTutorialId,
+                                       kTestContext1, testing::_, testing::_))
+        .WillOnce(testing::Return(true));
+    EXPECT_CALL(service, LogStartedFromWhatsNewPage(
+                             kTabGroupWithExistingGroupTutorialId, true));
+    EXPECT_TRUE(
+        ExecuteCommand(Command::kStartTabGroupTutorial, std::move(info)));
+  }
 }
 
 TEST_F(BrowserCommandHandlerTest, OpenPasswordManagerCommand) {

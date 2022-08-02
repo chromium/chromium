@@ -68,37 +68,16 @@ AmbientAnimationPlayer::AmbientAnimationPlayer(
                 "restart at timestamp 0";
     DCHECK(cycle_restart_timestamp_.is_zero());
   }
-  animation_observation_.Observe(animation);
   animation->SetPlaybackSpeed(
       AmbientUiModel::Get()->animation_playback_speed());
-  animated_image_view_->Play(lottie::Animation::PlaybackConfig::CreateWithStyle(
-      lottie::Animation::Style::kLinear, *animation));
+  animated_image_view_->Play(lottie::Animation::PlaybackConfig(
+      {{base::TimeDelta(), animation->GetAnimationDuration()},
+       {cycle_restart_timestamp_, animation->GetAnimationDuration()}},
+      lottie::Animation::Style::kLoop));
 }
 
 AmbientAnimationPlayer::~AmbientAnimationPlayer() {
   animated_image_view_->Stop();
-}
-
-void AmbientAnimationPlayer::AnimationCycleEnded(
-    const lottie::Animation* animation) {
-  DVLOG(1) << "First animation cycle ended. Restarting at "
-           << cycle_restart_timestamp_;
-  // No need to keep observing after the first animation cycle ends because all
-  // future animation cycles will automatically loop below.
-  animation_observation_.Reset();
-  // Stop()/Play() are actually very light-weight operations. They do not cause
-  // the animation to be re-loaded and only modify internal book-keeping state.
-  // The latency between the last frame of the first animation cycle and the
-  // first frame of the second cycle was compared against the same
-  // frame-to-frame latency at the end of other animation cycles, and there was
-  // no observable difference.
-  animated_image_view_->Stop();
-  animated_image_view_->Play(lottie::Animation::PlaybackConfig(
-      {/*start_offset=*/cycle_restart_timestamp_,
-       /*duration=*/
-       animated_image_view_->animated_image()->GetAnimationDuration() -
-           cycle_restart_timestamp_,
-       lottie::Animation::Style::kLoop}));
 }
 
 }  // namespace ash

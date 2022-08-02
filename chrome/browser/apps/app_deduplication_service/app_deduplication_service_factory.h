@@ -10,7 +10,7 @@
 
 class Profile;
 
-namespace apps {
+namespace apps::deduplication {
 
 class AppDeduplicationService;
 
@@ -42,6 +42,6 @@ class AppDeduplicationServiceFactory
       content::BrowserContext* context) const override;
 };
 
-}  // namespace apps
+}  // namespace apps::deduplication
 
 #endif  // CHROME_BROWSER_APPS_APP_DEDUPLICATION_SERVICE_APP_DEDUPLICATION_SERVICE_FACTORY_H_

@@ -95,7 +95,10 @@ void HighlightBorderOverlay::OnWindowPropertyChanged(aura::Window* window,
                                                      const void* key,
                                                      intptr_t old) {
   if (key == chromeos::kFrameActiveColorKey) {
-    UpdateNinePatchLayer();
+    if (window->GetProperty(chromeos::kFrameActiveColorKey) !=
+        static_cast<SkColor>(old)) {
+      UpdateNinePatchLayer();
+    }
     return;
   }
 

@@ -271,6 +271,7 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="2497852260688568942">Votre administrateur a désactivé la synchronisation</translation>
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, ainsi que vos données de navigation et les données du site dans Chrome</translation>
+<translation id="2507178219579379057">Chrome étudie différents moyens de limiter le spam publicitaire, la fraude et le partage entre les sites. Chrome <ph name="BEGIN_LINK" />prédit aussi vos centres d'intérêt<ph name="END_LINK" /> que les sites peuvent utiliser pour vous proposer des annonces. Vous pouvez gérer vos centres d'intérêt dans les paramètres.</translation>
 <translation id="2513403576141822879">Pour accéder à d'autres paramètres liés à la confidentialité, à la sécurité et à la collecte de données, consultez la section <ph name="BEGIN_LINK" />Services Google/Synchronisation<ph name="END_LINK" />.</translation>
 <translation id="2517472476991765520">Scanner</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
@@ -586,7 +587,6 @@ Lorsque vous supprimez votre historique de navigation (entièrement ou pour un s
 <translation id="4256782883801055595">Licences Open Source</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Quelles sont les données utilisées<ph name="END_BOLD" /> : votre historique de navigation, qui liste tous les sites que vous avez consultés dans Chrome sur cet appareil.</translation>
 <translation id="4263656433980196874">Interface d'autorisation pour la recherche vocale de l'Assistant ouverte à pleine hauteur</translation>
-<translation id="4266054596873078491">Connectez-vous à ce site et à Chrome avec votre compte Google.</translation>
 <translation id="4269820728363426813">Copier l'adresse du lien</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage de l'écran dans les paramètres Android<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">En utilisant Chrome, vous acceptez les <ph name="BEGIN_TOS_LINK" />Conditions d'utilisation de Google<ph name="END_TOS_LINK" /> et les <ph name="BEGIN_ATOS_LINK" />Conditions d'utilisation supplémentaires de Google Chrome et Chrome OS<ph name="END_ATOS_LINK" />. Les <ph name="BEGIN_PRIVACY_LINK" />Règles de confidentialité<ph name="END_PRIVACY_LINK" /> s'appliquent également.</translation>

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/app_list/app_list_model_provider.h"
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
 #include "ash/app_list/views/app_list_keyboard_controller.h"
@@ -117,6 +118,17 @@ bool AppListToastContainerView::HandleFocus(int column) {
   }
 
   return false;
+}
+
+void AppListToastContainerView::DisableFocusForShowingActiveFolder(
+    bool disabled) {
+  if (auto* toast_button = GetToastButton())
+    toast_button->SetEnabled(!disabled);
+  if (auto* close_button = GetCloseButton())
+    close_button->SetEnabled(!disabled);
+
+  // Prevent items from being accessed by ChromeVox.
+  SetViewIgnoredForAccessibility(this, disabled);
 }
 
 void AppListToastContainerView::MaybeUpdateReorderNudgeView() {

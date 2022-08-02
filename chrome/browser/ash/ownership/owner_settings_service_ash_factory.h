@@ -7,7 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
 
@@ -25,8 +25,7 @@ class DeviceSettingsService;
 class OwnerSettingsServiceAsh;
 class StubCrosSettingsProvider;
 
-class OwnerSettingsServiceAshFactory
-    : public BrowserContextKeyedServiceFactory {
+class OwnerSettingsServiceAshFactory : public ProfileKeyedServiceFactory {
  public:
   static OwnerSettingsServiceAsh* GetForBrowserContext(
       content::BrowserContext* context);
@@ -56,8 +55,6 @@ class OwnerSettingsServiceAshFactory
   ~OwnerSettingsServiceAshFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* browser_context) const override;

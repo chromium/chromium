@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">Штампање није успело.</translation>
 <translation id="1125564390852150847">Направи нову картицу.</translation>
 <translation id="1126809382673880764">Не штити вас од опасних веб-сајтова, преузимања и додатака. У другим Google услугама, као што су Gmail и Претрага, и даље ћете имати заштиту помоћу Безбедног прегледања када је доступна.</translation>
+<translation id="1135212215217513471">Набавите Chrome за iOS</translation>
 <translation id="1145536944570833626">Избришите постојеће податке</translation>
 <translation id="1147031633655575115">Пријављени сте као <ph name="USER" /></translation>
 <translation id="1154984953698510061">Прикажи друге картице</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">Да бисте били сигурни да увек можете да приступате синхронизованим подацима, потврдите да сте то ви</translation>
 <translation id="1870148520156231997">Прикажите лозинку</translation>
 <translation id="1872096359983322073">Блиц</translation>
+<translation id="1910975740091000991">Chrome за iOS</translation>
 <translation id="1911619930368729126">Отпреми у Google диск</translation>
 <translation id="1923342640370224680">Претходни сат</translation>
 <translation id="1930989359703290198">Организација вам дозвољава да се пријавите само помоћу одређених налога. Налози који нису дозвољени су скривени. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">Потражите текст који сте копирали</translation>
 <translation id="214201757571129614">Пријавите се…</translation>
 <translation id="2149973817440762519">Измените обележивач</translation>
+<translation id="2155145621546387786">Дели Chrome</translation>
 <translation id="2175927920773552910">QR кôд</translation>
 <translation id="2218443599109088993">Умањите</translation>
 <translation id="2230173723195178503">Веб-страница је учитана</translation>
@@ -406,7 +409,6 @@
 <translation id="4502566650163919158">Провери</translation>
 <translation id="4505980578794259603">Последња провера: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Затвори промоцију за пријављивање</translation>
-<translation id="4511669830082467224">Претражи слику помоћу Google-а</translation>
 <translation id="4526249700380860531">Прегледајте сачуване лозинке и управљајте њима на <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Прегледајте синхронизоване податке</translation>
 <translation id="4536418791685807335">Пробајте поново да се пријавите.</translation>

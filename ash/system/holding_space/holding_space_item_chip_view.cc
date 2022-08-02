@@ -639,10 +639,14 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
   if (!item())
     return;
 
-  // NOTE: Only download type items currently support secondary actions.
+  // NOTE: Only in-progress items currently support secondary actions.
   const bool has_secondary_action =
       !checkmark()->GetVisible() && !item()->progress().IsComplete() &&
-      HoldingSpaceItem::IsDownload(item()->type()) && IsMouseHovered();
+      (base::Contains(item()->in_progress_commands(),
+                      HoldingSpaceCommandId::kPauseItem) ||
+       base::Contains(item()->in_progress_commands(),
+                      HoldingSpaceCommandId::kResumeItem)) &&
+      IsMouseHovered();
 
   if (!has_secondary_action) {
     secondary_action_container_->SetVisible(false);
@@ -651,7 +655,8 @@ void HoldingSpaceItemChipView::UpdateSecondaryAction() {
   }
 
   // Pause/resume.
-  const bool is_item_paused = item()->IsPaused();
+  const bool is_item_paused = base::Contains(
+      item()->in_progress_commands(), HoldingSpaceCommandId::kResumeItem);
   secondary_action_pause_->SetVisible(!is_item_paused);
   secondary_action_resume_->SetVisible(is_item_paused);
 

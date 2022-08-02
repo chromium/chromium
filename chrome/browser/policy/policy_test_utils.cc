@@ -62,8 +62,6 @@ void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
 #endif
   provider_.UpdateChromePolicy(policy_with_defaults);
   DCHECK(base::CurrentThread::Get());
-  base::RunLoop loop;
-  loop.RunUntilIdle();
 }
 
 // static

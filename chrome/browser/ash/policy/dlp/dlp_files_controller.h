@@ -86,6 +86,10 @@ class DlpFilesController {
       std::vector<GURL> files_sources,
       std::string destination);
 
+  // TODO(crbug.com/1346254): Add comments when implementation is complete.
+  std::map<std::string, std::set<std::string>> GetDlpRestrictionDetails(
+      const std::string& sourceUrl);
+
  private:
   void ReturnDisallowedTransfers(
       base::flat_map<std::string, storage::FileSystemURL> files_map,

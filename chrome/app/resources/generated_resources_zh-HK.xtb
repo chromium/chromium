@@ -1347,7 +1347,7 @@
 <translation id="2241053333139545397">讀取及變更您在多個網站上的資料</translation>
 <translation id="2241634353105152135">只有這一次</translation>
 <translation id="2242687258748107519">檔案資料</translation>
-<translation id="2245296100676446525">開啟同步功能後，你就可以在這部裝置及任何其他保持同步的位置上取得你的書籤、密碼、歷史記錄等等。</translation>
+<translation id="2245296100676446525">開啟同步功能後，您便可在此裝置及任何其他保持同步的位置上取得書籤、密碼、記錄等等。</translation>
 <translation id="2245603955208828424">使用方向鍵即可在各項目中逐個字母移動</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> 會在背景中自動更新，為您提供最新功能並改善安全性。您可在「設定」中查看更新偏好設定。</translation>
 <translation id="2246549592927364792">要從 Google 取得圖片說明嗎？</translation>
@@ -6451,7 +6451,6 @@
 <translation id="7212097698621322584">請輸入目前的 PIN 以進行變更。如果您不知道自己的 PIN，請重設安全密鑰，然後建立新的 PIN。</translation>
 <translation id="7213903639823314449">網址列中使用的搜尋引擎</translation>
 <translation id="721490496276866468">匯入密碼</translation>
-<translation id="7216595297012131718">根據您的偏好為語言排序</translation>
 <translation id="7219473482981809164">我們發現多個設定檔可供下載。請先選取�要下載的設定檔再繼續。</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{沒有安全性弱的密碼}=1{1 個安全性弱的密碼}other{{NUM_WEAK} 個安全性弱的密碼}}</translation>
 <translation id="7220019174139618249">無法將密碼匯出至「<ph name="FOLDER" />」</translation>

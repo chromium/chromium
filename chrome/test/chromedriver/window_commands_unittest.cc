@@ -109,7 +109,7 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerMouse) {
   std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
   std::unique_ptr<base::DictionaryValue> action_sequence(
       new base::DictionaryValue());
-  std::unique_ptr<base::ListValue> actions(new base::ListValue());
+  base::Value::List actions;
   base::Value action(base::Value::Type::DICTIONARY);
   base::Value* parameters = action_sequence->GetDict().Set(
       "parameters", base::Value(base::Value::Type::DICTIONARY));
@@ -118,20 +118,22 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerMouse) {
   action_dict.Set("type", "pointerMove");
   action_dict.Set("x", 30);
   action_dict.Set("y", 60);
-  actions->Append(std::move(action));
+  actions.Append(std::move(action));
   action = base::Value(base::Value::Type::DICTIONARY);
   action_dict.Set("type", "pointerDown");
   action_dict.Set("button", 0);
-  actions->Append(std::move(action));
+  actions.Append(std::move(action));
   action = base::Value(base::Value::Type::DICTIONARY);
   action_dict.Set("type", "pointerUp");
   action_dict.Set("button", 0);
-  actions->Append(std::move(action));
+  actions.Append(std::move(action));
 
   // pointer properties
   action_sequence->SetString("type", "pointer");
   action_sequence->SetString("id", "pointer1");
-  action_sequence->SetList("actions", std::move(actions));
+  action_sequence->SetList(
+      "actions",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(actions))));
   const base::DictionaryValue* input_action_sequence = action_sequence.get();
   Status status =
       ProcessInputActionSequence(&session, input_action_sequence, &action_list);
@@ -190,7 +192,7 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   std::vector<std::unique_ptr<base::DictionaryValue>> action_list;
   std::unique_ptr<base::DictionaryValue> action_sequence(
       new base::DictionaryValue());
-  std::unique_ptr<base::ListValue> actions(new base::ListValue());
+  base::Value::List actions;
   base::Value action(base::Value::Type::DICTIONARY);
   base::Value::Dict& action_dict = action.GetDict();
   base::Value* parameters = action_sequence->GetDict().Set(
@@ -199,18 +201,20 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   action_dict.Set("type", "pointerMove");
   action_dict.Set("x", 30);
   action_dict.Set("y", 60);
-  actions->Append(std::move(action));
+  actions.Append(std::move(action));
   action = base::Value(base::Value::Type::DICTIONARY);
   action_dict.Set("type", "pointerDown");
-  actions->Append(std::move(action));
+  actions.Append(std::move(action));
   action = base::Value(base::Value::Type::DICTIONARY);
   action_dict.Set("type", "pointerUp");
-  actions->Append(std::move(action));
+  actions.Append(std::move(action));
 
   // pointer properties
   action_sequence->SetString("type", "pointer");
   action_sequence->SetString("id", "pointer1");
-  action_sequence->SetList("actions", std::move(actions));
+  action_sequence->SetList(
+      "actions",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(actions))));
   const base::DictionaryValue* input_action_sequence = action_sequence.get();
   Status status =
       ProcessInputActionSequence(&session, input_action_sequence, &action_list);
@@ -269,7 +273,7 @@ class AddCookieWebView : public StubWebView {
 
   Status CallFunction(const std::string& frame,
                       const std::string& function,
-                      const base::ListValue& args,
+                      const base::Value::List& args,
                       std::unique_ptr<base::Value>* result) override {
     if (function.find("document.URL") != std::string::npos) {
       *result = std::make_unique<base::Value>(documentUrl_);
@@ -538,54 +542,66 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPageRanges) {
   base::DictionaryValue params;
   std::unique_ptr<base::Value> result_value;
 
-  std::unique_ptr<base::ListValue> lv(new base::ListValue());
-  params.SetList("pageRanges", std::move(lv));
+  base::Value::List lv;
+  params.SetList(
+      "pageRanges",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(lv))));
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   base::DictionaryValue printParams = getDefaultPrintParams();
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
-  lv = std::make_unique<base::ListValue>();
-  lv->Append(2);
-  lv->Append(1);
-  lv->Append(3);
-  lv->Append("4-4");
-  lv->Append("4-");
-  lv->Append("-5");
-  params.SetList("pageRanges", std::move(lv));
+  lv = base::Value::List();
+  lv.Append(2);
+  lv.Append(1);
+  lv.Append(3);
+  lv.Append("4-4");
+  lv.Append("4-");
+  lv.Append("-5");
+  params.SetList(
+      "pageRanges",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(lv))));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
   printParams.SetString("pageRanges", "2,1,3,4-4,4-,-5");
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
-  lv = std::make_unique<base::ListValue>();
-  lv->Append(-1);
-  params.SetList("pageRanges", std::move(lv));
+  lv = base::Value::List();
+  lv.Append(-1);
+  params.SetList(
+      "pageRanges",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(lv))));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
-  lv = std::make_unique<base::ListValue>();
-  lv->Append(3.0);
-  params.SetList("pageRanges", std::move(lv));
+  lv = base::Value::List();
+  lv.Append(3.0);
+  params.SetList(
+      "pageRanges",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(lv))));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
-  lv = std::make_unique<base::ListValue>();
-  lv->Append(true);
-  params.SetList("pageRanges", std::move(lv));
+  lv = base::Value::List();
+  lv.Append(true);
+  params.SetList(
+      "pageRanges",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(lv))));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   // ExecutePrint delegates invalid string checks to CDP
-  lv = std::make_unique<base::ListValue>();
-  lv->Append("-");
-  lv->Append("");
-  lv->Append("  ");
-  lv->Append(" 1-3 ");
-  lv->Append("Invalid");
-  params.SetList("pageRanges", std::move(lv));
+  lv = base::Value::List();
+  lv.Append("-");
+  lv.Append("");
+  lv.Append("  ");
+  lv.Append(" 1-3 ");
+  lv.Append("Invalid");
+  params.SetList(
+      "pageRanges",
+      base::ListValue::From(std::make_unique<base::Value>(std::move(lv))));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();

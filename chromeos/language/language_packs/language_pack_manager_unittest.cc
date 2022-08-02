@@ -329,12 +329,12 @@ TEST_F(LanguagePackManagerTest, IsPackAvailableFalseTest) {
   EXPECT_FALSE(available);
 }
 
-TEST_F(LanguagePackManagerTest, InstallBasePayloadSuccess) {
+TEST_F(LanguagePackManagerTest, InstallBasePackSuccess) {
   dlcservice_client_->set_install_error(dlcservice::kErrorNone);
   dlcservice_client_->set_install_root_path("/path");
 
   // We need to use an existing Pack ID, so that we do get a result back.
-  manager_->InstallBasePayload(
+  manager_->InstallBasePack(
       kHandwritingFeatureId,
       base::BindOnce(&LanguagePackManagerTest::InstallTestCallback,
                      base::Unretained(this)));
@@ -345,11 +345,11 @@ TEST_F(LanguagePackManagerTest, InstallBasePayloadSuccess) {
   EXPECT_EQ(pack_result_.path, "/path");
 }
 
-TEST_F(LanguagePackManagerTest, InstallBasePayloadFailureTestFailure) {
+TEST_F(LanguagePackManagerTest, InstallBasePackFailureTestFailure) {
   dlcservice_client_->set_install_error(dlcservice::kErrorInternal);
 
   // We need to use an existing Pack ID, so that we do get a result back.
-  manager_->InstallBasePayload(
+  manager_->InstallBasePack(
       kHandwritingFeatureId,
       base::BindOnce(&LanguagePackManagerTest::InstallTestCallback,
                      base::Unretained(this)));

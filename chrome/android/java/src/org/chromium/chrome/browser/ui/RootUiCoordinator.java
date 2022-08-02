@@ -689,7 +689,7 @@ public class RootUiCoordinator
                     mTabModelSelectorSupplier.get().openNewTab(
                             generateUrlParamsForSearch(tab, query),
                             TabLaunchType.FROM_LONGPRESS_FOREGROUND, tab, tab.isIncognito());
-                }, mShareDelegateSupplier);
+                }, mShareDelegateSupplier, canDrawOutsideScreen());
         mVrModeObserver = new VrModeObserver() {
             @Override
             public void onEnterVr() {
@@ -1244,6 +1244,13 @@ public class RootUiCoordinator
         return appRect;
     }
 
+    /**
+     * Whether UI like popup can be drawn outside the screen. {@code false} by default.
+     */
+    protected boolean canDrawOutsideScreen() {
+        return false;
+    }
+
     private void hideAppMenu() {
         if (mAppMenuCoordinator != null) mAppMenuCoordinator.getAppMenuHandler().hideAppMenu();
     }
@@ -1256,7 +1263,8 @@ public class RootUiCoordinator
             stubId = R.id.find_toolbar_tablet_stub;
         }
         mFindToolbarManager = new FindToolbarManager(mActivity.findViewById(stubId),
-                mTabModelSelectorSupplier.get(), mWindowAndroid, mActionModeControllerCallback);
+                mTabModelSelectorSupplier.get(), mWindowAndroid, mActionModeControllerCallback,
+                mBackPressManager);
 
         mFindToolbarObserver = new FindToolbarObserver() {
             @Override

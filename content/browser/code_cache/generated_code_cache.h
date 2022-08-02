@@ -68,7 +68,8 @@ class CONTENT_EXPORT GeneratedCodeCache {
   };
 
   // Used for collecting statistics about cache behaviour.
-  enum CacheEntryStatus {
+  // Since it's uploaded to UMA, its values must never change.
+  enum CacheEntryStatus : uint8_t {
     kHit,
     kMiss,
     kClear,

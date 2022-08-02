@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_PLATFORM_DELEGATE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_PLATFORM_DELEGATE_H_
 
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -12,6 +15,15 @@ class FilePath;
 namespace device_signals {
 
 struct ExecutableMetadata;
+
+struct CustomFilePathComparator {
+  bool operator()(const base::FilePath& a, const base::FilePath& b) const;
+};
+
+template <typename T>
+using FilePathMap = base::flat_map<base::FilePath, T, CustomFilePathComparator>;
+
+using FilePathSet = base::flat_set<base::FilePath, CustomFilePathComparator>;
 
 // Interface whose derived types encapsulate OS-specific functionalities.
 class PlatformDelegate {
@@ -30,9 +42,9 @@ class PlatformDelegate {
   virtual bool ResolveFilePath(const base::FilePath& file_path,
                                base::FilePath* resolved_file_path) = 0;
 
-  // Collects and return executable metadata for the file at `file_path`.
-  virtual ExecutableMetadata GetExecutableMetadata(
-      const base::FilePath& file_path) = 0;
+  // Collects and return executable metadata for all the files in `file_paths`.
+  virtual FilePathMap<ExecutableMetadata> GetAllExecutableMetadata(
+      const FilePathSet& file_paths) = 0;
 };
 
 }  // namespace device_signals

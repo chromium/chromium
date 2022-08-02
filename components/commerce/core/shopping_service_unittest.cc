@@ -322,8 +322,8 @@ TEST_F(ShoppingServiceTest, TestDataMergeWithLeadImage) {
   ProductInfo info;
   info.image_url = GURL(kImageUrl);
 
-  base::DictionaryValue data_map;
-  data_map.SetStringKey("image", "https://example.com/fallback_image.png");
+  base::Value::Dict data_map;
+  data_map.Set("image", "https://example.com/fallback_image.png");
 
   MergeProductInfoData(&info, data_map);
 
@@ -335,8 +335,8 @@ TEST_F(ShoppingServiceTest, TestDataMergeWithNoLeadImage) {
       {kCommerceAllowLocalImages, kCommerceAllowServerImages}, {});
   ProductInfo info;
 
-  base::DictionaryValue data_map;
-  data_map.SetStringKey("image", kImageUrl);
+  base::Value::Dict data_map;
+  data_map.Set("image", kImageUrl);
 
   MergeProductInfoData(&info, data_map);
 
@@ -347,8 +347,8 @@ TEST_F(ShoppingServiceTest, TestDataMergeWithTitle) {
   ProductInfo info;
   info.title = kTitle;
 
-  base::DictionaryValue data_map;
-  data_map.SetStringKey("title", "Some other fallback title");
+  base::Value::Dict data_map;
+  data_map.Set("title", "Some other fallback title");
 
   MergeProductInfoData(&info, data_map);
 
@@ -358,8 +358,8 @@ TEST_F(ShoppingServiceTest, TestDataMergeWithTitle) {
 TEST_F(ShoppingServiceTest, TestDataMergeWithNoTitle) {
   ProductInfo info;
 
-  base::DictionaryValue data_map;
-  data_map.SetStringKey("title", kTitle);
+  base::Value::Dict data_map;
+  data_map.Set("title", kTitle);
 
   MergeProductInfoData(&info, data_map);
 

@@ -227,7 +227,8 @@ sk_sp<SkImage> SkiaImageRepresentation::ScopedReadAccess::CreateSkImage(
   auto color_type =
       viz::ResourceFormatToClosestSkColorType(true, representation()->format());
   auto alpha_type = representation()->alpha_type();
-  auto sk_color_space = representation()->color_space().ToSkColorSpace();
+  auto sk_color_space =
+      representation()->color_space().GetAsFullRangeRGB().ToSkColorSpace();
   return SkImage::MakeFromTexture(
       context, promise_image_texture_->backendTexture(), surface_origin,
       color_type, alpha_type, sk_color_space);

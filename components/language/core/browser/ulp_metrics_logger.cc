@@ -4,7 +4,9 @@
 
 #include "components/language/core/browser/ulp_metrics_logger.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/metrics_hashes.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace language {
@@ -32,6 +34,19 @@ void ULPMetricsLogger::RecordInitiationAcceptLanguagesULPOverlap(
     int overlap_ratio_percent) {
   UMA_HISTOGRAM_PERCENTAGE(kInitiationAcceptLanguagesULPOverlapHistogram,
                            overlap_ratio_percent);
+}
+
+void ULPMetricsLogger::RecordInitiationNeverLanguagesMissingFromULP(
+    const std::vector<std::string>& never_languages) {
+  for (const auto& language : never_languages) {
+    base::UmaHistogramSparse(kInitiationNeverLanguagesMissingFromULP,
+                             base::HashMetricName(language));
+  }
+}
+
+void ULPMetricsLogger::RecordInitiationNeverLanguagesMissingFromULPCount(
+    int count) {
+  UMA_HISTOGRAM_COUNTS_100(kInitiationNeverLanguagesMissingFromULPCount, count);
 }
 
 ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
@@ -89,5 +104,26 @@ int ULPMetricsLogger::ULPLanguagesInAcceptLanguagesRatio(
   }
   return (100 * num_ulp_languages_also_in_accept_languages) /
          ulp_languages.size();
+}
+
+std::vector<std::string> ULPMetricsLogger::RemoveULPLanguages(
+    const std::vector<std::string> languages,
+    const std::vector<std::string> ulp_languages) {
+  std::vector<std::string> filtered_languages;
+
+  for (const auto& language : languages) {
+    // Only add languages that do not have a base match in ulp_languages.
+    const std::string base_language = l10n_util::GetLanguage(language);
+    std::vector<std::string>::const_iterator base_match = std::find_if(
+        ulp_languages.begin(), ulp_languages.end(),
+        [&base_language](const std::string& ulp_language) {
+          return base_language.compare(l10n_util::GetLanguage(ulp_language)) ==
+                 0;
+        });
+    if (base_match == ulp_languages.end()) {
+      filtered_languages.push_back(language);
+    }
+  }
+  return filtered_languages;
 }
 }  // namespace language

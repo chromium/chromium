@@ -71,7 +71,6 @@ class SearchControllerImpl : public SearchController,
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;
   void Train(LaunchData&& launch_data) override;
-  int GetLastQueryLength() const override;
   void AddObserver(SearchController::Observer* observer) override;
   void RemoveObserver(SearchController::Observer* observer) override;
   std::u16string get_query() override;

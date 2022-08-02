@@ -1198,10 +1198,14 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
 }
 
 struct AutomaticLazyLoadFrameBrowserTestParam {
-  bool enabled_lazy_ads_and_embeds;
+  bool enable_lazy_ads_and_embeds;
   bool enable_lazy_embed_urls;
+  int skip_frame_count;
   int number_of_ads;
   int number_of_embeds;
+  int expected_child_frame_load_count;
+  int expected_lazy_ads_frame_count_in_ukm;
+  int expected_lazy_embeds_frame_count_in_ukm;
 };
 
 class AutomaticLazyLoadFrameBrowserTest
@@ -1210,7 +1214,7 @@ class AutomaticLazyLoadFrameBrowserTest
           AutomaticLazyLoadFrameBrowserTestParam> {
  public:
   AutomaticLazyLoadFrameBrowserTest() {
-    if (GetParam().enabled_lazy_ads_and_embeds) {
+    if (GetParam().enable_lazy_ads_and_embeds) {
       // kAutomaticLazyFrameLoadingToEmbedUrls should be enabled when
       // kAutomaticLazyFrameLoadingToEmbeds is enabled.
       EXPECT_TRUE(GetParam().enable_lazy_embed_urls);
@@ -1218,8 +1222,14 @@ class AutomaticLazyLoadFrameBrowserTest
           /*enabled_features=*/
           {{blink::features::kAutomaticLazyFrameLoadingToEmbedUrls,
             {{"allowed_websites", "http://embed.com|/title1.html"}}},
-           {blink::features::kAutomaticLazyFrameLoadingToAds, {}},
-           {blink::features::kAutomaticLazyFrameLoadingToEmbeds, {}}},
+           {blink::features::kAutomaticLazyFrameLoadingToAds,
+            {{blink::features::kSkipFrameCountForLazyAds.name,
+              base::NumberToString(GetParam().skip_frame_count)},
+             {blink::features::kTimeoutMillisForLazyAds.name, "10000"}}},
+           {blink::features::kAutomaticLazyFrameLoadingToEmbeds,
+            {{blink::features::kSkipFrameCountForLazyEmbeds.name,
+              base::NumberToString(GetParam().skip_frame_count)},
+             {blink::features::kTimeoutMillisForLazyEmbeds.name, "10000"}}}},
           /*disabled_features=*/
           {});
     } else if (GetParam().enable_lazy_embed_urls) {
@@ -1251,23 +1261,44 @@ class AutomaticLazyLoadFrameBrowserTest
         {subresource_filter::testing::CreateSuffixRule("ad_iframe_writer.js")});
   }
 
+  void InitTestPage(content::RenderFrameHost* render_frame_host) {
+    EXPECT_TRUE(ExecJs(render_frame_host, R"(
+      var childFrameLoadCount = 0;
+    )"));
+
+    // Create a vertical space so that lazy iframe loading is not triggered.
+    EXPECT_TRUE(ExecJs(render_frame_host, R"(
+      const element = document.createElement("div");
+      element.style.height = '100000px';
+      document.body.appendChild(element);
+    )"));
+  }
+
+  int GetChildFrameLoadCount(content::RenderFrameHost* render_frame_host) {
+    return EvalJs(render_frame_host, "childFrameLoadCount").ExtractInt();
+  }
+
   void AddAdIframe(content::RenderFrameHost* render_frame_host,
                    const GURL& url) {
-    EXPECT_TRUE(ExecJs(render_frame_host,
-                       content::JsReplace("createAdIframeWithSrc($1);", url)));
+    const base::StringPiece script = R"(
+      createAdIframeWithSrc($1).onload = () => {childFrameLoadCount++;};
+    )";
+    EXPECT_TRUE(ExecJs(render_frame_host, content::JsReplace(script, url)));
   }
 
   void AddLazyAdIframe(content::RenderFrameHost* render_frame_host,
                        const GURL& url) {
-    EXPECT_TRUE(
-        ExecJs(render_frame_host,
-               content::JsReplace("createLazyAdIframeWithSrc($1);", url)));
+    const base::StringPiece script = R"(
+      createLazyAdIframeWithSrc($1).onload = () => {childFrameLoadCount++;};
+    )";
+    EXPECT_TRUE(ExecJs(render_frame_host, content::JsReplace(script, url)));
   }
 
   void AddIframe(content::RenderFrameHost* render_frame_host, const GURL& url) {
     const base::StringPiece script = R"(
       const iframeElement = document.createElement("iframe");
       iframeElement.src = $1;
+      iframeElement.onload = () => {childFrameLoadCount++;};
       document.body.appendChild(iframeElement);
     )";
     EXPECT_TRUE(ExecJs(render_frame_host, content::JsReplace(script, url)));
@@ -1279,6 +1310,7 @@ class AutomaticLazyLoadFrameBrowserTest
       const iframeElement = document.createElement("iframe");
       iframeElement.src = $1;
       iframeElement.loading = 'lazy';
+      iframeElement.onload = () => {childFrameLoadCount++;};
       document.body.appendChild(iframeElement);
     )";
     EXPECT_TRUE(ExecJs(render_frame_host, content::JsReplace(script, url)));
@@ -1317,6 +1349,8 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
       ui_test_utils::NavigateToURL(browser(), kMainFrameUrl);
   ASSERT_TRUE(render_frame_host);
 
+  InitTestPage(render_frame_host);
+
   for (int i = 0; i < GetParam().number_of_ads; i++)
     AddAdIframe(render_frame_host, kAdUrl);
 
@@ -1341,12 +1375,17 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
 
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
+  EXPECT_EQ(GetChildFrameLoadCount(render_frame_host),
+            GetParam().expected_child_frame_load_count);
+
   // LazyEmbeds and LazyAds must be disabled when the page is reloaded.
   EXPECT_TRUE(render_frame_host->Reload());
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  InitTestPage(render_frame_host);
   AddAdIframe(render_frame_host, kAdUrl);
   AddIframe(render_frame_host, kEmbedUrl);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
+  EXPECT_EQ(GetChildFrameLoadCount(render_frame_host), 2);
 
   // Navigating away from the test page (kMainFrameUrl) causes the document to
   // be unloaded. That will cause any buffered metrics to be flushed.
@@ -1364,56 +1403,105 @@ IN_PROC_BROWSER_TEST_P(AutomaticLazyLoadFrameBrowserTest, UKM) {
     const ukm::mojom::UkmEntry* ukm_entry = entry.second.get();
     ukm_recorder.ExpectEntrySourceHasUrl(ukm_entry, kMainFrameUrl);
     ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
-        ukm_entry, "LazyAdsFrameCount", GetParam().number_of_ads);
+        ukm_entry, "LazyAdsFrameCount",
+        GetParam().expected_lazy_ads_frame_count_in_ukm);
     ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
         ukm_entry, "LazyEmbedsFrameCount",
-        GetParam().enable_lazy_embed_urls ? GetParam().number_of_embeds : 0);
+        GetParam().expected_lazy_embeds_frame_count_in_ukm);
   }
 }
 
 const AutomaticLazyLoadFrameBrowserTestParam
     kAutomaticLazyLoadFrameBrowserTestParams[] = {
         {
-            .enabled_lazy_ads_and_embeds = false,
+            .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = true,
+            .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 0,
+            .expected_child_frame_load_count = 5,
+            .expected_lazy_ads_frame_count_in_ukm = 2,
+            .expected_lazy_embeds_frame_count_in_ukm = 0,
         },
         {
-            .enabled_lazy_ads_and_embeds = false,
+            .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = true,
+            .skip_frame_count = 0,
             .number_of_ads = 0,
             .number_of_embeds = 2,
+            .expected_child_frame_load_count = 5,
+            .expected_lazy_ads_frame_count_in_ukm = 0,
+            .expected_lazy_embeds_frame_count_in_ukm = 2,
         },
         {
-            .enabled_lazy_ads_and_embeds = false,
+            .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = true,
+            .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 2,
+            .expected_child_frame_load_count = 7,
+            .expected_lazy_ads_frame_count_in_ukm = 2,
+            .expected_lazy_embeds_frame_count_in_ukm = 2,
         },
         {
-            .enabled_lazy_ads_and_embeds = false,
+            .enable_lazy_ads_and_embeds = false,
             .enable_lazy_embed_urls = false,
+            .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 2,
+            .expected_child_frame_load_count = 7,
+            .expected_lazy_ads_frame_count_in_ukm = 2,
+            .expected_lazy_embeds_frame_count_in_ukm = 0,
         },
         {
-            .enabled_lazy_ads_and_embeds = true,
+            .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 0,
+            .expected_child_frame_load_count = 3,
+            .expected_lazy_ads_frame_count_in_ukm = 2,
+            .expected_lazy_embeds_frame_count_in_ukm = 0,
         },
         {
-            .enabled_lazy_ads_and_embeds = true,
+            .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .skip_frame_count = 0,
             .number_of_ads = 0,
             .number_of_embeds = 2,
+            .expected_child_frame_load_count = 3,
+            .expected_lazy_ads_frame_count_in_ukm = 0,
+            .expected_lazy_embeds_frame_count_in_ukm = 2,
         },
         {
-            .enabled_lazy_ads_and_embeds = true,
+            .enable_lazy_ads_and_embeds = true,
             .enable_lazy_embed_urls = true,
+            .skip_frame_count = 0,
             .number_of_ads = 2,
             .number_of_embeds = 2,
+            .expected_child_frame_load_count = 3,
+            .expected_lazy_ads_frame_count_in_ukm = 2,
+            .expected_lazy_embeds_frame_count_in_ukm = 2,
+        },
+        {
+            .enable_lazy_ads_and_embeds = true,
+            .enable_lazy_embed_urls = true,
+            .skip_frame_count = 1,
+            .number_of_ads = 2,
+            .number_of_embeds = 0,
+            .expected_child_frame_load_count = 4,
+            .expected_lazy_ads_frame_count_in_ukm = 2,
+            .expected_lazy_embeds_frame_count_in_ukm = 0,
+        },
+        {
+            .enable_lazy_ads_and_embeds = true,
+            .enable_lazy_embed_urls = true,
+            .skip_frame_count = 1,
+            .number_of_ads = 0,
+            .number_of_embeds = 2,
+            .expected_child_frame_load_count = 4,
+            .expected_lazy_ads_frame_count_in_ukm = 0,
+            .expected_lazy_embeds_frame_count_in_ukm = 2,
         },
 };
 

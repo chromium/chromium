@@ -6,10 +6,10 @@ ADDRESS_HOME_CITY | city_1 | *City: |  | firstName_1_1-default
 ADDRESS_HOME_STATE | state_1 | *State: |  | firstName_1_1-default
 ADDRESS_HOME_ZIP | zipCode_1 | *ZIP Code: |  | firstName_1_1-default
 PHONE_HOME_CITY_CODE | fieldphone1_1 | *Phone Number on Record: |  | firstName_1_1-default
-PHONE_HOME_NUMBER | fieldphone2_1 | *Phone Number on Record: |  | firstName_1_1-default
-PHONE_HOME_NUMBER | fieldphone3_1 | *Phone Number on Record: |  | firstName_1_1-default
+PHONE_HOME_NUMBER_PREFIX | fieldphone2_1 | *Phone Number on Record: |  | firstName_1_1-default
+PHONE_HOME_NUMBER_SUFFIX | fieldphone3_1 | *Phone Number on Record: |  | firstName_1_1-default
 PHONE_HOME_CITY_CODE | altfieldphone1_1 | Alternate Phone: |  | firstName_1_1-default
-PHONE_HOME_NUMBER | altfieldphone2_1 | Alternate Phone: |  | firstName_1_1-default
-PHONE_HOME_NUMBER | altfieldphone3_1 | Alternate Phone: |  | firstName_1_1-default
+PHONE_HOME_NUMBER_PREFIX | altfieldphone2_1 | Alternate Phone: |  | firstName_1_1-default
+PHONE_HOME_NUMBER_SUFFIX | altfieldphone3_1 | Alternate Phone: |  | firstName_1_1-default
 UNKNOWN_TYPE | isBillingAddress_1 | Check here if the above shipping address is | on | firstName_1_1-default
 UNKNOWN_TYPE | emailInput | Add Shipping Addresses | Enter Email Address | emailInput_1-default

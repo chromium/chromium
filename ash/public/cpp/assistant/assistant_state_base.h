@@ -38,12 +38,11 @@ class ASH_PUBLIC_EXPORT AssistantStateObserver : public base::CheckedObserver {
   virtual void OnAssistantLaunchWithMicOpen(bool launch_with_mic_open) {}
   virtual void OnAssistantNotificationEnabled(bool notification_enabled) {}
   virtual void OnAssistantOnboardingModeChanged(
-      chromeos::assistant::prefs::AssistantOnboardingMode onboarding_mode) {}
+      assistant::prefs::AssistantOnboardingMode onboarding_mode) {}
   virtual void OnAssistantStateDestroyed() {}
-  virtual void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) {}
+  virtual void OnAssistantStatusChanged(assistant::AssistantStatus status) {}
   virtual void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState state) {}
+      assistant::AssistantAllowedState state) {}
   virtual void OnArcPlayStoreEnabledChanged(bool enabled) {}
   virtual void OnLocaleChanged(const std::string& locale) {}
   virtual void OnLockedFullScreenStateChanged(bool enabled) {}
@@ -63,7 +62,7 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
 
   virtual ~AssistantStateBase();
 
-  chromeos::assistant::AssistantStatus assistant_status() const {
+  assistant::AssistantStatus assistant_status() const {
     return assistant_status_;
   }
 
@@ -93,13 +92,13 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
     return notification_enabled_;
   }
 
-  const absl::optional<chromeos::assistant::prefs::AssistantOnboardingMode>&
+  const absl::optional<assistant::prefs::AssistantOnboardingMode>&
   onboarding_mode() const {
     return onboarding_mode_;
   }
 
-  const absl::optional<chromeos::assistant::AssistantAllowedState>&
-  allowed_state() const {
+  const absl::optional<assistant::AssistantAllowedState>& allowed_state()
+      const {
     return allowed_state_;
   }
 
@@ -138,15 +137,14 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
   void UpdateOnboardingMode();
 
   // Called when new values of the listened states are received.
-  void UpdateAssistantStatus(chromeos::assistant::AssistantStatus status);
-  void UpdateFeatureAllowedState(
-      chromeos::assistant::AssistantAllowedState state);
+  void UpdateAssistantStatus(assistant::AssistantStatus status);
+  void UpdateFeatureAllowedState(assistant::AssistantAllowedState state);
   void UpdateLocale(const std::string& locale);
   void UpdateArcPlayStoreEnabled(bool enabled);
   void UpdateLockedFullScreenState(bool enabled);
 
-  chromeos::assistant::AssistantStatus assistant_status_ =
-      chromeos::assistant::AssistantStatus::NOT_READY;
+  assistant::AssistantStatus assistant_status_ =
+      assistant::AssistantStatus::NOT_READY;
 
   // TODO(b/138679823): Maybe remove Optional for preference values.
   // Whether the Assistant is enabled in system settings. nullopt if the
@@ -174,12 +172,11 @@ class ASH_PUBLIC_EXPORT AssistantStateBase {
   absl::optional<bool> notification_enabled_;
 
   // The mode for the Assistant onboarding experience.
-  absl::optional<chromeos::assistant::prefs::AssistantOnboardingMode>
-      onboarding_mode_;
+  absl::optional<assistant::prefs::AssistantOnboardingMode> onboarding_mode_;
 
   // Whether the Assistant feature is allowed or disallowed for what reason.
   // nullopt if the data is not available yet.
-  absl::optional<chromeos::assistant::AssistantAllowedState> allowed_state_;
+  absl::optional<assistant::AssistantAllowedState> allowed_state_;
 
   absl::optional<std::string> locale_;
 

@@ -271,6 +271,7 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2496180316473517155">Böngészés előzményei</translation>
 <translation id="2497852260688568942">A szinkronizálást letiltotta a rendszergazda</translation>
 <translation id="250020030759455918">Láthatja a(z) <ph name="SITE_NAME" /> bejelentkezési állapotát, a böngészőadatokat és a webhelyadatokat a Chrome-ban</translation>
+<translation id="2507178219579379057">A Chrome a hirdetési spam, a csalás és a webhelyek közötti megosztás korlátozására szolgáló módszereket próbál ki. A Chrome emellett <ph name="BEGIN_LINK" />meghatározza az Ön érdeklődési köreit<ph name="END_LINK" />, amelyeket más webhelyek arra használhatnak fel, hogy hirdetéseket jelenítsenek meg Önnek. Érdeklődési köreit a beállításokban kezelheti.</translation>
 <translation id="2513403576141822879">A <ph name="BEGIN_LINK" />Szinkronizálás és Google<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan</translation>
 <translation id="2517472476991765520">Keresés</translation>
 <translation id="2523184218357549926">A felkeresett oldalak URL-címének elküldése a Google-nak</translation>
@@ -586,7 +587,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="4256782883801055595">Nyílt forráskódú licencek</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />A felhasznált adatok:<ph name="END_BOLD" /> Böngészési előzményei, az Ön által az ezen az eszközön használt Chrome-ban felkeresett webhelyek jegyzéke.</translation>
 <translation id="4263656433980196874">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete teljes magasságban megnyitva</translation>
-<translation id="4266054596873078491">Jelentkezzen be erre a webhelyre és a Chrome-ba a Google-fiókjával.</translation>
 <translation id="4269820728363426813">Link másolása</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Állítsa be a képernyőzárat az Android beállításai között<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">A Chrome használatával Ön elfogadja a <ph name="BEGIN_TOS_LINK" />Google Általános Szerződési Feltételeket<ph name="END_TOS_LINK" />, valamint <ph name="BEGIN_ATOS_LINK" />A Google Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételeit<ph name="END_ATOS_LINK" />. Az <ph name="BEGIN_PRIVACY_LINK" />adatvédelmi irányelvek<ph name="END_PRIVACY_LINK" /> is érvényben vannak.</translation>

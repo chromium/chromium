@@ -895,6 +895,7 @@
 <translation id="1829129547161959350">پینگوئن</translation>
 <translation id="1829192082282182671">زوم &amp;آؤٹ کریں</translation>
 <translation id="1830550083491357902">سائن ان نہیں</translation>
+<translation id="1831848493690504725">‏ہم منسلک نیٹ ورک کے ذریعے Google تک نہیں پہنچ سکتے۔ کسی مختلف نیٹ ورک کا انتخاب کرنے یا اپنے نیٹ ورک کی ترتیبات یا پراکسی ترتیبات (اگر آپ پراکسی استعمال کر رہے ہیں) کو چیک کرنے کی کوشش کریں۔</translation>
 <translation id="1832459821645506983">ہاں، میں تیار ہوں</translation>
 <translation id="1832511806131704864">فون کی تبدیلی کو اپ ڈیٹ کر دیا گیا</translation>
 <translation id="1832848789136765277">یقینی بنانے کیلئے کہ آپ اپنے مطابقت پذیر ڈیٹا تک ہمیشہ رسائی حاصل کر سکتے ہیں، توثیق کریں کہ یہ آپ ہیں</translation>
@@ -2195,6 +2196,7 @@
 <translation id="3021065318976393105">بیٹری کا استعمال کرتے وقت</translation>
 <translation id="3021066826692793094">تتلی</translation>
 <translation id="3021678814754966447">فریم ماخذ &amp;دیکھیں</translation>
+<translation id="3022361196600037287">‏<ph name="DEVICE" /> کو اس Chromebook سے ہٹا دیا جائے گا اور <ph name="PRIMARY_EMAIL" /> میں محفوظ نہیں کیا جائے گا۔</translation>
 <translation id="3022978424994383087">سمجھ نہیں آئی۔</translation>
 <translation id="3023464535986383522">سننے کیلئے منتخب کریں</translation>
 <translation id="3024374909719388945">24 گھنٹے کی گھڑی استعمال کریں</translation>
@@ -3733,6 +3735,7 @@
 <translation id="4535127706710932914">ڈیفالٹ پروفائل</translation>
 <translation id="4535767533210902251">فنگر پرنٹ سینسر آپ کے کی بورڈ پر سب سے اوپر دائیں ہاتھ کی کلید ہے۔ اسے کسی بھی انگلی سے ہلکے سے ٹچ کریں۔</translation>
 <translation id="4536140153723794651">وہ سائٹس جو ہمیشہ کوکیز کا استعمال کر سکتی ہیں</translation>
+<translation id="4536769240747010177">ٹیدرنگ کی صلاحیتیں:</translation>
 <translation id="4538417792467843292">لفظ حذف کریں</translation>
 <translation id="4538792345715658285">انٹرپرائز پالیسی کے ذریعے انسٹال کیا گیا۔</translation>
 <translation id="4541123282641193691">‏آپ کے اکاؤنٹ کی تصدیق نہیں ہو سکی۔ براہ کرم دوبارہ کوشش کریں یا اپنا Chromebook ری سٹارٹ کریں۔</translation>
@@ -3760,6 +3763,7 @@
 <translation id="4561893854334016293">حال میں کسی اجازت کو تبدیل نہیں کیا گیا</translation>
 <translation id="4562155214028662640">فنگر پرنٹ شامل کریں</translation>
 <translation id="4563210852471260509">ان پٹ کی ابتدائی زبان چینی ہے</translation>
+<translation id="4563382028841851106">اکاؤنٹ سے ہٹائیں</translation>
 <translation id="4563880231729913339">انگلی 3</translation>
 <translation id="4564245002465020751">اپنے فون پر ترتیب مکمل کریں</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
@@ -4736,6 +4740,7 @@
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> چاہتی ہے کہ</translation>
 <translation id="5534304873398226603">تصویر یا ویڈیو مسترد کریں</translation>
 <translation id="5537725057119320332">کاسٹ کریں</translation>
+<translation id="5539070192556911367">‏Google تک رسائی نہیں ہو سکتی</translation>
 <translation id="5539221284352502426">آپ کا درج کردہ پاس ورڈ سرور کی طرف سے مسترد کر دیا گیا۔ ممکنہ وجوہات میں شامل ہیں: پاس ورڈ کافی چھوٹا ہے۔ پاس ورڈ میں نمبرز یا علامتوں کا شامل ہونا ضروری ہے۔ پاس ورڈ کا پرانے پاس ورڈز سے مختلف ہونا ضروری ہے۔</translation>
 <translation id="5541694225089836610">آپ کے منتظم نے کارروائی کو غیر فعال کر دیا ہے</translation>
 <translation id="5542132724887566711">پروفائل</translation>
@@ -4799,6 +4804,7 @@
 <translation id="5585912436068747822">فارمیٹنگ ناکام ہو گئی</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">ایپس لوڈ ہو رہی ہیں…</translation>
+<translation id="5590418976913374224">آلے کے اسٹارٹ اپ پر آواز چلائیں</translation>
 <translation id="5592595402373377407">ابھی تک کافی ڈیٹا دستیاب نہیں ہے۔</translation>
 <translation id="5595307023264033512">سائٹس کے ذریعے استعمال کردہ کل اسٹوریج: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">پتے میں ترمیم کریں</translation>
@@ -6176,6 +6182,10 @@
 <translation id="6943939122536910181"><ph name="DEVICE" /> سے غیر منسلک ہو گيا</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="694592694773692225">اس صفحے پر ری ڈائریکٹ مسدود ہے۔</translation>
+<translation id="6947015141909171112">‏آپ تراکیب کیلئے اپنی حالیہ تلاش کی سرگرمی کی بنیاد پر تراکیب کو دیکھ رہے ہیں۔
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        آپ کارڈ مینو سے ترتیبات کا نظم کر سکتے یا حسب ضرورت Chrome میں مزید اختیارات دیکھ سکتے ہیں۔</translation>
 <translation id="6949434160682548041">پاس ورڈ (اختیاری)</translation>
 <translation id="6950627417367801484">ایپس بحال کریں</translation>
 <translation id="6952242901357037157">‏آپ اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> سے یہاں پاس ورڈز کو بھی دکھا سکتے ہیں</translation>
@@ -6343,6 +6353,7 @@
 <translation id="7102687220333134671">خود کار اپ ڈیٹس آن ہیں</translation>
 <translation id="7102832101143475489">درخواست کا وقت ختم ہو گیا</translation>
 <translation id="710640343305609397">نیٹ ورک کی ترتیبات کھولیں</translation>
+<translation id="7107609441453408294">سبھی اسپیکرز سے ایک ہی آڈیو چلائیں</translation>
 <translation id="7108338896283013870">چھپائیں</translation>
 <translation id="7108668606237948702">انٹر</translation>
 <translation id="7108933416628942903">ابھی مقفل کریں</translation>
@@ -6434,7 +6445,6 @@
 <translation id="7212097698621322584">‏PIN تبدیل کرنے کیلئے، اپنا موجودہ PIN درج کریں۔ اگر آپ کو اپنا PIN نہیں معلوم ہے تو آپ کو پہلے اپنی سیکیورٹی کلید دوبارہ ترتیب دینی ہوگی اور پھر ایک نیا PIN تخلیق کرنا ہوگا۔</translation>
 <translation id="7213903639823314449">پتہ بار میں سرچ انجن کا استعمال کیا جاتا ہے</translation>
 <translation id="721490496276866468">پاس ورڈز درآمد کریں</translation>
-<translation id="7216595297012131718">اپنی ترجیح کی بنیاد پر زبانوں کو ترتیب دیں</translation>
 <translation id="7219473482981809164">ہمیں ڈاؤن لوڈ کے لیے متعدد دستیاب پروفائلز ملی ہیں۔ آگے بڑھنے سے پہلے اس ایک کو منتخب کریں جسے آپ ڈاؤن لوڈ کرنا چاہتے ہیں۔</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{کوئی کمزور پاس ورڈ نہیں}=1{1 کمزور پاس ورڈ}other{{NUM_WEAK} کمزور پاس ورڈز}}</translation>
 <translation id="7220019174139618249">پاس ورڈ کو "<ph name="FOLDER" />" پر برآمد نہیں کر سکتے</translation>
@@ -6574,6 +6584,7 @@
 <translation id="7364745943115323529">کاسٹ کریں…</translation>
 <translation id="7364796246159120393">فائل کا انتخاب کریں</translation>
 <translation id="7365076891350562061">مانیٹر کا سائز</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - پن کردہ</translation>
 <translation id="7366316827772164604">قریبی آلات کو اسکین کیا جا رہا ہے…</translation>
 <translation id="7366415735885268578">ایک سائٹ شامل کریں</translation>
 <translation id="7366909168761621528">براؤزنگ ڈیٹا</translation>
@@ -6970,6 +6981,7 @@
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />" کے ساتھ جوڑا بنایا جا رہا ہے ...</translation>
 <translation id="7737846262459425222">‏آپ اسے کسی بھی وقت ترتیبات &gt; Google اسسٹنٹ &gt; اسکرین کے سیاق و سباق میں تبدیل کر سکتے ہیں۔</translation>
 <translation id="7737948071472253612">آپ کا کیمرا استعمال کرنے کی اجازت نہیں ہے</translation>
+<translation id="77381465218432215">ایکسینٹ مارکس اور مخصوص حروف دکھائیں</translation>
 <translation id="7740996059027112821">معیاری</translation>
 <translation id="7741307896921365578">اپنی پڑھنے کی فہرست اور بُک مارکس تک رسائی کے مفید اور مستحکم طریقے کے لیے، براؤزر کی سطح کے سائیڈ پینل کو آن کریں۔</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" /> اور اس کے ماتحت سبھی سائٹس، اور انسٹال کردہ ایپس کے لیے سائٹ کا ڈیٹا اور اجازتیں صاف کریں؟</translation>
@@ -7758,6 +7770,7 @@
 <translation id="8486666913807228950">وجہ: "اسے زبردستی کھولیں" کی فہرست میں معکوس اصول <ph name="REVERT_RULE" /> پایا گیا۔</translation>
 <translation id="848666842773560761">ایک ایپ کیمرے تک رسائی حاصل کرنے کی کوشش کر رہی ہے۔ رسائی کی اجازت دینے کیلئے کیمرا کی رازداری کا سوئچ آف کریں۔</translation>
 <translation id="8487678622945914333">زوم ان</translation>
+<translation id="8487699605742506766">ہاٹ اسپاٹ</translation>
 <translation id="8489156414266187072">ذاتی تجاویز صرف آپ کے اکاؤنٹ پر دکھائی جاتی ہیں</translation>
 <translation id="8490896350101740396">مندرجہ ذیل کیوسک ایپس "<ph name="UPDATED_APPS" />" کو اپ ڈیٹ کر دیا گیا ہے۔ اپ ڈیٹ کی کارروائی کو مکمل کرنے کیلئے براہ کرم آلہ کو ریبوٹ کریں۔</translation>
 <translation id="8492685019009920170">اپنی انگلی سے فنگر پرنٹ سینسر کو ٹچ کریں۔ آپ کے ڈیٹا کو محفوظ طریقے سے اسٹور کیا جاتا ہے اور یہ کبھی بھی آپ کے <ph name="DEVICE_TYPE" /> سے باہر نہیں جاتا۔</translation>
@@ -8251,6 +8264,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" اور 1 دوسرا ٹیب}other{"<ph name="TAB_TITLE" />" اور # دیگر ٹیبز}}</translation>
 <translation id="8977811652087512276">غلط پاس ورڈ یا خراب فائل</translation>
 <translation id="8978154919215542464">آن - ہر چیز کی مطابقت پذیری کریں</translation>
+<translation id="8978670037548431647">ٹیدرنگ کی صلاحیتیں ریفریش کریں</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" /> پر</translation>
 <translation id="8980345560318123814">تاثرات کی رپورٹس</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - کریش ہو گیا</translation>
@@ -8515,6 +8529,7 @@
 <translation id="935854577147268200">‏Smart Lock کا فون تبدیل ہو گيا ہے۔ Smart Lock اپ ڈیٹ کرنے کے لیے اپنا پاس ورڈ درج کریں۔ اگلی بار آپ کے فون سے آپ کا <ph name="DEVICE_TYPE" /> غیر مقفل ہوگا۔ آپ ترتیبات میں Smart Lock کو آف کر سکتے ہیں</translation>
 <translation id="936646668635477464">کیمرا اور مائیکروفون</translation>
 <translation id="936801553271523408">سسٹم ڈائیگناسٹک ڈیٹا</translation>
+<translation id="937053962468712792"><ph name="PRIMARY_EMAIL" /> سے <ph name="DEVICE" /> ہٹائیں؟</translation>
 <translation id="93766956588638423">ایکسٹینشن کو درست کریں</translation>
 <translation id="938568644810664664">‏"Ok Google یہ کون سا گانا ہے؟" یا "Ok Google میری اسکرین پر کیا ہے؟"</translation>
 <translation id="938623846785894166">خلاف معمول فائل</translation>

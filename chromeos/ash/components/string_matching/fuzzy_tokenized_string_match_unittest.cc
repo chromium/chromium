@@ -24,11 +24,18 @@ constexpr bool kUseWeightedRatio = false;
 constexpr bool kUseEditDistance = false;
 constexpr double kPartialMatchPenaltyRate = 0.9;
 
-void ExpectAllNearlyEqual(const std::vector<double>& scores,
-                          double epsilon = kEps) {
-  for (size_t i = 1; i < scores.size(); ++i) {
-    EXPECT_NEAR(scores[0], scores[i], epsilon);
+void ExpectAllNearlyEqualTo(const std::vector<double>& scores,
+                            double target_score,
+                            double abs_error = kEps) {
+  for (const auto score : scores) {
+    EXPECT_NEAR(target_score, score, abs_error);
   }
+}
+
+void ExpectAllNearlyEqual(const std::vector<double>& scores,
+                          double abs_error = kEps) {
+  DCHECK(scores.size() > 0);
+  ExpectAllNearlyEqualTo(scores, scores[0], abs_error);
 }
 
 void ExpectIncreasing(const std::vector<double>& scores,
@@ -357,6 +364,272 @@ TEST_F(FuzzyTokenizedStringMatchTest,
     // TODO(crbug.com/1336160): Decide on how to handle unmatched portions of
     // query.
   }
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokenOrderVariation) {
+  // Case: Two words.
+  std::u16string text_two_words = u"abc def";
+  std::vector<std::u16string> queries_two_words = {u"abc def", u"def abc"};
+  for (const auto& query : queries_two_words) {
+    const double relevance = CalculateRelevance(query, text_two_words);
+    VLOG(1) << FormatRelevanceResult(query, text_two_words, relevance,
+                                     /*query_first*/ false);
+  }
+  // Currently, query "abc def" yields a high score, whereas the inverted query
+  // "def abc" yields a low score.
+  //
+  // TODO(crbug.com/1336160): Support word order flexibility, such that the
+  // resulting relevance scores here are high and nearly equal.
+
+  // Case: Three words.
+  std::u16string text_three_words = u"abc def ghi";
+  std::vector<std::u16string> queries_three_words = {
+      u"abc def ghi", u"abc ghi def", u"def abc ghi",
+      u"def ghi abc", u"ghi abc def", u"ghi def abc"};
+  for (const auto& query : queries_three_words) {
+    const double relevance = CalculateRelevance(query, text_three_words);
+    VLOG(1) << FormatRelevanceResult(query, text_three_words, relevance,
+                                     /*query_first*/ false);
+  }
+  // Currently, query "abc def ghi" yields a high score, whereas all other
+  // queries yield low scores.
+  //
+  // TODO(crbug.com/1336160): Support word order flexibility, such that the
+  // resulting relevance scores here are high and nearly equal.
+
+  // TODO(crbug.com/1336160): [Later] Consider a score boost for when a matched
+  // token is the first token of both text and query.
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokensPresentInTextButNotQuery) {
+  std::u16string text = u"abc def ghi";
+
+  // Case: multi-token text, single-token query.
+  std::vector<std::u16string> queries_single_token = {u"abc", u"def", u"ghi"};
+  std::vector<double> scores_query_single_token;
+  for (const auto& query : queries_single_token) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    scores_query_single_token.push_back(relevance);
+  }
+  // TODO(crbug.com/1336160): Consider a score boost for when a matched token is
+  // the first token of both text and query.
+  ExpectAllNearlyEqual(scores_query_single_token, /*abs_error*/ 0.1);
+
+  // Case: multi-token text, two-token query.
+  std::vector<std::u16string> queries_two_tokens = {u"abc def", u"abc ghi",
+                                                    u"def ghi"};
+  std::vector<double> scores_query_two_tokens;
+  for (const auto& query : queries_two_tokens) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ false);
+    scores_query_two_tokens.push_back(relevance);
+  }
+
+  // Currently, queries "abc def" and "def ghi" score highly, because they match
+  // to long contiguous regions of the text. "abc ghi" scores poorly, because it
+  // matches two separate regions of the text.
+  //
+  // TODO(crbug.com/1336160): Support flexibility in words being absent from the
+  // query, so that we can:
+  //
+  //   ExpectAllNearlyEqual(scores_query_two_tokens);
+
+  // TODO(crbug.com/1336160): Support text-length agnosticism, whereby
+  // non-matched text tokens have no (or less of) an adverse effect on scoring.
+  // Maybe add some score comparisons between `scores_query_single_token` and
+  // `scores_query_two_tokens`.
+
+  // TODO(crbug.com/1336160): [Later] Consider a score boost for when a matched
+  // token is the first token of both text and query.
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkTokensPresentInQueryButNotText) {
+  // N.B. This test contains the same texts and queries as in
+  // BenchmarkTokensPresentInTextButNotQuery, with the roles of text and query
+  // swapped. The expected/desired behavior is quite different, though.
+
+  // TODO(crbug.com/1336160): Decide how to handle unmatched query tokens. When
+  // a text is very short and a query very long, the text and query are probably
+  // a poor match. However, when both the text and query are long, (e.g. file
+  // names, keyboard shortcuts), it seems useful to allow for some degree of
+  // unmatched query tokens.
+
+  // TODO(crbug.com/1336160): [Later] Consider a score boost for when a matched
+  // token is the first token of both text and query.
+
+  std::u16string query = u"abc def ghi";
+
+  // Case: single-token text.
+  std::vector<std::u16string> text_single_token = {u"abc", u"def", u"ghi"};
+  std::vector<double> scores_text_single_token;
+  for (const auto& text : text_single_token) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
+    scores_text_single_token.push_back(relevance);
+  }
+  ExpectAllNearlyEqual(scores_text_single_token);
+
+  // Case: two-token text.
+  std::vector<std::u16string> text_two_tokens = {u"abc def", u"abc ghi",
+                                                 u"def ghi"};
+  std::vector<double> scores_text_two_tokens;
+  for (const auto& text : text_two_tokens) {
+    const double relevance = CalculateRelevance(query, text);
+    VLOG(1) << FormatRelevanceResult(query, text, relevance,
+                                     /*query_first*/ true);
+    scores_text_two_tokens.push_back(relevance);
+  }
+  ExpectAllNearlyEqual(scores_text_two_tokens);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkMultipleQueryTokensMapToOneTextToken) {
+  // This test contains the same strings as
+  // BenchmarkMultipleTextTokensMapToOneQueryToken, with the
+  // roles of text and query swapped.
+  //
+  // N.B. With the upcoming fuzzy matching v2, supporting flexibility around
+  // whitespace in this way may turn out to be too onerous. Consider this a
+  // stretch goal.
+
+  // Case 1: single-token text.
+  std::u16string text1 = u"abcdef";
+
+  // A query containing extra whitespace and which is otherwise a good match to
+  // the text, should score highly. The idea is to treat a small amount of extra
+  // whitespace as a spelling/grammar mistake.
+  //
+  // Here `_ordered` and `_shuffled` refer to the relative positions of the two
+  // query tokens which map onto the text token "abcdef".
+  std::vector<std::u16string> queries1_ordered = {u"ab cdef", u"abc def"};
+  std::vector<double> scores1_ordered;
+  for (const auto& query : queries1_ordered) {
+    const double relevance = CalculateRelevance(query, text1);
+    VLOG(1) << FormatRelevanceResult(query, text1, relevance,
+                                     /*query_first*/ false);
+    scores1_ordered.push_back(relevance);
+  }
+  ExpectAllNearlyEqualTo(scores1_ordered, 0.9, /*abs_error*/ 0.1);
+
+  // Token-merging should only be considered for consecutive tokens, in line
+  // with the spelling/grammar mistake philosophy.
+  std::vector<std::u16string> queries1_shuffled = {u"cdef ab", u"def abc"};
+  std::vector<double> scores1_shuffled;
+  for (const auto& query : queries1_shuffled) {
+    const double relevance = CalculateRelevance(query, text1);
+    VLOG(1) << FormatRelevanceResult(query, text1, relevance,
+                                     /*query_first*/ false);
+    scores1_shuffled.push_back(relevance);
+  }
+  ExpectAllNearlyEqualTo(scores1_shuffled, 0.4, /*abs_error*/ 0.2);
+
+  // Case 2: multi-token text.
+  std::u16string text2 = u"abcdef ghi";
+
+  std::vector<std::u16string> queries2_ordered = {
+      u"ab cdef ghi", u"abc def ghi", u"ghi ab cdef", u"ghi abc def"};
+  std::vector<double> scores2_ordered;
+  for (const auto& query : queries2_ordered) {
+    const double relevance = CalculateRelevance(query, text2);
+    VLOG(1) << FormatRelevanceResult(query, text2, relevance,
+                                     /*query_first*/ false);
+    scores2_ordered.push_back(relevance);
+  }
+  EXPECT_GT(scores2_ordered[0], 0.9);
+  EXPECT_GT(scores2_ordered[1], 0.9);
+  // TODO(crbug.com/1336160): Support token-order flexibility to allow the
+  // following (ish):
+  //
+  //   ExpectAllNearlyEqualTo(scores2_ordered, 0.9, /*abs_error*/ 0.1);
+
+  std::vector<std::u16string> queries2_shuffled = {
+      u"cdef ab ghi", u"cdef ghi ab", u"def abc ghi", u"ghi def abc"};
+  std::vector<double> scores2_shuffled;
+  for (const auto& query : queries2_shuffled) {
+    const double relevance = CalculateRelevance(query, text2);
+    VLOG(1) << FormatRelevanceResult(query, text2, relevance,
+                                     /*query_first*/ false);
+    scores2_shuffled.push_back(relevance);
+  }
+  // TODO(crbug.com/1336160): Perhaps these scores should be higher.
+  ExpectAllNearlyEqualTo(scores2_shuffled, 0.4, /*abs_error*/ 0.25);
+}
+
+TEST_F(FuzzyTokenizedStringMatchTest,
+       BenchmarkMultipleTextTokensMapToOneQueryToken) {
+  // This test contains the same strings as
+  // BenchmarkMultipleQueryTokensMapToOneTextToken, with the
+  // roles of text and query swapped.
+  //
+  // N.B. With the upcoming fuzzy matching v2, supporting flexibility around
+  // whitespace in this way may turn out to be too onerous. Consider this a
+  // stretch goal.
+
+  // Case 1: single-token query.
+  std::u16string query1 = u"abcdef";
+
+  // A text containing extra whitespace and which is otherwise a good match to
+  // the query, should score highly. The idea is to treat a small amount of
+  // extra whitespace as a spelling/grammar mistake.
+  //
+  // Here `_ordered` and `_shuffled` refer to the relative positions of the two
+  // text tokens which map onto the query token "abcdef".
+  std::vector<std::u16string> texts1_ordered = {u"ab cdef", u"abc def"};
+  std::vector<double> scores1_ordered;
+  for (const auto& text : texts1_ordered) {
+    const double relevance = CalculateRelevance(query1, text);
+    VLOG(1) << FormatRelevanceResult(query1, text, relevance,
+                                     /*query_first*/ true);
+    scores1_ordered.push_back(relevance);
+  }
+  ExpectAllNearlyEqualTo(scores1_ordered, 0.9, /*abs_error*/ 0.1);
+
+  // Token-merging should only be considered for consecutive tokens, in line
+  // with the spelling/grammar mistake philosophy.
+  std::vector<std::u16string> texts1_shuffled = {u"cdef ab", u"def abc"};
+  std::vector<double> scores1_shuffled;
+  for (const auto& text : texts1_shuffled) {
+    const double relevance = CalculateRelevance(query1, text);
+    VLOG(1) << FormatRelevanceResult(query1, text, relevance,
+                                     /*query_first*/ true);
+    scores1_shuffled.push_back(relevance);
+  }
+  ExpectAllNearlyEqualTo(scores1_shuffled, 0.4, /*abs_error*/ 0.2);
+
+  // Case 2: multi-token query.
+  std::u16string query2 = u"abcdef ghi";
+
+  std::vector<std::u16string> texts2_ordered = {u"ab cdef ghi", u"abc def ghi",
+                                                u"ghi ab cdef", u"ghi abc def"};
+  std::vector<double> scores2_ordered;
+  for (const auto& text : texts2_ordered) {
+    const double relevance = CalculateRelevance(query2, text);
+    VLOG(1) << FormatRelevanceResult(query2, text, relevance,
+                                     /*query_first*/ true);
+    scores2_ordered.push_back(relevance);
+  }
+  EXPECT_GT(scores2_ordered[0], 0.9);
+  EXPECT_GT(scores2_ordered[1], 0.9);
+  // TODO(crbug.com/1336160): Support token-order flexibility to allow the
+  // following (ish):
+  //
+  //   ExpectAllNearlyEqualTo(scores2_ordered, 0.9, /*abs_error*/ 0.1);
+
+  std::vector<std::u16string> texts2_shuffled = {
+      u"cdef ab ghi", u"cdef ghi ab", u"def abc ghi", u"ghi def abc"};
+  std::vector<double> scores2_shuffled;
+  for (const auto& text : texts2_shuffled) {
+    const double relevance = CalculateRelevance(query2, text);
+    VLOG(1) << FormatRelevanceResult(query2, text, relevance,
+                                     /*query_first*/ true);
+    scores2_shuffled.push_back(relevance);
+  }
+  // TODO(crbug.com/1336160): Perhaps these scores should be higher.
+  ExpectAllNearlyEqualTo(scores2_shuffled, 0.4, /*abs_error*/ 0.25);
 }
 
 TEST_F(FuzzyTokenizedStringMatchTest, BenchmarkPartialMatchPartialMismatch) {

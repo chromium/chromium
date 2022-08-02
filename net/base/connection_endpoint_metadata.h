@@ -34,8 +34,9 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
   ConnectionEndpointMetadata& operator=(ConnectionEndpointMetadata&&) = default;
 
   bool operator==(const ConnectionEndpointMetadata& other) const {
-    return std::tie(supported_protocol_alpns, ech_config_list) ==
-           std::tie(other.supported_protocol_alpns, other.ech_config_list);
+    return std::tie(supported_protocol_alpns, ech_config_list, target_name) ==
+           std::tie(other.supported_protocol_alpns, other.ech_config_list,
+                    target_name);
   }
 
   base::Value ToValue() const;
@@ -48,6 +49,9 @@ struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
 
   // If not empty, TLS Encrypted Client Hello config for the service.
   EchConfigList ech_config_list;
+
+  // The target domain name of this metadata.
+  std::string target_name;
 };
 
 }  // namespace net

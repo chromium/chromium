@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/assistant/public/cpp/conversation_observer.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 ConversationObserver::ConversationObserver() = default;
 ConversationObserver::~ConversationObserver() = default;
@@ -17,5 +16,4 @@ ConversationObserver::BindNewPipeAndPassRemote() {
   return remote_observer_.BindNewPipeAndPassRemote();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

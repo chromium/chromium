@@ -14,7 +14,6 @@
 <translation id="1142745911746664600">無法更新 Chrome</translation>
 <translation id="1152920704813762236">關於 Chrome OS</translation>
 <translation id="1154147086299354128">在 Chrome 中開啟(&amp;O)</translation>
-<translation id="1178374936842835197">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />ChromeOS Flex 設定<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
@@ -122,7 +121,6 @@
 <translation id="3080151273017101988">Google Chrome 關閉時繼續執行背景應用程式</translation>
 <translation id="3089968997497233615">Google Chrome 推出全新版本，安全性更勝從前。</translation>
 <translation id="3100998948628680988">為 Chrome 設定檔命名</translation>
-<translation id="3103390129666310801">如要查看裝置是否已更新，請前往 <ph name="LINK_BEGIN" />ChromeOS Flex 設定<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chrome<ph name="END_LINK" />。</translation>
 <translation id="3140883423282498090">您的變更將於下次重新啟動 Google Chrome 時生效。</translation>
 <translation id="3149510190863420837">Chrome 應用程式</translation>
@@ -213,7 +211,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">如要取得日後的 Google Chrome 更新，您將需要 macOS 10.13 或以上版本。此電腦正在使用 OS X 10.11。</translation>
 <translation id="5098668839038261629">開啟時，您亦將會從 Chrome 登出</translation>
-<translation id="5112116809696021727">如要查看裝置是否已更新，請前往 <ph name="LINK_BEGIN" />Chrome OS 設定<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">為您的 Google Chrome 探索各種實用有趣的應用程式、遊戲、擴充功能和主題。</translation>
 <translation id="5139423532931106058">自訂您的 Chrome 設定檔</translation>
 <translation id="5163087008893166964">歡迎使用 Chrome；開咗新瀏覽器視窗</translation>
@@ -253,7 +250,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="5940385492829620908">您的網頁、書籤和其他 Chrome 資料在這裡直播。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">將 Google Chrome 設為預設瀏覽器</translation>
-<translation id="5959292945051687759">如果此頁面沒有顯示設定，請前往 <ph name="LINK_BEGIN" />Chrome OS 設定<ph name="LINK_END" />。</translation>
 <translation id="6003112304606738118">正在下載… 剩餘 <ph name="HOURS" /> 小時</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6070348360322141662">為提高安全性，Google Chrome 會將您的資料加密</translation>

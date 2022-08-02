@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Chromen päivitys epäonnistui</translation>
 <translation id="1152920704813762236">Tietoa Chrome-käyttöjärjestelmästä</translation>
 <translation id="1154147086299354128">Avaa Chr&amp;omessa</translation>
-<translation id="1178374936842835197">Jos asetus ei näy tällä sivulla, siirry <ph name="LINK_BEGIN" />
-    ChromeOS Flexin asetuksiin<ph name="LINK_END" />.</translation>
 <translation id="1203500561924088507">Kiitos asennuksesta. Selain pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
 <translation id="1278833599417554002">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="1302523850133262269">Odota hetki, Chrome asentaa uusimpia järjestelmäpäivityksiä.</translation>
@@ -120,7 +118,6 @@
 <translation id="3080151273017101988">Jätä taustaohjelmat käyntiin, kun Google Chrome suljetaan</translation>
 <translation id="3089968997497233615">Google Chromesta on saatavillaa uusi, turvallisempi versio.</translation>
 <translation id="3100998948628680988">Nimeä Chrome-profiilisi</translation>
-<translation id="3103390129666310801">Tarkista <ph name="LINK_BEGIN" />ChromeOS Flexin asetuksista<ph name="LINK_END" />, onko laitteesi ajan tasalla</translation>
 <translation id="3114643501466072395">Jos haluat tarkistaa, ovatko muut salasanasi turvassa tietosuojaloukkauksilta ja muilta tietoturvaongelmilta, <ph name="BEGIN_LINK" />kirjaudu Chromeen<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Muutokset tulevat voimaan, kun käynnistät Google Chromen seuraavan kerran.</translation>
 <translation id="3149510190863420837">Chrome-sovellukset</translation>
@@ -211,7 +208,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava macOS 10.13 tai uudempi. Tällä tietokoneella on OS X 10.11.</translation>
 <translation id="5098668839038261629">Kun tämä on päällä, sinut kirjataan ulos myös Chromesta</translation>
-<translation id="5112116809696021727">Tarkista <ph name="LINK_BEGIN" />Chrome-käyttöjärjestelmän asetuksista<ph name="LINK_END" />, onko laitteesi ajan tasalla</translation>
 <translation id="5132929315877954718">Löydät hienoja sovelluksia, pelejä ja teemoja Google Chromelle.</translation>
 <translation id="5139423532931106058">Muokkaa Chrome-profiiliasi</translation>
 <translation id="5163087008893166964">Tervetuloa Chromeen, uusi selainikkuna avattu</translation>
@@ -247,8 +243,6 @@
 <translation id="5940385492829620908">Tämä on verkkosi, kirjanmerkkiesi ja muun Chrome-sisältösi koti.</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5941830788786076944">Tee Google Chromesta oletusselain</translation>
-<translation id="5959292945051687759">Jos asetus ei näy tällä sivulla, siirry <ph name="LINK_BEGIN" />
-        Chrome-käyttöjärjestelmän asetuksiin<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>
 <translation id="6040143037577758943">Sulje</translation>
 <translation id="6070348360322141662">Google Chrome lisää suojausta salaamalla tietosi</translation>

@@ -80,13 +80,13 @@ SkColor HighlightBorder::GetHighlightColor(const views::View& view,
   } else {
     switch (type) {
       case HighlightBorder::Type::kHighlightBorder1:
-        highlight_color_id = ui::kColorAshSystemUIHighlightColor1;
+        highlight_color_id = ui::kColorHighlightBorderHighlight1;
         break;
       case HighlightBorder::Type::kHighlightBorder2:
-        highlight_color_id = ui::kColorAshSystemUIHighlightColor2;
+        highlight_color_id = ui::kColorHighlightBorderHighlight2;
         break;
       case HighlightBorder::Type::kHighlightBorder3:
-        highlight_color_id = ui::kColorAshSystemUIHighlightColor3;
+        highlight_color_id = ui::kColorHighlightBorderHighlight3;
         break;
     }
   }
@@ -114,13 +114,13 @@ SkColor HighlightBorder::GetBorderColor(const views::View& view,
   } else {
     switch (type) {
       case HighlightBorder::Type::kHighlightBorder1:
-        border_color_id = ui::kColorAshSystemUIBorderColor1;
+        border_color_id = ui::kColorHighlightBorderBorder1;
         break;
       case HighlightBorder::Type::kHighlightBorder2:
-        border_color_id = ui::kColorAshSystemUIBorderColor2;
+        border_color_id = ui::kColorHighlightBorderBorder2;
         break;
       case HighlightBorder::Type::kHighlightBorder3:
-        border_color_id = ui::kColorAshSystemUIBorderColor3;
+        border_color_id = ui::kColorHighlightBorderBorder3;
         break;
     }
   }

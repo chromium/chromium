@@ -503,12 +503,9 @@ void ServiceWorkerContextClient::SendWorkerStarted(
   CHECK_LE(start_timing_->script_evaluation_start_time,
            start_timing_->script_evaluation_end_time);
 
-  instance_host_->OnStarted(
-      status,
-      proxy_->HasFetchHandler()
-          ? blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable
-          : blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler,
-      WorkerThread::GetCurrentId(), std::move(start_timing_));
+  instance_host_->OnStarted(status, proxy_->FetchHandlerType(),
+                            WorkerThread::GetCurrentId(),
+                            std::move(start_timing_));
 
   TRACE_EVENT_NESTABLE_ASYNC_END0("ServiceWorker", "ServiceWorkerContextClient",
                                   this);

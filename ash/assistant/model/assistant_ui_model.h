@@ -45,8 +45,8 @@ enum class AssistantButtonId {
 // Models the Assistant UI.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
  public:
-  using AssistantEntryPoint = chromeos::assistant::AssistantEntryPoint;
-  using AssistantExitPoint = chromeos::assistant::AssistantExitPoint;
+  using AssistantEntryPoint = assistant::AssistantEntryPoint;
+  using AssistantExitPoint = assistant::AssistantExitPoint;
 
   AssistantUiModel();
 

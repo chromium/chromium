@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Праворуч</translation>
 <translation id="1351937230027495976">Згорнути меню</translation>
 <translation id="1364382257761975320">Щоб розблокувати Chromebook, скористайтеся відбитком пальця</translation>
+<translation id="1365866993922957110">Отримувати автоматичні оновлення</translation>
 <translation id="1372545819342940910">Зберегти робочий стіл</translation>
 <translation id="1383597849754832576">Не вдалося завантажити файли живих субтитрів. Повторіть спробу пізніше.</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" />: відкріплено</translation>
 <translation id="1836215606488044471">Асистент (завантаження…)</translation>
 <translation id="1838895407229022812">Нічний екран вимкнено.</translation>
+<translation id="1862380676329487333">Оновити й вийти</translation>
 <translation id="1864454756846565995">Пристрій із портом USB типу C (на задній панелі)</translation>
 <translation id="1879018240766558464">Вікна в режимі анонімного перегляду наразі не підтримуються. Інші додатки буде збережено.</translation>
 <translation id="1882814835921407042">Немає мобільних мереж</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">Наразі не вдається скопіювати або вставити контент</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
+<translation id="4247123849143712100">Оновити й завершити роботу</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
 <translation id="425364040945105958">Немає SIM-карти</translation>
 <translation id="4261870227682513959">Показати налаштування сповіщень. Сповіщення вимкнено</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Пристрій <ph name="DEVICE_NAME" /> під’єднано</translation>
 <translation id="6351032674660237738">ПРОПОЗИЦІЇ ДОДАТКІВ</translation>
+<translation id="6359587239691116345">Отримуйте доступ до найновіших функцій і покращеної безпеки. Якщо відхилити це оновлення, ваш пристрій може працювати неналежним чином і у вас можуть виникати проблеми з безпекою та продуктивністю.</translation>
 <translation id="6376931439017688372">Bluetooth увімкнено</translation>
 <translation id="6381109794406942707">Щоб розблокувати пристрій, введіть PIN-код.</translation>
 <translation id="639644700271529076">Режим CAPS LOCK вимкнено</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /> до кінцевого терміну</translation>
 <translation id="649452524636452238">PIN-код розумної картки</translation>
 <translation id="6495400115277918834">Увімкнено режим "Картинка в картинці"; щоб виділити, натисніть Alt+Shift+V</translation>
+<translation id="6500896621837555595">Оновити</translation>
 <translation id="6501401484702599040">Вміст екрана транслюється на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6515727200518652613">Немає з’єднання з камерою. Триває підключення.</translation>
 <translation id="6520517963145875092">Виберіть вікно, знімок якого потрібно зробити</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">Обчислення часу роботи акумулятора.</translation>
 <translation id="8061464966246066292">Високий контраст</translation>
 <translation id="8083540854303889870">Збережено на потім</translation>
+<translation id="8091387634532529612">Автоматичні оновлення</translation>
 <translation id="8098591350844501178">Зупинити трансляцію екрана на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Увімкнено всі</translation>
 <translation id="8120151603115102514">На телефоні немає екрана блокування. Щоб розблокувати Chromebook, введіть пароль.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949">Показано результати (<ph name="RESULT_COUNT" />) для запиту "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Альбомна</translation>
 <translation id="990277280839877440">Вікно <ph name="WINDOW_TITILE" /> закрито.</translation>
+<translation id="996204416024568215">Отримуйте доступ до найновіших функцій і покращеної безпеки. Оновлення відбуваються у фоновому режимі.</translation>
 </translationbundle>

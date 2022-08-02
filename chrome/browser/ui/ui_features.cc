@@ -156,8 +156,15 @@ const base::Feature kTabGroupsSave{"TabGroupsSave",
 
 // Enables preview images in tab-hover cards.
 // https://crbug.com/928954
-const base::Feature kTabHoverCardImages{"TabHoverCardImages",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kTabHoverCardImages {
+  "TabHoverCardImages",
+#if BUILDFLAG(IS_MAC)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
+
 const char kTabHoverCardImagesNotReadyDelayParameterName[] =
     "page_not_ready_delay";
 const char kTabHoverCardImagesLoadingDelayParameterName[] =

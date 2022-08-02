@@ -14,7 +14,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1142745911746664600">Chrome sa nedá aktualizovať</translation>
 <translation id="1152920704813762236">Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Otvoriť v Chrome</translation>
-<translation id="1178374936842835197">Ak nie je určité nastavenie zobrazené na tejto stránke, skontrolujte <ph name="LINK_BEGIN" />nastavenia systému Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať prehliadač.</translation>
 <translation id="1278833599417554002">Znova spustiť a aktualizovať Chrome</translation>
 <translation id="1302523850133262269">Počkajte, kým Chrome nainštaluje najnovšie aktualizácie systému.</translation>
@@ -121,7 +120,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3080151273017101988">Po zatvorení prehliadača Google Chrome nechať aplikácie na pozadí spustené</translation>
 <translation id="3089968997497233615">K dispozícii je nová, bezpečnejšia verzia prehliadača Google Chrome.</translation>
 <translation id="3100998948628680988">Pomenujte svoj profil Chromu</translation>
-<translation id="3103390129666310801">Ak chcete zistiť, či je zariadenie aktuálne, prejdite do <ph name="LINK_BEGIN" />nastavení systému Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Ak chcete skontrolovať, či sú vaše ostatné heslá chránené pred porušením ochrany údajov a inými bezpečnostnými hrozbami, <ph name="BEGIN_LINK" />prihláste sa do Chromu<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikácie Chrome</translation>
@@ -212,7 +210,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Ak chcete dostávať budúce aktualizácie prehliadača Google Chrome, musíte používať systém macOS 10.13 alebo novší. V tomto počítači používate OS X 10.11.</translation>
 <translation id="5098668839038261629">Keď zapnete túto možnosť, systém vás odhlási aj z Chromu</translation>
-<translation id="5112116809696021727">Ak chcete zistiť, či je zariadenie aktuálne, prejdite do <ph name="LINK_BEGIN" />nastavení systému Chrome OS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Objavte skvelé aplikácie, hry, rozšírenia a motívy pre prehliadač Google Chrome.</translation>
 <translation id="5139423532931106058">Prispôsobiť profil Chromu</translation>
 <translation id="5163087008893166964">Vitajte v Chrome, otvorilo sa nové okno prehliadača</translation>
@@ -252,7 +249,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5940385492829620908">Tu nájdete svoj obsah na webe, záložky a ďalšie položky prehliadača Chrome.</translation>
 <translation id="5941711191222866238">Minimalizovať</translation>
 <translation id="5941830788786076944">Nastaviť prehľadávač Google Chrome ako predvolený</translation>
-<translation id="5959292945051687759">Ak nie je určité nastavenie zobrazené na tejto stránke, skontrolujte <ph name="LINK_BEGIN" />nastavenia systému Chrome OS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Sťahuje sa… Zostávajúci čas: <ph name="HOURS" /> h</translation>
 <translation id="6040143037577758943">Zavrieť</translation>
 <translation id="6070348360322141662">V záujme vyššej miery zabezpečenia budú dáta v prehliadači Google Chrome šifrované</translation>

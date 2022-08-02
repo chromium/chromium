@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">Növ</translation>
 <translation id="2461822463642141190">Cari</translation>
 <translation id="2480034874476596812">Manual olaraq deaktiv edin</translation>
+<translation id="248546197012830854">Cihaz oflayndır. Yardım məzmununa baxmaq üçün Wi-Fi şəbəkəsinə qoşulun.</translation>
 <translation id="2491955442992294626">Başqa pəncərədən istifadə etdiyiniz zaman açarlar sınaqdan keçirilmir</translation>
 <translation id="2493126929778606526">Avtomatik seçilmiş ən yaxşı fotolarınız</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -235,12 +236,12 @@
 <translation id="3008341117444806826">YENİLƏYİN</translation>
 <translation id="3009958530611748826">Yadda saxlamaq üçün qovluq seçin</translation>
 <translation id="3017079585324758401">Arxa fon</translation>
+<translation id="302435934487327038">Quraşdırma tamamlandı</translation>
 <translation id="3027578600144895987">Kameranı bağlayın</translation>
 <translation id="3031560714565892478">Cihaz video kameradır.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Son nöqtə</translation>
 <translation id="3069085583900247081">Test uğursuz oldu</translation>
-<translation id="3076243757415932261">Komponentlər doğrulanır...</translation>
 <translation id="3083667275341675831">Bağlantı Diaqnostikası</translation>
 <translation id="3084958266922136097">Ekran qoruyucusunu deaktiv edin</translation>
 <translation id="3091839911843451378">Alınmadı - Dayandırılıb</translation>
@@ -275,7 +276,6 @@
 <translation id="3369013195428705271">Bütün çap tarixçəsini silmək istədiyinizə əminsiniz? Davam edən çap işləriniz silinməyəcək.</translation>
 <translation id="3383751554789092165">Lazım olduqda cihaz məlumatlarını dəyişdirin.</translation>
 <translation id="3404249063913988450">Ekran qoruyucusunu aktiv edin</translation>
-<translation id="3404770484521709967">Komponentlər düzgün quraşdırılıb.</translation>
 <translation id="3413935475507503304">Güncəlləməyə keçmək üçün "Növbəti" seçiminə toxunun.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
@@ -395,7 +395,6 @@
 <translation id="445059817448385655">Köhnə parol</translation>
 <translation id="4453205916657964690">Alt şəbəkə maskası</translation>
 <translation id="4454245904991689773">Skanı burada saxlayın</translation>
-<translation id="4472575034687746823">Başlayın</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Qeyri-defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="4500213108254186382">Ekran Akselerometr</translation>
@@ -662,7 +661,9 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> təmirindən çıxın</translation>
 <translation id="6618744767048954150">İcra olunur</translation>
 <translation id="6620487321149975369">Manual olaraq silinməsə, çap işləri tarixçədə görünəcək</translation>
+<translation id="6624819909909965616">10 MB-dan böyük faylı yükləmək mümkün deyil</translation>
 <translation id="6643016212128521049">Silin</translation>
+<translation id="6644568396961840069">Faylı saxlamaq mümkün olmadı. Fərqli xarici yaddaşa birləşdirməyə cəhd edin və ya sonra cəhd edin.</translation>
 <translation id="6647510110698214773">Şifrələmə alqoritmi</translation>
 <translation id="6650062777702288430">Kana/hərf-rəqəm keçiricisi</translation>
 <translation id="6657585470893396449">Parol</translation>
@@ -696,6 +697,7 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
 <translation id="6995564396478647735">Yazma Qoruyucusunun aktiv olduğuna əmin olun</translation>
+<translation id="7005833343836210400">Cihaz oflayndır</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Cihaz qoşulmayıb.</translation>
@@ -808,8 +810,8 @@
 <translation id="8063022551652308521">Yazma Qoruyucusu hələ də deaktivdir. Davam etmək üçün Yazma Qoruyucusunu aktiv edin.</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>
-<translation id="8083281199617904460">Bu təmir prosesi təlim keçmiş təmir ustası üçün nəzərdə tutulub. Yalnız nasaz komponentləri dəyişdirdikdən sonra başlayın.</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
+<translation id="8094062939584182041">Google'un bu problemlə bağlı sizə e-məktub göndərməsinə icazə verin</translation>
 <translation id="8104083085214006426">Açıq və güvənsiz şəbəkədən istifadə edirsiniz</translation>
 <translation id="8109786307828817014">Uğursuz tənzimləmələrə davam edilsin?</translation>
 <translation id="811820734797650957">(Android) Giriş test edilə bilər</translation>

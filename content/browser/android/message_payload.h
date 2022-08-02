@@ -8,24 +8,22 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/android/message_payload_type.h"
+#include "third_party/blink/public/common/messaging/string_message_codec.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 
 namespace content::android {
 
 // Helper methods to convert between java
 // `org.chromium.content_public.browser.MessagePayload` and
-// `blink::TransferableMessage`. Only payload data (String, ArrayBuffer etc) is
-// converted, the rest in `TransferableMessage` (like MessagePort) is not
-// handled.
+// `blink::WebMessagePayload`.
 
 // Construct Java `org.chromium.content_public.browser.MessagePayload` from
-// `blink::TransferableMessage`.
+// `blink::WebMessagePayload`.
 CONTENT_EXPORT base::android::ScopedJavaLocalRef<jobject>
-CreateJavaMessagePayload(const blink::TransferableMessage&);
+ConvertWebMessagePayloadToJava(const blink::WebMessagePayload& payload);
 
-// Construct `blink::TransferableMessage` from Java MessagePayload.
-CONTENT_EXPORT blink::TransferableMessage
-CreateTransferableMessageFromJavaMessagePayload(
+CONTENT_EXPORT blink::WebMessagePayload ConvertToWebMessagePayloadFromJava(
     const base::android::ScopedJavaLocalRef<
         jobject>& /* org.chromium.content_public.browser.MessagePayload */);
 

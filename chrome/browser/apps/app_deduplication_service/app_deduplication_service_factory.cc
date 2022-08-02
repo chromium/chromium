@@ -19,7 +19,7 @@ static constexpr const char* kAppDeduplicationService =
     "AppDeduplicationService";
 }  // namespace
 
-namespace apps {
+namespace apps::deduplication {
 
 // static
 AppDeduplicationService* AppDeduplicationServiceFactory::GetForProfile(
@@ -77,4 +77,4 @@ content::BrowserContext* AppDeduplicationServiceFactory::GetBrowserContextToUse(
   return BrowserContextKeyedServiceFactory::GetBrowserContextToUse(context);
 }
 
-}  // namespace apps
+}  // namespace apps::deduplication

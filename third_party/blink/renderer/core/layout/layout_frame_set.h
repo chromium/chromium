@@ -31,38 +31,6 @@ namespace blink {
 class HTMLDimension;
 class HTMLFrameSetElement;
 
-enum FrameEdge {
-  kLeftFrameEdge,
-  kRightFrameEdge,
-  kTopFrameEdge,
-  kBottomFrameEdge
-};
-
-struct FrameEdgeInfo {
-  STACK_ALLOCATED();
-
- public:
-  FrameEdgeInfo(bool prevent_resize = false, bool allow_border = true)
-      : prevent_resize_(4), allow_border_(4) {
-    prevent_resize_.Fill(prevent_resize);
-    allow_border_.Fill(allow_border);
-  }
-
-  bool PreventResize(FrameEdge edge) const { return prevent_resize_[edge]; }
-  bool AllowBorder(FrameEdge edge) const { return allow_border_[edge]; }
-
-  void SetPreventResize(FrameEdge edge, bool prevent_resize) {
-    prevent_resize_[edge] = prevent_resize;
-  }
-  void SetAllowBorder(FrameEdge edge, bool allow_border) {
-    allow_border_[edge] = allow_border;
-  }
-
- private:
-  Vector<bool> prevent_resize_;
-  Vector<bool> allow_border_;
-};
-
 class LayoutFrameSet final : public LayoutBox {
  public:
   LayoutFrameSet(HTMLFrameSetElement*);
@@ -93,8 +61,6 @@ class LayoutFrameSet final : public LayoutBox {
     return &children_;
   }
 
-  FrameEdgeInfo EdgeInfo() const;
-
   void NotifyFrameEdgeInfoChanged();
   HTMLFrameSetElement* FrameSet() const;
 
@@ -111,7 +77,6 @@ class LayoutFrameSet final : public LayoutBox {
     bool CanResizeSplitAt(int split_index) const;
 
     Vector<int> sizes_;
-    Vector<int> deltas_;
     Vector<bool> prevent_resize_;
     Vector<bool> allow_border_;
   };
@@ -167,8 +132,6 @@ class LayoutFrameSet final : public LayoutBox {
                   const Vector<HTMLDimension>&,
                   const Vector<int>& deltas,
                   int available_space);
-  void ComputeEdgeInfo();
-  void FillFromEdgeInfo(const FrameEdgeInfo&, int r, int c);
   void PositionFrames();
 
   LayoutObjectChildList children_;

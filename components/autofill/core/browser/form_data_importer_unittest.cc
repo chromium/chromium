@@ -1298,7 +1298,9 @@ TEST_P(FormDataImporterTest,
       {{NAME_FIRST, kDefaultFirstName},
        {NAME_LAST, kDefaultLastName},
        {EMAIL_ADDRESS, kDefaultMail},
-       // Add six phone number fields.
+       // Add two phone number fields, split across 3 fields each.
+       // They are all declared as PHONE_HOME_WHOLE_NUMBER, which only affects
+       // the label. Local heuristics will classify them correctly.
        {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneAreaCode},
        {PHONE_HOME_WHOLE_NUMBER, kDefaultPhonePrefix},
        {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneSuffix},

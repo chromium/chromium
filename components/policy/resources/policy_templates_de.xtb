@@ -2593,7 +2593,6 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutze das mehrzeilige Textfeld unten.</translation>
 <translation id="3709266154059827597">Sperrliste für Installation von Erweiterungen konfigurieren</translation>
 <translation id="3711895659073496551">Suspend-Modus</translation>
-<translation id="3715569262675717862">Authentifizierung auf Grundlage von Clientzertifikaten</translation>
 <translation id="3717409415785131989">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird die neue Benutzeroberfläche für das Download-Infofeld in <ph name="PRODUCT_NAME" /> angezeigt.
 
       Ist sie deaktiviert, wird in <ph name="PRODUCT_NAME" /> weiter die alte Benutzeroberfläche für die Download-Ablage angezeigt.</translation>
@@ -2973,13 +2972,6 @@ Diese Richtlinie hat keine Auswirkungen darauf, ob die lokalen Nutzerdaten auf d
 <translation id="410068710490553233">Anmeldung in zusätzlichen Google-Konten zulassen</translation>
 <translation id="4101282687722389021">UTC-Zeitstempel für die letzte Änderung dieses Eintrags. Wird als String gesendet, da der Zeitstempel nicht als Ganzzahl angegeben werden kann.</translation>
 <translation id="4103289232974211388">Nach Bestätigung durch Nutzer an SAML-IdP weiterleiten</translation>
-<translation id="4105884561459127998">Hiermit wird der Typ der Authentifizierung für SAML-Anmeldungen konfiguriert.
-
-      Wenn diese Richtlinie nicht konfiguriert oder auf dem Standardwert (Wert 0) belassen wird, wird das Verhalten bei SAML-Anmeldungen abhängig von anderen Faktoren vom Browser festgelegt. Im einfachsten Fall basieren die Nutzerauthentifizierung und der Schutz der im Cache gespeicherten Nutzerdaten auf Passwörtern, die von den Nutzern manuell eingegeben werden.
-
-      Wenn diese Richtlinie auf "ClientCertificate" (Wert 1) festgelegt ist, kommt für neu hinzugefügte Nutzer, die sich über SAML anmelden, die Authentifizierung mit Clientzertifikat zum Einsatz. Für solche Nutzer werden keine Passwörter verwendet und ihre im Cache gespeicherten lokalen Daten werden durch entsprechende kryptografische Schlüssel geschützt. Diese Einstellung ermöglicht z. B. die Konfiguration einer Nutzerauthentifizierung auf Grundlage von Smartcards. Hinweis: In diesem Fall ist die Installation von Smartcard-Middleware-Apps über die Richtlinie "DeviceLoginScreenExtensions" erforderlich.
-
-      Diese Richtlinie wirkt sich nur auf Nutzer aus, die sich über SAML authentifizieren.</translation>
 <translation id="4105989332710272578">Erzwingung der Zertifikatstransparenz für eine Liste von URLs deaktivieren</translation>
 <translation id="4114059938441379876">Wenn diese Richtlinie konfiguriert ist, wird die URL für Nutzer festgelegt, über die sie ihr Passwort ändern können, nachdem ihnen im Browser eine Warnung angezeigt wurde. Der Passwortschutzdienst leitet Nutzer weiter zu der URL (nur HTTP- und HTTPS-Protokolle), die du mit dieser Richtlinie festlegst. Die Seite zum Ändern des Passworts muss den Richtlinien unter https://www.chromium.org/developers/design-documents/create-amazing-password-forms entsprechen, damit der Salted-Hash-Wert des neuen Passworts in <ph name="PRODUCT_NAME" /> richtig erfasst werden kann.
 
@@ -4054,11 +4046,6 @@ Wenn diese Richtlinie für ein Konto auf <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_
       Ist für diese Richtlinie eine Liste mit IDs für Eingabemethoden festgelegt, werden die entsprechenden Eingabemethoden auf der Anmeldeseite bereitgestellt. Das oberste Listenelement ist vorab ausgewählt. Während bestimmte Nutzerdaten auf der Anmeldeseite markiert sind, wird zusätzlich zu den von dieser Richtlinie bereitgestellten Eingabemethoden auch die vom Nutzer zuletzt verwendete angeboten. Ist diese Richtlinie nicht konfiguriert, werden die Eingabemethoden auf der Anmeldeseite von der Sprache der Anmeldeseite abgeleitet. Werte, die keine gültigen IDs für Eingabemethoden sind, werden ignoriert.</translation>
 <translation id="5407008856008996384">Zugriff auf CUPS-Drucker zulassen</translation>
 <translation id="5413051574966911176">Benutzeroberflächen im Zusammenhang mit der Verbindung auf dem Remote-Host-Desktop während einer aktiven Verbindung deaktivieren</translation>
-<translation id="5417597818300833094">Wenn die Richtlinie konfiguriert ist, können Nutzer eine der von dir festgelegten Eingabemethoden für <ph name="PRODUCT_OS_NAME" />-Sitzungen auswählen.
-
-       Wenn sie nicht konfiguriert oder eine leere Liste festgelegt ist, können Nutzer alle unterstützten Eingabemethoden auswählen.
-
-      Hinweis: Falls die aktuelle Eingabemethode nicht unterstützt wird, wird die Eingabemethode auf das Hardware-Tastaturlayout (falls zulässig) oder den ersten gültigen Eintrag in dieser Liste eingestellt. Alle ungültigen oder nicht unterstützten Eingabemethoden in der Liste werden ignoriert.</translation>
 <translation id="5417906792459853336">Mit dieser Richtlinie wird festgelegt, ob Informationen zum Bestand der Anwendungen und zur Verwendung eines Geräts ausgegeben werden.
 
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
@@ -4775,16 +4762,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="6207607210601267301">Authentifizierung ohne PIN für den Host für den Remote-Zugriff deaktivieren</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" />-Richtliniendaten erfassen</translation>
 <translation id="6210259502936598222">Informationen zu Betriebssystem und <ph name="PRODUCT_NAME" />-Version erfassen</translation>
-<translation id="6210422374261465354">Ermöglicht dir, Konfigurationen für Authentifizierungs-URLs in <ph name="WEBVIEW_PRODUCT_NAME" /> anzugeben.
-
-      Diese Authentifizierungs-URLs werden von <ph name="WEBVIEW_PRODUCT_NAME" /> so verarbeitet: Wenn bei der Authentifizierung von einer Webseite in <ph name="WEBVIEW_PRODUCT_NAME" /> Authentifizierungs-URLs aufgerufen werden, wird die Authentifizierungs-App des jeweiligen Identitätsanbieters gestartet, die diese Authentifizierungs-URL verarbeiten kann.
-
-      Mit dem Start der Authentifizierungs-App ermöglichen die Identitätsanbieter Anwendungsfälle wie die App-übergreifende SSO-Bereitstellung bzw. ein höheres Sicherheitslevel, indem anhand von Zero-Trust-Gerätesignalen der Gerätestatus während der Authentifizierung ermittelt wird.
-
-      Wenn keine gültige App zur Verarbeitung der Authentifizierungs-URL auf dem Gerät installiert ist, wird die Navigation in <ph name="WEBVIEW_PRODUCT_NAME" /> fortgesetzt.
-
-      Gültige Authentifizierungs-URLs folgen dem Schema <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> und enthalten keine Platzhalter.
-      </translation>
 <translation id="6212868225782276239">Alle Drucker außer denen in der Sperrliste werden angezeigt.</translation>
 <translation id="6220835555850906733">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist jede unterstützte Audioausgabe auf den Geräten der Nutzer zulässig.
 
@@ -6101,7 +6078,6 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 <translation id="7554382342294940216">Wenn diese Richtlinie aktiviert ist, ermöglicht sie <ph name="PRODUCT_OS_NAME" />, zur Captive-Portal-Authentifizierung alle Proxys zu umgehen. Diese Authentifizierungswebseiten – also alle Webseiten ab der Captive Portal-Anmeldeseite, bis Chrome eine funktionierende Internetverbindung erkennt – werden in einem separaten Fenster geöffnet, wobei alle Richtlinieneinstellungen und -beschränkungen für den aktuellen Nutzer ignoriert werden. Diese Richtlinie kommt nur dann zum Einsatz, wenn ein Proxy konfiguriert ist, zum Beispiel über eine Richtlinie, eine Erweiterung oder vom Nutzer unter chrome://settings.
 
       Wenn du diese Einstellung deaktivierst oder nicht konfigurierst, werden alle Seiten der Captive-Portal-Authentifizierung auf einem regulären neuen Browsertab angezeigt und es kommen die Proxy-Einstellungen des aktuellen Nutzers zum Einsatz.</translation>
-<translation id="7566878661979235378">SAML-Anmeldungsauthentifizierungstyp</translation>
 <translation id="7567373982693549834">Diese Richtlinie kontrolliert für einzelne Nutzer die Nutzung von Android-Apps, die aus anderen Quellen als Google Play heruntergeladen wurden.
 
       Wenn diese Richtlinie nicht konfiguriert ist, können keine Apps aus anderen Quellen verwendet werden.
@@ -7386,7 +7362,6 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 <translation id="8951350807133946005">Datenträger-Cache-Verzeichnis festlegen</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>
 <translation id="8956312248048980644">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.</translation>
-<translation id="8959992920425111821">Standardkonfiguration</translation>
 <translation id="8967125680876068695">Chrome-Apps wurden für Windows, Mac und Linux eingestellt.
       Wenn diese Richtlinie aktiviert wird, erlaubt <ph name="PRODUCT_NAME" /> es, dass Chrome-Apps bis zu dem Datum im Juni 2022, an dem die Unterstützung für Chrome-Apps auf allen Plattformen beendet wird, auf diesen Plattformen ausgeführt werden.
       Wenn diese Richtlinie deaktiviert oder nicht eingerichtet ist, dürfen Chrome-Apps unter Umständen nicht ausgeführt werden, je nach dem Status des Einstellungs-Roll-outs.

@@ -202,8 +202,10 @@ TEST_P(PhoneFieldTest, ThreePartPhoneNumber) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"Phone:", u"dayphone1", PHONE_HOME_CITY_CODE},
-         {field_type, u"-", u"dayphone2", PHONE_HOME_NUMBER, /*max_length=*/3},
-         {field_type, u"-", u"dayphone3", PHONE_HOME_NUMBER, /*max_length=*/4},
+         {field_type, u"-", u"dayphone2", PHONE_HOME_NUMBER_PREFIX,
+          /*max_length=*/3},
+         {field_type, u"-", u"dayphone3", PHONE_HOME_NUMBER_SUFFIX,
+          /*max_length=*/4},
          {field_type, u"ext.:", u"dayphone4", PHONE_HOME_EXTENSION}});
   }
 }
@@ -214,8 +216,8 @@ TEST_P(PhoneFieldTest, ThreePartPhoneNumber) {
 TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest({{field_type, u"Phone:", u"area", PHONE_HOME_CITY_CODE},
-                    {field_type, u"", u"prefix", PHONE_HOME_NUMBER},
-                    {field_type, u"", u"suffix", PHONE_HOME_NUMBER,
+                    {field_type, u"", u"prefix", PHONE_HOME_NUMBER_PREFIX},
+                    {field_type, u"", u"suffix", PHONE_HOME_NUMBER_SUFFIX,
                      /*max_length=*/4}});
   }
 }
@@ -224,8 +226,9 @@ TEST_P(PhoneFieldTest, ThreePartPhoneNumberPrefixSuffix2) {
   for (const char* field_type : kFieldTypes) {
     RunParsingTest(
         {{field_type, u"(", u"phone1", PHONE_HOME_CITY_CODE, /*max_length=*/3},
-         {field_type, u")", u"phone2", PHONE_HOME_NUMBER, /*max_length=*/3},
-         {field_type, u"", u"phone3", PHONE_HOME_NUMBER,
+         {field_type, u")", u"phone2", PHONE_HOME_NUMBER_PREFIX,
+          /*max_length=*/3},
+         {field_type, u"", u"phone3", PHONE_HOME_NUMBER_SUFFIX,
           /*max_length=*/4}});
   }
 }

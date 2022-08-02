@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/features.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -42,7 +43,8 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     const std::string& domain,
     bool is_https) const {
   GURL origin = net::cookie_util::CookieOriginToURL(domain, is_https);
-  ContentSetting setting = GetCookieSetting(origin, origin, nullptr);
+  ContentSetting setting =
+      GetCookieSetting(origin, origin, nullptr, QueryReason::kCookies);
   DCHECK(IsValidSetting(setting));
   if (setting == CONTENT_SETTING_ALLOW)
     return false;
@@ -74,38 +76,44 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
 ContentSetting CookieSettingsBase::GetCookieSetting(
     const GURL& url,
     const GURL& first_party_url,
-    content_settings::SettingSource* source) const {
+    content_settings::SettingSource* source,
+    QueryReason query_reason) const {
   return GetCookieSettingInternal(
       url, first_party_url,
       IsThirdPartyRequest(url, net::SiteForCookies::FromUrl(first_party_url)),
-      source);
+      source, query_reason);
 }
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
-    const GURL& first_party_url) const {
+    const GURL& first_party_url,
+    QueryReason query_reason) const {
 #if !BUILDFLAG(IS_IOS)
   // IOS uses this method with an empty |first_party_url| but we don't have
   // content settings on IOS, so it does not matter.
   DCHECK(!first_party_url.is_empty() || url.is_empty()) << url;
 #endif
-  return IsAllowed(GetCookieSetting(url, first_party_url, nullptr));
+  return IsAllowed(
+      GetCookieSetting(url, first_party_url, nullptr, query_reason));
 }
 
 bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) const {
+    const absl::optional<url::Origin>& top_frame_origin,
+    QueryReason query_reason) const {
   ContentSetting setting = GetCookieSettingInternal(
       url,
       GetFirstPartyURL(site_for_cookies,
                        base::OptionalOrNullptr(top_frame_origin)),
-      IsThirdPartyRequest(url, site_for_cookies), nullptr);
+      IsThirdPartyRequest(url, site_for_cookies), nullptr, query_reason);
   return IsAllowed(setting);
 }
 
-bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
-  ContentSetting setting = GetCookieSetting(origin, origin, nullptr);
+bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin,
+                                             QueryReason query_reason) const {
+  ContentSetting setting =
+      GetCookieSetting(origin, origin, nullptr, query_reason);
   DCHECK(IsValidSetting(setting));
   return setting == CONTENT_SETTING_SESSION_ONLY;
 }
@@ -124,6 +132,21 @@ CookieSettingsBase::GetCookieAccessSemanticsForDomain(
       NOTREACHED();
   }
   return net::CookieAccessSemantics::UNKNOWN;
+}
+
+// static
+bool CookieSettingsBase::ShouldConsiderStorageAccessGrants(
+    QueryReason query_reason) {
+  switch (query_reason) {
+    case QueryReason::kSetting:
+      return false;
+    case QueryReason::kPrivacySandbox:
+      return false;
+    case QueryReason::kSiteStorage:
+      return base::FeatureList::IsEnabled(net::features::kStorageAccessAPI);
+    case QueryReason::kCookies:
+      return base::FeatureList::IsEnabled(net::features::kStorageAccessAPI);
+  }
 }
 
 // static

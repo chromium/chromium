@@ -68,6 +68,8 @@ target(_libcxx_target_type, "libc++") {
     libs = [ "atomic" ]
   }
 
+  inputs = [ "__config_site" ]
+
   sources = [
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
@@ -124,7 +126,7 @@ target(_libcxx_target_type, "libc++") {
     configs -= [ "//build/config/win:winver" ]
     configs += [ ":winver" ]
     if (libcxx_natvis_include) {
-      inputs = [
+      inputs += [
         # libc++.natvis listed as an input here instead of in
         # //build/config/c++:runtime_library to prevent unnecessary size
         # increase in generated build files.

@@ -2614,7 +2614,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Pronto dejará de estar disponible el campo de una línea y desaparecerá. Empieza a usar el cuadro de texto de varias líneas que se encuentra a continuación).</translation>
 <translation id="3709266154059827597">Configurar la lista negra de instalación de extensiones</translation>
 <translation id="3711895659073496551">Suspender</translation>
-<translation id="3715569262675717862">Autenticación basada en certificados de clientes</translation>
 <translation id="3717409415785131989">Si habilitas la política o no la estableces, se muestra la nueva IU del cuadro de descarga en <ph name="PRODUCT_NAME" />.
 
       Si la inhabilitas, <ph name="PRODUCT_NAME" /> seguirá mostrando la antigua IU de la barra de descarga.</translation>
@@ -2995,13 +2994,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="410068710490553233">Permite acceder en más Cuentas de Google</translation>
 <translation id="4101282687722389021">Una marca de tiempo (UTC) que indica la última vez que se actualizó esta entrada. Se envía como un string ya que la marca de tiempo no entra en un valor entero.</translation>
 <translation id="4103289232974211388">Redireccionar al IdP de SAML después de la confirmación del usuario</translation>
-<translation id="4105884561459127998">Configura el tipo de autenticación para los accesos SAML.
-
-      Cuando no se configura esta política o se establece como predeterminada (valor 0), el navegador determina el comportamiento de los accesos SAML según otros factores. En el caso más básico, la autenticación del usuario y la protección de los datos del usuario en caché se basan en las contraseñas que los usuarios hayan ingresado manualmente.
-
-      Si esta política se establece como ClientCertificate (valor 1), la autenticación de certificados de cliente se usa para los usuarios agregados recientemente con acceso mediante SAML. No se usan contraseñas para estos usuarios, y sus datos almacenados localmente en caché se protegen con claves criptográficas correspondientes. Por ejemplo, esta configuración permite establecer la autenticación de usuarios basada en tarjetas inteligentes (ten en cuenta que las apps de middleware de tarjetas inteligentes deben instalarse mediante la política DeviceLoginScreenExtensions).
-
-      Esta política solo afecta a los usuarios que realizan la autenticación con SAML.</translation>
 <translation id="4105989332710272578">Inhabilitar la aplicación del Certificado de transparencia para una lista de URL</translation>
 <translation id="4114059938441379876">Si estableces la política, se configurará la URL para que los usuarios cambien su contraseña cuando vean una advertencia en el navegador. El servicio de protección de contraseñas envíará a los usuarios a la URL (solo protocolos HTTP y HTTPS) que designes a través de esta política. Para que <ph name="PRODUCT_NAME" /> capture correctamente el hash con sal de la nueva contraseña en esta página de cambio de contraseña, asegúrate de que la página cumpla con estos lineamientos ( https://www.chromium.org/developers/design-documents/create-amazing-password-forms ).
 
@@ -3196,6 +3188,13 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 <translation id="4347908978527632940">Si la política se establece en true y el usuario es uno supervisado, otras apps de Android pueden consultar las restricciones web del usuario mediante un proveedor de contenido.
 
           Si la política se establece en false o no se establece, el proveedor de contenido no muestra ninguna información.</translation>
+<translation id="4357587374229381015">Especifica un nombre de parámetro de URL que se utilizará en la página de acceso del IdP de SAML para autocompletar el campo de nombre de usuario.
+
+      Se usará el correo electrónico del usuario asociado con su perfil de <ph name="PRODUCT_OS_NAME" /> como valor del parámetro de URL. Por lo tanto, esta configuración debe estar inhabilitada si se espera que los usuarios usen correos electrónicos con el IdP de SAML.
+
+      Si no la estableces, los usuarios tendrán que ingresar su nombre de usuario manualmente en la página de acceso del IdP de SAML.
+
+      Esta política afecta la autenticación en línea en las pantallas de acceso y bloqueo.</translation>
 <translation id="4363057787588706121">Permitir la combinación de políticas de listas con diferentes fuentes</translation>
 <translation id="4363101430102811068">Habilita la detección de filtraciones en las credenciales que se ingresan</translation>
 <translation id="436581050240847513">Informar interfaces de red del dispositivo</translation>
@@ -4087,11 +4086,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si esta política se establece como una lista de identificadores de método de entrada, estos métodos estarán disponibles en la pantalla de acceso y se preseleccionará el primero de ellos. Cuando se activa un módulo de sesión de usuario en la pantalla de acceso, el último método de entrada que este utilizó estará disponible junto con aquellos que especifica esta política. Si no se establece esta política, los métodos de entrada de la pantalla de acceso se obtendrán a partir de la configuración regional que se muestra en la pantalla de acceso. Se ignorarán los valores que no sean identificadores válidos de métodos de entrada.</translation>
 <translation id="5407008856008996384">Permite acceder a impresoras CUPS</translation>
 <translation id="5413051574966911176">Inhabilitar la IU relacionada con la conexión en el escritorio del host remoto cuando una conexión está activa</translation>
-<translation id="5417597818300833094">Si estableces la política, los usuarios podrán elegir uno de los métodos de entrada para las sesiones de <ph name="PRODUCT_OS_NAME" /> que especifiques.
-
-       Si no la estableces o la estableces como una lista vacía, los usuarios podrán seleccionar todos los métodos de entrada compatibles.
-
-      Nota: Si el método de entrada actual no es compatible, este cambiará al diseño de teclado del hardware (si se permite) o a la primera entrada válida de la lista. Se ignorarán los métodos no válidos o no compatibles.</translation>
 <translation id="5417906792459853336">Envía información sobre el uso de un dispositivo y su inventario de aplicaciones.
 
       Si se establece la política como falsa o no se establece, no se enviará la información.
@@ -4829,18 +4823,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="6207607210601267301">Inhabilitar la autenticación sin PIN para el host de acceso remoto</translation>
 <translation id="6208896993204286313">Enviar la información de la política de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enviar la información del SO y de la versión de <ph name="PRODUCT_NAME" /></translation>
-<translation id="6210422374261465354">Te permite especificar la configuración para URLs de autenticación en <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      <ph name="WEBVIEW_PRODUCT_NAME" /> tratará de manera especial estas URLs de autenticación, de manera que, durante la autenticación, cuando se navegue por la página web de <ph name="WEBVIEW_PRODUCT_NAME" />
-      a las URLs de autenticación, se iniciará la app de autenticador de los proveedores de identidad correspondiente que pueda administrar la URL.
-
-      Los proveedores de identidad utilizarán el flujo de ejecutar la app de autenticador de estos proveedores para habilitar
-      casos de uso en los que se brinda SSO en distintas apps o una mejor seguridad recopilando señales de dispositivos de confianza cero para entender la posición del dispositivo durante la autenticación.
-
-      Si no hay ninguna app válida instalada que pueda administrar la URL de autenticación en el dispositivo, la navegación continuará en <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Los URLs de autenticación válidos deben seguir el modelo <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> y no deben contener comodines.
-      </translation>
 <translation id="6212868225782276239">Se muestran todas las impresoras, excepto las de la lista negra.</translation>
 <translation id="6220835555850906733">Si habilitas la política o no la estableces, se permitirán todas las salidas de audio compatibles en los dispositivos de los usuarios.
 
@@ -6174,7 +6156,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7554382342294940216">Si habilitas la política, <ph name="PRODUCT_OS_NAME" /> podrá omitir cualquier proxy para autenticar portales cautivos. Estas páginas web de autenticación (desde la página de acceso del portal cautivo hasta que Chrome detecte una conexión a Internet exitosa) se abren en una ventana separada; por lo tanto, se ignorarán todas las opciones de configuración de la política y las restricciones para el usuario actual. Esta política solo tendrá efecto si se configura un proxy (por política, extensión o el usuario que aparece en chrome://settings).
 
       Si la inhabilitas o no la estableces, se mostrarán las páginas de autenticación del portal cautivo en una nueva pestaña del navegador (común) con la configuración de proxy del usuario actual.</translation>
-<translation id="7566878661979235378">Tipo de autenticación del acceso SAML</translation>
 <translation id="7567373982693549834">Esta política controla la forma en que cada usuario usa las apps para Android de fuentes no seguras (que no provienen de Google Play Store).
 
       Si no se establece el valor para esta política, no se permitirá la funcionalidad.
@@ -7467,7 +7448,6 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="8951350807133946005">Configurar el directorio de caché de disco</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permitir el agrupamiento en clústeres de agentes con clave de origen de forma predeterminada</translation>
-<translation id="8959992920425111821">Configuración predeterminada</translation>
 <translation id="8967125680876068695">Las Apps de Chrome dejaron de estar disponibles en Windows, Mac y Linux.
       Si se habilita esta política, <ph name="PRODUCT_NAME" /> seguirá permitiendo que se ejecuten las Apps de Chrome en estas plataformas hasta la fecha final en la que se quite su compatibilidad con todas las plataformas (junio de 2022).
       Si se inhabilita esta política o no se establece, es posible que no se puedan ejecutar las Apps de Chrome (en función del estado del lanzamiento de la desactivación).

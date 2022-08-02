@@ -46,7 +46,7 @@ constexpr char kReasonTether[] = "Tether Change";
 bool ConnectionStateChanged(const NetworkState* network,
                             const std::string& prev_connection_state,
                             NetworkState::PortalState prev_portal_state) {
-  if (network->portal_state() != prev_portal_state)
+  if (network->GetPortalState() != prev_portal_state)
     return true;
   std::string connection_state = network->connection_state();
   bool prev_idle = prev_connection_state.empty() ||
@@ -564,15 +564,14 @@ void NetworkStateHandler::SetShillConnectError(
   network->shill_connect_error_ = shill_connect_error;
 }
 
-void NetworkStateHandler::SetNetworkChromePortalDetected(
+void NetworkStateHandler::SetNetworkChromePortalState(
     const std::string& service_path,
-    bool portal_detected) {
+    NetworkState::PortalState portal_state) {
   NetworkState* network = GetModifiableNetworkState(service_path);
-  if (!network || network->is_chrome_captive_portal_ == portal_detected)
+  if (!network)
     return;
   bool was_captive_portal = network->IsCaptivePortal();
-  network->is_chrome_captive_portal_ = portal_detected;
-  // Only notify a connection state change if IsCaptivePortal() changed.
+  network->set_chrome_portal_state(portal_state);
   if (was_captive_portal == network->IsCaptivePortal())
     return;
   network_list_sorted_ = false;
@@ -997,7 +996,7 @@ void NetworkStateHandler::SetTetherNetworkStateConnectionState(
   network_list_sorted_ = false;
 
   if (ConnectionStateChanged(tether_network_state, prev_connection_state,
-                             tether_network_state->portal_state())) {
+                             tether_network_state->GetPortalState())) {
     NET_LOG(EVENT) << "Changing connection state for Tether network with GUID "
                    << guid << ". Old state: " << prev_connection_state << ", "
                    << "New state: " << connection_state;
@@ -1430,7 +1429,7 @@ void NetworkStateHandler::UpdateNetworkStateProperties(
   DCHECK(network);
   bool network_property_updated = false;
   std::string prev_connection_state = network->connection_state();
-  NetworkState::PortalState prev_portal_state = network->portal_state();
+  NetworkState::PortalState prev_portal_state = network->GetPortalState();
   bool metered = false;
   bool had_icccid_before_update = !network->iccid().empty();
   for (const auto iter : properties.DictItems()) {
@@ -1487,7 +1486,7 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
     return;
   }
   std::string prev_connection_state = network->connection_state();
-  NetworkState::PortalState prev_portal_state = network->portal_state();
+  NetworkState::PortalState prev_portal_state = network->GetPortalState();
   std::string prev_profile_path = network->profile_path();
   bool had_icccid_before_update = !network->iccid().empty();
   changed |= network->PropertyChanged(key, value);
@@ -2080,9 +2079,9 @@ void NetworkStateHandler::NotifyDefaultNetworkChanged(
     observer.DefaultNetworkChanged(default_network);
 
   if (default_network &&
-      (default_network->portal_state() != default_network_portal_state_ ||
+      (default_network->GetPortalState() != default_network_portal_state_ ||
        default_network->proxy_config() != default_network_proxy_config_)) {
-    default_network_portal_state_ = default_network->portal_state();
+    default_network_portal_state_ = default_network->GetPortalState();
     default_network_proxy_config_ = default_network->proxy_config().Clone();
     for (auto& observer : observers_) {
       observer.PortalStateChanged(default_network,

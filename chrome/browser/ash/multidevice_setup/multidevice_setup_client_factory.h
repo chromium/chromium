@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_CLIENT_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class ChromeOSMetricsProviderTest;
 class Profile;
@@ -18,7 +18,7 @@ class MultiDeviceSetupClient;
 
 // Singleton that owns all MultiDeviceSetupClient instances and associates them
 // with Profiles.
-class MultiDeviceSetupClientFactory : public BrowserContextKeyedServiceFactory {
+class MultiDeviceSetupClientFactory : public ProfileKeyedServiceFactory {
  public:
   static MultiDeviceSetupClient* GetForProfile(Profile* profile);
 

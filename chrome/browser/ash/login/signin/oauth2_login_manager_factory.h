@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_OAUTH2_LOGIN_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ class OAuth2LoginManager;
 // Singleton that owns all OAuth2LoginManager and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated OAuth2LoginManager.
-class OAuth2LoginManagerFactory : public BrowserContextKeyedServiceFactory {
+class OAuth2LoginManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of OAuth2LoginManager associated with this
   // `profile` (creates one if none exists).

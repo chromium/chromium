@@ -393,6 +393,8 @@ class Profile : public content::BrowserContext {
 
   // IsRegularProfile(), IsSystemProfile(), IsIncognitoProfile(), and
   // IsGuestSession() are mutually exclusive.
+  // Note: IsGuestSession() is not mutually exclusive with the rest of the
+  // methods mentioned above on Ash and Lacros. TODO(crbug.com/1348572).
   //
   // IsSystemProfile() returns true for both regular and off-the-record profile
   //   of the system profile.

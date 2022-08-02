@@ -36,16 +36,16 @@ namespace ash {
 
 namespace {
 
+using assistant::AssistantInteractionSubscriber;
+using assistant::ScopedAssistantInteractionSubscriber;
 using chromeos::assistant::AndroidAppInfo;
 using chromeos::assistant::Assistant;
 using chromeos::assistant::AssistantInteractionMetadata;
-using chromeos::assistant::AssistantInteractionSubscriber;
 using chromeos::assistant::AssistantInteractionType;
 using chromeos::assistant::AssistantQuerySource;
 using chromeos::assistant::AssistantSuggestion;
 using chromeos::assistant::AssistantSuggestionType;
 using chromeos::assistant::MockAssistantInteractionSubscriber;
-using chromeos::assistant::ScopedAssistantInteractionSubscriber;
 
 using ::testing::Invoke;
 using ::testing::Mock;
@@ -55,7 +55,7 @@ using ::testing::StrictMock;
 // Mocks -----------------------------------------------------------------------
 
 class AssistantInteractionSubscriberMock
-    : public chromeos::assistant::AssistantInteractionSubscriber {
+    : public AssistantInteractionSubscriber {
  public:
   explicit AssistantInteractionSubscriberMock(Assistant* service) {
     scoped_subscriber_.Observe(service);
@@ -69,8 +69,7 @@ class AssistantInteractionSubscriberMock
               (override));
 
  private:
-  chromeos::assistant::ScopedAssistantInteractionSubscriber scoped_subscriber_{
-      this};
+  ScopedAssistantInteractionSubscriber scoped_subscriber_{this};
 };
 
 // AssistantInteractionControllerImplTest --------------------------------------
@@ -237,7 +236,7 @@ TEST_F(AssistantInteractionControllerImplTest, ShouldDisplayGenericErrorOnce) {
   base::RunLoop().RunUntilIdle();
 
   interaction_controller()->OnInteractionFinished(
-      chromeos::assistant::AssistantInteractionResolution::kError);
+      assistant::AssistantInteractionResolution::kError);
 
   base::RunLoop().RunUntilIdle();
 

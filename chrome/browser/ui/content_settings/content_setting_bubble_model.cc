@@ -129,7 +129,8 @@ bool GetSettingManagedByUser(const GURL& url,
   ContentSetting setting;
   if (type == ContentSettingsType::COOKIES) {
     setting = CookieSettingsFactory::GetForProfile(profile)->GetCookieSetting(
-        url, url, &source);
+        url, url, &source,
+        content_settings::CookieSettings::QueryReason::kSetting);
   } else {
     SettingInfo info;
     const base::Value value = map->GetWebsiteSetting(url, url, type, &info);

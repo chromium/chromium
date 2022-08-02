@@ -199,8 +199,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
   display::DisplayLayoutStore* layout_store =
       GetDisplayManager()->layout_store();
 
-  const base::Value* layouts = local_state->Get(prefs::kSecondaryDisplays);
-  for (const auto it : layouts->DictItems()) {
+  for (const auto it : local_state->GetValueDict(prefs::kSecondaryDisplays)) {
     std::unique_ptr<display::DisplayLayout> layout(new display::DisplayLayout);
     if (!display::JsonToDisplayLayout(it.second, layout.get())) {
       LOG(WARNING) << "Invalid preference value for " << it.first;
@@ -225,8 +224,7 @@ void LoadDisplayLayouts(PrefService* local_state) {
 }
 
 void LoadDisplayProperties(PrefService* local_state) {
-  const base::Value* properties = local_state->Get(prefs::kDisplayProperties);
-  for (const auto it : properties->DictItems()) {
+  for (const auto it : local_state->GetValueDict(prefs::kDisplayProperties)) {
     const base::DictionaryValue* dict_value = nullptr;
     if (!it.second.GetAsDictionary(&dict_value) || dict_value == nullptr)
       continue;
@@ -279,30 +277,24 @@ void LoadDisplayProperties(PrefService* local_state) {
 }
 
 void LoadDisplayRotationState(PrefService* local_state) {
-  const base::Value* properties = local_state->Get(prefs::kDisplayRotationLock);
-  DCHECK(properties->is_dict());
-  const base::Value* rotation_lock =
-      properties->FindKeyOfType("lock", base::Value::Type::BOOLEAN);
+  const base::Value::Dict& properties =
+      local_state->GetValueDict(prefs::kDisplayRotationLock);
+  const absl::optional<bool> rotation_lock = properties.FindBool("lock");
   if (!rotation_lock)
     return;
 
-  const base::Value* rotation =
-      properties->FindKeyOfType("orientation", base::Value::Type::INTEGER);
+  const absl::optional<int> rotation = properties.FindInt("orientation");
   if (!rotation)
     return;
 
   GetDisplayManager()->RegisterDisplayRotationProperties(
-      rotation_lock->GetBool(),
-      static_cast<display::Display::Rotation>(rotation->GetInt()));
+      *rotation_lock, static_cast<display::Display::Rotation>(*rotation));
 }
 
 void LoadDisplayTouchAssociations(PrefService* local_state) {
-  const base::Value* properties =
-      local_state->Get(prefs::kDisplayTouchAssociations);
-  DCHECK(properties->is_dict());
-
   display::TouchDeviceManager::TouchAssociationMap touch_associations;
-  for (const auto item : properties->DictItems()) {
+  for (const auto item :
+       local_state->GetValueDict(prefs::kDisplayTouchAssociations)) {
     uint32_t identifier_raw;
     if (!base::StringToUint(item.first, &identifier_raw))
       continue;
@@ -338,8 +330,7 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   // a couple of milestones when everything is stable.
   const display::TouchDeviceIdentifier& fallback_identifier =
       display::TouchDeviceIdentifier::GetFallbackTouchDeviceIdentifier();
-  properties = local_state->Get(prefs::kDisplayProperties);
-  for (const auto it : properties->DictItems()) {
+  for (const auto it : local_state->GetValueDict(prefs::kDisplayProperties)) {
     const base::DictionaryValue* dict_value = nullptr;
     if (!it.second.GetAsDictionary(&dict_value) || dict_value == nullptr)
       continue;
@@ -366,9 +357,9 @@ void LoadDisplayTouchAssociations(PrefService* local_state) {
   }
 
   // Retrieve port association information.
-  properties = local_state->Get(prefs::kDisplayTouchPortAssociations);
   display::TouchDeviceManager::PortAssociationMap port_associations;
-  for (const auto item : properties->DictItems()) {
+  for (const auto item :
+       local_state->GetValueDict(prefs::kDisplayTouchPortAssociations)) {
     // Retrieve the secondary id that identifies the port.
     uint32_t secondary_id_raw;
     if (!base::StringToUint(item.first, &secondary_id_raw))
@@ -866,7 +857,7 @@ void DisplayPrefs::LoadDisplayPreferences() {
 
   // Restore DisplayPowerState:
   const std::string value =
-      local_state_->Get(prefs::kDisplayPowerState)->GetString();
+      local_state_->GetValue(prefs::kDisplayPowerState).GetString();
   chromeos::DisplayPowerState power_state;
   if (GetDisplayPowerStateFromString(value, &power_state))
     Shell::Get()->display_configurator()->SetInitialDisplayPower(power_state);

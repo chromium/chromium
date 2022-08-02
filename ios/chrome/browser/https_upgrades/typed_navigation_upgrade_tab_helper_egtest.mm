@@ -4,31 +4,32 @@
 
 #include <string>
 
-#include "base/bind.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "components/omnibox/common/omnibox_features.h"
-#include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/metrics/histogram_tester.h"
+#import "components/omnibox/common/omnibox_features.h"
+#import "components/security_interstitials/core/https_only_mode_metrics.h"
+#import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_app_interface.h"
 #import "ios/chrome/browser/https_upgrades/https_upgrade_test_helper.h"
-#include "ios/chrome/browser/metrics/metrics_app_interface.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/testing/embedded_test_server_handlers.h"
-#include "ios/web/common/features.h"
-#include "ios/web/public/test/element_selector.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/common/features.h"
+#import "ios/web/public/test/element_selector.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,6 +84,13 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"HTTPS Only Mode timer is unexpectedly running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is unexpectedly running");
+
+  // HTTPS-Only mode shouldn't handle this navigation.
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a successful upgrade.
@@ -116,6 +124,13 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"HTTPS Only Mode timer is still running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is still running");
+
+  // HTTPS-Only mode shouldn't handle this navigation.
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a failed upgrade.
@@ -150,6 +165,13 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"HTTPS Only Mode timer is still running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is still running");
+
+  // HTTPS-Only mode shouldn't handle this navigation.
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Asserts that the metrics are properly recorded for a timed-out upgrade.
@@ -184,6 +206,13 @@ std::string GetURLWithoutScheme(const GURL& url) {
              @"HTTPS Only Mode timer is still running");
   GREYAssert(![HttpsUpgradeAppInterface isOmniboxUpgradeTimerRunning],
              @"Omnibox upgrade timer is still running");
+
+  // HTTPS-Only mode shouldn't handle this navigation.
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"HTTPS-Only mode unexpectedly recorded a histogram event");
 }
 
 // Focuses on the omnibox and types the given text.
@@ -202,7 +231,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 
 // Navigate to an HTTP URL. Since it's not typed in the omnibox, it shouldn't
 // be upgraded to HTTPS.
-- (void)testUpgrade_NoTyping_NoUpgrade {
+- (void)test_NoTyping_ShouldNotUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -213,7 +242,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 }
 
 // Type an HTTP URL with scheme. It shouldn't be upgraded to HTTPS.
-- (void)testUpgrade_TypeFullHTTPURL_NoUpgrade {
+- (void)test_TypeFullHTTPURL_ShouldNotUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -228,7 +257,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 }
 
 // Type an HTTPS URL with scheme. It shouldn't be upgraded.
-- (void)testUpgrade_TypeFullHTTPSURL_NoUpgrade {
+- (void)test_TypeFullHTTPSURL_ShouldNotUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -244,7 +273,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS
 // which should load successfully.
-- (void)testUpgrade_GoodHTTPS {
+- (void)test_TypeHTTPWithGoodHTTPS_ShouldUpgrade {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
                                       useFakeHTTPS:true];
 
@@ -272,10 +301,50 @@ std::string GetURLWithoutScheme(const GURL& url) {
   [self assertSuccessfulUpgrade:2];
 }
 
+// Same as test_TypeHTTPWithGoodHTTPS_ShouldUpgrade but with HTTPS-Only Mode
+// enabled.
+- (void)test_TypeHTTPWithGoodHTTPS_HTTPSOnlyModeEnabled_ShouldUpgrade {
+  // Enable HTTPS-Only Mode.
+  [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
+
+  [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.goodHTTPSServer->port()
+                                      useFakeHTTPS:true];
+
+  // Go to a web page to have a normal location bar.
+  [ChromeEarlGrey loadURL:GURL("data:text/html,Blank Page")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
+
+  GURL testURL = self.testServer->GetURL("/");
+  std::string text = GetURLWithoutScheme(testURL);
+
+  // Type the URL in the omnibox.
+  [self typeTextAndPressEnter:text];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
+  [self assertSuccessfulUpgrade:1];
+
+  // Load an interim data URL to clear the "HTTP_RESPONSE" text.
+  [ChromeEarlGrey loadURL:GURL("data:text/html,Blank Page")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Blank Page"];
+
+  // Type again. Normally, Omnibox should remember the successful HTTPS
+  // navigation and not attempt to upgrade again. We are using a faux-HTTPS
+  // server in tests which serves an http:// URL, so it will get upgraded again.
+  [self typeTextAndPressEnter:text];
+  [ChromeEarlGrey waitForWebStateContainingText:"HTTPS_RESPONSE"];
+  [self assertSuccessfulUpgrade:2];
+
+  // HTTPS-Only mode shouldn't handle this navigation.
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:0
+                        forHistogram:@(security_interstitials::https_only_mode::
+                                           kEventHistogram)],
+                @"HTTPS-Only mode unexpectedly recorded a histogram event");
+}
+
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,
 // but the HTTPS URL serves bad response. The navigation should fall back to
 // HTTP.
-- (void)testUpgrade_BadHTTPS {
+- (void)test_HTTPWithBadHTTPS_ShouldFallback {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.badHTTPSServer->port()
                                       useFakeHTTPS:false];
   [HttpsUpgradeAppInterface
@@ -310,7 +379,7 @@ std::string GetURLWithoutScheme(const GURL& url) {
 // Type an HTTP URL without scheme. The navigation should be upgraded to HTTPS,
 // but the HTTPS URL serves a slow loading response. The upgrade should timeout
 // and the navigation should fall back to HTTP.
-- (void)testUpgrade_SlowTTPS {
+- (void)test_HTTPWithSlowHTTPS_ShouldFallBack {
   [HttpsUpgradeAppInterface setHTTPSPortForTesting:self.slowHTTPSServer->port()
                                       useFakeHTTPS:true];
   [HttpsUpgradeAppInterface

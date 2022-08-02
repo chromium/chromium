@@ -304,11 +304,6 @@ class CORE_EXPORT NGFragmentItem final {
     return NGLineBoxType::kNormalLineBox;
   }
 
-  LayoutUnit LineBoxHangingInlineSize() const {
-    DCHECK_EQ(Type(), kLine);
-    return LineBoxFragment()->HangingInlineSize();
-  }
-
   static PhysicalRect LocalVisualRectFor(const LayoutObject& layout_object);
 
   // Re-compute the ink overflow for the |cursor| until its end.
@@ -367,7 +362,9 @@ class CORE_EXPORT NGFragmentItem final {
     return IsHorizontalWritingMode(GetWritingMode());
   }
 
-  WritingMode GetWritingMode() const { return Style().GetWritingMode(); }
+  WritingMode GetWritingMode() const {
+    return Style().GetWritingMode();
+  }
 
   // Functions for |TextItem|, |SvgTextItem|, and |GeneratedTextItem|.
   NGTextType TextType() const {

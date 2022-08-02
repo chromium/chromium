@@ -717,7 +717,6 @@ class GpuIntegrationTest(
       # it's the discrete GPU, so that test expectations can be written that
       # target the discrete GPU.
       gpu_tags.append(gpu_helper.GetANGLERenderer(gpu_info))
-      gpu_tags.append(gpu_helper.GetSwiftShaderGLRenderer(gpu_info))
       gpu_tags.append(gpu_helper.GetCommandDecoder(gpu_info))
       gpu_tags.append(gpu_helper.GetOOPCanvasStatus(gpu_info.feature_status))
       gpu_tags.append(gpu_helper.GetAsanStatus(gpu_info))
@@ -737,11 +736,11 @@ class GpuIntegrationTest(
             gpu_device_tag = '%s-%s' % (gpu_vendor, gpu_device_id)
           if ii == 0 or gpu_vendor != 'intel':
             gpu_tags.extend([gpu_vendor, gpu_device_tag])
-            # This acts as a way to add expectations for both HD 630 and UHD 630
-            # GPUs without resorting to the more generic "intel" tag.
-            if gpu_device_tag in ('intel-0x5912', 'intel-0x3e92',
-                                  'intel-0x9bc5'):
-              gpu_tags.append('intel-hd-630-family')
+            # This acts as a way to add expectations for Intel Gen9 GPUs
+            # without resorting to the more generic "intel" tag.
+            if gpu_vendor == 'intel' and (gpu_device_id & 0xFF00) in (
+                0x1900, 0x3100, 0x3E00, 0x5900, 0x5A00, 0x9B00):
+              gpu_tags.extend(['intel-gen-9', 'intel-hd-630-family'])
       # all spaces and underscores in the tag will be replaced by dashes
       tags.extend([re.sub('[ _]', '-', tag) for tag in gpu_tags])
 

@@ -9,6 +9,7 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/site_engagement/content/site_engagement_service.h"
@@ -53,9 +54,10 @@ ThirdPartyCookieBlockState
 NavigationMetricsRecorder::GetThirdPartyCookieBlockState(const GURL& url) {
   if (!cookie_settings_->ShouldBlockThirdPartyCookies())
     return ThirdPartyCookieBlockState::kCookiesAllowed;
-  bool blocking_enabled_for_site =
-      !cookie_settings_->IsThirdPartyAccessAllowed(url,
-                                                   /*source=*/nullptr);
+  bool blocking_enabled_for_site = !cookie_settings_->IsThirdPartyAccessAllowed(
+      url,
+      /*source=*/nullptr,
+      content_settings::CookieSettings::QueryReason::kSetting);
   return blocking_enabled_for_site
              ? ThirdPartyCookieBlockState::kThirdPartyCookiesBlocked
              : ThirdPartyCookieBlockState::

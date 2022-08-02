@@ -50,11 +50,14 @@ public class BackPressManagerTest {
     @Test
     @SmallTest
     public void testBasic() {
-        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM, 0);
+        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM,
+                BackPressManager.sMetricsMap.get(BackPressHandler.Type.FIND_TOOLBAR));
+
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { manager.addHandler(h1, 0); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { manager.addHandler(h1, BackPressHandler.Type.FIND_TOOLBAR); });
 
         manager.getCallback().handleOnBackPressed();
 
@@ -77,16 +80,18 @@ public class BackPressManagerTest {
     @Test
     @SmallTest
     public void testMultipleHandlers() {
-        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM, 0);
-        HistogramDelta d2 = new HistogramDelta(BackPressManager.HISTOGRAM, 1);
+        HistogramDelta d1 = new HistogramDelta(BackPressManager.HISTOGRAM,
+                BackPressManager.sMetricsMap.get(BackPressHandler.Type.VR_DELEGATE));
+        HistogramDelta d2 = new HistogramDelta(BackPressManager.HISTOGRAM,
+                BackPressManager.sMetricsMap.get(BackPressHandler.Type.AR_DELEGATE));
         BackPressManager manager = new BackPressManager();
         EmptyBackPressHandler h1 =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
         EmptyBackPressHandler h2 =
                 TestThreadUtils.runOnUiThreadBlockingNoException(EmptyBackPressHandler::new);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            manager.addHandler(h1, 0);
-            manager.addHandler(h2, 1);
+            manager.addHandler(h1, BackPressHandler.Type.VR_DELEGATE);
+            manager.addHandler(h2, BackPressHandler.Type.AR_DELEGATE);
             h1.getHandleBackPressChangedSupplier().set(false);
             h2.getHandleBackPressChangedSupplier().set(true);
         });

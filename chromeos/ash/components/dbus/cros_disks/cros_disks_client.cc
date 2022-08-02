@@ -58,26 +58,26 @@ bool IsValidMediaType(uint32_t type) {
 // changes in cros-disks.
 DeviceType DeviceMediaTypeToDeviceType(uint32_t media_type_uint32) {
   if (!IsValidMediaType(media_type_uint32))
-    return DEVICE_TYPE_UNKNOWN;
+    return DeviceType::kUnknown;
 
   cros_disks::DeviceMediaType media_type =
       cros_disks::DeviceMediaType(media_type_uint32);
 
   switch (media_type) {
     case (cros_disks::DEVICE_MEDIA_UNKNOWN):
-      return DEVICE_TYPE_UNKNOWN;
+      return DeviceType::kUnknown;
     case (cros_disks::DEVICE_MEDIA_USB):
-      return DEVICE_TYPE_USB;
+      return DeviceType::kUSB;
     case (cros_disks::DEVICE_MEDIA_SD):
-      return DEVICE_TYPE_SD;
+      return DeviceType::kSD;
     case (cros_disks::DEVICE_MEDIA_OPTICAL_DISC):
-      return DEVICE_TYPE_OPTICAL_DISC;
+      return DeviceType::kOpticalDisc;
     case (cros_disks::DEVICE_MEDIA_MOBILE):
-      return DEVICE_TYPE_MOBILE;
+      return DeviceType::kMobile;
     case (cros_disks::DEVICE_MEDIA_DVD):
-      return DEVICE_TYPE_DVD;
+      return DeviceType::kDVD;
     default:
-      return DEVICE_TYPE_UNKNOWN;
+      return DeviceType::kUnknown;
   }
 }
 
@@ -630,7 +630,7 @@ DiskInfo::DiskInfo(const std::string& device_path, dbus::Response* response)
       is_hidden_(true),
       is_virtual_(false),
       is_auto_mountable_(false),
-      device_type_(DEVICE_TYPE_UNKNOWN),
+      device_type_(DeviceType::kUnknown),
       total_size_in_bytes_(0) {
   InitializeFromResponse(response);
 }

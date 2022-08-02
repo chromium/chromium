@@ -13,7 +13,6 @@ goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('BaseLog');
 goog.require('BrailleDisplayState');
-goog.require('BrailleInterface');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('EventLog');

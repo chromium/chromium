@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PRINTING_HISTORY_PRINT_JOB_REPORTING_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {
 class BrowserContext;
@@ -17,8 +17,7 @@ class PrintJobReportingService;
 
 // Singleton that owns all PrintJobReportingServices and associates them with
 // Profiles.
-class PrintJobReportingServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class PrintJobReportingServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the PrintJobReportingService for |context|, creating it if it is
   // not yet created.

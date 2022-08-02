@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">يمين</translation>
 <translation id="1351937230027495976">تصغير القائمة</translation>
 <translation id="1364382257761975320">‏لفتح قفل جهاز Chromebook، استخدِم بصمة إصبعك.</translation>
+<translation id="1365866993922957110">الحصول على تحديثات تلقائية</translation>
 <translation id="1372545819342940910">حفظ سطح المكتب لوقت لاحق</translation>
 <translation id="1383597849754832576">يتعذّر تنزيل ملفات ميزة "النسخ النصي التلقائي". يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="1383876407941801731">البحث</translation>
@@ -162,6 +163,7 @@
 <translation id="1830308660060964064">تم إلغاء تثبيت <ph name="ITEM_TITLE" /></translation>
 <translation id="1836215606488044471">المساعد (جارٍ التحميل...)</translation>
 <translation id="1838895407229022812">"الإضاءة الليلية" غير مفعّلة.</translation>
+<translation id="1862380676329487333">تحديث وتسجيل الخروج</translation>
 <translation id="1864454756846565995">‏جهاز USB-C (المنفذ الخلفي)</translation>
 <translation id="1879018240766558464">نوافذ التصفّح المتخفي غير متوافقة حاليًا، ولكن سيتم حفظ التطبيقات الأخرى.</translation>
 <translation id="1882814835921407042">شبكة الجوّال غير متاحة</translation>
@@ -563,6 +565,7 @@
 <translation id="423685346499232137">يتعذّر نسخ المحتوى أو لصقه في الوقت الحالي.</translation>
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
+<translation id="4247123849143712100">تحديث وإيقاف التشغيل</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
 <translation id="425364040945105958">‏ليس هناك شريحة SIM</translation>
 <translation id="4261870227682513959">عرض إعدادات الإشعارات. تم إيقاف الإشعارات</translation>
@@ -922,6 +925,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> هي جلسة تتم إدارتها من خلال <ph name="MANAGER" />.</translation>
 <translation id="6344138931392227467">تم توصيل <ph name="DEVICE_NAME" />.</translation>
 <translation id="6351032674660237738">اقتراحات التطبيقات</translation>
+<translation id="6359587239691116345">يُرجى الحصول على أحدث الميزات وتحسينات الأمان. في حال رفض هذا التحديث، من المحتمل أن يتوقف جهازك عن العمل بشكل صحيح وقد تواجه مشاكل تتعلّق بالأمان والأداء.</translation>
 <translation id="6376931439017688372">تم تفعيل البلوتوث</translation>
 <translation id="6381109794406942707">لفتح قفل الجهاز، أدخِل رقم التعريف الشخصي.</translation>
 <translation id="639644700271529076">‏مفتاح CAPS LOCK قيد الإيقاف</translation>
@@ -943,6 +947,7 @@
 <translation id="6491071886865974820">يتطلّب <ph name="MANAGER" /> منك تحديث جهاز <ph name="DEVICE_TYPE" /> قبل الموعد النهائي.</translation>
 <translation id="649452524636452238">رقم التعريف الشخصي للبطاقة الذكية</translation>
 <translation id="6495400115277918834">‏تم تفعيل ميزة "نافذة ضمن النافذة". يمكنك الضغط على المفاتيح Alt+‏Shift‏+V للتركيز.</translation>
+<translation id="6500896621837555595">تحديث</translation>
 <translation id="6501401484702599040">إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">انقطع الاتصال بالكاميرا، وجارٍ محاولة إعادة الاتصال.</translation>
 <translation id="6520517963145875092">يُرجى تحديد نافذة للحصول لالتقاط صورة لها.</translation>
@@ -1220,6 +1225,7 @@
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>
 <translation id="8061464966246066292">تباين عالٍ</translation>
 <translation id="8083540854303889870">محفوظة لوقت لاحق</translation>
+<translation id="8091387634532529612">التحديثات التلقائية</translation>
 <translation id="8098591350844501178">إيقاف إرسال الشاشة إلى <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">مفعلة، كل التطبيقات</translation>
 <translation id="8120151603115102514">‏شاشة القفل غير مفعّلة على هاتفك. لفتح قفل جهاز Chromebook، أدخِل كلمة المرور.</translation>
@@ -1426,4 +1432,5 @@
 <translation id="974545358917229949">عرض <ph name="RESULT_COUNT" /> نتيجة عن <ph name="QUERY" /></translation>
 <translation id="98515147261107953">أفقي</translation>
 <translation id="990277280839877440">تم إغلاق النافذة <ph name="WINDOW_TITILE" />.</translation>
+<translation id="996204416024568215">يُرجى الحصول على أحدث الميزات وتحسينات الأمان. يتم تنزيل التحديثات في الخلفية.</translation>
 </translationbundle>

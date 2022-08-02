@@ -37,7 +37,7 @@ PrefService* Prefs() {
 AssistantSetup::AssistantSetup() {
   DCHECK(assistant::IsAssistantAllowedForProfile(
              ProfileManager::GetActiveUserProfile()) ==
-         chromeos::assistant::AssistantAllowedState::ALLOWED);
+         ash::assistant::AssistantAllowedState::ALLOWED);
   ash::AssistantState::Get()->AddObserver(this);
 
   search_and_assistant_enabled_checker_ =
@@ -64,7 +64,7 @@ bool AssistantSetup::BounceOptInWindowIfActive() {
 void AssistantSetup::MaybeStartAssistantOptInFlow() {
   DCHECK(Prefs());
   if (!Prefs()->GetUserPrefValue(
-          chromeos::assistant::prefs::kAssistantConsentStatus)) {
+          ash::assistant::prefs::kAssistantConsentStatus)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&AssistantSetup::StartAssistantOptInFlow,
@@ -77,24 +77,24 @@ void AssistantSetup::OnError() {
   // When there is an error, default the pref to false if the pref is not set
   // yet. The pref value will be synced the next time.
   if (!Prefs()->GetUserPrefValue(
-          chromeos::assistant::prefs::kAssistantDisabledByPolicy)) {
-    Prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantDisabledByPolicy,
+          ash::assistant::prefs::kAssistantDisabledByPolicy)) {
+    Prefs()->SetBoolean(ash::assistant::prefs::kAssistantDisabledByPolicy,
                         false);
   }
 }
 
 void AssistantSetup::OnSearchAndAssistantStateReceived(bool is_disabled) {
-  Prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantDisabledByPolicy,
+  Prefs()->SetBoolean(ash::assistant::prefs::kAssistantDisabledByPolicy,
                       is_disabled);
   if (is_disabled) {
     DVLOG(1) << "Assistant is disabled by domain policy.";
-    Prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, false);
+    Prefs()->SetBoolean(ash::assistant::prefs::kAssistantEnabled, false);
   }
 }
 
 void AssistantSetup::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
-  if (status == chromeos::assistant::AssistantStatus::NOT_READY)
+    ash::assistant::AssistantStatus status) {
+  if (status == ash::assistant::AssistantStatus::NOT_READY)
     return;
 
   SyncSettingsState();
@@ -107,7 +107,7 @@ void AssistantSetup::SyncSettingsState() {
   consent_flow_ui->set_flow_id(
       chromeos::assistant::ActivityControlSettingsUiSelector::
           ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS);
-  chromeos::assistant::AssistantSettings::Get()->GetSettings(
+  ash::assistant::AssistantSettings::Get()->GetSettings(
       selector.SerializeAsString(),
       base::BindOnce(&AssistantSetup::OnGetSettingsResponse,
                      base::Unretained(this)));
@@ -129,29 +129,27 @@ void AssistantSetup::OnGetSettingsResponse(const std::string& settings) {
     case ConsentFlowUi::ASK_FOR_CONSENT:
       if (consent_ui.has_activity_control_ui() &&
           consent_ui.activity_control_ui().setting_zippy().size()) {
-        Prefs()->SetInteger(
-            chromeos::assistant::prefs::kAssistantConsentStatus,
-            chromeos::assistant::prefs::ConsentStatus::kNotFound);
+        Prefs()->SetInteger(ash::assistant::prefs::kAssistantConsentStatus,
+                            ash::assistant::prefs::ConsentStatus::kNotFound);
       } else {
-        Prefs()->SetInteger(chromeos::assistant::prefs::kAssistantConsentStatus,
-                            chromeos::assistant::prefs::ConsentStatus::
-                                kActivityControlAccepted);
+        Prefs()->SetInteger(
+            ash::assistant::prefs::kAssistantConsentStatus,
+            ash::assistant::prefs::ConsentStatus::kActivityControlAccepted);
       }
       break;
     case ConsentFlowUi::ERROR_ACCOUNT:
-      Prefs()->SetInteger(
-          chromeos::assistant::prefs::kAssistantConsentStatus,
-          chromeos::assistant::prefs::ConsentStatus::kUnauthorized);
+      Prefs()->SetInteger(ash::assistant::prefs::kAssistantConsentStatus,
+                          ash::assistant::prefs::ConsentStatus::kUnauthorized);
       break;
     case ConsentFlowUi::ALREADY_CONSENTED:
       Prefs()->SetInteger(
-          chromeos::assistant::prefs::kAssistantConsentStatus,
-          chromeos::assistant::prefs::ConsentStatus::kActivityControlAccepted);
+          ash::assistant::prefs::kAssistantConsentStatus,
+          ash::assistant::prefs::ConsentStatus::kActivityControlAccepted);
       break;
     case ConsentFlowUi::UNSPECIFIED:
     case ConsentFlowUi::ERROR:
-      Prefs()->SetInteger(chromeos::assistant::prefs::kAssistantConsentStatus,
-                          chromeos::assistant::prefs::ConsentStatus::kUnknown);
+      Prefs()->SetInteger(ash::assistant::prefs::kAssistantConsentStatus,
+                          ash::assistant::prefs::ConsentStatus::kUnknown);
       LOG(ERROR) << "Invalid activity control consent status.";
   }
 }

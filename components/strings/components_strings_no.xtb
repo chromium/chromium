@@ -1228,6 +1228,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4305666528087210886">Kunne ikke åpne filen</translation>
 <translation id="4306529830550717874">Vil du lagre adressen?</translation>
 <translation id="4306812610847412719">utklippstavle</translation>
+<translation id="4308567447483056043">Denne regelen ignoreres fordi brukeren ikke er tilknyttet. For at denne regelen skal gjelde, må Chrome-nettleseren og -profilen være administrert av den samme organisasjonen via administrasjonskonsollen.</translation>
 <translation id="4310070645992025887">Søk i søkereisene dine</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Blokkér (standard)</translation>

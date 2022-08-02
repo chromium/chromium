@@ -31,9 +31,6 @@ class SiteAccessMenuItemView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(SiteAccessMenuItemView);
 
-  static constexpr int kMenuItemHeightDp = 40;
-  static constexpr gfx::Size kIconSize{28, 28};
-
   SiteAccessMenuItemView(
       Browser* browser,
       std::unique_ptr<ToolbarActionViewController> controller);
@@ -86,10 +83,6 @@ DEFINE_VIEW_BUILDER(/* no export */, SiteAccessMenuItemView)
 class InstalledExtensionMenuItemView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(InstalledExtensionMenuItemView);
-
-  // TODO(emiliapaz): Consider moving these variables outside this class.
-  static constexpr int kMenuItemHeightDp = 40;
-  static constexpr gfx::Size kIconSize{28, 28};
 
   InstalledExtensionMenuItemView(
       Browser* browser,

@@ -109,7 +109,7 @@ class WebsitePreference extends ChromeImageViewPreference {
             return super.compareTo(preference);
         }
         WebsitePreference other = (WebsitePreference) preference;
-        if (mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             return mSite.compareByStorageTo(other.mSite);
         }
 
@@ -121,7 +121,7 @@ class WebsitePreference extends ChromeImageViewPreference {
         super.onBindViewHolder(holder);
         TextView usageText = (TextView) holder.findViewById(R.id.usage_text);
         usageText.setVisibility(View.GONE);
-        if (mCategory.showSites(SiteSettingsCategory.Type.USE_STORAGE)) {
+        if (mCategory.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             long totalUsage = mSite.getTotalUsage();
             if (totalUsage > 0) {
                 usageText.setText(Formatter.formatShortFileSize(getContext(), totalUsage));

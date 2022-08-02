@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Kan ikke oppdatere Chrome</translation>
 <translation id="1152920704813762236">Om ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Åpne i Chrome</translation>
-<translation id="1178374936842835197">Hvis en innstilling ikke vises på denne siden, kan du se i <ph name="LINK_BEGIN" />
-        innstillingene for ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Installasjonen er fullført. Start nettleseren på nytt før du tar i bruk <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Start på nytt for å oppdatere &amp;Chrome</translation>
 <translation id="1302523850133262269">Vent mens Chrome installerer de nyeste systemoppdateringene.</translation>
@@ -119,7 +117,6 @@
 <translation id="3080151273017101988">Fortsett kjøringen av bakgrunnsprogrammer når Google Chrome er lukket</translation>
 <translation id="3089968997497233615">En ny, sikrere versjon av Google Chrome er tilgjengelig</translation>
 <translation id="3100998948628680988">Gi navn til Chrome-profilen din</translation>
-<translation id="3103390129666310801">For å se om enheten er oppdatert, gå til <ph name="LINK_BEGIN" />Innstillinger for ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">For å sjekke om de andre passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Endringene dine trer i kraft neste gang du starter Google Chrome.</translation>
 <translation id="3149510190863420837">Chrome-apper</translation>
@@ -210,7 +207,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">For å få fremtidige Google Chrome-oppdateringer må du ha macOS 10.13 eller nyere. Denne datamaskinen bruker OS X 10.11.</translation>
 <translation id="5098668839038261629">Når dette er på, blir du også logget av Chrome</translation>
-<translation id="5112116809696021727">For å se om enheten er oppdatert, gå til <ph name="LINK_BEGIN" />ChromeOS-innstillingene<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Oppdag flotte apper, spill, utvidelser og temaer for Google Chrome.</translation>
 <translation id="5139423532931106058">Tilpass Chrome-profilen din</translation>
 <translation id="5163087008893166964">Velkommen til Chrome – et nytt nettleservindu er åpnet</translation>
@@ -246,8 +242,6 @@
 <translation id="5940385492829620908">Her finner du nettinnholdet, bokmerkene og de andre Chrome-tingene dine.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5941830788786076944">Gjør Google Chrome til standardleser</translation>
-<translation id="5959292945051687759">Hvis en innstilling ikke vises på denne siden, kan du se i <ph name="LINK_BEGIN" />
-        ChromeOS-innstillingene<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Laster ned … <ph name="HOURS" /> time(r) igjen</translation>
 <translation id="6040143037577758943">Lukk</translation>
 <translation id="6070348360322141662">Google Chrome krypterer dataene dine for å øke sikkerheten</translation>

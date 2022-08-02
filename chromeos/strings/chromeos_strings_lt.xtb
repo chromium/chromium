@@ -241,7 +241,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Galutinis taškas</translation>
 <translation id="3069085583900247081">Bandymas nepavyko</translation>
-<translation id="3076243757415932261">Tvirtinami komponentai...</translation>
 <translation id="3083667275341675831">Ryšio diagnostika</translation>
 <translation id="3084958266922136097">Išjungti ekrano užsklandą</translation>
 <translation id="3091839911843451378">Nepavyko – sustabdyta</translation>
@@ -276,7 +275,6 @@
 <translation id="3369013195428705271">Ar tikrai norite išvalyti visą spausdinimo istoriją? Vykdomos spausdinimo užduotys nebus išvalytos.</translation>
 <translation id="3383751554789092165">Keiskite įrenginio informaciją pagal poreikį.</translation>
 <translation id="3404249063913988450">Įgalinti ekrano užsklandą</translation>
-<translation id="3404770484521709967">Komponentai įdiegti tinkamai.</translation>
 <translation id="3413935475507503304">Jei norite tęsti atnaujinimo procesą, spustelėkite „Kitas“.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="3435738964857648380">Sauga</translation>
@@ -396,7 +394,6 @@
 <translation id="445059817448385655">Senas slaptažodis</translation>
 <translation id="4453205916657964690">Potinklio kaukė</translation>
 <translation id="4454245904991689773">Nuskaityti į</translation>
-<translation id="4472575034687746823">Pradėkite</translation>
 <translation id="4479639480957787382">Eternetas</translation>
 <translation id="4483049906298469269">Nepavyko patikrinti ryšio su nenumatytuoju tinklų sietuvu</translation>
 <translation id="4500213108254186382">Dangčio akcelerometras</translation>
@@ -811,7 +808,6 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8063022551652308521">Įrašymo apsauga vis dar išjungta. Jei norite tęsti, įjunkite įrašymo apsaugą.</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="8082366717211101304">Nepavyko pateikti DNS iš „Android“ programų</translation>
-<translation id="8083281199617904460">Taisymo procesą turi vykdyti kvalifikuotas taisymo specialistas. Pradėkite tik pakeitę netinkamai veikiančius komponentus.</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8104083085214006426">Naudojate atvirąjį ir nesaugų tinklą</translation>
 <translation id="8109786307828817014">Tęsti naudojant nesukalibruotus komponentus?</translation>

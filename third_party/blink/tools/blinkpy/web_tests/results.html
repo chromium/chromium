@@ -268,11 +268,12 @@ p, h2, h3, h4 {
 
   <p>Select the results you are interested in using "Query" buttons.</p>
   <p>Narrow down the results further with "Filter" search box and checkboxes.
-  The following types of search strings are supported:</p>
+  The search string can be a (full or partial) test name or bug number.
+  Additionally, the following range specifiers are supported:</p>
   <ul>
-  <li>Test name: full or partial,</li>
-  <li>Bug number: full or partial,</li>
-  <li>Range of test time duration: 'time:min-' or 'time:min-max' or 'time:-max' in seconds.</li>
+  <li>Range of test time duration: 'time:min-' or 'time:min-max' or 'time:-max' in seconds,</li>
+  <li>Total pixel difference: 'pixels:min-' or 'pixels:min-max' or 'pixels:-max',</li>
+  <li>Maximum channel difference: 'channel_max:min-' or 'channel_max:min-max' or 'channel_max:-max'.</li>
   </ul>
 
 
@@ -395,8 +396,8 @@ TestResult(TIMEOUT CRASH) + TextExpectation(Timeout Failure) => [ Failure <span 
   <div id="filters">
     <span class="fix-width">Filters</span>
     <input id="text-filter" onsearch="Query.filterChanged()" type="search"
-           placeholder="test name | bug | time &#9166;"
-           title="Format of time: 'time:min-' or 'time:min-max' or 'time:-max' in seconds">
+           placeholder="[test name | bug] [time:min-max] [pixels:min-max] [channel_max:min-max] &#9166;"
+           title="Text filter, see Help for format information.">
     <label id="CRASH"><input type="checkbox">Crash <span></span></label>
     <label id="TIMEOUT"><input type="checkbox">Timeout <span></span></label>
     <label id="TEXT"><input type="checkbox">Text failure <span></span></label>
@@ -949,6 +950,25 @@ const Query = {
     this.query();
   },
 
+  parseRangeFilter: function(query, key) {
+    let range = query.match(key + ":([.0-9]*)-([.0-9]*)");
+
+    if (range) {
+      let min = parseFloat(range[1]);
+      let max = Number.MAX_VALUE;
+
+      if (range[2] != "") {
+        max = parseFloat(range[2]);
+      }
+
+      let rem_query = query.substring(0, range.index) + query.substring(range.index +
+          range[0].length);
+      return [min, max, rem_query];
+    } else {
+      return [0, Number.MAX_VALUE, query];
+    }
+  },
+
   applyFilters: function(queryFilter) {
     var filterMap = new Map();
     for (let el of Array.from(
@@ -956,32 +976,50 @@ const Query = {
         if (el.querySelector('input').checked)
           filterMap.set(el.id.replace("_", "+"), true);
     }
-    let searchText = document.querySelector("#text-filter").value.trim();
-    let timeRange = searchText.match(/^time:([ .0-9]*)-([ .0-9]*)$/);
-    let timeMin = 0, timeMax = Number.MAX_VALUE;
-    if (timeRange) {
-      timeMin = parseFloat(timeRange[1]);
-      if (timeRange[2] != "")
-        timeMax = parseFloat(timeRange[2]);
-    }
-    let textFilter = (!searchText || searchText.length < 1)
-      ? _ => true
-      : test => {
-          if (test.expectPath.includes(searchText))
-            return true;
-          if (Array.isArray(test.bugs)) {
-            for (let bug of test.bugs) {
-              if (bug.includes(searchText))
-                return true;
+    let originalQuery = document.querySelector("#text-filter").value;
+
+    let [timeMin, timeMax, timeQuery] = this.parseRangeFilter(originalQuery, "time");
+    let [pixelsMin, pixelsMax, pixelsQuery] = this.parseRangeFilter(timeQuery, "pixels");
+    let [channelMin, channelMax, channelQuery] = this.parseRangeFilter(pixelsQuery, "channel_max");
+
+    let searchText = channelQuery.trim();
+
+    let textFilter = test => {
+      if (searchText.length > 0) {
+        let match = false;
+        if (test.expectPath.includes(searchText))
+          match = true;
+        else if (Array.isArray(test.bugs)) {
+          for (let bug of test.bugs) {
+            if (bug.includes(searchText)) {
+              match = true;
+              break;
             }
           }
-          if (timeRange) {
-            let time = test.time || 0;
-            if (time >= timeMin && time <= timeMax)
-              return true;
-          }
+        }
+
+        if (!match) {
           return false;
-        };
+        }
+      }
+      let time = test.time || 0;
+      if (time < timeMin || time > timeMax)
+        return false;
+
+      if (test.image_diff_stats) {
+        let pixels = test.image_diff_stats.totalPixels;
+        if (pixels < pixelsMin || pixels > pixelsMax)
+          return false;
+
+        let channel_max = test.image_diff_stats.maxDifference;
+        if (channel_max < channelMin || channel_max > channelMax)
+          return false;
+      } else if (pixelsMin > 0 || channelMin > 0) {
+          return false;
+      }
+
+      return true;
+    };
     return test => {
       if (!queryFilter(test) || !textFilter(test))
         return false;

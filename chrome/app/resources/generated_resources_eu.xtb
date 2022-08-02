@@ -895,6 +895,7 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1829129547161959350">Pinguinoa</translation>
 <translation id="1829192082282182671">&amp;Txikiagotu</translation>
 <translation id="1830550083491357902">Saioa hasi gabe</translation>
+<translation id="1831848493690504725">Ezin gara konektatu Google-ra sare honen bidez. Aukeratu beste sare bat, edo begiratu sarearen edo proxyaren ezarpenak (proxy bat erabiltzen ari bazara).</translation>
 <translation id="1832459821645506983">Ados</translation>
 <translation id="1832511806131704864">Eguneratu da telefono-aldaketa</translation>
 <translation id="1832848789136765277">Sinkronizatutako datuak edonoiz atzitu ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
@@ -1334,6 +1335,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2241053333139545397">Irakurri eta aldatu hainbat webguneetan dituzun datuak</translation>
 <translation id="2241634353105152135">Behin soilik</translation>
 <translation id="2242687258748107519">Fitxategiari buruzko informazioa</translation>
+<translation id="2245296100676446525">Aktibatu sinkronizazioa laster-markak, pasahitzak, historia eta abar gailu honetan eta sinkronizatutako gainerako gailuetan izateko.</translation>
 <translation id="2245603955208828424">Erabili gezi-teklak elementu batetik bestera letraz letra joateko</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> gailua automatikoki eguneratuko da atzeko planoan. Horrela, azken eginbideak eta segurtasun-hobekuntzak izango dituzu. Ezarpenak atalean berrikus ditzakezu softwarea eguneratzeko aukeraren inguruko hobespenak.</translation>
 <translation id="2246549592927364792">Google-k irudien azalpenak ematea nahi duzu?</translation>
@@ -4734,6 +4736,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> webguneak hau egin nahi du:</translation>
 <translation id="5534304873398226603">Baztertu argazkia edo bideoa</translation>
 <translation id="5537725057119320332">Igorri</translation>
+<translation id="5539070192556911367">Ezin da konektatu Google-ra</translation>
 <translation id="5539221284352502426">Zerbitzariak idatzi duzun pasahitza baztertu du, arrazoi hauetako baten ondorioz: pasahitza laburregia da, pasahitzak zenbakiak edo ikurrak izan behar ditu, edo pasahitza ezin da izan aurreko baten berdina.</translation>
 <translation id="5541694225089836610">Administratzaileak desgaitu egin du ekintza</translation>
 <translation id="5542132724887566711">Profila</translation>
@@ -4797,6 +4800,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="5585912436068747822">Ezin izan da formateatu</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Aplikazioak kargatzen…</translation>
+<translation id="5590418976913374224">Erreproduzitu soinua gailua piztean</translation>
 <translation id="5592595402373377407">Ez dago behar adina datu erabilgarri oraindik.</translation>
 <translation id="5595307023264033512">Webguneek erabilitako memoria, guztira: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Editatu helbidea</translation>
@@ -6338,6 +6342,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7102687220333134671">Aktibatuta daude eguneratze automatikoak</translation>
 <translation id="7102832101143475489">Gainditu egin da eskaeraren denbora-muga</translation>
 <translation id="710640343305609397">Ireki sarearen ezarpenak</translation>
+<translation id="7107609441453408294">Erreproduzitu audio bera bozgorailu guztietan</translation>
 <translation id="7108338896283013870">Ezkutatu</translation>
 <translation id="7108668606237948702">"sartu" tekla</translation>
 <translation id="7108933416628942903">Blokeatu</translation>
@@ -6429,7 +6434,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7212097698621322584">PINa aldatzeko, idatzi unekoa lehendabizi. Ez badakizu PINa zein den, segurtasun-giltza berrezarri beharko duzu, eta beste PIN bat sortu.</translation>
 <translation id="7213903639823314449">Helbide-barran egiten diren bilaketetarako erabiltzen den bilatzailea</translation>
 <translation id="721490496276866468">Inportatu pasahitzak</translation>
-<translation id="7216595297012131718">Zure hobespenen arabera ordenatuko dira hizkuntzak</translation>
 <translation id="7219473482981809164">Deskarga daitezkeen profil bat baino gehiago aurkitu ditugu. Aurrera egin baino lehen, hautatu deskargatu nahi dituzunak.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Ez dago segurua ez den pasahitzik}=1{1 pasahitz ez da segurua}other{{NUM_WEAK} pasahitz ez dira seguruak}}</translation>
 <translation id="7220019174139618249">Ezin da esportatu pasahitza "<ph name="FOLDER" />" karpetara</translation>
@@ -6569,6 +6573,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7364745943115323529">Igorri…</translation>
 <translation id="7364796246159120393">Aukeratu fitxategia</translation>
 <translation id="7365076891350562061">Monitorearen tamaina</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - Ainguratuta</translation>
 <translation id="7366316827772164604">Inguruko gailuak bilatzen…</translation>
 <translation id="7366415735885268578">Gehitu webgune bat</translation>
 <translation id="7366909168761621528">Arakatze-datuak</translation>

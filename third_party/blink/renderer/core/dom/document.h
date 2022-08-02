@@ -1826,6 +1826,8 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void IncrementLazyAdsFrameCount();
   void IncrementLazyEmbedsFrameCount();
+  void IncrementImmediateChildFrameCreationCount();
+  int GetImmediateChildFrameCreationCount() const;
 
   enum class DeclarativeShadowRootAllowState : uint8_t {
     kNotSet,

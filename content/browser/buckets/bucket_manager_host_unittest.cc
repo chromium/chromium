@@ -13,6 +13,9 @@
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/buckets/bucket_manager.h"
 #include "content/browser/buckets/bucket_manager_host.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
@@ -36,7 +39,8 @@ class BucketManagerHostTest : public testing::Test {
  public:
   BucketManagerHostTest()
       : special_storage_policy_(
-            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()) {}
+            base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
+        browser_context_(std::make_unique<TestBrowserContext>()) {}
   ~BucketManagerHostTest() override = default;
 
   BucketManagerHostTest(const BucketManagerHostTest&) = delete;
@@ -50,10 +54,15 @@ class BucketManagerHostTest : public testing::Test {
         base::ThreadTaskRunnerHandle::Get(), special_storage_policy_);
     quota_manager_proxy_ = base::MakeRefCounted<storage::MockQuotaManagerProxy>(
         quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
-    bucket_manager_ =
-        std::make_unique<BucketManager>(quota_manager_proxy_.get());
+
+    StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+        browser_context_->GetDefaultStoragePartition());
+    partition->OverrideQuotaManagerForTesting(quota_manager_.get());
+
+    bucket_manager_ = std::make_unique<BucketManager>(partition);
     bucket_manager_->DoBindReceiver(
-        BucketContext(0, url::Origin::Create(GURL(kTestUrl))),
+        blink::StorageKey::CreateFromStringForTesting(kTestUrl),
+        BucketContext(0),
         bucket_manager_host_remote_.BindNewPipeAndPassReceiver(),
         base::DoNothing());
     EXPECT_TRUE(bucket_manager_host_remote_.is_bound());
@@ -64,10 +73,11 @@ class BucketManagerHostTest : public testing::Test {
 
   base::ScopedTempDir data_dir_;
 
-  // These tests need a full TaskEnvironment because it uses the thread pool for
-  // querying QuotaDatabase
-  base::test::TaskEnvironment task_environment_;
+  // These tests need a full TaskEnvironment because they use the thread pool
+  // for querying QuotaDatabase.
+  content::BrowserTaskEnvironment task_environment_;
 
+  std::unique_ptr<TestBrowserContext> browser_context_;
   mojo::Remote<blink::mojom::BucketManagerHost> bucket_manager_host_remote_;
   std::unique_ptr<BucketManager> bucket_manager_;
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
@@ -116,8 +126,9 @@ TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
   for (auto it = names.begin(); it < names.end(); ++it) {
     mojo::Remote<blink::mojom::BucketManagerHost> remote;
     bucket_manager_->DoBindReceiver(
-        BucketContext(0, url::Origin::Create(GURL(kTestUrl))),
-        remote.BindNewPipeAndPassReceiver(), base::DoNothing());
+        blink::StorageKey::CreateFromStringForTesting(kTestUrl),
+        BucketContext(0), remote.BindNewPipeAndPassReceiver(),
+        base::DoNothing());
     EXPECT_TRUE(remote.is_bound());
 
     if (it->first) {
@@ -183,13 +194,13 @@ TEST_F(BucketManagerHostTest, PermissionCheck) {
                     {blink::mojom::PermissionStatus::DENIED, false}};
 
   for (auto test_case : test_cases) {
-    auto context = BucketContext(0, url::Origin::Create(GURL(kTestUrl)));
+    auto context = BucketContext(0);
     context.set_permission_status_for_test(test_case.first);
     bool persisted_respected = test_case.second;
     mojo::Remote<blink::mojom::BucketManagerHost> manager_remote;
-    bucket_manager_->DoBindReceiver(context,
-                                    manager_remote.BindNewPipeAndPassReceiver(),
-                                    base::DoNothing());
+    bucket_manager_->DoBindReceiver(
+        blink::StorageKey::CreateFromStringForTesting(kTestUrl), context,
+        manager_remote.BindNewPipeAndPassReceiver(), base::DoNothing());
     EXPECT_TRUE(manager_remote.is_bound());
 
     {

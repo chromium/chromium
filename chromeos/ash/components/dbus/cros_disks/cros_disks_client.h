@@ -40,22 +40,23 @@ enum class MountType {
   kNetworkStorage,
 };
 
+// Type of device.
+enum class DeviceType {
+  kUnknown,
+  kUSB,          // USB stick.
+  kSD,           // SD card.
+  kOpticalDisc,  // e.g. Optical disc excluding DVD.
+  kMobile,       // Storage on a mobile device (e.g. Android).
+  kDVD,          // DVD.
+};
+
 }  // namespace ash
 
 namespace chromeos {
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
+using ::ash::DeviceType;
 using ::ash::MountType;
-
-// Type of device.
-enum DeviceType {
-  DEVICE_TYPE_UNKNOWN,
-  DEVICE_TYPE_USB,           // USB stick.
-  DEVICE_TYPE_SD,            // SD card.
-  DEVICE_TYPE_OPTICAL_DISC,  // e.g. Optical disc excluding DVD.
-  DEVICE_TYPE_MOBILE,        // Storage on a mobile device (e.g. Android).
-  DEVICE_TYPE_DVD,           // DVD.
-};
 
 // Mount error code used by cros-disks.
 // These values are NOT the same as cros_disks::MountErrorType.
@@ -454,12 +455,6 @@ using ::chromeos::CROS_DISKS_DEVICE_SCANNED;
 using ::chromeos::CROS_DISKS_DISK_ADDED;
 using ::chromeos::CROS_DISKS_DISK_REMOVED;
 using ::chromeos::CrosDisksClient;
-using ::chromeos::DEVICE_TYPE_MOBILE;
-using ::chromeos::DEVICE_TYPE_OPTICAL_DISC;
-using ::chromeos::DEVICE_TYPE_SD;
-using ::chromeos::DEVICE_TYPE_UNKNOWN;
-using ::chromeos::DEVICE_TYPE_USB;
-using ::chromeos::DeviceType;
 using ::chromeos::DiskInfo;
 using ::chromeos::FORMAT_ERROR_DEVICE_NOT_ALLOWED;
 using ::chromeos::FORMAT_ERROR_NONE;

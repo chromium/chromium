@@ -27,7 +27,7 @@ enum class IntentFilterMatchLevel {
   kNone = 0,
   kScheme = 1,
   kHost = 2,
-  kPattern = 4,
+  kPath = 4,
   kMimeType = 8,
 };
 
@@ -42,7 +42,7 @@ ENUM(ConditionType,
      kHost,
      // Matches the URL path (e.g. /abc/*). Does not include the URL query or
      // hash.
-     kPattern,
+     kPath,
      // Matches the action type (e.g. view, send).
      kAction,
      // Matches the top-level mime type (e.g. text/plain).

@@ -843,6 +843,7 @@ blink_core_tests_layout = [
   "layout_box_test.cc",
   "layout_embedded_content_test.cc",
   "layout_flexible_box_test.cc",
+  "layout_frame_set_test.cc",
   "layout_image_test.cc",
   "layout_image_resource_test.cc",
   "layout_inline_test.cc",

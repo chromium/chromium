@@ -66,19 +66,17 @@ using l10n_util::GetNSStringF;
                        withStyle:(SigninPromoViewStyle)promoViewStyle {
   signinPromoView.closeButton.hidden = !self.hasCloseButton;
   signinPromoView.mode = self.signinPromoViewMode;
+  signinPromoView.promoViewStyle = promoViewStyle;
   switch (promoViewStyle) {
     case SigninPromoViewStyleStandard: {
-      signinPromoView.compactLayout = NO;
       [self configureStandardSigninPromoView:signinPromoView];
       break;
     }
     case SigninPromoViewStyleTitled: {
-      signinPromoView.compactLayout = NO;
       [self configureTitledPromoView:signinPromoView];
       break;
     }
     case SigninPromoViewStyleTitledCompact: {
-      signinPromoView.compactLayout = YES;
       [self configureTitledPromoView:signinPromoView];
       break;
     }
@@ -94,6 +92,7 @@ using l10n_util::GetNSStringF;
 // |SigninPromoViewStyleStandard| style.
 - (void)configureStandardSigninPromoView:(SigninPromoView*)signinPromoView {
   signinPromoView.titleLabel.hidden = YES;
+  //  signinPromoView.secondaryButton.hidden = NO;
   NSString* name =
       self.userGivenName.length ? self.userGivenName : self.userEmail;
   std::u16string name16 = SysNSStringToUTF16(name);
@@ -130,6 +129,7 @@ using l10n_util::GetNSStringF;
   // In the titled Promo views (both compact and non compact the primary button
   // text will use "continue" regardless of the promo mode.
   signinPromoView.titleLabel.hidden = NO;
+  //  signinPromoView.secondaryButton.hidden = YES;
   NSString* signInString = GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE);
   [signinPromoView.primaryButton setTitle:signInString
                                  forState:UIControlStateNormal];

@@ -17,9 +17,7 @@
 #include "components/url_param_filter/core/features.h"
 #include "components/url_param_filter/core/url_param_filter_classification.pb.h"
 #include "components/url_param_filter/core/url_param_filter_test_helper.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::ElementsAre;
 using ::testing::Eq;
@@ -92,15 +90,13 @@ class UrlParamClassificationsLoaderTest : public ::testing::Test {
 TEST_F(UrlParamClassificationsLoaderTest,
        GetClassifications_MissingComponentAndFeature) {
   // Neither Component nor feature provide classifications.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
        ReadClassifications_NonserializedProto) {
   loader()->ReadClassifications("clearly not proto");
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
 TEST_F(UrlParamClassificationsLoaderTest, ReadClassifications_EmptyList) {
@@ -108,9 +104,145 @@ TEST_F(UrlParamClassificationsLoaderTest, ReadClassifications_EmptyList) {
       MakeClassificationsProtoFromMap({}, {});
   SetComponentFileContents(classifications.SerializeAsString());
   loader()->ReadClassifications(test_file_contents());
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
+
+TEST_F(UrlParamClassificationsLoaderTest,
+       ReadClassifications_SiteMatchTypeNotSet_DefaultsToETLDPlusOne) {
+  base::HistogramTester histogram_tester;
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{kSourceSite, {"plzblock1"}}}, {{kDestinationSite, {"plzblock2"}}});
+
+  // Clear out site_match_type set to EXACT_ETLD_PLUS_ONE by helper function.
+  for (auto& fc : *classifications.mutable_classifications()) {
+    fc.clear_site_match_type();
+  }
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  EXPECT_THAT(
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(SourceKey(kSourceSite),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock1",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey(kDestinationSite),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 1);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsDestinationMetric,
+                                    1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
+      1);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
+};
+
+TEST_F(UrlParamClassificationsLoaderTest,
+       ReadClassifications_MatchTypeKeyCollision_SecondEntryAdded) {
+  base::HistogramTester histogram_tester;
+  FilterClassifications classifications;
+
+  // Create a candidate with a normal EXACT_ETLD_PLUS_ONE match type.
+  // This candidate would be marked NON_EXPERIMENTAL if added to the map, since
+  // it has the "default" tag.
+  AddClassification(classifications.add_classifications(), kSourceSite,
+                    FilterClassification_SiteRole_SOURCE,
+                    FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                    {"plzblock"}, {FilterClassification::USE_CASE_UNKNOWN},
+                    {"default", "not_default"});
+
+  // Create a candidate with an unknown site match type.  This candidate's key
+  // in ClassificationMap will collide with the first candidate.
+  // This candidate would be marked as EXPERIMENTAL if added to the map, since
+  // it has only one tag which is not "default".
+  AddClassification(classifications.add_classifications(), kSourceSite,
+                    FilterClassification_SiteRole_SOURCE,
+                    FilterClassification_SiteMatchType_MATCH_TYPE_UNKNOWN,
+                    {"plzblock"}, {FilterClassification::USE_CASE_UNKNOWN},
+                    {"not_default"});
+
+  const std::string experiment_identifier = "not_default";
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["experiment_identifier"] = experiment_identifier;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled, params);
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // The second entry gets added to the map normally, despite the collision.
+  // We can tell the second entry is the one that won because it's tagged
+  // EXPERIMENTAL.
+  EXPECT_THAT(loader()->GetClassifications(),
+              UnorderedElementsAre(Pair(
+                  SourceKey(kSourceSite),
+                  UnorderedElementsAre(Pair(
+                      FilterClassification::USE_CASE_UNKNOWN,
+                      UnorderedElementsAre(Pair(
+                          "plzblock",
+                          ClassificationExperimentStatus::EXPERIMENTAL)))))));
+
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 2);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsDestinationMetric,
+                                    1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
+      0);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
+};
+
+TEST_F(UrlParamClassificationsLoaderTest,
+       ReadClassifications_SiteMatchTypeSetToUnknown_DefaultsToETLDPlusOne) {
+  base::HistogramTester histogram_tester;
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{kSourceSite, {"plzblock1"}}}, {{kDestinationSite, {"plzblock2"}}});
+
+  // Clear out site_match_type set to EXACT_ETLD_PLUS_ONE by helper function.
+  for (auto& fc : *classifications.mutable_classifications()) {
+    fc.set_site_match_type(
+        FilterClassification_SiteMatchType_MATCH_TYPE_UNKNOWN);
+  }
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  EXPECT_THAT(
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(SourceKey(kSourceSite),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock1",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey(kDestinationSite),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 1);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsDestinationMetric,
+                                    1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
+      1);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
+};
 
 TEST_F(UrlParamClassificationsLoaderTest, ReadClassifications_OnlySources) {
   base::HistogramTester histogram_tester;
@@ -120,21 +252,56 @@ TEST_F(UrlParamClassificationsLoaderTest, ReadClassifications_OnlySources) {
   loader()->ReadClassifications(test_file_contents());
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("source1.xyz",
+          Pair(SourceKey("source1.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock1",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
-          Pair("source2.xyz",
+          Pair(SourceKey("source2.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock2",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 2);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsDestinationMetric,
+                                    1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
+      0);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
+}
+
+TEST_F(UrlParamClassificationsLoaderTest,
+       ReadClassifications_OnlySourceWildcards) {
+  base::HistogramTester histogram_tester;
+  FilterClassifications classifications = MakeClassificationsProtoFromMap(
+      {{SourceWildcardKey("wildcard1"), {"plzblock1"}},
+       {SourceWildcardKey("wildcard2"), {"plzblock2"}}});
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  EXPECT_THAT(
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(SourceWildcardKey("wildcard1"),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock1",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(SourceWildcardKey("wildcard2"),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 
   histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
   ASSERT_EQ(
@@ -157,17 +324,16 @@ TEST_F(UrlParamClassificationsLoaderTest,
   SetComponentFileContents(classifications.SerializeAsString());
   loader()->ReadClassifications(test_file_contents());
 
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
   EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("destination1.xyz",
+          Pair(DestinationKey("destination1.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock1",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
-          Pair("destination2.xyz",
+          Pair(DestinationKey("destination2.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
@@ -185,36 +351,41 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       ReadClassifications_SourcesAndDestinations) {
+       ReadClassifications_SourcesAndDestinationsAndWildcards) {
   base::HistogramTester histogram_tester;
   FilterClassifications classifications = MakeClassificationsProtoFromMap(
-      {{"source1.xyz", {"plzblock1"}}}, {{"destination2.xyz", {"plzblock2"}}});
+      {{SourceKey("source1.xyz"), {"plzblock1"}},
+       {DestinationKey("destination2.xyz"), {"plzblock2"}},
+       {SourceWildcardKey("wildcard"), {"plzblock3"}}});
 
   SetComponentFileContents(classifications.SerializeAsString());
   loader()->ReadClassifications(test_file_contents());
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("source1.xyz",
+          Pair(SourceKey("source1.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("destination2.xyz",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("destination2.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock2",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(SourceWildcardKey("wildcard"),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock3",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 
   histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
   ASSERT_EQ(
-      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 1);
+      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 2);
   histogram_tester.ExpectTotalCount(kApplicableClassificationsDestinationMetric,
                                     1);
   ASSERT_EQ(
@@ -225,26 +396,24 @@ TEST_F(UrlParamClassificationsLoaderTest,
 
 TEST_F(UrlParamClassificationsLoaderTest,
        ReadClassifications_NormalizeToLowercase) {
-  FilterClassifications classifications =
-      MakeClassificationsProtoFromMap({{"source1.xyz", {"UPPERCASE"}}},
-                                      {{"destination2.xyz", {"mixedCase123"}}});
+  FilterClassifications classifications = MakeClassificationsProtoFromMap({
+      {SourceKey("source1.xyz"), {"UPPERCASE"}},
+      {DestinationKey("destination2.xyz"), {"mixedCase123"}},
+  });
 
   SetComponentFileContents(classifications.SerializeAsString());
   loader()->ReadClassifications(test_file_contents());
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("source1.xyz",
+          Pair(SourceKey("source1.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "uppercase",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("destination2.xyz",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("destination2.xyz"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
@@ -269,23 +438,27 @@ TEST_F(UrlParamClassificationsLoaderTest,
       {{kSourceSite, {"plzblock1", "plzblock2"}}},
       {{kDestinationSite, {"plzblock3", "plzblock4"}}});
   FilterClassification destination_experiment_classification =
-      MakeFilterClassification(kDestinationSite,
-                               FilterClassification_SiteRole_DESTINATION,
-                               {"plzblock5"}, {}, experiment_identifier);
+      MakeFilterClassification(
+          kDestinationSite, FilterClassification_SiteRole_DESTINATION,
+          FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE, {"plzblock5"},
+          {}, experiment_identifier);
   FilterClassification source_experiment_classification =
-      MakeFilterClassification(kSourceSite,
-                               FilterClassification_SiteRole_SOURCE,
-                               {"plzblock7"}, {}, experiment_identifier);
+      MakeFilterClassification(
+          kSourceSite, FilterClassification_SiteRole_SOURCE,
+          FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE, {"plzblock7"},
+          {}, experiment_identifier);
   // These do not match our experiment identifier, so they should not appear in
   // the result.
   FilterClassification inapplicable_destination_experiment_classification =
-      MakeFilterClassification(kDestinationSite,
-                               FilterClassification_SiteRole_DESTINATION,
-                               {"plzblock6"}, {}, "not_our_experiment");
+      MakeFilterClassification(
+          kDestinationSite, FilterClassification_SiteRole_DESTINATION,
+          FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE, {"plzblock6"},
+          {}, "not_our_experiment");
   FilterClassification inapplicable_source_experiment_classification =
-      MakeFilterClassification(kSourceSite,
-                               FilterClassification_SiteRole_SOURCE,
-                               {"plzblock8"}, {}, "not_our_experiment");
+      MakeFilterClassification(
+          kSourceSite, FilterClassification_SiteRole_SOURCE,
+          FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE, {"plzblock8"},
+          {}, "not_our_experiment");
   *classifications.add_classifications() =
       std::move(destination_experiment_classification);
   *classifications.add_classifications() =
@@ -299,22 +472,21 @@ TEST_F(UrlParamClassificationsLoaderTest,
   SetComponentFileContents(classifications.SerializeAsString());
   loader()->ReadClassifications(test_file_contents());
 
-  EXPECT_THAT(loader()->GetDestinationClassifications(),
-              UnorderedElementsAre(Pair(
-                  Eq(kDestinationSite),
-                  UnorderedElementsAre(Pair(
-                      FilterClassification::USE_CASE_UNKNOWN,
-                      UnorderedElementsAre(Pair(
-                          "plzblock5",
-                          ClassificationExperimentStatus::EXPERIMENTAL)))))));
-  EXPECT_THAT(loader()->GetSourceClassifications(),
-              UnorderedElementsAre(Pair(
-                  Eq(kSourceSite),
-                  UnorderedElementsAre(Pair(
-                      FilterClassification::USE_CASE_UNKNOWN,
-                      UnorderedElementsAre(Pair(
-                          "plzblock7",
-                          ClassificationExperimentStatus::EXPERIMENTAL)))))));
+  EXPECT_THAT(
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(Eq(DestinationKey(kDestinationSite)),
+               UnorderedElementsAre(
+                   Pair(FilterClassification::USE_CASE_UNKNOWN,
+                        UnorderedElementsAre(Pair(
+                            "plzblock5",
+                            ClassificationExperimentStatus::EXPERIMENTAL))))),
+          Pair(Eq(SourceKey(kSourceSite)),
+               UnorderedElementsAre(
+                   Pair(FilterClassification::USE_CASE_UNKNOWN,
+                        UnorderedElementsAre(Pair(
+                            "plzblock7",
+                            ClassificationExperimentStatus::EXPERIMENTAL)))))));
 
   // Although there are 6 total classifications, only one source and one
   // destination classification is applicable due to the experiment override.
@@ -329,42 +501,16 @@ TEST_F(UrlParamClassificationsLoaderTest,
   histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
 }
 
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_NoSourceClassificationsProvided) {
-  // Create proto with only Destination classifications.
-  FilterClassifications classifications = MakeClassificationsProtoFromMap(
-      {}, {{kDestinationSite, {"plzblock3", "plzblock4"}}});
-
-  // Provide classifications from the Component.
-  SetComponentFileContents(classifications.SerializeAsString());
-  loader()->ReadClassifications(test_file_contents());
-
-  // No source classifications were loaded.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-
-  // Provide classifications from the feature.
-  std::map<std::string, std::vector<std::string>> source_params;
-  SetFeatureParams(
-      {{"classifications",
-        CreateBase64EncodedFilterParamClassificationForTesting(
-            source_params, {{kDestinationSite, {"plzblock3", "plzblock4"}}})}});
-
-  // No source classifications were loaded.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-}
-
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_ComponentInvalid) {
+TEST_F(UrlParamClassificationsLoaderTest, GetClassifications_ComponentInvalid) {
   // Provide classifications from the Component.
   SetComponentFileContents("clearly not proto");
   loader()->ReadClassifications(test_file_contents());
 
   // Invalid classifications list result in an empty ClassificationMap.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_ComponentOnly) {
+TEST_F(UrlParamClassificationsLoaderTest, GetClassifications_ComponentOnly) {
   // Create proto with both Source + Destination Classifications
   FilterClassifications classifications = MakeClassificationsProtoFromMap(
       {{kSourceSite, {"plzblock1", "plzblock2"}}},
@@ -375,38 +521,58 @@ TEST_F(UrlParamClassificationsLoaderTest,
   loader()->ReadClassifications(test_file_contents());
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock2",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(
+              Eq(SourceKey(kSourceSite)),
+              UnorderedElementsAre(Pair(
+                  FilterClassification::USE_CASE_UNKNOWN,
+                  UnorderedElementsAre(
+                      Pair("plzblock1",
+                           ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                      Pair(
+                          "plzblock2",
+                          ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(Eq(DestinationKey(kDestinationSite)),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(
+                       Pair("plzblock3",
+                            ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                       Pair("plzblock4", ClassificationExperimentStatus::
+                                             NON_EXPERIMENTAL)))))));
 }
 
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_FeatureOnly) {
+TEST_F(UrlParamClassificationsLoaderTest, GetClassifications_FeatureOnly) {
   // Provide classifications using the feature flag.
-  std::map<std::string, std::vector<std::string>> dest_params;
+  std::map<std::string, std::vector<std::string>> dest_params = {
+      {kDestinationSite, {"plzblock3", "plzblock4"}}};
   SetFeatureParams(
       {{"classifications",
         CreateBase64EncodedFilterParamClassificationForTesting(
             {{kSourceSite, {"plzblock1", "plzblock2"}}}, dest_params)}});
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock2",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(
+              Eq(SourceKey(kSourceSite)),
+              UnorderedElementsAre(Pair(
+                  FilterClassification::USE_CASE_UNKNOWN,
+                  UnorderedElementsAre(
+                      Pair("plzblock1",
+                           ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                      Pair(
+                          "plzblock2",
+                          ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(Eq(DestinationKey(kDestinationSite)),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(
+                       Pair("plzblock3",
+                            ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                       Pair("plzblock4", ClassificationExperimentStatus::
+                                             NON_EXPERIMENTAL)))))));
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
@@ -419,9 +585,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
             {{kSourceSite, {"UPPERCASE", "mixedCase123"}}}, dest_params)}});
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
+          Eq(SourceKey(kSourceSite)),
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
@@ -432,7 +598,7 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_ComponentThenFeature) {
+       GetClassifications_ComponentThenFeature) {
   // Create proto with both Source + Destination Classifications
   FilterClassifications classifications = MakeClassificationsProtoFromMap(
       {{kSourceSite, {"plzblock1", "plzblock2"}}},
@@ -450,9 +616,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
             {{kSourceSite, {"plzblockA", "plzblockB"}}}, dest_params)}});
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
+          Eq(SourceKey(kSourceSite)),
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
@@ -463,7 +629,7 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_FeatureThenComponent) {
+       GetClassifications_FeatureThenComponent) {
   // Create proto with both Source + Destination Classifications
   FilterClassifications classifications = MakeClassificationsProtoFromMap(
       {{kSourceSite, {"plzblock1", "plzblock2"}}},
@@ -481,9 +647,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
   loader()->ReadClassifications(test_file_contents());
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
+          Eq(SourceKey(kSourceSite)),
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
@@ -494,7 +660,7 @@ TEST_F(UrlParamClassificationsLoaderTest,
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_ComponentAndFeatureWithoutParams) {
+       GetClassifications_ComponentAndFeatureWithoutParams) {
   // Create proto with both Source + Destination Classifications
   FilterClassifications classifications = MakeClassificationsProtoFromMap(
       {{kSourceSite, {"plzblock1", "plzblock2"}}},
@@ -510,20 +676,30 @@ TEST_F(UrlParamClassificationsLoaderTest,
   // Expect that Component classifications are returned since no feature
   // classifications were provided.
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock2",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(
+              Eq(SourceKey(kSourceSite)),
+              UnorderedElementsAre(Pair(
+                  FilterClassification::USE_CASE_UNKNOWN,
+                  UnorderedElementsAre(
+                      Pair("plzblock1",
+                           ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                      Pair(
+                          "plzblock2",
+                          ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(Eq(DestinationKey(kDestinationSite)),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(
+                       Pair("plzblock3",
+                            ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                       Pair("plzblock4", ClassificationExperimentStatus::
+                                             NON_EXPERIMENTAL)))))));
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetSourceClassifications_ComponentAndFeatureWithShouldFilterParamOnly) {
+       GetClassifications_ComponentAndFeatureWithShouldFilterParamOnly) {
   // Create proto with both Source + Destination Classifications
   FilterClassifications classifications = MakeClassificationsProtoFromMap(
       {{kSourceSite, {"plzblock1", "plzblock2"}}},
@@ -539,40 +715,26 @@ TEST_F(UrlParamClassificationsLoaderTest,
   // Expect that Component classifications are returned since no feature
   // classifications were provided.
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock2",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-}
-
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetDestinationClassifications_NoDestinationClassificationsProvided) {
-  // Create proto with only Source classifications.
-  FilterClassifications classifications = MakeClassificationsProtoFromMap(
-      {{kSourceSite, {"plzblock1", "plzblock2"}}}, {});
-
-  // Provide classifications from the Component.
-  SetComponentFileContents(classifications.SerializeAsString());
-  loader()->ReadClassifications(test_file_contents());
-
-  // No destination classifications were loaded.
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
-
-  // Provide classifications from the feature.
-  std::map<std::string, std::vector<std::string>> destination_params;
-  SetFeatureParams(
-      {{"classifications",
-        CreateBase64EncodedFilterParamClassificationForTesting(
-            {{kSourceSite, {"plzblock1", "plzblock2"}}}, destination_params)}});
-
-  // No destination classifications were loaded.
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(
+              Eq(SourceKey(kSourceSite)),
+              UnorderedElementsAre(Pair(
+                  FilterClassification::USE_CASE_UNKNOWN,
+                  UnorderedElementsAre(
+                      Pair("plzblock1",
+                           ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                      Pair(
+                          "plzblock2",
+                          ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(Eq(DestinationKey(kDestinationSite)),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(
+                       Pair("plzblock3",
+                            ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                       Pair("plzblock4", ClassificationExperimentStatus::
+                                             NON_EXPERIMENTAL)))))));
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
@@ -582,35 +744,11 @@ TEST_F(UrlParamClassificationsLoaderTest,
   loader()->ReadClassifications(test_file_contents());
 
   // Invalid classifications list result in an empty ClassificationMap.
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetDestinationClassifications_ComponentOnly) {
-  // Create proto with both Source + Destination Classifications
-  FilterClassifications classifications = MakeClassificationsProtoFromMap(
-      {{kSourceSite, {"plzblock1", "plzblock2"}}},
-      {{kDestinationSite, {"plzblock3", "plzblock4"}}});
-
-  // Provide classifications from the Component.
-  SetComponentFileContents(classifications.SerializeAsString());
-  loader()->ReadClassifications(test_file_contents());
-
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock3",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock4",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-}
-
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetDestinationClassifications_ComponentOnlyWithUseCases) {
+       GetClassifications_ComponentOnlyWithUseCases) {
   // Create proto with both Source + Destination Classifications
   FilterClassifications classifications =
       MakeClassificationsProtoFromMapWithUseCases(
@@ -625,53 +763,30 @@ TEST_F(UrlParamClassificationsLoaderTest,
   loader()->ReadClassifications(test_file_contents());
 
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kSourceSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::CROSS_SITE_NO_3PC,
-              UnorderedElementsAre(
-                  Pair("plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock2",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::CROSS_OTR,
-              UnorderedElementsAre(
-                  Pair("plzblock3",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock4",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(
+              Eq(SourceKey(kSourceSite)),
+              UnorderedElementsAre(Pair(
+                  FilterClassification::CROSS_SITE_NO_3PC,
+                  UnorderedElementsAre(
+                      Pair("plzblock1",
+                           ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                      Pair(
+                          "plzblock2",
+                          ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(Eq(DestinationKey(kDestinationSite)),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::CROSS_OTR,
+                   UnorderedElementsAre(
+                       Pair("plzblock3",
+                            ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                       Pair("plzblock4", ClassificationExperimentStatus::
+                                             NON_EXPERIMENTAL)))))));
 }
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       GetDestinationClassifications_FeatureOnly) {
-  // Provide classifications using the feature flag.
-  std::map<std::string, std::vector<std::string>> source_params;
-  SetFeatureParams(
-      {{"classifications",
-        CreateBase64EncodedFilterParamClassificationForTesting(
-            source_params, {{kDestinationSite, {"plzblock3", "plzblock4"}}})}});
-
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock3",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock4",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-}
-
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetDestinationClassifications_FeatureOnlyWithUseCases) {
+       GetClassifications_FeatureOnlyWithUseCases) {
   // Provide classifications using the feature flag.
   SetFeatureParams(
       {{"classifications",
@@ -683,20 +798,19 @@ TEST_F(UrlParamClassificationsLoaderTest,
                 {"plzblock3", "plzblock4"}}}}})}});
 
   EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::CROSS_OTR,
-              UnorderedElementsAre(
-                  Pair("plzblock3",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock4",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair(Eq(kSourceSite),
+          Pair(
+              Eq(DestinationKey(kDestinationSite)),
+              UnorderedElementsAre(Pair(
+                  FilterClassification::CROSS_OTR,
+                  UnorderedElementsAre(
+                      Pair("plzblock3",
+                           ClassificationExperimentStatus::NON_EXPERIMENTAL),
+                      Pair(
+                          "plzblock4",
+                          ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(Eq(SourceKey(kSourceSite)),
                UnorderedElementsAre(Pair(
                    FilterClassification::CROSS_SITE_NO_3PC,
                    UnorderedElementsAre(Pair(
@@ -723,9 +837,9 @@ TEST_F(UrlParamClassificationsLoaderTest,
             source_params, {{kDestinationSite, {"plzblockA", "plzblockB"}}})}});
 
   EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
+          Eq(DestinationKey(kDestinationSite)),
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
@@ -754,74 +868,15 @@ TEST_F(UrlParamClassificationsLoaderTest,
   loader()->ReadClassifications(test_file_contents());
 
   EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
+          Eq(DestinationKey(kDestinationSite)),
           UnorderedElementsAre(Pair(
               FilterClassification::USE_CASE_UNKNOWN,
               UnorderedElementsAre(
                   Pair("plzblocka",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL),
                   Pair("plzblockb",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-}
-
-TEST_F(UrlParamClassificationsLoaderTest,
-       GetDestinationClassifications_ComponentAndFeatureWithoutParams) {
-  // Create proto with both Source + Destination Classifications
-  FilterClassifications classifications = MakeClassificationsProtoFromMap(
-      {{kSourceSite, {"plzblock1", "plzblock2"}}},
-      {{kDestinationSite, {"plzblock3", "plzblock4"}}});
-
-  // Don't provide classifications using the feature flag.
-  SetFeatureParams({{}});
-
-  // Provide classifications from the Component.
-  SetComponentFileContents(classifications.SerializeAsString());
-  loader()->ReadClassifications(test_file_contents());
-
-  // Expect that Component classifications are returned since no feature
-  // classifications were provided.
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock3",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock4",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-}
-
-TEST_F(
-    UrlParamClassificationsLoaderTest,
-    GetDestinationClassifications_ComponentAndFeatureWithShouldFilterParamOnly) {
-  // Create proto with both Source + Destination Classifications
-  FilterClassifications classifications = MakeClassificationsProtoFromMap(
-      {{kSourceSite, {"plzblock1", "plzblock2"}}},
-      {{kDestinationSite, {"plzblock3", "plzblock4"}}});
-
-  // Don't provide classifications using the feature flag.
-  SetFeatureParams({{"should_filter", "true"}});
-
-  // Provide classifications from the Component.
-  SetComponentFileContents(classifications.SerializeAsString());
-  loader()->ReadClassifications(test_file_contents());
-
-  // Expect that Component classifications are returned since no feature
-  // classifications were provided.
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(Pair(
-          Eq(kDestinationSite),
-          UnorderedElementsAre(Pair(
-              FilterClassification::USE_CASE_UNKNOWN,
-              UnorderedElementsAre(
-                  Pair("plzblock3",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL),
-                  Pair("plzblock4",
                        ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 }
 

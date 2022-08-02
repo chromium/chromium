@@ -1477,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                         /*total_count=*/2,
                         /*blocked_suffix=*/dlp::kScreenShareBlockedUMA,
                         /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
-  DismissDialog(/*expect_allowed=*/true);
+  DismissDialog(/*allow=*/true);
 
   EXPECT_CALL(state_change_cb_,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
@@ -1776,9 +1776,8 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   ASSERT_TRUE(events_.empty());
 }
 
-// TODO(crbug.com/1319941): Enable after fixing.
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
-                       DISABLED_NavigateWebContents) {
+                       NavigateWebContents) {
   SetupReporting();
   const GURL restricted_url(kGoogleUrl);
   const GURL reported_url(kExampleUrl);
@@ -1789,6 +1788,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Start sharing unrestricted content.
+  helper_->UpdateConfidentiality(web_contents, kEmptyRestrictionSet);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unrestricted_url));
   // Although the share should be paused and resumed, DLP will only call
   // state_change_cb_ once to pause it. When it's supposed to be resumed, it
@@ -1799,22 +1799,27 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
               Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
       .Times(1);
   EXPECT_CALL(source_cb_, Run).Times(1);
-  // Navigate to reported content. Should emit a report event.
+
+  //   Navigate to reported content. Should emit a report event.
+  helper_->UpdateConfidentiality(web_contents, kScreenShareReported);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), reported_url));
-  helper_->ChangeConfidentiality(web_contents, kScreenShareReported);
+  helper_->CheckRunningScreenShares();
+
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kReport, 1u);
 
-  // Navigate to unrestricted content.
+  // Navigate to unrestricted content. Should not emit any events.
+  helper_->UpdateConfidentiality(web_contents, kEmptyRestrictionSet);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), unrestricted_url));
-  helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+  helper_->CheckRunningScreenShares();
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kReport, 1u);
 
   // Navigate to the previous reported content. Should not emit any report
   // event.
+  helper_->UpdateConfidentiality(web_contents, kScreenShareReported);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), reported_url));
-  helper_->ChangeConfidentiality(web_contents, kScreenShareReported);
+  helper_->CheckRunningScreenShares();
   CheckEvents(DlpRulesManager::Restriction::kScreenShare,
               DlpRulesManager::Level::kReport, 1u);
 
@@ -1827,8 +1832,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
             0);
 
   // Navigate to restricted content. Should emit a block event.
+  helper_->UpdateConfidentiality(web_contents, kScreenShareRestricted);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
-  helper_->ChangeConfidentiality(web_contents, kScreenShareRestricted);
+  helper_->CheckRunningScreenShares();
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
@@ -1841,8 +1847,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
 
   // Navigate to the previous reported content. Should not emit any report
   // event.
+  helper_->UpdateConfidentiality(web_contents, kScreenShareReported);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), reported_url));
-  helper_->ChangeConfidentiality(web_contents, kScreenShareReported);
+  helper_->CheckRunningScreenShares();
   EXPECT_EQ(events_.size(), 2u);
 
   // Expect resume notification. Screen share should be paused, not blocked,

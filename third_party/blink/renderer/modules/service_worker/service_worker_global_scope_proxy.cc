@@ -281,8 +281,9 @@ void ServiceWorkerGlobalScopeProxy::ResumeEvaluation() {
   WorkerGlobalScope()->ResumeEvaluation();
 }
 
-bool ServiceWorkerGlobalScopeProxy::HasFetchHandler() {
-  return WorkerGlobalScope()->HasEventListeners(event_type_names::kFetch);
+mojom::blink::ServiceWorkerFetchHandlerType
+ServiceWorkerGlobalScopeProxy::FetchHandlerType() {
+  return WorkerGlobalScope()->FetchHandlerType();
 }
 
 WebServiceWorkerContextClient& ServiceWorkerGlobalScopeProxy::Client() const {

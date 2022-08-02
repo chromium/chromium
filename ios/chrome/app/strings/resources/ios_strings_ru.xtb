@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">Ошибка печати</translation>
 <translation id="1125564390852150847">Создать вкладку</translation>
 <translation id="1126809382673880764">Не защищает вас от сайтов, расширений и скачанных файлов, которые могут представлять опасность. Безопасный просмотр по-прежнему будет работать в других сервисах Google, например в Gmail и Поиске.</translation>
+<translation id="1135212215217513471">Скачайте Chrome для iOS</translation>
 <translation id="1145536944570833626">Удалить сохраненные данные</translation>
 <translation id="1147031633655575115">Вы вошли как <ph name="USER" /></translation>
 <translation id="1154984953698510061">Посмотреть другие вкладки</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">Чтобы никогда не терять доступ к синхронизированным данным, подтвердите свою личность.</translation>
 <translation id="1870148520156231997">Показать пароль</translation>
 <translation id="1872096359983322073">Вспышка</translation>
+<translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1923342640370224680">Последний час</translation>
 <translation id="1930989359703290198">Согласно правилам, установленным организацией, выполнить вход можно только с одобренным аккаунтом. Запрещенные аккаунты скрываются. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">Поиск скопированного текста</translation>
 <translation id="214201757571129614">Войти</translation>
 <translation id="2149973817440762519">Закладка</translation>
+<translation id="2155145621546387786">Share Chrome (Поделиться Chrome)</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2218443599109088993">Уменьшить</translation>
 <translation id="2230173723195178503">Веб-страница загружена</translation>
@@ -406,7 +409,6 @@
 <translation id="4502566650163919158">Проверить сейчас</translation>
 <translation id="4505980578794259603">Последняя проверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Закрыть сообщение о входе</translation>
-<translation id="4511669830082467224">Искать по изображению в Google</translation>
 <translation id="4526249700380860531">Просматривайте сохраненные пароли и управляйте ими на странице <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Проверить синхронизированные данные</translation>
 <translation id="4536418791685807335">Войдите в аккаунт снова.</translation>

@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1364382257761975320">若要解锁 Chromebook，请使用指纹</translation>
+<translation id="1365866993922957110">获取自动更新</translation>
 <translation id="1372545819342940910">保存桌面以备后用</translation>
 <translation id="1383597849754832576">无法下载实时字幕文件。请稍后再试。</translation>
 <translation id="1383876407941801731">搜索</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064">“<ph name="ITEM_TITLE" />”已被取消固定</translation>
 <translation id="1836215606488044471">智能助理（正在加载中…）</translation>
 <translation id="1838895407229022812">当前已关闭护眼模式。</translation>
+<translation id="1862380676329487333">更新并退出</translation>
 <translation id="1864454756846565995">USB-C 设备（背面端口）</translation>
 <translation id="1879018240766558464">目前不支持无痕式窗口。其他应用会被保存。</translation>
 <translation id="1882814835921407042">无移动网络</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">目前无法复制或粘贴内容</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
+<translation id="4247123849143712100">更新并关机</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
 <translation id="425364040945105958">无 SIM 卡</translation>
 <translation id="4261870227682513959">显示通知设置。通知已关闭</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
 <translation id="6344138931392227467">已连接到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6351032674660237738">应用推荐</translation>
+<translation id="6359587239691116345">获取最新的功能和安全性方面的改进。如果您拒绝此更新，您的设备可能会无法继续正常运行，您则可能会遇到安全问题和性能问题。</translation>
 <translation id="6376931439017688372">蓝牙已开启</translation>
 <translation id="6381109794406942707">要解锁此设备，请输入您的 PIN 码。</translation>
 <translation id="639644700271529076">CAPS LOCK 已关闭</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求您在截止日期之前更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智能卡 PIN 码</translation>
 <translation id="6495400115277918834">已启动“画中画”模式，按 Alt+Shift+V 可聚焦</translation>
+<translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6515727200518652613">相机连接已中断，正在尝试重新连接。</translation>
 <translation id="6520517963145875092">选择一个窗口即可截图</translation>
@@ -1215,6 +1220,7 @@
 <translation id="8054466585765276473">正在计算续航时间。</translation>
 <translation id="8061464966246066292">高对比度</translation>
 <translation id="8083540854303889870">已保存供日后使用</translation>
+<translation id="8091387634532529612">自动更新</translation>
 <translation id="8098591350844501178">停止将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="8113423164597455979">开启，所有应用</translation>
 <translation id="8120151603115102514">您的手机未设置锁屏。若要解锁 Chromebook，请输入密码。</translation>
@@ -1421,4 +1427,5 @@
 <translation id="974545358917229949">显示了 <ph name="RESULT_COUNT" /> 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="98515147261107953">横向</translation>
 <translation id="990277280839877440">已关闭窗口“<ph name="WINDOW_TITILE" />”。</translation>
+<translation id="996204416024568215">获取最新的功能和安全性方面的改进。更新在后台进行。</translation>
 </translationbundle>

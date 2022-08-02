@@ -57,6 +57,12 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // in |all_prefetches_|.
   std::unique_ptr<PrefetchContainer> ReleasePrefetchContainer(const GURL& url);
 
+  // Checking the canary cache can be a slow and blocking operation (see
+  // crbug.com/1266018), so we only do this for the first non-decoy prefetch we
+  // make on the page.
+  bool HaveCanaryChecksStarted() const { return have_canary_checks_started_; }
+  void OnCanaryChecksStarted() { have_canary_checks_started_ = true; }
+
   static void SetPrefetchServiceForTesting(PrefetchService* prefetch_service);
 
  private:
@@ -75,6 +81,9 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // until |PrefetchService| starts the network request for the prefetch, at
   // which point |PrefetchService| takes ownership.
   std::map<GURL, std::unique_ptr<PrefetchContainer>> owned_prefetches_;
+
+  // Stores whether or not canary checks have been started for this page.
+  bool have_canary_checks_started_{false};
 
   base::WeakPtrFactory<PrefetchDocumentManager> weak_method_factory_{this};
 

@@ -85,4 +85,51 @@ TEST_F(HTMLLinkElementSimTest, WebMonetizationNotCountedInSubFrame) {
       GetDocument().IsUseCounted(WebFeature::kHTMLLinkElementMonetization));
 }
 
+// This tests whether the Canonical counter is properly triggered.
+TEST_F(HTMLLinkElementTest, CanonicalCounter) {
+  // A <link rel="icon"> is not counted.
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="icon" type="image/ico" href="">
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelCanonical));
+
+  // A <link rel="canonoical"> is counted.
+  GetDocument().head()->setInnerHTML(R"HTML(
+    <link rel="canonical" href="">
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kLinkRelCanonical));
+}
+
+TEST_F(HTMLLinkElementSimTest, CanonicalNotCountedInSubFrame) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest child_frame_resource("https://example.com/subframe.html",
+                                  "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(
+      R"HTML(
+        <body onload='console.log("main body onload");'>
+          <iframe src='https://example.com/subframe.html'
+                  onload='console.log("child frame element onload");'></iframe>
+        </body>)HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  child_frame_resource.Complete(R"HTML(
+    <link rel="canonical" href="">
+  )HTML");
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  // Ensure that main frame and subframe are loaded before checking the counter.
+  EXPECT_TRUE(ConsoleMessages().Contains("main body onload"));
+  EXPECT_TRUE(ConsoleMessages().Contains("child frame element onload"));
+
+  // <link rel="canonical"> is not counted in subframes.
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kLinkRelCanonical));
+}
+
 }  // namespace blink

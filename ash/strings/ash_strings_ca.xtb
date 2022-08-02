@@ -84,6 +84,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1346748346194534595">Dreta</translation>
 <translation id="1351937230027495976">Replega el menú</translation>
 <translation id="1364382257761975320">Per desbloquejar el Chromebook, utilitza l'empremta digital</translation>
+<translation id="1365866993922957110">Obtén actualitzacions automàtiques</translation>
 <translation id="1372545819342940910">Desa l'escriptori per a més tard</translation>
 <translation id="1383597849754832576">No es poden baixar fitxers de veu. Torna-ho a provar més tard.</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -161,6 +162,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> s'ha deixat de fixar</translation>
 <translation id="1836215606488044471">Assistent (s'està carregant...)</translation>
 <translation id="1838895407229022812">La funció Llum nocturna està desactivada.</translation>
+<translation id="1862380676329487333">Actualitza i tanca la sessió</translation>
 <translation id="1864454756846565995">Dispositiu USB-C (port posterior)</translation>
 <translation id="1879018240766558464">Les finestres d'incògnit no s'admeten actualment. Les altres aplicacions es desaran.</translation>
 <translation id="1882814835921407042">No hi ha cap xarxa mòbil</translation>
@@ -561,6 +563,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="423685346499232137">En aquests moments no es pot copiar ni enganxar contingut</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
+<translation id="4247123849143712100">Actualitza i apaga</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="425364040945105958">No hi ha cap SIM</translation>
 <translation id="4261870227682513959">Mostra la configuració de notificacions. Les notificacions estan desactivades.</translation>
@@ -920,6 +923,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> és una sessió gestionada per <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Dispositiu <ph name="DEVICE_NAME" /> connectat</translation>
 <translation id="6351032674660237738">SUGGERIMENTS D'APLICACIONS</translation>
+<translation id="6359587239691116345">Obtén les funcions i les millores de seguretat més recents. Si rebutges aquesta actualització, pot ser que el dispositiu ja no funcioni correctament i que tinguis problemes de seguretat i de rendiment.</translation>
 <translation id="6376931439017688372">El Bluetooth està activat</translation>
 <translation id="6381109794406942707">Per desbloquejar el dispositiu, introdueix el PIN.</translation>
 <translation id="639644700271529076">Bloq Maj està desactivat</translation>
@@ -941,6 +945,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requereix que actualitzis el dispositiu <ph name="DEVICE_TYPE" /> abans del termini establert</translation>
 <translation id="649452524636452238">PIN de la targeta intel·ligent</translation>
 <translation id="6495400115277918834">S'ha iniciat la pantalla en pantalla; prem Alt+Maj+V per posar-hi el focus</translation>
+<translation id="6500896621837555595">Actualitza</translation>
 <translation id="6501401484702599040">S'està emetent la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">S'ha perdut la càmera. S'està provant de tornar a connectar.</translation>
 <translation id="6520517963145875092">Selecciona la finestra que vols capturar</translation>
@@ -1215,6 +1220,7 @@ Instal·lació nova</translation>
 <translation id="8054466585765276473">S'està calculant el temps de la bateria.</translation>
 <translation id="8061464966246066292">Contrast alt</translation>
 <translation id="8083540854303889870">Desat per a més tard</translation>
+<translation id="8091387634532529612">Actualitzacions automàtiques</translation>
 <translation id="8098591350844501178">Deixa d'emetre la pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Sí, en totes</translation>
 <translation id="8120151603115102514">El telèfon no té una pantalla de bloqueig. Per desbloquejar el Chromebook, introdueix la contrasenya.</translation>
@@ -1421,4 +1427,5 @@ Instal·lació nova</translation>
 <translation id="974545358917229949">S'estan mostrant <ph name="RESULT_COUNT" /> resultats per a "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Horitzontal</translation>
 <translation id="990277280839877440">La finestra <ph name="WINDOW_TITILE" /> s'ha tancat.</translation>
+<translation id="996204416024568215">Obtén les funcions i les millores de seguretat més recents. Les actualitzacions es duen a terme en segon pla.</translation>
 </translationbundle>

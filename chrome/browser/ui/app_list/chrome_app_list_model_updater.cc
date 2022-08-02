@@ -302,11 +302,6 @@ void ChromeAppListModelUpdater::SetSearchEngineIsGoogle(bool is_google) {
   search_model_.SetSearchEngineIsGoogle(is_google);
 }
 
-void ChromeAppListModelUpdater::UpdateSearchBox(const std::u16string& text,
-                                                bool initiated_by_user) {
-  search_model_.search_box()->Update(text, initiated_by_user);
-}
-
 void ChromeAppListModelUpdater::PublishSearchResults(
     const std::vector<ChromeSearchResult*>& results,
     const std::vector<ash::AppListSearchResultCategory>& categories) {

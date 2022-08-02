@@ -289,12 +289,10 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
       return {GetOrCreateBrowser(profile, params.user_gesture), -1};
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      // Out of paranoia, check that the PictureInPictureV2 feature is actually
-      // enabled as a browser feature before allowing the browser to create an
-      // always-on-top window.  This helps protect against a compromised
-      // renderer. TODO(https://crbug.com/1285144): Remove this check once
-      // the feature is no longer experimental.
-      if (!base::FeatureList::IsEnabled(features::kPictureInPictureV2))
+      // We may receive a PiP request with the feature disabled if the user has
+      // explicitly turned on the Blink feature without turning on the
+      // browser-side feature.
+      if (!base::FeatureList::IsEnabled(features::kDocumentPictureInPictureAPI))
         return {nullptr, -1};
 
       // Picture in picture windows may not be opened by other picture in

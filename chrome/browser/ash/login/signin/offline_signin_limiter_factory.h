@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_OFFLINE_SIGNIN_LIMITER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -20,7 +20,7 @@ class OfflineSigninLimiter;
 
 // Singleton that owns all OfflineSigninLimiters and associates them with
 // Profiles.
-class OfflineSigninLimiterFactory : public BrowserContextKeyedServiceFactory {
+class OfflineSigninLimiterFactory : public ProfileKeyedServiceFactory {
  public:
   static OfflineSigninLimiterFactory* GetInstance();
 

@@ -505,7 +505,7 @@ TEST_F(AppListBubbleViewTest, AssistantScreenshotClosesBubbleWithoutAnimation) {
   // Simulate the app list being closed by taking a screenshot with assistant.
   // This makes AppListControllerImpl::ShouldDismissImmediately() return true.
   AssistantUiController::Get()->ToggleUi(
-      absl::nullopt, chromeos::assistant::AssistantExitPoint::kScreenshot);
+      absl::nullopt, assistant::AssistantExitPoint::kScreenshot);
 
   // The bubble dismissed immediately so it is not animating.
   ui::Layer* bubble_layer = GetAppListTestHelper()->GetBubbleView()->layer();
@@ -1301,6 +1301,13 @@ TEST_F(AppListBubbleViewTest, PressingTabMovesFocusInsideFolder) {
   AddFolderWithApps(3);
   ShowAppList();
 
+  // Force the sorting toast to show.
+  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      AppListSortOrder::kColor,
+      /*animate=*/false, /*update_position_closure=*/base::OnceClosure());
+  ASSERT_TRUE(GetToastContainerView()->GetToastButton());
+
+  // Open the folder.
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
   LeftClickOn(folder_item);
 
@@ -1327,6 +1334,12 @@ TEST_F(AppListBubbleViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
   AddFolderWithApps(5);
   ShowAppList();
 
+  // Force the sorting toast to show.
+  AppListController::Get()->UpdateAppListWithNewTemporarySortOrder(
+      AppListSortOrder::kColor,
+      /*animate=*/false, /*update_position_closure=*/base::OnceClosure());
+  ASSERT_TRUE(GetToastContainerView()->GetToastButton());
+
   // Open the folder.
   AppListItemView* folder_item = GetAppsGridView()->GetItemViewAt(0);
   LeftClickOn(folder_item);
@@ -1340,6 +1353,9 @@ TEST_F(AppListBubbleViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
   auto* recent_apps = GetRecentAppsView();
   EXPECT_TRUE(recent_apps->GetViewAccessibility().IsIgnored());
   EXPECT_TRUE(recent_apps->GetViewAccessibility().IsLeaf());
+  auto* toast_container = GetToastContainerView();
+  EXPECT_TRUE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_TRUE(toast_container->GetViewAccessibility().IsLeaf());
   auto* apps_grid = GetAppsGridView();
   EXPECT_TRUE(apps_grid->GetViewAccessibility().IsIgnored());
   EXPECT_TRUE(apps_grid->GetViewAccessibility().IsLeaf());
@@ -1353,6 +1369,8 @@ TEST_F(AppListBubbleViewTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
   EXPECT_FALSE(continue_section->GetViewAccessibility().IsLeaf());
   EXPECT_FALSE(recent_apps->GetViewAccessibility().IsIgnored());
   EXPECT_FALSE(recent_apps->GetViewAccessibility().IsLeaf());
+  EXPECT_FALSE(toast_container->GetViewAccessibility().IsIgnored());
+  EXPECT_FALSE(toast_container->GetViewAccessibility().IsLeaf());
   EXPECT_FALSE(apps_grid->GetViewAccessibility().IsIgnored());
   EXPECT_FALSE(apps_grid->GetViewAccessibility().IsLeaf());
 }

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_SIGNIN_ERROR_NOTIFIER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -16,7 +16,7 @@ class SigninErrorNotifier;
 // Singleton that owns all SigninErrorNotifiers and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated SigninErrorNotifier.
-class SigninErrorNotifierFactory : public BrowserContextKeyedServiceFactory {
+class SigninErrorNotifierFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the instance of SigninErrorNotifier associated with this
   // profile, creating one if none exists and the shell exists.

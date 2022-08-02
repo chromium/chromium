@@ -7,6 +7,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/notreached.h"
+#include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,6 +20,7 @@ namespace {
 constexpr char kDomain[] = "foo.com";
 
 using GetSettingCallback = base::RepeatingCallback<ContentSetting(const GURL&)>;
+using QueryReason = CookieSettingsBase::QueryReason;
 
 ContentSettingPatternSource CreateSetting(ContentSetting setting) {
   return ContentSettingPatternSource(
@@ -43,7 +46,8 @@ class CallbackCookieSettings : public CookieSettingsBase {
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
-      content_settings::SettingSource* source) const override {
+      content_settings::SettingSource* source,
+      QueryReason query_reason) const override {
     return callback_.Run(url);
   }
   ContentSetting GetSettingForLegacyCookieAccess(
@@ -140,20 +144,25 @@ TEST(CookieSettingsBaseTest, ShouldNotDeleteNoThirdPartyDomainMatch) {
 TEST(CookieSettingsBaseTest, CookieAccessNotAllowedWithBlockedSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_BLOCK; }));
-  EXPECT_FALSE(
-      settings.IsFullCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
+  EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
+      GURL(kDomain), GURL(kDomain),
+      CallbackCookieSettings::QueryReason::kCookies));
 }
 
 TEST(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_ALLOW; }));
-  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      GURL(kDomain), GURL(kDomain),
+      CallbackCookieSettings::QueryReason::kCookies));
 }
 
 TEST(CookieSettingsBaseTest, CookieAccessAllowedWithSessionOnlySetting) {
   CallbackCookieSettings settings(base::BindRepeating(
       [](const GURL&) { return CONTENT_SETTING_SESSION_ONLY; }));
-  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(GURL(kDomain), GURL(kDomain)));
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      GURL(kDomain), GURL(kDomain),
+      CallbackCookieSettings::QueryReason::kCookies));
 }
 
 TEST(CookieSettingsBaseTest, LegacyCookieAccessSemantics) {
@@ -170,19 +179,22 @@ TEST(CookieSettingsBaseTest, LegacyCookieAccessSemantics) {
 TEST(CookieSettingsBaseTest, IsCookieSessionOnlyWithAllowSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_ALLOW; }));
-  EXPECT_FALSE(settings.IsCookieSessionOnly(GURL(kDomain)));
+  EXPECT_FALSE(settings.IsCookieSessionOnly(
+      GURL(kDomain), CookieSettingsBase::QueryReason::kCookies));
 }
 
 TEST(CookieSettingsBaseTest, IsCookieSessionOnlyWithBlockSetting) {
   CallbackCookieSettings settings(
       base::BindRepeating([](const GURL&) { return CONTENT_SETTING_BLOCK; }));
-  EXPECT_FALSE(settings.IsCookieSessionOnly(GURL(kDomain)));
+  EXPECT_FALSE(settings.IsCookieSessionOnly(
+      GURL(kDomain), CookieSettingsBase::QueryReason::kCookies));
 }
 
 TEST(CookieSettingsBaseTest, IsCookieSessionOnlySessionWithOnlySetting) {
   CallbackCookieSettings settings(base::BindRepeating(
       [](const GURL&) { return CONTENT_SETTING_SESSION_ONLY; }));
-  EXPECT_TRUE(settings.IsCookieSessionOnly(GURL(kDomain)));
+  EXPECT_TRUE(settings.IsCookieSessionOnly(
+      GURL(kDomain), CookieSettingsBase::QueryReason::kCookies));
 }
 
 TEST(CookieSettingsBaseTest, IsValidSetting) {
@@ -211,6 +223,39 @@ TEST(CookieSettingsBaseTest, IsValidLegacyAccessSetting) {
   EXPECT_FALSE(CookieSettingsBase::IsValidSettingForLegacyAccess(
       CONTENT_SETTING_SESSION_ONLY));
 }
+
+class CookieSettingsBaseStorageAccessAPITest
+    : public testing::TestWithParam<bool> {
+ public:
+  CookieSettingsBaseStorageAccessAPITest() {
+    features_.InitWithFeatureState(net::features::kStorageAccessAPI,
+                                   IsStorageAccessAPIEnabled());
+  }
+
+  bool IsStorageAccessAPIEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+TEST_P(CookieSettingsBaseStorageAccessAPITest,
+       ShouldConsiderStorageAccessGrants) {
+  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
+      QueryReason::kSetting));
+  EXPECT_FALSE(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
+      QueryReason::kPrivacySandbox));
+
+  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
+                QueryReason::kSiteStorage),
+            IsStorageAccessAPIEnabled());
+  EXPECT_EQ(CookieSettingsBase::ShouldConsiderStorageAccessGrants(
+                QueryReason::kCookies),
+            IsStorageAccessAPIEnabled());
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         CookieSettingsBaseStorageAccessAPITest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace content_settings

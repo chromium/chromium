@@ -38,6 +38,8 @@ import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.io.UnsupportedEncodingException;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -98,6 +100,10 @@ public class PostMessageTest {
 
             public String getStringValue() {
                 return mMessagePayload.getAsString();
+            }
+
+            public byte[] getArrayBuffer() {
+                return mMessagePayload.getAsArrayBuffer();
             }
         }
 
@@ -182,6 +188,19 @@ public class PostMessageTest {
             + "        }"
             + "   </script>"
             + "</body></html>";
+    // Concats all the data fields of the received messages and makes it
+    // available as page title.
+    private static final String TITLE_FROM_POSTMESSAGE_TO_FRAME_ARRAYBUFFER =
+            "<!DOCTYPE html><html><body>"
+            + "    <script>"
+            + "        var received = '';"
+            + "        onmessage = function (e) {"
+            + "            const view = new Int8Array(e.data);"
+            + "            received += String.fromCharCode.apply(null, view);"
+            + "            document.title = received;"
+            + "        }"
+            + "   </script>"
+            + "</body></html>";
 
     // Concats all the data fields of the received messages to the transferred channel
     // and makes it available as page title.
@@ -194,6 +213,20 @@ public class PostMessageTest {
             + "            myport.onmessage = function (f) {"
             + "                received += f.data;"
             + "                document.title = received;"
+            + "            }"
+            + "        }"
+            + "   </script>"
+            + "</body></html>";
+    // Concats all the data fields of the received messages to the transferred channel
+    // and makes it available as page title.
+    private static final String TITLE_FROM_POSTMESSAGE_TO_CHANNEL_ARRAYBUFFER =
+            "<!DOCTYPE html><html><body>"
+            + "    <script>"
+            + "        onmessage = function (e) {"
+            + "            var myport = e.ports[0];"
+            + "            myport.onmessage = function (f) {"
+            + "                const view = new Int8Array(f.data);"
+            + "                document.title = String.fromCharCode.apply(null, view);"
             + "            }"
             + "        }"
             + "   </script>"
@@ -244,6 +277,42 @@ public class PostMessageTest {
         MessageObject.Data data = mMessageObject.waitForMessage();
         Assert.assertEquals(WEBVIEW_MESSAGE, data.mMessage);
         Assert.assertEquals(SOURCE_ORIGIN, data.mOrigin);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostArrayBuffer() throws Throwable {
+        loadPage(TITLE_FROM_POSTMESSAGE_TO_FRAME_ARRAYBUFFER);
+        final String testString = "TestString";
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            try {
+                mAwContents.postMessageToMainFrame(new MessagePayload(testString.getBytes("UTF-8")),
+                        mWebServer.getBaseUrl(), null);
+            } catch (UnsupportedEncodingException e) {
+                Assert.fail();
+            }
+        });
+        expectTitle(testString);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testPostArrayBufferOnMessagePort() throws Throwable {
+        loadPage(TITLE_FROM_POSTMESSAGE_TO_CHANNEL_ARRAYBUFFER);
+        final String testString = "TestString";
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            MessagePort[] channel = mAwContents.createMessageChannel();
+            mAwContents.postMessageToMainFrame(new MessagePayload("1"), mWebServer.getBaseUrl(),
+                    new MessagePort[] {channel[1]});
+            try {
+                channel[0].postMessage(new MessagePayload(testString.getBytes("UTF-8")), null);
+            } catch (UnsupportedEncodingException e) {
+            }
+            channel[0].close();
+        });
+        expectTitle(testString);
     }
 
     @Test
@@ -548,6 +617,25 @@ public class PostMessageTest {
             + "        }"
             + "   </script>"
             + "</body></html>";
+    private static final String ECHO_ARRAY_BUFFER_PAGE = "<!DOCTYPE html><html><body>"
+            + "    <script>"
+            + "        onmessage = function (e) {"
+            + "            var myPort = e.ports[0];"
+            + "            myPort.onmessage = function(e) {"
+            + "                myPort.postMessage(e.data, [e.data]); }"
+            + "        }"
+            + "   </script>"
+            + "</body></html>";
+    private static final String ECHO_NON_TRANFERABLE_ARRAY_BUFFER_PAGE =
+            "<!DOCTYPE html><html><body>"
+            + "    <script>"
+            + "        onmessage = function (e) {"
+            + "            var myPort = e.ports[0];"
+            + "            myPort.onmessage = function(e) {"
+            + "                myPort.postMessage(e.data, [e.data]); }"
+            + "        }"
+            + "   </script>"
+            + "</body></html>";
 
     private static final String HELLO = "HELLO";
 
@@ -619,6 +707,60 @@ public class PostMessageTest {
         Assert.assertEquals(HELLO, data.getStringValue());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testMessageChannelSendAndReceiveArrayBuffer() throws Throwable {
+        final byte[] bytes = HELLO.getBytes("UTF-8");
+        verifyEchoArrayBuffer(ECHO_ARRAY_BUFFER_PAGE, bytes);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testMessageChannelSendAndReceiveLargeArrayBuffer() throws Throwable {
+        final byte[] bytes = new byte[1000 * 1000]; // 1MB
+        new Random(42).nextBytes(bytes);
+
+        verifyEchoArrayBuffer(ECHO_ARRAY_BUFFER_PAGE, bytes);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testMessageChannelSendAndReceiveNonTransferableArrayBuffer() throws Throwable {
+        final byte[] bytes = HELLO.getBytes("UTF-8");
+        verifyEchoArrayBuffer(ECHO_NON_TRANFERABLE_ARRAY_BUFFER_PAGE, bytes);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testMessageChannelSendAndReceiveLargeNonTransferableArrayBuffer() throws Throwable {
+        final byte[] bytes = new byte[1000 * 1000]; // 1MB
+        new Random(42).nextBytes(bytes);
+
+        verifyEchoArrayBuffer(ECHO_NON_TRANFERABLE_ARRAY_BUFFER_PAGE, bytes);
+    }
+
+    private void verifyEchoArrayBuffer(final String page, final byte[] bytes) throws Throwable {
+        final ChannelContainer channelContainer = new ChannelContainer();
+        loadPage(page);
+        final MessagePort[] channel =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            channel[0].setMessageCallback(
+                    (message, sentPorts) -> channelContainer.notifyCalled(message), null);
+            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
+                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage(new MessagePayload(bytes), null);
+        });
+        // wait for the asynchronous response from JS
+        ChannelContainer.Data data = channelContainer.waitForMessageCallback();
+        Assert.assertArrayEquals(bytes, data.getArrayBuffer());
+    }
+
     // Post a message with a pending port to a frame and then post a bunch of messages
     // after that. Make sure that they are not ordered at the receiver side.
     @Test
@@ -636,6 +778,53 @@ public class PostMessageTest {
                     new MessagePayload("3"), mWebServer.getBaseUrl(), null);
         });
         expectTitle("123");
+    }
+
+    // Generate an arraybuffer with a given size, and fill with ordered number, 0-255.
+    // Then pass it back over MessagePort.
+    private static final String GENERATE_ARRAY_BUFFER_FROM_JS_PAGE = "<!DOCTYPE html><html><body>"
+            + "    <script>"
+            + "        onmessage = function (e) {"
+            + "            var myPort = e.ports[0];"
+            + "            myPort.onmessage = function(e) {"
+            + "                let length = parseInt(e.data, 10);"
+            + "                var arrayBuffer = new ArrayBuffer(length);"
+            + "                const view = new Uint8Array(arrayBuffer);"
+            + "                for (var i = 0; i < length; ++i) {"
+            + "                    view[i] = i;"
+            + "                }"
+            + "                myPort.postMessage(arrayBuffer, [arrayBuffer]);"
+            + "            };"
+            + "        };"
+            + "    </script>";
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-PostMessage"})
+    public void testReceiveArrayBufferFromJsOverMessagePort() throws Throwable {
+        final int bufferLength = 5000;
+        final byte[] expectedBytes = new byte[bufferLength];
+        for (int i = 0; i < bufferLength; ++i) {
+            // Cast to byte implicitly % 256.
+            expectedBytes[i] = (byte) i;
+        }
+
+        final ChannelContainer channelContainer = new ChannelContainer();
+        loadPage(GENERATE_ARRAY_BUFFER_FROM_JS_PAGE);
+        final MessagePort[] channel =
+                TestThreadUtils.runOnUiThreadBlocking(() -> mAwContents.createMessageChannel());
+
+        InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
+            channel[0].setMessageCallback(
+                    (message, sentPorts) -> channelContainer.notifyCalled(message), null);
+            mAwContents.postMessageToMainFrame(new MessagePayload(WEBVIEW_MESSAGE),
+                    mWebServer.getBaseUrl(), new MessagePort[] {channel[1]});
+            channel[0].postMessage(new MessagePayload(String.valueOf(bufferLength)), null);
+        });
+        // wait for the asynchronous response from JS
+        ChannelContainer.Data data = channelContainer.waitForMessageCallback();
+        final byte[] bytes = data.getArrayBuffer();
+        Assert.assertEquals(bufferLength, bytes.length);
+        Assert.assertArrayEquals(expectedBytes, bytes);
     }
 
     private static final String RECEIVE_JS_MESSAGE_CHANNEL_PAGE =

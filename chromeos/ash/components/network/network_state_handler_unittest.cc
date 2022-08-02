@@ -2579,25 +2579,6 @@ TEST_F(NetworkStateHandlerTest, SetNetworkConnectRequested) {
       NetworkListContainsPath(active_networks, kShillManagerClientStubWifi2));
 }
 
-TEST_F(NetworkStateHandlerTest, SetNetworkChromePortalDetected) {
-  const NetworkState* network = network_state_handler_->DefaultNetwork();
-  EXPECT_FALSE(network->IsCaptivePortal());
-
-  test_observer_->reset_updates();
-  network_state_handler_->SetNetworkChromePortalDetected(network->path(), true);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(network->IsCaptivePortal());
-  EXPECT_EQ(1,
-            test_observer_->ConnectionStateChangesForService(network->path()));
-  network_state_handler_->SetNetworkChromePortalDetected(network->path(),
-                                                         false);
-  base::RunLoop().RunUntilIdle();
-  network = network_state_handler_->DefaultNetwork();
-  EXPECT_FALSE(network->IsCaptivePortal());
-  EXPECT_EQ(2,
-            test_observer_->ConnectionStateChangesForService(network->path()));
-}
-
 TEST_F(NetworkStateHandlerTest, Hostname) {
   const std::string kTestHostname = "Test Hostname";
   network_state_handler_->SetHostname(kTestHostname);

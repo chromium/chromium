@@ -15,6 +15,7 @@ class HelpBubbleDelegate;
 }  // namespace user_education
 
 extern const char kTabGroupTutorialId[];
+extern const char kTabGroupWithExistingGroupTutorialId[];
 
 extern user_education::HelpBubbleDelegate* GetHelpBubbleDelegate();
 extern void RegisterChromeHelpBubbleFactories(

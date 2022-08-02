@@ -23,7 +23,7 @@ chromeos::NetworkStateHandler* GetNetworkStateHandler() {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 // Returns a descriptive unique id for |network|
 // e.g.: ethernet_0, wifi_psk_1, cellular_lte_2, vpn_openvpn_3.
@@ -90,4 +90,4 @@ std::string NetworkGuidId(const std::string& guid) {
   return guid;
 }
 
-}  // namespace chromeos
+}  // namespace ash

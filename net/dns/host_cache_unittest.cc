@@ -1697,23 +1697,31 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
   HostCache::Key key(url::SchemeHostPort(url::kHttpsScheme, "example.com", 443),
                      DnsQueryType::A, 0, HostResolverSource::DNS,
                      NetworkIsolationKey());
-
-  std::vector<IPEndPoint> ip_endpoints = {
-      IPEndPoint(IPAddress(1, 1, 1, 1), 800),
-      IPEndPoint(IPAddress(2, 2, 2, 2), 900),
-      IPEndPoint(IPAddress(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4),
-                 100)};
+  IPEndPoint ipv6_endpoint(
+      IPAddress(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4), 110);
+  IPEndPoint ipv4_endpoint1(IPAddress(1, 1, 1, 1), 80);
+  IPEndPoint ipv4_endpoint2(IPAddress(2, 2, 2, 2), 90);
+  IPEndPoint other_ipv4_endpoint(IPAddress(3, 3, 3, 3), 100);
+  std::string ipv6_alias = "ipv6_alias.test";
+  std::string ipv4_alias = "ipv4_alias.test";
+  std::string other_alias = "other_alias.test";
+  std::vector<IPEndPoint> ip_endpoints = {ipv6_endpoint, ipv4_endpoint1,
+                                          ipv4_endpoint2, other_ipv4_endpoint};
   HostCache::Entry entry(OK, ip_endpoints, HostCache::Entry::SOURCE_DNS, ttl);
-  std::set<std::string> aliases = {"ipv4_alias.test", "ipv6_alias.test",
-                                   "other_alias.test"};
+  std::set<std::string> aliases = {ipv6_alias, ipv4_alias, other_alias};
   entry.set_aliases(aliases);
+
+  std::set<std::string> canonical_names = {ipv6_alias, ipv4_alias};
+  entry.set_canonical_names(canonical_names);
   EXPECT_TRUE(entry.GetEndpoints());
 
   ConnectionEndpointMetadata metadata1;
   metadata1.supported_protocol_alpns = {"h3", "h2"};
   metadata1.ech_config_list = {'f', 'o', 'o'};
+  metadata1.target_name = ipv6_alias;
   ConnectionEndpointMetadata metadata2;
   metadata2.supported_protocol_alpns = {"h2", "h4"};
+  metadata2.target_name = ipv4_alias;
   HostCache::Entry metadata_entry(
       OK,
       std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
@@ -1721,6 +1729,19 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
       HostCache::Entry::SOURCE_DNS);
 
   auto merged_entry = HostCache::Entry::MergeEntries(entry, metadata_entry);
+
+  EXPECT_THAT(merged_entry.GetEndpoints(),
+              Optional(ElementsAre(ExpectEndpointResult(ip_endpoints))));
+  EXPECT_THAT(
+      merged_entry.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(
+          ExpectConnectionEndpointMetadata(testing::ElementsAre("h3", "h2"),
+                                           testing::ElementsAre('f', 'o', 'o'),
+                                           ipv6_alias),
+          ExpectConnectionEndpointMetadata(testing::ElementsAre("h2", "h4"),
+                                           IsEmpty(), ipv4_alias))));
+  EXPECT_THAT(merged_entry.canonical_names(),
+              testing::Optional(UnorderedElementsAre(ipv4_alias, ipv6_alias)));
 
   HostCache cache(kMaxCacheEntries);
   cache.Set(key, merged_entry, now, ttl);
@@ -1744,11 +1765,19 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
 
   ASSERT_TRUE(result);
   EXPECT_THAT(result, Pointee(Pair(key, EntryContentsEqual(merged_entry))));
+  EXPECT_THAT(result->second.GetEndpoints(),
+              Optional(ElementsAre(ExpectEndpointResult(ip_endpoints))));
   EXPECT_THAT(
-      result->second.GetEndpoints(),
-      Optional(ElementsAre(ExpectEndpointResult(ip_endpoints, metadata1),
-                           ExpectEndpointResult(ip_endpoints, metadata2),
-                           ExpectEndpointResult(ip_endpoints))));
+      result->second.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(
+          ExpectConnectionEndpointMetadata(testing::ElementsAre("h3", "h2"),
+                                           testing::ElementsAre('f', 'o', 'o'),
+                                           ipv6_alias),
+          ExpectConnectionEndpointMetadata(testing::ElementsAre("h2", "h4"),
+                                           IsEmpty(), ipv4_alias))));
+  EXPECT_THAT(result->second.canonical_names(),
+              testing::Optional(UnorderedElementsAre(ipv4_alias, ipv6_alias)));
+
   EXPECT_THAT(result->second.aliases(), Pointee(aliases));
 }
 
@@ -1991,16 +2020,89 @@ TEST(HostCacheTest, MergeMetadatas) {
   EXPECT_FALSE(result.GetEndpoints());
 }
 
-TEST(HostCacheTest, MergeMetadatasWithIpEndpoints) {
+TEST(HostCacheTest, MergeMetadatasWithIpEndpointsDifferentCanonicalName) {
+  std::string target_name = "example.com";
+  std::string other_target_name = "other.example.com";
+  ConnectionEndpointMetadata metadata;
+  metadata.supported_protocol_alpns = {"h5", "h6", "monster truck rally"};
+  metadata.ech_config_list = {'h', 'i'};
+  metadata.target_name = target_name;
+
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadata_map{
+      {4u, metadata}};
+  HostCache::Entry metadata_entry(OK, metadata_map,
+                                  HostCache::Entry::SOURCE_DNS);
+
+  // Expect `GetEndpoints()` to always ignore metadatas with no `IPEndPoint`s.
+  EXPECT_FALSE(metadata_entry.GetEndpoints());
+
+  // Merge in an `IPEndPoint` with different canonical name.
+  IPEndPoint ip_endpoint(IPAddress(1, 1, 1, 1), 0);
+  HostCache::Entry with_ip_endpoint(OK, std::vector<IPEndPoint>{ip_endpoint},
+                                    HostCache::Entry::SOURCE_DNS);
+  with_ip_endpoint.set_canonical_names(
+      std::set<std::string>{other_target_name});
+  HostCache::Entry result =
+      HostCache::Entry::MergeEntries(metadata_entry, with_ip_endpoint);
+
+  // Expect `GetEndpoints()` not to return the metadata.
+  EXPECT_THAT(result.GetEndpoints(),
+              Optional(ElementsAre(
+                  ExpectEndpointResult(std::vector<IPEndPoint>{ip_endpoint}))));
+
+  // Expect merge order irrelevant.
+  EXPECT_EQ(result,
+            HostCache::Entry::MergeEntries(with_ip_endpoint, metadata_entry));
+}
+
+TEST(HostCacheTest, MergeMetadatasWithIpEndpointsMatchingCanonicalName) {
+  std::string target_name = "example.com";
+  ConnectionEndpointMetadata metadata;
+  metadata.supported_protocol_alpns = {"h5", "h6", "monster truck rally"};
+  metadata.ech_config_list = {'h', 'i'};
+  metadata.target_name = target_name;
+
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata> metadata_map{
+      {4u, metadata}};
+  HostCache::Entry metadata_entry(OK, metadata_map,
+                                  HostCache::Entry::SOURCE_DNS);
+
+  // Expect `GetEndpoints()` to always ignore metadatas with no `IPEndPoint`s.
+  EXPECT_FALSE(metadata_entry.GetEndpoints());
+
+  // Merge in an `IPEndPoint` with different canonical name.
+  IPEndPoint ip_endpoint(IPAddress(1, 1, 1, 1), 0);
+  HostCache::Entry with_ip_endpoint(OK, std::vector<IPEndPoint>{ip_endpoint},
+                                    HostCache::Entry::SOURCE_DNS);
+  with_ip_endpoint.set_canonical_names(std::set<std::string>{target_name});
+  HostCache::Entry result =
+      HostCache::Entry::MergeEntries(metadata_entry, with_ip_endpoint);
+
+  // Expect `GetEndpoints()` to return the metadata.
+  EXPECT_THAT(result.GetEndpoints(),
+              Optional(ElementsAre(
+                  ExpectEndpointResult(ElementsAre(ip_endpoint), metadata),
+                  ExpectEndpointResult(ElementsAre(ip_endpoint)))));
+
+  // Expect merge order irrelevant.
+  EXPECT_EQ(result,
+            HostCache::Entry::MergeEntries(with_ip_endpoint, metadata_entry));
+}
+
+TEST(HostCacheTest, MergeMultipleMetadatasWithIpEndpoints) {
+  std::string target_name = "example.com";
   ConnectionEndpointMetadata front_metadata;
   front_metadata.supported_protocol_alpns = {"h5", "h6", "monster truck rally"};
   front_metadata.ech_config_list = {'h', 'i'};
+  front_metadata.target_name = target_name;
+
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       front_metadata_map{{4u, front_metadata}};
   HostCache::Entry front(OK, front_metadata_map, HostCache::Entry::SOURCE_DNS);
 
   ConnectionEndpointMetadata back_metadata;
   back_metadata.supported_protocol_alpns = {"h5"};
+  back_metadata.target_name = target_name;
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       back_metadata_map{{2u, back_metadata}};
   HostCache::Entry back(OK, back_metadata_map, HostCache::Entry::SOURCE_DNS);
@@ -2018,6 +2120,7 @@ TEST(HostCacheTest, MergeMetadatasWithIpEndpoints) {
   IPEndPoint ip_endpoint(IPAddress(1, 1, 1, 1), 0);
   HostCache::Entry with_ip_endpoint(OK, std::vector<IPEndPoint>{ip_endpoint},
                                     HostCache::Entry::SOURCE_DNS);
+  with_ip_endpoint.set_canonical_names(std::set<std::string>{target_name});
 
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(merged_metadatas, with_ip_endpoint);

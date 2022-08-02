@@ -46,6 +46,12 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
     case ETC1:
       return kRGB_888x_SkColorType;
     case P010:
+#if BUILDFLAG(IS_MAC)
+      // TODO(https://crbug.com/1155760): Until individual planes can be bound
+      // as their own textures, P010 buffers are copied to F16 textures for
+      // sampling.
+      return kRGBA_F16_SkColorType;
+#endif
     case RGBA_1010102:
       return kRGBA_1010102_SkColorType;
     case BGRA_1010102:
@@ -398,6 +404,12 @@ unsigned int TextureStorageFormat(ResourceFormat format,
     case ETC1:
       return GL_ETC1_RGB8_OES;
     case P010:
+#if BUILDFLAG(IS_MAC)
+      // TODO(https://crbug.com/1155760): Until individual planes can be bound
+      // as their own textures, P010 buffers are copied to F16 textures for
+      // sampling.
+      return GL_RGBA16F_EXT;
+#endif
     case RGBA_1010102:
     case BGRA_1010102:
       return GL_RGB10_A2_EXT;

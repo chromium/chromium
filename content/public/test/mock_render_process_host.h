@@ -215,7 +215,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver)
       override {}
   void BindBucketManagerHostForWorker(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver)
       override {}
   void BindRestrictedCookieManagerForServiceWorker(

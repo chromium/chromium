@@ -323,8 +323,6 @@ class PermissionUmaUtil {
       bool did_click_manage,
       bool did_click_learn_more);
 
-  static void RecordWithBatteryBucket(const std::string& histogram);
-
   static void RecordInfobarDetailsExpanded(bool expanded);
 
   static void RecordCrowdDenyDelayedPushNotification(base::TimeDelta delay);

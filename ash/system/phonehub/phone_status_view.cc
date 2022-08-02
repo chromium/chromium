@@ -93,8 +93,13 @@ PhoneStatusView::PhoneStatusView(phonehub::PhoneModel* phone_model,
       battery_label_(new views::Label) {
   DCHECK(delegate);
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  // In dark light mode, we switch TrayBubbleView to use a textured layer
+  // instead of solid color layer, so no need to create an extra layer here.
+  if (!features::IsDarkLightModeEnabled()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+
   SetID(PhoneHubViewID::kPhoneStatusView);
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));

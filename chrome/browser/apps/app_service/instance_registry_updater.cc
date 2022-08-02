@@ -4,7 +4,11 @@
 
 #include "chrome/browser/apps/app_service/instance_registry_updater.h"
 
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "ui/aura/window.h"
 
 namespace apps {
 
@@ -24,6 +28,16 @@ static InstanceState GetState(bool visible, bool active) {
   return state;
 }
 
+bool IsAshBrowserWindow(aura::Window* aura_window) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    BrowserWindow* window = browser->window();
+    if (window && window->GetNativeWindow() == aura_window) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 InstanceRegistryUpdater::InstanceRegistryUpdater(
@@ -40,7 +54,6 @@ InstanceRegistryUpdater::~InstanceRegistryUpdater() = default;
 void InstanceRegistryUpdater::OnBrowserWindowAdded(
     const BrowserWindowInstance& instance) {
   OnBrowserWindowUpdated(instance);
-  window_observations_.AddObservation(instance.window);
 }
 
 void InstanceRegistryUpdater::OnBrowserWindowUpdated(
@@ -54,15 +67,11 @@ void InstanceRegistryUpdater::OnBrowserWindowRemoved(
     const BrowserWindowInstance& instance) {
   OnInstance(instance.id, instance.GetAppId(), instance.window,
              InstanceState::kDestroyed);
-  window_observations_.RemoveObservation(instance.window);
 }
 
 void InstanceRegistryUpdater::OnBrowserAppAdded(
     const BrowserAppInstance& instance) {
   OnBrowserAppUpdated(instance);
-  if (instance.type == BrowserAppInstance::Type::kAppWindow) {
-    window_observations_.AddObservation(instance.window);
-  }
 }
 
 void InstanceRegistryUpdater::OnBrowserAppUpdated(
@@ -77,13 +86,18 @@ void InstanceRegistryUpdater::OnBrowserAppRemoved(
     const BrowserAppInstance& instance) {
   OnInstance(instance.id, instance.app_id, instance.window,
              InstanceState::kDestroyed);
-  if (instance.type == BrowserAppInstance::Type::kAppWindow) {
-    window_observations_.RemoveObservation(instance.window);
-  }
+}
+
+void InstanceRegistryUpdater::OnWindowInitialized(aura::Window* window) {
+  window_observations_.AddObservation(window);
 }
 
 void InstanceRegistryUpdater::OnWindowVisibilityChanged(aura::Window* window,
                                                         bool visible) {
+  if (!crosapi::browser_util::IsLacrosWindow(window) &&
+      !IsAshBrowserWindow(window)) {
+    return;
+  }
   for (const BrowserAppInstance* instance :
        browser_app_instance_registry_.SelectAppInstances(
            [window](const BrowserAppInstance& instance) {
@@ -98,6 +112,10 @@ void InstanceRegistryUpdater::OnWindowVisibilityChanged(aura::Window* window,
            })) {
     OnBrowserWindowUpdated(*instance);
   }
+}
+
+void InstanceRegistryUpdater::OnWindowDestroying(aura::Window* window) {
+  window_observations_.RemoveObservation(window);
 }
 
 void InstanceRegistryUpdater::OnInstance(

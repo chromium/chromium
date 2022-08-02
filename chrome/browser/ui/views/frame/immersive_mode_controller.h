@@ -35,7 +35,7 @@ class ImmersiveRevealedLock {
 // the top-of-window views are hidden until the mouse hits the top of the
 // screen. The tab strip is optionally painted with miniature "tab indicator"
 // rectangles.
-// Currently, immersive mode is only available for Chrome OS.
+// Currently, immersive mode is only available for Chrome OS and macOS.
 class ImmersiveModeController {
  public:
   enum AnimateReveal {

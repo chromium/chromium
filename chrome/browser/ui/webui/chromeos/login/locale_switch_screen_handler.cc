@@ -13,26 +13,11 @@
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId LocaleSwitchView::kScreenId;
-
 LocaleSwitchScreenHandler::LocaleSwitchScreenHandler(
     CoreOobeView* core_oobe_view)
     : BaseScreenHandler(kScreenId), core_oobe_view_(core_oobe_view) {}
 
-LocaleSwitchScreenHandler::~LocaleSwitchScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
-
-void LocaleSwitchScreenHandler::Bind(LocaleSwitchScreen* screen) {
-  BaseScreenHandler::SetBaseScreenDeprecated(screen);
-  screen_ = screen;
-}
-
-void LocaleSwitchScreenHandler::Unbind() {
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
-  screen_ = nullptr;
-}
+LocaleSwitchScreenHandler::~LocaleSwitchScreenHandler() = default;
 
 void LocaleSwitchScreenHandler::UpdateStrings() {
   base::Value::Dict localized_strings = GetOobeUI()->GetLocalizedStrings();
@@ -41,7 +26,5 @@ void LocaleSwitchScreenHandler::UpdateStrings() {
 
 void LocaleSwitchScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {}
-
-void LocaleSwitchScreenHandler::InitializeDeprecated() {}
 
 }  // namespace chromeos

@@ -34,7 +34,7 @@ enum class AssistantButtonId;
 
 class AssistantInteractionControllerImpl
     : public AssistantInteractionController,
-      public chromeos::assistant::AssistantInteractionSubscriber,
+      public assistant::AssistantInteractionSubscriber,
       public AssistantControllerObserver,
       public AssistantInteractionModelObserver,
       public AssistantUiModelObserver,
@@ -45,7 +45,7 @@ class AssistantInteractionControllerImpl
   using AssistantInteractionMetadata =
       chromeos::assistant::AssistantInteractionMetadata;
   using AssistantInteractionResolution =
-      chromeos::assistant::AssistantInteractionResolution;
+      assistant::AssistantInteractionResolution;
   using AssistantInteractionType =
       chromeos::assistant::AssistantInteractionType;
   using AssistantQuerySource = chromeos::assistant::AssistantQuerySource;
@@ -65,7 +65,7 @@ class AssistantInteractionControllerImpl
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Provides a pointer to the |assistant| owned by AssistantService.
-  void SetAssistant(chromeos::assistant::Assistant* assistant);
+  void SetAssistant(assistant::Assistant* assistant);
 
   // AssistantInteractionController:
   const AssistantInteractionModel* GetModel() const override;
@@ -98,7 +98,7 @@ class AssistantInteractionControllerImpl
   // HighlighterController::Observer:
   void OnHighlighterSelectionRecognized(const gfx::Rect& rect) override;
 
-  // chromeos::assistant::AssistantInteractionSubscriber:
+  // assistant::AssistantInteractionSubscriber:
   void OnInteractionStarted(
       const AssistantInteractionMetadata& metadata) override;
   void OnInteractionFinished(
@@ -150,7 +150,7 @@ class AssistantInteractionControllerImpl
   bool has_had_interaction_ = false;
 
   // Owned by AssistantService.
-  chromeos::assistant::Assistant* assistant_ = nullptr;
+  assistant::Assistant* assistant_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

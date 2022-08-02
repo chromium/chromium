@@ -271,9 +271,6 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
           }
         });
 
-    ON_CALL(*router(), GetCurrentRoutes())
-        .WillByDefault(Return(std::vector<MediaRoute>()));
-
     // Handler so MockMediaRouter will respond to requests to create a route.
     // Will construct a RouteRequestResult based on the set result code and
     // then call the handler's callback, which should call the page's callback.
@@ -477,6 +474,28 @@ TEST_F(AccessCodeCastHandlerTest, StartPresentationContext) {
 
   StartPresentation(presentation_request, std::move(start_presentation_context),
                     mock_callback);
+}
+
+// Demonstrates that casting will not start if there already exists a route for
+// the given sink.
+TEST_F(AccessCodeCastHandlerTest, RouteAlreadyExists) {
+  MockCastToSinkCallback mock_callback;
+
+  MediaSinkInternal access_code_sink = CreateCastSink(1);
+  access_code_sink.cast_data().discovery_type =
+      CastDiscoveryType::kAccessCodeManualEntry;
+
+  CreateHandler({MediaCastMode::DESKTOP_MIRROR});
+  set_screen_capture_allowed_for_testing(true);
+  UpdateSinks({access_code_sink.sink()}, std::vector<url::Origin>());
+  handler()->set_sink_id_for_testing(access_code_sink.sink().id());
+
+  MediaRoute media_route_access = CreateRouteForTesting(access_code_sink);
+  std::vector<MediaRoute> route_list = {media_route_access};
+  ON_CALL(*router(), GetCurrentRoutes()).WillByDefault(Return(route_list));
+
+  EXPECT_CALL(mock_callback, Run(RouteRequestResultCode::ROUTE_ALREADY_EXISTS));
+  handler()->CastToSink(mock_callback.Get());
 }
 
 }  // namespace media_router

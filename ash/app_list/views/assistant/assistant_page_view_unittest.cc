@@ -244,7 +244,7 @@ class AssistantPageBubbleTest : public AssistantPageViewTest {
 
 // Counts the number of Assistant interactions that are started.
 class AssistantInteractionCounter
-    : private chromeos::assistant::AssistantInteractionSubscriber {
+    : private assistant::AssistantInteractionSubscriber {
  public:
   explicit AssistantInteractionCounter(
       chromeos::assistant::Assistant* service) {
@@ -264,8 +264,7 @@ class AssistantInteractionCounter
   }
 
   int interaction_count_ = 0;
-  chromeos::assistant::ScopedAssistantInteractionSubscriber
-      interaction_observer_{this};
+  assistant::ScopedAssistantInteractionSubscriber interaction_observer_{this};
 };
 
 TEST_F(AssistantPageNonBubbleTest, ShouldStartInPeekingState) {

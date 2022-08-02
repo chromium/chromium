@@ -1511,7 +1511,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::ApkWebAppService::RegisterProfilePrefs(registry);
   ash::app_time::AppActivityRegistry::RegisterProfilePrefs(registry);
   ash::app_time::AppTimeController::RegisterProfilePrefs(registry);
-  chromeos::assistant::prefs::RegisterProfilePrefs(registry);
+  ash::assistant::prefs::RegisterProfilePrefs(registry);
   ash::bluetooth::DebugLogsManager::RegisterPrefs(registry);
   chromeos::bluetooth_config::BluetoothPowerControllerImpl::
       RegisterProfilePrefs(registry);

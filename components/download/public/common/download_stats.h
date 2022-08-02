@@ -145,7 +145,7 @@ enum DownloadCountTypes {
 
 // Enum for in-progress download DB, used in histogram
 // "Download.InProgressDB.Counts".
-enum InProgressDBCountTypes {
+enum InProgressDBCountTypes : uint8_t {
   // Count of initialization attempts.
   kInitializationCount = 0,
 
