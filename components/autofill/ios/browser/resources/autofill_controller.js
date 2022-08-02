@@ -556,8 +556,8 @@ __gCrWeb.autofill['fillPredictionData'] = function(data) {
       if (!__gCrWeb.fill.isAutofillableElement(element)) {
         continue;
       }
-      const elementName = __gCrWeb.form.getFieldIdentifier(element);
-      const value = formData[elementName];
+      const elementID = __gCrWeb.fill.getUniqueID(element);
+      const value = formData[elementID];
       if (value) {
         element.placeholder = value;
       }

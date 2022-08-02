@@ -90,9 +90,9 @@ typedef void (^FetchFormsCompletionHandler)(BOOL, const FormDataVector&);
 // modifies the field's value for the select elements.
 void GetFormField(autofill::FormFieldData* field,
                   const autofill::FormData& form,
-                  const std::u16string& fieldIdentifier) {
+                  FieldRendererId fieldIdentifier) {
   for (const auto& currentField : form.fields) {
-    if (currentField.unique_id == fieldIdentifier &&
+    if (currentField.unique_renderer_id == fieldIdentifier &&
         currentField.is_focusable) {
       *field = currentField;
       break;
@@ -308,7 +308,7 @@ void GetFormField(autofill::FormFieldData* field,
 // Sends a request to BrowserAutofillManager to retrieve suggestions for the
 // specified form and field.
 - (void)queryAutofillForForm:(const autofill::FormData&)form
-             fieldIdentifier:(NSString*)fieldIdentifier
+             fieldIdentifier:(FieldRendererId)fieldIdentifier
                         type:(NSString*)type
                   typedValue:(NSString*)typedValue
                      frameID:(NSString*)frameID
@@ -323,7 +323,7 @@ void GetFormField(autofill::FormFieldData* field,
 
   // Find the right field.
   autofill::FormFieldData field;
-  GetFormField(&field, form, SysNSStringToUTF16(fieldIdentifier));
+  GetFormField(&field, form, fieldIdentifier);
 
   // Save the completion and go look for suggestions.
   _suggestionsAvailableCompletion = [completion copy];
@@ -370,7 +370,7 @@ void GetFormField(autofill::FormFieldData* field,
   id completionHandler = ^(BOOL success, const FormDataVector& forms) {
     if (success && forms.size() == 1) {
       [weakSelf queryAutofillForForm:forms[0]
-                     fieldIdentifier:formQuery.fieldIdentifier
+                     fieldIdentifier:formQuery.uniqueFieldID
                                 type:formQuery.type
                           typedValue:formQuery.typedValue
                              frameID:formQuery.frameID
@@ -542,8 +542,9 @@ void GetFormField(autofill::FormFieldData* field,
     base::Value fieldData(base::Value::Type::DICTIONARY);
     DCHECK(form.fields.size() == form.data.fields.size());
     for (size_t i = 0; i < form.fields.size(); i++) {
-      fieldData.SetKey(base::UTF16ToUTF8(form.data.fields[i].unique_id),
-                       base::Value(form.fields[i].overall_type));
+      fieldData.SetKey(
+          NumberToString(form.data.fields[i].unique_renderer_id.value()),
+          base::Value(form.fields[i].overall_type));
     }
     predictionData->SetKey(base::UTF16ToUTF8(form.data.name),
                            std::move(fieldData));
@@ -814,7 +815,7 @@ void GetFormField(autofill::FormFieldData* field,
   // -onFormsFetched:formsData:webFrameId:fieldIdentifier.
   __weak AutofillAgent* weakSelf = self;
   __block const std::string webFrameId = frame->GetFrameId();
-  __block const std::string fieldIdentifier = params.field_identifier;
+  __block FieldRendererId fieldIdentifier = params.unique_field_id;
   auto completionHandler = ^(BOOL success, const FormDataVector& forms) {
     [weakSelf onFormsFetched:success
                    formsData:forms
@@ -976,7 +977,7 @@ void GetFormField(autofill::FormFieldData* field,
 - (void)onFormsFetched:(BOOL)success
              formsData:(const FormDataVector&)forms
             webFrameId:(const std::string&)webFrameId
-       fieldIdentifier:(const std::string&)fieldIdentifier {
+       fieldIdentifier:(FieldRendererId)fieldIdentifier {
   if (!success || forms.size() != 1)
     return;
 
@@ -995,7 +996,7 @@ void GetFormField(autofill::FormFieldData* field,
     return;
 
   autofill::FormFieldData field;
-  GetFormField(&field, forms[0], base::UTF8ToUTF16(fieldIdentifier));
+  GetFormField(&field, forms[0], fieldIdentifier);
   autofillManager->OnTextFieldDidChange(
       forms[0], field, gfx::RectF(), autofill::AutofillTickClock::NowTicks());
 }
