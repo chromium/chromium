@@ -2461,6 +2461,32 @@ TEST_F(DrawPropertiesTest,
   EXPECT_EQ(gfx::Rect(), grand_child->visible_layer_rect());
 }
 
+TEST_F(DrawPropertiesTest, ClipExpanderWithUninvertibleTransform) {
+  LayerImpl* root = root_layer();
+  LayerImpl* child = AddLayer<LayerImpl>();
+
+  root->SetBounds(gfx::Size(100, 100));
+  child->SetBounds(gfx::Size(50, 50));
+  child->SetDrawsContent(true);
+
+  gfx::Transform uninvertible_matrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  ASSERT_FALSE(uninvertible_matrix.IsInvertible());
+
+  CopyProperties(root, child);
+  CreateTransformNode(child).local = uninvertible_matrix;
+  FilterOperations filters;
+  auto& filter_node = CreateEffectNode(child);
+  filter_node.render_surface_reason = RenderSurfaceReason::kFilter;
+  filter_node.filters.Append(FilterOperation::CreateBlurFilter(10));
+  auto& clip_node = CreateClipNode(child);
+  clip_node.pixel_moving_filter_id = filter_node.id;
+
+  UpdateActiveTreeDrawProperties();
+
+  EXPECT_TRUE(child->visible_layer_rect().IsEmpty());
+  EXPECT_TRUE(child->visible_drawable_content_rect().IsEmpty());
+}
+
 // Needs layer tree mode: mask layer.
 TEST_F(DrawPropertiesTestWithLayerTree, OcclusionBySiblingOfTarget) {
   auto root = Layer::Create();
