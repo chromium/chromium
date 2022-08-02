@@ -63,23 +63,6 @@ bool HTMLSummaryElement::IsMainSummary() const {
   return false;
 }
 
-bool HTMLSummaryElement::IsClickableControl(Node* node) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return false;
-  if (element->IsFormControlElement())
-    return true;
-  Element* host = element->OwnerShadowHost();
-  if (host && host->IsFormControlElement())
-    return true;
-  while (node && this != node) {
-    if (node->HasActivationBehavior())
-      return true;
-    node = node->ParentOrShadowHostNode();
-  }
-  return false;
-}
-
 bool HTMLSummaryElement::SupportsFocus() const {
   return IsMainSummary() || HTMLElement::SupportsFocus();
 }

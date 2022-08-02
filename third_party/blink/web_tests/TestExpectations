@@ -5042,15 +5042,6 @@ crbug.com/1008483 virtual/backface-visibility-interop/compositing/overflow/scrol
 crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/stacking-context-lost.html [ Failure ]
 crbug.com/1008483 virtual/backface-visibility-interop/paint/invalidation/multicol/multicol-as-paint-container.html [ Failure ]
 
-# TODO(https://crbug.com/1250716): These tests are being added as part of the
-# CL with the code relevant for them, but they need all of the current set of
-# CLs to land before they can pass.  So they are temporarily (within this
-# patch stack) marked as failing, and will be unmarked in the final patch.
-crbug.com/1250716 external/wpt/css/css-toggle/toggle-creation.tentative.html [ Failure ]
-crbug.com/1250716 external/wpt/css/css-toggle/toggle-activation.tentative.html [ Failure ]
-crbug.com/1250716 external/wpt/css/css-toggle/toggle-activation-with-groups.tentative.html [ Failure ]
-crbug.com/1250716 external/wpt/css/css-toggle/toggle-pseudo-class.tentative.html [ Failure ]
-
 # Swiftshader issue.
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-innerwidth.html [ Crash Timeout ]
 crbug.com/1048149 external/wpt/html/browsers/the-window-object/open-close/open-features-non-integer-screeny.html [ Crash Timeout ]
