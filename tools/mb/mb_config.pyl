@@ -364,7 +364,6 @@
       'Linux ChromiumOS MSan Focal': 'chromeos_msan_release_bot',
       'Linux MSan Focal': 'msan_release_bot_reclient',
       'Linux Viz': 'release_trybot_minimal_symbols_reclient',
-      'Mac Builder (py2 less)': 'gpu_tests_release_bot_minimal_symbols_no_nacl',
       # TODO(crbug.com/1260232): remove this after the migration.
       'Mac Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       # TODO(crbug.com/1244441): remove this after the migration.
@@ -2917,7 +2916,7 @@
     'ios_simulator_code_coverage_partial_instrumentation_xctest': [
       'use_clang_coverage', 'debug_static_bot', 'x64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation',
     ],
-    
+
     'ios_simulator_code_coverage_partial_instrumentation_xctest_arm64': [
       'use_clang_coverage', 'debug_static_bot', 'arm64', 'ios', 'ios_simulator', 'partial_code_coverage_instrumentation', 'xctest', 'ios_disable_xcode_project_generation',
     ],
@@ -2933,7 +2932,7 @@
     'ios_simulator_debug_static_bot_xctest_arm64': [
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation',
     ],
-    
+
     'ios_simulator_debug_static_bot_xctest_arm64_no_lld_treat_warnings_as_errors': [
         'debug_static_bot', 'ios', 'ios_simulator', 'ios_cpu_arm64', 'xctest', 'ios_disable_xcode_project_generation', 'no_lld', 'treat_warnings_as_errors'
     ],
