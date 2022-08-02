@@ -24,11 +24,9 @@
 #include "base/strings/string_split.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/cache_storage/cache_storage.h"
@@ -422,13 +420,13 @@ void OnBadMessage(std::string* result) {
 class TestCacheStorageCache : public CacheStorageCache {
  public:
   TestCacheStorageCache(
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       const std::string& cache_name,
       const base::FilePath& path,
       CacheStorage* cache_storage,
       const scoped_refptr<storage::QuotaManagerProxy>& quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context)
-      : CacheStorageCache(bucket_locator,
+      : CacheStorageCache(storage_key,
                           storage::mojom::CacheStorageOwner::kCacheAPI,
                           cache_name,
                           path,
@@ -504,7 +502,7 @@ class MockCacheStorage : public CacheStorage {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       CacheStorageManager* cache_storage_manager,
-      const storage::BucketLocator& bucket_locator,
+      const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner)
       : CacheStorage(origin_path,
                      memory_only,
@@ -513,7 +511,7 @@ class MockCacheStorage : public CacheStorage {
                      std::move(quota_manager_proxy),
                      std::move(blob_storage_context),
                      cache_storage_manager,
-                     bucket_locator,
+                     storage_key,
                      owner) {}
 
   void CacheUnreferenced(CacheStorageCache* cache) override {
@@ -566,7 +564,6 @@ class CacheStorageCacheTest : public testing::Test {
         std::vector<uint8_t>(expected_blob_data_.begin(),
                              expected_blob_data_.end()));
 
-    auto bucket_locator = GetOrCreateBucket(kTestUrl);
     // Use a mock CacheStorage object so we can use real
     // CacheStorageCacheHandle reference counting.  A CacheStorage
     // must be present to be notified when a cache becomes unreferenced.
@@ -574,25 +571,15 @@ class CacheStorageCacheTest : public testing::Test {
         temp_dir_path_, MemoryOnly(), base::ThreadTaskRunnerHandle::Get().get(),
         base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
         blob_storage_context_, /* cache_storage_manager = */ nullptr,
-        bucket_locator, storage::mojom::CacheStorageOwner::kCacheAPI);
+        blink::StorageKey(url::Origin::Create(kTestUrl)),
+        storage::mojom::CacheStorageOwner::kCacheAPI);
 
-    InitCache(mock_cache_storage_.get(), bucket_locator);
+    InitCache(mock_cache_storage_.get());
   }
 
   void TearDown() override {
     disk_cache::FlushCacheThreadForTesting();
     content::RunAllTasksUntilIdle();
-  }
-
-  storage::BucketLocator GetOrCreateBucket(const GURL& url) {
-    auto storage_key = blink::StorageKey(url::Origin::Create(url));
-    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
-    quota_manager_proxy_->UpdateOrCreateBucket(
-        storage::BucketInitParams(storage_key, storage::kDefaultBucketName),
-        base::ThreadTaskRunnerHandle::Get(), future.GetCallback());
-    auto bucket = future.Take();
-    EXPECT_TRUE(bucket.ok());
-    return bucket->ToBucketLocator();
   }
 
   GURL BodyUrl() const {
@@ -611,11 +598,11 @@ class CacheStorageCacheTest : public testing::Test {
     return kTestUrl.ReplaceComponents(replacements);
   }
 
-  void InitCache(CacheStorage* cache_storage,
-                 const storage::BucketLocator& bucket_locator) {
+  void InitCache(CacheStorage* cache_storage) {
     cache_ = std::make_unique<TestCacheStorageCache>(
-        bucket_locator, kCacheName, temp_dir_path_, cache_storage,
-        quota_manager_proxy_, blob_storage_context_);
+        blink::StorageKey(url::Origin::Create(kTestUrl)), kCacheName,
+        temp_dir_path_, cache_storage, quota_manager_proxy_,
+        blob_storage_context_);
     cache_->Init();
   }
 
@@ -1956,12 +1943,12 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaManagerModified) {
   base::Time response_time(base::Time::Now());
   blink::mojom::FetchAPIResponsePtr response(CreateNoBodyResponse());
   response->response_time = response_time;
-  EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_modified_count());
+  EXPECT_EQ(0, quota_manager_proxy_->notify_storage_modified_count());
   EXPECT_TRUE(Put(no_body_request_, std::move(response)));
   // Storage notification happens after the operation returns, so continue the
   // event loop.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_modified_count());
+  EXPECT_EQ(1, quota_manager_proxy_->notify_storage_modified_count());
 
   const size_t kSize = 10;
   scoped_refptr<net::IOBuffer> buffer =
@@ -1970,7 +1957,7 @@ TEST_P(CacheStorageCacheTestP, WriteSideData_QuotaManagerModified) {
   EXPECT_TRUE(
       WriteSideData(no_body_request_->url, response_time, buffer, kSize));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, quota_manager_proxy_->notify_bucket_modified_count());
+  EXPECT_EQ(2, quota_manager_proxy_->notify_storage_modified_count());
   ASSERT_TRUE(Delete(no_body_request_));
 }
 
@@ -2015,31 +2002,31 @@ TEST_F(CacheStorageCacheTest, CaselessServiceWorkerFetchRequestHeaders) {
 }
 
 TEST_P(CacheStorageCacheTestP, QuotaManagerModified) {
-  EXPECT_EQ(0, quota_manager_proxy_->notify_bucket_modified_count());
+  EXPECT_EQ(0, quota_manager_proxy_->notify_storage_modified_count());
 
   EXPECT_TRUE(Put(no_body_request_, CreateNoBodyResponse()));
   // Storage notification happens after the operation returns, so continue the
   // event loop.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1, quota_manager_proxy_->notify_bucket_modified_count());
-  EXPECT_LT(0, quota_manager_proxy_->last_notified_bucket_delta());
-  int64_t sum_delta = quota_manager_proxy_->last_notified_bucket_delta();
+  EXPECT_EQ(1, quota_manager_proxy_->notify_storage_modified_count());
+  EXPECT_LT(0, quota_manager_proxy_->last_notified_delta());
+  int64_t sum_delta = quota_manager_proxy_->last_notified_delta();
 
   EXPECT_TRUE(Put(body_request_, CreateBlobBodyResponse()));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, quota_manager_proxy_->notify_bucket_modified_count());
-  EXPECT_LT(sum_delta, quota_manager_proxy_->last_notified_bucket_delta());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  EXPECT_EQ(2, quota_manager_proxy_->notify_storage_modified_count());
+  EXPECT_LT(sum_delta, quota_manager_proxy_->last_notified_delta());
+  sum_delta += quota_manager_proxy_->last_notified_delta();
 
   EXPECT_TRUE(Delete(body_request_));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(3, quota_manager_proxy_->notify_bucket_modified_count());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  EXPECT_EQ(3, quota_manager_proxy_->notify_storage_modified_count());
+  sum_delta += quota_manager_proxy_->last_notified_delta();
 
   EXPECT_TRUE(Delete(no_body_request_));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(4, quota_manager_proxy_->notify_bucket_modified_count());
-  sum_delta += quota_manager_proxy_->last_notified_bucket_delta();
+  EXPECT_EQ(4, quota_manager_proxy_->notify_storage_modified_count());
+  sum_delta += quota_manager_proxy_->last_notified_delta();
 
   EXPECT_EQ(0, sum_delta);
 }
@@ -2374,7 +2361,7 @@ TEST_P(CacheStorageCacheTestP, UnfinishedPutsShouldNotBeReusable) {
   base::RunLoop().RunUntilIdle();
 
   // Create a new Cache in the same space.
-  InitCache(nullptr, GetOrCreateBucket(kTestUrl));
+  InitCache(nullptr);
 
   // Now attempt to read the same response from the cache. It should fail.
   EXPECT_FALSE(Match(body_request_));

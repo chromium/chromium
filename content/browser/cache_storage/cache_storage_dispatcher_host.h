@@ -35,9 +35,7 @@ class CacheStorageContextImpl;
 // from other sequences.
 class CacheStorageDispatcherHost {
  public:
-  CacheStorageDispatcherHost(
-      CacheStorageContextImpl* context,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
+  explicit CacheStorageDispatcherHost(CacheStorageContextImpl* context);
 
   CacheStorageDispatcherHost(const CacheStorageDispatcherHost&) = delete;
   CacheStorageDispatcherHost& operator=(const CacheStorageDispatcherHost&) =
@@ -60,15 +58,6 @@ class CacheStorageDispatcherHost {
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 
-  base::WeakPtr<CacheStorageDispatcherHost> AsWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  bool WasNotifiedOfBucketDataDeletion(
-      const storage::BucketLocator& bucket_locator);
-
-  void NotifyBucketDataDeleted(const storage::BucketLocator& bucket_locator);
-
  private:
   class CacheStorageImpl;
   class CacheImpl;
@@ -81,24 +70,15 @@ class CacheStorageDispatcherHost {
   CacheStorageHandle OpenCacheStorage(
       const storage::BucketLocator& bucket_locator,
       storage::mojom::CacheStorageOwner owner);
-  void UpdateOrCreateBucket(
-      const blink::StorageKey& storage_key,
-      base::OnceCallback<void(storage::QuotaErrorOr<storage::BucketInfo>)>
-          callback);
 
   // `this` is owned by `context_`.
   const raw_ptr<CacheStorageContextImpl> context_;
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   mojo::UniqueReceiverSet<blink::mojom::CacheStorage> receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::CacheStorageCache>
       cache_receivers_;
 
-  std::set<storage::BucketLocator> deleted_buckets_;
-
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<CacheStorageDispatcherHost> weak_ptr_factory_{this};
 };
 
 }  // namespace content
