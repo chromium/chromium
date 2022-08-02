@@ -483,11 +483,11 @@ LayerTreeHostImpl::LayerTreeHostImpl(
   if (is_ui) {
     compositor_frame_reporting_controller_->set_event_latency_tracker(this);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     dropped_frame_counter_.EnableReporForUI();
     compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
         FrameInfo::SmoothEffectDrivingThread::kMain, true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   dropped_frame_counter_.set_total_counter(&total_frame_counter_);

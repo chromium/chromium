@@ -29,6 +29,7 @@
 #include "chrome/browser/lacros/standalone_browser_test_controller.h"
 #include "chrome/browser/lacros/sync/sync_explicit_passphrase_client_lacros.h"
 #include "chrome/browser/lacros/task_manager_lacros.h"
+#include "chrome/browser/lacros/ui_throughput_recorder_lacros.h"
 #include "chrome/browser/lacros/vpn_extension_tracker_lacros.h"
 #include "chrome/browser/lacros/web_app_provider_bridge_lacros.h"
 #include "chrome/browser/lacros/web_page_info_lacros.h"
@@ -201,6 +202,8 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
     ::memory::OOMKillsMonitor::GetInstance().Initialize(
         g_browser_process->local_state());
   }
+
+  ui_throughput_recorder_ = std::make_unique<UiThroughputRecorderLacros>();
 }
 
 void ChromeBrowserMainExtraPartsLacros::PostProfileInit(

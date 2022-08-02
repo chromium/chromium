@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow"
+    units="%" expires_after="2023-07-25">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow but emitted for the
+    browser UI of lacros-chrome.
+  </summary>
+</histogram>
+
 <histogram name="Chrome.MessageLoopProblem" enum="MessageLoopProblems"
     expires_after="2021-07-31">
   <owner>fdoray@chromium.org</owner>

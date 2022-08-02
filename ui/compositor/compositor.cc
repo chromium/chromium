@@ -729,7 +729,7 @@ void Compositor::DidCommit(base::TimeTicks, base::TimeTicks) {
 
 std::unique_ptr<cc::BeginMainFrameMetrics>
 Compositor::GetBeginMainFrameMetrics() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto metrics_data = std::make_unique<cc::BeginMainFrameMetrics>();
   metrics_data->should_measure_smoothness = true;
   return metrics_data;

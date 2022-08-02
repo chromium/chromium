@@ -28,6 +28,7 @@ class QuickAnswersController;
 class StandaloneBrowserTestController;
 class SyncExplicitPassphraseClientLacros;
 class TabletModePageBehavior;
+class UiThroughputRecorderLacros;
 class VpnExtensionTrackerLacros;
 class WebAuthnRequestRegistrarLacros;
 
@@ -157,6 +158,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Forwards file system provider events to extensions.
   std::unique_ptr<LacrosFileSystemProvider> file_system_provider_;
+
+  // Records UI metrics such as dropped frame percentage.
+  std::unique_ptr<UiThroughputRecorderLacros> ui_throughput_recorder_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_
