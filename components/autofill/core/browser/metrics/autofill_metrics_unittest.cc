@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/form_events/address_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
@@ -50,7 +51,6 @@
 #include "components/autofill/core/browser/test_autofill_tick_clock.h"
 #include "components/autofill/core/browser/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
-#include "components/autofill/core/browser/test_form_structure.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
@@ -2783,9 +2783,9 @@ TEST_F(AutofillMetricsTest, QualityMetrics_BasedOnAutocomplete) {
   field.autocomplete_attribute = "";
   form.fields.push_back(field);
 
-  std::unique_ptr<TestFormStructure> form_structure =
-      std::make_unique<TestFormStructure>(form);
-  TestFormStructure* form_structure_ptr = form_structure.get();
+  std::unique_ptr<FormStructure> form_structure =
+      std::make_unique<FormStructure>(form);
+  FormStructure* form_structure_ptr = form_structure.get();
   form_structure->DetermineHeuristicTypes(nullptr, nullptr);
   ASSERT_TRUE(
       autofill_manager()
