@@ -859,11 +859,10 @@ class ObfuscatedFileUtilTest : public testing::Test,
     ASSERT_TRUE(db != nullptr);
 
     // Destroy it.
-    (is_non_default_bucket())
-        ? ofu()->DestroyDirectoryDatabaseForBucket(url.bucket().value(),
-                                                   GetTypeString(url.type()))
-        : ofu()->DestroyDirectoryDatabaseForStorageKey(
-              url.storage_key(), GetTypeString(url.type()));
+    (is_non_default_bucket()) ? ofu()->DestroyDirectoryDatabaseForBucket(
+                                    url.bucket().value(), url.type())
+                              : ofu()->DestroyDirectoryDatabaseForStorageKey(
+                                    url.storage_key(), url.type());
     ASSERT_TRUE(ofu()->directories_.empty());
   }
 
@@ -1863,9 +1862,8 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
 
   // Destroy database to make inconsistency between database and filesystem.
   (is_non_default_bucket())
-      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type_string())
-      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(),
-                                                     type_string());
+      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type())
+      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(), type());
 
   // Try to get file info of broken file.
   EXPECT_FALSE(PathExists(kPath1));
@@ -1886,9 +1884,8 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
 
   // Destroy again.
   (is_non_default_bucket())
-      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type_string())
-      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(),
-                                                     type_string());
+      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type())
+      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(), type());
 
   // Repair broken `kPath1`.
   context = NewContext(nullptr);
@@ -1907,9 +1904,8 @@ TEST_P(ObfuscatedFileUtilTest, TestInconsistency) {
                                   true /* copy */));
 
   (is_non_default_bucket())
-      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type_string())
-      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(),
-                                                     type_string());
+      ? ofu()->DestroyDirectoryDatabaseForBucket(custom_bucket_, type())
+      : ofu()->DestroyDirectoryDatabaseForStorageKey(storage_key(), type());
   context = NewContext(nullptr);
   created = false;
   EXPECT_EQ(base::File::FILE_OK,
@@ -2582,7 +2578,7 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType) {
 
   // Delete a directory for default_bucket_'s persistent filesystem.
   ASSERT_TRUE(ofu()->DeleteDirectoryForBucketAndType(
-      default_bucket_, GetTypeString(kFileSystemTypePersistent)));
+      default_bucket_, kFileSystemTypePersistent));
 
   // The directory for default_bucket_'s temporary filesystem should not be
   // removed.
@@ -2615,7 +2611,7 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType) {
 
   // Deleting directories which don't exist is not an error.
   ASSERT_TRUE(ofu()->DeleteDirectoryForBucketAndType(
-      alternate_custom_bucket_, GetTypeString(kFileSystemTypePersistent)));
+      alternate_custom_bucket_, kFileSystemTypePersistent));
 }
 
 TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType) {
@@ -2664,7 +2660,7 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType) {
 
   // Delete a directory for storage_key1's persistent filesystem.
   ASSERT_TRUE(ofu()->DeleteDirectoryForStorageKeyAndType(
-      storage_key1, GetTypeString(kFileSystemTypePersistent)));
+      storage_key1, kFileSystemTypePersistent));
 
   // The directory for storage_key1's temporary filesystem should not be
   // removed.
@@ -2710,9 +2706,9 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType) {
 
   // Deleting directories which don't exist is not an error.
   ASSERT_TRUE(ofu()->DeleteDirectoryForStorageKeyAndType(
-      storage_key3, GetTypeString(kFileSystemTypeTemporary)));
+      storage_key3, kFileSystemTypeTemporary));
   ASSERT_TRUE(ofu()->DeleteDirectoryForStorageKeyAndType(
-      storage_key3, GetTypeString(kFileSystemTypePersistent)));
+      storage_key3, kFileSystemTypePersistent));
 }
 
 TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType_DeleteAll) {
@@ -2756,7 +2752,7 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForBucketAndType_DeleteAll) {
                    .is_error());
 
   // Delete all directories for default_bucket_.
-  ofu()->DeleteDirectoryForBucketAndType(default_bucket_, std::string());
+  ofu()->DeleteDirectoryForBucketAndType(default_bucket_, absl::nullopt);
 
   // The directories for default_bucket_ should be removed.
   ASSERT_EQ(ofu()
@@ -2828,7 +2824,7 @@ TEST_P(ObfuscatedFileUtilTest, DeleteDirectoryForStorageKeyAndType_DeleteAll) {
                    .is_error());
 
   // Delete all directories for storage_key1.
-  ofu()->DeleteDirectoryForStorageKeyAndType(storage_key1, std::string());
+  ofu()->DeleteDirectoryForStorageKeyAndType(storage_key1, absl::nullopt);
 
   // The directories for storage_key1 should be removed.
   ASSERT_EQ(ofu()

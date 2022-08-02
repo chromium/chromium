@@ -81,10 +81,6 @@ const base::FilePath::CharType kRestrictedChars[] = {
     FILE_PATH_LITERAL('\\'),
 };
 
-std::string GetTypeStringForURL(const FileSystemURL& url) {
-  return SandboxFileSystemBackendDelegate::GetTypeString(url.type());
-}
-
 std::set<std::string> GetKnownTypeStrings() {
   std::set<std::string> known_type_strings;
   known_type_strings.insert(kTemporaryDirectoryName);
@@ -203,7 +199,6 @@ SandboxFileSystemBackendDelegate::SandboxFileSystemBackendDelegate(
               special_storage_policy,
               profile_path.Append(kFileSystemDirectory),
               env_override,
-              base::BindRepeating(&GetTypeStringForURL),
               GetKnownTypeStrings(),
               this,
               file_system_options.is_incognito()))),
@@ -368,7 +363,7 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
                                                      storage_key, type);
   usage_cache()->CloseCacheFiles();
   bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
-      storage_key, GetTypeString(type));
+      storage_key, type);
   if (result && proxy && usage) {
     proxy->NotifyStorageModified(
         QuotaClientType::kFileSystem, storage_key,
@@ -401,7 +396,7 @@ SandboxFileSystemBackendDelegate::DeleteBucketDataOnFileTaskRunner(
                           : 0;
   usage_cache()->CloseCacheFiles();
   bool result = obfuscated_file_util()->DeleteDirectoryForBucketAndType(
-      bucket_locator, GetTypeString(type));
+      bucket_locator, type);
   if (result && proxy && usage) {
     proxy->NotifyBucketModified(QuotaClientType::kFileSystem, bucket_locator.id,
                                 -usage, base::Time::Now(),
@@ -820,8 +815,7 @@ std::unique_ptr<ObfuscatedFileUtil> ObfuscatedFileUtil::CreateForTesting(
     bool is_incognito) {
   return std::make_unique<ObfuscatedFileUtil>(
       std::move(special_storage_policy), file_system_directory, env_override,
-      base::BindRepeating(&GetTypeStringForURL), GetKnownTypeStrings(),
-      /*sandbox_delegate=*/nullptr, is_incognito);
+      GetKnownTypeStrings(), /*sandbox_delegate=*/nullptr, is_incognito);
 }
 
 }  // namespace storage

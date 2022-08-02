@@ -34,10 +34,6 @@ namespace blink {
 class StorageKey;
 }  // namespace blink
 
-namespace url {
-class Origin;
-}  // namespace url
-
 namespace storage {
 
 class FileSystemOperationContext;
@@ -46,12 +42,18 @@ class QuotaBackendImplTest;
 class SandboxOriginDatabaseInterface;
 class SpecialStoragePolicy;
 
-// Class representing the key for directories_. NOTE: The BucketLocator value is
+// Class representing the key for directories_. NOTE: The `bucket` value is
 // optional due to usage of ObfuscatedFileUtil where the type is not kTemporary
 // (i.e. kPersistent or kSyncable). For all non-temporary types, expect the
 // bucket member value to be absl::nullopt. The class is implemented as such to
 // avoid mapping the same StorageKey to potentially different bucket values,
-// which would cause directories_ lookup errors.
+// which would cause directories_ lookup errors. NOTE: The `type_string` value
+// is empty when designating a "top-level directory" or a directory that
+// contains one or more subdirectories with a non-empty type. This class stores
+// a string rather than the FileSystemType itself because multiple
+// FileSystemTypes can map to the same `type_string`, and preserving this
+// behavior is necessary to retrieving and deleting ObfuscatedFilePaths
+// correctly.
 class DatabaseKey {
  public:
   DatabaseKey();
@@ -65,7 +67,7 @@ class DatabaseKey {
 
   DatabaseKey(const blink::StorageKey& storage_key,
               const absl::optional<BucketLocator>& bucket,
-              const std::string& type);
+              const std::string& type_string);
 
   const blink::StorageKey& storage_key() const { return storage_key_; }
   const absl::optional<BucketLocator>& bucket() const { return bucket_; }
@@ -135,20 +137,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   using GetTypeStringForURLCallback =
       base::RepeatingCallback<std::string(const FileSystemURL&)>;
 
-  // `get_type_string_for_url` is user-defined callback that should return
-  // a type string for the given FileSystemURL.  The type string is used
-  // to provide per-type isolation in the sandboxed filesystem directory.
-  //
-  // `known_type_strings` are known type string names that this file system
-  // should care about.
-  // This info is used to determine whether we could delete the entire
-  // origin directory or not in DeleteDirectoryForStorageKeyAndType. If no
-  // directory for any known type exists the origin directory may get
-  // deleted when one StorageKey/type pair is deleted.
+  // The type string is used to provide per-type isolation in the sandboxed
+  // filesystem directory. `known_type_strings` are known type string names that
+  // this file system should care about. This info is used to determine whether
+  // we could delete the entire origin directory or not in
+  // DeleteDirectoryForStorageKeyAndType. If no directory for any known type
+  // exists the origin directory may get deleted when one StorageKey/type pair
+  // is deleted.
   ObfuscatedFileUtil(scoped_refptr<SpecialStoragePolicy> special_storage_policy,
                      const base::FilePath& file_system_directory,
                      leveldb::Env* env_override,
-                     GetTypeStringForURLCallback get_type_string_for_url,
                      const std::set<std::string>& known_type_strings,
                      SandboxFileSystemBackendDelegate* sandbox_delegate,
                      bool is_incognito);
@@ -234,15 +232,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
 
   // Deletes the topmost directory specific to this StorageKey and type. This
   // will delete its directory database. Deletes the topmost StorageKey
-  // directory if `type_string` is empty.
-  bool DeleteDirectoryForStorageKeyAndType(const blink::StorageKey& storage_key,
-                                           const std::string& type_string);
+  // directory if `type` is absl::nullopt.
+  bool DeleteDirectoryForStorageKeyAndType(
+      const blink::StorageKey& storage_key,
+      const absl::optional<FileSystemType>& type);
 
   // Deletes the topmost directory specific to this BucketLocator and type. This
   // will delete its directory database. Deletes the topmost bucket
-  // directory if `type_string` is empty.
-  bool DeleteDirectoryForBucketAndType(const BucketLocator& bucket_locator,
-                                       const std::string& type_string);
+  // directory if `type` is absl::nullopt.
+  bool DeleteDirectoryForBucketAndType(
+      const BucketLocator& bucket_locator,
+      const absl::optional<FileSystemType>& type);
 
   // This method and all methods of its returned class must be called only on
   // the FILE thread.  The caller is responsible for deleting the returned
@@ -253,12 +253,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   // database on the disk corresponding to the provided StorageKey and type.
   void DestroyDirectoryDatabaseForStorageKey(
       const blink::StorageKey& storage_key,
-      const std::string& type_string);
+      const absl::optional<FileSystemType>& type);
 
   // Deletes a directory database from the database list and destroys the
   // database on the disk corresponding to the provided bucket locator and type.
-  void DestroyDirectoryDatabaseForBucket(const BucketLocator& bucket_locator,
-                                         const std::string& type_string);
+  void DestroyDirectoryDatabaseForBucket(
+      const BucketLocator& bucket_locator,
+      const absl::optional<FileSystemType>& type);
 
   // Computes a cost for storing a given file in the obfuscated FSFU.
   // As the cost of a file is independent of the cost of its parent directories,
@@ -310,9 +311,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   base::FileErrorOr<base::FilePath> GetDirectoryForURL(const FileSystemURL& url,
                                                        bool create);
 
-  // This just calls get_type_string_for_url_ callback that is given in ctor.
-  std::string CallGetTypeStringForURL(const FileSystemURL& url);
-
   base::File::Error GetFileInfoInternal(SandboxDirectoryDatabase* db,
                                         FileSystemOperationContext* context,
                                         const FileSystemURL& url,
@@ -359,7 +357,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
   void DestroyDirectoryDatabaseHelper(
       const absl::optional<BucketLocator>& bucket_locator,
       const blink::StorageKey& storage_key,
-      const std::string& type_string);
+      const absl::optional<FileSystemType>& type);
 
   // This returns nullptr if `create` flag is false and a filesystem does not
   // exist for the given `url`.
@@ -428,7 +426,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ObfuscatedFileUtil
 
   base::OneShotTimer timer_;
 
-  GetTypeStringForURLCallback get_type_string_for_url_;
   std::set<std::string> known_type_strings_;
 
   // Not owned.
