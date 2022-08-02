@@ -439,6 +439,8 @@ class SyncTest : public PlatformBrowserTest {
   // Collection of sync profiles used by a test. A sync profile maintains sync
   // data contained within its own subdirectory under the chrome user data
   // directory. Profiles are owned by the ProfileManager.
+  // TODO(crbug.com/1349349): store |profiles_|, |browsers_| and |clients_| in
+  // one structure.
   std::vector<Profile*> profiles_;
 
   // List of temporary directories that need to be deleted when the test is

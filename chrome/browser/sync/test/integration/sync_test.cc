@@ -514,6 +514,12 @@ void SyncTest::OnBrowserRemoved(Browser* browser) {
   for (size_t i = 0; i < browsers_.size(); ++i) {
     if (browsers_[i] == browser) {
       browsers_[i] = nullptr;
+      // Remove a corresponding SyncServiceHarness if exists since SyncService
+      // may be destroyed soon. It may not exist for browsers added during
+      // tests using AddBrowser().
+      if (i < clients_.size()) {
+        clients_[i].reset();
+      }
       break;
     }
   }
@@ -941,6 +947,22 @@ bool SyncTest::SetupSync(SetupSyncMode setup_mode) {
 }
 
 void SyncTest::TearDownOnMainThread() {
+  // Verify that there are no data type failures after the test.
+  for (size_t client_index = 0; client_index < clients_.size();
+       ++client_index) {
+    if (!GetClient(client_index)) {
+      // This may happen if the last tab and hence a browser has been closed.
+      continue;
+    }
+    if (GetClient(client_index)->service()->HasAnyDatatypeErrorForTest()) {
+      ADD_FAILURE() << "Data types failed during tests: "
+                    << GetClient(client_index)
+                           ->service()
+                           ->GetTypeStatusMapForDebugging()
+                           ->DebugString();
+    }
+  }
+
   // Workaround for https://crbug.com/801569: |prefs::kProfileLastUsed| stores
   // the profile path relative to the user dir, but our testing profiles are
   // outside the user dir (see CreateProfile). So code trying to access the last

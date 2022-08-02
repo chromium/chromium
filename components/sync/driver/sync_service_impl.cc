@@ -278,6 +278,17 @@ ModelTypeSet SyncServiceImpl::GetRegisteredDataTypesForTest() const {
   return GetRegisteredDataTypes();
 }
 
+bool SyncServiceImpl::HasAnyDatatypeErrorForTest() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& data_type_with_error : data_type_error_map_) {
+    if (data_type_with_error.second.error_type() ==
+        syncer::SyncError::DATATYPE_ERROR) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void SyncServiceImpl::GetThrottledDataTypesForTest(
     base::OnceCallback<void(ModelTypeSet)> cb) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
