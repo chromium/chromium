@@ -60,6 +60,7 @@
 #include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/commands/run_on_os_login_command.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -1886,7 +1887,7 @@ void WebAppIntegrationTestDriver::CheckRunOnOsLoginDisabled(Site site) {
 void WebAppIntegrationTestDriver::CheckSiteHandlesFile(
     Site site,
     std::string file_extension) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   BeforeStateCheckAction(__FUNCTION__);
   ASSERT_TRUE(IsFileHandledBySite(site, file_extension));
   AfterStateCheckAction();
@@ -1896,7 +1897,7 @@ void WebAppIntegrationTestDriver::CheckSiteHandlesFile(
 void WebAppIntegrationTestDriver::CheckSiteNotHandlesFile(
     Site site,
     std::string file_extension) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   BeforeStateCheckAction(__FUNCTION__);
   ASSERT_FALSE(IsFileHandledBySite(site, file_extension));
   AfterStateCheckAction();
@@ -2578,6 +2579,15 @@ bool WebAppIntegrationTestDriver::IsFileHandledBySite(
   is_file_handled =
       (base::UTF8ToUTF16(app_name) ==
        shell_integration::GetApplicationNameForProtocol(test_file_url));
+#elif BUILDFLAG(IS_LINUX)
+  AppId app_id = GetAppIdBySiteMode(site);
+  for (const LinuxFileRegistration& command :
+       shortcut_override_->linux_file_registration) {
+    if (base::Contains(command.xdg_command, app_id) &&
+        base::Contains(command.file_contents, file_extension)) {
+      is_file_handled = base::Contains(command.xdg_command, "install");
+    }
+  }
 #endif
   return is_file_handled;
 }

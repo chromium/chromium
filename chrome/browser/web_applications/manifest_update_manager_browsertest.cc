@@ -2301,7 +2301,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   // Make sure that blocking the permission also unregisters the MIME type on
   // Linux.
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
-      [](base::FilePath filename, std::string file_contents) {
+      [](base::FilePath filename, std::string xdg_command,
+         std::string file_contents) {
         EXPECT_TRUE(file_contents.empty());
         return true;
       }));

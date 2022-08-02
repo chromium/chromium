@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -110,6 +111,12 @@ void OnMimeInfoDatabaseUpdated(bool install, bool registration_succeeded) {
   }
 }
 
+UpdateMimeInfoDatabaseOnLinuxCallback&
+GetUpdateMimeInfoDatabaseCallbackForTesting() {
+  static base::NoDestructor<UpdateMimeInfoDatabaseOnLinuxCallback> instance;
+  return *instance;
+}
+
 bool UpdateMimeInfoDatabase(bool install,
                             base::FilePath filename,
                             std::string file_contents) {
@@ -134,30 +141,21 @@ bool UpdateMimeInfoDatabase(bool install,
                                                 temp_file_path.value()};
 
   int exit_code;
-  shell_integration_linux::LaunchXdgUtility(
-      install ? install_argv : uninstall_argv, &exit_code);
-  bool success = exit_code == 0;
-  RecordRegistration(success ? RegistrationResult::kSuccess
-                             : RegistrationResult::kXdgReturnNonZeroCode,
-                     install);
+  bool success = false;
+  const std::vector<std::string>& argv =
+      install ? install_argv : uninstall_argv;
+  if (!GetUpdateMimeInfoDatabaseCallbackForTesting()) {
+    shell_integration_linux::LaunchXdgUtility(argv, &exit_code);
+    success = exit_code == 0;
+    RecordRegistration(success ? RegistrationResult::kSuccess
+                               : RegistrationResult::kXdgReturnNonZeroCode,
+                       install);
+  } else {
+    GetUpdateMimeInfoDatabaseCallbackForTesting().Run(
+        filename, base::JoinString(argv, " "), file_contents);
+    success = true;
+  }
   return success;
-}
-
-UpdateMimeInfoDatabaseOnLinuxCallback&
-GetUpdateMimeInfoDatabaseCallbackForTesting() {
-  static base::NoDestructor<UpdateMimeInfoDatabaseOnLinuxCallback> instance;
-  return *instance;
-}
-
-// Returns the callback to use for updating MIME info.
-UpdateMimeInfoDatabaseOnLinuxCallback GetUpdateMimeInfoDatabaseCallback(
-    bool install) {
-  auto callback =
-      std::move(GetUpdateMimeInfoDatabaseCallbackForTesting());  // IN-TEST
-  if (callback)
-    return callback;
-
-  return base::BindOnce(&UpdateMimeInfoDatabase, install);
 }
 
 void UninstallMimeInfoOnLinux(const AppId& app_id, Profile* profile) {
@@ -171,7 +169,7 @@ void UninstallMimeInfoOnLinux(const AppId& app_id, Profile* profile) {
   std::string file_contents;
   internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(GetUpdateMimeInfoDatabaseCallback(/*install=*/false),
+      base::BindOnce(base::BindOnce(&UpdateMimeInfoDatabase, /*install=*/false),
                      std::move(filename), std::move(file_contents)),
       base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/false));
 }
@@ -230,7 +228,7 @@ void InstallMimeInfoOnLinux(const AppId& app_id,
 
   internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(GetUpdateMimeInfoDatabaseCallback(/*install=*/true),
+      base::BindOnce(base::BindOnce(&UpdateMimeInfoDatabase, /*install=*/true),
                      std::move(filename), std::move(file_contents)),
       base::BindOnce(&OnMimeInfoDatabaseUpdated, /*install=*/true));
 }

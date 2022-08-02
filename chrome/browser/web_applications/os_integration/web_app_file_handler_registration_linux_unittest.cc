@@ -62,6 +62,7 @@ TEST_F(WebAppFileHandlerRegistrationLinuxTest,
 
   SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(base::BindLambdaForTesting(
       [expected_filename, expected_file_contents](base::FilePath filename,
+                                                  std::string xdg_command,
                                                   std::string file_contents) {
         EXPECT_EQ(filename, expected_filename);
         EXPECT_EQ(file_contents, expected_file_contents);

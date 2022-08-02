@@ -94,7 +94,8 @@ IN_PROC_BROWSER_TEST_F(
   base::RunLoop run_loop;
   UpdateMimeInfoDatabaseOnLinuxCallback callback = base::BindLambdaForTesting(
       [&expected_file_contents, &path_reached, &run_loop](
-          base::FilePath filename, std::string file_contents) {
+          base::FilePath filename, std::string xdg_command,
+          std::string file_contents) {
         EXPECT_EQ(file_contents, expected_file_contents);
         path_reached = true;
         run_loop.Quit();

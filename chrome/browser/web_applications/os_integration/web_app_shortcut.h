@@ -33,6 +33,19 @@ class ImageSkia;
 
 namespace web_app {
 
+#if BUILDFLAG(IS_LINUX)
+struct LinuxFileRegistration {
+  std::string xdg_command;
+  std::string file_contents;
+};
+#endif
+
+// This class is used across multiple different sequenced task runners:
+// - Created on the UI thread.
+// - Accessed & sometimes modified by the shortcut task runner.
+// - Accessed by the UI thread.
+// It is up to the user to ensure thread safety of this struct through
+// ordering guarantees.
 struct ScopedShortcutOverrideForTesting {
  public:
   ScopedShortcutOverrideForTesting();
@@ -51,6 +64,9 @@ struct ScopedShortcutOverrideForTesting {
 #elif BUILDFLAG(IS_LINUX)
   base::ScopedTempDir desktop;
   base::ScopedTempDir startup;
+  std::vector<LinuxFileRegistration> linux_file_registration;
+  // std::string xdg_mime_install_cmd;
+  // std::string mime_types_file_contents;
 #endif
 };
 

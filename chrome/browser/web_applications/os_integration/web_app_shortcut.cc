@@ -22,6 +22,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_constants.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -128,7 +129,22 @@ std::string GetAllFilesInDir(const base::FilePath& file_path) {
 
 }  // namespace
 
-ScopedShortcutOverrideForTesting::ScopedShortcutOverrideForTesting() = default;
+ScopedShortcutOverrideForTesting::ScopedShortcutOverrideForTesting() {
+#if BUILDFLAG(IS_LINUX)
+  auto callback = base::BindRepeating(
+      [](ScopedShortcutOverrideForTesting* scoped_override,
+         base::FilePath filename, std::string xdg_command,
+         std::string file_contents) {
+        LinuxFileRegistration file_registration = LinuxFileRegistration();
+        file_registration.xdg_command = xdg_command;
+        file_registration.file_contents = file_contents;
+        scoped_override->linux_file_registration.push_back(file_registration);
+        return true;
+      },
+      base::Unretained(this));
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(std::move(callback));
+#endif
+}
 ScopedShortcutOverrideForTesting::~ScopedShortcutOverrideForTesting() {
   DCHECK(GetMutableShortcutOverrideForTesting().has_value());  // IN-TEST
   std::vector<base::ScopedTempDir*> directories;
@@ -148,6 +164,9 @@ ScopedShortcutOverrideForTesting::~ScopedShortcutOverrideForTesting() {
     }
   }
 #elif BUILDFLAG(IS_LINUX)
+  // Reset the file handling callback.
+  SetUpdateMimeInfoDatabaseOnLinuxCallbackForTesting(
+      UpdateMimeInfoDatabaseOnLinuxCallback());
   directories = {&desktop};
 #endif
   for (base::ScopedTempDir* dir : directories) {

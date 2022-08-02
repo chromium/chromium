@@ -53,8 +53,9 @@ void InstallMimeInfoOnLinux(const AppId& app_id,
                             const apps::FileHandlers& file_handlers);
 
 using UpdateMimeInfoDatabaseOnLinuxCallback =
-    base::OnceCallback<bool(base::FilePath profile_path,
-                            std::string file_contents)>;
+    base::RepeatingCallback<bool(base::FilePath profile_path,
+                                 std::string xdg_command,
+                                 std::string file_contents)>;
 
 // Override the |callback| used to handle updating the Linux MIME-info database
 // (the default is to use xdg-mime).
