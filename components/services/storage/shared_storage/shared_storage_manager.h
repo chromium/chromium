@@ -41,6 +41,7 @@ class SharedStorageManager {
   using OperationResult = SharedStorageDatabase::OperationResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
+  using TimeResult = SharedStorageDatabase::TimeResult;
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
@@ -210,10 +211,12 @@ class SharedStorageManager {
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
   // `mojom::StorageUsageInfoPtr` for each origin currently using shared storage
   // in this profile. Called by
-  // `browsing_data::SharedStorageHelper::StartFetching`.
-  void FetchOrigins(
-      base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
-          callback);
+  // `browsing_data::SharedStorageHelper::StartFetching`. If
+  // `exclude_empty_origins` is true, then only those with positive `length` are
+  // included in the vector.
+  void FetchOrigins(base::OnceCallback<
+                        void(std::vector<mojom::StorageUsageInfoPtr>)> callback,
+                    bool exclude_empty_origins = true);
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
   // privacy budget of `context_origin`.
@@ -229,11 +232,17 @@ class SharedStorageManager {
   void GetRemainingBudget(url::Origin context_origin,
                           base::OnceCallback<void(BudgetResult)> callback);
 
+  // Calls `callback` with the most recent creation time (currently in the
+  // schema as `last_used_time`) for `context_origin` and an `OperationResult`
+  // to indicate whether or not there were errors.
+  void GetCreationTime(url::Origin context_origin,
+                       base::OnceCallback<void(TimeResult)> callback);
+
   void SetOnDBDestroyedCallbackForTesting(
       base::OnceCallback<void(bool)> callback);
 
-  void OverrideLastUsedTimeForTesting(url::Origin context_origin,
-                                      base::Time new_last_used_time,
+  void OverrideCreationTimeForTesting(url::Origin context_origin,
+                                      base::Time new_creation_time,
                                       base::OnceCallback<void(bool)> callback);
 
   void OverrideSpecialStoragePolicyForTesting(

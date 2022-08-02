@@ -37,6 +37,7 @@ using SetBehavior = SharedStorageDatabase::SetBehavior;
 using OperationResult = SharedStorageDatabase::OperationResult;
 using GetResult = SharedStorageDatabase::GetResult;
 using BudgetResult = SharedStorageDatabase::BudgetResult;
+using TimeResult = SharedStorageDatabase::TimeResult;
 using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
 // For categorizing test databases.
@@ -73,6 +74,7 @@ class TestDatabaseOperationReceiver {
       DB_OVERRIDE_TIME = 18,
       DB_GET_NUM_BUDGET = 19,
       DB_GET_TOTAL_NUM_BUDGET = 20,
+      DB_GET_CREATION_TIME = 21,
     } type;
     url::Origin origin;
     std::vector<std::u16string> params;
@@ -122,6 +124,13 @@ class TestDatabaseOperationReceiver {
   base::OnceCallback<void(BudgetResult)> MakeBudgetResultCallback(
       const DBOperation& current_operation,
       BudgetResult* out_result);
+
+  void TimeResultCallbackBase(const DBOperation& current_operation,
+                              TimeResult* out_result,
+                              TimeResult result);
+  base::OnceCallback<void(TimeResult)> MakeTimeResultCallback(
+      const DBOperation& current_operation,
+      TimeResult* out_result);
 
   void OperationResultCallbackBase(const DBOperation& current_operation,
                                    OperationResult* out_result,

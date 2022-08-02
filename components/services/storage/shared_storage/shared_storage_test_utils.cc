@@ -29,8 +29,7 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type)
     : type(type) {
   DCHECK(type == Type::DB_IS_OPEN || type == Type::DB_STATUS ||
          type == Type::DB_DESTROY || type == Type::DB_TRIM_MEMORY ||
-         type == Type::DB_FETCH_ORIGINS ||
-         type == Type::DB_GET_TOTAL_NUM_BUDGET);
+         type == Type::DB_GET_TOTAL_NUM_BUDGET || type == Type::DB_PURGE_STALE);
 }
 
 TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type,
@@ -38,7 +37,7 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(Type type,
     : type(type), origin(std::move(origin)) {
   DCHECK(type == Type::DB_LENGTH || type == Type::DB_CLEAR ||
          type == Type::DB_GET_REMAINING_BUDGET ||
-         type == Type::DB_GET_NUM_BUDGET);
+         type == Type::DB_GET_NUM_BUDGET || type == Type::DB_GET_CREATION_TIME);
 }
 
 TestDatabaseOperationReceiver::DBOperation::DBOperation(
@@ -58,7 +57,7 @@ TestDatabaseOperationReceiver::DBOperation::DBOperation(
     std::vector<std::u16string> params)
     : type(type), params(std::move(params)) {
   DCHECK(type == Type::DB_ON_MEMORY_PRESSURE ||
-         type == Type::DB_PURGE_MATCHING || type == Type::DB_PURGE_STALE);
+         type == Type::DB_PURGE_MATCHING || type == Type::DB_FETCH_ORIGINS);
 }
 
 TestDatabaseOperationReceiver::DBOperation::~DBOperation() = default;
@@ -180,6 +179,25 @@ TestDatabaseOperationReceiver::MakeBudgetResultCallback(
   return base::BindOnce(
       &TestDatabaseOperationReceiver::BudgetResultCallbackBase,
       base::Unretained(this), current_operation, out_result);
+}
+
+void TestDatabaseOperationReceiver::TimeResultCallbackBase(
+    const DBOperation& current_operation,
+    TimeResult* out_result,
+    TimeResult result) {
+  DCHECK(out_result);
+  *out_result = std::move(result);
+
+  if (ExpectationsMet(current_operation) && loop_.running())
+    Finish();
+}
+
+base::OnceCallback<void(TimeResult)>
+TestDatabaseOperationReceiver::MakeTimeResultCallback(
+    const DBOperation& current_operation,
+    TimeResult* out_result) {
+  return base::BindOnce(&TestDatabaseOperationReceiver::TimeResultCallbackBase,
+                        base::Unretained(this), current_operation, out_result);
 }
 
 void TestDatabaseOperationReceiver::OperationResultCallbackBase(

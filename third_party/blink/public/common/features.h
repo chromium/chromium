@@ -129,8 +129,8 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // finds.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSharedStorageStaleOriginPurgeRecurringInterval;
-// Length of time that an origin must be inactive for it to be deemed stale
-// and hence necessary to auto-purge.
+// Length of time between origin creation and origin expiration. When an
+// origin's data is older than this threshold, it will be auto-purged.
 BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kSharedStorageOriginStalenessThreshold;
 

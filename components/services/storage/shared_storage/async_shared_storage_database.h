@@ -20,7 +20,6 @@
 
 namespace base {
 class Time;
-class TimeDelta;
 }  // namespace base
 
 namespace url {
@@ -40,6 +39,7 @@ class AsyncSharedStorageDatabase {
   using OperationResult = SharedStorageDatabase::OperationResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
+  using TimeResult = SharedStorageDatabase::TimeResult;
 
   // A callback type to check if a given origin matches a storage policy.
   // Can be passed empty/null where used, which means the origin will always
@@ -184,24 +184,23 @@ class AsyncSharedStorageDatabase {
       base::OnceCallback<void(OperationResult)> callback,
       bool perform_storage_cleanup = false) = 0;
 
-  // Clear all entries for all origins whose `last_read_time` falls before
-  // `SharedStorageDatabase::clock_->Now() - window_to_be_deemed_active`. Also
-  // purges, for all origins, all privacy budget withdrawals that have
-  // `time_stamps` older than `SharedStorageDatabase::clock_->Now() -
+  // Clear all entries for all origins whose `last_read_time` (i.e. creation
+  // time) falls before `SharedStorageDatabase::clock_->Now() -
+  // SharedStorageDatabase::origin_staleness_threshold_`. Also purges, for all
+  // origins, all privacy budget withdrawals that have `time_stamps` older than
+  // `SharedStorageDatabase::clock_->Now() -
   // SharedStorageDatabase::budget_interval_`.
-  //
-  // TODO(crbug.com/1317487): Remove the `window_to_be_deemed_active` parameter
-  // by sending via `SharedStorageDatabaseOptions` in the constructor.
   virtual void PurgeStaleOrigins(
-      base::TimeDelta window_to_be_deemed_active,
       base::OnceCallback<void(OperationResult)> callback) = 0;
 
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
   // `mojom::StorageUsageInfoPtr` for each origin currently using shared storage
-  // in this profile.
+  // in this profile. If `exclude_empty_origins` is true, then only those with
+  // positive `length` are included in the vector.
   virtual void FetchOrigins(
       base::OnceCallback<void(std::vector<mojom::StorageUsageInfoPtr>)>
-          callback) = 0;
+          callback,
+      bool exclude_empty_origins = true) = 0;
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
   // privacy budget of `context_origin`.
@@ -218,6 +217,13 @@ class AsyncSharedStorageDatabase {
   virtual void GetRemainingBudget(
       url::Origin context_origin,
       base::OnceCallback<void(BudgetResult)> callback) = 0;
+
+  // Calls `callback` with the most recent creation time (currently in the
+  // schema as `last_used_time`) for `context_origin` and an `OperationResult`
+  // to indicatewhether or not there were errors.
+  virtual void GetCreationTime(
+      url::Origin context_origin,
+      base::OnceCallback<void(TimeResult)> callback) = 0;
 };
 
 }  // namespace storage

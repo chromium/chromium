@@ -102,8 +102,12 @@ class SharedStorageDatabase {
     // requesting origin.
     kInvalidAppend = 6,  // Result if the length of the value after appending
     // would exceed the maximum allowed length.
-    kKeyNotFound = 7,  // Result if a key could not be retrieved via `Get()`
-                       // because it doesn't exist in the database.
+    kNotFound =
+        7,  // Result if a key could not be retrieved via `Get()`, a creation
+            // time could not be retrieved for an origin via
+            // `GetCreationTime()`, or the data from `per_origin_mapping` could
+            // not be found via `GetOriginInfo()`, because the key or origin
+            // doesn't exist in the database.
   };
 
   // Bundles a retrieved string from the database along with a field indicating
@@ -114,6 +118,8 @@ class SharedStorageDatabase {
     GetResult();
     GetResult(const GetResult&) = delete;
     GetResult(GetResult&&);
+    explicit GetResult(OperationResult result);
+    GetResult(std::u16string data, OperationResult result);
     ~GetResult();
     GetResult& operator=(const GetResult&) = delete;
     GetResult& operator=(GetResult&&);
@@ -131,6 +137,20 @@ class SharedStorageDatabase {
     ~BudgetResult();
     BudgetResult& operator=(const BudgetResult&) = delete;
     BudgetResult& operator=(BudgetResult&&);
+  };
+
+  // Bundles a `time` with a field indicating whether the database retrieval
+  // was free of SQL errors.
+  struct TimeResult {
+    base::Time time;
+    OperationResult result = OperationResult::kSqlError;
+    TimeResult();
+    TimeResult(const TimeResult&) = delete;
+    TimeResult(TimeResult&&);
+    explicit TimeResult(OperationResult result);
+    ~TimeResult();
+    TimeResult& operator=(const TimeResult&) = delete;
+    TimeResult& operator=(TimeResult&&);
   };
 
   // When `db_path` is empty, the database will be opened in memory only.
@@ -254,25 +274,18 @@ class SharedStorageDatabase {
       base::Time end,
       bool perform_storage_cleanup = false);
 
-  // Clear all entries for all origins whose `last_read_time` falls before
-  // `clock_->Now() - window_to_be_deemed_active`. Also purges, for all origins,
-  // all privacy budget withdrawals that have `time_stamps` older than
-  // `clock_->Now() - budget_interval_`.  Returns whether the transaction was
-  // successful.
-  //
-  // Note that `budget_interval_` may be different from
-  // `window_to_be_deemed_active`, and the latter only applies to the staleness
-  // of origins in `values_mapping`.
-  //
-  // TODO(crbug.com/1317487): Remove the `window_to_be_deemed_active` parameter
-  // by sending via `SharedStorageDatabaseOptions` in the constructor.
-  [[nodiscard]] OperationResult PurgeStaleOrigins(
-      base::TimeDelta window_to_be_deemed_active);
+  // Clear all entries for all origins whose `last_read_time` (i.e. creation
+  // time) falls before `clock_->Now() - origin_staleness_threshold_`. Also
+  // purges, for all origins, all privacy budget withdrawals that have
+  // `time_stamps` older than `clock_->Now() - budget_interval_`.
+  [[nodiscard]] OperationResult PurgeStaleOrigins();
 
   // Fetches a vector of `mojom::StorageUsageInfoPtr`, with one
   // `mojom::StorageUsageInfoPtr` for each origin currently using shared storage
-  // in this profile.
-  [[nodiscard]] std::vector<mojom::StorageUsageInfoPtr> FetchOrigins();
+  // in this profile. If `exclude_empty_origins` is true, then only those with
+  // positive `length` are included in the vector.
+  [[nodiscard]] std::vector<mojom::StorageUsageInfoPtr> FetchOrigins(
+      bool exclude_empty_origins = true);
 
   // Makes a withdrawal of `bits_debit` stamped with the current time from the
   // privacy budget of `context_origin`.
@@ -286,16 +299,20 @@ class SharedStorageDatabase {
   // retrieval was successful.
   [[nodiscard]] BudgetResult GetRemainingBudget(url::Origin context_origin);
 
+  // Retrieves the most recent creation time (currently in the schema as
+  // `last_used_time`) for `context_origin`.
+  [[nodiscard]] TimeResult GetCreationTime(url::Origin context_origin);
+
   // Returns whether the SQLite database is open.
   [[nodiscard]] bool IsOpenForTesting() const;
 
   // Returns the `db_status_` for tests.
   [[nodiscard]] InitStatus DBStatusForTesting() const;
 
-  // Changes `last_used_time` to `new_last_used_time` for `context_origin`.
-  [[nodiscard]] bool OverrideLastUsedTimeForTesting(
+  // Changes `last_used_time` to `new_creation_time` for `context_origin`.
+  [[nodiscard]] bool OverrideCreationTimeForTesting(
       url::Origin context_origin,
-      base::Time new_last_used_time);
+      base::Time new_creation_time);
 
   // Overrides the clock used to check the time.
   void OverrideClockForTesting(base::Clock* clock);
@@ -367,8 +384,11 @@ class SharedStorageDatabase {
 
   // Clears all entries for `context_origin`. Returns whether deletion is
   // successful. Not named `Clear()` to distinguish it from the public method
-  // called via `SequenceBound::AsyncCall()`.
-  [[nodiscard]] bool Purge(const std::string& context_origin)
+  // called via `SequenceBound::AsyncCall()`. If
+  // `delete_origin_if_empty`, then we remove `context_origin` from
+  // `per_origin_mapping`
+  [[nodiscard]] bool Purge(const std::string& context_origin,
+                           bool delete_origin_if_empty = false)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns the number of entries for `context_origin`, i.e. the `length`.
@@ -382,20 +402,22 @@ class SharedStorageDatabase {
                                  const std::u16string& key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Sets `last_used_time` to `new_last_used_time` for `context_origin`.
-  [[nodiscard]] bool SetLastUsedTime(const std::string& context_origin,
-                                     base::Time new_last_used_time)
+  // Retrieves the `length` in `out_length`, and `last_used_time` (i.e. creation
+  // time) in `out_creation_time`, of `context_origin`. Leaves the `out_*`
+  // parameters unchanged if `context_origin` is not found in the database.
+  // Returns an `OperationResult` indicating success, error, or that the origin
+  // was not found.
+  [[nodiscard]] OperationResult GetOriginInfo(const std::string& context_origin,
+                                              int64_t* out_length,
+                                              base::Time* out_creation_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Updates `last_used_time` to `clock_->Now()` for `context_origin`.
-  [[nodiscard]] bool UpdateLastUsedTime(const std::string& context_origin)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
-
-  // Updates `length` by `delta` for `context_origin`. If `should_update_time`
-  // is true, also updates `last_used_time` to `clock_->Now()`.
+  // Updates `length` by `delta` for `context_origin`. If
+  // `delete_origin_if_empty` and `length + delta == 0L`, then we remove
+  // `context_origin` from `per_origin_mapping`.
   [[nodiscard]] bool UpdateLength(const std::string& context_origin,
                                   int64_t delta,
-                                  bool should_update_time = true)
+                                  bool delete_origin_if_empty = false)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Inserts a triple for `(context_origin,key,value)` into
@@ -410,12 +432,21 @@ class SharedStorageDatabase {
       const std::string& context_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  // Inserts the triple for `(context_origin, last_used_time, length)` into
+  // Inserts the triple for `(context_origin, creation_time, length)` into
   // `per_origin_mapping`.
   [[nodiscard]] bool InsertIntoPerOriginMapping(
       const std::string& context_origin,
-      base::Time last_used_time,
+      base::Time creation_time,
       uint64_t length) VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  // Deletes the row for `context_origin` from `per_origin_mapping`, then if
+  // `length` is positive and/or `force_insertion` is true, inserts the triple
+  // for `(context_origin, creation_time, length)` into `per_origin_mapping`.
+  [[nodiscard]] bool DeleteThenMaybeInsertIntoPerOriginMapping(
+      const std::string& context_origin,
+      base::Time creation_time,
+      uint64_t length,
+      bool force_insertion) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Returns whether the `length` for `context_origin` is less than
   // `max_entries_per_origin_`.
@@ -462,6 +493,11 @@ class SharedStorageDatabase {
 
   // Interval over which `bit_budget_` is defined.
   const base::TimeDelta budget_interval_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Length of time between origin creation and origin expiration. When an
+  // origin's data is older than this threshold, it will be auto-purged.
+  const base::TimeDelta origin_staleness_threshold_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Clock used to determine current time. Can be overridden in tests.
   raw_ptr<base::Clock> clock_ GUARDED_BY_CONTEXT(sequence_checker_);
