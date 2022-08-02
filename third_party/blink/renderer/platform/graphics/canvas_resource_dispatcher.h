@@ -46,6 +46,8 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   };
 
   CanvasResourceDispatcher(CanvasResourceDispatcherClient*,
+                           scoped_refptr<base::SingleThreadTaskRunner>
+                               agent_group_scheduler_compositor_task_runner,
                            uint32_t client_id,
                            uint32_t sink_id,
                            int placeholder_canvas_id,
@@ -150,6 +152,9 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   CanvasResourceDispatcherClient* client_;
 
   std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
+
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner_;
 
   base::WeakPtrFactory<CanvasResourceDispatcher> weak_ptr_factory_{this};
 };

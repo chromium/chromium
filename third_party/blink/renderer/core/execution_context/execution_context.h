@@ -179,6 +179,12 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   virtual void CountUseOnlyInCrossSiteIframe(mojom::blink::WebFeature feature) {
   }
 
+  // Return the associated AgentGroupScheduler's compositor tasl runner.
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  GetAgentGroupSchedulerCompositorTaskRunner() {
+    return nullptr;
+  }
+
   const SecurityOrigin* GetSecurityOrigin() const;
   SecurityOrigin* GetMutableSecurityOrigin();
 

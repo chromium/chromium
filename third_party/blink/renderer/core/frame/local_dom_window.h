@@ -192,6 +192,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
 
+  scoped_refptr<base::SingleThreadTaskRunner>
+  GetAgentGroupSchedulerCompositorTaskRunner() final;
+
   // UseCounter orverrides:
   void CountUse(mojom::WebFeature feature) final;
 

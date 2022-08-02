@@ -642,6 +642,12 @@ void LocalDOMWindow::AddConsoleMessageImpl(ConsoleMessage* console_message,
   GetFrame()->Console().AddMessage(console_message, discard_duplicates);
 }
 
+scoped_refptr<base::SingleThreadTaskRunner>
+LocalDOMWindow::GetAgentGroupSchedulerCompositorTaskRunner() {
+  auto* frame_scheduler = GetFrame()->GetFrameScheduler();
+  return frame_scheduler->GetAgentGroupScheduler()->CompositorTaskRunner();
+}
+
 void LocalDOMWindow::AddInspectorIssue(
     mojom::blink::InspectorIssueInfoPtr info) {
   if (GetFrame()) {

@@ -76,7 +76,9 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
           absl::nullopt,
       bool parent_cross_origin_isolated_capability = false,
       bool parent_isolated_application_capability = false,
-      InterfaceRegistry* interface_registry = nullptr);
+      InterfaceRegistry* interface_registry = nullptr,
+      scoped_refptr<base::SingleThreadTaskRunner>
+          agent_group_scheduler_compositor_task_runner = nullptr);
   GlobalScopeCreationParams(const GlobalScopeCreationParams&) = delete;
   GlobalScopeCreationParams& operator=(const GlobalScopeCreationParams&) =
       delete;
@@ -201,6 +203,11 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   const bool parent_isolated_application_capability;
 
   InterfaceRegistry* const interface_registry;
+
+  // The compositor task runner associated with the |AgentGroupScheduler| this
+  // worker belongs to.
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner;
 };
 
 }  // namespace blink

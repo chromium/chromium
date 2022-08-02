@@ -138,6 +138,11 @@ class CORE_EXPORT WorkerGlobalScope
   void AddConsoleMessageImpl(ConsoleMessage*, bool discard_duplicates) final;
   const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() const final;
 
+  scoped_refptr<base::SingleThreadTaskRunner>
+  GetAgentGroupSchedulerCompositorTaskRunner() final {
+    return agent_group_scheduler_compositor_task_runner_;
+  }
+
   OffscreenFontSelector* GetFontSelector() { return font_selector_; }
 
   CoreProbeSink* GetProbeSink() final;
@@ -302,6 +307,11 @@ class CORE_EXPORT WorkerGlobalScope
   mutable Member<TrustedTypePolicyFactory> trusted_types_;
 
   WorkerThread* thread_;
+
+  // The compositor task runner associated with the |AgentGroupScheduler| this
+  // worker belongs to.
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner_;
 
   bool closing_ = false;
 

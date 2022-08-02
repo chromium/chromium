@@ -57,6 +57,8 @@ struct CanvasResourceDispatcher::FrameResource {
 
 CanvasResourceDispatcher::CanvasResourceDispatcher(
     CanvasResourceDispatcherClient* client,
+    scoped_refptr<base::SingleThreadTaskRunner>
+        agent_group_scheduler_compositor_task_runner,
     uint32_t client_id,
     uint32_t sink_id,
     int canvas_id,
@@ -70,7 +72,9 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
       client_(client),
       animation_power_mode_voter_(
           power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation.Canvas")) {
+              "PowerModeVoter.Animation.Canvas")),
+      agent_group_scheduler_compositor_task_runner_(
+          std::move(agent_group_scheduler_compositor_task_runner)) {
   // Frameless canvas pass an invalid |frame_sink_id_|; don't create mojo
   // channel for this special case.
   if (!frame_sink_id_.is_valid())
@@ -152,8 +156,13 @@ void CanvasResourceDispatcher::PostImageToPlaceholder(
   // After this point, |canvas_resource| can only be used on the main thread,
   // until it is returned.
   canvas_resource->Transfer();
+
+  // `agent_group_scheduler_compositor_task_runner_` may be null if this
+  // was created from a SharedWorker.
+  if (!agent_group_scheduler_compositor_task_runner_)
+    return;
   PostCrossThreadTask(
-      *Thread::MainThread()->Scheduler()->CompositorTaskRunner(), FROM_HERE,
+      *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
       CrossThreadBindOnce(UpdatePlaceholderImage, placeholder_canvas_id_,
                           std::move(canvas_resource), resource_id));
 }
@@ -455,6 +464,11 @@ void CanvasResourceDispatcher::SetFilterQuality(
 
 void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
     int placeholder_canvas_id) {
+  // `agent_group_scheduler_compositor_task_runner_` may be null if this
+  // was created from a SharedWorker.
+  if (!agent_group_scheduler_compositor_task_runner_)
+    return;
+
   scoped_refptr<base::SingleThreadTaskRunner> dispatcher_task_runner =
       Thread::Current()->GetTaskRunner();
 
@@ -466,7 +480,7 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
                                 placeholder_canvas_id);
   } else {
     PostCrossThreadTask(
-        *Thread::MainThread()->Scheduler()->CompositorTaskRunner(), FROM_HERE,
+        *agent_group_scheduler_compositor_task_runner_, FROM_HERE,
         CrossThreadBindOnce(UpdatePlaceholderDispatcher, GetWeakPtr(),
                             std::move(dispatcher_task_runner),
                             placeholder_canvas_id));

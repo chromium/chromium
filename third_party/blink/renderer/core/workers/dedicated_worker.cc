@@ -440,20 +440,32 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
   base::UnguessableToken parent_devtools_token;
   std::unique_ptr<WorkerSettings> settings;
   ExecutionContext* execution_context = GetExecutionContext();
+  scoped_refptr<base::SingleThreadTaskRunner>
+      agent_group_scheduler_compositor_task_runner;
 
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    // When the main thread creates a new DedicatedWorker.
     auto* frame = window->GetFrame();
     if (frame) {
       parent_devtools_token = frame->GetDevToolsFrameToken();
     }
     settings = std::make_unique<WorkerSettings>(frame->GetSettings());
+    agent_group_scheduler_compositor_task_runner =
+        execution_context->GetScheduler()
+            ->ToFrameScheduler()
+            ->GetAgentGroupScheduler()
+            ->CompositorTaskRunner();
   } else {
+    // When a DedicatedWorker creates another DedicatedWorker (nested worker).
     WorkerGlobalScope* worker_global_scope =
         To<WorkerGlobalScope>(execution_context);
     parent_devtools_token =
         worker_global_scope->GetThread()->GetDevToolsWorkerToken();
     settings = WorkerSettings::Copy(worker_global_scope->GetWorkerSettings());
+    agent_group_scheduler_compositor_task_runner =
+        worker_global_scope->GetAgentGroupSchedulerCompositorTaskRunner();
   }
+  DCHECK(agent_group_scheduler_compositor_task_runner);
 
   mojom::blink::ScriptType script_type =
       (options_->type() == script_type_names::kClassic)
@@ -480,7 +492,9 @@ DedicatedWorker::CreateGlobalScopeCreationParams(
       execution_context->GetAgentClusterID(), execution_context->UkmSourceID(),
       execution_context->GetExecutionContextToken(),
       execution_context->CrossOriginIsolatedCapability(),
-      execution_context->IsolatedApplicationCapability());
+      execution_context->IsolatedApplicationCapability(),
+      /*interface_registry=*/nullptr,
+      std::move(agent_group_scheduler_compositor_task_runner));
 }
 
 scoped_refptr<WebWorkerFetchContext>
