@@ -6643,4 +6643,103 @@ IN_PROC_BROWSER_TEST_F(PrerenderPortalBrowserTest, DeleteDeferredPortal) {
   ASSERT_EQ(prerendered_rfh->GetPortals().size(), 0UL);
 }
 
+namespace {
+
+class PrerenderWithSiteIsolationDisabledBrowserTest
+    : public PrerenderBrowserTest {
+ public:
+  PrerenderWithSiteIsolationDisabledBrowserTest() = default;
+  ~PrerenderWithSiteIsolationDisabledBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    PrerenderBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+};
+
+}  // namespace
+
+// This test sets up a scenario where we swap SiteInstances during a prerender
+// page's first navigation. Full site isolation is disabled for this test, but
+// we dynamically isolate "b.test". The max process count is also set to 1.
+//
+// We initially start off with navigating the primary main frame to b.test,
+// which will be assigned to a process P1.
+//
+// P1 ----- b.test
+//
+// We then add an a.test iframe, which will be assigned to a different process
+// P2. This is because P1 currently hosts content from b.test, and b.test has
+// been configured to require isolation from other sites.
+//
+// P1 ------ b.test
+// P2 ------ a.test
+//
+// We then start prerendering b.test. This happens in two steps. In the first
+// step we initialize the FrameTree and create an empty main frame that hasn't
+// been navigated. This empty main frame has an empty SiteInstance (prerenders
+// use an empty SiteInfo for this currently) which is assigned to P2 (in normal
+// circumstances, it would be assigned to a new process but because we're above
+// the process limit, it tries to reuse an existing process, and P2 is eligible
+// as it currently only has the a.test iframe and a.test does not need to be
+// isolated).
+//
+// P1 ------ b.test
+// P2 ------ a.test, <empty prerender>
+//
+// In the second step, we navigate the prerender main frame to the prerender
+// url, which is b.test. Now b.test is configured to be in an isolated process,
+// so we can't reuse the current SiteInstance (as it is assigned to P1 which has
+// content from a.test), and have to move it to a new process (and therefore
+// have to swap the SiteInstance).
+//
+// P1 ------ b.test (primary), b.test (prerender)
+// P2 ------ a.test
+IN_PROC_BROWSER_TEST_F(PrerenderWithSiteIsolationDisabledBrowserTest,
+                       ForceSiteInstanceSwapForInitialPrerenderNavigation) {
+  if (AreAllSitesIsolatedForTesting()) {
+    LOG(ERROR) << "Site Isolation should be disabled for this test.";
+    return;
+  }
+
+  // Set max renderer process count to force process reuse and prevent
+  // prerendering pages from getting dedicated processes by default.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+
+  const GURL kInitialUrl =
+      ssl_server().GetURL("isolated.b.test", "/empty.html");
+  const GURL kIframeUrl = ssl_server().GetURL("a.test", "/empty.html");
+  const GURL kPrerenderingUrl =
+      ssl_server().GetURL("isolated.b.test", "/title1.html");
+
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      {url::Origin::Create(kInitialUrl)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+
+  // Navigate primary main frame to b.test. It will be assigned to a process
+  // that is locked to b.test.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Add an a.test iframe, which will be loaded in a new process that isn't
+  // locked.
+  ASSERT_TRUE(AddTestUtilJS(current_frame_host()));
+  ASSERT_TRUE(
+      ExecJs(current_frame_host(), JsReplace("add_iframe($1)", kIframeUrl)));
+  RenderFrameHostImplWrapper iframe(
+      static_cast<RenderFrameHostImpl*>(ChildFrameAt(current_frame_host(), 0)));
+  ASSERT_NE(current_frame_host()->GetProcess(), iframe->GetProcess());
+
+  // Prerender b.test. The initial empty document will be assigned to
+  // the same process as the a.test iframe, but on navigation to b.test, it
+  // can no longer use the same process, and the SiteInstance will have to be
+  // changed in order to assign the document to a different process.
+  int host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImplWrapper prerender_rfh(
+      GetPrerenderedMainFrameHost(host_id));
+  EXPECT_EQ(prerender_rfh->lifecycle_state(),
+            LifecycleStateImpl::kPrerendering);
+  EXPECT_EQ(prerender_rfh->GetProcess(), current_frame_host()->GetProcess());
+}
+
 }  // namespace content

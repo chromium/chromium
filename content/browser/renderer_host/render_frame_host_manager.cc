@@ -1200,14 +1200,26 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
     }
 
     navigation_rfh = speculative_render_frame_host_.get();
+    // Check that this is for a prerendered FrameTree or not. Note that we
+    // cannot check the RFH's LifecycleState here instead, because it will be
+    // kSpeculative even for prerendering RFHs at this point.
+    bool is_prerendering = frame_tree_node_->frame_tree()->is_prerendering();
 
     if (!render_frame_host_->IsRenderFrameLive() &&
-        !recovering_without_early_commit) {
+        !recovering_without_early_commit && !is_prerendering) {
       // The current RFH is not live. There's no reason to sit around with a
       // sad tab or a newly created RFH while we wait for the navigation to
       // complete. Just switch to the speculative RFH now and go back to
       // normal. (Note that we don't care about on{before}unload handlers if
       // the current RFH isn't live.)
+      //
+      // Note: We can reach this path without there being a crash. If we
+      // navigate a frame immediately after its creation, and the navigation
+      // results in a speculative RFH being created, we would hit this codepath
+      // as the RFH is not live yet. For prerendering FrameTrees, we skip this
+      // codepath to explicitly avoid a LifecycleState transition from
+      // kSpeculative directly to kPrerender, and force it to go through the
+      // regular path instead (i.e. through kPendingCommit).
       //
       // If the corresponding RenderFrame is currently associated with a
       // proxy, send a SwapIn message to ensure that the RenderFrame swaps
@@ -3821,6 +3833,11 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   // user, unlike kActive state.
   if (render_frame_host_) {
     if (frame_tree->is_prerendering()) {
+      // Prerendering pages do not currently support early commit, so
+      // speculative RFHs for prerendering pages will always go through
+      // kPendingCommit first.
+      DCHECK_NE(render_frame_host_->lifecycle_state(),
+                LifecycleStateImpl::kSpeculative);
       if (render_frame_host_->lifecycle_state() ==
           LifecycleStateImpl::kPendingCommit) {
         render_frame_host_->SetLifecycleState(
