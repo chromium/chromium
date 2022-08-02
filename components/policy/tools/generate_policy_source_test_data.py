@@ -60,7 +60,7 @@ import "policy_common_definitions%(full_runtime_suffix)s.proto";
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;
@@ -70,7 +70,7 @@ message ExampleStringPolicyProto {
 //
 // ExampleBoolPolicy desc
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ExampleBoolPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolPolicy = 2;
@@ -90,7 +90,7 @@ message ExampleBoolMergeMetapolicyProto {
 //
 // ExampleBoolPrecedenceMetapolicy desc
 //
-// Supported on: android, chrome_os, fuchsia, ios, linux, mac, win
+// Supported on: android, chrome_os, ios, linux, mac, win
 message ExampleBoolPrecedenceMetapolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ExampleBoolPrecedenceMetapolicy = 2;
@@ -100,7 +100,7 @@ message ExampleBoolPrecedenceMetapolicyProto {
 //
 // CloudOnlyPolicy desc
 //
-// Supported on: android, chrome_os, fuchsia, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message CloudOnlyPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool CloudOnlyPolicy = 2;
@@ -110,7 +110,7 @@ message CloudOnlyPolicyProto {
 //
 // CloudManagementEnrollmentToken desc
 //
-// Supported on: android, chrome_os, fuchsia, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message CloudManagementEnrollmentTokenProto {
   optional PolicyOptions policy_options = 1;
   optional string CloudManagementEnrollmentToken = 2;
@@ -120,7 +120,7 @@ message CloudManagementEnrollmentTokenProto {
 //
 // DeprecatedButGenerated desc
 //
-// Supported on: android, chrome_os, fuchsia, linux, mac, win
+// Supported on: android, chrome_os, linux, mac, win
 message DeprecatedButGeneratedProto {
   optional PolicyOptions policy_options = 1;
   optional string DeprecatedButGenerated = 2;
@@ -150,7 +150,7 @@ message UnsupportedPolicyProto {
 //
 // ChunkZeroLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ChunkZeroLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkZeroLastFieldBooleanPolicy = 2;
@@ -160,7 +160,7 @@ message ChunkZeroLastFieldBooleanPolicyProto {
 //
 // ChunkOneFirstFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ChunkOneFirstFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneFirstFieldBooleanPolicy = 2;
@@ -170,7 +170,7 @@ message ChunkOneFirstFieldBooleanPolicyProto {
 //
 // ChunkOneLastFieldBooleanPolicy desc.
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ChunkOneLastFieldBooleanPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional bool ChunkOneLastFieldBooleanPolicy = 2;
@@ -180,7 +180,7 @@ message ChunkOneLastFieldBooleanPolicyProto {
 //
 // ChunkTwoFirstFieldStringPolicy desc
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ChunkTwoFirstFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoFirstFieldStringPolicy = 2;
@@ -190,7 +190,7 @@ message ChunkTwoFirstFieldStringPolicyProto {
 //
 // ChunkTwoLastFieldStringPolicy desc
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ChunkTwoLastFieldStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ChunkTwoLastFieldStringPolicy = 2;
@@ -233,7 +233,7 @@ EXPECTED_POLICY_PROTO = '''\
 //
 // ExampleStringPolicy desc
 //
-// Supported on: chrome_os, fuchsia, linux, mac, win
+// Supported on: chrome_os, linux, mac, win
 message ExampleStringPolicyProto {
   optional PolicyOptions policy_options = 1;
   optional string ExampleStringPolicy = 2;

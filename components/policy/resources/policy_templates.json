@@ -118,7 +118,7 @@
 #
 #   Currently supported platforms:
 #       'chrome.win', 'chrome.win7', 'chrome.mac', 'chrome.linux', 'chrome.*'
-#       'chrome_os', 'android', 'webview_android', 'ios', 'chrome_frame'
+#       'chrome_os', 'android', 'webview_android', 'ios', 'fuchsia', 'chrome_frame'
 #   Note that 'chrome_frame' has been deprecated.
 #
 # Annotations:
@@ -1359,6 +1359,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'android:81-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -1385,6 +1386,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -1416,6 +1418,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:58-', 'chrome_os:58-', 'ios:99-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -1501,6 +1504,7 @@
         'chrome_os:11-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -1535,6 +1539,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -1687,6 +1692,7 @@
         },
       ],
       'supported_on': ['chrome.*:38-', 'chrome_os:38-', 'android:38-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -1706,6 +1712,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': [ 'chrome.*:35-', 'chrome_os:35-' ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -1811,6 +1818,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-', 'chrome_os:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -1845,6 +1853,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-', 'chrome_os:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False
@@ -1901,6 +1910,7 @@
         }
       ],
       'supported_on': ['chrome.*:88-', 'chrome_os:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -1958,6 +1968,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'android:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -2054,6 +2065,7 @@
         'android:30-',
         'ios:90-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -2083,6 +2095,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -2111,6 +2124,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:57-', 'chrome_os:57-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -2139,6 +2153,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -2180,6 +2195,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:48-', 'chrome.*:48-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -2286,6 +2302,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:60-', 'chrome_os:60-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2309,6 +2326,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:14-', 'chrome_os:41-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2359,6 +2377,7 @@
         'items': {'type': 'string' },
       },
       'supported_on': ['chrome.*:60-', 'chrome_os:60-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2431,6 +2450,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:23-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2460,6 +2480,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2489,6 +2510,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:35-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'internal_only': True,  # Not available outside of Google.
@@ -2521,6 +2543,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:36-', 'chrome_os:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2550,6 +2573,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:36-', 'chrome_os:41-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2600,6 +2624,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'internal_only': True,  # Not available outside of Google.
@@ -2622,6 +2647,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'internal_only': True,  # Not available outside of Google.
@@ -2642,6 +2668,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:28-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'internal_only': True,  # Not available outside of Google.
@@ -2710,6 +2737,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:74-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2740,6 +2768,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'internal_only': True,  # Not available outside of Google.
@@ -2771,6 +2800,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:89-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2801,6 +2831,7 @@
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 30, 'maximum': 10080 },
       'supported_on': ['chrome.*:89-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2821,6 +2852,7 @@
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 2147483647 },
       'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2849,6 +2881,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:97-', 'chrome_os:97-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -2915,6 +2948,7 @@
         'android:39-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -2944,6 +2978,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:17-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -3121,6 +3156,7 @@
         },
       ],
       'supported_on': ['chrome_os:79-', 'chrome.*:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -3267,6 +3303,7 @@
         },
       ],
       'supported_on': ['chrome_os:79-', 'chrome.*:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -3443,6 +3480,7 @@
         'required': ['name']
       },
       'supported_on': ['chrome.*:84-', 'chrome_os:84-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -3647,6 +3685,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:41-', 'chrome_os:41-', 'android:41-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -3731,6 +3770,7 @@
         },
       ],
       'supported_on': ['chrome.*:55-', 'chrome_os:55-', 'android:55-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -3823,6 +3863,7 @@
         'android:87-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -3856,7 +3897,7 @@
         'chrome.*:8-',
         'ios:88-',
       ],
-      'future_on': ['android'],
+      'future_on': ['android', 'fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': False,
@@ -3897,6 +3938,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -3956,6 +3998,7 @@
         'chrome_os:79-',
         'android:79-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -3990,6 +4033,7 @@
         'chrome.*: 100-',
         'chrome_os: 100-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -4064,6 +4108,7 @@
         'android:69-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -4098,6 +4143,7 @@
         'android:63-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -4222,6 +4268,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:55-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -4283,7 +4330,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-', 'ios:96-'],
-      'future_on': ['android'],
+      'future_on': ['android', 'fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -4319,6 +4366,7 @@
         'items': {'type': 'string'},
       },
       'supported_on': ['chrome.*:79-','android:79-','chrome_os:79-','ios:97-'],
+      'future_on': ['fuchsia'],
       'features': {
         'per_profile': True,
         'dynamic_refresh': False,
@@ -4473,6 +4521,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:13-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -4494,6 +4543,7 @@
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome.*:17-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -4539,6 +4589,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*: 102-', 'chrome_os: 102-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -4598,6 +4649,7 @@
         },
       ],
       'supported_on': ['chrome.*:61-', 'chrome_os:61-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -4636,6 +4688,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:11-', 'chrome_os:35-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -4672,6 +4725,7 @@
       },
       'id': 700,
       'supported_on' : ['chrome.*:84-', 'chrome_os:84-'],
+      'future_on': ['fuchsia'],
       'caption': '''List of file types that should be automatically opened on download''',
       'tags': [],
       'desc': '''List of file types that should be automatically opened on download. The leading separator should not be included when listing the file type, so list "txt" instead of ".txt".
@@ -4699,6 +4753,7 @@
       },
       'id': 707,
       'supported_on' : ['chrome.*:84-', 'chrome_os:84-'],
+      'future_on': ['fuchsia'],
       'caption': '''URLs where AutoOpenFileTypes can apply''',
       'tags': [],
       'desc': '''List of URLs specifying which urls <ph name="AUTO_OPEN_FILE_TYPES_POLICY_NAME">AutoOpenFileTypes</ph> will apply to. This policy has no impact on automatically open values set by users.
@@ -4728,6 +4783,7 @@
         }
       },
       'supported_on': ['chrome.*:85-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -4878,6 +4934,7 @@
         'chrome_os:11-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -4940,6 +4997,7 @@
         'chrome_os:11-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5077,6 +5135,7 @@
         'chrome_os:18-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5114,6 +5173,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:9-','android:46-','chrome_os:62-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5144,6 +5204,7 @@
       'type': 'list',
       'schema': { 'type': 'array', 'items': { 'type': 'string' } },
       'supported_on': ['chrome.*:100-','android:100-','chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5163,6 +5224,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-','android:46-','chrome_os:62-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5191,6 +5253,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-','chrome_os:62-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5219,6 +5282,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:88-','chrome_os:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5273,6 +5337,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:86-','android:86-','webview_android:86-','chrome_os:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5314,6 +5379,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:86-','android:86-','chrome_os:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5362,6 +5428,7 @@
       'type': 'main',
       'schema' : {'type': 'boolean'},
       'supported_on': ['chrome.*:89-', 'chrome_os:93-'],
+      'future_on': ['fuchsia'],
       'example_value': False,
       'features':{
         'dynamic_refresh': True,
@@ -5429,6 +5496,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:13-','chrome_os:62-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -5519,6 +5587,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:86-', 'chrome_os:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5543,6 +5612,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:86-', 'chrome_os:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5590,6 +5660,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:9-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5626,6 +5697,7 @@
         'id': 'ExtensionInstallSources',
       },
       'supported_on': ['chrome.*:21-', 'chrome_os:21-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5648,6 +5720,7 @@
       'deprecated': True,
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:73-77', 'chrome_os:73-77'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5724,6 +5797,7 @@
         },
       ],
       'supported_on': ['chrome.*:25-', 'chrome_os:25-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5856,6 +5930,7 @@
       },
       'url_schema': 'https://www.chromium.org/administrators/policy-list-3/extension-settings-full',
       'supported_on': ['chrome.*:62-', 'chrome_os:62-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -5921,6 +5996,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -5954,6 +6030,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6039,6 +6116,7 @@
         },
       ],
       'supported_on': ['chrome.*:68-', 'chrome_os:68-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6070,6 +6148,7 @@
         },
       ],
       'supported_on': ['chrome.*:93-', 'chrome_os:93-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -6105,7 +6184,7 @@
           'caption': '''Do not allow use of the Headless Mode''',
         },
       ],
-      'supported_on': ['chrome.*:91-'],
+      'supported_on': ['chrome.*:91-', 'fuchsia:106-'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -6147,9 +6226,11 @@
           'value': 6,
           'caption': '''Open a list of URLs and restore the last session''',
           'supported_on': ['chrome.*:98-', 'chrome_os:98-'],
+          'future_on': ['fuchsia'],
         },
       ],
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6178,6 +6259,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:8-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6199,6 +6281,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:10-', 'chrome_os:11-', 'android:83-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6238,6 +6321,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6274,6 +6358,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:85-', 'chrome_os:85-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6312,6 +6397,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6336,6 +6422,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6360,6 +6447,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6384,6 +6472,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6432,6 +6521,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6459,6 +6549,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6486,6 +6577,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6532,6 +6624,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6556,6 +6649,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6580,6 +6674,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6604,6 +6699,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6650,6 +6746,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -6693,6 +6790,7 @@
         'chrome_os:11-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6728,6 +6826,7 @@
         },
       ],
       'supported_on': ['chrome.*:10-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6761,6 +6860,7 @@
         },
       ],
       'supported_on': ['chrome.*:10-', 'chrome_os:11-', 'android:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6840,6 +6940,7 @@
         'android:33-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6878,6 +6979,7 @@
         },
       ],
       'supported_on': ['chrome.*:10-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6916,6 +7018,7 @@
         },
       ],
       'supported_on': ['chrome.*:10-', 'chrome_os:11-', 'android:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -6984,6 +7087,7 @@
         },
       ],
       'supported_on': ['chrome_os:50-', 'android:50-', 'chrome.*:50-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7052,6 +7156,7 @@
         }
       ],
       'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7086,6 +7191,7 @@
         },
       ],
       'supported_on': ['chrome_os:67-', 'android:67-', 'chrome.*:67-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7127,6 +7233,7 @@
         }
       },
       'supported_on': ['android:75-', 'chrome_os:74-', 'chrome.*:74-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7205,6 +7312,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:68-', 'android:68-', 'chrome.*:68-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7230,6 +7338,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:68-', 'android:68-', 'chrome.*:68-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7267,6 +7376,7 @@
         },
       ],
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7289,6 +7399,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7316,6 +7427,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7343,6 +7455,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:94-', 'chrome.*:94-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7388,6 +7501,7 @@
         }
       },
       'supported_on': ['chrome_os:94-', 'chrome.*:94-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7436,6 +7550,7 @@
         },
       ],
       'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7460,6 +7575,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7493,6 +7609,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7526,6 +7643,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7579,6 +7697,7 @@
         }
       },
       'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7633,6 +7752,7 @@
         }
       },
       'supported_on': ['chrome_os:100-', 'chrome.*:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -7762,6 +7882,7 @@
         },
       ],
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7796,6 +7917,7 @@
         },
       ],
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7818,6 +7940,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7843,6 +7966,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7868,6 +7992,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7893,6 +8018,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -7945,6 +8071,7 @@
         }
       },
       'supported_on': ['chrome.*:15-', 'chrome_os:15-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8041,6 +8168,7 @@
         'chrome_os:11-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8070,6 +8198,7 @@
         'chrome_os:11-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8099,6 +8228,7 @@
         'chrome_os:11-',
         'android:30-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8124,6 +8254,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:11-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8149,6 +8280,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:11-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8174,6 +8306,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:11-', 'chrome_os:11-', 'android:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8197,6 +8330,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:11-', 'chrome_os:11-', 'android:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8232,6 +8366,7 @@
         },
       ],
       'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8256,6 +8391,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8280,6 +8416,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8393,6 +8530,7 @@
         'chrome_os:79-',
         'android:79-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8442,6 +8580,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:94-', 'chrome_os:94-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8469,6 +8608,7 @@
       'type': 'main',
       'schema' : {'type': 'boolean'},
       'supported_on': ['chrome_os:96-', 'chrome.*:101-'],
+      'future_on': ['fuchsia'],
       'example_value': False,
       'features':{
         'dynamic_refresh': False,
@@ -8507,6 +8647,7 @@
         'android:92-',
         'webview_android:92-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8558,6 +8699,7 @@
         'android:92-',
         'webview_android:92-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8636,6 +8778,7 @@
         'android:34-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8676,6 +8819,7 @@
         }
       },
       'supported_on': ['chrome.*:37-', 'chrome_os:37-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -8705,6 +8849,7 @@
         'android:34-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8728,6 +8873,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:16-', 'chrome_os:16-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8751,6 +8897,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:16-', 'chrome_os:16-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8774,6 +8921,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8799,6 +8947,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:88-', 'chrome_os:88-', 'android:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8852,6 +9001,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8905,6 +9055,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8927,6 +9078,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:34-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8955,6 +9107,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:9-', 'chrome_os:11-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -8983,6 +9136,7 @@
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 1800000, 'maximum': 86400000 },
       'supported_on': ['chrome_os:11-', 'chrome.*:79-', 'ios:90-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -9003,6 +9157,7 @@
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 1000, 'maximum': 300000 },
       'supported_on': ['chrome.*:30-', 'chrome_os:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -9507,6 +9662,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -9637,6 +9793,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:12-', 'chrome_os:12-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -9676,6 +9833,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -9704,6 +9862,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:37-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -9737,6 +9896,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:12-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -9770,6 +9930,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:65-', 'chrome_os:65-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -9834,6 +9995,7 @@
         },
       ],
       'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'internal_only': True,  # Not available outside of Google.
@@ -9900,6 +10062,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -9931,6 +10094,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -9962,6 +10126,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -9991,6 +10156,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -10021,6 +10187,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:15-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -10051,6 +10218,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:39-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -10081,7 +10249,7 @@
       'type': 'int',
       'schema': { 'type': 'integer' },
       'supported_on': ['chrome.*:14-'],
-      'future_on': [ 'chrome_os' ],
+      'future_on': [ 'chrome_os', 'fuchsia' ],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -10193,6 +10361,7 @@
         'android:86-',
         'webview_android:86-',
         'ios:98-',
+        'fuchsia:106-',
       ],
       'features': {
         'dynamic_refresh': True,
@@ -10226,6 +10395,7 @@
         'webview_android:86-',
         'ios:98-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10251,6 +10421,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:78-', 'chrome_os:78-', 'android:105-', 'ios:105-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10289,6 +10460,7 @@
         'android:97-',
         'ios:105-'
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10360,6 +10532,7 @@
         },
       ],
       'supported_on': ['chrome.*:76-', 'chrome_os:76-', 'android:105-', 'ios:105-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10388,6 +10561,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:92-', 'android:97-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10425,6 +10599,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:85-', 'chrome_os:85-', 'android:85-', 'webview_android:85-', 'ios:85-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10779,6 +10954,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:18-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -10807,6 +10983,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:70-', 'chrome.*:70-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -10859,6 +11036,7 @@
         }
       },
       'supported_on': ['chrome.*:48-', 'chrome_os:48-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -10901,6 +11079,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:19-', 'chrome_os:19-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -10931,6 +11110,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:30-', 'chrome.linux:30-', 'chrome.win:30-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -11102,6 +11282,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:32-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -13171,6 +13352,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:21-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -13196,6 +13378,7 @@
         'android:30-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -13237,6 +13420,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:22-', 'chrome_os:22-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -13329,6 +13513,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:25-', 'chrome_os:23-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -13353,6 +13538,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:29-', 'chrome_os:29-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -13371,6 +13557,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:25-', 'chrome_os:25-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -13394,6 +13581,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:29-', 'chrome_os:29-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -13412,6 +13600,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:22-', 'chrome.*:22-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -13519,6 +13708,7 @@
         'chrome.*:25-',
         'chrome_os:73-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -13569,6 +13759,7 @@
         'chrome_os:78-',
         'chrome.*:78-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -13600,6 +13791,7 @@
         'chrome_os:80-',
         'chrome.*:80-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -13628,6 +13820,7 @@
         'chrome.*:92-',
         'chrome_os:92-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -13945,6 +14138,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:31-', 'chrome.linux:31-', 'chrome_os:31-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -15696,6 +15890,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:79-', 'chrome_os:79-', 'android:79-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -16019,6 +16214,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:26-', 'chrome_os:68-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -16106,6 +16302,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:27-', 'android:34-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -16171,6 +16368,7 @@
         'chrome.*:83-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -16381,6 +16579,7 @@
       'schema': { 'type': 'boolean' },
       'deprecated': True,
       'supported_on': ['chrome.*:29-70'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -16442,6 +16641,7 @@
         'chrome_os:37-',
         'ios:88-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -16712,6 +16912,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:38-', 'chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -16732,6 +16933,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:77-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -16750,6 +16952,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:39-', 'chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -16812,6 +17015,7 @@
         },
       ],
       'supported_on': ['chrome.*:70-', 'android:70-', 'ios:90-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False
@@ -16874,6 +17078,7 @@
         'chrome_os:66-',
         'android:66-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -17000,6 +17205,7 @@
         'chrome_os:91-',
         'android:91-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -17026,6 +17232,7 @@
         'chrome_os:53-',
         'android:53-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -17053,6 +17260,7 @@
         'chrome_os:67-',
         'android:67-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -17086,6 +17294,7 @@
         'chrome_os:67-',
         'android:67-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -17262,6 +17471,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:44-', 'chrome_os:44-', 'android:44-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -17283,6 +17493,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:90-', 'chrome_os:90-', 'android:90-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -17326,6 +17537,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:43-', 'chrome_os:43-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -17406,6 +17618,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:46-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -17756,6 +17969,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:49-','chrome_os:49-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -17862,6 +18076,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:52-','chrome_os:52-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -18137,6 +18352,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:51-', 'chrome_os:51-', 'android:51-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -18195,6 +18411,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:52-', 'chrome_os:52-', 'android:52-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -18213,6 +18430,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:58-', 'chrome_os:58-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -18233,6 +18451,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:67-', 'chrome_os:67-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -18320,6 +18539,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-', 'chrome_os:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -18351,6 +18571,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:88-', 'chrome_os:88-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -18390,6 +18611,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:99-', 'chrome_os:99-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -18423,6 +18645,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:54-', 'chrome_os:54-', 'android:54-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -18444,6 +18667,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:79-', 'chrome_os:79-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -18463,6 +18687,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:54-', 'chrome_os:54-', 'android:105-', 'ios:105-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -19937,6 +20162,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:60-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -20011,6 +20237,7 @@
       'supported_on': [
         'chrome.*:61-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -20364,6 +20591,7 @@
         'ios:88-',
         'android:97-'
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -20387,6 +20615,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:96-', 'android:97-', 'ios:105-'],
+      'future_on': ['fuchsia'],
       'items': [
         {
           'value': True,
@@ -20421,6 +20650,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean'},
       'supported_on': ['chrome.*:64-', 'chrome_os:64-', 'android:92-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -20509,6 +20739,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:63-', 'chrome_os:63-'],
+      'future_on': ['fuchsia'],
       'device_only': False,
       'features': {
         'dynamic_refresh': False,
@@ -20536,6 +20767,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:63-', 'chrome_os:63-'],
+      'future_on': ['fuchsia'],
       'device_only': False,
       'features': {
         'dynamic_refresh': False,
@@ -20655,6 +20887,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:91-', 'chrome_os:91-'],
+      'future_on': ['fuchsia'],
       'device_only': False,
       'features': {
         'dynamic_refresh': False,
@@ -20688,6 +20921,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:96-', 'chrome_os:96-'],
+      'future_on': ['fuchsia'],
       'device_only': False,
       'features': {
         'dynamic_refresh': False,
@@ -20760,6 +20994,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:94-', 'chrome_os:94-'],
+      'future_on': ['fuchsia'],
       'device_only': False,
       'features': {
         'dynamic_refresh': False,
@@ -20829,6 +21064,7 @@
       },
       'deprecated': True,
       'supported_on': ['chrome.*:65-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -20858,6 +21094,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:64-', 'chrome_os:64-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_mandatory': False,
         'can_be_recommended': True,
@@ -20934,6 +21171,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:65-', 'chrome_os:65-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21077,6 +21315,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:65-', 'chrome_os:65-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -21128,6 +21367,7 @@
         },
       ],
       'supported_on': ['chrome.*:65-', 'chrome_os:65-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21192,6 +21432,7 @@
         },
       ],
       'supported_on': ['chrome.*:69-', 'chrome_os:69-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21224,6 +21465,7 @@
         'per_profile': False,
       },
       'supported_on': ['chrome.*:66-', 'chrome_os:70-'],
+      'future_on': ['fuchsia'],
       'type': 'int-enum',
       'schema': {
         'type': 'integer',
@@ -21259,6 +21501,7 @@
         'per_profile': False,
       },
       'supported_on': ['chrome.*:67-', 'chrome_os:67-'],
+      'future_on': ['fuchsia'],
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 3600000 },
       'caption': '''Set the time period for update notifications''',
@@ -21301,6 +21544,7 @@
         'per_profile': False,
       },
       'supported_on': ['chrome.*:93-', 'chrome_os:93-'],
+      'future_on': ['fuchsia'],
       'type': 'dict',
       'schema': {
         'type': 'object',
@@ -21652,6 +21896,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:86-', 'chrome_os:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21677,6 +21922,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:69-', 'chrome_os:69-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21697,6 +21943,7 @@
       'type': 'string',
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:69-', 'chrome_os:69-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21717,6 +21964,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:66-', 'chrome_os:66-', 'android: 87-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -21764,6 +22012,7 @@
         'ios:88-',
         'android:97-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -21783,6 +22032,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:72-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -21851,6 +22101,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:86-', 'chrome_os:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -22428,6 +22679,7 @@
         'per_profile': False,
       },
       'supported_on': ['chrome.*:69-', 'chrome_os:93-'],
+      'future_on': ['fuchsia'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'caption': '''Enable showing full-tab promotional content''',
@@ -22459,6 +22711,7 @@
         },
       ],
       'supported_on': ['chrome.*:69-', 'chrome_os:69-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -22485,6 +22738,7 @@
         'items': { 'type': 'string' }
       },
       'supported_on': ['chrome.*:69-', 'chrome_os:69-', 'android:69-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -22572,6 +22826,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:69-', 'chrome_os:69-', 'android:70-', 'ios:90-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -22608,6 +22863,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:70-', 'chrome_os:70-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -22649,6 +22905,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:70-','android:70-','chrome_os:70-'],
+      'future_on': ['fuchsia'],
       'features': {
         'internal_only': True,
         'dynamic_refresh': True,
@@ -22700,6 +22957,7 @@
         }
       },
       'supported_on': ['chrome.*:89-', 'chrome_os:89-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -22754,6 +23012,7 @@
         }
       },
       'supported_on': ['chrome.*:75-', 'chrome_os:75-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -22987,6 +23246,7 @@
         'cloud_only': True,
       },
       'supported_on': ['chrome.*:85-', 'chrome_os:85-'],
+      'future_on': ['fuchsia'],
       'caption': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> extension installation requests''',
       'example_value': True,
       'desc': '''This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> extension installation requests which allows users to send the requests to the Google Admin console for approval.
@@ -23028,6 +23288,7 @@
         'ios:88-',
         'android:97-',
       ],
+      'future_on': ['fuchsia'],
       'caption': '''Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting''',
       'example_value': True,
       'default': False,
@@ -23061,7 +23322,7 @@
           'caption': 'Disable managed profile cloud reporting',
         },
       ],
-      'future_on': [ 'chrome.*', 'chrome_os', 'android' ],
+      'future_on': [ 'chrome.*', 'chrome_os', 'android', 'fuchsia' ],
       'caption': '''Enable <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> cloud reporting for managed profile''',
       'example_value': True,
       'default': False,
@@ -23083,6 +23344,7 @@
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 3 , 'maximum': 24},
       'supported_on': ['chrome.*:101-', 'chrome_os:101-', 'android:101-', 'ios:101-'],
+      'future_on': ['fuchsia'],
       'tags': ['admin-sharing', 'google-sharing'],
       'features': {
         'dynamic_refresh': True,
@@ -23108,6 +23370,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:71-', 'chrome_os:71-', 'android:71-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -23255,6 +23518,7 @@
       },
       'example_value': '${ie}',
       'supported_on': ['chrome.*:71-'],
+      'future_on': ['fuchsia'],
       'caption': '''Alternative browser to launch for configured websites.''',
       'tags': [],
       'desc': '''Setting the policy controls which command to use to open URLs in an alternative browser. The policy can be set to one of <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER">${ie}</ph>, <ph name="FIREFOX_VALUE_PLACEHOLDER">${firefox}</ph>, <ph name="SAFARI_VALUE_PLACEHOLDER">${safari}</ph>, <ph name="OPERA_VALUE_PLACEHOLDER">${opera}</ph>, <ph name="EDGE_VALUE_PLACEHOLDER">${edge}</ph> or a file path. When this policy is set to a file path, that file is used as an executable file. <ph name="INTERNET_EXPLORER_VALUE_PLACEHOLDER">${ie}</ph> is only available on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>. <ph name="SAFARI_VALUE_PLACEHOLDER">${safari}</ph> and <ph name="EDGE_VALUE_PLACEHOLDER">${edge}</ph> are only available on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> and <ph name="MAC_OS_NAME">macOS</ph>.
@@ -23282,6 +23546,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:71-'],
+      'future_on': ['fuchsia'],
       'caption': '''Command-line parameters for the alternative browser.''',
       'tags': [],
       'desc': '''Setting the policy to a list of strings means each string is passed to the alternative browser as separate command-line parameters. On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, the parameters are joined with spaces. On <ph name="MAC_OS_NAME">macOS</ph> and <ph name="LINUX_OS_NAME">Linux®</ph>, a parameter can have spaces and still be treated as a single parameter.
@@ -23358,6 +23623,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:71-'],
+      'future_on': ['fuchsia'],
       'caption': '''Websites to open in alternative browser''',
       'tags': [],
       'desc': '''Setting the policy controls the list of websites to open in an alternative browser. Each item is treated as a rule for something to open in an alternative browser. <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses those rules when choosing if a URL should open in an alternative browser. When the <ph name="IE_PRODUCT_NAME">Internet Explorer®</ph> add-in is on, <ph name="IE_PRODUCT_NAME">Internet Explorer®</ph> switches back to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> when the rules don't match. If rules contradict each other, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> uses the most specific rule.
@@ -23385,6 +23651,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:71-'],
+      'future_on': ['fuchsia'],
       'caption': '''Websites that should never trigger a browser switch.''',
       'tags': [],
       'desc': '''Setting the policy controls the list of websites that will never cause a browser switch. Each item is treated as a rule. Those rules that match won't open an alternative browser. Unlike the <ph name="URL_LIST_POLICY_NAME">BrowserSwitcherUrlList</ph> policy, rules apply to both directions. When the <ph name="IE_PRODUCT_NAME">Internet Explorer®</ph> add-in is on, it also controls whether <ph name="IE_PRODUCT_NAME">Internet Explorer®</ph> should open these URLs in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
@@ -23427,6 +23694,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:72-'],
+      'future_on': ['fuchsia'],
       'caption': '''URL of an XML file that contains URLs to load in an alternative browser.''',
       'tags': [],
       'desc': '''Setting the policy to a valid URL has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> download the site list from that URL and apply the rules as if they were set up with the <ph name="SITELIST_POLICY_NAME">BrowserSwitcherUrlList</ph> policy.
@@ -23447,6 +23715,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:77-'],
+      'future_on': ['fuchsia'],
       'caption': '''URL of an XML file that contains URLs that should never trigger a browser switch.''',
       'tags': [],
       'desc': '''Setting the policy to a valid URL has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> download the site list from that URL and apply the rules as if they were set up with the <ph name="BROWSER_SWITCHER_URL_GREYLIST_POLICY_NAME">BrowserSwitcherUrlGreylist</ph> policy. These policies prevent <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and the alternative browser from opening one another.
@@ -23467,6 +23736,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:74-'],
+      'future_on': ['fuchsia'],
       'caption': '''Delay before launching alternative browser (milliseconds)''',
       'tags': [],
       'desc': '''Setting the policy to a number has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> show a message for that number of milliseconds, then it opens an alternative browser.
@@ -23485,6 +23755,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:73-'],
+      'future_on': ['fuchsia'],
       'caption': '''Enable the Legacy Browser Support feature.''',
       'tags': [],
       'desc': '''Setting the policy to Enabled means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will try to launch some URLs in an alternate browser, such as <ph name="IE_PRODUCT_NAME">Internet Explorer®</ph>. This feature is set using the policies in the <ph name="LEGACY_BROWSER_SUPPORT_POLICY_GROUP">Legacy Browser support</ph> group.
@@ -23518,6 +23789,7 @@
       },
       'default': 0,
       'supported_on': ['chrome.*:95-'],
+      'future_on': ['fuchsia'],
       'caption': '''Sitelist parsing mode''',
       'tags': [],
       'desc': '''This policy controls how <ph name="PRODUCT_NAME">Google Chrome</ph> interprets sitelist/greylist policies for the Legacy Browser Support feature. It affects the following policies: <ph name="URL_LIST_POLICY_NAME">BrowserSwitcherUrlList</ph>, <ph name="URL_GREYLIST_POLICY_NAME">BrowserSwitcherUrlGreylist</ph>, <ph name="USE_IE_SITELIST_POLICY_NAME">BrowserSwitcherUseIeSitelist</ph>, <ph name="EXTERNAL_SITELIST_POLICY_NAME">BrowserSwitcherExternalSitelistUrl</ph>, and <ph name="EXTERNAL_GREYLIST_POLICY_NAME">BrowserSwitcherExternalGreylistUrl</ph>.
@@ -23546,6 +23818,7 @@
         'per_profile': True,
       },
       'supported_on': ['chrome.*:74-'],
+      'future_on': ['fuchsia'],
       'caption': '''Keep last tab open in Chrome.''',
       'tags': [],
       'desc': '''Setting the policy to Enabled or leaving it unset has <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> keep at least one tab open, after switching to an alternate browser.
@@ -24202,6 +24475,7 @@
       'schema': { 'type': 'boolean' },
       'deprecated': True,
       'supported_on': ['chrome.*:74-87', 'chrome_os:74-87', 'android:74-87'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -24423,6 +24697,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:75-', 'chrome_os:75-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -24450,6 +24725,7 @@
       'name': 'ContextAwareAccessSignalsAllowlist',
       'owners': ['rodmartin@google.com', 'rogerta@chromium.org', 'mad@chromium.org', 'seblalancette@chromium.org'],
       'supported_on': ['chrome.*:95-', 'chrome_os:95-'],
+      'future_on': ['fuchsia'],
       'type': 'list',
       'schema': {
         'type': 'array',
@@ -24571,6 +24847,7 @@
         },
       ],
       'supported_on': ['chrome.*:77-', 'chrome_os:77-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -25062,6 +25339,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:76-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -25443,6 +25721,7 @@
       },
       'id': 696,
       'supported_on': ['chrome.*:84-', 'chrome_os:84-'],
+      'future_on': ['fuchsia'],
       'caption': '''Configuration policy for the OnFileDownloaded Chrome Enterprise Connector''',
       'tags': [],
       'desc': '''List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_FILE_DOWNLOADED_ENTERPRISE_CONNECTOR">OnFileDownloaded</ph> Enterprise Connector, which triggers when a file is downloaded in Chrome.
@@ -25606,6 +25885,7 @@
       },
       'id': 693,
       'supported_on': ['chrome.*:84-', 'chrome_os:84-'],
+      'future_on': ['fuchsia'],
       'caption': '''Configuration policy for the OnFileAttached Chrome Enterprise Connector''',
       'tags': [],
       'desc': '''List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_FILE_ATTACHED_ENTERPRISE_CONNECTOR">OnFileAttached</ph> Enterprise Connector, which triggers when a file is attached to Chrome.
@@ -25767,6 +26047,7 @@
       },
       'id': 697,
       'supported_on': ['chrome.*:84-', 'chrome_os:84-'],
+      'future_on': ['fuchsia'],
       'caption': '''Configuration policy for the OnBulkDataEntry Chrome Enterprise Connector''',
       'tags': [],
       'desc': '''List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_BULK_DATA_ENTRY_ENTERPRISE_CONNECTOR">OnBulkDataEntry</ph> Enterprise Connector, which triggers when data is entered in Chrome from the clipboard or by drag and dropping web content.
@@ -25915,7 +26196,7 @@
         'cloud_only': True,
       },
       'id': 931,
-      'future_on': ['chrome.*', 'chrome_os'],
+      'future_on': ['chrome.*', 'chrome_os', 'fuchsia'],
       'caption': '''Configuration policy for the OnPrint <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connector''',
       'tags': [],
       'desc': '''List of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> Enterprise Connectors services settings to be applied to the <ph name="ON_PRINT_ENTERPRISE_CONNECTOR">OnPrint</ph> Enterprise Connector, which triggers when a page or file is printed from <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
@@ -26170,6 +26451,7 @@
       },
       'id': 699,
       'supported_on': ['chrome.*:84-', 'chrome_os:84-'],
+      'future_on': ['fuchsia'],
       'caption': '''Configuration policy for the OnSecurityEvent Chrome Enterprise Connector''',
       'tags': [],
       'desc': '''List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR">OnSecurityEvent</ph> Enterprise Connector, which triggers when a security event occurs in Chrome. This includes negative verdicts from analysis Enterprise Connectors, password reuse, navigations to unsafe pages and other security sensitive user actions.
@@ -26202,6 +26484,7 @@
         'chrome.*:86-',
         'chrome_os:86-'
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -26314,6 +26597,7 @@
         },
       },
       'supported_on': ['chrome.*:78-','android:78-','chrome_os:78-'],
+      'future_on': ['fuchsia'],
       'features': {
         'per_profile': True,
         'dynamic_refresh': False,
@@ -26335,6 +26619,7 @@
       'schema': { 'type': 'boolean' },
       'deprecated': True,
       'supported_on': ['chrome.*:78-99', 'chrome_os:78-99', 'android:78-99'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -26574,6 +26859,7 @@
       'default': True,
       'id': 632,
       'supported_on': ['chrome.*:79-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -26617,6 +26903,7 @@
         },
       ],
       'supported_on': ['chrome.*:79-', 'chrome_os:79-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -26640,6 +26927,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:79-', 'chrome_os:79-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -26663,6 +26951,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:79-', 'chrome_os:79-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -26905,6 +27194,7 @@
       'default': None,
       'id': 990,
       'supported_on': ['chrome.*:105-115', 'chrome_os:105-115', 'android:105-115', 'webview_android:105-115'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -26941,6 +27231,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:79-', 'chrome_os:79-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -26965,6 +27256,7 @@
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0 },
       'supported_on': ['chrome.*:83-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -27027,6 +27319,7 @@
         },
       ],
       'supported_on': ['chrome_os:80-', 'chrome.*:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27169,6 +27462,7 @@
         'minimum': 0,
       },
       'supported_on': ['chrome.*:94-', 'chrome_os:94-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27202,6 +27496,7 @@
         },
       ],
       'supported_on': ['chrome.*:95-', 'chrome_os:95-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_mandatory' : False,
         'can_be_recommended': True,
@@ -27275,6 +27570,7 @@
         },
       ],
       'supported_on': ['chrome.*:80-', 'chrome_os:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': False,
@@ -27305,6 +27601,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:80-', 'chrome_os:80-', 'android:80-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27525,6 +27822,7 @@
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:81-', 'chrome_os:81-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27557,6 +27855,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27584,6 +27883,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27611,6 +27911,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27640,6 +27941,7 @@
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome_os:94-', 'chrome.*:95-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27953,6 +28255,7 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:83-', 'chrome_os:83-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -27970,6 +28273,7 @@ If set to False, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will not 
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:83-', 'chrome_os:83-', 'android:83-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -28010,6 +28314,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:84-', 'chrome.*:84-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -28061,6 +28366,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:85-', 'chrome.*:85-', 'android:85-'],
+      'future_on': ['fuchsia'],
       'features': {
         'per_profile': False,
         'dynamic_refresh': True,
@@ -28201,6 +28507,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:98-', 'chrome.*:98-', 'android:98-'],
+      'future_on': ['fuchsia'],
       'features': {
         'per_profile': False,
         'dynamic_refresh': True,
@@ -28231,6 +28538,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:102-', 'chrome.*:102-', 'android:102-'],
+      'future_on': ['fuchsia'],
       'features': {
         'per_profile': True,
         'dynamic_refresh': True,
@@ -28282,6 +28590,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:86-', 'chrome.*:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'dynamic_refresh': True,
@@ -28305,6 +28614,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:86-', 'chrome_os:86-', 'android:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -28327,6 +28637,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:86-', 'chrome_os:86-', 'android:86-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -28719,6 +29030,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:87-', 'chrome_os:87-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -28752,6 +29064,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:87-', 'chrome_os:87-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -28852,6 +29165,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         },
       },
       'supported_on': ['chrome.*:89-', 'chrome_os:89-', 'android:96-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29101,6 +29415,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         },
       ],
       'supported_on': ['chrome.*:89-', 'chrome_os:89-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29153,6 +29468,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'chrome.*:89-',
         'chrome_os:105-',
       ],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': False,
@@ -29178,6 +29494,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:89-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -29315,7 +29632,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'cloud_only': True,
       },
       'id': 822,
-      'future_on': ['chrome.*', 'chrome_os'],
+      'future_on': ['chrome.*', 'chrome_os', 'fuchsia'],
       'caption': '''Configuration policy for the <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR">File System Enterprise Connector</ph> handling of downloaded files''',
       'tags': [],
       'desc': '''List of settings to be applied to the <ph name="FILE_SYSTEM_ENTERPRISE_CONNECTOR">File System Enterprise Connector</ph>, which triggers when a file is downloaded.
@@ -29381,6 +29698,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         },
       },
       'supported_on': ['chrome.*:102-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29421,7 +29739,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 5 },
       'default': 0,
       'supported_on': ['chrome.*:90-'],
-      'future_on': ['chrome_os'],
+      'future_on': ['chrome_os', 'fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29443,6 +29761,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:91-', 'chrome_os:91-', 'android:91-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29573,7 +29892,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:91-'],
-      'future_on': ['chrome_os'],
+      'future_on': ['chrome_os', 'fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29598,6 +29917,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         'description': '''Hex color which will be used to generate and apply a theme to the browser.''',
       },
       'supported_on': ['chrome.*:91-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29644,6 +29964,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
         },
       ],
       'supported_on': ['chrome.*:91-', 'chrome_os:91-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -29785,6 +30106,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         },
       ],
       'supported_on': ['chrome.*:91-', 'android:91-', 'chrome_os:91-', 'webview_android:91-'],
+      'future_on': ['fuchsia'],
       'features': {
         'per_profile': False,
         'dynamic_refresh': True,
@@ -29926,7 +30248,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'supported_on': [
         'chrome.*:94-',
       ],
-      'future_on': ['chrome_os'],
+      'future_on': ['chrome_os', 'fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -30030,6 +30352,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         },
       ],
       'supported_on': ['chrome.*:93-', 'chrome_os:93-', 'android:93-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30056,6 +30379,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:93-', 'chrome_os:93-', 'android:93-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30083,6 +30407,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         'items': { 'type': 'string' },
       },
       'supported_on': ['chrome.*:93-', 'chrome_os:93-', 'android:93-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30116,6 +30441,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         ],
       },
       'supported_on': ['chrome.*:94-', 'chrome_os:94-', 'android:94-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30297,6 +30623,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.win:104-', 'chrome.mac:104-', 'chrome.linux:104-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30315,8 +30642,8 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'example_value': True,
       'id': 892,
       'tags': [],
-      'caption': '''Extend support for Chrome Apps on Windows, Mac, and Linux.''',
-      'desc': '''Chrome Apps are deprecated on Windows, Mac, and Linux.
+      'caption': '''Extend support for Chrome Apps on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="MAC_OS_NAME">macOS</ph>, and <ph name="LINUX_OS_NAME">Linux</ph>.''',
+      'desc': '''Chrome Apps are deprecated on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, <ph name="MAC_OS_NAME">macOS</ph>, and <ph name="LINUX_OS_NAME">Linux</ph>.
       If this policy is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will continue to allow Chrome Apps to be run on these platforms until the final date when Chrome Apps support is removed on all platforms, June 2022.
       If this policy is disabled or unset, Chrome Apps may not be allowed to run, depending on the status of the deprecation rollout.
       In either case, Chrome Apps that are force installed by policy will continue to be allowed.''',
@@ -30446,6 +30773,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:96-', 'chrome.*:96-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30475,6 +30803,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:102-', 'chrome.*:102-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30505,6 +30834,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0 },
       'supported_on': ['chrome_os:103-', 'chrome.*:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30650,6 +30980,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'schema': { 'type': 'boolean' },
       'default': True,
       'supported_on': ['chrome.*:97-', 'chrome_os:97-', 'android:97-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -30749,7 +31080,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         'per_profile': True,
       },
       'id': 928,
-      'future_on': ['chrome.*', 'chrome_os'],
+      'future_on': ['chrome.*', 'chrome_os', 'fuchsia'],
       'caption': '''Allows blocking copying to the clipboard on specified URLs''',
       'tags': [],
       'desc': '''This policy blocks copying data to the clipboard on specific URLs.
@@ -30787,6 +31118,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         },
       ],
       'supported_on': ['chrome_os:98-', 'chrome.*:98-', 'android:98-'],
+      'future_on': ['fuchsia'],
       'default': 0,
       'example_value': 0,
       'features': {
@@ -30829,6 +31161,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         },
       ],
       'supported_on': ['chrome_os:99-', 'chrome.*:99-', 'android:99-', 'webview_android:99-'],
+      'future_on': ['fuchsia'],
       'default': 0,
       'example_value': 0,
       'features': {
@@ -30887,6 +31220,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       },
       'id': 933,
       'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'tags': [],
       'caption': '''Allows origin-keyed agent clustering by default.''',
       'desc': '''This policy allows origin-keyed agent clustering by default.
@@ -31034,6 +31368,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
 
       ],
       'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -31055,6 +31390,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'list',
       'schema': { 'type': 'array', 'items': { 'type': 'string' } },
       'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -31075,6 +31411,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'list',
       'schema': { 'type': 'array', 'items': { 'type': 'string' } },
       'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -31111,6 +31448,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
 
       ],
       'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -31132,6 +31470,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'list',
       'schema': { 'type': 'array', 'items': { 'type': 'string' } },
       'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -31152,6 +31491,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'list',
       'schema': { 'type': 'array', 'items': { 'type': 'string' } },
       'supported_on': ['chrome.*:103-', 'chrome_os:103-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -31219,6 +31559,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         { "file_extension": "swf", "domains": ["*"] }
       ],
       'supported_on': ['chrome.*:100-', 'chrome_os:100-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': False,
         'dynamic_refresh': True,
@@ -31272,7 +31613,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         }
       ],
       'default': True,
-      'future_on': ['chrome.*', 'chrome_os', 'android', 'webview_android'],
+      'future_on': ['chrome.*', 'chrome_os', 'android', 'webview_android', 'fuchsia'],
       'example_value': False,
       'tags': [],
       'id': 948,
@@ -31341,7 +31682,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
         'dynamic_refresh': False,
         'per_profile': True,
       },
-      'future_on': ['chrome.*', 'chrome_os', 'android', 'webview_android'],
+      'future_on': ['chrome.*', 'chrome_os', 'android', 'webview_android', 'fuchsia'],
       'tags': [],
       'id': 969,
       'caption': '''Override First-Party Sets.''',
@@ -31426,7 +31767,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
           'caption': 'Disable Isolated Apps Developer Mode',
         }
       ],
-      'future_on': ['chrome_os', 'chrome.*'],
+      'future_on': ['chrome_os', 'chrome.*', 'fuchsia'],
       'default': True,
       'example_value': False,
       'default_for_enterprise_users': False,
@@ -31500,6 +31841,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['android:101-', 'chrome.*:101-', 'chrome_os:101-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -31529,6 +31871,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['android:105-110', 'chrome.*:105-110', 'chrome_os:105-110'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh': False,
         'per_profile': True,
@@ -31871,6 +32214,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:104-106', 'chrome.*:104-106', 'android:104-106'],
+      'future_on': ['fuchsia'],
       'features': {
         'per_profile': True,
         'dynamic_refresh': False,
@@ -31918,7 +32262,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'example_value': 5,
       'id': 994,
       'tags': [],
-      'future_on': ['chrome.*'],
+      'future_on': ['chrome.*', 'fuchsia'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -31937,6 +32281,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:105-', 'chrome_os:105-', 'android:105-'],
+      'future_on': ['fuchsia'],
       'features': {
         'dynamic_refresh' : True,
         'per_profile' : False,
@@ -31972,6 +32317,7 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></
       'schema': { 'type': 'boolean' },
       'default': False,
       'supported_on': ['chrome.*:106-'],
+      'future_on': ['fuchsia'],
       'features': {
         'can_be_recommended': True,
         'can_be_mandatory': False,

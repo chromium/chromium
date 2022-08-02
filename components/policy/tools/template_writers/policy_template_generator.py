@@ -102,6 +102,7 @@ class PolicyTemplateGenerator:
           'ios': ('chrome', 'ios'),
           'chrome_os': ('chrome_os', 'chrome_os'),
           'chrome_frame': ('chrome_frame', 'win'),
+          'fuchsia': ('chrome', 'fuchsia'),
       }[product_platform_string]
       platforms = [platform]
     return product, platforms

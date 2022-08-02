@@ -145,7 +145,7 @@ KEYS_DEFINING_SCHEMAS_PER_TYPE = {
 
 # The list of platforms policy could support.
 ALL_SUPPORTED_PLATFORMS = [
-    'chrome_frame', 'chrome_os', 'android', 'webview_android', 'ios',
+    'chrome_frame', 'chrome_os', 'android', 'webview_android', 'ios', 'fuchsia',
     'chrome.win', 'chrome.win7', 'chrome.linux', 'chrome.mac', 'chrome.*'
 ]
 

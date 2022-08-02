@@ -809,6 +809,7 @@ class DocWriter(xml_formatted_writer.XMLFormattedWriter):
         'android': 'Android',
         'win7': 'Windows 7',
         'ios': 'iOS',
+        'fuchsia': 'Fuchsia',
     }
     # Human-readable names of supported products.
     self._PRODUCT_MAP = {
