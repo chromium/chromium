@@ -231,21 +231,19 @@ void RestorePrimaryUserDesks() {
   desks_controller->RestorePrimaryUserActiveDeskIndex(active_desk_index);
 
   // Restore weekly active desks metrics.
-  auto* weekly_active_desks_dict =
-      primary_user_prefs->GetDictionary(prefs::kDesksWeeklyActiveDesksMetrics);
-  if (weekly_active_desks_dict) {
-    const int report_time =
-        weekly_active_desks_dict->FindIntPath(kReportTimeKey).value_or(-1);
-    const int num_weekly_active_desks =
-        weekly_active_desks_dict->FindIntPath(kWeeklyActiveDesksKey)
-            .value_or(-1);
+  auto& weekly_active_desks_dict =
+      primary_user_prefs->GetValueDict(prefs::kDesksWeeklyActiveDesksMetrics);
+  const int report_time =
+      weekly_active_desks_dict.FindIntByDottedPath(kReportTimeKey).value_or(-1);
+  const int num_weekly_active_desks =
+      weekly_active_desks_dict.FindIntByDottedPath(kWeeklyActiveDesksKey)
+          .value_or(-1);
 
-    // Discard stored metrics if either are corrupted.
-    if (report_time != -1 && num_weekly_active_desks != -1) {
-      desks_controller->RestoreWeeklyActiveDesksMetrics(
-          num_weekly_active_desks,
-          base::Time::FromDeltaSinceWindowsEpoch(base::Minutes(report_time)));
-    }
+  // Discard stored metrics if either are corrupted.
+  if (report_time != -1 && num_weekly_active_desks != -1) {
+    desks_controller->RestoreWeeklyActiveDesksMetrics(
+        num_weekly_active_desks,
+        base::Time::FromDeltaSinceWindowsEpoch(base::Minutes(report_time)));
   }
 }
 
