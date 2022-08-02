@@ -25,6 +25,9 @@ interface IBrowserFragmentDelegate {
     void onResume() = 10;
     void onPause() = 11;
 
+    // ViewModel events.
+    void onCleared() = 16;
+
     // Tab operations.
     ITabProxy getActiveTab() = 14;
     void setTabObserverDelegate(ITabObserverDelegate tabObserverDelegate) = 15;

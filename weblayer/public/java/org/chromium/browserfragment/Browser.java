@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.concurrent.futures.CallbackToFutureAdapter;
 
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.chromium.browserfragment.interfaces.IBrowserSandboxCallback;
@@ -31,6 +32,8 @@ public class Browser {
     private static final String BROWSER_SANDBOX_ACTION =
             "org.chromium.weblayer.intent.action.BROWSERSANDBOX";
 
+    private static Browser sInstance;
+
     private IBrowserSandboxService mBrowserSandboxService;
 
     private static class ConnectionSetup implements ServiceConnection {
@@ -42,7 +45,8 @@ public class Browser {
                 new IBrowserSandboxCallback.Stub() {
                     @Override
                     public void onBrowserProcessInitialized() {
-                        mCompleter.set(new Browser(mBrowserSandboxService));
+                        sInstance = new Browser(mBrowserSandboxService);
+                        mCompleter.set(sInstance);
                         mCompleter = null;
                     }
                 };
@@ -79,6 +83,9 @@ public class Browser {
      */
     @NonNull
     public static ListenableFuture<Browser> create(@NonNull Context context) {
+        if (sInstance != null) {
+            return Futures.immediateFuture(sInstance);
+        }
         return CallbackToFutureAdapter.getFuture(completer -> {
             ConnectionSetup connectionSetup = new ConnectionSetup(context, completer);
 
@@ -98,7 +105,9 @@ public class Browser {
     @Nullable
     public BrowserFragment createFragment() {
         try {
-            return new BrowserFragment(this, mBrowserSandboxService.createFragmentDelegate());
+            BrowserFragment fragment = new BrowserFragment();
+            fragment.initialize(this, mBrowserSandboxService.createFragmentDelegate());
+            return fragment;
         } catch (RemoteException e) {
             return null;
         }

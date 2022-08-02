@@ -205,11 +205,13 @@ android_library("browserfragment_java") {
   deps = [
     ":browserfragment_interfaces_java",
     "//base:base_java",
+    "//third_party/android_deps:com_google_guava_guava_android_java",
     "//third_party/android_deps:com_google_guava_listenablefuture_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_concurrent_concurrent_futures_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
   ]
 
   proguard_configs = [ "proguard.flags" ]
