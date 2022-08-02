@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_mount_provider.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -22,7 +23,8 @@ BruschettaService::BruschettaService(Profile* profile) {
   // "bru" so hardcode this to get them working while we work on the full
   // installer. Similarly, Bruschetta doesn't have a container but it runs a
   // garcon that identifies itself as in a penguin container, so use that name.
-  guest_os::GuestId alpha_id{guest_os::VmType::BRUSCHETTA, "bru", "penguin"};
+  guest_os::GuestId alpha_id{guest_os::VmType::BRUSCHETTA, kBruschettaVmName,
+                             "penguin"};
   launchers_.insert(
       {alpha_id.vm_name, std::make_unique<BruschettaLauncher>("bru", profile)});
   guest_os::GuestOsService::GetForProfile(profile)

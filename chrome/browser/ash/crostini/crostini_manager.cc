@@ -26,6 +26,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/crostini_engagement_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -1240,6 +1241,17 @@ CrostiniManager::CrostiniManager(Profile* profile)
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile_)) {
     for (const auto& container :
          guest_os::GetContainers(profile_, kCrostiniDefaultVmType)) {
+      // For a short while in M106 Bruschetta was getting added to prefs without
+      // a VM type, which meant it defaulted to Termina. If we've got it in
+      // prefs remove it instead of registering it. This'll break anyone who
+      // really has a vm named "bru" which is unfortunate, but we can't tell the
+      // difference between a correct and incorrect pref, so hopefully no one's
+      // done so.
+      // TODO(b/241043433): This code can be removed after M118.
+      if (container.vm_name == bruschetta::kBruschettaVmName) {
+        guest_os::RemoveContainerFromPrefs(profile, container);
+        continue;
+      }
       RegisterContainer(container);
     }
   }
