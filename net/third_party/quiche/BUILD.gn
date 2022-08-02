@@ -54,8 +54,6 @@ config("quiche_config") {
 
 component("quiche") {
   sources = [
-    "overrides/quiche_platform_impl/quic_flags_impl.cc",
-    "overrides/quiche_platform_impl/quic_flags_impl.h",
     "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
     "overrides/quiche_platform_impl/quiche_client_stats_impl.h",
     "overrides/quiche_platform_impl/quiche_containers_impl.h",
@@ -96,6 +94,8 @@ component("quiche") {
     "src/quiche/common/platform/api/quiche_thread_local.h",
     "src/quiche/common/platform/api/quiche_time_utils.h",
     "src/quiche/common/platform/api/quiche_url_utils.h",
+    "src/quiche/common/platform/default/quiche_platform_impl/quic_flags_impl.cc",
+    "src/quiche/common/platform/default/quiche_platform_impl/quic_flags_impl.h",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.cc",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_flags_impl.h",
     "src/quiche/common/platform/default/quiche_platform_impl/quiche_prefetch_impl.h",
