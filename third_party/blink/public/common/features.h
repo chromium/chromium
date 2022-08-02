@@ -18,8 +18,16 @@ namespace blink {
 namespace features {
 
 BLINK_COMMON_EXPORT extern const base::Feature kAutomaticLazyFrameLoadingToAds;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kTimeoutMillisForLazyAds;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSkipFrameCountForLazyAds;
 BLINK_COMMON_EXPORT extern const base::Feature
     kAutomaticLazyFrameLoadingToEmbeds;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kTimeoutMillisForLazyEmbeds;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kSkipFrameCountForLazyEmbeds;
 BLINK_COMMON_EXPORT extern const base::Feature
     kAutomaticLazyFrameLoadingToEmbedUrls;
 BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;

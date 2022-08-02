@@ -20,10 +20,40 @@ namespace features {
 const base::Feature kAutomaticLazyFrameLoadingToAds{
     "AutomaticLazyFrameLoadingToAds", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// The timeout value that forces loading iframes that are lazy loaded by
+// LazyAds. After this timeout, the frame loading is triggered even when the
+// intersection observer does not trigger iframe loading.
+const base::FeatureParam<int> kTimeoutMillisForLazyAds(
+    &features::kAutomaticLazyFrameLoadingToAds,
+    "timeout",
+    0);
+
+// Skip applying LazyAds for the first "skip_frame_count" frames in the
+// document, and apply LazyAds the rest if they are eligible.
+const base::FeatureParam<int> kSkipFrameCountForLazyAds(
+    &features::kAutomaticLazyFrameLoadingToAds,
+    "skip_frame_count",
+    0);
+
 // Apply lazy-loading to frames which have embeds likely impacting Core Web
 // Vitals.
 const base::Feature kAutomaticLazyFrameLoadingToEmbeds{
     "AutomaticLazyFrameLoadingToEmbeds", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// The timeout value that forces loading iframes that are lazy loaded by
+// LazyEmbeds. After this timeout, the frame loading is triggered even when the
+// intersection observer does not trigger iframe loading.
+const base::FeatureParam<int> kTimeoutMillisForLazyEmbeds(
+    &features::kAutomaticLazyFrameLoadingToEmbeds,
+    "timeout",
+    0);
+
+// Skip applying LazyEmbeds for the first "skip_frame_count" frames in the
+// document, and apply LazyEmbeds the rest if they are eligible.
+const base::FeatureParam<int> kSkipFrameCountForLazyEmbeds(
+    &features::kAutomaticLazyFrameLoadingToEmbeds,
+    "skip_frame_count",
+    0);
 
 // Define the allowed websites to use LazyEmbeds. The allowed websites need to
 // be defined separately from kAutomaticLazyFrameLoadingToEmbeds because we want

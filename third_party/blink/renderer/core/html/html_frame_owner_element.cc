@@ -135,6 +135,21 @@ enum class AutomaticLazyLoadFrame {
   kMaxValue = kTargetFramesFound,
 };
 
+int GetLazyAdsSkipFrameCount() {
+  DCHECK(
+      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds));
+  static const int skip_frame_count = features::kSkipFrameCountForLazyAds.Get();
+  return skip_frame_count;
+}
+
+int GetLazyEmbedsSkipFrameCount() {
+  DCHECK(base::FeatureList::IsEnabled(
+      features::kAutomaticLazyFrameLoadingToEmbeds));
+  static const int skip_frame_count =
+      features::kSkipFrameCountForLazyEmbeds.Get();
+  return skip_frame_count;
+}
+
 bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
                                            bool is_loading_attr_lazy,
                                            bool is_eligible_for_lazy_embeds,
@@ -199,12 +214,16 @@ bool CheckAndRecordIfShouldLazilyLoadFrame(const Document& document,
 
   if (is_eligible_for_lazy_embeds &&
       base::FeatureList::IsEnabled(
-          features::kAutomaticLazyFrameLoadingToEmbeds)) {
+          features::kAutomaticLazyFrameLoadingToEmbeds) &&
+      document.GetImmediateChildFrameCreationCount() >
+          GetLazyEmbedsSkipFrameCount()) {
     return true;
   }
 
   if (is_eligible_for_lazy_ads &&
-      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds)) {
+      base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds) &&
+      document.GetImmediateChildFrameCreationCount() >
+          GetLazyAdsSkipFrameCount()) {
     return true;
   }
 
@@ -298,24 +317,22 @@ bool IsEligibleForLazyEmbeds(const KURL& url, const Document& document) {
 
 const base::TimeDelta GetLazyEmbedsTimeoutMs() {
   if (!base::FeatureList::IsEnabled(
-          features::kAutomaticLazyFrameLoadingToEmbeds))
-    return base::Milliseconds(0);
+          features::kAutomaticLazyFrameLoadingToEmbeds)) {
+    return base::Milliseconds(
+        features::kTimeoutMillisForLazyEmbeds.default_value);
+  }
 
-  static const base::FeatureParam<int> kTimeout(
-      &features::kAutomaticLazyFrameLoadingToEmbeds, "timeout", 0);
-
-  static const base::TimeDelta timeout_ms = base::Milliseconds(kTimeout.Get());
+  static const base::TimeDelta timeout_ms =
+      base::Milliseconds(features::kTimeoutMillisForLazyEmbeds.Get());
   return timeout_ms;
 }
 
 const base::TimeDelta GetLazyAdsTimeoutMs() {
   if (!base::FeatureList::IsEnabled(features::kAutomaticLazyFrameLoadingToAds))
-    return base::Milliseconds(0);
+    return base::Milliseconds(features::kTimeoutMillisForLazyAds.default_value);
 
-  static const base::FeatureParam<int> kTimeout(
-      &features::kAutomaticLazyFrameLoadingToAds, "timeout", 0);
-
-  static const base::TimeDelta timeout_ms = base::Milliseconds(kTimeout.Get());
+  static const base::TimeDelta timeout_ms =
+      base::Milliseconds(features::kTimeoutMillisForLazyAds.Get());
   return timeout_ms;
 }
 
@@ -346,6 +363,7 @@ HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
                                              Document& document)
     : HTMLElement(tag_name, document),
       should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
+  document.IncrementImmediateChildFrameCreationCount();
 }
 
 LayoutEmbeddedContent* HTMLFrameOwnerElement::GetLayoutEmbeddedContent() const {
