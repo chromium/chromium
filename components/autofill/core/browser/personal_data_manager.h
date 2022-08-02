@@ -202,11 +202,11 @@ class PersonalDataManager : public KeyedService,
       const std::vector<AutofillProfile*>& profiles);
 
   // Adds |iban| to the web database as a local Iban.
-  virtual void AddIban(const Iban& iban);
+  virtual void AddIBAN(const IBAN& iban);
 
   // Updates |iban| which already exists in the web database. This
   // can only be used on local ibans.
-  virtual void UpdateIban(const Iban& iban);
+  virtual void UpdateIBAN(const IBAN& iban);
 
   // Adds |credit_card| to the web database as a local card.
   virtual void AddCreditCard(const CreditCard& credit_card);
@@ -255,7 +255,7 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the iban with the specified |guid|, or nullptr if there is no iban
   // with the specified |guid|.
-  virtual Iban* GetIbanByGUID(const std::string& guid);
+  virtual IBAN* GetIBANByGUID(const std::string& guid);
 
   // Returns the credit card with the specified |guid|, or nullptr if there is
   // no credit card with the specified |guid|.
@@ -293,7 +293,7 @@ class PersonalDataManager : public KeyedService,
   virtual std::vector<CreditCard*> GetCreditCards() const;
 
   // Returns local Ibans.
-  virtual std::vector<Iban*> GetIbans() const;
+  virtual std::vector<IBAN*> GetIBANs() const;
 
   // Returns the Payments customer data. Returns nullptr if no data is present.
   virtual PaymentsCustomerData* GetPaymentsCustomerData() const;
@@ -621,7 +621,7 @@ class PersonalDataManager : public KeyedService,
   virtual void LoadCreditCardCloudTokenData();
 
   // Loads the saved IBANs from the web database.
-  virtual void LoadIbans();
+  virtual void LoadIBANs();
 
   // Loads the payments customer data from the web database.
   virtual void LoadPaymentsCustomerData();
@@ -686,7 +686,7 @@ class PersonalDataManager : public KeyedService,
   std::vector<std::unique_ptr<CreditCard>> server_credit_cards_;
 
   // Cached versions of the local Ibans.
-  std::vector<std::unique_ptr<Iban>> local_ibans_;
+  std::vector<std::unique_ptr<IBAN>> local_ibans_;
 
   // Cached UPI IDs.
   std::vector<std::string> upi_ids_;

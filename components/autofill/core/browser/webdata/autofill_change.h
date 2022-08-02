@@ -16,7 +16,7 @@
 namespace autofill {
 
 class CreditCard;
-class Iban;
+class IBAN;
 
 // For classic Autofill form fields, the KeyType is AutofillKey.
 // Autofill++ types such as AutofillProfile and CreditCard simply use a string.
@@ -81,7 +81,7 @@ class AutofillDataModelChange : public GenericAutofillChange<std::string> {
 
 typedef AutofillDataModelChange<AutofillProfile> AutofillProfileChange;
 typedef AutofillDataModelChange<CreditCard> CreditCardChange;
-typedef AutofillDataModelChange<Iban> IbanChange;
+typedef AutofillDataModelChange<IBAN> IBANChange;
 
 class AutofillProfileDeepChange : public AutofillProfileChange {
  public:

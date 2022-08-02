@@ -39,7 +39,7 @@ class AutofillTableTest;
 class CreditCard;
 struct CreditCardCloudTokenData;
 struct FormFieldData;
-class Iban;
+class IBAN;
 struct PaymentsCustomerData;
 
 // This class manages the various Autofill tables within the SQLite database
@@ -547,21 +547,21 @@ class AutofillTable : public WebDatabaseTable,
   // the given ones.
   void SetServerProfiles(const std::vector<AutofillProfile>& profiles);
 
-  // Records a single Iban in the iban table.
-  bool AddIban(const Iban& iban);
+  // Records a single IBAN in the iban table.
+  bool AddIBAN(const IBAN& iban);
 
-  // Updates the database values for the specified Iban.
-  bool UpdateIban(const Iban& iban);
+  // Updates the database values for the specified IBAN.
+  bool UpdateIBAN(const IBAN& iban);
 
   // Removes a row from the ibans table. |guid| is the identifier of the
-  // iban to remove.
-  bool RemoveIban(const std::string& guid);
+  // IBAN to remove.
+  bool RemoveIBAN(const std::string& guid);
 
-  // Retrieves an Iban with the given |guid|.
-  std::unique_ptr<Iban> GetIban(const std::string& guid);
+  // Retrieves an IBAN with the given |guid|.
+  std::unique_ptr<IBAN> GetIBAN(const std::string& guid);
 
-  // Retrieves the local Ibans in the database.
-  bool GetIbans(std::vector<std::unique_ptr<Iban>>* ibans);
+  // Retrieves the local IBANs in the database.
+  bool GetIBANs(std::vector<std::unique_ptr<IBAN>>* ibans);
 
   // Records a single credit card in the credit_cards table.
   bool AddCreditCard(const CreditCard& credit_card);
@@ -730,7 +730,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion101RemoveCreditCardArtImageTable();
   bool MigrateToVersion102AddAutofillBirthdatesTable();
   bool MigrateToVersion104AddProductDescriptionColumn();
-  bool MigrateToVersion105AddAutofillIbanTable();
+  bool MigrateToVersion105AddAutofillIBANTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -824,7 +824,7 @@ class AutofillTable : public WebDatabaseTable,
 
   bool InitMainTable();
   bool InitCreditCardsTable();
-  bool InitIbansTable();
+  bool InitIBANsTable();
   bool InitProfilesTable();
   bool InitProfileAddressesTable();
   bool InitProfileNamesTable();

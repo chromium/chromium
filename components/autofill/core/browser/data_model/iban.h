@@ -16,7 +16,7 @@ namespace autofill {
 struct AutofillMetadata;
 
 // A form group that stores IBAN information.
-class Iban : public AutofillDataModel {
+class IBAN : public AutofillDataModel {
  public:
   enum RecordType {
     // An IBAN stored and editable locally.
@@ -27,14 +27,14 @@ class Iban : public AutofillDataModel {
     SERVER_IBAN,
   };
 
-  explicit Iban(const std::string& guid);
+  explicit IBAN(const std::string& guid);
 
   // For use in STL containers.
-  Iban();
-  Iban(const Iban&);
-  ~Iban() override;
+  IBAN();
+  IBAN(const IBAN&);
+  ~IBAN() override;
 
-  void operator=(const Iban& iban);
+  void operator=(const IBAN& iban);
 
   // AutofillDataModel:
   AutofillMetadata GetMetadata() const override;
@@ -64,12 +64,12 @@ class Iban : public AutofillDataModel {
   // contents of the fields.
   // GUIDs, origins, and server id are not compared, only the values of
   // the IBANs themselves.
-  int Compare(const Iban& iban) const;
+  int Compare(const IBAN& iban) const;
 
   // Equality operators compare GUIDs, origins, |record_type_|, |value_|,
   // |nickname_| and the |server_id_|.
-  bool operator==(const Iban& iban) const;
-  virtual bool operator!=(const Iban& iban) const;
+  bool operator==(const IBAN& iban) const;
+  virtual bool operator!=(const IBAN& iban) const;
 
   // Returns the ID assigned by the server. |server_id_| is empty if it's a
   // local IBAN.
@@ -96,7 +96,7 @@ class Iban : public AutofillDataModel {
   }
 
  private:
-  // This is the ID assigned by the server to uniquely identify this card.
+  // This is the ID assigned by the server to uniquely identify this IBAN.
   // Note: server_id is empty for now as only local IBAN is supported.
   std::string server_id_;
 

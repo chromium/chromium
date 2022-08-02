@@ -207,7 +207,7 @@ AutofillProfile GetServerProfile();
 AutofillProfile GetServerProfile2();
 
 // Returns an IBAN full of dummy info.
-Iban GetIban();
+IBAN GetIBAN();
 
 // Returns a credit card full of dummy info.
 CreditCard GetCreditCard();

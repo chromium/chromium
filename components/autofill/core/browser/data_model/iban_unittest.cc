@@ -13,14 +13,14 @@
 
 namespace autofill {
 
-TEST(IbanTest, AssignmentOperator) {
+TEST(IBANTest, AssignmentOperator) {
   // Creates two IBANs with different parameters.
   std::string guid = base::GenerateGUID();
-  Iban iban_0;
+  IBAN iban_0;
   iban_0.set_guid(guid);
   iban_0.set_nickname(u"Nickname 0");
   iban_0.set_value(u"DE91 1000 0000 0123 4567 89");
-  Iban iban_1;
+  IBAN iban_1;
   guid = base::GenerateGUID();
   iban_1.set_guid(guid);
   iban_1.set_nickname(u"Nickname 1");
@@ -30,8 +30,8 @@ TEST(IbanTest, AssignmentOperator) {
   EXPECT_EQ(iban_0, iban_1);
 }
 
-TEST(IbanTest, GetMetadata) {
-  Iban local_iban = test::GetIban();
+TEST(IBANTest, GetMetadata) {
+  IBAN local_iban = test::GetIBAN();
   local_iban.set_use_count(2);
   local_iban.set_use_date(base::Time::FromDoubleT(25));
   AutofillMetadata local_metadata = local_iban.GetMetadata();
@@ -44,8 +44,8 @@ TEST(IbanTest, GetMetadata) {
 // Verify that we set nickname with the processed string. We replace all tabs
 // and newlines with whitespace, replace multiple spaces into a single one
 // and trim leading/trailing whitespace.
-TEST(IbanTest, SetNickname) {
-  Iban iban(base::GenerateGUID());
+TEST(IBANTest, SetNickname) {
+  IBAN iban(base::GenerateGUID());
 
   // Normal input nickname.
   iban.set_nickname(u"My doctor's IBAN");
@@ -72,16 +72,16 @@ TEST(IbanTest, SetNickname) {
   EXPECT_EQ(u"My doctor's IBAN", iban.nickname());
 }
 
-TEST(IbanTest, SetValue) {
-  Iban iban(base::GenerateGUID());
+TEST(IBANTest, SetValue) {
+  IBAN iban(base::GenerateGUID());
 
   // Input value.
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
   EXPECT_EQ(u"DE91 1000 0000 0123 4567 89", iban.value());
 }
 
-TEST(IbanTest, SetRawData) {
-  Iban iban(base::GenerateGUID());
+TEST(IBANTest, SetRawData) {
+  IBAN iban(base::GenerateGUID());
 
   // Verify RawInfo can be correctly set and read.
   iban.SetRawInfoWithVerificationStatus(

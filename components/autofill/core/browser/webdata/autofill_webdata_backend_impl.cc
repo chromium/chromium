@@ -514,69 +514,69 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCardMetadata(
   return WebDatabase::COMMIT_NEEDED;
 }
 
-std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetIbans(
+std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetIBANs(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<Iban>> ibans;
-  AutofillTable::FromWebDatabase(db)->GetIbans(&ibans);
+  std::vector<std::unique_ptr<IBAN>> ibans;
+  AutofillTable::FromWebDatabase(db)->GetIBANs(&ibans);
 
-  return std::make_unique<WDResult<std::vector<std::unique_ptr<Iban>>>>(
+  return std::make_unique<WDResult<std::vector<std::unique_ptr<IBAN>>>>(
       AUTOFILL_IBANS_RESULT, std::move(ibans));
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::AddIban(const Iban& iban,
+WebDatabase::State AutofillWebDataBackendImpl::AddIBAN(const IBAN& iban,
                                                        WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (!AutofillTable::FromWebDatabase(db)->AddIban(iban)) {
+  if (!AutofillTable::FromWebDatabase(db)->AddIBAN(iban)) {
     NOTREACHED();
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   for (auto& db_observer : db_observer_list_) {
-    db_observer.IbanChanged(IbanChange(IbanChange::ADD, iban.guid(), &iban));
+    db_observer.IBANChanged(IBANChange(IBANChange::ADD, iban.guid(), &iban));
   }
   return WebDatabase::COMMIT_NEEDED;
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::UpdateIban(const Iban& iban,
+WebDatabase::State AutofillWebDataBackendImpl::UpdateIBAN(const IBAN& iban,
                                                           WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  // It is currently valid to try to update a missing iban. We simply drop
+  // It is currently valid to try to update a missing IBAN. We simply drop
   // the write and the caller will detect this on the next refresh.
-  std::unique_ptr<Iban> original_iban =
-      AutofillTable::FromWebDatabase(db)->GetIban(iban.guid());
+  std::unique_ptr<IBAN> original_iban =
+      AutofillTable::FromWebDatabase(db)->GetIBAN(iban.guid());
   if (!original_iban)
     return WebDatabase::COMMIT_NOT_NEEDED;
 
-  if (!AutofillTable::FromWebDatabase(db)->UpdateIban(iban)) {
+  if (!AutofillTable::FromWebDatabase(db)->UpdateIBAN(iban)) {
     NOTREACHED();
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   for (auto& db_observer : db_observer_list_) {
-    db_observer.IbanChanged(IbanChange(IbanChange::UPDATE, iban.guid(), &iban));
+    db_observer.IBANChanged(IBANChange(IBANChange::UPDATE, iban.guid(), &iban));
   }
   return WebDatabase::COMMIT_NEEDED;
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::RemoveIban(
+WebDatabase::State AutofillWebDataBackendImpl::RemoveIBAN(
     const std::string& guid,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  std::unique_ptr<Iban> iban =
-      AutofillTable::FromWebDatabase(db)->GetIban(guid);
+  std::unique_ptr<IBAN> iban =
+      AutofillTable::FromWebDatabase(db)->GetIBAN(guid);
   if (!iban) {
     NOTREACHED();
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
-  if (!AutofillTable::FromWebDatabase(db)->RemoveIban(guid)) {
+  if (!AutofillTable::FromWebDatabase(db)->RemoveIBAN(guid)) {
     NOTREACHED();
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   for (auto& db_observer : db_observer_list_) {
-    db_observer.IbanChanged(IbanChange(IbanChange::REMOVE, guid, iban.get()));
+    db_observer.IBANChanged(IBANChange(IBANChange::REMOVE, guid, iban.get()));
   }
   return WebDatabase::COMMIT_NEEDED;
 }

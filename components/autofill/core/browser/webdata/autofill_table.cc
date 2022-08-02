@@ -214,7 +214,7 @@ constexpr base::StringPiece kServerCardMetadataTable = "server_card_metadata";
 // kUseDate = "use_date"
 // kBillingAddressId = "billing_address_id"
 
-constexpr base::StringPiece kIbansTable = "ibans";
+constexpr base::StringPiece kIBANsTable = "ibans";
 // kGuid = "guid"
 // kUseCount = "use_count"
 // kUseDate = "use_date"
@@ -585,7 +585,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
   s->BindString16(index++, credit_card.nickname());
 }
 
-void BindIbanToStatement(const Iban& iban,
+void BindIBANToStatement(const IBAN& iban,
                          sql::Statement* s,
                          const AutofillTableEncryptor& encryptor) {
   DCHECK(base::IsValidGUID(iban.guid()));
@@ -636,10 +636,10 @@ std::unique_ptr<CreditCard> CreditCardFromStatement(
   return credit_card;
 }
 
-std::unique_ptr<Iban> IbanFromStatement(
+std::unique_ptr<IBAN> IBANFromStatement(
     sql::Statement& s,
     const AutofillTableEncryptor& encryptor) {
-  auto iban = std::make_unique<Iban>();
+  auto iban = std::make_unique<IBAN>();
 
   int index = 0;
   iban->set_guid(s.ColumnString(index++));
@@ -1040,7 +1040,7 @@ WebDatabaseTable::TypeKey AutofillTable::GetTypeKey() const {
 }
 
 bool AutofillTable::CreateTablesIfNecessary() {
-  return InitMainTable() && InitCreditCardsTable() && InitIbansTable() &&
+  return InitMainTable() && InitCreditCardsTable() && InitIBANsTable() &&
          InitProfilesTable() && InitProfileAddressesTable() &&
          InitProfileNamesTable() && InitProfileEmailsTable() &&
          InitProfilePhonesTable() && InitProfileBirthdatesTable() &&
@@ -1125,7 +1125,7 @@ bool AutofillTable::MigrateToVersion(int version,
       return MigrateToVersion104AddProductDescriptionColumn();
     case 105:
       *update_compatible_version = false;
-      return MigrateToVersion105AddAutofillIbanTable();
+      return MigrateToVersion105AddAutofillIBANTable();
   }
   return true;
 }
@@ -1710,11 +1710,11 @@ void AutofillTable::SetServerProfiles(
   SetServerProfilesAndMetadata(profiles, /*update_metadata=*/true);
 }
 
-bool AutofillTable::AddIban(const Iban& iban) {
+bool AutofillTable::AddIBAN(const IBAN& iban) {
   sql::Statement s;
-  InsertBuilder(db_, s, kIbansTable,
+  InsertBuilder(db_, s, kIBANsTable,
                 {kGuid, kUseCount, kUseDate, kValue, kNickname});
-  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
   if (!s.Run())
     return false;
 
@@ -1722,10 +1722,10 @@ bool AutofillTable::AddIban(const Iban& iban) {
   return true;
 }
 
-bool AutofillTable::UpdateIban(const Iban& iban) {
+bool AutofillTable::UpdateIBAN(const IBAN& iban) {
   DCHECK(base::IsValidGUID(iban.guid()));
 
-  std::unique_ptr<Iban> old_iban = GetIban(iban.guid());
+  std::unique_ptr<IBAN> old_iban = GetIBAN(iban.guid());
   if (!old_iban) {
     return false;
   }
@@ -1738,22 +1738,22 @@ bool AutofillTable::UpdateIban(const Iban& iban) {
       "UPDATE ibans "
       "SET guid=?, use_count=?, use_date=?, value=?, nickname=? "
       "WHERE guid=?1"));
-  BindIbanToStatement(iban, &s, *autofill_table_encryptor_);
+  BindIBANToStatement(iban, &s, *autofill_table_encryptor_);
 
   bool result = s.Run();
   DCHECK_GT(db_->GetLastChangeCount(), 0);
   return result;
 }
 
-bool AutofillTable::RemoveIban(const std::string& guid) {
+bool AutofillTable::RemoveIBAN(const std::string& guid) {
   DCHECK(base::IsValidGUID(guid));
-  return DeleteWhereColumnEq(db_, kIbansTable, kGuid, guid);
+  return DeleteWhereColumnEq(db_, kIBANsTable, kGuid, guid);
 }
 
-std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
+std::unique_ptr<IBAN> AutofillTable::GetIBAN(const std::string& guid) {
   DCHECK(base::IsValidGUID(guid));
   sql::Statement s;
-  SelectBuilder(db_, s, kIbansTable,
+  SelectBuilder(db_, s, kIBANsTable,
                 {kGuid, kUseCount, kUseDate, kValue, kNickname},
                 "WHERE guid = ?");
   s.BindString(0, guid);
@@ -1761,19 +1761,19 @@ std::unique_ptr<Iban> AutofillTable::GetIban(const std::string& guid) {
   if (!s.Step())
     return nullptr;
 
-  return IbanFromStatement(s, *autofill_table_encryptor_);
+  return IBANFromStatement(s, *autofill_table_encryptor_);
 }
 
-bool AutofillTable::GetIbans(std::vector<std::unique_ptr<Iban>>* ibans) {
+bool AutofillTable::GetIBANs(std::vector<std::unique_ptr<IBAN>>* ibans) {
   DCHECK(ibans);
   ibans->clear();
 
   sql::Statement s;
-  SelectBuilder(db_, s, kIbansTable, {kGuid}, "ORDER BY use_date DESC, guid");
+  SelectBuilder(db_, s, kIBANsTable, {kGuid}, "ORDER BY use_date DESC, guid");
 
   while (s.Step()) {
     std::string guid = s.ColumnString(0);
-    std::unique_ptr<Iban> iban = GetIban(guid);
+    std::unique_ptr<IBAN> iban = GetIBAN(guid);
     if (!iban)
       return false;
     ibans->push_back(std::move(iban));
@@ -3069,10 +3069,10 @@ bool AutofillTable::MigrateToVersion104AddProductDescriptionColumn() {
   return transaction.Commit();
 }
 
-bool AutofillTable::MigrateToVersion105AddAutofillIbanTable() {
+bool AutofillTable::MigrateToVersion105AddAutofillIBANTable() {
   sql::Transaction transaction(db_);
   return transaction.Begin() &&
-         CreateTable(db_, kIbansTable,
+         CreateTable(db_, kIBANsTable,
                      {{kGuid, "VARCHAR"},
                       {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                       {kUseDate, "INTEGER NOT NULL DEFAULT 0"},
@@ -3313,8 +3313,8 @@ bool AutofillTable::InitCreditCardsTable() {
                                  {kNickname, "VARCHAR"}});
 }
 
-bool AutofillTable::InitIbansTable() {
-  return CreateTableIfNotExists(db_, kIbansTable,
+bool AutofillTable::InitIBANsTable() {
+  return CreateTableIfNotExists(db_, kIBANsTable,
                                 {{kGuid, "VARCHAR PRIMARY KEY"},
                                  {kUseCount, "INTEGER NOT NULL DEFAULT 0"},
                                  {kUseDate, "INTEGER NOT NULL DEFAULT 0"},

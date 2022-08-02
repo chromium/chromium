@@ -481,8 +481,8 @@ AutofillProfile GetServerProfile2() {
   return profile;
 }
 
-Iban GetIban() {
-  Iban iban(base::GenerateGUID());
+IBAN GetIBAN() {
+  IBAN iban(base::GenerateGUID());
   iban.set_value(u"DE91 1000 0000 0123 4567 89");
   iban.set_nickname(u"Nickname for Iban");
   return iban;

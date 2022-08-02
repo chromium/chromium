@@ -1544,18 +1544,18 @@ TEST_F(AutofillTableTest, AutofillProfile) {
   EXPECT_FALSE(db_profile);
 }
 
-TEST_F(AutofillTableTest, Iban) {
-  // Add a valid Iban.
-  Iban iban;
+TEST_F(AutofillTableTest, IBAN) {
+  // Add a valid IBAN.
+  IBAN iban;
   std::string guid = base::GenerateGUID();
   iban.set_guid(guid);
   iban.SetRawInfo(IBAN_VALUE, u"IE12 BOFI 9000 0112 3456 78");
   iban.set_nickname(u"My doctor's IBAN");
 
-  EXPECT_TRUE(table_->AddIban(iban));
+  EXPECT_TRUE(table_->AddIBAN(iban));
 
   // Get the inserted Iban.
-  std::unique_ptr<Iban> db_iban = table_->GetIban(iban.guid());
+  std::unique_ptr<IBAN> db_iban = table_->GetIBAN(iban.guid());
   ASSERT_TRUE(db_iban);
   EXPECT_EQ(guid, db_iban->guid());
   sql::Statement s_work(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1566,16 +1566,16 @@ TEST_F(AutofillTableTest, Iban) {
   ASSERT_TRUE(s_work.Step());
   EXPECT_FALSE(s_work.Step());
 
-  // Add another valid Iban.
-  Iban another_iban;
+  // Add another valid IBAN.
+  IBAN another_iban;
   std::string another_guid = base::GenerateGUID();
   another_iban.set_guid(another_guid);
   another_iban.SetRawInfo(IBAN_VALUE, u"DE91 1000 0000 0123 4567 89");
   another_iban.set_nickname(u"My brother's IBAN");
 
-  EXPECT_TRUE(table_->AddIban(another_iban));
+  EXPECT_TRUE(table_->AddIBAN(another_iban));
 
-  db_iban = table_->GetIban(another_iban.guid());
+  db_iban = table_->GetIBAN(another_iban.guid());
   ASSERT_TRUE(db_iban);
 
   EXPECT_EQ(another_guid, db_iban->guid());
@@ -1591,8 +1591,8 @@ TEST_F(AutofillTableTest, Iban) {
   another_iban.set_origin("Interactive Autofill dialog");
   another_iban.SetRawInfo(IBAN_VALUE, u"GB98 MIDL 0700 9312 3456 78");
   another_iban.set_nickname(u"My teacher's IBAN");
-  EXPECT_TRUE(table_->UpdateIban(another_iban));
-  db_iban = table_->GetIban(another_iban.guid());
+  EXPECT_TRUE(table_->UpdateIBAN(another_iban));
+  db_iban = table_->GetIBAN(another_iban.guid());
   ASSERT_TRUE(db_iban);
   EXPECT_EQ(another_guid, db_iban->guid());
   sql::Statement s_target_updated(db_->GetSQLConnection()->GetUniqueStatement(
@@ -1603,9 +1603,9 @@ TEST_F(AutofillTableTest, Iban) {
   ASSERT_TRUE(s_target_updated.Step());
   EXPECT_FALSE(s_target_updated.Step());
 
-  // Remove the 'Target' iban.
-  EXPECT_TRUE(table_->RemoveIban(another_iban.guid()));
-  db_iban = table_->GetIban(another_iban.guid());
+  // Remove the 'Target' IBAN.
+  EXPECT_TRUE(table_->RemoveIBAN(another_iban.guid()));
+  db_iban = table_->GetIBAN(another_iban.guid());
   EXPECT_FALSE(db_iban);
 }
 

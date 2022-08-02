@@ -13,19 +13,19 @@
 
 namespace autofill {
 
-Iban::Iban(const std::string& guid)
+IBAN::IBAN(const std::string& guid)
     : AutofillDataModel(guid, /*origin=*/std::string()),
       record_type_(LOCAL_IBAN) {}
 
-Iban::Iban() : Iban(base::GenerateGUID()) {}
+IBAN::IBAN() : IBAN(base::GenerateGUID()) {}
 
-Iban::Iban(const Iban& iban) : Iban() {
+IBAN::IBAN(const IBAN& iban) : IBAN() {
   operator=(iban);
 }
 
-Iban::~Iban() = default;
+IBAN::~IBAN() = default;
 
-void Iban::operator=(const Iban& iban) {
+void IBAN::operator=(const IBAN& iban) {
   set_use_count(iban.use_count());
   set_use_date(iban.use_date());
 
@@ -43,24 +43,24 @@ void Iban::operator=(const Iban& iban) {
   nickname_ = iban.nickname_;
 }
 
-AutofillMetadata Iban::GetMetadata() const {
+AutofillMetadata IBAN::GetMetadata() const {
   AutofillMetadata metadata = AutofillDataModel::GetMetadata();
   metadata.id = (record_type_ == LOCAL_IBAN ? guid() : server_id_);
   return metadata;
 }
 
-bool Iban::SetMetadata(const AutofillMetadata metadata) {
+bool IBAN::SetMetadata(const AutofillMetadata metadata) {
   // Make sure the ids match.
   return ((metadata.id !=
            (record_type_ == LOCAL_IBAN ? guid() : server_id_))) &&
          AutofillDataModel::SetMetadata(metadata);
 }
 
-bool Iban::IsDeletable() const {
+bool IBAN::IsDeletable() const {
   return false;
 }
 
-std::u16string Iban::GetRawInfo(ServerFieldType type) const {
+std::u16string IBAN::GetRawInfo(ServerFieldType type) const {
   if (type == IBAN_VALUE) {
     return value_;
   }
@@ -69,7 +69,7 @@ std::u16string Iban::GetRawInfo(ServerFieldType type) const {
   return std::u16string();
 }
 
-void Iban::SetRawInfoWithVerificationStatus(
+void IBAN::SetRawInfoWithVerificationStatus(
     ServerFieldType type,
     const std::u16string& value,
     structured_address::VerificationStatus status) {
@@ -80,17 +80,17 @@ void Iban::SetRawInfoWithVerificationStatus(
   }
 }
 
-void Iban::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
+void IBAN::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(IBAN_VALUE);
 }
 
-bool Iban::IsEmpty(const std::string& app_locale) const {
+bool IBAN::IsEmpty(const std::string& app_locale) const {
   ServerFieldTypeSet types;
   GetNonEmptyTypes(app_locale, &types);
   return types.empty();
 }
 
-int Iban::Compare(const Iban& iban) const {
+int IBAN::Compare(const IBAN& iban) const {
   int comparison = server_id_.compare(iban.server_id_);
   if (comparison != 0) {
     return comparison;
@@ -104,16 +104,16 @@ int Iban::Compare(const Iban& iban) const {
   return value_.compare(iban.value_);
 }
 
-bool Iban::operator==(const Iban& iban) const {
+bool IBAN::operator==(const IBAN& iban) const {
   return guid() == iban.guid() && record_type() == iban.record_type() &&
          Compare(iban) == 0;
 }
 
-bool Iban::operator!=(const Iban& iban) const {
+bool IBAN::operator!=(const IBAN& iban) const {
   return !operator==(iban);
 }
 
-void Iban::set_nickname(const std::u16string& nickname) {
+void IBAN::set_nickname(const std::u16string& nickname) {
   // First replace all tabs and newlines with whitespaces and store it as
   // |nickname_|.
   base::ReplaceChars(nickname, u"\t\r\n", u" ", &nickname_);
