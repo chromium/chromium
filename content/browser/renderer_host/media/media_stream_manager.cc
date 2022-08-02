@@ -658,7 +658,6 @@ void RecordMediaStreamRequestResponseMetric(
 
 const blink::MediaStreamDevice* GetStreamDevice(
     const blink::mojom::StreamDevices& stream_devices,
-    const std::string& device_id,
     const base::UnguessableToken& session_id) {
   for (const absl::optional<blink::MediaStreamDevice>* device_ptr : {
            &stream_devices.audio_device,
@@ -668,7 +667,7 @@ const blink::MediaStreamDevice* GetStreamDevice(
       continue;
     }
     const blink::MediaStreamDevice& device = device_ptr->value();
-    if (device.id == device_id && device.session_id() == session_id) {
+    if (device.session_id() == session_id) {
       return &device;
     }
   }
@@ -706,11 +705,16 @@ class MediaStreamManager::DeviceRequest {
         controls(controls),
         salt_and_origin(std::move(salt_and_origin)),
         device_stopped_cb(std::move(device_stopped_cb)),
+        should_stop_in_future_(
+            /*size=*/static_cast<size_t>(MediaStreamType::NUM_MEDIA_TYPES),
+            /*value=*/false),
         state_(/*size=*/static_cast<size_t>(MediaStreamType::NUM_MEDIA_TYPES),
                /*value=*/MEDIA_REQUEST_STATE_NOT_REQUESTED),
         devices_opened_count_(
             /*size=*/static_cast<size_t>(MediaStreamType::NUM_MEDIA_TYPES),
             /*value=*/0u),
+        transfer_status_map_(
+            /*size=*/static_cast<size_t>(MediaStreamType::NUM_MEDIA_TYPES)),
         request_type_(request_type),
         audio_type_(MediaStreamType::NO_SERVICE),
         video_type_(MediaStreamType::NO_SERVICE),
@@ -824,6 +828,15 @@ class MediaStreamManager::DeviceRequest {
     }
   }
 
+  bool ShouldStopInFuture(MediaStreamType stream_type) {
+    return should_stop_in_future_[static_cast<int>(stream_type)];
+  }
+
+  void SetShouldStopInFuture(MediaStreamType stream_type,
+                             bool should_be_stopped) {
+    should_stop_in_future_[static_cast<int>(stream_type)] = should_be_stopped;
+  }
+
   MediaRequestState state(MediaStreamType stream_type) const {
     return state_[static_cast<int>(stream_type)];
   }
@@ -838,6 +851,35 @@ class MediaStreamManager::DeviceRequest {
 
   size_t devices_opened_count(MediaStreamType stream_type) const {
     return devices_opened_count_[static_cast<int>(stream_type)];
+  }
+
+  absl::optional<TransferState> GetTransferState(
+      MediaStreamType stream_type,
+      const base::UnguessableToken& transfer_id) {
+    auto transfer_map = transfer_status_map_[static_cast<int>(stream_type)];
+    auto it = transfer_map.find(transfer_id);
+    if (it == transfer_map.end()) {
+      return absl::nullopt;
+    }
+    return it->second.state;
+  }
+
+  void SetTransferState(MediaStreamType stream_type,
+                        const base::UnguessableToken& transfer_id,
+                        TransferState transfer_state) {
+    auto& transfer_map = transfer_status_map_[static_cast<int>(stream_type)];
+    transfer_map[transfer_id] = {transfer_state,
+                                 /*start_time=*/base::TimeTicks::Now()};
+  }
+
+  bool IsTransferMapEmpty(MediaStreamType stream_type) const {
+    return transfer_status_map_[static_cast<int>(stream_type)].empty();
+  }
+
+  void RemoveEntryInTransferMap(MediaStreamType stream_type,
+                                const base::UnguessableToken& transfer_id) {
+    auto& transfer_map = transfer_status_map_[static_cast<int>(stream_type)];
+    transfer_map.erase(transfer_id);
   }
 
   void SetCapturingLinkSecured(bool is_secure) {
@@ -949,11 +991,17 @@ class MediaStreamManager::DeviceRequest {
   PermissionController::SubscriptionId video_subscription_id;
 
  private:
+  // Mark true if the MediaStreamDevice of |MediaStreamType| type should be
+  // stopped but can't at the moment because of ongoing transfers.
+  std::vector<bool> should_stop_in_future_;
   std::vector<MediaRequestState> state_;
   // This vector keeps track of how many devices of a specific |MediaStreamType|
   // were already opened for this request.
   std::vector<size_t> devices_opened_count_;
   std::unique_ptr<MediaStreamRequest> ui_request_;
+  // This vector of map tracks all the ongoing transfers of MediaStreamDevice of
+  // |MediaStreamType| type.
+  std::vector<TransferMap> transfer_status_map_;
   MediaStreamRequestType request_type_;
   MediaStreamType audio_type_;
   MediaStreamType video_type_;
@@ -1209,6 +1257,7 @@ void MediaStreamManager::GenerateStreams(
 
 void MediaStreamManager::GetOpenDevice(
     const base::UnguessableToken& device_session_id,
+    const base::UnguessableToken& transfer_id,
     int render_process_id,
     int render_frame_id,
     int requester_id,
@@ -1236,13 +1285,11 @@ void MediaStreamManager::GetOpenDevice(
       std::move(device_capture_handle_change_cb));
 
   request->get_open_device_cb = std::move(get_open_device_cb);
-  request->stream_devices_set.stream_devices.emplace_back(
-      blink::mojom::StreamDevices::New());
   DeviceRequest* const request_ptr = request.get();
   const std::string new_label = AddRequest(std::move(request));
 
   const absl::optional<MediaStreamDevice> new_device =
-      CloneExistingOpenDevice(device_session_id, new_label);
+      CloneExistingOpenDevice(device_session_id, transfer_id, new_label);
   if (!new_device.has_value()) {
     // No existing device with matching session id is found.
     FinalizeRequestFailed(new_label, request_ptr,
@@ -1250,6 +1297,8 @@ void MediaStreamManager::GetOpenDevice(
     return;
   }
 
+  request_ptr->stream_devices_set.stream_devices.emplace_back(
+      blink::mojom::StreamDevices::New());
   if (blink::IsAudioInputMediaType(new_device->type)) {
     request_ptr->stream_devices_set.stream_devices[0]->audio_device =
         *new_device;
@@ -1371,20 +1420,69 @@ void MediaStreamManager::StopStreamDevice(
       case blink::MEDIA_DEVICE_UPDATE:
       case blink::MEDIA_GENERATE_STREAM:
       case blink::MEDIA_GET_OPEN_DEVICE:
-        for (const blink::mojom::StreamDevicesPtr& stream_devices_ptr :
+        for (const auto& stream_devices_ptr :
              request->stream_devices_set.stream_devices) {
-          const blink::mojom::StreamDevices& stream_devices =
-              *stream_devices_ptr;
-          const blink::MediaStreamDevice* device =
-              GetStreamDevice(stream_devices, device_id, session_id);
-          if (device) {
+          const blink::MediaStreamDevice* const device =
+              GetStreamDevice(*stream_devices_ptr, session_id);
+          if (!device || device->id != device_id)
+            continue;
+
+          if (request->IsTransferMapEmpty(device->type)) {
+            // There are no ongoing transfers for this device.
             StopDevice(device->type, device->session_id());
-            return;
+          } else {
+            request->SetShouldStopInFuture(device->type,
+                                           /*should_be_stopped=*/true);
           }
+          return;
         }
         break;
     }
   }
+}
+
+void MediaStreamManager::KeepDeviceAliveForTransfer(
+    int render_process_id,
+    int render_frame_id,
+    int requester_id,
+    const base::UnguessableToken& session_id,
+    const base::UnguessableToken& transfer_id,
+    KeepDeviceAliveForTransferCallback keep_device_alive_cb) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(keep_device_alive_cb);
+
+  if (!base::FeatureList::IsEnabled(features::kMediaStreamTrackTransfer)) {
+    ReceivedBadMessage(render_process_id,
+                       bad_message::MSDH_GET_OPEN_DEVICE_USE_WITHOUT_FEATURE);
+    return;
+  }
+
+  for (const LabeledDeviceRequest& device_request : requests_) {
+    DeviceRequest* const request = device_request.second.get();
+    switch (request->request_type()) {
+      case blink::MEDIA_DEVICE_ACCESS:
+      case blink::MEDIA_OPEN_DEVICE_PEPPER_ONLY:
+        break;
+      case blink::MEDIA_DEVICE_UPDATE:
+      case blink::MEDIA_GENERATE_STREAM:
+      case blink::MEDIA_GET_OPEN_DEVICE:
+        for (const auto& stream_devices_ptr :
+             request->stream_devices_set.stream_devices) {
+          const blink::MediaStreamDevice* const device =
+              GetStreamDevice(*stream_devices_ptr, session_id);
+          if (!device)
+            continue;
+
+          UpdateDeviceTransferStatus(request, device, transfer_id,
+                                     TransferState::KEPT_ALIVE);
+          std::move(keep_device_alive_cb).Run(/*device_found=*/true);
+          return;
+        }
+        break;
+    }
+  }
+
+  std::move(keep_device_alive_cb).Run(/*device_found=*/false);
 }
 
 base::UnguessableToken MediaStreamManager::VideoDeviceIdToSessionId(
@@ -1780,33 +1878,29 @@ MediaStreamManager::DeviceRequest* MediaStreamManager::FindRequest(
 
 absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
     const base::UnguessableToken& existing_device_session_id,
-    const std::string& new_label) const {
+    const base::UnguessableToken& transfer_id,
+    const std::string& new_label) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   DeviceRequest* const new_request = FindRequest(new_label);
   DCHECK(new_request);
   // TODO(crbug.com/1334583): Generalize to multiple streams.
-  DCHECK_EQ(1u, new_request->stream_devices_set.stream_devices.size());
+  DCHECK(new_request->stream_devices_set.stream_devices.empty());
   for (const LabeledDeviceRequest& labeled_request : requests_) {
-    const DeviceRequest* const existing_request = labeled_request.second.get();
+    DeviceRequest* const existing_request = labeled_request.second.get();
     // Skipping requests that contain multiple streams.
     // TODO(crbug.com/1334583): Generalize to multiple streams.
     if (existing_request->stream_devices_set.stream_devices.size() > 1u) {
       continue;
     }
-    const blink::mojom::StreamDevices& devices =
-        *existing_request->stream_devices_set.stream_devices[0];
-    for (const absl::optional<blink::MediaStreamDevice>* existing_device_ptr :
-         {&devices.audio_device, &devices.video_device}) {
-      if (!existing_device_ptr->has_value()) {
+    for (const auto& stream_devices_ptr :
+         existing_request->stream_devices_set.stream_devices) {
+      const blink::MediaStreamDevice* const existing_device =
+          GetStreamDevice(*stream_devices_ptr, existing_device_session_id);
+
+      if (!existing_device)
         continue;
-      }
-      const blink::MediaStreamDevice& existing_device =
-          existing_device_ptr->value();
-      if (existing_device.session_id() != existing_device_session_id) {
-        continue;
-      }
-      if (existing_request->state(existing_device.type) !=
+      if (existing_request->state(existing_device->type) !=
           MEDIA_REQUEST_STATE_DONE) {
         // TODO(https://crbug.com/1288839): Ensure state of MediaStreamDevice
         // doesn't change while MediaStreamTrack is being transferred.
@@ -1814,31 +1908,63 @@ absl::optional<MediaStreamDevice> MediaStreamManager::CloneExistingOpenDevice(
         continue;
       }
 
-      absl::optional<MediaStreamDevice> new_device = existing_device;
+      MediaStreamDevice new_device = *existing_device;
       // Device id and group_id are only hashed for MediaStreamType
       // DEVICE_AUDIO_CAPTURE and DEVICE_VIDEO_CAPTURE.
-      if (existing_device.type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
-          existing_device.type == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
+      if (existing_device->type == MediaStreamType::DEVICE_AUDIO_CAPTURE ||
+          existing_device->type == MediaStreamType::DEVICE_VIDEO_CAPTURE) {
         // Gets the raw device id and device group_id.
         if (!TranslateSourceIdToDeviceIdAndGroupId(
-                existing_device.type,
+                existing_device->type,
                 existing_request->salt_and_origin.device_id_salt,
-                existing_request->salt_and_origin.origin, existing_device.id,
-                &new_device->id, &new_device->group_id)) {
-          // Can return false if |existing_device.id| is invalid.
+                existing_request->salt_and_origin.origin, existing_device->id,
+                &new_device.id, &new_device.group_id)) {
+          // Can return false if |existing_device->id| is invalid.
           continue;
         }
 
         // Creates hashed device id and device group_id.
-        TranslateDeviceIdToSourceId(new_request, &*new_device);
+        TranslateDeviceIdToSourceId(new_request, &new_device);
       }
 
-      new_device->set_session_id(
-          GetDeviceManager(new_device->type)->Open(*new_device));
+      new_device.set_session_id(
+          GetDeviceManager(new_device.type)->Open(new_device));
+      UpdateDeviceTransferStatus(existing_request, existing_device, transfer_id,
+                                 TransferState::GOT_OPEN_DEVICE);
       return new_device;
     }
   }
   return absl::nullopt;
+}
+
+void MediaStreamManager::UpdateDeviceTransferStatus(
+    DeviceRequest* request,
+    const blink::MediaStreamDevice* const device,
+    const base::UnguessableToken& transfer_id,
+    TransferState transfer_state) {
+  // TODO(https://crbug.com/1288839): Use |start_time| to enforce a timeout to
+  // stop device in case a transfer never completes.
+  MediaStreamType stream_type = device->type;
+  absl::optional<TransferState> existing_state =
+      request->GetTransferState(stream_type, transfer_id);
+  if (!existing_state) {
+    request->SetTransferState(stream_type, transfer_id, transfer_state);
+    return;
+  }
+
+  if (existing_state.value() != transfer_state) {
+    // If the new |transfer_state| is different from the existing state in
+    // |transfer_map|, this entry can be removed. This is because reaching here
+    // implies both states, KEPT_ALIVE and GOT_OPEN_DEVICE, have been achieved,
+    // which in turn means both the original and transferred renderer have
+    // finished their execution with regards to transferring of this |device|.
+    request->RemoveEntryInTransferMap(stream_type, transfer_id);
+  }
+
+  if (request->IsTransferMapEmpty(stream_type) &&
+      request->ShouldStopInFuture(stream_type)) {
+    StopDevice(stream_type, device->session_id());
+  }
 }
 
 void MediaStreamManager::DeleteRequest(const std::string& label) {

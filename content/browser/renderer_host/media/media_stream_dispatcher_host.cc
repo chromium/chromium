@@ -697,9 +697,12 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
     return;
   }
 
+  // TODO(https://crbug.com/1288839): Replace created UnguessableToken with
+  // transfer_id passed to this function.
   media_stream_manager_->GetOpenDevice(
-      session_id, render_process_id_, render_frame_id_, requester_id_,
-      page_request_id, std::move(salt_and_origin), std::move(callback),
+      session_id, /*transfer_id=*/base::UnguessableToken::Create(),
+      render_process_id_, render_frame_id_, requester_id_, page_request_id,
+      std::move(salt_and_origin), std::move(callback),
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceStopped,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceChanged,
