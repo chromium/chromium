@@ -9,6 +9,7 @@
 import {Cursor, CursorMovement, CursorUnit} from '../../../common/cursors/cursor.js';
 import {CursorRange} from '../../../common/cursors/range.js';
 import {AbstractTts} from '../../common/abstract_tts.js';
+import {NavBraille} from '../../common/braille/nav_braille.js';
 import {ChromeVoxEvent} from '../../common/custom_automation_event.js';
 import {Msgs} from '../../common/msgs.js';
 import {BrailleBackground} from '../braille/braille_background.js';

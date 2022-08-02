@@ -32,6 +32,8 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
         'BrailleInterface', '/chromevox/common/braille/braille_interface.js');
+    await importModule(
+        'NavBraille', '/chromevox/common/braille/nav_braille.js');
   }
 
   /** @override */
@@ -44,7 +46,6 @@ MockFeedbackUnitTest = class extends AccessibilityTestBase {
 MockFeedbackUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
   '../testing/fake_dom.js',  // Must come before other files
-  '../common/braille/nav_braille.js',
   '../common/abstract_earcons.js',
   '../common/spannable.js',
   '../common/tts_interface.js',

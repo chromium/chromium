@@ -19,7 +19,6 @@ goog.require('EventLog');
 goog.require('JaPhoneticData');
 goog.require('KeyCode');
 goog.require('LogType');
-goog.require('NavBraille');
 goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');
 goog.require('QueueMode');

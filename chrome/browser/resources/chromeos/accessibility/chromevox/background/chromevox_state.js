@@ -8,6 +8,7 @@
  *     object and to facilitate mocking for tests.
  */
 import {CursorRange} from '../../common/cursors/range.js';
+import {NavBraille} from '../common/braille/nav_braille.js';
 import {BridgeConstants} from '../common/bridge_constants.js';
 import {BridgeHelper} from '../common/bridge_helper.js';
 

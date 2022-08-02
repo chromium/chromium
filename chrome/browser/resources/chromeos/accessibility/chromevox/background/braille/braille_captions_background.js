@@ -7,6 +7,7 @@
  * braille content to the Panel on Chrome OS, or a content script on
  * other platforms.
  */
+import {NavBraille} from '../../common/braille/nav_braille.js';
 import {Msgs} from '../../common/msgs.js';
 import {PanelCommand, PanelCommandType} from '../../common/panel_command.js';
 import {ChromeVox} from '../chromevox.js';

@@ -5,6 +5,8 @@
 /**
  * @fileoverview Puts text on a braille display.
  */
+import {NavBraille} from '../../common/braille/nav_braille.js';
+
 import {BrailleCaptionsBackground} from './braille_captions_background.js';
 import {BrailleTranslatorManager} from './braille_translator_manager.js';
 import {ExpandingBrailleTranslator} from './expanding_braille_translator.js';

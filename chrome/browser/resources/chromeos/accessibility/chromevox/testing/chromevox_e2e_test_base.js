@@ -48,6 +48,8 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     await importModule('ChromeVox', '/chromevox/background/chromevox.js');
     await importModule(
         'BrailleInterface', '/chromevox/common/braille/braille_interface.js');
+    await importModule(
+        'NavBraille', '/chromevox/common/braille/nav_braille.js');
   }
 };
 

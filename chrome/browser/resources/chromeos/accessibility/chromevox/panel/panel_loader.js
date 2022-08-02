@@ -15,7 +15,6 @@ goog.require('EarconDescription');
 goog.require('EventLog');
 goog.require('KeyCode');
 goog.require('LogType');
-goog.require('NavBraille');
 goog.require('PanelNodeMenuData');
 goog.require('PanelNodeMenuItemData');
 goog.require('QueueMode');

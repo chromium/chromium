@@ -9,6 +9,8 @@
  *
  */
 
+import {NavBraille} from './nav_braille.js';
+
 /** @interface */
 export class BrailleInterface {
   /**
