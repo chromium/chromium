@@ -241,8 +241,9 @@ class AutocompleteResult {
   // Returns whether or not |suggestion_group_id| should be collapsed in the UI.
   // This method takes into account both the user's stored prefs as well as
   // the server-provided visibility hint for |suggestion_group_id|.
-  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|
-  // and whether the group info contains the original server provided group ID.
+  // DCHECKs whether |suggestion_group_id| is found in |suggestion_groups_map_|.
+  // Returns false if the group info does not contain the original server
+  // provided group ID.
   bool IsSuggestionGroupHidden(PrefService* prefs,
                                SuggestionGroupId suggestion_group_id) const;
 
