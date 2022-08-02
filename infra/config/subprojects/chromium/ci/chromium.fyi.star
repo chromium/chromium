@@ -1396,6 +1396,25 @@ ci.builder(
     },
 )
 
+ci.builder(
+    name = "Win10 Tests x64 (py2 less)",
+    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Win10%20Tests%20x64\">Win10 Tests x64</a>, but runs on bots not having python2.",
+    builder_spec = builder_config.copy_from("ci/Win10 Tests x64", lambda spec: structs.evolve(
+        spec,
+        build_gs_bucket = "chromium-fyi-archive",
+    )),
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win",
+        short_name = "py3",
+    ),
+    os = os.WINDOWS_DEFAULT,
+    triggered_by = ["ci/Win x64 Builder"],
+    experiments = {
+        "luci.buildbucket.omit_python2": 100,
+    },
+)
+
 fyi_mac_builder(
     name = "Mac Builder (reclient)",
     builderless = True,

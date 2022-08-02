@@ -94,6 +94,38 @@
           {
             "builder_id": {
               "bucket": "ci",
+              "builder": "Win10 Tests x64 (py2 less)",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-fyi-archive",
+              "builder_group": "chromium.fyi",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "win"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Win x64 Builder",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
               "builder": "Win11 Tests x64",
               "project": "chromium"
             },
@@ -141,6 +173,11 @@
         {
           "bucket": "ci",
           "builder": "Win10 Tests x64",
+          "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "Win10 Tests x64 (py2 less)",
           "project": "chromium"
         },
         {
