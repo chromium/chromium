@@ -148,6 +148,17 @@ class OsSettingsA11YPageElement extends OsSettingsA11YPageElementBase {
       },
 
       /**
+       * Whether the user is in guest mode.
+       * @protected
+       */
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        },
+      },
+
+      /**
        * Used by DeepLinkingBehavior to focus this page's deep links.
        * @type {!Set<!Setting>}
        */
@@ -217,6 +228,17 @@ class OsSettingsA11YPageElement extends OsSettingsA11YPageElementBase {
         route === routes.MANAGE_CAPTION_SETTINGS) {
       this.attemptDeepLink();
     }
+  }
+
+  /**
+   * Whether additional features link should be shown.
+   * @param {boolean} isKiosk
+   * @param {boolean} isGuest
+   * @return {boolean}
+   * @private
+   */
+  shouldShowAdditionalFeaturesLink_(isKiosk, isGuest) {
+    return !isKiosk && !isGuest;
   }
 
   /**
