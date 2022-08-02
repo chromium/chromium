@@ -200,8 +200,8 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
   }
 #endif
 
-  top_level_blame_context_.Initialize();
-  main_thread_scheduler_->SetTopLevelBlameContext(&top_level_blame_context_);
+  // TODO(crbug/1349313): Remove this invocation.
+  main_thread_scheduler_->SetTopLevelBlameContext(nullptr);
 
   auto io_task_runner = GetIOTaskRunner();
   if (io_task_runner) {
@@ -270,10 +270,6 @@ void RendererBlinkPlatformImpl::SetThreadType(base::PlatformThreadId thread_id,
   }
 }
 #endif
-
-blink::BlameContext* RendererBlinkPlatformImpl::GetTopLevelBlameContext() {
-  return &top_level_blame_context_;
-}
 
 blink::WebSandboxSupport* RendererBlinkPlatformImpl::GetSandboxSupport() {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
