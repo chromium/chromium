@@ -263,20 +263,6 @@ void AgentSchedulingGroup::CreateView(mojom::CreateViewParamsPtr params) {
                          agent_group_scheduler_->DefaultTaskRunner());
 }
 
-void AgentSchedulingGroup::DestroyView(int32_t view_id) {
-  RenderViewImpl* view = RenderViewImpl::FromRoutingID(view_id);
-  DCHECK(view);
-
-  // This IPC can be called from re-entrant contexts. We can't destroy a
-  // RenderViewImpl while references still exist on the stack, so we dispatch a
-  // non-nestable task. This method is called exactly once by the browser
-  // process, and is used to release ownership of the corresponding
-  // RenderViewImpl instance. https://crbug.com/1000035.
-  agent_group_scheduler_->DefaultTaskRunner()->PostNonNestableTask(
-      FROM_HERE,
-      base::BindOnce(&RenderViewImpl::Destroy, base::Unretained(view)));
-}
-
 void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
   RenderFrameImpl::CreateFrame(
       *this, params->token, params->routing_id, std::move(params->frame),

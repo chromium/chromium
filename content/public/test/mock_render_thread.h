@@ -17,8 +17,10 @@
 #include "content/public/renderer/render_thread.h"
 #include "ipc/ipc_test_sink.h"
 #include "ipc/message_filter.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
+#include "third_party/blink/public/mojom/page/page.mojom.h"
 
 namespace IPC {
 class MessageFilter;
@@ -111,6 +113,10 @@ class MockRenderThread : public RenderThread {
   void OnCreateWindow(const mojom::CreateNewWindowParams& params,
                       mojom::CreateNewWindowReply* reply);
 
+  // Releases any `blink::WebView`s that are being held onto by PageBroadcast
+  // associated remotes.
+  void ReleaseAllWebViews();
+
   void OnCreateChildFrame(
       int32_t child_routing_id,
       mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
@@ -146,6 +152,11 @@ class MockRenderThread : public RenderThread {
 
   // A list of message filters added to this thread.
   std::vector<scoped_refptr<IPC::MessageFilter> > filters_;
+
+  // `blink::WebView`s associated with CreateNewWindow have their
+  // lifecycle associated with the mojo channel provided to them.
+  std::vector<mojo::AssociatedRemote<blink::mojom::PageBroadcast>>
+      page_broadcasts_;
 
   // Observers to notify.
   base::ObserverList<RenderThreadObserver>::Unchecked observers_;

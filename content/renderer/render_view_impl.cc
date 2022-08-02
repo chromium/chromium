@@ -169,7 +169,7 @@ void RenderViewImpl::Initialize(
 }
 
 RenderViewImpl::~RenderViewImpl() {
-  DCHECK(destroying_);  // Always deleted through Destroy().
+  DCHECK(destroying_);  // Always deleted through OnDestruct().
 
   g_routing_id_view_map.Get().erase(routing_id_);
 
@@ -202,14 +202,6 @@ RenderViewImpl* RenderViewImpl::FromRoutingID(int32_t routing_id) {
 }
 
 /*static*/
-void RenderViewImpl::DestroyAllRenderViewImpls() {
-  DCHECK(RenderThread::IsMainThread());
-  while (!g_view_map.Get().empty()) {
-    g_view_map.Get().begin()->second->Destroy();
-  }
-}
-
-/*static*/
 RenderViewImpl* RenderViewImpl::Create(
     AgentSchedulingGroup& agent_scheduling_group,
     mojom::CreateViewParamsPtr params,
@@ -226,19 +218,15 @@ RenderViewImpl* RenderViewImpl::Create(
   return render_view;
 }
 
-void RenderViewImpl::Destroy() {
-  destroying_ = true;
+// blink::WebViewClient ------------------------------------------------------
 
-  webview_->Close();
+void RenderViewImpl::OnDestruct() {
+  destroying_ = true;
   // The webview_ is already destroyed by the time we get here, remove any
   // references to it.
   g_view_map.Get().erase(webview_);
-  webview_ = nullptr;
-
   delete this;
 }
-
-// blink::WebViewClient ------------------------------------------------------
 
 // TODO(csharrison): Migrate this method to WebLocalFrameClient /
 // RenderFrameImpl, as it is now serviced by a mojo interface scoped to the

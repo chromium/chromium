@@ -129,7 +129,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // All calls to Create() should be balanced with a call to Close(). This
   // synchronously destroys the WebViewImpl.
   void Close() override;
-
   static HashSet<WebViewImpl*>& AllInstances();
   // Returns true if popup menus should be rendered by the browser, false if
   // they should be rendered by WebKit (which is the default).
@@ -719,6 +718,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Callback when this widget window has been displayed by the browser.
   // Corresponds to a Show method call.
   void DidShowCreatedWindow();
+
+  // Called when mojo is disconnected.
+  void MojoDisconnected();
 
   // A value provided by the browser to state that all Widgets in this
   // WebView's frame tree will never be user-visible and thus never need to

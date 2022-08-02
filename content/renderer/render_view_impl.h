@@ -88,11 +88,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   RenderViewImpl(const RenderViewImpl&) = delete;
   RenderViewImpl& operator=(const RenderViewImpl&) = delete;
 
-  // Instances of this object are created by and destroyed by the browser
-  // process. This method must be called exactly once by the IPC subsystem when
-  // the browser wishes the object to be destroyed.
-  void Destroy();
-
   // Returns the RenderViewImpl for the given routing ID.
   static RenderViewImpl* FromRoutingID(int routing_id);
 
@@ -113,17 +108,13 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
       const absl::optional<blink::Impression>& impression,
       const absl::optional<blink::WebPictureInPictureWindowOptions>&
           pip_options) override;
+  void OnDestruct() override;
 
   blink::WebView* GetWebView();
 
   // Please do not add your stuff randomly to the end here. If there is an
   // appropriate section, add it there. If not, there are some random functions
   // nearer to the top you can add it to.
-
- protected:
-  RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
-                 const mojom::CreateViewParams& params);
-  ~RenderViewImpl() override;
 
  private:
   // For unit tests.
@@ -135,6 +126,10 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   // code away from this class.
   friend class RenderFrameImpl;
 
+  RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
+                 const mojom::CreateViewParams& params);
+  ~RenderViewImpl() override;
+
   // Initialize() is separated out from the constructor because it is possible
   // to accidentally call virtual functions. All RenderViewImpl creation is
   // fronted by the Create() method which ensures Initialize() is always called
@@ -145,9 +140,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
 
   static WindowOpenDisposition NavigationPolicyToDisposition(
       blink::WebNavigationPolicy policy);
-
-  // Destroy all active RenderViewImpls.
-  static void DestroyAllRenderViewImpls();
 
   // ---------------------------------------------------------------------------
   // ADDING NEW FUNCTIONS? Please keep private functions alphabetized and put

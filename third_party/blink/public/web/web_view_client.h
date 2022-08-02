@@ -94,6 +94,8 @@ class WebViewClient {
   // Called when the View acquires focus.
   virtual void DidFocus() {}
 
+  // Called when the WebView is destroying itself.
+  virtual void OnDestruct() {}
 };
 
 }  // namespace blink

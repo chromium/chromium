@@ -371,10 +371,6 @@ RenderViewHostImpl::~RenderViewHostImpl() {
 
   // Destroy the RenderWidgetHost.
   GetWidget()->ShutdownAndDestroyWidget(false);
-  if (IsRenderViewLive()) {
-    // Destroy the RenderView, which will also destroy the RenderWidget.
-    GetAgentSchedulingGroup().DestroyView(GetRoutingID());
-  }
 
   ui::GpuSwitchingManager::GetInstance()->RemoveObserver(this);
 
@@ -525,9 +521,8 @@ bool RenderViewHostImpl::CreateRenderView(
   params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassReceiver();
 
-  // The renderer process's `RenderView` is owned by this `RenderViewHost`. This
-  // call must, therefore, be accompanied by a `DestroyView()` [see destructor]
-  // or else there will be a leak in the renderer process.
+  // The renderer process's `RenderView` is owned by this lifecycle of
+  // the `page_broadcast_` channel.
   GetAgentSchedulingGroup().CreateView(std::move(params));
 
   // Set the bit saying we've made the RenderView in the renderer and notify

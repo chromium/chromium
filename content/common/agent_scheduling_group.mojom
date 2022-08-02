@@ -69,12 +69,6 @@ interface AgentSchedulingGroup {
   // Tells the renderer to create a new view.
   CreateView(CreateViewParams params);
 
-  // Tells the renderer to destroy an existing view. This method must be called
-  // exactly once for each invocation of CreateView. |view_id| is synonymous
-  // with |routing_id|. A callback is provided so the browser receives
-  // notification the destruction is complete.
-  DestroyView(int32 view_id);
-
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
 

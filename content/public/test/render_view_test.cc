@@ -477,6 +477,8 @@ void RenderViewTest::SetUp() {
   view_params->web_preferences = blink::web_pref::WebPreferences();
   view_params->view_id = render_thread_->GetNextRoutingID();
   view_params->replication_state = blink::mojom::FrameReplicationState::New();
+  view_params->blink_page_broadcast =
+      page_broadcast_.BindNewEndpointAndPassDedicatedReceiver();
 
   auto main_frame_params = mojom::CreateLocalMainFrameParams::New();
   main_frame_params->routing_id = render_thread_->GetNextRoutingID();
@@ -530,9 +532,10 @@ void RenderViewTest::TearDown() {
       leak_detector.BindNewPipeAndPassReceiver());
   std::ignore = binders_.TryBind(&receiver);
 
-  // Close the main view as well as any other windows that might have been
-  // opened by the test.
-  RenderViewImpl::DestroyAllRenderViewImpls();
+  render_thread_->ReleaseAllWebViews();
+
+  // Resetting `page_broadcast_` will cause the WebView to close itself.
+  page_broadcast_.reset();
 
   web_view_ = nullptr;
   process_.reset();

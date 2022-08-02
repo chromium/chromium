@@ -314,6 +314,15 @@ void MockRenderThread::OnCreateWindow(
   widget_params->visual_properties.screen_infos =
       display::ScreenInfos(display::ScreenInfo());
   reply->widget_params = std::move(widget_params);
+
+  mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
+  reply->page_broadcast =
+      page_broadcast.BindNewEndpointAndPassDedicatedReceiver();
+  page_broadcasts_.push_back(std::move(page_broadcast));
+}
+
+void MockRenderThread::ReleaseAllWebViews() {
+  page_broadcasts_.clear();
 }
 
 }  // namespace content

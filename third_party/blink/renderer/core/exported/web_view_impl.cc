@@ -513,8 +513,8 @@ void WebViewImpl::CloseWindowSoon() {
   // could be called from deep in Javascript.  If we ask the RenderViewHost to
   // close now, the window could be closed before the JS finishes executing,
   // thanks to nested message loops running and handling the resulting
-  // DestroyView IPC. So instead, post a message back to the message loop, which
-  // won't run until the JS is complete, and then the
+  // disconnecting `page_broadcast_`. So instead, post a message back to the
+  // message loop, which won't run until the JS is complete, and then the
   // RouteCloseEvent/RequestClose request can be sent.
   GetPage()
       ->GetPageScheduler()
@@ -564,6 +564,15 @@ WebViewImpl::WebViewImpl(
                 std::move(page_handle),
                 agent_group_scheduler.DefaultTaskRunner()),
       session_storage_namespace_id_(session_storage_namespace_id) {
+  if (receiver_) {
+    // Typically, the browser process closes the corresponding peer handle
+    // to signal the renderer process to destroy `this`. In certain
+    // situations where the lifetime of `this` is not controlled by a
+    // corresponding browser-side `RenderViewHostImpl` (e.g. tests or
+    // printing), call `Close()` directly instead to delete `this`.
+    receiver_.set_disconnect_handler(
+        WTF::Bind(&WebViewImpl::MojoDisconnected, WTF::Unretained(this)));
+  }
   if (!web_view_client_)
     DCHECK(!does_composite_);
   page_ = Page::CreateOrdinary(*chrome_client_,
@@ -1096,12 +1105,16 @@ void WebViewImpl::Close() {
 
   // Invalidate any weak ptrs as we are starting to shutdown.
   weak_ptr_factory_.InvalidateWeakPtrs();
+  receiver_.reset();
 
   // Initiate shutdown for the entire frameset.  This will cause a lot of
   // notifications to be sent. This will detach all frames in this WebView's
   // frame tree.
   page_->WillBeDestroyed();
   page_.Clear();
+
+  if (web_view_client_)
+    web_view_client_->OnDestruct();
 
   // Reset the delegate to prevent notifications being sent as we're being
   // deleted.
@@ -3814,6 +3827,16 @@ const SessionStorageNamespaceId& WebViewImpl::GetSessionStorageNamespaceId() {
 
 bool WebViewImpl::IsFencedFrameRoot() const {
   return GetPage()->IsMainFrameFencedFrameRoot();
+}
+
+void WebViewImpl::MojoDisconnected() {
+  // This IPC can be called from re-entrant contexts. We can't destroy a
+  // RenderViewImpl while references still exist on the stack, so we dispatch a
+  // non-nestable task. This method is called exactly once by the browser
+  // process, and is used to release ownership of the corresponding
+  // RenderViewImpl instance. https://crbug.com/1000035.
+  GetPage()->GetAgentGroupScheduler().DefaultTaskRunner()->PostNonNestableTask(
+      FROM_HERE, WTF::Bind(&WebViewImpl::Close, WTF::Unretained(this)));
 }
 
 }  // namespace blink

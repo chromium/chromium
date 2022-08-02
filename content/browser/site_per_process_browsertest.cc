@@ -5282,12 +5282,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // Test for https://crbug.com/568836.  From an A-embed-B page, navigate the
 // subframe from B to A.  This cleans up the process for B, but the test delays
 // the browser side from killing the B process right away.  This allows the
-// B process to process the subframe's detached event and the DestroyView sent
-// to the RenderView. In the bug, the latter crashed while detaching the
-// subframe's LocalFrame (triggered as part of closing the RenderView), because
-// this tried to access the subframe's WebFrameWidget (from
-// RenderFrameImpl::didChangeSelection), which had already been cleared by the
-// former.
+// B process to process the subframe's detached event and the disconnect
+// of the blink::WebView's blink::mojom::PageBroadcast mojo channel. In the bug,
+// the latter crashed while detaching the subframe's LocalFrame (triggered as
+// part of closing the RenderView), because this tried to access the subframe's
+// WebFrameWidget (from RenderFrameImpl::didChangeSelection), which had already
+// been cleared by the former.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        CloseSubframeWidgetAndViewOnProcessExit) {
   GURL main_url(embedded_test_server()->GetURL(
