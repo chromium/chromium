@@ -73,11 +73,10 @@ class LayoutFrameSet final : public LayoutBox {
     GridAxis& operator=(const GridAxis&) = delete;
 
     void Resize(int);
-    // Returns true if a split is being resized now.
-    bool CanResizeSplitAt(int split_index) const;
 
     Vector<int> sizes_;
-    Vector<bool> prevent_resize_;
+    // A copy of HTMLFrameSetElement::allow_border_*.  It's helpful
+    // because this information is used at the paint stage.
     Vector<bool> allow_border_;
   };
 

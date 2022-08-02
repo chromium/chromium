@@ -79,20 +79,16 @@ void HTMLFrameSetElement::ParseAttribute(
       row_lengths_ = ParseListOfDimensions(value.GetString());
       SetNeedsStyleRecalc(kSubtreeStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
-      if (GetLayoutObject() && TotalRows() != resize_rows_.deltas_.size()) {
-        resize_rows_.Resize(TotalRows());
-        resize_cols_.Resize(TotalCols());
-      }
+      if (GetLayoutObject() && TotalRows() != resize_rows_.deltas_.size())
+        ResizeChildrenData();
     }
   } else if (name == html_names::kColsAttr) {
     if (!value.IsNull()) {
       col_lengths_ = ParseListOfDimensions(value.GetString());
       SetNeedsStyleRecalc(kSubtreeStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
-      if (GetLayoutObject() && TotalCols() != resize_cols_.deltas_.size()) {
-        resize_rows_.Resize(TotalRows());
-        resize_cols_.Resize(TotalCols());
-      }
+      if (GetLayoutObject() && TotalCols() != resize_cols_.deltas_.size())
+        ResizeChildrenData();
     }
   } else if (name == html_names::kFrameborderAttr) {
     if (!value.IsNull()) {
@@ -241,56 +237,48 @@ FrameEdgeInfo HTMLFrameSetElement::EdgeInfo() const {
   wtf_size_t cols_count = TotalCols();
   DCHECK_GT(rows_count, 0u);
   DCHECK_GT(cols_count, 0u);
-  const auto* object = To<LayoutFrameSet>(GetLayoutObject());
-  DCHECK(object) << "This must be called while LayoutFrameSet is attached.";
-  const LayoutFrameSet::GridAxis& cols = object->Columns();
-  result.SetPreventResize(kLeftFrameEdge, cols.prevent_resize_[0]);
-  result.SetAllowBorder(kLeftFrameEdge, cols.allow_border_[0]);
-  result.SetPreventResize(kRightFrameEdge, cols.prevent_resize_[cols_count]);
-  result.SetAllowBorder(kRightFrameEdge, cols.allow_border_[cols_count]);
-  const LayoutFrameSet::GridAxis& rows = object->Rows();
-  result.SetPreventResize(kTopFrameEdge, rows.prevent_resize_[0]);
-  result.SetAllowBorder(kTopFrameEdge, rows.allow_border_[0]);
-  result.SetPreventResize(kBottomFrameEdge, rows.prevent_resize_[rows_count]);
-  result.SetAllowBorder(kBottomFrameEdge, rows.allow_border_[rows_count]);
+  result.SetPreventResize(kLeftFrameEdge, resize_cols_.prevent_resize_[0]);
+  result.SetAllowBorder(kLeftFrameEdge, allow_border_cols_[0]);
+  result.SetPreventResize(kRightFrameEdge,
+                          resize_cols_.prevent_resize_[cols_count]);
+  result.SetAllowBorder(kRightFrameEdge, allow_border_cols_[cols_count]);
+  result.SetPreventResize(kTopFrameEdge, resize_rows_.prevent_resize_[0]);
+  result.SetAllowBorder(kTopFrameEdge, allow_border_rows_[0]);
+  result.SetPreventResize(kBottomFrameEdge,
+                          resize_rows_.prevent_resize_[rows_count]);
+  result.SetAllowBorder(kBottomFrameEdge, allow_border_rows_[rows_count]);
   return result;
 }
 
 void HTMLFrameSetElement::FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
                                            wtf_size_t r,
                                            wtf_size_t c) {
-  auto* object = To<LayoutFrameSet>(GetLayoutObject());
-  LayoutFrameSet::GridAxis& cols = object->cols_;
   if (edge_info.AllowBorder(kLeftFrameEdge))
-    cols.allow_border_[c] = true;
+    allow_border_cols_[c] = true;
   if (edge_info.AllowBorder(kRightFrameEdge))
-    cols.allow_border_[c + 1] = true;
+    allow_border_cols_[c + 1] = true;
   if (edge_info.PreventResize(kLeftFrameEdge))
-    cols.prevent_resize_[c] = true;
+    resize_cols_.prevent_resize_[c] = true;
   if (edge_info.PreventResize(kRightFrameEdge))
-    cols.prevent_resize_[c + 1] = true;
+    resize_cols_.prevent_resize_[c + 1] = true;
 
-  LayoutFrameSet::GridAxis& rows = object->rows_;
   if (edge_info.AllowBorder(kTopFrameEdge))
-    rows.allow_border_[r] = true;
+    allow_border_rows_[r] = true;
   if (edge_info.AllowBorder(kBottomFrameEdge))
-    rows.allow_border_[r + 1] = true;
+    allow_border_rows_[r + 1] = true;
   if (edge_info.PreventResize(kTopFrameEdge))
-    rows.prevent_resize_[r] = true;
+    resize_rows_.prevent_resize_[r] = true;
   if (edge_info.PreventResize(kBottomFrameEdge))
-    rows.prevent_resize_[r + 1] = true;
+    resize_rows_.prevent_resize_[r + 1] = true;
 }
 
 void HTMLFrameSetElement::CollectEdgeInfo() {
-  auto* object = To<LayoutFrameSet>(GetLayoutObject());
-  LayoutFrameSet::GridAxis& cols = object->cols_;
-  LayoutFrameSet::GridAxis& rows = object->rows_;
-  cols.prevent_resize_.Fill(NoResize());
-  cols.allow_border_.Fill(false);
-  rows.prevent_resize_.Fill(NoResize());
-  rows.allow_border_.Fill(false);
+  resize_cols_.prevent_resize_.Fill(NoResize());
+  allow_border_cols_.Fill(false);
+  resize_rows_.prevent_resize_.Fill(NoResize());
+  allow_border_rows_.Fill(false);
 
-  LayoutObject* child = object->FirstChild();
+  LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   if (!child)
     return;
 
@@ -343,8 +331,7 @@ void HTMLFrameSetElement::AttachLayoutTree(AttachContext& context) {
 
   HTMLElement::AttachLayoutTree(context);
   is_resizing_ = false;
-  resize_rows_.Resize(TotalRows());
-  resize_cols_.Resize(TotalCols());
+  ResizeChildrenData();
 }
 
 void HTMLFrameSetElement::DefaultEventHandler(Event& evt) {
@@ -423,7 +410,7 @@ void HTMLFrameSetElement::StartResizing(LayoutFrameSet::GridAxis& axis,
                                         int position,
                                         ResizeAxis& resize_axis) {
   int split = HitTestSplit(axis, position);
-  if (!axis.CanResizeSplitAt(split)) {
+  if (!resize_axis.CanResizeSplitAt(split)) {
     resize_axis.split_being_resized_ = ResizeAxis::kNoSplit;
     return;
   }
@@ -468,15 +455,13 @@ int HTMLFrameSetElement::SplitPosition(const LayoutFrameSet::GridAxis& axis,
 }
 
 bool HTMLFrameSetElement::CanResizeRow(const gfx::Point& p) const {
-  const LayoutFrameSet::GridAxis& axis =
-      To<LayoutFrameSet>(GetLayoutObject())->rows_;
-  return axis.CanResizeSplitAt(HitTestSplit(axis, p.y()));
+  return resize_rows_.CanResizeSplitAt(
+      HitTestSplit(To<LayoutFrameSet>(GetLayoutObject())->Rows(), p.y()));
 }
 
 bool HTMLFrameSetElement::CanResizeColumn(const gfx::Point& p) const {
-  const LayoutFrameSet::GridAxis& axis =
-      To<LayoutFrameSet>(GetLayoutObject())->cols_;
-  return axis.CanResizeSplitAt(HitTestSplit(axis, p.x()));
+  return resize_cols_.CanResizeSplitAt(
+      HitTestSplit(To<LayoutFrameSet>(GetLayoutObject())->Columns(), p.x()));
 }
 
 int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
@@ -502,10 +487,33 @@ int HTMLFrameSetElement::HitTestSplit(const LayoutFrameSet::GridAxis& axis,
   return ResizeAxis::kNoSplit;
 }
 
+void HTMLFrameSetElement::ResizeChildrenData() {
+  resize_rows_.Resize(TotalRows());
+  resize_cols_.Resize(TotalCols());
+
+  // To track edges for borders, we need to be (size + 1). This is because a
+  // parent frameset may ask us for information about our left/top/right/bottom
+  // edges in order to make its own decisions about what to do. We are capable
+  // of tainting that parent frameset's borders, so we have to cache this info.
+  allow_border_rows_.resize(TotalRows() + 1);
+  allow_border_cols_.resize(TotalCols() + 1);
+}
+
 void HTMLFrameSetElement::ResizeAxis::Resize(wtf_size_t number_of_frames) {
   deltas_.resize(number_of_frames);
   deltas_.Fill(0);
   split_being_resized_ = kNoSplit;
+
+  // To track edges for resizability, we need to be (size + 1). This is because
+  // a parent frameset may ask us for information about our left/top/right/
+  // bottom edges in order to make its own decisions about what to do. We are
+  // capable of tainting that parent frameset's borders, so we have to cache
+  // this info.
+  prevent_resize_.resize(number_of_frames + 1);
+}
+
+bool HTMLFrameSetElement::ResizeAxis::CanResizeSplitAt(int split_index) const {
+  return split_index != kNoSplit && !prevent_resize_[split_index];
 }
 
 }  // namespace blink

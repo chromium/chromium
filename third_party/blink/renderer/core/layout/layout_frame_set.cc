@@ -62,11 +62,6 @@ void LayoutFrameSet::Trace(Visitor* visitor) const {
   LayoutBox::Trace(visitor);
 }
 
-// TODO(crbug.com/1347700) Move this to ResizeAxis.
-bool LayoutFrameSet::GridAxis::CanResizeSplitAt(int split_index) const {
-  return split_index != -1 /* kNoSplit */ && !prevent_resize_[split_index];
-}
-
 HTMLFrameSetElement* LayoutFrameSet::FrameSet() const {
   NOT_DESTROYED();
   return To<HTMLFrameSetElement>(GetNode());
@@ -79,14 +74,6 @@ void LayoutFrameSet::Paint(const PaintInfo& paint_info) const {
 
 void LayoutFrameSet::GridAxis::Resize(int size) {
   sizes_.resize(size);
-
-  // To track edges for resizability and borders, we need to be (size + 1). This
-  // is because a parent frameset may ask us for information about our left/top/
-  // right/bottom edges in order to make its own decisions about what to do. We
-  // are capable of tainting that parent frameset's borders, so we have to cache
-  // this info.
-  prevent_resize_.resize(size + 1);
-  allow_border_.resize(size + 1);
 }
 
 void LayoutFrameSet::LayOutAxis(GridAxis& axis,
@@ -306,6 +293,8 @@ void LayoutFrameSet::NotifyFrameEdgeInfoChanged() {
   // that changed and its adjacent frame(s) instead of recomputing the edge info
   // for the entire frameset.
   FrameSet()->CollectEdgeInfo();
+  cols_.allow_border_ = FrameSet()->AllowBorderColumns();
+  rows_.allow_border_ = FrameSet()->AllowBorderRows();
 }
 
 void LayoutFrameSet::UpdateLayout() {
@@ -338,6 +327,8 @@ void LayoutFrameSet::UpdateLayout() {
   LayoutBox::UpdateLayout();
 
   FrameSet()->CollectEdgeInfo();
+  cols_.allow_border_ = FrameSet()->AllowBorderColumns();
+  rows_.allow_border_ = FrameSet()->AllowBorderRows();
 
   UpdateAfterLayout();
 

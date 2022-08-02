@@ -63,6 +63,8 @@ class HTMLFrameSetElement final : public HTMLElement {
   const Vector<HTMLDimension>& ColLengths() const { return col_lengths_; }
   const Vector<int>& RowDeltas() const { return resize_rows_.deltas_; }
   const Vector<int>& ColDeltas() const { return resize_cols_.deltas_; }
+  const Vector<bool>& AllowBorderRows() const { return allow_border_rows_; }
+  const Vector<bool>& AllowBorderColumns() const { return allow_border_cols_; }
 
   bool HasNonInBodyInsertionMode() const override { return true; }
 
@@ -94,6 +96,8 @@ class HTMLFrameSetElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void WillRecalcStyle(const StyleRecalcChange) override;
 
+  void ResizeChildrenData();
+
   class ResizeAxis {
     DISALLOW_NEW();
 
@@ -105,10 +109,13 @@ class HTMLFrameSetElement final : public HTMLElement {
     void Resize(wtf_size_t number_of_frames);
     // Returns true if a split is being resized now.
     bool IsResizingSplit() const { return split_being_resized_ != kNoSplit; }
+    // Returns true if a split is being resized now.
+    bool CanResizeSplitAt(int split_index) const;
 
     static constexpr int kNoSplit = -1;
 
     Vector<int> deltas_;
+    Vector<bool> prevent_resize_;
     int split_being_resized_ = kNoSplit;
     int split_resize_offset_;
   };
@@ -132,6 +139,8 @@ class HTMLFrameSetElement final : public HTMLElement {
   Vector<HTMLDimension> col_lengths_;
   ResizeAxis resize_rows_;
   ResizeAxis resize_cols_;
+  Vector<bool> allow_border_rows_;
+  Vector<bool> allow_border_cols_;
 
   int border_;
   bool border_set_;
