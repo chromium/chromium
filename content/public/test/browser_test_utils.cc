@@ -2621,15 +2621,48 @@ void RenderProcessHostBadMojoMessageWaiter::OnBadMojoMessage(
     observed_mojo_error_ = error;
 }
 
+class DOMMessageQueue::MessageObserver : public WebContentsObserver {
+ public:
+  MessageObserver(DOMMessageQueue* queue, WebContents* contents)
+      : WebContentsObserver(contents), queue_(queue) {}
+  ~MessageObserver() override = default;
+
+ private:
+  void DomOperationResponse(RenderFrameHost* rfh,
+                            const std::string& result) override {
+    queue_->OnDomMessageReceived(result);
+  }
+
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
+    queue_->PrimaryMainFrameRenderProcessGone(status);
+  }
+
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
+    queue_->RenderFrameDeleted(render_frame_host);
+  }
+
+  void WebContentsDestroyed() override {
+    queue_->OnBackingWebContentsDestroyed(this);
+  }
+
+  DOMMessageQueue* queue_;
+};
+
 DOMMessageQueue::DOMMessageQueue() {
   // TODO(https://crbug.com/1174774): Remove the need to listen for this
   // notification.
-  registrar_.Add(this, NOTIFICATION_DOM_OPERATION_RESPONSE,
-                 NotificationService::AllSources());
+  for (auto* contents : WebContentsImpl::GetAllWebContents()) {
+    observers_.emplace(std::make_unique<MessageObserver>(this, contents));
+  }
+  web_contents_creation_subscription_ =
+      RegisterWebContentsCreationCallback(base::BindRepeating(
+          &DOMMessageQueue::OnWebContentsCreated, base::Unretained(this)));
 }
 
-DOMMessageQueue::DOMMessageQueue(WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+DOMMessageQueue::DOMMessageQueue(WebContents* web_contents) {
+  observers_.emplace(std::make_unique<MessageObserver>(this, web_contents));
+}
 
 DOMMessageQueue::DOMMessageQueue(RenderFrameHost* render_frame_host)
     : DOMMessageQueue(WebContents::FromRenderFrameHost(render_frame_host)) {
@@ -2637,18 +2670,6 @@ DOMMessageQueue::DOMMessageQueue(RenderFrameHost* render_frame_host)
 }
 
 DOMMessageQueue::~DOMMessageQueue() = default;
-
-void DOMMessageQueue::Observe(int type,
-                              const NotificationSource& source,
-                              const NotificationDetails& details) {
-  Details<std::string> dom_op_result(details);
-  OnDomMessageReceived(*dom_op_result.ptr());
-}
-
-void DOMMessageQueue::DomOperationResponse(RenderFrameHost* render_frame_host,
-                                           const std::string& json_string) {
-  OnDomMessageReceived(json_string);
-}
 
 void DOMMessageQueue::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
@@ -2682,6 +2703,19 @@ void DOMMessageQueue::OnDomMessageReceived(const std::string& message) {
   message_queue_.push(message);
   if (quit_closure_)
     std::move(quit_closure_).Run();
+}
+
+void DOMMessageQueue::OnWebContentsCreated(WebContents* contents) {
+  observers_.emplace(std::make_unique<MessageObserver>(this, contents));
+}
+
+void DOMMessageQueue::OnBackingWebContentsDestroyed(MessageObserver* observer) {
+  for (auto& entry : observers_) {
+    if (entry.get() == observer) {
+      observers_.erase(entry);
+      break;
+    }
+  }
 }
 
 bool DOMMessageQueue::WaitForMessage(std::string* message) {

@@ -55,6 +55,9 @@ import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '..
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergePasswordsStoreCopiesMixin, MergePasswordsStoreCopiesMixinInterface} from './merge_passwords_store_copies_mixin.js';
+// <if expr="is_win">
+import {PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
+// </if>
 import {PasswordCheckMixin, PasswordCheckMixinInterface} from './password_check_mixin.js';
 import {AddCredentialFromSettingsUserInteractions, PasswordEditDialogElement} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
@@ -241,6 +244,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
         computed: 'computeHasLeakedCredentials_(leakedPasswords)',
       },
 
+      /** Whether the user has passkeys (i.e. WebAuthn credentials). */
+      hasPasskeys_: {
+        type: Boolean,
+        value: false,
+      },
+
       hidePasswordsLink_: {
         type: Boolean,
         computed: 'computeHidePasswordsLink_(syncPrefs_, syncStatus_, ' +
@@ -340,6 +349,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private shouldShowDevicePasswordsLink_: boolean;
   private trustedVaultBannerState_: TrustedVaultBannerState;
   private hasLeakedCredentials_: boolean;
+  private hasPasskeys_: boolean;
   private hidePasswordsLink_: boolean;
   private showImportPasswords_: boolean;
   private profileEmail_: string;
@@ -360,6 +370,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private activeDialogAnchorStack_: HTMLElement[];
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
+  // <if expr="is_win">
+  private passkeysBrowserProxy_: PasskeysBrowserProxy =
+      PasskeysBrowserProxyImpl.getInstance();
+  // </if>
   private setIsOptedInForAccountStorageListener_:
       ((isOptedIn: boolean) => void)|null = null;
   private setPasswordExceptionsListener_: PasswordExceptionListChangedListener|
@@ -393,6 +407,12 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       }
       // </if>
     });
+
+    // <if expr="is_win">
+    this.passkeysBrowserProxy_.hasPasskeys().then(hasPasskeys => {
+      this.hasPasskeys_ = hasPasskeys;
+    });
+    // </if>
   }
 
   override connectedCallback() {
@@ -597,6 +617,10 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     Router.getInstance().navigateTo(routes.DEVICE_PASSWORDS);
   }
 
+  private onManagePasskeysClick_() {
+    Router.getInstance().navigateTo(routes.PASSKEYS);
+  }
+
   getPasswordManagerForTest(): PasswordManagerProxy {
     return this.passwordManager_;
   }
@@ -772,6 +796,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       assert(toFocus);
       focusWithoutInk(toFocus);
     });
+    // <if expr="is_win">
+    this.focusConfig.set(routes.PASSKEYS.path, () => {
+      const toFocus =
+          this.shadowRoot!.querySelector<HTMLElement>('#managePasskeysIcon');
+      assert(toFocus);
+      focusWithoutInk(toFocus);
+    });
+    // </if>
   }
 
   private announceSearchResults_() {

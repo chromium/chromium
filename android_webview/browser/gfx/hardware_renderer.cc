@@ -21,7 +21,7 @@
 namespace android_webview {
 
 namespace {
-enum WebViewDrawAndSubmissionType {
+enum WebViewDrawAndSubmissionType : uint8_t {
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   kNoInvalidateNoSubmissionSameParams = 0,

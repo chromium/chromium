@@ -9,7 +9,9 @@
 goog.require('AbstractEarcons');
 goog.require('BluetoothBrailleDisplayListener');
 goog.require('BluetoothBrailleDisplayManager');
-goog.require('BrailleInterface');
+goog.require('BrailleKeyCommand');
+goog.require('BrailleKeyEvent');
+goog.require('NavBraille');
 goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('TtsInterface');

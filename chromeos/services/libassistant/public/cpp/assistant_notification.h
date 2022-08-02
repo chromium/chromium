@@ -104,4 +104,9 @@ struct COMPONENT_EXPORT(LIBASSISTANT_PUBLIC_STRUCTS) AssistantNotification {
 }  // namespace assistant
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when it moved to ash.
+namespace ash::assistant {
+using ::chromeos::assistant::AssistantNotification;
+}
+
 #endif  // CHROMEOS_SERVICES_LIBASSISTANT_PUBLIC_CPP_ASSISTANT_NOTIFICATION_H_

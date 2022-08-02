@@ -863,7 +863,7 @@ void ArcNetHostImpl::SetWifiEnabledState(bool is_enabled,
   NET_LOG(USER) << __func__ << ":" << is_enabled;
   GetStateHandler()->SetTechnologyEnabled(
       ash::NetworkTypePattern::WiFi(), is_enabled,
-      chromeos::network_handler::ErrorCallback());
+      ash::network_handler::ErrorCallback());
   std::move(callback).Run(true);
 }
 

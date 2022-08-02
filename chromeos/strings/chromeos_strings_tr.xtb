@@ -241,7 +241,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Uç nokta</translation>
 <translation id="3069085583900247081">Test başarısız oldu</translation>
-<translation id="3076243757415932261">Bileşenler doğrulanıyor...</translation>
 <translation id="3083667275341675831">Bağlantı Teşhisi</translation>
 <translation id="3084958266922136097">Ekran koruyucuyu devre dışı bırak</translation>
 <translation id="3091839911843451378">İşlem başarısız - Durdu</translation>
@@ -276,7 +275,6 @@
 <translation id="3369013195428705271">Tüm yazdırma geçmişini temizlemek istediğinizden emin misiniz? Devam eden yazdırma işleriniz silinmez.</translation>
 <translation id="3383751554789092165">Cihaz bilgilerini gerektiği şekilde değiştirin.</translation>
 <translation id="3404249063913988450">Ekran koruyucuyu etkinleştir</translation>
-<translation id="3404770484521709967">Bileşenler doğru şekilde yüklendi.</translation>
 <translation id="3413935475507503304">Güncelleme işlemine devam etmek için İleri'yi tıklayın.</translation>
 <translation id="3434107140712555581">%<ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3435738964857648380">Güvenlik</translation>
@@ -396,7 +394,6 @@
 <translation id="445059817448385655">Eski şifre</translation>
 <translation id="4453205916657964690">Alt ağ maskesi</translation>
 <translation id="4454245904991689773">Taramayı şuraya kaydet:</translation>
-<translation id="4472575034687746823">Başlayın</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Varsayılan olmayan ağ geçidi pinglenemedi</translation>
 <translation id="4500213108254186382">Kapaktaki İvme Ölçer</translation>
@@ -811,7 +808,6 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8063022551652308521">Yazma koruması hâlâ devre dışı. Devam etmek için yazma korumasını etkinleştirin.</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
-<translation id="8083281199617904460">Bu onarım işlemini eğitimli bir onarım teknisyeninin yapması gerekir. Sadece arızalı bileşenleri değiştirdikten sonra başlayın.</translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8104083085214006426">Açık ve güvenli olmayan bir ağ kullanıyorsunuz</translation>
 <translation id="8109786307828817014">Başarısız kalibrasyonlarla devam edilsin mi?</translation>

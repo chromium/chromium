@@ -32,6 +32,22 @@ FirstPartySetsPolicyServiceFactory::GetInstance() {
   return base::Singleton<FirstPartySetsPolicyServiceFactory>::get();
 }
 
+// static
+const base::Value::Dict* FirstPartySetsPolicyServiceFactory::GetPolicyIfEnabled(
+    const Profile& profile) {
+  if (profile.IsSystemProfile() || profile.IsGuestSession())
+    return nullptr;
+
+  if (!profile.GetPrefs()->GetBoolean(
+          first_party_sets::kFirstPartySetsEnabled) ||
+      !base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+    return nullptr;
+  }
+
+  return &profile.GetPrefs()->GetValueDict(
+      first_party_sets::kFirstPartySetsOverrides);
+}
+
 FirstPartySetsPolicyServiceFactory::FirstPartySetsPolicyServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "FirstPartySetsPolicyService",
@@ -49,21 +65,11 @@ FirstPartySetsPolicyServiceFactory::GetBrowserContextToUse(
 KeyedService* FirstPartySetsPolicyServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsSystemProfile() || profile->IsGuestSession())
-    return nullptr;
-
-  if (!profile->GetPrefs()->GetBoolean(
-          first_party_sets::kFirstPartySetsEnabled) ||
-      !base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+  if (const base::Value::Dict* policy = GetPolicyIfEnabled(*profile); policy) {
+    return new FirstPartySetsPolicyService(context, *policy);
+  } else {
     return nullptr;
   }
-
-  const base::Value* policy = profile->GetPrefs()->GetDictionary(
-      first_party_sets::kFirstPartySetsOverrides);
-  if (!policy)
-    return nullptr;
-
-  return new FirstPartySetsPolicyService(context, policy->GetDict());
 }
 
 bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()
@@ -71,7 +77,6 @@ bool FirstPartySetsPolicyServiceFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-// static
 void FirstPartySetsPolicyServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kFirstPartySetsEnabled, true);

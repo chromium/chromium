@@ -4,16 +4,9 @@
      found in the LICENSE file. -->
 
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- TODO(mschillaci): Replace all hardcoded values if this becomes part of final UI. -->
-    <solid android:color="@android:color/white"/>
-
-    <stroke android:width="1px" android:color="@android:color/black" />
-
-    <corners android:radius="44dp"/>
-
+    <solid android:color="@macro/default_bg_color"/>
+    <corners android:radius="@dimen/page_zoom_view_corner_radius"/>
     <padding
-        android:left="20dp"
-        android:right="20dp"
-        android:top="8dp"
-        android:bottom="8dp" />
+        android:top="@dimen/page_zoom_view_padding"
+        android:bottom="@dimen/page_zoom_view_padding" />
 </shape>

@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Chrome を更新できません</translation>
 <translation id="1152920704813762236">Chrome OS について</translation>
 <translation id="1154147086299354128">Chrome で開く(&amp;O)</translation>
-<translation id="1178374936842835197">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />
-        ChromeOS Flex の設定<ph name="LINK_END" />を確認してください</translation>
 <translation id="1203500561924088507">インストールいただきありがとうございます。<ph name="BUNDLE_NAME" /> を使用するにはブラウザを再起動してください。</translation>
 <translation id="1278833599417554002">再起動して Chrome を更新(&amp;C)</translation>
 <translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
@@ -119,7 +117,6 @@
 <translation id="3080151273017101988">Google Chrome を閉じた際にバックグラウンド アプリの処理を続行する</translation>
 <translation id="3089968997497233615">Google クロームブラウザがより速く、さらに便利に。いますぐトライ！</translation>
 <translation id="3100998948628680988">Chrome プロフィールの名前を設定</translation>
-<translation id="3103390129666310801">デバイスが最新の状態かどうか確認するには、<ph name="LINK_BEGIN" />ChromeOS Flex の設定<ph name="LINK_END" />をご覧ください</translation>
 <translation id="3114643501466072395">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chrome にログイン<ph name="END_LINK" />してください。</translation>
 <translation id="3140883423282498090">変更内容は次に Google Chrome を再起動したときに有効になります。</translation>
 <translation id="3149510190863420837">Chrome アプリ</translation>
@@ -210,7 +207,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">今後、Google Chrome のアップデートを受信するには、macOS 10.13 以降が必要となります。このコンピュータでは OS X 10.11 が実行されています。</translation>
 <translation id="5098668839038261629">オンにすると、Chrome からもログアウトします</translation>
-<translation id="5112116809696021727">デバイスが最新の状態かどうかを確認するには、<ph name="LINK_BEGIN" />Chrome OS の設定<ph name="LINK_END" />をご覧ください</translation>
 <translation id="5132929315877954718">Google Chrome のすばらしいアプリ、ゲーム、拡張機能、テーマをぜひご利用ください。</translation>
 <translation id="5139423532931106058">Chrome プロファイルをカスタマイズ</translation>
 <translation id="5163087008893166964">Chrome へようこそ。新しいブラウザ ウィンドウが開いています</translation>
@@ -246,7 +242,6 @@
 <translation id="5940385492829620908">ウェブ、ブックマーク、その他の Chrome データを好みに設定できます。</translation>
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5941830788786076944">Google Chrome を既定のブラウザにする</translation>
-<translation id="5959292945051687759">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />Chrome OS の設定<ph name="LINK_END" />を確認してください</translation>
 <translation id="6003112304606738118">ダウンロードしています... 残り <ph name="HOURS" /> 時間です</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>

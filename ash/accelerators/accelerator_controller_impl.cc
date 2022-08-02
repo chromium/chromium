@@ -1002,7 +1002,7 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
         base::UserMetricsAction("VoiceInteraction.Started.Assistant"));
   }
 
-  using chromeos::assistant::AssistantAllowedState;
+  using assistant::AssistantAllowedState;
   switch (AssistantState::Get()->allowed_state().value_or(
       AssistantAllowedState::ALLOWED)) {
     case AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER:
@@ -1057,8 +1057,8 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
   }
 
   AssistantUiController::Get()->ToggleUi(
-      /*entry_point=*/chromeos::assistant::AssistantEntryPoint::kHotkey,
-      /*exit_point=*/chromeos::assistant::AssistantExitPoint::kHotkey);
+      /*entry_point=*/assistant::AssistantEntryPoint::kHotkey,
+      /*exit_point=*/assistant::AssistantExitPoint::kHotkey);
 }
 
 void HandleSuspend() {

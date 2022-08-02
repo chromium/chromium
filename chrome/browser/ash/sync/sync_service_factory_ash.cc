@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/sync/sync_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -24,9 +23,7 @@ SyncServiceFactoryAsh* SyncServiceFactoryAsh::GetInstance() {
 }
 
 SyncServiceFactoryAsh::SyncServiceFactoryAsh()
-    : BrowserContextKeyedServiceFactory(
-          "SyncServiceAsh",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SyncServiceAsh") {
   DependsOn(SyncServiceFactory::GetInstance());
 }
 

@@ -51,8 +51,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void RemoveItem(const std::string& id, bool is_uninstall) override;
   void SetStatus(ash::AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
-  void UpdateSearchBox(const std::u16string& text,
-                       bool initiated_by_user) override;
   void PublishSearchResults(
       const std::vector<ChromeSearchResult*>& results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;

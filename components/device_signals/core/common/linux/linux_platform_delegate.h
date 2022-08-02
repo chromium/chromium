@@ -15,8 +15,8 @@ class LinuxPlatformDelegate : public PosixPlatformDelegate {
   ~LinuxPlatformDelegate() override;
 
   // PlatformDelegate:
-  ExecutableMetadata GetExecutableMetadata(
-      const base::FilePath& file_path) override;
+  FilePathMap<ExecutableMetadata> GetAllExecutableMetadata(
+      const FilePathSet& file_paths) override;
 };
 
 }  // namespace device_signals

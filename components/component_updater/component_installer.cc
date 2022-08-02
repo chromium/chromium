@@ -4,6 +4,7 @@
 
 #include "components/component_updater/component_installer.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <tuple>
@@ -36,6 +37,7 @@
 #include "components/update_client/component_unpacker.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
+#include "components/update_client/update_query_params.h"
 #include "components/update_client/utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -356,6 +358,19 @@ void ComponentInstaller::StartRegistration(
                   << ").";
       older_paths.push_back(path);
       continue;
+    } else {
+      const base::Value::List* accept_archs =
+          manifest.GetDict().FindList("accept_arch");
+      if (accept_archs != nullptr &&
+          std::none_of(accept_archs->begin(), accept_archs->end(),
+                       [](const base::Value& v) {
+                         return v.is_string() &&
+                                v.GetString() ==
+                                    update_client::UpdateQueryParams::GetArch();
+                       })) {
+        older_paths.push_back(path);
+        continue;
+      }
     }
 
     // New valid |version| folder found!

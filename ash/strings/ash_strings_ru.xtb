@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1364382257761975320">Чтобы разблокировать Chromebook, используйте отпечаток пальца.</translation>
+<translation id="1365866993922957110">Получать автоматические обновления</translation>
 <translation id="1372545819342940910">Сохранить рабочий стол</translation>
 <translation id="1383597849754832576">Не удалось скачать файлы автоматических субтитров. Повторите попытку позже.</translation>
 <translation id="1383876407941801731">Поиск</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064">Объект "<ph name="ITEM_TITLE" />" откреплен</translation>
 <translation id="1836215606488044471">Ассистент (загрузка…)</translation>
 <translation id="1838895407229022812">Ночная подсветка отключена</translation>
+<translation id="1862380676329487333">Обновить и выйти</translation>
 <translation id="1864454756846565995">Устройство USB-C (порт сзади)</translation>
 <translation id="1879018240766558464">Окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">В настоящий момент нельзя копировать или вставлять содержимое.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
+<translation id="4247123849143712100">Обновить и завершить работу</translation>
 <translation id="4250229828105606438">Скриншот</translation>
 <translation id="425364040945105958">Нет SIM-карты</translation>
 <translation id="4261870227682513959">Показать настройки уведомлений. Уведомления отключены.</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913">Сеансом "<ph name="DISPLAY_NAME" />" управляет <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Подключено устройство "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6351032674660237738">ПРЕДЛАГАЕМЫЕ ПРИЛОЖЕНИЯ</translation>
+<translation id="6359587239691116345">Получите доступ к новым функциям и улучшениям безопасности. Если вы откажетесь от этого обновления, могут возникнуть сбои в работе устройства, а также проблемы с безопасностью и производительностью.</translation>
 <translation id="6376931439017688372">Bluetooth включен</translation>
 <translation id="6381109794406942707">Чтобы разблокировать устройство, введите PIN-код.</translation>
 <translation id="639644700271529076">CAPS LOCK отключен</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820">Согласно требованиям <ph name="MANAGER" /> вам нужно обновить устройство <ph name="DEVICE_TYPE" /> до истечения срока.</translation>
 <translation id="649452524636452238">PIN-код для смарт-карты</translation>
 <translation id="6495400115277918834">Включен режим "Картинка в картинке", чтобы переместить фокус, нажмите Alt + Shift + V</translation>
+<translation id="6500896621837555595">Обновить</translation>
 <translation id="6501401484702599040">Трансляция содержимого экрана: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Попытка переподключения после потери связи с камерой.</translation>
 <translation id="6520517963145875092">Выберите окно для снимка</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">Подсчет оставшегося времени работы от батареи…</translation>
 <translation id="8061464966246066292">Высокая контрастность</translation>
 <translation id="8083540854303889870">Сохранено</translation>
+<translation id="8091387634532529612">Автоматическое обновление</translation>
 <translation id="8098591350844501178">Остановить трансляцию содержимого экрана на устройство "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Вкл. для всех</translation>
 <translation id="8120151603115102514">На телефоне нет блокировки экрана. Чтобы разблокировать Chromebook, введите пароль.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>
+<translation id="996204416024568215">Получите доступ к новым функциям и улучшениям безопасности. Обновление выполняется в фоновом режиме.</translation>
 </translationbundle>

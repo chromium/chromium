@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -28,5 +27,4 @@ AssistantService::~AssistantService() {
   g_instance = nullptr;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

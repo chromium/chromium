@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">Неуспешно отпечатване.</translation>
 <translation id="1125564390852150847">Създаване на нов раздел.</translation>
 <translation id="1126809382673880764">Няма защита срещу опасни уебсайтове, изтеглени файлове и разширения. Пак ще получавате защита посредством Безопасно сърфиране в други услуги на Google, където функцията се поддържа – например Gmail и Търсене.</translation>
+<translation id="1135212215217513471">Изтегляне на Chrome за iOS</translation>
 <translation id="1145536944570833626">Изтриване на съществуващите данни.</translation>
 <translation id="1147031633655575115">Влезли сте като <ph name="USER" /></translation>
 <translation id="1154984953698510061">Преглед на другите раздели</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">Потвърдете, че сте вие, за да имате постоянен достъп до синхронизираните си данни</translation>
 <translation id="1870148520156231997">Показване на паролата</translation>
 <translation id="1872096359983322073">Фенерче</translation>
+<translation id="1910975740091000991">Chrome за iOS</translation>
 <translation id="1911619930368729126">Качване в Google Диск</translation>
 <translation id="1923342640370224680">Последният час</translation>
 <translation id="1930989359703290198">Организацията ви разрешава да влизате само с определени профили. Неразрешените профили са скрити. <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">Търсене на копирания текст</translation>
 <translation id="214201757571129614">Вход…</translation>
 <translation id="2149973817440762519">Редактиране на отметката</translation>
+<translation id="2155145621546387786">Споделяне на Chrome</translation>
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="2218443599109088993">Отдалечаване</translation>
 <translation id="2230173723195178503">Уеб страницата се зареди</translation>
@@ -406,7 +409,6 @@
 <translation id="4502566650163919158">Проверка сега</translation>
 <translation id="4505980578794259603">Последна проверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Затваряне на подканата за вход</translation>
-<translation id="4511669830082467224">Търсене на изображението с Google</translation>
 <translation id="4526249700380860531">Преглед и управление на запазените пароли на адрес <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Преглед на синхронизираните ви данни</translation>
 <translation id="4536418791685807335">Опитайте да влезете отново.</translation>

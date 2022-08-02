@@ -34,8 +34,6 @@ class LayoutFrame final : public LayoutEmbeddedContent {
  public:
   explicit LayoutFrame(HTMLFrameElement*);
 
-  FrameEdgeInfo EdgeInfo() const;
-
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
   const char* GetName() const override {

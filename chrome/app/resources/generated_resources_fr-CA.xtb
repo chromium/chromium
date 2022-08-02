@@ -896,6 +896,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1829129547161959350">Pingouin</translation>
 <translation id="1829192082282182671">Z&amp;oom arrière</translation>
 <translation id="1830550083491357902">Non connecté</translation>
+<translation id="1831848493690504725">Nous ne pouvons pas contacter Google par l'entremise du réseau connecté. Choisissez un autre réseau ou vérifiez vos paramètres réseau ou vos paramètres du mandataire (si vous en utilisez un).</translation>
 <translation id="1832459821645506983">Oui, j'accepte</translation>
 <translation id="1832511806131704864">Changement de téléphone pris en compte</translation>
 <translation id="1832848789136765277">Pour vous assurer de toujours pouvoir accéder à vos données de synchronisation, vérifiez qu'il s'agit bien de vous</translation>
@@ -4737,6 +4738,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5533001281916885985"><ph name="SITE_NAME" /> souhaite</translation>
 <translation id="5534304873398226603">Supprimer la photo ou la vidéo</translation>
 <translation id="5537725057119320332">Diffuser</translation>
+<translation id="5539070192556911367">Impossible de contacter Google</translation>
 <translation id="5539221284352502426">Le mot de passe que vous avez entré a été refusé par le serveur. Voici des raisons possibles : le mot de passe est trop court. Le mot de passe doit comporter des chiffres ou des symboles. Le mot de passe doit être différent des mots de passe précédents.</translation>
 <translation id="5541694225089836610">Cette action est désactivée par votre administrateur</translation>
 <translation id="5542132724887566711">Profil</translation>
@@ -4800,6 +4802,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5585912436068747822">Échec du formatage</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Chargement des applications en cours…</translation>
+<translation id="5590418976913374224">Faire jouer un son au démarrage de l'appareil</translation>
 <translation id="5592595402373377407">Données insuffisantes pour l'instant.</translation>
 <translation id="5595307023264033512">Espace de stockage total utilisé par les sites : <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Modifier l'adresse</translation>
@@ -6346,6 +6349,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7102687220333134671">Les mises à jour automatiques sont activées</translation>
 <translation id="7102832101143475489">Le délai de traitement de la demande a expiré</translation>
 <translation id="710640343305609397">Ouvrir les paramètres réseau</translation>
+<translation id="7107609441453408294">Faire jouer le même audio sur tous les haut-parleurs</translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108668606237948702">Entrée</translation>
 <translation id="7108933416628942903">Verrouiller maintenant</translation>
@@ -6437,7 +6441,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7212097698621322584">Entrez votre NIP actuel pour le modifier. Si vous ne connaissez pas votre NIP, vous devrez réinitialiser la clé de sécurité, puis créer un nouveau NIP.</translation>
 <translation id="7213903639823314449">Moteur de recherche utilisé dans la barre d'adresse</translation>
 <translation id="721490496276866468">Importer des mots de passe</translation>
-<translation id="7216595297012131718">Classer les langues en fonction de vos préférences</translation>
 <translation id="7219473482981809164">Plusieurs profils peuvent être téléchargés. Sélectionnez ceux que vous voulez télécharger avant de continuer.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Aucun mot de passe faible}=1{1 mot de passe faible}one{{NUM_WEAK} mot de passe faible}other{{NUM_WEAK} mots de passe faibles}}</translation>
 <translation id="7220019174139618249">Impossible d'exporter les mots de passe vers « <ph name="FOLDER" /> »</translation>
@@ -6577,6 +6580,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7364745943115323529">Diffuser…</translation>
 <translation id="7364796246159120393">Sélectionner un fichier</translation>
 <translation id="7365076891350562061">Taille du moniteur</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - Épinglé</translation>
 <translation id="7366316827772164604">Recherche d'appareils à proximité en cours…</translation>
 <translation id="7366415735885268578">Ajouter un site</translation>
 <translation id="7366909168761621528">Données de navigation</translation>

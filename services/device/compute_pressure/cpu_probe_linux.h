@@ -53,9 +53,11 @@ class CpuProbeLinux : public CpuProbe {
   ProcfsStatCpuParser stat_parser_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Most recent per-core times from /proc/stat.
-  std::vector<CoreTimes> last_core_times_ GUARDED_BY_CONTEXT(sequence_checker_);
+  std::vector<CoreTimes> last_per_core_times_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  PressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_);
+  PressureSample last_sample_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      kUnsupportedValue;
 };
 
 }  // namespace device

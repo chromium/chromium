@@ -77,11 +77,11 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
                                 const std::string& extension_id) {
   if (g_skip_confirmation_dialog_for_testing)
     return false;
-  const base::Value* list =
+  const base::Value::List& list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
-          ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
-  return !base::Contains(list->GetList(), base::Value(extension_id));
+          ->GetValueList(prefs::kPrintingAPIExtensionsAllowlist);
+  return !base::Contains(list, base::Value(extension_id));
 }
 
 }  // namespace

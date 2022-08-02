@@ -330,9 +330,13 @@ ServerFieldType AutofillType::GetStorableType() const {
       return PHONE_HOME_CITY_CODE;
 
     case HTML_TYPE_TEL_LOCAL:
-    case HTML_TYPE_TEL_LOCAL_PREFIX:
-    case HTML_TYPE_TEL_LOCAL_SUFFIX:
       return PHONE_HOME_NUMBER;
+
+    case HTML_TYPE_TEL_LOCAL_PREFIX:
+      return PHONE_HOME_NUMBER_PREFIX;
+
+    case HTML_TYPE_TEL_LOCAL_SUFFIX:
+      return PHONE_HOME_NUMBER_SUFFIX;
 
     case HTML_TYPE_TEL_EXTENSION:
       return PHONE_HOME_EXTENSION;

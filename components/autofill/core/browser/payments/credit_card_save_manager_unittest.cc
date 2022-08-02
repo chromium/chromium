@@ -998,7 +998,8 @@ TEST_F(CreditCardSaveManagerTest,
   CreateTestCreditCardFormData(&credit_card_form,
                                CreditCardFormOptions().with_split_names(true));
   // Use the two same forms for FormsSeen to mock the dynamic change forms.
-  FormsSeen(std::vector<FormData>(2, credit_card_form));
+  FormsSeen({credit_card_form});
+  FormsSeen({credit_card_form});
 
   // Edit the data, and submit.
   credit_card_form.fields[0].value = u"Jane";
@@ -1030,7 +1031,8 @@ TEST_F(CreditCardSaveManagerTest,
   CreateTestCreditCardFormData(&credit_card_form,
                                CreditCardFormOptions().with_split_names(true));
   // Use the two same forms for FormsSeen to mock the dynamic change forms.
-  FormsSeen(std::vector<FormData>(2, credit_card_form));
+  FormsSeen({credit_card_form});
+  FormsSeen({credit_card_form});
 
   // Edit the data, and submit.
   credit_card_form.fields[0].value = u"Jane";
@@ -1072,7 +1074,8 @@ TEST_F(
   CreateTestCreditCardFormData(&credit_card_form,
                                CreditCardFormOptions().with_split_names(true));
   // Use the two same forms for FormsSeen to mock the dynamic change forms.
-  FormsSeen(std::vector<FormData>(2, credit_card_form));
+  FormsSeen({credit_card_form});
+  FormsSeen({credit_card_form});
 
   // Edit the data, and submit.
   credit_card_form.fields[0].value = u"Jane";
@@ -1110,7 +1113,8 @@ TEST_F(CreditCardSaveManagerTest,
   CreateTestCreditCardFormData(&credit_card_form,
                                CreditCardFormOptions().with_split_names(true));
   // Use the two same forms for FormsSeen to mock the dynamic change forms.
-  FormsSeen(std::vector<FormData>(2, credit_card_form));
+  FormsSeen({credit_card_form});
+  FormsSeen({credit_card_form});
 
   // Edit the data, and submit.
   credit_card_form.fields[0].value = u"Jane";

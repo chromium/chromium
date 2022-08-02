@@ -20,52 +20,67 @@ namespace autofill {
 
 using ThreadSafe = base::StrongAlias<struct ThreadSafeTag, bool>;
 
-// A thread-local class that serves as a cache of compiled regex patterns.
+// Compiles a case-insensitive regular expression.
 //
-// The regexp state can be accessed from multiple threads in single process
-// mode, and this class offers per-thread instance instead of per-process
-// singleton instance (https://crbug.com/812182).
-class AutofillRegexes {
+// The return icu::RegexPattern is thread-safe (because it's const and icu
+// guarantees thread-safety of the const functions). In particularly this
+// includes icu::RegexPattern::matcher().
+//
+// May also be used to initialize `static base::NoDestructor<icu::RegexPattern>`
+// function-scope variables.
+std::unique_ptr<const icu::RegexPattern> CompileRegex(
+    base::StringPiece16 regex);
+
+// Returns true if `regex` is found in `input`.
+// If `groups` is non-null, it gets resized and the found capture groups
+// are written into it.
+// Thread-safe.
+bool MatchesRegex(base::StringPiece16 input,
+                  const icu::RegexPattern& regex_pattern,
+                  std::vector<std::u16string>* groups = nullptr);
+
+// Calls MatchesRegex() after compiling the `regex` or retrieving it from a
+// cache.
+//
+// This function is thread-safe. Nevertheless, it should only be called from the
+// main thread to avoid the UI being blocked on some worker task.
+//
+// TODO(crbug.com/1345089): Merge FormField::MatchesPattern() and this function
+// one into a single MatchesPattern() that distinguishes between the main thread
+// and worker threads.
+bool MatchesPatternInMainThread(base::StringPiece16 input,
+                                base::StringPiece16 regex,
+                                std::vector<std::u16string>* groups = nullptr);
+
+// A cache of compiled regex patterns. It can be configured to be thread-safe
+// (using a mutex) or not (in which case it uses a sequence checker).
+class AutofillRegexCache {
  public:
-  explicit AutofillRegexes(ThreadSafe thread_safe);
-  ~AutofillRegexes();
+  explicit AutofillRegexCache(ThreadSafe thread_safe);
+  ~AutofillRegexCache();
 
-  AutofillRegexes(const AutofillRegexes&) = delete;
-  AutofillRegexes& operator=(const AutofillRegexes&) = delete;
+  AutofillRegexCache(const AutofillRegexCache&) = delete;
+  AutofillRegexCache& operator=(const AutofillRegexCache&) = delete;
 
-  // Case-insensitive regular expression matching.
-  // Returns true if `pattern` is found in `input`.
-  // If `groups` is non-null, it gets resized and the found capture groups
-  // are written into it.
-  // Thread-safety depends on `thread_safe_`.
-  bool MatchesPattern(const base::StringPiece16& input,
-                      const base::StringPiece16& pattern,
-                      std::vector<std::u16string>* groups = nullptr);
+  // Returns the compiled regex corresponding to `regex`.
+  // This function is thread-safe if `thread_safe_`.
+  // The returned object is thread-safe in any case (because it's const).
+  // Although the returned pointer is guaranteed to be non-nullptr, we do not
+  // return a reference to avoid accidental copies.
+  const icu::RegexPattern* GetRegexPattern(base::StringPiece16 regex);
 
  private:
-  // Returns the compiled regex matcher corresponding to `pattern`.
-  icu::RegexMatcher* GetMatcher(const base::StringPiece16& pattern);
-
   // `MatchesPattern()` uses the lock if `thread_safe_`. Otherwise, it validates
   // the sequence.
   ThreadSafe thread_safe_{false};
   base::Lock lock_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Maps patterns to their corresponding regex matchers.
-  std::map<std::u16string, std::unique_ptr<icu::RegexMatcher>, std::less<>>
-      matchers_;
+  // Maps regex strings to their corresponding compiled regex patterns.
+  std::
+      map<std::u16string, std::unique_ptr<const icu::RegexPattern>, std::less<>>
+          cache_;
 };
-
-// Calls MatchesPattern() for a global, thread-safe AutofillRegexes object.
-// Although this is thread-safe, this should only be called from the main thread
-// to avoid the UI being blocked on some worker task.
-// TODO(crbug.com/1345089): Merge FormField::MatchesPattern() and this function
-// one into a single MatchesPattern() that distinguishes between the main thread
-// and worker threads.
-bool MatchesPatternInMainThread(const base::StringPiece16& input,
-                                const base::StringPiece16& pattern,
-                                std::vector<std::u16string>* groups = nullptr);
 
 }  // namespace autofill
 

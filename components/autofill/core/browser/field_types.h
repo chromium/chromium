@@ -310,7 +310,7 @@ enum HtmlFieldType {
   // Variants of type hints specified in the HTML specification that are
   // inferred based on a field's 'maxlength' attribute.
   // TODO(isherman): Remove these types, in favor of understanding maxlength
-  // when filling fields.  See also: AutofillField::phone_part_.
+  // when filling fields.
   HTML_TYPE_ADDITIONAL_NAME_INITIAL,
   HTML_TYPE_CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
   HTML_TYPE_CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,

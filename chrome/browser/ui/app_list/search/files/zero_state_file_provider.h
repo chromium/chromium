@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_FILE_PROVIDER_H_
 #define CHROME_BROWSER_UI_APP_LIST_SEARCH_FILES_ZERO_STATE_FILE_PROVIDER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -28,19 +27,27 @@
 class Profile;
 
 namespace app_list {
-namespace internal {
 
-using Results = std::vector<base::FilePath>;
-using ScoredResults = std::vector<std::pair<base::FilePath, float>>;
-using ValidAndInvalidResults = std::pair<ScoredResults, Results>;
-
-}  // namespace internal
-
-// ZeroStateFileProvider dispatches queries to extensions and fetches the
-// results from them via chrome.launcherSearchProvider API.
+// ZeroStateFileProvider recommends local files from a cache. Files are added to
+// the cache whenever they are opened.
 class ZeroStateFileProvider : public SearchProvider,
                               file_manager::file_tasks::FileTasksObserver {
  public:
+  struct FileInfo {
+    base::FilePath path;
+    float score;
+    base::Time last_accessed;
+    base::Time last_modified;
+
+    FileInfo(const base::FilePath& path,
+             float score,
+             const base::Time& last_accessed,
+             const base::Time& last_modified);
+    ~FileInfo();
+  };
+  using ValidAndInvalidResults =
+      std::pair<std::vector<FileInfo>, std::vector<base::FilePath>>;
+
   explicit ZeroStateFileProvider(Profile* profile);
 
   ZeroStateFileProvider(const ZeroStateFileProvider&) = delete;
@@ -58,14 +65,10 @@ class ZeroStateFileProvider : public SearchProvider,
   void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;
 
  private:
-  // Takes a pair of vectors: <valid paths, invalid paths>, and converts the
-  // valid paths to ZeroStatFilesResults and sets them as this provider's
-  // results. The invalid paths are removed from the model.
-  void SetSearchResults(internal::ValidAndInvalidResults results);
-
-  // TODO(crbug.com/1216084): Remove this after finishing developing Continue
-  // Section. Appends mock results to the driver provider.
-  void AppendFakeSearchResults(Results* results);
+  // Takes a pair of vectors: <valid paths, invalid paths>, converts the valid
+  // paths to FileResults and sets them as this provider's results. The invalid
+  // paths are removed from the model.
+  void SetSearchResults(ValidAndInvalidResults results);
 
   void OnProtoInitialized(ReadStatus status);
 

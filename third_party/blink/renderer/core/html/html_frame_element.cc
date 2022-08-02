@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/html/frame_edge_info.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_frame.h"
@@ -51,6 +52,10 @@ LayoutObject* HTMLFrameElement::CreateLayoutObject(const ComputedStyle& style,
 
 bool HTMLFrameElement::NoResize() const {
   return FastHasAttribute(html_names::kNoresizeAttr);
+}
+
+FrameEdgeInfo HTMLFrameElement::EdgeInfo() const {
+  return FrameEdgeInfo(NoResize(), HasFrameBorder());
 }
 
 void HTMLFrameElement::AttachLayoutTree(AttachContext& context) {

@@ -6,9 +6,11 @@
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_ITEM_H_
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
@@ -143,6 +145,12 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // concatenation of primary and secondary text.
   bool SetAccessibleName(const absl::optional<std::u16string>& accessible_name);
 
+  // Sets the commands for an in-progress item which are shown in the item's
+  // context menu and possibly, in the case of cancel/pause/resume, as primary/
+  // secondary actions on the item view itself.
+  bool SetInProgressCommands(
+      std::set<HoldingSpaceCommandId> in_progress_commands);
+
   // Sets the `progress_` of the item, returning `true` if a change occurred or
   // `false` to indicate no-op.
   // NOTE: Progress can only be updated for in progress items.
@@ -154,15 +162,6 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
 
   // Returns true if this item is a screen capture.
   bool IsScreenCapture() const;
-
-  // Returns true if progress of this item is paused.
-  // NOTE: Only in-progress items can be paused.
-  bool IsPaused() const;
-
-  // Sets whether progress of this item is `paused_`, returning `true` if a
-  // change occurred or `false` to indicate no-op.
-  // NOTE: Only in-progress items can be paused.
-  bool SetPaused(bool paused);
 
   const std::string& id() const { return id_; }
 
@@ -183,6 +182,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   const GURL& file_system_url() const { return file_system_url_; }
 
   const HoldingSpaceProgress& progress() const { return progress_; }
+
+  const std::set<HoldingSpaceCommandId>& in_progress_commands() const {
+    return in_progress_commands_;
+  }
 
   HoldingSpaceImage& image_for_testing() { return *image_; }
 
@@ -224,9 +227,10 @@ class ASH_PUBLIC_EXPORT HoldingSpaceItem {
   // The progress of the item.
   HoldingSpaceProgress progress_;
 
-  // Whether or not progress of this item is paused.
-  // NOTE: Only in-progress items can be paused.
-  bool paused_ = false;
+  // The commands for an in-progress item which are shown in the item's context
+  // menu and possibly, in the case of cancel/pause/resume, as primary/secondary
+  // actions on the item's view itself.
+  std::set<HoldingSpaceCommandId> in_progress_commands_;
 
   // Mutable to allow const access from `AddDeletionCallback()`.
   mutable base::RepeatingClosureList deletion_callback_list_;

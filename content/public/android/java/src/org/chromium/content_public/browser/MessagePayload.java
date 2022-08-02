@@ -4,27 +4,22 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
 
 /**
  * Represents a JavaScript message payload.
  * Currently only STRING is supported.
  */
 public final class MessagePayload {
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef(value = {MessagePayloadType.TYPE_STRING})
-    @interface MessagePayloadType {
-        int TYPE_STRING = 0;
-    }
-
     @MessagePayloadType
     private final int mType;
     @Nullable
     private final String mString;
+    @Nullable
+    private final byte[] mArrayBuffer;
 
     /**
      * Create a MessagePayload String type.
@@ -32,8 +27,16 @@ public final class MessagePayload {
      * JNI.
      */
     public MessagePayload(@Nullable String string) {
-        mType = MessagePayloadType.TYPE_STRING;
+        mType = MessagePayloadType.STRING;
         mString = string;
+        mArrayBuffer = null;
+    }
+
+    public MessagePayload(@NonNull byte[] arrayBuffer) {
+        Objects.requireNonNull(arrayBuffer, "arrayBuffer cannot be null.");
+        mType = MessagePayloadType.ARRAY_BUFFER;
+        mArrayBuffer = arrayBuffer;
+        mString = null;
     }
 
     @MessagePayloadType
@@ -43,9 +46,34 @@ public final class MessagePayload {
 
     @Nullable
     public String getAsString() {
-        if (mType != MessagePayloadType.TYPE_STRING) {
-            throw new ClassCastException("String expected, but type is " + mType);
-        }
+        checkType(MessagePayloadType.STRING);
         return mString;
+    }
+
+    @NonNull
+    public byte[] getAsArrayBuffer() {
+        checkType(MessagePayloadType.ARRAY_BUFFER);
+        Objects.requireNonNull(mArrayBuffer, "mArrayBuffer cannot be null.");
+        return mArrayBuffer;
+    }
+
+    private void checkType(@MessagePayloadType int expectedType) {
+        if (mType != expectedType) {
+            throw new IllegalStateException("Expected " + typeToString(expectedType)
+                    + ", but type is " + typeToString(mType));
+        }
+    }
+
+    @NonNull
+    private static String typeToString(@MessagePayloadType int type) {
+        switch (type) {
+            case MessagePayloadType.STRING:
+                return "String";
+            case MessagePayloadType.ARRAY_BUFFER:
+                return "ArrayBuffer";
+            case MessagePayloadType.INVALID:
+                return "Invalid";
+        }
+        throw new RuntimeException("Unknown type: " + type);
     }
 }

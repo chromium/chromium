@@ -434,6 +434,12 @@ bool InputMethodManagerImpl::StateImpl::SetAllowedInputMethods(
         manager_->util_.MigrateInputMethod(input_method_id);
     if (manager_->util_.IsValidInputMethodId(migrated_id)) {
       allowed_keyboard_layout_input_method_ids_.push_back(migrated_id);
+      // Kiosk users are not able to go to the settings and manually enable
+      // allowed input methods, thus it has to be done automatically for
+      // non-empty list.
+      DCHECK(user_manager::UserManager::Get());
+      if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp())
+        EnableInputMethod(migrated_id);
     }
   }
 

@@ -1224,6 +1224,7 @@
 <translation id="4305666528087210886">无法访问您的文件</translation>
 <translation id="4306529830550717874">保存地址？</translation>
 <translation id="4306812610847412719">剪贴板</translation>
+<translation id="4308567447483056043">此政策会被忽略，因为该用户是独立用户。若要应用此政策，必须由同一组织通过管理控制台管理 Chrome 浏览器和个人资料。</translation>
 <translation id="4310070645992025887">在您的历程中搜索</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">屏蔽（默认）</translation>

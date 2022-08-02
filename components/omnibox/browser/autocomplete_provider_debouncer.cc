@@ -18,9 +18,10 @@ void AutocompleteProviderDebouncer::RequestRun(
   if (from_last_run_)
     delay -= base::TimeTicks::Now() - time_last_run_;
 
-  if (delay <= base::TimeDelta())
+  if (delay <= base::TimeDelta()) {
+    CancelRequest();
     Run();
-  else {
+  } else {
     timer_.Start(FROM_HERE, delay,
                  base::BindOnce(&AutocompleteProviderDebouncer::Run,
                                 base::Unretained(this)));

@@ -163,11 +163,11 @@ void MetalayerMode::OnTouchEvent(ui::TouchEvent* event) {
     // time.
     toast_event = kDeprecatedToastNotShown;
     if (!GetPrefs()->GetBoolean(
-            chromeos::assistant::prefs::kAssistantDeprecateStylusToast)) {
+            assistant::prefs::kAssistantDeprecateStylusToast)) {
       // Set the deprecate stylus toast assistant pref so that the toast doesn't
       // repeatedly show.
-      GetPrefs()->SetBoolean(
-          chromeos::assistant::prefs::kAssistantDeprecateStylusToast, true);
+      GetPrefs()->SetBoolean(assistant::prefs::kAssistantDeprecateStylusToast,
+                             true);
       Shell::Get()->toast_manager()->Show(
           ToastData(kDeprecateAssistantStylusToastId,
                     ToastCatalogName::kDeprecateAssistantStylus,
@@ -221,7 +221,7 @@ void MetalayerMode::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void MetalayerMode::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
+    assistant::AssistantStatus status) {
   assistant_status_ = status;
   UpdateState();
 }
@@ -237,7 +237,7 @@ void MetalayerMode::OnAssistantContextEnabled(bool enabled) {
 }
 
 void MetalayerMode::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState state) {
+    assistant::AssistantAllowedState state) {
   assistant_allowed_state_ = state;
   UpdateState();
 }

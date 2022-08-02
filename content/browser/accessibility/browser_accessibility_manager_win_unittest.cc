@@ -7,6 +7,7 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
@@ -53,6 +54,10 @@ class BrowserAccessibilityManagerWinTest : public testing::Test {
 
  private:
   void SetUp() override;
+
+  // This is needed to prevent a DCHECK failure when OnAccessibilityApiUsage
+  // is called in BrowserAccessibility::GetRole.
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 void BrowserAccessibilityManagerWinTest::SetUp() {

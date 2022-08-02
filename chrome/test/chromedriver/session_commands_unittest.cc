@@ -110,7 +110,9 @@ TEST(SessionCommandsTest, ProcessCapabilities_Empty) {
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // "capabilities" must be a JSON object
-  params.SetList("capabilities", std::make_unique<base::ListValue>());
+  params.SetList("capabilities",
+                 base::ListValue::From(
+                     std::make_unique<base::Value>(base::Value::Type::LIST)));
   status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
@@ -128,7 +130,8 @@ TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
 
   // "alwaysMatch" must be a JSON object
   params.SetList("capabilities.alwaysMatch",
-                 std::make_unique<base::ListValue>());
+                 base::ListValue::From(
+                     std::make_unique<base::Value>(base::Value::Type::LIST)));
   Status status = ProcessCapabilities(params, &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
@@ -163,44 +166,61 @@ TEST(SessionCommandsTest, ProcessCapabilities_AlwaysMatch) {
 }
 
 TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
-  base::DictionaryValue params;
+  base::Value::Dict params;
   base::DictionaryValue result;
 
   // "firstMatch" must be a JSON list
-  params.GetDict().SetByDottedPath("capabilities.firstMatch",
-                                   base::Value(base::Value::Type::DICTIONARY));
-  Status status = ProcessCapabilities(params, &result);
+  params.SetByDottedPath("capabilities.firstMatch",
+                         base::Value(base::Value::Type::DICTIONARY));
+  Status status =
+      ProcessCapabilities(*base::DictionaryValue::From(
+                              std::make_unique<base::Value>(params.Clone())),
+                          &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // "firstMatch" must have at least one entry
-  params.SetList("capabilities.firstMatch",
-                 std::make_unique<base::ListValue>());
-  status = ProcessCapabilities(params, &result);
+  params.SetByDottedPath("capabilities.firstMatch",
+                         base::Value(base::Value::Type::LIST));
+  status =
+      ProcessCapabilities(*base::DictionaryValue::From(
+                              std::make_unique<base::Value>(params.Clone())),
+                          &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Each entry must be a JSON object
-  base::ListValue* list_ptr;
-  ASSERT_TRUE(params.GetList("capabilities.firstMatch", &list_ptr));
-  list_ptr->Append(base::ListValue());
-  status = ProcessCapabilities(params, &result);
+  base::Value::List* list =
+      params.FindListByDottedPath("capabilities.firstMatch");
+  list->Append(base::Value::List());
+  status =
+      ProcessCapabilities(*base::DictionaryValue::From(
+                              std::make_unique<base::Value>(params.Clone())),
+                          &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Empty JSON object allowed as an entry
-  list_ptr->GetList()[0] = base::Value(base::Value::Type::DICT);
-  status = ProcessCapabilities(params, &result);
+  (*list)[0] = base::Value(base::Value::Type::DICT);
+  status =
+      ProcessCapabilities(*base::DictionaryValue::From(
+                              std::make_unique<base::Value>(params.Clone())),
+                          &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_TRUE(result.DictEmpty());
 
   // Invalid entry
-  base::Value::Dict* entry_ptr = list_ptr->GetList()[0].GetIfDict();
-  ASSERT_TRUE(entry_ptr);
-  entry_ptr->Set("pageLoadStrategy", "invalid");
-  status = ProcessCapabilities(params, &result);
+  base::Value::Dict* entry = (*list)[0].GetIfDict();
+  entry->Set("pageLoadStrategy", "invalid");
+  status =
+      ProcessCapabilities(*base::DictionaryValue::From(
+                              std::make_unique<base::Value>(params.Clone())),
+                          &result);
   ASSERT_EQ(kInvalidArgument, status.code());
 
   // Valid entry
-  entry_ptr->Set("pageLoadStrategy", "eager");
-  status = ProcessCapabilities(params, &result);
+  entry->Set("pageLoadStrategy", "eager");
+  status =
+      ProcessCapabilities(*base::DictionaryValue::From(
+                              std::make_unique<base::Value>(params.Clone())),
+                          &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(result.DictSize(), 1u);
   std::string result_string;
@@ -208,12 +228,14 @@ TEST(SessionCommandsTest, ProcessCapabilities_FirstMatch) {
   ASSERT_EQ(result_string, "eager");
 
   // Multiple entries, the first one should be selected.
-  list_ptr->Append(base::DictionaryValue());
-  entry_ptr = list_ptr->GetList()[1].GetIfDict();
-  ASSERT_TRUE(entry_ptr);
-  entry_ptr->Set("pageLoadStrategy", "normal");
-  entry_ptr->Set("browserName", "chrome");
-  status = ProcessCapabilities(params, &result);
+  list->Append(base::DictionaryValue());
+  entry = (*list)[1].GetIfDict();
+  entry->Set("pageLoadStrategy", "normal");
+  entry->Set("browserName", "chrome");
+  status =
+      ProcessCapabilities(*base::DictionaryValue::From(
+                              std::make_unique<base::Value>(params.Clone())),
+                          &result);
   ASSERT_EQ(kOk, status.code()) << status.message();
   ASSERT_EQ(result.DictSize(), 1u);
   ASSERT_TRUE(result.GetString("pageLoadStrategy", &result_string));

@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">RIFRESKO</translation>
 <translation id="3009958530611748826">Zgjidh një dosje për ruajtje</translation>
 <translation id="3017079585324758401">Sfondi</translation>
+<translation id="302435934487327038">Instalimi përfundoi</translation>
 <translation id="3027578600144895987">Mbylle kamerën</translation>
 <translation id="3031560714565892478">Pajisja është një video-kamerë.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Pika përfundimtare</translation>
 <translation id="3069085583900247081">Testi dështoi</translation>
-<translation id="3076243757415932261">Komponentët po verifikohen...</translation>
 <translation id="3083667275341675831">Diagnostikimi i lidhshmërisë</translation>
 <translation id="3084958266922136097">Çaktivizo mbrojtësin e ekranit</translation>
 <translation id="3091839911843451378">Dështoi - Ndaloi</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Je i sigurt që do ta pastrosh të gjithë historikun e printimit? Printimet e tua në vazhdim nuk do të pastrohen.</translation>
 <translation id="3383751554789092165">Ndrysho informacionet e pajisjes sipas nevojës.</translation>
 <translation id="3404249063913988450">Aktivizo mbrojtësin e ekranit</translation>
-<translation id="3404770484521709967">Komponentët janë instaluar si duhet.</translation>
 <translation id="3413935475507503304">Kliko "Para" për të vazhduar me përditësimin.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Siguria</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Fjalëkalimi i vjetër</translation>
 <translation id="4453205916657964690">Maska e nënrrjetit</translation>
 <translation id="4454245904991689773">Skano te</translation>
-<translation id="4472575034687746823">Fillo</translation>
 <translation id="4479639480957787382">Eternet</translation>
 <translation id="4483049906298469269">Dështoi verifikimi "ping" për portën jo të parazgjedhur të kalimit</translation>
 <translation id="4500213108254186382">Përshpejtuesi i kapakut</translation>
@@ -663,6 +661,7 @@
 <translation id="6618744767048954150">Në ekzekutim</translation>
 <translation id="6620487321149975369">Printimet do të shfaqen te historiku, përveçse kur hiqen manualisht</translation>
 <translation id="6643016212128521049">Pastro</translation>
+<translation id="6644568396961840069">Skedari nuk mund të ruhej. Provo të lidhësh një tjetër hapësirë ruajtëse të jashtme ose provo përsëri më vonë.</translation>
 <translation id="6647510110698214773">Algoritmi i enkriptimit</translation>
 <translation id="6650062777702288430">Kalimi në tastierën kana/alfanumerike</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
@@ -808,7 +807,6 @@
 <translation id="8063022551652308521">"Mbrojtja nga shkrimi" është akoma e çaktivizuar. Për të vazhduar, aktivizo "Mbrojtjen nga shkrimi".</translation>
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>
-<translation id="8083281199617904460">Ky proces riparimi duhet të kryhet nga një teknik i trajnuar për riparimin. Fillo vetëm pas zëvendësimit të komponentëve që nuk funksionojnë mirë.</translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8104083085214006426">Po përdor një rrjet të hapur dhe të pasigurt</translation>
 <translation id="8109786307828817014">Të vazhdohet me kalibrimet e dështuara?</translation>

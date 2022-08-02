@@ -9,9 +9,7 @@
 #include "chrome/browser/ash/printing/cups_printers_manager_proxy.h"
 #include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -28,9 +26,13 @@ CupsPrintersManager* CupsPrintersManagerFactory::GetForBrowserContext(
 }
 
 CupsPrintersManagerFactory::CupsPrintersManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "CupsPrintersManagerFactory",
-          BrowserContextDependencyManager::GetInstance()),
+          // In Guest Mode, only use the OffTheRecord profile.
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+              .Build()),
       proxy_(CupsPrintersManagerProxy::Create()) {
   DependsOn(SyncedPrintersManagerFactory::GetInstance());
 }
@@ -49,6 +51,12 @@ KeyedService* CupsPrintersManagerFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
+  // This condition still needs to be explicitly stated here despite having
+  // ProfileKeyedService logic implemented because `IsGuestSession()` and
+  // `IsRegularProfile()` are not yet mutually exclusive in ASH and Lacros.
+  // TODO(crbug.com/1348572): remove this condition when `IsGuestSession() is
+  // fixed.
+  //
   // In Guest Mode, only use the OffTheRecord profile.
   if (profile->IsGuestSession() && !profile->IsOffTheRecord()) {
     return nullptr;
@@ -70,11 +78,6 @@ void CupsPrintersManagerFactory::BrowserContextShutdown(
     proxy_->RemoveManager(manager);
   }
   BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
-}
-
-content::BrowserContext* CupsPrintersManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }
 
 bool CupsPrintersManagerFactory::ServiceIsCreatedWithBrowserContext() const {

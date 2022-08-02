@@ -16,11 +16,13 @@ class Profile;
 namespace guest_os {
 class GuestOsStabilityMonitor;
 }
+namespace game_mode {
+class GameModeController;
+}
 namespace borealis {
 
 class BorealisDiskManager;
 class BorealisEngagementMetrics;
-class BorealisGameModeController;
 class BorealisLifetimeObserver;
 class BorealisPowerController;
 
@@ -87,7 +89,7 @@ class BorealisContext {
   std::unique_ptr<guest_os::GuestOsStabilityMonitor>
       guest_os_stability_monitor_;
 
-  std::unique_ptr<BorealisGameModeController> game_mode_controller_;
+  std::unique_ptr<game_mode::GameModeController> game_mode_controller_;
 
   std::unique_ptr<BorealisEngagementMetrics> engagement_metrics_;
 

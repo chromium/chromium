@@ -885,6 +885,11 @@
       name: "DocumentDomain",
     },
     {
+      name: "DocumentPictureInPictureAPI",
+      depends_on: ["PictureInPictureAPI"],
+      settable_from_internals: true,
+    },
+    {
       name: "DocumentPolicy",
       status: "stable",
     },
@@ -1421,7 +1426,7 @@
     },
     {
       name: "MediaSourceInWorkers",
-      status: "experimental",
+      status: "stable",
       origin_trial_feature_name: "MediaSourceInWorkers",
     },
     {
@@ -1429,7 +1434,7 @@
       // being enabled. MediaSourceInWorkers is an OT feature, so this cannot
       // use the "depends_on" key.
       name: "MediaSourceInWorkersUsingHandle",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "MediaSourceNewAbortAndDuration",
@@ -1761,11 +1766,6 @@
       name: "PictureInPictureAPI",
       status: "stable"
     },
-    {
-      name: "PictureInPictureV2",
-      depends_on: ["PictureInPictureAPI"],
-      settable_from_internals: true,
-    },
     // This is a reverse OT used for a phased deprecation.
     // https://crbug.com/918374
     {
@@ -1874,6 +1874,17 @@
     },
     {
       name: "QuotaChange",
+      status: "experimental",
+    },
+    // This User-Agent Reduction feature has been enabled starting from M101,
+    // but we still keep this flag for future phase tests.
+    {
+      name: "ReduceUserAgentMinorVersion",
+      status: "stable",
+    },
+    {
+      name: "ReduceUserAgentPlatformOsCpu",
+      depends_on: ["ReduceUserAgentMinorVersion"],
       status: "experimental",
     },
     {

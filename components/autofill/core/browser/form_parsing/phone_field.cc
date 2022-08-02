@@ -58,6 +58,7 @@ std::u16string GetAreaRegex() {
 // The following notation is used to describe the patterns:
 // <cc> - country code field.
 // <ac> - area code field.
+// TODO(crbug.com/1348137): Add a separate prefix type.
 // <phone> - phone or prefix.
 // <suffix> - suffix.
 // :N means field is limited to N characters, otherwise it is unlimited.
@@ -270,6 +271,7 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
   DCHECK(parsed_fields[FIELD_PHONE] != nullptr);
 
   // Look for a suffix field using two different regex.
+  // TODO(crbug.com/1348137): Revise or remove.
   bool suffix_matched = false;
   if (!parsed_fields[FIELD_SUFFIX]) {
     suffix_matched =
@@ -287,8 +289,8 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
                                                 GetPhoneGrammars().size());
 
   // Now look for an extension.
-  // The extension is not actually used, so this just eats the field so other
-  // parsers do not mistaken it for something else.
+  // The extension is unused, but it is parsed to prevent other parsers from
+  // misclassifying it as something else.
   ParsePhoneField(scanner, kPhoneExtensionRe, &parsed_fields[FIELD_EXTENSION],
                   {log_manager, "kPhoneExtensionRe"},
                   /*is_country_code_field=*/false, "PHONE_EXTENSION",
@@ -321,24 +323,27 @@ void PhoneField::AddClassifications(
       AddClassification(parsed_phone_fields_[FIELD_AREA_CODE], area_code_type,
                         kBasePhoneParserScore, field_candidates);
     } else if (has_country_code) {
-      // Only if we can find country code without city code, it means the phone
-      // number include city code.
       field_number_type =
           base::FeatureList::IsEnabled(
               features::kAutofillEnableSupportForPhoneNumberTrunkTypes)
               ? PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX
               : PHONE_HOME_CITY_AND_NUMBER;
     }
-    // We tag the prefix as PHONE_HOME_NUMBER, then when filling the form
-    // we fill only the prefix depending on the size of the input field.
+    // PHONE_HOME_NUMBER = PHONE_HOME_NUMBER_PREFIX + PHONE_HOME_NUMBER_SUFFIX
+    // is technically dialable (seven-digit dialing), and thus not contained in
+    // the area code branch.
+    if (parsed_phone_fields_[FIELD_SUFFIX]) {
+      // TODO(crbug.com/1348137): Ideally we want to DCHECK that
+      // `parsed_phone_fields_[FIELD_AREA_CODE] || !has_country_code` here.
+      // With the current grammars this can be violated, even though it
+      // seemingly never happens in practice according to our metrics.
+      field_number_type = PHONE_HOME_NUMBER_PREFIX;
+      AddClassification(parsed_phone_fields_[FIELD_SUFFIX],
+                        PHONE_HOME_NUMBER_SUFFIX, kBasePhoneParserScore,
+                        field_candidates);
+    }
     AddClassification(parsed_phone_fields_[FIELD_PHONE], field_number_type,
                       kBasePhoneParserScore, field_candidates);
-    // We tag the suffix as PHONE_HOME_NUMBER, then when filling the form
-    // we fill only the suffix depending on the size of the input field.
-    if (parsed_phone_fields_[FIELD_SUFFIX]) {
-      AddClassification(parsed_phone_fields_[FIELD_SUFFIX], PHONE_HOME_NUMBER,
-                        kBasePhoneParserScore, field_candidates);
-    }
   } else {
     AddClassification(parsed_phone_fields_[FIELD_PHONE],
                       PHONE_HOME_WHOLE_NUMBER, kBasePhoneParserScore,

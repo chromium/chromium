@@ -79,11 +79,11 @@ using GetPackStateCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
 using OnUninstallCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
-using OnInstallBasePayloadCompleteCallback =
+using OnInstallBasePackCompleteCallback =
     base::OnceCallback<void(const PackResult& pack_result)>;
 
 // This class manages all Language Packs and their dependencies (called Base
-// Payloads) on the device.
+// Packs) on the device.
 // This is a Singleton and needs to be accessed via Get().
 class LanguagePackManager : public DlcserviceClient::Observer {
  public:
@@ -111,8 +111,8 @@ class LanguagePackManager : public DlcserviceClient::Observer {
   // Installs the Language Pack.
   // It takes a callback that will be triggered once the operation is done.
   // A state is passed to the callback.
-  // TODO(crbug.com/1320137): If |feature_id| has a corresponding Base Payload,
-  // then the Base Payload should be installed first.
+  // TODO(crbug.com/1320137): If |feature_id| has a corresponding Base Pack,
+  // then the Base Pack should be installed first.
   void InstallPack(const std::string& feature_id,
                    const std::string& locale,
                    OnInstallCompleteCallback callback);
@@ -137,9 +137,9 @@ class LanguagePackManager : public DlcserviceClient::Observer {
                   const std::string& locale,
                   OnUninstallCompleteCallback callback);
 
-  // Explicitly installs the base payload for |feature_id|.
-  void InstallBasePayload(const std::string& feature_id,
-                          OnInstallBasePayloadCompleteCallback callback);
+  // Explicitly installs the base pack for |feature_id|.
+  void InstallBasePack(const std::string& feature_id,
+                       OnInstallBasePackCompleteCallback callback);
 
   // Adds an observer to the observer list.
   void AddObserver(Observer* observer);

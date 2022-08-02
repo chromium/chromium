@@ -18,6 +18,7 @@ import android.util.Pair;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +29,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -101,6 +101,10 @@ public class ContextMenuCoordinatorTest {
         @Override
         @Implementation
         public void show() {}
+
+        @Override
+        @Implementation
+        public void dismiss() {}
     }
 
     /** No-op constructor for test cases that does not care of creation of real object. */
@@ -129,6 +133,9 @@ public class ContextMenuCoordinatorTest {
     public TestRule mProcessor = new Features.JUnitProcessor();
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock
     PerformanceHintsObserver.Natives mNativeMock;
@@ -143,7 +150,7 @@ public class ContextMenuCoordinatorTest {
 
     @Before
     public void setUpTest() {
-        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
         mCoordinator = new ContextMenuCoordinator(TOP_CONTENT_OFFSET_PX, mNativeDelegate);
         MockitoAnnotations.initMocks(this);
         mocker.mock(PerformanceHintsObserverJni.TEST_HOOKS, mNativeMock);

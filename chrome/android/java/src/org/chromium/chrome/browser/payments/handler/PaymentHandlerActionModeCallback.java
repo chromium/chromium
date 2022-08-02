@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.payments.handler;
 
+import android.graphics.Rect;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -15,7 +17,7 @@ import org.chromium.content_public.browser.WebContents;
 /**
  * A class that handles selection action mode for Payment Handler.
  */
-public class PaymentHandlerActionModeCallback implements ActionMode.Callback {
+public class PaymentHandlerActionModeCallback extends ActionMode.Callback2 {
     private final ActionModeCallbackHelper mHelper;
 
     /**
@@ -48,5 +50,10 @@ public class PaymentHandlerActionModeCallback implements ActionMode.Callback {
     @Override
     public void onDestroyActionMode(ActionMode mode) {
         mHelper.onDestroyActionMode();
+    }
+
+    @Override
+    public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
+        mHelper.onGetContentRect(mode, view, outRect);
     }
 }

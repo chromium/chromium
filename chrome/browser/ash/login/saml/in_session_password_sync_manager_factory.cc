@@ -8,7 +8,6 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -33,9 +32,7 @@ InSessionPasswordSyncManagerFactory::GetForProfile(Profile* profile) {
 }
 
 InSessionPasswordSyncManagerFactory::InSessionPasswordSyncManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "InSessionPasswordSyncManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("InSessionPasswordSyncManager") {}
 
 InSessionPasswordSyncManagerFactory::~InSessionPasswordSyncManagerFactory() =
     default;

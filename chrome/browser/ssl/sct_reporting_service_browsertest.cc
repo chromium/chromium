@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_to_iso8601.h"
@@ -925,6 +926,8 @@ IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest, DoNotReportSCTFound) {
 
 IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
                        HashdanceReportCountIncremented) {
+  base::HistogramTester histograms;
+
   // Visit an HTTPS page and wait for the full report to be sent.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("hashdance.test", "/")));
@@ -941,12 +944,19 @@ IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
   int report_count = g_browser_process->local_state()->GetInteger(
       prefs::kSCTAuditingHashdanceReportCount);
   EXPECT_EQ(report_count, 1);
+
+  // The histogram is logged *before* the report count is incremented, so the
+  // histogram will only log a report count of zero, once.
+  histograms.ExpectUniqueSample("Security.SCTAuditing.OptOut.ReportCount", 0,
+                                1);
 }
 
 // Test that report count isn't incremented when retrying a single audit report.
 // Regression test for crbug.com/1348313.
 IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
                        HashdanceReportCountNotIncrementedOnRetry) {
+  base::HistogramTester histograms;
+
   // Don't succeed for max_retries+1, for the *full report sending*, but the
   // hashdance lookup query will always succeed.
   set_error_count(16);
@@ -969,9 +979,16 @@ IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest,
   int report_count = g_browser_process->local_state()->GetInteger(
       prefs::kSCTAuditingHashdanceReportCount);
   EXPECT_EQ(report_count, 1);
+
+  // Retrying sending the same report will only check the report count once the
+  // first time, so the histogram will only log a report count of zero, once.
+  histograms.ExpectUniqueSample("Security.SCTAuditing.OptOut.ReportCount", 0,
+                                1);
 }
 
 IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest, HashdanceReportLimitReached) {
+  base::HistogramTester histograms;
+
   // Override the report count to be the maximum.
   g_browser_process->local_state()->SetInteger(
       prefs::kSCTAuditingHashdanceReportCount, 3);
@@ -984,6 +1001,9 @@ IN_PROC_BROWSER_TEST_F(SCTHashdanceBrowserTest, HashdanceReportLimitReached) {
   EXPECT_EQ(0u, requests_seen());
   SetSafeBrowsingEnabled(false);  // Clears the deduplication cache.
   EXPECT_TRUE(FlushAndCheckZeroReports());
+
+  histograms.ExpectUniqueSample("Security.SCTAuditing.OptOut.ReportCount", 3,
+                                1);
 }
 
 // Wrapper around FilePathWatcher to help tests wait for an auditing report to

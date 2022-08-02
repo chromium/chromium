@@ -40,19 +40,14 @@ export class ChromeVoxPrefs {
     // Default per session sticky to off.
     localStorage['sticky'] = false;
 
-    this.init(loadExistingSettings);
+    this.init();
   }
 
   /**
    * Merge the default values of all known prefs with what's found in
    * localStorage.
-   * @param {boolean} pullFromLocalStorage or not to pull prefs from local
-   * storage. True if we want to respect changes the user has already made
-   * to prefs, false if we want to overwrite them. Set false if we've made
-   * changes to keyboard shortcuts and need to make sure they aren't
-   * overridden by the old keymap in local storage.
    */
-  init(pullFromLocalStorage) {
+  init() {
     // Set the default value of any pref that isn't already in localStorage.
     for (const pref in ChromeVoxPrefs.DEFAULT_PREFS) {
       if (localStorage[pref] === undefined) {

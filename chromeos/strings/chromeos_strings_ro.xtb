@@ -241,7 +241,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punct final</translation>
 <translation id="3069085583900247081">Testul nu a reușit</translation>
-<translation id="3076243757415932261">Se validează componentele…</translation>
 <translation id="3083667275341675831">Diagnosticare pentru conectivitate</translation>
 <translation id="3084958266922136097">Dezactivează screensaverul</translation>
 <translation id="3091839911843451378">Nereușită – Oprită</translation>
@@ -276,7 +275,6 @@
 <translation id="3369013195428705271">Sigur vrei să ștergi tot istoricul printărilor? Sarcinile de printare în curs nu vor fi șterse.</translation>
 <translation id="3383751554789092165">Schimbă informațiile dispozitivului după caz.</translation>
 <translation id="3404249063913988450">Activează screensaverul</translation>
-<translation id="3404770484521709967">Componentele sunt instalate corect.</translation>
 <translation id="3413935475507503304">Ca să continui cu actualizarea, dă clic pe Înainte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Securitate</translation>
@@ -396,7 +394,6 @@
 <translation id="445059817448385655">Parolă veche</translation>
 <translation id="4453205916657964690">Mască de subrețea</translation>
 <translation id="4454245904991689773">Scanează către</translation>
-<translation id="4472575034687746823">Începeți</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Nu s-a putut da ping către gateway-ul de rețea care nu este prestabilit</translation>
 <translation id="4500213108254186382">Accelerometrul capacului</translation>
@@ -811,7 +808,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8063022551652308521">Protecția la scriere este încă dezactivată. Pentru a continua, activeaz-o.</translation>
 <translation id="8075838845814659848">Nivel de încărcare rămas</translation>
 <translation id="8082366717211101304">Nu se poate rezolva solicitarea DNS din aplicații pentru Android</translation>
-<translation id="8083281199617904460">Procesul de reparare este menit pentru un tehnician specializat. Începe numai după ce înlocuiești componentele care nu funcționează.</translation>
 <translation id="808894953321890993">Schimbă parola</translation>
 <translation id="8104083085214006426">Folosești o rețea deschisă și nesigură</translation>
 <translation id="8109786307828817014">Continui cu calibrările nereușite?</translation>

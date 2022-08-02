@@ -329,6 +329,10 @@ ExtractionError ExtractAddressResults(const DnsResponse& response,
                            HostCache::Entry::SOURCE_DNS, response_ttl);
   results.set_aliases(std::move(aliases));
 
+  if (!canonical_name.empty()) {
+    results.set_canonical_names(std::set<std::string>({canonical_name}));
+  }
+
   *out_results = std::move(results);
   return ExtractionError::kOk;
 }
@@ -556,13 +560,16 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
     if (!service->IsCompatible())
       continue;
 
-    // Only support services at the original domain name, as that is the name at
-    // which Chrome queried A/AAAA. Chrome does not yet support followup queries
-    // or diverging addresses.
     base::StringPiece target_name = service->service_name().empty()
                                         ? record->name()
                                         : service->service_name();
-    if (target_name != original_domain_name) {
+
+    // Chrome does not yet support followup queries. So only support services at
+    // the original domain name or the canonical name (the record name).
+    // Note: HostCache::Entry::GetEndpoints() will not return metadatas which
+    // target name is different from the canonical name of A/AAAA query results.
+    if ((target_name != original_domain_name) &&
+        (target_name != record->name())) {
       continue;
     }
 
@@ -593,6 +600,8 @@ ExtractionError ExtractHttpsResults(const DnsResponse& response,
 
     metadata.ech_config_list = ConnectionEndpointMetadata::EchConfigList(
         service->ech_config().cbegin(), service->ech_config().cend());
+
+    metadata.target_name = base::ToLowerASCII(target_name);
 
     results.emplace(service->priority(), std::move(metadata));
 

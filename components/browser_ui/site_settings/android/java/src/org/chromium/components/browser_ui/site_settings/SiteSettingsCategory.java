@@ -289,6 +289,13 @@ public class SiteSettingsCategory {
     }
 
     /**
+     * Returns the {@link SiteSettingsCategory.Type} for this category.
+     */
+    public @Type int getType() {
+        return mCategory;
+    }
+
+    /**
      * Returns the {@link ContentSettingsType} for this category, or -1 if no such type exists.
      */
     public @ContentSettingsType int getContentSettingsType() {
@@ -301,13 +308,6 @@ public class SiteSettingsCategory {
      */
     public @ContentSettingsType int getObjectChooserDataType() {
         return objectChooserDataTypeFromGuard(contentSettingsType(mCategory));
-    }
-
-    /**
-     * Returns whether this category is the specified type.
-     */
-    public boolean showSites(@Type int type) {
-        return type == mCategory;
     }
 
     /**
@@ -325,12 +325,12 @@ public class SiteSettingsCategory {
     public boolean isManaged() {
         // TODO(dullweber): Why do we check some permissions for managed state and some for user
         // modifiability and some not at all?
-        if (showSites(Type.AUTOMATIC_DOWNLOADS) || showSites(Type.BACKGROUND_SYNC)
-                || showSites(Type.JAVASCRIPT) || showSites(Type.POPUPS)) {
+        if (mCategory == Type.AUTOMATIC_DOWNLOADS || mCategory == Type.BACKGROUND_SYNC
+                || mCategory == Type.JAVASCRIPT || mCategory == Type.POPUPS) {
             return WebsitePreferenceBridge.isContentSettingManaged(
                     getBrowserContextHandle(), getContentSettingsType());
-        } else if (showSites(Type.COOKIES) || showSites(Type.DEVICE_LOCATION)
-                || showSites(Type.CAMERA) || showSites(Type.MICROPHONE)) {
+        } else if (mCategory == Type.COOKIES || mCategory == Type.DEVICE_LOCATION
+                || mCategory == Type.CAMERA || mCategory == Type.MICROPHONE) {
             return !WebsitePreferenceBridge.isContentSettingUserModifiable(
                     getBrowserContextHandle(), getContentSettingsType());
         }
@@ -343,8 +343,8 @@ public class SiteSettingsCategory {
      */
     public boolean isManagedByCustodian() {
         // TODO(dullweber): Why do we only check these types?
-        if (showSites(Type.COOKIES) || showSites(Type.DEVICE_LOCATION) || showSites(Type.CAMERA)
-                || showSites(Type.MICROPHONE)) {
+        if (mCategory == Type.COOKIES || mCategory == Type.DEVICE_LOCATION
+                || mCategory == Type.CAMERA || mCategory == Type.MICROPHONE) {
             return WebsitePreferenceBridge.isContentSettingManagedByCustodian(
                     getBrowserContextHandle(), getContentSettingsType());
         }

@@ -204,8 +204,8 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   Run();
 }
 
-// TODO(https://crbug.com/1288036): The test is flaky on iOS.
-#if BUILDFLAG(IS_IOS)
+// TODO(https://crbug.com/1288036): The test is flaky on Mac and iOS.
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_CloseTimeout DISABLED_CloseTimeout
 #else
 #define MAYBE_CloseTimeout CloseTimeout

@@ -49,9 +49,7 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
   bool HasPropagatedDescendants() const { return has_propagated_descendants_; }
 
   // True if there is any hanging white-space or similar.
-  bool HasHanging() const { return hanging_inline_size_ > 0; }
-
-  LayoutUnit HangingInlineSize() const { return hanging_inline_size_; }
+  bool HasHanging() const { return has_hanging_; }
 
   const FontHeight& Metrics() const { return metrics_; }
 
@@ -91,7 +89,6 @@ class CORE_EXPORT NGPhysicalLineBoxFragment final : public NGPhysicalFragment {
 
  private:
   FontHeight metrics_;
-  LayoutUnit hanging_inline_size_;
 };
 
 template <>

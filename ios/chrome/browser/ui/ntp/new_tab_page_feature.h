@@ -66,6 +66,9 @@ bool IsNTPViewHierarchyRepairEnabled();
 // Whether the Discover feed top sync promotion is enabled.
 bool IsDiscoverFeedTopSyncPromoEnabled();
 
+// Whether the feed top sync promotion is compact or not.
+bool IsDiscoverFeedTopSyncPromoCompact();
+
 // Whether the Discover feed ablation experiment is enabled.
 bool IsFeedAblationEnabled();
 

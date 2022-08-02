@@ -14,10 +14,12 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 #include "chrome/browser/webauthn/cablev2_devices.h"
+#include "chrome/browser/webauthn/local_credential_management.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +35,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "device/fido/win/webauthn_api.h"
+#endif
 
 using content::BrowserThread;
 
@@ -1114,5 +1120,137 @@ void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
 
   ResolveJavascriptCallback(callback_id, base::Value(std::move(result)));
 }
+
+#if BUILDFLAG(IS_WIN)
+
+PasskeysHandler::PasskeysHandler() = default;
+PasskeysHandler::~PasskeysHandler() = default;
+
+void PasskeysHandler::OnJavascriptAllowed() {}
+void PasskeysHandler::OnJavascriptDisallowed() {}
+
+void PasskeysHandler::RegisterMessages() {
+  web_ui()->RegisterMessageCallback(
+      "passkeysHasPasskeys",
+      base::BindRepeating(&PasskeysHandler::HandleHasPasskeys,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "passkeysEnumerate",
+      base::BindRepeating(&PasskeysHandler::HandleEnumerate,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "passkeysDelete", base::BindRepeating(&PasskeysHandler::HandleDelete,
+                                            base::Unretained(this)));
+}
+
+void PasskeysHandler::HandleHasPasskeys(const base::Value::List& args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(1u, args.size());
+
+  AllowJavascript();
+  auto local_cred_man = std::make_unique<LocalCredentialManagement>(
+      device::WinWebAuthnApi::GetDefault());
+  local_cred_man->HasCredentials(
+      Profile::FromBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext()),
+      base::BindOnce(&PasskeysHandler::OnHasPasskeysComplete,
+                     weak_factory_.GetWeakPtr(), args[0].GetString(),
+                     std::move(local_cred_man)));
+}
+
+void PasskeysHandler::OnHasPasskeysComplete(
+    std::string callback_id,
+    std::unique_ptr<LocalCredentialManagement> local_cred_man,
+    bool has_passkeys) {
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
+                            base::Value(has_passkeys));
+}
+
+void PasskeysHandler::HandleEnumerate(const base::Value::List& args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(1u, args.size());
+
+  AllowJavascript();
+  DoEnumerate(args[0].GetString());
+}
+
+void PasskeysHandler::DoEnumerate(std::string callback_id) {
+  auto local_cred_man = std::make_unique<LocalCredentialManagement>(
+      device::WinWebAuthnApi::GetDefault());
+  local_cred_man->Enumerate(
+      Profile::FromBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext()),
+      base::BindOnce(&PasskeysHandler::OnEnumerateComplete,
+                     weak_factory_.GetWeakPtr(), std::move(callback_id),
+                     std::move(local_cred_man)));
+}
+
+void PasskeysHandler::OnEnumerateComplete(
+    std::string callback_id,
+    std::unique_ptr<LocalCredentialManagement> local_cred_man,
+    absl::optional<std::vector<device::DiscoverableCredentialMetadata>>
+        credentials) {
+  base::Value result;
+
+  if (credentials.has_value()) {
+    base::Value::List passkeys;
+    for (const auto& cred : *credentials) {
+      // RP IDs with colons in them are assumed to be URLs and thus for
+      // protocols like SSH. In order to avoid confusing the UI, these are
+      // filtered out.
+      if (cred.rp_id.find(':') != std::string::npos) {
+        continue;
+      }
+
+      base::Value::Dict passkey;
+      passkey.Set("relyingPartyId", cred.rp_id);
+      passkey.Set("userName", cred.user.name.value_or(""));
+      passkey.Set("userDisplayName", cred.user.display_name.value_or(""));
+      passkey.Set("credentialId", base::HexEncode(cred.cred_id));
+      passkeys.Append(std::move(passkey));
+    }
+
+    result = base::Value(std::move(passkeys));
+  }
+
+  ResolveJavascriptCallback(base::Value(std::move(callback_id)),
+                            std::move(result));
+}
+
+void PasskeysHandler::HandleDelete(const base::Value::List& args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(2u, args.size());
+
+  std::vector<uint8_t> credential_id;
+  const bool ok = base::HexStringToBytes(args[1].GetString(), &credential_id);
+  DCHECK(ok);
+
+  auto local_cred_man = std::make_unique<LocalCredentialManagement>(
+      device::WinWebAuthnApi::GetDefault());
+  local_cred_man->Delete(
+      Profile::FromBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext()),
+      credential_id,
+      base::BindOnce(&PasskeysHandler::OnDeleteComplete,
+                     weak_factory_.GetWeakPtr(), args[0].GetString(),
+                     std::move(local_cred_man)));
+}
+
+void PasskeysHandler::OnDeleteComplete(
+    std::string callback_id,
+    std::unique_ptr<LocalCredentialManagement> local_cred_man,
+    bool ok) {
+  if (!ok) {
+    // Windows failed to delete the passkey. This can happen if API support is
+    // missing but no passkeys will be shown at all in that case so that should
+    // be impossible. It can also happen if the user attempts to delete a
+    // system-created credential. In this case the Javascript will notice that
+    // the credential didn't disappear and will show an error message.
+  }
+
+  DoEnumerate(std::move(callback_id));
+}
+
+#endif
 
 }  // namespace settings

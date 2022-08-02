@@ -242,7 +242,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Test failed</translation>
-<translation id="3076243757415932261">Validating components…</translation>
 <translation id="3083667275341675831">Connectivity diagnostics</translation>
 <translation id="3084958266922136097">Disable screensaver</translation>
 <translation id="3091839911843451378">Failed – Stopped</translation>
@@ -277,7 +276,6 @@
 <translation id="3369013195428705271">Are you sure you want to clear all print history? Your ongoing print jobs will not be cleared.</translation>
 <translation id="3383751554789092165">Change device information as needed.</translation>
 <translation id="3404249063913988450">Enable screensaver</translation>
-<translation id="3404770484521709967">Components are installed correctly.</translation>
 <translation id="3413935475507503304">To proceed with the update, click Next.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Security</translation>
@@ -397,7 +395,6 @@
 <translation id="445059817448385655">Old password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Scan to</translation>
-<translation id="4472575034687746823">Get started</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Failed to ping the non-default network gateway</translation>
 <translation id="4500213108254186382">Lid accelerometer</translation>
@@ -814,7 +811,6 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="8063022551652308521">Write Protect is still turned off. To proceed, turn on Write Protect.</translation>
 <translation id="8075838845814659848">Remaining charge</translation>
 <translation id="8082366717211101304">Can't resolve DNS from Android apps</translation>
-<translation id="8083281199617904460">This repair process is intended for a trained repair technician. Start only after replacing the malfunctioning components.</translation>
 <translation id="808894953321890993">Change password</translation>
 <translation id="8094062939584182041">Allow Google to email you about this issue</translation>
 <translation id="8104083085214006426">You are using an open and unsecure network</translation>

@@ -193,7 +193,7 @@ struct IconKey {
 enum ConditionType {
   [Default] kScheme,  // Matches the URL scheme (e.g. https, tel).
   kHost,              // Matches the URL host (e.g. www.google.com).
-  kPattern,           // Matches the URL pattern (e.g. /abc/*).
+  kPath  ,            // Matches the URL path (e.g. /abc/*).
   kAction,            // Matches the action type (e.g. view, send).
   kMimeType,          // Matches the top-level mime type (e.g. text/plain).
   [MinVersion=1] kFileExtension,  // Deprecated.

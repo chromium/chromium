@@ -16,10 +16,8 @@
 #include "chrome/browser/certificate_provider/certificate_provider.h"
 #include "chrome/browser/net/nss_service.h"
 #include "chrome/browser/net/nss_service_factory.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -171,9 +169,9 @@ void PlatformKeysServiceFactory::SetTestingMode(bool is_testing_mode) {
 }
 
 PlatformKeysServiceFactory::PlatformKeysServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "PlatformKeysService",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildServicesRedirectedToOriginal()) {
   DependsOn(NssServiceFactory::GetInstance());
 }
 
@@ -207,11 +205,6 @@ void PlatformKeysServiceFactory::BrowserContextShutdown(
   }
 
   BrowserContextKeyedServiceFactory::BrowserContextShutdown(context);
-}
-
-content::BrowserContext* PlatformKeysServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }
 
 }  // namespace platform_keys

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PRINTING_PRINT_MANAGEMENT_PRINTING_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -21,7 +21,7 @@ namespace print_management {
 class PrintingManager;
 
 // Factory for PrintingManager.
-class PrintingManagerFactory : public BrowserContextKeyedServiceFactory {
+class PrintingManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static PrintingManager* GetForProfile(Profile* profile);
   static PrintingManagerFactory* GetInstance();
@@ -38,8 +38,6 @@ class PrintingManagerFactory : public BrowserContextKeyedServiceFactory {
 
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;

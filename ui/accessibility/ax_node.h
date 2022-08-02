@@ -262,6 +262,8 @@ class AX_EXPORT AXNode final {
   // be before (logically less) the node we visit later.
   absl::optional<int> CompareTo(const AXNode& other) const;
 
+  bool IsDataValid() const { return data_.id != kInvalidAXNodeID; }
+
   // Returns true if the node has any of the text related roles, including
   // kStaticText, kInlineTextBox and kListMarker (for Legacy Layout). Does not
   // include any text field roles.
@@ -732,10 +734,6 @@ class AX_EXPORT AXNode final {
   // Finds and returns a pointer to ordered set containing node.
   AXNode* GetOrderedSet() const;
 
-  // Returns false if the |data_| is uninitialized or has been taken. Returns
-  // true otherwise.
-  bool IsDataValid() const;
-
   // Returns true if the node supports the read-only attribute.
   bool IsReadOnlySupported() const;
 
@@ -774,13 +772,6 @@ class AX_EXPORT AXNode final {
   // Stores information about this node that is immutable and which has been
   // computed by the tree's source, such as `content::BlinkAXTreeSource`.
   AXNodeData data_;
-
-  // Used to track when this object's data_ is valid. If either of these are
-  // true, and data is accessed, there will be a crash.
-  // TODO(crbug.com/1237353): Wrap this inside of an `#if DCHECK_IS_ON()` after
-  // removing `DumpWithoutCrashing`.
-  bool is_data_still_uninitialized_ = true;
-  bool has_data_been_taken_ = false;
 
   // See the class comment in "ax_hypertext.h" for an explanation of this
   // member.

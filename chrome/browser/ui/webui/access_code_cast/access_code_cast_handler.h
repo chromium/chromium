@@ -65,6 +65,7 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, DesktopMirroring);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, DesktopMirroringError);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, OnSinkAddedResult);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, RouteAlreadyExists);
 
   // Constructor that is used for testing.
   AccessCodeCastHandler(
@@ -109,6 +110,9 @@ class AccessCodeCastHandler : public access_code_cast::mojom::PageHandler,
   // Checks to see if all the conditions necessary to complete discovery have
   // been satisfied. If so, alerts the dialog.
   void CheckForDiscoveryCompletion();
+
+  // Checks to see that if route already exists for the given media sink id.
+  bool HasActiveRoute(const MediaSink::Id& sink_id);
 
   mojo::Remote<access_code_cast::mojom::Page> page_;
   mojo::Receiver<access_code_cast::mojom::PageHandler> receiver_;

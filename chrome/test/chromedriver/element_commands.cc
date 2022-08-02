@@ -131,7 +131,7 @@ Status FocusToElement(
     return Status(kInvalidElementState);
 
   if (!is_focused) {
-    base::ListValue args;
+    base::Value::List args;
     args.Append(CreateElement(element_id));
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(
@@ -146,7 +146,7 @@ Status SendKeysToElement(Session* session,
                          WebView* web_view,
                          const std::string& element_id,
                          const bool is_text,
-                         const base::ListValue* key_list) {
+                         const base::Value::List* key_list) {
   // If we were previously focused, we don't need to focus again.
   // But also, later we don't move the carat if we were already in focus.
   // However, non-text elements such as contenteditable elements needs to be
@@ -163,7 +163,7 @@ Status SendKeysToElement(Session* session,
   // Move cursor/caret to append the input if we only just focused this
   // element. keys if element's type is text-related
   if (is_text && !wasPreviouslyFocused) {
-    base::ListValue args;
+    base::Value::List args;
     args.Append(CreateElement(element_id));
     std::unique_ptr<base::Value> result;
     Status status = web_view->CallFunction(
@@ -233,7 +233,7 @@ Status ExecuteGetElementShadowRoot(Session* session,
   if (status.IsError())
     return status;
 
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
 
   std::string currentFrameId = session->GetCurrentFrameId();
@@ -467,7 +467,7 @@ Status ExecuteClearElement(Session* session,
   bool is_content_editable = false;
   if (!is_text && !is_input_control) {
     std::unique_ptr<base::Value> get_content_editable;
-    base::ListValue args;
+    base::Value::List args;
     args.Append(CreateElement(element_id));
     status = web_view->CallFunction(session->GetCurrentFrameId(),
                                     "element => element.isContentEditable",
@@ -516,7 +516,7 @@ Status ExecuteClearElement(Session* session,
             << "\tincluding raising blur event after clearing.\n";
     isClearWarningNotified = true;
   }
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   return web_view->CallFunction(
@@ -533,8 +533,8 @@ Status ExecuteSendKeysToElement(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  const base::ListValue* key_list;
-  base::ListValue key_list_local;
+  const base::Value::List* key_list;
+  base::Value::List key_list_local;
   const base::Value* text = nullptr;
   if (session->w3c_compliant) {
     text = params.FindKey("text");
@@ -543,8 +543,7 @@ Status ExecuteSendKeysToElement(Session* session,
     key_list_local.Append(text->Clone());
     key_list = &key_list_local;
   } else {
-    if (!params.GetList("value", &key_list))
-      return Status(kInvalidArgument, "'value' must be a list");
+    key_list = params.GetDict().FindList("value");
   }
 
   bool is_input = false;
@@ -572,7 +571,7 @@ Status ExecuteSendKeysToElement(Session* session,
     }
     // Compress array into a single string.
     std::string paths_string;
-    for (const base::Value& i : key_list->GetList()) {
+    for (const base::Value& i : *key_list) {
       const std::string* path_part = i.GetIfString();
       if (!path_part)
         return Status(kInvalidArgument, "'value' is invalid");
@@ -623,7 +622,7 @@ Status ExecuteSendKeysToElement(Session* session,
 
     // text is set only when session.w3c_compliant, so confirm here
     DCHECK(text != nullptr);
-    base::ListValue args;
+    base::Value::List args;
     args.Append(CreateElement(element_id));
     args.Append(text->GetString());
     std::unique_ptr<base::Value> result;
@@ -634,7 +633,7 @@ Status ExecuteSendKeysToElement(Session* session,
                                   args, &result);
   } else {
     std::unique_ptr<base::Value> get_content_editable;
-    base::ListValue args;
+    base::Value::List args;
     args.Append(CreateElement(element_id));
     status = web_view->CallFunction(session->GetCurrentFrameId(),
                                     "element => element.isContentEditable",
@@ -726,7 +725,7 @@ Status ExecuteSubmitElement(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -743,7 +742,7 @@ Status ExecuteGetElementText(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -760,7 +759,7 @@ Status ExecuteGetElementValue(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -777,7 +776,7 @@ Status ExecuteGetElementProperty(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
 
   std::string name;
@@ -800,7 +799,7 @@ Status ExecuteGetElementTagName(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -817,7 +816,7 @@ Status ExecuteIsElementSelected(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -834,7 +833,7 @@ Status ExecuteIsElementEnabled(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
 
   bool is_xml = false;
@@ -917,7 +916,7 @@ Status ExecuteIsElementDisplayed(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -934,7 +933,7 @@ Status ExecuteGetElementLocation(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -951,7 +950,7 @@ Status ExecuteGetElementRect(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
 
   std::unique_ptr<base::Value> location;
@@ -1027,7 +1026,7 @@ Status ExecuteGetElementSize(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   return web_view->CallFunction(
       session->GetCurrentFrameId(),
@@ -1054,7 +1053,7 @@ Status ExecuteGetElementAttribute(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(attribute_name);
   return web_view->CallFunction(

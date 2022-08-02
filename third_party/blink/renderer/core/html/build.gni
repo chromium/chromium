@@ -260,6 +260,7 @@ blink_core_sources_html = [
   "forms/validity_state.h",
   "forms/week_input_type.cc",
   "forms/week_input_type.h",
+  "frame_edge_info.h",
   "html_all_collection.cc",
   "html_all_collection.h",
   "html_anchor_element.cc",

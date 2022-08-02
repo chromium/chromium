@@ -2209,6 +2209,7 @@
 <translation id="3021065318976393105">Додека се користи батерија</translation>
 <translation id="3021066826692793094">Пеперутка</translation>
 <translation id="3021678814754966447">&amp;Прикажи извор на рамка</translation>
+<translation id="3022361196600037287"><ph name="DEVICE" /> ќе се отстрани од овој Chromebook и нема да се зачува на <ph name="PRIMARY_EMAIL" />.</translation>
 <translation id="3022978424994383087">Не го разбрав тоа.</translation>
 <translation id="3023464535986383522">Изберете за говор</translation>
 <translation id="3024374909719388945">Користи 24-часовен часовник</translation>
@@ -3748,6 +3749,7 @@
 <translation id="4535127706710932914">Стандарден профил</translation>
 <translation id="4535767533210902251">Сензорот за отпечатоци е копчето десно на врвот од вашата тастатура. Допрете го лесно со кој било прст.</translation>
 <translation id="4536140153723794651">Сајтови што секогаш можат да користат колачиња</translation>
+<translation id="4536769240747010177">Можности за интернет преку мобилен:</translation>
 <translation id="4538417792467843292">Избриши збор</translation>
 <translation id="4538792345715658285">Инсталирано од компаниската политика.</translation>
 <translation id="4541123282641193691">Вашата сметка не може да се потврди. Обидете се повторно или рестартирајте го вашиот Chromebook.</translation>
@@ -3775,6 +3777,7 @@
 <translation id="4561893854334016293">Нема неодамна променети дозволи</translation>
 <translation id="4562155214028662640">Додај отпечаток</translation>
 <translation id="4563210852471260509">Првичниот јазик на внесување е кинески</translation>
+<translation id="4563382028841851106">Отстрани од сметката</translation>
 <translation id="4563880231729913339">Прст 3</translation>
 <translation id="4564245002465020751">Завршете го поставувањето на вашиот телефон</translation>
 <translation id="4565377596337484307">Сокриј ја лозинката</translation>
@@ -6194,6 +6197,10 @@
 <translation id="6943939122536910181">Не е поврзан со <ph name="DEVICE" /></translation>
 <translation id="6945221475159498467">Избери</translation>
 <translation id="694592694773692225">Пренасочувањето е блокирано на оваа страница.</translation>
+<translation id="6947015141909171112">Прикажани се рецепти според вашата неодамнешна активност на пребарување рецепти.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        Може да управувате со поставките од менито со картички или да видите повеќе опции во „Приспособете го Chrome“.</translation>
 <translation id="6949434160682548041">Лозинка (изборно)</translation>
 <translation id="6950627417367801484">Врати ги апликациите</translation>
 <translation id="6952242901357037157">Тука може да се прикажуваат и лозинките од <ph name="BEGIN_LINK" />сметката на Google<ph name="END_LINK" /></translation>
@@ -6452,7 +6459,6 @@
 <translation id="7212097698621322584">Внесете го тековниот PIN за да го промените. Ако не го знаете PIN-кодот, ќе треба да го ресетирате безбедносниот клуч, а потоа да создадете нов PIN.</translation>
 <translation id="7213903639823314449">Пребарувач што се користи во лентата за адреси</translation>
 <translation id="721490496276866468">Увезете ги лозинките</translation>
-<translation id="7216595297012131718">Нарачајте јазици според вашите желби</translation>
 <translation id="7219473482981809164">Најдовме повеќе профили достапни за преземање. Изберете ги оние што сакате да ги преземете пред да продолжите.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Нема слаби лозинки}=1{1 слаба лозинка}one{{NUM_WEAK} слаба лозинка}other{{NUM_WEAK} слаби лозинки}}</translation>
 <translation id="7220019174139618249">Лозинките не може да се извезат во „<ph name="FOLDER" />“</translation>
@@ -6988,6 +6994,7 @@
 <translation id="7737115349420013392">Се спарува со „<ph name="DEVICE_NAME" />“…</translation>
 <translation id="7737846262459425222">Ова може да го промените во секое време во „Поставки &gt; Помошник на Google &gt; Контекст на екранот“.</translation>
 <translation id="7737948071472253612">Не им е дозволено да ја користат камерата</translation>
+<translation id="77381465218432215">Прикажувај ги знаците за акцентирање и специјалните знаци</translation>
 <translation id="7740996059027112821">Стандарден</translation>
 <translation id="7741307896921365578">Овозможува странична табла на ниво на прелистувачот за корисен и доследен начин на пристапување до „Списокот за читање“ и „Обележувачите“.</translation>
 <translation id="7742558784808143689">Да се избришат податоците и дозволите од сајтот за <ph name="SITE_NAME" />, сите сајтови под него и инсталираните апликации?</translation>
@@ -7780,6 +7787,7 @@
 <translation id="8486666913807228950">Причина: обратното правило <ph name="REVERT_RULE" /> беше најдено во списокот „Отвори присилно во“.</translation>
 <translation id="848666842773560761">Апликација се обидува да пристапи до камерата. Исклучете го копчето за приватност на камерата за да дозволите пристап.</translation>
 <translation id="8487678622945914333">Зумирај</translation>
+<translation id="8487699605742506766">Точка на пристап</translation>
 <translation id="8489156414266187072">Личните предлози се прикажуваат само на вашата сметка</translation>
 <translation id="8490896350101740396">Следниве апликации на Киоск „<ph name="UPDATED_APPS" />“ се ажурирани. Рестартирајте го уредот за да го завршите процесот на ажурирање.</translation>
 <translation id="8492685019009920170">Допрете го сензорот за отпечатоци со прстот. Податоците се складираат безбедно и никогаш не го напуштаат вашиот <ph name="DEVICE_TYPE" />.</translation>
@@ -8274,6 +8282,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{„<ph name="TAB_TITLE" />“}=1{„<ph name="TAB_TITLE" />“ и уште 1 картичка}one{„<ph name="TAB_TITLE" />“ и уште # картичка}other{„<ph name="TAB_TITLE" />“ и уште # картички}}</translation>
 <translation id="8977811652087512276">Неточна лозинка или оштетена датотека</translation>
 <translation id="8978154919215542464">Вклучено - синхронизирај сѐ</translation>
+<translation id="8978670037548431647">Освежи ги можностите за интернет преку мобилен</translation>
 <translation id="897939795688207351">На <ph name="ORIGIN" /></translation>
 <translation id="8980345560318123814">Извештаи со повратни информации</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - падна</translation>
@@ -8538,6 +8547,7 @@
 <translation id="935854577147268200">Телефонот за Smart Lock е сменет. Внесете ја вашата лозинка за да се ажурира Smart Lock. Следниот пат, телефонот ќе го отклучи вашиот <ph name="DEVICE_TYPE" />. Smart Lock може да се исклучи во „Поставки“.</translation>
 <translation id="936646668635477464">Камера и микрофон</translation>
 <translation id="936801553271523408">Дијагностички податоци на системот</translation>
+<translation id="937053962468712792">Да се отстрани <ph name="DEVICE" /> од <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="93766956588638423">Поправи ја екстензијата</translation>
 <translation id="938568644810664664">Пробајте со „Ok Google, what song is this?“ (Океј Гугл, која песна е ова?) или „Ok Google, what's on my screen?“ (Океј Гугл, што имам на екранот?)</translation>
 <translation id="938623846785894166">Невообичаена датотека</translation>

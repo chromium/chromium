@@ -6,10 +6,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
-#include "components/autofill/core/browser/test_form_structure.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -120,7 +120,7 @@ TEST_F(SingleFieldFormFillRouterTest,
 #endif  // !BUILDFLAG(IS_IOS)
 
   form_data.fields = fields;
-  TestFormStructure form_structure{form_data};
+  FormStructure form_structure{form_data};
 
   // Set the first |number_of_fields_for_testing| fields to be autocomplete
   // fields.

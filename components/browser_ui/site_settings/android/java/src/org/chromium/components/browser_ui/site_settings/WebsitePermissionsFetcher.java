@@ -163,13 +163,13 @@ public class WebsitePermissionsFetcher {
      */
     public void fetchPreferencesForCategory(
             SiteSettingsCategory category, WebsitePermissionsCallback callback) {
-        if (category.showSites(SiteSettingsCategory.Type.ALL_SITES)) {
+        if (category.getType() == SiteSettingsCategory.Type.ALL_SITES) {
             fetchAllPreferences(callback);
             return;
         }
 
         TaskQueue queue = new TaskQueue();
-        if (category.showSites(SiteSettingsCategory.Type.USE_STORAGE)) {
+        if (category.getType() == SiteSettingsCategory.Type.USE_STORAGE) {
             addFetcherForStorage(queue);
         } else {
             assert getPermissionsType(category.getContentSettingsType()) != null;

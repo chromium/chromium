@@ -30,6 +30,8 @@
 
 namespace blink {
 
+class FrameEdgeInfo;
+
 class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -37,8 +39,8 @@ class CORE_EXPORT HTMLFrameElement final : public HTMLFrameElementBase {
   explicit HTMLFrameElement(Document&);
 
   bool HasFrameBorder() const { return frame_border_; }
-
   bool NoResize() const;
+  FrameEdgeInfo EdgeInfo() const;
 
   ParsedPermissionsPolicy ConstructContainerPolicy() const override;
 

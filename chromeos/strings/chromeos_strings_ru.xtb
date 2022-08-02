@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ОБНОВИТЬ</translation>
 <translation id="3009958530611748826">Выберите папку для сохранения</translation>
 <translation id="3017079585324758401">Фон</translation>
+<translation id="302435934487327038">Установка завершена</translation>
 <translation id="3027578600144895987">Закрыть камеру</translation>
 <translation id="3031560714565892478">Это видеокамера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> мА</translation>
 <translation id="3056720590588772262">Конечная точка</translation>
 <translation id="3069085583900247081">Проверка не пройдена</translation>
-<translation id="3076243757415932261">Проверка компонентов…</translation>
 <translation id="3083667275341675831">Диагностика соединений</translation>
 <translation id="3084958266922136097">Отключить заставку</translation>
 <translation id="3091839911843451378">Сбой: остановка работы</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Очистить историю печати? Текущие задания печати не будут удалены.</translation>
 <translation id="3383751554789092165">При необходимости измените информацию об устройстве.</translation>
 <translation id="3404249063913988450">Включить заставку</translation>
-<translation id="3404770484521709967">Установлены подходящие компоненты.</translation>
 <translation id="3413935475507503304">Чтобы выполнить обновление, нажмите "Далее".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безопасность</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Старый пароль</translation>
 <translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
-<translation id="4472575034687746823">Начать</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Не удалось выполнить проверку ping сетевого шлюза, не заданного по умолчанию.</translation>
 <translation id="4500213108254186382">Акселерометр крышки</translation>
@@ -664,6 +662,7 @@
 <translation id="6618744767048954150">Выполняется</translation>
 <translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>
 <translation id="6643016212128521049">Удалить</translation>
+<translation id="6644568396961840069">Не удалось сохранить файл. Подключите другой внешний накопитель или повторите попытку позже.</translation>
 <translation id="6647510110698214773">Алгоритм шифрования</translation>
 <translation id="6650062777702288430">Переключение между кана и буквенно-цифровыми символами</translation>
 <translation id="6657585470893396449">Пароль</translation>
@@ -809,7 +808,6 @@
 <translation id="8063022551652308521">Защита от записи отключена. Чтобы продолжить, включите ее.</translation>
 <translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="8082366717211101304">Не удается выполнить DNS-преобразование в приложениях для Android.</translation>
-<translation id="8083281199617904460">Ремонт должен выполнять квалифицированный специалист. Прежде чем начать, замените неисправные компоненты.</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8104083085214006426">Вы используете открытую небезопасную сеть.</translation>
 <translation id="8109786307828817014">Некоторые компоненты не откалиброваны. Продолжить?</translation>

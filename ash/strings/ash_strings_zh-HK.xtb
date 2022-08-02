@@ -922,7 +922,7 @@
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
 <translation id="6344138931392227467">已連結 <ph name="DEVICE_NAME" /></translation>
 <translation id="6351032674660237738">應用程式建議</translation>
-<translation id="6359587239691116345">取得最新功能並改善安全性。如果拒絕這項更新，裝置可能無法再正常運作，你也可能會遇到安全性和效能問題。</translation>
+<translation id="6359587239691116345">取得最新功能和改善安全性的資訊。如果拒絕此更新，裝置可能無法再正常運作，您亦可能會遇到安全性和效能問題。</translation>
 <translation id="6376931439017688372">藍牙已開啟</translation>
 <translation id="6381109794406942707">如要解鎖裝置，請輸入 PIN。</translation>
 <translation id="639644700271529076">大寫鍵已關閉</translation>
@@ -1428,5 +1428,5 @@
 <translation id="974545358917229949">顯示緊 <ph name="RESULT_COUNT" /> 個同「<ph name="QUERY" />」有關嘅結果</translation>
 <translation id="98515147261107953">橫向</translation>
 <translation id="990277280839877440">視窗 <ph name="WINDOW_TITILE" /> 閂咗。</translation>
-<translation id="996204416024568215">取得最新功能並改善安全性。更新作業會在背景執行。</translation>
+<translation id="996204416024568215">取得最新功能和改善安全性的資訊。更新會在背景中執行。</translation>
 </translationbundle>

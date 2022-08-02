@@ -703,6 +703,9 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // Whether this result is a recommendation.
   bool is_recommendation = false;
 
+  // Whether this result can have its update animation skipped.
+  bool skip_update_animation = false;
+
   // The icon of this result.
   SearchResultIconInfo icon;
 

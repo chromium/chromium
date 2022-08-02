@@ -102,15 +102,13 @@ class AutocompleteControllerMetrics {
                                          bool completed,
                                          const base::TimeTicks end_time) const;
 
-  // Logs 'Omnibox.CrossInputMatchStability.MatchChange' or
-  // 'Omnibox.MatchStability.AsyncMatchChange2' depending on
-  // `controller_.in_start()`.
-  void LogSuggestionChangedMetrics(size_t change_index) const;
+  // Logs 'Omnibox.MatchStability.MatchChangeIndex'. Additionally logs
+  // '*.CrossInput' or '*.Async' depending on `controller_.in_start()`.
+  void LogSuggestionChangeIndexMetrics(size_t change_index) const;
 
-  // Logs 'Omnibox.CrossInputMatchStability.MatchChangedInAnyPosition' or
-  // 'Omnibox.MatchStability.AsyncMatchChangedInAnyPosition' depending on
-  // `controller_.in_start()`.
-  void LogAnySuggestionChangedMetrics(bool changed) const;
+  // Logs 'Omnibox.MatchStability.MatchChangeInAnyPosition'. Additionally logs
+  // '*.CrossInput' or '*.Async' depending on `controller_.in_start()`.
+  void LogSuggestionChangeInAnyPositionMetrics(bool changed) const;
 
   const AutocompleteController& controller_;
 

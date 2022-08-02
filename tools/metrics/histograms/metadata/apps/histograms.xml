@@ -1664,7 +1664,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSearchQueryLength" units="characters"
-    expires_after="2022-12-01">
+    expires_after="2022-08-01">
+  <obsolete>
+    Deprecated in July 2022. Replaced with Apps.AppListSearchQueryLenghtV2,
+    which, unlike this histogram, only records query length for results from
+    launcher search results UI. Apps.AppListSearchQueryLength was recording
+    query length when launching results from continue section.
+  </obsolete>
 <!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
 
   <owner>yulunwu@chromium.org</owner>
@@ -1673,6 +1679,17 @@ chromium-metrics-reviews@google.com.
     The length of the app list search query when a result is opened. This is
     gathered per click of a search result.
   </summary>
+</histogram>
+
+<histogram name="Apps.AppListSearchQueryLengthV2{TabletOrClamshell}"
+    units="characters" expires_after="2022-12-01">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>calamity@chromium.org</owner>
+  <summary>
+    The length of the app list search query when a result is opened. This is
+    gathered per click of a search result in launcher search results UI.
+  </summary>
+  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.AppListSearchResultInternalApp.Open"

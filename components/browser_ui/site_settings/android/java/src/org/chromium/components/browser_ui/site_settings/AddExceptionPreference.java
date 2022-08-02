@@ -124,7 +124,7 @@ public class AddExceptionPreference
         final CheckBox thirdPartyExceptionsBox =
                 (CheckBox) view.findViewById(R.id.third_parties_exception_checkbox);
 
-        if (!mCategory.showSites(SiteSettingsCategory.Type.COOKIES)) {
+        if (mCategory.getType() != SiteSettingsCategory.Type.COOKIES) {
             // TODO(crbug.com/1077766): Change the string of the checkbox to something like
             // "including third-party cookies on this site".
             thirdPartyExceptionsBox.setVisibility(View.GONE);

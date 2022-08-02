@@ -927,9 +927,12 @@ CompositionText InputMethodAsh::ExtractCompositionText(
   }
 
   DCHECK(text.selection.start() <= text.selection.end());
+  DCHECK(text.selection.end() <= char_length);
   if (text.selection.start() < text.selection.end()) {
-    const uint32_t start = text.selection.start();
-    const uint32_t end = text.selection.end();
+    const size_t start =
+        std::min(text.selection.start(), static_cast<size_t>(char_length));
+    const size_t end =
+        std::min(text.selection.end(), static_cast<size_t>(char_length));
     ImeTextSpan ime_text_span(
         ui::ImeTextSpan::Type::kComposition, char16_offsets[start],
         char16_offsets[end], ui::ImeTextSpan::Thickness::kThick,

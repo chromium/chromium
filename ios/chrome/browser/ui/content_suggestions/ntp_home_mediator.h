@@ -23,7 +23,6 @@ class ChromeAccountManagerService;
 @protocol ContentSuggestionsCollectionControlling;
 @class ContentSuggestionsHeaderSynchronizer;
 @class ContentSuggestionsMediator;
-@class ContentSuggestionsCollectionViewController;
 @protocol FeedControlDelegate;
 @class FeedMetricsRecorder;
 class GURL;
@@ -57,12 +56,6 @@ class VoiceSearchAvailability;
 @property(nonatomic, strong) NTPHomeMetrics* NTPMetrics;
 // Recorder for the metrics related to the feed.
 @property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
-// View Controller for the NTP if using the non refactored NTP or the Feed is
-// not visible.
-// TODO(crbug.com/1114792): Create a protocol to avoid duplication and update
-// comment.
-@property(nonatomic, weak)
-    ContentSuggestionsCollectionViewController* suggestionsViewController;
 // View Controller forthe NTP if using the refactored NTP and the Feed is
 // visible.
 // TODO(crbug.com/1114792): Create a protocol to avoid duplication and update

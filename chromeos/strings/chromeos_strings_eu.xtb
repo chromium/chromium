@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">FRESKATU</translation>
 <translation id="3009958530611748826">Hautatu zer karpetatan gorde nahi duzun</translation>
 <translation id="3017079585324758401">Atzeko planoa</translation>
+<translation id="302435934487327038">Osatu da instalazioa</translation>
 <translation id="3027578600144895987">Itxi kamera</translation>
 <translation id="3031560714565892478">Gailua bideokamera bat da.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Amaiera-puntua</translation>
 <translation id="3069085583900247081">Probak huts egin du</translation>
-<translation id="3076243757415932261">Osagaiak baliozkotzen…</translation>
 <translation id="3083667275341675831">Konexio-diagnostikoak</translation>
 <translation id="3084958266922136097">Desgaitu pantaila-babeslea</translation>
 <translation id="3091839911843451378">Hutsegitea - Gelditu egin da</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Ziur inprimatze-historia guztia garbitu nahi duzula? Ez dira garbituko abian dauden inprimatze-lanak.</translation>
 <translation id="3383751554789092165">Behar denean, aldatu gailuari buruzko informazioa.</translation>
 <translation id="3404249063913988450">Gaitu pantaila-babeslea</translation>
-<translation id="3404770484521709967">Osagaiak behar bezala instalatuta daude.</translation>
 <translation id="3413935475507503304">Eguneratzeko, sakatu Hurrengoa.</translation>
 <translation id="3434107140712555581">% <ph name="BATTERY_PERCENTAGE" /></translation>
 <translation id="3435738964857648380">Segurtasuna</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Pasahitz zaharra</translation>
 <translation id="4453205916657964690">Azpisare-maskara</translation>
 <translation id="4454245904991689773">Gorde hemen</translation>
-<translation id="4472575034687746823">Hasi erabiltzen</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Ezin izan da egin ping lehenetsia ez den sarerako atebidean</translation>
 <translation id="4500213108254186382">Estalkiko abiadura-neurgailua</translation>
@@ -664,6 +662,7 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="6618744767048954150">Abian</translation>
 <translation id="6620487321149975369">Inprimatze-lanak historian agertuko dira, eskuz kendu ezean</translation>
 <translation id="6643016212128521049">Garbitu</translation>
+<translation id="6644568396961840069">Ezin izan da gorde fitxategia. Saiatu kanpoko memoria bat entxufatzen edo saiatu berriro geroago.</translation>
 <translation id="6647510110698214773">Enkriptatze-algoritmoa</translation>
 <translation id="6650062777702288430">Kana teklatutik teklatu alfanumerikora, eta alderantziz, aldatzeko etengailua</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
@@ -809,7 +808,6 @@ Sakatu mikrofonoa zerbait galdetu nahi badidazu.</translation>
 <translation id="8063022551652308521">Idazketaren aurkako babesa desaktibatuta dago oraindik. Aurrera egiteko, aktiba ezazu.</translation>
 <translation id="8075838845814659848">Geratzen den bateria</translation>
 <translation id="8082366717211101304">Ezin da ebatzi DNS Android-erako aplikazioetatik</translation>
-<translation id="8083281199617904460">Konponketa-prozesu hau konponketak egiteko trebakuntza duen teknikari batentzat dago diseinatuta. Oker funtzionatzen duten osagaiak ordeztu ondoren abiarazi behar da prozesua.</translation>
 <translation id="808894953321890993">Aldatu pasahitza</translation>
 <translation id="8104083085214006426">Segurua ez den sare ireki bat ari zara erabiltzen</translation>
 <translation id="8109786307828817014">Aurrera egin nahi duzu huts egin duten kalibrazioekin?</translation>

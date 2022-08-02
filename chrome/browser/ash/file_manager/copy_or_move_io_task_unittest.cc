@@ -393,7 +393,7 @@ class CopyOrMoveIsCrossFileSystemTest : public testing::Test {
     // Register and mount another volume.
     test_volume_path_ = profile_.GetPath().Append("test_volume");
     volume_manager->AddVolumeForTesting(test_volume_path_, VOLUME_TYPE_TESTING,
-                                        chromeos::DEVICE_TYPE_UNKNOWN,
+                                        ash::DeviceType::kUnknown,
                                         false /* read_only */);
   }
 

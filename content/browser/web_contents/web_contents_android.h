@@ -121,7 +121,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void PostMessageToMainFrame(
       JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jmessage,
+      const base::android::JavaParamRef<jobject>& jmessage,
       const base::android::JavaParamRef<jstring>& jsource_origin,
       const base::android::JavaParamRef<jstring>& jtarget_origin,
       const base::android::JavaParamRef<jobjectArray>& jports);

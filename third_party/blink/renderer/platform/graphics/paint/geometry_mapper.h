@@ -248,11 +248,6 @@ class PLATFORM_EXPORT GeometryMapper {
   static void ClearCache();
 
  private:
-  // The internal methods do the same things as their public counterparts, but
-  // take an extra |success| parameter which indicates if the function is
-  // successful on return. See comments of the public functions for failure
-  // conditions.
-
   struct ExtraProjectionResult {
     bool has_animation = false;
     bool has_fixed = false;
@@ -273,8 +268,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const ClipPaintPropertyNode& ancestor_clip,
       const TransformPaintPropertyNode& ancestor_transform,
       OverlayScrollbarClipBehavior,
-      InclusiveIntersectOrNot,
-      bool& success);
+      InclusiveIntersectOrNot);
 
   // The return value has the same meaning as that for
   // LocalToAncestorVisualRect.
@@ -284,8 +278,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior,
-      InclusiveIntersectOrNot,
-      bool& success);
+      InclusiveIntersectOrNot);
 
   // The return value has the same meaning as that for
   // LocalToAncestorVisualRect.
@@ -295,8 +288,7 @@ class PLATFORM_EXPORT GeometryMapper {
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,
       OverlayScrollbarClipBehavior,
-      InclusiveIntersectOrNot,
-      bool& success);
+      InclusiveIntersectOrNot);
 
   static const ClipPaintPropertyNode* HighestOutputClipBetween(
       const EffectPaintPropertyNode& ancestor,
@@ -325,13 +317,11 @@ class PLATFORM_EXPORT GeometryMapper {
   static bool LocalToAncestorVisualRectInternalForTesting(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
-      FloatClipRect& mapping_rect,
-      bool& success);
+      FloatClipRect& mapping_rect);
   static bool LocalToAncestorVisualRectInternalForCompositingOverlapForTesting(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
-      FloatClipRect& mapping_rect,
-      bool& success);
+      FloatClipRect& mapping_rect);
 };
 
 }  // namespace blink

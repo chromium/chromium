@@ -2654,10 +2654,18 @@ TEST_F(HoldingSpaceTrayTest, SelectionWithPrimaryAndSecondaryActions) {
   StartSession();
 
   // Add multiple in-progress holding space items.
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake1"),
-          HoldingSpaceProgress(0, 100));
-  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"),
-          HoldingSpaceProgress(0, 100));
+  std::vector<HoldingSpaceItem*> items = {
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake1"),
+              HoldingSpaceProgress(0, 100)),
+      AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake2"),
+              HoldingSpaceProgress(0, 100))};
+
+  // In-progress download items typically support in-progress commands.
+  for (HoldingSpaceItem* item : items) {
+    EXPECT_TRUE(
+        item->SetInProgressCommands({HoldingSpaceCommandId::kCancelItem,
+                                     HoldingSpaceCommandId::kPauseItem}));
+  }
 
   // Show UI.
   test_api()->Show();
@@ -3020,6 +3028,13 @@ TEST_P(HoldingSpaceTrayPrimaryAndSecondaryActionsTest, HasExpectedActions) {
   // Create an in-progress holding space `item` of the parameterized type.
   HoldingSpaceItem* item = AddItem(GetType(), base::FilePath("/tmp/fake"),
                                    HoldingSpaceProgress(0, 100));
+
+  // In-progress download items typically support in-progress commands.
+  if (HoldingSpaceItem::IsDownload(item->type())) {
+    EXPECT_TRUE(
+        item->SetInProgressCommands({HoldingSpaceCommandId::kCancelItem,
+                                     HoldingSpaceCommandId::kPauseItem}));
+  }
 
   // Show holding space UI.
   test_api()->Show();

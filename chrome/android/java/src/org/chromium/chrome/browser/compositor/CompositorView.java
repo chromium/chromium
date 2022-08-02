@@ -44,11 +44,8 @@ import org.chromium.ui.resources.ResourceManager;
 public class CompositorView
         extends FrameLayout implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
                                        WindowAndroid.SelectionHandlesObserver {
-    private static final String TAG = "CompositorView";
-
     // Cache objects that should not be created every frame
     private final Rect mCacheAppRect = new Rect();
-    private final int[] mCacheViewPosition = new int[2];
 
     private CompositorSurfaceManager mCompositorSurfaceManager;
     private boolean mOverlayVideoEnabled;
@@ -66,7 +63,6 @@ public class CompositorView
     private ResourceManager mResourceManager;
 
     // Lazily populated as it is needed.
-    private View mRootActivityView;
     private WindowAndroid mWindowAndroid;
     private TabContentManager mTabContentManager;
 
@@ -633,9 +629,8 @@ public class CompositorView
      * Converts the layout into compositor layers. This is to be called on every frame the layout
      * is changing.
      * @param provider               Provides the layout to be rendered.
-     * @param forRotation            Whether or not this is a special draw during a rotation.
      */
-    public void finalizeLayers(final LayoutProvider provider, boolean forRotation) {
+    public void finalizeLayers(final LayoutProvider provider) {
         TraceEvent.begin("CompositorView:finalizeLayers");
         Layout layout = provider.getActiveLayout();
         if (layout == null || mNativeCompositorView == 0) {

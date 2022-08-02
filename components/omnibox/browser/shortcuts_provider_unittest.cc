@@ -267,7 +267,9 @@ ShortcutsProviderTest::ShortcutsProviderTest() {
   // `scoped_feature_list_` needs to be initialized as early as possible, to
   // avoid data races caused by tasks on other threads accessing it.
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeature(omnibox::kShortcutExpanding);
+  RichAutocompletionParams::ClearParamsForTesting();
+  scoped_feature_list_.InitWithFeatures({omnibox::kShortcutExpanding},
+                                        {omnibox::kRichAutocompletion});
 };
 
 void ShortcutsProviderTest::SetUp() {
@@ -760,7 +762,9 @@ class ShortcutsProviderAggregateShortcutsTest : public ShortcutsProviderTest {
     // `scoped_feature_list_` needs to be initialized as early as possible, to
     // avoid data races caused by tasks on other threads accessing it.
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeature(omnibox::kAggregateShortcuts);
+    RichAutocompletionParams::ClearParamsForTesting();
+    scoped_feature_list_.InitWithFeatures({omnibox::kAggregateShortcuts},
+                                          {omnibox::kRichAutocompletion});
   }
 };
 

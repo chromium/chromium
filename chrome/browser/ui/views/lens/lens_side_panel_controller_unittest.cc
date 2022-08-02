@@ -89,7 +89,7 @@ TEST_F(LensSidePanelControllerTest, OpenWithURLHidesChromeSidePanel) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(kHideChromeSidePanelAction));
 }
 
-TEST_F(LensSidePanelControllerTest, CloseAfterOpenHidesLensSidePanel) {
+TEST_F(LensSidePanelControllerTest, DISABLED_CloseAfterOpenHidesLensSidePanel) {
   base::UserActionTester user_action_tester;
   controller_->OpenWithURL(
       content::OpenURLParams(GURL("http://foo.com"), content::Referrer(),

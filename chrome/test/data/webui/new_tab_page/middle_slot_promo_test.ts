@@ -202,15 +202,27 @@ suite('NewTabPageMiddleSlotPromoTest', () => {
       const canShowPromo = true;
       const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
       assertHasContent(canShowPromo, middleSlotPromo);
-      const promoAndDismissContainer =
-          $$(middleSlotPromo, '#promoAndDismissContainer') as HTMLElement;
-      assert(promoAndDismissContainer);
-      const parts = promoAndDismissContainer.children;
+      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
       assertEquals(3, parts.length);
 
       const dismissPromoButton = parts[1] as HTMLElement;
       dismissPromoButton.click();
-      assertEquals(true, promoAndDismissContainer.hidden);
+      assertEquals(true, middleSlotPromo.$.promoAndDismissContainer.hidden);
+    });
+
+    test(`clicking dismiss button dismisses promo`, async () => {
+      const canShowPromo = true;
+      const middleSlotPromo = await createMiddleSlotPromo(canShowPromo);
+      assertHasContent(canShowPromo, middleSlotPromo);
+      const parts = middleSlotPromo.$.promoAndDismissContainer.children;
+      assertEquals(3, parts.length);
+
+      const dismissPromoButton = parts[1] as HTMLElement;
+      dismissPromoButton.click();
+      assertEquals(true, middleSlotPromo.$.promoAndDismissContainer.hidden);
+
+      middleSlotPromo.$.undoDismissPromoButton.click();
+      assertEquals(false, middleSlotPromo.$.promoAndDismissContainer.hidden);
     });
   });
 });

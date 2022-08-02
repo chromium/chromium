@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -92,7 +92,7 @@ def display_stat(stats, root, options):
   print("\nUnder directory %s " % root)
   # number of depth to display, default is max depth under root
   num_output_depth = len(stats['OWNERS-count-by-depth'])
-  if (options.stat_coverage > 0
+  if (options.stat_coverage and options.stat_coverage > 0
       and options.stat_coverage < num_output_depth):
     num_output_depth = options.stat_coverage
 

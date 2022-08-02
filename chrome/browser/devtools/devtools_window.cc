@@ -1658,8 +1658,7 @@ void DevToolsWindow::SetOpenNewWindowForPopups(bool value) {
 
 void DevToolsWindow::CreateDevToolsBrowser() {
   PrefService* prefs = profile_->GetPrefs();
-  if (!prefs->GetDictionary(prefs::kAppWindowPlacement)
-           ->FindKey(kDevToolsApp)) {
+  if (!prefs->GetValueDict(prefs::kAppWindowPlacement).Find(kDevToolsApp)) {
     // Ensure there is always a default size so that
     // BrowserFrame::InitBrowserFrame can retrieve it later.
     DictionaryPrefUpdate update(prefs, prefs::kAppWindowPlacement);

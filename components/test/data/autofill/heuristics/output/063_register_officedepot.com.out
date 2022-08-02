@@ -9,8 +9,8 @@ ADDRESS_HOME_CITY | addrsForm[0].city | *City |  | addrsForm[0].firstName_1-defa
 ADDRESS_HOME_STATE | addrsForm[0].state | *State | {blank} | addrsForm[0].firstName_1-default
 ADDRESS_HOME_ZIP | addrsForm[0].postalCode1 | *Zip Code |  | addrsForm[0].firstName_1-default
 PHONE_HOME_CITY_CODE | addrsForm[0].phoneNumber1 | *Phone Number: |  | addrsForm[0].firstName_1-default
-PHONE_HOME_NUMBER | addrsForm[0].phoneNumber2 | *Phone Number: |  | addrsForm[0].firstName_1-default
-PHONE_HOME_NUMBER | addrsForm[0].phoneNumber3 | *Phone Number: |  | addrsForm[0].firstName_1-default
+PHONE_HOME_NUMBER_PREFIX | addrsForm[0].phoneNumber2 | *Phone Number: |  | addrsForm[0].firstName_1-default
+PHONE_HOME_NUMBER_SUFFIX | addrsForm[0].phoneNumber3 | *Phone Number: |  | addrsForm[0].firstName_1-default
 PHONE_HOME_EXTENSION | addrsForm[0].phoneNumber4 | ext. |  | addrsForm[0].firstName_1-default
 UNKNOWN_TYPE | addrsForm[0].faxNumber1 | Fax: |  | addrsForm[0].firstName_1-default
 UNKNOWN_TYPE | addrsForm[0].faxNumber2 | Fax: |  | addrsForm[0].firstName_1-default
@@ -32,8 +32,8 @@ ADDRESS_HOME_CITY | addrsForm[2].city | *City |  | addrsForm[2].firstName_3-defa
 ADDRESS_HOME_STATE | addrsForm[2].state | *State | {blank} | addrsForm[2].firstName_3-default
 ADDRESS_HOME_ZIP | addrsForm[2].postalCode1 | *Zip Code |  | addrsForm[2].firstName_3-default
 PHONE_HOME_CITY_CODE | addrsForm[2].phoneNumber1 | *Phone Number: |  | addrsForm[2].firstName_3-default
-PHONE_HOME_NUMBER | addrsForm[2].phoneNumber2 | *Phone Number: |  | addrsForm[2].firstName_3-default
-PHONE_HOME_NUMBER | addrsForm[2].phoneNumber3 | *Phone Number: |  | addrsForm[2].firstName_3-default
+PHONE_HOME_NUMBER_PREFIX | addrsForm[2].phoneNumber2 | *Phone Number: |  | addrsForm[2].firstName_3-default
+PHONE_HOME_NUMBER_SUFFIX | addrsForm[2].phoneNumber3 | *Phone Number: |  | addrsForm[2].firstName_3-default
 PHONE_HOME_EXTENSION | addrsForm[2].phoneNumber4 | ext. |  | addrsForm[2].firstName_3-default
 EMAIL_ADDRESS | addrsForm[2].email | *Email Address: |  | addrsForm[2].firstName_3-default
 UNKNOWN_TYPE | loginForm.loginName | *Login Name: |  | addrsForm[2].firstName_3-default

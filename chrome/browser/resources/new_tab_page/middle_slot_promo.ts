@@ -5,9 +5,11 @@
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {Command} from 'chrome://resources/js/browser_command/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -117,6 +119,15 @@ export async function renderPromo():
   return null;
 }
 
+export interface MiddleSlotPromoElement {
+  $: {
+    promoAndDismissContainer: HTMLElement,
+    dismissPromoButtonToast: CrToastElement,
+    dismissPromoButtonToastMessage: HTMLElement,
+    undoDismissPromoButton: HTMLElement,
+  };
+}
+
 // Element that requests and renders the middle-slot promo. The element is
 // hidden until the promo is rendered, If no promo exists or the promo is empty,
 // the element remains hidden.
@@ -138,7 +149,18 @@ export class MiddleSlotPromoElement extends PolymerElement {
     };
   }
 
+  private eventTracker_: EventTracker = new EventTracker();
   private middleSlotPromoId_: string;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.eventTracker_.removeAll();
+  }
 
   override ready() {
     super.ready();
@@ -151,13 +173,10 @@ export class MiddleSlotPromoElement extends PolymerElement {
           this.middleSlotPromoId_ = promoId;
         }
 
-        const promoAndDismissContainer =
-            this.shadowRoot!.getElementById('promoAndDismissContainer');
-        assert(promoAndDismissContainer);
         const promoContainer = promo.container;
         if (promoContainer) {
-          promoAndDismissContainer.prepend(promoContainer);
-          promoAndDismissContainer.hidden = false;
+          this.$.promoAndDismissContainer.prepend(promoContainer);
+          this.$.promoAndDismissContainer.hidden = false;
         }
       }
       this.dispatchEvent(new Event(
@@ -165,13 +184,30 @@ export class MiddleSlotPromoElement extends PolymerElement {
     });
   }
 
+  private onWindowKeydown_(e: KeyboardEvent) {
+    let ctrlKeyPressed = e.ctrlKey;
+    // <if expr="is_macosx">
+    ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
+    // </if>
+    if (ctrlKeyPressed && e.key === 'z') {
+      this.onUndoDismissPromoButtonClick_();
+    }
+  }
+
   private onDismissPromoButtonClick_() {
-    const promoAndDismissContainer =
-        this.shadowRoot!.getElementById('promoAndDismissContainer');
-    assert(promoAndDismissContainer);
-    promoAndDismissContainer.hidden = true;
+    assert(this.$.promoAndDismissContainer);
+    this.$.promoAndDismissContainer.hidden = true;
     NewTabPageProxy.getInstance().handler.blocklistPromo(
         this.middleSlotPromoId_);
+    this.$.dismissPromoButtonToast.show();
+  }
+
+  private onUndoDismissPromoButtonClick_() {
+    assert(this.$.promoAndDismissContainer);
+    NewTabPageProxy.getInstance().handler.undoBlocklistPromo(
+        this.middleSlotPromoId_);
+    this.$.promoAndDismissContainer.hidden = false;
+    this.$.dismissPromoButtonToast.hide();
   }
 }
 

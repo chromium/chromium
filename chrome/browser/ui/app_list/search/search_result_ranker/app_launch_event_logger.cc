@@ -188,13 +188,13 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
   // Store all Arc apps.
   // arc_apps_ and arc_packages_ can be nullptr in tests.
   if (arc_apps_ && arc_packages_) {
-    for (const auto app : arc_apps_->DictItems()) {
+    for (const auto app : *arc_apps_) {
       const base::Value* package_name_value = app.second.FindKey(kPackageName);
       if (!package_name_value) {
         continue;
       }
       const base::Value* package =
-          arc_packages_->FindKey(package_name_value->GetString());
+          arc_packages_->Find(package_name_value->GetString());
       if (!package) {
         continue;
       }
@@ -222,8 +222,8 @@ void AppLaunchEventLogger::SetRegistryAndArcInfo() {
 
   PrefService* pref_service = profile->GetPrefs();
   if (pref_service) {
-    arc_apps_ = pref_service->GetDictionary(arc::prefs::kArcApps);
-    arc_packages_ = pref_service->GetDictionary(arc::prefs::kArcPackages);
+    arc_apps_ = &pref_service->GetValueDict(arc::prefs::kArcApps);
+    arc_packages_ = &pref_service->GetValueDict(arc::prefs::kArcPackages);
   }
 }
 

@@ -186,6 +186,11 @@ bool HTMLParserScriptRunner::IsParserBlockingScriptReady() {
   DCHECK(ParserBlockingScript());
   if (!document_->IsScriptExecutionReady())
     return false;
+  // TODO(crbug.com/1344772) Consider moving this condition to
+  // Document::IsScriptExecutionReady(), while we are not yet sure.
+  if (base::FeatureList::IsEnabled(features::kForceInOrderScript) &&
+      document_->GetScriptRunner()->HasForceInOrderScripts())
+    return false;
   return ParserBlockingScript()->IsReady();
 }
 

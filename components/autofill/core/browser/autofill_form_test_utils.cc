@@ -173,11 +173,6 @@ void FormStructureTest::CheckFormStructureTestData(
                 form_structure->field(i)->html_type());
     }
     for (size_t i = 0;
-         i < test_case.expected_field_types.expected_phone_part.size(); i++) {
-      EXPECT_EQ(test_case.expected_field_types.expected_phone_part[i],
-                form_structure->field(i)->phone_part());
-    }
-    for (size_t i = 0;
          i < test_case.expected_field_types.expected_heuristic_type.size();
          i++) {
       EXPECT_EQ(test_case.expected_field_types.expected_heuristic_type[i],

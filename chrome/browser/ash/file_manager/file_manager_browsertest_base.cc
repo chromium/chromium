@@ -1056,7 +1056,7 @@ class FakeTestVolume : public LocalTestVolume {
  public:
   FakeTestVolume(const std::string& name,
                  VolumeType volume_type,
-                 chromeos::DeviceType device_type)
+                 ash::DeviceType device_type)
       : LocalTestVolume(name),
         volume_type_(volume_type),
         device_type_(device_type) {}
@@ -1138,7 +1138,7 @@ class FakeTestVolume : public LocalTestVolume {
   }
 
   const VolumeType volume_type_;
-  const chromeos::DeviceType device_type_;
+  const ash::DeviceType device_type_;
   const bool read_only_ = false;
 };
 
@@ -1147,7 +1147,7 @@ class RemovableTestVolume : public FakeTestVolume {
  public:
   RemovableTestVolume(const std::string& name,
                       VolumeType volume_type,
-                      chromeos::DeviceType device_type,
+                      ash::DeviceType device_type,
                       const base::FilePath& device_path,
                       const std::string& drive_label,
                       const std::string& file_system_type)
@@ -1554,7 +1554,7 @@ class HiddenTestVolume : public FakeTestVolume {
   HiddenTestVolume()
       : FakeTestVolume("internal_test",
                        VolumeType::VOLUME_TYPE_SYSTEM_INTERNAL,
-                       chromeos::DeviceType::DEVICE_TYPE_UNKNOWN) {}
+                       ash::DeviceType::kUnknown) {}
   HiddenTestVolume(const HiddenTestVolume&) = delete;
   HiddenTestVolume& operator=(const HiddenTestVolume&) = delete;
 
@@ -2657,8 +2657,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       file_system = *file_system_param;
     }
     usb_volume_ = std::make_unique<RemovableTestVolume>(
-        "fake-usb", VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-        chromeos::DEVICE_TYPE_USB, base::FilePath(), "FAKEUSB", file_system);
+        "fake-usb", VOLUME_TYPE_REMOVABLE_DISK_PARTITION, ash::DeviceType::kUSB,
+        base::FilePath(), "FAKEUSB", file_system);
 
     if (name == "mountFakeUsb")
       ASSERT_TRUE(usb_volume_->PrepareTestEntries(profile()));
@@ -2685,10 +2685,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     // Create partition volumes with the same device path and drive label.
     partition_1_ = std::make_unique<RemovableTestVolume>(
         "partition-1", VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-        chromeos::DEVICE_TYPE_USB, device_path, "Drive Label", "ext4");
+        ash::DeviceType::kUSB, device_path, "Drive Label", "ext4");
     partition_2_ = std::make_unique<RemovableTestVolume>(
         "partition-2", VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-        chromeos::DEVICE_TYPE_USB, device_path, "Drive Label", "ext4");
+        ash::DeviceType::kUSB, device_path, "Drive Label", "ext4");
 
     // Create fake entries on partitions.
     ASSERT_TRUE(partition_1_->PrepareTestEntries(profile()));
@@ -2709,13 +2709,13 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     // Create partition volumes with the same device path.
     partition_1_ = std::make_unique<RemovableTestVolume>(
         "partition-1", VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-        chromeos::DEVICE_TYPE_USB, device_path, "Drive Label", "ntfs");
+        ash::DeviceType::kUSB, device_path, "Drive Label", "ntfs");
     partition_2_ = std::make_unique<RemovableTestVolume>(
         "partition-2", VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-        chromeos::DEVICE_TYPE_USB, device_path, "Drive Label", "ext4");
+        ash::DeviceType::kUSB, device_path, "Drive Label", "ext4");
     partition_3_ = std::make_unique<RemovableTestVolume>(
         "partition-3", VOLUME_TYPE_REMOVABLE_DISK_PARTITION,
-        chromeos::DEVICE_TYPE_USB, device_path, "Drive Label", "vfat");
+        ash::DeviceType::kUSB, device_path, "Drive Label", "vfat");
 
     // Create fake entries on partitions.
     ASSERT_TRUE(partition_1_->PrepareTestEntries(profile()));
@@ -2737,8 +2737,8 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
   }
 
   if (name == "mountFakeMtp" || name == "mountFakeMtpEmpty") {
-    mtp_volume_ = std::make_unique<FakeTestVolume>(
-        "fake-mtp", VOLUME_TYPE_MTP, chromeos::DEVICE_TYPE_UNKNOWN);
+    mtp_volume_ = std::make_unique<FakeTestVolume>("fake-mtp", VOLUME_TYPE_MTP,
+                                                   ash::DeviceType::kUnknown);
 
     if (name == "mountFakeMtp")
       ASSERT_TRUE(mtp_volume_->PrepareTestEntries(profile()));

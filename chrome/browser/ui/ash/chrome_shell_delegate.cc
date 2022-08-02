@@ -258,7 +258,7 @@ void ChromeShellDelegate::SetUpEnvironmentForLockedFullscreen(bool locked) {
   }
 
   if (assistant::IsAssistantAllowedForProfile(profile) ==
-      chromeos::assistant::AssistantAllowedState::ALLOWED) {
+      ash::assistant::AssistantAllowedState::ALLOWED) {
     ash::AssistantState::Get()->NotifyLockedFullScreenStateChanged(locked);
   }
 }

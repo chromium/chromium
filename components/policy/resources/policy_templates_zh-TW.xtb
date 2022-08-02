@@ -2566,7 +2566,6 @@
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (單行欄位已淘汰，日後將遭到移除。請開始使用下方的多行文字方塊。)</translation>
 <translation id="3709266154059827597">設定擴充功能安裝黑名單</translation>
 <translation id="3711895659073496551">暫停</translation>
-<translation id="3715569262675717862">根據用戶端憑證進行驗證</translation>
 <translation id="3717409415785131989">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 就會顯示新版下載對話框 UI。
 
       如果將這項政策設為停用，代表 <ph name="PRODUCT_NAME" /> 會繼續顯示舊版下載櫃 UI。</translation>
@@ -2945,13 +2944,6 @@
 <translation id="410068710490553233">允許登入其他 Google 帳戶</translation>
 <translation id="4101282687722389021">這個項目上次進行更新的時間戳記 (世界標準時間)。時間戳記並非整數值，因此會以字串的形式傳送</translation>
 <translation id="4103289232974211388">經使用者確認後重新導向 SAML IdP</translation>
-<translation id="4105884561459127998">設定 SAML 登入的驗證類型。
-
-      如果未設定這項政策或使用預設設定 (值為 0)，瀏覽器會依其他因素決定是否要允許 SAML 登入行為。在最單純的情況下，如果是要驗證使用者和保護快取使用者資料，則判斷依據是使用者手動輸入的密碼。
-
-      如果將這項政策設為 ClientCertificate (值為 1)，則會依用戶端憑證驗證判斷是否要允許新使用者透過 SAML 登入。這類使用者不需要密碼，且其快取本機資料會受到對應加密金鑰的保護。舉例來說，如果使用這項設定，就能設定透過智慧型卡片驗證使用者 (請注意，你必須透過 DeviceLoginScreenExtensions 政策安裝智慧型卡片中介軟體應用程式)。
-
-      這項政策只會影響透過 SAML 進行驗證的使用者。</translation>
 <translation id="4105989332710272578">不針對列出的網址強制執行憑證透明化政策</translation>
 <translation id="4114059938441379876">你可以透過設定這項政策，指定使用者在瀏覽器中看到警告後，前往變更密碼的網址。密碼保護服務會將使用者導向你透過這項政策設定的網址 (僅限 HTTP 和 HTTPS 通訊協定)。為了讓 <ph name="PRODUCT_NAME" /> 能在這個變更密碼頁面中正確擷取新密碼的加鹽雜湊值，請確保變更密碼頁面符合以下網址所述的規範：https://www.chromium.org/developers/design-documents/create-amazing-password-forms。
 
@@ -4027,11 +4019,6 @@
       如果將這項政策設為輸入法 ID 清單，登入畫面即可顯示指定的輸入法。系統會預先選取第一個指定的輸入法。在特定使用者視窗的登入畫面中，除了這項政策指定的輸入法之外，還會提供使用者最後一次使用的輸入法。如果未設定這項政策，系統會根據登入畫面顯示的語言代碼提供登入畫面的輸入法。如果值不是有效的輸入法 ID，則會遭到忽略。</translation>
 <translation id="5407008856008996384">允許存取 CUPS 印表機</translation>
 <translation id="5413051574966911176">連線時，在遠端主機桌面停用連線相關 UI</translation>
-<translation id="5417597818300833094">透過這項政策，你可以讓使用者為 <ph name="PRODUCT_OS_NAME" /> 工作階段選擇你指定的其中一種輸入法。
-
-       如果不設定這項政策或將清單設為空白，使用者可以選取任何支援的輸入法。
-
-      注意：若系統不支援目前的輸入法，就會將輸入法切換至硬體鍵盤配置 (如果情況允許)，或是這份清單中的第一個有效項目。系統會忽略無效或不支援的輸入法。</translation>
 <translation id="5417906792459853336">回報裝置的應用程式清單和使用狀況資訊。
 
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
@@ -4733,16 +4720,6 @@
 <translation id="6207607210601267301">針對遠端存取主機停用無 PIN 碼驗證機制</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
-<translation id="6210422374261465354">這項政策可讓你在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中指定驗證網址的設定。
-
-      <ph name="WEBVIEW_PRODUCT_NAME" /> 會將這些驗證網址視為特殊網址，因此在驗證過程中，當 <ph name="WEBVIEW_PRODUCT_NAME" /> 中的網頁導向至驗證網址時，系統就會啟動可處理這個驗證網址的識別資訊提供者驗證器應用程式。
-
-      透過這項啟動識別資訊提供者驗證器應用程式的流程，識別資訊提供者可以啟用其他用途，例如提供多個應用程式適用的單一登入 (SSO)，或是收集零信任的裝置信號來瞭解裝置在驗證過程中的狀態，藉此提供更完善的安全防護能力。
-
-      如果裝置上未安裝可處理驗證網址的有效應用程式，系統會繼續在 <ph name="WEBVIEW_PRODUCT_NAME" /> 中導向網頁。
-
-      有效的驗證網址應採用 <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> 架構，且不得包含萬用字元。
-      </translation>
 <translation id="6212868225782276239">顯示所有印表機 (黑名單中的印表機除外)。</translation>
 <translation id="6220835555850906733">如果將這項政策設為啟用或不設定，系統會在使用者的裝置上允許所有支援的音訊輸出。
 
@@ -6058,7 +6035,6 @@
 <translation id="7554382342294940216">你可以透過設定這項政策，讓 <ph name="PRODUCT_OS_NAME" /> 在網頁認證入口的驗證機制忽略所有 Proxy 設定。這些驗證網頁 (也就是從開啟網頁認證入口登入網頁開始，到 Chrome 成功偵測到網際網路連線為止的所有網頁) 會在另一個視窗開啟，並忽略目前使用者的所有政策設定和限制。只有當政策、擴充功能或是使用者在 chrome://settings 設定 Proxy 時，這項政策才會生效。
 
       如果將這項政策設為停用或不設定，則所有網頁認證入口驗證網頁都會顯示在一般的新瀏覽器分頁中，使用目前使用者的 Proxy 設定。</translation>
-<translation id="7566878661979235378">SAML 登入驗證類型</translation>
 <translation id="7567373982693549834">這項政策可控管每位使用者是否能使用來源不受信任 (並非來自 Google Play 商店) 的 Android 應用程式。
 
       如果不設定這項政策的值，系統會視為禁止使用這項功能。
@@ -7301,7 +7277,6 @@
 <translation id="8951350807133946005">設定磁碟快取目錄</translation>
 <translation id="8955719471735800169">返回頁首</translation>
 <translation id="8956312248048980644">在預設情況下，允許使用 origin-keyed 代理程式叢集。</translation>
-<translation id="8959992920425111821">預設設定</translation>
 <translation id="8967125680876068695">Chrome 應用程式已在 Windows、Mac 和 Linux 上遭到淘汰。
       如果啟用這項政策，<ph name="PRODUCT_NAME" /> 會繼續允許 Chrome 應用程式在這些平台上執行，直到 2022 年 6 月對所有平台停止支援 Chrome 應用程式為止。
       如果停用或不設定這項政策，系統可能會不允許執行 Chrome 應用程式，具體做法取決於淘汰實施狀態。

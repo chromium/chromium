@@ -9,6 +9,10 @@
 
 #include <string>
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -803,6 +807,22 @@ void LogUserInteractionsWhenAddingCredentialFromSettings(
 // Log how the user interaction with the note field in password add / edit
 // dialogs.
 void LogPasswordNoteActionInSettings(PasswordNoteAction action);
+
+// Wraps |callback| into another callback that measures the elapsed time between
+// construction and actual execution of the callback. Records the result to
+// |histogram|, which is expected to be a char literal.
+template <typename R, typename... Args>
+base::OnceCallback<R(Args...)> TimeCallback(
+    base::OnceCallback<R(Args...)> callback,
+    const char* histogram) {
+  return base::BindOnce(
+      [](const char* histogram, const base::ElapsedTimer& timer,
+         base::OnceCallback<R(Args...)> callback, Args... args) {
+        base::UmaHistogramTimes(histogram, timer.Elapsed());
+        return std::move(callback).Run(std::forward<Args>(args)...);
+      },
+      histogram, base::ElapsedTimer(), std::move(callback));
+}
 
 }  // namespace metrics_util
 

@@ -4,13 +4,16 @@
 
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 
+#include "chrome/browser/page_info/about_this_site_side_panel_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
@@ -59,8 +62,10 @@ AboutThisSiteSidePanelView::AboutThisSiteSidePanelView(
   SetContentVisible(false);
   auto* web_contents = web_view_->GetWebContents();
   web_contents->SetDelegate(this);
-  // TODO(crbug.com/1318000): Intercept all cross-origin navigations and open
-  // them in a new tab.
+  web_contents->SetUserData(
+      kAboutThisSiteWebContentsUserDataKey,
+      std::make_unique<AboutThisSiteWebContentsUserData>(base::BindRepeating(
+          &AboutThisSiteSidePanelView::OpenUrlInBrowser, AsWeakPtr())));
   Observe(web_contents);
 }
 
@@ -68,34 +73,47 @@ void AboutThisSiteSidePanelView::LoadProgressChanged(double progress) {
   SetContentVisible(progress == 1.0);
 }
 
-bool AboutThisSiteSidePanelView::HandleContextMenu(
-    content::RenderFrameHost& render_frame_host,
-    const content::ContextMenuParams& params) {
-  // Disable context menu.
-  return true;
-}
-
 void AboutThisSiteSidePanelView::OpenUrl(const content::OpenURLParams& params) {
   web_view_->GetWebContents()->GetController().LoadURLWithParams(
       content::NavigationController::LoadURLParams(params));
 }
 
-void AboutThisSiteSidePanelView::DidOpenRequestedURL(
-    content::WebContents* new_contents,
-    content::RenderFrameHost* source_render_frame_host,
-    const GURL& url,
-    const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    bool started_from_context_menu,
-    bool renderer_initiated) {
-  content::OpenURLParams params(url, referrer, disposition, transition,
-                                renderer_initiated);
-  // If the navigation is initiated by the renderer process, we must set an
-  // initiator origin.
-  if (renderer_initiated)
-    params.initiator_origin = url::Origin::Create(url);
+content::WebContents* AboutThisSiteSidePanelView::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  // Redirect requests to open a new tab to the main browser. These come e.g.
+  // from the context menu.
+  return outer_delegate()->OpenURLFromTab(source, params);
+}
 
+void AboutThisSiteSidePanelView::AddNewContents(
+    content::WebContents* source,
+    std::unique_ptr<content::WebContents> new_contents,
+    const GURL& target_url,
+    WindowOpenDisposition disposition,
+    const gfx::Rect& initial_rect,
+    bool user_gesture,
+    bool* was_blocked) {
+  // Redirect requests to add a webcontents to the main browser. These come e.g.
+  // from middle clicks on links.
+  outer_delegate()->AddNewContents(source, std::move(new_contents), target_url,
+                                   disposition, initial_rect, user_gesture,
+                                   was_blocked);
+}
+
+bool AboutThisSiteSidePanelView::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  // Redirect keyboard events to the main browser.
+  return outer_delegate()->HandleKeyboardEvent(source, event);
+}
+
+content::WebContentsDelegate* AboutThisSiteSidePanelView::outer_delegate() {
+  return browser_view_->browser();
+}
+
+void AboutThisSiteSidePanelView::OpenUrlInBrowser(
+    const content::OpenURLParams& params) {
   browser_view_->browser()->OpenURL(params);
 }
 

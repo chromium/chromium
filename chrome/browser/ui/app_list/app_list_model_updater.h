@@ -61,8 +61,6 @@ class AppListModelUpdater {
   virtual void SetStatus(ash::AppListModelStatus status) {}
   // For SearchModel:
   virtual void SetSearchEngineIsGoogle(bool is_google) {}
-  virtual void UpdateSearchBox(const std::u16string& text,
-                               bool initiated_by_user) {}
   virtual void PublishSearchResults(
       const std::vector<ChromeSearchResult*>& results,
       const std::vector<ash::AppListSearchResultCategory>& categories) {}

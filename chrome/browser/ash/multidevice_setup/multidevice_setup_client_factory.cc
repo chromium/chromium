@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/device_sync/device_sync_client_factory.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -78,9 +77,7 @@ class MultiDeviceSetupClientHolder : public KeyedService {
 }  // namespace
 
 MultiDeviceSetupClientFactory::MultiDeviceSetupClientFactory()
-    : BrowserContextKeyedServiceFactory(
-          "MultiDeviceSetupClient",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("MultiDeviceSetupClient") {
   DependsOn(device_sync::DeviceSyncClientFactory::GetInstance());
 }
 

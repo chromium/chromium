@@ -161,6 +161,9 @@ TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
   EXPECT_TRUE(result.find(kValidUserAgentProductAndVersion) !=
               std::string::npos);
   EXPECT_EQ(result, expected);
+
+  // Verify navigator.platform is empty, see crbug.com/1348646.
+  EXPECT_EQ(ExecuteJavaScriptWithStringResult("navigator.platform;"), "");
 }
 
 TEST_F(WebEngineIntegrationUserAgentTest, InvalidProduct) {

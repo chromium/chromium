@@ -59,7 +59,7 @@ void SaveFeedBackgroundRefreshEnabledForNextColdStart();
 
 // Returns true if the user should receive a local notification when a feed
 // background refresh is completed. Background refresh completion notifications
-// are only compiled into non-release versions.
+// are only enabled by Experimental Settings.
 bool IsFeedBackgroundRefreshCompletedNotificationEnabled();
 
 // Whether the Following feed should also be refreshed in the background.

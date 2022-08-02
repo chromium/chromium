@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">প্রকার</translation>
 <translation id="2461822463642141190">বর্তমান</translation>
 <translation id="2480034874476596812">ম্যানুয়ালি বন্ধ করা</translation>
+<translation id="248546197012830854">ডিভাইস অফলাইন আছে। সহায়তা কন্টেন্ট দেখতে ওয়াই-ফাই নেটওয়ার্কের সাথে কানেক্ট করুন।</translation>
 <translation id="2491955442992294626">অন্য উইন্ডো ব্যবহার করার সময় কী পরীক্ষা করা হয়না</translation>
 <translation id="2493126929778606526">আপনার সেরা ফটোগুলি অটোমেটিক বেছে নেওয়া হয়</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -235,12 +236,12 @@
 <translation id="3008341117444806826">রিফ্রেশ করুন</translation>
 <translation id="3009958530611748826">কোন ফোল্ডারে সেভ করতে চান তা বেছে নিন</translation>
 <translation id="3017079585324758401">ব্যাকগ্রাউন্ড</translation>
+<translation id="302435934487327038">ইনস্টল করা হয়ে গেছে</translation>
 <translation id="3027578600144895987">ক্যামেরা বন্ধ করুন</translation>
 <translation id="3031560714565892478">ডিভাইস একটি ভিডিও ক্যামেরা।</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">এন্ডপয়েন্ট</translation>
 <translation id="3069085583900247081">টেস্ট ব্যর্থ হয়েছে</translation>
-<translation id="3076243757415932261">কম্পোনেন্ট যাচাই করা হচ্ছে...</translation>
 <translation id="3083667275341675831">কানেক্টিভিটি ডায়াগনস্টিকস</translation>
 <translation id="3084958266922136097">স্ক্রিন সেভার বন্ধ করুন</translation>
 <translation id="3091839911843451378">প্রিন্ট করা যায়নি - প্রিন্টার বন্ধ হয়ে গেছে</translation>
@@ -275,7 +276,6 @@
 <translation id="3369013195428705271">আপনি কি সব প্রিন্ট ইতিহাস মুছে ফেলতে চান? এখন যে প্রিন্ট করার কাজগুলি চলছে সেগুলি মোছা হবে না।</translation>
 <translation id="3383751554789092165">ডিভাইসের তথ্য পরিবর্তন করতে হবে।</translation>
 <translation id="3404249063913988450">স্ক্রিন সেভার চালু করুন</translation>
-<translation id="3404770484521709967">কম্পোনেন্ট সঠিকভাবে ইনস্টল করা হয়েছে।</translation>
 <translation id="3413935475507503304">আপডেটগুলি ব্যবহার করে চালিয়ে যাওয়ার জন্য, 'পরবর্তী' বিকল্পে ক্লিক করুন।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">নিরাপত্তা</translation>
@@ -395,7 +395,6 @@
 <translation id="445059817448385655">পুরনো পাসওয়ার্ড</translation>
 <translation id="4453205916657964690">সাবনেট মাস্ক</translation>
 <translation id="4454245904991689773">স্ক্যান করা ফাইল এখানে সেভ করুন</translation>
-<translation id="4472575034687746823">শুরু করা যাক</translation>
 <translation id="4479639480957787382">ইথারনেট</translation>
 <translation id="4483049906298469269">ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="4500213108254186382">Lid অ্যাকসিলরোমিটার</translation>
@@ -662,7 +661,9 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> রিপেয়ার ছেড়ে বেরিয়ে আসুন</translation>
 <translation id="6618744767048954150">চলছে</translation>
 <translation id="6620487321149975369">ম্যানুয়ালি সরিয়ে না দেওয়া পর্যন্ত প্রিন্ট হওয়া কাজগুলি ইতিহাসে দেখা যাবে</translation>
+<translation id="6624819909909965616">১০ এমবির থেকে বড় ফাইল আপলোড করা যাবে না</translation>
 <translation id="6643016212128521049">সাফ করুন</translation>
+<translation id="6644568396961840069">ফাইল সেভ করা যায়নি। অন্য একটি এক্সটার্নাল স্টোরেজে প্লাগ-ইন করার চেষ্টা করুন বা পরে আবার চেষ্টা করুন।</translation>
 <translation id="6647510110698214773">এনক্রিপশন অ্যালগরিদম</translation>
 <translation id="6650062777702288430">কানা/আলফানিউমেরিক সুইচ</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
@@ -696,6 +697,7 @@
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
 <translation id="6995564396478647735">'রাইট প্রোটেক্ট' চালু আছে কিনা তা ভালভাবে দেখে নিন</translation>
+<translation id="7005833343836210400">ডিভাইস অফলাইন আছে</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
 <translation id="7040230719604914234">অপারেটর</translation>
 <translation id="7041549558901442110">ডিভাইস কানেক্ট করা নেই।</translation>
@@ -808,8 +810,8 @@
 <translation id="8063022551652308521">'রাইট প্রোটেক্ট' এখনও বন্ধ করা আছে। এগিয়ে যেতে 'রাইট প্রোটেক্ট' চালু করুন।</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>
-<translation id="8083281199617904460">এই রিপেয়ার প্রসেস একজন প্রশিক্ষিত প্রযুক্তিবিদ দ্বারা সম্পন্ন করা প্রয়োজন। ত্রুটিপূর্ণ কম্পোনেন্টগুলি সরিয়ে দেওয়ার পর শুরু করুন।</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
+<translation id="8094062939584182041">এই সমস্যা সম্পর্কে আপনাকে ইমেল পাঠানোর জন্য Google-কে অনুমতি দিন</translation>
 <translation id="8104083085214006426">আপনি একটি ওপেন এবং নিরাপদ নয় এমন নেটওয়ার্ক ব্যবহার করছেন</translation>
 <translation id="8109786307828817014">ক্যালিব্রেশন ছাড়া চালিয়ে যাবেন?</translation>
 <translation id="811820734797650957">(Android) গেটওয়ে পিং করা যেতে পারে</translation>

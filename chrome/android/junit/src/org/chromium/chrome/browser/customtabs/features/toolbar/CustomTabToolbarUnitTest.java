@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,6 +39,8 @@ import org.chromium.base.task.test.ShadowPostTask.TestImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.JUnitTestGURLs;
@@ -59,6 +62,7 @@ public class CustomTabToolbarUnitTest {
     @Mock
     CustomTabToolbarAnimationDelegate mAnimationDelegate;
 
+    private Activity mActivity;
     private CustomTabLocationBar mLocationBar;
     private TextView mTitleBar;
     private TextView mUrlBar;
@@ -78,13 +82,21 @@ public class CustomTabToolbarUnitTest {
                 .when(mLocationBarModel)
                 .getSecurityIconColorStateList();
 
-        Activity activity = Robolectric.buildActivity(TestActivity.class).get();
-        CustomTabToolbar toolbar = (CustomTabToolbar) LayoutInflater.from(activity).inflate(
+        mActivity = Robolectric.buildActivity(TestActivity.class).get();
+        CustomTabToolbar toolbar = (CustomTabToolbar) LayoutInflater.from(mActivity).inflate(
                 R.layout.custom_tabs_toolbar, null, false);
         mLocationBar = (CustomTabLocationBar) toolbar.createLocationBar(
                 mLocationBarModel, mActionModeCallback, () -> null, () -> null);
         mUrlBar = toolbar.findViewById(R.id.url_bar);
         mTitleBar = toolbar.findViewById(R.id.title_bar);
+        mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
+    }
+
+    @After
+    public void tearDown() {
+        mActivity.finish();
+        ShadowPostTask.reset();
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, null);
     }
 
     @Test
@@ -102,8 +114,7 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testShowBranding_DomainOnly() {
-        mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
-
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
         mLocationBar.showBranding();
         ShadowLooper.idleMainLooper();
         verify(mLocationBarModel).notifyTitleChanged();
@@ -123,8 +134,6 @@ public class CustomTabToolbarUnitTest {
 
     @Test
     public void testShowBranding_DomainAndTitle() {
-        mLocationBar.setAnimDelegateForTesting(mAnimationDelegate);
-
         // Set title before the branding starts, so the state is domain and title.
         mLocationBar.setShowTitle(true);
         ShadowLooper.idleMainLooper();
@@ -148,5 +157,73 @@ public class CustomTabToolbarUnitTest {
         verify(mLocationBarModel).notifySecurityStateChanged();
 
         assertEquals("URL bar is not visible.", mUrlBar.getVisibility(), View.VISIBLE);
+    }
+
+    @Test
+    public void testToolbarBrandingDelegateImpl_EmptyToRegular() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, true);
+
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
+        mLocationBar.showEmptyLocationBar();
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/false);
+
+        // Attempt to update title and URL, should noop since location bar is still in empty state.
+        mLocationBar.onTitleChanged();
+        mLocationBar.onUrlChanged();
+        assertEquals("Runnables should queue up since location bar is empty.", 2,
+                postBrandingRunnableCounts());
+
+        mLocationBar.showRegularToolbar();
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
+        assertEquals("Runnables queue should be empty after reset to regular toolbar", 0,
+                postBrandingRunnableCounts());
+    }
+
+    @Test
+    public void testToolbarBrandingDelegateImpl_EmptyToBranding() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.CCT_BRAND_TRANSPARENCY, true);
+
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
+        mLocationBar.showEmptyLocationBar();
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/false);
+
+        // Attempt to update title and URL, should noop since location bar is still in empty state.
+        mLocationBar.onTitleChanged();
+        mLocationBar.onUrlChanged();
+        assertEquals("Runnables should queue up since location bar is empty.", 2,
+                postBrandingRunnableCounts());
+
+        mLocationBar.showBrandingLocationBar();
+        assertUrlAndTitleVisible(/*titleVisible=*/true, /*urlVisible=*/false);
+
+        // Attempt to update title and URL,
+        mLocationBar.onTitleChanged();
+        mLocationBar.onUrlChanged();
+        assertEquals("Runnables should queue up during branding.", 2, postBrandingRunnableCounts());
+
+        mLocationBar.showRegularToolbar();
+        assertUrlAndTitleVisible(/*titleVisible=*/false, /*urlVisible=*/true);
+        assertEquals("Runnables queue should be empty after reset to regular toolbar", 0,
+                postBrandingRunnableCounts());
+    }
+
+    private int postBrandingRunnableCounts() {
+        Runnable[] runnables = mLocationBar.getAfterBrandingRunnablesForTesting();
+        int count = 0;
+        for (Runnable r : runnables) {
+            if (r != null) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {
+        int expectedTitleVisibility = titleVisible ? View.VISIBLE : View.GONE;
+        int expectedUrlVisibility = urlVisible ? View.VISIBLE : View.GONE;
+
+        assertEquals(
+                "Title visibility is off.", expectedTitleVisibility, mTitleBar.getVisibility());
+        assertEquals("URL bar visibility is off.", expectedUrlVisibility, mUrlBar.getVisibility());
     }
 }

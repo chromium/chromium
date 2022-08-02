@@ -13,7 +13,7 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::prefs::AssistantOnboardingMode;
+using assistant::prefs::AssistantOnboardingMode;
 
 const AssistantSuggestionsModel* GetModel() {
   return AssistantSuggestionsController::Get()->GetModel();

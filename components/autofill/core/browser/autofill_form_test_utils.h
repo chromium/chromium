@@ -90,7 +90,6 @@ struct TestFormFlags {
 template <typename = void>
 struct ExpectedFieldTypeValues {
   std::vector<HtmlFieldType> expected_html_type = {};
-  std::vector<AutofillField::PhonePart> expected_phone_part = {};
   std::vector<ServerFieldType> expected_heuristic_type = {};
   std::vector<ServerFieldType> expected_overall_type = {};
 };

@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">인쇄 실패</translation>
 <translation id="1125564390852150847">새 탭 만들기</translation>
 <translation id="1126809382673880764">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. Gmail, Google 검색과 같은 다른 Google 서비스에서는 가능한 경우 세이프 브라우징 보호가 계속 제공됩니다.</translation>
+<translation id="1135212215217513471">iOS용 Chrome 다운로드</translation>
 <translation id="1145536944570833626">기존 데이터 삭제</translation>
 <translation id="1147031633655575115"><ph name="USER" />님의 계정으로 로그인됨</translation>
 <translation id="1154984953698510061">다른 탭 보기</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">동기화 데이터에 항상 액세스하려면 본인 확인 절차를 거치세요.</translation>
 <translation id="1870148520156231997">비밀번호 표시</translation>
 <translation id="1872096359983322073">토치</translation>
+<translation id="1910975740091000991">iOS용 Chrome</translation>
 <translation id="1911619930368729126">Google Drive로 업로드</translation>
 <translation id="1923342640370224680">지난 1시간</translation>
 <translation id="1930989359703290198">조직에서 특정 계정으로만 로그인하도록 허용합니다. 허용되지 않는 계정은 숨겨져 있습니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">복사한 텍스트 검색</translation>
 <translation id="214201757571129614">로그인…</translation>
 <translation id="2149973817440762519">북마크 수정</translation>
+<translation id="2155145621546387786">Chrome 공유</translation>
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2218443599109088993">축소</translation>
 <translation id="2230173723195178503">웹페이지 로드됨</translation>
@@ -406,7 +409,6 @@ Google이 아닌 다른 검색엔진을 사용 중이라면 해당 검색엔진�
 <translation id="4502566650163919158">지금 확인</translation>
 <translation id="4505980578794259603"><ph name="TIME" />에 마지막으로 확인함</translation>
 <translation id="4508750114462689118">로그인 프로모션 닫기</translation>
-<translation id="4511669830082467224">Google로 이미지 검색</translation>
 <translation id="4526249700380860531"><ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="452750746583162491">동기화된 데이터 검토</translation>
 <translation id="4536418791685807335">다시 로그인해 주세요.</translation>

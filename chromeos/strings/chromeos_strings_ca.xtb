@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ACTUALITZA</translation>
 <translation id="3009958530611748826">Selecciona en quina carpeta vols que es desi</translation>
 <translation id="3017079585324758401">Fons</translation>
+<translation id="302435934487327038">La instal·lació s'ha completat</translation>
 <translation id="3027578600144895987">Tanca la càmera</translation>
 <translation id="3031560714565892478">El dispositiu és una càmera de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Punt final</translation>
 <translation id="3069085583900247081">La prova no s'ha superat</translation>
-<translation id="3076243757415932261">S'estan validant els components...</translation>
 <translation id="3083667275341675831">Diagnòstic de connectivitat</translation>
 <translation id="3084958266922136097">Desactiva l'estalvi de pantalla</translation>
 <translation id="3091839911843451378">Error: s'ha aturat</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Confirmes que vols esborrar tot l'historial d'impressions? Les tasques d'impressió en curs no s'esborraran.</translation>
 <translation id="3383751554789092165">Canvia la informació del dispositiu segons calgui.</translation>
 <translation id="3404249063913988450">Activa l'estalvi de pantalla</translation>
-<translation id="3404770484521709967">Els components s'han instal·lat correctament.</translation>
 <translation id="3413935475507503304">Per continuar amb l'actualització, fes clic a Següent.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguretat</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Contrasenya antiga</translation>
 <translation id="4453205916657964690">Màscara de subxarxa</translation>
 <translation id="4454245904991689773">Desa a</translation>
-<translation id="4472575034687746823">Comença</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">No s'ha pogut fer ping a la passarel·la de xarxa no predeterminada</translation>
 <translation id="4500213108254186382">Acceleròmetre de la tapa</translation>
@@ -664,6 +662,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
 <translation id="6643016212128521049">Esborra</translation>
+<translation id="6644568396961840069">El fitxer no s'ha pogut desar. Prova de connectar-lo a un altre emmagatzematge extern o torna-ho a provar més tard.</translation>
 <translation id="6647510110698214773">Algoritme d'encriptació</translation>
 <translation id="6650062777702288430">Interruptor de caràcters kana/alfanumèrics</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
@@ -809,7 +808,6 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8063022551652308521">La protecció contra l'escriptura encara està desactivada. Per continuar, activa-la.</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
-<translation id="8083281199617904460">Aquest procés de reparació l'ha de dur a terme un tècnic qualificat. No comencis fins que no s'hagin substituït els components que no funcionen correctament.</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8104083085214006426">Estàs utilitzant una xarxa oberta i no segura</translation>
 <translation id="8109786307828817014">Vols continuar amb les calibracions fallides?</translation>

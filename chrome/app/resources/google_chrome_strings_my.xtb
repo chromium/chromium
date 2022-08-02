@@ -14,8 +14,6 @@
 <translation id="1142745911746664600">Chrome ကို အပ်ဒိတ်လုပ်၍ မရခြင်း</translation>
 <translation id="1152920704813762236">ChromeOS အကြောင်း</translation>
 <translation id="1154147086299354128">&amp;Chrome တွင် ဖွင့်ရန်</translation>
-<translation id="1178374936842835197">ဤစာမျက်နှာတွင် ဆက်တင်ကိုမပြပါက <ph name="LINK_BEGIN" />
-        ChromeOS Flex ဆင်တင်များ<ph name="LINK_END" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="1203500561924088507">ထည့်သွင်းသည့်အတွက် ကျေးဇူးတင်ပါသည်။ <ph name="BUNDLE_NAME" /> အသုံးမပြုမီ သင့်ဘရောင်ဇာကို ပြန်စရမည်။</translation>
 <translation id="1278833599417554002">&amp;Chrome အပ်ဒိတ်လုပ်ရန် ပြန်ဖွင့်ပါ</translation>
 <translation id="1302523850133262269">​​ကျေးဇူးပြုပြီး Chrome က စနစ်၏ နောက်ဆုံး မွမ်းမံမှုများကို တပ်ဆင်ပေးနေတာကို စောင့်ပါ။</translation>
@@ -124,7 +122,6 @@
 <translation id="3080151273017101988">Google Chrome ကို ပိတ်လိုက်ချိန်မှာ နောက်ခံအက်ပ်များကို ဆက်ဖွင့် ထားရန်</translation>
 <translation id="3089968997497233615">ပိုသစ်သော၊ ပိုလုံခြုံသော Google Chrome ရနိုင်ပါသည်။</translation>
 <translation id="3100998948628680988">သင်၏ Chrome ပရိုဖိုင်ကို အမည်ပေးပါ</translation>
-<translation id="3103390129666310801">သင့်စက် အပ်ဒိတ်ဖြစ် မဖြစ် ကြည့်ရန် <ph name="LINK_BEGIN" />ChromeOS Flex ဆက်တင်များ<ph name="LINK_END" /> သို့သွားပါ</translation>
 <translation id="3114643501466072395">သင်၏အခြားစကားဝှက်များတွင် ဒေတာပေါက်ကြားမှုနှင့် အခြားသော လုံခြုံရေးပြဿနာများ ရှိ၊ မရှိ စစ်ဆေးရန် <ph name="BEGIN_LINK" />Chrome သို့ လက်မှတ်ထိုးဝင်ပါ<ph name="END_LINK" />။</translation>
 <translation id="3140883423282498090">သင် ပြောင်းလဲခဲ့သည်များမျာ သင်က Google Chrome ကို နောက်တစ်ကြိမ် ပြန်ဖွင့်စဉ် အကျိုးသက်ရောက် လာကြပါမည်။</translation>
 <translation id="3149510190863420837">Chrome အက်ပ်များ</translation>
@@ -215,7 +212,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">နောက်ပိုင်းထွက်မည့် Google Chrome အပ်ဒိတ်များ ရယူရန် macOS 10.13 နှင့်အထက် လိုအပ်ပါမည်။ ဤကွန်ပျူတာက OS X 10.11 အသုံးပြုနေသည်။</translation>
 <translation id="5098668839038261629">ဖွင့်ထားပါက Chrome မှလည်း သင်ထွက်သွားပါမည်</translation>
-<translation id="5112116809696021727">သင်၏စက် အပ်ဒိတ်ဖြစ်၊ မဖြစ် ကြည့်ရန် <ph name="LINK_BEGIN" />ChromeOS ဆက်တင်များ<ph name="LINK_END" /> သို့သွားပါ</translation>
 <translation id="5132929315877954718">Google Chrome အတွက် ဧရာမ အက်ပ်များ၊ ဂိမ်းများ၊ တိုးချဲ့မှုများ နှင့် အပြင်အဆင်များကို ရှာကြည့်ပါ</translation>
 <translation id="5139423532931106058">သင့် Chrome ပရိုဖိုင်ကို စိတ်ကြိုက်လုပ်ရန်</translation>
 <translation id="5163087008893166964">Chrome က ကြိုဆိုပါသည်၊ ဘရောင်ဇာဝင်းဒိုးအသစ် ဖွင့်လိုက်ပါပြီ</translation>
@@ -255,8 +251,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="5940385492829620908">သင်၏ ဝဘ်၊ စာညှပ်များ၊ နှင့် အခြားသော Chrome အရာများဟာ ဒီမှာ နေထိုင်ကြပါသည်။</translation>
 <translation id="5941711191222866238">အနည်းဆုံး လုပ်ရန်</translation>
 <translation id="5941830788786076944">Google Chrome ကို ပုံသေ ဘရောင်ဇာ ပြုလုပ်ပါ။</translation>
-<translation id="5959292945051687759">ဤစာမျက်နှာတွင် ဆက်တင်ကို မပြပါက <ph name="LINK_BEGIN" />
-        ChromeOS ဆင်တင်များ<ph name="LINK_END" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="6003112304606738118">ဒေါင်းလုဒ်လုပ်နေသည်… <ph name="HOURS" /> နာရီ ကျန်သည်</translation>
 <translation id="6040143037577758943">ပိတ်ရန်</translation>
 <translation id="6070348360322141662">လုံခြုံရေး ပိုမိုတင်းကြပ်စေရန်အတွက် Google Chrome သည် သင်၏ ဒေတာများကို အသွင်ဝှက်ထားပါမည်</translation>

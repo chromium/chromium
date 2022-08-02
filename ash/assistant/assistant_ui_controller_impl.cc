@@ -81,8 +81,7 @@ void AssistantUiControllerImpl::RegisterProfilePrefs(
       prefs::kAssistantNumSessionsWhereOnboardingShown, 0);
 }
 
-void AssistantUiControllerImpl::SetAssistant(
-    chromeos::assistant::Assistant* assistant) {
+void AssistantUiControllerImpl::SetAssistant(assistant::Assistant* assistant) {
   assistant_ = assistant;
 }
 
@@ -119,7 +118,7 @@ void AssistantUiControllerImpl::ShowUi(AssistantEntryPoint entry_point) {
 
   // TODO(dmblack): Show a more helpful message to the user.
   if (assistant_state->assistant_status() ==
-      chromeos::assistant::AssistantStatus::NOT_READY) {
+      assistant::AssistantStatus::NOT_READY) {
     ShowUnboundErrorToast();
     return;
   }
@@ -144,7 +143,7 @@ absl::optional<base::ScopedClosureRunner> AssistantUiControllerImpl::CloseUi(
   // provided the visibility change hasn't been invalidated.
   return base::ScopedClosureRunner(base::BindOnce(
       [](const base::WeakPtr<AssistantUiControllerImpl>& weak_ptr,
-         chromeos::assistant::AssistantExitPoint exit_point) {
+         assistant::AssistantExitPoint exit_point) {
         if (weak_ptr)
           weak_ptr->model_.SetClosed(exit_point);
       },

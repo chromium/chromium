@@ -131,10 +131,7 @@ void AddContainerToPrefs(Profile* profile,
     return;
   }
 
-  base::Value new_container(base::Value::Type::DICTIONARY);
-  new_container.SetKey(prefs::kVmNameKey, base::Value(container_id.vm_name));
-  new_container.SetKey(prefs::kContainerNameKey,
-                       base::Value(container_id.container_name));
+  base::Value new_container{container_id.ToDictValue()};
   for (const auto item : properties) {
     if (base::Contains(*kPropertiesAllowList, item.first)) {
       new_container.SetKey(std::move(item.first), std::move(item.second));
@@ -203,6 +200,7 @@ VmType VmTypeFromPref(const base::Value& pref) {
   // when only TERMINA was using prefs..
   auto type = pref.FindIntKey(guest_os::prefs::kVmTypeKey);
   if (!type.has_value()) {
+    LOG(WARNING) << "No VM type in pref, defaulting to termina";
     return VmType::TERMINA;
   }
   if (*type < vm_tools::apps::VmType_MIN ||

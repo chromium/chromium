@@ -1345,6 +1345,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2241053333139545397">Adatainak olvasása és módosítása bizonyos webhelyeken</translation>
 <translation id="2241634353105152135">Csak egyszer</translation>
 <translation id="2242687258748107519">Fájlinformáció</translation>
+<translation id="2245296100676446525">Ha bekapcsolja a szinkronizálást, hozzáférhet többek között könyvjelzőihez, jelszavaihoz és előzményeihez ezen az eszközön és bárhol máshol, ahol szinkronizál.</translation>
 <translation id="2245603955208828424">A nyílbillentyűk segítségével betűről betűre mozoghat az elemek között.</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> eszközét automatikusan frissíti a rendszer, hogy a legfrissebb funkciókat és biztonsági javításokat tudja biztosítani. A frissítési preferenciákat a Beállításokban tekintheti át.</translation>
 <translation id="2246549592927364792">Szeretne képleírásokat kapni a Google-tól?</translation>
@@ -6448,7 +6449,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7212097698621322584">A módosításhoz adja meg jelenlegi PIN-kódját. Ha nem tudja a PIN-kódot, vissza kell állítania a biztonsági hardverkulcsot, majd új PIN-kódot kell létrehoznia.</translation>
 <translation id="7213903639823314449">A címsávban használt keresőmotor</translation>
 <translation id="721490496276866468">Jelszavak importálása</translation>
-<translation id="7216595297012131718">A nyelveket tetszés szerint rendezheti</translation>
 <translation id="7219473482981809164">Több letölthető profilt is találtunk. A továbblépés előtt válassza ki, hogy melyeket szeretné letölteni.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nem található gyenge jelszó}=1{1 gyenge jelszó}other{{NUM_WEAK} gyenge jelszó}}</translation>
 <translation id="7220019174139618249">Nem sikerült a jelszavak exportálása a következő helyre: <ph name="FOLDER" /></translation>

@@ -323,7 +323,10 @@ ClipboardWarnBubble::ClipboardWarnBubble(const std::u16string& text)
   UpdateBorderSize(GetBubbleSize());
 }
 
-ClipboardWarnBubble::~ClipboardWarnBubble() = default;
+ClipboardWarnBubble::~ClipboardWarnBubble() {
+  if (paste_cb_)
+    std::move(paste_cb_).Run(false);
+}
 
 gfx::Size ClipboardWarnBubble::GetBubbleSize() const {
   DCHECK(label_);

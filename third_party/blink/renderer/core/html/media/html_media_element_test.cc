@@ -1206,8 +1206,8 @@ TEST_P(HTMLMediaElementTest,
 TEST_P(HTMLMediaElementTest,
        DestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsNotEnabled) {
   // Ensure that the WebMediaPlayer is destroyed when moving to a same-origin
-  // document, if `kPictureInPictureV2` is not enabled.
-  ScopedPictureInPictureV2ForTest scoped_feature(false);
+  // document, if `kDocumentPictureInPictureAPI` is not enabled.
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(false);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://a.com",
                                       /*should_destroy=*/true);
 }
@@ -1216,8 +1216,8 @@ TEST_P(
     HTMLMediaElementTest,
     DestroyMediaPlayerWhenSwitchingDifferentOriginDocumentsIfReuseIsNotEnabled) {
   // Ensure that the WebMediaPlayer is destroyed when moving to a new origin
-  // document, if `kPictureInPictureV2` is not enabled.
-  ScopedPictureInPictureV2ForTest scoped_feature(false);
+  // document, if `kDocumentPictureInPictureAPI` is not enabled.
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(false);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
                                       /*should_destroy=*/true);
 }
@@ -1226,9 +1226,9 @@ TEST_P(
     HTMLMediaElementTest,
     DoNotDestroyMediaPlayerWhenSwitchingSameOriginDocumentsIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is re-used when moving to a same-origin
-  // document, if `kPictureInPictureV2` is enabled.
+  // document, if `kDocumentPictureInPictureAPI` is enabled.
   ScopedPictureInPictureAPIForTest scoped_dependency(true);
-  ScopedPictureInPictureV2ForTest scoped_feature(true);
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://a.com",
                                       /*should_destroy=*/false);
 }
@@ -1237,10 +1237,10 @@ TEST_P(
     HTMLMediaElementTest,
     DestroyMediaPlayerWhenSwitchingDifferentOriginDocumentsIfReuseIsEnabled) {
   // Ensure that the WebMediaPlayer is destroyed when moving to a new origin
-  // document, if `kPictureInPictureV2` is enabled. Re-use should only occur if
-  // it's a same-origin document.
+  // document, if `kDocumentPictureInPictureAPI` is enabled. Re-use should only
+  // occur if it's a same-origin document.
   ScopedPictureInPictureAPIForTest scoped_dependency(true);
-  ScopedPictureInPictureV2ForTest scoped_feature(true);
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   MoveElementAndTestPlayerDestruction("https://a.com", "https://b.com",
                                       /*should_destroy=*/true);
 }
@@ -1250,7 +1250,7 @@ TEST_P(HTMLMediaElementTest,
   // Ensure that the WebMediaPlayer is re-used, that navigating the opener away
   // causes the player to be destroyed.
   ScopedPictureInPictureAPIForTest scoped_dependency(true);
-  ScopedPictureInPictureV2ForTest scoped_feature(true);
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   const char* origin = "https://a.com";
   SetSecurityOrigin(origin);
   WaitForPlayer();
@@ -1265,7 +1265,7 @@ TEST_P(HTMLMediaElementTest,
 TEST_P(HTMLMediaElementTest,
        CreateMediaPlayerAfterMovingElementUsesOpenerFrameIfReuseIsEnabled) {
   ScopedPictureInPictureAPIForTest scoped_dependency(true);
-  ScopedPictureInPictureV2ForTest scoped_feature(true);
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(true);
   // Move the element before creating the player.
   const char* origin = "https://a.com";
   SetSecurityOrigin(origin);
@@ -1280,7 +1280,7 @@ TEST_P(HTMLMediaElementTest,
 
 TEST_P(HTMLMediaElementTest,
        CreateMediaPlayerAfterMovingElementUsesNewFrameIfReuseIsNotEnabled) {
-  ScopedPictureInPictureV2ForTest scoped_feature(false);
+  ScopedDocumentPictureInPictureAPIForTest scoped_feature(false);
   // Move the element before creating the player.
   const char* origin = "https://a.com";
   SetSecurityOrigin(origin);

@@ -62,7 +62,7 @@ bool AssistantOptInFlowScreen::MaybeSkip(WizardContext* context) {
 
   if (::assistant::IsAssistantAllowedForProfile(
           ProfileManager::GetActiveUserProfile()) ==
-      chromeos::assistant::AssistantAllowedState::ALLOWED) {
+      assistant::AssistantAllowedState::ALLOWED) {
     return false;
   }
 

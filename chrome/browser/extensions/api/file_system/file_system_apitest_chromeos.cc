@@ -242,7 +242,7 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
     ASSERT_TRUE(volume_manager);
     volume_manager->AddVolumeForTesting(
         base::FilePath("/a/b/c"), file_manager::VOLUME_TYPE_TESTING,
-        chromeos::DEVICE_TYPE_UNKNOWN, false /* read_only */);
+        ash::DeviceType::kUnknown, false /* read_only */);
   }
 
  protected:
@@ -264,9 +264,9 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
     VolumeManager* const volume_manager =
         VolumeManager::Get(browser()->profile());
     ASSERT_TRUE(volume_manager);
-    volume_manager->AddVolumeForTesting(
-        mount_point_path, file_manager::VOLUME_TYPE_TESTING,
-        chromeos::DEVICE_TYPE_UNKNOWN, read_only);
+    volume_manager->AddVolumeForTesting(mount_point_path,
+                                        file_manager::VOLUME_TYPE_TESTING,
+                                        ash::DeviceType::kUnknown, read_only);
   }
 
   // Simulates entering the kiosk session.

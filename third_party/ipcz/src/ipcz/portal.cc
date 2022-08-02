@@ -46,7 +46,10 @@ Portal::Pair Portal::CreatePair(Ref<Node> node) {
   DVLOG(5) << "Created new portal pair with routers " << routers.first.get()
            << " and " << routers.second.get();
 
-  LocalRouterLink::ConnectRouters(LinkType::kCentral, routers);
+  auto links = LocalRouterLink::CreatePair(LinkType::kCentral, routers,
+                                           LocalRouterLink::kStable);
+  routers.first->SetOutwardLink(std::move(links.first));
+  routers.second->SetOutwardLink(std::move(links.second));
   return {MakeRefCounted<Portal>(node, std::move(routers.first)),
           MakeRefCounted<Portal>(node, std::move(routers.second))};
 }

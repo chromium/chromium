@@ -41,8 +41,12 @@ constexpr auto kLabelInsets = gfx::Insets::VH(0, 4);
 
 PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
                                                    bool show_image) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+  // In dark light mode, we switch TrayBubbleView to use a textured layer
+  // instead of solid color layer, so no need to create an extra layer here.
+  if (!features::IsDarkLightModeEnabled()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+  }
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->SetOrientation(views::BoxLayout::Orientation::kVertical);

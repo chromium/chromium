@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">Историја прегледања</translation>
 <translation id="2497852260688568942">Администратор је онемогућио синхронизацију</translation>
 <translation id="250020030759455918">У Chrome-у ћете видети да ли сте пријављени, податке прегледања и податке о сајту за <ph name="SITE_NAME" /></translation>
+<translation id="2507178219579379057">Chrome истражује начине да ограничи непожељне огласе, превару и дељење између сајтова. Chrome <ph name="BEGIN_LINK" />процењује и ваша интересовања<ph name="END_LINK" /> која сајтови могу да користе да би вам приказивали огласе. Интересовањима можете да управљате у подешавањима.</translation>
 <translation id="2513403576141822879">Више подешавања у вези са приватношћу, безбедношћу и прикупљањем података потражите у одељку <ph name="BEGIN_LINK" />Синхронизација и Google услуге<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">Скенирај</translation>
 <translation id="2523184218357549926">URL-ови страница које посећујете се шаљу Google-у</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">Лиценце отвореног кода</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />Који подаци се користе:<ph name="END_BOLD" /> Историја прегледања, евиденција сајтова које сте посетили помоћу Chrome-а на овом уређају.</translation>
 <translation id="4263656433980196874">Кориснички интерфејс за сагласност за гласовну претрагу Помоћника отворен је у пуној висини</translation>
-<translation id="4266054596873078491">Пријавите се на овај сајт и у Chrome помоћу Google налога.</translation>
 <translation id="4269820728363426813">Копирај адресу линка</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Укључите закључавање екрана у Android подешавањима<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Ако користите Chrome, прихватате <ph name="BEGIN_TOS_LINK" />Google услове коришћења услуге<ph name="END_TOS_LINK" /> и <ph name="BEGIN_ATOS_LINK" />додатне услове коришћења услуге за Google Chrome и Chrome ОС<ph name="END_ATOS_LINK" />. Примењује се и <ph name="BEGIN_PRIVACY_LINK" />политика приватности<ph name="END_PRIVACY_LINK" />.</translation>

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
+#include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -21,6 +22,8 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
 
   // Cache computed fields.
   const std::u16string accessible_name = item_->GetAccessibleName();
+  const std::set<HoldingSpaceCommandId> in_progress_commands =
+      item_->in_progress_commands();
 
   // Update accessible name.
   if (accessible_name_) {
@@ -36,11 +39,9 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
       updated_fields |= HoldingSpaceModelObserver::UpdatedField::kBackingFile;
   }
 
-  // Update pause.
-  if (paused_) {
-    if (item_->SetPaused(paused_.value()))
-      updated_fields |= HoldingSpaceModelObserver::UpdatedField::kPaused;
-  }
+  // Update in-progress commands.
+  if (in_progress_commands_)
+    item_->SetInProgressCommands(std::move(*in_progress_commands_));
 
   // Update progress.
   if (progress_) {
@@ -76,6 +77,10 @@ HoldingSpaceModel::ScopedItemUpdate::~ScopedItemUpdate() {
   // Calculate changes to computed fields.
   if (accessible_name != item_->GetAccessibleName())
     updated_fields |= HoldingSpaceModelObserver::UpdatedField::kAccessibleName;
+  if (in_progress_commands != item_->in_progress_commands()) {
+    updated_fields |=
+        HoldingSpaceModelObserver::UpdatedField::kInProgressCommands;
+  }
 
   // Notify observers if and only if an update occurred.
   if (updated_fields != 0u) {
@@ -101,14 +106,17 @@ HoldingSpaceModel::ScopedItemUpdate::SetBackingFile(
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
-HoldingSpaceModel::ScopedItemUpdate::SetInvalidateImage(bool invalidate_image) {
-  invalidate_image_ = invalidate_image;
+HoldingSpaceModel::ScopedItemUpdate::SetInProgressCommands(
+    std::set<HoldingSpaceCommandId> in_progress_commands) {
+  DCHECK(std::all_of(in_progress_commands.begin(), in_progress_commands.end(),
+                     &holding_space_util::IsInProgressCommand));
+  in_progress_commands_ = std::move(in_progress_commands);
   return *this;
 }
 
 HoldingSpaceModel::ScopedItemUpdate&
-HoldingSpaceModel::ScopedItemUpdate::SetPaused(bool paused) {
-  paused_ = paused;
+HoldingSpaceModel::ScopedItemUpdate::SetInvalidateImage(bool invalidate_image) {
+  invalidate_image_ = invalidate_image;
   return *this;
 }
 

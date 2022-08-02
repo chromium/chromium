@@ -2757,8 +2757,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
       .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(updated_fields &
-                    HoldingSpaceModelObserver::UpdatedField::kPaused);
+        EXPECT_TRUE(
+            updated_fields &
+            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
         run_loop.Quit();
       });
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -2841,8 +2842,9 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiPauseOrResumeBrowserTest,
       .WillOnce([&](const HoldingSpaceItem* item, uint32_t updated_fields) {
         EXPECT_EQ(item->id(),
                   test_api().GetHoldingSpaceItemId(in_progress_download_chip));
-        EXPECT_TRUE(updated_fields &
-                    HoldingSpaceModelObserver::UpdatedField::kPaused);
+        EXPECT_TRUE(
+            updated_fields &
+            HoldingSpaceModelObserver::UpdatedField::kInProgressCommands);
         run_loop.Quit();
       });
   Click(secondary_action_container);

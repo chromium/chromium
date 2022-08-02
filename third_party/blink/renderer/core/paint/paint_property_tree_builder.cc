@@ -1437,15 +1437,13 @@ bool FragmentPaintPropertyTreeBuilder::EffectCanUseCurrentClipAsOutputClip()
   const auto* layer = To<LayoutBoxModelObject>(object_).Layer();
   // Out-of-flow descendants not contained by this object may escape clips.
   if (layer->HasNonContainedAbsolutePositionDescendant() &&
-      &object_.ContainerForAbsolutePosition()
-              ->FirstFragment()
-              .PostOverflowClip() != context_.current.clip)
+      &object_.ContainerForAbsolutePosition()->FirstFragment().ContentsClip() !=
+          context_.current.clip)
     return false;
   if (layer->HasFixedPositionDescendant() &&
       !object_.CanContainFixedPositionObjects() &&
-      &object_.ContainerForFixedPosition()
-              ->FirstFragment()
-              .PostOverflowClip() != context_.current.clip)
+      &object_.ContainerForFixedPosition()->FirstFragment().ContentsClip() !=
+          context_.current.clip)
     return false;
 
   // Some descendants under a pagination container (e.g. composited objects
@@ -3631,7 +3629,7 @@ PaintPropertyTreeBuilder::ContextForFragment(
         logical_top_in_containing_flow_thread) {
       // Found a matching fragment in an ancestor container. Use the
       // container's content clip as the clip state.
-      found_clip = &container_fragment->PostOverflowClip();
+      found_clip = &container_fragment->ContentsClip();
       break;
     }
 

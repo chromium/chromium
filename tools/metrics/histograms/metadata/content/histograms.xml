@@ -615,6 +615,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContentSuggestions.Feed.CanBeShown" enum="BooleanAllowed"
+    expires_after="2023-08-01">
+  <owner>harringtond@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <summary>
+    Whether showing the Feed is permitted. The Feed can be shown if (A) profile
+    policies allow this, (B) the FeedAblationEnabled feature is disabled, and
+    (C) the user has not turned it off in Settings.
+
+    Note that this does not denote (A) whether the Feed is visible at the time
+    the metric is emitted or (B) whether the Feed was ever visible during the
+    browser process lifetime.
+
+    iOS only. Emitted when building a MetricsLog for the current session.
+  </summary>
+</histogram>
+
 <histogram name="ContentSuggestions.Feed.CommitMutationCount"
     units="operations" expires_after="2020-10-01">
   <owner>carlosk@chromium.org</owner>

@@ -189,6 +189,10 @@ void ProjectorAnnotationTray::ShowBubble() {
       gfx::Insets::TLBR(0, 0, kPaddingBetweenBottomAndLastTrayItem, 0)));
 
   auto setup_layered_view = [](views::View* view) {
+    // In dark light mode, we switch TrayBubbleView to use a textured layer
+    // instead of solid color layer, so no need to create an extra layer here.
+    if (features::IsDarkLightModeEnabled())
+      return;
     view->SetPaintToLayer();
     view->layer()->SetFillsBoundsOpaquely(false);
   };

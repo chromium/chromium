@@ -105,7 +105,7 @@ std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebRect& rect) {
 Status CallAtomsJs(const std::string& frame,
                    WebView* web_view,
                    const char* const* atom_function,
-                   const base::ListValue& args,
+                   const base::Value::List& args,
                    std::unique_ptr<base::Value>* result) {
   return web_view->CallFunction(
       frame, webdriver::atoms::asString(atom_function), args, result);
@@ -119,7 +119,7 @@ Status VerifyElementClickable(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(base::Value::FromUniquePtrValue(CreateValueFrom(location)));
   std::unique_ptr<base::Value> result;
@@ -160,7 +160,7 @@ Status ScrollElementRegionIntoViewHelper(
   if (status.IsError())
     return status;
   WebPoint tmp_location = *location;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(center);
   args.Append(base::Value::FromUniquePtrValue(CreateValueFrom(region)));
@@ -221,7 +221,7 @@ Status GetElementEffectiveStyle(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(property);
   std::unique_ptr<base::Value> result;
@@ -285,7 +285,7 @@ Status GetElementLocationInViewCenterHelper(const std::string& frame,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(center);
   std::unique_ptr<base::Value> result;
@@ -398,7 +398,7 @@ Status FindElementCommon(int interval_ms,
     script = webdriver::atoms::asString(webdriver::atoms::FIND_ELEMENTS);
   std::unique_ptr<base::DictionaryValue> locator(new base::DictionaryValue());
   locator->SetString(strategy, target);
-  base::ListValue arguments;
+  base::Value::List arguments;
   arguments.Append(base::Value::FromUniquePtrValue(std::move(locator)));
   if (root_element_id) {
     if (isShadowRoot)
@@ -440,7 +440,8 @@ Status FindElementCommon(int interval_ms,
         return Status(kNoSuchElement, "Unable to locate element: {\"method\":\""
          + strategy + "\",\"selector\":\"" + target + "\"}");
       }
-      *value = std::make_unique<base::ListValue>();
+      *value =
+          base::Value::ToUniquePtrValue(base::Value(base::Value::Type::LIST));
       return Status(kOk);
     }
 
@@ -473,7 +474,7 @@ Status FindShadowElement(int interval_ms,
 Status GetActiveElement(Session* session,
                         WebView* web_view,
                         std::unique_ptr<base::Value>* value) {
-  base::ListValue args;
+  base::Value::List args;
   Status status = web_view->CallFunction(
       session->GetCurrentFrameId(),
       "function() { return document.activeElement || document.body }", args,
@@ -544,7 +545,7 @@ Status GetElementAttribute(Session* session,
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(attribute_name);
   return CallAtomsJs(
@@ -604,7 +605,7 @@ Status GetElementClickableLocation(
     status = CheckElement(element_id);
     if (status.IsError())
       return status;
-    base::ListValue args;
+    base::Value::List args;
     args.Append(CreateElement(element_id));
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(
@@ -670,7 +671,7 @@ Status GetElementRegion(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   status = web_view->CallFunction(
@@ -692,7 +693,7 @@ Status GetElementTagName(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   status = web_view->CallFunction(
@@ -715,7 +716,7 @@ Status GetElementSize(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   status = CallAtomsJs(
@@ -737,7 +738,7 @@ Status IsElementDisplayed(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(ignore_opacity);
   std::unique_ptr<base::Value> result;
@@ -760,7 +761,7 @@ Status IsElementEnabled(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   status = CallAtomsJs(
@@ -782,7 +783,7 @@ Status IsOptionElementSelected(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   status = CallAtomsJs(
@@ -804,7 +805,7 @@ Status IsOptionElementTogglable(
   Status status = CheckElement(element_id);
   if (status.IsError())
     return status;
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   std::unique_ptr<base::Value> result;
   status = web_view->CallFunction(
@@ -827,7 +828,7 @@ Status SetOptionElementSelected(
   if (status.IsError())
     return status;
   // TODO(171034): need to fix throwing error if an alert is triggered.
-  base::ListValue args;
+  base::Value::List args;
   args.Append(CreateElement(element_id));
   args.Append(selected);
   std::unique_ptr<base::Value> result;
@@ -900,7 +901,7 @@ Status ScrollElementRegionIntoView(
   // frame up to the top-level window) and scroll each frame relative to its
   // parent frame, so that the region becomes visible in the parent frame.
   for (const FrameInfo& frame : base::Reversed(session->frames)) {
-    base::ListValue args;
+    base::Value::List args;
     args.Append(frame.chromedriver_frame_id.c_str());
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(frame.parent_frame_id, kFindSubFrameScript,
@@ -947,7 +948,7 @@ Status GetElementLocationInViewCenter(Session* session,
     return status;
 
   for (const FrameInfo& frame : base::Reversed(session->frames)) {
-    base::ListValue args;
+    base::Value::List args;
     args.Append(frame.chromedriver_frame_id.c_str());
     std::unique_ptr<base::Value> result;
     status = web_view->CallFunction(frame.parent_frame_id, kFindSubFrameScript,

@@ -7,9 +7,7 @@
 #include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
 
-namespace chromeos {
-namespace assistant {
-namespace prefs {
+namespace ash::assistant::prefs {
 
 // NOTE: These values are persisted in preferences and cannot be changed.
 const char kAssistantOnboardingModeDefault[] = "Default";
@@ -100,6 +98,4 @@ std::string ToOnboardingModeString(AssistantOnboardingMode onboarding_mode) {
   return std::string();
 }
 
-}  // namespace prefs
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant::prefs

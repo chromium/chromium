@@ -16,6 +16,7 @@ namespace embedder_support {
 
 using StorageType =
     content_settings::mojom::ContentSettingsManager::StorageType;
+using QueryReason = content_settings::CookieSettings::QueryReason;
 
 namespace {
 bool AllowWorkerStorageAccess(
@@ -24,7 +25,8 @@ bool AllowWorkerStorageAccess(
     const std::vector<content::GlobalRenderFrameHostId>& render_frames,
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
-      url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url));
+      url, net::SiteForCookies::FromUrl(url), url::Origin::Create(url),
+      QueryReason::kSiteStorage);
 
   for (const auto& it : render_frames) {
     content_settings::PageSpecificContentSettings::StorageAccessed(
@@ -51,7 +53,7 @@ content::AllowServiceWorkerResult AllowServiceWorker(
 
   // Check if cookies are allowed.
   bool allow_cookies = cookie_settings->IsFullCookieAccessAllowed(
-      scope, site_for_cookies, top_frame_origin);
+      scope, site_for_cookies, top_frame_origin, QueryReason::kSiteStorage);
 
   return content::AllowServiceWorkerResult::FromPolicy(!allow_javascript,
                                                        !allow_cookies);
@@ -67,7 +69,8 @@ bool AllowSharedWorker(
     int render_frame_id,
     const content_settings::CookieSettings* cookie_settings) {
   bool allow = cookie_settings->IsFullCookieAccessAllowed(
-      worker_url, site_for_cookies, top_frame_origin);
+      worker_url, site_for_cookies, top_frame_origin,
+      QueryReason::kSiteStorage);
 
   content_settings::PageSpecificContentSettings::SharedWorkerAccessed(
       render_process_id, render_frame_id, worker_url, name, storage_key,

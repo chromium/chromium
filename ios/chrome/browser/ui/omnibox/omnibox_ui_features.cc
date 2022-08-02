@@ -13,3 +13,6 @@ const base::Feature kOmniboxPasteButton{"OmniboxPasteButton",
 const char kOmniboxPasteButtonParameterName[] = "PasteButtonVariant";
 const char kOmniboxPasteButtonParameterBlueIconCapsule[] = "SuggestionIcon";
 const char kOmniboxPasteButtonParameterBlueFullCapsule[] = "SuggestionTextIcon";
+
+const base::Feature kOmniboxKeyboardPasteButton{
+    "OmniboxKeyboardPasteButton", base::FEATURE_DISABLED_BY_DEFAULT};

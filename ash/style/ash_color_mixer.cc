@@ -97,23 +97,6 @@ void AddControlsColors(ui::ColorMixer& mixer,
   mixer[ui::kColorAshFocusRing] = use_dark_color
                                       ? ui::ColorTransform(gfx::kGoogleBlue300)
                                       : ui::ColorTransform(gfx::kGoogleBlue600);
-
-  mixer[ui::kColorAshSystemUIBorderColor1] =
-      use_dark_color ? ui::ColorTransform(kColorAshShieldAndBase80)
-                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0F));
-  mixer[ui::kColorAshSystemUIBorderColor2] =
-      use_dark_color ? ui::ColorTransform(kColorAshShieldAndBase60)
-                     : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x0F));
-  mixer[ui::kColorAshSystemUIBorderColor3] = {SkColorSetA(SK_ColorBLACK, 0x0F)};
-
-  mixer[ui::kColorAshSystemUIHighlightColor1] =
-      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x14))
-                     : ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x4C));
-  mixer[ui::kColorAshSystemUIHighlightColor2] =
-      use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x0F))
-                     : ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x33));
-  mixer[ui::kColorAshSystemUIHighlightColor3] = {
-      ui::kColorAshSystemUIHighlightColor1};
 }
 
 // Mappings the Content layer colors for Material 2.
@@ -416,13 +399,13 @@ void AddAshColorMixer(ui::ColorProvider* provider,
   if (!features::IsDarkLightModeEnabled()) {
     ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
     mixer[ui::kColorAshSystemUILightBorderColor1] = {
-        ui::kColorAshSystemUIBorderColor1};
+        ui::kColorHighlightBorderBorder1};
     mixer[ui::kColorAshSystemUILightBorderColor2] = {
-        ui::kColorAshSystemUIBorderColor2};
+        ui::kColorHighlightBorderBorder2};
     mixer[ui::kColorAshSystemUILightHighlightColor1] = {
-        ui::kColorAshSystemUIHighlightColor1};
+        ui::kColorHighlightBorderHighlight1};
     mixer[ui::kColorAshSystemUILightHighlightColor2] = {
-        ui::kColorAshSystemUIHighlightColor2};
+        ui::kColorHighlightBorderHighlight2};
     return;
   }
 

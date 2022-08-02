@@ -11,9 +11,7 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-namespace assistant {
-namespace prefs {
+namespace ash::assistant::prefs {
 
 // The status of the user's consent. The enum values cannot be changed because
 // they are persisted on disk.
@@ -80,8 +78,11 @@ AssistantOnboardingMode ToOnboardingMode(const std::string& onboarding_mode);
 COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC)
 std::string ToOnboardingModeString(AssistantOnboardingMode onboarding_mode);
 
-}  // namespace prefs
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant::prefs
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+namespace prefs = ::ash::assistant::prefs;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_PREFS_H_

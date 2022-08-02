@@ -2571,7 +2571,6 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
 <translation id="3709266154059827597">Zwarte lijst voor het installeren van extensies configureren</translation>
 <translation id="3711895659073496551">Onderbreken</translation>
-<translation id="3715569262675717862">Verificatie op basis van clientcertificaten</translation>
 <translation id="3717409415785131989">Als je het beleid toepast of niet instelt, wordt de nieuwe ballon-UI voor downloaden getoond in <ph name="PRODUCT_NAME" />.
 
       Als je het beleid niet toepast, blijft <ph name="PRODUCT_NAME" /> de oude plank-UI voor downloaden tonen.</translation>
@@ -2951,13 +2950,6 @@ Als je dit beleid instelt, geef je op welke URL's moeten worden toegestaan als o
 <translation id="410068710490553233">Inloggen op aanvullende Google-accounts toestaan</translation>
 <translation id="4101282687722389021">UTC-tijdstempel voor de laatste tijd waarop dit item is geüpdatet. Gestuurd als tekenreeks omdat het tijdstempel niet past in een geheel getal.</translation>
 <translation id="4103289232974211388">Omleiden naar SAML IdP na bevestiging van de gebruiker</translation>
-<translation id="4105884561459127998">Hiermee configureer je de verificatietypen voor SAML-logins.
-
-      Wanneer dit beleid is ingesteld op Standaard (waarde 0), wordt het gedrag van SAML-logins bepaald door de browser, afhankelijk van andere factoren. In het meest basale scenario worden de gebruikersverificatie en de beveiliging van gebruikersgegevens in de cache gebaseerd op wachtwoorden die handmatig door gebruikers worden ingevoerd.
-
-      Wanneer dit beleid is ingesteld op ClientCertificate (waarde 1), wordt verificatie van clientcertificaten gebruikt voor nieuw toegevoegde gebruikers die via SAML inloggen. Voor dergelijke gebruikers worden geen wachtwoorden gebruikt. Hun gegevens in de lokale cache worden beveiligd met de bijbehorende cryptografische sleutels. Met deze instellingen is bijvoorbeeld de configuratie van slimme gebruikersverificatie op basis van smartcards mogelijk (houd er rekening mee dat middleware-apps voor smartcards via het beleid DeviceLoginScreenExtensions moeten worden geïnstalleerd).
-
-      Dit beleid heeft alleen gevolgen voor gebruikers die SAML-verificatie gebruiken.</translation>
 <translation id="4105989332710272578">Handhaving van Certificaattransparantie voor een lijst met URL's uitzetten</translation>
 <translation id="4114059938441379876">Als je dit beleid instelt, stel je de URL in waarmee gebruikers hun wachtwoord moeten wijzigen nadat zij een waarschuwing zien in de browser. De service voor wachtwoordbeveiliging stuurt gebruikers naar de URL (alleen HTTP- en HTTPS-protocollen) die je opgeeft via dit beleid. Zorg dat je pagina voor het wijzigen van wachtwoorden voldoet aan de richtlijnen op https://www.chromium.org/developers/design-documents/create-amazing-password-forms, zodat <ph name="PRODUCT_NAME" /> de salted hash van het nieuwe wachtwoord op deze pagina voor het wijzigen van wachtwoorden juist vastlegt.
 
@@ -4031,11 +4023,6 @@ Als je dit beleid instelt op <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_SIGNIN" /> v
       Als dit beleid is ingesteld op een lijst met invoermethode-ID's, zijn de opgegeven invoermethoden beschikbaar in het inlogscherm. De eerste opgegeven invoermethode wordt vooraf geselecteerd. Hoewel een gebruikerspod is gericht op het inlogscherm, is de laatst gebruikte invoermethode van de gebruiker beschikbaar naast de invoermethoden die door dit beleid worden aangegeven. Als dit beleid niet is ingesteld, worden de invoermethoden op het inlogscherm afgeleid van de taal waarin het inlogscherm zichtbaar is. Waarden die geen geldige invoermethode-ID's zijn, worden genegeerd.</translation>
 <translation id="5407008856008996384">Toegang tot CUPS-printers toestaan</translation>
 <translation id="5413051574966911176">Verbindingsgerelateerde UI uitzetten op de externe hostdesktop bij een actieve verbinding</translation>
-<translation id="5417597818300833094">Als je het beleid instelt, kunnen gebruikers een van de invoermethoden voor <ph name="PRODUCT_OS_NAME" />-sessies kiezen die je opgeeft.
-
-       Als je het beleid niet instelt of instelt op een lege lijst, kunnen gebruikers alle ondersteunde invoermethoden selecteren.
-
-      Opmerking: Als de huidige invoermethode niet wordt ondersteund, wordt de invoermethode overgeschakeld naar het hardwaretoetsenbord (indien toegestaan) of het eerste geldige item in deze lijst. Ongeldige of niet-ondersteunde methoden worden genegeerd.</translation>
 <translation id="5417906792459853336">Gegevens rapporteren over de app-voorraad en het gebruik van een apparaat.
 
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
@@ -4752,16 +4739,6 @@ Als je dit beleid instelt, worden afhankelijk van de waarde verschillende van de
 <translation id="6207607210601267301">Verificatie zonder pincode uitzetten voor de host voor externe toegang</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
-<translation id="6210422374261465354">Hiermee kun je instellingen voor verificatie-URL's opgeven in <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Deze verificatie-URL's worden speciaal behandeld door <ph name="WEBVIEW_PRODUCT_NAME" />. Als je tijdens de verificatie een webpagina in <ph name="WEBVIEW_PRODUCT_NAME" /> bezoekt via verificatie-URL's, wordt bijvoorbeeld de authenticator-app van de overeenkomende identiteitsprovider gelanceerd die deze verificatie-URL kan verwerken.
-
-      Het proces voor de lancering van de authenticator-app van de identiteitsprovider wordt door identiteitsproviders gebruikt om toepassingen mogelijk te maken zoals SSO in apps bieden of betere beveiliging leveren door signalen van veilige apparaten te verzamelen voor meer inzicht in de toestand van het apparaat tijdens verificatie.
-
-      Als er geen geldige app voor de verwerking van verificatie-URL's is geïnstalleerd op het apparaat, gaat de navigatie verder in <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Geldige verificatie-URL's horen het schema <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> te hebben en mogen geen jokertekens bevatten.
-      </translation>
 <translation id="6212868225782276239">Alle printers worden getoond, behalve printers op de blokkeerlijst.</translation>
 <translation id="6220835555850906733">Als je het beleid toepast of niet instelt, is alle ondersteunde audio-uitvoer op de apparaten van gebruikers toegestaan.
 
@@ -6078,7 +6055,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="7554382342294940216">Als je het beleid toepast, kan <ph name="PRODUCT_OS_NAME" /> elke proxy voor captive portal-verificatie omzeilen. Deze verificatiepagina's (vanaf de captive portal-inlogpagina totdat Chrome een internetverbinding waarneemt) worden in een afzonderlijk venster geopend, waarbij alle beleidsinstellingen en -beperkingen voor de huidige gebruiker worden genegeerd. Dit beleid is alleen van kracht als er een proxy is ingesteld (via beleid, extensie of door de gebruiker in chrome://settings).
 
       Als je het beleid niet toepast of niet instelt, worden captive portal-verificatiepagina's getoond in een (normaal) nieuw browsertabblad, waarbij de proxyinstellingen van de huidige gebruiker worden gebruikt.</translation>
-<translation id="7566878661979235378">Verificatietype voor SAML-inlog</translation>
 <translation id="7567373982693549834">Met dit beleid beheer je het gebruik van Android-apps van niet-vertrouwde bronnen (andere dan de Google Play Store) per gebruiker.
 
       Als de waarde voor dit beleid niet is ingesteld, wordt de functionaliteit behandeld alsof er geen toestemming is gegeven.
@@ -7344,7 +7320,6 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8951350807133946005">Directory voor schijfcache instellen</translation>
 <translation id="8955719471735800169">Bovenkant pagina</translation>
 <translation id="8956312248048980644">Staat origin-keyed agentclustering standaard toe.</translation>
-<translation id="8959992920425111821">Standaard configuratie</translation>
 <translation id="8967125680876068695">Chrome-apps worden beëindigd voor Windows, Mac en Linux.
       Als je dit beleid aanzet, staat <ph name="PRODUCT_NAME" /> nog steeds toe dat Chrome-apps worden uitgevoerd op deze platforms, tot de einddatum van juni 2022. Op dat moment wordt ondersteuning voor Chrome-apps op alle platforms verwijderd.
       Als je dit beleid uitzet of niet instelt, kunnen Chrome-apps misschien niet worden uitgevoerd, afhankelijk van de status van de uitrol van de beëindiging.

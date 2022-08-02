@@ -6346,15 +6346,6 @@ void WebContentsImpl::DomOperationResponse(RenderFrameHost* render_frame_host,
                         "render_frame_host", render_frame_host, "json_string",
                         json_string);
 
-  // TODO(lukasza): The notification below should probably indicate which
-  // RenderFrameHostImpl the message is coming from. This can enable tests to
-  // talk to 2 frames at the same time, without being confused which frame a
-  // given response comes from.  See also a corresponding TODO in the
-  // ExecuteScriptHelper in //content/public/test/browser_test_utils.cc
-  NotificationService::current()->Notify(
-      NOTIFICATION_DOM_OPERATION_RESPONSE, Source<WebContents>(this),
-      Details<const std::string>(&json_string));
-
   observers_.NotifyObservers(&WebContentsObserver::DomOperationResponse,
                              render_frame_host, json_string);
 }

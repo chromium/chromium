@@ -14,8 +14,6 @@
 <translation id="1142745911746664600">Chrome-ის განახლება ვერ მოხერხდა</translation>
 <translation id="1152920704813762236">ChromeOS-ის შესახებ</translation>
 <translation id="1154147086299354128">Chrome-ში &amp;გახსნა</translation>
-<translation id="1178374936842835197">თუ პარამეტრი ამ გვერდზე არ გამოჩნდება, ცადეთ მისი პოვნა <ph name="LINK_BEGIN" />
-        ChromeOS Flex-ის პარამეტრებში<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">გმადლობთ დაინსტალირებისთვის. <ph name="BUNDLE_NAME" />-ის გამოყენებამდე თქვენი ბრაუზერი უნდა გადატვირთოთ.</translation>
 <translation id="1278833599417554002">ხელახლა გაშვება &amp;Chrome-ის გასაახლებლად</translation>
 <translation id="1302523850133262269">დაელოდეთ, სანამ Chrome დააინსტალირებს სისტემის უახლეს განახლებებს.</translation>
@@ -123,7 +121,6 @@
 <translation id="3080151273017101988">გაგრძელება გაშვებული ფონური პროგრამებით Google Chrome-ის დახურვისას</translation>
 <translation id="3089968997497233615">ხელმისაწვდომია Google Chrome-ის უფრო ახალი და უსაფრთხო ვერსია.</translation>
 <translation id="3100998948628680988">დაასათაურეთ თქვენი Chrome პროფილი</translation>
-<translation id="3103390129666310801">თქვენი მოწყობილობის განახლების სტატუსის სანახავად გადადით <ph name="LINK_BEGIN" />ChromeOS Flex-ის პარამეტრებზე<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395"><ph name="BEGIN_LINK" />შედით Chrome-ში<ph name="END_LINK" />, რომ შეამოწმოთ, შეეხო თუ არა პერსონალურ მონაცემთა გაჟონვის შემთხვევები და უსაფრთხოებასთან დაკავშირებული პრობლემები თქვენს სხვა პაროლებს.</translation>
 <translation id="3140883423282498090">თქვენი ცვლილებები Google Chrome.ის გადატვირთვის შემდეგ შევა ძალაში.</translation>
 <translation id="3149510190863420837">Chrome-ის პროგრამები</translation>
@@ -214,7 +211,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Google Chrome-ის მომავალი განახლებების მისაღებად დაგჭირდებათ macOS 10.13 ან უფრო ახალი ვერსია. ეს კომპიუტერი იყენებს OS X 10.11-ს.</translation>
 <translation id="5098668839038261629">როცა ეს ფუნქცია ჩართულია, თქვენ, ასევე, გახვალთ Chrome-იდან</translation>
-<translation id="5112116809696021727">თქვენი მოწყობილობის განახლების სტატუსის სანახავად გადადით <ph name="LINK_BEGIN" />ChromeOS-ის პარამეტრებზე<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">აღმოაჩინეთ დიდებული აპები, თამაშები, გაფართოებები და თემები Google Chrome-ისთვის.</translation>
 <translation id="5139423532931106058">თქვენი Chrome პროფილის მორგება</translation>
 <translation id="5163087008893166964">მოგესალმებით Chrome-ში; გახსნილია ბრაუზერის ახალი ფანჯარა</translation>
@@ -254,7 +250,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5940385492829620908">თქვენი ვები, სანიშნეები და Chrome-ის სხვა მასალა არის აქ.</translation>
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5941830788786076944">Google Chrome გახდეს ნაგულისხმევი ბრაუზერი</translation>
-<translation id="5959292945051687759">თუ პარამეტრი ამ გვერდზე არ გამოჩნდება, ცადეთ მისი პოვნა <ph name="LINK_BEGIN" />ChromeOS-ის პარამეტრებში<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">მიმდინარეობს ჩამოტვირთვა… დარჩენილია <ph name="HOURS" /> საათი</translation>
 <translation id="6040143037577758943">დახურვა</translation>
 <translation id="6070348360322141662">დამატებითი უსაფრთხოებისთვის, Google Chrome თქვენს მონაცემებს დაშიფრავს</translation>

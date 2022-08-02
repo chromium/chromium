@@ -25,9 +25,7 @@ class RouteEdgeTest : public testing::Test {
     auto a = MakeRefCounted<Router>();
     auto b = MakeRefCounted<Router>();
     auto [a_link, b_blink] =
-        LocalRouterLink::ConnectRouters(LinkType::kCentral, {a, b});
-    a->CloseRoute();
-    b->CloseRoute();
+        LocalRouterLink::CreatePair(LinkType::kCentral, {a, b});
     return a_link;
   }
 };

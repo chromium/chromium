@@ -54,7 +54,7 @@ class ASH_EXPORT AssistantUiControllerImpl
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Provides a pointer to the |assistant| owned by AssistantService.
-  void SetAssistant(chromeos::assistant::Assistant* assistant);
+  void SetAssistant(assistant::Assistant* assistant);
 
   // AssistantUiController:
   const AssistantUiModel* GetModel() const override;
@@ -102,7 +102,7 @@ class ASH_EXPORT AssistantUiControllerImpl
   bool has_shown_onboarding_ = false;
 
   // Owned by AssistantService.
-  chromeos::assistant::Assistant* assistant_ = nullptr;
+  assistant::Assistant* assistant_ = nullptr;
 
   base::ScopedObservation<AssistantController, AssistantControllerObserver>
       assistant_controller_observation_{this};

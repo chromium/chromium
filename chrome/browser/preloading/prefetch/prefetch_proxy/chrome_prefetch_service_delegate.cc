@@ -42,6 +42,14 @@ std::string ChromePrefetchServiceDelegate::GetAPIKey() {
   return google_apis::GetAPIKey();
 }
 
+GURL ChromePrefetchServiceDelegate::GetDefaultDNSCanaryCheckURL() {
+  return GURL("http://dns-tunnel-check.googlezip.net/connect");
+}
+
+GURL ChromePrefetchServiceDelegate::GetDefaultTLSCanaryCheckURL() {
+  return GURL("http://tls-tunnel-check.googlezip.net/connect");
+}
+
 void ChromePrefetchServiceDelegate::ReportOriginRetryAfter(
     const GURL& url,
     base::TimeDelta retry_after) {

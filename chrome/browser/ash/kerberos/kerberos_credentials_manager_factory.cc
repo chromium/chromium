@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -36,9 +35,8 @@ KerberosCredentialsManagerFactory::GetInstance() {
 }
 
 KerberosCredentialsManagerFactory::KerberosCredentialsManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          /*name=*/"KerberosCredentialsManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory(
+          /*name=*/"KerberosCredentialsManager") {}
 
 KerberosCredentialsManagerFactory::~KerberosCredentialsManagerFactory() =
     default;

@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/orchestrator/omnibox_focus_orchestrator.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
+#import "ios/chrome/browser/ui/toolbar/primary_toolbar_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_coordinator_delegate.h"
@@ -41,7 +42,8 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PrimaryToolbarCoordinator () <PrimaryToolbarViewControllerDelegate> {
+@interface PrimaryToolbarCoordinator () <PrimaryToolbarMediatorDelegate,
+                                         PrimaryToolbarViewControllerDelegate> {
   // Observer that updates `toolbarViewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
   PrerenderService* _prerenderService;
@@ -49,6 +51,8 @@
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
+// Mediator for this toolbar.
+@property(nonatomic, strong) PrimaryToolbarMediator* primaryToolbarMediator;
 // Redefined as PrimaryToolbarViewController.
 @property(nonatomic, strong) PrimaryToolbarViewController* viewController;
 // The coordinator for the location bar in the toolbar.
@@ -78,6 +82,10 @@
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(FakeboxFocuser)];
+
+  self.primaryToolbarMediator = [[PrimaryToolbarMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()];
+  self.primaryToolbarMediator.delegate = self;
 
   // LocationBarCoordinator dispatches OmniboxCommands therefore Location Bar
   // setup should be done before using OmniboxCommands handler (below).
@@ -120,6 +128,8 @@
   if (!self.started)
     return;
   [super stop];
+  self.primaryToolbarMediator.delegate = nil;
+  [self.primaryToolbarMediator disconnect];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.locationBarCoordinator stop];
   _fullscreenUIUpdater = nullptr;

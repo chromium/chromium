@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 import base64
+import contextlib
 import json
 import re
-import unittest
+import textwrap
+from unittest.mock import patch, mock_open
 
 from blinkpy.common.host_mock import MockHost as BlinkMockHost
 from blinkpy.common.path_finder import PathFinder
@@ -13,7 +15,6 @@ from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.w3c.wpt_results_processor import WPTResultsProcessor
-from typ.fakes.host_fake import FakeHost as TypFakeHost
 
 # The path where the output of a wpt run was written. This is the file that
 # gets processed by WPTResultsProcessor.
@@ -21,10 +22,10 @@ OUTPUT_JSON_FILENAME = "out.json"
 
 
 class MockResultSink(object):
-    def __init__(self):
+    def __init__(self, host):
         self.sink_requests = []
         self.invocation_level_artifacts = {}
-        self.host = TypFakeHost()
+        self.host = host
 
     def report_individual_test_result(self, test_name_prefix, result,
                                       artifact_output_dir, expectations,
@@ -57,6 +58,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.fs = self.host.filesystem
         self.path_finder = PathFinder(self.fs)
         port = self.host.port_factory.get()
+        # `MockFileSystem` and `TestPort` use different web test directory
+        # placements to test nonstandard layouts. That is not a goal of this
+        # test case, so we settle on the former for consistency.
+        port.web_tests_dir = self.path_finder.web_tests_dir
         self.wpt_report_path = self.fs.join('out', 'Default',
                                             'wpt_report.json')
 
@@ -122,7 +127,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
             artifacts_dir=self.fs.join('out', 'Default',
                                        'layout-test-results'),
             results_dir=self.fs.join('out', 'Default'),
-            sink=MockResultSink())
+            sink=MockResultSink(port.typ_host()))
 
     def _create_json_output(self, json_dict):
         """Writing some json output for processing."""
@@ -131,6 +136,24 @@ class WPTResultsProcessorTest(LoggingTestCase):
     def _load_json_output(self, filename=OUTPUT_JSON_FILENAME):
         """Loads the json output after post-processing."""
         return json.loads(self.fs.read_text_file(filename))
+
+    def _open_mock(self, filename, mode='r', **_kwargs):
+        """A mock for Python's built-in `open` backed by a Blink FS."""
+        mode_match = re.match(r'([rwa])(b?)', mode).groups()
+        open_func_map = {
+            ('r', ''): self.fs.open_text_file_for_reading,
+            ('w', ''): self.fs.open_text_file_for_writing,
+            ('r', 'b'): self.fs.open_binary_file_for_reading,
+            ('w', 'b'): self.fs.open_binary_file_for_writing,
+        }
+        return open_func_map[mode_match](filename)
+
+    @contextlib.contextmanager
+    def _mock_filesystem_builtins(self):
+        with contextlib.ExitStack() as stack:
+            stack.enter_context(patch('builtins.open', self._open_mock))
+            stack.enter_context(patch('os.path.join', self.fs.join))
+            yield
 
     def test_result_sink_for_test_expected_result(self):
         json_dict = {
@@ -404,16 +427,15 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # Verify JSONP
         artifact_path = self.fs.join(self.processor.artifacts_dir,
                                      'full_results_jsonp.js')
-        full_results_jsonp = written_files[artifact_path].decode('utf-8')
+        full_results_jsonp = self.fs.read_text_file(artifact_path)
         match = re.match(r'ADD_FULL_RESULTS\((.*)\);$', full_results_jsonp)
         self.assertIsNotNone(match)
-        self.assertEqual(
-            match.group(1),
-            written_files[OUTPUT_JSON_FILENAME].decode(encoding='utf-8'))
+        self.assertEqual(match.group(1),
+                         self.fs.read_text_file(OUTPUT_JSON_FILENAME))
 
         artifact_path = self.fs.join(self.processor.artifacts_dir,
                                      'failing_results.json')
-        failing_results_jsonp = written_files[artifact_path].decode('utf-8')
+        failing_results_jsonp = self.fs.read_text_file(artifact_path)
         match = re.match(r'ADD_RESULTS\((.*)\);$', failing_results_jsonp)
         self.assertIsNotNone(match)
         failing_results = json.loads(match.group(1))
@@ -461,8 +483,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
         json_dict['tests']['test.html']['actual'] = 'FAIL'
         self._create_json_output(json_dict)
         self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
-        self.assertEqual("test.html actual text",
-                         written_files[actual_path].decode(encoding='utf-8'))
+        self.assertEqual('test.html actual text',
+                         self.fs.read_text_file(actual_path))
         # Ensure the artifact in the json was replaced with the location of
         # the newly-created file.
         updated_json = self._load_json_output()
@@ -494,12 +516,11 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self._create_json_output(json_dict)
 
         self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
-        written_files = self.fs.written_files
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')
         stderr_path = self.fs.join(artifacts_subdir, 'test-stderr.txt')
-        self.assertEqual(written_files[stderr_path].decode('utf-8'),
-                         'test.html exceptions')
+        self.assertEqual('test.html exceptions',
+                         self.fs.read_text_file(stderr_path))
 
         # Ensure the artifact in the json was replaced with the location of
         # the newly-created file.
@@ -529,13 +550,11 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self._create_json_output(json_dict)
 
         self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
-        written_files = self.fs.written_files
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')
         crash_log_path = self.fs.join(artifacts_subdir, 'test-crash-log.txt')
-        self.assertEqual(
-            "test.html crashed!",
-            written_files[crash_log_path].decode(encoding='utf-8'))
+        self.assertEqual('test.html crashed!',
+                         self.fs.read_text_file(crash_log_path))
 
         # Ensure the artifact in the json was replaced with the location of
         # the newly-created file.
@@ -569,20 +588,20 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self._create_json_output(json_dict)
 
         self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
-        written_files = self.fs.written_files
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')
         actual_path = self.fs.join(artifacts_subdir, 'reftest-actual.png')
-        self.assertEqual(base64.b64decode('abcd'), written_files[actual_path])
+        self.assertEqual(base64.b64decode('abcd'),
+                         self.fs.read_binary_file(actual_path))
         expected_path = self.fs.join(artifacts_subdir, 'reftest-expected.png')
         self.assertEqual(base64.b64decode('bcde'),
-                         written_files[expected_path])
+                         self.fs.read_binary_file(expected_path))
         diff_path = self.fs.join(artifacts_subdir, 'reftest-diff.png')
         self.assertEqual('\n'.join([
             '< bcde',
             '---',
             '> abcd',
-        ]), written_files[diff_path])
+        ]), self.fs.read_binary_file(diff_path))
 
         # Ensure the artifacts in the json were replaced with the location of
         # the newly-created files.
@@ -611,7 +630,10 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
-                        'wpt_actual_metadata': ['test.html actual text'],
+                        'wpt_actual_metadata': [
+                            '[test.html]\n  expected: OK\n',
+                            '  [Assert something]\n    expected: CRASH\n',
+                        ],
                     },
                 },
             },
@@ -619,21 +641,34 @@ class WPTResultsProcessorTest(LoggingTestCase):
         }
         self._create_json_output(json_dict)
         # Also create a checked-in metadata file for this test
+        checked_in_metadata = textwrap.dedent("""\
+            [test.html]
+              expected: OK
+              [Assert something]
+                expected: FAIL
+            """)
         self.fs.write_text_file(
             self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
-                         'test.html.ini'), 'test.html checked-in metadata')
+                         'test.html.ini'), checked_in_metadata)
 
-        self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
-        written_files = self.fs.written_files
+        with self._mock_filesystem_builtins():
+            self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')
         actual_path = self.fs.join(artifacts_subdir, 'test-actual.txt')
-        self.assertEqual("test.html actual text",
-                         written_files[actual_path].decode(encoding='utf-8'))
+        self.assertEqual(
+            textwrap.dedent("""\
+                [test.html]
+                  expected: OK
+
+                  [Assert something]
+                    expected: CRASH
+                """), self.fs.read_text_file(actual_path))
+
         # The checked-in metadata file gets renamed from .ini to -expected.txt
         expected_path = self.fs.join(artifacts_subdir, 'test-expected.txt')
-        self.assertEqual("test.html checked-in metadata",
-                         written_files[expected_path].decode(encoding='utf-8'))
+        self.assertEqual(checked_in_metadata,
+                         self.fs.read_text_file(expected_path))
 
         # Ensure the artifacts in the json were replaced with the locations of
         # the newly-created files.
@@ -652,23 +687,67 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # Ensure that a diff was also generated. There should be both additions
         # and deletions for this test since we have expected output. We don't
         # validate the entire diff files to avoid checking line numbers/markup.
-        diff_path = self.fs.join(artifacts_subdir, 'test-diff.txt')
-        self.assertIn('-test.html checked-in metadata',
-                      written_files[diff_path].decode(encoding='utf-8'))
-        self.assertIn('+test.html actual text',
-                      written_files[diff_path].decode(encoding='utf-8'))
+        diff_lines = self.fs.read_text_file(
+            self.fs.join(artifacts_subdir, 'test-diff.txt')).splitlines()
+        self.assertIn('-    expected: FAIL', diff_lines)
+        self.assertIn('+    expected: CRASH', diff_lines)
         self.assertEqual(
             [self.fs.join(path_from_out_dir_base, 'test-diff.txt')],
             test_node['artifacts']['text_diff'])
-        pretty_diff_path = self.fs.join(artifacts_subdir,
-                                        'test-pretty-diff.html')
-        self.assertIn("test.html checked-in metadata",
-                      written_files[pretty_diff_path].decode(encoding='utf-8'))
-        self.assertIn("test.html actual text",
-                      written_files[pretty_diff_path].decode(encoding='utf-8'))
+
+        pretty_diff_contents = self.fs.read_text_file(
+            self.fs.join(artifacts_subdir, 'test-pretty-diff.html'))
+        self.assertIn('expected: FAIL', pretty_diff_contents)
+        self.assertIn('expected: CRASH', pretty_diff_contents)
         self.assertEqual(
             [self.fs.join(path_from_out_dir_base, 'test-pretty-diff.html')],
             test_node['artifacts']['pretty_text_diff'])
+
+    def test_invalid_checked_in_metadata(self):
+        """Verify the processor handles a syntactically invalid metadata file:
+          * The tool does not crash.
+          * The actual text is created, but the expected text and diffs are not.
+        """
+        json_dict = {
+            'tests': {
+                'test.html': {
+                    'expected': 'PASS',
+                    'actual': 'FAIL',
+                    'artifacts': {
+                        'wpt_actual_status': ['OK'],
+                        'wpt_actual_metadata': [
+                            '[test.html]\n  expected: OK\n',
+                            '  [Assert something]\n    expected: CRASH\n',
+                        ],
+                    },
+                },
+            },
+            'path_delimiter': '/',
+        }
+        self._create_json_output(json_dict)
+        # Also create a checked-in metadata file for this test
+        self.fs.write_text_file(
+            self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
+                         'test.html.ini'),
+            textwrap.dedent("""\
+                [test.html]
+                  [bracket is not matched
+                """))
+
+        with self._mock_filesystem_builtins():
+            self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
+
+        path_from_out_dir_base = self.fs.join('layout-test-results',
+                                              'external', 'wpt')
+        updated_json = self._load_json_output()
+        test_node = updated_json['tests']['external']['wpt']['test.html']
+        self.assertNotIn('wpt_actual_metadata', test_node['artifacts'])
+        self.assertNotIn('expected_text', test_node['artifacts'])
+        self.assertNotIn('text_diff', test_node['artifacts'])
+        self.assertNotIn('pretty_text_diff', test_node['artifacts'])
+        self.assertEqual(
+            [self.fs.join(path_from_out_dir_base, 'test-actual.txt')],
+            test_node['artifacts']['actual_text'])
 
     def test_expected_output_for_variant(self):
         # Check that an -expected.txt file is created from a checked-in metadata
@@ -684,7 +763,9 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'actual': 'FAIL',
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
-                        'wpt_actual_metadata': ['variant bar/abc actual text'],
+                        'wpt_actual_metadata': [
+                            '[variant.html?foo=bar/abc]\n  expected: OK\n',
+                        ],
                     },
                 },
             },
@@ -692,26 +773,35 @@ class WPTResultsProcessorTest(LoggingTestCase):
         }
         self._create_json_output(json_dict)
         # Also create a checked-in metadata file for this test. This filename
-        # matches the test *file* name, not the test name (which includes the
-        # variant).
+        # matches the test *file* name, not the test ID. The checked-in file
+        # contains expectations for all variants.
         self.fs.write_text_file(
             self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
                          'variant.html.ini'),
-            "variant.html checked-in metadata")
+            textwrap.dedent("""\
+                [variant.html?foo=bar/abc]
+                  expected: OK
 
-        self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
-        written_files = self.fs.written_files
+                [variant.html?foo=baz]
+                  expected: TIMEOUT
+                """))
+        with self._mock_filesystem_builtins():
+            self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
+        variant_metadata = textwrap.dedent("""\
+            [variant.html?foo=bar/abc]
+              expected: OK
+            """)
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')
         actual_path = self.fs.join(artifacts_subdir,
-                                   "variant_foo=bar_abc-actual.txt")
-        self.assertEqual("variant bar/abc actual text",
-                         written_files[actual_path].decode(encoding='utf-8'))
+                                   'variant_foo=bar_abc-actual.txt')
+        self.assertEqual(variant_metadata, self.fs.read_text_file(actual_path))
         # The checked-in metadata file gets renamed from .ini to -expected.txt
         expected_path = self.fs.join(artifacts_subdir,
-                                     "variant_foo=bar_abc-expected.txt")
-        self.assertEqual("variant.html checked-in metadata",
-                         written_files[expected_path].decode(encoding='utf-8'))
+                                     'variant_foo=bar_abc-expected.txt')
+        # Exclude the `foo=baz` variant from the expected text.
+        self.assertEqual(variant_metadata,
+                         self.fs.read_text_file(expected_path))
 
         # Ensure the artifacts in the json were replaced with the locations of
         # the newly-created files.
@@ -746,7 +836,8 @@ class WPTResultsProcessorTest(LoggingTestCase):
                     'artifacts': {
                         'wpt_actual_status': ['OK'],
                         'wpt_actual_metadata': [
-                            'dir/multiglob worker actual text',
+                            '[multiglob.https.any.worker.html]\n'
+                            '  expected: OK\n',
                         ],
                     },
                 },
@@ -760,21 +851,34 @@ class WPTResultsProcessorTest(LoggingTestCase):
         self.fs.write_text_file(
             self.fs.join(self.processor.web_tests_dir, 'external', 'wpt',
                          'dir/multiglob.https.any.js.ini'),
-            "dir/multiglob checked-in metadata")
+            textwrap.dedent("""\
+                [multiglob.https.any.worker.html]
+                  expected: OK
 
-        self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
-        written_files = self.fs.written_files
+                [multiglob.https.any.window.html]
+                  expected: FAIL
+                """))
+
+        with self._mock_filesystem_builtins():
+            self.processor.process_wpt_results(OUTPUT_JSON_FILENAME)
         artifacts_subdir = self.fs.join(self.processor.artifacts_dir,
                                         'external', 'wpt')
         actual_path = self.fs.join(
             artifacts_subdir, 'dir/multiglob.https.any.worker-actual.txt')
-        self.assertEqual("dir/multiglob worker actual text",
-                         written_files[actual_path].decode(encoding='utf-8'))
+        self.assertEqual(
+            textwrap.dedent("""\
+                [multiglob.https.any.worker.html]
+                  expected: OK
+                """), self.fs.read_text_file(actual_path))
         # The checked-in metadata file gets renamed from .ini to -expected.txt
+        # and cut to the `worker` scope.
         expected_path = self.fs.join(
             artifacts_subdir, 'dir/multiglob.https.any.worker-expected.txt')
-        self.assertEqual("dir/multiglob checked-in metadata",
-                         written_files[expected_path].decode(encoding='utf-8'))
+        self.assertEqual(
+            textwrap.dedent("""\
+                [multiglob.https.any.worker.html]
+                  expected: OK
+                """), self.fs.read_text_file(expected_path))
 
         # Ensure the artifacts in the json were replaced with the locations of
         # the newly-created files.

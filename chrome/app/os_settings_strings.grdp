@@ -1501,7 +1501,7 @@ Press an assigned switch or key to remove assignment.
     Audio and captions
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_ADDITIONAL_FEATURES_TITLE" desc="In the settings tab, the title of a link that adds additional accessibility features not found in the built-in settings.">
-    Add additional features
+    Find more accessibility tools in the Chrome Web Store
   </message>
   <message name="IDS_SETTINGS_MANAGE_TTS_SETTINGS" desc="Link to manage text-to-speech settings">
     Text-to-Speech voice settings

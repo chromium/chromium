@@ -70,37 +70,32 @@ class MetalayerToolTest : public AshTestBase {
 // The metalayer tool is always visible, but only enabled when the user
 // has enabled the metalayer AND the Assistant framework is ready.
 TEST_F(MetalayerToolTest, PaletteMenuState) {
-  const chromeos::assistant::AssistantStatus kStates[] = {
-      chromeos::assistant::AssistantStatus::NOT_READY,
-      chromeos::assistant::AssistantStatus::READY};
-  const chromeos::assistant::AssistantAllowedState kAllowedStates[] = {
-      chromeos::assistant::AssistantAllowedState::ALLOWED,
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_POLICY,
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
-      chromeos::assistant::AssistantAllowedState::DISALLOWED_BY_INCOGNITO,
+  const assistant::AssistantStatus kStates[] = {
+      assistant::AssistantStatus::NOT_READY, assistant::AssistantStatus::READY};
+  const assistant::AssistantAllowedState kAllowedStates[] = {
+      assistant::AssistantAllowedState::ALLOWED,
+      assistant::AssistantAllowedState::DISALLOWED_BY_POLICY,
+      assistant::AssistantAllowedState::DISALLOWED_BY_LOCALE,
+      assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER,
+      assistant::AssistantAllowedState::DISALLOWED_BY_INCOGNITO,
   };
   const std::u16string kLoading(u"loading");
 
   // Iterate over every possible combination of states.
-  for (chromeos::assistant::AssistantStatus state : kStates) {
-    for (chromeos::assistant::AssistantAllowedState allowed_state :
-         kAllowedStates) {
+  for (assistant::AssistantStatus state : kStates) {
+    for (assistant::AssistantAllowedState allowed_state : kAllowedStates) {
       for (int enabled = 0; enabled <= 1; enabled++) {
         for (int context = 0; context <= 1; context++) {
           const bool allowed =
-              allowed_state ==
-              chromeos::assistant::AssistantAllowedState::ALLOWED;
-          const bool ready =
-              state != chromeos::assistant::AssistantStatus::NOT_READY;
+              allowed_state == assistant::AssistantAllowedState::ALLOWED;
+          const bool ready = state != assistant::AssistantStatus::NOT_READY;
           const bool selectable = allowed && enabled && context && ready;
 
           assistant_state()->NotifyStatusChanged(state);
-          prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled,
-                              enabled);
+          prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, enabled);
           assistant_state()->NotifyFeatureAllowed(allowed_state);
-          prefs()->SetBoolean(
-              chromeos::assistant::prefs::kAssistantContextEnabled, context);
+          prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled,
+                              context);
 
           std::unique_ptr<views::View> view =
               base::WrapUnique(tool_->CreateView());
@@ -146,26 +141,23 @@ TEST_F(MetalayerToolTest, EnablingDisablingMetalayerEnablesDisablesController) {
 
 // Verifies that disabling the metalayer support disables the tool.
 TEST_F(MetalayerToolTest, MetalayerUnsupportedDisablesPaletteTool) {
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
-                      true);
+  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
+  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, true);
 
   // Disabling the user prefs individually should disable the tool.
   tool_->OnEnable();
   EXPECT_CALL(*palette_tool_delegate_.get(),
               DisableTool(PaletteToolId::METALAYER));
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, false);
+  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, false);
   testing::Mock::VerifyAndClearExpectations(palette_tool_delegate_.get());
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
+  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
 
   tool_->OnEnable();
   EXPECT_CALL(*palette_tool_delegate_.get(),
               DisableTool(PaletteToolId::METALAYER));
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
-                      false);
+  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, false);
   testing::Mock::VerifyAndClearExpectations(palette_tool_delegate_.get());
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantContextEnabled,
-                      true);
+  prefs()->SetBoolean(assistant::prefs::kAssistantContextEnabled, true);
 
   // Test AssistantState changes.
   tool_->OnEnable();
@@ -175,16 +167,14 @@ TEST_F(MetalayerToolTest, MetalayerUnsupportedDisablesPaletteTool) {
   EXPECT_CALL(*palette_tool_delegate_.get(),
               DisableTool(PaletteToolId::METALAYER))
       .Times(0);
-  assistant_state()->NotifyStatusChanged(
-      chromeos::assistant::AssistantStatus::READY);
+  assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::READY);
   testing::Mock::VerifyAndClearExpectations(palette_tool_delegate_.get());
 
   // Changing the state to NOT_READY should disable the tool.
   EXPECT_CALL(*palette_tool_delegate_.get(),
               DisableTool(PaletteToolId::METALAYER))
       .Times(testing::AtLeast(1));
-  assistant_state()->NotifyStatusChanged(
-      chromeos::assistant::AssistantStatus::NOT_READY);
+  assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::NOT_READY);
   testing::Mock::VerifyAndClearExpectations(palette_tool_delegate_.get());
 }
 

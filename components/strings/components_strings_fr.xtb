@@ -1228,6 +1228,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4305666528087210886">Impossible d'accéder à votre fichier</translation>
 <translation id="4306529830550717874">Enregistrer l'adresse ?</translation>
 <translation id="4306812610847412719">presse-papiers</translation>
+<translation id="4308567447483056043">Cette règle est ignorée, car l'utilisateur n'est pas affilié. Pour qu'elle soit appliquée, le profil et le navigateur Chrome doivent être gérés par la même organisation dans la console d'administration.</translation>
 <translation id="4310070645992025887">Effectuer une recherche parmi vos parcours</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">Bloquer (par défaut)</translation>

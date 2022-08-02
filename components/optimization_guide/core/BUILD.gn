@@ -173,6 +173,7 @@ static_library("core") {
     "prediction_model_fetcher.h",
     "prediction_model_fetcher_impl.cc",
     "prediction_model_fetcher_impl.h",
+    "push_notification_manager.cc",
     "push_notification_manager.h",
     "store_update_data.cc",
     "store_update_data.h",
@@ -368,6 +369,7 @@ source_set("unit_tests") {
     "prediction_manager_unittest.cc",
     "prediction_model_download_manager_unittest.cc",
     "prediction_model_fetcher_unittest.cc",
+    "push_notification_manager_unittest.cc",
     "store_update_data_unittest.cc",
     "url_pattern_with_wildcards_unittest.cc",
   ]

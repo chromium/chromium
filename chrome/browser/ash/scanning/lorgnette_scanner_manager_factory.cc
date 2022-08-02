@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -28,9 +27,7 @@ LorgnetteScannerManagerFactory* LorgnetteScannerManagerFactory::GetInstance() {
 }
 
 LorgnetteScannerManagerFactory::LorgnetteScannerManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "LorgnetteScannerManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("LorgnetteScannerManager") {}
 
 LorgnetteScannerManagerFactory::~LorgnetteScannerManagerFactory() = default;
 

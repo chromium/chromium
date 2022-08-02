@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">AIL-LWYTHO</translation>
 <translation id="3009958530611748826">Dewiswch ffolder i gadw iddi</translation>
 <translation id="3017079585324758401">Cefndir</translation>
+<translation id="302435934487327038">Wedi cwblhau gosod</translation>
 <translation id="3027578600144895987">Cau'r camera</translation>
 <translation id="3031560714565892478">Mae'r ddyfais yn gamera fideo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Diweddbwynt</translation>
 <translation id="3069085583900247081">Gwnaeth y prawf fethu</translation>
-<translation id="3076243757415932261">Wrthi'n dilysu cydrannau...</translation>
 <translation id="3083667275341675831">Diagnosteg Cysylltedd</translation>
 <translation id="3084958266922136097">Analluogi'r arbedydd sgrîn</translation>
 <translation id="3091839911843451378">Methwyd - Wedi'i stopio</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Ydych chi'n siŵr eich bod am glirio holl hanes argraffu? Ni fydd y tasgau argraffu sy'n mynd rhagddynt yn cael eu clirio.</translation>
 <translation id="3383751554789092165">Newid gwybodaeth dyfais yn ôl yr angen.</translation>
 <translation id="3404249063913988450">Galluogi'r arbedydd sgrîn</translation>
-<translation id="3404770484521709967">Mae cydrannau wedi'u gosod yn gywir.</translation>
 <translation id="3413935475507503304">I barhau gyda'r diweddariad, cliciwch Nesaf.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Diogelwch</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Hen gyfrinair</translation>
 <translation id="4453205916657964690">Masg is-rwydwaith</translation>
 <translation id="4454245904991689773">Sganio i</translation>
-<translation id="4472575034687746823">Cychwyn arni</translation>
 <translation id="4479639480957787382">Ether-rwyd</translation>
 <translation id="4483049906298469269">Wedi methu â phingio porth y rhwydwaith nad yw'n ddiofyn</translation>
 <translation id="4500213108254186382">Mesurydd Cyflymu Caead</translation>
@@ -664,6 +662,7 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="6618744767048954150">wrthi'n rhedeg</translation>
 <translation id="6620487321149975369">Bydd tasgau argraffu yn ymddangos yn yr hanes oni bai eu bod yn cael eu tynnu'n bwrpasol</translation>
 <translation id="6643016212128521049">Clirio</translation>
+<translation id="6644568396961840069">Nid oedd modd cadw'r ffeil. Rhowch gynnig ar blygio storfa allanol wahanol i mewn, neu rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="6647510110698214773">Algorithm amgryptio</translation>
 <translation id="6650062777702288430">Switsh kana/alffaniwmerig</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
@@ -809,7 +808,6 @@ Rhowch gynnig ar dapio'r meic i ofyn unrhyw beth i fi.</translation>
 <translation id="8063022551652308521">Mae Diogelu Ysgrifennu wedi'i ddiffodd o hyd. I barhau, trowch Diogelu Ysgrifennu ymlaen.</translation>
 <translation id="8075838845814659848">Faint o fatri sy'n weddill</translation>
 <translation id="8082366717211101304">Methu â datrys DNS o apiau Android</translation>
-<translation id="8083281199617904460">Mae'r broses drwsio hon wedi'i bwriadu ar gyfer technegydd trwsio hyfforddedig. Dechreuwch dim ond ar ôl ailosod y cydrannau sy'n camweithio.</translation>
 <translation id="808894953321890993">Newid cyfrinair</translation>
 <translation id="8104083085214006426">Rydych yn defnyddio rhwydwaith agored anniogel</translation>
 <translation id="8109786307828817014">Parhau er bod calibradu rhai cydrannau wedi methu?</translation>

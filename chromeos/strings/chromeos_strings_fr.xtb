@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ACTUALISER</translation>
 <translation id="3009958530611748826">Sélectionner un dossier de destination</translation>
 <translation id="3017079585324758401">Arrière-plan</translation>
+<translation id="302435934487327038">Installation terminée</translation>
 <translation id="3027578600144895987">Fermer la caméra</translation>
 <translation id="3031560714565892478">L'appareil est une caméra.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Point de terminaison</translation>
 <translation id="3069085583900247081">Échec du test</translation>
-<translation id="3076243757415932261">Validation des composants…</translation>
 <translation id="3083667275341675831">Diagnostic de connectivité</translation>
 <translation id="3084958266922136097">Désactiver l'économiseur d'écran</translation>
 <translation id="3091839911843451378">Échec – Imprimante à l'arrêt</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique des impressions ? Vos tâches d'impression en cours ne seront pas supprimées de cet historique.</translation>
 <translation id="3383751554789092165">Modifiez les informations concernant l'appareil si nécessaire.</translation>
 <translation id="3404249063913988450">Activer l'économiseur d'écran</translation>
-<translation id="3404770484521709967">Les composants sont installés correctement.</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur "Suivant".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Sécurité</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Ancien mot de passe</translation>
 <translation id="4453205916657964690">Masque de sous-réseau</translation>
 <translation id="4454245904991689773">Enregistrer dans</translation>
-<translation id="4472575034687746823">Premiers pas</translation>
 <translation id="4479639480957787382">Ethernet </translation>
 <translation id="4483049906298469269">Impossible de pinguer la passerelle du réseau non défini par défaut</translation>
 <translation id="4500213108254186382">Accéléromètre (couvercle)</translation>
@@ -664,6 +662,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6618744767048954150">En cours</translation>
 <translation id="6620487321149975369">Les tâches d'impression seront incluses dans l'historique, sauf si vous les supprimez manuellement</translation>
 <translation id="6643016212128521049">Effacer</translation>
+<translation id="6644568396961840069">Impossible d'enregistrer le fichier. Essayez de brancher un autre périphérique de stockage externe ou réessayez plus tard.</translation>
 <translation id="6647510110698214773">Algorithme de chiffrement</translation>
 <translation id="6650062777702288430">Bascule kana/alphanumérique</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
@@ -809,7 +808,6 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8063022551652308521">La protection en écriture est toujours désactivée. Pour continuer, activez-la.</translation>
 <translation id="8075838845814659848">Niveau de charge</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS depuis les applis Android</translation>
-<translation id="8083281199617904460">Ce processus de réparation est destiné à guider les réparateurs qualifiés. Ne commencez qu'après avoir remplacé les composants défectueux.</translation>
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8104083085214006426">Vous utilisez un réseau ouvert et non sécurisé</translation>
 <translation id="8109786307828817014">Continuer malgré les échecs de calibrage ?</translation>

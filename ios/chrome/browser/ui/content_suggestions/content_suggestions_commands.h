@@ -13,8 +13,7 @@
 @protocol ContentSuggestionsCommands
 
 // Opens the Most Visited associated with this `item` at the `mostVisitedItem`.
-- (void)openMostVisitedItem:(CollectionViewItem*)item
-                    atIndex:(NSInteger)mostVisitedIndex;
+- (void)openMostVisitedItem:(NSObject*)item atIndex:(NSInteger)mostVisitedIndex;
 // Handles the actions tapping the "Return to Recent Tab" item that returns the
 // user to the last opened tab.
 - (void)openMostRecentTab;

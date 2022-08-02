@@ -811,7 +811,8 @@ QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
 
 void QuicChromiumClientSession::ConnectionMigrationValidationResultDelegate::
     OnPathValidationSuccess(
-        std::unique_ptr<quic::QuicPathValidationContext> context) {
+        std::unique_ptr<quic::QuicPathValidationContext> context,
+        quic::QuicTime start_time) {
   auto* chrome_context =
       static_cast<QuicChromiumPathValidationContext*>(context.get());
   session_->OnConnectionMigrationProbeSucceeded(
@@ -838,7 +839,8 @@ QuicChromiumClientSession::PortMigrationValidationResultDelegate::
 
 void QuicChromiumClientSession::PortMigrationValidationResultDelegate::
     OnPathValidationSuccess(
-        std::unique_ptr<quic::QuicPathValidationContext> context) {
+        std::unique_ptr<quic::QuicPathValidationContext> context,
+        quic::QuicTime start_time) {
   auto* chrome_context =
       static_cast<QuicChromiumPathValidationContext*>(context.get());
   session_->OnPortMigrationProbeSucceeded(

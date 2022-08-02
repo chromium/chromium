@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar una carpeta de destino</translation>
 <translation id="3017079585324758401">Imagen de fondo</translation>
+<translation id="302435934487327038">Se completó la instalación</translation>
 <translation id="3027578600144895987">Cerrar la cámara</translation>
 <translation id="3031560714565892478">El dispositivo es una videocámara.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3069085583900247081">No se pudo realizar la prueba</translation>
-<translation id="3076243757415932261">Validando componentes…</translation>
 <translation id="3083667275341675831">Diagnóstico de conectividad</translation>
 <translation id="3084958266922136097">Inhabilitar el protector de pantalla</translation>
 <translation id="3091839911843451378">Error: La impresora se detuvo</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">¿Seguro que quieres borrar todo el historial de impresiones? No se quitarán tus trabajos de impresión en curso.</translation>
 <translation id="3383751554789092165">Modifica la información del dispositivo según sea necesario.</translation>
 <translation id="3404249063913988450">Habilitar el protector de pantalla</translation>
-<translation id="3404770484521709967">Se instalaron los componentes correctamente.</translation>
 <translation id="3413935475507503304">Para continuar con la actualización, haz clic en Siguiente.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguridad</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Contraseña anterior</translation>
 <translation id="4453205916657964690">Máscara de subred</translation>
 <translation id="4454245904991689773">Destino del escaneo</translation>
-<translation id="4472575034687746823">Comenzar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">no se pudo hacer ping en la puerta de enlace de la red no predeterminada</translation>
 <translation id="4500213108254186382">Acelerómetro en la tapa</translation>
@@ -664,6 +662,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6618744767048954150">En ejecución</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial, a menos que se quiten manualmente</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6644568396961840069">No se pudo guardar el archivo. Intenta conectar otro almacenamiento externo o vuelve a intentarlo más tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de encriptación</translation>
 <translation id="6650062777702288430">Alternar entre teclados kana y alfanumérico</translation>
 <translation id="6657585470893396449">Contraseña</translation>
@@ -809,7 +808,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8063022551652308521">La protección de pantalla sigue desactivada. Actívala para continuar.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde apps para Android</translation>
-<translation id="8083281199617904460">Este proceso de reparación está diseñado para un técnico capacitado. No comiences con la reparación hasta no haber reemplazado los componentes dañados.</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8104083085214006426">Estás usando una red abierta y no segura</translation>
 <translation id="8109786307828817014">¿Deseas continuar con las calibraciones erróneas?</translation>

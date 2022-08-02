@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Не удалось обновить Chrome</translation>
 <translation id="1152920704813762236">Подробнее о Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Открыть в Chrome</translation>
-<translation id="1178374936842835197">Если нужного параметра нет на этой странице, откройте <ph name="LINK_BEGIN" />
-        настройки Chrome OS Flex<ph name="LINK_END" />.</translation>
 <translation id="1203500561924088507">Спасибо, что установили <ph name="BUNDLE_NAME" />. Чтобы изменения вступили в силу, перезапустите браузер.</translation>
 <translation id="1278833599417554002">Перезапустить для обновления &amp;Chrome</translation>
 <translation id="1302523850133262269">Подождите, пока Chrome устанавливает последние обновления системы</translation>
@@ -119,7 +117,6 @@
 <translation id="3080151273017101988">Не отключать работающие в фоновом режиме сервисы при закрытии браузера</translation>
 <translation id="3089968997497233615">Доступна новая, более безопасная версия Google Chrome.</translation>
 <translation id="3100998948628680988">Введите название профиля Chrome</translation>
-<translation id="3103390129666310801">Чтобы посмотреть, обновлена ли операционная система устройства, перейдите в <ph name="LINK_BEGIN" />настройки Chrome OS Flex<ph name="LINK_END" />.</translation>
 <translation id="3114643501466072395">Чтобы проверить, защищены ли другие ваши пароли от утечки данных и прочих проблем с безопасностью, <ph name="BEGIN_LINK" />войдите в Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Внесенные изменения станут активны после перезапуска Google Chrome.</translation>
 <translation id="3149510190863420837">Приложения Chrome</translation>
@@ -210,7 +207,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">На вашем компьютере используется OS X 10.11. Чтобы получать обновления Google Chrome, установите на устройство macOS 10.13 или более поздней версии.</translation>
 <translation id="5098668839038261629">Также выполняется выход из Chrome</translation>
-<translation id="5112116809696021727">Чтобы посмотреть, обновлена ли операционная система устройства, перейдите в <ph name="LINK_BEGIN" />настройки Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="5132929315877954718">Широкий выбор приложений, игр, расширений и тем для Google Chrome.</translation>
 <translation id="5139423532931106058">Настроить профиль Chrome</translation>
 <translation id="5163087008893166964">Добро пожаловать в Chrome! Открыто новое окно браузера.</translation>
@@ -246,8 +242,6 @@
 <translation id="5940385492829620908">Все веб-страницы, закладки и другие данные Chrome можно найти здесь.</translation>
 <translation id="5941711191222866238">Свернуть</translation>
 <translation id="5941830788786076944">Назначить Google Chrome браузером по умолчанию</translation>
-<translation id="5959292945051687759">Если нужного параметра нет на этой странице, откройте <ph name="LINK_BEGIN" />
-        настройки Chrome OS<ph name="LINK_END" />.</translation>
 <translation id="6003112304606738118">Скачивание… Осталось: <ph name="HOURS" /> ч.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6070348360322141662">В целях повышения безопасности Google Chrome шифрует ваши данные</translation>

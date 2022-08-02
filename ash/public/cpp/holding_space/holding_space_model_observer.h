@@ -35,8 +35,8 @@ class ASH_PUBLIC_EXPORT HoldingSpaceModelObserver
   enum UpdatedField : uint32_t {
     kAccessibleName = 1u,
     kBackingFile = kAccessibleName << 1u,
-    kPaused = kBackingFile << 1u,
-    kProgress = kPaused << 1u,
+    kInProgressCommands = kBackingFile << 1u,
+    kProgress = kInProgressCommands << 1u,
     kSecondaryText = kProgress << 1u,
     kSecondaryTextColor = kSecondaryText << 1u,
     kText = kSecondaryTextColor << 1u,

@@ -22,7 +22,6 @@ namespace util {
 
 namespace {
 
-using chromeos::assistant::AssistantEntryPoint;
 using chromeos::assistant::AssistantQuerySource;
 
 // Supported deep link param keys. These values must be kept in sync with the

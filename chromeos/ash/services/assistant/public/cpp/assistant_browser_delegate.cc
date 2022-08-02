@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/services/assistant/public/cpp/assistant_browser_delegate.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
 
@@ -29,5 +28,4 @@ AssistantBrowserDelegate::~AssistantBrowserDelegate() {
   g_instance = nullptr;
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

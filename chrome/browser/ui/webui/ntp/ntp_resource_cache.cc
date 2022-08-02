@@ -324,14 +324,11 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
   replacements["cookieControlsTooltipText"] = l10n_util::GetStringUTF8(
       IDS_NEW_TAB_OTR_COOKIE_CONTROLS_CONTROLLED_TOOLTIP_TEXT);
 
-  // Requesting the incognito HTML is only done from within incognito browser
-  // windows. The ThemeProvider associated with the requesting WebContents will
-  // wrap the relevant incognito bits.
-  const ui::ThemeProvider* tp = webui::GetThemeProvider(wc_getter.Run());
-  DCHECK(tp);
+  const ui::ThemeProvider& tp =
+      ThemeService::GetThemeProviderForProfile(profile_);
 
   replacements["hasCustomBackground"] =
-      tp->HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
+      tp.HasCustomImage(IDR_THEME_NTP_BACKGROUND) ? "true" : "false";
 
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
@@ -424,11 +421,8 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
   const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
   DCHECK(native_theme);
 
-  // Requesting the incognito CSS is only done from within incognito browser
-  // windows. The ThemeProvider associated with the requesting WebContents will
-  // wrap the relevant incognito bits.
-  const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
-  DCHECK(tp);
+  const ui::ThemeProvider& tp =
+      ThemeService::GetThemeProviderForProfile(profile_);
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;
@@ -441,8 +435,8 @@ void NTPResourceCache::CreateNewTabIncognitoCSS(
   const ui::ColorProvider& cp = web_contents->GetColorProvider();
   substitutions["colorBackground"] = color_utils::SkColorToRgbaString(
       GetThemeColor(native_theme, cp, kColorNewTabPageBackground));
-  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(*tp);
-  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(*tp);
+  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);
+  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
 
   // Get our template.
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
@@ -464,8 +458,8 @@ void NTPResourceCache::CreateNewTabCSS(
   const ui::NativeTheme* native_theme = webui::GetNativeTheme(web_contents);
   DCHECK(native_theme);
 
-  const ui::ThemeProvider* tp = webui::GetThemeProvider(web_contents);
-  DCHECK(tp);
+  const ui::ThemeProvider& tp =
+      ThemeService::GetThemeProviderForProfile(profile_);
   const ui::ColorProvider& cp = web_contents->GetColorProvider();
 
   // Get our theme colors.
@@ -490,8 +484,8 @@ void NTPResourceCache::CreateNewTabCSS(
       color_utils::SkColorToRgbaString(color_background);
   substitutions["colorLink"] = color_utils::SkColorToRgbString(
       GetThemeColor(native_theme, cp, kColorNewTabPageLink));
-  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(*tp);
-  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(*tp);
+  substitutions["backgroundPosition"] = GetNewTabBackgroundPositionCSS(tp);
+  substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
   substitutions["colorTextRgba"] = color_utils::SkColorToRgbaString(color_text);
   substitutions["colorTextLight"] =
       color_utils::SkColorToRgbaString(color_text_light);
@@ -502,7 +496,7 @@ void NTPResourceCache::CreateNewTabCSS(
   // For themes that right-align the background, we flip the attribution to the
   // left to avoid conflicts.
   int alignment =
-      tp->GetDisplayProperty(ThemeProperties::NTP_BACKGROUND_ALIGNMENT);
+      tp.GetDisplayProperty(ThemeProperties::NTP_BACKGROUND_ALIGNMENT);
   if (alignment & ThemeProperties::ALIGN_RIGHT) {
     substitutions["leftAlignAttribution"] = "0";
     substitutions["rightAlignAttribution"] = "auto";
@@ -514,7 +508,7 @@ void NTPResourceCache::CreateNewTabCSS(
   }
 
   substitutions["displayAttribution"] =
-      tp->HasCustomImage(IDR_THEME_NTP_ATTRIBUTION) ? "inline" : "none";
+      tp.HasCustomImage(IDR_THEME_NTP_ATTRIBUTION) ? "inline" : "none";
 
   // Get our template.
   static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>

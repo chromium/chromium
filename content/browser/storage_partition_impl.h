@@ -422,6 +422,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
 
+  storage::QuotaManagerProxy* GetQuotaManagerProxy();
+
   class URLLoaderNetworkContext {
    public:
     enum class Type {

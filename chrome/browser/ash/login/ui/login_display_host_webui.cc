@@ -20,7 +20,6 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
-#include "ash/public/cpp/multi_user_window_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -463,12 +462,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
   if (login_view_ && login_window_)
     login_window_->RemoveRemovalsObserver(this);
 
-  auto* window_manager = MultiUserWindowManagerHelper::GetWindowManager();
-  // MultiUserWindowManagerHelper instance might be null if no user is logged
-  // in - or in a unit test.
-  if (window_manager)
-    window_manager->RemoveObserver(this);
-
   ResetKeyboardOverscrollBehavior();
 
   views::FocusManager::set_arrow_key_traversal_enabled(false);
@@ -782,10 +775,7 @@ void LoginDisplayHostWebUI::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// LoginDisplayHostWebUI, MultiUserWindowManagerObserver:
-void LoginDisplayHostWebUI::OnUserSwitchAnimationFinished() {
-  ShutdownDisplayHost();
-}
+// LoginDisplayHostWebUI, OobeUI::Observer
 
 void LoginDisplayHostWebUI::OnCurrentScreenChanged(OobeScreenId current_screen,
                                                    OobeScreenId new_screen) {

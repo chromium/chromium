@@ -7,8 +7,8 @@ ADDRESS_HOME_STATE | state | State / Province | default | firstname_1-default
 ADDRESS_HOME_ZIP | zip | ZIP / Postal code |  | firstname_1-default
 ADDRESS_HOME_COUNTRY | countryId | Country or region | 1 | firstname_1-default
 PHONE_HOME_CITY_CODE | dayphone1 | Primary telephone number |  | firstname_1-default
-PHONE_HOME_NUMBER | dayphone2 | Primary telephone number |  | firstname_1-default
-PHONE_HOME_NUMBER | dayphone3 | Primary telephone number |  | firstname_1-default
+PHONE_HOME_NUMBER_PREFIX | dayphone2 | Primary telephone number |  | firstname_1-default
+PHONE_HOME_NUMBER_SUFFIX | dayphone3 | Primary telephone number |  | firstname_1-default
 PHONE_HOME_EXTENSION | dayphone4 | ext.: |  | firstname_1-default
 EMAIL_ADDRESS | email | Email address |  | firstname_1-default
 EMAIL_ADDRESS | retype_email | Re-enter email address |  | firstname_1-default
@@ -22,8 +22,8 @@ ADDRESS_HOME_STATE | state | State / Province | default | firstname_2-default
 ADDRESS_HOME_ZIP | zip | ZIP / Postal code |  | firstname_2-default
 ADDRESS_HOME_COUNTRY | countryId | Country or region | 1 | firstname_2-default
 PHONE_HOME_CITY_CODE | dayphone1 | Primary telephone number |  | firstname_2-default
-PHONE_HOME_NUMBER | dayphone2 | Primary telephone number |  | firstname_2-default
-PHONE_HOME_NUMBER | dayphone3 | Primary telephone number |  | firstname_2-default
+PHONE_HOME_NUMBER_PREFIX | dayphone2 | Primary telephone number |  | firstname_2-default
+PHONE_HOME_NUMBER_SUFFIX | dayphone3 | Primary telephone number |  | firstname_2-default
 PHONE_HOME_EXTENSION | dayphone4 | ext.: |  | firstname_2-default
 EMAIL_ADDRESS | email | Email address |  | firstname_2-default
 EMAIL_ADDRESS | retype_email | Re-enter email address |  | firstname_2-default
@@ -56,8 +56,8 @@ ADDRESS_HOME_STATE | state | State / Province | default | firstname_3-default
 ADDRESS_HOME_ZIP | zip | ZIP / Postal code |  | firstname_3-default
 ADDRESS_HOME_COUNTRY | countryId | Country or region | 1 | firstname_3-default
 PHONE_HOME_CITY_CODE | dayphone1 | Primary telephone number |  | firstname_3-default
-PHONE_HOME_NUMBER | dayphone2 | Primary telephone number |  | firstname_3-default
-PHONE_HOME_NUMBER | dayphone3 | Primary telephone number |  | firstname_3-default
+PHONE_HOME_NUMBER_PREFIX | dayphone2 | Primary telephone number |  | firstname_3-default
+PHONE_HOME_NUMBER_SUFFIX | dayphone3 | Primary telephone number |  | firstname_3-default
 PHONE_HOME_EXTENSION | dayphone4 | ext.: |  | firstname_3-default
 EMAIL_ADDRESS | email | Email address |  | firstname_3-default
 EMAIL_ADDRESS | retype_email | Re-enter email address |  | firstname_3-default

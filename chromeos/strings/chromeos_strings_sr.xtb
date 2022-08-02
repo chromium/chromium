@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ОСВЕЖИ</translation>
 <translation id="3009958530611748826">Изаберите фолдер за чување</translation>
 <translation id="3017079585324758401">Позадина</translation>
+<translation id="302435934487327038">Инсталирање је завршено</translation>
 <translation id="3027578600144895987">Затворите камеру</translation>
 <translation id="3031560714565892478">Уређај је видео камера.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Крајња тачка</translation>
 <translation id="3069085583900247081">Тест није успео</translation>
-<translation id="3076243757415932261">Валидирају се компоненте…</translation>
 <translation id="3083667275341675831">Дијагностика повезивости</translation>
 <translation id="3084958266922136097">Онемогућите чувар екрана</translation>
 <translation id="3091839911843451378">Није успело – заустављено је</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Желите ли стварно да обришете сву историју штампања? Задаци штампања који су у току се не бришу.</translation>
 <translation id="3383751554789092165">Мењајте информације о уређају према потреби.</translation>
 <translation id="3404249063913988450">Омогућите чувар екрана</translation>
-<translation id="3404770484521709967">Компоненте су правилно монтиране.</translation>
 <translation id="3413935475507503304">Да бисте наставили са ажурирањем, кликните на Даље.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Безбедност</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Стара лозинка</translation>
 <translation id="4453205916657964690">Маска подмреже</translation>
 <translation id="4454245904991689773">Скенирај у:</translation>
-<translation id="4472575034687746823">Започнимо</translation>
 <translation id="4479639480957787382">Етернет</translation>
 <translation id="4483049906298469269">Пинговање мрежног пролаза који није подразумеван није успело</translation>
 <translation id="4500213108254186382">Акцелерометар за поклопац</translation>
@@ -664,6 +662,7 @@
 <translation id="6618744767048954150">У току је</translation>
 <translation id="6620487321149975369">Задаци штампања ће се појавити у историји ако их не уклоните ручно</translation>
 <translation id="6643016212128521049">Обриши</translation>
+<translation id="6644568396961840069">Чување фајла није успело. Прикључите другу спољну меморију или пробајте поново касније.</translation>
 <translation id="6647510110698214773">Алгоритам шифровања</translation>
 <translation id="6650062777702288430">Прекидач за кана/алфанумеричке знакове</translation>
 <translation id="6657585470893396449">Лозинка</translation>
@@ -809,7 +808,6 @@
 <translation id="8063022551652308521">Заштита од уписивања је и даље искључена. Да бисте наставили, укључите заштиту од уписивања.</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
-<translation id="8083281199617904460">Овај процес поправке смеју да обављају само обучени сервисери. Покрените га само после замене неисправних компоненти.</translation>
 <translation id="808894953321890993">Промени лозинку</translation>
 <translation id="8104083085214006426">Користите отворену и необезбеђену мрежу</translation>
 <translation id="8109786307828817014">Желите да наставите са калибрацијом која није успела?</translation>

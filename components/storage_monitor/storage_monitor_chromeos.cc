@@ -64,7 +64,7 @@ bool GetDeviceInfo(const DiskMountManager::MountPointInfo& mount_info,
 
   const Disk* disk =
       DiskMountManager::GetInstance()->FindDiskBySourcePath(source_path);
-  if (!disk || disk->device_type() == chromeos::DEVICE_TYPE_UNKNOWN)
+  if (!disk || disk->device_type() == ash::DeviceType::kUnknown)
     return false;
 
   std::string unique_id = MakeDeviceUniqueId(*disk);

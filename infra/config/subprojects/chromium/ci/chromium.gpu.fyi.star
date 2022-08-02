@@ -485,20 +485,22 @@ ci.thin_tester(
         ),
         run_tests_serially = True,
     ),
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Apple",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Mac|Apple",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Mac arm64 Builder"],
 )
 
 ci.thin_tester(
     name = "Mac FYI Experimental Release (Intel)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Intel",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Mac|Intel",
+    #     short_name = "exp",
+    # ),
     list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Mac Builder"],
 )

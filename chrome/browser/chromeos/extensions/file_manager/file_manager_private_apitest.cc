@@ -75,7 +75,7 @@ struct TestDiskInfo {
   const char* product_name;
   const char* fs_uuid;
   const char* storage_device_path;
-  chromeos::DeviceType device_type;
+  ash::DeviceType device_type;
   uint64_t size_in_bytes;
   bool is_parent;
   bool is_read_only_hardware;
@@ -107,7 +107,7 @@ TestDiskInfo kTestDisks[] = {{"file_path1",
                               "product1",
                               "FFFF-FFFF",
                               "storage_device_path1",
-                              chromeos::DEVICE_TYPE_USB,
+                              ash::DeviceType::kUSB,
                               1073741824,
                               false,
                               false,
@@ -127,7 +127,7 @@ TestDiskInfo kTestDisks[] = {{"file_path1",
                               "product2",
                               "0FFF-FFFF",
                               "storage_device_path2",
-                              chromeos::DEVICE_TYPE_MOBILE,
+                              ash::DeviceType::kMobile,
                               47723,
                               true,
                               true,
@@ -147,7 +147,7 @@ TestDiskInfo kTestDisks[] = {{"file_path1",
                               "product3",
                               "00FF-FFFF",
                               "storage_device_path3",
-                              chromeos::DEVICE_TYPE_OPTICAL_DISC,
+                              ash::DeviceType::kOpticalDisc,
                               0,
                               true,
                               false,  // is_hardware_read_only
@@ -174,7 +174,7 @@ void AddLocalFileSystem(Profile* profile, base::FilePath root) {
       kLocalMountPointName, storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), root));
   file_manager::VolumeManager::Get(profile)->AddVolumeForTesting(
-      root, file_manager::VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
+      root, file_manager::VOLUME_TYPE_TESTING, ash::DeviceType::kUnknown,
       false /* read_only */);
 }
 
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
   file_manager::VolumeManager::Get(browser()->profile())
       ->AddVolumeForTesting(  // IN-TEST
           drive_path_.GetPath(), file_manager::VOLUME_TYPE_GOOGLE_DRIVE,
-          chromeos::DEVICE_TYPE_UNKNOWN,
+          ash::DeviceType::kUnknown,
           /*read_only=*/false);
 
   dlp::CheckFilesTransferResponse check_files_response;
@@ -777,7 +777,11 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(3);
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
+  // TODO(crbug.com/1346254): When implementation is completed, add following
+  // checks: EXPECT_CALL(*mock_rules_manager_,
+  // GetAggregatedComponents).Times(1); EXPECT_CALL(*mock_rules_manager_,
+  // GetAggregatedDestinations).Times(1);
 
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
@@ -819,7 +823,8 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata) {
       .WillOnce(testing::Return(policy::DlpRulesManager::Level::kAllow))
       .RetiresOnSaturation();
 
-  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata", {},
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "default"},
                                {.load_as_component = true}));
 }
 
@@ -829,9 +834,45 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
       base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
                           base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
-  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
-      .WillOnce(testing::Return(false))
-      .RetiresOnSaturation();
+  ON_CALL(*mock_rules_manager_, IsFilesPolicyEnabled)
+      .WillByDefault(testing::Return(false));
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
+  // We should not get to the point of checking DLP.
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
+  EXPECT_CALL(*mock_rules_manager_, GetAggregatedComponents).Times(0);
+  EXPECT_CALL(*mock_rules_manager_, GetAggregatedDestinations).Times(0);
+
+  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+
+  const base::FilePath blocked_file_path =
+      temp_dir_.GetPath().Append("blocked_file.txt");
+
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::File blocked_test_file(
+        blocked_file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(blocked_test_file.IsValid());
+  }
+
+  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
+  EXPECT_CALL(add_file_cb, Run).Times(1);
+  dlp::AddFileRequest request;
+  request.set_file_path(blocked_file_path.value());
+  request.set_source_url("https://example1.com");
+  chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "disabled"},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Error) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+  EXPECT_CALL(*mock_rules_manager_, IsFilesPolicyEnabled).Times(2);
   // We should not get to the point of checking DLP.
   EXPECT_CALL(*mock_rules_manager_, IsRestrictedByAnyRule).Times(0);
 
@@ -854,6 +895,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpMetadata_Disabled) {
   request.set_source_url("https://example1.com");
   chromeos::DlpClient::Get()->AddFile(request, add_file_cb.Get());
 
-  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata_disabled", {},
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_metadata",
+                               {.custom_arg = "error"},
                                {.load_as_component = true}));
 }

@@ -15,4 +15,9 @@ bool IsArcWindow(const aura::Window* window) {
                        static_cast<int>(ash::AppType::ARC_APP);
 }
 
+bool IsLacrosWindow(const aura::Window* window) {
+  return window->GetProperty(aura::client::kAppType) ==
+         static_cast<int>(ash::AppType::LACROS);
+}
+
 }  // namespace ash

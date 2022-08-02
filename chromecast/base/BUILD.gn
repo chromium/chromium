@@ -174,7 +174,6 @@ test("cast_base_unittests") {
     ":thread_health_checker",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
-    "//chromecast/base/static_sequence:tests",
     "//testing/gmock",
     "//testing/gtest",
   ]

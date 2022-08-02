@@ -41,16 +41,6 @@ const AccountId& MultiUserWindowManagerStub::GetUserPresentingWindow(
   return EmptyAccountId();
 }
 
-void MultiUserWindowManagerStub::AddObserver(
-    ash::MultiUserWindowManagerObserver* observer) {
-  NOTIMPLEMENTED();
-}
-
-void MultiUserWindowManagerStub::RemoveObserver(
-    ash::MultiUserWindowManagerObserver* observer) {
-  NOTIMPLEMENTED();
-}
-
 const AccountId& MultiUserWindowManagerStub::CurrentAccountId() const {
   return EmptyAccountId();
 }

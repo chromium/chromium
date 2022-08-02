@@ -19,9 +19,8 @@ namespace {
 const CGFloat kViewWidthAnchor = 149.0f;
 const CGFloat kViewHeightAnchor = 51.5f;
 
-// Size constraints for the search ImageView.
+// Width constraint for the search ImageView.
 const CGFloat kQueryImageMaxWidth = 20.0f;
-const CGFloat kQueryImageAspectRatio = 20.0f / 22.0f;
 
 // Size constraint for the query label.
 const CGFloat kQueryLabelHeightAnchor = 11.0f;
@@ -47,7 +46,7 @@ const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
     searchImageView.translatesAutoresizingMaskIntoConstraints = NO;
     UILabel* queryLabel = [[UILabel alloc] init];
     queryLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2];
+        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     queryLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     queryLabel.translatesAutoresizingMaskIntoConstraints = NO;
     queryLabel.numberOfLines = 2;
@@ -72,8 +71,7 @@ const CGFloat kQueryImageToLabelHorizontalSpacing = 9.5f;
       [searchImageView.widthAnchor
           constraintLessThanOrEqualToConstant:kQueryImageMaxWidth],
       [searchImageView.widthAnchor
-          constraintEqualToAnchor:searchImageView.heightAnchor
-                       multiplier:kQueryImageAspectRatio],
+          constraintEqualToAnchor:searchImageView.heightAnchor],
       [searchImageView.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
       [searchImageView.leadingAnchor

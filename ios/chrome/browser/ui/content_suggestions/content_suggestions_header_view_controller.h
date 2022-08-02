@@ -8,7 +8,6 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_provider.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_consumer.h"
 #import "ios/chrome/browser/ui/ntp/logo_animation_controller.h"
 
@@ -28,10 +27,9 @@ class ReadingListModel;
 // the interactions between the header and the collection, and the rest of the
 // application.
 @interface ContentSuggestionsHeaderViewController
-    : UIViewController<ContentSuggestionsHeaderControlling,
-                       ContentSuggestionsHeaderProvider,
-                       NTPHomeConsumer,
-                       LogoAnimationControllerOwnerOwner>
+    : UIViewController <ContentSuggestionsHeaderControlling,
+                        NTPHomeConsumer,
+                        LogoAnimationControllerOwnerOwner>
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

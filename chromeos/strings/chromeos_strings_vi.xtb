@@ -241,7 +241,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Điểm cuối</translation>
 <translation id="3069085583900247081">Không kiểm tra được</translation>
-<translation id="3076243757415932261">Đang xác thực các thành phần...</translation>
 <translation id="3083667275341675831">Chẩn đoán kết nối</translation>
 <translation id="3084958266922136097">Tắt trình bảo vệ màn hình</translation>
 <translation id="3091839911843451378">Không thành công – Đã dừng</translation>
@@ -276,7 +275,6 @@
 <translation id="3369013195428705271">Bạn có chắc chắn muốn xóa toàn bộ lịch sử in không? Các lệnh in đang thực hiện sẽ không bị xóa.</translation>
 <translation id="3383751554789092165">Thay đổi thông tin thiết bị nếu cần.</translation>
 <translation id="3404249063913988450">Bật trình bảo vệ màn hình</translation>
-<translation id="3404770484521709967">Đã cài đặt các thành phần đúng cách.</translation>
 <translation id="3413935475507503304">Để tiếp tục cập nhật, hãy nhấp vào Tiếp theo.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Bảo mật</translation>
@@ -396,7 +394,6 @@
 <translation id="445059817448385655">Mật khẩu cũ</translation>
 <translation id="4453205916657964690">Mặt nạ mạng con</translation>
 <translation id="4454245904991689773">Lưu bản quét vào</translation>
-<translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Không ping được cổng của mạng không phải mạng mặc định</translation>
 <translation id="4500213108254186382">Gia tốc kế ở nắp</translation>
@@ -811,7 +808,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8063022551652308521">Tính năng Chống ghi vẫn đang tắt. Để tiếp tục, vui lòng bật tính năng Chống ghi.</translation>
 <translation id="8075838845814659848">Mức pin còn lại</translation>
 <translation id="8082366717211101304">Không thể phân giải DNS từ các ứng dụng Android</translation>
-<translation id="8083281199617904460">Đây là quy trình sửa chữa dành cho kỹ thuật viên đã qua đào tạo. Chỉ bắt đầu quy trình này sau khi đã thay thế các thành phần bị trục trặc.</translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8104083085214006426">Bạn đang dùng mạng mở và không an toàn</translation>
 <translation id="8109786307828817014">Tiếp tục kể cả khi có thành phần không hiệu chỉnh được?</translation>

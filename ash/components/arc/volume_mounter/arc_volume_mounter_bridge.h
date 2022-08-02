@@ -102,7 +102,7 @@ class ArcVolumeMounterBridge
       const std::string& mount_path,
       const std::string& fs_uuid,
       const std::string& device_label,
-      chromeos::DeviceType device_type,
+      ash::DeviceType device_type,
       bool visible);
 
   bool IsVisibleToAndroidApps(const std::string& uuid) const;

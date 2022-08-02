@@ -2608,7 +2608,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
 <translation id="3709266154059827597">Configurar a lista de proibições de instalação da extensão</translation>
 <translation id="3711895659073496551">Suspender</translation>
-<translation id="3715569262675717862">Autenticação baseada em certificados do cliente</translation>
 <translation id="3717409415785131989">Se a política for ativada ou deixada sem definição, a nova IU de download em balão será mostrada no <ph name="PRODUCT_NAME" />.
 
       Se a política for desativada, o <ph name="PRODUCT_NAME" /> vai continuar mostrando a antiga IU de download em estante.</translation>
@@ -2989,13 +2988,6 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="410068710490553233">Permitir login em outras Contas do Google</translation>
 <translation id="4101282687722389021">Carimbo de data/hora UTC do último horário em que a entrada foi atualizada. Enviada como uma string, porque o carimbo de data/hora não caberia em um número inteiro.</translation>
 <translation id="4103289232974211388">Redireciona para IdP de SAML após confirmação do usuário</translation>
-<translation id="4105884561459127998">Configura o tipo de autenticação para logins SAML.
-
-Quando esta política não for definida ou for definida como "Padrão" (valor 0), o comportamento de logins SAML será determinado pelo navegador dependendo de outros fatores. No cenário mais básico, a autenticação do usuário e a proteção dos dados dele armazenados em cache se baseiam em senhas inseridas manualmente.
-
-Quando esta política for definida como ClientCertificate (valor 1), a autenticação do certificado do cliente será usada para usuários recém-adicionados que fazem login via SAML. Nenhuma senha é usada para esses usuários, e os dados locais deles armazenados em cache são protegidos usando chaves criptográficas correspondentes. Por exemplo, essa configuração permite definir a autenticação dos usuários com base em cartões inteligentes (apps de middleware de cartão inteligente precisam ser instalados pela política DeviceLoginScreenExtensions).
-
-Esta política afeta apenas os usuários que autenticam usando SAML.</translation>
 <translation id="4105989332710272578">Desativar a aplicação da Transparência dos certificados para uma lista de URLs</translation>
 <translation id="4114059938441379876">Se a política for definida, será possível configurar um URL em que os usuários poderão mudar a senha após receber um aviso no navegador. O serviço de proteção de senha direcionará os usuários ao URL (apenas protocolos HTTP e HTTPS) designado pela política. Para que o <ph name="PRODUCT_NAME" /> capture corretamente o hash com sal da nova senha na página de mudança de senha, essa página precisa seguir as diretrizes apresentadas em https://www.chromium.org/developers/design-documents/create-amazing-password-forms.
 
@@ -4082,11 +4074,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se esta política for definida como uma lista de identificadores de método de entrada, os métodos de entrada fornecidos ficarão disponíveis na tela de login. O primeiro método de entrada fornecido será pré-selecionado. Enquanto um grupo de usuários estiver focado na tela de login, o último método de entrada usado pelo usuário ficará disponível juntamente com os métodos de entrada fornecidos por esta política. Se esta política não for definida, os métodos de entrada na tela de login serão derivados da localidade em que a tela de login é exibida. Os valores que não forem identificadores de método de entrada válidos serão ignorados.</translation>
 <translation id="5407008856008996384">Permitir o acesso a impressoras CUPS</translation>
 <translation id="5413051574966911176">Desativar IUs relacionadas à conexão no computador do host remoto quando uma conexão estiver ativa</translation>
-<translation id="5417597818300833094">Se a política for definida, o usuário poderá escolher um dos métodos de entrada para as sessões do <ph name="PRODUCT_OS_NAME" /> que você especificar.
-
-       Se ela for deixada sem definição ou for definida como uma lista vazia, o usuário poderá selecionar todos os métodos de entrada que têm suporte.
-
-      Observação: se não houver suporte para o método de entrada atual, ele será alternado para o layout de teclado do hardware (se permitido) ou para a primeira entrada válida da lista. Métodos de entrada sem suporte ou inválidos são ignorados.</translation>
 <translation id="5417906792459853336">Envia informações sobre o uso e inventário de aplicativos de um dispositivo.
 
       Se a política for definida como falsa ou se não for definida, as informações não serão enviadas.
@@ -4823,18 +4810,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="6207607210601267301">Desativar a autenticação sem PIN para o host de acesso remoto</translation>
 <translation id="6208896993204286313">Reportar informações da política do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Reportar informações sobre a versão do SO e do <ph name="PRODUCT_NAME" /></translation>
-<translation id="6210422374261465354">Permite que você especifique configurações para URLs de autenticação no <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Esses URLs de autenticação seriam processados de forma especial pelo <ph name="WEBVIEW_PRODUCT_NAME" />. Assim, quando a página da Web no <ph name="WEBVIEW_PRODUCT_NAME" />
-      for direcionada a URLs de autenticação, apps autenticadores provedores de identidade correspondentes que podem processar esse URL serão inicializados.
-
-      Esse fluxo de inicialização do app autenticador de provedores de identidade seria usado para ativar
-      casos de uso, como ao fornecer SSO entre apps ou melhorar a segurança coletando indicadores de dispositivos de confiança zero para entender a postura deles durante a autenticação.
-
-      Se não houver um app válido instalado para processar o URL de autenticação no dispositivo, a navegação vai continuar no <ph name="WEBVIEW_PRODUCT_NAME" />.
-
-      Os URLs de autenticação válidos precisam ter o esquema <ph name="HTTP_PROTOCOL" />/<ph name="HTTPS_PROTOCOL" /> e não podem conter caracteres curinga.
-      </translation>
 <translation id="6212868225782276239">Todas as impressoras são mostradas, exceto as da lista de proibições.</translation>
 <translation id="6220835555850906733">Se a política for definida como ativada ou não for definida, todas as saídas de áudio compatíveis nos dispositivos dos usuários terão permissão.
 
@@ -6164,7 +6139,6 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
 <translation id="7554382342294940216">Se a política for definida como "Ativada", o <ph name="PRODUCT_OS_NAME" /> poderá ignorar qualquer proxy de autenticação de portal cativo. Essas páginas da Web de autenticação, começando pela página de login do portal cativo até que o Chrome detecte uma conexão de Internet bem-sucedida, serão abertas em uma janela separada, ignorando todas as configurações e restrições de política para o usuário atual. Esta política só terá efeito se um proxy estiver configurado (por uma política, por uma extensão ou pelo usuário em chrome://settings).
 
       Se a política for definida como "Desativada" ou se ela não for definida, qualquer página de autenticação de portal cativo será exibida em uma nova guia (normal) do navegador usando as configurações de proxy atuais do usuário.</translation>
-<translation id="7566878661979235378">Tipo de autenticação de login SAML</translation>
 <translation id="7567373982693549834">Esta política controla, no lugar de cada usuário, o uso de apps Android de fontes não confiáveis (diferentes do Google Play).
 
       Se o valor da política não for definido, a funcionalidade será tratada como não permitida.
@@ -7436,7 +7410,6 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8951350807133946005">Definir o diretório de cache de disco</translation>
 <translation id="8955719471735800169">Voltar ao início</translation>
 <translation id="8956312248048980644">Permite o clustering do agente com origin-key por padrão.</translation>
-<translation id="8959992920425111821">Configuração padrão</translation>
 <translation id="8967125680876068695">Os apps do Chrome foram descontinuados no Windows, Mac e Linux.
       Se esta política for ativada, o <ph name="PRODUCT_NAME" /> continuará permitindo a execução de apps do Chrome nessas plataformas até que o suporte a eles seja removido de todas as plataformas na data final, em junho de 2022.
       Se esta política for desativada ou deixada sem definição, a execução de apps do Chrome poderá ser bloqueada, dependendo do status da descontinuação.

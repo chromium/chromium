@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_CLASSIFICATIONS_LOADER_H_
 #define COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_CLASSIFICATIONS_LOADER_H_
 
+#include <functional>
+#include <string>
 #include <unordered_map>
 
 #include "base/no_destructor.h"
@@ -16,13 +18,64 @@ namespace url_param_filter {
 
 enum ClassificationExperimentStatus { EXPERIMENTAL, NON_EXPERIMENTAL };
 
-// `unordered_map` is used for the outer map of domains, which is likely to have
-// hundreds. `map` is used for the inner map of `UseCase`, which will have a
-// single digit number of keys.
+// Struct used as key in map of classifications.
+// Pair of a site's role and and the site name, e.g. (SOURCE, source.xyz).
+struct ClassificationMapKey {
+  FilterClassification::SiteRole site_role;
+  FilterClassification::SiteMatchType site_match_type;
+  std::string site;
+};
+
+bool operator==(const ClassificationMapKey& lhs,
+                const ClassificationMapKey& rhs);
+
+// Defined so that this can be used to key `std::map` as well as
+// `std::unordered_map`
+bool operator<(const ClassificationMapKey& lhs,
+               const ClassificationMapKey& rhs);
+
+struct ClassificationMapKeyHash {
+  size_t operator()(const ClassificationMapKey& key) const {
+    return std::hash<int>()(key.site_role) ^
+           std::hash<std::string>()(key.site) ^
+           std::hash<int>()(key.site_match_type);
+  }
+};
+
+inline ClassificationMapKey SourceKey(std::string site) {
+  return {
+      .site_role =
+          FilterClassification::SiteRole::FilterClassification_SiteRole_SOURCE,
+      .site_match_type = FilterClassification::SiteMatchType::
+          FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+      .site = site};
+}
+
+inline ClassificationMapKey DestinationKey(std::string site) {
+  return {.site_role = FilterClassification::SiteRole::
+              FilterClassification_SiteRole_DESTINATION,
+          .site_match_type = FilterClassification::SiteMatchType::
+              FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+          .site = site};
+}
+
+inline ClassificationMapKey SourceWildcardKey(std::string site_no_etld) {
+  return {
+      .site_role =
+          FilterClassification::SiteRole::FilterClassification_SiteRole_SOURCE,
+      .site_match_type = FilterClassification::SiteMatchType::
+          FilterClassification_SiteMatchType_ETLD_WILDCARD,
+      .site = site_no_etld};
+}
+
+// `unordered_map` is used for the outer map of (role, domain) pairs, which
+// is likely to have hundreds. `map` is used for the inner map of `UseCase`,
+// which will have a single digit number of keys.
 using ClassificationMap = std::unordered_map<
-    std::string,
+    ClassificationMapKey,
     std::map<FilterClassification::UseCase,
-             std::map<std::string, ClassificationExperimentStatus>>>;
+             std::map<std::string, ClassificationExperimentStatus>>,
+    ClassificationMapKeyHash>;
 
 class ClassificationsLoader {
  public:
@@ -31,11 +84,8 @@ class ClassificationsLoader {
   ClassificationsLoader(const ClassificationsLoader&) = delete;
   ClassificationsLoader& operator=(const ClassificationsLoader&) = delete;
 
-  // Returns a mapping from site to its source classifications.
-  ClassificationMap GetSourceClassifications();
-
-  // Returns a mapping from site to its destination classifications.
-  ClassificationMap GetDestinationClassifications();
+  // Returns a mapping from site to all of its classifications.
+  ClassificationMap GetClassifications();
 
   // Deserializes the proto from |raw_classifications|. The classifications that
   // are being read will have already been validated in the VerifyInstallation
@@ -59,12 +109,9 @@ class ClassificationsLoader {
   // classifications from either the Component Updater or the feature flag.
   // If classifications from both are provided, then the feature flag
   // classifications take precedence.
-  ClassificationMap GetClassificationsInternal(
-      FilterClassification_SiteRole role);
+  ClassificationMap GetClassificationsInternal();
 
-  absl::optional<ClassificationMap> component_source_classification_map_
-      GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
-  absl::optional<ClassificationMap> component_destination_classification_map_
+  absl::optional<ClassificationMap> component_classifications_
       GUARDED_BY_CONTEXT(sequence_checker_) = absl::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);

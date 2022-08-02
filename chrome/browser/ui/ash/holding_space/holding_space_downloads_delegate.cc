@@ -892,6 +892,15 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
   if (!item)
     return;
 
+  // Commands.
+  std::set<HoldingSpaceCommandId> in_progress_commands;
+  if (!in_progress_download->GetProgress().IsComplete()) {
+    in_progress_commands.insert(HoldingSpaceCommandId::kCancelItem);
+    in_progress_commands.insert(in_progress_download->IsPaused()
+                                    ? HoldingSpaceCommandId::kResumeItem
+                                    : HoldingSpaceCommandId::kPauseItem);
+  }
+
   // Update.
   service()
       ->UpdateItem(item->id())
@@ -899,11 +908,11 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       .SetBackingFile(in_progress_download->GetFilePath(),
                       holding_space_util::ResolveFileSystemUrl(
                           profile(), in_progress_download->GetFilePath()))
+      .SetInProgressCommands(std::move(in_progress_commands))
       .SetInvalidateImage(invalidate_image)
       .SetText(in_progress_download->GetText())
       .SetSecondaryText(in_progress_download->GetSecondaryText())
       .SetSecondaryTextColor(in_progress_download->GetSecondaryTextColor())
-      .SetPaused(in_progress_download->IsPaused())
       .SetProgress(in_progress_download->GetProgress());
 }
 

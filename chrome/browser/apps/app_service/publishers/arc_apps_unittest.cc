@@ -90,7 +90,7 @@ apps::IntentFilters CreateIntentFilters(
   values3.push_back(std::make_unique<apps::ConditionValue>(
       "/", apps::PatternMatchType::kPrefix));
   filter->conditions.push_back(std::make_unique<apps::Condition>(
-      apps::ConditionType::kPattern, std::move(values3)));
+      apps::ConditionType::kPath, std::move(values3)));
 
   filters.push_back(std::move(filter));
 

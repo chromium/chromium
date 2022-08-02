@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 
-namespace chromeos {
+namespace ash {
 
 // Result of state changes to a network triggered by any connection
 // attempt. With the exception of kSuccess and kUnknown, these enums are
@@ -131,6 +131,11 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
     const std::string& error_name);
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::ShillConnectResult;
+}
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_CONNECTION_RESULTS_H_

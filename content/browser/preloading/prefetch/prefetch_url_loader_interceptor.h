@@ -11,6 +11,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
+#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -20,6 +21,7 @@ namespace content {
 
 class BrowserContext;
 class PrefetchContainer;
+class PrefetchOriginProber;
 
 // Intercepts navigations that can use prefetched resources.
 class CONTENT_EXPORT PrefetchURLLoaderInterceptor
@@ -43,8 +45,15 @@ class CONTENT_EXPORT PrefetchURLLoaderInterceptor
       NavigationLoaderInterceptor::FallbackCallback fallback_callback) override;
 
  private:
-  // Gets the prefetch associated with |url| form |PrefetchService|.
+  // Gets the prefetch associated with |url| from |PrefetchService|.
   virtual base::WeakPtr<PrefetchContainer> GetPrefetch(const GURL& url) const;
+
+  // Gets the relevant |GetPrefetchOriginProber| from |PrefetchService|.
+  virtual PrefetchOriginProber* GetPrefetchOriginProber() const;
+
+  void OnProbeComplete(base::WeakPtr<PrefetchContainer> prefetch_container,
+                       base::OnceClosure on_success_callback,
+                       PrefetchProbeResult result);
 
   // Ensures that the cookies for prefetch are copied from its isolated network
   // context to the default network context before calling

@@ -36,6 +36,11 @@ class DlpContentManagerTestHelper {
   void ChangeConfidentiality(content::WebContents* web_contents,
                              const DlpContentRestrictionSet& restrictions);
 
+  // To be called when confidentiality for |web_contents| needs to be changed
+  // but without reacting to the change.
+  void UpdateConfidentiality(content::WebContents* web_contents,
+                             const DlpContentRestrictionSet& restrictions);
+
   void ChangeVisibility(content::WebContents* web_contents);
 
   void DestroyWebContents(content::WebContents* web_contents);

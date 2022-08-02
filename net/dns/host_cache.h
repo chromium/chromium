@@ -166,11 +166,12 @@ class NET_EXPORT HostCache {
     bool ContentsEqual(const Entry& other) const {
       return std::tie(error_, ip_endpoints_, endpoint_metadatas_, aliases_,
                       legacy_addresses_, text_records_, hostnames_,
-                      https_record_compatibility_) ==
+                      https_record_compatibility_, canonical_names_) ==
              std::tie(other.error_, other.ip_endpoints_,
                       other.endpoint_metadatas_, other.aliases_,
                       other.legacy_addresses_, other.text_records_,
-                      other.hostnames_, other.https_record_compatibility_);
+                      other.hostnames_, other.https_record_compatibility_,
+                      other.canonical_names_);
     }
 
     int error() const { return error_; }
@@ -225,6 +226,14 @@ class NET_EXPORT HostCache {
     }
     absl::optional<bool> pinning() const { return pinning_; }
     void set_pinning(absl::optional<bool> pinning) { pinning_ = pinning; }
+
+    const absl::optional<std::set<std::string>>& canonical_names() const {
+      return canonical_names_;
+    }
+    void set_canonical_names(
+        absl::optional<std::set<std::string>> canonical_names) {
+      canonical_names_ = std::move(canonical_names);
+    }
 
     Source source() const { return source_; }
     bool has_ttl() const { return ttl_ >= base::TimeDelta(); }
@@ -360,6 +369,11 @@ class NET_EXPORT HostCache {
     // for followup queries after insecure/expired bootstrap are abandoned (see
     // TODO(crbug.com/1200908) in HostResolverManager).
     absl::optional<bool> pinning_;
+
+    // The final name at the end of the alias chain that was the record name for
+    // the A/AAAA records.
+    absl::optional<std::set<std::string>> canonical_names_;
+
     // TTL obtained from the nameserver. Negative if unknown.
     base::TimeDelta ttl_ = base::Seconds(-1);
 

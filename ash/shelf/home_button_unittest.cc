@@ -596,11 +596,10 @@ TEST_P(HomeButtonTest, LongPressGesture) {
   CreateUserSessions(2);
 
   // Enable the Assistant in system settings.
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
+  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
   assistant_state()->NotifyFeatureAllowed(
-      chromeos::assistant::AssistantAllowedState::ALLOWED);
-  assistant_state()->NotifyStatusChanged(
-      chromeos::assistant::AssistantStatus::READY);
+      assistant::AssistantAllowedState::ALLOWED);
+  assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::READY);
 
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());
@@ -615,7 +614,7 @@ TEST_P(HomeButtonTest, LongPressGesture) {
             AssistantUiController::Get()->GetModel()->visibility());
 
   AssistantUiController::Get()->CloseUi(
-      chromeos::assistant::AssistantExitPoint::kUnspecified);
+      assistant::AssistantExitPoint::kUnspecified);
   // Test long press gesture on secondary display.
   SendGestureEventToSecondaryDisplay(&long_press);
   GetAppListTestHelper()->WaitUntilIdle();
@@ -628,11 +627,10 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletMode) {
   CreateUserSessions(2);
 
   // Enable the Assistant in system settings.
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
+  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
   assistant_state()->NotifyFeatureAllowed(
-      chromeos::assistant::AssistantAllowedState::ALLOWED);
-  assistant_state()->NotifyStatusChanged(
-      chromeos::assistant::AssistantStatus::READY);
+      assistant::AssistantAllowedState::ALLOWED);
+  assistant_state()->NotifyStatusChanged(assistant::AssistantStatus::READY);
 
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
@@ -671,17 +669,16 @@ TEST_P(HomeButtonTest, LongPressGestureInTabletMode) {
             AssistantUiController::Get()->GetModel()->visibility());
 
   AssistantUiController::Get()->CloseUi(
-      chromeos::assistant::AssistantExitPoint::kUnspecified);
+      assistant::AssistantExitPoint::kUnspecified);
 }
 
 TEST_P(HomeButtonTest, LongPressGestureWithSecondaryUser) {
   // Disallowed by secondary user.
   assistant_state()->NotifyFeatureAllowed(
-      chromeos::assistant::AssistantAllowedState::
-          DISALLOWED_BY_NONPRIMARY_USER);
+      assistant::AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER);
 
   // Enable the Assistant in system settings.
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, true);
+  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, true);
 
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());
@@ -707,9 +704,9 @@ TEST_P(HomeButtonTest, LongPressGestureWithSettingsDisabled) {
 
   // Simulate a user who has already completed setup flow, but disabled the
   // Assistant in settings.
-  prefs()->SetBoolean(chromeos::assistant::prefs::kAssistantEnabled, false);
+  prefs()->SetBoolean(assistant::prefs::kAssistantEnabled, false);
   assistant_state()->NotifyFeatureAllowed(
-      chromeos::assistant::AssistantAllowedState::ALLOWED);
+      assistant::AssistantAllowedState::ALLOWED);
 
   ShelfNavigationWidget::TestApi test_api(
       GetPrimaryShelf()->navigation_widget());

@@ -20,6 +20,7 @@ class InstanceRegistry;
 // Created in ash-chrome. Listens to |BrowserAppInstanceRegistry| events and
 // aura::Windows associated with them and updates |InstanceRegistry|.
 class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
+                                public aura::EnvObserver,
                                 public aura::WindowObserver {
  public:
   InstanceRegistryUpdater(
@@ -37,8 +38,12 @@ class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
   void OnBrowserAppUpdated(const BrowserAppInstance& instance) override;
   void OnBrowserAppRemoved(const BrowserAppInstance& instance) override;
 
+  // aura::EnvObserver overrides:
+  void OnWindowInitialized(aura::Window* window) override;
+
   // aura::WindowObserver overrides:
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
  private:
   BrowserAppInstanceRegistry& browser_app_instance_registry_;

@@ -15,14 +15,16 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_from_string_url_loader.h"
+#include "content/browser/preloading/prefetch/prefetch_origin_prober.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
+#include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetched_mainframe_response_container.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace content {
 namespace {
@@ -86,7 +88,25 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
     return;
   }
 
-  // TODO(crbug.com/1299059): Check if we need to probe the origin
+  PrefetchOriginProber* origin_prober = GetPrefetchOriginProber();
+  if (!origin_prober) {
+    DoNotInterceptNavigation();
+    return;
+  }
+  if (origin_prober->ShouldProbeOrigins()) {
+    base::OnceClosure on_success_callback =
+        base::BindOnce(&PrefetchURLLoaderInterceptor::
+                           EnsureCookiesCopiedAndInterceptPrefetchedNavigation,
+                       weak_factory_.GetWeakPtr(), tenative_resource_request,
+                       prefetch_container);
+
+    origin_prober->Probe(
+        url::SchemeHostPort(url_).GetURL(),
+        base::BindOnce(&PrefetchURLLoaderInterceptor::OnProbeComplete,
+                       weak_factory_.GetWeakPtr(), prefetch_container,
+                       std::move(on_success_callback)));
+    return;
+  }
 
   EnsureCookiesCopiedAndInterceptPrefetchedNavigation(tenative_resource_request,
                                                       prefetch_container);
@@ -100,6 +120,33 @@ base::WeakPtr<PrefetchContainer> PrefetchURLLoaderInterceptor::GetPrefetch(
     return nullptr;
 
   return prefetch_service->GetPrefetchToServe(url);
+}
+
+PrefetchOriginProber* PrefetchURLLoaderInterceptor::GetPrefetchOriginProber()
+    const {
+  PrefetchService* prefetch_service =
+      PrefetchServiceFromFrameTreeNodeId(frame_tree_node_id_);
+  if (!prefetch_service)
+    return nullptr;
+
+  return prefetch_service->GetPrefetchOriginProber();
+}
+
+void PrefetchURLLoaderInterceptor::OnProbeComplete(
+    base::WeakPtr<PrefetchContainer> prefetch_container,
+    base::OnceClosure on_success_callback,
+    PrefetchProbeResult result) {
+  // TODO(https://crbug.com/1299059): Record metrics on the result of the probe.
+
+  if (PrefetchProbeResultIsSuccess(result)) {
+    std::move(on_success_callback).Run();
+    return;
+  }
+
+  if (prefetch_container)
+    prefetch_container->SetPrefetchStatus(
+        PrefetchStatus::kPrefetchNotUsedProbeFailed);
+  DoNotInterceptNavigation();
 }
 
 void PrefetchURLLoaderInterceptor::

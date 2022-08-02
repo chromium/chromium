@@ -241,7 +241,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ਅਖੀਰਲਾ ਬਿੰਦੂ</translation>
 <translation id="3069085583900247081">ਟੈਸਟ ਅਸਫਲ ਰਿਹਾ</translation>
-<translation id="3076243757415932261">ਹਿੱਸਿਆਂ ਨੂੰ ਪ੍ਰਮਾਣਿਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="3083667275341675831">ਕਨੈਕਟੀਵਿਟੀ ਤਸ਼ਖੀਸ</translation>
 <translation id="3084958266922136097">ਸਕ੍ਰੀਨ ਸੇਵਰ ਬੰਦ ਕਰੋ</translation>
 <translation id="3091839911843451378">ਅਸਫਲ ਰਹੀ - ਪ੍ਰਿੰਟਰ ਰੁਕ ਗਿਆ ਹੈ</translation>
@@ -276,7 +275,6 @@
 <translation id="3369013195428705271">ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਆਪਣਾ ਸਾਰਾ ਪ੍ਰਿੰਟ ਇਤਿਹਾਸ ਕਲੀਅਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਤੁਹਾਡੀਆਂ ਚੱਲ ਰਹੀਆਂ ਪ੍ਰਿੰਟ ਜੌਬਾਂ ਨੂੰ ਕਲੀਅਰ ਨਹੀਂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3383751554789092165">ਲੋੜ ਅਨੁਸਾਰ ਡੀਵਾਈਸ ਜਾਣਕਾਰੀ ਬਦਲੋ।</translation>
 <translation id="3404249063913988450">ਸਕ੍ਰੀਨ ਸੇਵਰ ਚਾਲੂ ਕਰੋ</translation>
-<translation id="3404770484521709967">ਹਿੱਸਿਆਂ ਨੂੰ ਸਹੀ ਤਰ੍ਹਾਂ ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="3413935475507503304">ਅੱਪਡੇਟ ਨਾਲ ਜਾਰੀ ਰੱਖਣ ਲਈ, 'ਅੱਗੇ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">ਸੁਰੱਖਿਆ</translation>
@@ -396,7 +394,6 @@
 <translation id="445059817448385655">ਪੁਰਾਣਾ ਪਾਸਵਰਡ</translation>
 <translation id="4453205916657964690">ਸਬਨੈੱਟ ਮਾਸਕ</translation>
 <translation id="4454245904991689773">ਇਸ ਵਿੱਚ ਸਕੈਨ ਕਰੋ</translation>
-<translation id="4472575034687746823">ਸ਼ੁਰੂਆਤ ਕਰੋ</translation>
 <translation id="4479639480957787382">ਈਥਰਨੈਟ</translation>
 <translation id="4483049906298469269">ਗੈਰ-ਪੂਰਵ-ਨਿਰਧਾਰਤ ਨੈੱਟਵਰਕ ਗੇਟਵੇ ਨੂੰ ਪਿੰਗ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
 <translation id="4500213108254186382">ਲਿਡ ਐਕਸੈੱਲਰੋਮੀਟਰ</translation>
@@ -810,7 +807,6 @@
 <translation id="8063022551652308521">ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਹਾਲੇ ਵੀ ਬੰਦ ਹੈ। ਜਾਰੀ ਰੱਖਣ ਲਈ, ਲਿਖਣ ਸੰਬੰਧੀ ਸੁਰੱਖਿਆ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="8075838845814659848">ਬਾਕੀ ਚਾਰਜ</translation>
 <translation id="8082366717211101304">Android ਐਪਾਂ ਤੋਂ DNS ਸੰਬੰਧੀ ਸਮੱਸਿਆ ਨੂੰ ਹੱਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
-<translation id="8083281199617904460">ਮੁਰੰਮਤ ਦੀ ਇਹ ਪ੍ਰਕਿਰਿਆ ਕਿਸੇ ਮੁਰੰਮਤ ਸੰਬੰਧੀ ਤਕਨੀਕੀ ਮਾਹਰ ਲਈ ਹੈ। ਖਰਾਬੀ ਵਾਲੇ ਹਿੱਸਿਆਂ ਨੂੰ ਬਦਲਣ ਤੋਂ ਬਾਅਦ ਹੀ ਸ਼ੁਰੂ ਕਰੋ।</translation>
 <translation id="808894953321890993">ਪਾਸਵਰਡ ਬਦਲੋ</translation>
 <translation id="8104083085214006426">ਤੁਸੀਂ ਕੋਈ ਖੁੱਲ੍ਹਾ ਅਤੇ ਅਸੁਰੱਖਿਅਤ ਨੈੱਟਵਰਕ ਵਰਤ ਰਹੇ ਹੋ</translation>
 <translation id="8109786307828817014">ਕੀ ਅਸਫਲ ਕੈਲੀਬਰੇਸ਼ਨਾਂ ਨਾਲ ਅੱਗੇ ਵਧਣਾ ਹੈ?</translation>

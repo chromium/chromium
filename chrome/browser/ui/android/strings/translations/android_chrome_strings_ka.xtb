@@ -271,6 +271,7 @@
 <translation id="2496180316473517155">ნახვის ისტორია</translation>
 <translation id="2497852260688568942">სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="250020030759455918">Chrome-ში იხილავთ როგორც <ph name="SITE_NAME" />-ში შესვლის სტატუსს, ისე დათვალიერების/საიტის მონაცემებს</translation>
+<translation id="2507178219579379057">Chrome ცდილობს, გაარკვიოს, თუ როგორ შეიძლება სარეკლამო სპამის, თაღლითობისა და საიტებს შორის კონტენტის გაზიარების შეზღუდვა. Chrome, ასევე, <ph name="BEGIN_LINK" />ვარაუდით დაადგენს თქვენს ინტერესებს<ph name="END_LINK" />, რომელთა გამოყენებაც საიტებს შეუძლიათ თქვენთვის რეკლამის საჩვენებლად. თქვენი ინტერესების მართვა შეგიძლიათ პარამეტრებიდან.</translation>
 <translation id="2513403576141822879">კონფიდენციალურობასთან, უსაფრთხოებასთან და მონაცემთა შეგროვებასთან დაკავშირებული სხვა პარამეტრებისთვის იხილეთ <ph name="BEGIN_LINK" />სინქრონიზაცია და Google-ის სერვისები<ph name="END_LINK" /></translation>
 <translation id="2517472476991765520">სკანირება</translation>
 <translation id="2523184218357549926">Google-ს უგზავნის თქვენ მიერ მონახულებული გვერდების URL-ებს</translation>
@@ -586,7 +587,6 @@
 <translation id="4256782883801055595">ღია წყაროს ლიცენზიები</translation>
 <translation id="4262915912852657291"><ph name="BEGIN_BOLD" />გამოყენებული მონაცემების ტიპები:<ph name="END_BOLD" /> თქვენ მიერ ვების დათვალიერების ისტორია, ამ მოწყობილობაზე თქვენ მიერ Chrome-ის მეშვეობით მონახულებული საიტების ჩანაწერი.</translation>
 <translation id="4263656433980196874">ასისტენტში ხმოვან ძიებაზე თანხმობის სამომხმარებლო ინტერფეისი გახსნილია სრულ სიმაღლეზე</translation>
-<translation id="4266054596873078491">შედით ამ საიტსა და Chrome-ში თქვენი Google ანგარიშით.</translation>
 <translation id="4269820728363426813">ბმულის მისამართის კოპირება</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />ჩართეთ ეკრანის დაბლოკვა Android-ის პარამეტრებიდან<ph name="END_LINK" /></translation>
 <translation id="4293476595220860475">Chrome-ის გამოყენებით ეთანხმებით <ph name="BEGIN_TOS_LINK" />Google-ის მომსახურების პირობებს<ph name="END_TOS_LINK" />, ასევე, <ph name="BEGIN_ATOS_LINK" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_ATOS_LINK" />. გარდა ამისა, მოქმედებს <ph name="BEGIN_PRIVACY_LINK" />კონფიდენციალურობის დებულება<ph name="END_PRIVACY_LINK" />.</translation>

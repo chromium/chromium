@@ -14,8 +14,8 @@
 #include "components/autofill/core/browser/autofill_suggestion_generator.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_form_structure.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -517,7 +517,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
   // Create a complete form.
   FormData credit_card_form;
   test::CreateTestCreditCardFormData(&credit_card_form, true, false);
-  TestFormStructure form_structure(credit_card_form);
+  FormStructure form_structure(credit_card_form);
   form_structure.DetermineHeuristicTypes(nullptr, nullptr);
   // Clear the heuristic types, and instead set the appropriate server types.
   std::vector<ServerFieldType> heuristic_types, server_types;
@@ -525,7 +525,8 @@ TEST_F(AutofillSuggestionGeneratorTest, ShouldShowVirtualCardOption) {
     heuristic_types.push_back(UNKNOWN_TYPE);
     server_types.push_back(form_structure.field(i)->heuristic_type());
   }
-  form_structure.SetFieldTypes(heuristic_types, server_types);
+  FormStructureTestApi(&form_structure)
+      .SetFieldTypes(heuristic_types, server_types);
 
   // Create a server card.
   CreditCard server_card = test::GetMaskedServerCard();

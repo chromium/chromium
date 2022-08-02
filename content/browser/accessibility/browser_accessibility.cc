@@ -1087,6 +1087,11 @@ const ui::AXTreeData& BrowserAccessibility::GetTreeData() const {
 }
 
 ax::mojom::Role BrowserAccessibility::GetRole() const {
+  // Getting the role is generally the result of an accessibility API call, so
+  // we should reset the auto-disable accessibility code.
+  content::BrowserAccessibilityStateImpl::GetInstance()
+      ->OnAccessibilityApiUsage();
+
   // TODO(accessibility): Why is role checked after this object has been
   // destructed causing a dangling pointer bug?
   return node() ? node()->GetRole() : ax::mojom::Role::kUnknown;

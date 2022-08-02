@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PLUGIN_VM_PLUGIN_VM_MANAGER_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,7 +14,7 @@ namespace plugin_vm {
 
 class PluginVmManager;
 
-class PluginVmManagerFactory : public BrowserContextKeyedServiceFactory {
+class PluginVmManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static PluginVmManager* GetForProfile(Profile* profile);
 

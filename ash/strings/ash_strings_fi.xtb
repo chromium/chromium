@@ -84,6 +84,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1346748346194534595">Oikealla</translation>
 <translation id="1351937230027495976">Tiivistä valikko</translation>
 <translation id="1364382257761975320">Voit avata Chromebookin lukituksen käyttämällä sormenjälkeäsi</translation>
+<translation id="1365866993922957110">Päivitä automaattisesti</translation>
 <translation id="1372545819342940910">Tallenna työpöytä myöhempää käyttöä varten</translation>
 <translation id="1383597849754832576">Puhetiedostoja ei voi ladata. Yritä myöhemmin uudelleen.</translation>
 <translation id="1383876407941801731">Haku</translation>
@@ -161,6 +162,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> irrotettiin</translation>
 <translation id="1836215606488044471">Assistant (ladataan…)</translation>
 <translation id="1838895407229022812">Yövalo on pois päältä.</translation>
+<translation id="1862380676329487333">Päivitä ja kirjaudu ulos</translation>
 <translation id="1864454756846565995">C-tyypin USB-laite (takaportti)</translation>
 <translation id="1879018240766558464">Incognito-ikkunoita ei tällä hetkellä tueta. Muut sovellukset tallennetaan.</translation>
 <translation id="1882814835921407042">Ei mobiiliverkkoa</translation>
@@ -443,7 +445,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="3554637740840164787"><ph name="ITEM_TITLE" /> kiinnitettiin</translation>
 <translation id="3563775809269155755">Ota hotspot käyttöön</translation>
 <translation id="3566240529365775567">Avattu äsken</translation>
-<translation id="3571734092741541777">Määritä</translation>
+<translation id="3571734092741541777">Ota käyttöön</translation>
 <translation id="3573179567135747900">Vaihda takaisin kieleksi <ph name="FROM_LOCALE" /> (vaatii uudelleenkäynnistyksen)</translation>
 <translation id="3576141592585647168">Muuta aikavyöhykettä</translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
@@ -561,6 +563,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="423685346499232137">Sisältöä ei voi tällä hetkellä kopioida eikä liittää</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
+<translation id="4247123849143712100">Päivitä ja sammuta</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
 <translation id="425364040945105958">Ei SIM-korttia</translation>
 <translation id="4261870227682513959">Näytä ilmoitusasetukset. Ilmoitukset ovat pois päältä</translation>
@@ -920,6 +923,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on ylläpidetty käyttökerta, jota ylläpitää <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> yhdistetty</translation>
 <translation id="6351032674660237738">SOVELLUSEHDOTUKSET</translation>
+<translation id="6359587239691116345">Lataa uusimmat ominaisuudet ja tietoturvaparannukset. Jos hylkäät päivityksen, laite ei välttämättä toimi kunnolla, ja saatat kokea turvallisuuteen ja suorituskykyyn liittyviä ongelmia.</translation>
 <translation id="6376931439017688372">Bluetooth on päällä</translation>
 <translation id="6381109794406942707">Avaa laitteen lukitus lisäämällä PIN-koodisi.</translation>
 <translation id="639644700271529076">CAPS LOCK on pois päältä</translation>
@@ -941,6 +945,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> edellyttää, että <ph name="DEVICE_TYPE" /> on päivitetty määräaikaan mennessä</translation>
 <translation id="649452524636452238">Älykortin PIN-koodi</translation>
 <translation id="6495400115277918834">Kuva kuvassa aloitettu, kohdista painamalla Alt+Shift+V</translation>
+<translation id="6500896621837555595">Päivitä</translation>
 <translation id="6501401484702599040">Näkymä peilataan kohteeseen <ph name="RECEIVER_NAME" />.</translation>
 <translation id="6515727200518652613">Kameraa ei löydy, yritetään yhdistää uudelleen.</translation>
 <translation id="6520517963145875092">Valitse ikkuna kuvakaappausta varten</translation>
@@ -1218,6 +1223,7 @@ Uusi asennus</translation>
 <translation id="8054466585765276473">Lasketaan akun kesto.</translation>
 <translation id="8061464966246066292">Suuri kontrasti</translation>
 <translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>
+<translation id="8091387634532529612">Automaattiset päivitykset</translation>
 <translation id="8098591350844501178">Lopeta suoratoisto: <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Päällä, kaikki</translation>
 <translation id="8120151603115102514">Puhelimessasi ei ole lukitusnäyttöä. Avaa Chromebookin lukitus kirjoittamalla salasana.</translation>
@@ -1424,4 +1430,5 @@ Uusi asennus</translation>
 <translation id="974545358917229949">Näytetään <ph name="RESULT_COUNT" /> tulosta haulla <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Vaakasuunta</translation>
 <translation id="990277280839877440">Ikkuna <ph name="WINDOW_TITILE" /> suljettu.</translation>
+<translation id="996204416024568215">Lataa uusimmat ominaisuudet ja tietoturvaparannukset. Päivitykset tapahtuvat taustalla.</translation>
 </translationbundle>

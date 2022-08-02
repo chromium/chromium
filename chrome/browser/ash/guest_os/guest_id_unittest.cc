@@ -115,4 +115,13 @@ TEST_F(GuestIdTest, VmTypeFromPref) {
   EXPECT_EQ(VmType::UNKNOWN, VmTypeFromPref(dict));
 }
 
+TEST_F(GuestIdTest, RoundTripViaPrefs) {
+  auto id = guest_os::GuestId(guest_os::VmType::PLUGIN_VM, "vm_name",
+                              "container_name");
+  AddContainerToPrefs(&profile_, id, {});
+  auto list = GetContainers(&profile_, VmType::PLUGIN_VM);
+  ASSERT_EQ(list.size(), 1);
+  EXPECT_EQ(list[0], id);
+}
+
 }  // namespace guest_os

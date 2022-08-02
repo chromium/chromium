@@ -1580,6 +1580,9 @@ void AppsContainerView::DisableFocusForShowingActiveFolder(bool disabled) {
   if (auto* continue_section = GetContinueSectionView(); continue_section) {
     continue_section->DisableFocusForShowingActiveFolder(disabled);
   }
+  if (toast_container_) {
+    toast_container_->DisableFocusForShowingActiveFolder(disabled);
+  }
   apps_grid_view_->DisableFocusForShowingActiveFolder(disabled);
 
   // Ignore the page switcher in accessibility tree so that buttons inside it

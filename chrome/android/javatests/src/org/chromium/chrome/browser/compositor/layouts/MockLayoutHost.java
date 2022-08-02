@@ -108,9 +108,6 @@ class MockLayoutHost implements LayoutManagerHost, LayoutRenderHost {
     public void pushDebugRect(Rect rect, int color) {}
 
     @Override
-    public void loadPersitentTextureDataIfNeeded() {}
-
-    @Override
     public void setContentOverlayVisibility(boolean visible, boolean canBeFocusable) {}
 
     @Override

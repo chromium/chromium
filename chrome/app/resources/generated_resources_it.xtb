@@ -6430,7 +6430,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>
 <translation id="7213903639823314449">Motore di ricerca utilizzato nella barra degli indirizzi</translation>
 <translation id="721490496276866468">Importa password</translation>
-<translation id="7216595297012131718">Ordina le lingue in base alle tue preferenze</translation>
 <translation id="7219473482981809164">Sono stati trovati più profili disponibili per il download. Seleziona quelli che vuoi scaricare prima di continuare.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Nessuna password inefficace}=1{1 password inefficace}other{{NUM_WEAK} password inefficaci}}</translation>
 <translation id="7220019174139618249">Impossibile esportare le password in "<ph name="FOLDER" />"</translation>

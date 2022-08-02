@@ -5,8 +5,7 @@
 #ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_ENUMS_H_
 #define CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_ENUMS_H_
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 // The initial state is NOT_READY, after Assistant service started it becomes
 // READY. When Assistant UI shows up the state becomes VISIBLE.
 enum AssistantStatus {
@@ -133,7 +132,15 @@ enum class LibassistantDlcLoadStatus {
   kMaxValue = kLoaded,
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::AssistantAllowedState;
+using ::ash::assistant::AssistantInteractionResolution;
+using ::ash::assistant::AssistantStatus;
+using ::ash::assistant::LibassistantDlcInstallResult;
+using ::ash::assistant::LibassistantDlcLoadStatus;
+}  // namespace chromeos::assistant
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_ENUMS_H_

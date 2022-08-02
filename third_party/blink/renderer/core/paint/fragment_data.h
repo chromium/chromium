@@ -178,28 +178,21 @@ class CORE_EXPORT FragmentData final : public GarbageCollected<FragmentData> {
     return rare_data_ ? rare_data_->contents_cull_rect_ : CullRect();
   }
 
-  // This is the complete set of property nodes that is inherited
-  // from the ancestor before applying any local CSS properties,
-  // but includes paint offset transform.
-  PropertyTreeStateOrAlias PreEffectProperties() const {
-    return PropertyTreeStateOrAlias(PreTransform(), PreClip(), PreEffect());
-  }
-
-  // This is the complete set of property nodes that can be used to
-  // paint the contents of this fragment. It is similar to
-  // |local_border_box_properties_| but includes properties (e.g.,
-  // overflow clip, scroll translation) that apply to contents.
+  // This is the complete set of property nodes that can be used to paint the
+  // contents of this fragment. It is similar to LocalBorderBoxProperties()
+  // but includes properties (e.g., overflow clip, scroll translation,
+  // isolation nodes) that apply to contents.
   PropertyTreeStateOrAlias ContentsProperties() const {
-    return PropertyTreeStateOrAlias(PostScrollTranslation(), PostOverflowClip(),
-                                    PostIsolationEffect());
+    return PropertyTreeStateOrAlias(ContentsTransform(), ContentsClip(),
+                                    ContentsEffect());
   }
 
   const TransformPaintPropertyNodeOrAlias& PreTransform() const;
-  const TransformPaintPropertyNodeOrAlias& PostScrollTranslation() const;
   const ClipPaintPropertyNodeOrAlias& PreClip() const;
-  const ClipPaintPropertyNodeOrAlias& PostOverflowClip() const;
-  const EffectPaintPropertyNodeOrAlias& PreEffect() const;
-  const EffectPaintPropertyNodeOrAlias& PostIsolationEffect() const;
+
+  const ClipPaintPropertyNodeOrAlias& ContentsClip() const;
+  const TransformPaintPropertyNodeOrAlias& ContentsTransform() const;
+  const EffectPaintPropertyNodeOrAlias& ContentsEffect() const;
 
   ~FragmentData() = default;
   void Trace(Visitor* visitor) const { visitor->Trace(rare_data_); }

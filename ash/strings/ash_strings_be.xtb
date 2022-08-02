@@ -84,6 +84,7 @@
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Згарнуць меню</translation>
 <translation id="1364382257761975320">Каб разблакіраваць Chromebook, выкарыстайце функцыю разблакіравання адбіткам пальца</translation>
+<translation id="1365866993922957110">Атрымліваць аўтаматычныя абнаўленні</translation>
 <translation id="1372545819342940910">Захаваць працоўны стол для прагляду пазней</translation>
 <translation id="1383597849754832576">Не ўдалося спампаваць файлы для ператварэння маўлення ў тэкст. Паўтарыце спробу пазней.</translation>
 <translation id="1383876407941801731">Пошук</translation>
@@ -161,6 +162,7 @@
 <translation id="1830308660060964064">Элемент "<ph name="ITEM_TITLE" />" адмацаваны</translation>
 <translation id="1836215606488044471">Памочнік (загружаецца...)</translation>
 <translation id="1838895407229022812">Начная падсветка выключана.</translation>
+<translation id="1862380676329487333">Абнавіць і выйсці</translation>
 <translation id="1864454756846565995">Прылада USB-C (порт ззаду)</translation>
 <translation id="1879018240766558464">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
@@ -561,6 +563,7 @@
 <translation id="423685346499232137">Не ўдалося скапіраваць або ўставіць змесціва</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
+<translation id="4247123849143712100">Абнавіць і завяршыць працу</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
 <translation id="425364040945105958">Няма SIM-карты</translation>
 <translation id="4261870227682513959">Паказаць налады апавяшчэнняў. Апавяшчэнні выключаны</translation>
@@ -920,6 +923,7 @@
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, якім кіруе <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Прылада "<ph name="DEVICE_NAME" />" падключана</translation>
 <translation id="6351032674660237738">ПРАПАНОВЫ ПРАГРАМ</translation>
+<translation id="6359587239691116345">Усталюйце апошнія функцыі і паляпшэнні сістэмы бяспекі. Калі вы адмовіцеся ад гэтага абнаўлення, ваша прылада можа перастаць працаваць належным чынам. Магчымыя праблемы з прадукцыйнасцю і бяспекай.</translation>
 <translation id="6376931439017688372">Bluetooth уключаны</translation>
 <translation id="6381109794406942707">Каб разблакіраваць прыладу, увядзіце PIN-код.</translation>
 <translation id="639644700271529076">CAPS LOCK выключаны</translation>
@@ -941,6 +945,7 @@
 <translation id="6491071886865974820"><ph name="MANAGER" /> патрабуе, каб вы абнавілі прыладу <ph name="DEVICE_TYPE" /> да заканчэння тэрміну</translation>
 <translation id="649452524636452238">PIN-код разумнай карткі</translation>
 <translation id="6495400115277918834">Рэжым "Відарыс у відарысе" запушчаны, для пераходу выкарыстайце спалучэнне клавіш Alt + Shift + V</translation>
+<translation id="6500896621837555595">Абнавіць</translation>
 <translation id="6501401484702599040">Ідзе трансляцыя экрана на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Сувязь з камерай страчана. Ажыццяўляецца спроба паўторнага падключэння.</translation>
 <translation id="6520517963145875092">Выберыце акно для здымкі</translation>
@@ -1218,6 +1223,7 @@
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
 <translation id="8061464966246066292">Высокая кантраснасць</translation>
 <translation id="8083540854303889870">Захавана на будучыню</translation>
+<translation id="8091387634532529612">Аўтаматычныя абнаўленні</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="8113423164597455979">Уключана, усе праграмы</translation>
 <translation id="8120151603115102514">На тэлефоне не выкарыстоўваецца функцыя экрана блакіроўкі. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
@@ -1424,4 +1430,5 @@
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
 <translation id="98515147261107953">Альбомная</translation>
 <translation id="990277280839877440">Акно <ph name="WINDOW_TITILE" /> закрыта.</translation>
+<translation id="996204416024568215">Усталюйце апошнія функцыі і паляпшэнні сістэмы бяспекі. Абнаўленні ўсталёўваюцца ў фонавым рэжыме.</translation>
 </translationbundle>

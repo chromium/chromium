@@ -24,8 +24,7 @@
 #include "chromeos/services/libassistant/public/mojom/service.mojom-forward.h"
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 // Main interface implemented in browser to provide dependencies to
 // |chromeos::assistant::Service|.
@@ -94,7 +93,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_PUBLIC) AssistantBrowserDelegate {
 #endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 };
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos::assistant {
+using ::ash::assistant::AssistantBrowserDelegate;
+}
 
 #endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_PUBLIC_CPP_ASSISTANT_BROWSER_DELEGATE_H_

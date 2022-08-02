@@ -301,12 +301,12 @@ std::string SerializeSeed(const VariationsSeed& seed) {
   return serialized_seed;
 }
 
-// Converts |value| to a string, to make it easier for debugging.
-std::string ValueToString(const base::Value& value) {
+// Converts |list| to a string, to make it easier for debugging.
+std::string ListToString(const base::Value::List& list) {
   std::string json;
   JSONStringValueSerializer serializer(&json);
   serializer.set_pretty_print(true);
-  serializer.Serialize(value);
+  serializer.Serialize(list);
   return json;
 }
 
@@ -811,15 +811,15 @@ TEST_F(VariationsServiceTest, LoadPermanentConsistencyCountry) {
         << test.permanent_consistency_country_before << ", " << test.version
         << ", " << test.latest_country_code;
 
-    base::Value expected_list_value{base::Value::Type::LIST};
+    base::Value::List expected_list;
     for (const std::string& component :
          base::SplitString(test.permanent_consistency_country_after, ",",
                            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
-      expected_list_value.Append(component);
+      expected_list.Append(component);
     }
-    const base::Value* pref_value =
-        prefs_.GetList(prefs::kVariationsPermanentConsistencyCountry);
-    EXPECT_EQ(ValueToString(expected_list_value), ValueToString(*pref_value))
+    const base::Value::List& pref_list =
+        prefs_.GetValueList(prefs::kVariationsPermanentConsistencyCountry);
+    EXPECT_EQ(ListToString(expected_list), ListToString(pref_list))
         << test.permanent_consistency_country_before << ", " << test.version
         << ", " << test.latest_country_code;
 

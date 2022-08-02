@@ -4,7 +4,7 @@
 
 #include "chromeos/ash/components/network/tether_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kTypeTether[] = "wifi-tether";
 const char kTetherBatteryPercentage[] = "Tether.BatteryPercentage";
@@ -14,4 +14,4 @@ const char kTetherSignalStrength[] = "Tether.SignalStrength";
 const char kTetherDevicePath[] = "tether-device-path";
 const char kTetherDeviceName[] = "tether-name";
 
-}  // namespace chromeos
+}  // namespace ash

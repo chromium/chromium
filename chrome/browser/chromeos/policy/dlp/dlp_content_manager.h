@@ -381,6 +381,10 @@ class DlpContentManager : public DlpContentObserver,
   void RemoveAllowedContents(DlpConfidentialContents& contents,
                              DlpRulesManager::Restriction restriction);
 
+  // Updates confidentiality for |web_contents| with the |restriction_set|.
+  void UpdateConfidentiality(content::WebContents* web_contents,
+                             const DlpContentRestrictionSet& restriction_set);
+
   // Notifies observers if the restrictions they are listening to changed.
   void NotifyOnConfidentialityChanged(
       const DlpContentRestrictionSet& old_restriction_set,

@@ -197,6 +197,7 @@
 <translation id="2448312741937722512">قسم</translation>
 <translation id="2461822463642141190">حالیہ</translation>
 <translation id="2480034874476596812">دستی طور پر آف کریں</translation>
+<translation id="248546197012830854">‏آلہ آف لائن ہے۔ مدد کا مواد دیکھنے کے لیے Wi-Fi نیٹ ورک سے منسلک ہوں۔</translation>
 <translation id="2491955442992294626">آپ کے دوسری ونڈو کا استعمال کرنے کے دوران کلیدوں کی جانچ نہیں کی جاتی ہیں</translation>
 <translation id="2493126929778606526">آپ کی بہترین تصاویر، خودکار طور پر منتخب کی گئیں</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
@@ -241,7 +242,6 @@
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">اینڈ پوائنٹ</translation>
 <translation id="3069085583900247081">ٹیسٹ ناکام ہو گیا</translation>
-<translation id="3076243757415932261">اجزاء کی توثیق کی جا رہی ہے...</translation>
 <translation id="3083667275341675831">کنیکٹویٹی ڈائيگناسٹکس</translation>
 <translation id="3084958266922136097">اسکرین سیور غیر فعال کریں</translation>
 <translation id="3091839911843451378">ناکام ہو گیا - رک گیا</translation>
@@ -276,7 +276,6 @@
 <translation id="3369013195428705271">کیا آپ واقعی پرنٹ کی تمام سرگزشت کو صاف کرنا چاہتے ہیں؟ آپ کی جاری پرنٹ جابز کو صاف نہیں کیا جائے گا۔</translation>
 <translation id="3383751554789092165">ضرورت کے مطابق آلہ کی معلومات تبدیل کریں۔</translation>
 <translation id="3404249063913988450">اسکرین سیور فعال کریں</translation>
-<translation id="3404770484521709967">اجزاء صحیح طریقے سے انسٹال ہیں۔</translation>
 <translation id="3413935475507503304">اپ ڈیٹ کے ساتھ آگے بڑھنے کے لیے اگلے پر کلک کریں۔</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">سیکیورٹی</translation>
@@ -396,7 +395,6 @@
 <translation id="445059817448385655">پرانا پاس ورڈ</translation>
 <translation id="4453205916657964690">سب نیٹ ماسک</translation>
 <translation id="4454245904991689773">اس میں اسکین کریں</translation>
-<translation id="4472575034687746823">شروع کریں</translation>
 <translation id="4479639480957787382">ایتھرنیٹ</translation>
 <translation id="4483049906298469269">غیر ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="4500213108254186382">لِڈ ایکسلیرومیٹر</translation>
@@ -663,6 +661,7 @@
 <translation id="6611280807952151149"><ph name="DEVICE_TYPE" /> مرمت سے باہر نکلیں</translation>
 <translation id="6618744767048954150">جاری ہے</translation>
 <translation id="6620487321149975369">پرنٹ جابز سرگزشت میں ظاہر ہوں گی جب تک کہ انہیں دستی طور پر ہٹا نہیں دیا جاتا</translation>
+<translation id="6624819909909965616">‏10‎ MB سے بڑی فائل اپ لوڈ نہیں کی جا سکتی</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
 <translation id="6644568396961840069">فائل محفوظ نہیں ہو سکی۔ ایک مختلف بیرونی اسٹوریج میں پلگ ان کرنے کی کوشش کریں یا بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="6647510110698214773">مرموز کاری الگورتھم</translation>
@@ -698,6 +697,7 @@
 <translation id="6965382102122355670">ٹھیک ہے</translation>
 <translation id="6977381486153291903">فرم ویئر نظر ثانی</translation>
 <translation id="6995564396478647735">یقینی بنائیں کہ 'رائٹ پروٹیکٹ' آن ہے</translation>
+<translation id="7005833343836210400">آلہ آف لائن ہے</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
 <translation id="7040230719604914234">آپریٹر</translation>
 <translation id="7041549558901442110">آلہ منسلک نہیں ہے۔</translation>
@@ -810,8 +810,8 @@
 <translation id="8063022551652308521">'رائٹ پروٹیکٹ' ابھی بھی آف ہے۔ آگے بڑھنے کے لیے، 'رائٹ پروٹیکٹ' کو آن کریں۔</translation>
 <translation id="8075838845814659848">باقی چارج</translation>
 <translation id="8082366717211101304">‏Android ایپس سے DNS کو حل نہیں کیا جا سکتا</translation>
-<translation id="8083281199617904460">مرمت کا یہ عمل تربیت یافتہ مرمت کے ٹیکنیشین کے لیے ہے۔ خرابی والے اجزاء کو تبدیل کرنے کے بعد ہی شروع کریں۔</translation>
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
+<translation id="8094062939584182041">‏Google کو اس مسئلے کے بارے میں آپ کو ای میل کرنے کی اجازت دیں</translation>
 <translation id="8104083085214006426">آپ ایک اوپن اور غیر محفوظ نیٹ ورک استعمال کر رہے ہیں</translation>
 <translation id="8109786307828817014">ناکام کیلیبریشنز کے ساتھ آگے بڑھیں؟</translation>
 <translation id="811820734797650957">‏(Android) گیٹ وے کو پنگ کیا جا سکتا ہے</translation>

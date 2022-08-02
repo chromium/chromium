@@ -13,8 +13,6 @@
 <translation id="1142745911746664600">Chrome अपडेट करू शकत नाही</translation>
 <translation id="1152920704813762236">ChromeOS बद्दल</translation>
 <translation id="1154147086299354128">Chrome मध्‍ये &amp;उघडा</translation>
-<translation id="1178374936842835197">या पेजवर सेटिंग दिसत नसल्यास, तुमची <ph name="LINK_BEGIN" />
-        ChromeOS Flex सेटिंग्ज<ph name="LINK_END" /> यामध्ये पहा</translation>
 <translation id="1203500561924088507">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचा ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="1278833599417554002">&amp;Chrome अपडेट करण्यासाठी पुन्हा लाँच करा</translation>
 <translation id="1302523850133262269">कृपया Chrome नवीनतम सिस्टम अपडेट इंस्टॉल करताना प्रतीक्षा करा.</translation>
@@ -123,7 +121,6 @@
 <translation id="3080151273017101988">जेव्हा Google Chrome बंद असेल तेव्हा पार्श्वभूमीत ॲप्लिकेशन चालणे सुरू ठेवा</translation>
 <translation id="3089968997497233615">Google Chrome ची नवीन, सुरक्षित आवृत्ती उपलब्ध आहे.</translation>
 <translation id="3100998948628680988">तुमच्या Chrome प्रोफाइलला नाव द्या</translation>
-<translation id="3103390129666310801">तुमचे डिव्हाइस अप टू डेट आहे का हे पाहण्यासाठी, <ph name="LINK_BEGIN" />ChromeOS Flex सेटिंग्ज<ph name="LINK_END" /> वर जा</translation>
 <translation id="3114643501466072395">तुमचे इतर पासवर्ड डेटा भंग आणि इतर सुरक्षा समस्यांपासून सुरक्षित आहेत हे तपासण्यासाठी, <ph name="BEGIN_LINK" />Chrome मध्ये साइन इन करा<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">पुढील वेळी तुम्ही Google Chrome पुन्हा लाँच केल्यानंतर तुमचे बदल प्रभावी होतील.</translation>
 <translation id="3149510190863420837">Chrome Apps</translation>
@@ -214,7 +211,6 @@
 <translation id="4990567037958725628">Google Chrome कॅनरी</translation>
 <translation id="5037581483200764584">भविष्यातील Google Chrome अपडेट मिळवण्यासाठी, तुमच्याकडे macOS 10.13 किंवा त्यानंतरची आवृत्ती असणे आवश्यक आहे. हा कॉंप्युटर OS X 10.11 ही आवृत्ती वापरत आहे.</translation>
 <translation id="5098668839038261629">सुरू केलेले असेल, तेव्हा तुम्हाला Chrome मधूनदेखील साइन आउट केले जाईल</translation>
-<translation id="5112116809696021727">तुमचे डिव्हाइस अप टू डेट आहे का हे पाहण्यासाठी, <ph name="LINK_BEGIN" />ChromeOS सेटिंग्ज<ph name="LINK_END" /> वर जा</translation>
 <translation id="5132929315877954718">Google Chrome साठी उत्कृष्ट ॲप, खेळ, विस्तार आणि थीम शोधा.</translation>
 <translation id="5139423532931106058">तुमची Chrome प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="5163087008893166964">Chrome मध्ये स्वागत आहे; नवीन ब्राउझर विंडो उघडली</translation>
@@ -253,8 +249,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5940385492829620908">तुमचे वेब, बुकमार्क आणि अन्य Chrome आशय येथे थेट आहे.</translation>
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5941830788786076944">Google Chromeला डीफॉल्ट ब्राउझर बनवा</translation>
-<translation id="5959292945051687759">या पेजवर एखादे सेटिंग दिसत नसल्यास, तुमची <ph name="LINK_BEGIN" />
-        ChromeOS सेटिंग्ज<ph name="LINK_END" /> यामध्ये पहा</translation>
 <translation id="6003112304606738118">डाउनलोड करत आहे... <ph name="HOURS" /> तास शिल्लक आहे(आहेत)</translation>
 <translation id="6040143037577758943">बंद करा</translation>
 <translation id="6070348360322141662">अतिरिक्त सुरक्षिततेसाठी, Google Chrome तुमचा डेटा एंक्रिप्ट करेल</translation>

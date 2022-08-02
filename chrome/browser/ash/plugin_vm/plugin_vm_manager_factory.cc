@@ -7,7 +7,6 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_impl.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace plugin_vm {
 
@@ -22,9 +21,7 @@ PluginVmManagerFactory* PluginVmManagerFactory::GetInstance() {
 }
 
 PluginVmManagerFactory::PluginVmManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PluginVmManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PluginVmManager") {}
 
 PluginVmManagerFactory::~PluginVmManagerFactory() = default;
 

@@ -6,9 +6,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "components/autofill/core/browser/suggestions_context.h"
-#include "components/autofill/core/browser/test_form_structure.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_data.h"
@@ -89,7 +89,7 @@ TEST_F(MerchantPromoCodeManagerTest, ShowsPromoCodeSuggestions) {
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
-  TestFormStructure form_structure{form_data};
+  FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
   std::string promo_code = SetUpPromoCodeOffer(
@@ -164,7 +164,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
-  TestFormStructure form_structure{form_data};
+  FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
   merchant_promo_code_manager_->is_off_the_record_ = true;
@@ -207,7 +207,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
-  TestFormStructure form_structure{form_data};
+  FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
   merchant_promo_code_manager_->personal_data_manager_ = nullptr;
@@ -250,7 +250,7 @@ TEST_F(MerchantPromoCodeManagerTest, NoPromoCodeOffers) {
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
-  TestFormStructure form_structure{form_data};
+  FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
 
@@ -297,7 +297,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
-  TestFormStructure form_structure{form_data};
+  FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
   SetUpPromoCodeOffer(last_committed_origin_url,
@@ -363,7 +363,7 @@ TEST_F(MerchantPromoCodeManagerTest,
   FormData form_data;
   form_data.main_frame_origin =
       url::Origin::Create(GURL(last_committed_origin_url));
-  TestFormStructure form_structure{form_data};
+  FormStructure form_structure{form_data};
   SuggestionsContext context;
   context.form_structure = &form_structure;
   SetUpPromoCodeOffer(last_committed_origin_url,

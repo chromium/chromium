@@ -1759,7 +1759,7 @@
 <translation id="2610260699262139870">&amp;సాధారణ పరిమాణం</translation>
 <translation id="2610780100389066815">Microsoft Trust List Signing</translation>
 <translation id="2611776654555141051">దీర్ఘచతురస్ర టూల్</translation>
-<translation id="2612676031748830579">కార్డ్ సంఖ్య</translation>
+<translation id="2612676031748830579">కార్డ్ నంబర్</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" />‌లో ఎటువంటి ఎక్స్‌టెన్షన్‌లనూ అనుమతించకండి</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" />, <ph name="FILENAME" />‌ను ఎడిట్ చేయగలుగుతుంది</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />లో ఉన్న మీ డేటాను చదవడం మరియు మార్చడం</translation>
@@ -2207,6 +2207,7 @@
 <translation id="3021065318976393105">బ్యాటరీలో ఉన్నప్పుడు</translation>
 <translation id="3021066826692793094">సీతాకోకచిలుక</translation>
 <translation id="3021678814754966447">ఫ్రేమ్ మూలాన్ని &amp;వీక్షించండి</translation>
+<translation id="3022361196600037287">ఈ Chromebook నుండి <ph name="DEVICE" /> తీసివేయబడుతుంది, అలాగే <ph name="PRIMARY_EMAIL" />కు సేవ్ చేయబడదు.</translation>
 <translation id="3022978424994383087">అది పూర్తి కాలేదు.</translation>
 <translation id="3023464535986383522">వినడానికి ఎంచుకోండి</translation>
 <translation id="3024374909719388945">24-గంటల గడియారాన్ని ఉపయోగించండి</translation>
@@ -3746,6 +3747,7 @@
 <translation id="4535127706710932914">డిఫాల్ట్ ప్రొఫైల్</translation>
 <translation id="4535767533210902251">మీ కీబోర్డ్‌లో పైన కుడివైపు గల కీపై వేలిముద్ర సెన్సార్ ఉంది. ఏదైనా వేలితో దానిపై మెల్లగా తాకండి.</translation>
 <translation id="4536140153723794651">కుక్కీలను ఉపయోగించే అనుమతి ఎల్లప్పుడూ ఉన్న సైట్‌లు</translation>
+<translation id="4536769240747010177">టెథరింగ్ సామర్థ్యాలు:</translation>
 <translation id="4538417792467843292">పదాన్ని తొలగించు</translation>
 <translation id="4538792345715658285">బిజినెస్ విధానం ద్వారా ఇన్‌స్టాల్ చేయబడింది.</translation>
 <translation id="4541123282641193691">మీ ఖాతాను వెరిఫై చేయడం సాధ్యపడలేదు. దయచేసి మళ్లీ ట్రై చేయండి లేదా మీ Chromebookను రీస్టార్ట్ చేయండి.</translation>
@@ -3773,6 +3775,7 @@
 <translation id="4561893854334016293">ఇటీవల మార్చిన అనుమతులు లేవు</translation>
 <translation id="4562155214028662640">వేలిముద్రను జోడించు</translation>
 <translation id="4563210852471260509">ప్రారంభ ఇన్‌పుట్ భాష చైనీస్</translation>
+<translation id="4563382028841851106">ఖాతా నుండి తీసివేయండి</translation>
 <translation id="4563880231729913339">మూడో వేలు</translation>
 <translation id="4564245002465020751">మీ ఫోన్‌లో సెటప్‌ను పూర్తి చేయండి</translation>
 <translation id="4565377596337484307">పాస్‌వర్డ్‌ను దాచిపెట్టు</translation>
@@ -6190,6 +6193,10 @@
 <translation id="6943939122536910181"><ph name="DEVICE" /> నుండి డిస్‌కనెక్ట్ చేయబడింది</translation>
 <translation id="6945221475159498467">ఎంచుకోండి</translation>
 <translation id="694592694773692225">మళ్ళింపు ఈ పేజీలో బ్లాక్ చేయబడింది.</translation>
+<translation id="6947015141909171112">వంటకాల కోసం మీరు చేసిన ఇటీవలి సెర్చ్ యాక్టివిటీ ఆధారంగా ఈ వంటకాలు మీకు కనిపిస్తున్నాయి.
+        <ph name="BREAK" />
+        <ph name="BREAK" />
+        మీరు కార్డ్ మెనూ నుండి సెట్టింగ్‌లను మేనేజ్ చేయవచ్చు లేదా, అనుకూలంగా మార్చిన Chromeలో మరిన్ని ఆప్షన్‌లను చూడండి.</translation>
 <translation id="6949434160682548041">పాస్‌వర్డ్ (ఐచ్ఛికం)</translation>
 <translation id="6950627417367801484">యాప్‌లను పునరుద్ధరించండి</translation>
 <translation id="6952242901357037157">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" /> నుండి మీరు పాస్‌వర్డ్‌లను ఇక్కడ కూడా చూపవచ్చు</translation>
@@ -6448,7 +6455,6 @@
 <translation id="7212097698621322584">మీ ప్రస్తుత పిన్‌ను మార్చడానికి దానిని నమోదు చేయండి. మీ పిన్ మీకు తెలియకుంటే, మీరు సెక్యూరిటీ కీని రీసెట్ చేసి, ఆపై కొత్త పిన్‌ను సృష్టించాలి.</translation>
 <translation id="7213903639823314449">అడ్రస్ బార్‌లో ఉపయోగిస్తున్న సెర్చ్ ఇంజిన్</translation>
 <translation id="721490496276866468">పాస్‌వర్డ్‌లను దిగుమతి చేయండి</translation>
-<translation id="7216595297012131718">భాషలను మీ ప్రాధాన్యత ఆధారంగా క్రమం చేస్తుంది</translation>
 <translation id="7219473482981809164">డౌన్‌లోడ్ చేయడానికి అనేక ప్రొఫైళ్లు అందుబాటులో ఉన్నాయని మేము కనుగొన్నము. కొనసాగే ముందు మీరు డౌన్‌లోడ్ చేయాలనుకునే వాటిని ఎంచుకోండి.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{బలహీనమైన పాస్‌వర్డ్‌లు ఏవీ లేవు}=1{1 బలహీనమైన పాస్‌వర్డ్}other{{NUM_WEAK} బలహీనమైన పాస్‌వర్డ్‌లు}}</translation>
 <translation id="7220019174139618249">"<ph name="FOLDER" />"కు పాస్‌వర్డ్‌‌లను ఎగుమతి చేయడం సాధ్యపడలేదు.</translation>
@@ -6984,6 +6990,7 @@
 <translation id="7737115349420013392">"<ph name="DEVICE_NAME" />"తో పెయిర్ చేస్తోంది ...</translation>
 <translation id="7737846262459425222">దీన్ని మీరు సెట్టింగ్‌లు &gt; Google Assistant &gt; స్క్రీన్ కాంటెక్ట్స్‌లో ఎప్పుడైనా మార్చవచ్చు.</translation>
 <translation id="7737948071472253612">మీ కెమెరాను ఉపయోగించడానికి అనుమతి లేదు</translation>
+<translation id="77381465218432215">యాక్సెంట్ గుర్తులు, ప్రత్యేక అక్షరాలను చూపించు</translation>
 <translation id="7740996059027112821">ప్రామాణికం</translation>
 <translation id="7741307896921365578">మీ చదవాల్సిన లిస్ట్, Bookmarksను యాక్సెస్ చేయడానికి ఉపయోగకరమైన, నిరంతర మార్గం కోసం బ్రౌజర్ స్థాయి సైడ్ ప్యానెల్‌ను ఎనేబుల్ చేస్తుంది.</translation>
 <translation id="7742558784808143689"><ph name="SITE_NAME" />, దానికి సంబంధించిన అన్ని సైట్‌లు, ఇంకా ఇన్‌స్టాల్ చేయబడిన యాప్‌లలో సైట్ డేటాను, ఇంకా అనుమతులను క్లియర్ చేయాలనుకుంటున్నారా?</translation>
@@ -7770,6 +7777,7 @@
 <translation id="8486666913807228950">కారణం: ఇన్‌వర్టెడ్ నియమం <ph name="REVERT_RULE" />ను "బ్రౌజర్‌లో ఫోర్స్ ఓపెన్ చేయండి" అనే లిస్ట్‌లో చూడవచ్చు.</translation>
 <translation id="848666842773560761">కెమెరాను యాక్సెస్ చేయడానికి ఒక యాప్ ట్రై చేస్తోంది. యాక్సెస్‌ను అనుమతించడానికి కెమెరా గోప్యతా స్విచ్‌ను ఆఫ్ చేయండి.</translation>
 <translation id="8487678622945914333">దగ్గరికి జూమ్ చేయి</translation>
+<translation id="8487699605742506766">హాట్‌స్పాట్</translation>
 <translation id="8489156414266187072">వ్యక్తిగత సూచనలు కేవలం మీ ఖాతాలో మాత్రమే చూపబడతాయి</translation>
 <translation id="8490896350101740396">కింది కియోస్క్ యాప్‌లు "<ph name="UPDATED_APPS" />" అప్‌డేట్ అయ్యాయి. దయచేసి అప్‌డేట్ ప్రాసెస్‌ను పూర్తి చేయడానికి పరికరాన్ని రీబూట్ చేయండి.</translation>
 <translation id="8492685019009920170">వేలిముద్ర సెన్సార్‌ను మీ వేలితో తాకండి. మీ డేటా సురక్షితంగా స్టోర్ చేయబడుతుంది, ఎప్పటికీ మీ <ph name="DEVICE_TYPE" />లోనే ఉంటుంది.</translation>
@@ -8263,6 +8271,7 @@
 <translation id="8975562453115131273">{NUM_OTHER_TABS,plural, =0{"<ph name="TAB_TITLE" />"}=1{"<ph name="TAB_TITLE" />" ఇంకా 1 వేరే ట్యాబ్}other{"<ph name="TAB_TITLE" />" ఇంకా # వేరే ట్యాబ్‌లు}}</translation>
 <translation id="8977811652087512276">పాస్‌వర్డ్ తప్పు లేదా ఫైల్ పాడైంది</translation>
 <translation id="8978154919215542464">ఆన్‌లో ఉంది - ప్రతిదీ సింక్ చేస్తుంది</translation>
+<translation id="8978670037548431647">టెథరింగ్ సామర్థ్యాలను రిఫ్రెష్ చేయండి</translation>
 <translation id="897939795688207351"><ph name="ORIGIN" />లో</translation>
 <translation id="8980345560318123814">Feedback రిపోర్ట్‌లు</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - క్రాష్ అయ్యింది</translation>
@@ -8527,6 +8536,7 @@
 <translation id="935854577147268200">Smart Lock ఫోన్ మారింది. Smart Lockను అప్‌డేట్ చేయడానికి మీ పాస్‌వర్డ్‌ను నమోదు చేయండి. తదుపరిసారి, మీ ఫోన్ మీ <ph name="DEVICE_TYPE" />‌ను అన్‌లాక్ చేస్తుంది. మీరు సెట్టింగ్‌లలో Smart Lockను ఆఫ్ చేయవచ్చు</translation>
 <translation id="936646668635477464">కెమెరా &amp; మైక్రోఫోన్</translation>
 <translation id="936801553271523408">సిస్టమ్ విశ్లేషణ డేటా</translation>
+<translation id="937053962468712792"><ph name="PRIMARY_EMAIL" /> నుండి <ph name="DEVICE" />ను తీసివేయాలా?</translation>
 <translation id="93766956588638423">ఎక్స్‌టెన్షన్‌ను సరి చేయి</translation>
 <translation id="938568644810664664">"Ok Google, ఇది ఏ పాట?" లేదా "Ok Google, నా స్క్రీన్‌పై ఏముంది?" అని అడిగి చూడండి</translation>
 <translation id="938623846785894166">అసాధారణమైన ఫైల్</translation>

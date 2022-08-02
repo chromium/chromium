@@ -119,7 +119,10 @@ Polymer({
    * @return {string}
    */
   computeSubnetMask_() {
-    if (this.network.ipConfig && this.network.ipConfig.routingPrefix) {
+    // Routing prefix should be [1,32] when set. 0 indicates an unset value.
+    if (this.network.ipConfig && this.network.ipConfig.routingPrefix &&
+        this.network.ipConfig.routingPrefix >= 0 &&
+        this.network.ipConfig.routingPrefix <= 32) {
       return getSubnetMaskFromRoutingPrefix(
           this.network.ipConfig.routingPrefix);
     }

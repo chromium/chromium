@@ -290,7 +290,6 @@ namespace {
   self.feedMetricsRecorder.feedControlDelegate = self;
   self.feedMetricsRecorder.followDelegate = self;
 
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
     self.headerController =
         [[ContentSuggestionsHeaderViewController alloc] init];
     // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
@@ -321,7 +320,6 @@ namespace {
         self.headerController.focusOmniboxWhenViewAppears = NO;
       }
     }
-  }
 
   if (IsDiscoverFeedTopSyncPromoEnabled()) {
     self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
@@ -330,10 +328,8 @@ namespace {
   self.contentSuggestionsCoordinator =
       [self createContentSuggestionsCoordinator];
 
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    self.headerController.promoCanShow =
-        [self.contentSuggestionsCoordinator notificationPromo]->CanShow();
-  }
+  self.headerController.promoCanShow =
+      [self.contentSuggestionsCoordinator notificationPromo]->CanShow();
 
   // Fetches feed header and conditionally fetches feed. Feed can only be
   // visible if feed header is visible.
@@ -359,14 +355,6 @@ namespace {
   self.viewPresented = NO;
   [self updateVisible];
 
-  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
-    // Unfocus omnibox, to prevent it from lingering when it should be dismissed
-    // (for example, when navigating away or when changing feed visibility).
-    id<OmniboxCommands> omniboxCommandHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), OmniboxCommands);
-    [omniboxCommandHandler cancelOmniboxEdit];
-  }
-
   SceneState* sceneState =
       SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
   [sceneState removeObserver:self];
@@ -384,6 +372,7 @@ namespace {
   [self.containedViewController.view removeFromSuperview];
   [self.containedViewController removeFromParentViewController];
   self.containedViewController = nil;
+  self.ntpViewController.feedHeaderViewController = nil;
   self.ntpViewController = nil;
   self.feedHeaderViewController = nil;
   self.alertCoordinator = nil;
@@ -450,14 +439,8 @@ namespace {
 - (void)configureNTPViewController {
   DCHECK(self.ntpViewController);
 
-  if (IsContentSuggestionsUIViewControllerMigrationEnabled()) {
-    self.ntpViewController.contentSuggestionsViewController =
-        self.contentSuggestionsCoordinator.viewController;
-  } else {
-    self.ntpViewController.contentSuggestionsCollectionViewController =
-        self.contentSuggestionsCoordinator
-            .contentSuggestionsCollectionViewController;
-  }
+  self.ntpViewController.contentSuggestionsViewController =
+      self.contentSuggestionsCoordinator.viewController;
 
   self.ntpViewController.panGestureHandler = self.panGestureHandler;
   self.ntpViewController.feedVisible = [self isFeedVisible];
@@ -471,16 +454,16 @@ namespace {
 
   self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
       initWithCollectionController:self.ntpViewController
-                  headerController:[self headerController]];
+                  headerController:self.headerController];
 
   self.ntpViewController.feedWrapperViewController =
       self.feedWrapperViewController;
   self.ntpViewController.overscrollDelegate = self;
   self.ntpViewController.ntpContentDelegate = self;
   self.ntpViewController.identityDiscButton =
-      [[self headerController] identityDiscButton];
+      [self.headerController identityDiscButton];
 
-  self.ntpViewController.headerController = [self headerController];
+  self.ntpViewController.headerController = self.headerController;
 
   [self configureMainViewControllerUsing:self.ntpViewController];
   self.ntpViewController.feedMetricsRecorder = self.feedMetricsRecorder;
@@ -538,12 +521,8 @@ namespace {
   [self.ntpViewController stopScrolling];
 }
 
-- (UIEdgeInsets)contentInset {
-  return [self.contentSuggestionsCoordinator contentInset];
-}
-
-- (CGPoint)contentOffset {
-  return [self.contentSuggestionsCoordinator contentOffset];
+- (BOOL)isScrolledToTop {
+  return [self.ntpViewController isNTPScrolledToTop];
 }
 
 - (void)willUpdateSnapshot {
@@ -556,7 +535,7 @@ namespace {
   if (self.feedViewController) {
     [self.ntpViewController focusFakebox];
   } else {
-    [[self headerController] focusFakebox];
+    [self.headerController focusFakebox];
   }
 }
 
@@ -815,11 +794,10 @@ namespace {
 
 - (void)appState:(AppState*)appState
     didTransitionFromInitStage:(InitStage)previousInitStage {
-  DCHECK(IsContentSuggestionsHeaderMigrationEnabled());
   if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)) {
     if (previousInitStage == InitStageFirstRun) {
-      [self headerController].focusOmniboxWhenViewAppears = YES;
-      [[self headerController] focusAccessibilityOnOmnibox];
+      self.headerController.focusOmniboxWhenViewAppears = YES;
+      [self.headerController focusAccessibilityOnOmnibox];
 
       [appState removeObserver:self];
     }
@@ -829,7 +807,7 @@ namespace {
 #pragma mark - LogoAnimationControllerOwnerOwner
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
-  return [[self headerController] logoAnimationControllerOwner];
+  return [self.headerController logoAnimationControllerOwner];
 }
 
 #pragma mark - SceneStateObserver
@@ -936,7 +914,7 @@ namespace {
 - (UIView*)toolbarSnapshotViewForOverscrollActionsController:
     (OverscrollActionsController*)controller {
   return
-      [[[self headerController] toolBarView] snapshotViewAfterScreenUpdates:NO];
+      [[self.headerController toolBarView] snapshotViewAfterScreenUpdates:NO];
 }
 
 - (UIView*)headerViewForOverscrollActionsController:
@@ -951,7 +929,7 @@ namespace {
 
 - (CGFloat)headerHeightForOverscrollActionsController:
     (OverscrollActionsController*)controller {
-  CGFloat height = [[self headerController] toolBarView].bounds.size.height;
+  CGFloat height = [self.headerController toolBarView].bounds.size.height;
   CGFloat topInset = self.feedWrapperViewController.view.safeAreaInsets.top;
   return height + topInset;
 }
@@ -970,14 +948,10 @@ namespace {
 #pragma mark - NewTabPageContentDelegate
 
 - (void)reloadContentSuggestions {
-  if (IsContentSuggestionsHeaderMigrationEnabled() &&
-      IsContentSuggestionsUIViewControllerMigrationEnabled()) {
-    // No need to reload ContentSuggestions since the mediator receives all
-    // model state changes and immediately updates the consumer with the new
-    // state.
-    return;
-  }
-  [self.contentSuggestionsCoordinator reload];
+  // No need to reload ContentSuggestions since the mediator receives all
+  // model state changes and immediately updates the consumer with the new
+  // state.
+  return;
 }
 
 - (BOOL)isContentHeaderSticky {
@@ -1095,16 +1069,6 @@ namespace {
   }
 }
 
-// TODO(crbug.com/1285378): Remove this after
-// kContentSuggestionsHeaderMigrationEnabled is launched.
-- (ContentSuggestionsHeaderViewController*)headerController {
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    return _headerController;
-  } else {
-    return self.contentSuggestionsCoordinator.headerController;
-  }
-}
-
 // Feed header is always visible unless it is disabled from the Chrome settings
 // menu, or by an enterprise policy.
 - (BOOL)isFeedHeaderVisible {
@@ -1199,17 +1163,10 @@ namespace {
           initWithBaseViewController:nil
                              browser:self.browser];
   contentSuggestionsCoordinator.webState = self.webState;
-  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
-    contentSuggestionsCoordinator.toolbarDelegate = self.toolbarDelegate;
-  }
   contentSuggestionsCoordinator.ntpMediator = self.ntpMediator;
   contentSuggestionsCoordinator.ntpDelegate = self;
   contentSuggestionsCoordinator.feedDelegate = self;
   [contentSuggestionsCoordinator start];
-  if (!IsContentSuggestionsHeaderMigrationEnabled()) {
-    contentSuggestionsCoordinator.headerController.baseViewController =
-        self.baseViewController;
-  }
   return contentSuggestionsCoordinator;
 }
 

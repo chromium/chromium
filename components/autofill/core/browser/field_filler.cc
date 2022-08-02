@@ -1092,24 +1092,6 @@ std::u16string FieldFiller::GetPhoneNumberValueForInput(
     const std::u16string& number,
     const std::u16string& phone_home_city_and_number,
     const FormFieldData& field_data) {
-  // TODO(crbug.com/581485): Investigate the use of libphonenumber here.
-  // Check to see if the |field| size matches the "prefix" or "suffix" size or
-  // if the field was labeled as such. If so, return the appropriate substring.
-  if (number.length() ==
-      PhoneNumber::kPrefixLength + PhoneNumber::kSuffixLength) {
-    if (field.phone_part() == AutofillField::PHONE_PREFIX ||
-        field_data.max_length == PhoneNumber::kPrefixLength) {
-      return number.substr(PhoneNumber::kPrefixOffset,
-                           PhoneNumber::kPrefixLength);
-    }
-
-    if (field.phone_part() == AutofillField::PHONE_SUFFIX ||
-        field_data.max_length == PhoneNumber::kSuffixLength) {
-      return number.substr(PhoneNumber::kSuffixOffset,
-                           PhoneNumber::kSuffixLength);
-    }
-  }
-
   // If no max length was specified, return the complete number.
   if (field_data.max_length == 0)
     return number;

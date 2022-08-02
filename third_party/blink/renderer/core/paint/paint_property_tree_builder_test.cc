@@ -7119,9 +7119,12 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowScrollPropertyHierarchy) {
   EXPECT_EQ(middle_properties->OverflowClip(), &relative_fragment.PreClip());
 
   // The opacity on |middle-scroller| applies to all children.
-  EXPECT_EQ(middle_properties->Effect(), &fixed_fragment.PreEffect());
-  EXPECT_EQ(middle_properties->Effect(), &absolute_fragment.PreEffect());
-  EXPECT_EQ(middle_properties->Effect(), &relative_fragment.PreEffect());
+  EXPECT_EQ(middle_properties->Effect(),
+            &fixed_fragment.LocalBorderBoxProperties().Effect());
+  EXPECT_EQ(middle_properties->Effect(),
+            &absolute_fragment.LocalBorderBoxProperties().Effect());
+  EXPECT_EQ(middle_properties->Effect(),
+            &relative_fragment.LocalBorderBoxProperties().Effect());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, CompositedInline) {

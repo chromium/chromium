@@ -59,9 +59,10 @@ bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
   return true;
 }
 
-ExecutableMetadata WinPlatformDelegate::GetExecutableMetadata(
-    const base::FilePath& file_path) {
-  return ExecutableMetadata();
+FilePathMap<ExecutableMetadata> WinPlatformDelegate::GetAllExecutableMetadata(
+    const FilePathSet& file_paths) {
+  // TODO(b:231472924): Implement.
+  return FilePathMap<ExecutableMetadata>();
 }
 
 }  // namespace device_signals

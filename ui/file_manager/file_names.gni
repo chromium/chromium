@@ -268,7 +268,9 @@ static_js_files = [
 ts_files = [
   "file_manager/lib/base_store.ts",
   "file_manager/state/store.ts",
-  "file_manager/state/reducers.ts",
+  "file_manager/state/reducers/root.ts",
+  "file_manager/state/reducers/all_entries.ts",
+  "file_manager/state/reducers/current_directory.ts",
   "file_manager/state/actions.ts",
   "file_manager/state/file_key.ts",
   "file_manager/widgets/xf_breadcrumb.ts",
@@ -343,6 +345,7 @@ generated_js_files = [
 
 # Test files:
 unittest_files = [
+  "file_manager/common/js/async_util_unittest.js",
   "file_manager/common/js/util_unittest.js",
   "file_manager/common/js/filtered_volume_manager_unittest.js",
   "file_manager/common/js/file_type_unittest.js",

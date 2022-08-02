@@ -238,12 +238,22 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   launch_data.suggestion_index = suggestion_index;
   launch_data.score = result->relevance();
 
+  const size_t last_query_length = search_controller_->get_query().size();
   if (launch_type == ash::AppListLaunchType::kAppSearchResult &&
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox &&
       launch_data.ranking_item_type == app_list::RankingItemType::kApp &&
-      search_controller_->GetLastQueryLength() != 0) {
-    ash::RecordSuccessfulAppLaunchUsingSearch(
-        launched_from, search_controller_->GetLastQueryLength());
+      last_query_length != 0) {
+    ash::RecordSuccessfulAppLaunchUsingSearch(launched_from, last_query_length);
+  }
+
+  if (launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox) {
+    if (IsTabletMode()) {
+      base::UmaHistogramCounts100("Apps.AppListSearchQueryLengthV2.TabletMode",
+                                  last_query_length);
+    } else {
+      base::UmaHistogramCounts100(
+          "Apps.AppListSearchQueryLengthV2.ClamshellMode", last_query_length);
+    }
   }
 
   // Send training signal to search controller.
@@ -259,7 +269,7 @@ void AppListClientImpl::OpenSearchResult(int profile_id,
   if (launch_as_default)
     RecordDefaultSearchResultOpenTypeHistogram(result->metrics_type());
 
-  if (!search_controller_->GetLastQueryLength() &&
+  if (!last_query_length &&
       launched_from == ash::AppListLaunchedFrom::kLaunchedFromSearchBox)
     RecordZeroStateSuggestionOpenTypeHistogram(result->metrics_type());
 
@@ -538,10 +548,6 @@ void AppListClientImpl::SetProfile(Profile* new_profile) {
 
   SetUpSearchUI();
   OnTemplateURLServiceChanged();
-
-  // Clear search query.
-  current_model_updater_->UpdateSearchBox(std::u16string(),
-                                          false /* initiated_by_user */);
 }
 
 void AppListClientImpl::SetUpSearchUI() {

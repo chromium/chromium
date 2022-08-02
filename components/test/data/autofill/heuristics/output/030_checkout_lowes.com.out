@@ -14,7 +14,7 @@ ADDRESS_HOME_CITY | taxGeoCode | Municipality: As an additional way to make sure
 UNKNOWN_TYPE | billingAddress | This is also my billing address. | on | taxGeoCode_3-default
 EMAIL_ADDRESS | email1 | E-mail Address: |  | taxGeoCode_3-default
 PHONE_HOME_CITY_CODE | billphone1 | Contact Phone: |  | taxGeoCode_3-default
-PHONE_HOME_NUMBER | billphone2 | Contact Phone: |  | taxGeoCode_3-default
-PHONE_HOME_NUMBER | billphone3 | Contact Phone: |  | taxGeoCode_3-default
+PHONE_HOME_NUMBER_PREFIX | billphone2 | Contact Phone: |  | taxGeoCode_3-default
+PHONE_HOME_NUMBER_SUFFIX | billphone3 | Contact Phone: |  | taxGeoCode_3-default
 EMAIL_ADDRESS | selfAddress | Please enter the phone number and e-mail address associated with this billing address.E-mail Address: Contact Phone: | 0 | selfAddress_4-default
 UNKNOWN_TYPE | save-address | on | on | selfAddress_4-default

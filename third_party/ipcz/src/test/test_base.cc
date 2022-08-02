@@ -4,10 +4,16 @@
 
 #include "test/test_base.h"
 
+#include <chrono>
+#include <thread>
+
 #include "api.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/portal.h"
+#include "ipcz/router.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/synchronization/notification.h"
+#include "util/ref_counted.h"
 
 namespace ipcz::test::internal {
 
@@ -185,6 +191,31 @@ void TestBase::VerifyEndToEndLocal(IpczHandle a, IpczHandle b) {
   EXPECT_EQ(kMessage2, message);
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, &message));
   EXPECT_EQ(kMessage1, message);
+}
+
+void TestBase::WaitForDirectRemoteLink(IpczHandle portal) {
+  const Ref<Router> router = Portal::FromHandle(portal)->router();
+  while (!router->IsOnCentralRemoteLink()) {
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(8ms);
+  }
+
+  const std::string kMessage = "very direct wow";
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, kMessage));
+
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal, &message));
+  EXPECT_EQ(kMessage, message);
+}
+
+void TestBase::WaitForDirectLocalLink(IpczHandle a, IpczHandle b) {
+  const Ref<Router> router_a = Portal::FromHandle(a)->router();
+  const Ref<Router> router_b = Portal::FromHandle(b)->router();
+  while (!router_a->HasLocalPeer(*router_b) &&
+         !router_b->HasLocalPeer(*router_a)) {
+    using namespace std::chrono_literals;
+    std::this_thread::sleep_for(8ms);
+  }
 }
 
 void TestBase::HandleEvent(const IpczTrapEvent* event) {

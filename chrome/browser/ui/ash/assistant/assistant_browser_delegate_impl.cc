@@ -59,7 +59,7 @@ AssistantBrowserDelegateImpl::~AssistantBrowserDelegateImpl() {
 
 void AssistantBrowserDelegateImpl::MaybeInit(Profile* profile) {
   if (assistant::IsAssistantAllowedForProfile(profile) !=
-      chromeos::assistant::AssistantAllowedState::ALLOWED) {
+      ash::assistant::AssistantAllowedState::ALLOWED) {
     return;
   }
 
@@ -98,11 +98,11 @@ void AssistantBrowserDelegateImpl::OnAppTerminating() {
   if (!initialized_)
     return;
 
-  chromeos::assistant::AssistantService::Get()->Shutdown();
+  ash::assistant::AssistantService::Get()->Shutdown();
 }
 
 void AssistantBrowserDelegateImpl::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus new_status) {
+    ash::assistant::AssistantStatus new_status) {
   ash::AssistantState::Get()->NotifyStatusChanged(new_status);
 }
 
@@ -214,7 +214,7 @@ void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
 }
 
 void AssistantBrowserDelegateImpl::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState allowed_state) {
+    ash::assistant::AssistantAllowedState allowed_state) {
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   MaybeInit(profile);

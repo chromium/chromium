@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_SHARE_PATH_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -14,7 +14,7 @@ namespace guest_os {
 
 class GuestOsSharePath;
 
-class GuestOsSharePathFactory : public BrowserContextKeyedServiceFactory {
+class GuestOsSharePathFactory : public ProfileKeyedServiceFactory {
  public:
   static GuestOsSharePath* GetForProfile(Profile* profile);
   static GuestOsSharePathFactory* GetInstance();

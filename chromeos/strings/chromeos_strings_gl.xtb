@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">ACTUALIZAR</translation>
 <translation id="3009958530611748826">Seleccionar un cartafol para gardar os ficheiros</translation>
 <translation id="3017079585324758401">Fondo</translation>
+<translation id="302435934487327038">Completouse a instalación</translation>
 <translation id="3027578600144895987">Pechar cámara</translation>
 <translation id="3031560714565892478">O dispositivo é unha cámara de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3069085583900247081">Produciuse un erro durante a proba</translation>
-<translation id="3076243757415932261">Validando compoñentes…</translation>
 <translation id="3083667275341675831">Diagnósticos de conectividade</translation>
 <translation id="3084958266922136097">Desactivar salvapantallas</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
 <translation id="3383751554789092165">Cambia a información do dispositivo segundo sexa necesario.</translation>
 <translation id="3404249063913988450">Activar protector de pantalla</translation>
-<translation id="3404770484521709967">Os compoñentes instaláronse correctamente.</translation>
 <translation id="3413935475507503304">Para continuar coa actualización, fai clic en Seguinte.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Seguranza</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Contrasinal antigo</translation>
 <translation id="4453205916657964690">Máscara de subrede</translation>
 <translation id="4454245904991689773">Gardar en</translation>
-<translation id="4472575034687746823">Comezar</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
 <translation id="4500213108254186382">Acelerómetro da tapa</translation>
@@ -664,6 +662,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6618744767048954150">En execución</translation>
 <translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
 <translation id="6643016212128521049">Borrar</translation>
+<translation id="6644568396961840069">Non se puido gardar o ficheiro. Proba a enchufar outro dispositivo de almacenamento externo ou téntao de novo máis tarde.</translation>
 <translation id="6647510110698214773">Algoritmo de encriptación</translation>
 <translation id="6650062777702288430">Alternar entre teclado de kana e alfanumérico</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
@@ -809,7 +808,6 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8063022551652308521">A protección contra a escritura aínda está desactivada. Actívaa para continuar.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións para Android</translation>
-<translation id="8083281199617904460">Este proceso de reparación debe efectualo un técnico cualificado, e só se debe iniciar despois de substituír os compoñentes que non funcionen correctamente.</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8104083085214006426">Estás usando unha rede aberta e non segura</translation>
 <translation id="8109786307828817014">Queres continuar a pesar dos erros de calibración?</translation>

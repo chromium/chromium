@@ -214,9 +214,7 @@ async function verifyRecentDocuments(appId, expectedEntries) {
  * @param {string} expectedPath Expected breadcrumb path.
  */
 async function verifyBreadcrumbsPath(appId, expectedPath) {
-  const path =
-      await remoteCall.callRemoteTestUtil('getBreadcrumbPath', appId, []);
-  chrome.test.assertEq(expectedPath, path);
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, expectedPath);
 }
 
 /**

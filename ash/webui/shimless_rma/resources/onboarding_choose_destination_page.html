@@ -9,19 +9,16 @@
         on-selected-changed="onDestinationSelectionChanged_"
         disabled="[[allButtonsDisabled]]">
       <cr-radio-button name="newOwner" id="destinationNewOwner"
-          aria-label="[[i18n('newOwnerText')]]">
-        [[i18n('newOwnerText')]]
+          label="[[i18n('newOwnerText')]]">
       </cr-radio-button>
-      <div class="indented-description">
+      <div class="indented-description" aria-hidden="true">
         [[i18n('newOwnerDescriptionText')]]
       </div>
       <cr-radio-button name="originalOwner" id="destinationOriginalOwner"
-          aria-label="[[i18n('sameOwnerText')]]">
-        [[i18n('sameOwnerText')]]
+          label="[[i18n('sameOwnerText')]]">
       </cr-radio-button>
       <cr-radio-button name="notSureOwner" id="destinationNotSureOwner"
-          aria-label="[[i18n('notSureOwnerText')]]">
-        [[i18n('notSureOwnerText')]]
+          label="[[i18n('notSureOwnerText')]]">
       </cr-radio-button>
     </cr-radio-group>
   </div>

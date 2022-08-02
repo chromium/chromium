@@ -22016,6 +22016,8 @@
 
        If you leave it unset or set to an empty list, users can select all supported input methods.
 
+       Starting with version M106 allowed input methods are automatically enabled in kiosk session.
+
       Note: If the current input method is unsupported, it switches to the hardware keyboard layout (if allowed) or the first valid entry in this list. Invalid or unsupported methods are ignored.'''
     },
     {

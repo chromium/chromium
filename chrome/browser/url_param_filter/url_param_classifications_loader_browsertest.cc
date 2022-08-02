@@ -91,8 +91,7 @@ IN_PROC_BROWSER_TEST_F(
     FeatureDisabled_NoClassificationsLoaded) {
   // ClassificationLoader has no classifications since the feature is
   // disabled.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
 // Feature fully disabled, component installed.
@@ -119,8 +118,7 @@ IN_PROC_BROWSER_TEST_F(
     FeatureDisabled_NoClassificationsLoaded) {
   // ClassificationLoader has no classifications since the feature is
   // disabled.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
 // Feature enabled without params, component not installed.
@@ -137,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(
     NeitherSourceProvidesClassifications_NoClassificationsLoaded) {
   // ClassificationLoader has no classifications since neither feature
   // classifications nor Component Updater classifications were provided.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
 // Feature enabled without params, component installed.
@@ -165,18 +162,15 @@ IN_PROC_BROWSER_TEST_F(ClassificationsLoaderFeatureEnabledAndComponentInstalled,
   // Since no feature classifications are provided, the expected
   // classifications should be the component classifications.
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("source.test",
+          Pair(SourceKey("source.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock_src",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("dest.test",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("dest.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
@@ -204,8 +198,7 @@ IN_PROC_BROWSER_TEST_P(
     NeitherSourceProvidesClassifications) {
   // ClassificationLoader has no classifications since neither feature
   // classifications nor Component Updater classifications were provided.
-  EXPECT_THAT(loader()->GetSourceClassifications(), IsEmpty());
-  EXPECT_THAT(loader()->GetDestinationClassifications(), IsEmpty());
+  EXPECT_THAT(loader()->GetClassifications(), IsEmpty());
 }
 
 INSTANTIATE_TEST_CASE_P(
@@ -244,20 +237,17 @@ IN_PROC_BROWSER_TEST_P(
     LoaderUsesComponentClassifications) {
   // Since no feature classifications are provided, the expected
   // classifications should be the component classifications.
-  ClassificationMap s = loader()->GetSourceClassifications();
+  ClassificationMap s = loader()->GetClassifications();
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("source.test",
+          Pair(SourceKey("source.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock_src",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("dest.test",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("dest.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
@@ -294,18 +284,15 @@ IN_PROC_BROWSER_TEST_F(
     LoaderUsesClassificationsFromFeature) {
   // ClassificationLoader uses the feature parameters
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("feature-src.test",
+          Pair(SourceKey("feature-src.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("feature-dst.test",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("feature-dst.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
@@ -346,18 +333,15 @@ IN_PROC_BROWSER_TEST_F(
   // Since both feature and component classifications are provided, the feature
   // classifications take precedence.
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("feature-src.test",
+          Pair(SourceKey("feature-src.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("feature-dst.test",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("feature-dst.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
@@ -389,18 +373,15 @@ IN_PROC_BROWSER_TEST_P(
   // Since both feature and component classifications are provided, the feature
   // classifications take precedence.
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("feature-src.test",
+          Pair(SourceKey("feature-src.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("feature-dst.test",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("feature-dst.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
@@ -449,18 +430,15 @@ IN_PROC_BROWSER_TEST_P(
   // Since both feature and component classifications are provided, the feature
   // classifications take precedence.
   EXPECT_THAT(
-      loader()->GetSourceClassifications(),
+      loader()->GetClassifications(),
       UnorderedElementsAre(
-          Pair("feature-src.test",
+          Pair(SourceKey("feature-src.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(
                        "plzblock1",
-                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
-  EXPECT_THAT(
-      loader()->GetDestinationClassifications(),
-      UnorderedElementsAre(
-          Pair("feature-dst.test",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL))))),
+          Pair(DestinationKey("feature-dst.test"),
                UnorderedElementsAre(Pair(
                    FilterClassification::USE_CASE_UNKNOWN,
                    UnorderedElementsAre(Pair(

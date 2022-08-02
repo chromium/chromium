@@ -249,11 +249,12 @@ const FeatureEntry::FeatureVariation
 };
 
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoFullWithTitle[] = {
-    {kDiscoverFeedTopSyncPromoStyleParam,
-     kDiscoverFeedTopSyncPromoStyleFullWithTitle}};
+    {kDiscoverFeedTopSyncPromoStyleFullWithTitle, "true"},
+    {kDiscoverFeedTopSyncPromoStyleCompact, "false"}};
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompact[] = {
-    {kDiscoverFeedTopSyncPromoStyleParam,
-     kDiscoverFeedTopSyncPromoStyleCompact}};
+    {kDiscoverFeedTopSyncPromoStyleFullWithTitle, "false"},
+    {kDiscoverFeedTopSyncPromoStyleCompact, "true"}};
+
 const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
     {"Full with title", kDiscoverFeedTopSyncPromoFullWithTitle,
      std::size(kDiscoverFeedTopSyncPromoFullWithTitle), nullptr},
@@ -890,14 +891,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableUnicornAccountSupportDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(signin::kEnableUnicornAccountSupport)},
-    {"single-cell-content-suggestions",
-     flag_descriptions::kSingleCellContentSuggestionsName,
-     flag_descriptions::kSingleCellContentSuggestionsDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSingleCellContentSuggestions)},
-    {"content-suggestions-header-migration",
-     flag_descriptions::kContentSuggestionsHeaderMigrationName,
-     flag_descriptions::kContentSuggestionsHeaderMigrationDescription,
-     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContentSuggestionsHeaderMigration)},
     {"leak-detection-unauthenticated",
      flag_descriptions::kLeakDetectionUnauthenticatedName,
      flag_descriptions::kLeakDetectionUnauthenticatedDescription,
@@ -937,11 +930,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfSigninPromoName,
      flag_descriptions::kSendTabToSelfSigninPromoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfSigninPromo)},
-    {"content-suggestions-uiviewcontroller-migration",
-     flag_descriptions::kContentSuggestionsUIViewControllerMigrationName,
-     flag_descriptions::kContentSuggestionsUIViewControllerMigrationDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kContentSuggestionsUIViewControllerMigration)},
     {"bubble-rich-iph", flag_descriptions::kBubbleRichIPHName,
      flag_descriptions::kBubbleRichIPHDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBubbleRichIPH,
@@ -1129,6 +1117,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFeedBackgroundRefresh,
                                     kFeedBackgroundRefreshVariations,
                                     "FeedBackgroundRefresh")},
+    {"omnibox-keyboard-paste-button",
+     flag_descriptions::kOmniboxKeyboardPasteButtonName,
+     flag_descriptions::kOmniboxKeyboardPasteButtonDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kOmniboxKeyboardPasteButton)},
 #endif  // BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"enable-cbd-sign-out", flag_descriptions::kEnableCBDSignOutName,
      flag_descriptions::kEnableCBDSignOutDescription, flags_ui::kOsIos,

@@ -37,5 +37,16 @@ gfx::Size GetMaxImageSizeForType(HoldingSpaceItem::Type type) {
   return max_size;
 }
 
+bool IsInProgressCommand(HoldingSpaceCommandId command_id) {
+  switch (command_id) {
+    case HoldingSpaceCommandId::kCancelItem:
+    case HoldingSpaceCommandId::kPauseItem:
+    case HoldingSpaceCommandId::kResumeItem:
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace holding_space_util
 }  // namespace ash

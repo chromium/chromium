@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ash/web_applications/personalization_app/personalization_app_manager.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace ash {
@@ -29,9 +28,7 @@ PersonalizationAppManagerFactory::GetInstance() {
 }
 
 PersonalizationAppManagerFactory::PersonalizationAppManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "PersonalizationAppManager",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("PersonalizationAppManager") {
   DependsOn(::chromeos::local_search_service::LocalSearchServiceProxyFactory::
                 GetInstance());
 }

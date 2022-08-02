@@ -21,7 +21,7 @@
 namespace app_list {
 namespace {
 
-using chromeos::assistant::AssistantAllowedState;
+using ::ash::assistant::AssistantAllowedState;
 
 // Parameterized by feature ProductivityLauncher.
 class AssistantTextSearchProviderTest

@@ -71,6 +71,10 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
 
   virtual CommandUpdater* GetCommandUpdater();
 
+  virtual bool BrowserSupportsTabGroups();
+
+  virtual bool BrowserHasTabGroups();
+
  private:
   virtual void NavigateToURL(const GURL& url,
                              WindowOpenDisposition disposition);

@@ -45,6 +45,7 @@
 
 using ::testing::_;
 using content::BrowserThread;
+using QueryReason = content_settings::CookieSettings::QueryReason;
 
 namespace {
 
@@ -237,11 +238,13 @@ class CookiesTreeModelTest : public testing::Test {
         EXPECT_FALSE(host->CanCreateContentException());
       } else {
         cookie_settings->ResetCookieSetting(expected_url);
-        EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(expected_url));
+        EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(
+            expected_url, QueryReason::kSetting));
 
         host->CreateContentException(cookie_settings,
                                      CONTENT_SETTING_SESSION_ONLY);
-        EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(expected_url));
+        EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(
+            expected_url, QueryReason::kSetting));
       }
     }
   }
@@ -1432,8 +1435,10 @@ TEST_F(CookiesTreeModelTest, ContentSettings) {
       .Times(2);
   origin->CreateContentException(
       cookie_settings, CONTENT_SETTING_SESSION_ONLY);
-  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(host, host));
-  EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(host));
+  EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
+      host, host, QueryReason::kSetting));
+  EXPECT_TRUE(
+      cookie_settings->IsCookieSessionOnly(host, QueryReason::kSetting));
 }
 
 TEST_F(CookiesTreeModelTest, FileSystemFilter) {

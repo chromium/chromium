@@ -84,8 +84,9 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   ~FakeDlpController() override {
-    if (widget_ && widget_->HasObserver(this)) {
-      widget_->RemoveObserver(this);
+    auto* widget = helper_->GetWidget();
+    if (widget) {
+      widget->RemoveObserver(this);
     }
   }
 
@@ -122,15 +123,14 @@ class FakeDlpController : public DataTransferDlpController,
   }
 
   bool ObserveWidget() {
-    widget_ = helper_->GetWidget();
-    if (widget_ && !widget_->HasObserver(this)) {
-      widget_->AddObserver(this);
+    auto* widget = helper_->GetWidget();
+    if (widget && !widget->HasObserver(this)) {
+      widget->AddObserver(this);
       return true;
     }
     return false;
   }
 
-  raw_ptr<views::Widget> widget_ = nullptr;
   raw_ptr<FakeClipboardNotifier> helper_ = nullptr;
   absl::optional<ui::DataTransferEndpoint> blink_data_dst_;
   base::RepeatingClosure blink_quit_cb_ = base::DoNothing();

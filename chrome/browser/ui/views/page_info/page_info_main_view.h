@@ -64,7 +64,6 @@ class PageInfoMainView : public views::View,
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.
-  void EnsureCookieInfo() override;
   void SetCookieInfo(const CookieInfoList& cookie_info_list) override;
   void SetPermissionInfo(const PermissionInfoList& permission_info_list,
                          ChosenObjectInfoList chosen_object_info_list) override;
@@ -89,6 +88,10 @@ class PageInfoMainView : public views::View,
  private:
   friend class PageInfoBubbleViewDialogBrowserTest;
   friend class test::PageInfoBubbleViewTestApi;
+
+  // Ensures the cookie information UI is present, with placeholder information
+  // if necessary.
+  void EnsureCookieInfo();
 
   // Creates a view with vertical box layout that will used a container for
   // other views.

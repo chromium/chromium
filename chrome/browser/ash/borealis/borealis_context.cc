@@ -19,13 +19,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/borealis/borealis_disk_manager_impl.h"
 #include "chrome/browser/ash/borealis/borealis_engagement_metrics.h"
-#include "chrome/browser/ash/borealis/borealis_game_mode_controller.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_power_controller.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
+#include "chrome/browser/ash/game_mode/game_mode_controller.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/grit/generated_resources.h"
@@ -200,7 +200,7 @@ BorealisContext::BorealisContext(Profile* profile)
       guest_os_stability_monitor_(
           std::make_unique<guest_os::GuestOsStabilityMonitor>(
               kBorealisStabilityHistogram)),
-      game_mode_controller_(std::make_unique<BorealisGameModeController>()),
+      game_mode_controller_(std::make_unique<game_mode::GameModeController>()),
       engagement_metrics_(std::make_unique<BorealisEngagementMetrics>(profile)),
       disk_manager_(std::make_unique<BorealisDiskManagerImpl>(this)),
       power_controller_(std::make_unique<BorealisPowerController>()) {}

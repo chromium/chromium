@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/clipboard_bubble.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_clipboard_bubble_constants.h"
@@ -102,7 +103,7 @@ views::Widget::InitParams GetWidgetInitParams() {
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.z_order = ui::ZOrderLevel::kNormal;
   params.activatable = views::Widget::InitParams::Activatable::kYes;
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  params.ownership = views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   params.name = kBubbleName;
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = nullptr;
@@ -121,7 +122,7 @@ DlpDataTransferNotifier::DlpDataTransferNotifier() = default;
 DlpDataTransferNotifier::~DlpDataTransferNotifier() {
   if (widget_) {
     widget_->RemoveObserver(this);
-    CloseWidget(widget_.get(), views::Widget::ClosedReason::kUnspecified);
+    widget_->Close();
   }
 }
 
@@ -151,11 +152,30 @@ void DlpDataTransferNotifier::ShowWarningBubble(
 
 void DlpDataTransferNotifier::CloseWidget(views::Widget* widget,
                                           views::Widget::ClosedReason reason) {
-  if (widget_) {
-    DCHECK_EQ(widget, widget_.get());
-    widget_closing_timer_.Stop();
-    widget_->CloseWithReason(reason);
-  }
+  if (!widget || widget != widget_.get())
+    return;
+
+  widget_->CloseWithReason(reason);
+}
+
+void DlpDataTransferNotifier::SetPasteCallback(
+    base::OnceCallback<void(bool)> paste_cb) {
+  DCHECK(widget_);
+
+  ClipboardWarnBubble* clp_warn_bubble =
+      static_cast<ClipboardWarnBubble*>(widget_->GetContentsView());
+  clp_warn_bubble->set_paste_cb(std::move(paste_cb));
+}
+
+void DlpDataTransferNotifier::RunPasteCallback() {
+  DCHECK(widget_);
+
+  ClipboardWarnBubble* clp_warn_bubble =
+      static_cast<ClipboardWarnBubble*>(widget_->GetContentsView());
+
+  auto paste_cb = clp_warn_bubble->get_paste_cb();
+  DCHECK(paste_cb);
+  std::move(paste_cb).Run(true);
 }
 
 void DlpDataTransferNotifier::OnWidgetDestroying(views::Widget* widget) {
@@ -172,8 +192,6 @@ void DlpDataTransferNotifier::OnWidgetActivationChanged(views::Widget* widget,
 }
 
 void DlpDataTransferNotifier::InitWidget() {
-  if (widget_)
-    widget_->RemoveObserver(this);
   widget_ = std::make_unique<views::Widget>();
   widget_->Init(GetWidgetInitParams());
   widget_->AddObserver(this);

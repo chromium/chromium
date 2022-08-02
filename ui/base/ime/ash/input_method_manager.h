@@ -242,6 +242,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     // Sets the currently allowed input methods due to policy. Invalid
     // input method ids are ignored. Passing an empty vector means that all
     // input methods are allowed, which is the default.
+    // Automatically enables allowed methods in Kiosk sessions if the vector is
+    // non-empty.
     virtual bool SetAllowedInputMethods(
         const std::vector<std::string>& allowed_input_method_ids) = 0;
 

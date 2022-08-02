@@ -1003,6 +1003,7 @@
 <translation id="3676592649209844519">מזהה מכשיר:</translation>
 <translation id="3677008721441257057">‏התכוונת לכתובת &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">לא ניתן היה לחתום על הבקשה</translation>
+<translation id="3678342917559046352">‏התוסף לא תקין: הערך אמור להיות אחת מהצורות הבאות: &lt;extension_id&gt; או &lt;extension_id&gt;;&lt;update_url&gt;.</translation>
 <translation id="3678529606614285348">‏פתיחת הדף בחלון אנונימי חדש (Ctrl-Shift-N)</translation>
 <translation id="3681007416295224113">פרטי אישור</translation>
 <translation id="3701427423622901115">האיפוס אושר.</translation>
@@ -1227,6 +1228,7 @@
 <translation id="4305666528087210886">לא ניתן לגשת לקובץ</translation>
 <translation id="4306529830550717874">לשמור את הכתובת?</translation>
 <translation id="4306812610847412719">לוח</translation>
+<translation id="4308567447483056043">‏המערכת מתעלמת מהמדיניות הזו כי המשתמש לא משויך. כדי להחיל את המדיניות צריך לנהל את הדפדפן והפרופיל ב-Chrome דרך מסוף Admin של אותו ארגון.</translation>
 <translation id="4310070645992025887">חיפוש בתהליכים</translation>
 <translation id="4312613361423056926">B2</translation>
 <translation id="4312866146174492540">חסומה (ברירת מחדל)</translation>
@@ -1342,6 +1344,7 @@
 <translation id="464342062220857295">תכונות חיפוש</translation>
 <translation id="4644670975240021822">בסדר הפוך עם הפנים כלפי מטה</translation>
 <translation id="4646534391647090355">אני רוצה לעבור לשם עכשיו</translation>
+<translation id="4648262692072505866">‏הגיבוב חייב להיות בפורמט SHA-256.</translation>
 <translation id="4652266463001779298">אין הרשאה</translation>
 <translation id="4653167719759882810">מיזוגים ורכישות</translation>
 <translation id="4658638640878098064">סיכת הידוק בפינה השמאלית העליונה</translation>
@@ -1455,6 +1458,7 @@ Del</translation>
 <translation id="4926340098269537727"><ph name="ACTIVE_MATCH" />/<ph name="TOTAL_MATCHCOUNT" /></translation>
 <translation id="4929871932072157101">‏<ph name="KEYWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, יש להקיש על Tab ואז על Enter כדי לחפש</translation>
 <translation id="4930153903256238152">קיבולת גבוהה</translation>
+<translation id="4936134414789135531">הערך <ph name="VALUE_NAME" /> שהוזן לא נמצא.</translation>
 <translation id="4936675324097895694">פיננסים</translation>
 <translation id="4940163644868678279">‏מצב פרטי ב-Chrome</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
@@ -1572,6 +1576,7 @@ Del</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
 <translation id="521659676233207110">מגש 13</translation>
 <translation id="5216942107514965959">הכניסה האחרונה בוצעה היום</translation>
+<translation id="5217759126664161410">פורמט הפרוטוקול לא תקין.</translation>
 <translation id="5222812217790122047">אימייל (חובה)</translation>
 <translation id="5228404122310299359">מוצרים למסיבות ולחגים</translation>
 <translation id="5229588705416009823">משחקים מרובי משתתפים</translation>
@@ -1644,6 +1649,7 @@ Del</translation>
 <translation id="5398772614898833570">מודעות חסומות</translation>
 <translation id="5400836586163650660">אפור</translation>
 <translation id="540969355065856584">שרת זה לא הצליח להוכיח שהוא <ph name="DOMAIN" />; אישור האבטחה שלו אינו תקף כעת. הסיבה לכך עשויה להיות תצורה שגויה או שתוקף מיירט את החיבור שלך.</translation>
+<translation id="5412040515238827314">פורמט לא תקין: אמורה להופיע רשימת תבניות.</translation>
 <translation id="5412236728747081950">‏יוצגו לך מודעות רלוונטיות יותר באתר על סמך תחומי העניין שלך מ-Chrome</translation>
 <translation id="541416427766103491">מערים 4</translation>
 <translation id="5421136146218899937">ניקוי נתוני גלישה...</translation>
@@ -1763,6 +1769,7 @@ Del</translation>
 <translation id="5754400531489347219">חיות מחמד ובעלי חיים</translation>
 <translation id="5759751709240058861">להשתמש במצלמה ולהזיז אותה</translation>
 <translation id="5763042198335101085">עליך להזין כתובת אימייל חוקית</translation>
+<translation id="5764725887548570807">פורמט המקור לא תקין.</translation>
 <translation id="5765072501007116331">עליך לבחור כתובת כדי לראות שיטות מסירה ודרישות</translation>
 <translation id="57689295674415555">מספר הכרטיס הווירטואלי לא הוזן?</translation>
 <translation id="5776313857861697733">עדיפות</translation>
@@ -1887,10 +1894,12 @@ Del</translation>
 <translation id="6107012941649240045">מונפק ל</translation>
 <translation id="610911394827799129">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="6116338172782435947">גישה אל טקסט ותמונות שהועתקו ללוח</translation>
+<translation id="6118782133429281336">רשימת המקורות ריקה.</translation>
 <translation id="6120179357481664955">‏מזהה UPI שלך זכור לך?</translation>
 <translation id="6124432979022149706">‏מחברים של Chrome Enterprise</translation>
 <translation id="6127379762771434464">הפריט הוסר</translation>
 <translation id="6132161237766805930">‏<ph name="BEGIN_LINK" />מידע נוסף על מצב פרטי ב-Chrome<ph name="END_LINK" /></translation>
+<translation id="6133984428121856852">סיומת הקובץ ריקה או לא תקינה.</translation>
 <translation id="6146055958333702838">יש לבדוק את הכבלים ולהפעיל מחדש את הנתבים, המודמים ושאר התקני הרשת
 שמשתמשים בהם.</translation>
 <translation id="614940544461990577">כדאי לנסות:</translation>
@@ -2064,6 +2073,7 @@ Del</translation>
 <translation id="666259744093848177">‏(x86_64 מתורגם)</translation>
 <translation id="6663846344464066639">ידיים שלובות</translation>
 <translation id="6665553082534466207">3 ניקובים בצד ימין</translation>
+<translation id="6668389483194953109">‏השם של גודל הנייר הוגדר כ-'custom', אבל המאפיין 'custom_size' ריק או לא חוקי.</translation>
 <translation id="6671697161687535275">‏האם להסיר מ-Chromium הצעות לטפסים?</translation>
 <translation id="6683717648675961851">מודעות דרושים</translation>
 <translation id="6685834062052613830">יש לצאת ולהשלים את ההגדרה</translation>
@@ -2077,6 +2087,7 @@ Del</translation>
 <translation id="6696588630955820014">‏לחצן לשיתוף הכרטיסייה הזו, מקישים על Enter כדי לשתף את הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד</translation>
 <translation id="6698381487523150993">נוצר:</translation>
 <translation id="6702919718839027939">הצגה</translation>
+<translation id="6704458454638854812">‏המאפיין 'custom_size' מוגדר, אבל שם המאפיין לא מוגדר כ-'custom'.</translation>
 <translation id="6709133671862442373">חדשות</translation>
 <translation id="6709888928011386878">כלי נגינה</translation>
 <translation id="6710213216561001401">הקודם</translation>

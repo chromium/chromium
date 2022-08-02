@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
+#include "chrome/browser/ui/views/extensions/constants.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -65,8 +65,7 @@ ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
 ui::ImageModel GetIcon(ToolbarActionViewController* action,
                        content::WebContents* web_contents) {
   return ui::ImageModel::FromImageSkia(
-      action->GetIcon(web_contents, InstalledExtensionMenuItemView::kIconSize)
-          .AsImageSkia());
+      action->GetIcon(web_contents, kMenuExtensionIconSize).AsImageSkia());
 }
 
 std::u16string GetCurrentHost(content::WebContents* web_contents) {

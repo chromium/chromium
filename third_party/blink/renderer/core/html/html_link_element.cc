@@ -80,6 +80,10 @@ void HTMLLinkElement::ParseAttribute(
       UseCounter::Count(&GetDocument(),
                         WebFeature::kHTMLLinkElementMonetization);
     }
+    if (rel_attribute_.IsCanonical() &&
+        GetDocument().IsInOutermostMainFrame()) {
+      UseCounter::Count(&GetDocument(), WebFeature::kLinkRelCanonical);
+    }
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
     Process();
   } else if (name == html_names::kBlockingAttr &&

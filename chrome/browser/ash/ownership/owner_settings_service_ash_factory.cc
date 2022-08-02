@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/ownership/owner_key_util_impl.h"
 
@@ -35,9 +34,7 @@ DeviceSettingsService* GetDeviceSettingsService() {
 }  // namespace
 
 OwnerSettingsServiceAshFactory::OwnerSettingsServiceAshFactory()
-    : BrowserContextKeyedServiceFactory(
-          "OwnerSettingsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("OwnerSettingsService") {}
 
 OwnerSettingsServiceAshFactory::~OwnerSettingsServiceAshFactory() = default;
 
@@ -83,16 +80,6 @@ void OwnerSettingsServiceAshFactory::SetOwnerKeyUtilForTesting(
   owner_key_util_ = owner_key_util;
 }
 
-content::BrowserContext* OwnerSettingsServiceAshFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (profile->IsOffTheRecord() || !ProfileHelper::IsRegularProfile(profile)) {
-    return nullptr;
-  }
-
-  return context;
-}
-
 bool OwnerSettingsServiceAshFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return true;
@@ -100,10 +87,13 @@ bool OwnerSettingsServiceAshFactory::ServiceIsCreatedWithBrowserContext()
 
 KeyedService* OwnerSettingsServiceAshFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!ProfileHelper::IsRegularProfile(profile))
+    return nullptr;
+
   // If g_stub_cros_settings_provider_for_testing_ is set, we treat the current
   // user as the owner, and write settings directly to the stubbed provider.
   // This is done using the FakeOwnerSettingsService.
-  Profile* profile = Profile::FromBrowserContext(context);
   if (g_stub_cros_settings_provider_for_testing_ != nullptr) {
     return new FakeOwnerSettingsService(
         g_stub_cros_settings_provider_for_testing_, profile,

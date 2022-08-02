@@ -130,8 +130,7 @@ bool HomeButtonController::MaybeHandleGestureEvent(ui::GestureEvent* event) {
 
 bool HomeButtonController::IsAssistantAvailable() {
   AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() ==
-             chromeos::assistant::AssistantAllowedState::ALLOWED &&
+  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
          state->settings_enabled().value_or(false);
 }
 
@@ -156,7 +155,7 @@ void HomeButtonController::OnTabletModeStarted() {
 }
 
 void HomeButtonController::OnAssistantFeatureAllowedChanged(
-    chromeos::assistant::AssistantAllowedState state) {
+    assistant::AssistantAllowedState state) {
   button_->OnAssistantAvailabilityChanged();
 }
 

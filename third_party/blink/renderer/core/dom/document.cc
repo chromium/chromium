@@ -6745,6 +6745,14 @@ void Document::IncrementLazyEmbedsFrameCount() {
   data_->lazy_embeds_frame_count_++;
 }
 
+void Document::IncrementImmediateChildFrameCreationCount() {
+  data_->immediate_child_frame_creation_count_++;
+}
+
+int Document::GetImmediateChildFrameCreationCount() const {
+  return data_->immediate_child_frame_creation_count_;
+}
+
 DOMWindow* Document::defaultView() const {
   return dom_window_;
 }

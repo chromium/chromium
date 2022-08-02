@@ -29,7 +29,7 @@ std::string FormatNetworkHealth(
 
   for (const auto& net : network_health->networks) {
     if (scrub) {
-      output << "Name: " << chromeos::NetworkGuidId(net->guid.value_or("N/A"))
+      output << "Name: " << ash::NetworkGuidId(net->guid.value_or("N/A"))
              << "\n";
     } else {
       output << "Name: " << net->name.value_or("N/A") << "\n";

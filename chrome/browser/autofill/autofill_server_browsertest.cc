@@ -272,17 +272,17 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   // Combinations of honorific_prefix without structured_names are omitted
   // because honorific_prefix can only be enabled ontop of structured_names.
   if (structured_names && !structured_address && !honorific_prefix) {
-    upload->set_data_present("1f7e000378000008000400000004");
+    upload->set_data_present("1f7e0003780000080004000000040018");
   } else if (structured_names && honorific_prefix && !structured_address) {
-    upload->set_data_present("1f7e00037800000800040000000404");
+    upload->set_data_present("1f7e0003780000080004000000040418");
   } else if (structured_names && !honorific_prefix && structured_address) {
-    upload->set_data_present("1f7e0003780000080004000001c4");
+    upload->set_data_present("1f7e0003780000080004000001c40018");
   } else if (structured_names && honorific_prefix && structured_address) {
-    upload->set_data_present("1f7e0003780000080004000001c404");
+    upload->set_data_present("1f7e0003780000080004000001c40418");
   } else if (!structured_names && !honorific_prefix && structured_address) {
-    upload->set_data_present("1f7e0003780000080004000001c0");
+    upload->set_data_present("1f7e0003780000080004000001c00018");
   } else {
-    upload->set_data_present("1f7e0003780000080004");
+    upload->set_data_present("1f7e0003780000080004000000000018");
   }
 
   upload->set_passwords_revealed(false);

@@ -154,7 +154,7 @@ absl::optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
 
   // This should be consistent with `NetworkServiceCorsPreflightMethodAllowed`
   // in `tools/metrics/histograms/enums.xml`.
-  enum CorsPreflightMethodAllowed {
+  enum CorsPreflightMethodAllowed : uint8_t {
     kBothDisallowed = 0,
     kNormalizedMethodAllowed = 1,
     kMethodAllowed = 2,

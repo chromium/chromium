@@ -141,7 +141,8 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
          PIXEL_FORMAT_XBGR == video_frame->format() ||
          PIXEL_FORMAT_XB30 == video_frame->format() ||
          PIXEL_FORMAT_XR30 == video_frame->format() ||
-         PIXEL_FORMAT_NV12 == video_frame->format())
+         PIXEL_FORMAT_NV12 == video_frame->format() ||
+         PIXEL_FORMAT_RGBAF16 == video_frame->format())
       << "Format: " << VideoPixelFormatToString(video_frame->format());
 
   const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(0);

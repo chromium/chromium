@@ -71,7 +71,12 @@ enum class ScriptSchedulingType {
   // Spec: not yet spec'ed. https://crbug.com/976061
   kForceDefer,
 
-  kMaxValue = kForceDefer,
+  // Force in-order scripts controlled by ScriptRunner.
+  //
+  // Spec: not yet spec'ed. https://crbug.com/1344772
+  kForceInOrder,
+
+  kMaxValue = kForceInOrder,
 };
 
 }  // namespace blink

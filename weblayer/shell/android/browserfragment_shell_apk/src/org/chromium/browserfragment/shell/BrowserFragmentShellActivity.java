@@ -51,6 +51,8 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
     }
 
     private void onBrowserReady(Browser browser) {
+        browser.setRemoteDebuggingEnabled(true);
+
         BrowserFragment fragment = browser.createFragment();
 
         fragment.registerTabObserver(new TabObserver() {

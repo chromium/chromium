@@ -4,9 +4,13 @@
 
 package org.chromium.content.browser;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.content_public.browser.MessagePayload;
+import org.chromium.content_public.browser.MessagePayloadType;
 
 /**
  * Helper class to call MessagePayload methods from native.
@@ -15,13 +19,29 @@ import org.chromium.content_public.browser.MessagePayload;
 final class MessagePayloadJni {
     private MessagePayloadJni() {}
 
+    @MessagePayloadType
     @CalledByNative
-    private static MessagePayload createFromString(String string) {
+    private static int getType(@NonNull MessagePayload payload) {
+        return payload.getType();
+    }
+
+    @CalledByNative
+    private static MessagePayload createFromString(@Nullable String string) {
         return new MessagePayload(string);
     }
 
     @CalledByNative
-    private static String getAsString(MessagePayload payload) {
+    private static String getAsString(@NonNull MessagePayload payload) {
         return payload.getAsString();
+    }
+
+    @CalledByNative
+    private static MessagePayload createFromArrayBuffer(@NonNull byte[] arrayBuffer) {
+        return new MessagePayload(arrayBuffer);
+    }
+
+    @CalledByNative
+    private static byte[] getAsArrayBuffer(@NonNull MessagePayload payload) {
+        return payload.getAsArrayBuffer();
     }
 }

@@ -9,7 +9,7 @@ var catErrCommand = 'cat 1>&2\n';
 // Ensure this has all distinct characters.
 var testLine = 'abcdefgh\n';
 
-var startCharacter = '#';
+var startChar = '#';
 
 var croshName = 'crosh';
 var invalidName = 'some name';
@@ -28,13 +28,15 @@ function TestProcess(id, type) {
   this.id_ = id;
   this.type_= type;
 
+  // Text received before we start matching lines.
+  this.startText_ = '';
+
   this.lineExpectation_ = '';
   this.linesLeftToCheck_ = -1;
   // We receive two streams from the process.
   this.checkedStreamEnd_ = [0, 0];
 
   this.closed_ = false;
-  this.startCharactersFound_ = 0;
   this.started_ = false;
 };
 
@@ -54,7 +56,7 @@ TestProcess.prototype.testExpectation = function(text) {
       continue;
     if (this.processReceivedCharacter_(text[i], 1))
       continue;
-    chrome.test.fail("Received: " + text);
+    chrome.test.fail("Received: [" + text + "]");
   }
 };
 
@@ -105,14 +107,6 @@ TestProcess.prototype.setClosed = function() {
   this.closed_ = true;
 };
 
-TestProcess.prototype.canStart = function() {
-  return (this.startCharactersFound_ == 2);
-};
-
-TestProcess.prototype.startCharacterFound = function() {
-  this.startCharactersFound_++;
-};
-
 TestProcess.prototype.getCatCommand = function() {
   if (this.type_ == "stdout")
     return catCommand;
@@ -126,21 +120,13 @@ TestProcess.prototype.addLineExpectation = function(line, times) {
 
 // Set of commands we use to setup terminal for testing (start cat) will produce
 // some output. We don't care about that output, to avoid having to set that
-// output in test expectations, we will send |startCharacter| right after cat is
-// started. After we detect second |startCharacter|s in output, we know process
-// won't produce any output by itself, so it is safe to start actual test.
+// output in test expectations, we will send |startChar| right after cat is
+// started. After we detect `${startChar}\r\n${startChar}\r\n` in output, we
+// know process won't produce any output by itself, so it is safe to start test.
 TestProcess.prototype.maybeKickOffTest = function(text) {
-  var index = 0;
-  while (index != -1) {
-    index = text.indexOf(startCharacter, index);
-    if (index != -1) {
-      this.startCharacterFound();
-      if (this.canStart()) {
-        this.kickOffTest_(testLine, testLineNum);
-        return;
-      }
-      index++;
-    }
+  this.startText_ += text;
+  if (this.startText_.indexOf(`${startChar}\r\n${startChar}\r\n`) !== -1) {
+    this.kickOffTest_(testLine, testLineNum);
   }
 };
 
@@ -210,10 +196,10 @@ function closeTerminal(index) {
 };
 
 function initTest(process) {
-  var sendStartCharacter = function() {
+  var sendStartChar = function() {
       chrome.terminalPrivate.sendInput(
           process.id(),
-          startCharacter + '\n',
+          startChar + '\n',
           function(result) {
               chrome.test.assertTrue(result);
           }
@@ -226,7 +212,7 @@ function initTest(process) {
           process.getCatCommand(),
           function(result) {
             chrome.test.assertTrue(result);
-            sendStartCharacter();
+            sendStartChar();
           }
       );
   };

@@ -35,8 +35,6 @@ void UnmapNow(uintptr_t reservation_start,
 template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionDirectUnmap(
     SlotSpanMetadata<thread_safe>* slot_span) {
-  using ::partition_alloc::internal::ScopedUnlockGuard;
-
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
   root->lock_.AssertAcquired();
   auto* extent = PartitionDirectMapExtent<thread_safe>::FromSlotSpan(slot_span);

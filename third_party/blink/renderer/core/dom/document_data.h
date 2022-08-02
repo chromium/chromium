@@ -69,6 +69,10 @@ class DocumentData final : public GarbageCollected<DocumentData> {
   // prevents sending UKM multiple times.
   bool already_sent_automatic_lazy_load_frame_ukm_ = false;
 
+  // The number of immediate child frames created within this document so far.
+  // This count doesn't include this document's frame nor descendant frames.
+  int immediate_child_frame_creation_count_ = 0;
+
   friend class Document;
 };
 

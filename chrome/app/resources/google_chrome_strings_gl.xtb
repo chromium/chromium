@@ -14,7 +14,6 @@
 <translation id="1142745911746664600">Non se puido actualizar Chrome</translation>
 <translation id="1152920704813762236">Acerca de Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Abrir en Chrome</translation>
-<translation id="1178374936842835197">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o navegador.</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1302523850133262269">Espera a que Chrome instale as actualizacións do sistema máis recentes.</translation>
@@ -122,7 +121,6 @@
 <translation id="3080151273017101988">Continuar executando aplicacións en segundo plano cando se peche Google Chrome</translation>
 <translation id="3089968997497233615">Está dispoñible unha versión nova e máis segura de Google Chrome.</translation>
 <translation id="3100998948628680988">Asígnalle un nome ao teu perfil de Chrome</translation>
-<translation id="3103390129666310801">Para comprobar se o teu dispositivo está actualizado, vai a <ph name="LINK_BEGIN" />Configuración de Chrome OS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Para comprobar se os teus outros contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Os cambios terán efecto a próxima vez que reinicies Google Chrome.</translation>
 <translation id="3149510190863420837">Aplicacións de Chrome</translation>
@@ -213,7 +211,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Se queres recibir actualizacións de Google Chrome no futuro, debes instalar o sistema operativo macOS 10.13 ou unha versión posterior. Este ordenador ten OS X 10.11.</translation>
 <translation id="5098668839038261629">Se activas esta opción, tamén se pechará a túa sesión en Chrome</translation>
-<translation id="5112116809696021727">Para ver ser o teu dispositivo está actualizado, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Descubre aplicacións, xogos, extensións e temas fantásticos para Google Chrome.</translation>
 <translation id="5139423532931106058">Personalizar o teu perfil de Chrome</translation>
 <translation id="5163087008893166964">Dámosche a benvida a Chrome. Abriuse unha nova ventá do navegador</translation>
@@ -253,7 +250,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="5940385492829620908">Aquí podes atopar as túas páxinas web, marcadores e outros contidos de Chrome.</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5941830788786076944">Converter Google Chrome no navegador predeterminado</translation>
-<translation id="5959292945051687759">Se non se mostra algunha opción de configuración nesta páxina, accede á <ph name="LINK_BEGIN" />configuración de Chrome OS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Descargando… Tempo restante: <ph name="HOURS" /> h</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6070348360322141662">Para obter unha maior seguranza, Google Chrome encriptará os teus datos</translation>

@@ -31,7 +31,8 @@ SharedStoragePrivateGetFunction::~SharedStoragePrivateGetFunction() = default;
 ExtensionFunction::ResponseAction SharedStoragePrivateGetFunction::Run() {
   PrefService* prefs =
       Profile::FromBrowserContext(browser_context())->GetPrefs();
-  return RespondNow(OneArgument(prefs->Get(prefs::kSharedStorage)->Clone()));
+  return RespondNow(
+      OneArgument(prefs->GetValue(prefs::kSharedStorage).Clone()));
 }
 
 SharedStoragePrivateSetFunction::SharedStoragePrivateSetFunction() = default;

@@ -28,6 +28,10 @@
 #include "ui/aura/test/aura_test_helper.h"
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "third_party/blink/public/mojom/hid/hid.mojom-forward.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 namespace aura {
 namespace test {
 class AuraTestHelper;
@@ -145,6 +149,12 @@ class RenderFrameHostTester {
   virtual RenderFrameHost* AppendFencedFrame(
       blink::mojom::FencedFrameMode mode =
           blink::mojom::FencedFrameMode::kDefault) = 0;
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Creates the HidService and binds `receiver`.
+  virtual void CreateHidServiceForTesting(
+      mojo::PendingReceiver<blink::mojom::HidService> receiever) = 0;
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 // An interface and utility for driving tests of RenderViewHost.

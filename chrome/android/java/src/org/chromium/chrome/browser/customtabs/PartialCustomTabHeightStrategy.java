@@ -874,6 +874,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mAnimator.start();
     }
 
+    @Override
+    public boolean canDrawOutsideScreen() {
+        return !isFullHeight();
+    }
+
     @VisibleForTesting
     void setMockViewForTesting(LinearLayout navbar, ImageView spinnerView,
             CircularProgressDrawable spinner, View toolbar, View toolbarCoordinator) {

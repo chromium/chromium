@@ -20,6 +20,10 @@ const char kInitiationTopAcceptLanguageInULPHistogram[] =
     "LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP";
 const char kInitiationAcceptLanguagesULPOverlapHistogram[] =
     "LanguageUsage.ULP.Initiation.AcceptLanguagesULPOverlap.Base";
+const char kInitiationNeverLanguagesMissingFromULP[] =
+    "LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP";
+const char kInitiationNeverLanguagesMissingFromULPCount[] =
+    "LanguageUsage.ULP.Initiation.NeverLanguagesMissingFromULP.Count";
 
 // Keep up to date with ULPLanguageStatus in
 // //tools/metrics/histograms/enums.xml.
@@ -60,17 +64,31 @@ class ULPMetricsLogger {
   virtual void RecordInitiationAcceptLanguagesULPOverlap(
       int overlap_ratio_percent);
 
+  // Record each Never Translate language that does not have a base match with a
+  // ULP language.
+  virtual void RecordInitiationNeverLanguagesMissingFromULP(
+      const std::vector<std::string>& never_languages);
+
+  // Record the count of Never Translate languages that do not have a base match
+  // with a ULP language.
+  virtual void RecordInitiationNeverLanguagesMissingFromULPCount(int count);
+
   // Returns an enum that indicates whether `language` is present in
   // `ulp_languages` and, if so, whether it was the first entry.
-  virtual ULPLanguageStatus DetermineLanguageStatus(
+  static ULPLanguageStatus DetermineLanguageStatus(
       const std::string& language,
       const std::vector<std::string>& ulp_languages);
 
   // Returns a number from 0-100 that indicates the ratio of ulp_languages that
   // are present in accept_languages. Only language bases are compared (e.g
   // pt-BR == pt-MZ).
-  virtual int ULPLanguagesInAcceptLanguagesRatio(
+  static int ULPLanguagesInAcceptLanguagesRatio(
       const std::vector<std::string> accept_languages,
+      const std::vector<std::string> ulp_languages);
+
+  // Returns a vector with languages that do not have a ULP base language match.
+  static std::vector<std::string> RemoveULPLanguages(
+      const std::vector<std::string> languages,
       const std::vector<std::string> ulp_languages);
 };
 

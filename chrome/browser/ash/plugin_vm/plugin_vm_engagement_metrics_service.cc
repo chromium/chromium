@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace plugin_vm {
 
@@ -28,9 +27,7 @@ PluginVmEngagementMetricsService::Factory::GetInstance() {
 }
 
 PluginVmEngagementMetricsService::Factory::Factory()
-    : BrowserContextKeyedServiceFactory(
-          "PluginVmEngagementMetricsService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("PluginVmEngagementMetricsService") {}
 
 PluginVmEngagementMetricsService::Factory::~Factory() = default;
 

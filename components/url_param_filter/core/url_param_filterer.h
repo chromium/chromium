@@ -14,6 +14,15 @@
 // string.
 namespace url_param_filter {
 
+namespace internal {
+
+// Given a URL, get the label just to the left of the site's eTLD (e.g.
+// subdomain.site.co.uk -> site).  Returns `absl::nullopt` for IP addresses,
+// URLs that do not have hostnames, and other parsing errors.
+absl::optional<std::string> GetLabelFromHostname(const GURL& gurl);
+
+}  // namespace internal
+
 // Represents the result of filtering; includes the resulting URL (which may be
 // unmodified), along with the count of params filtered.
 struct FilterResult {
@@ -28,8 +37,7 @@ struct FilterResult {
 // Currently experimental; not intended for broad consumption.
 FilterResult FilterUrl(const GURL& source_url,
                        const GURL& destination_url,
-                       const ClassificationMap& source_classification_map,
-                       const ClassificationMap& destination_classification_map,
+                       const ClassificationMap& classifications,
                        const FilterClassification::UseCase use_case);
 
 // Filter the destination URL according to the default parameter classifications

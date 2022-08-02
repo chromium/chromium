@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FIRST_PARTY_SETS_FIRST_PARTY_SETS_POLICY_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
+#include "base/values.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {
@@ -36,6 +37,14 @@ class FirstPartySetsPolicyServiceFactory
       content::BrowserContext* context);
 
   static FirstPartySetsPolicyServiceFactory* GetInstance();
+
+  // Checks the criteria for applying the First-Party Sets Overrides policy
+  // and returns a pointer to a representation of the policy if all criteria are
+  // met. If not, this method returns a nullptr.
+  //
+  // The returned pointer has the same lifetime as anything returned by the
+  // PrefService.
+  static const base::Value::Dict* GetPolicyIfEnabled(const Profile& profile);
 
  private:
   friend struct base::DefaultSingletonTraits<

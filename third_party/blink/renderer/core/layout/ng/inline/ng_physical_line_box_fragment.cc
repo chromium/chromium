@@ -20,7 +20,6 @@ namespace {
 
 struct SameSizeAsNGPhysicalLineBoxFragment : NGPhysicalFragment {
   FontHeight metrics;
-  LayoutUnit hanging_inline_size;
 };
 
 ASSERT_SIZE(NGPhysicalLineBoxFragment, SameSizeAsNGPhysicalLineBoxFragment);
@@ -45,11 +44,11 @@ NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
                          builder->GetWritingMode(),
                          kFragmentLineBox,
                          builder->line_box_type_),
-      metrics_(builder->metrics_),
-      hanging_inline_size_(builder->hang_inline_size_) {
+      metrics_(builder->metrics_) {
   // A line box must have a metrics unless it's an empty line box.
   DCHECK(!metrics_.IsEmpty() || IsEmptyLineBox());
   base_direction_ = static_cast<unsigned>(builder->base_direction_);
+  has_hanging_ = builder->hang_inline_size_ != 0;
   has_propagated_descendants_ = has_floating_descendants_for_paint_ ||
                                 HasOutOfFlowPositionedDescendants() ||
                                 builder->unpositioned_list_marker_;
@@ -58,10 +57,9 @@ NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
 NGPhysicalLineBoxFragment::NGPhysicalLineBoxFragment(
     PassKey key,
     const NGPhysicalLineBoxFragment& other)
-    : NGPhysicalFragment(other),
-      metrics_(other.metrics_),
-      hanging_inline_size_(other.hanging_inline_size_) {
+    : NGPhysicalFragment(other), metrics_(other.metrics_) {
   base_direction_ = other.base_direction_;
+  has_hanging_ = other.has_hanging_;
   has_propagated_descendants_ = other.has_propagated_descendants_;
 }
 
@@ -122,7 +120,7 @@ PhysicalRect NGPhysicalLineBoxFragment::ScrollableOverflowForLine(
 
   PhysicalRect overflow;
   AddScrollableOverflowForInlineChild(container, container_style, line,
-                                      HasHanging(), cursor, height_type,
+                                      has_hanging_, cursor, height_type,
                                       &overflow);
 
   // Make sure we include the inline-size of the line-box in the overflow.

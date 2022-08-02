@@ -14,8 +14,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="1142745911746664600">Ayikwazi ukubuyekeza i-Chrome</translation>
 <translation id="1152920704813762236">Mayelana ne-ChromeOS</translation>
 <translation id="1154147086299354128">&amp;Vula ku-Chrome</translation>
-<translation id="1178374936842835197">Uma isethingi ingabonisi kuleli khasi, bheka <ph name="LINK_BEGIN" />
-        kumasethingi wakho we-ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Siyabonga ngokufaka. Kufanele uqale kabusha ibhrawuza yakho ngaphambi kokusebenzisa i-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Qalisa kabusha ukuze ubuyekeze i-&amp;Chrome</translation>
 <translation id="1302523850133262269">Sicela ulinde ngenkathi i-Chrome ifaka izibuyekezo zesistimu zakamuva.</translation>
@@ -124,7 +122,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="3080151273017101988">Qhubeka nokusebenzisa izinhlelo zokusebenza zangemuva ngenkathi i-Google Chrome ivaliwe</translation>
 <translation id="3089968997497233615">Kukhona inguqulo entsha, evikelekile ye-Google Chrome etholakalayo.</translation>
 <translation id="3100998948628680988">Qamba iphrofayela lakho le-Chrome</translation>
-<translation id="3103390129666310801">Ukuze ubone ukuthi idivayisi yakho isesikhathini yini, iya kokuthi <ph name="LINK_BEGIN" />Amasethingi we-ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Ukuze uhlole ukuba amanye amaphasiwedi akho aphephile yini kusukela ekuphulweni kwedatha nezinye izinkinga zezokuvikela, <ph name="BEGIN_LINK" />ngena ngemvume ku-Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Izinguquko zakho zizosebenza ngesikhathi esilandelayo lapho uqalisa kabusha i-Google Chrome.</translation>
 <translation id="3149510190863420837">Izinhlelo zokusebenza ze-Chrome</translation>
@@ -215,7 +212,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="4990567037958725628">I-Canary ye-Google Chrome</translation>
 <translation id="5037581483200764584">Ukuze uthole izibuyekezo zesikhathi esizayo ze-Google Chrome, uzodinga i-macOS 10.13 noma eyakamuva. Le khompuyutha isebenzisa i-OS X 10.11.</translation>
 <translation id="5098668839038261629">Lapho ivuliwe, uzophinde futhi uphume ngemvume ku-Chrome</translation>
-<translation id="5112116809696021727">Ukuze ubone ukuthi idivayisi yakho isesikhathini yini, iya <ph name="LINK_BEGIN" />Kumasethingi we-ChromeOS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Thola izinhlelo zokusebenza ezinhle, amageyimu, izandiso namatimu e-Google Chrome.</translation>
 <translation id="5139423532931106058">Yenza ngokwezifiso iphrofayela yakho ye-Chrome</translation>
 <translation id="5163087008893166964">Siyakwamukela ku-Chrome; iwindi elisha lesiphequluli livuliwe</translation>
@@ -255,8 +251,6 @@ I-Google Chrome ayikwazi ukuthola izilungiselelo zakho.</translation>
 <translation id="5940385492829620908">Iwebhu yakho, amabhukhimakhi, nezinye izinto ze-Chrome zihlala lapha.</translation>
 <translation id="5941711191222866238">Nciphisa</translation>
 <translation id="5941830788786076944">Yenza i-Google Chrome ibe isiphequluli sokuzenzakalelayo</translation>
-<translation id="5959292945051687759">Uma isethingi ingaveli kuleli khasi, bheka <ph name="LINK_BEGIN" />
-        kumasethingi wakho we-ChromeOS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Iyadawuniloda... Kusele amahora angu-<ph name="HOURS" /></translation>
 <translation id="6040143037577758943">Vala</translation>
 <translation id="6070348360322141662">Ngokuvikela okungeziwe, i-Google Chromium izobethela idatha yakho</translation>

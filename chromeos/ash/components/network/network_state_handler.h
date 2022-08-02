@@ -225,11 +225,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void SetShillConnectError(const std::string& service_path,
                             const std::string& shill_connect_error);
 
-  // Called from Chrome's network portal detector to indicate whether Chrome has
-  // detected that the network is in a captive portal state. This may or may
-  // not match the network's |is_captive_portal_| which is provided by Shill.
-  void SetNetworkChromePortalDetected(const std::string& service_path,
-                                      bool portal_detected);
+  // Called from Chrome's network portal detector when Chrome has detected
+  // that a network is in a captive portal state.
+  void SetNetworkChromePortalState(const std::string& service_path,
+                                   NetworkState::PortalState portal_state);
 
   // Returns the aa:bb formatted hardware (MAC) address for the first connected
   // network matching |type|, or an empty string if none is connected.

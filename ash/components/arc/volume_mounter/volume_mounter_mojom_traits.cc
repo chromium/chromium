@@ -9,17 +9,17 @@
 namespace mojo {
 
 arc::mojom::DeviceType
-EnumTraits<arc::mojom::DeviceType, chromeos::DeviceType>::ToMojom(
-    chromeos::DeviceType device_type) {
+EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::ToMojom(
+    ash::DeviceType device_type) {
   switch (device_type) {
-    case chromeos::DeviceType::DEVICE_TYPE_USB:
+    case ash::DeviceType::kUSB:
       return arc::mojom::DeviceType::DEVICE_TYPE_USB;
-    case chromeos::DeviceType::DEVICE_TYPE_SD:
+    case ash::DeviceType::kSD:
       return arc::mojom::DeviceType::DEVICE_TYPE_SD;
-    case chromeos::DeviceType::DEVICE_TYPE_UNKNOWN:
-    case chromeos::DeviceType::DEVICE_TYPE_OPTICAL_DISC:
-    case chromeos::DeviceType::DEVICE_TYPE_MOBILE:
-    case chromeos::DeviceType::DEVICE_TYPE_DVD:
+    case ash::DeviceType::kUnknown:
+    case ash::DeviceType::kOpticalDisc:
+    case ash::DeviceType::kMobile:
+    case ash::DeviceType::kDVD:
       // Android doesn't recognize this device natively. So, propagating
       // UNKNOWN and let Android decides how to handle this.
       return arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN;
@@ -28,18 +28,18 @@ EnumTraits<arc::mojom::DeviceType, chromeos::DeviceType>::ToMojom(
   return arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN;
 }
 
-bool EnumTraits<arc::mojom::DeviceType, chromeos::DeviceType>::FromMojom(
+bool EnumTraits<arc::mojom::DeviceType, ash::DeviceType>::FromMojom(
     arc::mojom::DeviceType input,
-    chromeos::DeviceType* out) {
+    ash::DeviceType* out) {
   switch (input) {
     case arc::mojom::DeviceType::DEVICE_TYPE_USB:
-      *out = chromeos::DeviceType::DEVICE_TYPE_USB;
+      *out = ash::DeviceType::kUSB;
       return true;
     case arc::mojom::DeviceType::DEVICE_TYPE_SD:
-      *out = chromeos::DeviceType::DEVICE_TYPE_SD;
+      *out = ash::DeviceType::kSD;
       return true;
     case arc::mojom::DeviceType::DEVICE_TYPE_UNKNOWN:
-      *out = chromeos::DeviceType::DEVICE_TYPE_UNKNOWN;
+      *out = ash::DeviceType::kUnknown;
       return true;
   }
   NOTREACHED();

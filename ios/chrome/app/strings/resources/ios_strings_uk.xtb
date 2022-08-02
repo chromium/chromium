@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">Не надруковано.</translation>
 <translation id="1125564390852150847">Створити вкладку.</translation>
 <translation id="1126809382673880764">Не захищає від небезпечних веб-сайтів, завантажень і розширень. Безпечний перегляд усе ще працюватиме в інших сервісах Google (у яких він доступний), як-от Gmail і Пошук.</translation>
+<translation id="1135212215217513471">Завантажити Chrome для iOS</translation>
 <translation id="1145536944570833626">Видалити наявні дані.</translation>
 <translation id="1147031633655575115">Ви ввійшли як <ph name="USER" /></translation>
 <translation id="1154984953698510061">Переглянути інші вкладки</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">Щоб не втратити доступ до своїх даних синхронізації, підтвердьте свою особу</translation>
 <translation id="1870148520156231997">Показати пароль</translation>
 <translation id="1872096359983322073">Ліхтарик</translation>
+<translation id="1910975740091000991">Chrome для iOS</translation>
 <translation id="1911619930368729126">Завантажити на Google Диск</translation>
 <translation id="1923342640370224680">Остання година</translation>
 <translation id="1930989359703290198">Ваша організація дозволяє входити лише в певні облікові записи. Недозволені облікові записи приховано. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">Шукати скопійований текст</translation>
 <translation id="214201757571129614">Увійти…</translation>
 <translation id="2149973817440762519">Редагувати закладку</translation>
+<translation id="2155145621546387786">Посилання на додаток Chrome</translation>
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2218443599109088993">Віддалити</translation>
 <translation id="2230173723195178503">Веб-сторінку завантажено</translation>
@@ -406,7 +409,6 @@
 <translation id="4502566650163919158">Перевірити</translation>
 <translation id="4505980578794259603">Остання перевірка: <ph name="TIME" /></translation>
 <translation id="4508750114462689118">Закрити заклик до входу</translation>
-<translation id="4511669830082467224">Шукати зображення за допомогою Google</translation>
 <translation id="4526249700380860531">Переглядайте збережені паролі та керуйте ними на сторінці <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /></translation>
 <translation id="452750746583162491">Переглянути синхронізовані дані</translation>
 <translation id="4536418791685807335">Спробуйте ввійти ще раз.</translation>

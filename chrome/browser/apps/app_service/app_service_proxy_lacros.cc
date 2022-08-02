@@ -297,6 +297,8 @@ void AppServiceProxyLacros::Uninstall(
   if (app_type == AppType::kWeb) {
     web_app::UninstallImpl(web_app::WebAppProvider::GetForWebApps(profile_),
                            app_id, uninstall_source, parent_window);
+  } else {
+    NOTIMPLEMENTED();
   }
 }
 

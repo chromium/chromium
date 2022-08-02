@@ -7,8 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/views/layout/flex_layout_view.h"
+
+class BrowserView;
 
 namespace content {
 class WebContents;
@@ -35,6 +38,9 @@ class AboutThisSiteSidePanelView
   void OpenUrl(const content::OpenURLParams& params);
 
  private:
+  // Opens a URL in a regular tab.
+  void OpenUrlInBrowser(const content::OpenURLParams& params);
+
   // Shows / hides the page and the loading view to avoid showing
   // loading artifacts.
   void SetContentVisible(bool visible);
@@ -43,18 +49,21 @@ class AboutThisSiteSidePanelView
   void LoadProgressChanged(double progress) override;
 
   // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
-                         const content::ContextMenuParams& params) override;
+  void AddNewContents(content::WebContents* source,
+                      std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
+                      WindowOpenDisposition disposition,
+                      const gfx::Rect& initial_rect,
+                      bool user_gesture,
+                      bool* was_blocked) override;
+  content::WebContents* OpenURLFromTab(
+      content::WebContents* source,
+      const content::OpenURLParams& params) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
 
-  // content::WebContentsObserver:
-  void DidOpenRequestedURL(content::WebContents* new_contents,
-                           content::RenderFrameHost* source_render_frame_host,
-                           const GURL& url,
-                           const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
-                           ui::PageTransition transition,
-                           bool started_from_context_menu,
-                           bool renderer_initiated) override;
+  content::WebContentsDelegate* outer_delegate();
 
   raw_ptr<BrowserView> browser_view_;
   raw_ptr<views::WebView> loading_indicator_web_view_;

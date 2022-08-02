@@ -10318,22 +10318,29 @@ others/histograms.xml -->
 </enum>
 
 <enum name="BackPressConsumer">
-  <int value="0" label="TEXT_BUBBLE"/>
-  <int value="1" label="VR_DELEGATE"/>
-  <int value="2" label="AR_DELEGATE"/>
-  <int value="3" label="SCENE_OVERLAY"/>
-  <int value="4" label="START_SURFACE_MEDIATOR"/>
-  <int value="5" label="SELECTION_POPUP"/>
-  <int value="6" label="MANUAL_FILLING"/>
-  <int value="7" label="FULLSCREEN"/>
-  <int value="8" label="BOTTOM_SHEET"/>
-  <int value="9" label="TAB_MODAL_HANDLER"/>
-  <int value="10" label="TAB_SWITCHER_TO_BROWSING"/>
-  <int value="11" label="CLOSE_WATCHER"/>
-  <int value="12" label="TOOLBAR_TAB_CONTROLLER"/>
-  <int value="13" label="TAB_RETURN_TO_CHROME_START_SURFACE"/>
-  <int value="14" label="SHOW_READING_LIST"/>
-  <int value="15" label="MINIMIZE_APP_AND_CLOSE_TAB"/>
+<!-- Append the new enumerator to the end. Add the label in the format
+  of "(value of BackPressHandler.Type) <Name of BackPressHandler.Type>".
+  It is okay the new value of enumerator is different from value of
+  BackPressHandler.Type.
+  -->
+
+  <int value="0" label="(00) TEXT_BUBBLE"/>
+  <int value="1" label="(01) VR_DELEGATE"/>
+  <int value="2" label="(02) AR_DELEGATE"/>
+  <int value="3" label="(03) SCENE_OVERLAY"/>
+  <int value="4" label="(04) START_SURFACE_MEDIATOR"/>
+  <int value="5" label="(05) SELECTION_POPUP"/>
+  <int value="6" label="(06) MANUAL_FILLING"/>
+  <int value="7" label="(07) FULLSCREEN"/>
+  <int value="8" label="(08) BOTTOM_SHEET"/>
+  <int value="9" label="(09) TAB_MODAL_HANDLER"/>
+  <int value="10" label="(10) TAB_SWITCHER_TO_BROWSING"/>
+  <int value="11" label="(11) CLOSE_WATCHER"/>
+  <int value="12" label="(13) TOOLBAR_TAB_CONTROLLER"/>
+  <int value="13" label="(14) TAB_RETURN_TO_CHROME_START_SURFACE"/>
+  <int value="14" label="(15) SHOW_READING_LIST"/>
+  <int value="15" label="(16) MINIMIZE_APP_AND_CLOSE_TAB"/>
+  <int value="16" label="(12) FIND_TOOLBAR"/>
 </enum>
 
 <enum name="BadMessageReasonAutofill">
@@ -15852,54 +15859,54 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="0" label="Camera image"/>
   <int value="1" label="User defined"/>
   <int value="2" label="Profile image"/>
-  <int value="10" label="Beaker"/>
-  <int value="11" label="Bee"/>
-  <int value="12" label="Briefcase"/>
-  <int value="13" label="Circles"/>
-  <int value="14" label="Cloud"/>
-  <int value="15" label="Cupcake"/>
-  <int value="16" label="Day"/>
-  <int value="17" label="Flower"/>
-  <int value="18" label="Globe"/>
-  <int value="19" label="Hot air"/>
-  <int value="20" label="Ladybug"/>
-  <int value="21" label="Leaf"/>
-  <int value="22" label="Night"/>
-  <int value="23" label="Plane"/>
-  <int value="24" label="Robot body"/>
-  <int value="25" label="Robot head"/>
-  <int value="26" label="Toolbox"/>
-  <int value="27" label="User color"/>
-  <int value="28" label="User enterprise"/>
-  <int value="29" label="Bicycle"/>
-  <int value="30" label="Bokeh"/>
-  <int value="31" label="Chess"/>
-  <int value="32" label="Coffee"/>
-  <int value="33" label="Dragonfly"/>
-  <int value="34" label="Frog"/>
-  <int value="35" label="Gazania Flower"/>
-  <int value="36" label="Jack Russell Terrier"/>
-  <int value="37" label="Jellyfish"/>
-  <int value="38" label="Kiwi"/>
-  <int value="39" label="Penguin1"/>
-  <int value="40" label="Rainbowfish"/>
-  <int value="41" label="Record player"/>
-  <int value="42" label="Upside Down"/>
-  <int value="43" label="Cat"/>
-  <int value="44" label="Penguin2"/>
-  <int value="45" label="Fox"/>
-  <int value="46" label="Snail"/>
-  <int value="47" label="Red butterfly"/>
-  <int value="48" label="Cat"/>
-  <int value="49" label="Corgi"/>
-  <int value="50" label="Rabbit"/>
-  <int value="51" label="Pink butterfly"/>
-  <int value="52" label="Monkey"/>
-  <int value="53" label="Dragon"/>
-  <int value="54" label="Elephant"/>
-  <int value="55" label="Panda"/>
-  <int value="56" label="Unicorn"/>
-  <int value="57" label="Butterflies"/>
+  <int value="10" label="Beaker (deprecated)"/>
+  <int value="11" label="Bee (deprecated)"/>
+  <int value="12" label="Briefcase (deprecated)"/>
+  <int value="13" label="Circles (deprecated)"/>
+  <int value="14" label="Cloud (deprecated)"/>
+  <int value="15" label="Cupcake (deprecated)"/>
+  <int value="16" label="Day (deprecated)"/>
+  <int value="17" label="Flower (deprecated)"/>
+  <int value="18" label="Globe (deprecated)"/>
+  <int value="19" label="Hot air (deprecated)"/>
+  <int value="20" label="Ladybug (deprecated)"/>
+  <int value="21" label="Leaf (deprecated)"/>
+  <int value="22" label="Night (deprecated)"/>
+  <int value="23" label="Plane (deprecated)"/>
+  <int value="24" label="Robot body (deprecated)"/>
+  <int value="25" label="Robot head (deprecated)"/>
+  <int value="26" label="Toolbox (deprecated)"/>
+  <int value="27" label="User color (deprecated)"/>
+  <int value="28" label="User enterprise (deprecated)"/>
+  <int value="29" label="Bicycle (deprecated)"/>
+  <int value="30" label="Bokeh (deprecated)"/>
+  <int value="31" label="Chess (deprecated)"/>
+  <int value="32" label="Coffee (deprecated)"/>
+  <int value="33" label="Dragonfly (deprecated)"/>
+  <int value="34" label="Frog (deprecated)"/>
+  <int value="35" label="Gazania Flower (deprecated)"/>
+  <int value="36" label="Jack Russell Terrier (deprecated)"/>
+  <int value="37" label="Jellyfish (deprecated)"/>
+  <int value="38" label="Kiwi (deprecated)"/>
+  <int value="39" label="Penguin1 (deprecated)"/>
+  <int value="40" label="Rainbowfish (deprecated)"/>
+  <int value="41" label="Record player (deprecated)"/>
+  <int value="42" label="Upside Down (deprecated)"/>
+  <int value="43" label="Cat (deprecated)"/>
+  <int value="44" label="Penguin2 (deprecated)"/>
+  <int value="45" label="Fox (deprecated)"/>
+  <int value="46" label="Snail (deprecated)"/>
+  <int value="47" label="Red butterfly (deprecated)"/>
+  <int value="48" label="Cat (deprecated)"/>
+  <int value="49" label="Corgi (deprecated)"/>
+  <int value="50" label="Rabbit (deprecated)"/>
+  <int value="51" label="Pink butterfly (deprecated)"/>
+  <int value="52" label="Monkey (deprecated)"/>
+  <int value="53" label="Dragon (deprecated)"/>
+  <int value="54" label="Elephant (deprecated)"/>
+  <int value="55" label="Panda (deprecated)"/>
+  <int value="56" label="Unicorn (deprecated)"/>
+  <int value="57" label="Butterflies (deprecated)"/>
   <int value="58" label="Bird"/>
   <int value="59" label="Ramen"/>
   <int value="60" label="Tamagotchi"/>
@@ -15918,11 +15925,11 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="73" label="Onigiri"/>
   <int value="74" label="Melon"/>
   <int value="75" label="Avocado"/>
-  <int value="76" label="Landing"/>
-  <int value="77" label="Lunar"/>
-  <int value="78" label="Dots"/>
-  <int value="79" label="Spin"/>
-  <int value="80" label="Grids"/>
+  <int value="76" label="Landing (deprecated)"/>
+  <int value="77" label="Lunar (deprecated)"/>
+  <int value="78" label="Dots (deprecated)"/>
+  <int value="79" label="Spin (deprecated)"/>
+  <int value="80" label="Grid (deprecated)s"/>
   <int value="81" label="Botanist"/>
   <int value="82" label="Burger"/>
   <int value="83" label="Graduate"/>
@@ -34676,7 +34683,7 @@ Called by update_extension_histograms.py.-->
   <int value="1189" label="FILEMANAGERPRIVATE_GETRECENTFILES"/>
   <int value="1190" label="FILEMANAGERPRIVATE_RENAMEVOLUME"/>
   <int value="1191" label="AUTOTESTPRIVATE_SETMOUSEREVERSESCROLL"/>
-  <int value="1192" label="METRICSPRIVATE_RECORDSPARSEHASHABLE"/>
+  <int value="1192" label="DELETED_METRICSPRIVATE_RECORDSPARSEHASHABLE"/>
   <int value="1193" label="NETWORKINGPRIVATE_SELECTCELLULARMOBILENETWORK"/>
   <int value="1194" label="PASSWORDSPRIVATE_IMPORTPASSWORDS"/>
   <int value="1195" label="PASSWORDSPRIVATE_EXPORTPASSWORDS"/>
@@ -35200,6 +35207,7 @@ Called by update_extension_histograms.py.-->
   <int value="1691" label="AUTOTESTPRIVATE_GETDESKCOUNT"/>
   <int value="1692" label="METRICSPRIVATE_RECORDSPARSEVALUEWITHPERSISTENTHASH"/>
   <int value="1693" label="METRICSPRIVATE_RECORDSPARSEVALUEWITHHASHMETRICNAME"/>
+  <int value="1694" label="FILEMANAGERPRIVATE_SHOWDLPRESTRICTIONDETAILS"/>
 </enum>
 
 <enum name="ExtensionIconState">
@@ -40904,6 +40912,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4314" label="LinkRelPrefetchAsDocumentCrossOrigin"/>
   <int value="4315" label="PersistentQuotaType"/>
   <int value="4316" label="CrossOriginScrollIntoView"/>
+  <int value="4317" label="LinkRelCanonical"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -51227,6 +51236,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="7" label="Shared Highlight"/>
   <int value="8" label="Tab Grid Item"/>
   <int value="9" label="Tab Grid Selection Mode"/>
+  <int value="10" label="Share Chrome"/>
 </enum>
 
 <enum name="IOSAppState">
@@ -56193,6 +56203,8 @@ from previous Chrome versions.
   <int value="-1669727073"
       label="HandwritingLegacyRecognitionAllLang:disabled"/>
   <int value="-1669486359" label="ImportantSitesInCBD:enabled"/>
+  <int value="-1669172326"
+      label="AutofillEnableDependentLocalityParsing:disabled"/>
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
   <int value="-1667822423" label="ContextMenuGoogleLensChip:disabled"/>
   <int value="-1666652919" label="MagnifierPanningImprovements:disabled"/>
@@ -57363,6 +57375,8 @@ from previous Chrome versions.
   <int value="-972945109" label="NtpRealbox:disabled"/>
   <int value="-972737445" label="ArcUseAuthEndpoint:disabled"/>
   <int value="-972425050" label="gesture-editing"/>
+  <int value="-970201112"
+      label="AutofillEnableDependentLocalityParsing:enabled"/>
   <int value="-970067535" label="BackgroundTaskComponentUpdate:disabled"/>
   <int value="-969332901" label="stop-non-timers-in-background:disabled"/>
   <int value="-969028093" label="FullRestore:disabled"/>
@@ -61970,6 +61984,7 @@ from previous Chrome versions.
   <int value="1996125159" label="AutoplayMutedVideos:enabled"/>
   <int value="1997047666" label="NTPSnippetsIncreasedVisibility:disabled"/>
   <int value="1997931863" label="OmniboxContextMenuShowFullUrls:enabled"/>
+  <int value="1998568354" label="DocumentPictureInPictureAPI:enabled"/>
   <int value="1998917160" label="AppServiceAdaptiveIcon:enabled"/>
   <int value="2000091128" label="enable-touch-hover"/>
   <int value="2000291475"
@@ -62113,6 +62128,7 @@ from previous Chrome versions.
   <int value="2096736155" label="BrowsingDataLifetimeManager:enabled"/>
   <int value="2097048479" label="disable-auto-hiding-toolbar-threshold"/>
   <int value="2098059607" label="WifiSyncAllowDeletes:disabled"/>
+  <int value="2098114768" label="DocumentPictureInPictureAPI:disabled"/>
   <int value="2098597721"
       label="WebAuthenticationPasskeysUIExperiment:disabled"/>
   <int value="2098714203" label="enable-generic-sensors"/>

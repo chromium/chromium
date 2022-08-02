@@ -221,7 +221,7 @@ SupportedCodecs GetSupportedCodecs(const media::CdmCapability& capability) {
 #if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
       case media::VideoCodec::kDolbyVision:
         supported_codecs |=
-            GetDolbyVisionCodecs(video_codec_info.video_codec_profiles);
+            GetDolbyVisionCodecs(video_codec_info.supported_profiles);
         break;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
       default:

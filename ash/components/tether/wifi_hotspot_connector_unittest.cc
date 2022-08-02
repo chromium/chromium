@@ -259,7 +259,7 @@ class WifiHotspotConnectorTest : public testing::Test {
         NetworkStateHandler::TechnologyState::TECHNOLOGY_ENABLED);
     helper_.network_state_handler()->SetTechnologyEnabled(
         NetworkTypePattern::WiFi(), true /* enabled */,
-        chromeos::network_handler::ErrorCallback());
+        network_handler::ErrorCallback());
     base::RunLoop().RunUntilIdle();
 
     SetUpShillState();
@@ -725,7 +725,7 @@ TEST_F(WifiHotspotConnectorTest,
 TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_Success) {
   network_state_handler()->SetTechnologyEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
-      chromeos::network_handler::ErrorCallback());
+      network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
@@ -778,7 +778,7 @@ TEST_F(WifiHotspotConnectorTest,
        TestConnect_WifiDisabled_Success_OtherDeviceStatesChange) {
   network_state_handler()->SetTechnologyEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
-      chromeos::network_handler::ErrorCallback());
+      network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
@@ -836,7 +836,7 @@ TEST_F(WifiHotspotConnectorTest,
 TEST_F(WifiHotspotConnectorTest, TestConnect_WifiDisabled_AttemptTimesOut) {
   network_state_handler()->SetTechnologyEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
-      chromeos::network_handler::ErrorCallback());
+      network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));
@@ -871,7 +871,7 @@ TEST_F(WifiHotspotConnectorTest,
        TestConnect_WifiDisabled_SecondConnectionWhileWaitingForWifiEnabled) {
   network_state_handler()->SetTechnologyEnabled(
       NetworkTypePattern::WiFi(), false /* enabled */,
-      chromeos::network_handler::ErrorCallback());
+      network_handler::ErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(
       network_state_handler()->IsTechnologyEnabled(NetworkTypePattern::WiFi()));

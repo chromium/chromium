@@ -32,8 +32,16 @@ source_set("updater_executable") {
     "updater.rc",
   ]
 
+  if (is_chrome_branded) {
+    defines = [ "CHROME_BRANDED_TLB=1" ]
+  } else {
+    defines = [ "CHROME_BRANDED_TLB=0" ]
+  }
+
   deps = [
+    "//build:branding_buildflags",
     "//chrome/updater:base",
+    "//chrome/updater/app/server/win:updater_legacy_idl_idl",
     "//chrome/updater/win/ui/resources",
   ]
 

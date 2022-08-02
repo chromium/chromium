@@ -12,8 +12,6 @@
 <translation id="1142745911746664600">Δεν είναι δυνατή η ενημέρωση του Chrome</translation>
 <translation id="1152920704813762236">Σχετικά με το Chrome OS</translation>
 <translation id="1154147086299354128">&amp;Άνοιγμα στο Chrome</translation>
-<translation id="1178374936842835197">Εάν μια ρύθμιση δεν εμφανίζεται σε αυτήν τη σελίδα, αναζητήστε τη στις <ph name="LINK_BEGIN" />
-        ρυθμίσεις του ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Ευχαριστούμε για την εγκατάσταση. Πρέπει να επανεκκινήσετε το πρόγραμμα περιήγησής σας πριν από τη χρήση του <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Επανεκκίνηση για ενημέρωση του &amp;Chrome</translation>
 <translation id="1302523850133262269">Περιμένετε μέχρι να γίνει εγκατάσταση των πιο πρόσφατων ενημερώσεων συστήματος από το Chrome.</translation>
@@ -122,7 +120,6 @@
 <translation id="3080151273017101988">Να συνεχίζεται η εκτέλεση εφαρμογών παρασκηνίου όταν το Google Chrome είναι κλειστό</translation>
 <translation id="3089968997497233615">Υπάρχει μια νέα, ασφαλέστερη έκδοση του Google Chrome.</translation>
 <translation id="3100998948628680988">Ονομάστε το προφίλ σας στο Chrome</translation>
-<translation id="3103390129666310801">Για να δείτε αν η συσκευή σας είναι ενημερωμένη, μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις του ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Για να ελέγξετε αν οι άλλοι κωδικοί πρόσβασής σας είναι ασφαλείς από παραβιάσεις δεδομένων και άλλα ζητήματα ασφαλείας, <ph name="BEGIN_LINK" />συνδεθείτε στο Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Οι αλλαγές που πραγματοποιήσατε θα ισχύσουν την επόμενη φορά που θα επανεκκινήσετε το Google Chrome.</translation>
 <translation id="3149510190863420837">Εφαρμογές Chrome</translation>
@@ -213,7 +210,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Για τη λήψη μελλοντικών ενημερώσεων του Google Chrome, θα χρειαστείτε macOS 10.13 ή νεότερη έκδοση. Αυτός ο υπολογιστής χρησιμοποιεί OS X 10.11.</translation>
 <translation id="5098668839038261629">Όταν είναι ενεργή η επιλογή, θα αποσυνδεθείτε και από το Chrome</translation>
-<translation id="5112116809696021727">Για να διαπιστώσετε εάν η συσκευή σας είναι ενημερωμένη, μεταβείτε στις <ph name="LINK_BEGIN" />Ρυθμίσεις του Chrome OS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Ανακαλύψτε υπέροχες εφαρμογές, παιχνίδια, επεκτάσεις και θέματα για το Google Chrome.</translation>
 <translation id="5139423532931106058">Προσαρμόστε το προφίλ σας Chrome</translation>
 <translation id="5163087008893166964">Καλωσορίσατε στο Chrome. Ένα νέο παράθυρο προγράμματος περιήγησης έχει ανοίξει.</translation>
@@ -251,8 +247,6 @@
 <translation id="5940385492829620908">Εδώ μπορείτε να βρείτε τις ιστοσελίδες, τους σελιδοδείκτες σας και άλλα δεδομένα του Chrome.</translation>
 <translation id="5941711191222866238">Ελαχιστοποίηση</translation>
 <translation id="5941830788786076944">Ορισμός Google Chrome ως προεπιλεγμένο πρόγραμμα περιήγησης</translation>
-<translation id="5959292945051687759">Εάν μια ρύθμιση δεν εμφανίζεται σε αυτήν τη σελίδα, αναζητήστε τη στις <ph name="LINK_BEGIN" />
-        ρυθμίσεις του Chrome OS<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Λήψη… Απομένουν <ph name="HOURS" /> ώρες</translation>
 <translation id="6040143037577758943">Κλείσιμο</translation>
 <translation id="6070348360322141662">Για επιπλέον ασφάλεια, το Google Chrome θα κρυπτογραφήσει τα δεδομένα σας</translation>

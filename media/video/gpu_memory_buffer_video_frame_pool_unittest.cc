@@ -771,7 +771,11 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest, CreateOneHardwareP010Frame) {
   RunUntilIdle();
 
   EXPECT_NE(software_frame.get(), frame.get());
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(PIXEL_FORMAT_RGBAF16, frame->format());
+#else
   EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
+#endif
   EXPECT_EQ(1u, frame->NumTextures());
   EXPECT_EQ(1u, sii_->shared_image_count());
   EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);
@@ -806,7 +810,11 @@ TEST_F(GpuMemoryBufferVideoFramePoolTest,
   if (gfx::IsOddWidthMultiPlanarBuffersAllowed() &&
       gfx::IsOddHeightMultiPlanarBuffersAllowed()) {
     EXPECT_NE(software_frame.get(), frame.get());
+#if BUILDFLAG(IS_MAC)
+    EXPECT_EQ(PIXEL_FORMAT_RGBAF16, frame->format());
+#else
     EXPECT_EQ(PIXEL_FORMAT_P016LE, frame->format());
+#endif
     EXPECT_EQ(1u, frame->NumTextures());
     EXPECT_EQ(1u, sii_->shared_image_count());
     EXPECT_TRUE(frame->metadata().read_lock_fences_enabled);

@@ -267,6 +267,19 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
   }
 }
 
+void PromoService::UndoBlocklistPromo(const std::string& promo_id) {
+  if (promo_id.empty()) {
+    return;
+  }
+
+  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
+  update->RemoveKey(promo_id);
+
+  // Refresh promo service since cached promo data was cleared in
+  // BlocklistPromo(), which is called before UndoBlocklistPromo().
+  Refresh();
+}
+
 void PromoService::PromoDataLoaded(Status status,
                                    const absl::optional<PromoData>& data) {
   // In case of transient errors, keep our cached data (if any), but still

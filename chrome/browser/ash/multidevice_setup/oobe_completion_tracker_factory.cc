@@ -6,7 +6,6 @@
 
 #include "ash/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 
@@ -26,9 +25,7 @@ OobeCompletionTrackerFactory* OobeCompletionTrackerFactory::GetInstance() {
 }
 
 OobeCompletionTrackerFactory::OobeCompletionTrackerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "OobeCompletionTrackerFactory",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("OobeCompletionTrackerFactory") {}
 
 OobeCompletionTrackerFactory::~OobeCompletionTrackerFactory() = default;
 

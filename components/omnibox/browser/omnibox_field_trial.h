@@ -496,6 +496,14 @@ extern const base::FeatureParam<bool>
 // happen in parallel. This effects only the search, history_url, document, and
 // on device head providers.
 extern const base::FeatureParam<bool> kAutocompleteStabilityAsyncProvidersFirst;
+// Limit how frequently `AutocompleteController::UpdateResult()` will be
+// invoked. See the comments at `AutocompleteController::update_debouncer_`.
+extern const base::FeatureParam<bool>
+    kAutocompleteStabilityUpdateResultDebounceFromLastRun;
+// See `kAutocompleteStabilityUpdateResultDebounceFromLastRun`. No debouncing
+// if set to 0.
+extern const base::FeatureParam<int>
+    kAutocompleteStabilityUpdateResultDebounceDelay;
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 

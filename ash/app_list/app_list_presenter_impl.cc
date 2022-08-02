@@ -51,7 +51,7 @@
 namespace ash {
 namespace {
 
-using chromeos::assistant::AssistantExitPoint;
+using assistant::AssistantExitPoint;
 
 inline ui::Layer* GetLayer(views::Widget* widget) {
   return widget->GetNativeView()->layer();

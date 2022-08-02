@@ -77,3 +77,48 @@ service process should have started.
 Start another debugger and attach the server process. Then set a server-side
 breakpoint at the place you want to debug.
 * Continue the client process.
+
+### How to generate the cross-compilation IDL COM headers and TLB files
+
+6 different build flavors need to be built in sequence as outlined below. Each
+of those builds will generate the corresponding IDL files and stop with a
+message to copy the files. Here is an example output to copy generated files.
+After copying the files, the next step is to build the next build flavor and
+copy those files, until all build flavors are built:
+
+
+```
+midl.exe output different from files in gen/chrome/updater/app/server/win, see C:\src\temp\tmppbfwi0ds
+To rebaseline:
+  copy /y C:\src\temp\tmppbfwi0ds\* c:\src\chromium\src\third_party\win_build_output\midl\chrome\updater\app\server\win\x64
+ninja: build stopped: subcommand failed.
+```
+
+
+```
+* call gn gen out\ChromeBrandedDebug "--args=target_cpu=\"arm64\" use_goma=true is_chrome_branded=true is_debug=true enable_nacl=false blink_symbol_level=0 v8_symbol_level=0"
+* autoninja -C out\ChromeBrandedDebug chrome/updater:all
+* copy the generated files
+
+* call gn gen out\ChromeBrandedDebug "--args=target_cpu=\"x64\" use_goma=true is_chrome_branded=true is_debug=true enable_nacl=false blink_symbol_level=0 v8_symbol_level=0"
+* autoninja -C out\ChromeBrandedDebug chrome/updater:all
+* copy the generated files
+
+* call gn gen out\ChromeBrandedDebug "--args=target_cpu=\"x86\" use_goma=true is_chrome_branded=true is_debug=true enable_nacl=false blink_symbol_level=0 v8_symbol_level=0"
+* autoninja -C out\ChromeBrandedDebug chrome/updater:all
+* copy the generated files
+
+* call gn gen out\Default "--args=target_cpu=\"arm64\" use_goma=true is_chrome_branded=false is_debug=true enable_nacl=false blink_symbol_level=0 v8_symbol_level=0"
+* autoninja -C out\Default chrome/updater:all
+* copy the generated files
+
+* call gn gen out\Default "--args=target_cpu=\"x64\" use_goma=true is_chrome_branded=false is_debug=true enable_nacl=false blink_symbol_level=0 v8_symbol_level=0"
+* autoninja -C out\Default chrome/updater:all
+* copy the generated files
+
+* call gn gen out\Default "--args=target_cpu=\"x86\" use_goma=true is_chrome_branded=false is_debug=true enable_nacl=false blink_symbol_level=0 v8_symbol_level=0"
+* autoninja -C out\Default chrome/updater:all
+* copy the generated files
+```
+
+

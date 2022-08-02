@@ -68,6 +68,8 @@ bool PhoneNumber::operator==(const PhoneNumber& other) const {
 void PhoneNumber::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   supported_types->insert(PHONE_HOME_WHOLE_NUMBER);
   supported_types->insert(PHONE_HOME_NUMBER);
+  supported_types->insert(PHONE_HOME_NUMBER_PREFIX);
+  supported_types->insert(PHONE_HOME_NUMBER_SUFFIX);
   supported_types->insert(PHONE_HOME_CITY_CODE);
   supported_types->insert(PHONE_HOME_CITY_AND_NUMBER);
   supported_types->insert(PHONE_HOME_COUNTRY_CODE);
@@ -118,17 +120,6 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   std::u16string stripped_text = text;
   base::RemoveChars(stripped_text, u" .()-", &stripped_text);
   FormGroup::GetMatchingTypes(stripped_text, app_locale, matching_types);
-
-  // For US numbers, also compare to the three-digit prefix and the four-digit
-  // suffix, since web sites often split numbers into these two fields.
-  std::u16string number = GetInfo(AutofillType(PHONE_HOME_NUMBER), app_locale);
-  if (GetRegion(*profile_, app_locale) == "US" &&
-      number.size() == (kPrefixLength + kSuffixLength)) {
-    std::u16string prefix = number.substr(kPrefixOffset, kPrefixLength);
-    std::u16string suffix = number.substr(kSuffixOffset, kSuffixLength);
-    if (text == prefix || text == suffix)
-      matching_types->insert(PHONE_HOME_NUMBER);
-  }
 
   // TODO(crbug.com/581391): Investigate the use of PhoneNumberUtil when
   // matching phone numbers for upload.
@@ -365,7 +356,13 @@ bool PhoneNumber::PhoneCombineHelper::SetInfo(const AutofillType& type,
     return true;
   }
 
-  if (storable_type == PHONE_HOME_NUMBER) {
+  if (storable_type == PHONE_HOME_NUMBER ||
+      storable_type == PHONE_HOME_NUMBER_PREFIX) {
+    phone_ = value;
+    return true;
+  }
+
+  if (storable_type == PHONE_HOME_NUMBER_SUFFIX) {
     phone_.append(value);
     return true;
   }

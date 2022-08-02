@@ -6,4 +6,9 @@
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <dimen name="page_zoom_preview_image_size">24dp</dimen>
+
+    <dimen name="page_zoom_view_margins">16dp</dimen>
+    <dimen name="page_zoom_view_padding">4dp</dimen>
+    <dimen name="page_zoom_view_elevation">4dp</dimen>
+    <dimen name="page_zoom_view_corner_radius">44dp</dimen>
 </resources>

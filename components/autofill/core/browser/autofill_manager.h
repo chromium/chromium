@@ -73,6 +73,9 @@ class AutofillManager
     virtual void OnAutofillManagerDestroyed() {}
     virtual void OnAutofillManagerReset() {}
 
+    virtual void OnBeforeLanguageDetermined() {}
+    virtual void OnAfterLanguageDetermined() {}
+
     virtual void OnBeforeFormsSeen() {}
     virtual void OnAfterFormsSeen() {}
 

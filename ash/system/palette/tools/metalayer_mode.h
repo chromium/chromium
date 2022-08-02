@@ -57,20 +57,20 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   bool feature_enabled() const {
     return assistant_enabled_ && assistant_context_enabled_ &&
            assistant_allowed_state_ ==
-               chromeos::assistant::AssistantAllowedState::ALLOWED;
+               assistant::AssistantAllowedState::ALLOWED;
   }
 
   // Whether the tool is in "loading" state.
   bool loading() const {
     return feature_enabled() &&
-           assistant_status_ == chromeos::assistant::AssistantStatus::NOT_READY;
+           assistant_status_ == assistant::AssistantStatus::NOT_READY;
   }
 
   // Whether the tool can be selected from the menu (only true when enabled
   // by the user and fully loaded).
   bool selectable() const {
     return feature_enabled() &&
-           assistant_status_ != chromeos::assistant::AssistantStatus::NOT_READY;
+           assistant_status_ != assistant::AssistantStatus::NOT_READY;
   }
 
   // PaletteTool:
@@ -89,12 +89,11 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // AssistantStateObserver:
-  void OnAssistantStatusChanged(
-      chromeos::assistant::AssistantStatus status) override;
+  void OnAssistantStatusChanged(assistant::AssistantStatus status) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantContextEnabled(bool enabled) override;
   void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState state) override;
+      assistant::AssistantAllowedState state) override;
 
   // HighlighterController::Observer:
   void OnHighlighterEnabledChanged(HighlighterEnabledState state) override;
@@ -108,15 +107,15 @@ class ASH_EXPORT MetalayerMode : public CommonPaletteTool,
   // Called when the metalayer session is complete.
   void OnMetalayerSessionComplete();
 
-  chromeos::assistant::AssistantStatus assistant_status_ =
-      chromeos::assistant::AssistantStatus::NOT_READY;
+  assistant::AssistantStatus assistant_status_ =
+      assistant::AssistantStatus::NOT_READY;
 
   bool assistant_enabled_ = false;
 
   bool assistant_context_enabled_ = false;
 
-  chromeos::assistant::AssistantAllowedState assistant_allowed_state_ =
-      chromeos::assistant::AssistantAllowedState::ALLOWED;
+  assistant::AssistantAllowedState assistant_allowed_state_ =
+      assistant::AssistantAllowedState::ALLOWED;
 
   base::TimeTicks previous_stroke_end_;
 

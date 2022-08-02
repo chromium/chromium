@@ -70,6 +70,16 @@ source_set("tab_helper") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "follow_util_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//testing/gtest",
+  ]
+}
+
 optimize_ts("rss_link_js") {
   visibility = [ ":follow" ]
 

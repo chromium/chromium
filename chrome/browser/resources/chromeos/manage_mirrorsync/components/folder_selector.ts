@@ -79,7 +79,7 @@ export class FolderSelector extends HTMLElement {
    * parent.
    */
   async addChildFolders(folderPaths: string[]) {
-    let parentContainer: Element|null = null;
+    const parentElements: Map<string, HTMLInputElement> = new Map();
     let parentSelected: boolean = false;
     /**
      * Get the parent container and in the process cache the parent element. All
@@ -87,15 +87,16 @@ export class FolderSelector extends HTMLElement {
      * @param folderPath
      */
     const getParentContainer = (folderPath: string) => {
-      if (!parentContainer) {
-        const parentPath = getParentPath(folderPath);
+      const parentPath = getParentPath(folderPath);
+      if (!parentElements.has(parentPath)) {
         const parentSelector = selectorFromPath(parentPath);
         const parentElement =
             this.shadowRoot!.querySelector(parentSelector) as HTMLInputElement;
+        parentElements.set(parentPath, parentElement);
         parentSelected = parentElement.checked;
-        parentContainer = parentElement!.parentElement!.nextElementSibling!;
       }
-      return parentContainer;
+      parentSelected = parentElements.get(parentPath)!.checked;
+      return parentElements.get(parentPath)!.parentElement!.nextElementSibling!;
     };
 
     for (const path of folderPaths) {
@@ -106,6 +107,13 @@ export class FolderSelector extends HTMLElement {
       const newElement = this.createNewFolderSelection(path, parentSelected);
       ulContainer?.appendChild(newElement);
     }
+  }
+
+  /**
+   * Returns the list of paths that are currently selected.
+   */
+  get selectedPaths() {
+    return Array.from(this.selectedFolders.values());
   }
 
   /**

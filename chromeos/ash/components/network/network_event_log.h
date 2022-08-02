@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/component_export.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/ash/components/network/network_state.h"
 #include "components/device_event_log/device_event_log.h"
 
-namespace chromeos {
+namespace ash {
+
+class NetworkState;
 
 // Returns a consistent network identifier for logs. If |network| is null
 // returns "<none>".
@@ -29,13 +29,12 @@ std::string NetworkPathId(const std::string& service_path);
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 std::string NetworkGuidId(const std::string& guid);
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::NetworkGuidId;
-using ::chromeos::NetworkId;
-using ::chromeos::NetworkPathId;
 }  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when the migration is finished.
+namespace chromeos {
+using ::ash::NetworkGuidId;
+using ::ash::NetworkPathId;
+}  // namespace chromeos
 
 #endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_NETWORK_EVENT_LOG_H_

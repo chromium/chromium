@@ -7,15 +7,13 @@
     <cr-radio-group id="wipeDeviceRadioGroup" disabled="[[allButtonsDisabled]]"
         on-selected-changed="onOptionChanged_">
       <cr-radio-button name="[[wipeDeviceOption_.WIPE_DEVICE]]"
-          aria-label="[[i18n('wipeDeviceRemoveDataLabel')]]">
-        [[i18n('wipeDeviceRemoveDataLabel')]]
+          label="[[i18n('wipeDeviceRemoveDataLabel')]]">
       </cr-radio-button>
-      <div class="indented-description">
+      <div class="indented-description" aria-hidden="true">
         [[i18n('wipeDeviceRemoveDataDescription')]]
       </div>
       <cr-radio-button name="[[wipeDeviceOption_.PRESERVE_DATA]]"
-          aria-label="[[i18n('wipeDevicePreserveDataLabel')]]">
-        [[i18n('wipeDevicePreserveDataLabel')]]
+          label="[[i18n('wipeDevicePreserveDataLabel')]]">
       </cr-radio-button>
     </cr-radio-group>
   </div>

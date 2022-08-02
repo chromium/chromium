@@ -33,17 +33,7 @@ class NotificationPromoWhatsNew;
 // YES if the coordinator has started. If YES, start is a no-op.
 @property(nonatomic, readonly) BOOL started;
 
-@property(nonatomic, strong, readonly)
-    ContentSuggestionsHeaderViewController* headerController;
-
-// The CollectionView that this coordinator manages.
-@property(nonatomic, strong, readonly)
-    UICollectionViewController* contentSuggestionsCollectionViewController;
-
-// The ViewController that this coordinator managers if
-// kContentSuggestionsUIViewControllerMigration is enabled.
-// TODO(crbug.com/1285378): remove `contentSuggestionsCollectionViewController`
-// once migration is finished.
+// The ViewController that this coordinator managers.
 @property(nonatomic, strong, readonly)
     ContentSuggestionsViewController* viewController;
 
@@ -62,13 +52,6 @@ class NotificationPromoWhatsNew;
 
 // Delegate used to communicate to communicate events to the feed.
 @property(nonatomic, weak) id<FeedDelegate> feedDelegate;
-
-// Stop any scrolling in the scroll view.
-- (void)stopScrolling;
-
-// The content inset and offset of the scroll view.
-- (UIEdgeInsets)contentInset;
-- (CGPoint)contentOffset;
 
 // Reloads the suggestions.
 - (void)reload;

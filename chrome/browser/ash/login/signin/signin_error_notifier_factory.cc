@@ -10,14 +10,11 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
 SigninErrorNotifierFactory::SigninErrorNotifierFactory()
-    : BrowserContextKeyedServiceFactory(
-          "SigninErrorNotifier",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("SigninErrorNotifier") {
   DependsOn(SigninErrorControllerFactory::GetInstance());
   DependsOn(NotificationDisplayServiceFactory::GetInstance());
 }

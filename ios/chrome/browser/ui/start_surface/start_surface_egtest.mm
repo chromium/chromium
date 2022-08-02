@@ -35,9 +35,6 @@ const CGFloat kWaitElementTimeout = 2;
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kContentSuggestionsHeaderMigration);
-  config.features_enabled.push_back(
-      kContentSuggestionsUIViewControllerMigration);
   config.additional_args.push_back(
       std::string("--force-fieldtrial-params=StartSurface.ShrinkLogo:"
                   "ReturnToStartSurfaceInactiveDurationInSeconds/0"));

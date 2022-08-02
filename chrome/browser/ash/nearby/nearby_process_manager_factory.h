@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_NEARBY_NEARBY_PROCESS_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,7 +17,7 @@ class NearbyProcessManager;
 
 // Creates a NearbyProcessManager for the primary user. No instance is created
 // any other profile.
-class NearbyProcessManagerFactory : public BrowserContextKeyedServiceFactory {
+class NearbyProcessManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static NearbyProcessManager* GetForProfile(Profile* profile);
 

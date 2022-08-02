@@ -12,7 +12,7 @@ interface PictureInPictureWindow : EventTarget {
   [Measure] readonly attribute long width;
   [Measure] readonly attribute long height;
 
-  [RuntimeEnabled=PictureInPictureV2] readonly attribute Document? document;
+  [RuntimeEnabled=DocumentPictureInPictureAPI] readonly attribute Document? document;
 
   attribute EventHandler onresize;
 };

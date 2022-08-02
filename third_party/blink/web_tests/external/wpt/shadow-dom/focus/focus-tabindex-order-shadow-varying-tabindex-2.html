@@ -12,7 +12,7 @@
 promise_test(async () => {
   function createButtonInShadowDOM(host) {
     const root = host.attachShadow({mode: "open"});
-    root.innerHTML = "<button>Button</button>";
+    root.innerHTML = "<input>";
     document.body.appendChild(host);
     return root;
   }
@@ -30,12 +30,12 @@ promise_test(async () => {
   const host3 = document.createElement("div");
   const root3 = createButtonInShadowDOM(host3);
 
-  root1.querySelector("button").focus();
+  root1.querySelector("input").focus();
 
   let forwarderFocused = false;
   forwarder.addEventListener("focus", () => {
     forwarderFocused = true;
-    root2.querySelector("button").focus();
+    root2.querySelector("input").focus();
   });
 
   // Structure:
@@ -50,17 +50,17 @@ promise_test(async () => {
   //   #ShadowRoot
   //     <button>Button</button>
   assert_equals(document.activeElement, host1);
-  assert_equals(root1.activeElement, root1.querySelector("button"));
+  assert_equals(root1.activeElement, root1.querySelector("input"));
 
   await navigateFocusForward();
   assert_true(forwarderFocused);
   assert_equals(document.activeElement, host2);
-  assert_equals(root2.activeElement, root2.querySelector("button"));
+  assert_equals(root2.activeElement, root2.querySelector("input"));
 
   // In buggy Firefox build, the following focus navigation will
   // move the focus back to #host1's button.
   await navigateFocusForward();
   assert_equals(document.activeElement, host3);
-  assert_equals(root3.activeElement, root3.querySelector("button"));
+  assert_equals(root3.activeElement, root3.querySelector("input"));
 }, "Order with different tabindex on host")
 </script>

@@ -167,6 +167,13 @@ class APP_LIST_MODEL_EXPORT SearchResult {
     metadata_->is_recommendation = is_recommendation;
   }
 
+  bool skip_update_animation() const {
+    return metadata_->skip_update_animation;
+  }
+  void set_skip_update_animation(bool skip_update_animation) {
+    metadata_->skip_update_animation = skip_update_animation;
+  }
+
   bool use_badge_icon_background() const {
     return metadata_->use_badge_icon_background;
   }

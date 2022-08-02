@@ -56,6 +56,16 @@ def add_blinkpy_thirdparty_dir_to_sys_path():
         sys.path.insert(0, path)
 
 
+def bootstrap_wpt_imports():
+    """Bootstrap the availability of all wpt-vended packages."""
+    path = os.path.join(get_wpt_tools_wpt_dir(), 'tools')
+    if path not in sys.path:
+        sys.path.insert(0, path)
+    # This module is under `//third_party/wpt_tools/wpt/tools`, and has the side
+    # effect of inserting wpt-related directories into `sys.path`.
+    import localpaths
+
+
 def add_depot_tools_dir_to_os_path():
     path = get_depot_tools_dir()
     if path not in os.environ['PATH']:
@@ -137,6 +147,10 @@ class PathFinder(object):
         return self.path_from_chromium_base('third_party', 'blink',
                                             'web_tests')
 
+    def wpt_tests_dir(self):
+        return self.path_from_chromium_base('third_party', 'blink',
+                                            'web_tests', 'external', 'wpt')
+
     def perf_tests_dir(self):
         return self.path_from_chromium_base('third_party', 'blink',
                                             'perf_tests')
@@ -172,6 +186,9 @@ class PathFinder(object):
 
     def path_from_web_tests(self, *comps):
         return self._filesystem.join(self.web_tests_dir(), *comps)
+
+    def path_from_wpt_tests(self, *comps):
+        return self._filesystem.join(self.wpt_tests_dir(), *comps)
 
     def strip_web_tests_path(self, web_test_abs_path):
         web_tests_path = self.path_from_web_tests('')

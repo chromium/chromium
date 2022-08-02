@@ -73,6 +73,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.sAnonymousUpdateChecks);
                 add(ChromeFeatureList.sAppMenuMobileSiteOption);
                 add(ChromeFeatureList.sBackGestureRefactorAndroid);
+                add(ChromeFeatureList.sCctBrandTransparency);
                 add(ChromeFeatureList.sCctIncognito);
                 add(ChromeFeatureList.sCctIncognitoAvailableToThirdParty);
                 add(ChromeFeatureList.sCctRemoveRemoteViewIds);

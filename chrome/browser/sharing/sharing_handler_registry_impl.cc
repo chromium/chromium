@@ -8,17 +8,17 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharing/ack_message_handler.h"
+#include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
 #include "chrome/browser/sharing/ping_message_handler.h"
 #include "chrome/browser/sharing/sharing_device_registration.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
 #include "chrome/browser/sharing/sharing_message_sender.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sharing/click_to_call/click_to_call_message_handler_android.h"
-#include "chrome/browser/sharing/optimization_guide/optimization_guide_message_handler.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_android.h"
 #include "chrome/browser/sharing/sms/sms_fetch_request_handler.h"
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #else
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_message_handler_desktop.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -53,13 +53,14 @@ SharingHandlerRegistryImpl::SharingHandlerRegistryImpl(
         {chrome_browser_sharing::SharingMessage::kSmsFetchRequest});
   }
 
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (optimization_guide::features::IsPushNotificationsEnabled() &&
       optimization_guide::features::IsOptimizationHintsEnabled()) {
     AddSharingHandler(OptimizationGuideMessageHandler::Create(profile),
                       {chrome_browser_sharing::SharingMessage::
                            kOptimizationGuidePushNotification});
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   if (sharing_device_registration->IsSharedClipboardSupported()) {
     std::unique_ptr<SharingMessageHandler> shared_clipboard_message_handler;

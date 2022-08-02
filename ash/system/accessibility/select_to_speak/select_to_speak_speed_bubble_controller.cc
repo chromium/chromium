@@ -62,8 +62,13 @@ void SelectToSpeakSpeedBubbleController::Show(views::View* anchor_view,
 
     speed_view_ = new SelectToSpeakSpeedView(this, speech_rate);
     bubble_view_->AddChildView(speed_view_);
-    speed_view_->SetPaintToLayer();
-    speed_view_->layer()->SetFillsBoundsOpaquely(false);
+
+    // In dark light mode, we switch TrayBubbleView to use a textured layer
+    // instead of solid color layer, so no need to create an extra layer here.
+    if (!features::IsDarkLightModeEnabled()) {
+      speed_view_->SetPaintToLayer();
+      speed_view_->layer()->SetFillsBoundsOpaquely(false);
+    }
 
     bubble_widget_ =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);

@@ -14,8 +14,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1142745911746664600">Imeshindwa kusasisha Chrome</translation>
 <translation id="1152920704813762236">Kuhusu Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="1154147086299354128">na Fungua katika Chrome</translation>
-<translation id="1178374936842835197">Iwapo mipangilio haionekani kwenye ukurasa huu, angalia katika <ph name="LINK_BEGIN" />
-        mipangilio yako ya ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="1203500561924088507">Asante kwa kusakinisha. Ni lazima uzime kisha uwashe tena kivinjari chako kabla ya kutumia <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">Fungua tena ili usasishe &amp;Chrome</translation>
 <translation id="1302523850133262269">Tafadhali subiri Chrome inaposakinisha sasisho mpya za mfumo.</translation>
@@ -124,7 +122,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3080151273017101988">Endelea kuendesha programu zinazofanya kazi chini chini wakati Google Chrome imefungwa</translation>
 <translation id="3089968997497233615">Kuna toleo jipya na salama la Google Chrome.</translation>
 <translation id="3100998948628680988">Upe wasifu wako wa Chrome jina</translation>
-<translation id="3103390129666310801">Ili kuona kama kifaa chako kimesasishwa, nenda kwenye <ph name="LINK_BEGIN" />Mipangilio ya ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">Ili uangalie kama manenosiri yako mengine ni salama dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama, <ph name="BEGIN_LINK" />ingia katika akaunti kwenye Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Mabadiliko yako yataanza kufanya kazi wakati ujao utakapozindua Google Chrome.</translation>
 <translation id="3149510190863420837">Programu za Chrome</translation>
@@ -215,7 +212,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4990567037958725628">Kanari ya Google Chrome</translation>
 <translation id="5037581483200764584">Ili upate masasisho ya Google Chrome ya hapo baadaye, utahitaji toleo la macOS 10.13 au toleo jipya zaidi. Kompyuta hii inatumia OS X 10.11.</translation>
 <translation id="5098668839038261629">Kinapokuwa kimewashwa, utaondolewa pia katika akauti ya Chrome</translation>
-<translation id="5112116809696021727">Ili kuona kama kifaa chako kimesasishwa, nenda kwenye <ph name="LINK_BEGIN" />Mipangilio ya Mfumo wa Uendeshaji wa Chrome<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">Gundua programu, michezo, viendelezi na mandhari bora ya Google Chrome.</translation>
 <translation id="5139423532931106058">Weka mapendeleo ya wasifu wako kwenye Chrome</translation>
 <translation id="5163087008893166964">Karibu kwenye Chrome; dirisha jipya la kivinjari limefunguliwa</translation>
@@ -255,8 +251,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5940385492829620908">Wavuti, alamisho, na vitu vyako vingine vya Chrome vinapatikana hapa.</translation>
 <translation id="5941711191222866238">Punguza</translation>
 <translation id="5941830788786076944">Fanya Google Chrome iwe kivinjari chaguomsingi</translation>
-<translation id="5959292945051687759">Ikiwa mipangilio haionekani kwenye ukurasa huu, angalia kwenye <ph name="LINK_BEGIN" />
-        mipangilio yako ya Mfumo wa Uendeshaji wa Chrome<ph name="LINK_END" /></translation>
 <translation id="6003112304606738118">Inapakua... Zimesalia saa <ph name="HOURS" /></translation>
 <translation id="6040143037577758943">Funga</translation>
 <translation id="6070348360322141662">Kwa usalama wa ziada, Google Chrome itasimba data yako kwa njia fiche</translation>

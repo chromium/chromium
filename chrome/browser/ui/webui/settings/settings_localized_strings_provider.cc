@@ -1132,7 +1132,19 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"unenrollVirtualCardDialogTitle",
        IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_TITLE},
       {"unenrollVirtualCardDialogConfirm",
-       IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_CONFIRM_BUTTON_LABEL}};
+       IDS_AUTOFILL_VIRTUAL_CARD_UNENROLL_DIALOG_CONFIRM_BUTTON_LABEL},
+#if BUILDFLAG(IS_WIN)
+      {"managePasskeysLabel", IDS_AUTOFILL_MANAGE_PASSKEYS_LABEL},
+      {"managePasskeysTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_TITLE},
+      {"managePasskeysSubTitle", IDS_AUTOFILL_MANAGE_PASSKEYS_SUB_TITLE},
+      {"managePasskeysSearch", IDS_AUTOFILL_MANAGE_PASSKEYS_SEARCH},
+      {"managePasskeysNoSupport", IDS_AUTOFILL_MANAGE_PASSKEYS_NO_SUPPORT},
+      {"managePasskeysCannotDeleteTitle",
+       IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_TITLE},
+      {"managePasskeysCannotDeleteBody",
+       IDS_AUTOFILL_MANAGE_PASSKEYS_CANNOT_DELETE_BODY},
+#endif
+  };
 
   bool unifiedPasswordManagerEnabled = base::FeatureList::IsEnabled(
       password_manager::features::kUnifiedPasswordManagerDesktop);

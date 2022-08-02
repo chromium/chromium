@@ -95,3 +95,13 @@
     </cr-icon-button>
   </template>
 </div>
+<cr-toast id="dismissPromoButtonToast" duration="10000">
+  <div id="dismissPromoButtonToastMessage">
+    $i18n{undoDismissPromoButtonToast}
+  </div>
+  <cr-button id="undoDismissPromoButton"
+      aria-label="$i18n{undoDescription}"
+      on-click="onUndoDismissPromoButtonClick_">
+    $i18n{undo}
+  </cr-button>
+</cr-toast>

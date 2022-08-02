@@ -235,12 +235,12 @@
 <translation id="3008341117444806826">I-REFRESH</translation>
 <translation id="3009958530611748826">Pumili ng folder kung saan magse-save</translation>
 <translation id="3017079585324758401">Background</translation>
+<translation id="302435934487327038">Tapos na ang pag-install</translation>
 <translation id="3027578600144895987">Isara ang camera</translation>
 <translation id="3031560714565892478">Video camera ang device.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3069085583900247081">Nabigo ang pagsubok</translation>
-<translation id="3076243757415932261">Vina-validate ang mga bahagi...</translation>
 <translation id="3083667275341675831">Mga Diagnostic sa Pagkakonekta</translation>
 <translation id="3084958266922136097">I-disable ang screen saver</translation>
 <translation id="3091839911843451378">Hindi na-print - Huminto</translation>
@@ -275,7 +275,6 @@
 <translation id="3369013195428705271">Sigurado ka bang gusto mong i-clear ang lahat ng history ng pag-print? Hindi maki-clear ang iyong mga kasalukuyang pag-print.</translation>
 <translation id="3383751554789092165">Baguhin ang impormasyon ng device kung kinakailangan.</translation>
 <translation id="3404249063913988450">I-enable ang screen saver</translation>
-<translation id="3404770484521709967">Na-install nang tama ang mga bahagi.</translation>
 <translation id="3413935475507503304">Para magpatuloy sa update, i-click ang Susunod.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Seguridad</translation>
@@ -395,7 +394,6 @@
 <translation id="445059817448385655">Lumang password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Pag-scan sa</translation>
-<translation id="4472575034687746823">Magsimula</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Hindi na-ping ang hindi default na network gateway</translation>
 <translation id="4500213108254186382">Lid Accelerometer</translation>
@@ -664,6 +662,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6618744767048954150">Tumatakbo</translation>
 <translation id="6620487321149975369">Lalabas sa history ang mga pag-print maliban na lang kung manual na aalisin ang mga ito</translation>
 <translation id="6643016212128521049">I-clear</translation>
+<translation id="6644568396961840069">Hindi ma-save ang file. Subukang magsaksak ng ibang external storage, o subukan ulit sa ibang pagkakataon.</translation>
 <translation id="6647510110698214773">Algorithm ng pag-encrypt</translation>
 <translation id="6650062777702288430">Kana/alphanumeric na switch</translation>
 <translation id="6657585470893396449">Password</translation>
@@ -809,7 +808,6 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8063022551652308521">Naka-off pa rin ang Write Protect. Para magpatuloy, i-on ang Write Protect.</translation>
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
-<translation id="8083281199617904460">Nakalaan ang prosesong ito ng pag-aayos para sa sinanay na technician sa pag-aayos. Magsimula lang kapag napalitan na ang mga hindi gumaganang bahagi.</translation>
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8104083085214006426">Gumagamit ka ng bukas at hindi secure na network</translation>
 <translation id="8109786307828817014">Magpatuloy sa mga hindi pag-calibrate?</translation>

@@ -1227,7 +1227,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     SKIP_BITS_OR_RETURN(slice_segment_header_extension_length * 8);
   }
 
-  if (prior_shdr) {
+  if (prior_shdr && !shdr->first_slice_segment_in_pic_flag) {
     // Validate the fields that must match between slice headers for the same
     // picture.
     EQ_OR_RETURN(shdr, prior_shdr, slice_pic_parameter_set_id);

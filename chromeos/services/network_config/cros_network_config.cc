@@ -371,7 +371,7 @@ mojom::NetworkStatePropertiesPtr NetworkStateToMojo(
   result->guid = network->guid();
   result->name =
       network_name_util::GetNetworkName(cellular_esim_profile_handler, network);
-  result->portal_state = GetMojoPortalState(network->portal_state());
+  result->portal_state = GetMojoPortalState(network->GetPortalState());
   result->priority = network->priority();
   result->prohibited_by_policy = network->blocked_by_policy();
   result->source = GetMojoOncSource(network);
@@ -1532,7 +1532,7 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
       ip_configs.push_back(GetIPConfig(&ip_config_value));
     result->ip_configs = std::move(ip_configs);
   }
-  result->portal_state = GetMojoPortalState(network_state->portal_state());
+  result->portal_state = GetMojoPortalState(network_state->GetPortalState());
   const base::Value* saved_ip_config =
       GetDictionary(properties, ::onc::network_config::kSavedIPConfig);
   if (saved_ip_config)

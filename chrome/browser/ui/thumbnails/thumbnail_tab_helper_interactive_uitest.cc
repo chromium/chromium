@@ -176,8 +176,10 @@ IN_PROC_BROWSER_TEST_F(ThumbnailTabHelperInteractiveTest,
 
 // On browser restore, some tabs may not be loaded. Requesting a
 // thumbnail for one of these tabs should trigger load and capture.
-// TODO(crbug.com/1294473): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1294473, crbug.com/1294473): Flaky on Mac and various
+// sanitizer builds.
+#if BUILDFLAG(IS_MAC) || defined(THREAD_SANITIZER) || \
+    defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_CapturesRestoredTabWhenRequested \
   DISABLED_CapturesRestoredTabWhenRequested
 #else

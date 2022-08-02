@@ -84,6 +84,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351937230027495976">Palos menynë</translation>
 <translation id="1364382257761975320">Për të shkyçur Chromebook-un tënd, përdor gjurmën e gishtit</translation>
+<translation id="1365866993922957110">Merr përditësimet automatike</translation>
 <translation id="1372545819342940910">Ruaj tavolinën e punës për më vonë</translation>
 <translation id="1383597849754832576">Skedarët e ligjërimit nuk mund të shkarkohen. Provo përsëri më vonë.</translation>
 <translation id="1383876407941801731">Kërko</translation>
@@ -161,6 +162,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> u zhgozhdua</translation>
 <translation id="1836215606488044471">Asistenti (po ngarkohet...)</translation>
 <translation id="1838895407229022812">"Drita e natës" është joaktive.</translation>
+<translation id="1862380676329487333">Përditëso dhe dil</translation>
 <translation id="1864454756846565995">Pajisja USB-C (porta prapa)</translation>
 <translation id="1879018240766558464">Dritaret "E fshehta" nuk mbështeten aktualisht. Aplikacionet e tjera do të ruhen.</translation>
 <translation id="1882814835921407042">Nuk ka rrjet celular</translation>
@@ -561,6 +563,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="423685346499232137">Nuk mund të kopjohen ose të ngjiten përmbajtje në këtë moment</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
+<translation id="4247123849143712100">Përditëso dhe fike</translation>
 <translation id="4250229828105606438">Pamje e ekranit</translation>
 <translation id="425364040945105958">Nuk ka kartë SIM</translation>
 <translation id="4261870227682513959">Shfaq cilësimet e njoftimeve. Njoftimet janë joaktive</translation>
@@ -920,6 +923,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> u lidh</translation>
 <translation id="6351032674660237738">SUGJERIMET E APLIKACIONEVE</translation>
+<translation id="6359587239691116345">Merr veçoritë dhe përmirësimet më të fundit të sigurisë. Nëse e refuzon këtë përditësim, pajisja jote mund të mos funksionojë më siç duhet dhe mund të kesh probleme me sigurinë dhe cilësinë e funksionimit.</translation>
 <translation id="6376931439017688372">Bluetooth-i është aktiv</translation>
 <translation id="6381109794406942707">Për të shkyçur pajisjen, fut kodin PIN.</translation>
 <translation id="639644700271529076">KYÇJA E KAPITALEVE është joaktive</translation>
@@ -941,6 +945,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kërkon që ta përditësosh pajisjen tënde <ph name="DEVICE_TYPE" /> përpara afatit</translation>
 <translation id="649452524636452238">Kodi PIN i kartës smart</translation>
 <translation id="6495400115277918834">"Figurë brenda figurës" filloi; shtyp "Alt+Shift+V" për të fokusuar</translation>
+<translation id="6500896621837555595">Përditëso</translation>
 <translation id="6501401484702599040">Po transmeton ekranin te <ph name="RECEIVER_NAME" /></translation>
 <translation id="6515727200518652613">Kamera u shkëput; po provohet rilidhja.</translation>
 <translation id="6520517963145875092">Zgjidh një dritare për të regjistruar</translation>
@@ -1218,6 +1223,7 @@ Instalim i ri</translation>
 <translation id="8054466585765276473">Po llogarit kohën e baterisë.</translation>
 <translation id="8061464966246066292">Kontrast i lartë</translation>
 <translation id="8083540854303889870">Ruajtur për më vonë</translation>
+<translation id="8091387634532529612">Përditësimet automatike</translation>
 <translation id="8098591350844501178">Ndalo transmetimin e ekranit te <ph name="RECEIVER_NAME" /></translation>
 <translation id="8113423164597455979">Aktiv, të gjitha aplikacionet</translation>
 <translation id="8120151603115102514">Telefoni yt nuk ka një ekran kyçjeje. Për të shkyçur Chromebook-un tënd, fut fjalëkalimin.</translation>
@@ -1424,4 +1430,5 @@ Instalim i ri</translation>
 <translation id="974545358917229949">Po shfaq <ph name="RESULT_COUNT" /> rezultate për <ph name="QUERY" /></translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="990277280839877440">Dritarja <ph name="WINDOW_TITILE" /> u mbyll.</translation>
+<translation id="996204416024568215">Merr veçoritë dhe përmirësimet më të fundit të sigurisë. Përditësimet kryhen në sfond.</translation>
 </translationbundle>

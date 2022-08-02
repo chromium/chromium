@@ -25,6 +25,7 @@
 <translation id="1112015203684611006">Չհաջողվեց տպել:</translation>
 <translation id="1125564390852150847">Ստեղծել նոր ներդիր:</translation>
 <translation id="1126809382673880764">Չի պաշտպանում վտանգավոր կայքերից, ընդլայնումներից և ներբեռնումներից։ Անվտանգ դիտարկումը նախկինի պես կաշխատի Google-ի այլ ծառայություններում (եթե հասանելի է), օրինակ՝ Gmail-ում կամ Որոնման էջերում։</translation>
+<translation id="1135212215217513471">Տեղադրել iOS-ի համար Chrome-ը</translation>
 <translation id="1145536944570833626">Առկա տվյալների ջնջում։</translation>
 <translation id="1147031633655575115">Դուք մուտք եք գործել որպես <ph name="USER" /></translation>
 <translation id="1154984953698510061">Տեսնել մյուս ներդիրները</translation>
@@ -113,6 +114,7 @@
 <translation id="1832848789136765277">Հաստատեք ձեր ինքնությունը, որպեսզի համաժամացված տվյալները միշտ հասանելի լինեն ձեզ</translation>
 <translation id="1870148520156231997">Ցուցադրել գաղտնաբառը</translation>
 <translation id="1872096359983322073">Լապտեր</translation>
+<translation id="1910975740091000991">Chrome՝ iOS համար</translation>
 <translation id="1911619930368729126">Վերբեռնել Google Drive</translation>
 <translation id="1923342640370224680">Վերջին ժամը</translation>
 <translation id="1930989359703290198">Ձեր կազմակերպությունում հնարավոր է մուտք գործել միայն որոշակի հաշիվներ։ Հաշիվները, որոնց մուտքն արգելված է, կթաքցվեն։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
@@ -140,6 +142,7 @@
 <translation id="2139867232736819575">Որոնեք ձեր պատճենած տեքստը</translation>
 <translation id="214201757571129614">Մտնել…</translation>
 <translation id="2149973817440762519">Փոփոխել էջանիշը</translation>
+<translation id="2155145621546387786">Կիսվել Chrome-ով</translation>
 <translation id="2175927920773552910">QR կոդ</translation>
 <translation id="2218443599109088993">Փոքրացնել</translation>
 <translation id="2230173723195178503">Կայքէջը բեռնվեց</translation>
@@ -406,7 +409,6 @@
 <translation id="4502566650163919158">Ստուգել հիմա</translation>
 <translation id="4505980578794259603">Վերջին անգամ ստուգվել է <ph name="TIME" />։</translation>
 <translation id="4508750114462689118">Փակել մուտք գործելու առաջարկը</translation>
-<translation id="4511669830082467224">Որոնել պատկերում Google-ի միջոցով</translation>
 <translation id="4526249700380860531">Դիտեք և կառավարեք պահված գաղտնաբառերը <ph name="BEGIN_LINK" />passwords.google.com<ph name="END_LINK" /> կայքում</translation>
 <translation id="452750746583162491">Ստուգեք ձեր համաժամացված տվյալները</translation>
 <translation id="4536418791685807335">Փորձեք նորից մուտք գործել:</translation>

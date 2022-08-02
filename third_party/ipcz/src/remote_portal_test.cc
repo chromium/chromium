@@ -49,6 +49,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, PortalTransferClient) {
   EXPECT_NE(IPCZ_INVALID_HANDLE, p);
 
   VerifyEndToEnd(p);
+  WaitForDirectRemoteLink(p);
   CloseAll({p, b});
 }
 
@@ -59,6 +60,7 @@ TEST_P(RemotePortalTest, PortalTransfer) {
   EXPECT_EQ(IPCZ_RESULT_OK, Put(c, kTestMessage1, {&p, 1}));
 
   VerifyEndToEnd(q);
+  WaitForDirectRemoteLink(q);
   CloseAll({q, c});
 }
 
@@ -80,6 +82,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, MultipleHopsClient1) {
     EXPECT_EQ(kTestMessage1, message);
   }
 
+  WaitForDirectRemoteLink(q);
   PingPong(b);
   CloseAll({q, b});
 }
@@ -100,6 +103,7 @@ MULTINODE_TEST_NODE(RemotePortalTestNode, MultipleHopsClient2) {
     EXPECT_EQ(kTestMessage2, message);
   }
 
+  WaitForDirectRemoteLink(p);
   PingPong(b);
   CloseAll({p, b});
 }
@@ -117,7 +121,7 @@ TEST_P(RemotePortalTest, MultipleHops) {
   CloseAll({c1, c2});
 }
 
-constexpr size_t kTransferBackAndForthNumIterations = 1;
+constexpr size_t kTransferBackAndForthNumIterations = 100;
 
 MULTINODE_TEST_NODE(RemotePortalTestNode, TransferBackAndForthClient) {
   IpczHandle b = ConnectToBroker();
@@ -149,6 +153,7 @@ TEST_P(RemotePortalTest, TransferBackAndForth) {
   }
 
   VerifyEndToEndLocal(q, p);
+  WaitForDirectLocalLink(q, p);
   CloseAll({q, p, c});
 }
 

@@ -905,6 +905,7 @@ Izimvume ozinikezile ama-app kakade zingase zisebenze kule akhawunti. Ungakwazi 
 <translation id="1829129547161959350">I-penguin</translation>
 <translation id="1829192082282182671">&amp;Hlehlisa isithombe</translation>
 <translation id="1830550083491357902">Ayingenile ngemvume</translation>
+<translation id="1831848493690504725">Asikwazi ukufinyelela i-Google ngenethiwekhi exhunyiwe. Zama ukukhetha inethiwekhi ehlukile noma ukuhlola amasethingi enethiwekhi yakho noma amasethingi ommeleli (uma usebenzisa ummeleli).</translation>
 <translation id="1832459821645506983">Yebo, ngingenile</translation>
 <translation id="1832511806131704864">Ukuguqulwa kwefoni kubuyekeziwe</translation>
 <translation id="1832848789136765277">Ukuze uqiniseke ukuthi uhlala ufinyelela idatha yakho yokuvumelanisa, qinisekisa ukuthi uwena</translation>
@@ -4753,6 +4754,7 @@ Ungabela amaswishi amaningi kulesi senzo.</translation>
 <translation id="5533001281916885985">I-<ph name="SITE_NAME" /> ifuna</translation>
 <translation id="5534304873398226603">Lahla isithombe noma ividiyo</translation>
 <translation id="5537725057119320332">Sakaza</translation>
+<translation id="5539070192556911367">Ayikwazi ukufinyelela i-Google</translation>
 <translation id="5539221284352502426">Iphasiwedi oyifakile inqatshwe yiseva. Izizathu ezingenzeka zibandakanya: Iphasiwedi yifushane kakhulu. Iphasiwedi kufanele ibandakanye izinombolo noma izimpawu. Iphasiwedi kufanele yehluke kunamaphasiwedi wangaphambilini.</translation>
 <translation id="5541694225089836610">Isenzo sikhutshazwe umlawuli wakho</translation>
 <translation id="5542132724887566711">Iphrofayela</translation>
@@ -4816,6 +4818,7 @@ Ungabela amaswishi amaningi kulesi senzo.</translation>
 <translation id="5585912436068747822">Ukufometha kuhlulekile</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Ilayisha izinhlelo zokusebenza...</translation>
+<translation id="5590418976913374224">Dlala umsindo ekuqalisweni kwedivayisi</translation>
 <translation id="5592595402373377407">Ayikho idatha eyanele etholakalayo okwamanje.</translation>
 <translation id="5595307023264033512">Ingqikithi yesitoreji esisetshenziswe amasayithi: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5595485650161345191">Hlela ikheli</translation>
@@ -6363,6 +6366,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7102687220333134671">Izibuyekezo zokuzenzakalela zivuliwe</translation>
 <translation id="7102832101143475489">Isicelo siphelelwe isikhathi</translation>
 <translation id="710640343305609397">Vula izilungiselelo zenethiwekhi</translation>
+<translation id="7107609441453408294">Dlala umsindo ofanayo kuzo zonke izipikha</translation>
 <translation id="7108338896283013870">Fihla</translation>
 <translation id="7108668606237948702">i-enter</translation>
 <translation id="7108933416628942903">Khiya manje</translation>
@@ -6454,7 +6458,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7212097698621322584">Faka i-PIN yakho yamanje ukuze uyishintshe. Uma ungazi i-PIN yakho, uzodinga ukusetha kabusha ukhiye wokuqinisekisa ubunikazi, bese udale i-PIN entsha.</translation>
 <translation id="7213903639823314449">Injini yokusesha isetshenziswe kubha lekheli</translation>
 <translation id="721490496276866468">Ngenisa amaphasiwedi</translation>
-<translation id="7216595297012131718">Landelanisa izilimi kusukela kokuncamelayo</translation>
 <translation id="7219473482981809164">Sithole amaphrofayela amaningi atholakalela ukulandwa. Khetha lawo ongathanda ukuwalanda ngaphambi kokuqhubeka.</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{Awekho amaphasiwedi angaqinile}=1{iphasiwedi engaqinile e-1}one{amaphasiwedi angaqinile angu-{NUM_WEAK}}other{amaphasiwedi angaqinile angu-{NUM_WEAK}}}</translation>
 <translation id="7220019174139618249">Ayikwazi ukukhiphela amaphasiwedi ku-"<ph name="FOLDER" />"</translation>
@@ -6594,6 +6597,7 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="7364745943115323529">Sakaza...</translation>
 <translation id="7364796246159120393">Khetha ifayela</translation>
 <translation id="7365076891350562061">Usayizi wemonitha</translation>
+<translation id="7365995455115045224"><ph name="WINDOW_TITLE" /> - Kuphiniwe</translation>
 <translation id="7366316827772164604">Iskenela amadivayisi aseduze…</translation>
 <translation id="7366415735885268578">Engeza isayithi</translation>
 <translation id="7366909168761621528">Idatha yokuphequlula</translation>

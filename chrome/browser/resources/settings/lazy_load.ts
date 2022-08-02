@@ -5,6 +5,9 @@
 // Subpages
 import './appearance_page/appearance_fonts_page.js';
 import './autofill_page/autofill_section.js';
+// <if expr="is_win">
+import './autofill_page/passkeys_subpage.js';
+// </if>
 import './autofill_page/password_check.js';
 import './autofill_page/password_view.js';
 import './autofill_page/passwords_device_section.js';
@@ -82,6 +85,10 @@ export {SettingsAutofillSectionElement} from './autofill_page/autofill_section.j
 export {BlockingRequestManager} from './autofill_page/blocking_request_manager.js';
 // </if>
 export {SettingsCreditCardEditDialogElement} from './autofill_page/credit_card_edit_dialog.js';
+// <if expr="is_win">
+export {Passkey, PasskeysBrowserProxy, PasskeysBrowserProxyImpl} from './autofill_page/passkeys_browser_proxy.js';
+export {SettingsPasskeysSubpageElement} from './autofill_page/passkeys_subpage.js';
+// </if>
 export {SettingsPasswordCheckElement} from './autofill_page/password_check.js';
 export {SettingsPasswordCheckEditDialogElement} from './autofill_page/password_check_edit_dialog.js';
 export {SettingsPasswordEditDisclaimerDialogElement} from './autofill_page/password_check_edit_disclaimer_dialog.js';

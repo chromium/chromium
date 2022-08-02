@@ -95,12 +95,13 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "PictureInPictureV2");
+                                    "DocumentPictureInPictureAPI");
     InProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kPictureInPictureV2);
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDocumentPictureInPictureAPI);
     InProcessBrowserTest::SetUp();
   }
 

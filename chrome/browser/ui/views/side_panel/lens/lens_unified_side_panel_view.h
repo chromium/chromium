@@ -34,9 +34,15 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   LensUnifiedSidePanelView& operator=(const LensUnifiedSidePanelView&) = delete;
   ~LensUnifiedSidePanelView() override;
 
+  // views::View
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
   content::WebContents* GetWebContents();
 
   void OpenUrl(const content::OpenURLParams& params);
+
+  // Loads the Lens website if the side panel view is ready with a width.
+  void MaybeLoadURLWithParams();
 
   // Opens current view URL in a new chrome tab and closes the side panel
   void LoadResultsInNewTab();
@@ -77,6 +83,10 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   raw_ptr<views::WebView> loading_indicator_web_view_;
   raw_ptr<views::WebView> web_view_;
   raw_ptr<views::MdTextButton> launch_button_;
+
+  // Copy of the most recent URL params to open.
+  std::unique_ptr<content::OpenURLParams> side_panel_url_params_;
+
   base::WeakPtrFactory<LensUnifiedSidePanelView> weak_factory_{this};
 };
 

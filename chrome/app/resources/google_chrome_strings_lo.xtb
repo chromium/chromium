@@ -14,8 +14,6 @@
 <translation id="1142745911746664600">ບໍ່ສາມາດອັບເດດ Chrome ໄດ້</translation>
 <translation id="1152920704813762236">ກ່ຽວກັບ ChromeOS</translation>
 <translation id="1154147086299354128">&amp;ເປີດໃນ Chrome</translation>
-<translation id="1178374936842835197">ຫາກການຕັ້ງຄ່າໃດໜຶ່ງບໍ່ສະແດງຢູ່ໜ້ານີ້, ກະລຸນາກວດເບິ່ງໃນ <ph name="LINK_BEGIN" />
-    ການຕັ້ງຄ່າ ChromeOS Flex<ph name="LINK_END" /> ຂອງທ່ານ</translation>
 <translation id="1203500561924088507">ຂໍຂອບໃຈສຳລັບການຕິດຕັ້ງ. ທ່ານຈະຕ້ອງຣີສະຕາດໂປຣແກຣມທ່ອງເວັບຂອງທ່ານກ່ອນການໃຊ້ <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1278833599417554002">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chrome</translation>
 <translation id="1302523850133262269">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chrome ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
@@ -124,7 +122,6 @@
 <translation id="3080151273017101988">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Google Chrome ປິດ</translation>
 <translation id="3089968997497233615">ມີ Google Chrome ລຸ້ນໃໝ່ປອດໄພກ່ວາຢູ່.</translation>
 <translation id="3100998948628680988">ຕັ້ງຊື່ໂປຣໄຟລ໌ Chrome ຂອງທ່ານ</translation>
-<translation id="3103390129666310801">ເພື່ອເບິ່ງວ່າອຸປະກອນຂອງທ່ານໄດ້ຮັບການອັບເດດຫຼືຍັງ, ໃຫ້ເຂົ້າໄປ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ ChromeOS Flex<ph name="LINK_END" /></translation>
 <translation id="3114643501466072395">ເພື່ອກວດເບິ່ງວ່າລະຫັດຜ່ານອື່ນຂອງທ່ານປອດໄພຈາກການລະເມີດຂໍ້ມູນ ແລະ ບັນຫາຄວາມປອດໄພອື່ນຫຼືບໍ່, ກະລຸນາ <ph name="BEGIN_LINK" />ເຂົ້າສູ່ລະບົບ Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">ການປ່ຽນແປງຂອງທ່ານຈະມີຜົນຄັ້ງຕໍ່ໄປທີ່ທ່ານເລີ່ມເປີດໃຊ້ Google Chrome ໃໝ່.</translation>
 <translation id="3149510190863420837">ແອັບ Chrome</translation>
@@ -215,7 +212,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">ເພື່ອຮັບການອັບເດດ Google Chrome ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ macOS 10.13 ຂຶ້ນໄປ. ຄອມພິວເຕີນີ້ກຳລັງໃຊ້ OS X 10.11.</translation>
 <translation id="5098668839038261629">ເມື່ອເປີດໃຊ້, ທ່ານຈະອອກຈາກລະບົບ Chrome ນຳ</translation>
-<translation id="5112116809696021727">ເພື່ອເບິ່ງວ່າອຸປະກອນຂອງທ່ານອັບເດດແລ້ວຫຼືຍັງ, ກະລຸນາເຂົ້າໄປ <ph name="LINK_BEGIN" />ການຕັ້ງຄ່າ ChromeOS<ph name="LINK_END" /></translation>
 <translation id="5132929315877954718">ຄົ້ນພົບແອັບຯ, ເກມ, ສ່ວນຂະຫຍາຍ ແລະ ຮູບແບບສີສັນສຳລັບ Google Chrome.</translation>
 <translation id="5139423532931106058">ປັບແຕ່ງໂປຣໄຟລ໌ Chrome ຂອງທ່ານ</translation>
 <translation id="5163087008893166964">ຍິນດີຕ້ອນຮັບສູ່ Chrome; ເປີດໜ້າຈໍໂປຣແກຣມທ່ອງເວັບໃໝ່ແລ້ວ</translation>
@@ -255,8 +251,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="5940385492829620908">ເວັບຂອງທ່ານ, ບຸກມາກສ໌, ແລະ Chrome ອື່ນສົດຢູ່ທີ່ນີ້.</translation>
 <translation id="5941711191222866238">ຫຍໍ້ລົງ</translation>
 <translation id="5941830788786076944">ເຮັດ Google Chrome ເປັນບຣາວເຊີມາດຕະຖານ</translation>
-<translation id="5959292945051687759">ຫາກການຕັ້ງຄ່າໃດໜຶ່ງບໍ່ສະແດງຢູ່ໜ້ານີ້, ກະລຸນາເບິ່ງໃນ <ph name="LINK_BEGIN" />
-        ການຕັ້ງຄ່າ ChromeOS<ph name="LINK_END" /> ຂອງທ່ານ</translation>
 <translation id="6003112304606738118">ກຳລັງດາວໂຫຼດ... ຍັງເຫຼືອ <ph name="HOURS" /> ຊົ່ວໂມງ</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6070348360322141662">ເພື່ອຄວາມປອດໄພເພີ່ມເຕີມ, Google Chrome ຈະເຂົ້າລະຫັດລັບຂໍ້ມູນຂອງທ່ານ</translation>

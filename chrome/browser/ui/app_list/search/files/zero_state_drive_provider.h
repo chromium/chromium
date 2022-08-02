@@ -136,10 +136,6 @@ class ZeroStateDriveProvider : public SearchProvider,
   // valid.
   const base::TimeDelta max_last_modified_time_;
 
-  // Whether or not zero-state drive files are enabled. True iff the
-  // productivity launcher is enabled.
-  const bool enabled_;
-
   base::ScopedObservation<drive::DriveIntegrationService,
                           drive::DriveIntegrationServiceObserver>
       drive_observation_{this};

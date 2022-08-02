@@ -53,6 +53,9 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     {"LocAC", "(\\bLocation area code: ')([0-9a-fA-F]+)(')",
      PIIType::kLocationInfo},
 
+    // Android. Must run first since this expression matches the replacement.
+    {"SSID", "(?i-s)(\\SSID: ['\"]??)(.+)(['\"]??)", PIIType::kSSID},
+
     // wpa_supplicant
     {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')", PIIType::kSSID},
     {"SSID", "(?i-s)(\\bssid[= ]\")(.+)(\")", PIIType::kSSID},
@@ -221,6 +224,31 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
       return addr;
   }
   return "";
+}
+
+// Some strings can contain pieces that match like IPv4 addresses but aren't.
+// This function can be used to determine if this was the case by evaluating
+// the skipped piece. It returns true, if the matched address was erroneous
+// and should be skipped instead.
+bool ShouldSkipIPAddress(const re2::StringPiece& skipped) {
+  // MomdemManager can dump out firmware revision fields that can also
+  // confuse the IPv4 matcher e.g. "Revision: 81600.0000.00.29.19.16_DO"
+  // so ignore the replacement if the skipped piece looks like
+  // "Revision: .*<ipv4>". Note however that if this field contains
+  // values delimited by multiple spaces, any matches after the first
+  // will lose the context and be redacted.
+  static const re2::StringPiece rev("Revision: ");
+  static const re2::StringPiece space(" ");
+  const auto pos = skipped.rfind(rev);
+  if (pos != re2::StringPiece::npos &&
+      skipped.find(space, pos + rev.length()) == re2::StringPiece::npos) {
+    return true;
+  }
+
+  // USB paths can be confused with IPv4 Addresses because they can look
+  // similar: n-n.n.n.n . Ignore replacement if previous char is `-`
+  static const re2::StringPiece dash("-");
+  return skipped.ends_with(dash);
 }
 
 // Helper macro: Non capturing group
@@ -843,7 +871,6 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
   re2::StringPiece text(input);
   re2::StringPiece skipped;
   re2::StringPiece matched_id;
-  const re2::StringPiece dash("-");
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &matched_id)) {
     if (IsUrlExempt(matched_id, first_party_extension_ids_)) {
       skipped.AppendToString(&result);
@@ -855,9 +882,9 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
     if (identifier_space->count(matched_id_as_string) == 0) {
       replacement_id = MaybeScrubIPAddress(matched_id_as_string);
       if (replacement_id != matched_id_as_string) {
-        // USB paths can be confused with IPv4 Addresses because they can look
-        // similar: n-n.n.n.n . Ignore replacement if previous char is `-`
-        if (skipped.ends_with(dash) && strcmp("IPv4", pattern.alias) == 0) {
+        // Double-check overly opportunistic IPv4 address matching.
+        if ((strcmp("IPv4", pattern.alias) == 0) &&
+            ShouldSkipIPAddress(skipped)) {
           skipped.AppendToString(&result);
           matched_id.AppendToString(&result);
           continue;

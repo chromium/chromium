@@ -47,6 +47,13 @@ public class BrowserSandboxService extends Service {
 
             return new BrowserFragmentDelegate(mContext, mWebLayer);
         }
+
+        @Override
+        public void setRemoteDebuggingEnabled(boolean enabled) {
+            assert mWebLayer != null;
+            mWebLayer.setRemoteDebuggingEnabled(enabled);
+        }
+
     };
 
     @Override

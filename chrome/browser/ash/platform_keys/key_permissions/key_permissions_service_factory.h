@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_PLATFORM_KEYS_KEY_PERMISSIONS_KEY_PERMISSIONS_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -27,7 +27,7 @@ class KeyPermissionsService;
 //
 // Note: Service instances provided by this factory are only valid during the
 // lifetime of the given BrowserContext.
-class KeyPermissionsServiceFactory : public BrowserContextKeyedServiceFactory {
+class KeyPermissionsServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static KeyPermissionsService* GetForBrowserContext(
       content::BrowserContext* context);

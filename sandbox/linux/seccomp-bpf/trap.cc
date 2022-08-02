@@ -12,12 +12,13 @@
 #include <sys/syscall.h>
 
 #include <algorithm>
+#include <atomic>
 #include <limits>
 #include <tuple>
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/seccomp-bpf/die.h"
@@ -29,7 +30,9 @@
 namespace {
 
 struct arch_sigsys {
-  raw_ptr<void> ip;
+  // This is not raw_ptr because it is a pointer to a code address given to us
+  // by the kernel.
+  RAW_PTR_EXCLUSION void* ip;
   int nr;
   unsigned int arch;
 };
@@ -77,11 +80,7 @@ bool IsDefaultSignalAction(const struct sigaction& sa) {
 
 namespace sandbox {
 
-Trap::Trap()
-    : trap_array_(nullptr),
-      trap_array_size_(0),
-      trap_array_capacity_(0),
-      has_unsafe_traps_(false) {
+Trap::Trap() {
   // Set new SIGSYS handler
   struct sigaction sa = {};
   // In some toolchain, sa_sigaction is not declared in struct sigaction.
@@ -239,7 +238,7 @@ void Trap::SigSys(int nr, LinuxSigInfo* info, ucontext_t* ctx) {
     struct arch_seccomp_data data = {
         static_cast<int>(SECCOMP_SYSCALL(ctx)),
         SECCOMP_ARCH,
-        reinterpret_cast<uint64_t>(sigsys.ip.get()),
+        reinterpret_cast<uint64_t>(sigsys.ip),
         {static_cast<uint64_t>(SECCOMP_PARM1(ctx)),
          static_cast<uint64_t>(SECCOMP_PARM2(ctx)),
          static_cast<uint64_t>(SECCOMP_PARM3(ctx)),
@@ -333,24 +332,11 @@ uint16_t Trap::Add(TrapFnc fnc, const void* aux, bool safe) {
     TrapKey* new_trap_array = new TrapKey[trap_array_capacity_];
     std::copy_n(old_trap_array, trap_array_size_, new_trap_array);
 
-    // Language specs are unclear on whether the compiler is allowed to move
-    // the "delete[]" above our preceding assignments and/or memory moves,
-    // iff the compiler believes that "delete[]" doesn't have any other
-    // global side-effects.
-    // We insert optimization barriers to prevent this from happening.
-    // The first barrier is probably not needed, but better be explicit in
-    // what we want to tell the compiler.
-    // The clang developer mailing list couldn't answer whether this is a
-    // legitimate worry; but they at least thought that the barrier is
-    // sufficient to prevent the (so far hypothetical) problem of re-ordering
-    // of instructions by the compiler.
-    //
-    // TODO(mdempsky): Try to clean this up using base/atomicops or C++11
-    // atomics; see crbug.com/414363.
-    asm volatile("" : "=r"(new_trap_array) : "0"(new_trap_array) : "memory");
     trap_array_ = new_trap_array;
-    asm volatile("" : "=r"(trap_array_) : "0"(trap_array_) : "memory");
-
+    // Prevent the compiler from moving delete[] before the store of the
+    // |new_trap_array|, otherwise a concurrent SIGSYS may see a |trap_array_|
+    // that still points to |old_trap_array| after it has been deleted.
+    std::atomic_signal_fence(std::memory_order_release);
     delete[] old_trap_array;
   }
 

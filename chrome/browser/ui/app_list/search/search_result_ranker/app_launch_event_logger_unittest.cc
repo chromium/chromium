@@ -51,8 +51,8 @@ bool TestIsWebstoreExtension(base::StringPiece id) {
 class AppLaunchEventLoggerForTest : public AppLaunchEventLogger {
  public:
   AppLaunchEventLoggerForTest(extensions::ExtensionRegistry* registry,
-                              base::DictionaryValue* arc_apps,
-                              base::DictionaryValue* arc_packages,
+                              base::Value::Dict* arc_apps,
+                              base::Value::Dict* arc_packages,
                               Profile* profile)
       : AppLaunchEventLogger(profile) {
     arc_apps_ = arc_apps;
@@ -146,14 +146,14 @@ TEST_F(AppLaunchEventLoggerTest, CheckUkmCodeArc) {
   base::Value package(base::Value::Type::DICTIONARY);
   package.SetKey(AppLaunchEventLogger::kShouldSync, base::Value(true));
 
-  auto packages = std::make_unique<base::DictionaryValue>();
-  packages->SetKey(kMapsPackageName, package.Clone());
+  auto packages = std::make_unique<base::Value::Dict>();
+  packages->Set(kMapsPackageName, package.Clone());
 
-  base::Value app(base::Value::Type::DICTIONARY);
-  app.SetKey(AppLaunchEventLogger::kPackageName, base::Value(kMapsPackageName));
+  base::Value::Dict app;
+  app.Set(AppLaunchEventLogger::kPackageName, base::Value(kMapsPackageName));
 
-  auto arc_apps = std::make_unique<base::DictionaryValue>();
-  arc_apps->SetKey(kMapsArcApp, app.Clone());
+  auto arc_apps = std::make_unique<base::Value::Dict>();
+  arc_apps->Set(kMapsArcApp, app.Clone());
 
   AppLaunchEventLoggerForTest app_launch_event_logger_(
       nullptr, arc_apps.get(), packages.get(), &profile_);
@@ -188,9 +188,9 @@ TEST_F(AppLaunchEventLoggerTest, DISABLED_CheckMultipleClicks) {
   calculator_package.SetKey(AppLaunchEventLogger::kShouldSync,
                             base::Value(true));
 
-  auto packages = std::make_unique<base::DictionaryValue>();
-  packages->SetKey(kMapsPackageName, maps_package.Clone());
-  packages->SetKey(kCalculatorPackageName, calculator_package.Clone());
+  auto packages = std::make_unique<base::Value::Dict>();
+  packages->Set(kMapsPackageName, maps_package.Clone());
+  packages->Set(kCalculatorPackageName, calculator_package.Clone());
 
   base::Value maps_app(base::Value::Type::DICTIONARY);
   base::Value calculator_app(base::Value::Type::DICTIONARY);
@@ -199,9 +199,9 @@ TEST_F(AppLaunchEventLoggerTest, DISABLED_CheckMultipleClicks) {
   calculator_app.SetKey(AppLaunchEventLogger::kPackageName,
                         base::Value(kCalculatorPackageName));
 
-  auto arc_apps = std::make_unique<base::DictionaryValue>();
-  arc_apps->SetKey(kMapsArcApp, maps_app.Clone());
-  arc_apps->SetKey(kCalculatorArcApp, calculator_app.Clone());
+  auto arc_apps = std::make_unique<base::Value::Dict>();
+  arc_apps->Set(kMapsArcApp, maps_app.Clone());
+  arc_apps->Set(kCalculatorArcApp, calculator_app.Clone());
 
   AppLaunchEventLoggerForTest app_launch_event_logger_(
       nullptr, arc_apps.get(), packages.get(), &profile_);

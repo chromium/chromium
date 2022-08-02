@@ -12,7 +12,6 @@
 <translation id="1142745911746664600">Chrome kann nicht aktualisiert werden</translation>
 <translation id="1152920704813762236">Über Chrome OS</translation>
 <translation id="1154147086299354128">In Chr&amp;ome öffnen</translation>
-<translation id="1178374936842835197">Wenn du auf dieser Seite eine Einstellung nicht finden kannst, sieh in den <ph name="LINK_BEGIN" />Einstellungen von Chrome OS Flex<ph name="LINK_END" /> nach</translation>
 <translation id="1203500561924088507">Vielen Dank für die Installation. Du musst deinen Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
 <translation id="1278833599417554002">Neu starten, um &amp;Chrome zu aktualisieren</translation>
 <translation id="1302523850133262269">Bitte warte, bis die aktuellen Systemupdates von Chrome installiert wurden.</translation>
@@ -119,7 +118,6 @@
 <translation id="3080151273017101988">Apps im Hintergrund ausführen, wenn Google Chrome geschlossen ist</translation>
 <translation id="3089968997497233615">Es gibt eine neue, sicherere Version von Google Chrome.</translation>
 <translation id="3100998948628680988">Chrome-Profil benennen</translation>
-<translation id="3103390129666310801">Du kannst anhand der <ph name="LINK_BEGIN" />Einstellungen von Chrome OS Flex<ph name="LINK_END" /> sehen, ob dein Gerät auf dem neuesten Stand ist</translation>
 <translation id="3114643501466072395">Wenn du prüfen möchtest, ob deine anderen Passwörter von Datenpannen und anderen Sicherheitsproblemen betroffen sind, <ph name="BEGIN_LINK" />melde dich in Chrome an<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Deine Änderungen werden beim nächsten Neustart von Google Chrome wirksam.</translation>
 <translation id="3149510190863420837">Chrome-Apps</translation>
@@ -210,7 +208,6 @@
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5037581483200764584">Du benötigst macOS 10.13 oder höher, um zukünftige Google Chrome-Updates zu erhalten. Auf diesem Computer wird OS X 10.11 ausgeführt.</translation>
 <translation id="5098668839038261629">Wenn aktiviert, wirst du auch aus Chrome abgemeldet</translation>
-<translation id="5112116809696021727">Du kannst anhand der <ph name="LINK_BEGIN" />Einstellungen von Chrome OS<ph name="LINK_END" /> sehen, ob dein Gerät auf dem neuesten Stand ist</translation>
 <translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
 <translation id="5139423532931106058">Chrome-Profil personalisieren</translation>
 <translation id="5163087008893166964">Willkommen bei Chrome; neues Browserfenster geöffnet</translation>
@@ -246,7 +243,6 @@
 <translation id="5940385492829620908">Hier kannst du im Web surfen und deine Lesezeichen und andere Chrome-Inhalte speichern.</translation>
 <translation id="5941711191222866238">Minimieren</translation>
 <translation id="5941830788786076944">Google Chrome als Standardbrowser festlegen</translation>
-<translation id="5959292945051687759">Wenn du auf dieser Seite eine Einstellung nicht finden kannst, sieh in den <ph name="LINK_BEGIN" />Einstellungen von Chrome OS<ph name="LINK_END" /> nach</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>
 <translation id="6040143037577758943">Schließen</translation>
 <translation id="6070348360322141662">Zur Erhöhung der Sicherheit verschlüsselt Google Chrome deine Daten</translation>

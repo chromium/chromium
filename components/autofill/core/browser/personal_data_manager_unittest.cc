@@ -1750,6 +1750,8 @@ TEST_F(PersonalDataManagerTest, GetNonEmptyTypes) {
                                               ADDRESS_HOME_ZIP,
                                               ADDRESS_HOME_COUNTRY,
                                               PHONE_HOME_NUMBER,
+                                              PHONE_HOME_NUMBER_PREFIX,
+                                              PHONE_HOME_NUMBER_SUFFIX,
                                               PHONE_HOME_COUNTRY_CODE,
                                               PHONE_HOME_CITY_CODE,
                                               PHONE_HOME_CITY_AND_NUMBER,
@@ -3189,8 +3191,8 @@ TEST_F(PersonalDataManagerTest,
   ASSERT_EQ(0U, card_to_suggest.size());
 }
 
-// Test that local profiles are not added if |kAutofillProfileEnabled| is set to
-// |false|.
+// Test that local credit cards are not added if |kAutofillCreditCardEnabled| is
+// set to |false|.
 TEST_F(PersonalDataManagerTest,
        GetCreditCardsToSuggest_NoCreditCardsAddedIfDisabled) {
   // Disable Profile autofill.
@@ -3204,7 +3206,7 @@ TEST_F(PersonalDataManagerTest,
                           "1");
   personal_data_->AddCreditCard(credit_card);
 
-  // Expect no profile values or suggestions were added.
+  // Expect no credit card values or suggestions were added.
   EXPECT_EQ(0U, personal_data_->GetCreditCards().size());
 }
 

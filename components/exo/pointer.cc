@@ -11,7 +11,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "components/exo/input_trace.h"
 #include "components/exo/pointer_constraint_delegate.h"
 #include "components/exo/pointer_delegate.h"
@@ -19,6 +18,8 @@
 #include "components/exo/pointer_stylus_delegate.h"
 #include "components/exo/relative_pointer_delegate.h"
 #include "components/exo/seat.h"
+#include "components/exo/security_delegate.h"
+#include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -47,19 +48,13 @@
 #include "ui/wm/core/cursor_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
+// #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
-#include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/wm/window_util.h"
 #endif
 
 namespace exo {
-
-// Controls Pointer capture in exo/wayland.
-const base::Feature kPointerCapture{"ExoPointerCapture",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
-
 namespace {
 
 // TODO(oshima): Some accessibility features, including large cursors, disable
@@ -138,6 +133,10 @@ Pointer::Pointer(PointerDelegate* delegate, Seat* seat)
 
 Pointer::~Pointer() {
   WMHelper* helper = WMHelper::GetInstance();
+  // Remove the pretarget handler in case the pointer is deleted
+  // w/o disabling pointer capture.
+  aura::Env::GetInstance()->RemovePreTargetHandler(this);
+
   helper->RemovePreTargetHandler(this);
   delegate_->OnPointerDestroying(this);
   if (focus_surface_)
@@ -264,14 +263,14 @@ bool Pointer::ConstrainPointer(PointerConstraintDelegate* delegate) {
     return false;
   }
 
-  // Pointer lock is permitted for ARC windows, and for windows configured to
-  // notify the user on lock activation. In the latter case, the
-  // kExoPointerLock feature must be enabled.
+  // Permission of Pointer lock is controlled by SecurityDelegate, created per
+  // server instance. Default implementation allows this for ARC and Lacros
+  // windows which have their own security mechanism and are consiered trusted.
   aura::Window* toplevel = constrained_surface->window()->GetToplevelWindow();
-  bool permitted =
-      ash::IsArcWindow(toplevel) ||
-      (base::FeatureList::IsEnabled(chromeos::features::kExoPointerLock) &&
-       toplevel->GetProperty(chromeos::kUseOverviewToExitPointerLock));
+  auto* shell_surface_base = GetShellSurfaceBaseForWindow(toplevel);
+  auto* security_delegate = shell_surface_base->GetSecurityDelegate();
+
+  bool permitted = security_delegate->CanLockPointer(toplevel);
   if (!permitted) {
     delegate->OnDefunct();
     return false;
@@ -360,11 +359,6 @@ void Pointer::OnPointerConstraintDelegateDestroying(
 bool Pointer::EnablePointerCapture(Surface* capture_surface) {
   if (!capture_permitted_) {
     VLOG(1) << "Unable to re-capture the pointer due to previous user action.";
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kPointerCapture)) {
-    LOG(WARNING) << "Unable to capture the pointer, feature is disabled.";
     return false;
   }
 

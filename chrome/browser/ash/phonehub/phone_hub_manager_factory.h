@@ -8,14 +8,14 @@
 #include "base/memory/singleton.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "ash/components/phonehub/phone_hub_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
 namespace ash {
 namespace phonehub {
 
-class PhoneHubManagerFactory : public BrowserContextKeyedServiceFactory {
+class PhoneHubManagerFactory : public ProfileKeyedServiceFactory {
  public:
   // Returns the PhoneHubManager instance associated with |profile|. Null is
   // returned if |profile| is not the primary Profile, if the kPhoneHub flag

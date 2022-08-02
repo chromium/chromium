@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_LOGIN_SAML_IN_SESSION_PASSWORD_SYNC_MANAGER_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -15,8 +15,7 @@ class InSessionPasswordSyncManager;
 
 // Singleton that owns all InSessionPasswordSyncManagers and associates them
 // with Profiles.
-class InSessionPasswordSyncManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class InSessionPasswordSyncManagerFactory : public ProfileKeyedServiceFactory {
  public:
   static InSessionPasswordSyncManagerFactory* GetInstance();
 

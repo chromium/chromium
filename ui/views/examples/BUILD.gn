@@ -262,6 +262,7 @@ executable("views_examples_with_content") {
     "//content",
     "//content:sandbox_helper_win",
     "//sandbox",
+    "//ui/color:mixers",
     "//ui/views_content_client",
   ]
 

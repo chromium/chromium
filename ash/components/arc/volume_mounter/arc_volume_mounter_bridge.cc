@@ -171,7 +171,7 @@ void ArcVolumeMounterBridge::SendMountEventForMyFiles() {
       l10n_util::GetStringUTF8(IDS_FILE_BROWSER_MY_FILES_ROOT_LABEL);
 
   // TODO(niwa): Add a new DeviceType enum value for MyFiles.
-  chromeos::DeviceType device_type = chromeos::DeviceType::DEVICE_TYPE_SD;
+  ash::DeviceType device_type = ash::DeviceType::kSD;
 
   // Conditionally set MyFiles to be visible for P and invisible for R. In R, we
   // use IsVisibleRead so this is not needed.
@@ -243,7 +243,7 @@ void ArcVolumeMounterBridge::OnMountEvent(
       DiskMountManager::GetInstance()->FindDiskBySourcePath(
           mount_info.source_path);
   std::string fs_uuid, device_label;
-  chromeos::DeviceType device_type = chromeos::DeviceType::DEVICE_TYPE_UNKNOWN;
+  ash::DeviceType device_type = ash::DeviceType::kUnknown;
   // There are several cases where disk can be null:
   // 1. The disk is removed physically before being ejected/unmounted.
   // 2. The disk is inserted, but then immediately removed physically. The
@@ -291,8 +291,8 @@ void ArcVolumeMounterBridge::OnMountEvent(
   }
 
   if (event == DiskMountManager::MountEvent::MOUNTING &&
-      (device_type == chromeos::DeviceType::DEVICE_TYPE_USB ||
-       device_type == chromeos::DeviceType::DEVICE_TYPE_SD)) {
+      (device_type == ash::DeviceType::kUSB ||
+       device_type == ash::DeviceType::kSD)) {
     // Record visibilities of the mounted devices only when they are removable
     // storages (e.g. USB sticks or SD cards).
     base::UmaHistogramBoolean("Arc.ExternalStorage.MountedMediaVisibility",
@@ -306,7 +306,7 @@ void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(
     const std::string& mount_path,
     const std::string& fs_uuid,
     const std::string& device_label,
-    chromeos::DeviceType device_type,
+    ash::DeviceType device_type,
     bool visible) {
   mojom::VolumeMounterInstance* volume_mounter_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),

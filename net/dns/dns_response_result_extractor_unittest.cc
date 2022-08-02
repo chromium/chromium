@@ -922,7 +922,8 @@ TEST(DnsResponseResultExtractorTest, ExtractsBasicHttpsResponses) {
   EXPECT_THAT(
       results.GetMetadatas(),
       testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
-          testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn)))));
+          testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 
@@ -963,11 +964,12 @@ TEST(DnsResponseResultExtractorTest, ExtractsComprehensiveHttpsResponses) {
   EXPECT_THAT(results.error(), test::IsOk());
   EXPECT_THAT(results.GetMetadatas(),
               testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(kAlpn)),
+                  ExpectConnectionEndpointMetadata(testing::ElementsAre(kAlpn),
+                                                   testing::IsEmpty(), kName),
                   ExpectConnectionEndpointMetadata(
                       testing::ElementsAre(
                           kAlpn, dns_protocol::kHttpsServiceDefaultAlpn),
-                      testing::ElementsAreArray(kEchConfig)))));
+                      testing::ElementsAreArray(kEchConfig), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true, true)));
 
@@ -1058,7 +1060,8 @@ TEST(DnsResponseResultExtractorTest, IgnoresUnsupportedParamsInHttpsRecord) {
   EXPECT_THAT(
       results.GetMetadatas(),
       testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
-          testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn)))));
+          testing::ElementsAre(dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
@@ -1092,10 +1095,11 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(false, true)));
 }
@@ -1119,10 +1123,11 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
@@ -1146,10 +1151,11 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
@@ -1174,10 +1180,11 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
@@ -1202,10 +1209,11 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
@@ -1234,25 +1242,25 @@ TEST(DnsResponseResultExtractorTest,
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true, true)));
 }
 
 TEST(DnsResponseResultExtractorTest,
-     IgnoreHttpsRecordWithPrefixedNameAndDefaultServiceName) {
+     ExtractsHttpsRecordWithPrefixedNameAndDefaultServiceName) {
   constexpr char kPrefixedName[] = "_445._https.https.test";
 
-  DnsResponse response =
-      BuildTestDnsResponse(kPrefixedName, dns_protocol::kTypeHttps,
-                           {BuildTestHttpsServiceRecord(
-                               kPrefixedName, /*priority=*/4,
-                               /*service_name=*/".",
-                               /*params=*/
-                               {BuildTestHttpsServiceAlpnParam({"ignored"})})});
+  DnsResponse response = BuildTestDnsResponse(
+      kPrefixedName, dns_protocol::kTypeHttps,
+      {BuildTestHttpsServiceRecord(kPrefixedName, /*priority=*/4,
+                                   /*service_name=*/".",
+                                   /*params=*/
+                                   {BuildTestHttpsServiceAlpnParam({"foo"})})});
   DnsResponseResultExtractor extractor(&response);
 
   HostCache::Entry results(ERR_FAILED, HostCache::Entry::SOURCE_UNKNOWN);
@@ -1261,14 +1269,18 @@ TEST(DnsResponseResultExtractorTest,
                                         /*request_port=*/0, &results),
             DnsResponseResultExtractor::ExtractionError::kOk);
 
-  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kPrefixedName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
 
 TEST(DnsResponseResultExtractorTest,
-     IgnoreHttpsRecordWithAliasingAndDefaultServiceName) {
+     ExtractsHttpsRecordWithAliasingAndDefaultServiceName) {
   constexpr char kName[] = "https.test";
 
   DnsResponse response = BuildTestDnsResponse(
@@ -1286,8 +1298,12 @@ TEST(DnsResponseResultExtractorTest,
                                         /*request_port=*/0, &results),
             DnsResponseResultExtractor::ExtractionError::kOk);
 
-  EXPECT_THAT(results.error(), test::IsError(ERR_NAME_NOT_RESOLVED));
-  EXPECT_THAT(results.GetMetadatas(), testing::Optional(testing::IsEmpty()));
+  EXPECT_THAT(results.error(), test::IsOk());
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), "alias.test"))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
@@ -1312,10 +1328,11 @@ TEST(DnsResponseResultExtractorTest, ExtractsHttpsRecordWithMatchingPort) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 }
@@ -1343,10 +1360,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithMismatchingPort) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true, true)));
 }
@@ -1376,10 +1394,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresHttpsRecordWithNoAlpn) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true, true)));
 }
@@ -1579,10 +1598,11 @@ TEST(DnsResponseResultExtractorTest, IgnoresAdditionalHttpsRecords) {
             DnsResponseResultExtractor::ExtractionError::kOk);
 
   EXPECT_THAT(results.error(), test::IsOk());
-  EXPECT_THAT(results.GetMetadatas(),
-              testing::Optional(testing::ElementsAre(
-                  ExpectConnectionEndpointMetadata(testing::ElementsAre(
-                      "foo1", dns_protocol::kHttpsServiceDefaultAlpn)))));
+  EXPECT_THAT(
+      results.GetMetadatas(),
+      testing::Optional(testing::ElementsAre(ExpectConnectionEndpointMetadata(
+          testing::ElementsAre("foo1", dns_protocol::kHttpsServiceDefaultAlpn),
+          testing::IsEmpty(), kName))));
   EXPECT_THAT(results.https_record_compatibility(),
               testing::Pointee(testing::ElementsAre(true)));
 

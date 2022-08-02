@@ -146,4 +146,55 @@ base::TimeDelta PrefetchCacheableDuration() {
       features::kPrefetchUseContentRefactor, "cacheable_duration", 300));
 }
 
+bool PrefetchProbingEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kPrefetchUseContentRefactor, "must_probe_origin", true);
+}
+
+bool PrefetchCanaryCheckEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kPrefetchUseContentRefactor, "do_canary", true);
+  ;
+}
+
+bool PrefetchTLSCanaryCheckEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kPrefetchUseContentRefactor, "do_tls_canary", false);
+  ;
+}
+
+GURL PrefetchTLSCanaryCheckURL(const GURL& default_tls_canary_check_url) {
+  GURL url(base::GetFieldTrialParamValueByFeature(
+      features::kPrefetchUseContentRefactor, "tls_canary_url"));
+  if (url.is_valid())
+    return url;
+
+  return default_tls_canary_check_url;
+}
+
+GURL PrefetchDNSCanaryCheckURL(const GURL& default_dns_canary_check_url) {
+  GURL url(base::GetFieldTrialParamValueByFeature(
+      features::kPrefetchUseContentRefactor, "dns_canary_url"));
+  if (url.is_valid())
+    return url;
+
+  return default_dns_canary_check_url;
+}
+
+base::TimeDelta PrefetchCanaryCheckCacheLifetime() {
+  return base::Hours(base::GetFieldTrialParamByFeatureAsInt(
+      features::kPrefetchUseContentRefactor, "canary_cache_hours", 24));
+}
+
+base::TimeDelta PrefetchCanaryCheckTimeout() {
+  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      features::kPrefetchUseContentRefactor, "canary_check_timeout_ms",
+      5 * 1000 /* 5 seconds */));
+}
+
+int PrefetchCanaryCheckRetries() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kPrefetchUseContentRefactor, "canary_check_retries", 1);
+}
+
 }  // namespace content

@@ -578,7 +578,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
                                          apps::PatternMatchType::kNone);
   intent_filter->AddSingleValueCondition(apps::ConditionType::kHost, "2",
                                          apps::PatternMatchType::kLiteral);
-  intent_filter->AddSingleValueCondition(apps::ConditionType::kPattern, "3",
+  intent_filter->AddSingleValueCondition(apps::ConditionType::kPath, "3",
                                          apps::PatternMatchType::kPrefix);
   intent_filter->AddSingleValueCondition(apps::ConditionType::kAction, "4",
                                          apps::PatternMatchType::kGlob);
@@ -617,7 +617,7 @@ TEST(AppServiceTypesMojomTraitsTest, RoundTripIntentFilters) {
   }
   {
     auto& condition = filter->conditions[2];
-    EXPECT_EQ(condition->condition_type, apps::ConditionType::kPattern);
+    EXPECT_EQ(condition->condition_type, apps::ConditionType::kPath);
     ASSERT_EQ(condition->condition_values.size(), 1U);
     EXPECT_EQ(condition->condition_values[0]->match_type,
               apps::PatternMatchType::kPrefix);
@@ -1143,7 +1143,7 @@ TEST(AppServiceTypesMojomTraitsTest, PreferredAppChanges) {
 
   apps::IntentFilters removed_filters;
   auto intent_filter3 = std::make_unique<apps::IntentFilter>();
-  intent_filter3->AddSingleValueCondition(apps::ConditionType::kPattern, "3",
+  intent_filter3->AddSingleValueCondition(apps::ConditionType::kPath, "3",
                                           apps::PatternMatchType::kPrefix);
   auto intent_filter4 = std::make_unique<apps::IntentFilter>();
   intent_filter4->AddSingleValueCondition(apps::ConditionType::kAction, "4",

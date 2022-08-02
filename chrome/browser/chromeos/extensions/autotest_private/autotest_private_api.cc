@@ -1976,7 +1976,6 @@ ExtensionFunction::ResponseAction AutotestPrivateGetLacrosInfoFunction::Run() {
   DVLOG(1) << "AutotestPrivateGetLacrosInfoFunction";
   auto* browser_manager = crosapi::BrowserManager::Get();
   auto result = std::make_unique<base::DictionaryValue>();
-  result->SetBoolKey("isRunning", browser_manager->IsRunning());
   result->SetStringKey("state", api::autotest_private::ToString(
                                     ToLacrosState(browser_manager->state_)));
   result->SetBoolKey("isKeepAlive", browser_manager->IsKeepAliveEnabled());

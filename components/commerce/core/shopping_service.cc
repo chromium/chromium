@@ -172,14 +172,15 @@ void ShoppingService::OnProductInfoJsonSanitizationCompleted(
     data_decoder::DataDecoder::ValueOrError result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.has_value())
+  if (!result.has_value() || !result.value().is_dict())
     return;
 
   auto it = product_info_cache_.find(url.spec());
   // If there was no entry or the data doesn't need javascript run, do
   // nothing.
   if (it != product_info_cache_.end())
-    MergeProductInfoData(std::get<2>(it->second).get(), result.value());
+    MergeProductInfoData(std::get<2>(it->second).get(),
+                         result.value().GetDict());
 }
 
 void ShoppingService::WebWrapperDestroyed(WebWrapper* web) {
@@ -384,8 +385,9 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   std::move(callback).Run(url, optional_info);
 }
 
-void ShoppingService::MergeProductInfoData(ProductInfo* info,
-                                           base::Value& on_page_data_map) {
+void ShoppingService::MergeProductInfoData(
+    ProductInfo* info,
+    const base::Value::Dict& on_page_data_map) {
   if (!info)
     return;
 
@@ -395,16 +397,16 @@ void ShoppingService::MergeProductInfoData(ProductInfo* info,
 
   bool had_fallback_image = false;
 
-  for (auto it : on_page_data_map.DictItems()) {
-    if (base::CompareCaseInsensitiveASCII(it.first, kOgTitle) == 0) {
+  for (const auto [key, value] : on_page_data_map) {
+    if (base::CompareCaseInsensitiveASCII(key, kOgTitle) == 0) {
       if (info->title.empty()) {
-        info->title = it.second.GetString();
+        info->title = value.GetString();
         base::UmaHistogramEnumeration(
             "Commerce.ShoppingService.ProductInfo.FallbackDataContent",
             ProductInfoFallback::kTitle);
         data_was_merged = true;
       }
-    } else if (base::CompareCaseInsensitiveASCII(it.first, kOgImage) == 0) {
+    } else if (base::CompareCaseInsensitiveASCII(key, kOgImage) == 0) {
       had_fallback_image = true;
 
       // If the product already has an image, add the one found on the page as
@@ -412,7 +414,7 @@ void ShoppingService::MergeProductInfoData(ProductInfo* info,
       // retrieved from the proto received from optimization guide before this
       // callback runs.
       if (info->image_url.is_empty()) {
-        GURL og_url(it.second.GetString());
+        GURL og_url(value.GetString());
 
         // Only keep the local image if we're allowed to.
         if (base::FeatureList::IsEnabled(commerce::kCommerceAllowLocalImages))
@@ -425,16 +427,15 @@ void ShoppingService::MergeProductInfoData(ProductInfo* info,
       }
       // TODO(mdjones): Add capacity for fallback images when necessary.
 
-    } else if (base::CompareCaseInsensitiveASCII(it.first, kOgPriceCurrency) ==
-               0) {
+    } else if (base::CompareCaseInsensitiveASCII(key, kOgPriceCurrency) == 0) {
       if (info->amount_micros <= 0) {
         double amount = 0;
-        if (base::StringToDouble(
-                *on_page_data_map.FindStringKey(kOgPriceAmount), &amount)) {
+        if (base::StringToDouble(*on_page_data_map.FindString(kOgPriceAmount),
+                                 &amount)) {
           // Currency is stored in micro-units rather than standard units, so we
           // need to convert (open graph provides standard units).
           info->amount_micros = amount * kToMicroCurrency;
-          info->currency_code = it.second.GetString();
+          info->currency_code = value.GetString();
           base::UmaHistogramEnumeration(
               "Commerce.ShoppingService.ProductInfo.FallbackDataContent",
               ProductInfoFallback::kPrice);

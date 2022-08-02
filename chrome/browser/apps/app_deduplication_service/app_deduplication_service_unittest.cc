@@ -6,12 +6,16 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_deduplication_service/app_deduplication_service_factory.h"
+#include "chrome/browser/apps/app_provisioning_service/app_provisioning_data_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace apps {
+using testing::ElementsAre;
+
+namespace apps::deduplication {
 
 class AppDeduplicationServiceTest : public testing::Test {
  protected:
@@ -30,20 +34,19 @@ TEST_F(AppDeduplicationServiceTest, ServiceAccessPerProfile) {
 
   // We expect an App Deduplication Service in a regular profile.
   auto profile = profile_builder.Build();
-  EXPECT_TRUE(apps::AppDeduplicationServiceFactory::
+  EXPECT_TRUE(AppDeduplicationServiceFactory::
                   IsAppDeduplicationServiceAvailableForProfile(profile.get()));
-  auto* service =
-      apps::AppDeduplicationServiceFactory::GetForProfile(profile.get());
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
   EXPECT_NE(nullptr, service);
 
   // We expect App Deduplication Service to be unsupported in incognito.
   TestingProfile::Builder incognito_builder;
   auto* incognito_profile = incognito_builder.BuildIncognito(profile.get());
   EXPECT_FALSE(
-      apps::AppDeduplicationServiceFactory::
+      AppDeduplicationServiceFactory::
           IsAppDeduplicationServiceAvailableForProfile(incognito_profile));
-  EXPECT_EQ(nullptr, apps::AppDeduplicationServiceFactory::GetForProfile(
-                         incognito_profile));
+  EXPECT_EQ(nullptr,
+            AppDeduplicationServiceFactory::GetForProfile(incognito_profile));
 
   // We expect a different App Deduplication Service in the Guest Session
   // profile.
@@ -53,21 +56,53 @@ TEST_F(AppDeduplicationServiceTest, ServiceAccessPerProfile) {
 
   // App Deduplication Service is not available for original profile.
   EXPECT_FALSE(
-      apps::AppDeduplicationServiceFactory::
+      AppDeduplicationServiceFactory::
           IsAppDeduplicationServiceAvailableForProfile(guest_profile.get()));
-  EXPECT_EQ(nullptr, apps::AppDeduplicationServiceFactory::GetForProfile(
-                         guest_profile.get()));
+  EXPECT_EQ(nullptr,
+            AppDeduplicationServiceFactory::GetForProfile(guest_profile.get()));
 
   // App Deduplication Service is available for OTR profile in Guest mode.
   auto* guest_otr_profile =
       guest_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_TRUE(
-      apps::AppDeduplicationServiceFactory::
+      AppDeduplicationServiceFactory::
           IsAppDeduplicationServiceAvailableForProfile(guest_otr_profile));
   auto* guest_otr_service =
-      apps::AppDeduplicationServiceFactory::GetForProfile(guest_otr_profile);
+      AppDeduplicationServiceFactory::GetForProfile(guest_otr_profile);
   EXPECT_NE(nullptr, guest_otr_service);
   EXPECT_NE(guest_otr_service, service);
 }
 
-}  // namespace apps
+TEST_F(AppDeduplicationServiceTest, OnDuplicatedAppsMapUpdated) {
+  TestingProfile::Builder profile_builder;
+  auto profile = profile_builder.Build();
+  ASSERT_TRUE(AppDeduplicationServiceFactory::
+                  IsAppDeduplicationServiceAvailableForProfile(profile.get()));
+  auto* service = AppDeduplicationServiceFactory::GetForProfile(profile.get());
+  EXPECT_NE(nullptr, service);
+
+  std::string binary_pb = "";
+  base::FilePath install_dir("/");
+  apps::AppProvisioningDataManager::Get()->PopulateFromDynamicUpdate(
+      binary_pb, install_dir);
+
+  std::string test_key = "test_key";
+  std::string arc_app_id = "test_arc_app_id";
+  auto it =
+      service->entry_to_group_map_.find(EntryId(arc_app_id, AppType::kArc));
+  ASSERT_NE(it, service->entry_to_group_map_.end());
+  EXPECT_EQ(test_key, it->second);
+
+  std::string web_app_id = "test_web_app_id";
+  it = service->entry_to_group_map_.find(EntryId(web_app_id, AppType::kWeb));
+  ASSERT_NE(it, service->entry_to_group_map_.end());
+  EXPECT_EQ(test_key, it->second);
+
+  auto map_it = service->duplication_map_.find(test_key);
+  ASSERT_FALSE(map_it == service->duplication_map_.end());
+  EXPECT_THAT(map_it->second.entries,
+              ElementsAre(Entry(EntryId(arc_app_id, AppType::kArc)),
+                          Entry(EntryId(web_app_id, AppType::kWeb))));
+}
+
+}  // namespace apps::deduplication

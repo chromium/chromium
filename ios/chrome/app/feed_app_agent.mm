@@ -167,7 +167,7 @@
   }
 }
 
-#pragma mark - Non-release only - Refresh Completion Notifications
+#pragma mark - Refresh Completion Notifications (only enabled by Experimental Settings)
 
 // Request provisional permission, which does not explicitly prompt the user for
 // permission. Instead, the OS delivers provisional notifications quietly and
@@ -195,7 +195,8 @@
   UNMutableNotificationContent* content =
       [[UNMutableNotificationContent alloc] init];
   content.title = title;
-  content.body = @"This is compiled only into non-release versions.";
+  content.body = @"This is enabled via Experimental Settings which is not "
+                 @"available in stable.";
   UNTimeIntervalNotificationTrigger* trigger =
       [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:(1)
                                                          repeats:NO];

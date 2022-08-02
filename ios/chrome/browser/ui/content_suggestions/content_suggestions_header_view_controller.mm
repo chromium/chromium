@@ -215,14 +215,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   return AlignValueToPixel(offsetY);
 }
 
-- (void)loadView {
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    [super loadView];
-  } else {
-    self.view = [[ContentSuggestionsHeaderView alloc] init];
-  }
-}
-
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
@@ -240,7 +232,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (IsContentSuggestionsHeaderMigrationEnabled() && !self.headerView) {
+  if (!self.headerView) {
     CGFloat width = self.view.frame.size.width;
 
     self.headerView = [[ContentSuggestionsHeaderView alloc] init];
@@ -278,56 +270,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
     [self.logoVendor fetchDoodle];
   }
-}
-
-#pragma mark - ContentSuggestionsHeaderProvider
-
-- (UIView*)headerForWidth:(CGFloat)width
-           safeAreaInsets:(UIEdgeInsets)safeAreaInsets {
-  DCHECK(!IsContentSuggestionsHeaderMigrationEnabled());
-  if (!self.headerView) {
-    self.headerView =
-        base::mac::ObjCCastStrict<ContentSuggestionsHeaderView>(self.view);
-    [self addFakeOmnibox];
-
-    [self.headerView addSubview:self.logoVendor.view];
-    // Fake Tap View has identity disc, which should render above the doodle.
-    [self addFakeTapView];
-    [self.headerView addSubview:self.fakeOmnibox];
-    self.logoVendor.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.logoVendor.view.accessibilityIdentifier =
-        ntp_home::NTPLogoAccessibilityID();
-    self.fakeOmnibox.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [self.headerView addSeparatorToSearchField:self.fakeOmnibox];
-
-    // Identity disc needs to be added after the Google logo/doodle since it
-    // needs to respond to user taps first.
-    [self addIdentityDisc];
-
-    // -headerForView is regularly called before self.headerView has been added
-    // to the view hierarchy, so there's no simple way to get the correct
-    // safeAreaInsets.  Since this situation is universally called for the full
-    // screen new tab animation, it's safe to check the rootViewController's
-    // view instead.
-    // TODO(crbug.com/791784) : Remove use of rootViewController.
-    if (self.headerView.window) {
-      safeAreaInsets =
-          self.headerView.window.rootViewController.view.safeAreaInsets;
-    }
-    width = std::max<CGFloat>(
-        0, width - safeAreaInsets.left - safeAreaInsets.right);
-
-    self.fakeOmniboxWidthConstraint = [self.fakeOmnibox.widthAnchor
-        constraintEqualToConstant:content_suggestions::searchFieldWidth(
-                                      width, self.traitCollection)];
-    [self addConstraintsForLogoView:self.logoVendor.view
-                        fakeOmnibox:self.fakeOmnibox
-                      andHeaderView:self.headerView];
-
-    [self.logoVendor fetchDoodle];
-  }
-  return self.headerView;
 }
 
 #pragma mark - Private
@@ -511,15 +453,11 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                       self.logoVendor.isShowingDoodle, self.traitCollection)];
   self.fakeOmnibox.hidden =
       IsRegularXRegularSizeClass(self) && !self.logoIsShowing;
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    [self.headerView layoutIfNeeded];
-    self.headerViewHeightConstraint.constant =
-        content_suggestions::heightForLogoHeader(
-            self.logoIsShowing, self.logoVendor.isShowingDoodle,
-            self.promoCanShow, YES, [self topInset], self.traitCollection);
-  } else {
-    [self.collectionSynchronizer invalidateLayout];
-  }
+  [self.headerView layoutIfNeeded];
+  self.headerViewHeightConstraint.constant =
+      content_suggestions::heightForLogoHeader(
+          self.logoIsShowing, self.logoVendor.isShowingDoodle,
+          self.promoCanShow, YES, [self topInset], self.traitCollection);
 }
 
 // If Google is not the default search engine, hides the logo, doodle and
@@ -561,11 +499,9 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.fakeOmniboxTopMarginConstraint = [logoView.bottomAnchor
       constraintEqualToAnchor:fakeOmnibox.topAnchor
                      constant:-content_suggestions::searchFieldTopMargin()];
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    self.headerViewHeightConstraint =
-        [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
-    self.headerViewHeightConstraint.active = YES;
-  }
+  self.headerViewHeightConstraint =
+      [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
+  self.headerViewHeightConstraint.active = YES;
   self.doodleTopMarginConstraint.active = YES;
   self.doodleHeightConstraint.active = YES;
   self.fakeOmniboxWidthConstraint.active = YES;
@@ -660,9 +596,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (CGFloat)topInset {
-  return IsContentSuggestionsHeaderMigrationEnabled()
-             ? 0
-             : self.parentViewController.view.safeAreaInsets.top;
+  return 0;
 }
 
 #pragma mark - UIIndirectScribbleInteractionDelegate
@@ -738,12 +672,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       setConstant:content_suggestions::doodleHeight(self.logoVendor.showingLogo,
                                                     doodleShowing,
                                                     self.traitCollection)];
-  if (IsContentSuggestionsHeaderMigrationEnabled()) {
-    self.headerViewHeightConstraint.constant =
-        content_suggestions::heightForLogoHeader(
-            self.logoIsShowing, self.logoVendor.isShowingDoodle,
-            self.promoCanShow, YES, [self topInset], self.traitCollection);
-  }
+  self.headerViewHeightConstraint.constant =
+      content_suggestions::heightForLogoHeader(
+          self.logoIsShowing, self.logoVendor.isShowingDoodle,
+          self.promoCanShow, YES, [self topInset], self.traitCollection);
   [self.commandHandler updateForHeaderSizeChange];
 }
 

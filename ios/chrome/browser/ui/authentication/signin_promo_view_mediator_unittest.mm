@@ -201,8 +201,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     ExpectNoAccountsConfiguration(style);
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
-    OCMExpect([signin_promo_view_
-        setCompactLayout:(style == SigninPromoViewStyleTitledCompact)]);
+    OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_EQ(nil, image_view_profile_image_);
   }
@@ -250,8 +249,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     ExpectSigninWithAccountConfiguration(style);
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
-    OCMExpect([signin_promo_view_
-        setCompactLayout:(style == SigninPromoViewStyleTitledCompact)]);
+    OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_NE(nil, image_view_profile_image_);
   }
@@ -283,8 +281,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
     ExpectSyncPromoConfiguration();
     OCMExpect([close_button_ setHidden:close_button_hidden_]);
     OCMExpect([title_label_ setHidden:(style == SigninPromoViewStyleStandard)]);
-    OCMExpect([signin_promo_view_
-        setCompactLayout:(style == SigninPromoViewStyleTitledCompact)]);
+    OCMExpect([signin_promo_view_ setPromoViewStyle:style]);
     [configurator configureSigninPromoView:signin_promo_view_ withStyle:style];
     EXPECT_NE(nil, image_view_profile_image_);
   }
