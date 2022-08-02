@@ -9,6 +9,7 @@
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
@@ -35,6 +36,9 @@ class BrowserAccessibilityManagerAuraLinuxTest : public testing::Test {
  private:
   void SetUp() override;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
+
+  // See crbug.com/1349124
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 void BrowserAccessibilityManagerAuraLinuxTest::SetUp() {
