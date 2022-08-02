@@ -241,15 +241,22 @@ bool DictionaryValueUpdate::GetStringWithoutPathExpansion(
 bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
     base::StringPiece key,
     const base::DictionaryValue** out_value) const {
-  return value_->GetDictionaryWithoutPathExpansion(key, out_value);
+  const base::Value* value = value_->GetDict().Find(key);
+  if (!value || !value->is_dict())
+    return false;
+  if (out_value)
+    *out_value = static_cast<const base::DictionaryValue*>(value);
+  return true;
 }
 
 bool DictionaryValueUpdate::GetDictionaryWithoutPathExpansion(
     base::StringPiece key,
     std::unique_ptr<DictionaryValueUpdate>* out_value) {
   base::DictionaryValue* dictionary_value = nullptr;
-  if (!value_->GetDictionaryWithoutPathExpansion(key, &dictionary_value))
+  if (!base::as_const(*this).GetDictionaryWithoutPathExpansion(
+          key, const_cast<const base::DictionaryValue**>(&dictionary_value))) {
     return false;
+  }
 
   std::vector<std::string> full_path = path_;
   full_path.push_back(std::string(key));
