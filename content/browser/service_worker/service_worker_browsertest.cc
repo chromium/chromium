@@ -1007,10 +1007,18 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest, StartWorkerWhileInstalling) {
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+// http://crbug.com/1347684
+#define MAYBE_DispatchFetchEventToStoppedWorkerSynchronously \
+  DISABLED_DispatchFetchEventToStoppedWorkerSynchronously
+#else
+#define MAYBE_DispatchFetchEventToStoppedWorkerSynchronously \
+  DispatchFetchEventToStoppedWorkerSynchronously
+#endif
 // Make sure that a fetch event is dispatched to a stopped worker in the task
 // which calls ServiceWorkerFetchDispatcher::Run().
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
-                       DispatchFetchEventToStoppedWorkerSynchronously) {
+                       MAYBE_DispatchFetchEventToStoppedWorkerSynchronously) {
   // Setup the server so that the test doesn't crash when tearing down.
   StartServerAndNavigateToSetup();
 
