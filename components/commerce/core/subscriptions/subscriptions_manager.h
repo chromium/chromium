@@ -11,15 +11,28 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/scoped_refptr.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace commerce {
 
+class SubscriptionsServerProxy;
+class SubscriptionsStorage;
 enum class SubscriptionType;
 struct CommerceSubscription;
 
 class SubscriptionsManager {
  public:
-  SubscriptionsManager();
+  SubscriptionsManager(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   SubscriptionsManager(const SubscriptionsManager&) = delete;
   SubscriptionsManager& operator=(const SubscriptionsManager&) = delete;
   ~SubscriptionsManager();
@@ -47,6 +60,10 @@ class SubscriptionsManager {
             AsyncOperation operation,
             std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
             base::OnceCallback<void(bool)> callback);
+    Request(const Request&) = delete;
+    Request& operator=(const Request&) = delete;
+    Request(Request&&);
+    Request& operator=(Request&&) = default;
     ~Request();
 
     SubscriptionType type;
@@ -67,15 +84,24 @@ class SubscriptionsManager {
   // request. This is chained to the main callback when Request object is built.
   void OnRequestCompletion();
 
-  void ProcessSubscribeRequest(std::unique_ptr<Request> request);
+  void ProcessSubscribeRequest(Request request);
 
-  void ProcessUnsubscribeRequest(std::unique_ptr<Request> request);
+  void ProcessUnsubscribeRequest(Request request);
 
-  void ProcessInitRequest(std::unique_ptr<Request> request);
+  void ProcessInitRequest(Request request);
+
+  void GetRemoteSubscriptionsAndUpdateStorage(
+      SubscriptionType type,
+      base::OnceCallback<void(bool)> callback);
+
+  void HandleManageSubscriptionsResponse(
+      SubscriptionType type,
+      base::OnceCallback<void(bool)> callback,
+      bool succeeded);
 
   // Hold coming requests until previous ones have finished to avoid race
   // conditions.
-  std::queue<std::unique_ptr<Request>> pending_requests_;
+  std::queue<Request> pending_requests_;
 
   // Whether the initialization is successful. If not, all (un)subscribe
   // operations will fail immediately.
@@ -83,6 +109,10 @@ class SubscriptionsManager {
 
   // Whether there is any request running.
   bool has_request_running_ = false;
+
+  std::unique_ptr<SubscriptionsServerProxy> server_proxy_;
+
+  std::unique_ptr<SubscriptionsStorage> storage_;
 
   base::WeakPtrFactory<SubscriptionsManager> weak_ptr_factory_;
 };

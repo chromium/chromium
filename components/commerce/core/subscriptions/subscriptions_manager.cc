@@ -5,14 +5,27 @@
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
+#include "components/commerce/core/subscriptions/subscriptions_server_proxy.h"
+#include "components/commerce/core/subscriptions/subscriptions_storage.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #include <queue>
 #include <string>
 
 namespace commerce {
 
-SubscriptionsManager::SubscriptionsManager() : weak_ptr_factory_(this) {
+SubscriptionsManager::SubscriptionsManager(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : weak_ptr_factory_(this) {
+  server_proxy_ = std::make_unique<SubscriptionsServerProxy>(
+      identity_manager, std::move(url_loader_factory));
+  storage_ = std::make_unique<SubscriptionsStorage>();
+// Avoid duplicate server calls on android. Remove this after we integrate
+// android implementation to shopping service.
+#if !BUILDFLAG(IS_ANDROID)
   InitSubscriptions();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 SubscriptionsManager::~SubscriptionsManager() = default;
 
@@ -34,21 +47,22 @@ SubscriptionsManager::Request::Request(
   CHECK(operation == AsyncOperation::kSubscribe ||
         operation == AsyncOperation::kUnsubscribe);
 }
+SubscriptionsManager::Request::Request(Request&&) = default;
 SubscriptionsManager::Request::~Request() = default;
 
 void SubscriptionsManager::Subscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
   SubscriptionType type = (*subscriptions)[0].type;
-  pending_requests_.push(std::make_unique<Request>(
-      type, AsyncOperation::kSubscribe, std::move(subscriptions),
-      base::BindOnce(
-          [](base::WeakPtr<SubscriptionsManager> manager,
-             base::OnceCallback<void(bool)> callback, bool result) {
-            std::move(callback).Run(result);
-            manager->OnRequestCompletion();
-          },
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+  pending_requests_.push(
+      Request(type, AsyncOperation::kSubscribe, std::move(subscriptions),
+              base::BindOnce(
+                  [](base::WeakPtr<SubscriptionsManager> manager,
+                     base::OnceCallback<void(bool)> callback, bool result) {
+                    std::move(callback).Run(result);
+                    manager->OnRequestCompletion();
+                  },
+                  weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
   CheckAndProcessRequest();
 }
 
@@ -56,22 +70,22 @@ void SubscriptionsManager::Unsubscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
   SubscriptionType type = (*subscriptions)[0].type;
-  pending_requests_.push(std::make_unique<Request>(
-      type, AsyncOperation::kUnsubscribe, std::move(subscriptions),
-      base::BindOnce(
-          [](base::WeakPtr<SubscriptionsManager> manager,
-             base::OnceCallback<void(bool)> callback, bool result) {
-            std::move(callback).Run(result);
-            manager->OnRequestCompletion();
-          },
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+  pending_requests_.push(
+      Request(type, AsyncOperation::kUnsubscribe, std::move(subscriptions),
+              base::BindOnce(
+                  [](base::WeakPtr<SubscriptionsManager> manager,
+                     base::OnceCallback<void(bool)> callback, bool result) {
+                    std::move(callback).Run(result);
+                    manager->OnRequestCompletion();
+                  },
+                  weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
   CheckAndProcessRequest();
 }
 
 void SubscriptionsManager::InitSubscriptions() {
   init_succeeded_ = false;
   if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-    pending_requests_.push(std::make_unique<Request>(
+    pending_requests_.push(Request(
         SubscriptionType::kPriceTrack, AsyncOperation::kInit,
         base::BindOnce(
             [](base::WeakPtr<SubscriptionsManager> manager, bool result) {
@@ -90,11 +104,11 @@ void SubscriptionsManager::CheckAndProcessRequest() {
   // If there is no request running, we can start processing next request in the
   // queue.
   has_request_running_ = true;
-  std::unique_ptr<Request> request = std::move(pending_requests_.front());
+  Request request = std::move(pending_requests_.front());
   pending_requests_.pop();
-  CHECK(request->type != SubscriptionType::kTypeUnspecified);
+  CHECK(request.type != SubscriptionType::kTypeUnspecified);
 
-  switch (request->operation) {
+  switch (request.operation) {
     case AsyncOperation::kInit:
       ProcessInitRequest(std::move(request));
       break;
@@ -112,26 +126,73 @@ void SubscriptionsManager::OnRequestCompletion() {
   CheckAndProcessRequest();
 }
 
-void SubscriptionsManager::ProcessInitRequest(std::unique_ptr<Request> request){
-    // TODO: Get all subscriptions from server and sync with local db.
+void SubscriptionsManager::ProcessInitRequest(Request request) {
+  GetRemoteSubscriptionsAndUpdateStorage(request.type,
+                                         std::move(request.callback));
 };
 
-void SubscriptionsManager::ProcessSubscribeRequest(
-    std::unique_ptr<Request> request) {
+void SubscriptionsManager::ProcessSubscribeRequest(Request request) {
   if (!init_succeeded_) {
-    std::move(request->callback).Run(false);
+    std::move(request.callback).Run(false);
     return;
   }
-  // TODO: Check local db and send request to server.
+  storage_->GetUniqueNonExistingSubscriptions(
+      std::move(request.subscriptions),
+      base::BindOnce(
+          [](base::WeakPtr<SubscriptionsManager> manager, SubscriptionType type,
+             base::OnceCallback<void(bool)> callback,
+             std::unique_ptr<std::vector<CommerceSubscription>>
+                 unique_subscriptions) {
+            manager->server_proxy_->Create(
+                std::move(unique_subscriptions),
+                base::BindOnce(
+                    &SubscriptionsManager::HandleManageSubscriptionsResponse,
+                    manager, type, std::move(callback)));
+          },
+          weak_ptr_factory_.GetWeakPtr(), request.type,
+          std::move(request.callback)));
 }
 
-void SubscriptionsManager::ProcessUnsubscribeRequest(
-    std::unique_ptr<Request> request) {
+void SubscriptionsManager::ProcessUnsubscribeRequest(Request request) {
   if (!init_succeeded_) {
-    std::move(request->callback).Run(false);
+    std::move(request.callback).Run(false);
     return;
   }
-  // TODO: Check local db and send request to server.
+  storage_->GetUniqueExistingSubscriptions(
+      std::move(request.subscriptions),
+      base::BindOnce(
+          [](base::WeakPtr<SubscriptionsManager> manager, SubscriptionType type,
+             base::OnceCallback<void(bool)> callback,
+             std::unique_ptr<std::vector<CommerceSubscription>>
+                 unique_subscriptions) {
+            manager->server_proxy_->Delete(
+                std::move(unique_subscriptions),
+                base::BindOnce(
+                    &SubscriptionsManager::HandleManageSubscriptionsResponse,
+                    manager, type, std::move(callback)));
+          },
+          weak_ptr_factory_.GetWeakPtr(), request.type,
+          std::move(request.callback)));
+}
+
+void SubscriptionsManager::GetRemoteSubscriptionsAndUpdateStorage(
+    SubscriptionType type,
+    base::OnceCallback<void(bool)> callback) {
+  server_proxy_->Get(type, base::BindOnce(&SubscriptionsStorage::UpdateStorage,
+                                          base::Unretained(storage_.get()),
+                                          type, std::move(callback)));
+}
+
+void SubscriptionsManager::HandleManageSubscriptionsResponse(
+    SubscriptionType type,
+    base::OnceCallback<void(bool)> callback,
+    bool succeeded) {
+  if (!succeeded) {
+    VLOG(1) << "Fail to create or delete subscriptions on server";
+    std::move(callback).Run(false);
+  } else {
+    GetRemoteSubscriptionsAndUpdateStorage(type, std::move(callback));
+  }
 }
 
 }  // namespace commerce

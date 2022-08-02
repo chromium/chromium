@@ -8,37 +8,35 @@
 
 namespace commerce {
 
-UserSeenOffer::UserSeenOffer(uint64_t offer_id,
+UserSeenOffer::UserSeenOffer(std::string offer_id,
                              long user_seen_price,
-                             const std::string& country_code)
+                             std::string country_code)
     : offer_id(offer_id),
       user_seen_price(user_seen_price),
       country_code(country_code) {}
+UserSeenOffer::UserSeenOffer(const UserSeenOffer&) = default;
+UserSeenOffer& UserSeenOffer::operator=(const UserSeenOffer&) = default;
 UserSeenOffer::~UserSeenOffer() = default;
 
-CommerceSubscription::CommerceSubscription(SubscriptionType type,
-                                           IdentifierType id_type,
-                                           uint64_t id,
-                                           ManagementType management_type)
-    : type(type),
-      id_type(id_type),
-      id(id),
-      management_type(management_type),
-      user_seen_offer(absl::nullopt),
-      timestamp(0) {}
+const int64_t kUnknownSubscriptionTimestamp = 0;
 
 CommerceSubscription::CommerceSubscription(
     SubscriptionType type,
     IdentifierType id_type,
-    uint64_t id,
+    std::string id,
     ManagementType management_type,
+    int64_t timestamp,
     absl::optional<UserSeenOffer> user_seen_offer)
     : type(type),
       id_type(id_type),
       id(id),
       management_type(management_type),
-      user_seen_offer(std::move(user_seen_offer)),
-      timestamp(0) {}
+      timestamp(timestamp),
+      user_seen_offer(std::move(user_seen_offer)) {}
+CommerceSubscription::CommerceSubscription(const CommerceSubscription&) =
+    default;
+CommerceSubscription& CommerceSubscription::operator=(
+    const CommerceSubscription&) = default;
 CommerceSubscription::~CommerceSubscription() = default;
 
 }  // namespace commerce

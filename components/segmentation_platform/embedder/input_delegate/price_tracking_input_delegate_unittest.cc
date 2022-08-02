@@ -13,6 +13,7 @@
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/segmentation_platform/internal/execution/processing/feature_processor_state.h"
 #include "components/segmentation_platform/public/input_context.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform::processing {
@@ -41,8 +42,10 @@ class PriceTrackingInputDelegateTest : public testing::Test {
   void SetUp() override {
     Test::SetUp();
 
+    // TODO(crbug.com/1346711): Provide mock ShoppingService to avoid passing
+    // all arguments.
     shopping_service_ = std::make_unique<commerce::ShoppingService>(
-        nullptr, &mock_opt_guide_, nullptr);
+        nullptr, &mock_opt_guide_, nullptr, nullptr, nullptr);
     input_delegate_ = std::make_unique<PriceTrackingInputDelegate>(
         base::BindRepeating(&TestShoppingServiceGetter,
                             base::Unretained(shopping_service_.get())));

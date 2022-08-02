@@ -31,6 +31,14 @@ namespace bookmarks {
 class BookmarkModel;
 }
 
+namespace network {
+class TestURLLoaderFactory;
+}
+
+namespace signin {
+class IdentityTestEnvironment;
+}
+
 namespace commerce {
 
 // A mock Optimization Guide decider that allows us to specify the response for
@@ -145,11 +153,15 @@ class ShoppingServiceTestBase : public testing::Test {
 
   std::unique_ptr<MockOptGuideDecider> opt_guide_;
 
-  std::unique_ptr<ShoppingService> shopping_service_;
-
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
 
   base::test::ScopedFeatureList test_features_;
+
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+
+  std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
+
+  std::unique_ptr<ShoppingService> shopping_service_;
 };
 
 }  // namespace commerce

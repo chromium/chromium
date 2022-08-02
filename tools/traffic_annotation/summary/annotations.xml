@@ -138,7 +138,7 @@ Refer to README.md for content description and update process.
  <item id="metrics_report_uma" added_in_milestone="62" content_hash_code="009b46c5" os_list="linux,windows,chromeos,android" file_path="components/metrics/net/net_metrics_log_uploader.cc" />
  <item id="mirroring_get_setup_info" added_in_milestone="68" content_hash_code="03dd5ef2" os_list="windows,linux,chromeos,android" file_path="components/mirroring/service/receiver_setup_querier.cc" />
  <item id="missing" added_in_milestone="62" reserved="1" os_list="linux,windows" file_path="" />
- <item id="navigation_predictor_srp_prefetch" added_in_milestone="81" content_hash_code="025036ba" os_list="linux,windows,chromeos,android" file_path="chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.cc" />
+ <item id="navigation_predictor_srp_prefetch" added_in_milestone="81" content_hash_code="025036ba" os_list="windows,chromeos,android,linux" file_path="chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_tab_helper.cc" />
  <item id="navigation_url_loader" added_in_milestone="62" content_hash_code="060edd12" os_list="linux,windows,chromeos,android" file_path="content/browser/loader/navigation_url_loader_impl.cc" />
  <item id="network_location_provider" added_in_milestone="64" type="partial" second_id="network_location_request" content_hash_code="0272f3e8" os_list="linux,windows,chromeos" semantics_fields="1" policy_fields="3,4" file_path="services/device/geolocation/network_location_provider.cc" />
  <item id="network_location_request" added_in_milestone="65" type="completing" content_hash_code="04d00293" os_list="linux,windows,chromeos,android" semantics_fields="2,3,4,5" policy_fields="-1" file_path="services/device/geolocation/network_location_request.cc" />
@@ -180,7 +180,7 @@ Refer to README.md for content description and update process.
  <item id="ppapi_download_request" added_in_milestone="62" content_hash_code="07d4e067" os_list="linux,windows,chromeos" file_path="chrome/browser/safe_browsing/download_protection/ppapi_download_request.cc" />
  <item id="predictive_prefetch" added_in_milestone="85" content_hash_code="00ebd1fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/predictors/prefetch_manager.cc" />
  <item id="prefetch_download" added_in_milestone="62" content_hash_code="0146e99e" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/prefetch_downloader_impl.cc" />
- <item id="prefetch_proxy_probe" added_in_milestone="88" content_hash_code="001d245d" os_list="linux,windows,chromeos,android" file_path="chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc" />
+ <item id="prefetch_proxy_probe" added_in_milestone="88" content_hash_code="001d245d" os_list="windows,chromeos,android,linux" file_path="chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_origin_prober.cc" />
  <item id="prefetch_visuals" added_in_milestone="75" content_hash_code="0564010a" os_list="linux,windows,chromeos,android" file_path="components/offline_pages/core/prefetch/visuals_fetch_by_url.cc" />
  <item id="profile_avatar" added_in_milestone="62" content_hash_code="06c4a5fd" os_list="linux,windows,chromeos,android" file_path="chrome/browser/profiles/profile_avatar_downloader.cc" />
  <item id="profile_resetter_upload" added_in_milestone="62" content_hash_code="07b56813" os_list="linux,windows,chromeos" file_path="chrome/browser/profile_resetter/reset_report_uploader.cc" />
@@ -226,7 +226,7 @@ Refer to README.md for content description and update process.
  <item id="sanitized_image_source" added_in_milestone="86" content_hash_code="076ce826" os_list="linux,windows,chromeos" file_path="chrome/browser/ui/webui/sanitized_image_source.cc" />
  <item id="save_file_manager" added_in_milestone="62" content_hash_code="03610e73" os_list="linux,windows,chromeos,android" file_path="content/browser/download/save_file_manager.cc" />
  <item id="sct_auditing" added_in_milestone="87" content_hash_code="0298c98f" os_list="linux,windows,chromeos,android" file_path="chrome/browser/ssl/sct_reporting_service.cc" />
- <item id="search_prefetch_service" added_in_milestone="88" content_hash_code="077746c6" os_list="windows,linux,chromeos,android" file_path="chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.cc" />
+ <item id="search_prefetch_service" added_in_milestone="88" content_hash_code="077746c6" os_list="windows,chromeos,android,linux" file_path="chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_request.cc" />
  <item id="security_key_socket" added_in_milestone="66" content_hash_code="00d1acb0" os_list="linux,windows,chromeos" file_path="remoting/host/security_key/security_key_socket.cc" />
  <item id="service_worker_navigation_preload" added_in_milestone="63" content_hash_code="0675faf7" os_list="linux,windows,chromeos,android" file_path="content/browser/service_worker/service_worker_fetch_dispatcher.cc" />
  <item id="service_worker_script_load" added_in_milestone="90" content_hash_code="035ab34f" os_list="linux,windows,chromeos,android" file_path="content/browser/service_worker/service_worker_new_script_fetcher.cc" />
@@ -383,4 +383,7 @@ Refer to README.md for content description and update process.
  <item id="chrome_search_suggest_service" added_in_milestone="105" content_hash_code="04d973c6" os_list="linux,windows,android,chromeos" file_path="components/search/start_suggest_service.cc" />
  <item id="coupon_persisted_tab_data" added_in_milestone="105" content_hash_code="006dcd97" os_list="android" file_path="chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/CouponPersistedTabData.java" />
  <item id="speculation_rules_prefetch_probe" added_in_milestone="105" content_hash_code="04341e21" os_list="linux,windows,android,chromeos" file_path="content/browser/preloading/prefetch/prefetch_origin_prober.cc" />
+ <item id="chrome_commerce_subscriptions_create" added_in_milestone="105" content_hash_code="076a1b98" os_list="windows,android,linux,chromeos" file_path="components/commerce/core/subscriptions/subscriptions_server_proxy.cc" />
+ <item id="chrome_commerce_subscriptions_delete" added_in_milestone="105" content_hash_code="05f47d4b" os_list="windows,android,linux,chromeos" file_path="components/commerce/core/subscriptions/subscriptions_server_proxy.cc" />
+ <item id="chrome_commerce_subscriptions_get" added_in_milestone="105" content_hash_code="02f49372" os_list="windows,android,linux,chromeos" file_path="components/commerce/core/subscriptions/subscriptions_server_proxy.cc" />
 </annotations>

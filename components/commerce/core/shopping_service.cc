@@ -28,6 +28,7 @@
 #include "components/optimization_guide/core/new_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace commerce {
@@ -52,7 +53,9 @@ MerchantInfo::~MerchantInfo() = default;
 ShoppingService::ShoppingService(
     bookmarks::BookmarkModel* bookmark_model,
     optimization_guide::NewOptimizationGuideDecider* opt_guide,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : opt_guide_(opt_guide),
       pref_service_(pref_service),
       weak_ptr_factory_(this) {
@@ -79,7 +82,10 @@ ShoppingService::ShoppingService(
         std::make_unique<ShoppingBookmarkModelObserver>(bookmark_model);
   }
 
-  subscriptions_manager_ = std::make_unique<SubscriptionsManager>();
+  if (identity_manager) {
+    subscriptions_manager_ = std::make_unique<SubscriptionsManager>(
+        identity_manager, std::move(url_loader_factory));
+  }
 }
 
 void ShoppingService::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -525,6 +531,7 @@ void ShoppingService::HandleOptGuideMerchantInfoResponse(
 void ShoppingService::Subscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  CHECK(subscriptions_manager_);
   subscriptions_manager_->Subscribe(std::move(subscriptions),
                                     std::move(callback));
 }
@@ -532,6 +539,7 @@ void ShoppingService::Subscribe(
 void ShoppingService::Unsubscribe(
     std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  CHECK(subscriptions_manager_);
   subscriptions_manager_->Unsubscribe(std::move(subscriptions),
                                       std::move(callback));
 }

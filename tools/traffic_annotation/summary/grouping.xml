@@ -252,6 +252,9 @@ after discussions on the right group.
       <annotation id="quick_answers_loader"/>
       <annotation id="chrome_search_suggest_service"/>
       <annotation id="coupon_persisted_tab_data"/>
+      <annotation id="chrome_commerce_subscriptions_create"/>
+      <annotation id="chrome_commerce_subscriptions_delete"/>
+      <annotation id="chrome_commerce_subscriptions_get"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

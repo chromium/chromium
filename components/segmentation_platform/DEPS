@@ -8,6 +8,7 @@ include_rules = [
   "+components/prefs",
   "+components/ukm",
   "+services/metrics/public",
+  "+services/network/public/cpp/shared_url_loader_factory.h",
   "+sql",
   "+third_party/perfetto",
   "+third_party/tflite",

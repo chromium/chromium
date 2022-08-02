@@ -160,15 +160,16 @@ static_library("shopping_service") {
     ":feature_list",
     ":metrics",
     ":proto",
-    ":subscriptions",
     "//base",
     "//components/bookmarks/browser",
+    "//components/commerce/core/subscriptions:subscriptions",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:prefs",
     "//components/resources:components_resources_grit",
     "//services/data_decoder/public/cpp",
+    "//services/network/public/cpp:cpp",
     "//ui/base",
     "//url:url",
   ]
@@ -211,7 +212,11 @@ source_set("shopping_service_test_support") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//services/data_decoder/public/cpp:test_support",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gtest",
     "//url:url",
   ]
@@ -229,19 +234,5 @@ source_set("shopping_service_unit_tests") {
   deps = [
     ":metrics",
     ":shopping_service_test_support",
-  ]
-}
-
-source_set("subscriptions") {
-  sources = [
-    "subscriptions/commerce_subscription.cc",
-    "subscriptions/commerce_subscription.h",
-    "subscriptions/subscriptions_manager.cc",
-    "subscriptions/subscriptions_manager.h",
-  ]
-
-  deps = [
-    ":feature_list",
-    "//base",
   ]
 }

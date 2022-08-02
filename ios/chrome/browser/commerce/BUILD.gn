@@ -42,7 +42,9 @@ static_library("shopping_service") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/optimization_guide",
+    "//ios/chrome/browser/signin:signin",
     "//ios/web",
+    "//services/network/public/cpp",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

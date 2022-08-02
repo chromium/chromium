@@ -1,0 +1,98 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_SUBSCRIPTIONS_SERVER_PROXY_H_
+#define COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_SUBSCRIPTIONS_SERVER_PROXY_H_
+
+#include <queue>
+#include <string>
+#include <unordered_map>
+
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/values.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+class EndpointFetcher;
+struct EndpointResponse;
+
+namespace commerce {
+
+enum class SubscriptionType;
+struct CommerceSubscription;
+
+using ManageSubscriptionsFetcherCallback = base::OnceCallback<void(bool)>;
+using GetSubscriptionsFetcherCallback = base::OnceCallback<void(
+    std::unique_ptr<std::vector<CommerceSubscription>>)>;
+
+class SubscriptionsServerProxy {
+ public:
+  SubscriptionsServerProxy(
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  SubscriptionsServerProxy(const SubscriptionsServerProxy&) = delete;
+  SubscriptionsServerProxy& operator=(const SubscriptionsServerProxy&) = delete;
+  ~SubscriptionsServerProxy();
+
+  // Make an HTTPS call to backend to create the new |subscriptions|.
+  void Create(std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+              ManageSubscriptionsFetcherCallback callback);
+
+  // Make an HTTPS call to backend to delete the existing |subscriptions|.
+  void Delete(std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
+              ManageSubscriptionsFetcherCallback callback);
+
+  // Make an HTTP call to backend to get all subscriptions for specified type.
+  void Get(SubscriptionType type, GetSubscriptionsFetcherCallback callback);
+
+ private:
+  std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
+      const GURL& url,
+      const std::string& http_method,
+      const std::string& post_data,
+      const net::NetworkTrafficAnnotationTag& annotation_tag);
+
+  // Handle Create or Delete response.
+  void HandleManageSubscriptionsResponses(
+      ManageSubscriptionsFetcherCallback callback,
+      std::unique_ptr<EndpointResponse> responses);
+
+  // This is called when Create or Delete response is parsed.
+  void OnManageSubscriptionsJsonParsed(
+      ManageSubscriptionsFetcherCallback callback,
+      data_decoder::DataDecoder::ValueOrError result);
+
+  // Handle Get response.
+  void HandleGetSubscriptionsResponses(
+      GetSubscriptionsFetcherCallback callback,
+      std::unique_ptr<EndpointResponse> responses);
+
+  // This is called when Get response is parsed.
+  void OnGetSubscriptionsJsonParsed(
+      GetSubscriptionsFetcherCallback callback,
+      data_decoder::DataDecoder::ValueOrError result);
+
+  base::Value Serialize(const CommerceSubscription& subscription);
+
+  absl::optional<CommerceSubscription> Deserialize(const base::Value& value);
+
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  base::WeakPtrFactory<SubscriptionsServerProxy> weak_ptr_factory_;
+};
+
+}  // namespace commerce
+
+#endif  // COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_SUBSCRIPTIONS_SERVER_PROXY_H_

@@ -40,34 +40,38 @@ enum class ManagementType {
 };
 
 struct UserSeenOffer {
-  UserSeenOffer(uint64_t offer_id,
+  UserSeenOffer(std::string offer_id,
                 long user_seen_price,
-                const std::string& country_code);
+                std::string country_code);
+  UserSeenOffer(const UserSeenOffer&);
+  UserSeenOffer& operator=(const UserSeenOffer&);
   ~UserSeenOffer();
 
-  const uint64_t offer_id;
-  const long user_seen_price;
-  const std::string country_code;
+  std::string offer_id;
+  long user_seen_price;
+  std::string country_code;
 };
 
+extern const int64_t kUnknownSubscriptionTimestamp;
+
 struct CommerceSubscription {
-  CommerceSubscription(SubscriptionType type,
-                       IdentifierType id_type,
-                       uint64_t id,
-                       ManagementType management_type);
-  CommerceSubscription(SubscriptionType type,
-                       IdentifierType id_type,
-                       uint64_t id,
-                       ManagementType management_type,
-                       absl::optional<UserSeenOffer> user_seen_offer);
+  CommerceSubscription(
+      SubscriptionType type,
+      IdentifierType id_type,
+      std::string id,
+      ManagementType management_type,
+      int64_t timestamp = kUnknownSubscriptionTimestamp,
+      absl::optional<UserSeenOffer> user_seen_offer = absl::nullopt);
+  CommerceSubscription(const CommerceSubscription&);
+  CommerceSubscription& operator=(const CommerceSubscription&);
   ~CommerceSubscription();
 
-  const SubscriptionType type;
-  const IdentifierType id_type;
-  const uint64_t id;
-  const ManagementType management_type;
-  const absl::optional<UserSeenOffer> user_seen_offer;
-  const uint64_t timestamp;
+  SubscriptionType type;
+  IdentifierType id_type;
+  std::string id;
+  ManagementType management_type;
+  int64_t timestamp;
+  absl::optional<UserSeenOffer> user_seen_offer;
 };
 
 }  // namespace commerce

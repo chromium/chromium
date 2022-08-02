@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
@@ -33,10 +34,18 @@ namespace bookmarks {
 class BookmarkModel;
 }  // namespace bookmarks
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace optimization_guide {
 class NewOptimizationGuideDecider;
 class OptimizationMetadata;
 }  // namespace optimization_guide
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 namespace commerce {
 
@@ -128,9 +137,12 @@ using MerchantInfoCallback =
 
 class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
-  ShoppingService(bookmarks::BookmarkModel* bookmark_model,
-                  optimization_guide::NewOptimizationGuideDecider* opt_guide,
-                  PrefService* pref_service);
+  ShoppingService(
+      bookmarks::BookmarkModel* bookmark_model,
+      optimization_guide::NewOptimizationGuideDecider* opt_guide,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;

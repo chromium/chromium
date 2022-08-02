@@ -4,6 +4,7 @@
 
 #include "components/commerce/core/shopping_service_test_base.h"
 
+#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -13,6 +14,9 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
@@ -155,9 +159,15 @@ void MockWebWrapper::SetMockJavaScriptResult(base::Value* result) {
 ShoppingServiceTestBase::ShoppingServiceTestBase()
     : bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
       opt_guide_(std::make_unique<MockOptGuideDecider>()),
-      pref_service_(std::make_unique<TestingPrefServiceSimple>()) {
+      pref_service_(std::make_unique<TestingPrefServiceSimple>()),
+      identity_test_env_(std::make_unique<signin::IdentityTestEnvironment>()),
+      test_url_loader_factory_(
+          std::make_unique<network::TestURLLoaderFactory>()) {
   shopping_service_ = std::make_unique<ShoppingService>(
-      bookmark_model_.get(), opt_guide_.get(), pref_service_.get());
+      bookmark_model_.get(), opt_guide_.get(), pref_service_.get(),
+      identity_test_env_->identity_manager(),
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          test_url_loader_factory_.get()));
 }
 
 ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;
