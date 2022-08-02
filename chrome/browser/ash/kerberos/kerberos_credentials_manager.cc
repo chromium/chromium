@@ -383,6 +383,7 @@ void KerberosCredentialsManager::RegisterLocalStatePrefs(
   registry->RegisterBooleanPref(prefs::kKerberosRememberPasswordEnabled, true);
   registry->RegisterBooleanPref(prefs::kKerberosAddAccountsAllowed, true);
   registry->RegisterListPref(prefs::kKerberosAccounts);
+  registry->RegisterStringPref(prefs::kKerberosDomainAutocomplete, "");
 }
 
 void KerberosCredentialsManager::RegisterProfilePrefs(

@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager_factory.h"
@@ -120,6 +121,12 @@ void AddKerberosAddAccountDialogStrings(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "kerberosRememberPasswordEnabled",
       local_state->GetBoolean(::prefs::kKerberosRememberPasswordEnabled));
+
+  // Prefilled domain if policy is enabled. Note that Kerberos
+  // domains should be in all uppercase.
+  html_source->AddString("kerberosDomainAutocomplete",
+                         base::ToUpperASCII(local_state->GetString(
+                             ::prefs::kKerberosDomainAutocomplete)));
 
   // Kerberos default configuration.
   html_source->AddString(

@@ -491,6 +491,7 @@
         'KerberosRememberPasswordEnabled',
         'KerberosAddAccountsAllowed',
         'KerberosAccounts',
+        'KerberosDomainAutocomplete'
       ],
     },
     {
@@ -25035,6 +25036,27 @@
           If this policy is disabled or not set, no accounts are added to the Kerberos Accounts settings and all accounts previously added with this policy are removed. Users may still add accounts manually if the 'Users can add Kerberos accounts' policy is enabled.''',
     },
     {
+      'name': 'KerberosDomainAutocomplete',
+      'owners': ['slutskii@google.com', 'file://chrome/browser/ash/kerberos/OWNERS'],
+      'type': 'string',
+      'schema': { 'type': 'string' },
+      'future_on': ['chrome_os'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'example_value': 'my-kerberos-domain.com',
+      'id': 999,
+      'caption': '''Autocomplete domain for new Kerberos tickets''',
+      'tags': ['website-sharing'],
+      'desc': '''Adds a prefilled domain to the Kerberos authentication dialog.
+
+          If this policy is set, the "Kerberos username" field shows the prefilled domain on the right. If the user enters their username it is going to be concatenated with the prefilled domain. If the user's input contains "@", the prefilled domain is not shown and does not affect the input.
+
+          If this policy is unset, no adittional information is shown and creating the ticket works as usual.''',
+    },
+    {
       'name': 'CommandLineFlagSecurityWarningsEnabled',
       'owners': ['proberge@chromium.org'],
       'type': 'main',
@@ -32983,6 +33005,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 438, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 998,
+  'highest_id_currently_used': 999,
   'highest_atomic_group_id_currently_used': 43
 }

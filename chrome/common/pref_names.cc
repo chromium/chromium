@@ -1096,6 +1096,10 @@ const char kKerberosAccounts[] = "kerberos.accounts";
 // active (empty if none) and to determine whether to wake up the Kerberos
 // daemon on session startup.
 const char kKerberosActivePrincipalName[] = "kerberos.active_principal_name";
+// Used by KerberosAccountsHandler to prefill kerberos domain in
+// username field of "Add a ticket" UI window.
+// Tied to KerberosDomainAutocomplete policy.
+const char kKerberosDomainAutocomplete[] = "kerberos.domain_autocomplete";
 
 // A boolean pref for enabling/disabling App reinstall recommendations in Zero
 // State Launcher by policy.

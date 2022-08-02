@@ -724,6 +724,42 @@ suite('KerberosAddAccountTests', function() {
     assertConfig(loadTimeData.getString('defaultKerberosConfig'));
   });
 
+  test('DomainAutocompleteEnabled', function() {
+    loadTimeData.overrideValues({kerberosDomainAutocomplete: 'domain.com'});
+    createDialog();
+    flush();
+
+    // '@' should be automatically added to the policy value.
+    assertEquals(
+        '@domain.com',
+        dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
+
+    // Reset for further tests.
+    loadTimeData.overrideValues({kerberosDomainAutocomplete: ''});
+  });
+
+  test('DomainAutocompleteEnabledOverride', function() {
+    loadTimeData.overrideValues({kerberosDomainAutocomplete: 'domain.com'});
+    assertTrue(
+        TEST_KERBEROS_ACCOUNTS[0].principalName &&
+        TEST_KERBEROS_ACCOUNTS[0].principalName.indexOf('@') !== -1);
+    createDialog(TEST_KERBEROS_ACCOUNTS[0]);
+    flush();
+
+    // If inserted principal contains '@', nothing should be shown.
+    assertEquals(
+        '', dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
+
+    // Reset for further tests.
+    loadTimeData.overrideValues({kerberosDomainAutocomplete: ''});
+  });
+
+  test('DomainAutocompleteDisabled', function() {
+    assertEquals('', loadTimeData.getString('kerberosDomainAutocomplete'));
+    assertEquals(
+        '', dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
+  });
+
   // addAccount: KerberosErrorType.kNetworkProblem spawns a general error.
   test('AddAccountError_NetworkProblem', async () => {
     await checkAddAccountError(KerberosErrorType.kNetworkProblem, generalError);

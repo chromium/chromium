@@ -32103,6 +32103,7 @@ Called by update_document_policy_enum.py.-->
   <int value="996" label="EncryptedClientHelloEnabled"/>
   <int value="997" label="DeviceAutofillSAMLUsername"/>
   <int value="998" label="EnterpriseProfileCreationKeepBrowsingData"/>
+  <int value="999" label="KerberosDomainAutocomplete"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

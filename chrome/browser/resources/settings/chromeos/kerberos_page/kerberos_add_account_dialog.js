@@ -36,6 +36,13 @@ import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserPr
 const KerberosAddAccountDialogElementBase =
     mixinBehaviors([I18nBehavior], PolymerElement);
 
+/**
+ * The default placeholder that is shown in the username field
+ * of authentication dialog.
+ * @type {string}
+ */
+const DEFAULT_USERNAME_PLACEHOLDER = 'user@example.com';
+
 /** @polymer */
 class KerberosAddAccountDialogElement extends
     KerberosAddAccountDialogElementBase {
@@ -147,6 +154,16 @@ class KerberosAddAccountDialogElement extends
       },
 
       /**
+       * Prefilled domain for the new tickets if kerberosDomainAutocomplete
+       * policy is enabled. Empty by default. Starts with '@' if it is
+       * not empty.
+       */
+      prefillDomain_: {
+        type: String,
+        value: '',
+      },
+
+      /**
        * Whether the user is in guest mode.
        * @private {boolean}
        */
@@ -217,6 +234,13 @@ class KerberosAddAccountDialogElement extends
       this.title_ = this.i18n('addKerberosAccount');
       this.actionButtonLabel_ = this.i18n('add');
 
+      // Get the prefill domain and add '@' to it if it's not empty.
+      // Also the domain is considered invalid if it already has '@' in it.
+      const domain = loadTimeData.getString('kerberosDomainAutocomplete');
+      if (domain && domain.indexOf('@') === -1) {
+        this.prefillDomain_ = '@' + domain;
+      }
+
       // Set a default configuration.
       this.config_ = loadTimeData.getString('defaultKerberosConfig');
     }
@@ -245,8 +269,9 @@ class KerberosAddAccountDialogElement extends
 
     this.browserProxy_
         .addAccount(
-            this.username_, passwordToSubmit, this.rememberPassword_,
-            this.config_, allowExisting)
+            this.computeUsername_(this.username_, this.prefillDomain_),
+            passwordToSubmit, this.rememberPassword_, this.config_,
+            allowExisting)
         .then(error => {
           this.inProgress_ = false;
 
@@ -475,6 +500,48 @@ class KerberosAddAccountDialogElement extends
    */
   showError_(errorText) {
     return !!errorText;
+  }
+
+  /**
+   * Prefilled domain is not shown if the username contains '@',
+   * giving the user an opportunity to use some other domain.
+   * @param {string} username The username typed by the user.
+   * @param {string} domain Prefilled domain, prefixed with '@'.
+   * @return {string}
+   */
+  computeDomain_(username, domain) {
+    if (username && username.indexOf('@') !== -1) {
+      return '';
+    }
+    return domain;
+  }
+
+  /**
+   * Return username if it contains '@', otherwise append prefilled
+   * domain (which could be empty) to the current username.
+   * @param {string} username The username typed by the user.
+   * @param {string} domain Prefilled domain, prefixed with '@'.
+   * @return {string}
+   * @private
+   */
+  computeUsername_(username, domain) {
+    if (username && username.indexOf('@') === -1) {
+      return username + domain;
+    }
+    return username;
+  }
+
+  /**
+   * If prefilled domain is present return an empty string,
+   * otherwise show the default placeholder.
+   * @param {string} prefillDomain Prefilled domain, prefixed with '@'.
+   * @return {string}
+   */
+  computePlaceholder_(prefillDomain) {
+    if (prefillDomain) {
+      return '';
+    }
+    return DEFAULT_USERNAME_PLACEHOLDER;
   }
 }
 
