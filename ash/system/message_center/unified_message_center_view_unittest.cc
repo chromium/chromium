@@ -41,12 +41,6 @@ namespace {
 
 constexpr int kDefaultMaxHeight = 500;
 
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
-};
-
 class TestUnifiedMessageCenterView : public UnifiedMessageCenterView {
  public:
   explicit TestUnifiedMessageCenterView(UnifiedSystemTrayModel* model)

@@ -11,6 +11,7 @@
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "ui/events/event.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -65,11 +66,6 @@ void HungPluginTabHelperTest::SetUp() {
   infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 }
 
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), ui::EF_NONE) {}
-};
-
 // Regression test for https://crbug.com/969099 .
 TEST_F(HungPluginTabHelperTest, DontRemoveTwice) {
   HungPluginTabHelper::FromWebContents(web_contents())
@@ -82,6 +78,6 @@ TEST_F(HungPluginTabHelperTest, DontRemoveTwice) {
   views::MdTextButton* ok_button = infobar->ok_button_for_testing();
   ok_button->SetCallback(
       base::BindRepeating(&RemoveOnlyOnce, base::Unretained(infobar)));
-  views::test::ButtonTestApi(ok_button).NotifyClick(DummyEvent());
+  views::test::ButtonTestApi(ok_button).NotifyClick(ui::test::TestEvent());
   EXPECT_EQ(0u, infobar_manager->infobar_count());
 }

@@ -51,6 +51,11 @@ class MouseEnterExitEvent : public ui::MouseEvent {
   }
 
   ~MouseEnterExitEvent() override = default;
+
+  // Event:
+  std::unique_ptr<ui::Event> Clone() const override {
+    return std::make_unique<MouseEnterExitEvent>(*this);
+  }
 };
 
 }  // namespace

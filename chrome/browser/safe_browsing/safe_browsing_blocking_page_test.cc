@@ -118,6 +118,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/styled_label.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -177,16 +178,11 @@ content::RenderFrameHost* GetRenderFrameHost(Browser* browser) {
       ->GetPrimaryMainFrame();
 }
 
-class ClickEvent : public ui::Event {
- public:
-  ClickEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-};
-
 views::BubbleDialogDelegateView* OpenPageInfo(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   LocationIconView* location_icon_view =
       browser_view->toolbar()->location_bar()->location_icon_view();
-  ClickEvent event;
+  ui::test::TestEvent event;
   location_icon_view->ShowBubble(event);
   views::BubbleDialogDelegateView* page_info =
       PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();

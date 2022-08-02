@@ -44,12 +44,16 @@ class TouchEvent;
 
 enum class DomCode;
 
+// Note: In order for Clone() to work properly, every concrete class
+// transitively inheriting Event must implement Clone() explicitly, even if any
+// ancestors have provided an implementation.
 class EVENTS_EXPORT Event {
  public:
   using Properties = base::flat_map<std::string, std::vector<uint8_t>>;
 
   // Copies an arbitrary event. If you have a typed event (e.g. a MouseEvent)
   // just use its copy constructor.
+  // TODO(yzshen): Remove this static method and switch callers to Clone().
   static std::unique_ptr<Event> Clone(const Event& event);
 
   virtual ~Event();
@@ -292,6 +296,10 @@ class EVENTS_EXPORT Event {
   // For debugging. Not a stable serialization format.
   virtual std::string ToString() const;
 
+  // Every concrete class transitively inheriting Event must implement this
+  // method, even if any ancestors have provided an implementation.
+  virtual std::unique_ptr<Event> Clone() const = 0;
+
  protected:
   Event(EventType type, base::TimeTicks time_stamp, int flags);
   Event(const PlatformEvent& native_event, EventType type, int flags);
@@ -333,6 +341,9 @@ class EVENTS_EXPORT CancelModeEvent : public Event {
  public:
   CancelModeEvent();
   ~CancelModeEvent() override;
+
+  // Event:
+  std::unique_ptr<Event> Clone() const override;
 };
 
 class EVENTS_EXPORT LocatedEvent : public Event {
@@ -381,7 +392,7 @@ class EVENTS_EXPORT LocatedEvent : public Event {
     location_ = location_ - diff;
   }
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
 
  protected:
@@ -555,8 +566,9 @@ class EVENTS_EXPORT MouseEvent : public LocatedEvent {
 
   const PointerDetails& pointer_details() const { return pointer_details_; }
 
-  // Event overides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EventTest, DoubleClickRequiresUniqueTimestamp);
@@ -635,6 +647,9 @@ class EVENTS_EXPORT MouseWheelEvent : public MouseEvent {
   // The amount the wheel(s) moved, in 120ths of a tick.
   const gfx::Vector2d& tick_120ths() const { return tick_120ths_; }
 
+  // Event:
+  std::unique_ptr<Event> Clone() const override;
+
  private:
   gfx::Vector2d offset_;
   gfx::Vector2d tick_120ths_;
@@ -700,6 +715,9 @@ class EVENTS_EXPORT TouchEvent : public LocatedEvent {
   void SetPointerDetailsForTest(const PointerDetails& pointer_details);
 
   float ComputeRotationAngle() const;
+
+  // Event:
+  std::unique_ptr<Event> Clone() const override;
 
  private:
   // A unique identifier for the touch event.
@@ -887,8 +905,9 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // (Native X11 event flags describe the state before the event.)
   void NormalizeFlags();
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
 
  protected:
   friend class KeyEventTestApi;
@@ -1003,8 +1022,9 @@ class EVENTS_EXPORT ScrollEvent : public MouseEvent {
   EventMomentumPhase momentum_phase() const { return momentum_phase_; }
   ScrollEventPhase scroll_event_phase() const { return scroll_event_phase_; }
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
 
  private:
   // Potential accelerated offsets.
@@ -1048,8 +1068,9 @@ class EVENTS_EXPORT GestureEvent : public LocatedEvent {
 
   uint32_t unique_touch_event_id() const { return unique_touch_event_id_; }
 
-  // Event overrides.
+  // Event:
   std::string ToString() const override;
+  std::unique_ptr<Event> Clone() const override;
 
  private:
   GestureEventDetails details_;

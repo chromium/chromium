@@ -28,5 +28,9 @@ DropTargetEvent::DropTargetEvent(const DropTargetEvent& other)
       data_(other.data_),
       source_operations_(other.source_operations_) {}
 
+std::unique_ptr<Event> DropTargetEvent::Clone() const {
+  return std::make_unique<DropTargetEvent>(*this);
+}
+
 }  // namespace ui
 

@@ -24,6 +24,9 @@ class COMPONENT_EXPORT(UI_BASE) DropTargetEvent : public LocatedEvent {
   const OSExchangeData& data() const { return data_; }
   int source_operations() const { return source_operations_; }
 
+  // Event:
+  std::unique_ptr<Event> Clone() const override;
+
  private:
   // Data associated with the drag/drop session.
   const OSExchangeData& data_;

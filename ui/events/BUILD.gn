@@ -516,6 +516,8 @@ static_library("test_support") {
     "test/motion_event_test_utils.h",
     "test/platform_event_source_test_api.cc",
     "test/platform_event_source_test_api.h",
+    "test/test_event.cc",
+    "test/test_event.h",
     "test/test_event_handler.cc",
     "test/test_event_handler.h",
     "test/test_event_processor.cc",

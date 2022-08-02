@@ -15,6 +15,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -30,30 +31,6 @@ class DummyButton : public views::Button {
 };
 
 DummyButton::DummyButton() : views::Button(views::Button::PressedCallback()) {}
-
-// A simple light weight test double dummy for a ui::Event.
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent();
-
-  DummyEvent(const DummyEvent&) = delete;
-  DummyEvent& operator=(const DummyEvent&) = delete;
-
-  ~DummyEvent() override;
-  int unique_id() const { return unique_id_; }
-
- private:
-  static int next_unique_id_;
-  int unique_id_;
-};
-
-int DummyEvent::next_unique_id_ = 0;
-
-DummyEvent::DummyEvent()
-    : Event(ui::ET_GESTURE_TAP, base::TimeTicks(), 0),
-      unique_id_(next_unique_id_++) {}
-
-DummyEvent::~DummyEvent() = default;
 
 // Test fixture for the ShelfButtonPressedMetricTracker class. Relies on
 // AshTestBase to initilize the UserMetricsRecorder and it's dependencies.
@@ -135,7 +112,7 @@ void ShelfButtonPressedMetricTrackerTest::ButtonPressed(
 
 void ShelfButtonPressedMetricTrackerTest::ButtonPressed(
     ShelfAction performed_action) {
-  const DummyEvent kDummyEvent;
+  const ui::test::TestEvent kDummyEvent(ui::ET_GESTURE_TAP);
   const DummyButton kDummyButton;
   metric_tracker_->ButtonPressed(kDummyEvent, &kDummyButton, performed_action);
 }
@@ -143,7 +120,7 @@ void ShelfButtonPressedMetricTrackerTest::ButtonPressed(
 void ShelfButtonPressedMetricTrackerTest::ButtonPressed(
     const views::Button* sender,
     ShelfAction performed_action) {
-  const DummyEvent kDummyEvent;
+  const ui::test::TestEvent kDummyEvent(ui::ET_GESTURE_TAP);
   metric_tracker_->ButtonPressed(kDummyEvent, sender, performed_action);
 }
 

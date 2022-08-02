@@ -160,21 +160,6 @@ class VisibilityObserver : public views::ViewObserver {
   bool was_drawn_ = false;
 };
 
-// Simply constructs a GestureEvent for test.
-class GestureEventForTest : public ui::GestureEvent {
- public:
-  GestureEventForTest(const gfx::Point& location,
-                      ui::GestureEventDetails details)
-      : GestureEvent(location.x(),
-                     location.y(),
-                     /*flags=*/ui::EF_NONE,
-                     base::TimeTicks(),
-                     details) {}
-
-  GestureEventForTest(const GestureEventForTest&) = delete;
-  GestureEventForTest& operator=(const GestureEventForTest&) = delete;
-};
-
 // Base class for tests of the embedded assistant page in:
 // - Legacy clamshell mode ("peeking launcher")
 // - Clamshell mode ("bubble launcher")

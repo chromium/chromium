@@ -46,6 +46,11 @@ class TouchEventX11 : public ui::TouchEvent {
     if (type() == ET_TOUCH_RELEASED || type() == ET_TOUCH_CANCELLED)
       TouchFactory::GetInstance()->ReleaseSlot(pointer_details().id);
   }
+
+  // Event:
+  std::unique_ptr<Event> Clone() const override {
+    return std::make_unique<TouchEventX11>(*this);
+  }
 };
 
 Event::Properties GetEventPropertiesFromXEvent(EventType type,

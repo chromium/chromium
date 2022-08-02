@@ -13,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace ash {
@@ -25,11 +26,6 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
-};
-
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
 };
 
 }  // namespace
@@ -122,7 +118,7 @@ TEST_F(TaskContinuationViewTest, TaskChipsView) {
                 OpenUrl(GURL("https://www.example.com/tab1"),
                         NewWindowDelegate::OpenUrlFrom::kUserInteraction));
     // Simulate clicking button using dummy event.
-    views::test::ButtonTestApi(chip).NotifyClick(DummyEvent());
+    views::test::ButtonTestApi(chip).NotifyClick(ui::test::TestEvent());
   }
 }
 

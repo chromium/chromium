@@ -31,14 +31,9 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
-
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
-};
 
 // Test suite covering the interaction between browser bookmarks and
 // `Sec-Fetch-*` headers that can't be covered by Web Platform Tests (yet).
@@ -111,7 +106,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest {
     content::TestNavigationObserver observer(web_contents(), 1);
     views::LabelButton* button = GetBookmarkButton(0);
     views::test::ButtonTestApi clicker(button);
-    DummyEvent click_event;
+    ui::test::TestEvent click_event;
     clicker.NotifyClick(click_event);
     observer.Wait();
 

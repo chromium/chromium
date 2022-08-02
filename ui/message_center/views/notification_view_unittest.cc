@@ -14,6 +14,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -102,12 +103,6 @@ class NotificationTestDelegate : public NotificationDelegate {
   ~NotificationTestDelegate() override = default;
 
   bool disable_notification_called_ = false;
-};
-
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
 };
 
 }  // namespace
@@ -249,7 +244,7 @@ class NotificationViewTest : public views::ViewObserver,
 
   // Toggle inline settings with a dummy event.
   void ToggleInlineSettings() {
-    notification_view_->ToggleInlineSettings(DummyEvent());
+    notification_view_->ToggleInlineSettings(ui::test::TestEvent());
   }
 
  protected:
@@ -748,13 +743,14 @@ TEST_F(NotificationViewTest, TestDeleteOnDisableNotification) {
   notification->set_type(NOTIFICATION_TYPE_SIMPLE);
   UpdateNotificationViews(*notification);
 
-  notification_view()->OnSettingsButtonPressed(DummyEvent());
-  block_all_button()->NotifyClick(DummyEvent());
+  notification_view()->OnSettingsButtonPressed(ui::test::TestEvent());
+  block_all_button()->NotifyClick(ui::test::TestEvent());
 
   // After DisableNotification() is called, |notification_view| can be deleted.
   // https://crbug.com/924922
   set_delete_on_notification_removed(true);
-  views::test::ButtonTestApi(settings_done_button()).NotifyClick(DummyEvent());
+  views::test::ButtonTestApi(settings_done_button())
+      .NotifyClick(ui::test::TestEvent());
 }
 
 // Tests that action buttons (e.g. the inline reply button) ignores the

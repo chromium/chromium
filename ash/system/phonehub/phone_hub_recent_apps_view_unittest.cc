@@ -9,6 +9,7 @@
 #include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "ash/system/phonehub/phone_hub_recent_app_button.h"
 #include "ash/test/ash_test_base.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/test/button_test_api.h"
 
@@ -21,11 +22,6 @@ const int64_t kUserId = 0;
 namespace {
 
 using FeatureState = multidevice_setup::mojom::FeatureState;
-
-class FakeEvent : public ui::Event {
- public:
-  FakeEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-};
 
 }  // namespace
 
@@ -122,7 +118,7 @@ TEST_F(RecentAppButtonsViewTest, MultipleRecentAppButtonsView) {
     PhoneHubRecentAppButton* recent_app =
         static_cast<PhoneHubRecentAppButton*>(child);
     // Simulate clicking button using placeholder event.
-    views::test::ButtonTestApi(recent_app).NotifyClick(FakeEvent());
+    views::test::ButtonTestApi(recent_app).NotifyClick(ui::test::TestEvent());
   }
 
   size_t expected_number_of_button_be_clicked = 3;

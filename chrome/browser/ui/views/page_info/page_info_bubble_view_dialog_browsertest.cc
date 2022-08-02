@@ -36,6 +36,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_certificate_data.h"
 #include "net/test/test_data_directory.h"
+#include "ui/events/test/test_event.h"
 
 namespace {
 
@@ -43,18 +44,13 @@ constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
 constexpr char kAboutThisSiteUrl[] = "a.test";
 constexpr char kHistoryUrl[] = "b.test";
 
-class ClickEvent : public ui::Event {
- public:
-  ClickEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-};
-
 // Clicks the location icon to open the page info bubble.
 void OpenPageInfoBubble(Browser* browser) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   LocationIconView* location_icon_view =
       browser_view->toolbar()->location_bar()->location_icon_view();
   ASSERT_TRUE(location_icon_view);
-  ClickEvent event;
+  ui::test::TestEvent event;
   location_icon_view->ShowBubble(event);
   views::BubbleDialogDelegateView* page_info =
       PageInfoBubbleView::GetPageInfoBubbleForTesting();

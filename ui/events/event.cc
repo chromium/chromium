@@ -165,34 +165,7 @@ bool IsNearZero(const float num) {
 
 // static
 std::unique_ptr<Event> Event::Clone(const Event& event) {
-  if (event.IsKeyEvent()) {
-    return std::make_unique<KeyEvent>(static_cast<const KeyEvent&>(event));
-  }
-
-  if (event.IsMouseEvent()) {
-    if (event.IsMouseWheelEvent()) {
-      return std::make_unique<MouseWheelEvent>(
-          static_cast<const MouseWheelEvent&>(event));
-    }
-
-    return std::make_unique<MouseEvent>(static_cast<const MouseEvent&>(event));
-  }
-
-  if (event.IsTouchEvent()) {
-    return std::make_unique<TouchEvent>(static_cast<const TouchEvent&>(event));
-  }
-
-  if (event.IsGestureEvent()) {
-    return std::make_unique<GestureEvent>(
-        static_cast<const GestureEvent&>(event));
-  }
-
-  if (event.IsScrollEvent()) {
-    return std::make_unique<ScrollEvent>(
-        static_cast<const ScrollEvent&>(event));
-  }
-
-  return base::WrapUnique(new Event(event));
+  return event.Clone();
 }
 
 Event::~Event() {
@@ -399,6 +372,10 @@ CancelModeEvent::CancelModeEvent()
 }
 
 CancelModeEvent::~CancelModeEvent() = default;
+
+std::unique_ptr<Event> CancelModeEvent::Clone() const {
+  return std::make_unique<CancelModeEvent>(*this);
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // LocatedEvent
@@ -625,6 +602,10 @@ std::string MouseEvent::ToString() const {
                         " | ")});
 }
 
+std::unique_ptr<Event> MouseEvent::Clone() const {
+  return std::make_unique<MouseEvent>(*this);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // MouseWheelEvent
 
@@ -699,6 +680,10 @@ MouseWheelEvent::MouseWheelEvent(const gfx::Vector2d& offset,
                       changed_button_flags) {}
 
 MouseWheelEvent::~MouseWheelEvent() = default;
+
+std::unique_ptr<Event> MouseWheelEvent::Clone() const {
+  return std::make_unique<MouseWheelEvent>(*this);
+}
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 // This value matches Windows and Fuchsia WHEEL_DELTA.
@@ -817,6 +802,10 @@ float TouchEvent::ComputeRotationAngle() const {
   while (rotation_angle >= 180)
     rotation_angle -= 180.f;
   return rotation_angle;
+}
+
+std::unique_ptr<Event> TouchEvent::Clone() const {
+  return std::make_unique<TouchEvent>(*this);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1157,6 +1146,10 @@ std::string KeyEvent::ToString() const {
        base::JoinString(base::make_span(KeyEventFlagsNames(flags())), " | ")});
 }
 
+std::unique_ptr<Event> KeyEvent::Clone() const {
+  return std::make_unique<KeyEvent>(*this);
+}
+
 KeyboardCode KeyEvent::GetLocatedWindowsKeyboardCode() const {
   return NonLocatedToLocatedKeyboardCode(key_code_, code_);
 }
@@ -1269,6 +1262,10 @@ std::string ScrollEvent::ToString() const {
       ScrollEventPhaseToString(scroll_event_phase_).c_str());
 }
 
+std::unique_ptr<Event> ScrollEvent::Clone() const {
+  return std::make_unique<ScrollEvent>(*this);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // GestureEvent
 
@@ -1301,6 +1298,10 @@ std::string GestureEvent::ToString() const {
   return base::StringPrintf("%s touch_event_id %d",
                             LocatedEvent::ToString().c_str(),
                             unique_touch_event_id_);
+}
+
+std::unique_ptr<Event> GestureEvent::Clone() const {
+  return std::make_unique<GestureEvent>(*this);
 }
 
 }  // namespace ui

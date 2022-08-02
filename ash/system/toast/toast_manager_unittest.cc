@@ -36,12 +36,6 @@
 
 namespace ash {
 
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
-};
-
 class ToastManagerImplTest : public AshTestBase {
  public:
   ToastManagerImplTest()

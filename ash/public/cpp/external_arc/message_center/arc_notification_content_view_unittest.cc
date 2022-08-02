@@ -42,6 +42,7 @@
 #include "ui/aura/window.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/events/test/test_event.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/views/notification_control_buttons_view.h"
@@ -121,12 +122,6 @@ aura::Window* GetFocusedWindow() {
 
 }  // anonymous namespace
 
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
-};
-
 class ArcNotificationContentViewTest : public AshTestBase {
  public:
   ArcNotificationContentViewTest() = default;
@@ -169,7 +164,7 @@ class ArcNotificationContentViewTest : public AshTestBase {
   }
 
   void PressCloseButton(ArcNotificationView* notification_view) {
-    DummyEvent dummy_event;
+    ui::test::TestEvent dummy_event;
     auto* control_buttons_view =
         &notification_view->content_view_->control_buttons_view_;
     ASSERT_TRUE(control_buttons_view);

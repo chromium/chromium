@@ -64,6 +64,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/range/range.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -83,11 +84,6 @@ const int kHighEngagement = 20;
 
 // An engagement score below MEDIUM.
 const int kLowEngagement = 1;
-
-class ClickEvent : public ui::Event {
- public:
-  ClickEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-};
 
 // A single test case for UKM collection on triggered heuristics.
 // |navigated_url| is the URL that will be navigated to, and |expected_results|
@@ -183,7 +179,7 @@ void OpenPageInfoBubble(Browser* browser) {
   LocationIconView* location_icon_view =
       browser_view->toolbar()->location_bar()->location_icon_view();
   ASSERT_TRUE(location_icon_view);
-  ClickEvent event;
+  ui::test::TestEvent event;
   location_icon_view->ShowBubble(event);
   views::BubbleDialogDelegateView* page_info =
       PageInfoBubbleViewBase::GetPageInfoBubbleForTesting();

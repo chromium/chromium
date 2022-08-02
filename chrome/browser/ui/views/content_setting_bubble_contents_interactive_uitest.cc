@@ -14,6 +14,7 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/test/widget_test.h"
 
 class ContentSettingBubbleContentsInteractiveTest
@@ -90,11 +91,6 @@ class BubbleWidgetObserver : public views::WidgetObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : ui::Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-};
-
 IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsInteractiveTest,
                        PrerenderDoesNotCloseBubble) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -127,7 +123,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingBubbleContentsInteractiveTest,
   EXPECT_FALSE(geolocation_icon.IsBubbleShowing());
 
   // Click the geolocation icon.
-  geolocation_icon.ShowBubble(DummyEvent());
+  geolocation_icon.ShowBubble(ui::test::TestEvent());
 
   // Make sure its content setting bubble is shown.
   EXPECT_TRUE(geolocation_icon.IsBubbleShowing());

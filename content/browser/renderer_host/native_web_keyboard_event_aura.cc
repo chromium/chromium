@@ -75,6 +75,11 @@ class TranslatedKeyEvent : public ui::KeyEvent {
         web_event.dom_key, web_event.TimeStamp(), is_char);
   }
 
+  // Event:
+  std::unique_ptr<ui::Event> Clone() const override {
+    return std::make_unique<TranslatedKeyEvent>(*this);
+  }
+
  private:
   TranslatedKeyEvent(ui::EventType type,
                      ui::KeyboardCode keyboard_code,

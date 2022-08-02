@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -19,12 +20,6 @@
 namespace ash {
 
 using PhoneStatusModel = phonehub::PhoneStatusModel;
-
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
-};
 
 class PhoneStatusViewTest : public AshTestBase,
                             public PhoneStatusView::Delegate {
@@ -122,7 +117,7 @@ TEST_F(PhoneStatusViewTest, ClickOnSettings) {
 
   // Click on the settings button.
   views::test::ButtonTestApi(status_view_->settings_button_)
-      .NotifyClick(DummyEvent());
+      .NotifyClick(ui::test::TestEvent());
   EXPECT_TRUE(connected_device_settings_opened_);
 }
 

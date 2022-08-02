@@ -27,6 +27,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_utils.h"
+#include "ui/events/test/test_event.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -57,12 +58,6 @@ const gfx::Image CreateTestImage(int width,
   bitmap.eraseColor(color);
   return gfx::Image::CreateFrom1xBitmap(bitmap);
 }
-
-class DummyEvent : public ui::Event {
- public:
-  DummyEvent() : Event(ui::ET_UNKNOWN, base::TimeTicks(), 0) {}
-  ~DummyEvent() override = default;
-};
 
 class NotificationTestDelegate : public message_center::NotificationDelegate {
  public:
@@ -187,7 +182,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
 
   // Toggle inline settings with a dummy event.
   void ToggleInlineSettings(AshNotificationView* view) {
-    view->ToggleInlineSettings(DummyEvent());
+    view->ToggleInlineSettings(ui::test::TestEvent());
   }
 
   // Make the given notification to become a group parent of some basic
@@ -624,7 +619,7 @@ TEST_F(AshNotificationViewTest, InlineSettingsBlockAll) {
 
   // Clicking the turn off button should disable notifications.
   views::test::ButtonTestApi test_api(turn_off_notifications_button());
-  test_api.NotifyClick(DummyEvent());
+  test_api.NotifyClick(ui::test::TestEvent());
   EXPECT_TRUE(delegate()->disable_notification_called());
 }
 
@@ -637,7 +632,7 @@ TEST_F(AshNotificationViewTest, InlineSettingsCancel) {
 
   // Clicking the cancel button should not disable notifications.
   views::test::ButtonTestApi test_api(inline_settings_cancel_button());
-  test_api.NotifyClick(DummyEvent());
+  test_api.NotifyClick(ui::test::TestEvent());
 
   EXPECT_FALSE(GetInlineSettingsRow(notification_view())->GetVisible());
   EXPECT_FALSE(delegate()->disable_notification_called());
@@ -926,7 +921,7 @@ TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {
   // Clicking inline reply button and check animations.
   EXPECT_TRUE(notification_view->IsExpanded());
   views::test::ButtonTestApi test_api(GetActionButtons(notification_view)[1]);
-  test_api.NotifyClick(DummyEvent());
+  test_api.NotifyClick(ui::test::TestEvent());
 
   CheckSmoothnessRecorded(
       histograms, GetActionButtonsRow(notification_view),
