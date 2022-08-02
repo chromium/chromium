@@ -8870,4 +8870,292 @@ void Element::CreateToggles(const ToggleRootList* toggle_roots) {
   }
 }
 
+std::pair<Toggle*, Element*> Element::FindToggleInScope(
+    const AtomicString& name) {
+  Element* element = this;
+  bool allow_narrow_scope = true;
+  while (true) {
+    if (ToggleData* toggle_data = element->GetToggleData()) {
+      ToggleMap& toggles = toggle_data->Toggles();
+      auto iter = toggles.find(name);
+      if (iter != toggles.end()) {
+        Toggle& toggle = iter->value;
+        // TODO(https://github.com/tabatkins/css-toggle/issues/20): Should we
+        // allow the current toggle specifier (if any) on the element to
+        // override the stored one, like it does for other aspects?
+        if (allow_narrow_scope || toggle.Scope() == ToggleScope::kWide) {
+          return std::make_pair(&toggle, element);
+        }
+      }
+    }
+
+    if (Element* sibling = ElementTraversal::PreviousSibling(*element)) {
+      allow_narrow_scope = false;
+      element = sibling;
+      continue;
+    }
+
+    allow_narrow_scope = true;
+    element = element->parentElement();
+
+    if (!element)
+      return std::make_pair(nullptr, nullptr);
+  }
+}
+
+void Element::FireToggleActivation(const ToggleTrigger& activation) {
+  const AtomicString& name = activation.Name();
+  auto [toggle, element] = FindToggleInScope(name);
+  if (!toggle)
+    return;
+
+  const ToggleRoot* toggle_specifier = nullptr;
+  if (const ComputedStyle* style = element->GetComputedStyle()) {
+    if (const ToggleRootList* toggle_root = style->ToggleRoot()) {
+      for (const auto& item : toggle_root->Roots()) {
+        if (item.Name() == name) {
+          toggle_specifier = &item;
+        }
+      }
+    }
+  }
+
+  ChangeToggle(element, toggle, activation, toggle_specifier);
+  element->FireToggleChangeEvent(toggle);
+}
+
+static std::pair<Element*, ToggleScope> FindToggleGroupElement(
+    Element* toggle_element,
+    const AtomicString& name) {
+  Element* element = toggle_element;
+  bool allow_narrow_scope = true;
+  do {
+    Element* parent = element->parentElement();
+    if (!parent) {
+      // An element is in the root's group if we don't find any other group.
+      //
+      // TODO(https://github.com/tabatkins/css-toggle/issues/23): See if the
+      // spec ends up describing it this way.
+      return std::make_pair(element, ToggleScope::kNarrow);
+    }
+
+    if (const ComputedStyle* style = element->GetComputedStyle()) {
+      if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
+        for (const auto& group : toggle_groups->Groups()) {
+          if (group.Name() == name &&
+              (allow_narrow_scope || group.Scope() == ToggleScope::kWide)) {
+            return std::make_pair(element, group.Scope());
+          }
+        }
+      }
+    }
+
+    if (Element* sibling = ElementTraversal::PreviousSibling(*element)) {
+      allow_narrow_scope = false;
+      element = sibling;
+      continue;
+    }
+
+    allow_narrow_scope = true;
+
+    element = parent;
+  } while (true);
+}
+
+static void MakeRestOfToggleGroupZero(Element* toggle_element,
+                                      const AtomicString& name) {
+  // We do not attempt to maintain any persistent state representing toggle
+  // groups, since doing so without noticeable overhead would require a decent
+  // amount of code.  Instead, we will simply find the elements in the toggle
+  // group here.  If this turns out to be too slow, we could try to maintain
+  // data structures to represent groups, but doing so requires monitoring
+  // style changes on *elements*.
+
+  using State = ToggleRoot::State;
+
+  auto [toggle_group_element, toggle_scope] =
+      FindToggleGroupElement(toggle_element, name);
+  Element* stay_within;
+  switch (toggle_scope) {
+    case ToggleScope::kNarrow:
+      stay_within = toggle_group_element;
+      break;
+    case ToggleScope::kWide:
+      stay_within = toggle_group_element->parentElement();
+      break;
+  }
+
+  Element* e = toggle_group_element;
+  do {
+    if (e == toggle_element) {
+      e = ElementTraversal::Next(*e, stay_within);
+      continue;
+    }
+    if (e != toggle_group_element) {
+      // Skip descendants in a different group.
+      //
+      // TODO(dbaron): What if style is null?  See
+      // https://github.com/tabatkins/css-toggle/issues/24 .
+      if (const ComputedStyle* style = e->GetComputedStyle()) {
+        if (const ToggleGroupList* toggle_groups = style->ToggleGroup()) {
+          bool found_group = false;  // to continue the outer loop
+          for (const ToggleGroup& group : toggle_groups->Groups()) {
+            if (group.Name() == name) {
+              // TODO(https://github.com/tabatkins/css-toggle/issues/25):
+              // Consider multiple occurrences of the same name.
+              switch (group.Scope()) {
+                case ToggleScope::kWide:
+                  if (e != stay_within && e->parentElement()) {
+                    e = ElementTraversal::NextSkippingChildren(
+                        *e->parentElement(), stay_within);
+                  } else {
+                    e = nullptr;
+                  }
+                  break;
+                case ToggleScope::kNarrow:
+                  e = ElementTraversal::NextSkippingChildren(*e, stay_within);
+                  break;
+              }
+              found_group = true;
+              break;
+            }
+          }
+          if (found_group)
+            continue;
+        }
+      }
+    }
+    if (ToggleData* toggle_data = e->GetToggleData()) {
+      ToggleMap& toggles = toggle_data->Toggles();
+      auto iter = toggles.find(name);
+      if (iter != toggles.end()) {
+        Toggle& toggle = iter->value;
+        if (toggle.IsGroup()) {
+          toggle.SetValue(State(0u));
+        }
+      }
+    }
+    e = ElementTraversal::Next(*e, stay_within);
+  } while (e);
+}
+
+// Implement https://tabatkins.github.io/css-toggle/#change-a-toggle
+void Element::ChangeToggle(Element* toggle_element,
+                           Toggle* t,
+                           const ToggleTrigger& action,
+                           const ToggleRoot* override_spec) {
+  using State = ToggleRoot::State;
+
+  DCHECK(t);
+  if (!override_spec)
+    override_spec = t;
+  DCHECK_EQ(t->Name(), override_spec->Name());
+  const auto states = override_spec->StateSet();
+  const bool is_group = override_spec->IsGroup();
+  const auto overflow = override_spec->Overflow();
+
+  if (action.Mode() == ToggleTriggerMode::kSet) {
+    t->SetValue(action.Value());
+  } else {
+    using IntegerType = ToggleRoot::State::IntegerType;
+    DCHECK_EQ(std::numeric_limits<IntegerType>::lowest(), 0u);
+    const IntegerType infinity = std::numeric_limits<IntegerType>::max();
+    bool overflowed = false;
+
+    IntegerType index;
+    if (t->Value().IsInteger()) {
+      index = t->Value().AsInteger();
+    } else if (states.IsNames()) {
+      index = states.AsNames().Find(t->Value().AsName());
+      if (index == kNotFound) {
+        index = infinity;
+        overflowed = true;
+      }
+    } else {
+      index = infinity;
+      overflowed = true;
+    }
+
+    IntegerType max_index;
+    if (states.IsInteger()) {
+      max_index = states.AsInteger();
+    } else {
+      max_index = states.AsNames().size() - 1;
+    }
+
+    if (action.Mode() == ToggleTriggerMode::kNext) {
+      if (!overflowed) {
+        IntegerType new_index = index + action.Value().AsInteger();
+        if (new_index < index || new_index > max_index)
+          overflowed = true;
+        else
+          index = new_index;
+      }
+
+      if (overflowed) {
+        switch (overflow) {
+          case ToggleOverflow::kCycle:
+            index = 0u;
+            break;
+          case ToggleOverflow::kCycleOn:
+            index = 1u;
+            break;
+          case ToggleOverflow::kSticky:
+            index = max_index;
+            break;
+        }
+      }
+    } else {
+      DCHECK_EQ(action.Mode(), ToggleTriggerMode::kPrev);
+      bool overflowed_negative = false;
+      if (!overflowed) {
+        IntegerType new_index = index - action.Value().AsInteger();
+        if (new_index > index) {
+          overflowed = true;
+          overflowed_negative = true;
+        }
+        index = new_index;
+      }
+      switch (overflow) {
+        case ToggleOverflow::kCycle:
+          DCHECK_EQ(std::numeric_limits<IntegerType>::lowest(), 0u);
+          if (overflowed || index > max_index)
+            index = max_index;
+          break;
+        case ToggleOverflow::kCycleOn:
+          if (overflowed || index < 1u || index > max_index)
+            index = max_index;
+          break;
+        case ToggleOverflow::kSticky:
+          if (overflowed_negative)
+            index = 0u;
+          else if (overflowed || index > max_index)
+            index = max_index;
+          break;
+      }
+    }
+
+    if (t->StateSet().IsNames()) {
+      const auto& names = t->StateSet().AsNames();
+      if (index < names.size()) {
+        t->SetValue(State(names[index]));
+      } else {
+        t->SetValue(State(index));
+      }
+    } else {
+      t->SetValue(State(index));
+    }
+  }
+
+  // If t’s value does not match 0, and group is true, then set the value of
+  // all other toggles in the same toggle group as t to 0.
+  if (is_group && !t->ValueMatches(State(0u)))
+    MakeRestOfToggleGroupZero(toggle_element, t->Name());
+}
+
+void Element::FireToggleChangeEvent(Toggle* toggle) {
+  // TODO(https://crbug.com/1250716): Write code to add event classes and fire
+  // toggle change events.
+}
+
 }  // namespace blink

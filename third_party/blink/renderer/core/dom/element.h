@@ -112,8 +112,11 @@ class StylePropertyMap;
 class StylePropertyMapReadOnly;
 class StyleRecalcContext;
 class StyleRequest;
+class Toggle;
 class ToggleData;
+class ToggleRoot;
 class ToggleRootList;
+class ToggleTrigger;
 class V8UnionBooleanOrScrollIntoViewOptions;
 
 enum class CSSPropertyID;
@@ -1206,6 +1209,16 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // the element.
   void CreateToggles(const ToggleRootList* toggle_roots);
 
+  // Find the toggle and corresponding element that has the toggle named name
+  // that is in scope on this element, or both null if no toggle is in scope.
+  // The element may be this.
+  //
+  // See https://tabatkins.github.io/css-toggle/#toggle-in-scope .
+  std::pair<Toggle*, Element*> FindToggleInScope(const AtomicString& name);
+
+  // Implement https://tabatkins.github.io/css-toggle/#fire-a-toggle-activation
+  void FireToggleActivation(const ToggleTrigger& activation);
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
@@ -1604,6 +1617,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // like *::selection. To improve runtime and keep copy-on-write inheritance,
   // avoid recalc if neither parent nor child matched any non-universal rules.
   bool CanSkipRecalcForHighlightPseudos(const ComputedStyle& new_style) const;
+
+  static void ChangeToggle(Element* toggle_element,
+                           Toggle* toggle,
+                           const ToggleTrigger& action,
+                           const ToggleRoot* override_spec);
+  void FireToggleChangeEvent(Toggle* toggle);
 
   Member<ElementData> element_data_;
 };

@@ -31,6 +31,11 @@ class Toggle : public ToggleRoot {
   // toggle specifiers, which we happen to use as a base class
   State InitialState() const = delete;
   State Value() const { return value_; }
+
+  void SetValue(const State& value) { value_ = value; }
+  void SetValue(State&& value) { value_ = value; }
+
+  bool ValueMatches(const State& other) const;
 };
 
 }  // namespace blink
