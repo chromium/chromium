@@ -23,7 +23,9 @@ namespace remote_cocoa {
 RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
     mojom::RenderWidgetHostNSViewHost* host,
     RenderWidgetHostNSViewHostHelper* host_helper,
-    uint64_t ns_view_id) {
+    uint64_t ns_view_id,
+    base::OnceClosure destroy_callback)
+    : destroy_callback_(std::move(destroy_callback)) {
   cocoa_view_.reset([[RenderWidgetHostViewCocoa alloc]
         initWithHost:host
       withHostHelper:host_helper]);
@@ -290,6 +292,11 @@ void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
     ShowSharingServicePickerCallback callback) {
   ShowSharingServicePickerForView(cocoa_view_, title, text, url, file_paths,
                                   std::move(callback));
+}
+
+void RenderWidgetHostNSViewBridge::Destroy() {
+  if (destroy_callback_)
+    std::move(destroy_callback_).Run();
 }
 
 }  // namespace remote_cocoa

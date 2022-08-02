@@ -13,6 +13,7 @@
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/common/content_export.h"
 #include "content/common/web_contents_ns_view_bridge.mojom.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
@@ -44,6 +45,9 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
 
   ~WebContentsNSViewBridge() override;
 
+  void Bind(mojo::PendingAssociatedReceiver<mojom::WebContentsNSView> receiver,
+            scoped_refptr<base::SequencedTaskRunner> task_runner);
+
   WebContentsViewCocoa* GetNSView() const { return ns_view_.get(); }
 
   // mojom::WebContentsNSViewBridge:
@@ -57,9 +61,11 @@ class CONTENT_EXPORT WebContentsNSViewBridge : public mojom::WebContentsNSView {
                  uint32_t operation_mask,
                  const gfx::ImageSkia& image,
                  const gfx::Vector2d& image_offset) override;
+  void Destroy() override;
 
  private:
   base::scoped_nsobject<WebContentsViewCocoa> ns_view_;
+  mojo::AssociatedReceiver<mojom::WebContentsNSView> receiver_{this};
   mojo::AssociatedRemote<mojom::WebContentsNSViewHost> host_;
 
   std::unique_ptr<ScopedNSViewIdMapping> view_id_;

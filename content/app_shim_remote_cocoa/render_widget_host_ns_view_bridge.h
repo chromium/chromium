@@ -30,7 +30,8 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
  public:
   RenderWidgetHostNSViewBridge(mojom::RenderWidgetHostNSViewHost* client,
                                RenderWidgetHostNSViewHostHelper* client_helper,
-                               uint64_t ns_view_id);
+                               uint64_t ns_view_id,
+                               base::OnceClosure destroy_callback = {});
 
   RenderWidgetHostNSViewBridge(const RenderWidgetHostNSViewBridge&) = delete;
   RenderWidgetHostNSViewBridge& operator=(const RenderWidgetHostNSViewBridge&) =
@@ -83,6 +84,7 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
       const std::string& url,
       const std::vector<std::string>& file_paths,
       ShowSharingServicePickerCallback callback) override;
+  void Destroy() override;
 
  private:
   bool IsPopup() const { return !!popup_window_; }
@@ -116,6 +118,9 @@ class RenderWidgetHostNSViewBridge : public mojom::RenderWidgetHostNSView,
 
   // The receiver for this object (only used when remotely instantiated).
   mojo::AssociatedReceiver<mojom::RenderWidgetHostNSView> receiver_{this};
+
+  // The callback to be called when `Destroy()` is called.
+  base::OnceClosure destroy_callback_;
 };
 
 }  // namespace remote_cocoa

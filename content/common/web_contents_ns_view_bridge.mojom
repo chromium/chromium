@@ -39,6 +39,12 @@ interface WebContentsNSView {
             uint32 operation_mask,
             gfx.mojom.ImageSkia? image,
             gfx.mojom.Vector2d image_offset);
+
+  // TODO(https://crbug.com/1327478): This is a work around for a bug in mojo
+  // where close notifications for associated messages pipes can sometimes be
+  // delivered later than they should. This method is called before closing the
+  // remote, and is treated as if a close notification was received.
+  Destroy();
 };
 
 // The method through which a window was focused (directly focused, or by

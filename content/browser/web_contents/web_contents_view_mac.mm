@@ -654,6 +654,7 @@ void WebContentsViewMac::ViewsHostableDetach() {
     remote_ns_view_->SetVisible(false);
     remote_ns_view_->ResetParentNSView();
     remote_ns_view_host_receiver_.reset();
+    remote_ns_view_->Destroy();
     remote_ns_view_.reset();
     // Permit the in-process NSView to call back into |this| again.
     [GetInProcessNSView() setHost:this];

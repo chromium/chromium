@@ -265,6 +265,8 @@ void RenderWidgetHostViewMac::MigrateNSViewBridge(
   // destroying the associated bridge), and close the receiver (to allow it
   // to be re-bound). Note that |in_process_ns_view_bridge_| remains valid.
   remote_ns_view_client_receiver_.reset();
+  if (remote_ns_view_)
+    remote_ns_view_->Destroy();
   remote_ns_view_.reset();
 
   // Enable accessibility focus overriding for remote NSViews.
@@ -738,6 +740,8 @@ void RenderWidgetHostViewMac::Destroy() {
   ns_view_ = nullptr;
   in_process_ns_view_bridge_.reset();
   remote_ns_view_client_receiver_.reset();
+  if (remote_ns_view_)
+    remote_ns_view_->Destroy();
   remote_ns_view_.reset();
 
   // Delete the delegated frame state, which will reach back into

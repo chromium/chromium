@@ -101,6 +101,12 @@ interface RenderWidgetHostNSView {
                            string url,
                            array<string> file_paths)
     => (blink.mojom.ShareError error);
+
+  // TODO(https://crbug.com/1327478): This is a work around for a bug in mojo
+  // where close notifications for associated messages pipes can sometimes be
+  // delivered later than they should. This method is called before closing the
+  // remote, and is treated as if a close notification was received.
+  Destroy();
 };
 
 // The interface through which the RenderWidgetHostViewCocoa NSView in the app

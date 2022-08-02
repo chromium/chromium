@@ -43,6 +43,18 @@ WebContentsNSViewBridge::~WebContentsNSViewBridge() {
   [ns_view_ removeFromSuperview];
 }
 
+void WebContentsNSViewBridge::Bind(
+    mojo::PendingAssociatedReceiver<mojom::WebContentsNSView> receiver,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  receiver_.Bind(std::move(receiver), std::move(task_runner));
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &WebContentsNSViewBridge::Destroy, base::Unretained(this)));
+}
+
+void WebContentsNSViewBridge::Destroy() {
+  delete this;
+}
+
 void WebContentsNSViewBridge::SetParentNSView(uint64_t parent_ns_view_id) {
   NSView* parent_ns_view = remote_cocoa::GetNSViewFromId(parent_ns_view_id);
   // If the browser passed an invalid handle, then there is no recovery.
