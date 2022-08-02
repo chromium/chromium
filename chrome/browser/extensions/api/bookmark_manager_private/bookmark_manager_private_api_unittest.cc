@@ -127,13 +127,13 @@ TEST_F(BookmarkManagerPrivateApiUnitTest, RunOpenInNewTabFunctionFolder) {
 }
 
 TEST_F(BookmarkManagerPrivateApiUnitTest, RunOpenInNewWindowFunctionFolder) {
-  auto new_tab_function =
+  auto new_window_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
   std::string node_id =
       base::NumberToString(model()->bookmark_bar_node()->id());
   std::string args = base::StringPrintf(R"([["%s"], false])", node_id.c_str());
   EXPECT_EQ("Cannot open a folder in a new window.",
-            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+            api_test_utils::RunFunctionAndReturnError(new_window_function.get(),
                                                       args, profile()));
 }
 
@@ -143,11 +143,11 @@ TEST_F(BookmarkManagerPrivateApiUnitTest,
   IncognitoModePrefs::SetAvailability(
       profile()->GetPrefs(), IncognitoModePrefs::Availability::kDisabled);
 
-  auto new_tab_function =
+  auto new_window_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
   std::string args = base::StringPrintf(R"([["%s"], true])", node_id().c_str());
   EXPECT_EQ("Incognito mode is disabled.",
-            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+            api_test_utils::RunFunctionAndReturnError(new_window_function.get(),
                                                       args, profile()));
 }
 
@@ -157,12 +157,12 @@ TEST_F(BookmarkManagerPrivateApiUnitTest,
   IncognitoModePrefs::SetAvailability(
       profile()->GetPrefs(), IncognitoModePrefs::Availability::kForced);
 
-  auto new_tab_function =
+  auto new_window_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
   std::string args =
       base::StringPrintf(R"([["%s"], false])", node_id().c_str());
   EXPECT_EQ("Incognito mode is forced. Cannot open normal windows.",
-            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+            api_test_utils::RunFunctionAndReturnError(new_window_function.get(),
                                                       args, profile()));
 }
 
@@ -172,11 +172,11 @@ TEST_F(BookmarkManagerPrivateApiUnitTest,
       model()->other_node(), 0, u"history", GURL("chrome://history"));
   std::string node_id = base::NumberToString(node->id());
 
-  auto new_tab_function =
+  auto new_window_function =
       base::MakeRefCounted<BookmarkManagerPrivateOpenInNewWindowFunction>();
   std::string args = base::StringPrintf(R"([["%s"], true])", node_id.c_str());
   EXPECT_EQ("Cannot open URL \"chrome://history/\" in an incognito window.",
-            api_test_utils::RunFunctionAndReturnError(new_tab_function.get(),
+            api_test_utils::RunFunctionAndReturnError(new_window_function.get(),
                                                       args, profile()));
 }
 

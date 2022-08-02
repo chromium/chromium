@@ -69,6 +69,7 @@ class ExtensionTabUtil {
     std::unique_ptr<bool> active;
     std::unique_ptr<bool> pinned;
     std::unique_ptr<int> index;
+    std::unique_ptr<int> bookmark_id;
   };
 
   // Platform specific delegate.

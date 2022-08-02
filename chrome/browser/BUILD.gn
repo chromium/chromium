@@ -3587,6 +3587,7 @@ static_library("browser") {
       "banners/app_banner_manager_desktop.h",
       "bookmarks/bookmark_html_writer.cc",
       "bookmarks/bookmark_html_writer.h",
+      "bookmarks/url_and_id.h",
       "cart/cart_db.cc",
       "cart/cart_db.h",
       "cart/cart_discount_fetcher.cc",
