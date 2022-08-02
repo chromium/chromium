@@ -1306,6 +1306,12 @@
     "args": ["--enable-features=ForceDeferScriptIntervention"]
   },
   {
+    "prefix": "force-in-order-script",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["wpt_internal/in-order-script-scheduling"],
+    "args": ["--enable-features=ForceInOrderScript"]
+  },
+  {
     "prefix": "threaded-preload-scanner",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

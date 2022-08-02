@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlscriptelement_svgscriptelement.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -346,11 +347,22 @@ Element& HTMLScriptElement::CloneWithoutAttributesAndChildren(
 }
 
 bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {
-  return blocking_attribute_->HasRenderToken() ||
-         (loader_->IsParserInserted() &&
-          loader_->GetScriptType() ==
-              ScriptLoader::ScriptTypeAtPrepare::kClassic &&
-          !AsyncAttributeValue() && !DeferAttributeValue());
+  if (blocking_attribute_->HasRenderToken())
+    return true;
+
+  if (loader_->IsParserInserted() &&
+      loader_->GetScriptType() == ScriptLoader::ScriptTypeAtPrepare::kClassic) {
+    // If ForceInOrderScript is enabled, treat the script having src attribute
+    // as non-render blocking even if it has neither async nor defer attribute.
+    // Because the script is force-in-order'ed, which behaves like the scripts
+    // categorized ScriptSchedulingType::kInOrder. Those're not render blocking.
+    if (base::FeatureList::IsEnabled(features::kForceInOrderScript) &&
+        HasSourceAttribute())
+      return false;
+    return !AsyncAttributeValue() && !DeferAttributeValue();
+  }
+
+  return false;
 }
 
 // static
