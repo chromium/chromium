@@ -154,6 +154,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   blink::mojom::V8CacheOptions v8_cache_options;
   bool record_whole_document;
 
+  // If true, stylus handwriting recognition to text input will be available in
+  // editable input fields which are non-password type.
+  bool stylus_handwriting_enabled;
+
   // This flags corresponds to a Page's Settings' setCookieEnabled state. It
   // only controls whether or not the "document.cookie" field is properly
   // connected to the backing store, for instance if you wanted to be able to

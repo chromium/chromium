@@ -739,7 +739,10 @@ void StyleAdjuster::AdjustEffectiveTouchAction(
     element_touch_action &= ~TouchAction::kInternalPanXScrolls;
   }
 
+  // TODO(crbug.com/1346169): Full style invalidation is needed when this
+  // feature status changes at runtime as it affects the computed style.
   if (base::FeatureList::IsEnabled(blink::features::kStylusWritingToInput) &&
+      RuntimeEnabledFeatures::StylusHandwritingEnabled() &&
       (element_touch_action & TouchAction::kPan) == TouchAction::kPan &&
       IsEditableElement(element, style) &&
       !IsPasswordFieldWithUnrevealedPassword(element)) {

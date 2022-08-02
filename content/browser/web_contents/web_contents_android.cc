@@ -709,6 +709,11 @@ void WebContentsAndroid::SetSpatialNavigationDisabled(JNIEnv* env,
   web_contents_->SetSpatialNavigationDisabled(disabled);
 }
 
+void WebContentsAndroid::SetStylusHandwritingEnabled(JNIEnv* env,
+                                                     bool enabled) {
+  web_contents_->SetStylusHandwritingEnabled(enabled);
+}
+
 int WebContentsAndroid::DownloadImage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jurl,

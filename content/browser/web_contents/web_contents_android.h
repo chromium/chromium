@@ -155,6 +155,8 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void SetSpatialNavigationDisabled(JNIEnv* env, bool disabled);
 
+  void SetStylusHandwritingEnabled(JNIEnv* env, bool enabled);
+
   int DownloadImage(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& url,
                     jboolean is_fav_icon,

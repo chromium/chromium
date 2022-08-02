@@ -2805,6 +2805,8 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   if (is_spatial_navigation_disabled_)
     prefs.spatial_navigation_enabled = false;
 
+  prefs.stylus_handwriting_enabled = stylus_handwriting_enabled_;
+
   prefs.disable_reading_from_canvas =
       command_line.HasSwitch(switches::kDisableReadingFromCanvas);
 
@@ -8731,6 +8733,13 @@ void WebContentsImpl::SetSpatialNavigationDisabled(bool disabled) {
     return;
 
   is_spatial_navigation_disabled_ = disabled;
+  NotifyPreferencesChanged();
+}
+
+void WebContentsImpl::SetStylusHandwritingEnabled(bool enabled) {
+  if (stylus_handwriting_enabled_ == enabled)
+    return;
+  stylus_handwriting_enabled_ = enabled;
   NotifyPreferencesChanged();
 }
 

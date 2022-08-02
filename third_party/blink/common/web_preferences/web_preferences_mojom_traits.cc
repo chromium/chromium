@@ -148,6 +148,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       data.fake_no_alloc_direct_call_for_testing_enabled();
   out->v8_cache_options = data.v8_cache_options();
   out->record_whole_document = data.record_whole_document();
+  out->stylus_handwriting_enabled = data.stylus_handwriting_enabled();
   out->cookie_enabled = data.cookie_enabled();
   out->accelerated_video_decode_enabled =
       data.accelerated_video_decode_enabled();
