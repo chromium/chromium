@@ -68,8 +68,11 @@ std::unique_ptr<ImageProcessor> ImageProcessor::Create(
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
+  // Note: we use a single thread task runner because the GL context is thread
+  // local, so we need to make sure we run the GLImageProcessorBackend on the
+  // same thread each time.
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner({});
+      base::ThreadPool::CreateSingleThreadTaskRunner({});
   auto wrapped_error_cb = base::BindRepeating(
       base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
       client_task_runner, FROM_HERE, std::move(error_cb));

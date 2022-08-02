@@ -51,6 +51,8 @@ source_set("common") {
     "chromeos_status.h",
     "dmabuf_video_frame_pool.cc",
     "dmabuf_video_frame_pool.h",
+    "gl_image_processor_backend.cc",
+    "gl_image_processor_backend.h",
     "gpu_buffer_layout.cc",
     "gpu_buffer_layout.h",
     "image_processor.cc",
