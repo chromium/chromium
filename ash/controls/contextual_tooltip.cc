@@ -72,8 +72,8 @@ std::string GetPath(TooltipType type, const std::string& sub_pref) {
 
 base::Time GetLastShownTime(PrefService* prefs, TooltipType type) {
   const base::Value* last_shown_time =
-      prefs->GetDictionary(prefs::kContextualTooltips)
-          ->FindPath(GetPath(type, kLastTimeShown));
+      prefs->GetValueDict(prefs::kContextualTooltips)
+          .FindByDottedPath(GetPath(type, kLastTimeShown));
   if (!last_shown_time)
     return base::Time();
   return *base::ValueToTime(last_shown_time);
@@ -81,8 +81,8 @@ base::Time GetLastShownTime(PrefService* prefs, TooltipType type) {
 
 int GetSuccessCount(PrefService* prefs, TooltipType type) {
   absl::optional<int> success_count =
-      prefs->GetDictionary(prefs::kContextualTooltips)
-          ->FindIntPath(GetPath(type, kSuccessCount));
+      prefs->GetValueDict(prefs::kContextualTooltips)
+          .FindIntByDottedPath(GetPath(type, kSuccessCount));
   return success_count.value_or(0);
 }
 
@@ -210,8 +210,8 @@ base::TimeDelta GetNudgeTimeout(PrefService* prefs, TooltipType type) {
 
 int GetShownCount(PrefService* prefs, TooltipType type) {
   absl::optional<int> shown_count =
-      prefs->GetDictionary(prefs::kContextualTooltips)
-          ->FindIntPath(GetPath(type, kShownCount));
+      prefs->GetValueDict(prefs::kContextualTooltips)
+          .FindIntByDottedPath(GetPath(type, kShownCount));
   return shown_count.value_or(0);
 }
 
