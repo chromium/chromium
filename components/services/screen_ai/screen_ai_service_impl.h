@@ -51,19 +51,35 @@ class ScreenAIService : public mojom::ScreenAIService,
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor>
           main_content_extractor) override;
 
+  // Initializes the pipelines.
+  // |models_folder| is a null terminated string pointing to the folder that
+  // includes model files.
   typedef bool (*InitFunction)(bool /*init_visual_annotations*/,
                                bool /*init_main_content_extraction*/,
                                bool /*debug_mode*/,
-                               const std::string& /*models_path*/);
+                               const char* /*models_path*/);
   InitFunction init_function_;
 
-  typedef bool (*AnnotateFunction)(const SkBitmap& /*image*/,
-                                   std::string& /*annotation_text*/);
+  // Sends the given bitmap to ScreenAI pipeline and returns visual annotations.
+  // The annoations will be returned as a serialized VisualAnnotation proto.
+  // |serialized_visual_annotation| will be allocated for the output and the
+  // ownership of the buffer will be passed to the caller function.
+  typedef bool (*AnnotateFunction)(
+      const SkBitmap& /*bitmap*/,
+      char*& /*serialized_visual_annotation*/,
+      uint32_t& /*serialized_visual_annotation_length*/);
   AnnotateFunction annotate_function_;
 
+  // Passes the given accessibility tree proto to Screen2x pipeline and returns
+  // the main content ids.
+  // The input is in form of a serialized ViewHierarchy proto.
+  // |content_node_ids| will be allocated for the outputs and the ownership of
+  // the array will be passed to the caller function.
   typedef bool (*ExtractMainContentFunction)(
-      const std::string& /*serialized_snapshot*/,
-      std::vector<int32_t>& /*content_node_ids*/);
+      const char* /*serialized_view_hierarchy*/,
+      uint32_t /*serialized_view_hierarchy_length*/,
+      int32_t*& /*&content_node_ids*/,
+      uint32_t& /*content_node_ids_length*/);
   ExtractMainContentFunction extract_main_content_function_;
 
   mojo::Receiver<mojom::ScreenAIService> receiver_;
