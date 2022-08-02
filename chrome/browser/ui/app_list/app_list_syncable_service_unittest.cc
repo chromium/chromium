@@ -1687,10 +1687,10 @@ TEST_F(AppListSyncableServiceTest, EphemeralAppsNotSynced) {
   EXPECT_TRUE(sync_item->is_ephemeral);
 
   // Ephemeral sync items are not added to the local storage.
-  const base::Value* local_items =
-      profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
-  const base::Value* dict_item = local_items->FindKeyOfType(
-      ephemeral_app_id, base::Value::Type::DICTIONARY);
+  const base::Value::Dict& local_items =
+      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
+
+  const base::Value::Dict* dict_item = local_items.FindDict(ephemeral_app_id);
   EXPECT_FALSE(dict_item);
 
   // Ephemeral sync items are not uploaded to sync data.
@@ -1739,10 +1739,10 @@ TEST_F(AppListSyncableServiceTest, EphemeralFoldersNotSynced) {
   EXPECT_TRUE(sync_item->is_ephemeral);
 
   // Ephemeral sync items are not added to the local storage.
-  const base::Value* local_items =
-      profile_->GetPrefs()->GetDictionary(prefs::kAppListLocalState);
-  const base::Value* dict_item = local_items->FindKeyOfType(
-      ephemeral_folder_id, base::Value::Type::DICTIONARY);
+  const base::Value::Dict& local_items =
+      profile_->GetPrefs()->GetValueDict(prefs::kAppListLocalState);
+  const base::Value::Dict* dict_item =
+      local_items.FindDict(ephemeral_folder_id);
   EXPECT_FALSE(dict_item);
 
   // Ephemeral sync items are not uploaded to sync data.
