@@ -44,6 +44,7 @@
 namespace {
 
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
+const char kTabGroupWithGroupTutorialMetricPrefix[] = "TabGroupWithGroup";
 constexpr char kTabGroupHeaderElementName[] = "TabGroupHeader";
 
 class BrowserHelpBubbleDelegate : public user_education::HelpBubbleDelegate {
@@ -374,9 +375,9 @@ void MaybeRegisterChromeTutorials(
     tutorial_registry.AddTutorial(kTabGroupTutorialId,
                                   std::move(without_group_description));
 
-    with_group_description.histograms =
-        user_education::MakeTutorialHistograms<kTabGroupTutorialMetricPrefix>(
-            with_group_description.steps.size());
+    with_group_description.histograms = user_education::MakeTutorialHistograms<
+        kTabGroupWithGroupTutorialMetricPrefix>(
+        with_group_description.steps.size());
     tutorial_registry.AddTutorial(kTabGroupWithExistingGroupTutorialId,
                                   std::move(with_group_description));
   }
