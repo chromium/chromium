@@ -69,6 +69,7 @@ if (include_polymer) {
 # Files that either dont hold a custom element definition or the custom element
 # does not have an equivalent .html file.
 non_web_component_files_ts = [
+  "cr_lazy_render/cr_lazy_render.ts",
   "cr_splitter/cr_splitter.ts",
   "cr_tree/cr_tree_base.ts",
 ]
