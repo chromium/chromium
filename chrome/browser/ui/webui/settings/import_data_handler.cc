@@ -72,9 +72,14 @@ void ImportDataHandler::OnJavascriptDisallowed() {
   // Cancels outstanding profile list detections.
   importer_list_.reset();
 
-  // Stops listening to updates from any ongoing imports.
-  if (importer_host_)
+  // When the WebUI is unloading, we ignore all further updates from the host.
+  // Because we're no longer listening to the `ImportEnded` callback, we must
+  // also clear our pointer, as otherwise this can lead to a use-after-free
+  // in the destructor. https://crbug.com/1302813.
+  if (importer_host_) {
     importer_host_->set_observer(nullptr);
+    importer_host_ = nullptr;
+  }
 }
 
 void ImportDataHandler::StartImport(
