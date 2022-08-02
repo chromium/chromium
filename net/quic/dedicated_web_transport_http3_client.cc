@@ -221,7 +221,7 @@ class WebTransportVisitorProxy : public quic::WebTransportVisitor {
   explicit WebTransportVisitorProxy(quic::WebTransportVisitor* visitor)
       : visitor_(visitor) {}
 
-  void OnSessionReady(const spdy::SpdyHeaderBlock& block) override {
+  void OnSessionReady(const spdy::Http2HeaderBlock& block) override {
     visitor_->OnSessionReady(block);
   }
   void OnSessionClosed(quic::WebTransportSessionError error_code,
@@ -597,7 +597,7 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   }
   connect_stream_ = stream;
 
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   DCHECK_EQ(url_.scheme(), url::kHttpsScheme);
   headers[":scheme"] = url_.scheme();
   headers[":method"] = "CONNECT";

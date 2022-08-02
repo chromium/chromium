@@ -26,7 +26,7 @@
 #include "net/http/http_stream.h"
 #include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace quic {

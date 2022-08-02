@@ -11,7 +11,7 @@
 #include "net/http/http_log_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_capture_mode.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 namespace net {
 

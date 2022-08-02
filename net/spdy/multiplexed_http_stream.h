@@ -10,7 +10,7 @@
 
 #include "net/http/http_stream.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_header_block.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/http2_header_block.h"
 
 namespace net {
 
