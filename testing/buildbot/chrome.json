@@ -2255,9 +2255,9 @@
     "skylab_tests": [
       {
         "args": [],
-        "cros_board": "trogdor",
-        "cros_img": "trogdor-release/R106-14997.0.0",
-        "name": "lacros_all_tast_tests TROGDOR_RELEASE_LKGM",
+        "cros_board": "cherry",
+        "cros_img": "cherry64-release/R106-14998.0.0",
+        "name": "lacros_all_tast_tests CHERRY64_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2267,13 +2267,13 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "TROGDOR_RELEASE_LKGM"
+        "variant_id": "CHERRY64_RELEASE_LKGM"
       },
       {
         "args": [],
-        "cros_board": "trogdor",
-        "cros_img": "trogdor-release/R105-14989.11.0",
-        "name": "lacros_all_tast_tests TROGDOR_RELEASE_DEV",
+        "cros_board": "jacuzzi",
+        "cros_img": "jacuzzi64-release/R106-14998.0.0",
+        "name": "lacros_all_tast_tests JACUZZI64_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
@@ -2283,39 +2283,7 @@
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
-        "variant_id": "TROGDOR_RELEASE_DEV"
-      },
-      {
-        "args": [],
-        "cros_board": "trogdor",
-        "cros_img": "trogdor-release/R104-14909.90.0",
-        "name": "lacros_all_tast_tests TROGDOR_RELEASE_BETA",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "TROGDOR_RELEASE_BETA"
-      },
-      {
-        "args": [],
-        "cros_board": "trogdor",
-        "cros_img": "trogdor-release/R103-14816.131.0",
-        "name": "lacros_all_tast_tests TROGDOR_RELEASE_STABLE",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "swarming": {},
-        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
-        "test": "lacros_all_tast_tests",
-        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
-        "timeout_sec": 10800,
-        "variant_id": "TROGDOR_RELEASE_STABLE"
+        "variant_id": "JACUZZI64_RELEASE_LKGM"
       }
     ]
   },

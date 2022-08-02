@@ -923,6 +923,15 @@
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_STABLE',
   },
+  'CROS_CHERRY64_RELEASE_LKGM': {
+    'skylab': {
+      'cros_board': 'cherry',
+      'cros_chrome_version': '105.0.5190.0',
+      'cros_img': 'cherry64-release/R106-14998.0.0',
+    },
+    'enabled': True,
+    'identifier': 'CHERRY64_RELEASE_LKGM',
+  },
   'CROS_EVE_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'eve',
@@ -968,42 +977,6 @@
     'enabled': True,
     'identifier': 'EVE_FULL',
   },
-  'CROS_TROGDOR_RELEASE_LKGM': {
-    'skylab': {
-      'cros_board': 'trogdor',
-      'cros_chrome_version': '105.0.5190.0',
-      'cros_img': 'trogdor-release/R106-14997.0.0',
-    },
-    'enabled': True,
-    'identifier': 'TROGDOR_RELEASE_LKGM',
-  },
-  'CROS_TROGDOR_RELEASE_DEV': {
-    'skylab': {
-      'cros_board': 'trogdor',
-      'cros_chrome_version': '105.0.5195.5',
-      'cros_img': 'trogdor-release/R105-14989.11.0',
-    },
-    'enabled': True,
-    'identifier': 'TROGDOR_RELEASE_DEV',
-  },
-  'CROS_TROGDOR_RELEASE_BETA': {
-    'skylab': {
-      'cros_board': 'trogdor',
-      'cros_chrome_version': '104.0.5112.64',
-      'cros_img': 'trogdor-release/R104-14909.90.0',
-    },
-    'enabled': True,
-    'identifier': 'TROGDOR_RELEASE_BETA',
-  },
-  'CROS_TROGDOR_RELEASE_STABLE': {
-    'skylab': {
-      'cros_board': 'trogdor',
-      'cros_chrome_version': '103.0.5060.132',
-      'cros_img': 'trogdor-release/R103-14816.131.0',
-    },
-    'enabled': True,
-    'identifier': 'TROGDOR_RELEASE_STABLE',
-  },
   'CROS_HANA_RELEASE_LKGM': {
     'skylab': {
       'cros_board': 'hana',
@@ -1031,7 +1004,7 @@
     'enabled': True,
     'identifier': 'HANA_RELEASE_BETA',
   },
-    'CROS_HANA_RELEASE_STABLE': {
+  'CROS_HANA_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'hana',
       'cros_chrome_version': '103.0.5060.132',
@@ -1039,6 +1012,15 @@
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_STABLE',
+  },
+  'CROS_JACUZZI64_RELEASE_LKGM': {
+    'skylab': {
+      'cros_board': 'jacuzzi',
+      'cros_chrome_version': '105.0.5190.0',
+      'cros_img': 'jacuzzi64-release/R106-14998.0.0',
+    },
+    'enabled': True,
+    'identifier': 'JACUZZI64_RELEASE_LKGM',
   },
   'CROS_JACUZZI_RELEASE_LKGM': {
     'skylab': {

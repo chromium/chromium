@@ -6863,10 +6863,8 @@
     'lacros_skylab_arm64': {
       'lacros_skylab_arm64_tests': {
         'variants': [
-          'CROS_TROGDOR_RELEASE_LKGM',
-          'CROS_TROGDOR_RELEASE_DEV',
-          'CROS_TROGDOR_RELEASE_BETA',
-          'CROS_TROGDOR_RELEASE_STABLE',
+          'CROS_CHERRY64_RELEASE_LKGM',
+          'CROS_JACUZZI64_RELEASE_LKGM',
         ]
       },
     },
