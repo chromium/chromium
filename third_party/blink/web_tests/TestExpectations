@@ -7044,7 +7044,6 @@ crbug.com/1344771 virtual/force-defer-script/external/wpt/html/semantics/scripti
 crbug.com/1345192 accessibility/aria-combo-box-with-delay-add.html [ Skip ]
 crbug.com/1345205 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/style-background-image.https.html [ Skip ]
 crbug.com/1345235 external/wpt/content-security-policy/style-src/stylehash-basic-blocked.sub.html [ Skip ]
-crbug.com/1345233 [ Mac12 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-010.https.html [ Crash Failure Pass ]
 crbug.com/1334674 [ Mac11 ] http/tests/devtools/oopif/oopif-presentation-console-messages.js [ Failure Pass ]
 
 # Sheriff 2022-07-19
