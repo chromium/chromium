@@ -200,6 +200,13 @@ source_set("cpu_and_os_specific") {
     sources = [ "src/src/x86/windows/init.c" ]
   }
 
+  if (is_win && current_cpu == "arm64") {
+    sources = [
+      "src/src/arm/windows/init-by-logical-sys-info.c",
+      "src/src/arm/windows/init.c",
+    ]
+  }
+
   if ((is_mac || is_ios) && (current_cpu == "x86" || current_cpu == "x64")) {
     sources = [ "src/src/x86/mach/init.c" ]
   }
