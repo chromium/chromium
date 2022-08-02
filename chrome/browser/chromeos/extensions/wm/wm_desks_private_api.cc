@@ -18,15 +18,6 @@ namespace extensions {
 
 namespace {
 
-api::wm_desks_private::DeskTemplate FromAshDeskTemplate(
-    const ash::DeskTemplate& desk_template) {
-  api::wm_desks_private::DeskTemplate out_api_template;
-  out_api_template.template_uuid = desk_template.uuid().AsLowercaseString();
-  out_api_template.template_name =
-      base::UTF16ToUTF8(desk_template.template_name());
-  return out_api_template;
-}
-
 api::wm_desks_private::Desk FromAshDesk(const ash::Desk& ash_desk) {
   api::wm_desks_private::Desk target;
   target.desk_name = base::UTF16ToUTF8(ash_desk.name());
@@ -35,100 +26,6 @@ api::wm_desks_private::Desk FromAshDesk(const ash::Desk& ash_desk) {
 }
 
 }  // namespace
-
-WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
-    WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction() = default;
-WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
-    ~WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction() = default;
-
-ExtensionFunction::ResponseAction
-WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::Run() {
-  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
-      base::BindOnce(&WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
-                         OnCaptureActiveDeskAndSaveTemplateCompleted,
-                     this));
-  return RespondLater();
-}
-
-void WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
-    OnCaptureActiveDeskAndSaveTemplateCompleted(
-        std::unique_ptr<ash::DeskTemplate> desk_template,
-        std::string error_string) {
-  if (!error_string.empty()) {
-    Respond(Error(std::move(error_string)));
-    return;
-  }
-
-  api::wm_desks_private::DeskTemplate api_template =
-      FromAshDeskTemplate(*desk_template);
-  Respond(ArgumentList(
-      api::wm_desks_private::CaptureActiveDeskAndSaveTemplate::Results::Create(
-          api_template)));
-}
-
-WmDesksPrivateUpdateDeskTemplateFunction::
-    WmDesksPrivateUpdateDeskTemplateFunction() = default;
-WmDesksPrivateUpdateDeskTemplateFunction::
-    ~WmDesksPrivateUpdateDeskTemplateFunction() = default;
-
-ExtensionFunction::ResponseAction
-WmDesksPrivateUpdateDeskTemplateFunction::Run() {
-  std::unique_ptr<api::wm_desks_private::UpdateDeskTemplate::Params> params(
-      api::wm_desks_private::UpdateDeskTemplate::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  DesksClient::Get()->UpdateDeskTemplate(
-      params->desk_template.template_uuid,
-      base::UTF8ToUTF16(params->desk_template.template_name),
-      base::BindOnce(&WmDesksPrivateUpdateDeskTemplateFunction::
-                         OnUpdateDeskTemplateCompleted,
-                     this));
-  return RespondLater();
-}
-
-void WmDesksPrivateUpdateDeskTemplateFunction::OnUpdateDeskTemplateCompleted(
-    std::string error_string) {
-  if (!error_string.empty()) {
-    Respond(Error(std::move(error_string)));
-    return;
-  }
-
-  Respond(NoArguments());
-}
-
-WmDesksPrivateGetSavedDeskTemplatesFunction::
-    WmDesksPrivateGetSavedDeskTemplatesFunction() = default;
-WmDesksPrivateGetSavedDeskTemplatesFunction::
-    ~WmDesksPrivateGetSavedDeskTemplatesFunction() = default;
-
-ExtensionFunction::ResponseAction
-WmDesksPrivateGetSavedDeskTemplatesFunction::Run() {
-  DesksClient::Get()->GetDeskTemplates(base::BindOnce(
-      &WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate,
-      this));
-  return RespondLater();
-}
-
-void WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate(
-    const std::vector<const ash::DeskTemplate*>& desk_templates,
-    std::string error_string) {
-  if (!error_string.empty()) {
-    Respond(Error(std::move(error_string)));
-    return;
-  }
-
-  // Construct the value.
-  std::vector<api::wm_desks_private::DeskTemplate> api_templates;
-  for (auto* desk_template : desk_templates) {
-    api::wm_desks_private::DeskTemplate api_template =
-        FromAshDeskTemplate(*desk_template);
-    api_templates.push_back(std::move(api_template));
-  }
-
-  Respond(ArgumentList(
-      api::wm_desks_private::GetSavedDeskTemplates::Results::Create(
-          api_templates)));
-}
 
 WmDesksPrivateGetDeskTemplateJsonFunction::
     WmDesksPrivateGetDeskTemplateJsonFunction() = default;
@@ -162,35 +59,6 @@ void WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson(
           template_json)));
 }
 
-WmDesksPrivateDeleteDeskTemplateFunction::
-    WmDesksPrivateDeleteDeskTemplateFunction() = default;
-WmDesksPrivateDeleteDeskTemplateFunction::
-    ~WmDesksPrivateDeleteDeskTemplateFunction() = default;
-
-ExtensionFunction::ResponseAction
-WmDesksPrivateDeleteDeskTemplateFunction::Run() {
-  std::unique_ptr<api::wm_desks_private::DeleteDeskTemplate::Params> params(
-      api::wm_desks_private::DeleteDeskTemplate::Params::Create(args()));
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  DesksClient::Get()->DeleteDeskTemplate(
-      params->template_uuid,
-      base::BindOnce(&WmDesksPrivateDeleteDeskTemplateFunction::
-                         OnDeleteDeskTemplateCompleted,
-                     this));
-  return RespondLater();
-}
-
-void WmDesksPrivateDeleteDeskTemplateFunction::OnDeleteDeskTemplateCompleted(
-    std::string error_string) {
-  if (!error_string.empty()) {
-    Respond(Error(std::move(error_string)));
-    return;
-  }
-
-  Respond(NoArguments());
-}
-
 WmDesksPrivateLaunchDeskFunction::WmDesksPrivateLaunchDeskFunction() = default;
 WmDesksPrivateLaunchDeskFunction::~WmDesksPrivateLaunchDeskFunction() = default;
 
@@ -202,16 +70,9 @@ ExtensionFunction::ResponseAction WmDesksPrivateLaunchDeskFunction::Run() {
   std::u16string desk_name = launch_options.desk_name
                                  ? base::UTF8ToUTF16(*launch_options.desk_name)
                                  : u"";
-  if (launch_options.template_uuid) {
-    DesksClient::Get()->LaunchDeskTemplate(
-        *params->launch_options.template_uuid,
-        base::BindOnce(&WmDesksPrivateLaunchDeskFunction::OnLaunchDesk, this),
-        desk_name);
-  } else {
-    DesksClient::Get()->LaunchEmptyDesk(
-        base::BindOnce(&WmDesksPrivateLaunchDeskFunction::OnLaunchDesk, this),
-        desk_name);
-  }
+  DesksClient::Get()->LaunchEmptyDesk(
+      base::BindOnce(&WmDesksPrivateLaunchDeskFunction::OnLaunchDesk, this),
+      desk_name);
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 

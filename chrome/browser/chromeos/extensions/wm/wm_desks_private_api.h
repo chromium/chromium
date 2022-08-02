@@ -7,7 +7,6 @@
 
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
-#include "extensions/browser/quota_service.h"
 
 namespace ash {
 class DeskTemplate;
@@ -15,72 +14,6 @@ class Desk;
 }
 
 namespace extensions {
-
-class WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction
-    : public ExtensionFunction {
- public:
-  WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction();
-  WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction(
-      const WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction&) = delete;
-  WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction& operator=(
-      const WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction&) = delete;
-
-  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.captureActiveDeskAndSaveTemplate",
-                             WMDESKSPRIVATE_CAPTUREACTIVEDESKANDSAVETEMPLATE)
-
- protected:
-  ~WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  void OnCaptureActiveDeskAndSaveTemplateCompleted(
-      std::unique_ptr<ash::DeskTemplate> desk_template,
-      std::string error_string);
-};
-
-class WmDesksPrivateUpdateDeskTemplateFunction : public ExtensionFunction {
- public:
-  WmDesksPrivateUpdateDeskTemplateFunction();
-  WmDesksPrivateUpdateDeskTemplateFunction(
-      const WmDesksPrivateUpdateDeskTemplateFunction&) = delete;
-  WmDesksPrivateUpdateDeskTemplateFunction& operator=(
-      const WmDesksPrivateUpdateDeskTemplateFunction&) = delete;
-
-  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.updateDeskTemplate",
-                             WMDESKSPRIVATE_UPDATEDESKTEMPLATE)
-
- protected:
-  ~WmDesksPrivateUpdateDeskTemplateFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  void OnUpdateDeskTemplateCompleted(std::string error_string);
-};
-
-class WmDesksPrivateGetSavedDeskTemplatesFunction : public ExtensionFunction {
- public:
-  WmDesksPrivateGetSavedDeskTemplatesFunction();
-  WmDesksPrivateGetSavedDeskTemplatesFunction(
-      const WmDesksPrivateGetSavedDeskTemplatesFunction&) = delete;
-  WmDesksPrivateGetSavedDeskTemplatesFunction& operator=(
-      const WmDesksPrivateGetSavedDeskTemplatesFunction&) = delete;
-
-  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.getSavedDeskTemplates",
-                             WMDESKSPRIVATE_GETSAVEDDESKTEMPLATES)
-
- protected:
-  ~WmDesksPrivateGetSavedDeskTemplatesFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  void OnGetSavedDeskTemplate(
-      const std::vector<const ash::DeskTemplate*>& desk_templates,
-      std::string error_string);
-};
-
 class WmDesksPrivateGetDeskTemplateJsonFunction : public ExtensionFunction {
  public:
   WmDesksPrivateGetDeskTemplateJsonFunction();
@@ -100,26 +33,6 @@ class WmDesksPrivateGetDeskTemplateJsonFunction : public ExtensionFunction {
 
   void OnGetDeskTemplateJson(const std::string& template_json,
                              std::string error_string);
-};
-
-class WmDesksPrivateDeleteDeskTemplateFunction : public ExtensionFunction {
- public:
-  WmDesksPrivateDeleteDeskTemplateFunction();
-  WmDesksPrivateDeleteDeskTemplateFunction(
-      const WmDesksPrivateDeleteDeskTemplateFunction&) = delete;
-  WmDesksPrivateDeleteDeskTemplateFunction& operator=(
-      const WmDesksPrivateDeleteDeskTemplateFunction&) = delete;
-
-  DECLARE_EXTENSION_FUNCTION("wmDesksPrivate.deleteDeskTemplate",
-                             WMDESKSPRIVATE_DELETEDESKTEMPLATE)
-
- protected:
-  ~WmDesksPrivateDeleteDeskTemplateFunction() override;
-
-  // ExtensionFunction:
-  ResponseAction Run() override;
-
-  void OnDeleteDeskTemplateCompleted(std::string error_string);
 };
 
 class WmDesksPrivateLaunchDeskFunction : public ExtensionFunction {
