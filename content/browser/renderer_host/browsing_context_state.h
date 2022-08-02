@@ -226,14 +226,16 @@ class CONTENT_EXPORT BrowsingContextState
       SiteInstance* site_instance,
       const scoped_refptr<RenderViewHostImpl>& rvh,
       FrameTreeNode* frame_tree_node,
-      ProxyAccessMode proxy_access_mode = ProxyAccessMode::kRegular);
+      ProxyAccessMode proxy_access_mode = ProxyAccessMode::kRegular,
+      const blink::RemoteFrameToken& frame_token = blink::RemoteFrameToken());
 
   // Called on the RFHM of the inner WebContents to create a
   // RenderFrameProxyHost in its outer WebContents's SiteInstance,
   // |outer_contents_site_instance|.
   RenderFrameProxyHost* CreateOuterDelegateProxy(
       SiteInstance* outer_contents_site_instance,
-      FrameTreeNode* frame_tree_node);
+      FrameTreeNode* frame_tree_node,
+      const blink::RemoteFrameToken& frame_token);
 
   // Called on an inner WebContents that's being detached from its outer
   // WebContents. This will delete the proxy in the

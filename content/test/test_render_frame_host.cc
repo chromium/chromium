@@ -268,8 +268,8 @@ void TestRenderFrameHost::SimulateManifestURLUpdate(const GURL& manifest_url) {
 
 TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
     blink::mojom::FencedFrameMode mode) {
-  fenced_frames_.push_back(
-      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
+  fenced_frames_.push_back(std::make_unique<FencedFrame>(
+      weak_ptr_factory_.GetSafeRef(), mode, base::UnguessableToken::Create()));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   // Create stub RemoteFrameInterfaces.
   auto remote_frame_interfaces =
@@ -281,7 +281,7 @@ TestRenderFrameHost* TestRenderFrameHost::AppendFencedFrame(
   std::ignore = frame.BindNewEndpointAndPassDedicatedReceiver();
   remote_frame_interfaces->frame = frame.Unbind();
   fenced_frame->CreateProxyAndAttachToOuterFrameTree(
-      std::move(remote_frame_interfaces));
+      std::move(remote_frame_interfaces), blink::RemoteFrameToken());
   return static_cast<TestRenderFrameHost*>(fenced_frame->GetInnerRoot());
 }
 

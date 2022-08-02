@@ -105,10 +105,12 @@ class CONTENT_EXPORT RenderFrameProxyHost
   static RenderFrameProxyHost* FromFrameToken(
       int process_id,
       const blink::RemoteFrameToken& frame_token);
+  static bool IsFrameTokenInUse(const blink::RemoteFrameToken& frame_token);
 
   RenderFrameProxyHost(SiteInstance* site_instance,
                        scoped_refptr<RenderViewHostImpl> render_view_host,
-                       FrameTreeNode* frame_tree_node);
+                       FrameTreeNode* frame_tree_node,
+                       const blink::RemoteFrameToken& frame_token);
 
   RenderFrameProxyHost(const RenderFrameProxyHost&) = delete;
   RenderFrameProxyHost& operator=(const RenderFrameProxyHost&) = delete;

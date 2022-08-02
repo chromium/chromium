@@ -203,6 +203,8 @@ class CONTENT_EXPORT FrameTree {
 
   // A set of delegates are remembered here so that we can create
   // RenderFrameHostManagers.
+  // `dev_tools_frame_token` is the devtools token for the root `FrameTreeNode`
+  // of this new `FrameTree`.
   FrameTree(BrowserContext* browser_context,
             Delegate* delegate,
             NavigationControllerDelegate* navigation_controller_delegate,
@@ -212,7 +214,8 @@ class CONTENT_EXPORT FrameTree {
             RenderWidgetHostDelegate* render_widget_delegate,
             RenderFrameHostManager::Delegate* manager_delegate,
             PageDelegate* page_delegate,
-            Type type);
+            Type type,
+            const base::UnguessableToken& devtools_frame_token);
 
   FrameTree(const FrameTree&) = delete;
   FrameTree& operator=(const FrameTree&) = delete;

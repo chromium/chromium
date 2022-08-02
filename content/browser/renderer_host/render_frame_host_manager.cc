@@ -2888,7 +2888,7 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
           DCHECK(outer_contents_frame_tree_node->parent());
           browsing_context_state->CreateOuterDelegateProxy(
               outer_contents_frame_tree_node->parent()->GetSiteInstance(),
-              frame_tree_node_);
+              frame_tree_node_, blink::RemoteFrameToken());
         }
       }
     }

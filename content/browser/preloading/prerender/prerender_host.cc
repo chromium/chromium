@@ -88,7 +88,8 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
                                         &web_contents,
                                         &web_contents,
                                         &web_contents,
-                                        FrameTree::Type::kPrerender)) {
+                                        FrameTree::Type::kPrerender,
+                                        base::UnguessableToken::Create())) {
     scoped_refptr<SiteInstance> site_instance =
         SiteInstance::Create(web_contents.GetBrowserContext());
     frame_tree_->Init(site_instance.get(),

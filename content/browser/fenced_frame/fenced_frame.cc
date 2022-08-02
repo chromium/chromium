@@ -37,7 +37,8 @@ FrameTreeNode* CreateDelegateFrameTreeNode(
 
 FencedFrame::FencedFrame(
     base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
-    blink::mojom::FencedFrameMode mode)
+    blink::mojom::FencedFrameMode mode,
+    const base::UnguessableToken& devtools_frame_token)
     : web_contents_(static_cast<WebContentsImpl*>(
           WebContents::FromRenderFrameHost(&*owner_render_frame_host))),
       owner_render_frame_host_(owner_render_frame_host),
@@ -53,7 +54,8 @@ FencedFrame::FencedFrame(
                                       /*render_widget_delegate=*/web_contents_,
                                       /*manager_delegate=*/web_contents_,
                                       /*page_delegate=*/web_contents_,
-                                      FrameTree::Type::kFencedFrame)),
+                                      FrameTree::Type::kFencedFrame,
+                                      devtools_frame_token)),
       mode_(mode) {
   scoped_refptr<SiteInstance> site_instance =
       SiteInstanceImpl::CreateForFencedFrame(
@@ -174,8 +176,8 @@ FrameTree* FencedFrame::LoadingTree() {
 }
 
 RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree(
-    blink::mojom::RemoteFrameInterfacesFromRendererPtr
-        remote_frame_interfaces) {
+    blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
+    const blink::RemoteFrameToken& frame_token) {
   DCHECK(remote_frame_interfaces);
   DCHECK(outer_delegate_frame_tree_node_);
   // Connect the outer delegate RenderFrameHost with the inner main
@@ -192,7 +194,8 @@ RenderFrameProxyHost* FencedFrame::CreateProxyAndAttachToOuterFrameTree(
       inner_root->current_frame_host()
           ->browsing_context_state()
           ->CreateOuterDelegateProxy(
-              owner_render_frame_host_->GetSiteInstance(), inner_root);
+              owner_render_frame_host_->GetSiteInstance(), inner_root,
+              frame_token);
 
   proxy_host->BindRemoteFrameInterfaces(
       std::move(remote_frame_interfaces->frame),

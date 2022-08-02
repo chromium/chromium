@@ -2350,8 +2350,10 @@ RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
     mojom::blink::FencedFrameMode mode) {
   mojom::blink::FrameReplicationStatePtr initial_replicated_state =
       mojom::blink::FrameReplicationState::New();
+  initial_replicated_state->origin = SecurityOrigin::CreateUniqueOpaque();
   RemoteFrameToken frame_token;
-  base::UnguessableToken devtools_frame_token;
+  base::UnguessableToken devtools_frame_token =
+      base::UnguessableToken::Create();
   auto remote_frame_interfaces =
       mojom::blink::RemoteFrameInterfacesFromRenderer::New();
   mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
@@ -2363,7 +2365,9 @@ RemoteFrame* WebLocalFrameImpl::CreateFencedFrame(
 
   GetFrame()->GetLocalFrameHostRemote().CreateFencedFrame(
       std::move(receiver), mode, std::move(remote_frame_interfaces),
-      &initial_replicated_state, &frame_token, &devtools_frame_token);
+      frame_token, devtools_frame_token);
+
+  DCHECK(initial_replicated_state->origin->IsOpaque());
 
   WebRemoteFrameImpl* remote_frame =
       WebRemoteFrameImpl::CreateForPortalOrFencedFrame(

@@ -10668,6 +10668,8 @@ Called by update_bad_message_reasons.py.-->
   <int value="279" label="BFSI_CREATE_FOR_WORKER_FENCED_FRAME"/>
   <int value="280" label="PMM_SUBSCRIBE_IN_FENCED_FRAME"/>
   <int value="281" label="MSDH_REQUEST_ALL_SCREENS_NOT_ALLOWED_FOR_ORIGIN"/>
+  <int value="282" label="RFHI_CREATE_FENCED_FRAME_BAD_FRAME_TOKEN"/>
+  <int value="283" label="RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

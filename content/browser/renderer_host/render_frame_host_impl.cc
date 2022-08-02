@@ -7625,23 +7625,18 @@ void RenderFrameHostImpl::CreateFencedFrame(
         pending_receiver,
     blink::mojom::FencedFrameMode mode,
     blink::mojom::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-    CreateFencedFrameCallback callback) {
+    const blink::RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token) {
   // We should defer fenced frame creation during prerendering, so creation at
   // this point is an error.
   if (GetLifecycleState() == RenderFrameHost::LifecycleState::kPrerendering) {
     bad_message::ReceivedBadMessage(GetProcess(),
                                     bad_message::FF_CREATE_WHILE_PRERENDERING);
-    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
-                            blink::RemoteFrameToken(),
-                            base::UnguessableToken::Create());
     return;
   }
   if (!frame_tree_->IsFencedFramesMPArchBased()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_FENCED_FRAME_MOJO_WHEN_DISABLED);
-    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
-                            blink::RemoteFrameToken(),
-                            base::UnguessableToken::Create());
     return;
   }
   // Cannot create a fenced frame in a sandbox iframe which doesn't allow
@@ -7650,9 +7645,6 @@ void RenderFrameHostImpl::CreateFencedFrame(
   if (IsSandboxed(blink::kFencedFrameMandatoryUnsandboxedFlags)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME);
-    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
-                            blink::RemoteFrameToken(),
-                            base::UnguessableToken::Create());
     return;
   }
   // A fenced frame embedded in another fenced frame cannot have a different
@@ -7662,17 +7654,34 @@ void RenderFrameHostImpl::CreateFencedFrame(
       GetMainFrame()->frame_tree_node()->GetFencedFrameMode() != mode) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::FF_DIFFERENT_MODE_THAN_EMBEDDER);
-    std::move(callback).Run(blink::mojom::FrameReplicationState::New(),
-                            blink::RemoteFrameToken(),
-                            base::UnguessableToken::Create());
     return;
   }
-  fenced_frames_.push_back(
-      std::make_unique<FencedFrame>(weak_ptr_factory_.GetSafeRef(), mode));
+
+  // Check that we have a unique `frame_token`.
+  if (RenderFrameProxyHost::IsFrameTokenInUse(frame_token)) {
+    bad_message::ReceivedBadMessage(
+        GetProcess(), bad_message::RFHI_CREATE_FENCED_FRAME_BAD_FRAME_TOKEN);
+    return;
+  }
+
+  // Ensure the devtools frame token doesn't exist in the FrameTree for
+  // this tab.
+  for (FrameTreeNode* node :
+       GetOutermostMainFrame()->frame_tree()->NodesIncludingInnerTreeNodes()) {
+    if (node->devtools_frame_token() == devtools_frame_token) {
+      bad_message::ReceivedBadMessage(
+          GetProcess(),
+          bad_message::RFHI_CREATE_FENCED_FRAME_BAD_DEVTOOLS_FRAME_TOKEN);
+      return;
+    }
+  }
+
+  fenced_frames_.push_back(std::make_unique<FencedFrame>(
+      weak_ptr_factory_.GetSafeRef(), mode, devtools_frame_token));
   FencedFrame* fenced_frame = fenced_frames_.back().get();
   RenderFrameProxyHost* proxy_host =
       fenced_frame->CreateProxyAndAttachToOuterFrameTree(
-          std::move(remote_frame_interfaces));
+          std::move(remote_frame_interfaces), frame_token);
   fenced_frame->Bind(std::move(pending_receiver));
 
   // Since the fenced frame is newly created and has yet to commit a navigation,
@@ -7684,10 +7693,6 @@ void RenderFrameHostImpl::CreateFencedFrame(
   // Fenced frames (after their first navigation) do not have opaque origins,
   // and this default-constructed FRS does not impact that.
   DCHECK(initial_replicated_state.origin.opaque());
-
-  std::move(callback).Run(initial_replicated_state.Clone(),
-                          proxy_host->GetFrameToken(),
-                          fenced_frame->GetDevToolsFrameToken());
 }
 
 void RenderFrameHostImpl::CreateNewPopupWidget(

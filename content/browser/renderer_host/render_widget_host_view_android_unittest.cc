@@ -175,7 +175,7 @@ void RenderWidgetHostViewAndroidTest::SetUp() {
       browser_context_.get(), web_contents_.get(), web_contents_.get(),
       web_contents_.get(), web_contents_.get(), web_contents_.get(),
       web_contents_.get(), web_contents_.get(), web_contents_.get(),
-      FrameTree::Type::kPrimary);
+      FrameTree::Type::kPrimary, base::UnguessableToken::Create());
 
   delegate_ = std::make_unique<MockRenderWidgetHostDelegate>();
   process_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());

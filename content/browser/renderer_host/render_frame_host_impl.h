@@ -2190,7 +2190,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::mojom::FencedFrameMode mode,
       blink::mojom::RemoteFrameInterfacesFromRendererPtr
           remote_frame_interfaces,
-      CreateFencedFrameCallback callback) override;
+      const blink::RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token) override;
 
   // blink::mojom::BackForwardCacheControllerHost:
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;

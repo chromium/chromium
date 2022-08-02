@@ -269,7 +269,8 @@ void FakeLocalFrameHost::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>,
     mojom::blink::FencedFrameMode,
     mojom::blink::RemoteFrameInterfacesFromRendererPtr remote_frame_interfaces,
-    CreateFencedFrameCallback) {
+    const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token) {
   NOTREACHED() << "At the moment, FencedFrame is not used in any "
                   "unit tests, so this path should not be hit";
 }

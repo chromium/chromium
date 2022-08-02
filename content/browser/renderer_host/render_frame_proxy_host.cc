@@ -103,10 +103,19 @@ RenderFrameProxyHost* RenderFrameProxyHost::FromFrameToken(
              : nullptr;
 }
 
+// static
+bool RenderFrameProxyHost::IsFrameTokenInUse(
+    const blink::RemoteFrameToken& frame_token) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TokenFrameMap* frames = g_token_frame_proxy_map.Pointer();
+  return frames->find(frame_token) != frames->end();
+}
+
 RenderFrameProxyHost::RenderFrameProxyHost(
     SiteInstance* site_instance,
     scoped_refptr<RenderViewHostImpl> render_view_host,
-    FrameTreeNode* frame_tree_node)
+    FrameTreeNode* frame_tree_node,
+    const blink::RemoteFrameToken& frame_token)
     : routing_id_(site_instance->GetProcess()->GetNextRoutingID()),
       site_instance_(site_instance),
       site_instance_group_(
@@ -115,6 +124,7 @@ RenderFrameProxyHost::RenderFrameProxyHost(
       frame_tree_node_(frame_tree_node),
       render_frame_proxy_created_(false),
       render_view_host_(std::move(render_view_host)),
+      frame_token_(frame_token),
       post_message_counter_(blink::PostMessagePartition::kCrossProcess) {
   TRACE_EVENT_BEGIN("navigation", "RenderFrameProxyHost",
                     perfetto::Track::FromPointer(this),

@@ -278,13 +278,14 @@ class NavigationDelayerInterceptor
       blink::mojom::FencedFrameMode mode,
       blink::mojom::RemoteFrameInterfacesFromRendererPtr
           remote_frame_interfaces,
-      CreateFencedFrameCallback callback) override {
+      const blink::RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token) override {
     mojo::PendingAssociatedRemote<blink::mojom::FencedFrameOwnerHost>
         original_remote;
 
     GetForwardingInterface()->CreateFencedFrame(
         original_remote.InitWithNewEndpointAndPassReceiver(), mode,
-        std::move(remote_frame_interfaces), std::move(callback));
+        std::move(remote_frame_interfaces), frame_token, devtools_frame_token);
     std::vector<FencedFrame*> fenced_frames =
         render_frame_host_->GetFencedFrames();
     ASSERT_FALSE(fenced_frames.empty());

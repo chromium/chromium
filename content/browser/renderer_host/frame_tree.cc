@@ -180,7 +180,8 @@ FrameTree::FrameTree(
     RenderWidgetHostDelegate* render_widget_delegate,
     RenderFrameHostManager::Delegate* manager_delegate,
     PageDelegate* page_delegate,
-    Type type)
+    Type type,
+    const base::UnguessableToken& devtools_frame_token)
     : delegate_(delegate),
       render_frame_delegate_(render_frame_delegate),
       render_view_delegate_(render_view_delegate),
@@ -198,7 +199,7 @@ FrameTree::FrameTree(
                               // document scope.
                               blink::mojom::TreeScopeType::kDocument,
                               false,
-                              base::UnguessableToken::Create(),
+                              devtools_frame_token,
                               blink::mojom::FrameOwnerProperties(),
                               blink::FrameOwnerElementType::kNone,
                               blink::FramePolicy())),

@@ -904,7 +904,8 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
                           this,
                           this,
                           this,
-                          FrameTree::Type::kPrimary),
+                          FrameTree::Type::kPrimary,
+                          base::UnguessableToken::Create()),
       node_(this),
       primary_main_frame_process_status_(
           base::TERMINATION_STATUS_STILL_RUNNING),
@@ -2492,7 +2493,7 @@ void WebContentsImpl::AttachInnerWebContents(
   auto* proxy =
       inner_main_frame->browsing_context_state()->CreateOuterDelegateProxy(
           render_frame_host_impl->GetSiteInstance(),
-          inner_main_frame->frame_tree_node());
+          inner_main_frame->frame_tree_node(), blink::RemoteFrameToken());
   if (remote_frame && remote_frame_host_receiver) {
     proxy->BindRemoteFrameInterfaces(std::move(remote_frame),
                                      std::move(remote_frame_host_receiver));
