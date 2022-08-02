@@ -218,6 +218,8 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_LEGACY_INNER_JOINS
 
+#define SK_LEGACY_SET_ROTATE_SNAP
+
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
 /* In some places Skia can use static initializers for global initialization,
