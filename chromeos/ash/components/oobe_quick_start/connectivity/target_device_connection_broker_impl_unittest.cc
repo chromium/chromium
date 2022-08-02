@@ -39,8 +39,10 @@ class FakeFastPairAdvertiser : public FastPairAdvertiser {
     std::move(on_destroy_callback_).Run();
   }
 
-  void StartAdvertising(base::OnceCallback<void()> callback,
-                        base::OnceCallback<void()> error_callback) override {
+  void StartAdvertising(
+      base::OnceCallback<void()> callback,
+      base::OnceCallback<void()> error_callback,
+      const base::UnguessableToken& random_session_id) override {
     ++start_advertising_call_count_;
     if (should_succeed_on_start_)
       std::move(callback).Run();

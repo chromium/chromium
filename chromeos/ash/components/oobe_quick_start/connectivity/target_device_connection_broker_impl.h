@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_OOBE_QUICK_START_CONNECTIVITY_TARGET_DEVICE_CONNECTION_BROKER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "chromeos/ash/components/oobe_quick_start/connectivity/target_device_connection_broker.h"
 
 class FastPairAdvertiser;
@@ -43,6 +44,7 @@ class TargetDeviceConnectionBrokerImpl : public TargetDeviceConnectionBroker {
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
 
   std::unique_ptr<FastPairAdvertiser> fast_pair_advertiser_;
+  base::UnguessableToken random_session_id_;
 
   base::WeakPtrFactory<TargetDeviceConnectionBrokerImpl> weak_ptr_factory_{
       this};

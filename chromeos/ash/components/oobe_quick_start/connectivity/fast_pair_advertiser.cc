@@ -58,10 +58,12 @@ void FastPairAdvertiser::AdvertisementReleased(
 
 void FastPairAdvertiser::StartAdvertising(
     base::OnceCallback<void()> callback,
-    base::OnceCallback<void()> error_callback) {
+    base::OnceCallback<void()> error_callback,
+    const base::UnguessableToken& random_session_id) {
   DCHECK(adapter_->IsPresent() && adapter_->IsPowered());
   DCHECK(!advertisement_);
-  RegisterAdvertisement(std::move(callback), std::move(error_callback));
+  RegisterAdvertisement(std::move(callback), std::move(error_callback),
+                        random_session_id);
 }
 
 void FastPairAdvertiser::StopAdvertising(base::OnceCallback<void()> callback) {
@@ -76,7 +78,8 @@ void FastPairAdvertiser::StopAdvertising(base::OnceCallback<void()> callback) {
 
 void FastPairAdvertiser::RegisterAdvertisement(
     base::OnceClosure callback,
-    base::OnceClosure error_callback) {
+    base::OnceClosure error_callback,
+    const base::UnguessableToken& random_session_id) {
   auto advertisement_data =
       std::make_unique<device::BluetoothAdvertisement::Data>(
           device::BluetoothAdvertisement::ADVERTISEMENT_TYPE_BROADCAST);
@@ -95,7 +98,8 @@ void FastPairAdvertiser::RegisterAdvertisement(
 
   auto manufacturer_data =
       std::make_unique<device::BluetoothAdvertisement::ManufacturerData>();
-  auto manufacturer_metadata = GenerateManufacturerMetadata();
+  std::vector<uint8_t> manufacturer_metadata =
+      GenerateManufacturerMetadata(random_session_id);
   manufacturer_data->insert(std::pair<uint16_t, std::vector<uint8_t>>(
       kCompanyId, manufacturer_metadata));
   advertisement_data->set_manufacturer_data(std::move(manufacturer_data));
@@ -151,15 +155,9 @@ void FastPairAdvertiser::OnUnregisterAdvertisementError(
   // |this| might be destroyed here, do not access local fields.
 }
 
-std::vector<uint8_t> FastPairAdvertiser::GenerateManufacturerMetadata() {
-  // TODO(b/235403498): This code may need to be updated later to be derived
-  // from the device BT address. It is not required in order for the
-  // advertisement to trigger the Fast Pair halfsheet.
-  auto token = base::UnguessableToken::Create();
-  base::span<const uint8_t> fast_pair_code = token.AsBytes().first(2);
-
-  std::vector<uint8_t> metadata(std::begin(fast_pair_code),
-                                std::end(fast_pair_code));
-
+std::vector<uint8_t> FastPairAdvertiser::GenerateManufacturerMetadata(
+    const base::UnguessableToken& random_session_id) {
+  base::span<const uint8_t, 16> id = random_session_id.AsBytes();
+  std::vector<uint8_t> metadata(std::begin(id), std::end(id));
   return metadata;
 }

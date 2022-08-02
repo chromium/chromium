@@ -73,6 +73,10 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
     return;
   }
 
+  if (!random_session_id_) {
+    random_session_id_ = base::UnguessableToken::Create();
+  }
+
   fast_pair_advertiser_ =
       FastPairAdvertiser::Factory::Create(bluetooth_adapter_);
   auto [success_callback, failure_callback] =
@@ -82,7 +86,8 @@ void TargetDeviceConnectionBrokerImpl::StartAdvertising(
       base::BindOnce(std::move(success_callback), /*success=*/true),
       base::BindOnce(
           &TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError,
-          weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(failure_callback)),
+      random_session_id_);
 }
 
 void TargetDeviceConnectionBrokerImpl::OnStartFastPairAdvertisingError(
