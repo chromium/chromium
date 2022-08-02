@@ -110,18 +110,16 @@
     fill: var(--cros-button-label-color-primary);
   }
 
-  /** TODO(b/231359911) find suitable semantic colors for enterprise icon. */
   #enterpriseIconContainer {
     --iron-icon-fill-color: var(--google-grey-800);
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
-    background-color: var(--google-grey-100);
+    background-color: var(--cros-button-background-color-primary-disabled);
   }
 
   @media (prefers-color-scheme: dark) {
     #enterpriseIconContainer {
       --iron-icon-fill-color: var(--google-grey-300);
-      background-color: var(--google-grey-800);
     }
   }
 
