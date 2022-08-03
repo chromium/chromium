@@ -210,7 +210,7 @@ chromeos::OrientationType GetSnapDisplayOrientation(
     const display::Display& display) {
   // This function is used by `GetSnappedWindowBounds()` for clamshell mode
   // only. Tablet mode uses a different function
-  // `SplitViewController::GetSnappedWindowBoundsInScreen()`.
+  // `SplitViewController::GetSnappedWindowBoundsInScreen()`1.
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
   DCHECK(!tablet_mode_controller || !tablet_mode_controller->InTabletMode());
 
@@ -232,7 +232,6 @@ void CenterWindow(aura::Window* window) {
 void SetBoundsInScreen(aura::Window* window,
                        const gfx::Rect& bounds_in_screen,
                        const display::Display& display) {
-  DCHECK_NE(display::kInvalidDisplayId, display.id());
   // Don't move a window to other root window if:
   // a) the window is a transient window. It moves when its
   //    transient parent moves.
@@ -277,10 +276,14 @@ void SetBoundsInScreen(aura::Window* window,
         gfx::Rect new_bounds = gfx::Rect(origin, bounds_in_screen.size());
         // Set new bounds now so that the container's layout manager can adjust
         // the bounds if necessary.
+        if (window_state)
+          window_state->set_is_moving_to_another_display(true);
         window->SetBounds(new_bounds);
       }
-
       dst_container->AddChild(window);
+
+      if (window_state)
+        window_state->set_is_moving_to_another_display(false);
 
       // Restore focused/active window.
       if (focused && tracker.Contains(focused)) {

@@ -201,6 +201,7 @@ class ShellSurface : public ShellSurfaceBase, public ash::WindowStateObserver {
   gfx::Vector2d origin_offset_;
   gfx::Vector2d pending_origin_offset_;
   gfx::Vector2d pending_origin_offset_accumulator_;
+  gfx::Rect old_screen_bounds_for_pending_move_;
 
   int resize_component_ = HTCAPTION;  // HT constant (see ui/base/hit_test.h)
   int pending_resize_component_ = HTCAPTION;

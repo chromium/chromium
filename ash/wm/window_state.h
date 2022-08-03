@@ -173,6 +173,14 @@ class ASH_EXPORT WindowState : public aura::WindowObserver {
   // Returns true if the window's location can be controlled by the user.
   bool IsUserPositionable() const;
 
+  bool is_moving_to_another_display() const {
+    return is_moving_to_another_display_;
+  }
+  void set_is_moving_to_another_display(bool moving) {
+    is_moving_to_another_display_ = moving;
+  }
+  bool is_moving_to_another_display_ = false;
+
   // Checks if the window can change its state accordingly.
   bool CanMaximize() const;
   bool CanMinimize() const;

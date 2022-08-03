@@ -408,6 +408,14 @@ void ShellSurface::OnWindowBoundsChanged(aura::Window* window,
     return;
 
   if (window == widget_->GetNativeWindow()) {
+    auto* window_state = ash::WindowState::Get(window);
+    if (window_state && window_state->is_moving_to_another_display()) {
+      old_screen_bounds_for_pending_move_ = old_bounds;
+      wm::ConvertRectToScreen(window->parent(),
+                              &old_screen_bounds_for_pending_move_);
+      return;
+    }
+
     if (new_bounds.size() == old_bounds.size()) {
       if (!origin_change_callback_.is_null())
         origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
@@ -439,8 +447,28 @@ void ShellSurface::OnWindowAddedToRootWindow(aura::Window* window) {
   ShellSurfaceBase::OnWindowAddedToRootWindow(window);
   if (window != widget_->GetNativeWindow())
     return;
-  if (!origin_change_callback_.is_null())
-    origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
+  auto* window_state = ash::WindowState::Get(window);
+  if (window_state && window_state->is_moving_to_another_display()) {
+    DCHECK(!old_screen_bounds_for_pending_move_.IsEmpty());
+
+    gfx::Rect new_bounds_in_screen = window->bounds();
+    wm::ConvertRectToScreen(window->parent(), &new_bounds_in_screen);
+
+    gfx::Vector2d delta = new_bounds_in_screen.origin() -
+                          old_screen_bounds_for_pending_move_.origin();
+    old_screen_bounds_for_pending_move_ = gfx::Rect();
+    origin_offset_ -= delta;
+    pending_origin_offset_accumulator_ += delta;
+    UpdateSurfaceBounds();
+    UpdateShadow();
+
+    if (!window_state_is_changing_)
+      Configure();
+
+  } else {
+    if (!origin_change_callback_.is_null())
+      origin_change_callback_.Run(GetClientBoundsInScreen(widget_).origin());
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -532,6 +560,8 @@ void ShellSurface::SetWidgetBounds(const gfx::Rect& bounds) {
   // should not result in a configure request.
   DCHECK(!ignore_window_bounds_changes_);
   ignore_window_bounds_changes_ = true;
+
+  // TODO(oshima): Probably ignore while dragging.
 
   widget_->SetBounds(bounds);
   UpdateSurfaceBounds();

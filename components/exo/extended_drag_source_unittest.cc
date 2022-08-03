@@ -688,29 +688,46 @@ TEST_F(ExtendedDragSourceTest, DragWithScreenCoordinates_Touch) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
-  UpdateDisplay("800x600,800x600");
+  UpdateDisplay("400x300,800x600");
+  const gfx::Rect original_window_bounds(410, 10, 500, 200);
 
-  // Create and map a toplevel shell surface.
+  // Create and map a toplevel shell surface, with the size larger than 2nd
+  // display to test if configure uses the adjusted size.
   auto shell_surface =
-      exo::test::ShellSurfaceBuilder({32, 32}).BuildShellSurface();
+      exo::test::ShellSurfaceBuilder(original_window_bounds.size())
+          .SetOrigin(original_window_bounds.origin())
+          .BuildShellSurface();
   auto* surface = shell_surface->root_surface();
-
-  shell_surface->GetWidget()->SetBounds({810, 10, 32, 32});
-
+  EXPECT_EQ(original_window_bounds,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen());
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       shell_surface->GetWidget()->GetNativeWindow());
-  EXPECT_EQ(gfx::Rect(800, 0, 800, 600), display.bounds());
+  EXPECT_EQ(gfx::Rect(400, 0, 800, 600), display.bounds());
 
-  gfx::Rect expected_bounds =
-      shell_surface->GetWidget()->GetWindowBoundsInScreen();
+  uint32_t serial = 0;
+  gfx::Rect drop_bounds;
+  auto configure_callback = base::BindLambdaForTesting(
+      [&](const gfx::Rect& bounds, chromeos::WindowStateType state_type,
+          bool resizing, bool activated, const gfx::Vector2d& origin_offset) {
+        drop_bounds = bounds;
+        return ++serial;
+      });
+  std::vector<gfx::Point> origins;
+  auto origin_change_callback = base::BindLambdaForTesting(
+      [&](const gfx::Point& point) { origins.push_back(point); });
 
-  constexpr int kDragOffset = 10;
+  // Map shell surface.
+  // surface->Attach(buffer.get());
+  shell_surface->set_configure_callback(configure_callback);
+  shell_surface->set_origin_change_callback(origin_change_callback);
+
+  constexpr int kDragOffset = 100;
   extended_drag_source_->Drag(surface, gfx::Vector2d(kDragOffset, 0));
 
   // Start the DND + extended-drag session.
   // Creates a mouse-pressed event before starting the drag session.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo({810 + kDragOffset, 10});
+  generator->MoveMouseTo({410 + kDragOffset, 10});
   generator->PressLeftButton();
 
   // Start a DragDropOperation.
@@ -718,23 +735,24 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
   seat_->StartDrag(data_source_.get(), surface, /*icon=*/nullptr,
                    ui::mojom::DragEventSource::kMouse);
   // Just move to the middle to avoid snapping.
-  int x_movement = 500;
-  expected_bounds.set_x(310);
+  int x_movement = 300;
 
   constexpr int kXDragDelta = 20;
   auto* toplevel_handler = ash::Shell::Get()->toplevel_window_event_handler();
 
   base::RunLoop loop;
+  size_t move_count = 0;
   drag_drop_controller_->SetLoopClosureForTesting(
       base::BindLambdaForTesting([&]() {
-        if (x_movement == 500) {
+        if (x_movement == 300) {
           auto* window_state = ash::WindowState::Get(
               shell_surface->GetWidget()->GetNativeWindow());
-          EXPECT_EQ(gfx::PointF(20, 10),
+          EXPECT_EQ(gfx::PointF(110, 10),
                     window_state->drag_details()->initial_location_in_parent);
         }
         if (x_movement > 0) {
           x_movement -= kXDragDelta;
+          move_count++;
           generator->MoveMouseBy(-kXDragDelta, 0);
           EXPECT_TRUE(toplevel_handler->is_drag_in_progress());
         } else {
@@ -744,11 +762,34 @@ TEST_F(ExtendedDragSourceTest, DragToAnotherDisplay) {
       loop.QuitClosure());
   loop.Run();
   EXPECT_FALSE(toplevel_handler->is_drag_in_progress());
-  EXPECT_EQ(expected_bounds,
-            shell_surface->GetWidget()->GetWindowBoundsInScreen());
+  EXPECT_FALSE(shell_surface->GetWidget()->IsMaximized());
   display = display::Screen::GetScreen()->GetDisplayNearestWindow(
       shell_surface->GetWidget()->GetNativeWindow());
-  EXPECT_EQ(gfx::Rect(0, 0, 800, 600), display.bounds());
+
+  gfx::Size secondary_display_size(400, 300);
+  EXPECT_EQ(gfx::Rect(secondary_display_size), display.bounds());
+  EXPECT_EQ(move_count, origins.size());
+
+  // Configure when dropped.
+  EXPECT_EQ(1u, serial);
+  // Upon drop, the window is shrunk horizontally.
+  gfx::Rect expected_drop_bounds =
+      gfx::Rect(origins.back(), original_window_bounds.size());
+  expected_drop_bounds.set_width(secondary_display_size.width());
+  int offset =
+      (original_window_bounds.width() - expected_drop_bounds.width()) / 2;
+  expected_drop_bounds.set_x(expected_drop_bounds.x() + offset);
+  EXPECT_EQ(expected_drop_bounds, drop_bounds);
+  EXPECT_EQ(expected_drop_bounds,
+            shell_surface->GetWidget()->GetWindowBoundsInScreen());
+
+  // Make sure all origins are kXDragDelta apart.
+  for (size_t i = 1; origins.size() < i; i++) {
+    EXPECT_EQ(origins[i - 1].x() + kXDragDelta, origins[i].x());
+  }
+
+  // The size will be adjusted when dropped.
+  EXPECT_EQ(gfx::Size(400, 200), drop_bounds.size());
 }
 
 }  // namespace exo
