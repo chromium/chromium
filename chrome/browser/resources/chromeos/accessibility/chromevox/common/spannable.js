@@ -6,10 +6,7 @@
  * @fileoverview Class which allows construction of annotated strings.
  */
 
-goog.provide('MultiSpannable');
-goog.provide('Spannable');
-
-Spannable = class {
+export class Spannable {
   /**
    * @param {string|!Spannable=} opt_string Initial value of the spannable.
    * @param {*=} opt_annotation Initial annotation for the entire string.
@@ -401,7 +398,7 @@ Spannable = class {
     serializableSpansByName.set(name, obj);
     serializableSpansByConstructor.set(constructor, obj);
   }
-};
+}
 
 
 /**
@@ -410,7 +407,7 @@ Spannable = class {
  * Note that most methods that assume a span value is unique such as
  * |getSpanStart| will use the first span value.
  */
-MultiSpannable = class extends Spannable {
+export class MultiSpannable extends Spannable {
   /**
    * @param {string|!Spannable=} opt_string Initial value of the spannable.
    * @param {*=} opt_annotation Initial annotation for the entire string.
@@ -429,7 +426,7 @@ MultiSpannable = class extends Spannable {
     const ret = Spannable.prototype.substring.call(this, start, opt_end);
     return new MultiSpannable(ret);
     }
-};
+}
 
 
 /**

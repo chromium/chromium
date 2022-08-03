@@ -23,7 +23,6 @@ goog.require('PanelNodeMenuData');
 goog.require('PanelTabMenuItemData');
 goog.require('QueueMode');
 goog.require('RecoveryStrategy');
-goog.require('Spannable');
 goog.require('SpeechLog');
 goog.require('TextLog');
 goog.require('TreeDumper');

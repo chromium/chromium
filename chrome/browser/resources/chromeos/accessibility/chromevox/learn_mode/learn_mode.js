@@ -16,6 +16,7 @@ import {KeyMap} from '../common/key_map.js';
 import {KeyUtil} from '../common/key_util.js';
 import {ChromeVoxKbHandler} from '../common/keyboard_handler.js';
 import {Msgs} from '../common/msgs.js';
+import {Spannable} from '../common/spannable.js';
 
 /**
  * Class to manage the keyboard explorer.

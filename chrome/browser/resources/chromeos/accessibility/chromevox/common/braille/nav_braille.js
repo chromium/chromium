@@ -12,6 +12,9 @@
  * A class capturing the braille for navigation from one object to
  * another.
  */
+
+import {Spannable} from '../spannable.js';
+
 export class NavBraille {
   /**
    * @param {{text: (undefined|string|!Spannable),

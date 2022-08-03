@@ -10,7 +10,6 @@ goog.require('AbstractEarcons');
 goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('KeyCode');
-goog.require('Spannable');
 goog.require('TtsInterface');
 
 goog.require('constants');

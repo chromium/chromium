@@ -52,6 +52,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule('Cursor', '/common/cursors/cursor.js');
     await importModule(
         'OutputAction', '/chromevox/background/output/output_types.js');
+    await importModule(
+        ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
 
     window.doGesture = this.doGesture;
     window.simulateHitTestResult = this.simulateHitTestResult;

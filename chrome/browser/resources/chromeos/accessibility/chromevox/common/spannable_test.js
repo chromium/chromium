@@ -61,6 +61,12 @@ ChromeVoxSpannableUnitTest = class extends AccessibilityTestBase {
   /** @override */
   setUp() {
     super.setUp();
+  }
+
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        ['Spannable', 'MultiSpannable'], '/chromevox/common/spannable.js');
     Spannable.registerStatelessSerializableSpan(
         StatelessSerializableSpan, 'StatelessSerializableSpan');
 
@@ -76,7 +82,6 @@ ChromeVoxSpannableUnitTest = class extends AccessibilityTestBase {
 ChromeVoxSpannableUnitTest.prototype.extraLibraries = [
   '../../common/testing/assert_additions.js',
   '../testing/fake_dom.js',
-  'spannable.js',
 ];
 
 
