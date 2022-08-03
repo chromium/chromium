@@ -14,6 +14,10 @@
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/media_buildflags.h"
 
+#if !BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#error This file only applies to builds that enable_library_cdms.
+#endif
+
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #include "media/cdm/cdm_host_file.h"
 #include "media/cdm/cdm_host_files.h"

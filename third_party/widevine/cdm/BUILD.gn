@@ -8,9 +8,12 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/toolchain/toolchain.gni")
-import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 import("//third_party/widevine/cdm/widevine.gni")
+
+if (bundle_widevine_cdm) {
+  import("//media/cdm/library_cdm/cdm_paths.gni")
+}
 
 assert(!bundle_widevine_cdm || (enable_widevine && enable_library_cdms))
 

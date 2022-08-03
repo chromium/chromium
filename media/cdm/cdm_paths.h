@@ -11,6 +11,11 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "media/cdm/cdm_type.h"
+#include "media/media_buildflags.h"
+
+#if !BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#error This file only applies to builds that enable_library_cdms.
+#endif
 
 namespace media {
 

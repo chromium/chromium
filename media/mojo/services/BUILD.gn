@@ -226,7 +226,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/ukm:test_support",
     "//media:test_support",
-    "//media/cdm:cdm_paths",
     "//media/learning/common",
     "//media/mojo:test_support",
     "//media/mojo/clients",
@@ -250,7 +249,10 @@ source_set("unit_tests") {
       "mojo_cdm_helper_unittest.cc",
     ]
 
-    deps += [ "//media/cdm:cdm_api" ]
+    deps += [
+      "//media/cdm:cdm_api",
+      "//media/cdm:cdm_paths",
+    ]
   }
 
   if (is_chromeos_ash) {

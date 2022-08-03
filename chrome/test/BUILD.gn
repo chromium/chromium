@@ -1476,7 +1476,6 @@ if (!is_android) {
       "//media:media_buildflags",
       "//media:test_support",
       "//media/cast:test_support",
-      "//media/cdm:cdm_paths",
       "//media/mojo/services",
       "//mojo/core/embedder",
       "//mojo/public/cpp/system",
@@ -4366,6 +4365,8 @@ if (!is_android) {
       sources -= [ "../browser/media/encrypted_media_browsertest.cc" ]
     }
     if (enable_library_cdms) {
+      deps += [ "//media/cdm:cdm_paths" ]
+
       # Runtime dependencies.
       data_deps += [
         "//media/cdm/library_cdm/clear_key_cdm",
@@ -10232,7 +10233,6 @@ if (!is_android) {
       "//base",
       "//base/test:test_support_perf",
       "//media:media_buildflags",
-      "//media/cdm:cdm_paths",
       "//testing/gtest",
       "//testing/perf",
       "//third_party/widevine/cdm:buildflags",

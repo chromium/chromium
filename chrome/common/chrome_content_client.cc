@@ -88,8 +88,10 @@
 #include "components/pdf/common/internal_plugin_helpers.h"
 #endif
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 #include "chrome/common/media/cdm_host_file_path.h"
+#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -225,9 +227,11 @@ void ChromeContentClient::AddContentDecryptionModules(
   if (cdms)
     RegisterCdmInfo(cdms);
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
   if (cdm_host_file_paths)
     AddCdmHostFilePaths(cdm_host_file_paths);
+#endif
 #endif
 }
 

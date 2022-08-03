@@ -27,7 +27,6 @@
 #include "media/base/decryptor.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
-#include "media/cdm/cdm_module.h"
 #include "media/media_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
@@ -38,6 +37,7 @@
 #include "media/cdm/api/content_decryption_module.h"  // nogncheck
 #include "media/cdm/cdm_adapter.h"
 #include "media/cdm/cdm_auxiliary_helper.h"
+#include "media/cdm/cdm_module.h"
 #include "media/cdm/external_clear_key_test_helper.h"
 #include "media/cdm/mock_helpers.h"
 #include "media/cdm/simple_cdm_allocator.h"

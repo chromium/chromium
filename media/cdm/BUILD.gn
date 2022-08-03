@@ -12,8 +12,8 @@ source_set("cdm_type_conversion") {
   if (enable_library_cdms || is_win) {
     # This target is a subcomponent.
     visibility = [
+      ":*",
       "//media",
-      "//media/cdm",
     ]
     configs += [ "//media:subcomponent_config" ]
   } else {
@@ -150,18 +150,19 @@ source_set("cdm") {
   }
 }
 
-static_library("cdm_paths") {
-  sources = [
-    "cdm_paths.cc",
-    "cdm_paths.h",
-  ]
+if (enable_library_cdms) {
+  static_library("cdm_paths") {
+    public = [ "cdm_paths.h" ]
 
-  public_deps = [ ":cdm_type" ]
+    sources = [ "cdm_paths.cc" ]
 
-  deps = [
-    "//base",
-    "//media:media_buildflags",
-  ]
+    public_deps = [ ":cdm_type" ]
+
+    deps = [
+      "//base",
+      "//media:media_buildflags",
+    ]
+  }
 }
 
 source_set("cdm_type") {
