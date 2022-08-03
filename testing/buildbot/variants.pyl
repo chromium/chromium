@@ -927,7 +927,7 @@
     'skylab': {
       'cros_board': 'cherry',
       'cros_chrome_version': '105.0.5190.0',
-      'cros_img': 'cherry64-release/R106-14998.0.0',
+      'cros_img': 'cherry64-release/R106-14997.0.0',
     },
     'enabled': True,
     'identifier': 'CHERRY64_RELEASE_LKGM',
@@ -1017,7 +1017,7 @@
     'skylab': {
       'cros_board': 'jacuzzi',
       'cros_chrome_version': '105.0.5190.0',
-      'cros_img': 'jacuzzi64-release/R106-14998.0.0',
+      'cros_img': 'jacuzzi64-release/R106-14997.0.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI64_RELEASE_LKGM',
