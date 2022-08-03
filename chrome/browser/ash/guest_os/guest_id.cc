@@ -110,7 +110,7 @@ void RemoveDuplicateContainerEntries(PrefService* prefs) {
 std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type) {
   std::vector<GuestId> result;
   const base::Value::List& container_list =
-      profile->GetPrefs()->GetList(prefs::kGuestOsContainers)->GetList();
+      profile->GetPrefs()->GetValueList(prefs::kGuestOsContainers);
   for (const auto& container : container_list) {
     guest_os::GuestId id(container);
     if (id.vm_type == vm_type) {

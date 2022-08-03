@@ -403,9 +403,9 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
       {"theme-variations", TerminalSetting::kThemeVariations},
   });
 
-  const base::Value* settings = profile->GetPrefs()->GetDictionary(
+  const base::Value::Dict& settings = profile->GetPrefs()->GetValueDict(
       guest_os::prefs::kGuestOsTerminalSettings);
-  for (const auto item : settings->DictItems()) {
+  for (const auto item : settings) {
     // Only record settings for /hterm/profiles/default/.
     if (!base::StartsWith(item.first, kSettingPrefix,
                           base::CompareCase::SENSITIVE)) {
@@ -427,13 +427,13 @@ std::string GetTerminalSettingBackgroundColor(
     return GetSettingsKey(kSettingsPrefixHterm, profile,
                           kSettingsKeyBackgroundColor);
   };
-  const base::Value* settings = profile->GetPrefs()->GetDictionary(
+  const base::Value::Dict& settings = profile->GetPrefs()->GetValueDict(
       guest_os::prefs::kGuestOsTerminalSettings);
   // 1. Use 'settings_profile' url param.
   std::string settings_profile;
   if (net::GetValueForKeyInQuery(url, kSettingsProfileUrlParam,
                                  &settings_profile)) {
-    const std::string* result = settings->FindStringKey(key(settings_profile));
+    const std::string* result = settings.FindString(key(settings_profile));
     if (result) {
       return *result;
     }
@@ -445,15 +445,14 @@ std::string GetTerminalSettingBackgroundColor(
   }
 
   // 3. Use 'default' profile color, or default color.
-  const std::string* result =
-      settings->FindStringKey(key(kSettingsProfileDefault));
+  const std::string* result = settings.FindString(key(kSettingsProfileDefault));
   return result ? *result : kDefaultBackgroundColor;
 }
 
 bool GetTerminalSettingPassCtrlW(Profile* profile) {
-  const base::Value* value = profile->GetPrefs()->GetDictionary(
+  const base::Value::Dict& value = profile->GetPrefs()->GetValueDict(
       guest_os::prefs::kGuestOsTerminalSettings);
-  return value->FindBoolKey(kSettingPassCtrlW).value_or(kDefaultPassCtrlW);
+  return value.FindBool(kSettingPassCtrlW).value_or(kDefaultPassCtrlW);
 }
 
 std::string ShortcutIdForSSH(const std::string& profileId) {
@@ -471,10 +470,8 @@ std::string ShortcutIdFromContainerId(Profile* profile,
   dict.Set(kShortcutKey, base::Value(kShortcutValueTerminal));
 
   // Find terminal profile from prefs.
-  const base::Value::Dict& settings =
-      profile->GetPrefs()
-          ->GetDictionary(guest_os::prefs::kGuestOsTerminalSettings)
-          ->GetDict();
+  const base::Value::Dict& settings = profile->GetPrefs()->GetValueDict(
+      guest_os::prefs::kGuestOsTerminalSettings);
   const base::Value::List* vsh_ids = settings.FindList("/vsh/profile-ids");
   if (vsh_ids) {
     for (const auto& vsh_id : *vsh_ids) {
@@ -513,10 +510,8 @@ base::flat_map<std::string, std::string> ExtrasFromShortcutId(
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(
     Profile* profile) {
   std::vector<std::pair<std::string, std::string>> result;
-  const base::Value::Dict& settings =
-      profile->GetPrefs()
-          ->GetDictionary(guest_os::prefs::kGuestOsTerminalSettings)
-          ->GetDict();
+  const base::Value::Dict& settings = profile->GetPrefs()->GetValueDict(
+      guest_os::prefs::kGuestOsTerminalSettings);
   const base::Value::List* ids = settings.FindList("/nassh/profile-ids");
   if (!ids) {
     return result;
@@ -597,11 +592,10 @@ bool ExecuteTerminalMenuShortcutCommand(Profile* profile,
     if (!profileId) {
       return false;
     }
-    const base::Value* settings = profile->GetPrefs()->GetDictionary(
+    const base::Value::Dict& settings = profile->GetPrefs()->GetValueDict(
         guest_os::prefs::kGuestOsTerminalSettings);
-    const std::string* settings_profile =
-        settings->FindStringKey(GetSettingsKey(kSettingsPrefixNassh, *profileId,
-                                               kSettingsKeyTerminalProfile));
+    const std::string* settings_profile = settings.FindString(GetSettingsKey(
+        kSettingsPrefixNassh, *profileId, kSettingsKeyTerminalProfile));
     auto escape = [](const std::string& v) {
       return base::EscapeQueryParamValue(v, /*use_plus=*/true);
     };

@@ -536,10 +536,10 @@ base::WeakPtr<GuestOsRegistryService> GuestOsRegistryService::GetWeakPtr() {
 
 std::map<std::string, GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetAllRegisteredApps() const {
-  const base::Value* apps =
-      prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
+  const base::Value::Dict& apps =
+      prefs_->GetValueDict(guest_os::prefs::kGuestOsRegistry);
   std::map<std::string, GuestOsRegistryService::Registration> result;
-  for (const auto item : apps->DictItems()) {
+  for (const auto item : apps) {
     result.emplace(item.first, Registration(item.first, item.second.Clone()));
   }
   return result;
@@ -599,24 +599,24 @@ GuestOsRegistryService::GetRegisteredApps(VmType vm_type) const {
 
 absl::optional<GuestOsRegistryService::Registration>
 GuestOsRegistryService::GetRegistration(const std::string& app_id) const {
-  const base::Value* apps =
-      prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
+  const base::Value::Dict& apps =
+      prefs_->GetValueDict(guest_os::prefs::kGuestOsRegistry);
 
-  const base::Value* pref_registration =
-      apps->FindKeyOfType(app_id, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* pref_registration = apps.FindDict(app_id);
   if (!pref_registration) {
     return absl::nullopt;
   }
-  return absl::make_optional<Registration>(app_id, pref_registration->Clone());
+  return absl::make_optional<Registration>(
+      app_id, base::Value(pref_registration->Clone()));
 }
 
 void GuestOsRegistryService::RecordStartupMetrics() {
-  const base::Value* apps =
-      prefs_->GetDictionary(guest_os::prefs::kGuestOsRegistry);
+  const base::Value::Dict& apps =
+      prefs_->GetValueDict(guest_os::prefs::kGuestOsRegistry);
 
   base::flat_map<int, int> num_apps;
 
-  for (const auto item : apps->DictItems()) {
+  for (const auto item : apps) {
     absl::optional<bool> no_display =
         item.second.FindBoolKey(guest_os::prefs::kAppNoDisplayKey);
     if (no_display && no_display.value()) {
