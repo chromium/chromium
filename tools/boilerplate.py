@@ -17,8 +17,7 @@ import os.path
 import sys
 
 LINES = [
-    'Copyright %d The Chromium Authors. All rights reserved.' %
-        date.today().year,
+    f'Copyright {date.today().year} The Chromium Authors.',
     'Use of this source code is governed by a BSD-style license that can be',
     'found in the LICENSE file.'
 ]
