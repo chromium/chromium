@@ -88,12 +88,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   RenderViewImpl(const RenderViewImpl&) = delete;
   RenderViewImpl& operator=(const RenderViewImpl&) = delete;
 
-  // Returns the RenderViewImpl for the given routing ID.
-  static RenderViewImpl* FromRoutingID(int routing_id);
-
-  // Returns the RenderViewImpl for the given blink::WebView.
-  static RenderViewImpl* FromWebView(blink::WebView* web_view);
-
   // blink::WebViewClient implementation --------------------------------------
 
   blink::WebView* CreateView(
@@ -145,13 +139,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient {
   // ADDING NEW FUNCTIONS? Please keep private functions alphabetized and put
   // it in the same order in the .cc file as it was in the header.
   // ---------------------------------------------------------------------------
-
-  // Becomes true when Destroy() is called.
-  bool destroying_ = false;
-
-  // Routing ID that allows us to communicate with the corresponding
-  // RenderViewHost in the parent browser process.
-  const int32_t routing_id_;
 
   // View ----------------------------------------------------------------------
 

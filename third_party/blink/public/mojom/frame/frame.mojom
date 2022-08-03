@@ -156,6 +156,12 @@ enum JavaScriptExecutionResultType {
 // to accept in the browser process.
 const uint16 kMaxTitleChars = 4096; // 4 * 1024;
 
+// Struct for communication channels of the RemoteMainFrame in blink.
+struct RemoteMainFrameInterfaces {
+  pending_associated_remote<blink.mojom.RemoteMainFrameHost> main_frame_host;
+  pending_associated_receiver<blink.mojom.RemoteMainFrame> main_frame;
+};
+
 // Struct for passing RemoteFrame interfaces from renderer.
 struct RemoteFrameInterfacesFromRenderer {
   pending_associated_remote<blink.mojom.RemoteFrame> frame;
@@ -1248,7 +1254,7 @@ interface RemoteFrame {
   ChildProcessGone();
 
   // Tells the RemoteFrame to create a new RemoteFrame child. See
-  // content.mojom.AgentSchedulingGroup.CreateRemoteMainFrame for creation
+  // blink.mojom.PageBroadcast.CreateRemoteMainFrame for creation
   // of main frames.
   //
   // `token`: The frame token. Used to map between RemoteFrame and

@@ -277,8 +277,9 @@ CreateStubRemoteFrameInterfaces() {
   return interfaces;
 }
 
-mojom::RemoteMainFrameInterfacesPtr CreateStubRemoteMainFrameInterfaces() {
-  auto interfaces = mojom::RemoteMainFrameInterfaces::New();
+blink::mojom::RemoteMainFrameInterfacesPtr
+CreateStubRemoteMainFrameInterfaces() {
+  auto interfaces = blink::mojom::RemoteMainFrameInterfaces::New();
 
   mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
   interfaces->main_frame = main_frame.BindNewEndpointAndPassDedicatedReceiver();
@@ -975,13 +976,12 @@ TEST_F(RenderViewImplTest, BeginNavigationForWebUI) {
   popup_request.SetMode(network::mojom::RequestMode::kNavigate);
   popup_request.SetRedirectMode(network::mojom::RedirectMode::kManual);
   popup_request.SetRequestContext(blink::mojom::RequestContextType::INTERNAL);
-  blink::WebView* new_web_view =
-      RenderViewImpl::FromWebView(web_view_)->CreateView(
-          GetMainFrame(), popup_request, blink::WebWindowFeatures(), "foo",
-          blink::kWebNavigationPolicyNewForegroundTab,
-          network::mojom::WebSandboxFlags::kNone,
-          blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
-          absl::nullopt, absl::nullopt);
+  blink::WebView* new_web_view = web_view_->Client()->CreateView(
+      GetMainFrame(), popup_request, blink::WebWindowFeatures(), "foo",
+      blink::kWebNavigationPolicyNewForegroundTab,
+      network::mojom::WebSandboxFlags::kNone,
+      blink::AllocateSessionStorageNamespaceId(), consumed_user_gesture,
+      absl::nullopt, absl::nullopt);
   auto popup_navigation_info = std::make_unique<blink::WebNavigationInfo>();
   popup_navigation_info->url_request = std::move(popup_request);
   popup_navigation_info->frame_type =

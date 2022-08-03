@@ -128,6 +128,17 @@ class MockPageBroadcast : public blink::mojom::PageBroadcast {
               SetPageBaseBackgroundColor,
               (absl::optional<SkColor> color),
               (override));
+  MOCK_METHOD(
+      void,
+      CreateRemoteMainFrame,
+      (const blink::RemoteFrameToken& token,
+       const absl::optional<blink::FrameToken>& opener_frame_token,
+       blink::mojom::FrameReplicationStatePtr replication_state,
+       const base::UnguessableToken& devtools_frame_token,
+       blink::mojom::RemoteFrameInterfacesFromBrowserPtr
+           remote_frame_interfaces,
+       blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces),
+      (override));
 
   mojo::PendingAssociatedRemote<blink::mojom::PageBroadcast> GetRemote() {
     return receiver_.BindNewEndpointAndPassDedicatedRemote();

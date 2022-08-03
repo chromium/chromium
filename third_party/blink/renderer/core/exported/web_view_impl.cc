@@ -55,6 +55,7 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -3837,6 +3838,31 @@ void WebViewImpl::MojoDisconnected() {
   // RenderViewImpl instance. https://crbug.com/1000035.
   GetPage()->GetAgentGroupScheduler().DefaultTaskRunner()->PostNonNestableTask(
       FROM_HERE, WTF::Bind(&WebViewImpl::Close, WTF::Unretained(this)));
+}
+
+void WebViewImpl::CreateRemoteMainFrame(
+    const RemoteFrameToken& frame_token,
+    const absl::optional<FrameToken>& opener_frame_token,
+    mojom::blink::FrameReplicationStatePtr replicated_state,
+    const base::UnguessableToken& devtools_frame_token,
+    mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+    mojom::blink::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
+  blink::WebFrame* opener = nullptr;
+  if (opener_frame_token)
+    opener = WebFrame::FromFrameToken(*opener_frame_token);
+  // Create a top level WebRemoteFrame.
+  WebRemoteFrameImpl::CreateMainFrame(
+      this, frame_token, devtools_frame_token, opener,
+      std::move(remote_frame_interfaces->frame_host),
+      std::move(remote_frame_interfaces->frame_receiver),
+      std::move(replicated_state));
+  // Root frame proxy has no ancestors to point to their RenderWidget.
+
+  // The WebRemoteFrame created here was already attached to the Page as its
+  // main frame, so we can call WebView's DidAttachRemoteMainFrame().
+  DidAttachRemoteMainFrame(
+      std::move(remote_main_frame_interfaces->main_frame_host),
+      std::move(remote_main_frame_interfaces->main_frame));
 }
 
 }  // namespace blink

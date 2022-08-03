@@ -103,7 +103,7 @@ WebRemoteFrame* WebRemoteFrame::CreateMainFrame(
   return WebRemoteFrameImpl::CreateMainFrame(
       web_view, frame_token, devtools_frame_token, opener,
       std::move(remote_frame_host), std::move(receiver),
-      std::move(replicated_state));
+      ToBlinkFrameReplicationState(std::move(replicated_state)));
 }
 
 // static
@@ -115,7 +115,7 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
     mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
         remote_frame_host,
     mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-    mojom::FrameReplicationStatePtr replicated_state) {
+    mojom::blink::FrameReplicationStatePtr replicated_state) {
   WebRemoteFrameImpl* frame = MakeGarbageCollected<WebRemoteFrameImpl>(
       mojom::blink::TreeScopeType::kDocument, frame_token);
   Page& page = *To<WebViewImpl>(web_view)->GetPage();

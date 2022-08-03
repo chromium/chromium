@@ -138,7 +138,8 @@ class RenderFrameImplTest : public RenderViewTest {
     std::ignore = frame_host.BindNewEndpointAndPassDedicatedReceiver();
     remote_frame_interfaces->frame_host = frame_host.Unbind();
 
-    auto remote_main_frame_interfaces = mojom::RemoteMainFrameInterfaces::New();
+    auto remote_main_frame_interfaces =
+        blink::mojom::RemoteMainFrameInterfaces::New();
     mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
     remote_main_frame_interfaces->main_frame =
         main_frame.BindNewEndpointAndPassDedicatedReceiver();

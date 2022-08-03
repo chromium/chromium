@@ -332,21 +332,6 @@ void AgentSchedulingGroupHost::CreateView(mojom::CreateViewParamsPtr params) {
   mojo_remote_.get()->CreateView(std::move(params));
 }
 
-void AgentSchedulingGroupHost::CreateRemoteMainFrame(
-    const blink::RemoteFrameToken& token,
-    const absl::optional<blink::FrameToken>& opener_frame_token,
-    int32_t view_routing_id,
-    blink::mojom::FrameReplicationStatePtr replicated_state,
-    const base::UnguessableToken& devtools_frame_token,
-    blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-    mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  DCHECK_EQ(state_, LifecycleState::kBound);
-  mojo_remote_.get()->CreateRemoteMainFrame(
-      token, opener_frame_token, view_routing_id, std::move(replicated_state),
-      devtools_frame_token, std::move(remote_frame_interfaces),
-      std::move(remote_main_frame_interfaces));
-}
-
 void AgentSchedulingGroupHost::CreateSharedStorageWorkletService(
     mojo::PendingReceiver<
         shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {

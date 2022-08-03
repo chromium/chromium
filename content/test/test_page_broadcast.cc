@@ -4,6 +4,9 @@
 
 #include "content/test/test_page_broadcast.h"
 
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
+
 namespace content {
 
 TestPageBroadcast::TestPageBroadcast(
@@ -43,5 +46,13 @@ void TestPageBroadcast::SetHistoryOffsetAndLength(int32_t history_offset,
 
 void TestPageBroadcast::SetPageBaseBackgroundColor(
     absl::optional<SkColor> color) {}
+
+void TestPageBroadcast::CreateRemoteMainFrame(
+    const blink::RemoteFrameToken& token,
+    const absl::optional<blink::FrameToken>& opener_frame_token,
+    blink::mojom::FrameReplicationStatePtr replication_state,
+    const base::UnguessableToken& devtools_frame_token,
+    blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+    blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {}
 
 }  // namespace content

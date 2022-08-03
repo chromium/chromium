@@ -475,7 +475,6 @@ void RenderViewTest::SetUp() {
   view_params->window_was_opened_by_another_window = false;
   view_params->renderer_preferences = blink::RendererPreferences();
   view_params->web_preferences = blink::web_pref::WebPreferences();
-  view_params->view_id = render_thread_->GetNextRoutingID();
   view_params->replication_state = blink::mojom::FrameReplicationState::New();
   view_params->blink_page_broadcast =
       page_broadcast_.BindNewEndpointAndPassDedicatedReceiver();

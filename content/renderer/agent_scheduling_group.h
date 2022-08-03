@@ -92,15 +92,6 @@ class CONTENT_EXPORT AgentSchedulingGroup
   // mojom::AgentSchedulingGroup:
   void CreateView(mojom::CreateViewParamsPtr params) override;
   void CreateFrame(mojom::CreateFrameParamsPtr params) override;
-  void CreateRemoteMainFrame(
-      const blink::RemoteFrameToken& token,
-      const absl::optional<blink::FrameToken>& opener_frame_token,
-      int32_t view_routing_id,
-      blink::mojom::FrameReplicationStatePtr replicated_state,
-      const base::UnguessableToken& devtools_frame_token,
-      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-      mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
-      override;
   void CreateSharedStorageWorkletService(
       mojo::PendingReceiver<
           shared_storage_worklet::mojom::SharedStorageWorkletService> receiver)

@@ -72,34 +72,6 @@ interface AgentSchedulingGroup {
   // Tells the renderer to create a new RenderFrame.
   CreateFrame(CreateFrameParams params);
 
-  // Tells the renderer to create a new RemoteFrame main frame. See
-  // blink.mojom.RemoteFrame.CreateRemoteChild for creating child frames
-  // of RemoteFrames.
-  //
-  // `token`: The frame token. Used to map between RemoteFrame and
-  //     RenderFrameProxyHost.
-  // `opener_frame_token`: Frame token that identifies the opener frame if one
-  //     exists, or absl::nullopt otherwise.
-  // `view_routing_id`: routing ID of the RenderView for this RenderFrameProxy.
-  //     Must not be `MSG_ROUTING_NONE`.
-  // `devtools_frame_token`: Used for devtools instrumentation and
-  //    trace-ability. The token is shared across all frames (local or remotes)
-  //    representing the same logical frame tree node, and is used by Blink and
-  //    content to tag calls and requests for instrumentation purposes,
-  //    allowing them to be attributed to a context frame.
-  //
-  //    Must not be used to look up a RenderFrameHostImpl or
-  //    RenderFrameProxyHost in the browser process, as the token is shared,
-  //    making the mapping ambiguous and non-authoritative.
-  CreateRemoteMainFrame(
-    blink.mojom.RemoteFrameToken token,
-    blink.mojom.FrameToken? opener_frame_token,
-    int32 view_routing_id,
-    blink.mojom.FrameReplicationState replication_state,
-    mojo_base.mojom.UnguessableToken devtools_frame_token,
-    blink.mojom.RemoteFrameInterfacesFromBrowser remote_frame_interfaces,
-    RemoteMainFrameInterfaces remote_main_frame_interfaces);
-
   // Tells the renderer process to create a thread that exclusively hosts the
   // shared storage worklet service.
   CreateSharedStorageWorkletService(

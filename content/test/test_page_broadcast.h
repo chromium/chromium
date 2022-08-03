@@ -34,6 +34,14 @@ class TestPageBroadcast : public blink::mojom::PageBroadcast {
   void SetHistoryOffsetAndLength(int32_t history_offset,
                                  int32_t history_length) override;
   void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
+  void CreateRemoteMainFrame(
+      const blink::RemoteFrameToken& token,
+      const absl::optional<blink::FrameToken>& opener_frame_token,
+      blink::mojom::FrameReplicationStatePtr replication_state,
+      const base::UnguessableToken& devtools_frame_token,
+      blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+      blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
+      override;
 
   mojo::AssociatedReceiver<blink::mojom::PageBroadcast> receiver_;
 };

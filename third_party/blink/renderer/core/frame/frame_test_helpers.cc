@@ -486,17 +486,19 @@ WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
 
   InitializeWebView(web_view_client, nullptr, absl::nullopt);
 
-  WebRemoteFrameImpl* frame = WebRemoteFrameImpl::CreateMainFrame(
+  if (!security_origin)
+    security_origin = SecurityOrigin::CreateUniqueOpaque();
+  auto replication_state = mojom::blink::FrameReplicationState::New();
+  replication_state->origin = security_origin;
+
+  WebRemoteFrameImpl::CreateMainFrame(
       web_view_, RemoteFrameToken(),
       /*devtools_frame_token=*/base::UnguessableToken(), opener,
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
           .BindNewEndpointAndPassDedicatedReceiver(),
-      mojom::FrameReplicationState::New());
-  if (!security_origin)
-    security_origin = SecurityOrigin::CreateUniqueOpaque();
-  frame->GetFrame()->SetReplicatedOrigin(std::move(security_origin), false);
+      std::move(replication_state));
   return web_view_;
 }
 

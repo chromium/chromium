@@ -269,9 +269,8 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
         CreateAndBindRemoteFrameInterfaces());
 
   } else {
-    int view_routing_id = GetRenderViewHost()->GetRoutingID();
-    GetAgentSchedulingGroup().CreateRemoteMainFrame(
-        frame_token_, opener_frame_token, view_routing_id,
+    GetRenderViewHost()->GetAssociatedPageBroadcast()->CreateRemoteMainFrame(
+        frame_token_, opener_frame_token,
         frame_tree_node_->current_replication_state().Clone(),
         frame_tree_node_->devtools_frame_token(),
         CreateAndBindRemoteFrameInterfaces(),
@@ -772,9 +771,9 @@ RenderFrameProxyHost::CreateAndBindRemoteFrameInterfaces() {
   return params;
 }
 
-mojom::RemoteMainFrameInterfacesPtr
+blink::mojom::RemoteMainFrameInterfacesPtr
 RenderFrameProxyHost::CreateAndBindRemoteMainFrameInterfaces() {
-  auto params = mojom::RemoteMainFrameInterfaces::New();
+  auto params = blink::mojom::RemoteMainFrameInterfaces::New();
   BindRemoteMainFrameInterfaces(
       params->main_frame.InitWithNewEndpointAndPassRemote(),
       params->main_frame_host.InitWithNewEndpointAndPassReceiver());

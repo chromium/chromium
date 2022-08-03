@@ -276,34 +276,6 @@ void AgentSchedulingGroup::CreateFrame(mojom::CreateFrameParamsPtr params) {
       std::move(params->policy_container));
 }
 
-void AgentSchedulingGroup::CreateRemoteMainFrame(
-    const blink::RemoteFrameToken& frame_token,
-    const absl::optional<blink::FrameToken>& opener_frame_token,
-    int32_t view_routing_id,
-    blink::mojom::FrameReplicationStatePtr replicated_state,
-    const base::UnguessableToken& devtools_frame_token,
-    blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
-    mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {
-  blink::WebFrame* opener = nullptr;
-  if (opener_frame_token)
-    opener = blink::WebFrame::FromFrameToken(*opener_frame_token);
-  // Create a top level WebRemoteFrame.
-  RenderViewImpl* render_view = RenderViewImpl::FromRoutingID(view_routing_id);
-  blink::WebView* web_view = render_view->GetWebView();
-  blink::WebRemoteFrame::CreateMainFrame(
-      web_view, frame_token, devtools_frame_token, opener,
-      std::move(remote_frame_interfaces->frame_host),
-      std::move(remote_frame_interfaces->frame_receiver),
-      std::move(replicated_state));
-  // Root frame proxy has no ancestors to point to their RenderWidget.
-
-  // The WebRemoteFrame created here was already attached to the Page as its
-  // main frame, so we can call WebView's DidAttachRemoteMainFrame().
-  web_view->DidAttachRemoteMainFrame(
-      std::move(remote_main_frame_interfaces->main_frame_host),
-      std::move(remote_main_frame_interfaces->main_frame));
-}
-
 void AgentSchedulingGroup::CreateSharedStorageWorkletService(
     mojo::PendingReceiver<
         shared_storage_worklet::mojom::SharedStorageWorkletService> receiver) {

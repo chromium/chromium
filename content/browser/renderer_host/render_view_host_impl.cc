@@ -437,7 +437,6 @@ bool RenderViewHostImpl::CreateRenderView(
   params->renderer_preferences = delegate_->GetRendererPrefs();
   RenderViewHostImpl::GetPlatformSpecificPrefs(&params->renderer_preferences);
   params->web_preferences = delegate_->GetOrCreateWebPreferences();
-  params->view_id = GetRoutingID();
   params->opener_frame_token = opener_frame_token;
   params->replication_state =
       frame_tree_node->current_replication_state().Clone();

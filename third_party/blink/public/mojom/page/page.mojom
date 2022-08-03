@@ -4,9 +4,13 @@
 
 module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "skia/public/mojom/skcolor.mojom";
+import "third_party/blink/public/mojom/frame/frame.mojom";
+import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
 import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 
@@ -108,4 +112,29 @@ interface PageBroadcast {
 
   // Sent to whole page, but should only be used by the main frame.
   SetPageBaseBackgroundColor(skia.mojom.SkColor? color);
+
+  // Tells the renderer to create a new RemoteFrame main frame. See
+  // blink.mojom.RemoteFrame.CreateRemoteChild for creating child frames
+  // of RemoteFrames.
+  //
+  // `token`: The frame token. Used to map between RemoteFrame and
+  //    RenderFrameProxyHost.
+  // `opener_frame_token`: Frame token that identifies the opener frame if one
+  //    exists, or absl::nullopt otherwise.
+  // `devtools_frame_token`: Used for devtools instrumentation and
+  //    trace-ability. The token is shared across all frames (local or remotes)
+  //    representing the same logical frame tree node, and is used by Blink and
+  //    content to tag calls and requests for instrumentation purposes,
+  //    allowing them to be attributed to a context frame.
+  //
+  //    Must not be used to look up a RenderFrameHostImpl or
+  //    RenderFrameProxyHost in the browser process, as the token is shared,
+  //    making the mapping ambiguous and non-authoritative.
+  CreateRemoteMainFrame(
+    RemoteFrameToken token,
+    FrameToken? opener_frame_token,
+    FrameReplicationState replication_state,
+    mojo_base.mojom.UnguessableToken devtools_frame_token,
+    RemoteFrameInterfacesFromBrowser remote_frame_interfaces,
+    RemoteMainFrameInterfaces remote_main_frame_interfaces);
 };

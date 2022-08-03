@@ -283,7 +283,6 @@ bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
 void MockRenderThread::OnCreateWindow(
     const mojom::CreateNewWindowParams& params,
     mojom::CreateNewWindowReply* reply) {
-  reply->route_id = GetNextRoutingID();
   reply->frame = TestRenderFrame::CreateStubFrameReceiver();
   reply->main_frame_route_id = GetNextRoutingID();
   frame_routing_id_to_initial_browser_brokers_.emplace(

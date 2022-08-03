@@ -219,6 +219,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   int32_t HistoryListLength() const { return history_list_length_; }
   const SessionStorageNamespaceId& GetSessionStorageNamespaceId() override;
   bool IsFencedFrameRoot() const override;
+  WebViewClient* Client() override { return web_view_client_; }
 
   // Functions to add and remove observers for this object.
   void AddObserver(WebViewObserver* observer);
@@ -291,6 +292,14 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetHistoryOffsetAndLength(int32_t history_offset,
                                  int32_t history_length) override;
   void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
+  void CreateRemoteMainFrame(
+      const RemoteFrameToken& frame_token,
+      const absl::optional<FrameToken>& opener_frame_token,
+      mojom::blink::FrameReplicationStatePtr replicated_state,
+      const base::UnguessableToken& devtools_frame_token,
+      mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
+      mojom::blink::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
+      override;
 
   void DispatchPageshow(base::TimeTicks navigation_start);
   void DispatchPagehide(mojom::blink::PagehideDispatch pagehide_dispatch);
@@ -322,8 +331,6 @@ class CORE_EXPORT WebViewImpl final : public WebView,
 
   // Returns the currently focused Element or null if no element has focus.
   Element* FocusedElement() const;
-
-  WebViewClient* Client() { return web_view_client_; }
 
   // Returns the page object associated with this view. This may be null when
   // the page is shutting down, but will be valid at all other times.

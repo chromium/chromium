@@ -35,6 +35,7 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_page_popup.h"
+#include "third_party/blink/public/web/web_remote_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_window_features.h"
 #include "ui/base/ui_base_features.h"
@@ -48,15 +49,6 @@ using blink::WebView;
 using blink::WebWindowFeatures;
 
 namespace content {
-
-//-----------------------------------------------------------------------------
-
-typedef std::map<blink::WebView*, RenderViewImpl*> ViewMap;
-static base::LazyInstance<ViewMap>::Leaky g_view_map =
-    LAZY_INSTANCE_INITIALIZER;
-typedef std::map<int32_t, RenderViewImpl*> RoutingIDViewMap;
-static base::LazyInstance<RoutingIDViewMap>::Leaky g_routing_id_view_map =
-    LAZY_INSTANCE_INITIALIZER;
 
 // static
 WindowOpenDisposition RenderViewImpl::NavigationPolicyToDisposition(
@@ -101,8 +93,7 @@ content::mojom::WindowContainerType WindowFeaturesToContainerType(
 
 RenderViewImpl::RenderViewImpl(AgentSchedulingGroup& agent_scheduling_group,
                                const mojom::CreateViewParams& params)
-    : routing_id_(params.view_id),
-      agent_scheduling_group_(agent_scheduling_group) {
+    : agent_scheduling_group_(agent_scheduling_group) {
   // Please put all logic in RenderViewImpl::Initialize().
 }
 
@@ -130,9 +121,6 @@ void RenderViewImpl::Initialize(
       agent_scheduling_group_.agent_group_scheduler(),
       params->session_storage_namespace_id, params->base_background_color);
 
-  g_view_map.Get().insert(std::make_pair(GetWebView(), this));
-  g_routing_id_view_map.Get().insert(std::make_pair(routing_id_, this));
-
   bool local_main_frame = params->main_frame->is_local_params();
 
   webview_->SetRendererPreferences(params->renderer_preferences);
@@ -148,16 +136,23 @@ void RenderViewImpl::Initialize(
         std::move(params->replication_state), params->devtools_main_frame_token,
         std::move(params->main_frame->get_local_params()));
   } else {
-    static_cast<mojom::AgentSchedulingGroup&>(agent_scheduling_group_)
-        .CreateRemoteMainFrame(
-            params->main_frame->get_remote_params()->token,
-            params->opener_frame_token, routing_id_,
-            std::move(params->replication_state),
-            params->devtools_main_frame_token,
-            std::move(
-                params->main_frame->get_remote_params()->frame_interfaces),
-            std::move(params->main_frame->get_remote_params()
-                          ->main_frame_interfaces));
+    blink::WebRemoteFrame::CreateMainFrame(
+        webview_, params->main_frame->get_remote_params()->token,
+        params->devtools_main_frame_token, opener_frame,
+        std::move(params->main_frame->get_remote_params()
+                      ->frame_interfaces->frame_host),
+        std::move(params->main_frame->get_remote_params()
+                      ->frame_interfaces->frame_receiver),
+        std::move(params->replication_state));
+    // Root frame proxy has no ancestors to point to their RenderWidget.
+
+    // The WebRemoteFrame created here was already attached to the Page as its
+    // main frame, so we can call WebView's DidAttachRemoteMainFrame().
+    webview_->DidAttachRemoteMainFrame(
+        std::move(params->main_frame->get_remote_params()
+                      ->main_frame_interfaces->main_frame_host),
+        std::move(params->main_frame->get_remote_params()
+                      ->main_frame_interfaces->main_frame));
   }
 
   // TODO(davidben): Move this state from Blink into content.
@@ -168,38 +163,7 @@ void RenderViewImpl::Initialize(
                                                  was_created_by_renderer);
 }
 
-RenderViewImpl::~RenderViewImpl() {
-  DCHECK(destroying_);  // Always deleted through OnDestruct().
-
-  g_routing_id_view_map.Get().erase(routing_id_);
-
-#ifndef NDEBUG
-  // Make sure we are no longer referenced by the ViewMap or RoutingIDViewMap.
-  ViewMap* views = g_view_map.Pointer();
-  for (ViewMap::iterator it = views->begin(); it != views->end(); ++it)
-    DCHECK_NE(this, it->second) << "Failed to call Close?";
-  RoutingIDViewMap* routing_id_views = g_routing_id_view_map.Pointer();
-  for (RoutingIDViewMap::iterator it = routing_id_views->begin();
-       it != routing_id_views->end(); ++it)
-    DCHECK_NE(this, it->second) << "Failed to call Close?";
-#endif
-}
-
-/*static*/
-RenderViewImpl* RenderViewImpl::FromWebView(blink::WebView* webview) {
-  DCHECK(RenderThread::IsMainThread());
-  ViewMap* views = g_view_map.Pointer();
-  auto it = views->find(webview);
-  return it == views->end() ? NULL : it->second;
-}
-
-/*static*/
-RenderViewImpl* RenderViewImpl::FromRoutingID(int32_t routing_id) {
-  DCHECK(RenderThread::IsMainThread());
-  RoutingIDViewMap* views = g_routing_id_view_map.Pointer();
-  auto it = views->find(routing_id);
-  return it == views->end() ? NULL : it->second;
-}
+RenderViewImpl::~RenderViewImpl() = default;
 
 /*static*/
 RenderViewImpl* RenderViewImpl::Create(
@@ -207,7 +171,6 @@ RenderViewImpl* RenderViewImpl::Create(
     mojom::CreateViewParamsPtr params,
     bool was_created_by_renderer,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(params->view_id != MSG_ROUTING_NONE);
   DCHECK(!params->session_storage_namespace_id.empty())
       << "Session storage namespace must be populated.";
 
@@ -221,10 +184,6 @@ RenderViewImpl* RenderViewImpl::Create(
 // blink::WebViewClient ------------------------------------------------------
 
 void RenderViewImpl::OnDestruct() {
-  destroying_ = true;
-  // The webview_ is already destroyed by the time we get here, remove any
-  // references to it.
-  g_view_map.Get().erase(webview_);
   delete this;
 }
 
@@ -341,7 +300,6 @@ WebView* RenderViewImpl::CreateView(
     return nullptr;
 
   DCHECK(reply);
-  DCHECK_NE(MSG_ROUTING_NONE, reply->route_id);
   DCHECK_NE(MSG_ROUTING_NONE, reply->main_frame_route_id);
   DCHECK_NE(MSG_ROUTING_NONE, reply->widget_params->routing_id);
 
@@ -364,7 +322,6 @@ WebView* RenderViewImpl::CreateView(
   view_params->window_was_opened_by_another_window = true;
   view_params->renderer_preferences = webview_->GetRendererPreferences();
   view_params->web_preferences = webview_->GetWebPreferences();
-  view_params->view_id = reply->route_id;
 
   view_params->replication_state = blink::mojom::FrameReplicationState::New();
   view_params->replication_state->frame_policy.sandbox_flags = sandbox_flags;

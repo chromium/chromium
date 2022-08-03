@@ -38,7 +38,7 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
           remote_frame_host,
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
-      mojom::FrameReplicationStatePtr replicated_state);
+      mojom::blink::FrameReplicationStatePtr replicated_state);
 
   static WebRemoteFrameImpl* CreateForPortalOrFencedFrame(
       mojom::blink::TreeScopeType,

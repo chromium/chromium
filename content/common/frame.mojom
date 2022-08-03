@@ -97,9 +97,6 @@ struct CreateViewParams {
   // Preferences for this view.
   blink.mojom.WebPreferences web_preferences;
 
-  // The ID of the view to be created.
-  int32 view_id = IPC.mojom.kRoutingIdNone;
-
   // The session storage namespace ID this view should use.
   string session_storage_namespace_id;
 
@@ -198,7 +195,7 @@ struct CreateRemoteMainFrameParams {
 
   // The communication channels for the Remote/RemoteMainFrame in this view.
   blink.mojom.RemoteFrameInterfacesFromBrowser frame_interfaces;
-  RemoteMainFrameInterfaces main_frame_interfaces;
+  blink.mojom.RemoteMainFrameInterfaces main_frame_interfaces;
 };
 
 // Parameters used for creating a new frame widget.
@@ -346,12 +343,6 @@ enum FrameDeleteIntention {
   kSpeculativeMainFrameForNavigationCancelled,
 };
 
-// Struct for communication channels of the RemoteMainFrame in blink.
-struct RemoteMainFrameInterfaces {
-  pending_associated_remote<blink.mojom.RemoteMainFrameHost> main_frame_host;
-  pending_associated_receiver<blink.mojom.RemoteMainFrame> main_frame;
-};
-
 // Implemented by the frame provider, and must be associated with other content
 // mojoms bound to frames, widgets, views, and currently also with the legacy
 // IPC channel.
@@ -403,7 +394,7 @@ interface Frame {
       blink.mojom.FrameReplicationState new_remote_frame_replication_state,
       blink.mojom.RemoteFrameToken new_remote_frame_token,
       blink.mojom.RemoteFrameInterfacesFromBrowser new_remote_frame_interfaces,
-      RemoteMainFrameInterfaces new_remote_main_frame_interfaces);
+      blink.mojom.RemoteMainFrameInterfaces new_remote_main_frame_interfaces);
 
   // Delete the frame. This is only called for child frames that the browser
   // wants to detach, or for speculative main frames which are owned by the
@@ -450,7 +441,7 @@ interface Frame {
       blink.mojom.FrameReplicationState new_remote_frame_replication_state,
       blink.mojom.RemoteFrameToken new_remote_frame_token,
       blink.mojom.RemoteFrameInterfacesFromBrowser new_remote_frame_interfaces,
-      RemoteMainFrameInterfaces new_remote_main_frame_interfaces);
+      blink.mojom.RemoteMainFrameInterfaces new_remote_main_frame_interfaces);
 
   // Causes all new subresource requests to be blocked (not being started) until
   // ResumeBlockedRequests is called.
@@ -591,9 +582,6 @@ enum CreateNewWindowStatus {
 // See if there's a reasonable way to factor out state here by splitting things
 // into browser-created params vs renderer-created params.
 struct CreateNewWindowReply {
-  // The ID of the view to be created.
-  int32 route_id;
-
   // The unique identifier of the RenderFrameHost
   blink.mojom.LocalFrameToken main_frame_token;
 
