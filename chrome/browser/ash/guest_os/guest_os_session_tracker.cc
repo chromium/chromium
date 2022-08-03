@@ -22,12 +22,14 @@ GuestInfo::GuestInfo(GuestId guest_id,
                      int64_t cid,
                      std::string username,
                      base::FilePath homedir,
-                     std::string ipv4_address)
+                     std::string ipv4_address,
+                     uint32_t sftp_vsock_port)
     : guest_id(std::move(guest_id)),
       cid(cid),
       username(std::move(username)),
       homedir(std::move(homedir)),
-      ipv4_address(std::move(ipv4_address)) {}
+      ipv4_address(std::move(ipv4_address)),
+      sftp_vsock_port(sftp_vsock_port) {}
 GuestInfo::~GuestInfo() = default;
 GuestInfo::GuestInfo(GuestInfo&&) = default;
 GuestInfo::GuestInfo(const GuestInfo&) = default;
@@ -121,9 +123,12 @@ void GuestOsSessionTracker::OnContainerStarted(
     return;
   }
   GuestId id{VmType::UNKNOWN, signal.vm_name(), signal.container_name()};
-  GuestInfo info{id, iter->second.cid(), signal.container_username(),
+  GuestInfo info{id,
+                 iter->second.cid(),
+                 signal.container_username(),
                  base::FilePath(signal.container_homedir()),
-                 signal.ipv4_address()};
+                 signal.ipv4_address(),
+                 signal.sftp_vsock_port()};
   guests_.insert_or_assign(id, info);
   auto cb_list = container_start_callbacks_.find(id);
   if (cb_list != container_start_callbacks_.end()) {

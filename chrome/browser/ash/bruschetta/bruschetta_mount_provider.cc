@@ -69,10 +69,8 @@ void BruschettaMountProvider::OnRunning(PrepareCallback callback,
     std::move(callback).Run(false, 0, 0, base::FilePath());
     return;
   }
-
-  // TODO(b/217469540): Once the sftp changes in garcon land, change the port
-  // from hardcoded 1234 to the real value.
-  std::move(callback).Run(true, info->cid, 1234, info->homedir);
+  std::move(callback).Run(true, info->cid, info->sftp_vsock_port,
+                          info->homedir);
 }
 
 }  // namespace bruschetta

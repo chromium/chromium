@@ -22,7 +22,8 @@ struct GuestInfo {
             int64_t cid,
             std::string username,
             base::FilePath homedir,
-            std::string ipv4_address);
+            std::string ipv4_address,
+            uint32_t sftp_vsock_port);
   ~GuestInfo();
   GuestInfo(GuestInfo&&);
   GuestInfo(const GuestInfo&);
@@ -33,6 +34,7 @@ struct GuestInfo {
   std::string username;
   base::FilePath homedir;
   std::string ipv4_address;
+  uint32_t sftp_vsock_port;
 };
 
 class GuestOsSessionTracker : protected ash::ConciergeClient::VmObserver,

@@ -49,7 +49,7 @@ class BruschettaLauncherTest : public testing::Test,
 
     guest_os::GuestId id{guest_os::VmType::UNKNOWN, "vm_name", "penguin"};
     guest_os::GuestOsSessionTracker::GetForProfile(&profile_)
-        ->AddGuestForTesting(id, guest_os::GuestInfo(id, 30, {}, {}, {}));
+        ->AddGuestForTesting(id, guest_os::GuestInfo(id, 30, {}, {}, {}, {}));
   }
 
   void TearDown() override {}

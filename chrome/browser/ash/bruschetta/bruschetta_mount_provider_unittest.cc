@@ -36,7 +36,7 @@ class BruschettaMountProviderTest : public testing::Test {
   TestingProfile profile_;
   guest_os::GuestId id_{guest_os::VmType::BRUSCHETTA, "vm_name", ""};
   guest_os::GuestInfo info_{id_, 32, "username", base::FilePath("/home/dir"),
-                            ""};
+                            "",  123};
   FakeBruschettaLauncher* launcher_;
   BruschettaMountProvider provider_{&profile_, id_};
 };
@@ -59,7 +59,7 @@ TEST_F(BruschettaMountProviderTest, TestPrepare) {
       [this, &called](bool result, int cid, int port, base::FilePath path) {
         EXPECT_TRUE(result);
         EXPECT_EQ(cid, info_.cid);
-        EXPECT_EQ(port, 1234);
+        EXPECT_EQ(port, 123);
         EXPECT_EQ(path, info_.homedir);
         called = true;
       }));
