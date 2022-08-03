@@ -1616,8 +1616,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetTextTrackMarginPercentage(prefs.text_track_margin_percentage);
   settings->SetTextTrackWindowColor(
       WebString::FromASCII(prefs.text_track_window_color));
-  settings->SetTextTrackWindowPadding(
-      WebString::FromASCII(prefs.text_track_window_padding));
   settings->SetTextTrackWindowRadius(
       WebString::FromASCII(prefs.text_track_window_radius));
 

@@ -246,8 +246,6 @@ struct WebPreferences {
   // around WebVTT text tracks.
   // Window color can be any legal CSS color descriptor.
   string text_track_window_color;
-  // Window padding is in em.
-  string text_track_window_padding;
   // Window radius is in pixels.
   string text_track_window_radius;
 

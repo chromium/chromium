@@ -297,8 +297,6 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
       builder.Append("video::-webkit-media-text-track-display { ");
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kBackgroundColor,
                                 settings->GetTextTrackWindowColor());
-      AddTextTrackCSSProperties(&builder, CSSPropertyID::kPadding,
-                                settings->GetTextTrackWindowPadding());
       AddTextTrackCSSProperties(&builder, CSSPropertyID::kBorderRadius,
                                 settings->GetTextTrackWindowRadius());
       builder.Append(" } video::cue { ");

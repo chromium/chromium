@@ -195,8 +195,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // around WebVTT text tracks.
   // Window color can be any legal CSS color descriptor.
   std::string text_track_window_color;
-  // Window padding is in em.
-  std::string text_track_window_padding;
   // Window radius is in pixels.
   std::string text_track_window_radius;
 

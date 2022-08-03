@@ -380,10 +380,6 @@ void WebSettingsImpl::SetTextTrackWindowColor(const WebString& color) {
   settings_->SetTextTrackWindowColor(color);
 }
 
-void WebSettingsImpl::SetTextTrackWindowPadding(const WebString& padding) {
-  settings_->SetTextTrackWindowPadding(padding);
-}
-
 void WebSettingsImpl::SetTextTrackWindowRadius(const WebString& radius) {
   settings_->SetTextTrackWindowRadius(radius);
 }

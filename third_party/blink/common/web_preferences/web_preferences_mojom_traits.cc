@@ -36,7 +36,6 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
       !data.ReadTextTrackFontStyle(&out->text_track_font_style) ||
       !data.ReadTextTrackFontVariant(&out->text_track_font_variant) ||
       !data.ReadTextTrackWindowColor(&out->text_track_window_color) ||
-      !data.ReadTextTrackWindowPadding(&out->text_track_window_padding) ||
       !data.ReadTextTrackWindowRadius(&out->text_track_window_radius) ||
       !data.ReadPrimaryPointerType(&out->primary_pointer_type) ||
       !data.ReadPrimaryHoverType(&out->primary_hover_type) ||

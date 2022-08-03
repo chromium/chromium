@@ -496,11 +496,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.text_track_window_color;
   }
 
-  static const std::string& text_track_window_padding(
-      const blink::web_pref::WebPreferences& r) {
-    return r.text_track_window_padding;
-  }
-
   static const std::string& text_track_window_radius(
       const blink::web_pref::WebPreferences& r) {
     return r.text_track_window_radius;

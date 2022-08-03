@@ -773,10 +773,6 @@
       type: "String",
     },
     {
-      name: "textTrackWindowPadding",
-      type: "String",
-    },
-    {
       name: "textTrackWindowRadius",
       type: "String",
     },
