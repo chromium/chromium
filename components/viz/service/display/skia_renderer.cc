@@ -1242,61 +1242,42 @@ void SkiaRenderer::PrepareGradient(
   const gfx::RectF rect = mask_filter_info->bounds();
   const absl::optional<gfx::LinearGradient>& gradient_mask =
       mask_filter_info->gradient_mask();
-  const int16_t angle = gradient_mask->angle() % 360;
 
-  // For positive angles, the start point is the bottom left rect point. For
-  // negative angles, the start point is the upper left rect point.
-  bool negative = angle < 0;
+  int16_t angle = gradient_mask->angle() % 360;
+  if (angle < 0) angle += 360;
+
   SkPoint start_end[2];
-  start_end[0] = {0, negative ? 0 : rect.height()};
 
-  // We explicitly specify the end point when cos(angle) = 0 and for axis
-  // aligned angles, where complex computation is not required to determine the
-  // end point.
-  switch (std::abs(angle)) {
-    case 0:
-      ABSL_FALLTHROUGH_INTENDED;
-    case 180:
-      ABSL_FALLTHROUGH_INTENDED;
-    case 360:
-      start_end[1] = {rect.width(), negative ? 0 : rect.height()};
-      break;
-    case 90:
-      ABSL_FALLTHROUGH_INTENDED;
-    case 270:
-      start_end[1] = {0, negative ? rect.height() : 0};
-      break;
-    // For non-axis aligned angles, the end point is the intersection of
-    // the gradient line and the normal line. The normal line is orthogonal to
-    // the gradient line and intersects the corner diagonal from the start
-    // point.
-    // Positive angle gradient line example:
-    //     +
-    //  +-/-------+
-    //  |/ )      |
-    //  +---------+
-    //
-    // Negative angle gradient line example:
-    //  +---------+
-    //  |\ )      |
-    //  +-\-------+
-    //     +
-    default: {
-      // TODO(crbug.com/1039003): add computation for angles >90 deg.
-      float rad_angle = gfx::DegToRad(static_cast<float>(angle));
-      float s = std::sin(rad_angle);
-      float c = std::cos(rad_angle);
-      float t = std::tan(rad_angle);
+  float rad_angle = gfx::DegToRad(static_cast<float>(angle));
+  float s = std::sin(rad_angle);
+  float c = std::cos(rad_angle);
 
-      float a = rect.width() * t;
-      float b = rect.height() - a;
-      float cc = b * s;
-      float d = cc * c;
-      float e = cc * s;
-      float end_x = (rect.width() + d);
-      float end_y = negative ? (a + e) : (rect.height() - a - e);
+  if (angle % 180 > 90) {
+    float start_x = rect.width() * c * c;
+    float start_y = rect.height() - (rect.width() * s * c);
+    float end_x = rect.height() * s * c;
+    float end_y = rect.height() * c * c;
 
+    if (angle < 180) {
+      start_end[0] = {start_x, start_y};
       start_end[1] = {end_x, end_y};
+    } else {
+      start_end[0] = {end_x, end_y};
+      start_end[1] = {start_x, start_y};
+    }
+
+  } else {
+    float start_x = -rect.height() * s * c;
+    float start_y = rect.height() * s * s;
+    float end_x = rect.width() * c * c;
+    float end_y = -rect.width() * s * c;
+
+    if (angle < 180) {
+      start_end[0] = {start_x, start_y};
+      start_end[1] = {end_x, end_y};
+    } else {
+      start_end[0] = {end_x, end_y};
+      start_end[1] = {start_x, start_y};
     }
   }
 

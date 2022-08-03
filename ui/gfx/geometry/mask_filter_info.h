@@ -73,7 +73,8 @@ class GEOMETRY_SKIA_EXPORT MaskFilterInfo {
 };
 
 inline bool operator==(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {
-  return lhs.rounded_corner_bounds() == rhs.rounded_corner_bounds();
+  return (lhs.rounded_corner_bounds() == rhs.rounded_corner_bounds()) &&
+         (lhs.gradient_mask() == rhs.gradient_mask());
 }
 
 inline bool operator!=(const MaskFilterInfo& lhs, const MaskFilterInfo& rhs) {

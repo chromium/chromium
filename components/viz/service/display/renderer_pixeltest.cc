@@ -4577,7 +4577,7 @@ TEST_P(GPURendererPixelTest, LinearGradientOnRenderPass) {
                 SkColors::kWhite, false);
 
   gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadius);
-  gfx::LinearGradient gradient_mask(90);
+  gfx::LinearGradient gradient_mask(330);
   gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
   gradient_mask.AddStep(50, 255);
   gradient_mask.AddStep(100, 255);
@@ -4646,7 +4646,7 @@ TEST_P(GPURendererPixelTest, MultiLinearGradientOnRenderPass) {
                 SkColors::kWhite, false);
 
   gfx::RRectF rounded_corner_bounds(gfx::RectF(pass_rect), kCornerRadius);
-  gfx::LinearGradient gradient_mask(90);
+  gfx::LinearGradient gradient_mask(-30);
   gradient_mask.AddStep(/*percent=*/0, /*alpha=*/0);
   gradient_mask.AddStep(50, 255);
   gradient_mask.AddStep(100, 255);

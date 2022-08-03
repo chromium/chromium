@@ -49,6 +49,9 @@ void LinearGradient::ReverseSteps() {
 }
 
 void LinearGradient::Transform(const gfx::Transform& transform) {
+  if (transform.IsIdentity())
+    return;
+
   gfx::PointF origin, end;
   float radian = gfx::DegToRad(static_cast<float>(angle_));
   float y = -sin(radian);
@@ -57,19 +60,17 @@ void LinearGradient::Transform(const gfx::Transform& transform) {
   transform.TransformPoint(&origin);
   transform.TransformPoint(&end);
   gfx::Vector2dF diff = end - origin;
-  int16_t new_angle =
-      -static_cast<int16_t>(gfx::RadToDeg(atan2(diff.y(), diff.x())));
-  angle_ = new_angle;
+  float new_angle = gfx::RadToDeg(atan2(diff.y(), diff.x()));
+  angle_ = -static_cast<int16_t>(std::round(new_angle));
 }
 
 std::string LinearGradient::ToString() const {
   std::string result = base::StringPrintf(
-      "LinearGradient{angle=%u, step_count=%zu [", angle_, step_count_);
-  for (size_t i = 0; i < step_count_; i++) {
+      "LinearGradient{angle=%d, step_count=%zu [", angle_, step_count_);
+  for (size_t i = 0; i < step_count_; ++i) {
     if (i)
       result += " - ";
-    result += base::NumberToString(steps_[i].percent) + ":" +
-              base::NumberToString(static_cast<int>(steps_[i].alpha));
+    result += base::StringPrintf("%f:%u", steps_[i].percent, steps_[i].alpha);
   }
   return result + "]}";
 }
