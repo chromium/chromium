@@ -37,6 +37,14 @@ message UrlInfo {
   optional string url = 1;
 }
 
+// Information about the set of host hashes to retrieve hints for.
+message HashedHostInfos {
+  // The partial host hash will be the first num_hash_bits least significant bit
+  // of the hashed host.
+  repeated uint32 partial_host_hashes = 1;
+  optional uint32 num_hash_bits = 2;
+}
+
 // Request to return a set of hints that guide what optimizations to perform
 // on those hosts.
 message GetHintsRequest {
@@ -47,6 +55,9 @@ message GetHintsRequest {
 
   // Information about the set of URLs to retrieve hints for.
   repeated UrlInfo urls = 4;
+
+  // Information about the set of host hashes to retrieve hints for.
+  optional HashedHostInfos hashed_hosts = 8;
 
   // The set of optimization types that the requesting client can support
   // and perform.
@@ -185,6 +196,8 @@ enum KeyRepresentation {
   //
   // This will be an exact match of a page load host.
   HOST = 3;
+  // This will be a partial hash of a page load host.
+  HASHED_HOST = 4;
 }
 
 message Optimization {

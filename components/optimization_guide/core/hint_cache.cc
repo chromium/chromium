@@ -375,6 +375,10 @@ bool HintCache::ProcessAndCacheHints(
         // Old component versions if not updated could potentially have
         // HOST_SUFFIX hints. Just skip over them.
         break;
+      case proto::HASHED_HOST:
+        // The server should not send hints with hashed host key.
+        NOTREACHED();
+        break;
       case proto::REPRESENTATION_UNSPECIFIED:
         NOTREACHED();
         break;
