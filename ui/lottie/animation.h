@@ -122,7 +122,10 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
                                           const Animation& animation);
 
     PlaybackConfig();
-    PlaybackConfig(std::vector<CycleBoundaries> scheduled_cycles, Style style);
+    PlaybackConfig(std::vector<CycleBoundaries> scheduled_cycles,
+                   base::TimeDelta initial_offset,
+                   int initial_completed_cycles,
+                   Style style);
     PlaybackConfig(const PlaybackConfig& other);
     PlaybackConfig& operator=(const PlaybackConfig& other);
     ~PlaybackConfig();
@@ -139,6 +142,20 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
     //
     // If |style| is kLinear, |scheduled_cycles| must have exactly one entry.
     std::vector<CycleBoundaries> scheduled_cycles;
+
+    // |initial_offset| and |initial_completed_cycles| combined dictate
+    // where to start playing the animation from within the |scheduled_cycles|
+    // above. The most common thing is to start playing from the very beginning
+    // (|initial_offset| is the |start_offset| of the first scheduled cycle
+    // and |initial_completed_cycles| is 0). But this allows the caller to
+    // specify an arbitrary starting point.
+    base::TimeDelta initial_offset;
+    // The animation will start playing as if it has already completed the
+    // number of cycles specified below. Note this not only dictates which
+    // scheduled cycle the animation starts within, but also the initial
+    // direction of the animation for throbbing animations.
+    int initial_completed_cycles = 0;
+
     Style style = Style::kLoop;
   };
 
@@ -191,6 +208,10 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // * The animation has been Start()ed but a single frame has not been painted
   //   yet.
   absl::optional<float> GetCurrentProgress() const;
+
+  // Returns the number of animation cycles that have been completed since
+  // Play() was called, or nullopt if the animation is currently Stop()ed.
+  absl::optional<int> GetNumCompletedCycles() const;
 
   // Returns the currently active PlaybackConfig, or nullopt if the animation
   // is currently Stop()ed.
@@ -245,6 +266,8 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   class COMPONENT_EXPORT(UI_LOTTIE) TimerControl final {
    public:
     TimerControl(std::vector<CycleBoundaries> scheduled_cycles,
+                 base::TimeDelta initial_offset,
+                 int initial_completed_cycles,
                  const base::TimeDelta& total_duration,
                  const base::TimeTicks& start_timestamp,
                  bool should_reverse,

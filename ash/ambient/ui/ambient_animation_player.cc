@@ -73,7 +73,8 @@ AmbientAnimationPlayer::AmbientAnimationPlayer(
   animated_image_view_->Play(lottie::Animation::PlaybackConfig(
       {{base::TimeDelta(), animation->GetAnimationDuration()},
        {cycle_restart_timestamp_, animation->GetAnimationDuration()}},
-      lottie::Animation::Style::kLoop));
+      /*initial_offset=*/base::TimeDelta(),
+      /*initial_completed_cycles=*/0, lottie::Animation::Style::kLoop));
 }
 
 AmbientAnimationPlayer::~AmbientAnimationPlayer() {

@@ -35,6 +35,11 @@ bool IsCycleValid(const Animation::CycleBoundaries& boundaries,
          boundaries.start_offset < boundaries.end_offset;
 }
 
+bool IsInCycleBoundaries(base::TimeDelta offset,
+                         const Animation::CycleBoundaries& boundaries) {
+  return offset >= boundaries.start_offset && offset < boundaries.end_offset;
+}
+
 Animation::CycleBoundaries GetCycleAtIndex(
     const std::vector<Animation::CycleBoundaries>& scheduled_cycles,
     int cycle_idx) {
@@ -47,6 +52,8 @@ Animation::CycleBoundaries GetCycleAtIndex(
 
 Animation::TimerControl::TimerControl(
     std::vector<CycleBoundaries> scheduled_cycles,
+    base::TimeDelta initial_offset,
+    int initial_completed_cycles,
     const base::TimeDelta& total_duration,
     const base::TimeTicks& start_timestamp,
     bool should_reverse,
@@ -54,9 +61,10 @@ Animation::TimerControl::TimerControl(
     : scheduled_cycles_(std::move(scheduled_cycles)),
       total_duration_(total_duration),
       previous_tick_(start_timestamp),
-      current_cycle_progress_(scheduled_cycles_.front().start_offset),
+      current_cycle_progress_(initial_offset),
       should_reverse_(should_reverse),
-      current_cycle_(scheduled_cycles_.front()) {
+      completed_cycles_(initial_completed_cycles),
+      current_cycle_(GetCycleAtIndex(scheduled_cycles_, completed_cycles_)) {
   SetPlaybackSpeed(playback_speed);
 }
 
@@ -127,7 +135,8 @@ Animation::PlaybackConfig Animation::PlaybackConfig::CreateDefault(
     const Animation& animation) {
   return PlaybackConfig(
       /*scheduled_cycles=*/{CycleBoundaries::FullCycle(animation)},
-      Animation::Style::kLoop);
+      /*initial_offset=*/base::TimeDelta(),
+      /*initial_completed_cycles=*/0, Animation::Style::kLoop);
 }
 
 // static
@@ -143,8 +152,13 @@ Animation::PlaybackConfig::PlaybackConfig() = default;
 
 Animation::PlaybackConfig::PlaybackConfig(
     std::vector<CycleBoundaries> scheduled_cycles,
+    base::TimeDelta initial_offset,
+    int initial_completed_cycles,
     Style style)
-    : scheduled_cycles(std::move(scheduled_cycles)), style(style) {}
+    : scheduled_cycles(std::move(scheduled_cycles)),
+      initial_offset(initial_offset),
+      initial_completed_cycles(initial_completed_cycles),
+      style(style) {}
 
 Animation::PlaybackConfig::PlaybackConfig(const PlaybackConfig& other) =
     default;
@@ -266,6 +280,23 @@ absl::optional<float> Animation::GetCurrentProgress() const {
   }
 }
 
+absl::optional<int> Animation::GetNumCompletedCycles() const {
+  if (state_ == PlayState::kStopped)
+    return absl::nullopt;
+
+  // This can happen if Start() has been called but a single frame has not been
+  // painted yet.
+  if (!timer_control_)
+    return playback_config_.initial_completed_cycles;
+
+  if (state_ == PlayState::kEnded) {
+    DCHECK_EQ(playback_config_.style, Style::kLinear);
+    return 1;
+  }
+
+  return timer_control_->completed_cycles();
+}
+
 absl::optional<Animation::PlaybackConfig> Animation::GetPlaybackConfig() const {
   if (state_ == PlayState::kStopped) {
     return absl::nullopt;
@@ -378,8 +409,9 @@ cc::SkottieWrapper::FrameDataFetchResult Animation::LoadImageForAsset(
 void Animation::InitTimer(const base::TimeTicks& timestamp) {
   DCHECK(!timer_control_);
   timer_control_ = std::make_unique<TimerControl>(
-      playback_config_.scheduled_cycles, GetAnimationDuration(), timestamp,
-      playback_config_.style == Style::kThrobbing, playback_speed_);
+      playback_config_.scheduled_cycles, playback_config_.initial_offset,
+      playback_config_.initial_completed_cycles, GetAnimationDuration(),
+      timestamp, playback_config_.style == Style::kThrobbing, playback_speed_);
 }
 
 void Animation::TryNotifyAnimationCycleEnded() const {
@@ -416,6 +448,11 @@ void Animation::VerifyPlaybackConfigIsValid(
   if (playback_config.style == Style::kLinear) {
     DCHECK_EQ(playback_config.scheduled_cycles.size(), 1u);
   }
+  DCHECK_GE(playback_config.initial_completed_cycles, 0);
+  DCHECK(IsInCycleBoundaries(
+      playback_config.initial_offset,
+      GetCycleAtIndex(playback_config.scheduled_cycles,
+                      playback_config.initial_completed_cycles)));
 }
 
 }  // namespace lottie
