@@ -733,8 +733,8 @@ template("test_runner_script") {
 
     executable = "//testing/test_env.py"
 
-    if (defined(android_test_runner_script)) {
-      _runner_script = android_test_runner_script
+    if (defined(invoker.android_test_runner_script)) {
+      _runner_script = invoker.android_test_runner_script
     } else {
       _runner_script = "//build/android/test_runner.py"
     }
