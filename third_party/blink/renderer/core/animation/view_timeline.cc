@@ -62,9 +62,6 @@ ViewTimeline::ViewTimeline(Document* document,
 absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
     PaintLayerScrollableArea* scrollable_area,
     ScrollOrientation physical_orientation) const {
-  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
-                                   scrollable_area->MinimumScrollOffset();
-
   DCHECK(subject());
   LayoutBox* layout_box = subject()->GetLayoutBox();
   DCHECK(layout_box);
@@ -77,22 +74,16 @@ absl::optional<ScrollTimeline::ScrollOffsets> ViewTimeline::CalculateOffsets(
       ComputeOffset(layout_box, source_layout, physical_orientation);
   double target_size = 0;
   double viewport_size = 0;
-  double max_offset = 0;
   if (physical_orientation == kHorizontalScroll) {
     target_size = layout_box->Size().Width().ToDouble();
     viewport_size = scrollable_area->VisibleScrollSnapportRect().Width();
-    max_offset = scroll_dimensions.x();
   } else {
     target_size = layout_box->Size().Height().ToDouble();
     viewport_size = scrollable_area->VisibleScrollSnapportRect().Height();
-    max_offset = scroll_dimensions.y();
   }
 
-  // Clamping the offsets to the scrollable range. It is unclear if this is the
-  // desired behavior as it also makes sense not to clamp.
-  // TODO(crbug.com/1329159): Revisit once clarified in the spec.
-  double start_offset = std::max<double>(target_offset - viewport_size, 0);
-  double end_offset = std::min<double>(target_offset + target_size, max_offset);
+  double start_offset = target_offset - viewport_size;
+  double end_offset = target_offset + target_size;
   return absl::make_optional<ScrollOffsets>(start_offset, end_offset);
 }
 
