@@ -51,19 +51,26 @@ AggregationServiceImpl::AggregationServiceImpl(
     bool run_in_memory,
     const base::FilePath& user_data_directory,
     StoragePartitionImpl* storage_partition)
-    : AggregationServiceImpl(
-          run_in_memory,
-          user_data_directory,
-          base::DefaultClock::GetInstance(),
-          std::make_unique<AggregatableReportScheduler>(
-              /*storage_context=*/this,
-              // `base::Unretained` is safe as the scheduler is owned by `this`.
-              base::BindRepeating(
-                  &AggregationServiceImpl::OnScheduledReportTimeReached,
-                  base::Unretained(this))),
-          std::make_unique<AggregatableReportAssembler>(this,
-                                                        storage_partition),
-          std::make_unique<AggregatableReportSender>(storage_partition)) {}
+    : storage_(
+          // Ensure storage is constructed first (and destroyed last) so we can
+          // safely pass `this` as an `AggregationServiceStorageContext` in the
+          // below constructors.
+          // TODO(alexmt): Pass the storage directly to avoid an extra wrapper.
+          base::SequenceBound<AggregationServiceStorageSql>(
+              g_storage_task_runner.Get(),
+              run_in_memory,
+              user_data_directory,
+              base::DefaultClock::GetInstance())),
+      scheduler_(std::make_unique<AggregatableReportScheduler>(
+          /*storage_context=*/this,
+          // `base::Unretained` is safe as the scheduler is owned by `this`.
+          base::BindRepeating(
+              &AggregationServiceImpl::OnScheduledReportTimeReached,
+              base::Unretained(this)))),
+      assembler_(std::make_unique<AggregatableReportAssembler>(
+          /*storage_context=*/this,
+          storage_partition)),
+      sender_(std::make_unique<AggregatableReportSender>(storage_partition)) {}
 
 AggregationServiceImpl::~AggregationServiceImpl() = default;
 
@@ -88,12 +95,12 @@ AggregationServiceImpl::AggregationServiceImpl(
     std::unique_ptr<AggregatableReportScheduler> scheduler,
     std::unique_ptr<AggregatableReportAssembler> assembler,
     std::unique_ptr<AggregatableReportSender> sender)
-    : scheduler_(std::move(scheduler)),
-      storage_(base::SequenceBound<AggregationServiceStorageSql>(
+    : storage_(base::SequenceBound<AggregationServiceStorageSql>(
           g_storage_task_runner.Get(),
           run_in_memory,
           user_data_directory,
           clock)),
+      scheduler_(std::move(scheduler)),
       assembler_(std::move(assembler)),
       sender_(std::move(sender)) {}
 

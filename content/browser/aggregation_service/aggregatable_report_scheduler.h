@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/report_scheduler_timer.h"
 #include "content/common/content_export.h"
@@ -37,6 +38,14 @@ class AggregationServiceStorageContext;
 // clock time goes backward).
 class CONTENT_EXPORT AggregatableReportScheduler {
  public:
+  // Add uniform random noise in the range of [0, 1 minutes] to the report time
+  // when the browser comes back online. Aligned with
+  // `AttributionStorageDelegateImpl::GetOfflineReportDelayConfig()`.
+  static constexpr base::TimeDelta kOfflineReportTimeMinimumDelay =
+      base::Minutes(0);
+  static constexpr base::TimeDelta kOfflineReportTimeMaximumDelay =
+      base::Minutes(1);
+
   AggregatableReportScheduler(
       AggregationServiceStorageContext* storage_context,
       base::RepeatingCallback<

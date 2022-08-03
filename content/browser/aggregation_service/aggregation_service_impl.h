@@ -105,8 +105,8 @@ class CONTENT_EXPORT AggregationServiceImpl
   void OnReportSendingComplete(AggregationServiceStorage::RequestId request_id,
                                AggregatableReportSender::RequestStatus status);
 
-  std::unique_ptr<AggregatableReportScheduler> scheduler_;
   base::SequenceBound<AggregationServiceStorage> storage_;
+  std::unique_ptr<AggregatableReportScheduler> scheduler_;
   std::unique_ptr<AggregatableReportAssembler> assembler_;
   std::unique_ptr<AggregatableReportSender> sender_;
 };

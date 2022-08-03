@@ -106,8 +106,11 @@ void AggregatableReportScheduler::TimerDelegate::OnReportingTimeReached(
 
 void AggregatableReportScheduler::TimerDelegate::AdjustOfflineReportTimes(
     base::OnceCallback<void(absl::optional<base::Time>)> maybe_set_timer_cb) {
-  // TODO(crbug.com/1340042): Implement offline and startup handling
-  std::move(maybe_set_timer_cb).Run(absl::nullopt);
+  storage_context_->GetStorage()
+      .AsyncCall(&AggregationServiceStorage::AdjustOfflineReportTimes)
+      .WithArgs(base::Time::Now(), kOfflineReportTimeMinimumDelay,
+                kOfflineReportTimeMaximumDelay)
+      .Then(std::move(maybe_set_timer_cb));
 }
 
 void AggregatableReportScheduler::TimerDelegate::NotifyRequestCompleted(

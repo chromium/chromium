@@ -77,8 +77,15 @@ class AggregationServiceStorage {
   virtual std::vector<RequestAndId> GetRequestsReportingOnOrBefore(
       base::Time not_after_time) = 0;
 
-  // TODO(crbug.com/1340042): Add a method to randomly delay all reports in the
-  // past (for startup and coming online).
+  // Adjusts the report time of all reports with report times strictly before
+  // `now`. Each new report time is `now` + a random delay. The random delay for
+  // each report is picked independently from a uniform distribution between
+  // `min_delay` and `max_delay`, both inclusive. Returns the new first report
+  // time in storage, if any.
+  virtual absl::optional<base::Time> AdjustOfflineReportTimes(
+      base::Time now,
+      base::TimeDelta min_delay,
+      base::TimeDelta max_delay) = 0;
 
   // == Joint methods =====
 

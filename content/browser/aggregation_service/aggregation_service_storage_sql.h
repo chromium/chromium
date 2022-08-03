@@ -65,6 +65,10 @@ class CONTENT_EXPORT AggregationServiceStorageSql
       base::Time strictly_after_time) override;
   std::vector<AggregationServiceStorage::RequestAndId>
   GetRequestsReportingOnOrBefore(base::Time not_after_time) override;
+  absl::optional<base::Time> AdjustOfflineReportTimes(
+      base::Time now,
+      base::TimeDelta min_delay,
+      base::TimeDelta max_delay) override;
   void ClearDataBetween(
       base::Time delete_begin,
       base::Time delete_end,
@@ -131,6 +135,9 @@ class CONTENT_EXPORT AggregationServiceStorageSql
   // Deletes the stored request with the given report ID.
   bool DeleteRequestImpl(RequestId request_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  absl::optional<base::Time> NextReportTimeAfterImpl(
+      base::Time strictly_after_time) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Clears the report requests that were stored between `delete_begin` and
   // `delete_end` time (inclusive). Null times are treated as unbounded lower or

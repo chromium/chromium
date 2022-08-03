@@ -19,6 +19,8 @@
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service_storage.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
+#include "services/network/public/mojom/network_change_manager.mojom.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -33,6 +35,8 @@ using testing::Invoke;
 // Will be used to verify the sequence of expected function calls.
 using Checkpoint = ::testing::MockFunction<void(int)>;
 
+// TODO(alexmt): Consider changing tests to avoid the assumption that this time
+// is after `base::Time::Now()`.
 const base::Time kExampleTime = base::Time::FromJavaTime(1652984901234);
 
 }  // namespace
@@ -396,6 +400,95 @@ TEST_F(AggregatableReportSchedulerTest,
   // request.
   task_environment_.AdvanceClock(base::Hours(2));
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(AggregatableReportSchedulerTest,
+       NetworkOffline_ReportsAreNotRetrievedUntilOnline) {
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_NONE);  // Offline
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregatableReportSharedInfo expected_shared_info =
+      example_request.shared_info().Clone();
+  expected_shared_info.scheduled_report_time = kExampleTime;
+
+  scheduler_.ScheduleRequest(
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
+          .value());
+
+  base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();
+
+  Checkpoint checkpoint;
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_callback_, Run).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_callback_, Run);
+  }
+
+  // Need to fast forward beyond the report time so that it's in the past and
+  // will be updated.
+  task_environment_.FastForwardBy(fast_forward_required +
+                                  base::Microseconds(1));
+
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_UNKNOWN);  // Online
+
+  checkpoint.Call(1);
+
+  // As the new report should've been delayed from 'now', we fast forward
+  // through that delay to trigger the report.
+  task_environment_.FastForwardBy(
+      AggregatableReportScheduler::kOfflineReportTimeMaximumDelay);
+}
+
+TEST_F(AggregatableReportSchedulerTest,
+       OnlineConnectionChanges_ReportsAreNotRetrieved) {
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_3G);
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+
+  AggregatableReportSharedInfo expected_shared_info =
+      example_request.shared_info().Clone();
+  expected_shared_info.scheduled_report_time = kExampleTime;
+
+  scheduler_.ScheduleRequest(
+      AggregatableReportRequest::Create(example_request.payload_contents(),
+                                        std::move(expected_shared_info))
+          .value());
+
+  Checkpoint checkpoint;
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_callback_, Run).Times(0);
+    EXPECT_CALL(checkpoint, Call(1));
+    EXPECT_CALL(mock_callback_, Run);
+  }
+
+  // Deliberately avoid running tasks so that the connection change and time
+  // advance can be "atomic", which is necessary because
+  // `AttributionStorage::AdjustOfflineReportTimes()` only adjusts times for
+  // reports that should have been sent before now. In other words, the call to
+  // `AdjustOfflineReportTimes()` would have no effect if we used
+  // `FastForwardBy()` here, and we wouldn't be able to detect it below.
+  base::TimeDelta fast_forward_required = kExampleTime - base::Time::Now();
+
+  task_environment_.AdvanceClock(fast_forward_required + base::Microseconds(1));
+  network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
+      network::mojom::ConnectionType::CONNECTION_4G);
+
+  checkpoint.Call(1);
+
+  // Cause any scheduled tasks to run. If the report was delayed, this wouldn't
+  // be late enough for the report to be sent. There is a tiny chance that the
+  // report was only delayed by 0 or 1 microsecond, but this flake is rare
+  // enough to ignore (1 in 30 million runs).
+  task_environment_.FastForwardBy(base::TimeDelta());
 }
 
 }  // namespace content
