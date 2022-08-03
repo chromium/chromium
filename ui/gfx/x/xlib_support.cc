@@ -81,7 +81,9 @@ XlibDisplay::~XlibDisplay() {
   // events, they will just queue up and leak memory.  This check makes sure
   // |display_| never had any pending events before it is closed.
   CHECK(!loader->XPending(display_));
-  loader->XCloseDisplay(display_);
+  // ExtractAsDangling clears the underlying pointer and returns another raw_ptr
+  // instance that is allowed to dangle.
+  loader->XCloseDisplay(display_.ExtractAsDangling());
 }
 
 DISABLE_CFI_DLSYM

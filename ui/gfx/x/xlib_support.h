@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(X11) XlibDisplay {
 
   explicit XlibDisplay(const std::string& address);
 
-  raw_ptr<struct _XDisplay, DanglingUntriaged> display_ = nullptr;
+  raw_ptr<struct _XDisplay> display_ = nullptr;
 };
 
 // A temporary wrapper around an unowned Xlib display that adds behavior
