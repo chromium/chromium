@@ -5525,6 +5525,8 @@ static_library("browser") {
       "lacros/standalone_browser_test_controller.h",
       "lacros/sync/sync_explicit_passphrase_client_lacros.cc",
       "lacros/sync/sync_explicit_passphrase_client_lacros.h",
+      "lacros/sync/sync_user_settings_client_lacros.cc",
+      "lacros/sync/sync_user_settings_client_lacros.h",
       "lacros/system_logs/lacros_system_log_fetcher.cc",
       "lacros/system_logs/lacros_system_log_fetcher.h",
       "lacros/task_manager_lacros.cc",

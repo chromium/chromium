@@ -7,6 +7,7 @@
 
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/sync/chromeos/lacros/fake_sync_explicit_passphrase_client_ash.h"
+#include "components/sync/chromeos/lacros/fake_sync_user_settings_client_ash.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -35,9 +36,11 @@ class FakeSyncMojoService : public crosapi::mojom::SyncService {
   void BindReceiver(
       mojo::PendingReceiver<crosapi::mojom::SyncService> receiver);
   FakeSyncExplicitPassphraseClientAsh& GetFakeSyncExplicitPassphraseClientAsh();
+  FakeSyncUserSettingsClientAsh& GetFakeSyncUserSettingsClientAsh();
 
  private:
   FakeSyncExplicitPassphraseClientAsh fake_sync_explicit_passphrase_client_ash_;
+  FakeSyncUserSettingsClientAsh fake_sync_user_settings_client_ash_;
 
   mojo::ReceiverSet<crosapi::mojom::SyncService> receivers_;
 };

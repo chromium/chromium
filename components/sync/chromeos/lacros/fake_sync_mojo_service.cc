@@ -25,8 +25,7 @@ void FakeSyncMojoService::BindExplicitPassphraseClient(
 
 void FakeSyncMojoService::BindUserSettingsClient(
     mojo::PendingReceiver<crosapi::mojom::SyncUserSettingsClient> receiver) {
-  // TODO(crbug.com/1330894): support SyncUserSettingsClient logic.
-  NOTIMPLEMENTED();
+  fake_sync_user_settings_client_ash_.BindReceiver(std::move(receiver));
 }
 
 void FakeSyncMojoService::BindReceiver(
@@ -37,6 +36,11 @@ void FakeSyncMojoService::BindReceiver(
 FakeSyncExplicitPassphraseClientAsh&
 FakeSyncMojoService::GetFakeSyncExplicitPassphraseClientAsh() {
   return fake_sync_explicit_passphrase_client_ash_;
+}
+
+FakeSyncUserSettingsClientAsh&
+FakeSyncMojoService::GetFakeSyncUserSettingsClientAsh() {
+  return fake_sync_user_settings_client_ash_;
 }
 
 }  // namespace syncer

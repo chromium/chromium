@@ -10,6 +10,8 @@ static_library("test_support") {
     "fake_sync_explicit_passphrase_client_ash.h",
     "fake_sync_mojo_service.cc",
     "fake_sync_mojo_service.h",
+    "fake_sync_user_settings_client_ash.cc",
+    "fake_sync_user_settings_client_ash.h",
   ]
   public_deps = [
     "//chromeos/crosapi/mojom",
