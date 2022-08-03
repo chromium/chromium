@@ -230,9 +230,8 @@ class AppWindow : public content::WebContentsDelegate,
   AppWindow& operator=(const AppWindow&) = delete;
 
   // Initializes the render interface, web contents, and native window.
-  // |app_window_contents| will become owned by AppWindow.
   void Init(const GURL& url,
-            AppWindowContents* app_window_contents,
+            std::unique_ptr<AppWindowContents> app_window_contents,
             content::RenderFrameHost* creator_frame,
             const CreateParams& params);
 

@@ -249,11 +249,11 @@ AppWindow::AppWindow(BrowserContext* context,
 }
 
 void AppWindow::Init(const GURL& url,
-                     AppWindowContents* app_window_contents,
+                     std::unique_ptr<AppWindowContents> app_window_contents,
                      content::RenderFrameHost* creator_frame,
                      const CreateParams& params) {
   // Initialize the render interface and web contents
-  app_window_contents_.reset(app_window_contents);
+  app_window_contents_ = std::move(app_window_contents);
   app_window_contents_->Initialize(browser_context(), creator_frame, url);
 
   initial_url_ = url;

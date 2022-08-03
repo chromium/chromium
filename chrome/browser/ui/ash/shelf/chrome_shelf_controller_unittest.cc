@@ -714,7 +714,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   void AppendPrefValue(base::ListValue* pref_value,
                        const std::string& extension_id) {
     base::DictionaryValue entry;
-    entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, base::Value(extension_id));
+    entry.SetKey(ChromeShelfPrefs::kPinnedAppsPrefAppIDKey,
+                 base::Value(extension_id));
     pref_value->Append(std::move(entry));
   }
 
@@ -1358,7 +1359,7 @@ class V2App {
     // calling chrome.app.window.create. For unit testing purposes, just passing
     // in a random RenderFrameHost is Good Enough™.
     window_->Init(GURL(std::string()),
-                  new extensions::AppWindowContentsImpl(window_),
+                  std::make_unique<extensions::AppWindowContentsImpl>(window_),
                   creator_web_contents_->GetPrimaryMainFrame(), params);
   }
 

@@ -344,7 +344,8 @@ class TestAppWindow : public content::WebContentsObserver {
 
     extensions::AppWindow::CreateParams params;
     params.hidden = !shown;
-    window_->Init(GURL(), new extensions::AppWindowContentsImpl(window_),
+    window_->Init(GURL(),
+                  std::make_unique<extensions::AppWindowContentsImpl>(window_),
                   web_contents_->GetPrimaryMainFrame(), params);
     Observe(window_->web_contents());
   }

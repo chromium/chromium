@@ -51,7 +51,7 @@ void ShellTestHelperAura::InitAppWindow(AppWindow* app_window,
 
   AppWindow::CreateParams params;
   params.content_spec.bounds = bounds;
-  app_window->Init(GURL(), app_window_contents.release(), main_frame, params);
+  app_window->Init(GURL(), std::move(app_window_contents), main_frame, params);
 }
 
 }  // namespace extensions

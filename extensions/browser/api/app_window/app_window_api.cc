@@ -401,7 +401,7 @@ ExtensionFunction::ResponseAction AppWindowCreateFunction::Run() {
   if (!app_window)
     return RespondNow(Error(app_window_constants::kAppWindowCreationFailed));
 
-  app_window->Init(url, new AppWindowContentsImpl(app_window),
+  app_window->Init(url, std::make_unique<AppWindowContentsImpl>(app_window),
                    render_frame_host(), create_params);
 
   if (ExtensionsBrowserClient::Get()->IsRunningInForcedAppMode() &&
@@ -470,44 +470,36 @@ bool AppWindowCreateFunction::GetBoundsSpec(
     const app_window::BoundsSpecification* outer_bounds =
         options.outer_bounds.get();
     if (inner_bounds && outer_bounds) {
-      if (!CheckBoundsConflict(
-               inner_bounds->left, outer_bounds->left, "left", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(
-               inner_bounds->top, outer_bounds->top, "top", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(
-               inner_bounds->width, outer_bounds->width, "width", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(
-               inner_bounds->height, outer_bounds->height, "height", error)) {
-        return false;
-      }
-      if (!CheckBoundsConflict(inner_bounds->min_width,
-                               outer_bounds->min_width,
-                               "minWidth",
+      if (!CheckBoundsConflict(inner_bounds->left, outer_bounds->left, "left",
                                error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->top, outer_bounds->top, "top",
+                               error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->width, outer_bounds->width,
+                               "width", error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->height, outer_bounds->height,
+                               "height", error)) {
+        return false;
+      }
+      if (!CheckBoundsConflict(inner_bounds->min_width, outer_bounds->min_width,
+                               "minWidth", error)) {
         return false;
       }
       if (!CheckBoundsConflict(inner_bounds->min_height,
-                               outer_bounds->min_height,
-                               "minHeight",
-                               error)) {
+                               outer_bounds->min_height, "minHeight", error)) {
         return false;
       }
-      if (!CheckBoundsConflict(inner_bounds->max_width,
-                               outer_bounds->max_width,
-                               "maxWidth",
-                               error)) {
+      if (!CheckBoundsConflict(inner_bounds->max_width, outer_bounds->max_width,
+                               "maxWidth", error)) {
         return false;
       }
       if (!CheckBoundsConflict(inner_bounds->max_height,
-                               outer_bounds->max_height,
-                               "maxHeight",
-                               error)) {
+                               outer_bounds->max_height, "maxHeight", error)) {
         return false;
       }
     }
