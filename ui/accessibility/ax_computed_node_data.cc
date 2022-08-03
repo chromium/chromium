@@ -25,22 +25,59 @@ AXComputedNodeData::AXComputedNodeData(const AXNode& node) : owner_(&node) {}
 AXComputedNodeData::~AXComputedNodeData() = default;
 
 int AXComputedNodeData::GetOrComputeUnignoredIndexInParent() const {
-  DCHECK(!owner_->IsIgnored());
+  DCHECK(!owner_->IsIgnored())
+      << "Ignored nodes cannot have an `unignored index in parent`.\n"
+      << *owner_;
   if (unignored_index_in_parent_)
     return *unignored_index_in_parent_;
 
-  if (const AXNode* unignored_parent = owner_->GetUnignoredParent()) {
+  if (const AXNode* unignored_parent = SlowGetUnignoredParent()) {
+    DCHECK_NE(unignored_parent->id(), kInvalidAXNodeID)
+        << "All nodes should have a valid ID.\n"
+        << *owner_;
     unignored_parent->GetComputedNodeData().ComputeUnignoredValues();
   } else {
     // This should be the root node and, by convention, we assign it an
     // index-in-parent of 0.
     unignored_index_in_parent_ = 0;
+    unignored_parent_id_ = kInvalidAXNodeID;
   }
   return *unignored_index_in_parent_;
 }
 
+AXNodeID AXComputedNodeData::GetOrComputeUnignoredParentID() const {
+  if (unignored_parent_id_)
+    return *unignored_parent_id_;
+
+  if (const AXNode* unignored_parent = SlowGetUnignoredParent()) {
+    DCHECK_NE(unignored_parent->id(), kInvalidAXNodeID)
+        << "All nodes should have a valid ID.\n"
+        << *owner_;
+    unignored_parent_id_ = unignored_parent->id();
+  } else {
+    // This should be the root node and, by convention, we assign it an
+    // index-in-parent of 0.
+    DCHECK(!owner_->GetParent())
+        << "If `unignored_parent` is nullptr, then this should be the "
+           "rootnode, since in all trees the rootnode should be unignored.\n"
+        << *owner_;
+    unignored_index_in_parent_ = 0;
+    unignored_parent_id_ = kInvalidAXNodeID;
+  }
+  return *unignored_parent_id_;
+}
+
+AXNode* AXComputedNodeData::GetOrComputeUnignoredParent() const {
+  DCHECK(owner_->tree())
+      << "All nodes should be owned by an accessibility tree.\n"
+      << *owner_;
+  return owner_->tree()->GetFromId(GetOrComputeUnignoredParentID());
+}
+
 int AXComputedNodeData::GetOrComputeUnignoredChildCount() const {
-  DCHECK(!owner_->IsIgnored());
+  DCHECK(!owner_->IsIgnored())
+      << "Ignored nodes cannot have an `unignored child count`.\n"
+      << *owner_;
   if (!unignored_child_count_)
     ComputeUnignoredValues();
   return *unignored_child_count_;
@@ -48,10 +85,18 @@ int AXComputedNodeData::GetOrComputeUnignoredChildCount() const {
 
 const std::vector<AXNodeID>& AXComputedNodeData::GetOrComputeUnignoredChildIDs()
     const {
-  DCHECK(!owner_->IsIgnored());
+  DCHECK(!owner_->IsIgnored())
+      << "Ignored nodes cannot have `unignored child IDs`.\n"
+      << *owner_;
   if (!unignored_child_ids_)
     ComputeUnignoredValues();
   return *unignored_child_ids_;
+}
+
+bool AXComputedNodeData::GetOrComputeIsDescendantOfPlatformLeaf() const {
+  if (!is_descendant_of_leaf_)
+    ComputeIsDescendantOfPlatformLeaf();
+  return *is_descendant_of_leaf_;
 }
 
 bool AXComputedNodeData::HasOrCanComputeAttribute(
@@ -235,12 +280,18 @@ int AXComputedNodeData::GetOrComputeTextContentLengthUTF16() const {
 }
 
 void AXComputedNodeData::ComputeUnignoredValues(
+    AXNodeID unignored_parent_id,
     int starting_index_in_parent) const {
+  DCHECK_GE(starting_index_in_parent, 0);
   // Reset any previously computed values.
   unignored_index_in_parent_ = absl::nullopt;
+  unignored_parent_id_ = absl::nullopt;
   unignored_child_count_ = absl::nullopt;
   unignored_child_ids_ = absl::nullopt;
 
+  AXNodeID unignored_parent_id_for_child = unignored_parent_id;
+  if (!owner_->IsIgnored())
+    unignored_parent_id_for_child = owner_->id();
   int unignored_child_count = 0;
   std::vector<AXNodeID> unignored_child_ids;
   for (auto iter = owner_->AllChildrenBegin(); iter != owner_->AllChildrenEnd();
@@ -250,7 +301,8 @@ void AXComputedNodeData::ComputeUnignoredValues(
 
     if (iter->IsIgnored()) {
       // Skip the ignored node and recursively look at its children.
-      computed_data.ComputeUnignoredValues(new_index_in_parent);
+      computed_data.ComputeUnignoredValues(unignored_parent_id_for_child,
+                                           new_index_in_parent);
       DCHECK(computed_data.unignored_child_count_);
       unignored_child_count += *computed_data.unignored_child_count_;
       DCHECK(computed_data.unignored_child_ids_);
@@ -258,16 +310,48 @@ void AXComputedNodeData::ComputeUnignoredValues(
                                  computed_data.unignored_child_ids_->begin(),
                                  computed_data.unignored_child_ids_->end());
     } else {
+      // Setting `unignored_index_in_parent_` and `unignored_parent_id_` is the
+      // responsibility of the parent node, since only the parent node can
+      // calculate these values. This is in contrast to `unignored_child_count_`
+      // and `unignored_child_ids_` that are only set if this method is called
+      // on the node itself.
+      computed_data.unignored_index_in_parent_ = new_index_in_parent;
+      if (unignored_parent_id_for_child != kInvalidAXNodeID)
+        computed_data.unignored_parent_id_ = unignored_parent_id_for_child;
+
       ++unignored_child_count;
       unignored_child_ids.push_back(iter->id());
-      computed_data.unignored_index_in_parent_ = new_index_in_parent;
     }
   }
 
+  if (unignored_parent_id != kInvalidAXNodeID)
+    unignored_parent_id_ = unignored_parent_id;
   // Ignored nodes store unignored child information in order to propagate it to
-  // their parents, but do not expose it directly.
+  // their parents, but do not expose it directly. The latter is guarded via a
+  // DCHECK.
   unignored_child_count_ = unignored_child_count;
   unignored_child_ids_ = unignored_child_ids;
+}
+
+AXNode* AXComputedNodeData::SlowGetUnignoredParent() const {
+  AXNode* unignored_parent = owner_->GetParent();
+  while (unignored_parent && unignored_parent->IsIgnored())
+    unignored_parent = unignored_parent->GetParent();
+  return unignored_parent;
+}
+
+void AXComputedNodeData::ComputeIsDescendantOfPlatformLeaf() const {
+  is_descendant_of_leaf_ = false;
+  for (const AXNode* ancestor = GetOrComputeUnignoredParent(); ancestor;
+       ancestor =
+           ancestor->GetComputedNodeData().GetOrComputeUnignoredParent()) {
+    if (ancestor->GetComputedNodeData().is_descendant_of_leaf_.value_or(
+            false) ||
+        ancestor->IsLeaf()) {
+      is_descendant_of_leaf_ = true;
+      return;
+    }
+  }
 }
 
 void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {

@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_node_id_forward.h"
 
 namespace ui {
 
@@ -37,6 +38,12 @@ class AX_EXPORT AXComputedNodeData final {
   // associated node is ignored.
   int GetOrComputeUnignoredIndexInParent() const;
 
+  // The lowest unignored parent. This value should be computed for all
+  // associated nodes, ignored and unignored. Only the rootnode should not have
+  // an unignored parent.
+  AXNodeID GetOrComputeUnignoredParentID() const;
+  AXNode* GetOrComputeUnignoredParent() const;
+
   // If the associated node is unignored, i.e. exposed to the platform's
   // assistive software, the number of its children that are also unignored.
   // Naturally, this value is not defined when the associated node is ignored.
@@ -45,6 +52,11 @@ class AX_EXPORT AXComputedNodeData final {
   // If the associated node is unignored, i.e. exposed to the platform's
   // assistive software, the IDs of its children that are also unignored.
   const std::vector<AXNodeID>& GetOrComputeUnignoredChildIDs() const;
+
+  // Whether the associated node is a descendant of a platform leaf. The set of
+  // platform leaves are the lowest nodes that are exposed to the platform's
+  // assistive software.
+  bool GetOrComputeIsDescendantOfPlatformLeaf() const;
 
   // Given an accessibility attribute, returns whether the attribute is
   // currently present in the node's data, or if it can always be computed on
@@ -97,10 +109,20 @@ class AX_EXPORT AXComputedNodeData final {
   int GetOrComputeTextContentLengthUTF16() const;
 
  private:
-  // Computes and caches the `unignored_index_in_parent_`,
+  // Computes and caches the `unignored_index_in_parent_`, `unignored_parent_`,
   // `unignored_child_count_` and `unignored_child_ids_` for the associated
   // node.
-  void ComputeUnignoredValues(int starting_index_in_parent = 0) const;
+  void ComputeUnignoredValues(AXNodeID unignored_parent_id = kInvalidAXNodeID,
+                              int starting_index_in_parent = 0) const;
+
+  // Walks up the accessibility tree from the associated node until it finds the
+  // lowest unignored ancestor.
+  AXNode* SlowGetUnignoredParent() const;
+
+  // Computes and caches (if not already in the cache) whether the associated
+  // node is a descendant of a platform leaf. The set of platform leaves are the
+  // lowest nodes that are exposed to the platform's assistive software.
+  void ComputeIsDescendantOfPlatformLeaf() const;
 
   // Computes and caches (if not already in the cache) the character offsets
   // where each line in the associated node's on-screen text starts and ends.
@@ -126,8 +148,10 @@ class AX_EXPORT AXComputedNodeData final {
   const raw_ptr<const AXNode> owner_;
 
   mutable absl::optional<int> unignored_index_in_parent_;
+  mutable absl::optional<AXNodeID> unignored_parent_id_;
   mutable absl::optional<int> unignored_child_count_;
   mutable absl::optional<std::vector<AXNodeID>> unignored_child_ids_;
+  mutable absl::optional<bool> is_descendant_of_leaf_;
   mutable absl::optional<std::vector<int32_t>> line_starts_;
   mutable absl::optional<std::vector<int32_t>> line_ends_;
   mutable absl::optional<std::vector<int32_t>> sentence_starts_;
