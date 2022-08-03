@@ -59,6 +59,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.display.DisplayAndroidManager;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 
 import java.io.Serializable;
@@ -178,6 +179,8 @@ public class HistoryClustersCoordinatorTest {
     private GURL mGurl2;
     @Mock
     private HistoryClustersMetricsLogger mMetricsLogger;
+    @Mock
+    private AccessibilityUtil mAccessibilityUtil;
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
@@ -214,9 +217,9 @@ public class HistoryClustersCoordinatorTest {
         mActivityScenario =
                 ActivityScenario.launch(ChromeTabbedActivity.class).onActivity(activity -> {
                     mActivity = activity;
-                    mHistoryClustersCoordinator =
-                            new HistoryClustersCoordinator(mProfile, activity, mTemplateUrlService,
-                                    mHistoryClustersDelegate, mMetricsLogger, mSelectionDelegate);
+                    mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
+                            mTemplateUrlService, mHistoryClustersDelegate, mMetricsLogger,
+                            mSelectionDelegate, mAccessibilityUtil);
                 });
     }
 

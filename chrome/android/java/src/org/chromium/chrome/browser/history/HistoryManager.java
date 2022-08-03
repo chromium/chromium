@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
@@ -256,9 +257,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                 }
             };
 
-            mHistoryClustersCoordinator =
-                    new HistoryClustersCoordinator(Profile.getLastUsedRegularProfile(), activity,
-                            TemplateUrlServiceFactory.get(), historyClustersDelegate);
+            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
+                    Profile.getLastUsedRegularProfile(), activity, TemplateUrlServiceFactory.get(),
+                    historyClustersDelegate, ChromeAccessibilityUtil.get());
         }
 
         // 1. Create selectable components.

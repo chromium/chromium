@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.ui.util.AccessibilityUtil;
 
 /**
  * Root component for the HistoryClusters UI component, which displays lists of related history
@@ -70,7 +71,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Activity activity,
             TemplateUrlService templateUrlService, HistoryClustersDelegate historyClustersDelegate,
             HistoryClustersMetricsLogger metricsLogger,
-            SelectionDelegate<ClusterVisit> selectionDelegate) {
+            SelectionDelegate<ClusterVisit> selectionDelegate,
+            AccessibilityUtil accessibilityUtil) {
         mActivity = activity;
         mDelegate = historyClustersDelegate;
         mModelList = new ModelList();
@@ -84,7 +86,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), mActivity, mActivity.getResources(), mModelList,
                 mToolbarModel, mDelegate, System::currentTimeMillis, templateUrlService,
-                mSelectionDelegate, mMetricsLogger);
+                mSelectionDelegate, mMetricsLogger, accessibilityUtil);
     }
 
     /**
@@ -93,12 +95,14 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
      * @param activity Activity in which this UI resides.
      * @param historyClustersDelegate Delegate that provides functionality that must be implemented
      *         externally, e.g. populating intents targeting activities we can't reference directly.
+     * @param accessibilityUtil Utility object that tells us about the current accessibility state.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Activity activity,
-            TemplateUrlService templateUrlService,
-            HistoryClustersDelegate historyClustersDelegate) {
+            TemplateUrlService templateUrlService, HistoryClustersDelegate historyClustersDelegate,
+            AccessibilityUtil accessibilityUtil) {
         this(profile, activity, templateUrlService, historyClustersDelegate,
-                new HistoryClustersMetricsLogger(templateUrlService), new SelectionDelegate<>());
+                new HistoryClustersMetricsLogger(templateUrlService), new SelectionDelegate<>(),
+                accessibilityUtil);
     }
 
     public void destroy() {
@@ -157,6 +161,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 HistoryClustersViewBinder::noopBindView);
         mAdapter.registerType(ItemType.CLEAR_BROWSING_DATA, mDelegate::getClearBrowsingDataView,
                 HistoryClustersViewBinder::noopBindView);
+        mAdapter.registerType(ItemType.MORE_PROGRESS, this::buildMoreProgressView,
+                HistoryClustersViewBinder::bindMoreProgressView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mActivity);
         mActivityContentView = (ViewGroup) layoutInflater.inflate(
@@ -190,6 +196,11 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 mToolbarModel, mSelectableListLayout, HistoryClustersViewBinder::bindListLayout);
 
         mActivityViewInflated = true;
+    }
+
+    private View buildMoreProgressView(ViewGroup parent) {
+        return LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.more_progress_button, parent, false);
     }
 
     private View buildClusterView(ViewGroup parent) {

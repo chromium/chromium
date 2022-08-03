@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
+import org.chromium.components.browser_ui.widget.MoreProgressButton.State;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
@@ -44,6 +45,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AccessibilityUtil;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -98,9 +100,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     private ListItem mPrivacyDisclaimerItem;
     private ListItem mClearBrowsingDataItem;
     private QueryState mQueryState;
+    private final ListItem mMoreProgressItem;
     private final HistoryClustersMetricsLogger mMetricsLogger;
     private Map<String, PropertyModel> mLabelToModelMap = new LinkedHashMap<>();
     private Map<ClusterVisit, VisitMetadata> mVisitMetadataMap = new HashMap<>();
+    private final AccessibilityUtil mAccessibilityUtil;
+    private final boolean mIsScrollToLoadDisabled;
 
     /**
      * Create a new HistoryClustersMediator.
@@ -118,13 +123,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
      * @param selectionDelegate Delegate that gives us information about the currently selected
      *         items in the list we're displaying.
      * @param metricsLogger Object that records metrics about user interactions.
+     * @param accessibilityUtil Utility object that tells us about the current accessibility state.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
             HistoryClustersDelegate historyClustersDelegate, Clock clock,
             TemplateUrlService templateUrlService, SelectionDelegate selectionDelegate,
-            HistoryClustersMetricsLogger metricsLogger) {
+            HistoryClustersMetricsLogger metricsLogger, AccessibilityUtil accessibilityUtil) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -138,6 +144,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mTemplateUrlService = templateUrlService;
         mSelectionDelegate = selectionDelegate;
         mMetricsLogger = metricsLogger;
+        mAccessibilityUtil = accessibilityUtil;
 
         PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         mToggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
@@ -151,6 +158,18 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                 new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
         mClearBrowsingDataItem = new ListItem(ItemType.CLEAR_BROWSING_DATA, clearBrowsingDataModel);
         mDelegate.shouldShowClearBrowsingDataSupplier().addObserver(show -> ensureHeaders());
+
+        mIsScrollToLoadDisabled = mAccessibilityUtil.isAccessibilityEnabled()
+                || AccessibilityUtil.isHardwareKeyboardAttached(mResources.getConfiguration());
+        @State
+        int buttonState = mIsScrollToLoadDisabled ? State.BUTTON : State.LOADING;
+        PropertyModel moreProgressModel =
+                new PropertyModel.Builder(HistoryClustersItemProperties.ALL_KEYS)
+                        .with(HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState)
+                        .with(HistoryClustersItemProperties.CLICK_HANDLER,
+                                (v) -> mPromise.then(this::continueQuery))
+                        .build();
+        mMoreProgressItem = new ListItem(ItemType.MORE_PROGRESS, moreProgressModel);
     }
 
     // SearchDelegate implementation.
@@ -168,14 +187,11 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
     // OnScrollListener implementation
     @Override
     public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        if (mIsScrollToLoadDisabled) return;
         LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
         if (layoutManager.findLastVisibleItemPosition()
                 > (mModelList.size() - REMAINING_ITEM_BUFFER_SIZE)) {
-            mPromise.then(result -> {
-                if (result.canLoadMore()) {
-                    continueQuery(result.getQuery());
-                }
-            });
+            mPromise.then(this::continueQuery);
         }
     }
 
@@ -205,11 +221,14 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         mPromise = mHistoryClustersBridge.queryClusters(query);
         mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
+        ensureFooter(State.LOADING, true);
     }
 
-    void continueQuery(String query) {
-        mPromise = mHistoryClustersBridge.loadMoreClusters(query);
+    void continueQuery(HistoryClustersResult previousResult) {
+        if (!previousResult.canLoadMore()) return;
+        mPromise = mHistoryClustersBridge.loadMoreClusters(previousResult.getQuery());
         mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
+        ensureFooter(State.LOADING, true);
     }
 
     void openHistoryClustersUi(String query) {
@@ -349,9 +368,11 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
                                 entry.getValue(), entry.getValue()));
             }
 
-            if (result.canLoadMore() && !result.isContinuation()) {
-                continueQuery("");
+            if (!mIsScrollToLoadDisabled && result.canLoadMore() && !result.isContinuation()) {
+                continueQuery(result);
             }
+
+            ensureFooter(State.BUTTON, result.canLoadMore());
 
             return;
         }
@@ -435,6 +456,8 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             clusterModel.set(
                     HistoryClustersItemProperties.LABEL, getTimeString(cluster.getTimestamp()));
         }
+
+        ensureFooter(State.BUTTON, result.canLoadMore());
     }
 
     private void resetModel() {
@@ -482,6 +505,22 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
         if (!hasToggleItem) {
             mModelList.add(position++, mToggleItem);
+        }
+    }
+
+    private void ensureFooter(@State int buttonState, boolean canLoadMore) {
+        mMoreProgressItem.model.set(
+                HistoryClustersItemProperties.PROGRESS_BUTTON_STATE, buttonState);
+        boolean shouldShow = (buttonState == State.BUTTON && canLoadMore && mIsScrollToLoadDisabled)
+                || buttonState == State.LOADING;
+        int currentIndex = mModelList.indexOf(mMoreProgressItem);
+        boolean showing = currentIndex != -1;
+        if (showing) {
+            mModelList.remove(mMoreProgressItem);
+        }
+
+        if (shouldShow) {
+            mModelList.add(mMoreProgressItem);
         }
     }
 
