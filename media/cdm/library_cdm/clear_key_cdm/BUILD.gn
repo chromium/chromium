@@ -6,6 +6,8 @@ import("//build/config/features.gni")
 import("//media/cdm/library_cdm/cdm_paths.gni")
 import("//media/media_options.gni")
 
+assert(enable_library_cdms)
+
 loadable_module("clear_key_cdm") {
   testonly = true
   output_dir = "$root_out_dir/$clearkey_cdm_path"
@@ -35,11 +37,6 @@ loadable_module("clear_key_cdm") {
     "//third_party/libyuv",
     "//url",
   ]
-
-  if (!enable_library_cdms) {
-    # cdm_type_conversion is not included via //media.
-    deps += [ "//media/cdm:cdm_type_conversion" ]
-  }
 
   # TODO(xhwang): Convert this to use media::FFmpegAudioDecoder.
   if (media_use_ffmpeg) {

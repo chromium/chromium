@@ -259,10 +259,6 @@ group("gn_all") {
       "//fuchsia_web:gn_all",
       "//tools/fuchsia/size_tests:fuchsia_sizes",
 
-      # Ensure this target, used by cipd, is built in all configurations.
-      # TODO(crbug.com/1265618): Remove this once it has a natural dependency.
-      "//media/cdm/library_cdm/clear_key_cdm",
-
       # Ensure this target continues to build.
       "//chromecast/bindings:bindings_manager_fuchsia",
     ]
