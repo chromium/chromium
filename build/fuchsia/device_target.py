@@ -404,10 +404,13 @@ class DeviceTarget(target.Target):
     if self._node_name:
       pave_command.extend(['-n', self._node_name, '-1'])
     logging.info(' '.join(pave_command))
-    return_code, stdout, stderr = SubprocessCallWithTimeout(pave_command,
-                                                            timeout_secs=300)
-    if return_code != 0:
-      raise ProvisionDeviceException('Could not pave device.')
+    try:
+      return_code, stdout, stderr = SubprocessCallWithTimeout(pave_command,
+                                                              timeout_secs=300)
+      if return_code != 0:
+        raise ProvisionDeviceException('Could not pave device.')
+    except TimeoutError as ex:
+      raise ProvisionDeviceException('Timed out while paving device.') from ex
     self._ParseNodename(stderr)
 
   def Restart(self):

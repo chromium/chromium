@@ -153,7 +153,7 @@ def SubprocessCallWithTimeout(command, silent=False, timeout_secs=None):
     timeout_timer.cancel()
 
   if process.returncode == -9:
-    raise Exception('Timeout when executing \"%s\".' % ' '.join(command))
+    raise TimeoutError('Timeout when executing \"%s\".' % ' '.join(command))
 
   return process.returncode, out, err
 
