@@ -214,8 +214,8 @@ void ScriptCacheConsumer::CallFinishCallback() {
   // Clear the task runner, we don't need it anymore since we've already made
   // our way to the main thread.
   finish_callback_task_runner_.reset();
-  client->NotifyCacheConsumeFinished();
   AdvanceState(State::kCalledFinishCallbackBit);
+  client->NotifyCacheConsumeFinished();
 }
 
 }  // namespace blink
