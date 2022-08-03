@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -9,17 +9,8 @@ the command lines of any processes that are the children of ninja processes.
 The idea is that if the build is serialized (not many build steps running) then
 you can run this to see what it is serialized on.
 
-This uses python3 on Linux and vpython elsewhere (for psutil).
+This uses python3 on Windows and vpython elsewhere (for psutil).
 """
-
-# [VPYTHON:BEGIN]
-# wheel: <
-#   name: "infra/python/wheels/psutil/${vpython_platform}"
-#   version: "version:5.6.2"
-# >
-# [VPYTHON:END]
-
-from __future__ import print_function
 
 import sys
 
