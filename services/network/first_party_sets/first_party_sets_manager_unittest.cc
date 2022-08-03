@@ -921,330 +921,65 @@ class OverrideSetsFirstPartySetsManagerTest : public FirstPartySetsEnabledTest {
         {net::SchemefulSite(GURL("https://example.test")),
          net::SchemefulSite(GURL("https://example.test"))},
     });
+
+    SetFirstPartySetsContextConfig(
+        true,
+        {
+            // New entry:
+            {net::SchemefulSite(GURL("https://foo.test")),
+             {net::SchemefulSite(GURL("https://foo.test"))}},
+            // Removed entry:
+            {net::SchemefulSite(GURL("https://member1.test")), absl::nullopt},
+            // Remapped entry:
+            {net::SchemefulSite(GURL("https://member2.test")),
+             {net::SchemefulSite(GURL("https://foo.test"))}},
+        });
   }
 };
 
-TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwner_NoIntersection) {
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://member3.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://foo.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-            });
-
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member1.test"))),
-            net::SchemefulSite(GURL("https://example.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member3.test"))),
-            net::SchemefulSite(GURL("https://foo.test")));
+TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwner) {
   EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://foo.test"))),
             net::SchemefulSite(GURL("https://foo.test")));
-}
-
-// The member of a override set is also a member of an existing set as a
-// replacement.
-TEST_F(OverrideSetsFirstPartySetsManagerTest,
-       FindOwner_ReplacesExistingMember) {
-  // The owner of the existing set is mapped to nullopt since it gets removed
-  // after its member is replaced due to an override set and the owner becomes a
-  // singleton.
-  SetFirstPartySetsContextConfig(
-      true,
-      {
-          {net::SchemefulSite(GURL("https://member1.test")),
-           {net::SchemefulSite(GURL("https://foo.test"))}},
-          {net::SchemefulSite(GURL("https://example.test")), absl::nullopt},
-          {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
-          // Below are the owner self mappings.
-          {net::SchemefulSite(GURL("https://foo.test")),
-           {net::SchemefulSite(GURL("https://foo.test"))}},
-      });
-
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member1.test"))),
-            net::SchemefulSite(GURL("https://foo.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member2.test"))),
-            absl::nullopt);
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))),
-            absl::nullopt);
-}
-
-// The owner of a override set is also an owner of an existing set as a
-// replacement.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwner_ReplacesExistingOwner) {
-  // The member of the existing set is mapped to nullopt since it gets removed
-  // after its owner is replaced to an override set and it becomes a singleton.
-  SetFirstPartySetsContextConfig(
-      true,
-      {
-          {net::SchemefulSite(GURL("https://member3.test")),
-           {net::SchemefulSite(GURL("https://example.test"))}},
-          {net::SchemefulSite(GURL("https://member1.test")), absl::nullopt},
-          {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
-          // Below are the owner self mappings.
-          {net::SchemefulSite(GURL("https://example.test")),
-           {net::SchemefulSite(GURL("https://example.test"))}},
-      });
-
   EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member1.test"))),
             absl::nullopt);
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member2.test"))),
-            absl::nullopt);
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member3.test"))),
-            net::SchemefulSite(GURL("https://example.test")));
-}
-
-// The owner of an override set is also an owner of an existing set as an
-// addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwner_AdditionMutualOwner) {
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://member3.test")),
-                 {net::SchemefulSite(GURL("https://example.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://example.test")),
-                 {net::SchemefulSite(GURL("https://example.test"))}},
-            });
-
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member1.test"))),
-            net::SchemefulSite(GURL("https://example.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member2.test"))),
-            net::SchemefulSite(GURL("https://example.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member3.test"))),
-            net::SchemefulSite(GURL("https://example.test")));
-}
-
-// The owner of a override set is a member of an existing set as an addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwner_AdditionOwnerIsMember) {
-  // All the sites in the existing set are reparented to the new owner.
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://member3.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-                {net::SchemefulSite(GURL("https://example.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-                {net::SchemefulSite(GURL("https://member2.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://member1.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-            });
-
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member1.test"))),
-            net::SchemefulSite(GURL("https://member1.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member2.test"))),
-            net::SchemefulSite(GURL("https://member1.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member3.test"))),
-            net::SchemefulSite(GURL("https://member1.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))),
-            net::SchemefulSite(GURL("https://member1.test")));
-}
-
-// The member of a override set is also an owner of an existing set as an
-// addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwner_AdditionMemberIsOwner) {
-  // The member of the existing set for that owner is reparented to the new
-  // owner as addition.
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://example.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                {net::SchemefulSite(GURL("https://member1.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                {net::SchemefulSite(GURL("https://member2.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://foo.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-            });
-
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://example.test"))),
-            net::SchemefulSite(GURL("https://foo.test")));
-  EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member1.test"))),
-            net::SchemefulSite(GURL("https://foo.test")));
   EXPECT_EQ(FindOwnerAndWait(net::SchemefulSite(GURL("https://member2.test"))),
             net::SchemefulSite(GURL("https://foo.test")));
 }
 
-TEST_F(OverrideSetsFirstPartySetsManagerTest, NoIntersection) {
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://member3.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://foo.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-            });
-
+TEST_F(OverrideSetsFirstPartySetsManagerTest, FindOwners) {
   EXPECT_THAT(FindOwnersAndWait({
-                  net::SchemefulSite(GURL("https://foo.test")),
-                  net::SchemefulSite(GURL("https://example.test")),
                   net::SchemefulSite(GURL("https://member1.test")),
                   net::SchemefulSite(GURL("https://member2.test")),
-                  net::SchemefulSite(GURL("https://member3.test")),
+                  net::SchemefulSite(GURL("https://foo.test")),
               }),
               UnorderedElementsAre(Pair(SerializesTo("https://foo.test"),
                                         SerializesTo("https://foo.test")),
-                                   Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member3.test"),
-                                        SerializesTo("https://foo.test"))));
-}
-
-// The member of a override set is also a member of an existing set as a
-// replacement.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, ReplacesExistingMember) {
-  // The owner of the existing set is mapped to nullopt since it gets removed
-  // after its member is replaced to an override set and it becomes a singleton.
-  SetFirstPartySetsContextConfig(
-      true,
-      {
-          {net::SchemefulSite(GURL("https://member1.test")),
-           {net::SchemefulSite(GURL("https://foo.test"))}},
-          {net::SchemefulSite(GURL("https://example.test")), absl::nullopt},
-          {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
-          // Below are the owner self mappings.
-          {net::SchemefulSite(GURL("https://foo.test")),
-           {net::SchemefulSite(GURL("https://foo.test"))}},
-      });
-
-  EXPECT_THAT(FindOwnersAndWait({
-                  net::SchemefulSite(GURL("https://foo.test")),
-                  net::SchemefulSite(GURL("https://example.test")),
-                  net::SchemefulSite(GURL("https://member1.test")),
-                  net::SchemefulSite(GURL("https://member2.test")),
-              }),
-              UnorderedElementsAre(Pair(SerializesTo("https://foo.test"),
-                                        SerializesTo("https://foo.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://foo.test"))));
-}
-
-// The owner of a override set is also an owner of an existing set as a
-// replacement.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, ReplacesExistingOwner) {
-  // The member of the existing set is mapped to nullopt since it gets removed
-  // after its owner is replaced to an override set and it becomes a singleton.
-  SetFirstPartySetsContextConfig(
-      true,
-      {
-          {net::SchemefulSite(GURL("https://member3.test")),
-           {net::SchemefulSite(GURL("https://example.test"))}},
-          {net::SchemefulSite(GURL("https://member1.test")), absl::nullopt},
-          {net::SchemefulSite(GURL("https://member2.test")), absl::nullopt},
-          // Below are the owner self mappings.
-          {net::SchemefulSite(GURL("https://example.test")),
-           {net::SchemefulSite(GURL("https://example.test"))}},
-      });
-
-  EXPECT_THAT(FindOwnersAndWait({
-                  net::SchemefulSite(GURL("https://example.test")),
-                  net::SchemefulSite(GURL("https://member1.test")),
-                  net::SchemefulSite(GURL("https://member2.test")),
-                  net::SchemefulSite(GURL("https://member3.test")),
-              }),
-              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member3.test"),
-                                        SerializesTo("https://example.test"))));
-}
-
-// The owner of an override set is also an owner of an existing set as an
-// addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, AdditionMutualOwner) {
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://member3.test")),
-                 {net::SchemefulSite(GURL("https://example.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://example.test")),
-                 {net::SchemefulSite(GURL("https://example.test"))}},
-            });
-
-  EXPECT_THAT(FindOwnersAndWait({
-                  net::SchemefulSite(GURL("https://example.test")),
-                  net::SchemefulSite(GURL("https://member1.test")),
-                  net::SchemefulSite(GURL("https://member2.test")),
-                  net::SchemefulSite(GURL("https://member3.test")),
-              }),
-              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member3.test"),
-                                        SerializesTo("https://example.test"))));
-}
-
-// The owner of a override set is a member of an existing set as an addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, AdditionOwnerIsMember) {
-  // All the sites in the existing set are reparented to the new owner.
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://member3.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-                {net::SchemefulSite(GURL("https://example.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-                {net::SchemefulSite(GURL("https://member2.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://member1.test")),
-                 {net::SchemefulSite(GURL("https://member1.test"))}},
-            });
-
-  EXPECT_THAT(FindOwnersAndWait({
-                  net::SchemefulSite(GURL("https://example.test")),
-                  net::SchemefulSite(GURL("https://member1.test")),
-                  net::SchemefulSite(GURL("https://member2.test")),
-                  net::SchemefulSite(GURL("https://member3.test")),
-              }),
-              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://member1.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://member1.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://member1.test")),
-                                   Pair(SerializesTo("https://member3.test"),
-                                        SerializesTo("https://member1.test"))));
-}
-
-// The member of a override set is also an owner of an existing set as an
-// addition.
-TEST_F(OverrideSetsFirstPartySetsManagerTest, AdditionMemberIsOwner) {
-  // The member of the existing set for that owner is reparented to the new
-  // owner as addition.
-  SetFirstPartySetsContextConfig(
-      true, {
-                {net::SchemefulSite(GURL("https://example.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                {net::SchemefulSite(GURL("https://member1.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                {net::SchemefulSite(GURL("https://member2.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-                // Below are the owner self mappings.
-                {net::SchemefulSite(GURL("https://foo.test")),
-                 {net::SchemefulSite(GURL("https://foo.test"))}},
-            });
-
-  EXPECT_THAT(FindOwnersAndWait({
-                  net::SchemefulSite(GURL("https://foo.test")),
-                  net::SchemefulSite(GURL("https://example.test")),
-                  net::SchemefulSite(GURL("https://member1.test")),
-                  net::SchemefulSite(GURL("https://member2.test")),
-              }),
-              UnorderedElementsAre(Pair(SerializesTo("https://foo.test"),
-                                        SerializesTo("https://foo.test")),
-                                   Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://foo.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://foo.test")),
                                    Pair(SerializesTo("https://member2.test"),
                                         SerializesTo("https://foo.test"))));
+}
+
+TEST_F(OverrideSetsFirstPartySetsManagerTest, ComputeMetadata) {
+  net::SchemefulSite example(GURL("https://example.test"));
+  net::SchemefulSite foo(GURL("https://foo.test"));
+  net::SchemefulSite member1(GURL("https://member1.test"));
+  net::SchemefulSite member2(GURL("https://member2.test"));
+
+  {
+    // member1 has been removed from its set.
+    net::FirstPartySetMetadata expected(
+        net::SamePartyContext(Type::kCrossParty), nullptr, &example);
+
+    EXPECT_THAT(ComputeMetadataAndWait(member1, &example, {}),
+                testing::Eq(std::ref(expected)));
+  }
+  {
+    // member2 and foo are sites in a new set.
+    net::FirstPartySetMetadata expected(net::SamePartyContext(Type::kSameParty),
+                                        &foo, &foo);
+
+    EXPECT_THAT(ComputeMetadataAndWait(member2, &foo, {}),
+                testing::Eq(std::ref(expected)));
+  }
 }
 
 }  // namespace network
