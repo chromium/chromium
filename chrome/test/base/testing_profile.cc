@@ -159,7 +159,7 @@ std::unique_ptr<KeyedService> BuildPersonalDataManagerInstanceFor(
 }  // namespace
 
 // static
-const char TestingProfile::kDefaultProfileUserName[] = "testing_profile";
+const char TestingProfile::kDefaultProfileUserName[] = "testing_profile@test";
 
 // static
 #if BUILDFLAG(IS_CHROMEOS_ASH)

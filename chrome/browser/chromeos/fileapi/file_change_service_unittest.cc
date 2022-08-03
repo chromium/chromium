@@ -238,7 +238,7 @@ class FileChangeServiceTest : public BrowserWithTestWindowTest {
  private:
   // BrowserWithTestWindowTest:
   TestingProfile* CreateProfile() override {
-    constexpr char kPrimaryProfileName[] = "primary_profile";
+    constexpr char kPrimaryProfileName[] = "primary_profile@test";
     return CreateProfileWithName(kPrimaryProfileName);
   }
 
@@ -261,7 +261,7 @@ TEST_F(FileChangeServiceTest, CreatesServiceInstancesPerProfile) {
   ASSERT_TRUE(primary_profile_service);
 
   // `FileChangeService` should be created as needed for additional profiles.
-  constexpr char kSecondaryProfileName[] = "secondary_profile";
+  constexpr char kSecondaryProfileName[] = "secondary_profile@test";
   auto* secondary_profile = CreateProfileWithName(kSecondaryProfileName);
   auto* secondary_profile_service = factory->GetService(secondary_profile);
   ASSERT_TRUE(secondary_profile_service);

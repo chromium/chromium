@@ -1242,7 +1242,8 @@ class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
 
     // Login a user. The "email" must match the TestingProfile's
     // GetProfileUserName() so that profile() will be the primary profile.
-    const AccountId account_id = AccountId::FromUserEmail("testing_profile");
+    const AccountId account_id =
+        AccountId::FromUserEmail("testing_profile@test");
     fake_user_manager->AddUser(account_id);
     fake_user_manager->LoginUser(account_id);
 

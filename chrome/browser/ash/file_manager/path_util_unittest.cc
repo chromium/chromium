@@ -386,7 +386,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
 
   Test tests[] = {
       {
-          "Downloads-testing_profile-hash",
+          "Downloads-testing_profile%40test-hash",
           "path/in/myfiles",
           "/mnt/chromeos/MyFiles/path/in/myfiles",
       },
@@ -500,7 +500,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_TRUE(ConvertPathInsideVMToFileSystemURL(
       profile_.get(), base::FilePath("//chromeos/MyFiles/path/in/pluginvm"),
       base::FilePath("//ChromeOS"), /*map_crostini_home=*/false, &url));
-  EXPECT_EQ("Downloads-testing_profile-hash/path/in/pluginvm",
+  EXPECT_EQ("Downloads-testing_profile%40test-hash/path/in/pluginvm",
             url.virtual_path().value());
 
   profile_.reset();

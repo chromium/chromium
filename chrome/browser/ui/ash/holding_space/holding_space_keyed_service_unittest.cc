@@ -349,7 +349,7 @@ class HoldingSpaceKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   TestingProfile* CreateProfile() override {
-    const std::string kPrimaryProfileName = "primary_profile";
+    const std::string kPrimaryProfileName = "primary_profile@test";
     const AccountId account_id(AccountId::FromUserEmail(kPrimaryProfileName));
 
     fake_user_manager_->AddUser(account_id);

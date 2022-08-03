@@ -33,17 +33,17 @@
 namespace ash {
 namespace {
 
-const char kTestEmail[] = "email@example.com";
-const char kTestSecondaryEmail[] = "email2@example.com";
+constexpr char kTestEmail[] = "email@example.com";
+constexpr char kTestSecondaryEmail[] = "email2@example.com";
 
-const char kTokenHandle[] = "test_token_handle";
+constexpr char kTokenHandle[] = "test_token_handle";
 
 // Notification ID corresponding to kProfileSigninNotificationId +
 // kTestAccountId.
-const char kPrimaryAccountErrorNotificationId[] =
-    "chrome://settings/signin/testing_profile";
-const char kSecondaryAccountErrorNotificationId[] =
-    "chrome://settings/signin/testing_profile/secondary-account";
+constexpr char kPrimaryAccountErrorNotificationId[] =
+    "chrome://settings/signin/testing_profile@test";
+constexpr char kSecondaryAccountErrorNotificationId[] =
+    "chrome://settings/signin/testing_profile@test/secondary-account";
 }  // namespace
 
 class SigninErrorNotifierTest : public BrowserWithTestWindowTest {

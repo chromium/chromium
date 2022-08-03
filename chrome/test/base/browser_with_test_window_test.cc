@@ -211,7 +211,8 @@ void BrowserWithTestWindowTest::NavigateAndCommitActiveTabWithTitle(
 
 TestingProfile* BrowserWithTestWindowTest::CreateProfile() {
   return profile_manager_->CreateTestingProfile(
-      "testing_profile", nullptr, std::u16string(), 0, GetTestingFactories());
+      TestingProfile::kDefaultProfileUserName, nullptr, std::u16string(), 0,
+      GetTestingFactories());
 }
 
 TestingProfile::TestingFactories
