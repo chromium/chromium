@@ -56,11 +56,22 @@ void AppendParams(ClassificationMap& map,
     ClassificationMapKey key = {.site_role = classification.site_role(),
                                 .site_match_type = site_match_type,
                                 .site = classification.site()};
-    map[key][use_case][base::ToLowerASCII(param.name())] =
-        !classification.experiment_tags().empty() &&
-                !HasExperimentTag(classification, DEFAULT_TAG)
-            ? ClassificationExperimentStatus::EXPERIMENTAL
-            : ClassificationExperimentStatus::NON_EXPERIMENTAL;
+    std::string param_name = base::ToLowerASCII(param.name());
+
+    auto status = !classification.experiment_tags().empty() &&
+                          !HasExperimentTag(classification, DEFAULT_TAG)
+                      ? ClassificationExperimentStatus::EXPERIMENTAL
+                      : ClassificationExperimentStatus::NON_EXPERIMENTAL;
+
+    // Preserve existing entry in map if it is marked as NON_EXPERIMENTAL.
+    if (map.find(key) != map.end() &&
+        map[key].find(use_case) != map[key].end() &&
+        map[key][use_case].find(param_name) != map[key][use_case].end() &&
+        map[key][use_case][param_name] ==
+            ClassificationExperimentStatus::NON_EXPERIMENTAL) {
+      status = ClassificationExperimentStatus::NON_EXPERIMENTAL;
+    }
+    map[key][use_case][param_name] = status;
   }
 }
 

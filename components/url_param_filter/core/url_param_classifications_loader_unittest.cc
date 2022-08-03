@@ -148,7 +148,7 @@ TEST_F(UrlParamClassificationsLoaderTest,
 };
 
 TEST_F(UrlParamClassificationsLoaderTest,
-       ReadClassifications_MatchTypeKeyCollision_SecondEntryAdded) {
+       ReadClassifications_MatchTypeKeyCollision_NonExperimentalTagApplied) {
   base::HistogramTester histogram_tester;
   FilterClassifications classifications;
 
@@ -180,17 +180,18 @@ TEST_F(UrlParamClassificationsLoaderTest,
   SetComponentFileContents(classifications.SerializeAsString());
   loader()->ReadClassifications(test_file_contents());
 
-  // The second entry gets added to the map normally, despite the collision.
-  // We can tell the second entry is the one that won because it's tagged
-  // EXPERIMENTAL.
-  EXPECT_THAT(loader()->GetClassifications(),
-              UnorderedElementsAre(Pair(
-                  SourceKey(kSourceSite),
-                  UnorderedElementsAre(Pair(
-                      FilterClassification::USE_CASE_UNKNOWN,
-                      UnorderedElementsAre(Pair(
-                          "plzblock",
-                          ClassificationExperimentStatus::EXPERIMENTAL)))))));
+  // The first entry remains in the map, despite the collision.
+  // We can tell the first entry is the one that won because it's tagged
+  // NON_EXPERIMENTAL.
+  EXPECT_THAT(
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(SourceKey(kSourceSite),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
 
   histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
   ASSERT_EQ(
@@ -202,6 +203,108 @@ TEST_F(UrlParamClassificationsLoaderTest,
       0);
   histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
 };
+
+TEST_F(
+    UrlParamClassificationsLoaderTest,
+    ReadClassifications_DuplicateKeysExperimentalThenNonExperimental_NonExperimentalTagApplied) {
+  base::HistogramTester histogram_tester;
+  FilterClassifications classifications;
+
+  // Two classifications keyed in exactly the same way.
+  // The first classification is EXPERIMENTAL but the second is
+  // NON_EXPERIMENTAL.
+  AddClassification(classifications.add_classifications(), kSourceSite,
+                    FilterClassification_SiteRole_SOURCE,
+                    FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                    {"plzblock"}, {FilterClassification::USE_CASE_UNKNOWN},
+                    {"not_default"});
+  AddClassification(classifications.add_classifications(), kSourceSite,
+                    FilterClassification_SiteRole_SOURCE,
+                    FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                    {"plzblock"}, {FilterClassification::USE_CASE_UNKNOWN},
+                    {"default", "not_default"});
+
+  const std::string experiment_identifier = "not_default";
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["experiment_identifier"] = experiment_identifier;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled, params);
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // The parameter is marked as NON_EXPERIMENTAL.
+  EXPECT_THAT(
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(SourceKey(kSourceSite),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 2);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsDestinationMetric,
+                                    1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
+      0);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
+}
+
+TEST_F(
+    UrlParamClassificationsLoaderTest,
+    ReadClassifications_DuplicateKeysNonExperimentalThenExperimental_NonExperimentalTagApplied) {
+  base::HistogramTester histogram_tester;
+  FilterClassifications classifications;
+
+  // Two classifications keyed in exactly the same way.
+  // The first classification is NON_EXPERIMENTAL but the second is
+  // EXPERIMENTAL.
+  AddClassification(classifications.add_classifications(), kSourceSite,
+                    FilterClassification_SiteRole_SOURCE,
+                    FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                    {"plzblock"}, {FilterClassification::USE_CASE_UNKNOWN},
+                    {"not_default", "default"});
+  AddClassification(classifications.add_classifications(), kSourceSite,
+                    FilterClassification_SiteRole_SOURCE,
+                    FilterClassification_SiteMatchType_EXACT_ETLD_PLUS_ONE,
+                    {"plzblock"}, {FilterClassification::USE_CASE_UNKNOWN},
+                    {"not_default"});
+
+  const std::string experiment_identifier = "not_default";
+  base::test::ScopedFeatureList scoped_feature_list;
+  base::FieldTrialParams params;
+  params["experiment_identifier"] = experiment_identifier;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIncognitoParamFilterEnabled, params);
+  SetComponentFileContents(classifications.SerializeAsString());
+  loader()->ReadClassifications(test_file_contents());
+
+  // The parameter is marked as NON_EXPERIMENTAL.
+  EXPECT_THAT(
+      loader()->GetClassifications(),
+      UnorderedElementsAre(
+          Pair(SourceKey(kSourceSite),
+               UnorderedElementsAre(Pair(
+                   FilterClassification::USE_CASE_UNKNOWN,
+                   UnorderedElementsAre(Pair(
+                       "plzblock",
+                       ClassificationExperimentStatus::NON_EXPERIMENTAL)))))));
+
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsSourceMetric, 1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsSourceMetric), 2);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsDestinationMetric,
+                                    1);
+  ASSERT_EQ(
+      histogram_tester.GetTotalSum(kApplicableClassificationsDestinationMetric),
+      0);
+  histogram_tester.ExpectTotalCount(kApplicableClassificationsInvalidMetric, 0);
+}
 
 TEST_F(UrlParamClassificationsLoaderTest,
        ReadClassifications_SiteMatchTypeSetToUnknown_DefaultsToETLDPlusOne) {
