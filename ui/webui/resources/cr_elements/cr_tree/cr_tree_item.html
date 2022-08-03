@@ -84,6 +84,12 @@
     display: none;
   }
 
+  #extra-aria-label {
+    clip: rect(0,0,0,0);
+    display: inline-block;
+    position: fixed;
+  }
+
   :host .tree-row > * {
     box-sizing: border-box;
     display: inline-block;
@@ -163,9 +169,10 @@
   }
 </style>
 <div class="tree-row" role="treeitem" aria-owns="tree-children"
-    aria-labelledby="label">
+    aria-labelledby="label extra-aria-label">
   <span class="expand-icon"></span>
   <span class="tree-label-icon"></span>
   <span class="tree-label" id="label"></span>
+  <span id="extra-aria-label"></span>
 </div>
 <div class="tree-children" id="tree-children" role="group"></div>

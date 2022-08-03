@@ -188,6 +188,8 @@ function constructTree(tree: TreeInfo): CrTreeItemElement {
   const treeItem = document.createElement('cr-tree-item');
   treeItem.label = tree.label;
   treeItem.detail = {payload: tree.payload ? tree.payload : {}, children: {}};
+  treeItem.setExtraAriaLabel(
+      (treeItem.detail as TreeItemDetail).payload.val || '');
   if (tree.children) {
     for (let i = 0; i < tree.children.length; i++) {
       const child = constructTree(tree.children[i]!);
