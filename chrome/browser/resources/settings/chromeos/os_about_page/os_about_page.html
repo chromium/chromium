@@ -35,6 +35,7 @@
   }
 
   iron-icon[icon='cr:error-outline'],
+  iron-icon[icon='cr:warning'],
   iron-icon[icon='os-settings:end-of-life'] {
     fill: var(--cros-icon-color-alert);
   }
@@ -117,6 +118,9 @@
               id="endOfLifeMessageContainer" hidden="[[!hasEndOfLife_]]"
               localized-string="$i18n{endOfLifeMessage}">
           </localized-link>
+          <div class="secondary" hidden="[[!hasDeferredUpdate_]]">
+            $i18n{aboutDeferredUpdate}
+          </div>
           <div class="secondary">$i18n{aboutBrowserVersion}</div>
         </div>
         <div class="separator" hidden="[[!showButtonContainer_]]"></div>

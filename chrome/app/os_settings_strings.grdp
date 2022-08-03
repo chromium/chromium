@@ -210,6 +210,12 @@
   <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (ChromiumOS/ChromeOS)">
     Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is up to date
   </message>
+  <message name="IDS_SETTINGS_UPGRADE_NOT_UP_TO_DATE" desc="Status label: Not up to date (ChromiumOS/ChromeOS)">
+    Your device is not up to date
+  </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_DEFERRED_UPDATE_DESCRIPTION" desc="Text of the deferred update description.">
+    Your device may no longer work properly and may experience security and performance issues.
+  </message>
   <message name="IDS_SETTINGS_ABOUT_PAGE_MANAGED_END_OF_LIFE_SUBTITLE" desc="Subtitle used for End of Life section on the Additional details subpage of the ABout page for managed users.">
     Updates are managed by your administrator
   </message>

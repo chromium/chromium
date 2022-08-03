@@ -549,7 +549,7 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
       case UpdateStatus.DISABLED_BY_ADMIN:
         return this.i18nAdvanced('aboutUpgradeAdministrator');
       case UpdateStatus.DEFERRED:
-        return this.i18nAdvanced('aboutUpgradeRelaunch');
+        return this.i18nAdvanced('aboutUpgradeNotUpToDate');
       default:
         function formatMessage(msg) {
           return parseHtmlSubset('<b>' + msg + '</b>', ['br', 'pre'])
@@ -588,9 +588,10 @@ class OsSettingsAboutPageElement extends OsSettingsAboutPageBase {
         return 'cr:error-outline';
       case UpdateStatus.UPDATED:
       case UpdateStatus.NEARLY_UPDATED:
-      case UpdateStatus.DEFERRED:
         // TODO(crbug.com/986596): Don't use browser icons here. Fork them.
         return 'settings:check-circle';
+      case UpdateStatus.DEFERRED:
+        return 'cr:warning';
       default:
         return null;
     }
