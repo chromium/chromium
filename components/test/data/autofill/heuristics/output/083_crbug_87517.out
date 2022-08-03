@@ -19,18 +19,18 @@ UNKNOWN_TYPE | remLen | ( You may enter up to 500 characters. ) | 500 | f1_1-def
 UNKNOWN_TYPE | Comments | ( You may enter up to 500 characters. ) |  | f1_1-default
 UNKNOWN_TYPE | tribute | In Honor Of | IHO | f1_1-default
 UNKNOWN_TYPE | tribute | In Memory Of | IMO | f1_1-default
-NAME_FULL | Tribute_Name | Name: |  | f1_1-default
-UNKNOWN_TYPE | Tribute_occasion | Occasion: |  | f1_1-default
-UNKNOWN_TYPE | Tribute_Disclosure | I wish to remain anonymous | on | f1_1-default
-UNKNOWN_TYPE | Tribute_Notification | Please send a notification of my gift to the following address: | on | f1_1-default
-UNKNOWN_TYPE | Tribute_IncludeAmount | Include the amount | 1 | f1_1-default
-UNKNOWN_TYPE | Tribute_IncludeAmount | Do not include the amount | 0 | f1_1-default
-NAME_FULL | Tribute_NotifyName | Name: |  | f1_1-default
-EMAIL_ADDRESS | Tribute_Email | Email: |  | Tribute_Email_2-default
-ADDRESS_HOME_LINE1 | Tribute_NotifyAddr | Street: |  | Tribute_Email_2-default
-ADDRESS_HOME_CITY | Tribute_NotifyCity | City / St. / Zip: |  | Tribute_Email_2-default
-ADDRESS_HOME_STATE | Tribute_NotifyState | City / St. / Zip: |  | Tribute_Email_2-default
-ADDRESS_HOME_ZIP | Tribute_NotifyZip | City / St. / Zip: |  | Tribute_Email_2-default
+NAME_FULL | Tribute_Name | Name: |  | Tribute_Name_2-default
+UNKNOWN_TYPE | Tribute_occasion | Occasion: |  | Tribute_Name_2-default
+UNKNOWN_TYPE | Tribute_Disclosure | I wish to remain anonymous | on | Tribute_Name_2-default
+UNKNOWN_TYPE | Tribute_Notification | Please send a notification of my gift to the following address: | on | Tribute_Name_2-default
+UNKNOWN_TYPE | Tribute_IncludeAmount | Include the amount | 1 | Tribute_Name_2-default
+UNKNOWN_TYPE | Tribute_IncludeAmount | Do not include the amount | 0 | Tribute_Name_2-default
+NAME_FULL | Tribute_NotifyName | Name: |  | Tribute_Name_2-default
+EMAIL_ADDRESS | Tribute_Email | Email: |  | Tribute_Name_2-default
+ADDRESS_HOME_LINE1 | Tribute_NotifyAddr | Street: |  | Tribute_Name_2-default
+ADDRESS_HOME_CITY | Tribute_NotifyCity | City / St. / Zip: |  | Tribute_Name_2-default
+ADDRESS_HOME_STATE | Tribute_NotifyState | City / St. / Zip: |  | Tribute_Name_2-default
+ADDRESS_HOME_ZIP | Tribute_NotifyZip | City / St. / Zip: |  | Tribute_Name_2-default
 CREDIT_CARD_TYPE | cctype | Credit Card Type * | Visa | credit-card-cc
 CREDIT_CARD_NUMBER | ccard | Credit Card Number * |  | credit-card-cc
 CREDIT_CARD_VERIFICATION_CODE | csc | CSC Number * What Is This? |  | credit-card-cc
