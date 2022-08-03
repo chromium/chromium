@@ -6,6 +6,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("feedback") {
   sources = [
+    "features.cc",
+    "features.h",
     "feedback_common.cc",
     "feedback_common.h",
     "feedback_data.cc",
