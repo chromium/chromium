@@ -2340,7 +2340,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "impl": "3"
+                        "use_crs": "true"
                     },
                     "enable_features": [
                         "CertDualVerificationTrial"
@@ -2370,11 +2370,7 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "impl": "4"
-                    },
                     "enable_features": [
-                        "CertVerifierBuiltin",
                         "ChromeRootStoreUsed"
                     ]
                 }
