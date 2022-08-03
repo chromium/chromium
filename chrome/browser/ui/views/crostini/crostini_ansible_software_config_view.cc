@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -82,6 +83,19 @@ std::u16string CrostiniAnsibleSoftwareConfigView::GetSubtextLabel() const {
 void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationStarted(
     const guest_os::GuestId& container_id) {}
 
+void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationProgress(
+    const guest_os::GuestId& container_id,
+    const std::vector<std::string>& status_lines) {
+  std::u16string status_string;
+  if (!base::UTF8ToUTF16(status_lines.back().c_str(),
+                         status_lines.back().size(), &status_string)) {
+    LOG(ERROR) << "Failed to convert status line into a UTF16 string: "
+               << status_lines.back();
+  } else {
+    progress_label_->SetText(status_string);
+  }
+}
+
 void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
     const guest_os::GuestId& container_id,
     bool success) {
@@ -104,6 +118,11 @@ void CrostiniAnsibleSoftwareConfigView::OnAnsibleSoftwareConfigurationFinished(
 std::u16string
 CrostiniAnsibleSoftwareConfigView::GetSubtextLabelStringForTesting() {
   return subtext_label_->GetText();
+}
+
+std::u16string
+CrostiniAnsibleSoftwareConfigView::GetProgressLabelStringForTesting() {
+  return progress_label_->GetText();
 }
 
 // static
@@ -135,12 +154,18 @@ CrostiniAnsibleSoftwareConfigView::CrostiniAnsibleSoftwareConfigView(
   subtext_label_ = AddChildView(std::move(subtext_label));
 
   // Add infinite progress bar.
-  // TODO(crbug.com/1000173): add progress reporting and display text above
-  // progress bar indicating current process.
   auto progress_bar = std::make_unique<views::ProgressBar>();
   // Values outside the range [0,1] display an infinite loading animation.
   progress_bar->SetValue(-1);
   progress_bar_ = AddChildView(std::move(progress_bar));
+
+  // Adds text below the infinite progress bar stating the last action.
+  // Currently can't really display the full progress since Ansible doesn't
+  // expose this by default w/o specific playbook hacks.
+  auto progress_label = std::make_unique<views::Label>();
+  progress_label->SetMultiLine(true);
+  progress_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  progress_label_ = AddChildView(std::move(progress_label));
 
   default_container_ansible_filepath_ = profile->GetPrefs()->GetFilePath(
       crostini::prefs::kCrostiniAnsiblePlaybookFilePath);

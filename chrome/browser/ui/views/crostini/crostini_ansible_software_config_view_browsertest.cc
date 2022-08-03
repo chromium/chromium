@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 
+#include <string>
+
 #include "base/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
@@ -22,6 +25,8 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+
+constexpr char kProgressString[] = "Yesh milord. More work?";
 
 class CrostiniAnsibleSoftwareConfigViewBrowserTest
     : public CrostiniDialogBrowserTest,
@@ -48,11 +53,27 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
   // crostini::AnsibleManagementService::Observer
   void OnAnsibleSoftwareConfigurationStarted(
       const guest_os::GuestId& container_id) override {}
+
+  void OnAnsibleSoftwareConfigurationProgress(
+      const guest_os::GuestId& container_id,
+      const std::vector<std::string>& status_lines) override {}
+
   void OnAnsibleSoftwareConfigurationFinished(
       const guest_os::GuestId& container_id,
       bool success) override {}
 
   void OnApplyAnsiblePlaybook(const guest_os::GuestId& container_id) override {
+    if (send_ansible_progress_) {
+      EXPECT_NE(nullptr, ActiveView());
+      vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
+      signal.set_status(
+          vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal::IN_PROGRESS);
+      signal.set_vm_name(crostini::DefaultContainerId().vm_name);
+      signal.set_container_name(crostini::DefaultContainerId().container_name);
+      signal.add_status_string(kProgressString);
+      ansible_management_service()->OnApplyAnsiblePlaybookProgress(signal);
+      status_string_ = ActiveView()->GetProgressLabelStringForTesting();
+    }
     if (is_apply_ansible_success_) {
       EXPECT_NE(nullptr, ActiveView());
       vm_tools::cicerone::ApplyAnsiblePlaybookProgressSignal signal;
@@ -108,6 +129,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
     // Set sensible defaults.
     is_install_ansible_success_ = true;
     is_apply_ansible_success_ = true;
+    send_ansible_progress_ = false;
   }
 
   void TearDownOnMainThread() override {
@@ -154,7 +176,12 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
     is_install_ansible_success_ = success;
   }
 
+  void SetSendAnsibleProgress(bool show_progress) {
+    send_ansible_progress_ = show_progress;
+  }
+
   guest_os::GuestId container_id_;
+  std::u16string status_string_;
 
  private:
   bool HasAcceptButton() { return ActiveView()->GetOkButton() != nullptr; }
@@ -190,6 +217,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
 
   bool is_install_ansible_success_;
   bool is_apply_ansible_success_;
+  bool send_ansible_progress_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       network_connection_tracker_;
   std::unique_ptr<crostini::AnsibleManagementTestHelper> test_helper_;
@@ -292,6 +320,25 @@ IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
       base::BindLambdaForTesting([&](bool success) { run_loop()->Quit(); }));
 
   run_loop()->Run();
+
+  EXPECT_TRUE(HasNoView());
+}
+
+IN_PROC_BROWSER_TEST_F(CrostiniAnsibleSoftwareConfigViewBrowserTest,
+                       AnsibleConfigFlowWithProgress_Successful) {
+  SetSendAnsibleProgress(true);
+  ansible_management_service()->ConfigureContainer(
+      crostini::DefaultContainerId(),
+      browser()->profile()->GetPrefs()->GetFilePath(
+          crostini::prefs::kCrostiniAnsiblePlaybookFilePath),
+      base::BindLambdaForTesting([&](bool success) { run_loop()->Quit(); }));
+
+  run_loop()->Run();
+  std::u16string expected;
+  // -1 to anti the null at the end of the string.
+  ASSERT_TRUE(base::UTF8ToUTF16(kProgressString, sizeof(kProgressString) - 1,
+                                &expected));
+  EXPECT_EQ(status_string_, expected);
 
   EXPECT_TRUE(HasNoView());
 }

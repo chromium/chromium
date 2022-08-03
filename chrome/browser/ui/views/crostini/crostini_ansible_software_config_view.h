@@ -35,11 +35,15 @@ class CrostiniAnsibleSoftwareConfigView
   // crostini::AnsibleManagementService::Observer:
   void OnAnsibleSoftwareConfigurationStarted(
       const guest_os::GuestId& container_id) override;
+  void OnAnsibleSoftwareConfigurationProgress(
+      const guest_os::GuestId& container_id,
+      const std::vector<std::string>& status_lines) override;
   void OnAnsibleSoftwareConfigurationFinished(
       const guest_os::GuestId& container_id,
       bool success) override;
 
   std::u16string GetSubtextLabelStringForTesting();
+  std::u16string GetProgressLabelStringForTesting();
 
   static CrostiniAnsibleSoftwareConfigView* GetActiveViewForTesting();
 
@@ -61,6 +65,7 @@ class CrostiniAnsibleSoftwareConfigView
   crostini::AnsibleManagementService* ansible_management_service_ = nullptr;
 
   views::Label* subtext_label_ = nullptr;
+  views::Label* progress_label_ = nullptr;
   views::ProgressBar* progress_bar_ = nullptr;
   base::FilePath default_container_ansible_filepath_;
 
