@@ -107,6 +107,20 @@ float CSSToLengthConversionData::FontSizes::Ch() const {
                    : 0;
 }
 
+float CSSToLengthConversionData::FontSizes::Ic() const {
+  DCHECK(font_);
+  const SimpleFontData* font_data = font_->PrimaryFont();
+  DCHECK(font_data);
+  absl::optional<float> full_width =
+      font_data->GetFontMetrics().IdeographicFullWidth();
+  if (!full_width.has_value())
+    return Em();
+  // Font-metrics has zoom applied, which means we need to unzoom to get the
+  // value in CSS pixels.
+  float unzoom = (zoom_adjust_.has_value() ? zoom_ : 1.0f);
+  return full_width.value() / unzoom * zoom_adjust_.value_or(1.0f);
+}
+
 CSSToLengthConversionData::FontSizes
 CSSToLengthConversionData::FontSizes::CopyWithAdjustedZoom(
     float new_zoom) const {
@@ -231,6 +245,12 @@ float CSSToLengthConversionData::ChFontSize() const {
   if (style_)
     const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
   return font_sizes_.Ch();
+}
+
+float CSSToLengthConversionData::IcFontSize() const {
+  if (style_)
+    const_cast<ComputedStyle*>(style_)->SetHasGlyphRelativeUnits();
+  return font_sizes_.Ic();
 }
 
 double CSSToLengthConversionData::ViewportWidth() const {

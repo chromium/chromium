@@ -21,6 +21,11 @@
     font-size: 50px;
     width: 10ch;
   }
+  #ic_container {
+    container-type: inline-size;
+    font-size: 50px;
+    width: 10ic;
+  }
   @container (width: 1em) {
     #em_test { color: green }
   }
@@ -33,6 +38,9 @@
   @container (width: 10ch) {
     #ch_test { color: green }
   }
+  @container (width: 10ic) {
+    #ic_test { color: green }
+  }
 </style>
 <div id="em_container">
   <div id="em_test"></div>
@@ -44,6 +52,9 @@
 <div id="ch_container">
   <div id="ch_test"></div>
 </div>
+<div id="ic_container">
+  <div id="ic_test"></div>
+</div>
 <script>
   setup(() => assert_implements_container_queries());
 
@@ -52,4 +63,5 @@
   test(() => assert_equals(getComputedStyle(rem_test).color, green), "rem relative inline-size");
   test(() => assert_equals(getComputedStyle(ex_test).color, green), "ex relative inline-size");
   test(() => assert_equals(getComputedStyle(ch_test).color, green), "ch relative inline-size");
+  test(() => assert_equals(getComputedStyle(ic_test).color, green), "ic relative inline-size");
 </script>

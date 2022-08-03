@@ -35,6 +35,10 @@ class CSSUnitValues {
     return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kChs);
   }
 
+  static CSSUnitValue* ic(double value) {
+    return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kIcs);
+  }
+
   static CSSUnitValue* rem(double value) {
     return CSSUnitValue::Create(value, CSSPrimitiveValue::UnitType::kRems);
   }

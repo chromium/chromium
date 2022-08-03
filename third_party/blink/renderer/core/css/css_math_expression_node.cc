@@ -101,6 +101,9 @@ static CalculationCategory UnitCategory(CSSPrimitiveValue::UnitType type) {
       return RuntimeEnabledFeatures::CSSContainerRelativeUnitsEnabled()
                  ? kCalcLength
                  : kCalcOther;
+    case CSSPrimitiveValue::UnitType::kIcs:
+      return RuntimeEnabledFeatures::CSSIcUnitEnabled() ? kCalcLength
+                                                        : kCalcOther;
     case CSSPrimitiveValue::UnitType::kDegrees:
     case CSSPrimitiveValue::UnitType::kGradians:
     case CSSPrimitiveValue::UnitType::kRadians:
@@ -124,6 +127,7 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
     case CSSPrimitiveValue::UnitType::kEms:
     case CSSPrimitiveValue::UnitType::kExs:
     case CSSPrimitiveValue::UnitType::kChs:
+    case CSSPrimitiveValue::UnitType::kIcs:
     case CSSPrimitiveValue::UnitType::kRems:
     case CSSPrimitiveValue::UnitType::kPixels:
     case CSSPrimitiveValue::UnitType::kCentimeters:

@@ -223,6 +223,10 @@
       unit_type: "kChs",
     },
     {
+      name: "ic",
+      unit_type: "kIcs",
+    },
+    {
       name: "__qem",
       unit_type: "kQuirkyEms",
     },

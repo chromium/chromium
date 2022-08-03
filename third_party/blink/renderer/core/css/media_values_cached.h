@@ -52,6 +52,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     float em_size = 16.f;
     float ex_size = 8.f;
     float ch_size = 8.f;
+    float ic_size = 16.f;
     bool three_d_enabled = false;
     bool immersive_mode = false;
     bool strict_mode = true;
@@ -92,6 +93,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.em_size = em_size;
       data.ex_size = ex_size;
       data.ch_size = ch_size;
+      data.ch_size = ic_size;
       data.three_d_enabled = three_d_enabled;
       data.immersive_mode = immersive_mode;
       data.strict_mode = strict_mode;
@@ -153,6 +155,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   float RemFontSize() const override;
   float ExFontSize() const override;
   float ChFontSize() const override;
+  float IcFontSize() const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;

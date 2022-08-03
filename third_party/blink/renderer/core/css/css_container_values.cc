@@ -46,6 +46,10 @@ float CSSContainerValues::ChFontSize() const {
   return font_sizes_.Ch();
 }
 
+float CSSContainerValues::IcFontSize() const {
+  return font_sizes_.Ic();
+}
+
 double CSSContainerValues::ContainerWidth() const {
   return container_sizes_.Width().value_or(SmallViewportWidth());
 }

@@ -585,6 +585,10 @@
       status: "stable",
     },
     {
+      name: "CSSIcUnit",
+      status: "experimental",
+    },
+    {
       name: "CSSIndependentTransformProperties",
       status: "stable",
     },

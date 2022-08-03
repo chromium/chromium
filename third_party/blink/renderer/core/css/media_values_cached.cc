@@ -59,6 +59,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     // virtual/highdpi-threaded/external/wpt/css/css-paint-api/hidpi/device-pixel-ratio.https.html
     ex_size = em_size / 2.0;
     ch_size = em_size / 2.0;
+    ic_size = em_size;
     three_d_enabled = MediaValues::CalculateThreeDEnabled(frame);
     immersive_mode = MediaValues::CalculateInImmersiveMode(frame);
     strict_mode = MediaValues::CalculateStrictMode(frame);
@@ -105,6 +106,10 @@ float MediaValuesCached::ExFontSize() const {
 
 float MediaValuesCached::ChFontSize() const {
   return data_.ch_size;
+}
+
+float MediaValuesCached::IcFontSize() const {
+  return data_.ic_size;
 }
 
 double MediaValuesCached::ViewportWidth() const {

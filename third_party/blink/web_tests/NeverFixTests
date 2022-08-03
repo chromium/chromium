@@ -959,12 +959,6 @@ external/wpt/css/css-backgrounds/css3-border-image-repeat-repeat.html [ Skip ]
 external/wpt/css/css-backgrounds/css3-border-image-repeat-stretch.html [ Skip ]
 external/wpt/css/css-backgrounds/first-letter-space-not-selected.html [ Skip ]
 
-# The ic unit isn't supported. https://crbug.com/778495
-external/wpt/css/css-values/ic-unit-001.html [ Skip ]
-external/wpt/css/css-values/ic-unit-002.html [ Skip ]
-external/wpt/css/css-values/ic-unit-003.html [ Skip ]
-external/wpt/css/css-values/ic-unit-004.html [ Skip ]
-
 # lab() and lch() aren't supported.
 external/wpt/css/css-color/lab-001.html [ Skip ]
 external/wpt/css/css-color/lab-002.html [ Skip ]

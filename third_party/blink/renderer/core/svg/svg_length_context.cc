@@ -332,6 +332,9 @@ float SVGLengthContext::ConvertValueToUserUnits(
     case CSSPrimitiveValue::UnitType::kChs:
       user_units = ConvertValueFromCHSToUserUnits(value);
       break;
+    case CSSPrimitiveValue::UnitType::kIcs:
+      user_units = ConvertValueFromICSToUserUnits(value);
+      break;
     case CSSPrimitiveValue::UnitType::kViewportWidth:
     case CSSPrimitiveValue::UnitType::kViewportHeight:
     case CSSPrimitiveValue::UnitType::kViewportMin:
@@ -387,6 +390,8 @@ float SVGLengthContext::ConvertValueFromUserUnits(
       return ConvertValueFromUserUnitsToEMS(RootElementStyle(context_), value);
     case CSSPrimitiveValue::UnitType::kChs:
       return ConvertValueFromUserUnitsToCHS(value);
+    case CSSPrimitiveValue::UnitType::kIcs:
+      return ConvertValueFromUserUnitsToICS(value);
     case CSSPrimitiveValue::UnitType::kCentimeters:
       return value / kCssPixelsPerCentimeter;
     case CSSPrimitiveValue::UnitType::kMillimeters:
@@ -442,6 +447,35 @@ float SVGLengthContext::ConvertValueFromCHSToUserUnits(float value) const {
   if (!font_data)
     return 0;
   return value * font_data->GetFontMetrics().ZeroWidth() /
+         style->EffectiveZoom();
+}
+
+float SVGLengthContext::ConvertValueFromUserUnitsToICS(float value) const {
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  if (!style)
+    return 0;
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  if (!font_data)
+    return 0;
+  float ideographic_full_width =
+      font_data->GetFontMetrics().IdeographicFullWidth().value_or(
+          style->ComputedFontSize()) /
+      style->EffectiveZoom();
+  if (!ideographic_full_width)
+    return 0;
+  return value / ideographic_full_width;
+}
+
+float SVGLengthContext::ConvertValueFromICSToUserUnits(float value) const {
+  const ComputedStyle* style = ComputedStyleForLengthResolving(context_);
+  if (!style)
+    return 0;
+  const SimpleFontData* font_data = style->GetFont().PrimaryFont();
+  if (!font_data)
+    return 0;
+  return value *
+         font_data->GetFontMetrics().IdeographicFullWidth().value_or(
+             style->ComputedFontSize()) /
          style->EffectiveZoom();
 }
 

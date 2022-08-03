@@ -237,6 +237,16 @@ float MediaValues::CalculateChSize(LocalFrame* frame) {
   return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ch();
 }
 
+float MediaValues::CalculateIcSize(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetDocument());
+  const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
+  DCHECK(style);
+  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
+  // scale back to CSS pixels.
+  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ic();
+}
+
 const String MediaValues::CalculateMediaType(LocalFrame* frame) {
   DCHECK(frame);
   if (!frame->View())

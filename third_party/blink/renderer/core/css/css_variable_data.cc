@@ -39,6 +39,7 @@ static bool IsFontUnitToken(CSSParserToken token) {
     case CSSPrimitiveValue::UnitType::kEms:
     case CSSPrimitiveValue::UnitType::kChs:
     case CSSPrimitiveValue::UnitType::kExs:
+    case CSSPrimitiveValue::UnitType::kIcs:
       return true;
     default:
       return false;

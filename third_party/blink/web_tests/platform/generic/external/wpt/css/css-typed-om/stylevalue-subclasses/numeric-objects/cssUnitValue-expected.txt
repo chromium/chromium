@@ -6,7 +6,7 @@ PASS CSSUnitValue can be constructed with percent
 PASS CSSUnitValue can be constructed with em
 PASS CSSUnitValue can be constructed with ex
 PASS CSSUnitValue can be constructed with ch
-FAIL CSSUnitValue can be constructed with ic Failed to construct 'CSSUnitValue': Invalid unit: ic
+PASS CSSUnitValue can be constructed with ic
 PASS CSSUnitValue can be constructed with rem
 FAIL CSSUnitValue can be constructed with lh Failed to construct 'CSSUnitValue': Invalid unit: lh
 FAIL CSSUnitValue can be constructed with rlh Failed to construct 'CSSUnitValue': Invalid unit: rlh

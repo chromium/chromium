@@ -35,6 +35,7 @@ TEST_F(MediaValuesTest, Basic) {
       {40.0, CSSPrimitiveValue::UnitType::kRems, 16, 300, 300, true, 640},
       {40.0, CSSPrimitiveValue::UnitType::kExs, 16, 300, 300, true, 320},
       {40.0, CSSPrimitiveValue::UnitType::kChs, 16, 300, 300, true, 320},
+      {40.0, CSSPrimitiveValue::UnitType::kIcs, 16, 300, 300, true, 640},
       {43.0, CSSPrimitiveValue::UnitType::kViewportWidth, 16, 848, 976, true,
        364.64},
       {100.0, CSSPrimitiveValue::UnitType::kViewportWidth, 16, 821, 976, true,
@@ -94,6 +95,7 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   double rem = 0;
   double ex = 0;
   double ch = 0;
+  double ic = 0;
 
   using UnitType = CSSPrimitiveValue::UnitType;
 
@@ -101,11 +103,13 @@ TEST_F(MediaValuesTest, ZoomedFontUnits) {
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kRems, rem));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kExs, ex));
   EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kChs, ch));
+  EXPECT_TRUE(media_values->ComputeLength(1.0, UnitType::kIcs, ic));
 
   EXPECT_DOUBLE_EQ(10.0, em);
   EXPECT_DOUBLE_EQ(10.0, rem);
   EXPECT_DOUBLE_EQ(8.0, ex);
   EXPECT_DOUBLE_EQ(10.0, ch);
+  EXPECT_DOUBLE_EQ(10.0, ic);
 }
 
 }  // namespace blink
