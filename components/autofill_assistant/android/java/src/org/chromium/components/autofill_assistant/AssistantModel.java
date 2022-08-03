@@ -13,6 +13,8 @@ import org.chromium.components.autofill_assistant.generic_ui.AssistantGenericUiM
 import org.chromium.components.autofill_assistant.header.AssistantHeaderModel;
 import org.chromium.components.autofill_assistant.infobox.AssistantInfoBoxModel;
 import org.chromium.components.autofill_assistant.overlay.AssistantOverlayModel;
+import org.chromium.components.autofill_assistant.qr_code.AssistantQrCodeCameraScanModelWrapper;
+import org.chromium.components.autofill_assistant.qr_code.AssistantQrCodeImagePickerModelWrapper;
 import org.chromium.components.autofill_assistant.user_data.AssistantCollectUserDataModel;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,6 +46,10 @@ public class AssistantModel extends PropertyModel {
     private final AssistantHeaderModel mHeaderModel = new AssistantHeaderModel();
     private final AssistantDetailsModel mDetailsModel = new AssistantDetailsModel();
     private final AssistantInfoBoxModel mInfoBoxModel = new AssistantInfoBoxModel();
+    private final AssistantQrCodeCameraScanModelWrapper mQrCodeCameraScanModelWrapper =
+            new AssistantQrCodeCameraScanModelWrapper();
+    private final AssistantQrCodeImagePickerModelWrapper mQrCodeImagePickerModelWrapper =
+            new AssistantQrCodeImagePickerModelWrapper();
     private final AssistantCollectUserDataModel mCollectUserDataModel =
             new AssistantCollectUserDataModel();
     private final AssistantFormModel mFormModel = new AssistantFormModel();
@@ -80,6 +86,16 @@ public class AssistantModel extends PropertyModel {
     @CalledByNative
     public AssistantInfoBoxModel getInfoBoxModel() {
         return mInfoBoxModel;
+    }
+
+    @CalledByNative
+    public AssistantQrCodeCameraScanModelWrapper getQrCodeCameraScanModelWrapper() {
+        return mQrCodeCameraScanModelWrapper;
+    }
+
+    @CalledByNative
+    public AssistantQrCodeImagePickerModelWrapper getQrCodeImagePickerModelWrapper() {
+        return mQrCodeImagePickerModelWrapper;
     }
 
     @CalledByNative

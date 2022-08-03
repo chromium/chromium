@@ -62,7 +62,7 @@ void AssistantQrCodeNativeDelegate::OnCameraError(
 }
 
 base::android::ScopedJavaGlobalRef<jobject>
-AssistantQrCodeNativeDelegate::GetJavaObject() {
+AssistantQrCodeNativeDelegate::GetJavaObject() const {
   return java_assistant_qr_code_native_delegate_;
 }
 

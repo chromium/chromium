@@ -1865,9 +1865,34 @@ message PromptQrCodeScanProto {
     optional string camera_preview_instruction_text = 6;
   }
 
+  // UI strings shown to the user during QR Code Scanning via Image Picker.
+  message ImagePickerUiStrings {
+    // Text to be displayed as title on Toolbar.
+    optional string title_text = 1;
+
+    // Text to ask users to grant permission to access images.
+    optional string permission_text = 2;
+
+    // Text on action button while asking users to grant permission to
+    // access images.
+    optional string permission_button_text = 3;
+
+    // Text to ask users to grant media permissions by going into system
+    // settings.
+    optional string open_settings_text = 4;
+
+    // Text on action button while asking users to grant media permissions
+    //  by going into system settings.
+    optional string open_settings_button_text = 5;
+  }
+
   // UI strings shown during camera scan. This is a mandatory field when QR Code
   // Scanning via Camera Preview is to be triggered.
   optional CameraScanUiStrings camera_scan_ui_strings = 3;
+
+  // UI strings shown during image picker. This is a mandatory field when QR
+  // Code Scanning via Image Picker is to be triggered.
+  optional ImagePickerUiStrings image_picker_ui_strings = 4;
 }
 
 // Contain a localized text message from the server.

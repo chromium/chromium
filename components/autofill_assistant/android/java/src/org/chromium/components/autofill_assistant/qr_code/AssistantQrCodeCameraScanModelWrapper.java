@@ -19,7 +19,6 @@ public class AssistantQrCodeCameraScanModelWrapper {
     /**
      * The AssistantQrCodeCameraScanWrapperModel constructor.
      */
-    @CalledByNative
     public AssistantQrCodeCameraScanModelWrapper() {
         mCameraScanModel = new AssistantQrCodeCameraScanModel();
     }

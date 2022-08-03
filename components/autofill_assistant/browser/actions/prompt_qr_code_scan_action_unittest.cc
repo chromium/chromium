@@ -58,38 +58,66 @@ class PromptQrCodeScanActionTest : public testing::Test {
             "Camera preview instruction text");
   }
 
+  void setImagePickerUiStrings() {
+    proto_.mutable_image_picker_ui_strings()->set_title_text("Title text");
+    proto_.mutable_image_picker_ui_strings()->set_permission_text(
+        "Permission text");
+    proto_.mutable_image_picker_ui_strings()->set_permission_button_text(
+        "Permission button text");
+    proto_.mutable_image_picker_ui_strings()->set_open_settings_text(
+        "Open settings text");
+    proto_.mutable_image_picker_ui_strings()->set_open_settings_button_text(
+        "Open settings button text");
+  }
+
+  void testQrCodeSuccessfullyPromptsAndGetsScanResult() {
+    InSequence seq;
+    EXPECT_CALL(mock_action_delegate_, Prompt).Times(1);
+    EXPECT_CALL(mock_action_delegate_, ShowQrCodeScanUi)
+        .WillOnce(RunOnceCallback<1>(
+            ClientStatus(ACTION_APPLIED),
+            SimpleValue(std::string(kDefaultQrCodeScanResult),
+                        /* is_client_side_only= */ true)));
+
+    EXPECT_CALL(mock_action_delegate_, ClearQrCodeScanUi).Times(1);
+    EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt).Times(1);
+    EXPECT_CALL(
+        callback_,
+        Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+
+    Run();
+
+    EXPECT_EQ(*user_model_.GetValue(kDefaultOutputClientMemoryKey),
+              SimpleValue(std::string(kDefaultQrCodeScanResult),
+                          /* is_client_side_only= */ true));
+  }
+
   UserModel user_model_;
   MockActionDelegate mock_action_delegate_;
   base::MockCallback<Action::ProcessActionCallback> callback_;
   PromptQrCodeScanProto proto_;
 };
 
-TEST_F(PromptQrCodeScanActionTest, SuccessfullyPromptsAndGetQrCodeScanResult) {
+TEST_F(PromptQrCodeScanActionTest,
+       SuccessfullyPromptsAndGetQrCodeCameraScanResult) {
+  proto_.set_use_gallery(false);
   proto_.set_output_client_memory_key(kDefaultOutputClientMemoryKey);
   setCameraScanUiStrings();
 
-  InSequence seq;
-  EXPECT_CALL(mock_action_delegate_, Prompt).Times(1);
-  EXPECT_CALL(mock_action_delegate_, ShowQrCodeScanUi)
-      .WillOnce(
-          RunOnceCallback<1>(ClientStatus(ACTION_APPLIED),
-                             SimpleValue(std::string(kDefaultQrCodeScanResult),
-                                         /* is_client_side_only= */ true)));
+  testQrCodeSuccessfullyPromptsAndGetsScanResult();
+}
 
-  EXPECT_CALL(mock_action_delegate_, ClearQrCodeScanUi).Times(1);
-  EXPECT_CALL(mock_action_delegate_, CleanUpAfterPrompt).Times(1);
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
+TEST_F(PromptQrCodeScanActionTest,
+       SuccessfullyPromptsAndGetQrCodeImagePickerResult) {
+  proto_.set_use_gallery(true);
+  proto_.set_output_client_memory_key(kDefaultOutputClientMemoryKey);
+  setImagePickerUiStrings();
 
-  Run();
-
-  EXPECT_EQ(*user_model_.GetValue(kDefaultOutputClientMemoryKey),
-            SimpleValue(std::string(kDefaultQrCodeScanResult),
-                        /* is_client_side_only= */ true));
+  testQrCodeSuccessfullyPromptsAndGetsScanResult();
 }
 
 TEST_F(PromptQrCodeScanActionTest, FailsWhenOutputClientMemoryKeyIsNotSet) {
+  proto_.set_use_gallery(false);
   setCameraScanUiStrings();
 
   EXPECT_CALL(
@@ -100,7 +128,23 @@ TEST_F(PromptQrCodeScanActionTest, FailsWhenOutputClientMemoryKeyIsNotSet) {
 }
 
 TEST_F(PromptQrCodeScanActionTest, FailsWhenCameraScanUiStringsAreNotSet) {
+  proto_.set_use_gallery(false);
   proto_.set_output_client_memory_key(kDefaultOutputClientMemoryKey);
+  // Should be ignored because use_gallery=false.
+  setImagePickerUiStrings();
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
+
+  Run();
+}
+
+TEST_F(PromptQrCodeScanActionTest, FailsWhenImagePickerUiStringsAreNotSet) {
+  proto_.set_use_gallery(true);
+  proto_.set_output_client_memory_key(kDefaultOutputClientMemoryKey);
+  // Should be ignored because use_gallery=true.
+  setCameraScanUiStrings();
 
   EXPECT_CALL(
       callback_,

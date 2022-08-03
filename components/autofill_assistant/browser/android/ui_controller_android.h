@@ -19,6 +19,8 @@
 #include "components/autofill_assistant/browser/android/assistant_header_delegate.h"
 #include "components/autofill_assistant/browser/android/assistant_header_model.h"
 #include "components/autofill_assistant/browser/android/assistant_overlay_delegate.h"
+#include "components/autofill_assistant/browser/android/assistant_qr_code_camera_scan_model_wrapper.h"
+#include "components/autofill_assistant/browser/android/assistant_qr_code_image_picker_model_wrapper.h"
 #include "components/autofill_assistant/browser/android/assistant_qr_code_native_delegate.h"
 #include "components/autofill_assistant/browser/android/dependencies_android.h"
 #include "components/autofill_assistant/browser/chip.h"
@@ -257,7 +259,6 @@ class UiControllerAndroid : public EmptyControllerObserver,
   base::android::ScopedJavaLocalRef<jobject> GetDetailsModel();
   base::android::ScopedJavaLocalRef<jobject> GetInfoBoxModel();
   base::android::ScopedJavaLocalRef<jobject> GetCollectUserDataModel();
-  base::android::ScopedJavaLocalRef<jobject> GetQrCodeCameraScanWrapperModel();
   base::android::ScopedJavaLocalRef<jobject> GetFormModel();
   base::android::ScopedJavaLocalRef<jobject> GetGenericUiModel();
   base::android::ScopedJavaLocalRef<jobject> GetPersistentGenericUiModel();

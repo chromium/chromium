@@ -34,17 +34,31 @@ void PromptQrCodeScanAction::InternalProcessAction(
   }
 
   // Validate that all UI strings are available.
-  const PromptQrCodeScanProto_CameraScanUiStrings* camera_scan_ui_strings =
-      &proto_.prompt_qr_code_scan().camera_scan_ui_strings();
-  if (camera_scan_ui_strings->title_text().empty() ||
-      camera_scan_ui_strings->permission_text().empty() ||
-      camera_scan_ui_strings->permission_button_text().empty() ||
-      camera_scan_ui_strings->open_settings_text().empty() ||
-      camera_scan_ui_strings->open_settings_button_text().empty() ||
-      camera_scan_ui_strings->camera_preview_instruction_text().empty()) {
-    VLOG(1) << "Invalid action: camera_scan_ui_strings not set";
-    EndAction(ClientStatus(INVALID_ACTION), /* value= */ absl::nullopt);
-    return;
+  if (proto_.prompt_qr_code_scan().use_gallery()) {
+    const PromptQrCodeScanProto::ImagePickerUiStrings& image_picker_ui_strings =
+        proto_.prompt_qr_code_scan().image_picker_ui_strings();
+    if (image_picker_ui_strings.title_text().empty() ||
+        image_picker_ui_strings.permission_text().empty() ||
+        image_picker_ui_strings.permission_button_text().empty() ||
+        image_picker_ui_strings.open_settings_text().empty() ||
+        image_picker_ui_strings.open_settings_button_text().empty()) {
+      VLOG(1) << "Invalid action: one or more image_picker_ui_strings not set";
+      EndAction(ClientStatus(INVALID_ACTION), /* value= */ absl::nullopt);
+      return;
+    }
+  } else {
+    const PromptQrCodeScanProto::CameraScanUiStrings& camera_scan_ui_strings =
+        proto_.prompt_qr_code_scan().camera_scan_ui_strings();
+    if (camera_scan_ui_strings.title_text().empty() ||
+        camera_scan_ui_strings.permission_text().empty() ||
+        camera_scan_ui_strings.permission_button_text().empty() ||
+        camera_scan_ui_strings.open_settings_text().empty() ||
+        camera_scan_ui_strings.open_settings_button_text().empty() ||
+        camera_scan_ui_strings.camera_preview_instruction_text().empty()) {
+      VLOG(1) << "Invalid action: one or more camera_scan_ui_strings not set";
+      EndAction(ClientStatus(INVALID_ACTION), /* value= */ absl::nullopt);
+      return;
+    }
   }
 
   delegate_->Prompt(/* user_actions = */ nullptr,

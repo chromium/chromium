@@ -42,7 +42,7 @@ class AssistantQrCodeNativeDelegate {
   void OnCameraError(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& jcaller);
 
-  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
+  base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;
 
  private:
   raw_ptr<UiControllerAndroid> ui_controller_;
