@@ -441,7 +441,9 @@ double CrasInputStream::GetVolume() {
 }
 
 bool CrasInputStream::IsMuted() {
-  return false;
+  int muted = 0;
+  libcras_client_get_system_capture_muted(client_, &muted);
+  return static_cast<bool>(muted);
 }
 
 void CrasInputStream::SetOutputDeviceForAec(
