@@ -34,35 +34,29 @@ class VideoFrameYUVMailboxesHolder;
 // images.
 class MEDIA_EXPORT VideoFrameYUVConverter {
  public:
-  static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
-
-  static bool ConvertYUVVideoFrameNoCaching(
-      const VideoFrame* video_frame,
-      viz::RasterContextProvider* raster_context_provider,
-      const gpu::MailboxHolder& dest_mailbox_holder);
-
-  // TODO(crbug.com/1108154): Will merge this uploading path
-  // with ConvertYUVVideoFrameYUVWithGrContext after solving
-  // issue 1120911, 1120912
-  static bool ConvertYUVVideoFrameToDstTextureNoCaching(
-      const VideoFrame* video_frame,
-      viz::RasterContextProvider* raster_context_provider,
-      const gpu::MailboxHolder& dest_mailbox_holder,
-      unsigned int internal_format,
-      unsigned int type,
-      bool flip_y,
-      bool use_visible_rect);
+  // These parameters are only supported by ConvertYUVVideoFrame et al when the
+  // specified RasterContextProvider also has a GrContext (equivalently, when
+  // OOP-R is disabled). Isolate them in their own structure, so they can
+  // eventually be removed once OOP-R is universal.
+  struct GrParams {
+    unsigned int internal_format = GL_RGBA;
+    unsigned int type = GL_UNSIGNED_BYTE;
+    bool flip_y = false;
+    bool use_visible_rect = false;
+  };
 
   VideoFrameYUVConverter();
   ~VideoFrameYUVConverter();
-
+  static bool IsVideoFrameFormatSupported(const VideoFrame& video_frame);
+  static bool ConvertYUVVideoFrameNoCaching(
+      const VideoFrame* video_frame,
+      viz::RasterContextProvider* raster_context_provider,
+      const gpu::MailboxHolder& dest_mailbox_holder,
+      absl::optional<GrParams> gr_params = absl::nullopt);
   bool ConvertYUVVideoFrame(const VideoFrame* video_frame,
                             viz::RasterContextProvider* raster_context_provider,
                             const gpu::MailboxHolder& dest_mailbox_holder,
-                            unsigned int internal_format = GL_RGBA,
-                            unsigned int type = GL_UNSIGNED_BYTE,
-                            bool flip_y = false,
-                            bool use_visible_rect = false);
+                            absl::optional<GrParams> gr_params = absl::nullopt);
   void ReleaseCachedData();
 
  private:
@@ -70,19 +64,7 @@ class MEDIA_EXPORT VideoFrameYUVConverter {
       const VideoFrame* video_frame,
       viz::RasterContextProvider* raster_context_provider,
       const gpu::MailboxHolder& dest_mailbox_holder,
-      unsigned int internal_format,
-      unsigned int type,
-      bool flip_y,
-      bool use_visible_rect);
-  bool ConvertFromVideoFrameYUVSkia(
-      const VideoFrame* video_frame,
-      viz::RasterContextProvider* raster_context_provider,
-      unsigned int texture_target,
-      unsigned int texture_id,
-      unsigned int internal_format,
-      unsigned int type,
-      bool flip_y,
-      bool use_visible_rect);
+      const GrParams& gr_params);
 
   std::unique_ptr<VideoFrameYUVMailboxesHolder> holder_;
 };
