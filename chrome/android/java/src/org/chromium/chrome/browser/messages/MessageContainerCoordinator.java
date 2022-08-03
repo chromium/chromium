@@ -10,6 +10,7 @@ import android.view.View;
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -24,6 +25,9 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     private MessageContainer mContainer;
     private BrowserControlsManager mControlsManager;
 
+    /** The list of observers for the message container. */
+    private final ObserverList<MessageContainerObserver> mObservers = new ObserverList<>();
+
     public MessageContainerCoordinator(
             @NonNull MessageContainer container, @NonNull BrowserControlsManager controlsManager) {
         mContainer = container;
@@ -35,6 +39,7 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
         mControlsManager.removeObserver(this);
         mContainer = null;
         mControlsManager = null;
+        mObservers.clear();
     }
 
     private void updateMargins() {
@@ -52,10 +57,12 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     protected void showMessageContainer() {
         mContainer.setVisibility(View.VISIBLE);
         updateMargins();
+        for (MessageContainerObserver o : mObservers) o.onShowMessageContainer();
     }
 
     protected void hideMessageContainer() {
         mContainer.setVisibility(View.GONE);
+        for (MessageContainerObserver o : mObservers) o.onHideMessageContainer();
     }
 
     /**
@@ -83,6 +90,22 @@ public class MessageContainerCoordinator implements BrowserControlsStateProvider
     @Override
     public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
         updateMargins();
+    }
+
+    /**
+     * Adds an observer.
+     * @param observer The observer to add.
+     */
+    public void addObserver(MessageContainerObserver observer) {
+        mObservers.addObserver(observer);
+    }
+
+    /**
+     * Removes an observer.
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(MessageContainerObserver observer) {
+        mObservers.removeObserver(observer);
     }
 
     /** @return Offset of the message container from the top of the screen. */
