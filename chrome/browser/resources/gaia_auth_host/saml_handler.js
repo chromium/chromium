@@ -5,6 +5,7 @@
 // <include src="post_message_channel.js">
 // <include src="webview_event_manager.js">
 // <include src="saml_password_attributes.js">
+// <include src="saml_username_autofill.js">
 
 // clang-format off
 // #import {Channel} from './channel.m.js';
@@ -12,6 +13,7 @@
 // #import {WebviewEventManager} from './webview_event_manager.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js'
 // #import {PasswordAttributes, readPasswordAttributes} from './saml_password_attributes.m.js';
+// #import {maybeAutofillUsername} from './saml_username_autofill.m.js' ;
 // clang-format on
 
 /**
@@ -264,6 +266,19 @@ cr.define('cr.login', function() {
       this.passwordAttributes_ =
           samlPasswordAttributes.PasswordAttributes.EMPTY;
 
+      /**
+       * User's email/
+       * @public {?string}
+       */
+      this.email = null;
+
+      /**
+       * Url parameter name for SAML IdP web page which is used to autofill the
+       * username.
+       * @public {?string}
+       */
+      this.urlParameterToAutofillSAMLUsername = null;
+
       this.webviewEventManager_ = WebviewEventManager.create();
 
       this.webviewEventManager_.addEventListener(
@@ -284,6 +299,11 @@ cr.define('cr.login', function() {
           this.onMainFrameWebRequest.bind(this),
           {urls: ['http://*/*', 'https://*/*'], types: ['main_frame']},
           ['requestBody']);
+
+      this.webviewEventManager_.addWebRequestEventListener(
+          this.webview_.request.onBeforeRequest,
+          this.onMainFrameHttpsWebRequest_.bind(this),
+          {urls: ['https://*/*'], types: ['main_frame']}, ['blocking']);
 
       if (!this.startsOnSamlPage_) {
         this.webviewEventManager_.addEventListener(
@@ -439,6 +459,9 @@ cr.define('cr.login', function() {
       this.passwordAttributes_ =
           samlPasswordAttributes.PasswordAttributes.EMPTY;
       this.x509certificate = null;
+
+      this.email = null;
+      this.urlParameterToAutofillSAMLUsername = null;
     }
 
     /**
@@ -584,6 +607,23 @@ cr.define('cr.login', function() {
 
       this.passwordAttributes_ =
           samlPasswordAttributes.readPasswordAttributes(samlResponse);
+    }
+
+    /**
+     * Handler for webRequest.onBeforeRequest, used to optionally add a url
+     * parameter to the IdP login page in order to autofill the username field.
+     * @param {OnBeforeRequestDetails} details The web-request details.
+     * @return {BlockingResponse} Allows the event handler to modify network
+     *     requests.
+     * @private
+     */
+    onMainFrameHttpsWebRequest_(details) {
+      const urlToAutofillUsername = samlUsernameAutofill.maybeAutofillUsername(
+          details.url, this.urlParameterToAutofillSAMLUsername, this.email);
+      if (urlToAutofillUsername) {
+        return {redirectUrl: urlToAutofillUsername};
+      }
+      return {};
     }
 
     /**

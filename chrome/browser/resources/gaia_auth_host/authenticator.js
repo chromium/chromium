@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 // <include src="saml_handler.js">
-// <include src="saml_username_autofill.js">
 // Note: webview_event_manager.js is already included by saml_handler.js.
 
 // clang-format off
@@ -15,7 +14,6 @@
 // #import {SamlHandler, OnHeadersReceivedDetails} from './saml_handler.m.js';
 // #import {WebviewEventManager} from './webview_event_manager.m.js';
 // #import {PasswordAttributes} from './saml_password_attributes.m.js';
-// #import {maybeAutofillUsername} from './saml_username_autofill.m.js' ;
 // clang-format on
 
 /**
@@ -441,8 +439,6 @@ cr.define('cr.login', function() {
       /** @private {?SyncTrustedVaultKeys} */
       this.syncTrustedVaultKeys_ = null;
       this.closeViewReceived_ = false;
-      /** @private {string|null} */
-      this.urlParameterToAutofillSAMLUsername_ = null;
       this.gaiaStartTime = null;
 
       window.addEventListener(
@@ -486,7 +482,6 @@ cr.define('cr.login', function() {
       this.maybeClearGaiaTimeout_();
       this.syncTrustedVaultKeys_ = null;
       this.closeViewReceived_ = false;
-      this.urlParameterToAutofillSAMLUsername_ = null;
     }
 
     /**
@@ -653,8 +648,6 @@ cr.define('cr.login', function() {
       this.clientId_ = data.clientId;
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
-      this.urlParameterToAutofillSAMLUsername_ =
-          data.urlParameterToAutofillSAMLUsername;
 
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
       this.reloadUrl_ = data.frameUrl || this.initialFrameUrl_;
@@ -670,6 +663,9 @@ cr.define('cr.login', function() {
           this.idpOrigin_.startsWith('https://');
       this.samlHandler_.extractSamlPasswordAttributes =
           data.extractSamlPasswordAttributes;
+      this.samlHandler_.email = data.email;
+      this.samlHandler_.urlParameterToAutofillSAMLUsername =
+          data.urlParameterToAutofillSAMLUsername;
 
       this.needPassword = !('needPassword' in data) || data.needPassword;
 
@@ -932,15 +928,6 @@ cr.define('cr.login', function() {
           assert(header.value !== undefined);
           const location = decodeURIComponent(header.value);
           this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
-          // In some cases we can add a url parameter to autofill the username
-          // field on saml IdP login page.
-          const urlToAutofillUsername =
-              samlUsernameAutofill.maybeAutofillUsername(
-                  header.value, this.urlParameterToAutofillSAMLUsername_,
-                  this.email_);
-          if (urlToAutofillUsername) {
-            this.webview_.src = urlToAutofillUsername;
-          }
         }
       }
     }

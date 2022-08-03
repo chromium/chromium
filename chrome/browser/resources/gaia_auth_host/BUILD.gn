@@ -139,6 +139,7 @@ js_library("saml_handler.m") {
     ":channel.m",
     ":post_message_channel.m",
     ":saml_password_attributes.m",
+    ":saml_username_autofill.m",
     ":webview_event_manager.m",
   ]
   extra_deps = [ ":modulize" ]
@@ -151,7 +152,6 @@ js_library("authenticator.m") {
   deps = [
     ":saml_handler.m",
     ":saml_password_attributes.m",
-    ":saml_username_autofill.m",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
