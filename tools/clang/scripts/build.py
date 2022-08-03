@@ -678,13 +678,6 @@ def main():
     isysroot = subprocess.check_output(['xcrun', '--show-sdk-path'],
                                        universal_newlines=True).rstrip()
 
-    # clang only automatically links to libc++ when targeting OS X 10.9+, so
-    # add stdlib=libc++ explicitly so clang can run on OS X versions as old as
-    # 10.7.
-    cxxflags += ['-stdlib=libc++']
-    ldflags += ['-stdlib=libc++']
-
-
   # See https://crbug.com/1302636#c49 - #c56 -- intercepting crypt_r() does not
   # work with the sysroot for not fully understood reasons. Disable it.
   sanitizers_override = [
@@ -930,7 +923,7 @@ def main():
                 '-target', 'x86_64-unknown-unknown', '-O2', '-g', '-std=c++14',
                  '-fno-exceptions', '-fno-rtti', '-w', '-c', training_source]
     if sys.platform == 'darwin':
-      train_cmd.extend(['-stdlib=libc++', '-isysroot', isysroot])
+      train_cmd.extend(['-isysroot', isysroot])
     RunCommand(train_cmd, msvc_arch='x64')
 
     # Merge profiles.
@@ -940,7 +933,7 @@ def main():
                                        '*.profraw')), msvc_arch='x64')
     print('Profile generated.')
 
-  deployment_target = '10.7'
+  deployment_target = '10.12'
 
   # If building at head, define a macro that plugins can use for #ifdefing
   # out code that builds at head, but not at CLANG_REVISION or vice versa.
@@ -1057,7 +1050,7 @@ def main():
          ]))
   elif sys.platform == 'darwin':
     compiler_rt_args = [
-        'SANITIZER_MIN_OSX_VERSION=10.7',
+        'SANITIZER_MIN_OSX_VERSION=' + deployment_target,
         'COMPILER_RT_ENABLE_MACCATALYST=ON',
         'COMPILER_RT_ENABLE_IOS=ON',
         'COMPILER_RT_ENABLE_WATCHOS=OFF',
