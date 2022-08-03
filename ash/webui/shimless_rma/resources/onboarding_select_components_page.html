@@ -12,10 +12,9 @@
   </div>
   <div slot="right-pane">
     <div class="scroll-container">
-      <div id="componentList" class="component-grid repair">
+      <div class="component-grid repair">
         <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
           <repair-component-chip id="[[component.id]]"
-            unique-id="[[component.uniqueId]]"
             checked="{{component.checked}}"
             disabled$="[[isComponentDisabled_(component.disabled,
                 allButtonsDisabled)]]"

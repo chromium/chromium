@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {fakeComponentsForRepairStateTest} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
@@ -129,7 +128,7 @@ export function onboardingSelectComponentsPageTest() {
 
     const components = getComponentRepairStateList();
     assertNotEquals(fakeComponentsForRepairStateTest, components);
-    fakeComponentsForRepairStateTest[1].state = ComponentRepairStatus.kReplaced;
+    fakeComponentsForRepairStateTest[0].state = ComponentRepairStatus.kReplaced;
     assertDeepEquals(fakeComponentsForRepairStateTest, components);
   });
 
@@ -195,111 +194,5 @@ export function onboardingSelectComponentsPageTest() {
     await clickReworkButton();
 
     assertEquals(0, callCounter);
-  });
-
-  test('SelectComponentsPageKeyboardNavigationWorks', async () => {
-    await initializeComponentSelectPage(fakeComponentsForRepairStateTest);
-
-    const componentCameraButton =
-        component.shadowRoot.querySelector('#componentCamera')
-            .shadowRoot.querySelector('#componentButton');
-    const componentTouchpadButton =
-        component.shadowRoot.querySelector('#componentTouchpad')
-            .shadowRoot.querySelector('#componentButton');
-    const componentNetworkButton =
-        component.shadowRoot.querySelector('#componentNetwork')
-            .shadowRoot.querySelector('#componentButton');
-    // There are two cameras, so we can only get the first one by the id. We get
-    // the second one by the unique id.
-    const componentSecondCameraButton =
-        component.shadowRoot.querySelector('[unique-id="7"]')
-            .shadowRoot.querySelector('#componentButton');
-
-    await flushTasks();
-
-    // At the beginning we should be focused on the first clickable component,
-    // which is the camera.
-    assertDeepEquals(componentCameraButton, getDeepActiveElement());
-    // We are at the beginning of the list, so left arrow should do nothing.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    await flushTasks();
-    assertDeepEquals(componentCameraButton, getDeepActiveElement());
-
-    // Skip the battery because it's missing.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    await flushTasks();
-    assertDeepEquals(componentTouchpadButton, getDeepActiveElement());
-
-    // Skip two components.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    await flushTasks();
-    assertDeepEquals(componentNetworkButton, getDeepActiveElement());
-
-    // If the next component is good, we don't skip it.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    await flushTasks();
-    assertDeepEquals(componentSecondCameraButton, getDeepActiveElement());
-
-    // We have reached the end of the list, so we can't go any further.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight'}));
-    await flushTasks();
-    assertDeepEquals(componentSecondCameraButton, getDeepActiveElement());
-
-    // Check that we can go backwards the same way.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    await flushTasks();
-    assertDeepEquals(componentNetworkButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    await flushTasks();
-    assertDeepEquals(componentTouchpadButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowLeft'}));
-    await flushTasks();
-    assertDeepEquals(componentCameraButton, getDeepActiveElement());
-
-    // Check that the down button navigates down the column. It should skip the
-    // network component, because it is in a different column.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    await flushTasks();
-    assertDeepEquals(componentTouchpadButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    await flushTasks();
-    assertDeepEquals(componentSecondCameraButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
-    await flushTasks();
-    assertDeepEquals(componentSecondCameraButton, getDeepActiveElement());
-
-    // The up button should work in a similar way.
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
-    await flushTasks();
-    assertDeepEquals(componentTouchpadButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
-    await flushTasks();
-    assertDeepEquals(componentCameraButton, getDeepActiveElement());
-    window.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
-    await flushTasks();
-    assertDeepEquals(componentCameraButton, getDeepActiveElement());
-
-    // Click on the touchpad button. It should come into focus.
-    componentTouchpadButton.click();
-    await flushTasks();
-    assertDeepEquals(componentTouchpadButton, getDeepActiveElement());
-
-    // Click on the battery button. It's disabled, so we shouldn't focus on it.
-    const componentBatteryButton =
-        component.shadowRoot.querySelector('#componentBattery')
-            .shadowRoot.querySelector('#componentButton');
-    componentBatteryButton.click();
-    await flushTasks();
-    assertDeepEquals(componentTouchpadButton, getDeepActiveElement());
-
-    // Make sure we can bring both cameras into focus, even though they have the
-    // same id.
-    componentCameraButton.click();
-    await flushTasks();
-    assertDeepEquals(componentCameraButton, getDeepActiveElement());
-
-    componentSecondCameraButton.click();
-    await flushTasks();
-    assertDeepEquals(componentSecondCameraButton, getDeepActiveElement());
   });
 }
