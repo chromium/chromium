@@ -11,10 +11,16 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
 
+# See documentation at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_build_configuration.md#build_webui
+
 template("build_webui") {
   not_needed([ "target_name" ])
 
-  forward_variables_from(invoker, [ "grd_prefix" ])
+  forward_variables_from(invoker,
+                         [
+                           "grd_prefix",
+                           "static_files",
+                         ])
 
   preprocess_dir = "${target_gen_dir}/preprocessed"
   tsc_dir = "${target_gen_dir}/tsc"
@@ -76,6 +82,17 @@ template("build_webui") {
     }
   }
 
+  # Compute which static_files should be preprocessed.
+  non_preprocessed_files_filter = [
+    "*.jpg",
+    "*.png",
+    "*.svg",
+  ]
+  static_non_preprocessed_files =
+      filter_include(static_files, non_preprocessed_files_filter)
+  static_preprocessed_files =
+      filter_exclude(static_files, non_preprocessed_files_filter)
+
   ### Define the various targets that are required by the build pipeline.
 
   # Specifically the order in which these targets are executed is:
@@ -86,6 +103,15 @@ template("build_webui") {
   #  4) optimize_webui() (only if |invoker.optimize| is true)
   #  5) generate_grd()
   #  6) grit()
+
+  preprocess_if_expr("preprocess_static_files") {
+    visibility = [ ":build_grd" ]
+    defines = chrome_grit_defines
+    in_folder = "."
+    out_folder = preprocess_dir
+    in_files = static_preprocessed_files
+    out_manifest = "${target_gen_dir}/preprocess_static_files_manifest.json"
+  }
 
   preprocess_if_expr("preprocess") {
     visibility = [
@@ -230,16 +256,20 @@ template("build_webui") {
     grd_prefix = grd_prefix
     out_grd = "$target_gen_dir/resources.grd"
 
-    input_files = invoker.static_files
+    input_files = static_non_preprocessed_files
     input_files_base_dir = rebase_path(".", "//")
 
+    deps = [ ":preprocess_static_files" ]
+    manifest_files =
+        [ "${target_gen_dir}/preprocess_static_files_manifest.json" ]
+
     if (optimize) {
-      deps = [ ":build_bundle" ]
-      manifest_files = [ "$target_gen_dir/$bundle_manifest" ]
+      deps += [ ":build_bundle" ]
+      manifest_files += [ "$target_gen_dir/$bundle_manifest" ]
       resource_path_rewrites = invoker.optimize_webui_resource_paths_rewrites
     } else {
-      deps = [ ":build_ts" ]
-      manifest_files =
+      deps += [ ":build_ts" ]
+      manifest_files +=
           filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
     }
 

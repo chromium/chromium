@@ -410,9 +410,11 @@ from other parts of the build.
 ```
 
 List of files params:
-static_files: List of HTML/CSS files that don't need any processing and will be
-              included in the build verbatim. Don't confuse with |css_files|
-              below. Required parameter.
+static_files: Required parameter. List of
+              1) non Web Component HTML/CSS files (don't confuse with
+                 |css_files| below). These are passed to preprocess_if_expr()
+              2) JPG/PNG/SVG files. These are included in the build verbatim
+                 without any preprocessing.
 
 web_component_files:  List of TS files that hold Web Component definitions with
                       equivalent HTML template files. These can be either native
