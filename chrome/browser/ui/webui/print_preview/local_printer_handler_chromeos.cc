@@ -121,20 +121,20 @@ base::Value::Dict LocalPrinterHandlerChromeos::CapabilityToValue(
 }
 
 // static
-base::Value LocalPrinterHandlerChromeos::StatusToValue(
+base::Value::Dict LocalPrinterHandlerChromeos::StatusToValue(
     const crosapi::mojom::PrinterStatus& status) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("printerId", status.printer_id);
-  dict.SetDoubleKey("timestamp", status.timestamp.ToJsTimeIgnoringNull());
-  base::Value status_reasons(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  dict.Set("printerId", status.printer_id);
+  dict.Set("timestamp", status.timestamp.ToJsTimeIgnoringNull());
+  base::Value::List status_reasons;
   for (const crosapi::mojom::StatusReasonPtr& reason_ptr :
        status.status_reasons) {
-    base::Value status_reason(base::Value::Type::DICTIONARY);
-    status_reason.SetIntKey("reason", static_cast<int>(reason_ptr->reason));
-    status_reason.SetIntKey("severity", static_cast<int>(reason_ptr->severity));
+    base::Value::Dict status_reason;
+    status_reason.Set("reason", static_cast<int>(reason_ptr->reason));
+    status_reason.Set("severity", static_cast<int>(reason_ptr->severity));
     status_reasons.Append(std::move(status_reason));
   }
-  dict.SetKey("statusReasons", std::move(status_reasons));
+  dict.Set("statusReasons", std::move(status_reasons));
   return dict;
 }
 
@@ -241,7 +241,7 @@ void LocalPrinterHandlerChromeos::StartPrinterStatusRequest(
   if (!local_printer_) {
     PRINTER_LOG(ERROR)
         << "Local printer not available (StartPrinterStatusRequest)";
-    std::move(callback).Run(base::Value());
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   local_printer_->GetStatus(

@@ -71,7 +71,7 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
   // All CallJS invocations can be recorded for tests if CallJS recording is
   // enabled.
   template <typename... Args>
-  void CallJS(const std::string& function_name, Args... args) {
+  void CallJS(base::StringPiece function_name, Args... args) {
     if (IsJavascriptAllowed()) {
       CallJavascriptFunction(function_name, base::Value(std::move(args))...);
       return;
@@ -79,11 +79,12 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
     deferred_calls_.push_back(base::BindOnce(
         &BaseWebUIHandler::CallJS<Args...>, base::Unretained(this),
-        function_name, std::move(args)...));
+        std::string(function_name.data(), function_name.length()),
+        std::move(args)...));
   }
 
   template <typename... Args>
-  void FireWebUIListenerWhenAllowed(const std::string& event_name,
+  void FireWebUIListenerWhenAllowed(base::StringPiece event_name,
                                     Args... args) {
     if (IsJavascriptAllowed()) {
       FireWebUIListener(event_name, args...);
@@ -92,11 +93,13 @@ class BaseWebUIHandler : public content::WebUIMessageHandler {
 
     deferred_calls_.push_back(
         base::BindOnce(&BaseWebUIHandler::FireWebUIListenerWhenAllowed<Args...>,
-                       base::Unretained(this), event_name, std::move(args)...));
+                       base::Unretained(this),
+                       std::string(event_name.data(), event_name.length()),
+                       std::move(args)...));
   }
 
   template <typename T, typename... Args>
-  void AddCallback(const std::string& function_name,
+  void AddCallback(base::StringPiece function_name,
                    void (T::*method)(Args...)) {
     base::RepeatingCallback<void(Args...)> callback =
         base::BindRepeating(method, base::Unretained(static_cast<T*>(this)));

@@ -22,7 +22,8 @@ namespace chromeos {
 // attestation during SAML authentication.
 class SamlChallengeKeyHandler final {
  public:
-  using CallbackType = base::OnceCallback<void(const base::Value& response)>;
+  using CallbackType =
+      base::OnceCallback<void(const base::Value::Dict response)>;
 
   SamlChallengeKeyHandler();
   SamlChallengeKeyHandler(const SamlChallengeKeyHandler&) = delete;

@@ -59,7 +59,8 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
 
   // Returns a PrinterStatus object (defined in
   // chrome/browser/resources/print_preview/data/printer_status_cros.js).
-  static base::Value StatusToValue(const crosapi::mojom::PrinterStatus& status);
+  static base::Value::Dict StatusToValue(
+      const crosapi::mojom::PrinterStatus& status);
 
   // PrinterHandler implementation.
   void Reset() override;

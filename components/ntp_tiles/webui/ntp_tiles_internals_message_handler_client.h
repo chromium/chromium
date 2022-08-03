@@ -43,17 +43,17 @@ class NTPTilesInternalsMessageHandlerClient {
 
   // Registers a callback in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void RegisterMessageCallback(
-      const std::string& message,
+      base::StringPiece message,
       base::RepeatingCallback<void(const base::Value::List&)> callback) = 0;
 
   // Invokes a function in Javascript. See content::WebUI and web::WebUIIOS.
   virtual void CallJavascriptFunctionSpan(
-      const std::string& name,
+      base::StringPiece name,
       base::span<const base::ValueView> values) = 0;
 
   // Convenience function for CallJavascriptFunctionSpan().
   template <typename... Arg>
-  void CallJavascriptFunction(const std::string& name, const Arg&... arg) {
+  void CallJavascriptFunction(base::StringPiece name, const Arg&... arg) {
     base::ValueView args[] = {arg...};
     CallJavascriptFunctionSpan(name, args);
   }

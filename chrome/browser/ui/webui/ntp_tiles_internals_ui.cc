@@ -57,11 +57,11 @@ class ChromeNTPTilesInternalsMessageHandlerClient
   std::unique_ptr<ntp_tiles::MostVisitedSites> MakeMostVisitedSites() override;
   PrefService* GetPrefs() override;
   void RegisterMessageCallback(
-      const std::string& message,
+      base::StringPiece message,
       base::RepeatingCallback<void(const base::Value::List&)> callback)
       override;
   void CallJavascriptFunctionSpan(
-      const std::string& name,
+      base::StringPiece name,
       base::span<const base::ValueView> values) override;
 
   ntp_tiles::NTPTilesInternalsMessageHandler handler_;
@@ -113,13 +113,13 @@ PrefService* ChromeNTPTilesInternalsMessageHandlerClient::GetPrefs() {
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::RegisterMessageCallback(
-    const std::string& message,
+    base::StringPiece message,
     base::RepeatingCallback<void(const base::Value::List&)> callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void ChromeNTPTilesInternalsMessageHandlerClient::CallJavascriptFunctionSpan(
-    const std::string& name,
+    base::StringPiece name,
     base::span<const base::ValueView> values) {
   web_ui()->CallJavascriptFunctionUnsafe(name, values);
 }

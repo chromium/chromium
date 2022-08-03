@@ -52,8 +52,8 @@ class PrinterHandler {
 #if BUILDFLAG(IS_CHROMEOS)
   using GetEulaUrlCallback =
       base::OnceCallback<void(const std::string& license)>;
-  using PrinterStatusRequestCallback =
-      base::OnceCallback<void(const base::Value& cups_printer_status)>;
+  using PrinterStatusRequestCallback = base::OnceCallback<void(
+      absl::optional<base::Value::Dict> cups_printer_status)>;
 #endif
 
   // Creates an instance of a PrinterHandler for extension printers.

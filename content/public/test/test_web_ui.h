@@ -57,50 +57,34 @@ class TestWebUI : public WebUI {
                            const std::string& message,
                            base::Value::List args) override {}
   bool CanCallJavascript() override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg1) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg1,
-                                    base::ValueView arg2) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg1,
-                                    base::ValueView arg2,
-                                    base::ValueView arg3) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg1,
-                                    base::ValueView arg2,
-                                    base::ValueView arg3,
-                                    base::ValueView arg4) override;
+  void CallJavascriptFunctionUnsafe(base::StringPiece function_name) override;
   void CallJavascriptFunctionUnsafe(
-      const std::string& function_name,
+      base::StringPiece function_name,
       base::span<const base::ValueView> args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;
 
   class CallData {
    public:
-    explicit CallData(const std::string& function_name);
+    explicit CallData(base::StringPiece function_name);
     ~CallData();
 
-    void TakeAsArg1(std::unique_ptr<base::Value> arg);
-    void TakeAsArg2(std::unique_ptr<base::Value> arg);
-    void TakeAsArg3(std::unique_ptr<base::Value> arg);
-    void TakeAsArg4(std::unique_ptr<base::Value> arg);
+    void AppendArgument(base::Value arg);
 
     const std::string& function_name() const { return function_name_; }
-    const base::Value* arg1() const { return args_[0].get(); }
-    const base::Value* arg2() const { return args_[1].get(); }
-    const base::Value* arg3() const { return args_[2].get(); }
-    const base::Value* arg4() const { return args_[3].get(); }
-
-    const std::array<std::unique_ptr<base::Value>, 4>& args() const {
-      return args_;
+    const base::Value* arg_nth(size_t index) const {
+      return args_.size() > index ? &args_[index] : nullptr;
     }
+    const base::Value* arg1() const { return arg_nth(0); }
+    const base::Value* arg2() const { return arg_nth(1); }
+    const base::Value* arg3() const { return arg_nth(2); }
+    const base::Value* arg4() const { return arg_nth(3); }
+
+    const std::vector<base::Value>& args() const { return args_; }
 
    private:
     std::string function_name_;
-    std::array<std::unique_ptr<base::Value>, 4> args_;
+    std::vector<base::Value> args_;
   };
 
   const std::vector<std::unique_ptr<CallData>>& call_data() const {

@@ -93,6 +93,9 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
   // Called to initiate a status request for a printer.
   void HandleRequestPrinterStatusUpdate(const base::Value::List& args);
+  void HandleRequestPrinterStatusUpdateCompletion(
+      base::Value callback_id,
+      absl::optional<base::Value::Dict> result);
 
   // crosapi::mojom::PrintServerObserver Implementation
   void OnPrintServersChanged(

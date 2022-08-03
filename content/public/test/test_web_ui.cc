@@ -99,55 +99,19 @@ bool TestWebUI::CanCallJavascript() {
   return true;
 }
 
-void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name) {
+void TestWebUI::CallJavascriptFunctionUnsafe(base::StringPiece function_name) {
   call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  OnJavascriptCall(*call_data_.back());
-}
-
-void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             base::ValueView arg1) {
-  call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
-  OnJavascriptCall(*call_data_.back());
-}
-
-void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             base::ValueView arg1,
-                                             base::ValueView arg2) {
-  call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
-  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.ToValue()));
-  OnJavascriptCall(*call_data_.back());
-}
-
-void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             base::ValueView arg1,
-                                             base::ValueView arg2,
-                                             base::ValueView arg3) {
-  call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
-  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.ToValue()));
-  call_data_.back()->TakeAsArg3(base::Value::ToUniquePtrValue(arg3.ToValue()));
-  OnJavascriptCall(*call_data_.back());
-}
-
-void TestWebUI::CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                             base::ValueView arg1,
-                                             base::ValueView arg2,
-                                             base::ValueView arg3,
-                                             base::ValueView arg4) {
-  call_data_.push_back(base::WrapUnique(new CallData(function_name)));
-  call_data_.back()->TakeAsArg1(base::Value::ToUniquePtrValue(arg1.ToValue()));
-  call_data_.back()->TakeAsArg2(base::Value::ToUniquePtrValue(arg2.ToValue()));
-  call_data_.back()->TakeAsArg3(base::Value::ToUniquePtrValue(arg3.ToValue()));
-  call_data_.back()->TakeAsArg4(base::Value::ToUniquePtrValue(arg4.ToValue()));
   OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::CallJavascriptFunctionUnsafe(
-    const std::string& function_name,
+    base::StringPiece function_name,
     base::span<const base::ValueView> args) {
-  NOTREACHED();
+  call_data_.push_back(base::WrapUnique(new CallData(function_name)));
+  for (const auto& arg : args) {
+    call_data_.back()->AppendArgument(arg.ToValue());
+  }
+  OnJavascriptCall(*call_data_.back());
 }
 
 void TestWebUI::OnJavascriptCall(const CallData& call_data) {
@@ -160,27 +124,14 @@ TestWebUI::GetHandlersForTesting() {
   return &handlers_;
 }
 
-TestWebUI::CallData::CallData(const std::string& function_name)
-    : function_name_(function_name) {
-}
+TestWebUI::CallData::CallData(base::StringPiece function_name)
+    : function_name_(function_name.data(), function_name.size()) {}
 
 TestWebUI::CallData::~CallData() {
 }
 
-void TestWebUI::CallData::TakeAsArg1(std::unique_ptr<base::Value> arg) {
-  args_[0] = std::move(arg);
-}
-
-void TestWebUI::CallData::TakeAsArg2(std::unique_ptr<base::Value> arg) {
-  args_[1] = std::move(arg);
-}
-
-void TestWebUI::CallData::TakeAsArg3(std::unique_ptr<base::Value> arg) {
-  args_[2] = std::move(arg);
-}
-
-void TestWebUI::CallData::TakeAsArg4(std::unique_ptr<base::Value> arg) {
-  args_[3] = std::move(arg);
+void TestWebUI::CallData::AppendArgument(base::Value arg) {
+  args_.push_back(std::move(arg));
 }
 
 }  // namespace content

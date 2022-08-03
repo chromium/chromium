@@ -40,7 +40,7 @@ class CONTENT_EXPORT WebUI {
   // Returns JavaScript code that, when executed, calls the function specified
   // by |function_name| with the arguments specified in |arg_list|.
   static std::u16string GetJavascriptCall(
-      const std::string& function_name,
+      base::StringPiece function_name,
       base::span<const base::ValueView> arg_list);
 
   virtual ~WebUI() {}
@@ -111,24 +111,19 @@ class CONTENT_EXPORT WebUI {
   // All function names in WebUI must consist of only ASCII characters.
   // There are variants for calls with more arguments.
   virtual void CallJavascriptFunctionUnsafe(
-      const std::string& function_name) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            base::ValueView arg) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            base::ValueView arg1,
-                                            base::ValueView arg2) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            base::ValueView arg1,
-                                            base::ValueView arg2,
-                                            base::ValueView arg3) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            base::ValueView arg1,
-                                            base::ValueView arg2,
-                                            base::ValueView arg3,
-                                            base::ValueView arg4) = 0;
+      base::StringPiece function_name) = 0;
+
   virtual void CallJavascriptFunctionUnsafe(
-      const std::string& function_name,
+      base::StringPiece function_name,
       base::span<const base::ValueView> args) = 0;
+
+  template <typename... Args>
+  void CallJavascriptFunctionUnsafe(base::StringPiece function_name,
+                                    const base::ValueView arg1,
+                                    const Args&... arg) {
+    base::ValueView args[] = {arg1, arg...};
+    CallJavascriptFunctionUnsafe(function_name, args);
+  }
 
   // Allows mutable access to this WebUI's message handlers for testing.
   virtual std::vector<std::unique_ptr<WebUIMessageHandler>>*

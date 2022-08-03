@@ -941,9 +941,15 @@ void GaiaScreenHandler::HandleSamlChallengeMachineKey(
   CreateSamlChallengeKeyHandler();
   saml_challenge_key_handler_->Run(
       Profile::FromWebUI(web_ui()),
-      base::BindOnce(&GaiaScreenHandler::ResolveJavascriptCallback,
+      base::BindOnce(&GaiaScreenHandler::HandleSamlChallengeMachineKeyResult,
                      weak_factory_.GetWeakPtr(), base::Value(callback_id)),
       GURL(url), challenge);
+}
+
+void GaiaScreenHandler::HandleSamlChallengeMachineKeyResult(
+    base::Value callback_id,
+    base::Value::Dict result) {
+  ResolveJavascriptCallback(callback_id, result);
 }
 
 void GaiaScreenHandler::HandleGaiaUIReady() {

@@ -227,6 +227,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void HandleSamlChallengeMachineKey(const std::string& callback_id,
                                      const std::string& url,
                                      const std::string& challenge);
+  void HandleSamlChallengeMachineKeyResult(base::Value callback_id,
+                                           base::Value::Dict result);
 
   void HandleGaiaUIReady();
 

@@ -79,23 +79,9 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
                            const std::string& message,
                            base::Value::List args) override;
   bool CanCallJavascript() override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg1,
-                                    base::ValueView arg2) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg1,
-                                    base::ValueView arg2,
-                                    base::ValueView arg3) override;
-  void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                    base::ValueView arg1,
-                                    base::ValueView arg2,
-                                    base::ValueView arg3,
-                                    base::ValueView arg4) override;
+  void CallJavascriptFunctionUnsafe(base::StringPiece function_name) override;
   void CallJavascriptFunctionUnsafe(
-      const std::string& function_name,
+      base::StringPiece function_name,
       base::span<const base::ValueView> args) override;
   std::vector<std::unique_ptr<WebUIMessageHandler>>* GetHandlersForTesting()
       override;

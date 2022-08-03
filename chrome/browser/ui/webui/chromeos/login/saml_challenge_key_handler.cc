@@ -137,7 +137,7 @@ base::TimeDelta SamlChallengeKeyHandler::GetTpmResponseTimeout() const {
 
 void SamlChallengeKeyHandler::ReturnResult(
     const attestation::TpmChallengeKeyResult& result) {
-  base::Value js_result(base::Value::Type::DICTIONARY);
+  base::Value::Dict js_result;
   if (!result.IsSuccess()) {
     LOG(WARNING) << "Device attestation error: " << result.GetErrorMessage();
   }
@@ -145,8 +145,8 @@ void SamlChallengeKeyHandler::ReturnResult(
   std::string encoded_result_data;
   base::Base64Encode(result.challenge_response, &encoded_result_data);
 
-  js_result.SetKey(kSuccessField, base::Value(result.IsSuccess()));
-  js_result.SetKey(kResponseField, base::Value(encoded_result_data));
+  js_result.Set(kSuccessField, result.IsSuccess());
+  js_result.Set(kResponseField, encoded_result_data);
 
   std::move(callback_).Run(std::move(js_result));
   tpm_key_challenger_.reset();

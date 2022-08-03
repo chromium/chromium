@@ -33,13 +33,13 @@ IOSTranslateInternalsHandler::GetVariationsService() {
 }
 
 void IOSTranslateInternalsHandler::RegisterMessageCallback(
-    const std::string& message,
+    base::StringPiece message,
     MessageCallback callback) {
   web_ui()->RegisterMessageCallback(message, std::move(callback));
 }
 
 void IOSTranslateInternalsHandler::CallJavascriptFunction(
-    const std::string& function_name,
+    base::StringPiece function_name,
     base::span<const base::ValueView> args) {
   web_ui()->CallJavascriptFunction(function_name, args);
 }
