@@ -61,6 +61,9 @@ try_.builder(
     main_list_view = "try",
     os = os.WINDOWS_ANY,
     tryjob = try_.job(),
+    experiments = {
+        "enable_weetbix_queries": 100,
+    },
 )
 
 try_.builder(
@@ -182,6 +185,7 @@ try_.orchestrator_builder(
     tryjob = try_.job(),
     experiments = {
         "remove_src_checkout_experiment": 100,
+        "enable_weetbix_queries": 100,
     },
     use_orchestrator_pool = True,
 )
