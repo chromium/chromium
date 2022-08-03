@@ -647,7 +647,7 @@ ci.builder(
     sheriff_rotations = args.ignore_default(sheriff_rotations.IOS),
     cores = None,
     os = os.MAC_12,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
 )
 
 # TODO(crbug.com/1340327): Remove after experiment is over.

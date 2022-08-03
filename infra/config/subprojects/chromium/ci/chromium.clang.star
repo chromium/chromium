@@ -399,7 +399,7 @@ ci.builder(
     cores = None,
     os = os.MAC_12,
     ssd = True,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
 )
 
 ci.builder(
@@ -412,7 +412,7 @@ ci.builder(
     cores = None,
     os = os.MAC_12,
     ssd = True,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
 )
 
 clang_mac_builder(

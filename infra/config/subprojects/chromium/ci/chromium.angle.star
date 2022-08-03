@@ -147,7 +147,7 @@ ci.gpu.mac_builder(
     ),
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = None,
-    xcode = xcode.x13main,
+    xcode = xcode.x14main,
 )
 
 ci.thin_tester(
