@@ -351,17 +351,12 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(GetWidgetHost()->GetView()->view_stopped_flinging_for_test());
 }
 
-// TODO(1269960): Fix flakiness on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_FlingingStopsAfterNavigation DISABLED_FlingingStopsAfterNavigation
-#else
-#define MAYBE_FlingingStopsAfterNavigation FlingingStopsAfterNavigation
-#endif
+// TODO(crbug.com/1347271,crbug.com/269960): TODO: Re-enable this test.
 
 // Tests that flinging does not continue after navigating to a page that uses
 // the same renderer.
 IN_PROC_BROWSER_TEST_F(BrowserSideFlingBrowserTest,
-                       MAYBE_FlingingStopsAfterNavigation) {
+                       DISABLED_FlingingStopsAfterNavigation) {
   GURL first_url(embedded_test_server()->GetURL(
       "b.a.com", "/scrollable_page_with_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), first_url));
