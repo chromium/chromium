@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/buildflags.h"
 #include "ash/webui/media_app_ui/url_constants.h"
@@ -26,6 +25,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 
 namespace {
 
@@ -177,11 +177,10 @@ std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
   }
 
   if (chromeos::features::IsDarkLightModeEnabled()) {
-    auto* color_provider = ash::AshColorProvider::Get();
-    info->theme_color =
-        color_provider->GetBackgroundColorInMode(/*use_dark_color=*/false);
-    info->dark_mode_theme_color =
-        color_provider->GetBackgroundColorInMode(/*use_dark_color=*/true);
+    info->theme_color = cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/false);
+    info->dark_mode_theme_color = cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor, /*is_dark_mode=*/true);
     info->background_color = info->theme_color;
     info->dark_mode_background_color = info->dark_mode_theme_color;
   } else {

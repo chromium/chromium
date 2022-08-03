@@ -59,8 +59,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
   // color will be different based on color mode and color theme (see
   // |is_themed_|).
   SkColor GetBackgroundColor() const;
-  // Gets the background color in the desired color mode dark/light.
-  SkColor GetBackgroundColorInMode(bool use_dark_color) const;
 
  private:
   // Gets the color of |type| of the corresponding layer. Returns the color on
@@ -70,8 +68,6 @@ class ASH_EXPORT AshColorProvider : public ColorProvider {
 
   // Gets the background default color based on the current color mode.
   SkColor GetBackgroundDefaultColor() const;
-  // Gets the background default color based on the current inverted color mode.
-  SkColor GetInvertedBackgroundDefaultColor() const;
 
   // Gets the background themed color that's calculated based on the color
   // extracted from wallpaper. For dark mode, it will be dark muted wallpaper

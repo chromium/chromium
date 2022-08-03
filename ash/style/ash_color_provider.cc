@@ -225,11 +225,6 @@ SkColor AshColorProvider::GetBackgroundColor() const {
                                       IsDarkModeEnabled());
 }
 
-SkColor AshColorProvider::GetBackgroundColorInMode(bool use_dark_color) const {
-  return cros_styles::ResolveColor(cros_styles::ColorName::kBgColor,
-                                   use_dark_color);
-}
-
 SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
                                                    bool use_dark_color) const {
   switch (type) {
@@ -298,11 +293,7 @@ SkColor AshColorProvider::GetContentLayerColorImpl(ContentLayerType type,
 }
 
 SkColor AshColorProvider::GetBackgroundDefaultColor() const {
-  return GetBackgroundColorInMode(IsDarkModeEnabled());
-}
-
-SkColor AshColorProvider::GetInvertedBackgroundDefaultColor() const {
-  return GetBackgroundColorInMode(!IsDarkModeEnabled());
+  return IsDarkModeEnabled() ? gfx::kGoogleGrey900 : SK_ColorWHITE;
 }
 
 SkColor AshColorProvider::GetBackgroundThemedColorImpl(
