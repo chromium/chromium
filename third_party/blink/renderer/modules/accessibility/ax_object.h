@@ -1137,7 +1137,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool CanHaveChildren() const { return true; }
   void UpdateChildrenIfNecessary();
   bool NeedsToUpdateChildren() const;
-  void SetNeedsToUpdateChildren() const;
+  virtual void SetNeedsToUpdateChildren() const;
   virtual void ClearChildren() const;
   void DetachFromParent() { parent_ = nullptr; }
   virtual void SelectedOptions(AXObjectVector&) const {}

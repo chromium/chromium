@@ -82,6 +82,18 @@ void AXMenuList::Detach() {
   }
 }
 
+void AXMenuList::SetNeedsToUpdateChildren() const {
+  if (!children_.IsEmpty()) {
+    if (AXObject* child_popup = children_[0]) {
+      // If we have a child popup, update its children at the same time.
+      DCHECK(IsA<AXMenuListPopup>(child_popup));
+      child_popup->SetNeedsToUpdateChildren();
+    }
+  }
+
+  AXObject::SetNeedsToUpdateChildren();
+}
+
 void AXMenuList::ClearChildren() const {
   if (children_.IsEmpty())
     return;
