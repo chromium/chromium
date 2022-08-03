@@ -4,13 +4,12 @@
 # found in the LICENSE file.
 
 """This script will check out llvm and clang, and then package the results up
-to a tgz file."""
-
-from __future__ import print_function
+to a number of tarballs."""
 
 import argparse
 import fnmatch
 import itertools
+import lzma
 import multiprocessing.dummy
 import os
 import platform
@@ -101,16 +100,24 @@ def PackageInArchive(directory_path, archive_path):
       if not os.path.islink(file_path):
         subprocess.call(['strip', file_path])
 
-  with tarfile.open(archive_path, 'w:gz') as tar:
-    for f in os.listdir(directory_path):
-      tar.add(os.path.join(directory_path, f),
-              arcname=f, filter=PrintTarProgress)
+  with tarfile.open(archive_path + '.tar.xz',
+                    'w:xz',
+                    preset=9 | lzma.PRESET_EXTREME) as tar_xz:
+    with tarfile.open(archive_path + '.tgz', 'w:gz') as tar_gz:
+      for f in sorted(os.listdir(directory_path)):
+        tar_xz.add(os.path.join(directory_path, f),
+                   arcname=f,
+                   filter=PrintTarProgress)
+        # TODO(crbug.com/1261812) Stop making gzip'ed archives once the
+        # goma/reclient push processes are updated to consume the .xz files
+        # instead.
+        tar_gz.add(os.path.join(directory_path, f), arcname=f)
 
 
 def MaybeUpload(do_upload, filename, gcs_platform, extra_gsutil_args=[]):
   gsutil_args = ['cp'] + extra_gsutil_args + [
       '-n', '-a', 'public-read', filename,
-      'gs://chromium-browser-clang-staging/%s/%s' % (gcs_platform, filename)
+      'gs://chromium-browser-clang-staging/%s/' % (gcs_platform)
   ]
   if do_upload:
     print('Uploading %s to Google Cloud Storage...' % filename)
@@ -535,8 +542,8 @@ def main():
           old, os.path.join(pdir, 'lib', 'clang', RELEASE_VERSION, 'lib', new))
 
   # Create main archive.
-  PackageInArchive(pdir, pdir + '.tgz')
-  MaybeUpload(args.upload, pdir + '.tgz', gcs_platform)
+  PackageInArchive(pdir, pdir)
+  MaybeUpload(args.upload, pdir + '.t*z', gcs_platform)
 
   # Upload build log next to it.
   os.rename('buildlog.txt', pdir + '-buildlog.txt')
@@ -553,8 +560,8 @@ def main():
   for filename in ['llvm-cov', 'llvm-profdata']:
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', filename + exe_ext),
                 os.path.join(code_coverage_dir, 'bin'))
-  PackageInArchive(code_coverage_dir, code_coverage_dir + '.tgz')
-  MaybeUpload(args.upload, code_coverage_dir + '.tgz', gcs_platform)
+  PackageInArchive(code_coverage_dir, code_coverage_dir)
+  MaybeUpload(args.upload, code_coverage_dir + '.t*z', gcs_platform)
 
   # Zip up llvm-objdump and related tools for sanitizer coverage and Supersize.
   objdumpdir = 'llvmobjdump-' + stamp
@@ -573,8 +580,8 @@ def main():
     f.write('\n')
   if sys.platform != 'win32':
     os.symlink('llvm-objdump', os.path.join(objdumpdir, 'bin', 'llvm-otool'))
-  PackageInArchive(objdumpdir, objdumpdir + '.tgz')
-  MaybeUpload(args.upload, objdumpdir + '.tgz', gcs_platform)
+  PackageInArchive(objdumpdir, objdumpdir)
+  MaybeUpload(args.upload, objdumpdir + '.t*z', gcs_platform)
 
   # Zip up clang-tidy for users who opt into it, and Tricium.
   clang_tidy_dir = 'clang-tidy-' + stamp
@@ -582,8 +589,8 @@ def main():
   os.makedirs(os.path.join(clang_tidy_dir, 'bin'))
   shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'clang-tidy' + exe_ext),
               os.path.join(clang_tidy_dir, 'bin'))
-  PackageInArchive(clang_tidy_dir, clang_tidy_dir + '.tgz')
-  MaybeUpload(args.upload, clang_tidy_dir + '.tgz', gcs_platform)
+  PackageInArchive(clang_tidy_dir, clang_tidy_dir)
+  MaybeUpload(args.upload, clang_tidy_dir + '.t*z', gcs_platform)
 
   # Zip up clang-format so we can update it (separately from the clang roll).
   clang_format_dir = 'clang-format-' + stamp
@@ -591,8 +598,8 @@ def main():
   os.makedirs(os.path.join(clang_format_dir, 'bin'))
   shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'clang-format' + exe_ext),
               os.path.join(clang_format_dir, 'bin'))
-  PackageInArchive(clang_format_dir, clang_format_dir + '.tgz')
-  MaybeUpload(args.upload, clang_format_dir + '.tgz', gcs_platform)
+  PackageInArchive(clang_format_dir, clang_format_dir)
+  MaybeUpload(args.upload, clang_format_dir + '.t*z', gcs_platform)
 
   # Zip up clang-libs for users who opt into it. We want Clang and LLVM headers
   # and libs, as well as a couple binaries. The LLVM parts are needed by the
@@ -643,8 +650,8 @@ def main():
       if fnmatch.fnmatch(lib_path, lib_want):
         shutil.copy(os.path.join(LLVM_BOOTSTRAP_DIR, 'lib', lib_path),
                     os.path.join(clang_libs_dir, 'lib'))
-  PackageInArchive(clang_libs_dir, clang_libs_dir + '.tgz')
-  MaybeUpload(args.upload, clang_libs_dir + '.tgz', gcs_platform)
+  PackageInArchive(clang_libs_dir, clang_libs_dir)
+  MaybeUpload(args.upload, clang_libs_dir + '.t*z', gcs_platform)
 
   if sys.platform == 'darwin':
     # dsymutil isn't part of the main zip, and it gets periodically
@@ -655,8 +662,8 @@ def main():
     os.makedirs(os.path.join(dsymdir, 'bin'))
     shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'dsymutil'),
                 os.path.join(dsymdir, 'bin'))
-    PackageInArchive(dsymdir, dsymdir + '.tgz')
-    MaybeUpload(args.upload, dsymdir + '.tgz', gcs_platform)
+    PackageInArchive(dsymdir, dsymdir)
+    MaybeUpload(args.upload, dsymdir + '.t*z', gcs_platform)
 
   # Zip up the translation_unit tool.
   translation_unit_dir = 'translation_unit-' + stamp
@@ -665,8 +672,8 @@ def main():
   shutil.copy(os.path.join(LLVM_RELEASE_DIR, 'bin', 'translation_unit' +
                            exe_ext),
               os.path.join(translation_unit_dir, 'bin'))
-  PackageInArchive(translation_unit_dir, translation_unit_dir + '.tgz')
-  MaybeUpload(args.upload, translation_unit_dir + '.tgz', gcs_platform)
+  PackageInArchive(translation_unit_dir, translation_unit_dir)
+  MaybeUpload(args.upload, translation_unit_dir + '.t*z', gcs_platform)
 
   # Zip up the libclang binaries.
   libclang_dir = 'libclang-' + stamp
@@ -680,8 +687,8 @@ def main():
     shutil.copy(os.path.join(LLVM_DIR, 'clang', 'bindings', 'python', 'clang',
                              filename),
                 os.path.join(libclang_dir, 'bindings', 'python', 'clang'))
-  PackageInArchive(libclang_dir, libclang_dir + '.tgz')
-  MaybeUpload(args.upload, libclang_dir + '.tgz', gcs_platform)
+  PackageInArchive(libclang_dir, libclang_dir)
+  MaybeUpload(args.upload, libclang_dir + '.t*z', gcs_platform)
 
   if sys.platform == 'win32' and args.upload:
     binaries = [f for f in want if f.endswith('.exe') or f.endswith('.dll')]

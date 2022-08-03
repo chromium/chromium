@@ -36,7 +36,7 @@ import zlib
 # Reverting problematic clang rolls is safe, though.
 # This is the output of `git describe` and is usable as a commit-ish.
 CLANG_REVISION = 'llvmorg-16-init-572-gdde41c6c'
-CLANG_SUB_REVISION = 1
+CLANG_SUB_REVISION = 2
 
 PACKAGE_VERSION = '%s-%s' % (CLANG_REVISION, CLANG_SUB_REVISION)
 RELEASE_VERSION = '16.0.0'
@@ -182,7 +182,7 @@ def GetPlatformUrlPrefix(host_os):
 
 
 def DownloadAndUnpackPackage(package_file, output_dir, host_os):
-  cds_file = "%s-%s.tgz" % (package_file, PACKAGE_VERSION)
+  cds_file = "%s-%s.tar.xz" % (package_file, PACKAGE_VERSION)
   cds_full_url = GetPlatformUrlPrefix(host_os) + cds_file
   try:
     DownloadAndUnpack(cds_full_url, output_dir)
@@ -194,7 +194,7 @@ def DownloadAndUnpackPackage(package_file, output_dir, host_os):
 
 
 def DownloadAndUnpackClangMacRuntime(output_dir):
-  cds_file = "clang-%s.tgz" % PACKAGE_VERSION
+  cds_file = "clang-%s.tar.xz" % PACKAGE_VERSION
   # We run this only for the runtime libraries, and 'mac' and 'mac-arm64' both
   # have the same (universal) runtime libraries. It doesn't matter which one
   # we download here.
@@ -213,7 +213,7 @@ def DownloadAndUnpackClangMacRuntime(output_dir):
 
 # TODO(hans): Create a clang-win-runtime package instead.
 def DownloadAndUnpackClangWinRuntime(output_dir):
-  cds_file = "clang-%s.tgz" % PACKAGE_VERSION
+  cds_file = "clang-%s.tar.xz" % PACKAGE_VERSION
   cds_full_url = GetPlatformUrlPrefix('win') + cds_file
   path_prefixes = [
       'lib/clang/' + RELEASE_VERSION + '/lib/windows', 'bin/llvm-symbolizer.exe'
