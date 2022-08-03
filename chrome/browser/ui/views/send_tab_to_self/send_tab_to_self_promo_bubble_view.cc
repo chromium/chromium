@@ -8,10 +8,10 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/signin_view_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/send_tab_to_self/manage_account_devices_link_view.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -26,7 +26,7 @@ SendTabToSelfPromoBubbleView::SendTabToSelfPromoBubbleView(
     views::View* anchor_view,
     content::WebContents* web_contents,
     bool show_signin_button)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents),
+    : SendTabToSelfBubbleView(anchor_view, web_contents),
       controller_(SendTabToSelfBubbleController::CreateOrGetFromWebContents(
                       web_contents)
                       ->AsWeakPtr()) {

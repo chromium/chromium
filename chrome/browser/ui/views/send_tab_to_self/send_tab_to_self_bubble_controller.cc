@@ -1,7 +1,7 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 
 #include <vector>
 
@@ -17,8 +17,8 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"

@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "third_party/skia/include/core/SkColor.h"

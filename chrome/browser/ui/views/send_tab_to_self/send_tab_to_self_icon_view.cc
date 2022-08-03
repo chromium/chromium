@@ -9,7 +9,7 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
@@ -43,8 +43,7 @@ views::BubbleDialogDelegate* SendTabToSelfIconView::GetBubble() const {
     return nullptr;
   }
 
-  return static_cast<SendTabToSelfDevicePickerBubbleView*>(
-      controller->send_tab_to_self_bubble_view());
+  return controller->send_tab_to_self_bubble_view();
 }
 
 void SendTabToSelfIconView::UpdateImpl() {

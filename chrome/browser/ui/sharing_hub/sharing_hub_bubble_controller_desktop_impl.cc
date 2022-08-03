@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -193,11 +193,8 @@ void SharingHubBubbleControllerDesktopImpl::OnActionSelected(
       qrcode_controller->ShowBubble(GetWebContents().GetLastCommittedURL(),
                                     true);
     } else if (command_id == IDC_SEND_TAB_TO_SELF) {
-      send_tab_to_self::SendTabToSelfBubbleController*
-          send_tab_to_self_controller =
-              send_tab_to_self::SendTabToSelfBubbleController::
-                  CreateOrGetFromWebContents(&GetWebContents());
-      send_tab_to_self_controller->ShowBubble(true);
+      send_tab_to_self::ShowBubble(&GetWebContents(),
+                                   /*show_back_button=*/true);
     } else if (command_id == IDC_ROUTE_MEDIA) {
       media_router::MediaRouterDialogController* dialog_controller =
           media_router::MediaRouterDialogController::GetOrCreateForWebContents(

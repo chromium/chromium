@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
-#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
+#include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -1461,9 +1461,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
     }
 
     case CommandSendTabToSelf: {
-      send_tab_to_self::SendTabToSelfBubbleController::
-          CreateOrGetFromWebContents(GetWebContentsAt(context_index))
-              ->ShowBubble();
+      send_tab_to_self::ShowBubble(GetWebContentsAt(context_index));
       break;
     }
 
