@@ -44,6 +44,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -4270,7 +4271,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIAccessibleAction) {
       <html>
       <body>
         <img src="" alt="image"
-            onclick="document.querySelector('img').alt = 'image2';">
+            onclick="document.querySelector('img').alt = 'clicked';">
       </body>
       </html>)HTML");
 
@@ -4302,14 +4303,33 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIAccessibleAction) {
 
   LONG n_actions = 0;
   EXPECT_HRESULT_SUCCEEDED(image_action->nActions(&n_actions));
-  EXPECT_EQ(1, n_actions);
+  EXPECT_EQ(2, n_actions);
 
   base::win::ScopedBstr action_name;
   EXPECT_HRESULT_SUCCEEDED(image_action->get_name(0, action_name.Receive()));
   EXPECT_EQ(L"click", std::wstring(action_name.Get(), action_name.Length()));
   action_name.Release();
-  EXPECT_HRESULT_FAILED(image_action->get_name(1, action_name.Receive()));
+  EXPECT_HRESULT_SUCCEEDED(image_action->get_name(1, action_name.Receive()));
+  EXPECT_EQ(L"showContextMenu",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_FAILED(image_action->get_name(2, action_name.Receive()));
   EXPECT_EQ(nullptr, action_name.Get());
+
+  base::win::ScopedBstr localized_name;
+  EXPECT_HRESULT_SUCCEEDED(
+      image_action->get_localizedName(0, localized_name.Receive()));
+  EXPECT_EQ(L"click",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(
+      image_action->get_localizedName(1, localized_name.Receive()));
+  EXPECT_EQ(L"showContextMenu",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_FAILED(
+      image_action->get_localizedName(2, localized_name.Receive()));
+  EXPECT_EQ(nullptr, localized_name.Get());
 
   base::win::ScopedVariant childid_self(CHILDID_SELF);
   base::win::ScopedBstr image_name;
@@ -4317,16 +4337,28 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIAccessibleAction) {
       image->get_accName(childid_self, image_name.Receive()));
   EXPECT_EQ(L"image", std::wstring(image_name.Get(), image_name.Length()));
   image_name.Release();
-  // Cllicking the image will change its name.
-  EXPECT_HRESULT_SUCCEEDED(image_action->doAction(0));
+  // The action for index 0 is the default one, "click" in this case.
+  // Clicking the image will change its name.
   AccessibilityNotificationWaiter waiter(
       shell()->web_contents(), ui::kAXModeComplete,
       ui::AXEventGenerator::Event::NAME_CHANGED);
+  EXPECT_HRESULT_SUCCEEDED(image_action->doAction(0));
   ASSERT_TRUE(waiter.WaitForNotification());
   EXPECT_HRESULT_SUCCEEDED(
       image->get_accName(childid_self, image_name.Receive()));
-  EXPECT_EQ(L"image2", std::wstring(image_name.Get(), image_name.Length()));
-  EXPECT_HRESULT_FAILED(image_action->doAction(1));
+  EXPECT_EQ(L"clicked", std::wstring(image_name.Get(), image_name.Length()));
+  image_name.Release();
+  // The action for index 1 is "showContextMenu".
+  // We use a ContextMenuInterceptor to intercept the event before
+  // RenderFrameHost receives.
+  auto context_menu_interceptor = std::make_unique<ContextMenuInterceptor>(
+      shell()->web_contents()->GetPrimaryMainFrame(),
+      ContextMenuInterceptor::ShowBehavior::kPreventShow);
+  EXPECT_HRESULT_SUCCEEDED(image_action->doAction(1));
+  // If the context menu event did not happen, the test would time out here:
+  context_menu_interceptor->Wait();
+  // There are no more actions, calls for indexes >=2 will fail.
+  EXPECT_HRESULT_FAILED(image_action->doAction(2));
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, HasHWNDAfterNavigation) {

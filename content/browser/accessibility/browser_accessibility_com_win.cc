@@ -684,16 +684,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::nActions(LONG* n_actions) {
   if (!n_actions)
     return E_INVALIDARG;
 
-  // |IsHyperlink| is required for |IAccessibleHyperlink::anchor/anchorTarget|
-  // to work properly because the |IAccessibleHyperlink| interface inherits from
-  // |IAccessibleAction|.
-  if (IsHyperlink() ||
-      owner()->HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb)) {
-    *n_actions = 1;
-  } else {
-    *n_actions = 0;
-  }
-
+  *n_actions = static_cast<LONG>(owner()->GetSupportedActions().size());
   return S_OK;
 }
 
@@ -703,12 +694,19 @@ IFACEMETHODIMP BrowserAccessibilityComWin::doAction(LONG action_index) {
   if (!owner())
     return E_FAIL;
 
-  if (!owner()->HasIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb) ||
-      action_index != 0) {
+  const std::vector<ax::mojom::Action> actions = owner()->GetSupportedActions();
+  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size()))
     return E_INVALIDARG;
-  }
 
-  Manager()->DoDefaultAction(*owner());
+  if (action_index == 0 && owner()->HasDefaultActionVerb()) {
+    // If there is a default action, it will always be at index 0.
+    Manager()->DoDefaultAction(*owner());
+    return S_OK;
+  }
+  ui::AXActionData data;
+  data.action = actions[action_index];
+  owner()->AccessibilityPerformAction(data);
+
   return S_OK;
 }
 
@@ -726,7 +724,38 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_keyBinding(LONG action_index,
                                                           LONG* n_bindings) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_KEY_BINDING);
   AddAccessibilityModeFlags(kScreenReaderAndHTMLAccessibilityModes);
-  return E_NOTIMPL;
+  if (!owner())
+    return E_FAIL;
+
+  if (!key_bindings || !n_bindings)
+    return E_INVALIDARG;
+
+  const std::vector<ax::mojom::Action> actions = owner()->GetSupportedActions();
+  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
+    *key_bindings = nullptr;
+    return E_INVALIDARG;
+  }
+  n_bindings = 0;
+  int action;
+  std::u16string key_binding_string;
+  if (action_index == 0 &&
+      owner()->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
+                               &action)) {
+    if (owner()->GetString16Attribute(ax::mojom::StringAttribute::kAccessKey,
+                                      &key_binding_string))
+      *n_bindings = 1;
+  }
+
+  if (n_bindings == 0) {
+    *key_bindings = nullptr;
+    return S_FALSE;
+  }
+
+  *key_bindings = static_cast<BSTR*>(CoTaskMemAlloc(sizeof(BSTR)));
+  (*key_bindings)[0] = SysAllocString(base::as_wcstr(key_binding_string));
+
+  DCHECK(key_bindings);
+  return S_OK;
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
@@ -739,22 +768,29 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
   if (!name)
     return E_INVALIDARG;
 
-  int action;
-  if (!owner()->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
-                                &action) ||
-      action_index != 0) {
+  const std::vector<ax::mojom::Action> actions = owner()->GetSupportedActions();
+  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
     *name = nullptr;
     return E_INVALIDARG;
   }
 
-  std::wstring action_verb = base::UTF8ToWide(
-      ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(action)));
-  if (action_verb.empty() || action_verb == L"none") {
+  int action;
+  std::string action_verb;
+  if (action_index == 0 &&
+      owner()->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
+                               &action)) {
+    action_verb =
+        ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(action));
+  } else {
+    action_verb = ui::ToString(actions[action_index]);
+  }
+
+  if (action_verb.empty() || action_verb.compare("none") == 0) {
     *name = nullptr;
     return S_FALSE;
   }
 
-  *name = SysAllocString(action_verb.c_str());
+  *name = SysAllocString(base::as_wcstr(base::UTF8ToUTF16(action_verb)));
   DCHECK(name);
   return S_OK;
 }
@@ -770,22 +806,30 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
   if (!localized_name)
     return E_INVALIDARG;
 
-  int action;
-  if (!owner()->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
-                                &action) ||
-      action_index != 0) {
+  const std::vector<ax::mojom::Action> actions = owner()->GetSupportedActions();
+  if (action_index < 0 || action_index >= static_cast<LONG>(actions.size())) {
     *localized_name = nullptr;
     return E_INVALIDARG;
   }
 
-  std::wstring action_verb = base::UTF8ToWide(
-      ui::ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action)));
+  int action;
+  if (!owner()->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
+                                &action) ||
+      action_index != 0) {
+    // There aren't localized names for actions except default ones, we fall
+    // back to returning the hard-coded, not localized name.
+    return get_name(action_index, localized_name);
+  }
+
+  std::string action_verb =
+      ui::ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action));
   if (action_verb.empty()) {
     *localized_name = nullptr;
     return S_FALSE;
   }
 
-  *localized_name = SysAllocString(action_verb.c_str());
+  *localized_name =
+      SysAllocString(base::as_wcstr(base::UTF8ToUTF16(action_verb)));
   DCHECK(localized_name);
   return S_OK;
 }

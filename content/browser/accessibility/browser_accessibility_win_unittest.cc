@@ -2345,11 +2345,11 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
   hyperlink.Reset();
 
   EXPECT_HRESULT_SUCCEEDED(root_accessible->GetCOM()->nActions(&n_actions));
-  EXPECT_EQ(0, n_actions);
+  EXPECT_EQ(1, n_actions);
   EXPECT_HRESULT_SUCCEEDED(div_accessible->GetCOM()->nActions(&n_actions));
   EXPECT_EQ(1, n_actions);
   EXPECT_HRESULT_SUCCEEDED(text_accessible->GetCOM()->nActions(&n_actions));
-  EXPECT_EQ(0, n_actions);
+  EXPECT_EQ(1, n_actions);
   EXPECT_HRESULT_SUCCEEDED(link_accessible->GetCOM()->nActions(&n_actions));
   EXPECT_EQ(1, n_actions);
 
