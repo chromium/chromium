@@ -3189,7 +3189,7 @@
     ],
 
     'official_goma_chromeos_include_unwind_tables': [
-      'official', 'goma', 'chromeos', 'include_unwind_tables',
+      'official', 'goma', 'chromeos', 'minimal_symbols', 'include_unwind_tables',
     ],
 
     'official_goma_fuchsia_arm64_perf': [
