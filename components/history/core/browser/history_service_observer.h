@@ -41,8 +41,12 @@ class HistoryServiceObserver {
                             const URLRow& row,
                             base::Time visit_time) {}
 
-  // Called when a `URLRow` is modified without necessarily having a new visit.
-  // This happens in these scenarios:
+  // Called when a URL has a metadata-only update. In situations where a URL has
+  // a metadata-only update AND new visits, both `OnURLsModified` and
+  // `OnURLVisited` will be called. Therefore observers that only care about new
+  // visits should only override `OnURLVisited`.
+  //
+  // These metadata-only updates happen in these scenarios:
   //  1. When the Page Title is updated shortly after the page loads.
   //  2. When `TypedURLSyncBridge` updates the `URLRow` data. This often happens
   //     in addition to adding new visits, so `OnURLVisited` will be called too.
