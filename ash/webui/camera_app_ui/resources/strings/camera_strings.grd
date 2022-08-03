@@ -205,7 +205,7 @@
         Pan tilt zoom
       </message>
       <message desc="Toast message notifying user about new document scanning feature is available" name="IDS_NEW_DOCUMENT_SCAN_TOAST">
-        Document scanning now available
+        Document scan available
       </message>
       <message desc="Toast message notifying user about new controls available" name="IDS_NEW_CONTROL_TOAST">
         Additional camera controls available
@@ -696,7 +696,7 @@ If your feedback is about image or video quality, please attach a sample photo o
         Toggle microphone mute. Mute is on
       </message>
       <message desc="Toast message notifying user about the document scanner feature is currently downloading" name="IDS_DOWNLOADING_DOCUMENT_SCANNING_FEATURE">
-        Downloading document scanning feature
+        Downloading updates for document scanning
       </message>
     </messages>
   </release>

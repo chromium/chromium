@@ -1388,6 +1388,10 @@ body:not(.mode-switching):not(.streaming).view-expert-settings .spinner {
   visibility: hidden;
 }
 
+.disabled {
+  opacity: 0.38;
+}
+
 .panel {
   backdrop-filter: blur(10px);
   background: rgba(var(--grey-900-rgb), 0.9);

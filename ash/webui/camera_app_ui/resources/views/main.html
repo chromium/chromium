@@ -140,10 +140,10 @@
       </div>
       <div id="scan-modes-group" class="mode-subgroup" role="radiogroup"
            i18n-aria="aria_scan_type_group">
-        <div id="scan-document-option" class="item" hidden>
+        <div id="scan-document-option" class="item disabled">
           <input id="scan-document" type="radio" tabindex="0"
                  name="scan-type" data-scantype="document"
-                 i18n-aria="scan_document_option">
+                 i18n-aria="scan_document_option" disabled>
           <div class="label" i18n-text="label_scan_document_option"
                aria-hidden="true"></div>
         </div>
@@ -218,7 +218,7 @@
             <span i18n-text="label_switch_take_photo_button"
                   aria-hidden="true"></span>
           </div>
-          <div class="mode-item" i18n-new-feature="new_document_scan_toast">
+          <div class="mode-item">
             <input type="radio" name="mode"
                  data-mode="scan" tabindex="0"
                  i18n-aria="switch_scan_mode_button">

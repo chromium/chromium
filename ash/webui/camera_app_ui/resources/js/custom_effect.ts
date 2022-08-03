@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import * as animation from './animation.js';
-import {assertExists, assertInstanceof, assertNotReached} from './assert.js';
+import {assertExists, assertNotReached} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
+import {ChromeHelper} from './mojo/chrome_helper.js';
+import * as state from './state.js';
 import * as util from './util.js';
 
 /**
@@ -77,7 +79,9 @@ const TOAST_POSITION_UPDATE_MS = 500;
 
 enum PositionProperty {
   BOTTOM = 'bottom',
+  CENTER = 'center',
   LEFT = 'left',
+  MIDDLE = 'middle',
   RIGHT = 'right',
   TOP = 'top',
 }
@@ -95,12 +99,32 @@ type PositionInfos = Array<{
 
 export enum IndicatorType {
   DOWNLOAD_DOCUMENT_SCANNER = 'download_document_scanner',
+  DOC_SCAN_AVAILABLE = 'doc_scan_available',
+}
+
+/**
+ * Setup the required state observers to dismiss toasts when changing
+ * modes/cameras.
+ */
+export function setup(): void {
+  state.addObserver(state.State.CAMERA_SWITCHING, (val) => {
+    if (val) {
+      hide();
+    }
+  });
+  state.addObserver(state.State.MODE_SWITCHING, (val) => {
+    if (val) {
+      hide();
+    }
+  });
 }
 
 function getIndicatorI18nStringId(indicatorType: IndicatorType): I18nString {
   switch (indicatorType) {
     case IndicatorType.DOWNLOAD_DOCUMENT_SCANNER:
       return I18nString.DOWNLOADING_DOCUMENT_SCANNING_FEATURE;
+    case IndicatorType.DOC_SCAN_AVAILABLE:
+      return I18nString.NEW_DOCUMENT_SCAN_TOAST;
     default:
       assertNotReached();
   }
@@ -110,6 +134,8 @@ function getIndicatorIcon(indicatorType: IndicatorType): string|null {
   switch (indicatorType) {
     case IndicatorType.DOWNLOAD_DOCUMENT_SCANNER:
       return '/images/download_dlc_toast_icon.svg';
+    case IndicatorType.DOC_SCAN_AVAILABLE:
+      return '/images/new_feature_toast_icon.svg';
     default:
       return null;
   }
@@ -151,7 +177,15 @@ function updatePosition(
   }
   style.clear();
   for (const {elProperty, toastProperty, offset} of properties) {
-    let value = rect[elProperty] + offset;
+    let value;
+    if (elProperty === PositionProperty.CENTER) {
+      value = rect.left + offset + rect.width / 2;
+    } else if (elProperty === PositionProperty.MIDDLE) {
+      value = rect.top + offset + rect.height / 2;
+    } else {
+      value = rect[elProperty] + offset;
+    }
+
     if (toastProperty === PositionProperty.RIGHT) {
       value = window.innerWidth - value;
     } else if (toastProperty === PositionProperty.BOTTOM) {
@@ -191,7 +225,7 @@ class Toast {
     this.anchor.removeAttribute('aria-owns');
     clearInterval(this.cancelHandle);
     for (const {target} of this.positionInfos) {
-      document.body.removeChild(target);
+      target.remove();
     }
   }
 }
@@ -366,27 +400,21 @@ export function showPtzToast(): void {
 }
 
 /**
- * Shows feature visual effect for document mode entry.
+ * Shows document scan feature is available indicator on the scan mode button.
  */
-export function showDocToast(): void {
+export function showDocScanAvailableIndicator(): void {
   const scanModeButton = dom.get('input[data-mode="scan"]', HTMLInputElement);
-  const scanModeItem =
-      assertInstanceof(scanModeButton.parentElement, HTMLDivElement);
-  // aria-owns don't work on HTMLInputElement, show toast on parent div
-  // instead.
-  const {hide} = showNewFeature(scanModeItem);
-  scanModeButton.addEventListener('click', hide, {once: true});
+  showIndicator(scanModeButton, IndicatorType.DOC_SCAN_AVAILABLE);
 }
 
 /**
  * Shows loading indicator toast for document mode when it's supported but not
  * yet ready.
  */
-export function showDocIndicator(): void {
-  const scanModeButton = dom.get('input[data-mode="scan"]', HTMLInputElement);
-  const scanModeItem =
-      assertInstanceof(scanModeButton.parentElement, HTMLDivElement);
+export async function showDownloadingDocScanIndicator(): Promise<void> {
+  const docModeButton = dom.get('#scan-document-option', HTMLDivElement);
   const {hide} =
-      showIndicator(scanModeItem, IndicatorType.DOWNLOAD_DOCUMENT_SCANNER);
-  scanModeButton.addEventListener('click', hide, {once: true});
+      showIndicator(docModeButton, IndicatorType.DOWNLOAD_DOCUMENT_SCANNER);
+  await ChromeHelper.getInstance().waitUntilDocumentModeReady();
+  hide();
 }

@@ -27,13 +27,13 @@
 }
 
 @property --toast-element-ref-x {
-  syntax: 'left | right';
+  syntax: 'left | right | center';
   inherits: false;
   initial-value: right;
 }
 
 @property --toast-element-ref-y {
-  syntax: 'bottom | top';
+  syntax: 'bottom | top | middle';
   inherits: false;
   initial-value: top;
 }
@@ -63,13 +63,13 @@
 }
 
 @property --indicator-dot-element-ref-x {
-  syntax: 'left | right';
+  syntax: 'left | right | center';
   inherits: false;
   initial-value: right;
 }
 
 @property --indicator-dot-element-ref-y {
-  syntax: 'bottom | top';
+  syntax: 'bottom | top | middle';
   inherits: false;
   initial-value: top;
 }
@@ -205,10 +205,41 @@ body.keyboard-navigation .custom-toast:focus::after {
   --toast-ref-y: bottom;
   --toast-element-ref-y: top;
   --toast-offset-y: -23px;
+}
 
-  --indicator-dot-ref-x: right;
-  --indicator-dot-element-ref-x: right;
-  --indicator-dot-offset-x: -16px;
+#modes-group .mode-item input {
+  --ripple-start-height: 20px;
+  --ripple-start-width: 54px;
+
+  --toast-ref-x: right;
+  --toast-element-ref-x: right;
+  --toast-offset-x: 0;
+
+  --toast-ref-y: bottom;
+  --toast-element-ref-y: top;
+  --toast-offset-y: -30px;
+
+  --indicator-dot-ref-x: left;
+  --indicator-dot-element-ref-x: center;
+  --indicator-dot-offset-x: 0px;
+
+  --indicator-dot-ref-y: bottom;
+  --indicator-dot-element-ref-y: top;
+  --indicator-dot-offset-y: -14px;
+}
+
+.mode-subgroup .item {
+  --toast-ref-x: right;
+  --toast-element-ref-x: right;
+  --toast-offset-x: 0;
+
+  --toast-ref-y: bottom;
+  --toast-element-ref-y: top;
+  --toast-offset-y: -16px;
+
+  --indicator-dot-ref-x: left;
+  --indicator-dot-element-ref-x: center;
+  --indicator-dot-offset-x: 0px;
 
   --indicator-dot-ref-y: bottom;
   --indicator-dot-element-ref-y: top;

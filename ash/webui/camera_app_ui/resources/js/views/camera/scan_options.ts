@@ -67,6 +67,12 @@ export class ScanOptions implements CameraUI {
     // ready.
     dom.get('#scan-barcode', HTMLInputElement).checked = true;
 
+    (async () => {
+      const {supported} =
+          await ChromeHelper.getInstance().getDocumentScannerReadyState();
+      dom.get('#scan-document-option', HTMLElement).hidden = !supported;
+    })();
+
     for (const option of this.scanOptions) {
       option.addEventListener('click', (evt) => {
         if (state.get(state.State.CAMERA_CONFIGURING)) {
@@ -81,11 +87,6 @@ export class ScanOptions implements CameraUI {
     }
   }
 
-  setDocumentModeEnabled(enabled: boolean): void {
-    const documentModeBtn = dom.get('#scan-document-option', HTMLDivElement);
-    documentModeBtn.hidden = !enabled;
-  }
-
   async waitUntilDocumentModeReady(): Promise<boolean> {
     const isLoaded =
         await ChromeHelper.getInstance().waitUntilDocumentModeReady();
@@ -96,10 +97,14 @@ export class ScanOptions implements CameraUI {
   }
 
   onDocumentModeReady(): void {
+    const docModeOption = dom.get('#scan-document-option', HTMLDivElement);
+    docModeOption.classList.remove('disabled');
+
+    const docBtn = dom.get('#scan-document', HTMLInputElement);
+    docBtn.disabled = false;
     if (!state.get(Mode.SCAN)) {
-      dom.get('#scan-document', HTMLInputElement).checked = true;
+      docBtn.checked = true;
     }
-    this.setDocumentModeEnabled(true);
   }
 
   /**
