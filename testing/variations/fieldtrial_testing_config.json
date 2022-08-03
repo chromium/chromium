@@ -3214,6 +3214,21 @@
             ]
         }
     ],
+    "CustomTabBrandTransparency": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CCTBrandTransparency"
+                    ]
+                }
+            ]
+        }
+    ],
     "CustomTabSessionRecording": [
         {
             "platforms": [
