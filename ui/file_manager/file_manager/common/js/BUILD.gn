@@ -37,7 +37,6 @@ group("js_modules") {
     ":icon_util",
     ":importer_common",
     ":lru_cache",
-    ":mediasession_types",
     ":metrics",
     ":metrics_base",
     ":notifications_browser_proxy",
@@ -264,9 +263,6 @@ js_unittest("lru_cache_unittest") {
     ":lru_cache",
     "//chrome/test/data/webui:chai_assert",
   ]
-}
-
-js_library("mediasession_types") {
 }
 
 js_library("metrics") {

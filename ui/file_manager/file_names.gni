@@ -1,14 +1,4 @@
 # Static files are used as-is from the repository.
-audio_static_js_files = [
-  "audio_player/js/audio_player.js",
-  "audio_player/js/background.js",
-  "audio_player/js/error_util.js",
-  "audio_player/js/main.js",
-  "audio_player/js/main_background.js",
-  "audio_player/js/metadata_worker.js",
-  "audio_player/js/test_util.js",
-]
-
 image_loader_static_js_files = [
   "image_loader/background.js",
   "image_loader/cache.js",
@@ -79,7 +69,6 @@ static_js_files = [
   "file_manager/common/js/icon_util.js",
   "file_manager/common/js/importer_common.js",
   "file_manager/common/js/lru_cache.js",
-  "file_manager/common/js/mediasession_types.js",
   "file_manager/common/js/metrics.js",
   "file_manager/common/js/metrics_base.js",
   "file_manager/common/js/mock_chrome.js",
@@ -289,14 +278,6 @@ foreach(_t, ts_templates) {
 
 # Generated files are built from the repository and the final JS files is only
 # available in the "gen/" folder.
-audio_generated_js_files = [
-  "audio_player/elements/audio_player.js",
-  "audio_player/elements/control_panel.js",
-  "audio_player/elements/repeat_button.js",
-  "audio_player/elements/track_info_panel.js",
-  "audio_player/elements/track_list.js",
-]
-
 image_loader_generated_js_files = [
   "image_loader/image_orientation.js",
   "image_loader/lru_cache.js",

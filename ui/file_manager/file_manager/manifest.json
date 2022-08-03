@@ -25,7 +25,6 @@
     "clipboardWrite",
     "commandLinePrivate",
     "contextMenus",
-    "echoPrivate",
     "fileManagerPrivate",
     {
       "fileSystem": ["requestFileSystem", "write"]
