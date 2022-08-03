@@ -982,14 +982,18 @@ class BrowserView : public BrowserWindow,
   // The Toolbar containing the navigation buttons, menus and the address bar.
   raw_ptr<ToolbarView> toolbar_ = nullptr;
 
-  // The OverlayView for the widget, which is used to host |top_container_|
+  // The OverlayView for the widget, which is used to host `top_container_`
   // during immersive reveal.
+  // On Aura, this view is owned by the browser frame. On mac, this view is
+  // owned by `overlay_widget_`.
   std::unique_ptr<views::ViewTargeterDelegate> overlay_view_targeter_;
   raw_ptr<views::View> overlay_view_ = nullptr;
 
 #if BUILDFLAG(IS_MAC)
-  // Used when calling CreateMacOverlayView().
-  std::unique_ptr<views::Widget> overlay_widget_;
+  // Used when calling CreateMacOverlayView(). This widget owns `overlay_view_`.
+  // Its content NSView will be reparented to a NSToolbarFullScreenWindow
+  // during fullscreen.
+  raw_ptr<views::Widget> overlay_widget_;
 #endif
 
   // The Bookmark Bar View for this window. Lazily created. May be null for

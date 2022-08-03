@@ -177,6 +177,12 @@ class ImmersiveModeControllerMac : public ImmersiveModeController,
   base::scoped_nsobject<ImmersiveModeTitlebarViewController>
       immersive_mode_titlebar_view_controller_;
   base::scoped_nsobject<ImmersiveModeMapper> immersive_mode_mapper_;
+  base::ScopedObservation<views::View, views::ViewObserver>
+      top_container_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      browser_frame_observation_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      overlay_widget_observation_{this};
 
   // Used to keep track of the update of kShowFullscreenToolbar preference.
   BooleanPrefMember show_fullscreen_toolbar_;
@@ -247,8 +253,9 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
   enabled_ = enabled;
   if (enabled) {
     browser_view_->GetWidget()->GetFocusManager()->AddFocusChangeListener(this);
-    browser_view_->GetWidget()->AddObserver(this);
-    browser_view_->top_container()->AddObserver(this);
+    top_container_observation_.Observe(browser_view_->top_container());
+    browser_frame_observation_.Observe(browser_view_->GetWidget());
+    overlay_widget_observation_.Observe(browser_view_->overlay_widget());
 
     // Create a new NSTitlebarAccessoryViewController that will host the
     // overlay_view_.
@@ -297,8 +304,15 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
   } else {
     browser_view_->GetWidget()->GetFocusManager()->RemoveFocusChangeListener(
         this);
-    browser_view_->GetWidget()->RemoveObserver(this);
-    browser_view_->top_container()->RemoveObserver(this);
+    top_container_observation_.Reset();
+    browser_frame_observation_.Reset();
+    overlay_widget_observation_.Reset();
+
+    // Notify BrowserView about the fullscreen exit so that the top container
+    // can be reparented, otherwise it might be destroyed along with the
+    // overlay widget.
+    for (Observer& observer : observers_)
+      observer.OnImmersiveFullscreenExited();
 
     // Rollback the view shuffling from enablement.
     browser_view_->overlay_widget()->Hide();

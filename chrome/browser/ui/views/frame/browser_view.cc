@@ -3125,6 +3125,9 @@ BrowserView::GetNativeViewHostsForTopControlsSlide() const {
 }
 
 void BrowserView::ReparentTopContainerForEndOfImmersive() {
+  if (top_container()->parent() == this)
+    return;
+
   overlay_view_->SetVisible(false);
   top_container()->DestroyLayer();
   AddChildViewAt(top_container(), 0);
@@ -3342,15 +3345,10 @@ views::View* BrowserView::CreateOverlayView() {
 #if BUILDFLAG(IS_MAC)
 views::View* BrowserView::CreateMacOverlayView() {
   views::Widget::InitParams params;
-  // Keep around overlay_widget_ and overlay_view_ until this
-  // BrowserView is deconstructed. overlay_view_ is used during BrowserView
-  // deconstruction.
-  // TODO(bur): Refactor usage of WIDGET_OWNS_NATIVE_WIDGET.
-  params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.type = views::Widget::InitParams::TYPE_POPUP;
   params.child = true;
   params.parent = GetWidget()->GetNativeView();
-  overlay_widget_ = std::make_unique<ThemeCopyingWidget>(GetWidget());
+  overlay_widget_ = new ThemeCopyingWidget(GetWidget());
   overlay_widget_->Init(std::move(params));
   overlay_widget_->SetNativeWindowProperty(kBrowserViewKey, this);
 
