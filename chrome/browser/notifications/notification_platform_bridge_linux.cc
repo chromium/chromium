@@ -289,9 +289,9 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
   std::unique_ptr<dbus::Response> name_has_owner_response =
       dbus_proxy->CallMethodAndBlock(&name_has_owner_call,
                                      dbus::ObjectProxy::TIMEOUT_USE_DEFAULT);
-  dbus::MessageReader reader(name_has_owner_response.get());
+  dbus::MessageReader owner_reader(name_has_owner_response.get());
   bool owned = false;
-  if (name_has_owner_response && reader.PopBool(&owned) && owned)
+  if (name_has_owner_response && owner_reader.PopBool(&owned) && owned)
     return true;
 
   // If the service currently isn't running, maybe it is activatable.
@@ -702,14 +702,14 @@ class NotificationPlatformBridgeLinuxImpl
 
       if (notification->type() == message_center::NOTIFICATION_TYPE_MULTIPLE) {
         for (const auto& item : notification->items()) {
-          const std::string title = base::UTF16ToUTF8(item.title);
-          const std::string message = base::UTF16ToUTF8(item.message);
+          const std::string item_title = base::UTF16ToUTF8(item.title);
+          const std::string item_message = base::UTF16ToUTF8(item.message);
           // TODO(peter): Figure out the right way to internationalize
           // this for RTL languages.
           if (body_markup)
-            body << "<b>" << title << "</b> " << message << "\n";
+            body << "<b>" << item_title << "</b> " << item_message << "\n";
           else
-            body << title << " - " << message << "\n";
+            body << item_title << " - " << item_message << "\n";
         }
       } else if (notification->type() ==
                      message_center::NOTIFICATION_TYPE_IMAGE &&
