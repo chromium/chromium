@@ -136,11 +136,6 @@ std::string GetConsoleErrorMessage(FederatedAuthRequestResult status) {
         kErrorFetchingClientMetadataInvalidResponse: {
       return "Provider's client metadata is invalid.";
     }
-    case FederatedAuthRequestResult::
-        kErrorClientMetadataMissingPrivacyPolicyUrl: {
-      return "Provider's client metadata is missing or has an invalid privacy "
-             "policy url.";
-    }
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
       return "The provider's accounts list endpoint cannot be found.";
     }
@@ -207,8 +202,6 @@ RequestTokenStatus FederatedAuthRequestResultToRequestTokenStatus(
     case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound:
     case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse:
-    case FederatedAuthRequestResult::
-        kErrorClientMetadataMissingPrivacyPolicyUrl:
     case FederatedAuthRequestResult::
         kErrorFetchingClientMetadataInvalidResponse:
     case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound:

@@ -643,10 +643,6 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
             {FederatedAuthRequestResult::
                  kErrorFetchingClientMetadataInvalidResponse,
              "Provider's client metadata is invalid."},
-            {FederatedAuthRequestResult::
-                 kErrorClientMetadataMissingPrivacyPolicyUrl,
-             "Provider's client metadata is missing or has an invalid privacy "
-             "policy url."},
             {FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
              "Provider's token is invalid."},
         };
