@@ -201,6 +201,9 @@ class PasswordCheckDelegate
   // running.
   base::WeakPtr<PasswordCheckProgress> password_check_progress_;
 
+  // Remembers whether scripts are fetching right now.
+  bool are_scripts_fetching_ = false;
+
   // Remembers whether a password check is running right now.
   bool is_check_running_ = false;
 
