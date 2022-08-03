@@ -415,7 +415,8 @@ TEST_F(WinAudioInputTest, WASAPIAudioInputStreamHistograms) {
   sink.WaitForData();
   ais->Stop();
   ais.Close();
-  histogram_tester.ExpectTotalCount("Media.Audio.Capture.Win.Glitches", 1);
+  histogram_tester.ExpectTotalCount("Media.Audio.Capture.EarlyGlitchDetected",
+                                    1);
 }
 
 // Test some additional calling sequences.
