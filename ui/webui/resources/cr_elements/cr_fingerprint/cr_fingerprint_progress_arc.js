@@ -7,7 +7,7 @@ import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import './cr_fingerprint_icon.js';
 import '../cr_lottie/cr_lottie.m.js';
 
-import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * The dark-mode fingerprint icon displayed temporarily each time a user scans
@@ -110,81 +110,90 @@ const FINGERPRINT_SCAN_SUCCESS_MS = 500;
  */
 const PROGRESS_CIRCLE_STROKE_WIDTH = 4;
 
-Polymer({
-  is: 'cr-fingerprint-progress-arc',
 
-  _template: html`{__html_template__}`,
+/** @polymer */
+export class CrFingerprintProgressArcElement extends PolymerElement {
+  static get is() {
+    return 'cr-fingerprint-progress-arc';
+  }
 
-  properties: {
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Radius of the fingerprint progress circle being displayed.
+       * @type {number}
+       */
+      circleRadius: {
+        type: Number,
+        value: DEFAULT_PROGRESS_CIRCLE_RADIUS,
+      },
+
+      /**
+       * Whether lottie animation should be autoplayed.
+       * @type {boolean}
+       */
+      autoplay: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Scale factor based the configured radius (circleRadius) vs the default
+       * radius (DEFAULT_PROGRESS_CIRCLE_RADIUS).
+       * This will affect the size of icons and check mark.
+       * @type {number}
+       * @private
+       */
+      scale_: {
+        type: Number,
+        value: 1.0,
+      },
+
+      /**
+       * Whether fingerprint enrollment is complete.
+       * @type {boolean}
+       * @private
+       */
+      isComplete_: Boolean,
+
+      /**
+       * Whether the fingerprint progress page is being rendered in dark mode.
+       * @type {boolean}
+       * @private
+       */
+      isDarkModeActive_: {
+        type: Boolean,
+        value: false,
+        observer: 'onDarkModeChanged_',
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
     /**
-     * Radius of the fingerprint progress circle being displayed.
-     * @type {number}
+     * Animation ID for the fingerprint progress circle.
+     * @private {number|undefined}
      */
-    circleRadius: {
-      type: Number,
-      value: DEFAULT_PROGRESS_CIRCLE_RADIUS,
-    },
+    this.progressAnimationIntervalId_ = undefined;
 
     /**
-     * Whether lottie animation should be autoplayed.
-     * @type {boolean}
+     * Percentage of the enrollment process completed as of the last update.
+     * @private {number}
      */
-    autoplay: {
-      type: Boolean,
-      value: false,
-    },
+    this.progressPercentDrawn_ = 0;
 
     /**
-     * Scale factor based the configured radius (circleRadius) vs the default
-     * radius (DEFAULT_PROGRESS_CIRCLE_RADIUS).
-     * This will affect the size of icons and check mark.
-     * @type {number}
-     * @private
+     * Timer ID for fingerprint scan success update.
+     * @private {number|undefined}
      */
-    scale_: {
-      type: Number,
-      value: 1.0,
-    },
-
-    /**
-     * Whether fingerprint enrollment is complete.
-     * @type {boolean}
-     * @private
-     */
-    isComplete_: Boolean,
-
-    /**
-     * Whether the fingerprint progress page is being rendered in dark mode.
-     * @type {boolean}
-     * @private
-     */
-    isDarkModeActive_: {
-      type: Boolean,
-      value: false,
-      observer: 'onDarkModeChanged_',
-    },
-  },
-
-  /**
-   * Animation ID for the fingerprint progress circle.
-   * @type {number|undefined}
-   * @private
-   */
-  progressAnimationIntervalId_: undefined,
-
-  /**
-   * Percentage of the enrollment process completed as of the last update.
-   * @type {number}
-   * @private
-   */
-  progressPercentDrawn_: 0,
-
-  /**
-   * Timer ID for fingerprint scan success update.
-   * @type {number|undefined}
-   * @private
-   */
-  updateTimerId_: undefined,
+    this.updateTimerId_ = undefined;
+  }
 
   /**
    * Updates the current state to account for whether dark mode is enabled.
@@ -195,14 +204,16 @@ Polymer({
     this.drawProgressCircle_(this.progressPercentDrawn_);
     this.updateAnimationAsset_();
     this.updateIconAsset_();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.scale_ = this.circleRadius / DEFAULT_PROGRESS_CIRCLE_RADIUS;
     this.updateIconAsset_();
     this.updateImages_();
-  },
+  }
 
   /**
    * Reset the element to initial state, when the enrollment just starts.
@@ -223,7 +234,7 @@ Polymer({
     this.updateAnimationAsset_();
     this.resizeAndCenterIcon_(scanningAnimation);
     scanningAnimation.hidden = false;
-  },
+  }
 
   /**
    * Animates the progress circle. Animates an arc that starts at the top of
@@ -264,7 +275,9 @@ Polymer({
       this.clearCanvas_();
       this.drawProgressCircle_(nextPercentToDraw);
       if (!this.progressAnimationIntervalId_) {
-        this.fire('cr-fingerprint-progress-arc-drawn');
+        this.dispatchEvent(new CustomEvent(
+            'cr-fingerprint-progress-arc-drawn',
+            {bubbles: true, composed: true}));
       }
       nextPercentToDraw += step;
     };
@@ -277,7 +290,7 @@ Polymer({
     } else {
       this.animateScanProgress_();
     }
-  },
+  }
 
   /**
    * Controls the animation based on the value of |shouldPlay|.
@@ -288,12 +301,12 @@ Polymer({
     const scanningAnimation =
         /** @type {CrLottieElement|HTMLElement} */ (this.$.scanningAnimation);
     scanningAnimation.setPlay(shouldPlay);
-  },
+  }
 
   /** @public */
   isComplete() {
     return this.isComplete_;
-  },
+  }
 
   /**
    * Draws an arc on the canvas element around the center with radius
@@ -314,7 +327,7 @@ Polymer({
     ctx.lineWidth = PROGRESS_CIRCLE_STROKE_WIDTH;
     ctx.strokeStyle = color;
     ctx.stroke();
-  },
+  }
 
   /**
    * Draws a circle on the canvas element around the center with radius
@@ -346,7 +359,7 @@ Polymer({
         this.isDarkModeActive_ ? PROGRESS_CIRCLE_BACKGROUND_COLOR_DARK :
                                  PROGRESS_CIRCLE_BACKGROUND_COLOR_LIGHT);
     this.progressPercentDrawn_ = currentPercent;
-  },
+  }
 
   /**
    * Updates the lottie animation taking into account the current state and
@@ -365,7 +378,7 @@ Polymer({
     scanningAnimation.animationUrl = this.isDarkModeActive_ ?
         'chrome://theme/IDR_FINGERPRINT_ICON_ANIMATION_DARK' :
         'chrome://theme/IDR_FINGERPRINT_ICON_ANIMATION_LIGHT';
-  },
+  }
 
   /**
    * Updates the fingerprint-scanned icon based on whether dark mode is enabled.
@@ -377,7 +390,7 @@ Polymer({
     fingerprintScanned.icon = this.isDarkModeActive_ ?
         FINGERPRINT_SCANNED_ICON_DARK :
         FINGERPRINT_SCANNED_ICON_LIGHT;
-  },
+  }
 
   /*
    * Cleans up any pending animation update created by setInterval().
@@ -393,7 +406,7 @@ Polymer({
       window.clearTimeout(this.updateTimerId_);
       this.updateTimerId_ = undefined;
     }
-  },
+  }
 
   /**
    * Show animation for enrollment completion.
@@ -408,7 +421,7 @@ Polymer({
     this.updateAnimationAsset_();
     this.resizeCheckMark_(scanningAnimation);
     this.$.fingerprintScanned.hidden = false;
-  },
+  }
 
   /**
    * Show animation for enrollment in progress.
@@ -421,7 +434,7 @@ Polymer({
       this.$.scanningAnimation.hidden = false;
       this.$.fingerprintScanned.hidden = true;
     }, FINGERPRINT_SCAN_SUCCESS_MS);
-  },
+  }
 
   /**
    * Clear the canvas of any renderings.
@@ -431,7 +444,7 @@ Polymer({
     const c = this.$.canvas;
     const ctx = c.getContext('2d');
     ctx.clearRect(0, 0, c.width, c.height);
-  },
+  }
 
   /**
    * Update the size and position of the animation images.
@@ -442,7 +455,7 @@ Polymer({
         /** @type {!HTMLElement} */ (this.$.scanningAnimation));
     this.resizeAndCenterIcon_(
         /** @type {!HTMLElement} */ (this.$.fingerprintScanned));
-  },
+  }
 
   /**
    * Resize the icon based on the scale and place it in the center of the
@@ -460,7 +473,7 @@ Polymer({
     const top = this.$.canvas.height / 2 - ICON_HEIGHT * this.scale_ / 2;
     target.style.left = left + 'px';
     target.style.top = top + 'px';
-  },
+  }
 
   /**
    * Resize the check mark based on the scale and place it in the bottom-right
@@ -480,5 +493,8 @@ Polymer({
         CHECK_MARK_SIZE * this.scale_;
     target.style.left = left + 'px';
     target.style.top = top + 'px';
-  },
-});
+  }
+}
+
+customElements.define(
+    CrFingerprintProgressArcElement.is, CrFingerprintProgressArcElement);
