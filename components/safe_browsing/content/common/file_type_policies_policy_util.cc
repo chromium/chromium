@@ -37,39 +37,36 @@ bool IsInNotDangerousOverrideList(const std::string& extension,
               kExemptDomainFileTypePairsFromFileTypeDownloadWarnings)) {
     return false;
   }
-  const base::Value* heuristic_overrides = prefs->GetList(
+  const base::Value::List& heuristic_overrides = prefs->GetValueList(
       file_type::prefs::kExemptDomainFileTypePairsFromFileTypeDownloadWarnings);
 
   const std::string lower_extension = base::ToLowerASCII(extension);
 
-  if (heuristic_overrides) {
-    base::Value::List domains_for_extension;
-    for (const base::Value& entry : heuristic_overrides->GetListDeprecated()) {
-      const base::DictionaryValue& extension_domain_patterns_dict =
-          base::Value::AsDictionaryValue(entry);
-      const std::string* extension_for_this_entry =
-          extension_domain_patterns_dict.FindStringKey(kFileExtensionNameKey);
-      if (extension_for_this_entry &&
-          base::ToLowerASCII(*extension_for_this_entry) == lower_extension) {
-        const base::Value* domains_for_this_entry =
-            extension_domain_patterns_dict.FindListKey(kDomainListKey);
-        if (domains_for_this_entry) {
-          for (const base::Value& domain :
-               domains_for_this_entry->GetListDeprecated()) {
-            domains_for_extension.Append(domain.Clone());
-          }
+  base::Value::List domains_for_extension;
+  for (const base::Value& entry : heuristic_overrides) {
+    const base::Value::Dict& extension_domain_patterns_dict = entry.GetDict();
+    const std::string* extension_for_this_entry =
+        extension_domain_patterns_dict.FindString(kFileExtensionNameKey);
+    if (extension_for_this_entry &&
+        base::ToLowerASCII(*extension_for_this_entry) == lower_extension) {
+      const base::Value::List* domains_for_this_entry =
+          extension_domain_patterns_dict.FindList(kDomainListKey);
+      if (domains_for_this_entry) {
+        for (const base::Value& domain : *domains_for_this_entry) {
+          domains_for_extension.Append(domain.Clone());
         }
       }
     }
-
-    if (!domains_for_extension.empty()) {
-      url_matcher::URLMatcher matcher;
-      base::MatcherStringPattern::ID id(0);
-      url_matcher::util::AddFilters(&matcher, true, &id, domains_for_extension);
-      auto matching_set_size = matcher.MatchURL(normalized_url).size();
-      return matching_set_size > 0;
-    }
   }
+
+  if (!domains_for_extension.empty()) {
+    url_matcher::URLMatcher matcher;
+    base::MatcherStringPattern::ID id(0);
+    url_matcher::util::AddFilters(&matcher, true, &id, domains_for_extension);
+    auto matching_set_size = matcher.MatchURL(normalized_url).size();
+    return matching_set_size > 0;
+  }
+
   return false;
 }
 

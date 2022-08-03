@@ -373,14 +373,12 @@ bool ChromePasswordProtectionService::ShouldShowPasswordReusePageInfoBubble(
          password_type == PasswordType::OTHER_GAIA_PASSWORD);
   // Otherwise, checks if there's any unhandled sync password reuses matches
   // this origin.
-  auto* unhandled_sync_password_reuses = profile->GetPrefs()->GetDictionary(
-      prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
-  return unhandled_sync_password_reuses
-             ? (unhandled_sync_password_reuses->FindKey(
-                    web_contents->GetPrimaryMainFrame()
-                        ->GetLastCommittedOrigin()
-                        .Serialize()) != nullptr)
-             : false;
+  const auto& unhandled_sync_password_reuses =
+      profile->GetPrefs()->GetValueDict(
+          prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
+  return unhandled_sync_password_reuses.Find(web_contents->GetPrimaryMainFrame()
+                                                 ->GetLastCommittedOrigin()
+                                                 .Serialize());
 }
 
 safe_browsing::LoginReputationClientRequest::UrlDisplayExperiment
@@ -1212,10 +1210,10 @@ bool ChromePasswordProtectionService::HasUnhandledEnterprisePasswordReuse(
 }
 
 void ChromePasswordProtectionService::OnWarningTriggerChanged() {
-  const base::Value* pref_value = pref_change_registrar_->prefs()->Get(
+  const base::Value& pref_value = pref_change_registrar_->prefs()->GetValue(
       prefs::kPasswordProtectionWarningTrigger);
   // If password protection is not turned off, do nothing.
-  if (static_cast<PasswordProtectionTrigger>(pref_value->GetInt()) !=
+  if (static_cast<PasswordProtectionTrigger>(pref_value.GetInt()) !=
       PASSWORD_PROTECTION_OFF) {
     return;
   }

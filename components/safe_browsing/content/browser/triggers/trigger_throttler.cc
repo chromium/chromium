@@ -159,9 +159,9 @@ void TriggerThrottler::LoadTriggerEventsFromPref() {
   if (!local_state_prefs_)
     return;
 
-  const base::Value* event_dict = local_state_prefs_->GetDictionary(
+  const base::Value::Dict& event_dict = local_state_prefs_->GetValueDict(
       prefs::kSafeBrowsingTriggerEventTimestamps);
-  for (auto trigger_pair : event_dict->DictItems()) {
+  for (auto trigger_pair : event_dict) {
     // Check that the first item in the pair is convertible to a trigger type
     // and that the second item is a list.
     int trigger_type_int;
@@ -174,7 +174,7 @@ void TriggerThrottler::LoadTriggerEventsFromPref() {
       continue;
 
     const TriggerType trigger_type = static_cast<TriggerType>(trigger_type_int);
-    for (const auto& timestamp : trigger_pair.second.GetListDeprecated()) {
+    for (const auto& timestamp : trigger_pair.second.GetList()) {
       if (timestamp.is_double())
         trigger_events_[trigger_type].push_back(
             base::Time::FromDoubleT(timestamp.GetDouble()));

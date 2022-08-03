@@ -9,16 +9,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace safe_browsing {
 
@@ -168,7 +165,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   absl::optional<SafeBrowsingMetricsCollector::Event>
   GetLatestEventFromEventTypeFilter(UserState user_state,
                                     EventTypeFilter event_type_filter);
-  const base::Value* GetSafeBrowsingEventDictionary(UserState user_state);
+  const base::Value::Dict* GetSafeBrowsingEventDictionary(UserState user_state);
   int GetEventCountSince(UserState user_state,
                          EventType event_type,
                          base::Time since_time);

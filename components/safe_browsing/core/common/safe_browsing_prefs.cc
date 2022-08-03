@@ -302,10 +302,10 @@ base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
 
 base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs) {
   base::ListValue preferences_list;
-  const base::Value* allowlist_domains =
-      prefs->GetList(prefs::kSafeBrowsingAllowlistDomains);
+  const base::Value::List& allowlist_domains =
+      prefs->GetValueList(prefs::kSafeBrowsingAllowlistDomains);
   std::vector<std::string> domain_list;
-  CanonicalizeDomainList(*allowlist_domains, &domain_list);
+  CanonicalizeDomainList(allowlist_domains, &domain_list);
   std::string domains;
   for (const auto& domain : domain_list) {
     domains = domains + " " + domain;
@@ -335,21 +335,20 @@ base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs) {
 void GetSafeBrowsingAllowlistDomainsPref(
     const PrefService& prefs,
     std::vector<std::string>* out_canonicalized_domain_list) {
-  const base::Value* pref_value =
-      prefs.GetList(prefs::kSafeBrowsingAllowlistDomains);
-  CanonicalizeDomainList(*pref_value, out_canonicalized_domain_list);
+  const base::Value::List& pref_value =
+      prefs.GetValueList(prefs::kSafeBrowsingAllowlistDomains);
+  CanonicalizeDomainList(pref_value, out_canonicalized_domain_list);
 }
 
 void CanonicalizeDomainList(
-    const base::Value& raw_domain_list,
+    const base::Value::List& raw_domain_list,
     std::vector<std::string>* out_canonicalized_domain_list) {
   out_canonicalized_domain_list->clear();
-  for (auto it = raw_domain_list.GetListDeprecated().begin();
-       it != raw_domain_list.GetListDeprecated().end(); it++) {
+  for (const base::Value& value : raw_domain_list) {
     // Verify if it is valid domain string.
     url::CanonHostInfo host_info;
     std::string canonical_host =
-        net::CanonicalizeHost(it->GetString(), &host_info);
+        net::CanonicalizeHost(value.GetString(), &host_info);
     if (!canonical_host.empty())
       out_canonicalized_domain_list->push_back(canonical_host);
   }
@@ -358,9 +357,9 @@ void CanonicalizeDomainList(
 bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
   if (!pref.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains))
     return false;
-  const base::Value* allowlist =
-      pref.GetList(prefs::kSafeBrowsingAllowlistDomains);
-  for (const base::Value& value : allowlist->GetListDeprecated()) {
+  const base::Value::List& allowlist =
+      pref.GetValueList(prefs::kSafeBrowsingAllowlistDomains);
+  for (const base::Value& value : allowlist) {
     if (url.DomainIs(value.GetString()))
       return true;
   }
@@ -369,9 +368,9 @@ bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
 
 std::vector<std::string> GetURLAllowlistByPolicy(PrefService* pref_service) {
   std::vector<std::string> allowlist_domains;
-  const base::Value* allowlist =
-      pref_service->GetList(prefs::kSafeBrowsingAllowlistDomains);
-  for (const base::Value& value : allowlist->GetListDeprecated()) {
+  const base::Value::List& allowlist =
+      pref_service->GetValueList(prefs::kSafeBrowsingAllowlistDomains);
+  for (const base::Value& value : allowlist) {
     allowlist_domains.push_back(value.GetString());
   }
   return allowlist_domains;
@@ -388,10 +387,10 @@ bool MatchesEnterpriseAllowlist(const PrefService& pref,
 
 void GetPasswordProtectionLoginURLsPref(const PrefService& prefs,
                                         std::vector<GURL>* out_login_url_list) {
-  const base::Value* pref_value =
-      prefs.GetList(prefs::kPasswordProtectionLoginURLs);
+  const base::Value::List& pref_value =
+      prefs.GetValueList(prefs::kPasswordProtectionLoginURLs);
   out_login_url_list->clear();
-  for (const base::Value& value : pref_value->GetListDeprecated()) {
+  for (const base::Value& value : pref_value) {
     GURL login_url(value.GetString());
     // Skip invalid or none-http/https login URLs.
     if (login_url.is_valid() && login_url.SchemeIsHTTPOrHTTPS())

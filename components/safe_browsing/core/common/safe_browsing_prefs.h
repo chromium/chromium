@@ -307,7 +307,7 @@ void GetSafeBrowsingAllowlistDomainsPref(
 
 // Helper function to validate and canonicalize a list of domain strings.
 void CanonicalizeDomainList(
-    const base::Value& raw_domain_list,
+    const base::Value::List& raw_domain_list,
     std::vector<std::string>* out_canonicalized_domain_list);
 
 // Helper function to determine if |url| matches Safe Browsing allowlist domains
