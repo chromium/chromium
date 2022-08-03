@@ -2019,7 +2019,6 @@ TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoSendsCorrectRequest) {
   EXPECT_EQ(request.container_name(), kDifferentContainerContainerName);
   EXPECT_EQ(request.owner_id(), CryptohomeIdForProfile(profile_.get()));
   EXPECT_EQ(request.file_path(), kPackageFileContainerPath);
-  EXPECT_TRUE(fake_seneschal_client_->share_path_called());
 }
 
 TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoReturnsInfoOnSuccess) {
@@ -2074,6 +2073,10 @@ TEST_F(CrostiniPackageServiceTest, GetLinuxPackageInfoSharePathFailure) {
   service_->GetLinuxPackageInfo(
       kDifferentContainerId, package_file_url_,
       base::BindOnce(&RecordPackageInfoResult, base::Unretained(&result)));
+  CrostiniManager::GetForProfile(profile_.get())
+      ->CallRestarterStartLxdContainerFinishedForTesting(
+          service_->GetRestartIdForTesting(),
+          CrostiniResult::CONTAINER_START_FAILED);
 
   base::RunLoop().RunUntilIdle();
 

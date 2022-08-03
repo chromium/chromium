@@ -85,6 +85,8 @@ class CrostiniPackageService : public KeyedService,
   // started, a system notification will be used to display further updates.
   void QueueUninstallApplication(const std::string& app_id);
 
+  CrostiniManager::RestartId GetRestartIdForTesting();
+
  private:
   // The user can request new operations while a different operation is in
   // progress. Rather than sending a request which will fail, just queue the
@@ -134,8 +136,7 @@ class CrostiniPackageService : public KeyedService,
       const storage::FileSystemURL& package_url,
       const base::FilePath& package_path,
       CrostiniManager::GetLinuxPackageInfoCallback callback,
-      bool share_success,
-      const std::string& share_failure_reason);
+      CrostiniResult result);
 
   // Wraps the callback provided in GetLinuxPackageInfo().
   void OnGetLinuxPackageInfo(
@@ -198,6 +199,8 @@ class CrostiniPackageService : public KeyedService,
   StateChangeCallback testing_state_change_callback_;
 
   int next_notification_id_ = 0;
+
+  CrostiniManager::RestartId restart_id_for_testing_;
 
   base::WeakPtrFactory<CrostiniPackageService> weak_ptr_factory_{this};
 };
