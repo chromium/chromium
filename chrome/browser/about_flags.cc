@@ -6964,6 +6964,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableManualFallbackForVirtualCards)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"autofill-enable-card-product-name",
+     flag_descriptions::kAutofillEnableCardProductNameName,
+     flag_descriptions::kAutofillEnableCardProductNameDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"account-id-migration", flag_descriptions::kAccountIdMigrationName,
      flag_descriptions::kAccountIdMigrationDescription, kOsCrOS,

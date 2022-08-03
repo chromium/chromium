@@ -926,6 +926,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableUnmaskCardRequestSetInstrumentId)},
+    {"autofill-enable-card-product-name",
+     flag_descriptions::kAutofillEnableCardProductNameName,
+     flag_descriptions::kAutofillEnableCardProductNameDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardProductName)},
     {"send-tab-to-self-signin-promo",
      flag_descriptions::kSendTabToSelfSigninPromoName,
      flag_descriptions::kSendTabToSelfSigninPromoDescription, flags_ui::kOsIos,

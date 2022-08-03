@@ -52,6 +52,12 @@ const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[] =
     "When enabled, UnmaskCardRequest will set the card's non-legacy ID when "
     "available.";
 
+const char kAutofillEnableCardProductNameName[] =
+    "Enable showing card product name";
+const char kAutofillEnableCardProductNameDescription[] =
+    "When enabled, card product name (instead of issuer network) will be shown "
+    "in Payments UI.";
+
 const char kAutofillEnforceDelaysInStrikeDatabaseName[] =
     "Enforce delay between offering Autofill opportunities in the strike "
     "database";

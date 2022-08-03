@@ -47,6 +47,11 @@ extern const char kAutofillEnableSendingBcnInGetUploadDetailsDescription[];
 extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdName[];
 extern const char kAutofillEnableUnmaskCardRequestSetInstrumentIdDescription[];
 
+// Title and description for flag to enable showing card product name (instead
+// of issuer network) in Payments UI.
+extern const char kAutofillEnableCardProductNameName[];
+extern const char kAutofillEnableCardProductNameDescription[];
+
 // Title and description for flag to enforce delays between offering Autofill
 // opportunities.
 extern const char kAutofillEnforceDelaysInStrikeDatabaseName[];

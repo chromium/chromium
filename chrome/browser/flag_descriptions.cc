@@ -382,6 +382,12 @@ const char kAutofillEnableManualFallbackForVirtualCardsDescription[] =
     "When enabled, manual fallback will be enabled for virtual cards on "
     "Android.";
 
+const char kAutofillEnableCardProductNameName[] =
+    "Enable showing card product name";
+const char kAutofillEnableCardProductNameDescription[] =
+    "When enabled, card product name (instead of issuer network) will be shown "
+    "in Payments UI.";
+
 const char kAutofillEnableOfferNotificationForPromoCodesName[] =
     "Extend Autofill offers and rewards notification to promo code offers";
 const char kAutofillEnableOfferNotificationForPromoCodesDescription[] =
