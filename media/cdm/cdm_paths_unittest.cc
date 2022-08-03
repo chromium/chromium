@@ -30,7 +30,7 @@ const char kComponentPlatform[] =
 #elif BUILDFLAG(IS_LINUX)
     "linux";
 #else
-    "unsupported_platform";
+#error unsupported platform
 #endif
 
 // Name of the component architecture.
@@ -44,7 +44,7 @@ const char kComponentArch[] =
 #elif defined(ARCH_CPU_ARM64)
     "arm64";
 #else
-    "unsupported_arch";
+#error unsupported architecture
 #endif
 
 }  // namespace

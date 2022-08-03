@@ -22,7 +22,7 @@ if (is_chromeos) {
 } else if (is_mac) {
   component_os = "mac"
 } else {
-  component_os = "unsupported_platform"
+  assert(false, "unsupported_platform")
 }
 
 component_arch = "$current_cpu"
