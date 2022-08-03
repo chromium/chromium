@@ -34,14 +34,33 @@ MATCHER_P(Title, title, "") {
   return arg->title() == title;
 }
 
-apps::Result MakeAppsResult(const std::u16string& title) {
+apps::Result MakeAppsResult(const std::u16string& title,
+                            const std::u16string& source) {
   return apps::Result(
       apps::AppSource::kGames, "12345", title,
       std::make_unique<apps::GameExtras>(
           absl::make_optional(std::vector<std::u16string>({u"A", u"B", u"C"})),
-          u"SourceName", u"TestGamePublisher",
-          base::FilePath("/icons/test.png"), /*is_icon_masking_allowed=*/false,
-          GURL("https://game.com/game")));
+          source, u"TestGamePublisher", base::FilePath("/icons/test.png"),
+          /*is_icon_masking_allowed=*/false, GURL("https://game.com/game")));
+}
+
+apps::Result MakeAppsResult(const std::u16string& title) {
+  return MakeAppsResult(title, u"SourceName");
+}
+
+// Checks that the result's details text vector contains exactly one text item
+// with the given text.
+bool DetailsEquals(const std::unique_ptr<ChromeSearchResult>& result,
+                   const std::u16string& details) {
+  const auto& details_vector = result->details_text_vector();
+
+  if (details_vector.size() != 1)
+    return false;
+
+  if (details_vector[0].GetType() != ash::SearchResultTextItemType::kString)
+    return false;
+
+  return details_vector[0].GetText() == details;
 }
 
 }  // namespace
@@ -87,11 +106,12 @@ class GameProviderTest : public testing::Test,
     provider_->SetGameIndexForTest(std::move(index));
   }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
-
   void StartSearch(const std::u16string& query) {
     search_controller_->StartSearch(query);
+    task_environment_.RunUntilIdle();
   }
+
+  GameProvider* provider() const { return provider_; }
 
   ScopedFeatureList feature_list_;
   content::BrowserTaskEnvironment task_environment_;
@@ -110,11 +130,9 @@ TEST_P(GameProviderTest, SearchResultsMatchQuery) {
   SetUpTestingIndex();
 
   StartSearch(u"first");
-  Wait();
   EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
 
   StartSearch(u"title");
-  Wait();
   EXPECT_THAT(LastResults(), UnorderedElementsAre(Title(u"First Title"),
                                                   Title(u"Second Title"),
                                                   Title(u"Third Title")));
@@ -127,20 +145,50 @@ TEST_P(GameProviderTest, Policy) {
   profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
                                    true);
   StartSearch(u"first");
-  Wait();
   EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
 
   // If Suggested Content is disabled, only show results if the override is on.
   profile_->GetPrefs()->SetBoolean(chromeos::prefs::kSuggestedContentEnabled,
                                    false);
   StartSearch(u"first");
-  Wait();
   bool enabled_override = GetParam();
   if (enabled_override) {
     EXPECT_THAT(LastResults(), ElementsAre(Title(u"First Title")));
   } else {
     EXPECT_TRUE(LastResults().empty());
   }
+}
+
+// Tests that games with the same title but different sources appear in a random
+// order across different queries.
+TEST_P(GameProviderTest, RandomizeSourceOrder) {
+  // Create two games with the same name but different sources.
+  GameProvider::GameIndex index;
+  index.push_back(MakeAppsResult(u"title", u"source_a"));
+  index.push_back(MakeAppsResult(u"title", u"source_b"));
+  provider()->SetGameIndexForTest(std::move(index));
+
+  int a_first = 0;
+  int b_first = 0;
+  for (int i = 0; i < 1000; ++i) {
+    StartSearch(u"title");
+    ASSERT_EQ(LastResults().size(), 2);
+
+    // The source name is set into the result details, so use the result details
+    // to identify which source it came from.
+    if (DetailsEquals(LastResults()[0], u"source_a")) {
+      a_first++;
+    } else if (DetailsEquals(LastResults()[0], u"source_b")) {
+      b_first++;
+    }
+  }
+  ASSERT_EQ(a_first + b_first, 1000);
+
+  // We expect a and b each to be first about ~half the time, but this will vary
+  // randomly across test runs. To avoid flakiness, only expect here that they
+  // each happen at least 10 times, which has a very high chance of being true.
+  EXPECT_GE(a_first, 10);
+  EXPECT_GE(b_first, 10);
 }
 
 }  // namespace app_list

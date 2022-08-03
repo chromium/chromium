@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/app_list/search/games/game_provider.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -41,6 +43,7 @@ constexpr double kRelevanceThreshold = 0.32;
 constexpr double kPartialMatchPenaltyRate = 0.9;
 
 constexpr size_t kMaxResults = 3u;
+constexpr double kEpsilon = 1e-5;
 
 // Outcome of a call to GameSearchProvider::Start. These values persist to logs.
 // Entries should not be renumbered and numeric values should not be reused.
@@ -186,6 +189,14 @@ void GameProvider::OnSearchComplete(
     std::u16string query,
     std::vector<std::pair<const apps::Result*, double>> matches) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Shuffle the matches and use the resulting order to slightly modify all
+  // scores. When the results are sorted, this will have the effect of
+  // randomizing the order of cloud providers given the same game title.
+  base::RandomShuffle(matches.begin(), matches.end());
+  for (size_t i = 0; i < matches.size(); ++i) {
+    matches[i].second = std::max(0.0, matches[i].second - i * kEpsilon);
+  }
 
   // Sort matches by descending relevance score.
   std::sort(matches.begin(), matches.end(),
