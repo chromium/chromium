@@ -77,7 +77,6 @@ class PLATFORM_EXPORT RawResource final : public Resource {
               const ResourceLoaderOptions&);
 
   // Resource implementation
-  MatchStatus CanReuse(const FetchParameters&) const override;
   bool WillFollowRedirect(const ResourceRequest&,
                           const ResourceResponse&) override;
 

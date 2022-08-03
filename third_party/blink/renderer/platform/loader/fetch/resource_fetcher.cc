@@ -1468,9 +1468,6 @@ void ResourceFetcher::PrintPreloadMismatch(Resource* resource,
     case Resource::MatchStatus::kRequestMethodDoesNotMatch:
       builder.Append("because the request HTTP method does not match.");
       break;
-    case Resource::MatchStatus::kRequestHeadersDoNotMatch:
-      builder.Append("because the request headers do not match.");
-      break;
     case Resource::MatchStatus::kScriptTypeDoesNotMatch:
       builder.Append("because the script type does not match.");
       break;

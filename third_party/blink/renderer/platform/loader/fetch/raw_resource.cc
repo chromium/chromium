@@ -313,47 +313,6 @@ void RawResource::MatchPreload(const FetchParameters& params) {
       !params.GetResourceRequest().UseStreamOnResponse();
 }
 
-static bool ShouldIgnoreHeaderForCacheReuse(AtomicString header_name) {
-  // FIXME: This list of headers that don't affect cache policy almost certainly
-  // isn't complete.
-  DEFINE_STATIC_LOCAL(
-      HashSet<AtomicString>, headers,
-      ({"Cache-Control", "If-Modified-Since", "If-None-Match", "Origin",
-        "Pragma", "Purpose", "Referer", "User-Agent"}));
-  return headers.Contains(header_name);
-}
-
-Resource::MatchStatus RawResource::CanReuse(
-    const FetchParameters& new_fetch_parameters) const {
-  const ResourceRequest& new_request =
-      new_fetch_parameters.GetResourceRequest();
-  // Ensure most headers match the existing headers before continuing. Note that
-  // the list of ignored headers includes some headers explicitly related to
-  // caching. A more detailed check of caching policy will be performed later,
-  // this is simply a list of headers that we might permit to be different and
-  // still reuse the existing Resource.
-  const HTTPHeaderMap& new_headers = new_request.HttpHeaderFields();
-  const HTTPHeaderMap& old_headers = GetResourceRequest().HttpHeaderFields();
-
-  for (const auto& header : new_headers) {
-    AtomicString header_name = header.key;
-    if (!ShouldIgnoreHeaderForCacheReuse(header_name) &&
-        header.value != old_headers.Get(header_name)) {
-      return MatchStatus::kRequestHeadersDoNotMatch;
-    }
-  }
-
-  for (const auto& header : old_headers) {
-    AtomicString header_name = header.key;
-    if (!ShouldIgnoreHeaderForCacheReuse(header_name) &&
-        header.value != new_headers.Get(header_name)) {
-      return MatchStatus::kRequestHeadersDoNotMatch;
-    }
-  }
-
-  return Resource::CanReuse(new_fetch_parameters);
-}
-
 void RawResourceClient::DidDownloadToBlob(Resource*,
                                           scoped_refptr<BlobDataHandle>) {}
 

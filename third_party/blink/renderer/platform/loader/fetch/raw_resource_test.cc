@@ -79,25 +79,6 @@ class RawResourceTest : public testing::Test {
       platform_;
 };
 
-TEST_F(RawResourceTest, DontIgnoreAcceptForCacheReuse) {
-  scoped_refptr<const SecurityOrigin> source_origin =
-      SecurityOrigin::CreateUniqueOpaque();
-
-  ResourceRequest jpeg_request;
-  jpeg_request.SetHTTPAccept("image/jpeg");
-  jpeg_request.SetRequestorOrigin(source_origin);
-
-  RawResource* jpeg_resource(
-      RawResource::CreateForTest(jpeg_request, ResourceType::kRaw));
-
-  ResourceRequest png_request;
-  png_request.SetHTTPAccept("image/png");
-  png_request.SetRequestorOrigin(source_origin);
-  EXPECT_NE(jpeg_resource->CanReuse(
-                FetchParameters::CreateForTest(std::move(png_request))),
-            Resource::MatchStatus::kOk);
-}
-
 class DummyClient final : public GarbageCollected<DummyClient>,
                           public RawResourceClient {
  public:

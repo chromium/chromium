@@ -140,9 +140,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
     // Match fails due to different request methods.
     kRequestMethodDoesNotMatch,
 
-    // Match fails due to different request headers.
-    kRequestHeadersDoNotMatch,
-
     // Match fails due to different script types.
     kScriptTypeDoesNotMatch,
   };
@@ -363,7 +360,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   }
 
   // Returns |kOk| when |this| can be resused for the given arguments.
-  virtual MatchStatus CanReuse(const FetchParameters& params) const;
+  MatchStatus CanReuse(const FetchParameters& params) const;
 
   // TODO(yhirano): Remove this once out-of-blink CORS is fully enabled.
   void SetResponseType(network::mojom::FetchResponseType response_type) {
