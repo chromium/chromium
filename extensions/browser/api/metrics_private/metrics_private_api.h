@@ -113,6 +113,19 @@ class MetricsPrivateRecordEnumerationValueFunction
   ResponseAction Run() override;
 };
 
+class MetricsPrivateRecordSparseHashableFunction
+    : public MetricsHistogramHelperFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("metricsPrivate.recordSparseHashable",
+                             METRICSPRIVATE_RECORDSPARSEHASHABLE)
+
+ protected:
+  ~MetricsPrivateRecordSparseHashableFunction() override {}
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 class MetricsPrivateRecordSparseValueWithHashMetricNameFunction
     : public MetricsHistogramHelperFunction {
  public:

@@ -32,6 +32,7 @@ namespace RecordUserAction = api::metrics_private::RecordUserAction;
 namespace RecordValue = api::metrics_private::RecordValue;
 namespace RecordBoolean = api::metrics_private::RecordBoolean;
 namespace RecordEnumerationValue = api::metrics_private::RecordEnumerationValue;
+namespace RecordSparseHashable = api::metrics_private::RecordSparseHashable;
 namespace RecordSparseValueWithHashMetricName =
     api::metrics_private::RecordSparseValueWithHashMetricName;
 namespace RecordSparseValueWithPersistentHash =
@@ -149,6 +150,15 @@ ExtensionFunction::ResponseAction MetricsPrivateRecordValueFunction::Run() {
       type == "histogram-linear" ? base::LINEAR_HISTOGRAM : base::HISTOGRAM);
   RecordValue(params->metric.metric_name, histogram_type, params->metric.min,
               params->metric.max, params->metric.buckets, params->value);
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
+MetricsPrivateRecordSparseHashableFunction::Run() {
+  auto params = RecordSparseHashable::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+  base::UmaHistogramSparse(params->metric_name,
+                           base::PersistentHash(params->value));
   return RespondNow(NoArguments());
 }
 
