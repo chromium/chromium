@@ -19,7 +19,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.DoNotClassMerge;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
@@ -489,59 +488,77 @@ public class CriticalPersistedTabData extends PersistedTabData {
     // TODO(crbug.com/1220678) Change PersistedTabData saves to use ByteBuffer instead of byte[]
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @Override
-    public Supplier<ByteBuffer> getSerializeSupplier() {
-        final WebContentsState webContentsState;
-        final ByteBuffer byteBuffer;
-        final String openerAppId;
-        final int parentId;
-        final int rootId;
-        final long timestampMillis;
-        final int webContentsStateVersion;
-        final int themeColor;
-        final int launchType;
-        final int userAgentType;
-        try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.PreSerialize")) {
-            webContentsState = mWebContentsState == null ? getWebContentsStateFromTab(mTab)
-                                                         : mWebContentsState;
-            byteBuffer = webContentsState == null ? null : webContentsState.buffer();
-            openerAppId = mOpenerAppId;
-            parentId = mParentId;
-            rootId = mRootId;
-            timestampMillis = mTimestampMillis;
-            webContentsStateVersion = mContentStateVersion;
-            themeColor = mThemeColor;
-            launchType = getLaunchType(mTabLaunchTypeAtCreation);
-            userAgentType = getUserAgentType(mUserAgent);
-        }
-        return () -> {
-            try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
-                ByteBuffer readOnlyByteBuffer =
-                        byteBuffer == null ? null : byteBuffer.asReadOnlyBuffer();
-                if (readOnlyByteBuffer != null) {
-                    readOnlyByteBuffer.rewind();
-                }
-                FlatBufferBuilder fbb = new FlatBufferBuilder();
-                int wcs = CriticalPersistedTabDataFlatBuffer.createWebContentsStateBytesVector(fbb,
-                        readOnlyByteBuffer == null ? ByteBuffer.allocate(0).put(new byte[] {})
-                                                   : readOnlyByteBuffer);
-                int oaid =
-                        fbb.createString(mOpenerAppId == null ? NULL_OPENER_APP_ID : mOpenerAppId);
-                CriticalPersistedTabDataFlatBuffer.startCriticalPersistedTabDataFlatBuffer(fbb);
-                CriticalPersistedTabDataFlatBuffer.addParentId(fbb, parentId);
-                CriticalPersistedTabDataFlatBuffer.addRootId(fbb, rootId);
-                CriticalPersistedTabDataFlatBuffer.addTimestampMillis(fbb, timestampMillis);
-                CriticalPersistedTabDataFlatBuffer.addWebContentsStateBytes(fbb, wcs);
-                CriticalPersistedTabDataFlatBuffer.addContentStateVersion(
-                        fbb, webContentsStateVersion);
-                CriticalPersistedTabDataFlatBuffer.addOpenerAppId(fbb, oaid);
-                CriticalPersistedTabDataFlatBuffer.addThemeColor(fbb, themeColor);
-                CriticalPersistedTabDataFlatBuffer.addLaunchTypeAtCreation(fbb, launchType);
-                CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, userAgentType);
-                int r = CriticalPersistedTabDataFlatBuffer.endCriticalPersistedTabDataFlatBuffer(
-                        fbb);
-                fbb.finish(r);
+    public Serializer<ByteBuffer> getSerializer() {
+        return new Serializer<ByteBuffer>() {
+            private ByteBuffer mByteBufferSnapshot;
+            private String mOpenerAppIdSnapshot;
+            private int mParentIdSnapshot;
+            private int mRootIdSnapshot;
+            private long mTimestampMillisSnapshot;
+            private int mWebContentsStateVersionSnapshot;
+            private int mThemeColorSnapshot;
+            private int mLaunchTypeSnapshot;
+            private int mUserAgentTypeSnapshot;
+            private boolean mPreSerialized;
 
-                return fbb.dataBuffer();
+            @Override
+            public ByteBuffer get() {
+                assert mPreSerialized
+                    : "Must call preSerialize before get() on CriticalPersistedTabData Serializer";
+                try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.Serialize")) {
+                    ByteBuffer readOnlyByteBuffer = mByteBufferSnapshot == null
+                            ? null
+                            : mByteBufferSnapshot.asReadOnlyBuffer();
+                    if (readOnlyByteBuffer != null) {
+                        readOnlyByteBuffer.rewind();
+                    }
+                    FlatBufferBuilder fbb = new FlatBufferBuilder();
+                    int wcs = CriticalPersistedTabDataFlatBuffer.createWebContentsStateBytesVector(
+                            fbb,
+                            readOnlyByteBuffer == null ? ByteBuffer.allocate(0).put(new byte[] {})
+                                                       : readOnlyByteBuffer);
+                    int oaid =
+                            fbb.createString(mOpenerAppIdSnapshot == null ? NULL_OPENER_APP_ID
+                                                                          : mOpenerAppIdSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.startCriticalPersistedTabDataFlatBuffer(fbb);
+                    CriticalPersistedTabDataFlatBuffer.addParentId(fbb, mParentIdSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addRootId(fbb, mRootIdSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addTimestampMillis(
+                            fbb, mTimestampMillisSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addWebContentsStateBytes(fbb, wcs);
+                    CriticalPersistedTabDataFlatBuffer.addContentStateVersion(
+                            fbb, mWebContentsStateVersionSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addOpenerAppId(fbb, oaid);
+                    CriticalPersistedTabDataFlatBuffer.addThemeColor(fbb, mThemeColorSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addLaunchTypeAtCreation(
+                            fbb, mLaunchTypeSnapshot);
+                    CriticalPersistedTabDataFlatBuffer.addUserAgent(fbb, mUserAgentTypeSnapshot);
+                    int r = CriticalPersistedTabDataFlatBuffer
+                                    .endCriticalPersistedTabDataFlatBuffer(fbb);
+                    fbb.finish(r);
+
+                    return fbb.dataBuffer();
+                }
+            }
+
+            @Override
+            public void preSerialize() {
+                try (TraceEvent e = TraceEvent.scoped("CriticalPersistedTabData.PreSerialize")) {
+                    WebContentsState webContentsState = mWebContentsState == null
+                            ? getWebContentsStateFromTab(mTab)
+                            : mWebContentsState;
+                    mByteBufferSnapshot =
+                            webContentsState == null ? null : webContentsState.buffer();
+                    mOpenerAppIdSnapshot = mOpenerAppId;
+                    mParentIdSnapshot = mParentId;
+                    mRootIdSnapshot = mRootId;
+                    mTimestampMillisSnapshot = mTimestampMillis;
+                    mWebContentsStateVersionSnapshot = mContentStateVersion;
+                    mThemeColorSnapshot = mThemeColor;
+                    mLaunchTypeSnapshot = getLaunchType(mTabLaunchTypeAtCreation);
+                    mUserAgentTypeSnapshot = getUserAgentType(mUserAgent);
+                }
+                mPreSerialized = true;
             }
         };
     }

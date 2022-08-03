@@ -13,7 +13,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 
 import java.io.DataInputStream;
@@ -50,14 +49,14 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
 
     @MainThread
     @Override
-    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier) {
-        save(tabId, dataId, dataSupplier, NO_OP_CALLBACK);
+    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer) {
+        save(tabId, dataId, serializer, NO_OP_CALLBACK);
     }
 
     @MainThread
     @Override
     public void save(
-            int tabId, String dataId, Supplier<ByteBuffer> data, Callback<Integer> callback) {
+            int tabId, String dataId, Serializer<ByteBuffer> data, Callback<Integer> callback) {
         addStorageRequestAndProcessNext(
                 new EncryptedFileSaveRequest(tabId, dataId, data, callback));
     }
@@ -97,18 +96,18 @@ public class EncryptedFilePersistedTabDataStorage extends FilePersistedTabDataSt
         /**
          * @param tabId identifier for the {@link Tab}
          * @param dataId identifier for the {@link PersistedTabData}
-         * @param dataSupplier {@link Supplier} containing data to be saved
+         * @param serializer {@link Serializer} containing data to be saved
          */
-        EncryptedFileSaveRequest(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+        EncryptedFileSaveRequest(int tabId, String dataId, Serializer<ByteBuffer> serializer,
                 Callback<Integer> callback) {
-            super(tabId, dataId, dataSupplier, callback);
+            super(tabId, dataId, serializer, callback);
         }
 
         @Override
         public Void executeSyncTask() {
-            ByteBuffer data = mDataSupplier.get();
+            ByteBuffer data = mSerializer.get();
             if (data == null) {
-                mDataSupplier = null;
+                mSerializer = null;
                 return null;
             }
             boolean success = false;

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -20,12 +19,12 @@ import java.util.List;
 public class EmptyByteBufferPersistedTabDataStorage implements PersistedTabDataStorage {
     // Unused
     @Override
-    public void save(int tabId, String tabDataId, Supplier<ByteBuffer> dataSupplier) {
+    public void save(int tabId, String tabDataId, Serializer<ByteBuffer> serializer) {
         assert false : "save is currently unused in EmptyByteBufferPersistedTabDataStorage";
     }
 
     @Override
-    public void save(int tabId, String tabDataId, Supplier<ByteBuffer> dataSupplier,
+    public void save(int tabId, String tabDataId, Serializer<ByteBuffer> serializer,
             Callback<Integer> callback) {
         assert false : "save is currently unused in EmptyByteBufferPersistedTabDataStorage";
     }

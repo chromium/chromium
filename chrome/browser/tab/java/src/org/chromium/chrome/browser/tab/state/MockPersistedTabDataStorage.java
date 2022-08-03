@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -24,17 +23,18 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     private final Map<String, ByteBuffer> mStorage = new HashMap<>();
 
     @Override
-    public void save(int tabId, String tabDataId, Supplier<ByteBuffer> dataSupplier) {
-        mStorage.put(getKey(tabId), dataSupplier.get());
+    public void save(int tabId, String tabDataId, Serializer<ByteBuffer> serializer) {
+        serializer.preSerialize();
+        mStorage.put(getKey(tabId), serializer.get());
         if (mSemaphore != null) {
             mSemaphore.release();
         }
     }
 
     @Override
-    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+    public void save(int tabId, String dataId, Serializer<ByteBuffer> serializer,
             Callback<Integer> callback) {
-        save(tabId, dataId, dataSupplier);
+        save(tabId, dataId, serializer);
         callback.onResult(0);
     }
 

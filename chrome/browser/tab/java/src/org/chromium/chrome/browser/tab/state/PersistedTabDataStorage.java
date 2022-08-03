@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tab.state;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
 
 import java.nio.ByteBuffer;
 import java.util.List;
@@ -17,17 +16,17 @@ public interface PersistedTabDataStorage {
     /**
      * @param tabId identifier for the {@link Tab}
      * @param tabDataId unique identifier representing the type {@link PersistedTabData}
-     * @param dataSupplier {@link Supplier} for serialized {@link PersistedTabData}
+     * @param serializer {@link Serializer} for serialized {@link PersistedTabData}
      */
-    void save(int tabId, String tabDataId, Supplier<ByteBuffer> dataSupplier);
+    void save(int tabId, String tabDataId, Serializer<ByteBuffer> serializer);
 
     /**
      * @param tabId identifier for the {@link Tab}
      * @param tabDataId unique identifier representing the type {@link PersistedTabData}
-     * @param dataSupplier {@link Supplier} for serialized {@link PersistedTabData}
+     * @param serializer {@link Serializer} for serialized {@link PersistedTabData}
      * @param onComplete {@link Callback} called after save is completed
      */
-    void save(int tabId, String tabDataId, Supplier<ByteBuffer> dataSupplier,
+    void save(int tabId, String tabDataId, Serializer<ByteBuffer> serializer,
             Callback<Integer> onComplete);
 
     /**

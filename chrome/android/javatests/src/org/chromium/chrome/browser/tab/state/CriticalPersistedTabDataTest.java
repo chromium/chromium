@@ -30,7 +30,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
@@ -306,7 +305,9 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION,
                 OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
-        ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
+        Serializer<ByteBuffer> serializer = criticalPersistedTabData.getSerializer();
+        serializer.preSerialize();
+        ByteBuffer serialized = serializer.get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
@@ -345,7 +346,9 @@ public class CriticalPersistedTabDataTest {
                 FilePersistedTabDataStorage persistedTabDataStorage =
                         new FilePersistedTabDataStorage();
                 persistedTabDataStorage.save(tab.getId(), config.getId(), () -> {
-                    return criticalPersistedTabData.getSerializeSupplier().get();
+                    Serializer<ByteBuffer> serializer = criticalPersistedTabData.getSerializer();
+                    serializer.preSerialize();
+                    return serializer.get();
                 }, semaphore::release);
             }
         });
@@ -375,7 +378,9 @@ public class CriticalPersistedTabDataTest {
         CriticalPersistedTabData criticalPersistedTabData = new CriticalPersistedTabData(tab, "",
                 "", PARENT_ID, ROOT_ID, TIMESTAMP, WEB_CONTENTS_STATE, CONTENT_STATE_VERSION, null,
                 THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
-        ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
+        Serializer<ByteBuffer> serializer = criticalPersistedTabData.getSerializer();
+        serializer.preSerialize();
+        ByteBuffer serialized = serializer.get();
         PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                 ShoppingPersistedTabData.class, tab.isIncognito());
         CriticalPersistedTabData deserialized =
@@ -725,24 +730,24 @@ public class CriticalPersistedTabDataTest {
             // shouldSave flag not yet set, so save shouldn't go through
             criticalPersistedTabData.save();
             verify(spyStorage, times(0))
-                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+                    .save(anyInt(), anyString(), any(Serializer.class), any(Callback.class));
 
             // shouldSave set, so save should go through
             criticalPersistedTabData.setShouldSave();
             criticalPersistedTabData.save();
             verify(spyStorage, times(1))
-                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+                    .save(anyInt(), anyString(), any(Serializer.class), any(Callback.class));
 
             // shouldSave reset after recent save, so save shouldn't go through
             criticalPersistedTabData.save();
             verify(spyStorage, times(1))
-                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+                    .save(anyInt(), anyString(), any(Serializer.class), any(Callback.class));
 
             // shouldSave set again so save should go through
             criticalPersistedTabData.setShouldSave();
             criticalPersistedTabData.save();
             verify(spyStorage, times(2))
-                    .save(anyInt(), anyString(), any(Supplier.class), any(Callback.class));
+                    .save(anyInt(), anyString(), any(Serializer.class), any(Callback.class));
         }
     }
 
