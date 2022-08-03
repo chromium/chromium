@@ -279,6 +279,9 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void LoosenLoadThrottlingPolicy() { scheduler_->LoosenThrottlingPolicy(); }
 
+  void StartBatch() { scheduler_->StartBatch(); }
+  void EndBatch() { scheduler_->EndBatch(); }
+
   // Workaround for https://crbug.com/666214.
   // TODO(hiroshige): Remove this hack.
   void EmulateLoadStartedForInspector(Resource*,

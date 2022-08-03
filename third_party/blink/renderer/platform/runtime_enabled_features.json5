@@ -261,6 +261,10 @@
       },
     },
     {
+      name: "BatchFetchRequests",
+      status: "test",
+    },
+    {
       // https://github.com/WICG/display-locking/blob/master/explainer-beforematch.md
       name: "BeforeMatchEvent",
       origin_trial_feature_name: "BeforeMatchEvent",

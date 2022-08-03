@@ -338,6 +338,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            features::kAndroidDownloadableFontsMatching},
           {"CancelFormSubmissionInDefaultHandler",
            blink::features::kCancelFormSubmissionInDefaultHandler},
+          {"BatchFetchRequests", blink::features::kBatchFetchRequests},
           {"ClipboardCustomFormats", blink::features::kClipboardCustomFormats},
           {"CSSContainerQueries", blink::features::kCSSContainerQueries},
           {"CSSOverflowForReplacedElements",

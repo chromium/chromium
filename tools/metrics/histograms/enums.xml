@@ -57645,6 +57645,7 @@ from previous Chrome versions.
   <int value="-816895294" label="DiscoverApp:disabled"/>
   <int value="-816404462" label="TabGroupsAutoCreate:disabled"/>
   <int value="-815213125" label="SplitSettings:enabled"/>
+  <int value="-814305011" label="BatchFetchRequests:disabled"/>
   <int value="-814097014" label="disable-session-crashed-bubble"/>
   <int value="-813753274" label="VrBrowsing:disabled"/>
   <int value="-813474479" label="site-per-process"/>
@@ -60244,6 +60245,7 @@ from previous Chrome versions.
   <int value="854391022" label="SmartLockUIRevamp:enabled"/>
   <int value="854730848" label="disable-app-info-dialog-mac"/>
   <int value="855746780" label="disable-physical-keyboard-autocorrect"/>
+  <int value="855981832" label="BatchFetchRequests:enabled"/>
   <int value="857391671" label="BluetoothNextHandsfreeProfile:disabled"/>
   <int value="857445869" label="enable-captive-portal-bypass-proxy"/>
   <int value="857716462" label="FeedInteractiveRefresh:enabled"/>

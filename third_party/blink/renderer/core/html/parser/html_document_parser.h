@@ -59,6 +59,7 @@ class BackgroundHTMLScanner;
 class Document;
 class DocumentFragment;
 class Element;
+class FetchBatchScope;
 class HTMLDocument;
 class HTMLParserMetrics;
 class HTMLParserScriptRunner;
@@ -82,6 +83,8 @@ size_t CORE_EXPORT GetDiscardedTokenCountForTesting();
 
 class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                                        private HTMLParserScriptRunnerHost {
+  friend FetchBatchScope;
+
  public:
   HTMLDocumentParser(HTMLDocument&,
                      ParserSynchronizationPolicy,
@@ -258,6 +261,20 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       GUARDED_BY(pending_preload_lock_);
 
   ThreadScheduler* scheduler_;
+
+  // Handle the ref counting of nested batch fetches. Usually the batching is
+  // handled by a scope-lock for the duration of the batch (and can be nested
+  // within other batches).
+  //
+  // When the parser gets detached from the document, if it happens during a
+  // scope-locked batch operation, the scope-based batching will not be able
+  // to end the batches properly. By keeping track of how deep the request
+  // batching is, the outstanding batches can be cleared outside of the scope
+  // lock at the time that the document is detached from the parser.
+  void StartFetchBatch();
+  void EndFetchBatch();
+  void FlushFetchBatch();
+  uint32_t pending_batch_operations_ = 0u;
 };
 
 }  // namespace blink

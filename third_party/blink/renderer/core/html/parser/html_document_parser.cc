@@ -410,6 +410,19 @@ class ShouldCompleteScope {
   HTMLDocumentParserState* state_;
 };
 
+class FetchBatchScope {
+  STACK_ALLOCATED();
+
+ public:
+  explicit FetchBatchScope(HTMLDocumentParser* parser) : parser_(parser) {
+    parser_->StartFetchBatch();
+  }
+  ~FetchBatchScope() { parser_->EndFetchBatch(); }
+
+ private:
+  HTMLDocumentParser* const parser_;
+};
+
 // This is a direct transcription of step 4 from:
 // http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#fragment-case
 static HTMLTokenizer::State TokenizerStateForContextElement(
@@ -579,6 +592,9 @@ bool HTMLDocumentParser::HasPendingWorkScheduledForTesting() const {
 }
 
 void HTMLDocumentParser::Detach() {
+  // Unwind any nested batch operations before being detached
+  FlushFetchBatch();
+
   // Deschedule any pending tokenizer pumps.
   task_runner_state_->SetState(
       HTMLDocumentParserState::DeferredParserState::kNotScheduled);
@@ -800,6 +816,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
   // whole buffer in this pump.  We should pass how much we parsed as part of
   // DidWriteHTML instead of WillWriteHTML.
   probe::ParseHTML probe(GetDocument(), this);
+
+  FetchBatchScope fetch_batch(this);
 
   bool should_yield = false;
   // If we've yielded more than 2 times, then set the budget to a very large
@@ -1449,6 +1467,9 @@ void HTMLDocumentParser::ProcessPreloadData(
     HTMLMetaElement::ProcessMetaCH(*GetDocument(), value.value, value.type,
                                    value.is_doc_preloader);
   }
+
+  FetchBatchScope fetch_batch(this);
+
   // Make sure that the viewport is up-to-date, so that the correct viewport
   // dimensions will be fed to the preload scanner.
   if (GetDocument()->Loader() &&
@@ -1584,6 +1605,28 @@ void HTMLDocumentParser::FlushPendingPreloads() {
 
     for (auto& preload : preload_data)
       ProcessPreloadData(std::move(preload));
+  }
+}
+
+void HTMLDocumentParser::StartFetchBatch() {
+  GetDocument()->Fetcher()->StartBatch();
+  pending_batch_operations_++;
+}
+
+void HTMLDocumentParser::EndFetchBatch() {
+  if (!IsDetached() && pending_batch_operations_ > 0) {
+    pending_batch_operations_--;
+    GetDocument()->Fetcher()->EndBatch();
+  }
+}
+
+void HTMLDocumentParser::FlushFetchBatch() {
+  if (!IsDetached() && pending_batch_operations_ > 0) {
+    ResourceFetcher* fetcher = GetDocument()->Fetcher();
+    while (pending_batch_operations_ > 0) {
+      pending_batch_operations_--;
+      fetcher->EndBatch();
+    }
   }
 }
 

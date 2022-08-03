@@ -81,6 +81,9 @@ extern const char kAriaElementReflectionDescription[];
 extern const char kAttributionReportingDebugModeName[];
 extern const char kAttributionReportingDebugModeDescription[];
 
+extern const char kBatchFetchRequestsName[];
+extern const char kBatchFetchRequestsDescription[];
+
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[];
 extern const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[];
 

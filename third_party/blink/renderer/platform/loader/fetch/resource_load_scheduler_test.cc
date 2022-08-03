@@ -825,5 +825,124 @@ TEST_F(ResourceLoadSchedulerTest,
   EXPECT_TRUE(Release(id1));
 }
 
+TEST_F(ResourceLoadSchedulerTest, UnbatchedRequestsRunInInsertOrder) {
+  Scheduler()->OnLifecycleStateChanged(
+      scheduler::SchedulingLifecycleState::kThrottled);
+  Scheduler()->SetOutstandingLimitForTesting(2, 5);
+
+  MockClient::MockClientDelegate delegate;
+
+  // Push two requests.
+  MockClient* client1 = MakeGarbageCollected<MockClient>();
+  MockClient* client2 = MakeGarbageCollected<MockClient>();
+
+  client1->SetDelegate(&delegate);
+  client2->SetDelegate(&delegate);
+
+  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client1, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLowest, 10 /* intra_priority */,
+                       &id1);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
+
+  ResourceLoadScheduler::ClientId id2 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client2, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kHighest, 1 /* intra_priority */,
+                       &id2);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id2);
+
+  EXPECT_TRUE(client1->WasRun());
+  EXPECT_TRUE(client2->WasRun());
+
+  // Release all.
+  EXPECT_TRUE(Release(id1));
+  EXPECT_TRUE(Release(id2));
+
+  // Verify low priority request ran first.
+  auto& order = delegate.client_order();
+  EXPECT_EQ(order[0], client1);
+  EXPECT_EQ(order[1], client2);
+}
+
+TEST_F(ResourceLoadSchedulerTest, BatchedRequestsRunInPriorityOrder) {
+  Scheduler()->OnLifecycleStateChanged(
+      scheduler::SchedulingLifecycleState::kThrottled);
+  Scheduler()->SetOutstandingLimitForTesting(2, 5);
+
+  MockClient::MockClientDelegate delegate;
+
+  Scheduler()->StartBatch();
+
+  // Push two requests.
+  MockClient* client1 = MakeGarbageCollected<MockClient>();
+  MockClient* client2 = MakeGarbageCollected<MockClient>();
+
+  client1->SetDelegate(&delegate);
+  client2->SetDelegate(&delegate);
+
+  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client1, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLowest, 10 /* intra_priority */,
+                       &id1);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
+
+  ResourceLoadScheduler::ClientId id2 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client2, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kHighest, 1 /* intra_priority */,
+                       &id2);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id2);
+
+  EXPECT_FALSE(client1->WasRun());
+  EXPECT_FALSE(client2->WasRun());
+
+  Scheduler()->EndBatch();
+
+  EXPECT_TRUE(client1->WasRun());
+  EXPECT_TRUE(client2->WasRun());
+
+  // Release all.
+  EXPECT_TRUE(Release(id1));
+  EXPECT_TRUE(Release(id2));
+
+  // Verify high priority request ran first.
+  auto& order = delegate.client_order();
+  EXPECT_EQ(order[0], client2);
+  EXPECT_EQ(order[1], client1);
+}
+
+TEST_F(ResourceLoadSchedulerTest, NestedBatchesAccumulateCorrectly) {
+  Scheduler()->OnLifecycleStateChanged(
+      scheduler::SchedulingLifecycleState::kThrottled);
+  Scheduler()->SetOutstandingLimitForTesting(2, 5);
+
+  MockClient::MockClientDelegate delegate;
+
+  // Create 2 nested batches
+  Scheduler()->StartBatch();
+  Scheduler()->StartBatch();
+
+  MockClient* client1 = MakeGarbageCollected<MockClient>();
+  client1->SetDelegate(&delegate);
+
+  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
+  Scheduler()->Request(client1, ThrottleOption::kThrottleable,
+                       ResourceLoadPriority::kLowest, 10 /* intra_priority */,
+                       &id1);
+  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
+
+  EXPECT_FALSE(client1->WasRun());
+
+  // Exit the inner batch and make sure the requests are not released
+  Scheduler()->EndBatch();
+  EXPECT_FALSE(client1->WasRun());
+
+  // Exit the outer batch and verify that the requests are no longer accumulated
+  Scheduler()->EndBatch();
+  EXPECT_TRUE(client1->WasRun());
+
+  // Release all.
+  EXPECT_TRUE(Release(id1));
+}
+
 }  // namespace
 }  // namespace blink

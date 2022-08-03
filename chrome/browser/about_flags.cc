@@ -8996,6 +8996,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseVcnCardOnFileStandaloneCvcFields)},
 
+    {"batch-fetch-requests", flag_descriptions::kBatchFetchRequestsName,
+     flag_descriptions::kBatchFetchRequestsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kBatchFetchRequests)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"desktop-partial-translate",
      flag_descriptions::kDesktopPartialTranslateName,

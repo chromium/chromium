@@ -31,6 +31,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::Feature
     kAutomaticLazyFrameLoadingToEmbedUrls;
 BLINK_COMMON_EXPORT extern const base::Feature kBackForwardCacheDedicatedWorker;
+BLINK_COMMON_EXPORT extern const base::Feature kBatchFetchRequests;
 BLINK_COMMON_EXPORT extern const base::Feature
     kBlockingDownloadsInAdFrameWithoutUserActivation;
 BLINK_COMMON_EXPORT extern const base::Feature kCSSContainerQueries;

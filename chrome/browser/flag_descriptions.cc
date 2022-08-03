@@ -103,6 +103,10 @@ const char kAttributionReportingDebugModeDescription[] =
     "reporting delays and noise. Only works if the Attribution Reporting API "
     "is already enabled.";
 
+const char kBatchFetchRequestsName[] = "Batch Fetch Requests";
+const char kBatchFetchRequestsDescription[] =
+    "Process resource requests in batches while parsing a HTML document.";
+
 const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[] =
     "Broker file operations on disk cache in the Network Service";
 const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =

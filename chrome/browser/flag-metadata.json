@@ -624,6 +624,11 @@
     "expiry_milestone": 109
   },
   {
+    "name": "batch-fetch-requests",
+    "owners": ["pmeenan"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "biometric-authentication-for-filling",
     "owners": ["sygiet@google.com", "vsemeniuk@google.com"],
     "expiry_milestone": 111

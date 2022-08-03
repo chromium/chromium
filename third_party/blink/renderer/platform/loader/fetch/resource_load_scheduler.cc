@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/aggregated_metric_reporter.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -173,7 +174,14 @@ void ResourceLoadScheduler::Request(ResourceLoadSchedulerClient* client,
 
   // Remember the ClientId since MaybeRun() below may destruct the caller
   // instance and |id| may be inaccessible after the call.
-  MaybeRun();
+  // Don't run if we are still batching fetch requests.
+
+  // MaybeRun() will get called directly at the end of the batch if a batch
+  // operation is active.
+  if (0 == pending_batch_operations_ ||
+      !RuntimeEnabledFeatures::BatchFetchRequestsEnabled()) {
+    MaybeRun();
+  }
 }
 
 void ResourceLoadScheduler::SetPriority(ClientId client_id,
@@ -472,6 +480,19 @@ void ResourceLoadScheduler::SetConnectionInfo(
   }
 
   MaybeRun();
+}
+
+void ResourceLoadScheduler::StartBatch() {
+  pending_batch_operations_++;
+}
+
+void ResourceLoadScheduler::EndBatch() {
+  DCHECK_NE(0U, pending_batch_operations_);
+
+  pending_batch_operations_--;
+  if (0 == pending_batch_operations_) {
+    MaybeRun();
+  }
 }
 
 bool ResourceLoadScheduler::CanRequestForMultiplexedConnectionsInTight() const {
