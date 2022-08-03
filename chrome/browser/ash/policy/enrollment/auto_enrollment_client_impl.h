@@ -196,7 +196,7 @@ class AutoEnrollmentClientImpl final
   // Sends server state availability request and parses response. Reports
   // results.
   std::unique_ptr<ServerStateAvailabilityRequester>
-      server_state_avalability_requester_;
+      server_state_availability_requester_;
 
   // Sends server state retrieval request and parses response. Reports results.
   std::unique_ptr<ServerStateRetriever> server_state_retriever_;

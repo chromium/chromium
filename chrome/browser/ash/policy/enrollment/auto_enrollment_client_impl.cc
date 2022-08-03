@@ -787,11 +787,11 @@ void AutoEnrollmentClientImpl::RegisterPrefs(PrefRegistrySimple* registry) {
 AutoEnrollmentClientImpl::AutoEnrollmentClientImpl(
     ProgressCallback callback,
     std::unique_ptr<ServerStateAvailabilityRequester>
-        server_state_avalability_requester,
+        server_state_availability_requester,
     std::unique_ptr<ServerStateRetriever> server_state_retriever)
     : progress_callback_(std::move(callback)),
-      server_state_avalability_requester_(
-          std::move(server_state_avalability_requester)),
+      server_state_availability_requester_(
+          std::move(server_state_availability_requester)),
       server_state_retriever_(std::move(server_state_retriever)) {
   DCHECK(progress_callback_);
 }
@@ -852,14 +852,14 @@ void AutoEnrollmentClientImpl::RequestServerStateAvailability() {
          state_ == State::kRequestServerStateAvailabilityServerError);
   state_ = State::kRequestingServerStateAvailability;
 
-  if (server_state_avalability_requester_->GetServerStateIfObtained()) {
+  if (server_state_availability_requester_->GetServerStateIfObtained()) {
     OnServerStateAvailabilityCompleted(ServerStateAvailabilityResult::kSuccess);
     return;
   }
 
   ReportProgress(AUTO_ENROLLMENT_STATE_PENDING);
 
-  server_state_avalability_requester_->Start(base::BindOnce(
+  server_state_availability_requester_->Start(base::BindOnce(
       &AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted,
       base::Unretained(this)));
 }
@@ -870,8 +870,8 @@ void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
 
   switch (result) {
     case ServerStateAvailabilityResult::kSuccess:
-      DCHECK(server_state_avalability_requester_->GetServerStateIfObtained());
-      if (server_state_avalability_requester_->GetServerStateIfObtained()
+      DCHECK(server_state_availability_requester_->GetServerStateIfObtained());
+      if (server_state_availability_requester_->GetServerStateIfObtained()
               .value()) {
         state_ = State::kRequestServerStateAvailabilitySuccess;
         RequestStateRetrieval();
@@ -893,7 +893,7 @@ void AutoEnrollmentClientImpl::OnServerStateAvailabilityCompleted(
       Retry();
       break;
     case ServerStateAvailabilityResult::kPsmInternalError:
-      DCHECK(!server_state_avalability_requester_->GetServerStateIfObtained());
+      DCHECK(!server_state_availability_requester_->GetServerStateIfObtained());
       state_ = State::kFinished;
       ReportFinished();
       break;
@@ -904,9 +904,9 @@ void AutoEnrollmentClientImpl::RequestStateRetrieval() {
   DCHECK(state_ == State::kRequestServerStateAvailabilitySuccess ||
          state_ == State::kRequestStateRetrievalConnectionError ||
          state_ == State::kRequestStateRetrievalServerError);
-  DCHECK(server_state_avalability_requester_->GetServerStateIfObtained());
+  DCHECK(server_state_availability_requester_->GetServerStateIfObtained());
   DCHECK(
-      server_state_avalability_requester_->GetServerStateIfObtained().value());
+      server_state_availability_requester_->GetServerStateIfObtained().value());
   DCHECK(!server_state_retriever_->GetAutoEnrollmentStateIfObtained());
   state_ = State::kRequestingStateRetrieval;
 
