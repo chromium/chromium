@@ -67052,6 +67052,12 @@ Called by update_use_counter_css.py.-->
   <int value="13"
       label="A navigation suggestion is found using a character swap match
              against a top 500 domain."/>
+  <int value="14"
+      label="A navigation suggestion is found using a combo squatting match
+             against a popular brand name."/>
+  <int value="15"
+      label="A navigation suggestion is found using a combo squatting match
+             against an engaged site."/>
 </enum>
 
 <enum name="NavigationURLScheme">
