@@ -36,8 +36,6 @@
 #include "components/mirroring/service/udp_socket_client.h"
 #include "components/mirroring/service/video_capture_client.h"
 #include "crypto/random.h"
-#include "gpu/config/gpu_feature_info.h"
-#include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/audio/audio_input_device.h"
 #include "media/base/audio_capturer_source.h"
 #include "media/base/bind_to_current_loop.h"
@@ -359,15 +357,13 @@ Session::Session(
     mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : session_params_(*session_params),
-      state_(MIRRORING),
       observer_(std::move(observer)),
       resource_provider_(std::move(resource_provider)),
       message_dispatcher_(std::make_unique<MessageDispatcher>(
           std::move(outbound_channel),
           std::move(inbound_channel),
           base::BindRepeating(&Session::OnResponseParsingError,
-                              base::Unretained(this)))),
-      gpu_channel_host_(nullptr) {
+                              base::Unretained(this)))) {
   DCHECK(resource_provider_);
   mirror_settings_.SetResolutionConstraints(max_resolution.width(),
                                             max_resolution.height());
@@ -391,26 +387,41 @@ Session::Session(
 
   setup_querier_ = std::make_unique<ReceiverSetupQuerier>(
       session_params_.receiver_address, std::move(url_loader_factory));
+}
 
-  if (gpu_) {
-    gpu_channel_host_ = gpu_->EstablishGpuChannelSync();
-    if (gpu_channel_host_ &&
-        gpu_channel_host_->gpu_feature_info().status_values
-                [gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE] ==
-            gpu::kGpuFeatureStatusEnabled) {
-      supported_profiles_ =
-          media::GpuVideoAcceleratorUtil::ConvertGpuToMediaEncodeProfiles(
-              gpu_channel_host_->gpu_info()
-                  .video_encode_accelerator_supported_profiles);
-    }
+void Session::AsyncInitialize(AsyncInitializeDoneCB done_cb) {
+  init_done_cb_ = std::move(done_cb);
+  if (!gpu_) {
+    // Post OnAsyncInitializeDone() instead of calling it directly to make sure
+    // that CreateAndSendOffer() is always called asynchronously. This kind of
+    // consistency is good for testing and reliability.
+    auto runner = base::ThreadTaskRunnerHandle::Get();
+    SupportedProfiles empty_profiles;
+    runner->PostTask(FROM_HERE, base::BindOnce(&Session::OnAsyncInitializeDone,
+                                               weak_factory_.GetWeakPtr(),
+                                               std::move(empty_profiles)));
+    return;
   }
 
-  if (supported_profiles_.empty()) {
+  gpu_->CreateVideoEncodeAcceleratorProvider(
+      vea_provider_.BindNewPipeAndPassReceiver());
+  vea_provider_->GetVideoEncodeAcceleratorSupportedProfiles(base::BindOnce(
+      &Session::OnAsyncInitializeDone, weak_factory_.GetWeakPtr()));
+}
+
+void Session::OnAsyncInitializeDone(const SupportedProfiles& profiles) {
+  if (profiles.empty()) {
     // HW encoding is not supported.
-    gpu_channel_host_ = nullptr;
     gpu_.reset();
+  } else {
+    supported_profiles_ = profiles;
   }
+  DCHECK_EQ(state_, INITIALIZING);
+  state_ = MIRRORING;
+
   CreateAndSendOffer();
+  if (!init_done_cb_.is_null())
+    std::move(init_done_cb_).Run();
 }
 
 Session::~Session() {
@@ -476,7 +487,6 @@ void Session::StopSession() {
   video_encode_thread_ = nullptr;
   video_capture_client_.reset();
   resource_provider_.reset();
-  gpu_channel_host_ = nullptr;
   gpu_.reset();
   if (observer_) {
     observer_->DidStop();
@@ -512,17 +522,13 @@ void Session::OnEncoderStatusChange(OperationalStatus status) {
   }
 }
 
-media::VideoEncodeAccelerator::SupportedProfiles
-Session::GetSupportedVeaProfiles() {
-  return supported_profiles_;
-}
-
 void Session::CreateVideoEncodeAccelerator(
     media::cast::ReceiveVideoEncodeAcceleratorCallback callback) {
+  DCHECK_NE(state_, INITIALIZING);
   if (callback.is_null())
     return;
   std::unique_ptr<media::VideoEncodeAccelerator> mojo_vea;
-  if (gpu_ && gpu_channel_host_ && !supported_profiles_.empty()) {
+  if (gpu_ && !supported_profiles_.empty()) {
     if (!vea_provider_) {
       gpu_->CreateVideoEncodeAcceleratorProvider(
           vea_provider_.BindNewPipeAndPassReceiver());
@@ -808,7 +814,8 @@ void Session::ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
 // TODO(issuetracker.google.com/159352836): Refactor to use libcast's
 // OFFER message format.
 void Session::CreateAndSendOffer() {
-  DCHECK(state_ != STOPPED);
+  DCHECK_NE(state_, STOPPED);
+  DCHECK_NE(state_, INITIALIZING);
 
   // The random AES key and initialization vector pair used by all streams in
   // this session.
@@ -844,7 +851,7 @@ void Session::CreateAndSendOffer() {
       // First, check if hardware VP8 and H264 are available.
       if (media::cast::ExternalVideoEncoder::IsRecommended(
               Codec::CODEC_VIDEO_VP8, session_params_.receiver_model_name,
-              GetSupportedVeaProfiles())) {
+              supported_profiles_)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_VP8, Codec::CODEC_VIDEO_VP8);
         config.use_external_encoder = true;
@@ -855,7 +862,7 @@ void Session::CreateAndSendOffer() {
       }
       if (media::cast::ExternalVideoEncoder::IsRecommended(
               Codec::CODEC_VIDEO_H264, session_params_.receiver_model_name,
-              GetSupportedVeaProfiles())) {
+              supported_profiles_)) {
         FrameSenderConfig config = MirrorSettings::GetDefaultVideoConfig(
             RtpPayloadType::VIDEO_H264, Codec::CODEC_VIDEO_H264);
         config.use_external_encoder = true;

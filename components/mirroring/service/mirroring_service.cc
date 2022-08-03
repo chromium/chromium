@@ -34,6 +34,13 @@ void MirroringService::Start(
       std::move(params), max_resolution, std::move(observer),
       std::move(resource_provider), std::move(outbound_channel),
       std::move(inbound_channel), io_task_runner_);
+
+  // We could put a waitable event here and wait till initialization completed
+  // before exiting Start(). But that would actually be just waste of effort,
+  // because Session will not send anything over the channels until
+  // initialization is completed, hence no outer calls to the session
+  // will be made.
+  session_->AsyncInitialize(Session::AsyncInitializeDoneCB());
 }
 
 void MirroringService::OnDisconnect() {

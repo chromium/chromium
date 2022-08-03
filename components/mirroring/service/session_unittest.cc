@@ -125,6 +125,8 @@ class SessionTest : public mojom::ResourceProvider,
   // Called when sends an outbound message.
   MOCK_METHOD1(OnOutboundMessage, void(const std::string& message_type));
 
+  MOCK_METHOD0(OnInitDone, void());
+
   // mojom::CastMessageHandler implementation. For outbound messages.
   void Send(mojom::CastMessagePtr message) override {
     EXPECT_TRUE(message->message_namespace == mojom::kWebRtcNamespace ||
@@ -231,6 +233,10 @@ class SessionTest : public mojom::ResourceProvider,
     task_environment_.RunUntilIdle();
   }
 
+  Session::AsyncInitializeDoneCB MakeInitDoneCB() {
+    return base::BindOnce(&SessionTest::OnInitDone, base::Unretained(this));
+  }
+
   // Create a mirroring session. Expect to send OFFER message.
   void CreateSession(SessionType session_type) {
     session_type_ = session_type;
@@ -257,11 +263,14 @@ class SessionTest : public mojom::ResourceProvider,
     EXPECT_CALL(*this, OnGetNetworkContext()).Times(1);
     EXPECT_CALL(*this, OnError(_)).Times(0);
     EXPECT_CALL(*this, OnOutboundMessage("OFFER")).Times(1);
+    EXPECT_CALL(*this, OnInitDone()).Times(1);
+
     session_ = std::make_unique<Session>(
         std::move(session_params), gfx::Size(1920, 1080),
         std::move(session_observer_remote), std::move(resource_provider_remote),
         std::move(outbound_channel_remote),
         inbound_channel_.BindNewPipeAndPassReceiver(), nullptr);
+    session_->AsyncInitialize(MakeInitDoneCB());
     task_environment_.RunUntilIdle();
     Mock::VerifyAndClear(this);
   }

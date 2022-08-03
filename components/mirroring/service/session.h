@@ -34,10 +34,6 @@ class CastTransport;
 }  // namespace cast
 }  // namespace media
 
-namespace gpu {
-class GpuChannelHost;
-}  // namespace gpu
-
 namespace viz {
 class Gpu;
 }  // namespace viz
@@ -71,7 +67,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
 
   ~Session() override;
 
-  // RtpStreamClient implemenation.
+  using AsyncInitializeDoneCB = base::OnceCallback<void()>;
+  void AsyncInitialize(AsyncInitializeDoneCB done_cb);
+
+  // RtpStreamClient implementation.
   void OnError(const std::string& message) override;
   void RequestRefreshFrame() override;
   void CreateVideoEncodeAccelerator(
@@ -112,6 +111,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
 
  private:
   class AudioCapturingCallback;
+  using SupportedProfiles = media::VideoEncodeAccelerator::SupportedProfiles;
 
   // MediaRemoter::Client implementation.
   void ConnectToRemotingSource(
@@ -145,26 +145,30 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   // Callback by media::cast::VideoSender to report resource utilization.
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback);
 
-  media::VideoEncodeAccelerator::SupportedProfiles GetSupportedVeaProfiles();
-
   // Create and send OFFER message.
   void CreateAndSendOffer();
 
   // Send GET_CAPABILITIES message.
   void QueryCapabilitiesForRemoting();
 
+  void OnAsyncInitializeDone(const SupportedProfiles& profiles);
+
   // Provided by client.
   const mojom::SessionParameters session_params_;
 
   // State transition:
+  // INITIALIZING
+  //     |
+  //    \./
   // MIRRORING <-------> REMOTING
   //     |                   |
   //     .---> STOPPED <----.
   enum {
-    MIRRORING,  // A mirroring streaming session is starting or started.
-    REMOTING,   // A remoting streaming session is starting or started.
-    STOPPED,    // The session is stopped due to user's request or errors.
-  } state_;
+    INITIALIZING,  // The session is initializing, and can't be used yet.
+    MIRRORING,     // A mirroring streaming session is starting or started.
+    REMOTING,      // A remoting streaming session is starting or started.
+    STOPPED,       // The session is stopped due to user's request or errors.
+  } state_ = INITIALIZING;
 
   mojo::Remote<mojom::SessionObserver> observer_;
   mojo::Remote<mojom::ResourceProvider> resource_provider_;
@@ -188,9 +192,11 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   scoped_refptr<media::AudioInputDevice> audio_input_device_;
   std::unique_ptr<MediaRemoter> media_remoter_;
   std::unique_ptr<viz::Gpu> gpu_;
-  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
-  media::VideoEncodeAccelerator::SupportedProfiles supported_profiles_;
+  SupportedProfiles supported_profiles_;
   mojo::Remote<media::mojom::VideoEncodeAcceleratorProvider> vea_provider_;
+
+  // A callback to call after initialization is completed
+  AsyncInitializeDoneCB init_done_cb_;
 
   base::WeakPtrFactory<Session> weak_factory_{this};
 };
