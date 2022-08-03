@@ -7,10 +7,6 @@
     padding-bottom: var(--cluster-padding-vertical);
   }
 
-  :host([in-side-panel]) {
-    padding-bottom: 0;
-  }
-
   :host-context(.focus-outline-visible):host(:focus) #container {
     box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
   }
@@ -21,20 +17,16 @@
     margin-bottom: var(--cluster-padding-vertical);
   }
 
-  :host([in-side-panel]) #container {
-    border-bottom: 3px solid var(--cr-separator-color);
-  }
-
   /* We need an inner container div to apply spacing between clusters. This is
      because iron-list ignores the margin on the host element. */
-  :host(:not([in-side-panel])) #container {
+  #container {
     background-color: var(--cr-card-background-color);
     border-radius: var(--cr-card-border-radius);
     box-shadow: var(--cr-card-shadow);
     padding: var(--cluster-padding-vertical) 0;
   }
 
-  .label-row {
+  #label-row {
     align-items: center;
     display: flex;
     flex-grow: 1;
@@ -45,18 +37,10 @@
     user-select: none;
   }
 
-  .label {
+  #label {
     color: var(--cr-primary-text-color);
     font-size: 1rem;  /* 16px */
     font-weight: 500;
-  }
-
-  #label-and-timestamp {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    row-gap: 6px;
   }
 
   #related-searches {
@@ -115,18 +99,8 @@
     on-open-all-visits="onOpenAllVisits_"
     on-remove-all-visits="onRemoveAllVisits_"
     on-remove-visit="onRemoveVisit_">
-  <!-- In the side panel the label and timestamp should be stacked on the
-       left, while outside the side panel the timestamp and the menu should
-       be side by side on the right. -->
-  <div class="label-row" hidden="[[!inSidePanel]]">
-    <div id="label-and-timestamp">
-      <div id="labelSidePanel" class="label"></div>
-      <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
-    </div>
-    <menu-container></menu-container>
-  </div>
-  <div class="label-row" hidden="[[inSidePanel]]">
-    <div id="label" class="label"></div>
+  <div id="label-row">
+    <div id="label"></div>
     <div class="timestamp-and-menu">
       <div class="timestamp">[[cluster.visits.0.relativeDate]]</div>
       <menu-container></menu-container>
