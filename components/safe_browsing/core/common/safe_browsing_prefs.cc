@@ -282,8 +282,8 @@ void UpdatePrefsBeforeSecurityInterstitial(PrefService* prefs) {
   prefs->SetBoolean(prefs::kSafeBrowsingSawInterstitialScoutReporting, true);
 }
 
-base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
-  base::ListValue preferences_list;
+base::Value::List GetSafeBrowsingPreferencesList(PrefService* prefs) {
+  base::Value::List preferences_list;
 
   const char* safe_browsing_preferences[] = {
       prefs::kSafeBrowsingEnabled,
@@ -293,15 +293,15 @@ base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
   // Add the status of the preferences if they are Enabled or Disabled for the
   // user.
   for (const char* preference : safe_browsing_preferences) {
-    preferences_list.Append(base::Value(preference));
+    preferences_list.Append(preference);
     bool enabled = prefs->GetBoolean(preference);
-    preferences_list.Append(base::Value(enabled ? "Enabled" : "Disabled"));
+    preferences_list.Append(enabled ? "Enabled" : "Disabled");
   }
   return preferences_list;
 }
 
-base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs) {
-  base::ListValue preferences_list;
+base::Value::List GetSafeBrowsingPoliciesList(PrefService* prefs) {
+  base::Value::List preferences_list;
   const base::Value::List& allowlist_domains =
       prefs->GetValueList(prefs::kSafeBrowsingAllowlistDomains);
   std::vector<std::string> domain_list;
@@ -310,16 +310,14 @@ base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs) {
   for (const auto& domain : domain_list) {
     domains = domains + " " + domain;
   }
-  preferences_list.Append(base::Value(domains));
-  preferences_list.Append(base::Value(prefs::kSafeBrowsingAllowlistDomains));
-  preferences_list.Append(base::Value(
-      prefs->GetString(prefs::kPasswordProtectionChangePasswordURL)));
+  preferences_list.Append(domains);
+  preferences_list.Append(prefs::kSafeBrowsingAllowlistDomains);
   preferences_list.Append(
-      base::Value(prefs::kPasswordProtectionChangePasswordURL));
-  preferences_list.Append(base::Value(base::NumberToString(
-      prefs->GetInteger(prefs::kPasswordProtectionWarningTrigger))));
-  preferences_list.Append(
-      base::Value(prefs::kPasswordProtectionWarningTrigger));
+      prefs->GetString(prefs::kPasswordProtectionChangePasswordURL));
+  preferences_list.Append(prefs::kPasswordProtectionChangePasswordURL);
+  preferences_list.Append(base::NumberToString(
+      prefs->GetInteger(prefs::kPasswordProtectionWarningTrigger)));
+  preferences_list.Append(prefs::kPasswordProtectionWarningTrigger);
 
   std::vector<GURL> login_urls_list;
   GetPasswordProtectionLoginURLsPref(*prefs, &login_urls_list);
@@ -327,8 +325,8 @@ base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs) {
   for (const auto& login_url : login_urls_list) {
     login_urls = login_urls + " " + login_url.spec();
   }
-  preferences_list.Append(base::Value(login_urls));
-  preferences_list.Append(base::Value(prefs::kPasswordProtectionLoginURLs));
+  preferences_list.Append(login_urls);
+  preferences_list.Append(prefs::kPasswordProtectionLoginURLs);
   return preferences_list;
 }
 

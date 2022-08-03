@@ -11,10 +11,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace safe_browsing {
 // Features list, in alphabetical order.
 
@@ -181,7 +177,7 @@ extern const base::Feature kVisualFeaturesSizes;
 // Controls whether we send visual features in CSPP pings.
 extern const base::Feature kVisualFeaturesInCsppPings;
 
-base::ListValue GetFeatureStatusList();
+base::Value::List GetFeatureStatusList();
 
 // Returns the tag used for Client Side Phishing Detection models, as
 // computed from the current feature flags.
