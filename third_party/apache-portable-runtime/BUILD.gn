@@ -10,6 +10,9 @@ config("apr_warnings") {
     cflags = [
       # TODO(https://crbug.com/1347226): Investigate, fix.
       "-Wno-deprecated-declarations",
+
+      # TODO(https://crbug.com/1343303): Remove once fix is rolled in.
+      "-Wno-array-parameter",
     ]
   }
 }
