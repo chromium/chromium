@@ -122,7 +122,8 @@ export class SettingsPasswordCheckElement extends
 
       canUsePasswordCheckup_: {
         type: Boolean,
-        computed: 'computeCanUsePasswordCheckup_(syncPrefs_, syncStatus_)',
+        computed: 'computeCanUsePasswordCheckup_(syncPrefs_,' +
+            'isSyncingPasswords_)',
       },
 
       isButtonHidden_: {
@@ -166,7 +167,7 @@ export class SettingsPasswordCheckElement extends
       showNoCompromisedPasswordsLabel_: {
         type: Boolean,
         computed: 'computeShowNoCompromisedPasswordsLabel_(' +
-            'syncStatus_, prefs.*, status, leakedPasswords)',
+            'isSignedOut_, prefs.*, status, leakedPasswords)',
       },
 
       showHideMenuTitle_: {
@@ -820,7 +821,7 @@ export class SettingsPasswordCheckElement extends
    * @return whether the user can use the online Password Checkup.
    */
   private computeCanUsePasswordCheckup_(): boolean {
-    return !!this.syncStatus_ && !!this.syncStatus_.signedIn &&
+    return this.isSyncingPasswords_ &&
         (!this.syncPrefs_ || !this.syncPrefs_.encryptAllData);
   }
 
@@ -832,7 +833,7 @@ export class SettingsPasswordCheckElement extends
 
   private computeShowNoCompromisedPasswordsLabel_(): boolean {
     // Check if user isn't signed in.
-    if (!this.syncStatus_ || !this.syncStatus_.signedIn) {
+    if (this.isSignedOut_) {
       return false;
     }
 
