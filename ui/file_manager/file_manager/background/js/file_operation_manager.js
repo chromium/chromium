@@ -694,7 +694,11 @@ export class FileOperationManagerImpl {
   notifyExtractDone(taskId) {
     if (window.isSWA) {
       // TODO(crbug.com/953256) Add closure annotation.
-      this.fileManager_.taskController.deleteExtractTaskDetails(taskId);
+      // taskController is set asynchronously, this can be called on startup
+      // if another SWA window is finishing an extract (crbug.com/1348432).
+      if (this.fileManager_.taskController) {
+        this.fileManager_.taskController.deleteExtractTaskDetails(taskId);
+      }
     }
   }
 
@@ -707,7 +711,11 @@ export class FileOperationManagerImpl {
    */
   handleMissingPassword(taskId) {
     // TODO(crbug.com/953256) Add closure annotation.
-    this.fileManager_.taskController.handleMissingPassword(taskId);
+    // null check is unlikely to be needed, but there's no guarantee
+    // that taskController has been initialized on a password event.
+    if (this.fileManager_.taskController) {
+      this.fileManager_.taskController.handleMissingPassword(taskId);
+    }
   }
 
   /**
