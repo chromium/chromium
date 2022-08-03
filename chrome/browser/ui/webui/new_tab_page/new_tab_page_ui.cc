@@ -727,6 +727,7 @@ void NewTabPageUI::CreateBrowserCommandHandler(
   std::vector<Command> supported_commands = {
       Command::kOpenSafetyCheck,
       Command::kOpenSafeBrowsingEnhancedProtectionSettings,
+      Command::kNoOpCommand,
   };
   promo_browser_command_handler_ = std::make_unique<BrowserCommandHandler>(
       std::move(pending_handler), profile_, supported_commands);

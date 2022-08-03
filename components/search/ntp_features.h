@@ -82,6 +82,8 @@ extern const char kNtpDriveModuleCacheMaxAgeSParam[];
 // Parameter for communicating the experiment group of the Drive module
 // experiment.
 extern const char kNtpDriveModuleExperimentGroupParam[];
+// Parameter determining the type of middle slot promo data to render.
+extern const char kNtpMiddleSlotPromoDismissalParam[];
 // Parameter determining the type of Photos data to render.
 extern const char kNtpPhotosModuleDataParam[];
 // Parameter determining the art work in opt-in card.

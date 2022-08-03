@@ -67,6 +67,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
 namespace {
 
@@ -614,10 +615,22 @@ void NewTabPageHandler::ChooseLocalCustomBackground(
 }
 
 void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
+  std::string command_id;
   // Replace the promo URL with "command:<id>" if such a command ID is set
   // via the feature params.
-  const std::string command_id = base::GetFieldTrialParamValueByFeature(
-      features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
+  // If fake data is being used, we set the command_id to 7, which corresponds
+  // to kNoOpCommand in
+  // ui/webui/resources/js/browser_command/browser_command.mojom
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpMiddleSlotPromoDismissal,
+          ntp_features::kNtpMiddleSlotPromoDismissalParam) == "fake") {
+    command_id = base::NumberToString(
+        static_cast<int>(browser_command::mojom::Command::kNoOpCommand));
+  } else {
+    command_id = base::GetFieldTrialParamValueByFeature(
+        features::kPromoBrowserCommands, features::kBrowserCommandIdParam);
+  }
+
   if (!command_id.empty()) {
     auto promo = new_tab_page::mojom::Promo::New();
     std::vector<new_tab_page::mojom::PromoPartPtr> parts;
@@ -636,6 +649,7 @@ void NewTabPageHandler::GetPromo(GetPromoCallback callback) {
     link->text = "Test command: " + command_id;
     parts.push_back(new_tab_page::mojom::PromoPart::NewLink(std::move(link)));
     promo->middle_slot_parts = std::move(parts);
+    promo->id = "test" + command_id;
     std::move(callback).Run(std::move(promo));
     return;
   }

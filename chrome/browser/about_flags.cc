@@ -1615,6 +1615,14 @@ const FeatureEntry::FeatureVariation kNtpDriveModuleVariations[] = {
      std::size(kNtpDriveModuleManagedUsersOnly), nullptr},
 };
 
+const FeatureEntry::FeatureParam kNtpMiddleSlotPromoDismissalFakeData[] = {
+    {ntp_features::kNtpMiddleSlotPromoDismissalParam, "fake"}};
+const FeatureEntry::FeatureVariation kNtpMiddleSlotPromoDismissalVariations[] =
+    {
+        {"- Fake Data", kNtpMiddleSlotPromoDismissalFakeData,
+         std::size(kNtpMiddleSlotPromoDismissalFakeData), nullptr},
+};
+
 const FeatureEntry::FeatureParam kNtpPhotosModuleFakeData0[] = {
     {ntp_features::kNtpPhotosModuleDataParam, "0"}};
 const FeatureEntry::FeatureParam kNtpPhotosModuleFakeData1[] = {
@@ -5569,7 +5577,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-middle-slot-promo-dismissal",
      flag_descriptions::kNtpMiddleSlotPromoDismissalName,
      flag_descriptions::kNtpMiddleSlotPromoDismissalDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kNtpMiddleSlotPromoDismissal)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpMiddleSlotPromoDismissal,
+                                    kNtpMiddleSlotPromoDismissalVariations,
+                                    "DesktopNtpModules")},
 
     {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
      flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,

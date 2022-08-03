@@ -90,6 +90,9 @@ void BrowserCommandHandler::CanExecuteCommand(
     case Command::kOpenPasswordManager:
       can_execute = true;
       break;
+    case Command::kNoOpCommand:
+      can_execute = true;
+      break;
   }
   std::move(callback).Run(can_execute);
 }
@@ -150,6 +153,9 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       NavigateToURL(
           GURL(chrome::GetSettingsUrl(chrome::kPasswordManagerSubPage)),
           disposition);
+      break;
+    case Command::kNoOpCommand:
+      // Nothing to do.
       break;
     default:
       NOTREACHED() << "Unspecified behavior for command " << id;

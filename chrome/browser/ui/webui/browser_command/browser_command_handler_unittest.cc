@@ -46,6 +46,7 @@ std::vector<Command> supported_commands = {
     Command::kOpenPrivacyGuide,
     Command::kStartTabGroupTutorial,
     Command::kOpenPasswordManager,
+    Command::kNoOpCommand,
 };
 
 const ui::ElementContext kTestContext1(1);
