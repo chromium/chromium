@@ -71,9 +71,4 @@ class ProbeServiceAsh : public crosapi::mojom::ProbeService {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::ProbeServiceAsh;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_TELEMETRY_EXTENSION_PROBE_SERVICE_ASH_H_
