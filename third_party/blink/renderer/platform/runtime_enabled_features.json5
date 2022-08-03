@@ -1280,6 +1280,11 @@
       status: "stable",
     },
     {
+      // crbug.com/1346221
+      name: "LayoutNGFrameSet",
+      depends_on: ["LayoutNG"],
+    },
+    {
       // Block fragmentation support in the grid layout algorithm.
       // https://drafts.csswg.org/css-grid-1/#pagination
       name: "LayoutNGGridFragmentation",
