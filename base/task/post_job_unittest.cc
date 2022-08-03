@@ -8,11 +8,13 @@
 #include <iterator>
 #include <numeric>
 
+#include "base/barrier_closure.h"
 #include "base/task/test_task_traits_extension.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/test/test_waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,10 +36,17 @@ TEST(PostJobTest, PostJobSimple) {
 TEST(PostJobTest, CreateJobSimple) {
   test::TaskEnvironment task_environment;
   std::atomic_size_t num_tasks_to_run(4);
+  TestWaitableEvent threads_continue;
+  RepeatingClosure barrier = BarrierClosure(
+      num_tasks_to_run, BindLambdaForTesting([&threads_continue]() {
+        threads_continue.Signal();
+      }));
   bool job_started = false;
   auto handle =
       CreateJob(FROM_HERE, {}, BindLambdaForTesting([&](JobDelegate* delegate) {
                   EXPECT_TRUE(job_started);
+                  barrier.Run();
+                  threads_continue.Wait();
                   --num_tasks_to_run;
                 }),
                 BindLambdaForTesting([&](size_t /*worker_count*/) -> size_t {

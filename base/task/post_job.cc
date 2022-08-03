@@ -127,6 +127,12 @@ void JobHandle::Join() {
       << "Join may not be called on Job with higher priority than the current "
          "thread.";
   UpdatePriority(internal::GetTaskPriorityForCurrentThread());
+  if (task_source_->GetRemainingConcurrency() != 0) {
+    // Make sure the task source is in the queue if not enough workers are
+    // contributing. This is necessary for CreateJob(...).Join(). This is a
+    // noop if the task source was already in the queue.
+    task_source_->delegate()->EnqueueJobTaskSource(task_source_);
+  }
   bool must_run = task_source_->WillJoin();
   while (must_run)
     must_run = task_source_->RunJoinTask();
