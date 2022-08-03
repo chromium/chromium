@@ -13,7 +13,7 @@ namespace blink {
 // All transform caches invalidate themselves by tracking a local cache
 // generation, and invalidating their cache if their cache generation disagrees
 // with s_global_generation.
-unsigned GeometryMapperTransformCache::s_global_generation;
+unsigned GeometryMapperTransformCache::s_global_generation = 1;
 
 void GeometryMapperTransformCache::ClearCache() {
   s_global_generation++;

@@ -280,10 +280,8 @@ class PLATFORM_EXPORT GeometryMapper {
       OverlayScrollbarClipBehavior,
       InclusiveIntersectOrNot);
 
-  // The return value has the same meaning as that for
-  // LocalToAncestorVisualRect.
   template <ForCompositingOverlap>
-  static bool SlowLocalToAncestorVisualRectWithEffects(
+  static bool LocalToAncestorVisualRectUnderSameFilterClip(
       const PropertyTreeState& local_state,
       const PropertyTreeState& ancestor_state,
       FloatClipRect& mapping_rect,

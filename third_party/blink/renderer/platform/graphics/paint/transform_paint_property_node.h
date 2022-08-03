@@ -483,7 +483,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
   const GeometryMapperTransformCache& GetTransformCache() const {
     if (!transform_cache_)
-      transform_cache_.reset(new GeometryMapperTransformCache);
+      transform_cache_ = std::make_unique<GeometryMapperTransformCache>();
     transform_cache_->UpdateIfNeeded(*this);
     return *transform_cache_;
   }

@@ -162,14 +162,16 @@ TEST_F(ChunkToLayerMapperTest, SlowPath) {
   CompositorFilterOperations filter2;
   filter2.AppendBlurFilter(20);
   auto effect2 = CreateFilterEffect(LayerState().Effect(), std::move(filter2));
-  auto chunk2 = Chunk(PropertyTreeState(LayerState().Transform(),
-                                        LayerState().Clip(), *effect2));
+  auto clip_expander =
+      CreatePixelMovingFilterClipExpander(LayerState().Clip(), *effect2);
+  auto chunk2 = Chunk(
+      PropertyTreeState(LayerState().Transform(), *clip_expander, *effect2));
 
   // Chunk3 has a different effect which inherits from chunk2's effect.
   // Should use the slow path.
   auto effect3 = CreateOpacityEffect(*effect2, 1.f);
-  auto chunk3 = Chunk(PropertyTreeState(LayerState().Transform(),
-                                        LayerState().Clip(), *effect3));
+  auto chunk3 = Chunk(
+      PropertyTreeState(LayerState().Transform(), *clip_expander, *effect3));
 
   // Chunk4 has an opacity filter effect which inherits from the layer's effect.
   // Should use the fast path.

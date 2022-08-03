@@ -374,11 +374,14 @@ void ConversionContext::SwitchToClip(const ClipPaintPropertyNode& target_clip) {
     // This should never happen unless the DCHECK in step 1 failed.
     if (!clip)
       break;
-    pending_clips.push_back(clip);
+    if (!clip->PixelMovingFilter())
+      pending_clips.push_back(clip);
   }
 
+  if (pending_clips.IsEmpty())
+    return;
+
   // Step 3: Now apply the list of clips in top-down order.
-  DCHECK(pending_clips.size());
   auto pending_combined_clip_rect = pending_clips.back()->PaintClipRect();
   const auto* lowest_combined_clip_node = pending_clips.back();
   for (auto i = pending_clips.size() - 1; i--;) {

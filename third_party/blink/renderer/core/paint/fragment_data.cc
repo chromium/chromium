@@ -96,10 +96,6 @@ const TransformPaintPropertyNodeOrAlias& FragmentData::ContentsTransform()
 
 const ClipPaintPropertyNodeOrAlias& FragmentData::PreClip() const {
   if (const auto* properties = PaintProperties()) {
-    if (const auto* clip = properties->PixelMovingFilterClipExpander()) {
-      DCHECK(clip->Parent());
-      return *clip->Parent();
-    }
     if (const auto* clip = properties->ClipPathClip()) {
       DCHECK(clip->Parent());
       return *clip->Parent();
@@ -111,6 +107,10 @@ const ClipPaintPropertyNodeOrAlias& FragmentData::PreClip() const {
     if (const auto* css_clip = properties->CssClip()) {
       DCHECK(css_clip->Parent());
       return *css_clip->Parent();
+    }
+    if (const auto* clip = properties->PixelMovingFilterClipExpander()) {
+      DCHECK(clip->Parent());
+      return *clip->Parent();
     }
   }
   return LocalBorderBoxProperties().Clip();

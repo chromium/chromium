@@ -207,14 +207,74 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     FloatClipRect& rect_to_map,
     OverlayScrollbarClipBehavior clip_behavior,
     InclusiveIntersectOrNot inclusive_behavior) {
-  if (local_state == ancestor_state)
-    return true;
+  // Many effects (e.g. filters, clip-paths) can make a clip rect not tight.
+  if (&local_state.Effect() != &ancestor_state.Effect())
+    rect_to_map.ClearIsTight();
 
-  if (&local_state.Effect() != &ancestor_state.Effect()) {
-    return SlowLocalToAncestorVisualRectWithEffects<for_compositing_overlap>(
-        local_state, ancestor_state, rect_to_map, clip_behavior,
-        inclusive_behavior);
+  // The transform tree and the clip tree contain all information needed for
+  // visual rect mapping. Pixel-moving filters should have corresponding
+  // pixel-moving filter clip expanders in the clip tree.
+  if (&local_state.Transform() == &ancestor_state.Transform() &&
+      &local_state.Clip() == &ancestor_state.Clip()) {
+    return true;
   }
+
+  PropertyTreeState last_state = local_state;
+  const auto* ancestor_filter_clip =
+      ancestor_state.Clip().NearestPixelMovingFilterClip();
+  const auto* filter_clip = local_state.Clip().NearestPixelMovingFilterClip();
+  while (filter_clip != ancestor_filter_clip) {
+    if (!filter_clip) {
+      // Abnormal clip hierarchy.
+      rect_to_map = InfiniteLooseFloatClipRect();
+      return true;
+    }
+
+    PropertyTreeState new_state(filter_clip->LocalTransformSpace().Unalias(),
+                                *filter_clip, last_state.Effect());
+    const auto* filter = filter_clip->PixelMovingFilter();
+    DCHECK(filter);
+    DCHECK_EQ(&filter->LocalTransformSpace().Unalias(), &new_state.Transform());
+    if (for_compositing_overlap == ForCompositingOverlap::kYes &&
+        filter->HasActiveFilterAnimation()) {
+      // Assume during the animation the filter can map |rect_to_map| to
+      // anywhere. Ancestor clips will still apply.
+      // TODO(crbug.com/1026653): Use animation bounds instead of infinite rect.
+      rect_to_map = InfiniteLooseFloatClipRect();
+    } else {
+      bool intersects =
+          LocalToAncestorVisualRectUnderSameFilterClip<for_compositing_overlap>(
+              last_state, new_state, rect_to_map, clip_behavior,
+              inclusive_behavior);
+      if (!intersects) {
+        rect_to_map = FloatClipRect(gfx::RectF());
+        return false;
+      }
+      if (!rect_to_map.IsInfinite())
+        rect_to_map.Rect() = filter->MapRect(rect_to_map.Rect());
+    }
+
+    last_state = new_state;
+    const auto* next_clip = filter_clip->UnaliasedParent();
+    DCHECK(next_clip);
+    last_state.SetClip(*next_clip);
+    filter_clip = next_clip->NearestPixelMovingFilterClip();
+  }
+
+  return LocalToAncestorVisualRectUnderSameFilterClip<for_compositing_overlap>(
+      last_state, ancestor_state, rect_to_map, clip_behavior,
+      inclusive_behavior);
+}
+
+template <GeometryMapper::ForCompositingOverlap for_compositing_overlap>
+bool GeometryMapper::LocalToAncestorVisualRectUnderSameFilterClip(
+    const PropertyTreeState& local_state,
+    const PropertyTreeState& ancestor_state,
+    FloatClipRect& rect_to_map,
+    OverlayScrollbarClipBehavior clip_behavior,
+    InclusiveIntersectOrNot inclusive_behavior) {
+  DCHECK_EQ(local_state.Clip().NearestPixelMovingFilterClip(),
+            ancestor_state.Clip().NearestPixelMovingFilterClip());
 
   ExtraProjectionResult extra_result;
   bool success = false;
@@ -268,64 +328,6 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     return rect_to_map.InclusiveIntersect(clip_rect);
   rect_to_map.Intersect(clip_rect);
   return !rect_to_map.Rect().IsEmpty();
-}
-
-template <GeometryMapper::ForCompositingOverlap for_compositing_overlap>
-bool GeometryMapper::SlowLocalToAncestorVisualRectWithEffects(
-    const PropertyTreeState& local_state,
-    const PropertyTreeState& ancestor_state,
-    FloatClipRect& mapping_rect,
-    OverlayScrollbarClipBehavior clip_behavior,
-    InclusiveIntersectOrNot inclusive_behavior) {
-  PropertyTreeState last_transform_and_clip_state(
-      local_state.Transform(), local_state.Clip(),
-      EffectPaintPropertyNode::Root());
-
-  const auto& ancestor_effect = ancestor_state.Effect();
-  for (const auto* effect = &local_state.Effect();
-       effect && effect != &ancestor_effect;
-       effect = effect->UnaliasedParent()) {
-    if (for_compositing_overlap == ForCompositingOverlap::kYes &&
-        effect->HasActiveFilterAnimation()) {
-      // Assume during the animation the filter can map |rect_to_map| to
-      // anywhere. Ancestor clips will still apply.
-      // TODO(crbug.com/1026653): Use animation bounds instead of infinite rect.
-      mapping_rect = InfiniteLooseFloatClipRect();
-      last_transform_and_clip_state.SetTransform(
-          effect->LocalTransformSpace().Unalias());
-      last_transform_and_clip_state.SetClip(effect->OutputClip()->Unalias());
-      continue;
-    }
-
-    if (!effect->HasFilterThatMovesPixels())
-      continue;
-
-    PropertyTreeState transform_and_clip_state(
-        effect->LocalTransformSpace().Unalias(),
-        effect->OutputClip()->Unalias(), EffectPaintPropertyNode::Root());
-    bool intersects =
-        LocalToAncestorVisualRectInternal<for_compositing_overlap>(
-            last_transform_and_clip_state, transform_and_clip_state,
-            mapping_rect, clip_behavior, inclusive_behavior);
-    if (!intersects) {
-      mapping_rect = FloatClipRect(gfx::RectF());
-      return false;
-    }
-
-    mapping_rect = FloatClipRect(effect->MapRect(mapping_rect.Rect()));
-    last_transform_and_clip_state = transform_and_clip_state;
-  }
-
-  PropertyTreeState final_transform_and_clip_state(
-      ancestor_state.Transform(), ancestor_state.Clip(),
-      EffectPaintPropertyNode::Root());
-  bool intersects = LocalToAncestorVisualRectInternal<for_compositing_overlap>(
-      last_transform_and_clip_state, final_transform_and_clip_state,
-      mapping_rect, clip_behavior, inclusive_behavior);
-
-  // Many effects (e.g. filters, clip-paths) can make a clip rect not tight.
-  mapping_rect.ClearIsTight();
-  return intersects;
 }
 
 FloatClipRect GeometryMapper::LocalToAncestorClipRect(

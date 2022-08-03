@@ -1798,7 +1798,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
         OnUpdateClip(properties_->UpdatePixelMovingFilterClipExpander(
             *context_.current.clip,
             ClipPaintPropertyNode::State(context_.current.transform,
-                                         properties_->Filter())));
+                                         *properties_->Filter())));
       } else {
         OnClearClip(properties_->ClearPixelMovingFilterClipExpander());
       }

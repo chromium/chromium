@@ -42,23 +42,13 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
                                             -layer_offset_.y());
   }
 
-  bool new_has_filter_that_moves_pixels = has_filter_that_moves_pixels_;
-  if (&new_chunk_state.Effect() != &chunk_state_.Effect()) {
-    new_has_filter_that_moves_pixels = false;
-    for (const auto* effect = &new_chunk_state.Effect();
-         effect && effect != &layer_state_.Effect();
-         effect = effect->UnaliasedParent()) {
-      if (effect->HasFilterThatMovesPixels()) {
-        new_has_filter_that_moves_pixels = true;
-        break;
-      }
-    }
-  }
+  has_filter_that_moves_pixels_ =
+      new_chunk_state.Clip().NearestPixelMovingFilterClip() !=
+      layer_state_.Clip().NearestPixelMovingFilterClip();
 
-  bool needs_clip_recalculation =
-      new_has_filter_that_moves_pixels != has_filter_that_moves_pixels_ ||
-      &new_chunk_state.Clip() != &chunk_state_.Clip();
-  if (needs_clip_recalculation) {
+  if (has_filter_that_moves_pixels_) {
+    clip_rect_ = InfiniteLooseFloatClipRect();
+  } else if (&new_chunk_state.Clip() != &chunk_state_.Clip()) {
     clip_rect_ =
         GeometryMapper::LocalToAncestorClipRect(new_chunk_state, layer_state_);
     if (!clip_rect_.IsInfinite())
@@ -66,7 +56,6 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
   }
 
   chunk_state_ = new_chunk_state;
-  has_filter_that_moves_pixels_ = new_has_filter_that_moves_pixels;
 }
 
 gfx::Rect ChunkToLayerMapper::MapVisualRect(const gfx::Rect& rect) const {

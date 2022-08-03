@@ -89,9 +89,9 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     }
     State(scoped_refptr<const TransformPaintPropertyNodeOrAlias>
               local_transform_space,
-          const EffectPaintPropertyNode* pixel_moving_filter)
+          const EffectPaintPropertyNode& pixel_moving_filter)
         : local_transform_space(std::move(local_transform_space)),
-          pixel_moving_filter(pixel_moving_filter) {
+          pixel_moving_filter(&pixel_moving_filter) {
       DCHECK(layout_clip_rect_.IsInfinite());
       paint_clip_rect_ = FloatRoundedRect(layout_clip_rect_.Rect());
     }
@@ -179,6 +179,10 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
     return state_.pixel_moving_filter;
   }
 
+  const ClipPaintPropertyNode* NearestPixelMovingFilterClip() const {
+    return GetClipCache().NearestPixelMovingFilterClip();
+  }
+
   std::unique_ptr<JSONObject> ToJSON() const;
 
  private:
@@ -203,20 +207,18 @@ class PLATFORM_EXPORT ClipPaintPropertyNode
 
   // For access to GetClipCache();
   friend class GeometryMapper;
+  friend class GeometryMapperClipCache;
   friend class GeometryMapperTest;
 
   GeometryMapperClipCache& GetClipCache() const {
-    return const_cast<ClipPaintPropertyNode*>(this)->GetClipCache();
-  }
-
-  GeometryMapperClipCache& GetClipCache() {
     if (!clip_cache_)
-      clip_cache_.reset(new GeometryMapperClipCache());
-    return *clip_cache_.get();
+      clip_cache_ = std::make_unique<GeometryMapperClipCache>();
+    clip_cache_->UpdateIfNeeded(*this);
+    return *clip_cache_;
   }
 
   State state_;
-  std::unique_ptr<GeometryMapperClipCache> clip_cache_;
+  mutable std::unique_ptr<GeometryMapperClipCache> clip_cache_;
 };
 
 }  // namespace blink

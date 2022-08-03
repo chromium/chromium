@@ -221,10 +221,6 @@ class CORE_EXPORT ObjectPaintProperties {
   // [ FragmentClip ]
   // |    Clips to a fragment's bounds.
   // |    This is only present for content under a fragmentation container.
-  // +-[ PixelMovingFilterClipExpander ]
-  //   | Clip created by pixel-moving filter. Instead of intersecting with the
-  //  /  current clip, this clip expands the current clip to include all pixels
-  // /   in the filtered content that may affect the pixels in the current clip.
   // +-[ ClipPathClip ]
   //   |  Clip created by path-based CSS clip-path. Only exists if the
   //  /   clip-path is "simple" that can be applied geometrically. This and
@@ -245,6 +241,11 @@ class CORE_EXPORT ObjectPaintProperties {
   //     +-[ OverflowControlsClip ]
   //     |   Clip created by overflow clip to clip overflow controls
   //     |   (scrollbars, resizer, scroll corner) that would overflow the box.
+  //     +-[ PixelMovingFilterClipExpander ]
+  //       | Clip created by pixel-moving filter. Instead of intersecting with
+  //       | the current clip, this clip expands the current clip to include all
+  //      /  pixels in the filtered content that may affect the pixels in the
+  //     /   current clip.
   //     +-[ InnerBorderRadiusClip ]
   //       |   Clip created by a rounded border with overflow clip. This clip is
   //       |   not inset by scrollbars.

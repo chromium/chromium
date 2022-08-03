@@ -4749,8 +4749,7 @@ TEST_P(PaintArtifactCompositorTest,
   filter_op.AppendBlurFilter(5);
   auto filter =
       CreateFilterEffect(e0(), filter_op, CompositingReason::kWillChangeFilter);
-  auto clip_expander = ClipPaintPropertyNode::Create(
-      c0(), ClipPaintPropertyNode::State(&t0(), filter.get()));
+  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *filter);
 
   Update(TestPaintArtifact()
              .Chunk(t0(), *clip_expander, *filter)
@@ -4769,8 +4768,7 @@ TEST_P(PaintArtifactCompositorTest,
   CompositorFilterOperations filter_op;
   filter_op.AppendBlurFilter(5);
   auto filter = CreateFilterEffect(e0(), filter_op);
-  auto clip_expander = ClipPaintPropertyNode::Create(
-      c0(), ClipPaintPropertyNode::State(&t0(), filter.get()));
+  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *filter);
 
   EffectPaintPropertyNode::State mask_state;
   mask_state.local_transform_space = &t0();

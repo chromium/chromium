@@ -113,11 +113,11 @@ class PropertyTreePrinterTraits<ClipPaintPropertyNodeOrAlias> {
       const ObjectPaintProperties& properties,
       PropertyTreePrinter<ClipPaintPropertyNodeOrAlias>& printer) {
     printer.AddNode(properties.FragmentClip());
-    printer.AddNode(properties.PixelMovingFilterClipExpander());
     printer.AddNode(properties.ClipPathClip());
     printer.AddNode(properties.MaskClip());
     printer.AddNode(properties.CssClip());
     printer.AddNode(properties.CssClipFixedPosition());
+    printer.AddNode(properties.PixelMovingFilterClipExpander());
     printer.AddNode(properties.OverflowControlsClip());
     printer.AddNode(properties.InnerBorderRadiusClip());
     printer.AddNode(properties.OverflowClip());
@@ -250,13 +250,13 @@ void UpdateDebugNames(const LayoutObject& object,
                object);
 
   SetDebugName(properties.FragmentClip(), "FragmentClip", object);
-  SetDebugName(properties.PixelMovingFilterClipExpander(),
-               "PixelMovingFilterClip", object);
   SetDebugName(properties.ClipPathClip(), "ClipPathClip", object);
   SetDebugName(properties.MaskClip(), "MaskClip", object);
   SetDebugName(properties.CssClip(), "CssClip", object);
   SetDebugName(properties.CssClipFixedPosition(), "CssClipFixedPosition",
                object);
+  SetDebugName(properties.PixelMovingFilterClipExpander(),
+               "PixelMovingFilterClip", object);
   SetDebugName(properties.OverflowControlsClip(), "OverflowControlsClip",
                object);
   SetDebugName(properties.InnerBorderRadiusClip(), "InnerBorderRadiusClip",

@@ -805,10 +805,13 @@ TEST_P(RasterInvalidatorTest, EffectLocalTransformSpaceChange) {
   CompositorFilterOperations filter;
   filter.AppendBlurFilter(20);
   auto e1 = CreateFilterEffect(e0(), *t1, &c0(), filter);
+  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *e1);
 
   PropertyTreeState layer_state = DefaultPropertyTreeState();
-  PaintChunkSubset chunks(
-      TestPaintArtifact().Chunk(0).Properties(*t2, c0(), *e1).Build());
+  PaintChunkSubset chunks(TestPaintArtifact()
+                              .Chunk(0)
+                              .Properties(*t2, *clip_expander, *e1)
+                              .Build());
 
   invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
                         kDefaultLayerBounds, layer_state);

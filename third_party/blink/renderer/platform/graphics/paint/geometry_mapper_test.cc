@@ -879,33 +879,35 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransforms) {
   // This clip is between transformAboveEffect and the effect.
   auto clip_above_effect = CreateClip(c0(), *transform_above_effect,
                                       FloatRoundedRect(-100, -100, 200, 200));
-  // This clip is between the effect and transformBelowEffect.
-  auto clip_below_effect =
-      CreateClip(*clip_above_effect, *transform_above_effect,
-                 FloatRoundedRect(10, 10, 100, 100));
 
   CompositorFilterOperations filters;
   filters.AppendBlurFilter(20);
   auto effect = CreateFilterEffect(e0(), *transform_above_effect,
                                    clip_above_effect.get(), filters);
+  auto clip_expander =
+      CreatePixelMovingFilterClipExpander(*clip_above_effect, *effect);
+
+  // This clip is between the effect and transform_below_effect.
+  auto clip_below_effect = CreateClip(*clip_expander, *transform_above_effect,
+                                      FloatRoundedRect(10, 10, 100, 100));
 
   local_state =
       PropertyTreeState(*transform_below_effect, *clip_below_effect, *effect);
 
   input_rect = gfx::RectF(0, 0, 100, 100);
-  // 1. transformBelowEffect
+  // 1. transform_below_effect
   auto output = input_rect;
   output.Offset(transform_below_effect->Translation2D());
-  // 2. clipBelowEffect
+  // 2. clip_below_effect
   output.Intersect(clip_below_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(20, 30, 90, 80), output);
   // 3. effect (the outset is 3 times of blur amount).
   output = filters.MapRect(output);
   EXPECT_EQ(gfx::RectF(-40, -30, 210, 200), output);
-  // 4. clipAboveEffect
+  // 4. clip_above_effect
   output.Intersect(clip_above_effect->LayoutClipRect().Rect());
   EXPECT_EQ(gfx::RectF(-40, -30, 140, 130), output);
-  // 5. transformAboveEffect
+  // 5. transform_above_effect
   output.Offset(transform_above_effect->Translation2D());
   EXPECT_EQ(gfx::RectF(0, 20, 140, 130), output);
 
@@ -928,16 +930,18 @@ TEST_P(GeometryMapperTest, FilterWithClipsAndTransformsWithAlias) {
   // This clip is between transformAboveEffect and the effect.
   auto clip_above_effect = CreateClip(c0(), *transform_above_effect,
                                       FloatRoundedRect(-100, -100, 200, 200));
-  // This clip is between the effect and transformBelowEffect.
-  auto clip_below_effect =
-      CreateClip(*clip_above_effect, *transform_above_effect,
-                 FloatRoundedRect(10, 10, 100, 100));
 
   CompositorFilterOperations filters;
   filters.AppendBlurFilter(20);
   auto real_effect = CreateFilterEffect(e0(), *transform_above_effect,
                                         clip_above_effect.get(), filters);
+  auto clip_expander =
+      CreatePixelMovingFilterClipExpander(*clip_above_effect, *real_effect);
   auto effect = EffectPaintPropertyNodeAlias::Create(*real_effect);
+
+  // This clip is between the effect and transformBelowEffect.
+  auto clip_below_effect = CreateClip(*clip_expander, *transform_above_effect,
+                                      FloatRoundedRect(10, 10, 100, 100));
 
   local_state = PropertyTreeStateOrAlias(*transform_below_effect,
                                          *clip_below_effect, *effect);
@@ -975,7 +979,10 @@ TEST_P(GeometryMapperTest,
   auto clip1 = CreateClip(c0(), t0(), FloatRoundedRect(10, 10, 200, 200));
   auto effect = CreateAnimatingFilterEffect(e0(), CompositorFilterOperations(),
                                             clip1.get());
-  auto clip2 = CreateClip(*clip1, t0(), FloatRoundedRect(50, 0, 200, 50));
+  auto clip_expander = CreatePixelMovingFilterClipExpander(*clip1, *effect);
+
+  auto clip2 =
+      CreateClip(*clip_expander, t0(), FloatRoundedRect(50, 0, 200, 50));
   local_state.SetClip(*clip2);
   local_state.SetEffect(*effect);
 
@@ -1003,13 +1010,17 @@ TEST_P(GeometryMapperTest, Reflection) {
   filters.AppendReferenceFilter(paint_filter_builder::BuildBoxReflectFilter(
       BoxReflection(BoxReflection::kHorizontalReflection, 0), nullptr));
   auto effect = CreateFilterEffect(e0(), filters);
+  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *effect);
+
   local_state.SetEffect(*effect);
+  local_state.SetClip(*clip_expander);
 
   input_rect = gfx::RectF(100, 100, 50, 50);
   expected_transformed_rect = input_rect;
   // Reflection is at (50, 100, 50, 50).
   expected_visual_rect = FloatClipRect(gfx::RectF(-150, 100, 300, 50));
   expected_visual_rect.ClearIsTight();
+  expected_clip.ClearIsTight();
 
   CheckMappings();
 }

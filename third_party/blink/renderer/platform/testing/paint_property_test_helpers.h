@@ -180,6 +180,14 @@ inline scoped_refptr<ClipPaintPropertyNode> CreateClip(
   return CreateClip(parent, local_transform_space, clip_rect.Rect(), clip_rect);
 }
 
+inline scoped_refptr<ClipPaintPropertyNode> CreatePixelMovingFilterClipExpander(
+    const ClipPaintPropertyNodeOrAlias& parent,
+    const EffectPaintPropertyNode& pixel_moving_filter) {
+  ClipPaintPropertyNode::State state(&pixel_moving_filter.LocalTransformSpace(),
+                                     pixel_moving_filter);
+  return ClipPaintPropertyNode::Create(parent, std::move(state));
+}
+
 inline void UpdateClip(ClipPaintPropertyNode& clip,
                        const gfx::RectF& layout_clip_rect,
                        const FloatRoundedRect& paint_clip_rect) {

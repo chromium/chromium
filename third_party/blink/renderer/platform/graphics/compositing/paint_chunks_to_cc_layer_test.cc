@@ -1273,8 +1273,9 @@ TEST_P(PaintChunksToCcLayerTest, ReferenceFilterOnChunkWithDrawingDisplayItem) {
   filter.SetReferenceBox(gfx::RectF(11, 22, 33, 44));
   ASSERT_TRUE(filter.HasReferenceFilter());
   auto e1 = CreateFilterEffect(e0(), t0(), &c0(), filter);
+  auto clip_expander = CreatePixelMovingFilterClipExpander(c0(), *e1);
   TestChunks chunks;
-  chunks.AddChunk(t0(), c0(), *e1, gfx::Rect(5, 10, 200, 300),
+  chunks.AddChunk(t0(), *clip_expander, *e1, gfx::Rect(5, 10, 200, 300),
                   gfx::Rect(10, 15, 20, 30));
 
   auto cc_list = base::MakeRefCounted<cc::DisplayItemList>(

@@ -23,7 +23,7 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
   USING_FAST_MALLOC(GeometryMapperClipCache);
 
  public:
-  GeometryMapperClipCache();
+  GeometryMapperClipCache() = default;
   GeometryMapperClipCache(const GeometryMapperClipCache&) = delete;
   GeometryMapperClipCache& operator=(const GeometryMapperClipCache&) = delete;
 
@@ -47,21 +47,28 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
     }
   };
 
+  void UpdateIfNeeded(const ClipPaintPropertyNode& node) {
+    if (cache_generation_ != s_global_generation_)
+      Update(node);
+    DCHECK_EQ(cache_generation_, s_global_generation_);
+  }
+
   struct ClipCacheEntry {
     const ClipAndTransform clip_and_transform;
     // The clip visual rect of the associated clip node in the space of
     // |clip_and_transform|.
     const FloatClipRect clip_rect;
+
     // Whether there is any transform animation between the transform space
-    // of the associated clip node and |clip_and_transform|.
+    // of the associated clip node (inclusive) and |clip_and_transform|
+    // (exclusive).
     const bool has_transform_animation = false;
     // Similarly, for sticky transform.
     const bool has_sticky_transform = false;
   };
 
-  // Returns the clip visual rect  of the owning
-  // clip of |this| in the space of |ancestors|, if there is one cached.
-  // Otherwise returns null.
+  // Returns the clip visual rect  of the owning clip of |this| in the space of
+  // |ancestors|, if there is one cached. Otherwise returns null.
   const ClipCacheEntry* GetCachedClip(const ClipAndTransform& ancestors);
 
   // Stores cached the "clip visual rect" of |this| in the space of |ancestors|,
@@ -71,11 +78,19 @@ class PLATFORM_EXPORT GeometryMapperClipCache {
   static void ClearCache();
   bool IsValid() const;
 
+  const ClipPaintPropertyNode* NearestPixelMovingFilterClip() const {
+    return nearest_pixel_moving_filter_clip_;
+  }
+
  private:
-  void InvalidateCacheIfNeeded();
+  void Update(const ClipPaintPropertyNode&);
 
   Vector<ClipCacheEntry> clip_cache_;
-  unsigned cache_generation_;
+  // The nearest ancestor that has non-null PixelMovingFilter().
+  const ClipPaintPropertyNode* nearest_pixel_moving_filter_clip_ = nullptr;
+
+  unsigned cache_generation_ = s_global_generation_ - 1;
+  static unsigned s_global_generation_;
 };
 
 }  // namespace blink

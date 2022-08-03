@@ -16,6 +16,7 @@ TEST_F(FragmentDataTest, PreClip) {
         width: 400px; height: 400px; position: absolute;
         clip: rect(0, 50px, 100px, 0);
         clip-path: inset(0%);
+        filter: blur(10px);
       }
     </style>
     <div id='target'></div>
@@ -26,6 +27,9 @@ TEST_F(FragmentDataTest, PreClip) {
       target->FirstFragment().PaintProperties();
   EXPECT_TRUE(properties->ClipPathClip());
   EXPECT_TRUE(properties->CssClip());
+  EXPECT_TRUE(properties->PixelMovingFilterClipExpander());
+  EXPECT_EQ(properties->CssClip(),
+            properties->PixelMovingFilterClipExpander()->Parent());
   EXPECT_EQ(properties->ClipPathClip(), properties->CssClip()->Parent());
   EXPECT_EQ(properties->ClipPathClip()->Parent(),
             &target->FirstFragment().PreClip());
