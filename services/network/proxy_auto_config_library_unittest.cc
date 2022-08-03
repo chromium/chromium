@@ -155,44 +155,6 @@ class MockUDPSocket : public net::DatagramClientSocket {
   void ApplySocketTag(const net::SocketTag& tag) override {
     ADD_FAILURE() << "Called ApplySocketTag()";
   }
-  int WriteAsync(
-      net::DatagramBuffers buffers,
-      net::CompletionOnceCallback callback,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    ADD_FAILURE() << "Called WriteAsync()";
-    return net::ERR_UNEXPECTED;
-  }
-  int WriteAsync(
-      const char* buffer,
-      size_t buf_len,
-      net::CompletionOnceCallback callback,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    ADD_FAILURE() << "Called WriteAsync()";
-    return net::ERR_UNEXPECTED;
-  }
-  net::DatagramBuffers GetUnwrittenBuffers() override {
-    ADD_FAILURE() << "Called GetUnwrittenBuffers()";
-    return net::DatagramBuffers();
-  }
-  void SetWriteAsyncEnabled(bool enabled) override {
-    ADD_FAILURE() << "Called SetWriteAsyncEnabled()";
-  }
-  void SetMaxPacketSize(size_t max_packet_size) override {
-    ADD_FAILURE() << "Called SetWriteAsyncEnabled()";
-  }
-  bool WriteAsyncEnabled() override {
-    ADD_FAILURE() << "Called WriteAsyncEnabled()";
-    return false;
-  }
-  void SetWriteMultiCoreEnabled(bool enabled) override {
-    ADD_FAILURE() << "Called SetWriteMultiCoreEnabled()";
-  }
-  void SetSendmmsgEnabled(bool enabled) override {
-    ADD_FAILURE() << "Called SetSendmmsgEnabled()";
-  }
-  void SetWriteBatchingActive(bool active) override {
-    ADD_FAILURE() << "Called SetWriteBatchingActive()";
-  }
   int SetMulticastInterface(uint32_t interface_index) override {
     ADD_FAILURE() << "Called SetMulticastInterface()";
     return net::ERR_UNEXPECTED;

@@ -97,29 +97,6 @@ int UDPClientSocket::Write(
   return socket_.Write(buf, buf_len, std::move(callback), traffic_annotation);
 }
 
-int UDPClientSocket::WriteAsync(
-    const char* buffer,
-    size_t buf_len,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(WriteAsyncEnabled());
-  return socket_.WriteAsync(buffer, buf_len, std::move(callback),
-                            traffic_annotation);
-}
-
-int UDPClientSocket::WriteAsync(
-    DatagramBuffers buffers,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(WriteAsyncEnabled());
-  return socket_.WriteAsync(std::move(buffers), std::move(callback),
-                            traffic_annotation);
-}
-
-DatagramBuffers UDPClientSocket::GetUnwrittenBuffers() {
-  return socket_.GetUnwrittenBuffers();
-}
-
 void UDPClientSocket::Close() {
   socket_.Close();
 }
@@ -156,30 +133,6 @@ void UDPClientSocket::UseNonBlockingIO() {
 #if BUILDFLAG(IS_WIN)
   socket_.UseNonBlockingIO();
 #endif
-}
-
-void UDPClientSocket::SetWriteAsyncEnabled(bool enabled) {
-  socket_.SetWriteAsyncEnabled(enabled);
-}
-
-void UDPClientSocket::SetMaxPacketSize(size_t max_packet_size) {
-  socket_.SetMaxPacketSize(max_packet_size);
-}
-
-bool UDPClientSocket::WriteAsyncEnabled() {
-  return socket_.WriteAsyncEnabled();
-}
-
-void UDPClientSocket::SetWriteMultiCoreEnabled(bool enabled) {
-  socket_.SetWriteMultiCoreEnabled(enabled);
-}
-
-void UDPClientSocket::SetSendmmsgEnabled(bool enabled) {
-  socket_.SetSendmmsgEnabled(enabled);
-}
-
-void UDPClientSocket::SetWriteBatchingActive(bool active) {
-  socket_.SetWriteBatchingActive(active);
 }
 
 int UDPClientSocket::SetMulticastInterface(uint32_t interface_index) {

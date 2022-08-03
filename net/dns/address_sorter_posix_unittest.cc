@@ -77,32 +77,6 @@ class TestUDPClientSocket : public DatagramClientSocket {
     return OK;
   }
   void UseNonBlockingIO() override {}
-  int WriteAsync(
-      const char* buffer,
-      size_t buf_len,
-      CompletionOnceCallback callback,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTIMPLEMENTED();
-    return OK;
-  }
-  int WriteAsync(
-      DatagramBuffers buffers,
-      CompletionOnceCallback callback,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTIMPLEMENTED();
-    return OK;
-  }
-  DatagramBuffers GetUnwrittenBuffers() override {
-    DatagramBuffers result;
-    NOTIMPLEMENTED();
-    return result;
-  }
-  void SetWriteAsyncEnabled(bool enabled) override {}
-  void SetMaxPacketSize(size_t max_packet_size) override {}
-  bool WriteAsyncEnabled() override { return false; }
-  void SetWriteMultiCoreEnabled(bool enabled) override {}
-  void SetSendmmsgEnabled(bool enabled) override {}
-  void SetWriteBatchingActive(bool active) override {}
   int SetMulticastInterface(uint32_t interface_index) override {
     NOTIMPLEMENTED();
     return ERR_NOT_IMPLEMENTED;

@@ -4452,10 +4452,6 @@ test("net_unittests") {
     sources += [ "base/sockaddr_util_posix_unittest.cc" ]
   }
 
-  if (is_posix || is_fuchsia) {
-    sources += [ "socket/udp_socket_posix_unittest.cc" ]
-  }
-
   if (is_android || is_chromeos_ash) {
     sources += [ "base/network_change_notifier_posix_unittest.cc" ]
   }

@@ -49,18 +49,6 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
             CompletionOnceCallback callback,
             const NetworkTrafficAnnotationTag& traffic_annotation) override;
 
-  int WriteAsync(
-      const char* buffer,
-      size_t buf_len,
-      CompletionOnceCallback callback,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override;
-  int WriteAsync(
-      DatagramBuffers buffers,
-      CompletionOnceCallback callback,
-      const NetworkTrafficAnnotationTag& traffic_annotation) override;
-
-  DatagramBuffers GetUnwrittenBuffers() override;
-
   void Close() override;
   int GetPeerAddress(IPEndPoint* address) const override;
   int GetLocalAddress(IPEndPoint* address) const override;
@@ -74,12 +62,6 @@ class NET_EXPORT_PRIVATE UDPClientSocket : public DatagramClientSocket {
   const NetLogWithSource& NetLog() const override;
   void EnableRecvOptimization() override;
 
-  void SetWriteAsyncEnabled(bool enabled) override;
-  bool WriteAsyncEnabled() override;
-  void SetMaxPacketSize(size_t max_packet_size) override;
-  void SetWriteMultiCoreEnabled(bool enabled) override;
-  void SetSendmmsgEnabled(bool enabled) override;
-  void SetWriteBatchingActive(bool active) override;
   int SetMulticastInterface(uint32_t interface_index) override;
   void SetIOSNetworkServiceType(int ios_network_service_type) override;
 

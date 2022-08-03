@@ -92,34 +92,6 @@ int FuzzedDatagramClientSocket::GetLocalAddress(IPEndPoint* address) const {
 
 void FuzzedDatagramClientSocket::UseNonBlockingIO() {}
 
-int FuzzedDatagramClientSocket::WriteAsync(
-    DatagramBuffers buffers,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  return -1;
-}
-
-int FuzzedDatagramClientSocket::WriteAsync(
-    const char* buffer,
-    size_t buf_len,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  return -1;
-}
-
-DatagramBuffers FuzzedDatagramClientSocket::GetUnwrittenBuffers() {
-  DatagramBuffers result;
-  return result;
-}
-
-void FuzzedDatagramClientSocket::SetWriteAsyncEnabled(bool enabled) {}
-bool FuzzedDatagramClientSocket::WriteAsyncEnabled() {
-  return false;
-}
-void FuzzedDatagramClientSocket::SetMaxPacketSize(size_t max_packet_size) {}
-void FuzzedDatagramClientSocket::SetWriteMultiCoreEnabled(bool enabled) {}
-void FuzzedDatagramClientSocket::SetSendmmsgEnabled(bool enabled) {}
-void FuzzedDatagramClientSocket::SetWriteBatchingActive(bool active) {}
 int FuzzedDatagramClientSocket::SetMulticastInterface(
     uint32_t interface_index) {
   return ERR_NOT_IMPLEMENTED;

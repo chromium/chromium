@@ -1571,82 +1571,6 @@ int MockUDPClientSocket::Write(
   return write_result.result;
 }
 
-int MockUDPClientSocket::WriteAsync(
-    const char* buffer,
-    size_t buf_len,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& /* traffic_annotation */) {
-  DCHECK(buffer);
-  DCHECK_GT(buf_len, 0u);
-  DCHECK(callback);
-
-  if (!connected_ || !data_)
-    return ERR_UNEXPECTED;
-  data_transferred_ = true;
-
-  std::string data(buffer, buf_len);
-  MockWriteResult write_result = data_->OnWrite(data);
-
-  // ERR_IO_PENDING is a signal that the socket data will call back
-  // asynchronously.
-  if (write_result.result == ERR_IO_PENDING) {
-    pending_write_callback_ = std::move(callback);
-    return ERR_IO_PENDING;
-  }
-  if (write_result.mode == ASYNC) {
-    RunCallbackAsync(std::move(callback), write_result.result);
-    return ERR_IO_PENDING;
-  }
-  return write_result.result;
-}
-
-int MockUDPClientSocket::WriteAsync(
-    DatagramBuffers buffers,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& /* traffic_annotation */) {
-  DCHECK(!buffers.empty());
-  DCHECK(callback);
-
-  if (!connected_ || !data_)
-    return ERR_UNEXPECTED;
-
-  unwritten_buffers_ = std::move(buffers);
-
-  int rv = 0;
-  size_t buf_len = 0;
-  do {
-    auto& buf = unwritten_buffers_.front();
-
-    buf_len = buf->length();
-    std::string data(buf->data(), buf_len);
-    MockWriteResult write_result = data_->OnWrite(data);
-    rv = write_result.result;
-
-    // ERR_IO_PENDING is a signal that the socket data will call back
-    // asynchronously.
-    if (write_result.result == ERR_IO_PENDING) {
-      pending_write_callback_ = std::move(callback);
-      return ERR_IO_PENDING;
-    }
-    if (write_result.mode == ASYNC) {
-      RunCallbackAsync(std::move(callback), write_result.result);
-      return ERR_IO_PENDING;
-    }
-
-    if (rv < 0) {
-      return rv;
-    }
-
-    unwritten_buffers_.pop_front();
-  } while (!unwritten_buffers_.empty());
-
-  return buf_len;
-}
-
-DatagramBuffers MockUDPClientSocket::GetUnwrittenBuffers() {
-  return std::move(unwritten_buffers_);
-}
-
 int MockUDPClientSocket::SetReceiveBufferSize(int32_t size) {
   return OK;
 }
@@ -1678,14 +1602,6 @@ int MockUDPClientSocket::GetLocalAddress(IPEndPoint* address) const {
 
 void MockUDPClientSocket::UseNonBlockingIO() {}
 
-void MockUDPClientSocket::SetWriteAsyncEnabled(bool enabled) {}
-bool MockUDPClientSocket::WriteAsyncEnabled() {
-  return false;
-}
-void MockUDPClientSocket::SetMaxPacketSize(size_t max_packet_size) {}
-void MockUDPClientSocket::SetWriteMultiCoreEnabled(bool enabled) {}
-void MockUDPClientSocket::SetSendmmsgEnabled(bool enabled) {}
-void MockUDPClientSocket::SetWriteBatchingActive(bool active) {}
 int MockUDPClientSocket::SetMulticastInterface(uint32_t interface_index) {
   return OK;
 }
