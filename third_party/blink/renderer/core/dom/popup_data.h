@@ -81,8 +81,14 @@ class PopupData final : public GarbageCollected<PopupData> {
     animation_finished_listener_ = listener;
   }
 
-  HeapHashMap<WeakMember<Element>, TaskHandle>& hoverPopupTasks() {
+  HeapHashMap<WeakMember<const Element>, TaskHandle>& hoverPopupTasks() {
     return hover_popup_tasks_;
+  }
+
+  void setHoverHideTask(TaskHandle&& task) {
+    if (hover_hide_task_.IsActive())
+      hover_hide_task_.Cancel();
+    hover_hide_task_ = std::move(task);
   }
 
   HTMLSelectMenuElement* ownerSelectMenuElement() const {
@@ -110,9 +116,11 @@ class PopupData final : public GarbageCollected<PopupData> {
   // We hold a strong reference to the animation finished listener, so that we
   // can confirm that the listeners get removed before cleanup.
   Member<PopupAnimationFinishedEventListener> animation_finished_listener_;
-  // Map from triggering elements to a TaskHandle for the task that will invoke
-  // the pop-up.
-  HeapHashMap<WeakMember<Element>, TaskHandle> hover_popup_tasks_;
+  // Map from elements with the 'hoverpopup' attribute to a task that will show
+  // the pop-up after a delay.
+  HeapHashMap<WeakMember<const Element>, TaskHandle> hover_popup_tasks_;
+  // A task that hide the pop-up after a delay.
+  TaskHandle hover_hide_task_;
 
   // TODO(crbug.com/1197720): The popup position should be provided by the new
   // anchored positioning scheme.

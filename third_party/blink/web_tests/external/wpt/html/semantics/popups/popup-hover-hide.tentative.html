@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>The pop-up-hide-delay CSS property</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+<link rel=help href="https://open-ui.org/components/popup.research.explainer">
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/popup-utils.js"></script>
+
+<style>
+  [popup] {
+    top:100px;
+    hover-pop-up-hide-delay: 100ms;
+  }
+  [hoverpopup] {
+    top:200px;
+    hover-pop-up-delay: 100ms;
+  }
+  #unrelated {top: 300px;}
+  div {
+    /* Fixed position everything to ensure nothing overlaps */
+    position: fixed;
+  }
+</style>
+<div id=unrelated>Unrelated element</div>
+
+<div popup id=example1>Pop-up</div>
+<div hoverpopup=example1 id=invoker1>Hover me</div>
+
+<script>
+const hoverDelays = 100; // This needs to match the style block above.
+const hoverWaitTime = 200; // How long to wait to cover the delay for sure.
+
+// NOTE about testing methodology:
+// This test checks whether pop-ups are hidden *after* the appropriate de-hover
+// delay. The delay used for testing is kept low, to avoid this test taking too
+// long, but that means that sometimes on a slow bot/client, the delay can
+// elapse before we are able to check the pop-up status. And that can make this
+// test flaky. To avoid that, the msSinceMouseOver() function is used to check
+// that not-too-much time has passed, and if it has, the test is simply skipped.
+
+const unrelated = document.getElementById('unrelated');
+
+function getComputedStyleTimeMs(element,property) {
+  // Times are in seconds, so just strip off the 's'.
+  return Number(getComputedStyle(element)[property].slice(0,-1))*1000;
+}
+
+promise_test(async (t) => {
+  await mouseOver(unrelated);
+  const popUp = document.getElementById('example1');
+  assert_false(popUp.matches(':top-layer'));
+  popUp.showPopUp();
+  assert_true(popUp.matches(':top-layer'));
+  await waitForHoverTime(hoverWaitTime);
+  assert_false(popUp.matches(':top-layer'));
+  assert_true(msSinceMouseOver() >= hoverWaitTime,'waitForHoverTime should wait the specified time');
+  assert_true(hoverWaitTime > hoverDelays,'hoverDelays is the value from CSS, hoverWaitTime should be longer than that');
+  assert_equals(getComputedStyleTimeMs(invoker1,'hoverPopUpDelay'),hoverDelays,'hover-pop-up-delay is incorrect');
+  assert_equals(getComputedStyleTimeMs(popUp,'hoverPopUpHideDelay'),hoverDelays,'hover-pop-up-hide-delay is incorrect');
+},`The hover-pop-up-hide-delay causes a pop-up to be hidden after a delay`);
+
+promise_test(async (t) => {
+  await mouseOver(unrelated);
+  const popUp = document.getElementById('example1');
+  assert_false(popUp.matches(':top-layer'));
+  popUp.showPopUp();
+  await mouseOver(popUp);
+  await waitForHoverTime(hoverWaitTime);
+  assert_true(popUp.matches(':top-layer'),'hovering the pop-up should keep it showing');
+  await mouseOver(unrelated);
+  let showing = popUp.matches(':top-layer');
+  if (msSinceMouseOver() >= hoverDelays)
+    return; // The WPT runner was too slow.
+  assert_true(showing,'hovering unrelated element shouldn\'t immediately hide the pop-up');
+  await waitForHoverTime(hoverWaitTime);
+  assert_false(popUp.matches(':top-layer'),'hovering unrelated element should hide pop-up after delay');
+},`hovering the pop-up keeps it from being hidden`);
+
+promise_test(async (t) => {
+  await mouseOver(unrelated);
+  const popUp = document.getElementById('example1');
+  const invoker = document.getElementById('invoker1');
+  assert_false(popUp.matches(':top-layer'));
+  await mouseOver(invoker);
+  await waitForHoverTime(hoverWaitTime);
+  assert_true(popUp.matches(':top-layer'));
+  await waitForHoverTime(hoverWaitTime);
+  assert_true(popUp.matches(':top-layer'),'While still hovering the invoker, pop-up should not be hidden');
+  await mouseOver(popUp);
+  await waitForHoverTime(hoverWaitTime);
+  await mouseOver(invoker);
+  await waitForHoverTime(hoverWaitTime);
+  assert_true(popUp.matches(':top-layer'),'Moving hover between invoker and pop-up should keep pop-up from being hidden');
+  await mouseOver(unrelated);
+  await waitForHoverTime(hoverWaitTime);
+  assert_false(popUp.matches(':top-layer'),'Moving hover to unrelated should finally hide the pop-up');
+},`hovering a hoverpopup invoking element keeps the pop-up from being hidden`);
+</script>
+
+<div popup id=example2>Pop-up</div>
+<button popuptoggletarget=example2><span><span data-note=nested_element id=invoker2>Click me</span></span></button>
+
+<script>
+promise_test(async (t) => {
+  await mouseOver(unrelated);
+  const popUp = document.getElementById('example2');
+  const invoker = document.getElementById('invoker2');
+  assert_equals(getComputedStyleTimeMs(popUp,'hoverPopUpHideDelay'),hoverDelays,'hover-pop-up-hide-delay is incorrect');
+  assert_false(popUp.matches(':top-layer'));
+  await mouseOver(invoker);
+  popUp.showPopUp();
+  await waitForHoverTime(hoverWaitTime);
+  assert_true(popUp.matches(':top-layer'),'While hovering an invoker element, pop-up should not be hidden');
+  await mouseOver(popUp);
+  await waitForHoverTime(hoverWaitTime);
+  await mouseOver(invoker);
+  await waitForHoverTime(hoverWaitTime);
+  assert_true(popUp.matches(':top-layer'),'Moving hover between invoker and pop-up should keep pop-up from being hidden');
+  await mouseOver(unrelated);
+  await waitForHoverTime(hoverWaitTime);
+  assert_false(popUp.matches(':top-layer'),'Moving hover to unrelated should finally hide the pop-up');
+},`hovering a popuptoggletarget invoking element keeps the pop-up from being hidden`);
+</script>

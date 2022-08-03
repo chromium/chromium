@@ -27,3 +27,17 @@ async function finishAnimations(popUp) {
   popUp.getAnimations({subtree: true}).forEach(animation => animation.finish());
   await waitForRender();
 }
+let mouseOverStarted;
+function mouseOver(element) {
+  mouseOverStarted = performance.now();
+  return (new test_driver.Actions())
+    .pointerMove(0, 0, {origin: element})
+    .send();
+}
+function msSinceMouseOver() {
+  return performance.now() - mouseOverStarted;
+}
+async function waitForHoverTime(hoverWaitTimeMs) {
+  await new Promise(resolve => step_timeout(resolve,hoverWaitTimeMs));
+  await waitForRender();
+};
