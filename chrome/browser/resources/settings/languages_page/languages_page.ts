@@ -125,12 +125,8 @@ export class SettingsLanguagesPageElement extends
        enableDesktopDetailedLanguageSettings_: {
          type: Boolean,
          value: function() {
-           let enabled = false;
-           // <if expr="not chromeos_lacros">
-           enabled =
-               loadTimeData.getBoolean('enableDesktopDetailedLanguageSettings');
-           // </if>
-           return enabled;
+           return loadTimeData.getBoolean(
+              'enableDesktopDetailedLanguageSettings');
          },
        },
     };

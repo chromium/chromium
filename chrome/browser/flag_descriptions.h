@@ -3479,10 +3479,6 @@ extern const char kSideSearchDSESupportDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
-
-extern const char kDesktopDetailedLanguageSettingsName[];
-extern const char kDesktopDetailedLanguageSettingsDescription[];
-
 extern const char kQuickCommandsName[];
 extern const char kQuickCommandsDescription[];
 
@@ -3599,6 +3595,9 @@ extern const char kElasticOverscrollDescription[];
     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 extern const char kUIDebugToolsName[];
 extern const char kUIDebugToolsDescription[];
+
+extern const char kDesktopDetailedLanguageSettingsName[];
+extern const char kDesktopDetailedLanguageSettingsDescription[];
 #endif
 
 #if defined(WEBRTC_USE_PIPEWIRE)

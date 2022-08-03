@@ -127,7 +127,6 @@ TEST_F('CrSettingsLanguagesPageTest', 'LanguageMenu', function() {
   mocha.grep(languages_page_tests.TestNames.LanguageMenu).run();
 });
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS_LACROS)');
 var CrSettingsLanguagesPageDetailedTest =
     class extends CrSettingsBrowserTest {
   /** @override */
@@ -150,7 +149,6 @@ TEST_F(
       mocha.grep(languages_page_details_tests.TestNames.NeverTranslateDialog)
           .run();
     });
-GEN('#endif');
 
 var CrSettingsLanguagesPageMetricsTest = class extends CrSettingsBrowserTest {
   /** @override */
