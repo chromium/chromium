@@ -15,12 +15,14 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/types/pass_key.h"
 #include "base/win/com_init_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/windows_version.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -41,34 +43,46 @@ std::wstring GetCurrentDefault(
 // restoring it at destruction.
 class ScopedCopyRegKey {
  public:
-  // |to| must outlive this object.
-  ScopedCopyRegKey(const base::win::RegKey& from,
-                   base::win::RegKey& to,
-                   const wchar_t* key)
-      : to_(to), key_(key) {
-    base::win::RegKey exists_key(to_.Handle(), key_.c_str(),
-                                 KEY_READ | KEY_WRITE);
+  // absl::optional requires a public constructor, so the constructor requires
+  // a passkey to ensure callers use Create() to create this object.
+  using ConstructorPassKey = base::PassKey<ScopedCopyRegKey>;
+
+  // Copies |from|\|key| to |to|\|key|, preserving |to|\|key| and restoring it
+  // at destruction. Returns nullopt upon failure of preserving |to|. |to| must
+  // outlive this object.
+  static absl::optional<ScopedCopyRegKey> Create(const base::win::RegKey& from,
+                                                 base::win::RegKey& to,
+                                                 const std::wstring& key) {
+    absl::optional<ScopedCopyRegKey> copy_regkey;
+    std::wstring temp_key_name;
+    base::win::RegKey exists_key(to.Handle(), key.c_str(), KEY_READ);
     if (exists_key.Valid()) {
-      temp_key_name_ =
+      temp_key_name =
           base::StrCat({L"Temp-", base::ASCIIToWide(base::GenerateGUID())});
       LONG result =
-          RegRenameKey(to_.Handle(), key_.c_str(), temp_key_name_.c_str());
+          RegRenameKey(to.Handle(), key.c_str(), temp_key_name.c_str());
       if (result != ERROR_SUCCESS) {
         ADD_FAILURE() << "Registry Initial Rename Failed " << result;
-        temp_key_name_.clear();
-        return;
+        return copy_regkey;
       }
     }
 
-    base::win::RegKey orig_key(from.Handle(), key_.c_str(), KEY_READ);
-    base::win::RegKey dest_key(to_.Handle(), key_.c_str(), KEY_WRITE);
+    base::win::RegKey orig_key(from.Handle(), key.c_str(), KEY_READ);
+    base::win::RegKey dest_key(to.Handle(), key.c_str(), KEY_WRITE);
     CopyRecursively(orig_key, dest_key);
-    copied_ = true;
+    copy_regkey.emplace(to, key, temp_key_name, ConstructorPassKey());
+    return copy_regkey;
   }
 
+  // |to| must outlive this object.
+  ScopedCopyRegKey(base::win::RegKey& to,
+                   const std::wstring& key,
+                   const std::wstring& temp_key_name,
+                   ConstructorPassKey passkey)
+      : to_(to), key_(key), temp_key_name_(temp_key_name) {}
+
   ~ScopedCopyRegKey() {
-    if (copied_)
-      to_.DeleteKey(key_.c_str());
+    to_.DeleteKey(key_.c_str());
 
     if (!temp_key_name_.empty()) {
       LONG result =
@@ -98,9 +112,8 @@ class ScopedCopyRegKey {
 
   // This RegKey must outlive this class.
   base::win::RegKey& to_;
-  std::wstring key_;
-  std::wstring temp_key_name_;
-  bool copied_ = false;
+  const std::wstring key_;
+  const std::wstring temp_key_name_;
 };
 
 }  // namespace
@@ -163,8 +176,9 @@ TEST(ShellUtilInteractiveTest, MakeChromeDefaultDirectly) {
   // to the underlying HKCU if necessary for correct functionality.
   base::win::RegKey redirected_hkcu_classes(HKEY_CURRENT_USER,
                                             L"Software\\Classes", KEY_READ);
-  ScopedCopyRegKey copy_regkey(redirected_hkcu_classes, original_hkcu_classes,
-                               prog_id.c_str());
+  absl::optional<ScopedCopyRegKey> copy_regkey = ScopedCopyRegKey::Create(
+      redirected_hkcu_classes, original_hkcu_classes, prog_id.c_str());
+  ASSERT_TRUE(copy_regkey);
 
   // If the expectations fail below, the default browser mechanism has changed
   // and will need to be reexamined.
