@@ -1628,4 +1628,15 @@ TEST_F(PasswordSyncBridgeTest,
             specifics_with_only_unknown_fields.SerializeAsString());
 }
 
+TEST_F(PasswordSyncBridgeTest,
+       TrimRemoteSpecificsReturnsEmptyProtoWhenAllFieldsAreSupported) {
+  sync_pb::EntitySpecifics specifics;
+  sync_pb::PasswordSpecificsData* password_data =
+      specifics.mutable_password()->mutable_client_only_encrypted_data();
+  password_data->set_username_value("username_value");
+
+  EXPECT_EQ(bridge()->TrimRemoteSpecificsForCaching(specifics).ByteSizeLong(),
+            0u);
+}
+
 }  // namespace password_manager

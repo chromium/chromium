@@ -902,11 +902,17 @@ void PasswordSyncBridge::ApplyStopSyncChanges(
 sync_pb::EntitySpecifics PasswordSyncBridge::TrimRemoteSpecificsForCaching(
     const sync_pb::EntitySpecifics& entity_specifics) const {
   DCHECK(entity_specifics.has_password());
-  sync_pb::EntitySpecifics trimmed_entity_specifics;
-  *trimmed_entity_specifics.mutable_password()
-       ->mutable_client_only_encrypted_data() =
+
+  const sync_pb::PasswordSpecificsData trimmed_password_specifics_data =
       TrimPasswordSpecificsDataForCaching(
           entity_specifics.password().client_only_encrypted_data());
+  if (trimmed_password_specifics_data.ByteSizeLong() == 0u) {
+    return sync_pb::EntitySpecifics();
+  }
+
+  sync_pb::EntitySpecifics trimmed_entity_specifics;
+  *trimmed_entity_specifics.mutable_password()
+       ->mutable_client_only_encrypted_data() = trimmed_password_specifics_data;
   return trimmed_entity_specifics;
 }
 
