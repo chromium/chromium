@@ -2171,6 +2171,86 @@ TEST_F(DesksWithMultiDisplayOverview, DropOnOtherDeskInOtherDisplay) {
   EXPECT_TRUE(base::Contains(desk_2->windows(), win.get()));
 }
 
+// DesksBarVisibilityObserver waits for the Desks Bar on the observed root
+// window to become visible.
+class DesksBarVisibilityObserver : public aura::WindowObserver {
+ public:
+  explicit DesksBarVisibilityObserver(aura::Window* root_window)
+      : root_window_(root_window) {
+    root_window_->AddObserver(this);
+  }
+  DesksBarVisibilityObserver(const DesksBarVisibilityObserver&) = delete;
+  DesksBarVisibilityObserver& operator=(const DesksBarVisibilityObserver&) =
+      delete;
+  ~DesksBarVisibilityObserver() override {
+    DCHECK(root_window_);
+    root_window_->RemoveObserver(this);
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
+    if (visible && window->GetId() == kShellWindowId_DesksBarWindow)
+      run_loop_.Quit();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  raw_ptr<aura::Window> root_window_;
+};
+
+// Tests that closing a desk while in overview before the overview starting
+// animation finishes on a second display does not cause a crash. Regression
+// test for https://crbug.com/1346154.
+TEST_F(DesksWithMultiDisplayOverview, CloseDeskBeforeAnimationFinishes) {
+  // We need a non-zero duration to ensure we can close the desk before the
+  // animation completes.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create a maximized window on Desk 1. This means that when entering
+  // overview, we skip the wallpaper animation for Desk 1, so that the
+  // desks_bar_view for RootWindow-0 will initialize before RootWindow-1.
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  const WMEvent toggle_maximize_event(WM_EVENT_TOGGLE_MAXIMIZE);
+  WindowState::Get(win0.get())->OnWMEvent(&toggle_maximize_event);
+  ASSERT_TRUE(WindowState::Get(win0.get())->IsMaximized());
+
+  EnterOverview();
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+
+  // Check that the desk bar on our first root window has finished initializing,
+  // while the second desk bar hasn't been initialized yet since the enter
+  // animation hasn't finished for the second root window.
+  auto root_windows = Shell::GetAllRootWindows();
+  ASSERT_EQ(2u, root_windows.size());
+  const auto* desks_bar_view_1 =
+      GetOverviewGridForRoot(root_windows[0])->desks_bar_view();
+  ASSERT_EQ(2u, desks_bar_view_1->mini_views().size());
+  ASSERT_EQ(nullptr, GetOverviewGridForRoot(root_windows[1])->desks_bar_view());
+
+  // Close the first desk. Previously, this would result in a crash since the
+  // desk is deleted before `desks_bar_view_2` is initialized, resulting in the
+  // `desk_1_mini_view` not being created for `desks_bar_view_2`. When
+  // `OnDeskRemoved` is then called for the second desk bar, we now return early
+  // if that miniview can't be found.
+  // To prevent flakiness in this test, we wait until `desks_bar_view_2` is
+  // initialized and shown before we check the state.
+  DesksBarVisibilityObserver desks_bar_2_observer(root_windows[1]);
+  auto* desk_1_mini_view = desks_bar_view_1->mini_views()[0];
+  CloseDeskFromMiniView(desk_1_mini_view, GetEventGenerator());
+  desks_bar_2_observer.Wait();
+
+  // Verify that we are still in overview mode and that both desks bars are in
+  // the zero state.
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_TRUE(desks_bar_view_1->IsZeroState());
+  const auto* desks_bar_view_2 =
+      GetOverviewGridForRoot(root_windows[1])->desks_bar_view();
+  ASSERT_TRUE(desks_bar_view_2->IsZeroState());
+}
+
 namespace {
 
 PrefService* GetPrimaryUserPrefService() {

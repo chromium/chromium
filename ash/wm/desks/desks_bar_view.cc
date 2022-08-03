@@ -821,7 +821,13 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
       mini_views_.begin(), mini_views_.end(),
       [desk](DeskMiniView* mini_view) { return desk == mini_view->desk(); });
 
-  DCHECK(iter != mini_views_.end());
+  // There are cases where a desk may be removed before the `desks_bar_view`
+  // finishes initializing (i.e. removed on a separate root window before the
+  // overview starting animation completes). In those cases, that mini_view
+  // would not exist and the bar view will already be in the correct state so we
+  // do not need to update the UI (https://crbug.com/1346154).
+  if (iter == mini_views_.end())
+    return;
 
   // Let the highlight controller know the view is destroying before it is
   // removed from the collection because it needs to know the index of the mini
