@@ -16,13 +16,15 @@ import tempfile
 import time
 
 from collections import OrderedDict
+from PIL import Image
 
 SRC_DIR = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 PAR_DIR = os.path.join(SRC_DIR, 'testing')
 OUT_DIR = os.path.join(SRC_DIR, 'out', 'Release')
-BLINK_TOOLS = os.path.join(
-    SRC_DIR, 'third_party', 'blink', 'tools')
+BLINK_DIR = os.path.join(SRC_DIR, 'third_party', 'blink')
+BLINK_TOOLS = os.path.join(BLINK_DIR, 'tools')
+BLINK_WEB_TESTS = os.path.join(BLINK_DIR, 'web_tests')
 BUILD_ANDROID = os.path.join(SRC_DIR, 'build', 'android')
 CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
@@ -55,17 +57,20 @@ if 'compile_targets' not in sys.argv:
 import devil_chromium
 import wpt_common
 
+from blinkpy.web_tests.models import test_failures
 from blinkpy.web_tests.port.android import (
     ANDROID_WEBLAYER, ANDROID_WEBVIEW, CHROME_ANDROID)
 
 from devil import devil_env
 from devil.android import apk_helper
+from devil.android import device_temp_file
 from devil.android import flag_changer
 from devil.android import logcat_monitor
 from devil.android.tools import script_common
 from devil.android.tools import system_app
 from devil.android.tools import webview_app
 from devil.utils import logging_common
+from pylib.local.device import local_device_environment
 from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
 from scripts import common
@@ -87,9 +92,17 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 TEST_CASES = {}
 
+
+def _merge_results_dicts(dict_to_merge, test_results_dict):
+  if 'actual' in dict_to_merge:
+    test_results_dict.update(dict_to_merge)
+    return
+  for key in dict_to_merge.keys():
+    _merge_results_dicts(dict_to_merge[key],
+                             test_results_dict.setdefault(key, {}))
+
+
 # pylint: disable=super-with-arguments
-
-
 class FinchTestCase(wpt_common.BaseWptScriptAdapter):
 
 
@@ -97,8 +110,9 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     super(FinchTestCase, self).__init__()
     self._device = device
     self.parse_args()
-    self.browser_package_name = apk_helper.GetPackageName(
-        self.options.browser_apk)
+    self._browser_apk_helper = apk_helper.ToHelper(self.options.browser_apk)
+
+    self.browser_package_name = self._browser_apk_helper.GetPackageName()
     self.browser_activity_name = (self.options.browser_activity_name or
                                   self.default_browser_activity_name)
     self.layout_test_results_subdir = None
@@ -128,6 +142,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       'dom/collections/HTMLCollection-supported-property-names.html',
       'dom/collections/HTMLCollection-supported-property-indices.html',
     ]
+
+  @property
+  def pixel_tests(self):
+    return []
 
   @property
   def default_browser_activity_name(self):
@@ -200,7 +218,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       '--package-name',
       self.browser_package_name,
       '--keep-app-data-directory',
-      '--reftest-screenshot=always',
+      '--test-type=testharness',
     ])
 
     for binary_arg in self.browser_command_line_args():
@@ -258,11 +276,11 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     super(FinchTestCase, self).add_extra_arguments(parser)
     self.add_common_arguments(parser)
 
-  def _compare_screenshots_with_baselines(self, results_dict):
-    """Compare screenshots with baselines stored in skia gold
+  def _compare_screenshots_with_baselines(self, all_pixel_tests_results_dict):
+    """Compare pixel tests screenshots with baselines stored in skia gold
 
     Args:
-      results_dict: WPT results dictionary
+      all_pixel_tests_results_dict: Results dictionary for all pixel tests
 
     Returns:
       1 if there was an error comparing images otherwise 0
@@ -287,26 +305,29 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
             os.path.join(os.path.dirname(self.wpt_output), artifact_path))
 
         if status:
-          results_dict['num_failures_by_type'][test_result_dict['actual']] -= 1
           test_result_dict['actual'] = 'FAIL'
-          results_dict['num_failures_by_type'].setdefault('FAIL', 0)
-          results_dict['num_failures_by_type']['FAIL'] += 1
+          all_pixel_tests_results_dict['num_failures_by_type'].setdefault(
+              'FAIL', 0)
+          all_pixel_tests_results_dict['num_failures_by_type']['FAIL'] += 1
           triage_link = finch_skia_gold_utils.log_skia_gold_status_code(
               skia_gold_session, artifact_path, status, error)
           if triage_link:
             artifacts_dict['%s_triage_link' % artifact_name] = [triage_link]
           return_code = 1
+        else:
+          test_result_dict['actual'] = 'PASS'
+
       return return_code
 
-    def _process_test_leaves(node):
+    def _process_tests(node):
       return_code = 0
       if 'actual' in node:
         return _process_test_leaf(node)
       for next_node in node.values():
-        return_code |= _process_test_leaves(next_node)
+        return_code |= _process_tests(next_node)
       return return_code
 
-    return _process_test_leaves(results_dict['tests'])
+    return _process_tests(all_pixel_tests_results_dict['tests'])
 
   @contextlib.contextmanager
   def install_apks(self):
@@ -315,6 +336,32 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     self._device.Install(self.options.browser_apk, reinstall=True)
     for apk_path in self.options.additional_apk:
       self._device.Install(apk_path)
+
+    self._device.ClearApplicationState(
+        self.browser_package_name,
+        permissions=self._browser_apk_helper.GetPermissions())
+
+    # TODO(rmhasan): For R+ test devices, store the files in the
+    # app's data directory. This is needed for R+ devices because
+    # of the scoped storage feature.
+    tests_root_dir = posixpath.join(self._device.GetExternalStoragePath(),
+                                    'chromium_tests_root')
+    local_device_environment.place_nomedia_on_device(self._device,
+                                                     tests_root_dir)
+
+    # Store screenshot tests on the device's external storage.
+    for test_file in self.pixel_tests:
+      self._device.RunShellCommand(
+          ['mkdir', '-p',
+           posixpath.join(tests_root_dir,
+                          'pixel_tests',
+                          posixpath.dirname(test_file))],
+          check_return=True)
+      self._device.adb.Push(os.path.join(BLINK_WEB_TESTS, test_file),
+                            posixpath.join(tests_root_dir,
+                                           'pixel_tests',
+                                           test_file))
+
     yield
 
   def browser_command_line_args(self):
@@ -322,14 +369,14 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
              self.options.fake_variations_channel] +
             self.test_specific_browser_args)
 
-  def run_tests(self, test_run_variation, results_dict,
+  def run_tests(self, test_run_variation, all_test_results_dict,
                 extra_browser_args=None):
     """Run browser test on test device
 
     Args:
       test_run_variation: Test run variation.
-      results_dict: Main results dictionary containing results
-        for all test variations.
+      all_test_results_dict: Main results dictionary containing
+        results for all test variations.
       extra_browser_args: Extra browser arguments.
 
     Returns:
@@ -351,6 +398,10 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       ret = super(FinchTestCase, self).run_test()
       self.stop_browser()
 
+      # Run screen shot tests
+      pixel_tests_results_dict, pixel_tests_ret = self._run_pixel_tests()
+      ret |= pixel_tests_ret
+
     self._include_variation_prefix(test_run_variation)
     self.process_and_upload_results()
 
@@ -360,17 +411,79 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
     shutil.move(os.path.join(isolate_root_dir, logcat_filename),
                 final_logcat_path)
 
-    with open(self.wpt_output, 'r') as curr_test_results:
-      curr_results_dict = json.load(curr_test_results)
-      results_dict['tests'][test_run_variation] = curr_results_dict['tests']
-      # Compare screenshots with baselines stored in Skia Gold
-      ret |= self._compare_screenshots_with_baselines(curr_results_dict)
+    with open(self.wpt_output, 'r') as test_harness_results:
+      test_harness_results_dict = json.load(test_harness_results)
+      all_test_results_dict['tests'][test_run_variation] = (
+          test_harness_results_dict['tests'])
+      _merge_results_dicts(pixel_tests_results_dict['tests'],
+                           all_test_results_dict['tests'][test_run_variation])
 
-      for result, count in curr_results_dict['num_failures_by_type'].items():
-        results_dict['num_failures_by_type'].setdefault(result, 0)
-        results_dict['num_failures_by_type'][result] += count
+      for test_results_dict in (test_harness_results_dict,
+                                pixel_tests_results_dict):
+        for result, count in test_results_dict['num_failures_by_type'].items():
+          all_test_results_dict['num_failures_by_type'].setdefault(result, 0)
+          all_test_results_dict['num_failures_by_type'][result] += count
 
     return ret
+
+  def _run_pixel_tests(self):
+    """Run pixel tests on device
+
+    Returns:
+      A tuple containing a dictionary of pixel test results
+      and the skia gold status code.
+    """
+    tests_root_dir = posixpath.join(
+        self._device.GetExternalStoragePath(),
+        'chromium_tests_root',
+        'pixel_tests')
+
+    pixel_tests_results_dict = {'tests':{}, 'num_failures_by_type': {}}
+    for test_file in self.pixel_tests:
+      try:
+        # The test result will for each tests will be set after
+        # comparing the test screenshots to skia gold baselines.
+        url = 'file://{}'.format(
+            posixpath.join(tests_root_dir, test_file))
+        self.start_browser(url)
+
+        screenshot_artifact_relpath = os.path.join(
+            'pixel_tests_artifacts',
+            self.layout_test_results_subdir.replace('_artifacts', ''),
+            self.port.output_filename(test_file,
+                                      test_failures.FILENAME_SUFFIX_ACTUAL,
+                                      '.png'))
+        screenshot_artifact_abspath = os.path.join(
+            os.path.dirname(self.options.isolated_script_test_output),
+            screenshot_artifact_relpath)
+
+        self._device.TakeScreenshot(host_path=screenshot_artifact_abspath)
+
+        # Crop away the Android status bar and the WebView shell's support
+        # action bar. We will do this by removing one fifth of the image
+        # from the top. We can do this by setting the new top point of the
+        # image to height / height_factor. height_factor is set to 5.
+        height_factor = 5
+        image = Image.open(screenshot_artifact_abspath)
+        width, height = image.size
+        cropped_image = image.crop((0, height // height_factor, width, height))
+        image.close()
+        cropped_image.save(screenshot_artifact_abspath)
+
+        test_results_dict = pixel_tests_results_dict['tests']
+        for key in test_file.split('/'):
+          test_results_dict = test_results_dict.setdefault(key, {})
+
+        test_results_dict['actual'] = 'PASS'
+        test_results_dict['expected'] = 'PASS'
+        test_results_dict['artifacts'] = {
+            'actual_image': [screenshot_artifact_relpath]}
+      finally:
+        self.stop_browser()
+
+    # Compare screenshots with baselines stored in Skia Gold.
+    return (pixel_tests_results_dict,
+            self._compare_screenshots_with_baselines(pixel_tests_results_dict))
 
   def _include_variation_prefix(self, test_run_variation):
     with open(self.wpt_output, 'r') as test_results_file:
@@ -387,10 +500,11 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
       self._device.ForceStop(
           self.webview_provider_package_name)
 
-  def start_browser(self):
+  def start_browser(self, url=None):
     full_activity_name = '%s/%s' % (self.browser_package_name,
                                     self.browser_activity_name)
     logger.info('Starting activity %s', full_activity_name)
+    url = url or 'www.google.com'
 
     self._device.RunShellCommand([
           'am',
@@ -399,7 +513,7 @@ class FinchTestCase(wpt_common.BaseWptScriptAdapter):
           '-n',
           full_activity_name,
           '-d',
-          'data:,'])
+          url])
     logger.info('Waiting 10 seconds')
     time.sleep(10)
 
@@ -497,6 +611,12 @@ class WebViewFinchTestCase(FinchTestCase):
   def wpt_product_name(cls):
     return ANDROID_WEBVIEW
 
+  @property
+  def pixel_tests(self):
+    return super(WebViewFinchTestCase, self).pixel_tests + [
+        'external/wpt/svg/pservers/reftests/radialgradient-basic-002.svg',
+    ]
+
   @classmethod
   def finch_seed_download_args(cls):
     return [
@@ -508,7 +628,7 @@ class WebViewFinchTestCase(FinchTestCase):
 
   @property
   def default_browser_activity_name(self):
-    return 'org.chromium.webview_shell.WebPlatformTestsActivity'
+    return 'org.chromium.webview_shell.WebViewBrowserActivity'
 
   @property
   def default_finch_seed_path(self):
@@ -660,10 +780,6 @@ def main(args):
     platform_tools_path = os.path.dirname(devil_env.config.FetchPath('adb'))
     os.environ['PATH'] = os.pathsep.join([platform_tools_path] +
                                           os.environ['PATH'].split(os.pathsep))
-
-    device.RunShellCommand(
-        ['pm', 'clear', test_case.browser_package_name],
-        check_return=True)
 
     test_results_dict = OrderedDict({'version': 3, 'interrupted': False,
                                      'num_failures_by_type': {}, 'tests': {}})
