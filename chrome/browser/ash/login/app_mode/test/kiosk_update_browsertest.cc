@@ -724,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PreserveLocalData) {
   set_test_app_version("2.0.0");
   set_test_crx_file(test_app_id() + "_v2_read_and_verify_data.crx");
   extensions::ResultCatcher catcher;
-  StartAppLaunchFromLoginScreen(
+  StartExistingAppLaunchFromLoginScreen(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);
   WaitForAppLaunchWithOptions(true /* check_launch_data */,
                               false /* terminate_app */);

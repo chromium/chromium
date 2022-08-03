@@ -234,6 +234,14 @@ void KioskBaseTest::StartAppLaunchFromLoginScreen(
   EXPECT_TRUE(LaunchApp(test_app_id()));
 }
 
+void KioskBaseTest::StartExistingAppLaunchFromLoginScreen(
+    NetworkPortalDetector::CaptivePortalStatus network_status) {
+  SetupTestAppUpdateCheck();
+
+  network_portal_detector_.SimulateDefaultNetworkState(network_status);
+  EXPECT_TRUE(LaunchApp(test_app_id()));
+}
+
 const extensions::Extension* KioskBaseTest::GetInstalledApp() {
   Profile* app_profile = ProfileManager::GetPrimaryUserProfile();
   return extensions::ExtensionRegistry::Get(app_profile)

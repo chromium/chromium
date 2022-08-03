@@ -87,6 +87,8 @@ class KioskBaseTest : public OobeBaseTest {
 
   void StartAppLaunchFromLoginScreen(
       NetworkPortalDetector::CaptivePortalStatus network_status);
+  void StartExistingAppLaunchFromLoginScreen(
+      NetworkPortalDetector::CaptivePortalStatus network_status);
 
   const extensions::Extension* GetInstalledApp();
 
