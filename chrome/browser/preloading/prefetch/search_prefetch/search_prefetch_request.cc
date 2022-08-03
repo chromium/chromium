@@ -107,6 +107,34 @@ std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
                                : embedder_support::GetUserAgent());
 }
 
+// Used for StateTransitions matching.
+const char* SearchPrefetchStatusToString(SearchPrefetchStatus status) {
+  switch (status) {
+    case SearchPrefetchStatus::kNotStarted:
+      return "NotStarted";
+    case SearchPrefetchStatus::kInFlight:
+      return "InFlight";
+    case SearchPrefetchStatus::kCanBeServed:
+      return "CanBeServed";
+    case SearchPrefetchStatus::kCanBeServedAndUserClicked:
+      return "CanBeServedAndUserClicked";
+    case SearchPrefetchStatus::kComplete:
+      return "Complete";
+    case SearchPrefetchStatus::kRequestCancelled:
+      return "RequestCancelled";
+    case SearchPrefetchStatus::kRequestFailed:
+      return "RequestFailed";
+    case SearchPrefetchStatus::kPrerendered:
+      return "Prerendered";
+    case SearchPrefetchStatus::kPrerenderedAndClicked:
+      return "PrerenderedAndClicked";
+    case SearchPrefetchStatus::kPrefetchServedForRealNavigation:
+      return "kPrefetchServedForRealNavigation";
+    case SearchPrefetchStatus::kPrerenderActivated:
+      return "PrerenderActivated";
+  }
+}
+
 }  // namespace
 
 SearchPrefetchRequest::SearchPrefetchRequest(
@@ -280,7 +308,7 @@ bool SearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
 
   prefetch_url_ = resource_request->url;
 
-  current_status_ = SearchPrefetchStatus::kInFlight;
+  SetSearchPrefetchStatus(SearchPrefetchStatus::kInFlight);
 
   StartPrefetchRequestInternal(profile, std::move(resource_request),
                                network_traffic_annotation,
@@ -299,10 +327,7 @@ bool SearchPrefetchRequest::ShouldBeCancelledOnResultChanges() const {
 }
 
 void SearchPrefetchRequest::CancelPrefetch() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
-         current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kPrerendered);
-  current_status_ = SearchPrefetchStatus::kRequestCancelled;
+  SetSearchPrefetchStatus(SearchPrefetchStatus::kRequestCancelled);
   StopPrefetch();
   StopPrerender();
 }
@@ -369,11 +394,9 @@ void SearchPrefetchRequest::MaybeStartPrerenderSearchResult(
 }
 
 void SearchPrefetchRequest::ErrorEncountered() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
-         current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
-         current_status_ == SearchPrefetchStatus::kPrerendered);
-  current_status_ = SearchPrefetchStatus::kRequestFailed;
+  // When prerender fails, don't set the prefetch status to failure.
+  if (current_status_ != SearchPrefetchStatus::kPrerendered)
+    SetSearchPrefetchStatus(SearchPrefetchStatus::kRequestFailed);
   StopPrefetch();
   StopPrerender();
 }
@@ -394,20 +417,15 @@ void SearchPrefetchRequest::OnServableResponseCodeReceived() {
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsServable() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight);
-  current_status_ = SearchPrefetchStatus::kCanBeServed;
+  SetSearchPrefetchStatus(SearchPrefetchStatus::kCanBeServed);
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsPrerendered() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kComplete);
-  current_status_ = SearchPrefetchStatus::kPrerendered;
+  SetSearchPrefetchStatus(SearchPrefetchStatus::kPrerendered);
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsPrerenderActivated() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kPrerenderedAndClicked ||
-         current_status_ == SearchPrefetchStatus::kPrerendered);
-  current_status_ = SearchPrefetchStatus::kPrerenderActivated;
+  SetSearchPrefetchStatus(SearchPrefetchStatus::kPrerenderActivated);
 }
 
 void SearchPrefetchRequest::ResetPrerenderUpgrader() {
@@ -417,26 +435,20 @@ void SearchPrefetchRequest::ResetPrerenderUpgrader() {
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsComplete() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kInFlight ||
-         current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked);
-  current_status_ = SearchPrefetchStatus::kComplete;
+  SetSearchPrefetchStatus(SearchPrefetchStatus::kComplete);
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsClicked() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServed ||
-         current_status_ == SearchPrefetchStatus::kPrerendered);
   if (current_status_ == SearchPrefetchStatus::kCanBeServed) {
-    current_status_ = SearchPrefetchStatus::kCanBeServedAndUserClicked;
+    SetSearchPrefetchStatus(SearchPrefetchStatus::kCanBeServedAndUserClicked);
   } else if (current_status_ == SearchPrefetchStatus::kPrerendered) {
-    current_status_ = SearchPrefetchStatus::kPrerenderedAndClicked;
+    SetSearchPrefetchStatus(SearchPrefetchStatus::kPrerenderedAndClicked);
   }
 }
 
 void SearchPrefetchRequest::MarkPrefetchAsServed() {
-  DCHECK(current_status_ == SearchPrefetchStatus::kCanBeServedAndUserClicked ||
-         current_status_ == SearchPrefetchStatus::kComplete);
-  current_status_ = SearchPrefetchStatus::kPrefetchServedForRealNavigation;
+  SetSearchPrefetchStatus(
+      SearchPrefetchStatus::kPrefetchServedForRealNavigation);
   UMA_HISTOGRAM_TIMES("Omnibox.SearchPrefetch.ClickToNavigationIntercepted",
                       base::TimeTicks::Now() - time_clicked_);
 }
@@ -480,4 +492,61 @@ void SearchPrefetchRequest::StopPrerender() {
     prerender_preloading_attempt_ = nullptr;
     prerender_url_ = GURL();
   }
+}
+
+void SearchPrefetchRequest::SetSearchPrefetchStatus(
+    SearchPrefetchStatus new_status) {
+#if DCHECK_IS_ON()
+  static const base::NoDestructor<base::StateTransitions<SearchPrefetchStatus>>
+      allowed_transitions(base::StateTransitions<SearchPrefetchStatus>({
+          {SearchPrefetchStatus::kNotStarted,
+           {SearchPrefetchStatus::kInFlight}},
+
+          {SearchPrefetchStatus::kInFlight,
+           {SearchPrefetchStatus::kCanBeServed,
+            SearchPrefetchStatus::kRequestCancelled,
+            SearchPrefetchStatus::kRequestFailed}},
+
+          {SearchPrefetchStatus::kCanBeServed,
+           {SearchPrefetchStatus::kCanBeServedAndUserClicked,
+            SearchPrefetchStatus::kComplete,
+            SearchPrefetchStatus::kRequestFailed,
+            SearchPrefetchStatus::kRequestCancelled,
+            SearchPrefetchStatus::kPrerendered}},
+
+          {SearchPrefetchStatus::kCanBeServedAndUserClicked,
+           {SearchPrefetchStatus::kComplete,
+            SearchPrefetchStatus::kPrefetchServedForRealNavigation,
+            SearchPrefetchStatus::kRequestFailed}},
+
+          {SearchPrefetchStatus::kComplete,
+           {SearchPrefetchStatus::kPrefetchServedForRealNavigation,
+            SearchPrefetchStatus::kPrerendered}},
+
+          {SearchPrefetchStatus::kPrefetchServedForRealNavigation, {}},
+
+          {SearchPrefetchStatus::kPrerendered,
+           {SearchPrefetchStatus::kPrerenderedAndClicked,
+            SearchPrefetchStatus::kRequestCancelled,
+            SearchPrefetchStatus::kPrerenderActivated}},
+
+          {SearchPrefetchStatus::kPrerenderedAndClicked,
+           {SearchPrefetchStatus::kPrerenderActivated}},
+
+          {SearchPrefetchStatus::kPrerenderActivated, {}},
+
+          {SearchPrefetchStatus::kRequestFailed, {}},
+
+          {SearchPrefetchStatus::kRequestCancelled, {}},
+
+      }));
+  DCHECK_STATE_TRANSITION(allowed_transitions,
+                          /*old_state=*/current_status_,
+                          /*new_state=*/new_status);
+#endif  // DCHECK_IS_ON()
+  current_status_ = new_status;
+}
+
+std::ostream& operator<<(std::ostream& o, const SearchPrefetchStatus& s) {
+  return o << SearchPrefetchStatusToString(s);
 }

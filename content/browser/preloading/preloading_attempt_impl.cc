@@ -4,7 +4,7 @@
 
 #include "content/browser/preloading/preloading_attempt_impl.h"
 
-#include "content/common/state_transitions.h"
+#include "base/state_transitions.h"
 #include "content/public/browser/preloading.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -16,8 +16,9 @@ namespace {
 void DCHECKTriggeringOutcomeTransitions(PreloadingTriggeringOutcome old_state,
                                         PreloadingTriggeringOutcome new_state) {
 #if DCHECK_IS_ON()
-  static const base::NoDestructor<StateTransitions<PreloadingTriggeringOutcome>>
-      allowed_transitions(StateTransitions<PreloadingTriggeringOutcome>({
+  static const base::NoDestructor<
+      base::StateTransitions<PreloadingTriggeringOutcome>>
+      allowed_transitions(base::StateTransitions<PreloadingTriggeringOutcome>({
           {PreloadingTriggeringOutcome::kUnspecified,
            {PreloadingTriggeringOutcome::kDuplicate,
             PreloadingTriggeringOutcome::kRunning,

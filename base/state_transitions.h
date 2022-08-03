@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_STATE_TRANSITIONS_H_
-#define CONTENT_COMMON_STATE_TRANSITIONS_H_
+#ifndef BASE_STATE_TRANSITIONS_H_
+#define BASE_STATE_TRANSITIONS_H_
 
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "content/common/content_export.h"
 
-namespace content {
+namespace base {
 
 // This class represents a set of state transitions where each state is a value
 // that supports copy, << and == (e.g. an enum element). It's intended to be
@@ -37,7 +36,7 @@ namespace content {
 // In foo.cc
 // ---------
 // #include "base/no_destructor.h"
-// #include "content/common/state_transitions.h"
+// #include "base/state_transitions.h"
 //
 // std::ostream& operator<<(std::ostream& o, const State& s) {
 //   return o << static_cast<int>(s);
@@ -96,6 +95,6 @@ struct StateTransitions {
   DCHECK((transitions)->IsTransitionValid((old_state), (new_state))) \
       << "Invalid transition: " << old_state << " -> " << new_state
 
-}  // namespace content
+}  // namespace base
 
-#endif  // CONTENT_COMMON_STATE_TRANSITIONS_H_
+#endif  // BASE_STATE_TRANSITIONS_H_

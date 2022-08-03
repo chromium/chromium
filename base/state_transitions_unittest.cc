@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/state_transitions.h"
+#include "base/state_transitions.h"
 
 #include <ostream>
 #include <string>
@@ -12,7 +12,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace content {
+namespace base {
 
 enum class State { kState1 = 0, kState2, kState3, kState4 };
 
@@ -97,4 +97,4 @@ TEST(StateTransitionsTest, NonEnum) {
   ASSERT_FALSE(transitions.IsTransitionValid("foo", "bar"));
 }
 
-}  // namespace content
+}  // namespace base

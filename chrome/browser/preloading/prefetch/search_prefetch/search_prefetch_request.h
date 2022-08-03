@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/state_transitions.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/gurl.h"
@@ -168,6 +169,9 @@ class SearchPrefetchRequest {
   // Cancels ongoing and pending prerender.
   void StopPrerender();
 
+  // Updates the `current_status_` to status.
+  void SetSearchPrefetchStatus(SearchPrefetchStatus status);
+
   // Whether the request has received a servable response. See
   // `CanServePrefetchRequest` in ./streaming_search_prefetch_url_loader.cc for
   // the definition of servable response.
@@ -213,5 +217,8 @@ class SearchPrefetchRequest {
 
   base::raw_ptr<Profile> profile_;
 };
+
+// Used when DCHECK_STATE_TRANSITION triggers.
+std::ostream& operator<<(std::ostream& o, const SearchPrefetchStatus& s);
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_REQUEST_H_

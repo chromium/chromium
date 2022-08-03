@@ -9,6 +9,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/state_transitions.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/bad_message.h"
@@ -17,7 +18,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/common/agent_scheduling_group.mojom.h"
 #include "content/common/renderer.mojom.h"
-#include "content/common/state_transitions.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/services/shared_storage_worklet/public/mojom/shared_storage_worklet_service.mojom.h"
@@ -483,8 +483,8 @@ void AgentSchedulingGroupHost::SetUpIPC() {
 
 void AgentSchedulingGroupHost::SetState(
     AgentSchedulingGroupHost::LifecycleState state) {
-  static const base::NoDestructor<StateTransitions<LifecycleState>> transitions(
-      StateTransitions<LifecycleState>({
+  static const base::NoDestructor<base::StateTransitions<LifecycleState>>
+      transitions(base::StateTransitions<LifecycleState>({
           {LifecycleState::kNewborn, {LifecycleState::kBound}},
           {LifecycleState::kBound,
            {LifecycleState::kRenderProcessExited,
