@@ -70,7 +70,8 @@ class MockSyncWebSocket : public SyncWebSocket {
         base::JSONReader::ReadDeprecated(message);
     base::DictionaryValue* temp_dict;
     EXPECT_TRUE(value->GetAsDictionary(&temp_dict));
-    dict->reset(temp_dict->DeepCopy());
+    *dict = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(temp_dict->Clone()));
     if (!dict)
       return false;
     absl::optional<int> maybe_id = (*dict)->GetDict().FindInt("id");

@@ -521,7 +521,8 @@ TEST_F(ExtensionContextMenuModelTest, ComponentExtensionContextMenu) {
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder()
-            .SetManifest(base::WrapUnique(manifest->DeepCopy()))
+            .SetManifest(base::DictionaryValue::From(
+                base::Value::ToUniquePtrValue(manifest->Clone())))
             .SetID(crx_file::id_util::GenerateId("component"))
             .SetLocation(ManifestLocation::kComponent)
             .Build();

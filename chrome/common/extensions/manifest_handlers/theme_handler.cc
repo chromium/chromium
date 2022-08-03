@@ -51,7 +51,8 @@ bool LoadImages(const base::DictionaryValue* theme_value,
         return false;
       }
     }
-    theme_info->theme_images_.reset(images_value->DeepCopy());
+    theme_info->theme_images_ = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(images_value->Clone()));
   }
   return true;
 }
@@ -127,7 +128,8 @@ bool LoadTints(const base::DictionaryValue* theme_value,
     }
   }
 
-  theme_info->theme_tints_.reset(tints_value->DeepCopy());
+  theme_info->theme_tints_ = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(tints_value->Clone()));
   return true;
 }
 
@@ -137,8 +139,8 @@ bool LoadDisplayProperties(const base::DictionaryValue* theme_value,
   const base::DictionaryValue* display_properties_value = NULL;
   if (theme_value->GetDictionary(keys::kThemeDisplayProperties,
                                  &display_properties_value)) {
-    theme_info->theme_display_properties_.reset(
-        display_properties_value->DeepCopy());
+    theme_info->theme_display_properties_ = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(display_properties_value->Clone()));
   }
   return true;
 }

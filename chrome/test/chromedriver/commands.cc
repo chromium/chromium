@@ -343,7 +343,8 @@ void ExecuteSessionCommand(SessionThreadMap* session_thread_map,
         base::BindOnce(
             &ExecuteSessionCommandOnSessionThread, command_name, command,
             w3c_standard_command, return_ok_without_session,
-            base::WrapUnique(params.DeepCopy()),
+            base::DictionaryValue::From(
+                base::Value::ToUniquePtrValue(params.Clone())),
             base::ThreadTaskRunnerHandle::Get(), callback,
             base::BindRepeating(&TerminateSessionThreadOnCommandThread,
                                 session_thread_map, session_id)));

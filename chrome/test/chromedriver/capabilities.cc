@@ -93,7 +93,8 @@ Status ParseDict(std::unique_ptr<base::DictionaryValue>* to_set,
   const base::DictionaryValue* dict = NULL;
   if (!option.GetAsDictionary(&dict))
     return Status(kInvalidArgument, "must be a dictionary");
-  to_set->reset(dict->DeepCopy());
+  *to_set =
+      base::DictionaryValue::From(base::Value::ToUniquePtrValue(dict->Clone()));
   return Status(kOk);
 }
 

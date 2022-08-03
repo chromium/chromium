@@ -285,7 +285,8 @@ void RecordPrinterInfo(size_t* call_count,
                        std::unique_ptr<base::DictionaryValue>* printer_info_out,
                        const base::DictionaryValue& printer_info) {
   ++(*call_count);
-  printer_info_out->reset(printer_info.DeepCopy());
+  *printer_info_out = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(printer_info.Clone()));
 }
 
 std::string RefCountedMemoryToString(

@@ -170,7 +170,9 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, SimultaneousInstall) {
   std::unique_ptr<WebstoreInstaller::Approval> approval =
       WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
           browser()->profile(), kTestExtensionId,
-          std::unique_ptr<base::DictionaryValue>(manifest->DeepCopy()), false);
+          base::DictionaryValue::From(
+              base::Value::ToUniquePtrValue(manifest->Clone())),
+          false);
 
   // Create and run a WebstoreInstaller.
   base::RunLoop run_loop;

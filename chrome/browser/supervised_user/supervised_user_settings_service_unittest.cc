@@ -116,10 +116,12 @@ class SupervisedUserSettingsServiceTest : public ::testing::Test {
   }
 
   void OnNewSettingsAvailable(const base::DictionaryValue* settings) {
-    if (!settings)
+    if (!settings) {
       settings_.reset();
-    else
-      settings_.reset(settings->DeepCopy());
+    } else {
+      settings_ = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(settings->Clone()));
+    }
   }
 
   // Check that a single website approval has been added correctly.

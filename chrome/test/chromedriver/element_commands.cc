@@ -998,7 +998,7 @@ Status ExecuteGetElementRect(Session* session,
   ret.SetDoubleKey("y", maybe_y.value());
   ret.SetDoubleKey("width", maybe_width.value());
   ret.SetDoubleKey("height", maybe_height.value());
-  value->reset(ret.DeepCopy());
+  *value = base::Value::ToUniquePtrValue(ret.Clone());
   return Status(kOk);
 }
 

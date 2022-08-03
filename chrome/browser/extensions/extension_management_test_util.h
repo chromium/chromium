@@ -110,7 +110,7 @@ class ExtensionManagementPrefUpdaterBase {
   // Set the preference with |pref|, pass the ownership of it as well.
   // This function must be called before accessing publicly exposed functions,
   // for example in constructor of subclass.
-  void SetPref(base::DictionaryValue* pref);
+  void SetPref(std::unique_ptr<base::DictionaryValue> pref);
 
   // Take the preference. Caller takes ownership of it as well.
   // This function must be called after accessing publicly exposed functions,
@@ -136,11 +136,13 @@ class ExtensionManagementPrefUpdater
       : service_(service) {
     const base::Value* pref_value =
         service_->GetManagedPref(pref_names::kExtensionManagement);
-    const base::DictionaryValue* dict_value = nullptr;
-    if (pref_value && pref_value->GetAsDictionary(&dict_value))
-      SetPref(dict_value->DeepCopy());
-    else
-      SetPref(new base::DictionaryValue);
+    std::unique_ptr<base::DictionaryValue> dict_value(
+        new base::DictionaryValue);
+    if (pref_value && pref_value->is_dict()) {
+      dict_value = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(pref_value->Clone()));
+    }
+    SetPref(std::move(dict_value));
   }
 
   ExtensionManagementPrefUpdater(const ExtensionManagementPrefUpdater&) =

@@ -116,7 +116,8 @@ void DeviceLocalAccountExternalPolicyLoader::UpdateExtensionListFromStore() {
     if (pref_value_map.GetValue(extensions::pref_names::kInstallForceList,
                                 &value) &&
         value->GetAsDictionary(&dict)) {
-      prefs.reset(dict->DeepCopy());
+      prefs = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(dict->Clone()));
     }
   }
 

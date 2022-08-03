@@ -402,9 +402,9 @@ void InstalledLoader::LoadAllExtensions() {
         continue;
       }
 
-      extensions_info->at(i)->extension_manifest.reset(
-          static_cast<base::DictionaryValue*>(
-              extension->manifest()->value()->DeepCopy()));
+      extensions_info->at(i)->extension_manifest =
+          base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+              extension->manifest()->value()->Clone()));
       should_write_prefs = true;
     }
   }

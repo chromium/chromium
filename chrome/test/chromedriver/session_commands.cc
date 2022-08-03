@@ -337,10 +337,9 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
     base::Value body(base::Value::Type::DICTIONARY);
     body.SetKey("capabilities", session->capabilities->Clone());
     body.SetStringKey("sessionId", session->id);
-    value->reset(base::Value::ToUniquePtrValue(body.Clone()).release());
+    *value = base::Value::ToUniquePtrValue(body.Clone());
   } else {
-    value->reset(base::Value::ToUniquePtrValue(session->capabilities->Clone())
-                     .release());
+    *value = base::Value::ToUniquePtrValue(session->capabilities->Clone());
   }
   return CheckSessionCreated(session);
 }
@@ -652,7 +651,7 @@ Status ExecuteQuit(bool allow_detach,
 Status ExecuteGetSessionCapabilities(Session* session,
                                      const base::DictionaryValue& params,
                                      std::unique_ptr<base::Value>* value) {
-  value->reset(session->capabilities->DeepCopy());
+  *value = base::Value::ToUniquePtrValue(session->capabilities->Clone());
   return Status(kOk);
 }
 
@@ -949,7 +948,7 @@ Status ExecuteGetTimeouts(Session* session,
                         session->page_load_timeout.InMilliseconds());
   SetSafeInt(&timeouts, "implicit", session->implicit_wait.InMilliseconds());
 
-  value->reset(base::Value::ToUniquePtrValue(timeouts.Clone()).release());
+  *value = base::Value::ToUniquePtrValue(timeouts.Clone());
   return Status(kOk);
 }
 
@@ -1010,7 +1009,7 @@ Status ExecuteGetLocation(Session* session,
   // Set a dummy altitude to make WebDriver clients happy.
   // https://code.google.com/p/chromedriver/issues/detail?id=281
   location.SetDoubleKey("altitude", 0);
-  value->reset(base::Value::ToUniquePtrValue(location.Clone()).release());
+  *value = base::Value::ToUniquePtrValue(location.Clone());
   return Status(kOk);
 }
 
@@ -1049,7 +1048,7 @@ Status ExecuteGetNetworkConditions(Session* session,
   conditions.SetIntKey(
       "upload_throughput",
       session->overridden_network_conditions->upload_throughput);
-  value->reset(base::Value::ToUniquePtrValue(conditions.Clone()).release());
+  *value = base::Value::ToUniquePtrValue(conditions.Clone());
   return Status(kOk);
 }
 
@@ -1136,7 +1135,7 @@ Status ExecuteGetWindowPosition(Session* session,
   base::Value position(base::Value::Type::DICTIONARY);
   position.SetIntKey("x", windowRect.x);
   position.SetIntKey("y", windowRect.y);
-  value->reset(base::Value::ToUniquePtrValue(position.Clone()).release());
+  *value = base::Value::ToUniquePtrValue(position.Clone());
   return Status(kOk);
 }
 
@@ -1168,7 +1167,7 @@ Status ExecuteGetWindowSize(Session* session,
   base::Value size(base::Value::Type::DICTIONARY);
   size.SetIntKey("width", windowRect.width);
   size.SetIntKey("height", windowRect.height);
-  value->reset(base::Value::ToUniquePtrValue(size.Clone()).release());
+  *value = base::Value::ToUniquePtrValue(size.Clone());
   return Status(kOk);
 }
 

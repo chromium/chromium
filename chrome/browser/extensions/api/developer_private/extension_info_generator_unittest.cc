@@ -270,7 +270,9 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
                                        .Build())
           .Set("permissions", ListBuilder().Append("tabs").Build())
           .Build();
-  std::unique_ptr<base::DictionaryValue> manifest_copy(manifest->DeepCopy());
+  std::unique_ptr<base::DictionaryValue> manifest_copy =
+      base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(manifest->Clone()));
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(std::move(manifest))

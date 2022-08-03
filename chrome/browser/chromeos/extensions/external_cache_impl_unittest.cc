@@ -71,7 +71,8 @@ class ExternalCacheImplTest : public testing::Test,
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override {
-    prefs_.reset(prefs->DeepCopy());
+    prefs_ = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(prefs->Clone()));
   }
 
   void OnCachedExtensionFileDeleted(

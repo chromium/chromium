@@ -591,8 +591,10 @@ Status DevToolsClientImpl::ProcessCommandResponse(
     response_info->state = kReceived;
     response_info->response.id = response.id;
     response_info->response.error = response.error;
-    if (response.result)
-      response_info->response.result.reset(response.result->DeepCopy());
+    if (response.result) {
+      response_info->response.result = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(response.result->Clone()));
+    }
   }
 
   if (response.result) {
@@ -675,10 +677,12 @@ bool ParseInspectorMessage(const std::string& message,
 
     *type = kEventMessageType;
     event->method = method;
-    if (params)
-      event->params.reset(params->DeepCopy());
-    else
+    if (params) {
+      event->params = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(params->Clone()));
+    } else {
       event->params = std::make_unique<base::DictionaryValue>();
+    }
     return true;
   } else if (id_value->is_int()) {
     base::DictionaryValue* unscoped_error = nullptr;
@@ -690,12 +694,14 @@ bool ParseInspectorMessage(const std::string& message,
     // Tracing.start and Tracing.end command responses do not contain one.
     // So, if neither "error" nor "result" keys are present, just provide
     // a blank result dictionary.
-    if (message_dict->GetDictionary("result", &unscoped_result))
-      command_response->result.reset(unscoped_result->DeepCopy());
-    else if (message_dict->GetDictionary("error", &unscoped_error))
+    if (message_dict->GetDictionary("result", &unscoped_result)) {
+      command_response->result = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(unscoped_result->Clone()));
+    } else if (message_dict->GetDictionary("error", &unscoped_error)) {
       base::JSONWriter::Write(*unscoped_error, &command_response->error);
-    else
+    } else {
       command_response->result = std::make_unique<base::DictionaryValue>();
+    }
     return true;
   }
   return false;

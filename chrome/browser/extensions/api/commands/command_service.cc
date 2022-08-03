@@ -82,7 +82,9 @@ void MergeSuggestedKeyPrefs(
   if (extension_prefs->ReadPrefAsDictionary(extension_id,
                                             kCommands,
                                             &current_prefs)) {
-    std::unique_ptr<base::DictionaryValue> new_prefs(current_prefs->DeepCopy());
+    std::unique_ptr<base::DictionaryValue> new_prefs =
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(current_prefs->Clone()));
     new_prefs->MergeDictionary(suggested_key_prefs.get());
     suggested_key_prefs = std::move(new_prefs);
   }
@@ -558,8 +560,9 @@ void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
                                         &current_prefs);
 
   if (current_prefs) {
-    std::unique_ptr<base::DictionaryValue> suggested_key_prefs(
-        current_prefs->DeepCopy());
+    std::unique_ptr<base::DictionaryValue> suggested_key_prefs =
+        base::DictionaryValue::From(
+            base::Value::ToUniquePtrValue(current_prefs->Clone()));
     const CommandMap* named_commands =
         CommandsInfo::GetNamedCommands(extension);
 

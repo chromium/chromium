@@ -71,8 +71,10 @@ class FakeDevToolsClient : public StubDevToolsClient {
   Status SendCommandAndGetResult(const std::string& method,
                                  const base::DictionaryValue& params,
                                  base::Value* result) override {
-    sent_commands_.push_back(
-        std::make_unique<DevToolsCommand>(method, params.DeepCopy()));
+    sent_commands_.push_back(std::make_unique<DevToolsCommand>(
+        method, base::DictionaryValue::From(
+                    base::Value::ToUniquePtrValue(params.Clone()))
+                    .release()));
     *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kOk);
   }

@@ -2339,7 +2339,8 @@ Status ExecuteGetNamedCookie(Session* session,
   for (std::list<Cookie>::const_iterator it = cookies.begin();
        it != cookies.end(); ++it) {
     if (name == it->name) {
-      value->reset(CreateDictionaryFrom(*it)->DeepCopy());
+      *value =
+          base::Value::ToUniquePtrValue(CreateDictionaryFrom(*it)->Clone());
       return Status(kOk);
     }
   }

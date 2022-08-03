@@ -302,8 +302,9 @@ const base::DictionaryValue* ExtensionManagementPrefUpdaterBase::GetPref() {
 
 // Private section functions ---------------------------------------------------
 
-void ExtensionManagementPrefUpdaterBase::SetPref(base::DictionaryValue* pref) {
-  pref_.reset(pref);
+void ExtensionManagementPrefUpdaterBase::SetPref(
+    std::unique_ptr<base::DictionaryValue> pref) {
+  pref_.reset(pref.release());
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -348,11 +349,12 @@ ExtensionManagementPolicyUpdater::ExtensionManagementPolicyUpdater(
           ->Get(policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME,
                                         std::string()))
           .GetValue(policy::key::kExtensionSettings, base::Value::Type::DICT);
-  const base::DictionaryValue* dict_value = nullptr;
-  if (policy_value && policy_value->GetAsDictionary(&dict_value))
-    SetPref(dict_value->DeepCopy());
-  else
-    SetPref(new base::DictionaryValue);
+  std::unique_ptr<base::DictionaryValue> dict_value(new base::DictionaryValue);
+  if (policy_value && policy_value->is_dict()) {
+    dict_value = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(policy_value->Clone()));
+  }
+  SetPref(std::move(dict_value));
 }
 
 ExtensionManagementPolicyUpdater::~ExtensionManagementPolicyUpdater() {

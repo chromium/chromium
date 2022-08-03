@@ -662,8 +662,8 @@ void ServicesCustomizationDocument::OnManifestLoaded() {
        it != external_loaders_.end(); ++it) {
     if (*it) {
       UpdateCachedManifest((*it)->profile());
-      (*it)->SetCurrentApps(
-          std::unique_ptr<base::DictionaryValue>(prefs->DeepCopy()));
+      (*it)->SetCurrentApps(base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(prefs->Clone())));
       SetOemFolderName((*it)->profile(), *root_);
     }
   }
