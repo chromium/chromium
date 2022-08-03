@@ -78,7 +78,7 @@ Add a 'tsconfig_base.json' file to configure TypeScript options. Typical options
 needed by Polymer UIs include noUncheckedIndexAccess, noUnusedLocals, and
 strictPropertyInitialization, all set to false.
 
-`chrome/browser/resources/hello_world/tsconfig_base.gn`
+`chrome/browser/resources/hello_world/tsconfig_base.json`
 ```
 {
   "extends": "../../../../tools/typescript/tsconfig_base.json",
