@@ -26,6 +26,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/shortcut.h"
 #include "base/win/windows_version.h"
+#include "chrome/installer/util/taskbar_util.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace chrome {
@@ -129,9 +130,10 @@ void CreateChromeApplicationShortcutView::InitControls() {
         prefs::kWebAppCreateInAppsMenu);
   }
 
-  // Win10 actively prevents creating shortcuts on the taskbar so we eliminate
-  // that option from the dialog.
-  if (base::win::CanPinShortcutToTaskbar()) {
+  // Only include the pin-to-taskbar option when running on versions of Windows
+  // that support pinning.
+  if (CanPinShortcutToTaskbar()) {
+    // TODO(crbug.com/1348764): Remove pre-Win7 code and string.
     quick_launch_check_box =
         AddCheckbox((version >= base::win::Version::WIN7)
                         ? l10n_util::GetStringUTF16(IDS_PIN_TO_TASKBAR_CHKBOX)

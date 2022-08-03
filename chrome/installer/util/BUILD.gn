@@ -164,6 +164,8 @@ static_library("with_no_strings") {
       "scoped_user_protocol_entry.h",
       "shell_util.cc",
       "shell_util.h",
+      "taskbar_util.cc",
+      "taskbar_util.h",
     ]
 
     public_deps += [

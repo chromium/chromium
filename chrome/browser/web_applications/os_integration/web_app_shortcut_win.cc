@@ -35,6 +35,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/installer/util/shell_util.h"
+#include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -555,13 +556,14 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   std::vector<base::FilePath> shortcut_paths =
       GetShortcutPaths(creation_locations);
 
-  bool pin_to_taskbar = creation_locations.in_quick_launch_bar &&
-                        base::win::CanPinShortcutToTaskbar();
+  bool pin_to_taskbar =
+      creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar();
 
   // Create/update the shortcut in the web app path for the "Pin To Taskbar"
-  // option in Win7. We use the web app path shortcut because we will overwrite
-  // it rather than appending unique numbers if the shortcut already exists.
-  // This prevents pinned apps from having unique numbers in their names.
+  // option in Win7 and Win10 versions that support pinning. We use the web app
+  // path shortcut because we will overwrite it rather than appending unique
+  // numbers if the shortcut already exists. This prevents pinned apps from
+  // having unique numbers in their names.
   if (pin_to_taskbar)
     shortcut_paths.push_back(web_app_path);
 
@@ -581,7 +583,7 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
     // in the application name.
     base::FilePath shortcut_to_pin =
         web_app_path.Append(file_name).AddExtension(installer::kLnkExt);
-    if (!base::win::PinShortcutToTaskbar(shortcut_to_pin))
+    if (!PinShortcutToTaskbar(shortcut_to_pin))
       return false;
   }
 
@@ -737,10 +739,9 @@ std::vector<base::FilePath> GetShortcutPaths(
        ShellUtil::SHORTCUT_LOCATION_START_MENU_CHROME_APPS_DIR,
        testing_shortcuts ? testing_shortcuts->application_menu.GetPath()
                          : base::FilePath()},
-      {// For Windows 7 and 8, |in_quick_launch_bar| indicates that we are
-       // pinning to taskbar. This needs to be handled by callers.
-       creation_locations.in_quick_launch_bar &&
-           base::win::CanPinShortcutToTaskbar(),
+      {// For some versions of Windows, `in_quick_launch_bar` indicates that we
+       // are pinning to taskbar. This needs to be handled by callers.
+       creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar(),
        ShellUtil::SHORTCUT_LOCATION_QUICK_LAUNCH,
        testing_shortcuts ? testing_shortcuts->quick_launch.GetPath()
                          : base::FilePath()},

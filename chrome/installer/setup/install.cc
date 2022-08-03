@@ -21,12 +21,14 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/win/shortcut.h"
+#include "base/win/windows_version.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/setup/install_params.h"
@@ -47,9 +49,11 @@
 #include "chrome/installer/util/installation_state.h"
 #include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/l10n_string_util.h"
+#include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/installer/util/work_item.h"
 #include "chrome/installer/util/work_item_list.h"
+#include "components/version_info/channel.h"
 
 namespace installer {
 
@@ -108,7 +112,7 @@ void LogShortcutOperation(ShellUtil::ShortcutLocation location,
   if (properties.has_arguments())
     message.append(base::WideToUTF8(properties.arguments));
 
-  if (properties.pin_to_taskbar && base::win::CanPinShortcutToTaskbar())
+  if (properties.pin_to_taskbar && CanPinShortcutToTaskbar())
     message.append(" and pinning to the taskbar");
 
   message.push_back('.');
@@ -290,6 +294,26 @@ bool HasVisualElementAssets(const base::FilePath& base_path,
   return true;
 }
 
+// This function will control the rollout of the installer pinning Chrome to the
+// taskbar on Win10+, for Beta and Stable channels.
+bool ShouldPinChromeToTaskbar() {
+  if (base::win::GetVersion() < base::win::Version::WIN10)
+    return true;
+  switch (install_static::GetChromeChannel()) {
+    case version_info::Channel::BETA: {
+      // Increase kBetaRolloutPercentage to roll out to beta channel.
+      constexpr int kBetaRolloutPercentage = 0;
+      return base::RandInt(0, 99) < kBetaRolloutPercentage;
+    }
+    case version_info::Channel::STABLE: {
+      constexpr int kStableRolloutPercentage = 0;
+      return base::RandInt(0, 99) < kStableRolloutPercentage;
+    }
+    default:
+      return false;
+  }
+}
+
 }  // namespace
 
 bool CreateVisualElementsManifest(const base::FilePath& src_path,
@@ -384,7 +408,12 @@ void CreateOrUpdateShortcuts(const base::FilePath& target,
   if (shortcut_operation == ShellUtil::SHELL_SHORTCUT_CREATE_ALWAYS ||
       shortcut_operation ==
           ShellUtil::SHELL_SHORTCUT_CREATE_IF_NO_SYSTEM_LEVEL) {
-    start_menu_properties.set_pin_to_taskbar(!do_not_create_taskbar_shortcut);
+    // ShouldPinChromeToTaskbar will control the rollout of installer pinning to
+    // the taskbar, for Win10+ beta and stable channels.
+    bool pin_to_taskbar =
+        !do_not_create_taskbar_shortcut && ShouldPinChromeToTaskbar();
+
+    start_menu_properties.set_pin_to_taskbar(pin_to_taskbar);
   }
 
   const CLSID toast_activator_clsid = install_static::GetToastActivatorClsid();

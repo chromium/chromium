@@ -869,16 +869,6 @@ class ShellUtil {
       const std::vector<std::unique_ptr<RegistryEntry>>& entries,
       bool best_effort_no_rollback = false);
 
-  // Use IPinnedList3 to pin shortcut to taskbar on WIN10_RS5 and above.
-  // Returns true if pinning was successful.
-  static bool PinShortcut(const base::FilePath& shortcut);
-
-  // Returns true if `shortcut` is pinned, false if not, and nullopt if
-  // IPinnedList3 is not supported (e.g., pre WIN10_RS5). Do not to call
-  // this on the Browser UI thread since it calls CoCreateInstance, which can
-  // cause jank.
-  static absl::optional<bool> IsShortcutPinned(const base::FilePath& shortcut);
-
   static std::array<uint32_t, 4> ComputeHashForTesting(
       base::span<const uint8_t> input);
 

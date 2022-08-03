@@ -36,6 +36,7 @@
 #include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/shell_util.h"
+#include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -267,10 +268,10 @@ class InstallShortcutTest : public testing::Test {
   void TearDown() override {
     // Try to unpin potentially pinned shortcuts (although pinning isn't tested,
     // the call itself might still have pinned the Start Menu shortcuts).
-    base::win::UnpinShortcutFromTaskbar(user_start_menu_shortcut_);
-    base::win::UnpinShortcutFromTaskbar(user_start_menu_subdir_shortcut_);
-    base::win::UnpinShortcutFromTaskbar(system_start_menu_shortcut_);
-    base::win::UnpinShortcutFromTaskbar(system_start_menu_subdir_shortcut_);
+    UnpinShortcutFromTaskbar(user_start_menu_shortcut_);
+    UnpinShortcutFromTaskbar(user_start_menu_subdir_shortcut_);
+    UnpinShortcutFromTaskbar(system_start_menu_shortcut_);
+    UnpinShortcutFromTaskbar(system_start_menu_subdir_shortcut_);
   }
 
   installer::InitialPreferences* GetFakeMasterPrefs(

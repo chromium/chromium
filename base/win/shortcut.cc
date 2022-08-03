@@ -6,7 +6,6 @@
 
 #include <objbase.h>
 #include <propkey.h>
-#include <shellapi.h>
 #include <shlobj.h>
 #include <wrl/client.h>
 
@@ -362,28 +361,6 @@ bool ResolveShortcut(const FilePath& shortcut_path,
   if (args)
     *args = properties.arguments;
   return true;
-}
-
-bool CanPinShortcutToTaskbar() {
-  // "Pin to taskbar" stopped being supported in Windows 10.
-  return GetVersion() < Version::WIN10;
-}
-
-bool PinShortcutToTaskbar(const FilePath& shortcut) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-  DCHECK(CanPinShortcutToTaskbar());
-
-  intptr_t result = reinterpret_cast<intptr_t>(ShellExecute(
-      nullptr, L"taskbarpin", shortcut.value().c_str(), nullptr, nullptr, 0));
-  return result > 32;
-}
-
-bool UnpinShortcutFromTaskbar(const FilePath& shortcut) {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
-
-  intptr_t result = reinterpret_cast<intptr_t>(ShellExecute(
-      nullptr, L"taskbarunpin", shortcut.value().c_str(), nullptr, nullptr, 0));
-  return result > 32;
 }
 
 }  // namespace win
