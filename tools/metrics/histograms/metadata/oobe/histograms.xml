@@ -404,7 +404,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OOBE.MarketingOptInScreen.BackendConnector.{OOBEMarketingCountry}"
-    enum="MarketingOptInBackendConnectorEvent" expires_after="2022-11-30">
+    enum="MarketingOptInBackendConnectorEvent" expires_after="2023-08-01">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -417,7 +417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.Event.{OOBEMarketingCountry}"
-    enum="MarketingOptInScreenEvent" expires_after="2022-04-24">
+    enum="MarketingOptInScreenEvent" expires_after="2023-08-01">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
@@ -428,7 +428,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OOBE.MarketingOptInScreen.GeolocationResolve"
-    enum="MarketingOptInGeolocationEvent" expires_after="2022-11-30">
+    enum="MarketingOptInGeolocationEvent" expires_after="2023-08-01">
   <owner>rrsilva@google.com</owner>
   <owner>cros-oac@google.com</owner>
   <summary>
