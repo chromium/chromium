@@ -7065,3 +7065,6 @@ crbug.com/1225773 [ Linux ] external/wpt/html/webappapis/scripting/processing-mo
 
 # Flaky timeouts on WebKit Linux MSAN
 crbug.com/1218100 [ Linux ] external/wpt/IndexedDB/idb-partitioned-coverage.tentative.sub.html [ Pass Timeout ]
+
+# Sheriff 2022-08-03
+crbug.com/1349910 [ Mac ] external/wpt/html/semantics/popups/popup-hover-hide.tentative.html [ Failure Pass ]
