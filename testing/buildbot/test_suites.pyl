@@ -2414,6 +2414,41 @@
       },
     },
 
+    # Test suites to run the CTS with validation layers only on CI for
+    # configurations where capacity is constrained.
+    'gpu_dawn_telemetry_cts_tests_with_ci_only_validation': {
+      'webgpu_cts_with_validation': {
+        'ci_only': True,
+        'args': [
+          '--enable-dawn-backend-validation',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+        ],
+        'swarming': {
+          'shards': 14,
+        },
+        'telemetry_test_name': 'webgpu_cts',
+      },
+      'webgpu_swiftshader_web_platform_cts_with_validation': {
+        'ci_only': True,
+        'args': [
+          '--use-webgpu-adapter=swiftshader',
+          '--test-filter=*web_platform*',
+          '--enable-dawn-backend-validation',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'webgpu_telemetry_cts',
+        ],
+        'swarming': {
+          'shards': 2,
+        },
+        'telemetry_test_name': 'webgpu_cts',
+      },
+    },
+
     'gpu_dawn_telemetry_cts_tests_with_validation': {
       'webgpu_cts_with_validation': {
         'args': [
@@ -5802,8 +5837,9 @@
       'gpu_webgpu_integration_partial_backend_validation_isolated_scripts',
     ],
 
-    'gpu_dawn_telemetry_cts_regular': [
+    'gpu_dawn_telemetry_cts_regular_and_ci_only_validation': [
       'gpu_dawn_telemetry_cts_tests',
+      'gpu_dawn_telemetry_cts_tests_with_ci_only_validation',
     ],
 
     'gpu_dawn_telemetry_cts_regular_and_validation': [
