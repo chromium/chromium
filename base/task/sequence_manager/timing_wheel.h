@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_TIMING_WHEEL_H_
 #define BASE_TASK_SEQUENCE_MANAGER_TIMING_WHEEL_H_
 
+#include <algorithm>
 #include <array>
 #include <limits>
 #include <memory>
