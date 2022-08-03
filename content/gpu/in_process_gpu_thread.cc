@@ -50,7 +50,7 @@ void InProcessGpuThread::Init() {
   io_thread_type = base::ThreadType::kDisplayCritical;
 #endif
 
-  gpu_process_ = new ChildProcess(io_thread_type);
+  gpu_process_ = std::make_unique<ChildProcess>(io_thread_type);
 
   auto gpu_init = std::make_unique<gpu::GpuInit>();
   gpu_init->InitializeInProcess(base::CommandLine::ForCurrentProcess(),
@@ -76,7 +76,7 @@ void InProcessGpuThread::Init() {
 
 void InProcessGpuThread::CleanUp() {
   SetThreadWasQuitProperly(true);
-  delete gpu_process_;
+  gpu_process_.reset();
 }
 
 base::Thread* CreateInProcessGpuThread(

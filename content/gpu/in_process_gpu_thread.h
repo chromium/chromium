@@ -35,7 +35,7 @@ class InProcessGpuThread : public base::Thread {
   InProcessChildThreadParams params_;
 
   // Deleted in CleanUp() on the gpu thread, so don't use smart pointers.
-  raw_ptr<ChildProcess, DanglingUntriaged> gpu_process_;
+  std::unique_ptr<ChildProcess> gpu_process_;
   gpu::GpuPreferences gpu_preferences_;
 };
 
