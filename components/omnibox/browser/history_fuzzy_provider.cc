@@ -562,6 +562,7 @@ void HistoryFuzzyProvider::Start(const AutocompleteInput& input,
     // normal), the matches are cleared here instead of at end of result
     // processing pipeline so they won't interact or dedupe with other matches.
     if (OmniboxFieldTrial::kFuzzyUrlSuggestionsCounterfactual.Get()) {
+      DVLOG(1) << "Clearing matches_ for counterfactual";
       matches_.clear();
     }
   }
