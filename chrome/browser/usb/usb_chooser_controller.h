@@ -55,7 +55,7 @@ class UsbChooserController : public permissions::ChooserController,
   void OnDeviceAdded(const device::mojom::UsbDeviceInfo& device_info) override;
   void OnDeviceRemoved(
       const device::mojom::UsbDeviceInfo& device_info) override;
-  void OnDeviceManagerConnectionError() override;
+  void OnBrowserContextShutdown() override;
 
  private:
   void GotUsbDeviceList(std::vector<device::mojom::UsbDeviceInfoPtr> devices);

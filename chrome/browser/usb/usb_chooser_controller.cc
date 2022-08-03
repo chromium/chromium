@@ -234,7 +234,7 @@ void UsbChooserController::OnDeviceRemoved(
   }
 }
 
-void UsbChooserController::OnDeviceManagerConnectionError() {
+void UsbChooserController::OnBrowserContextShutdown() {
   observation_.Reset();
 }
 

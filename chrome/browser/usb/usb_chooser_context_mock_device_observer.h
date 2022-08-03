@@ -17,6 +17,7 @@ class MockDeviceObserver : public UsbChooserContext::DeviceObserver {
   MOCK_METHOD1(OnDeviceAdded, void(const device::mojom::UsbDeviceInfo&));
   MOCK_METHOD1(OnDeviceRemoved, void(const device::mojom::UsbDeviceInfo&));
   MOCK_METHOD0(OnDeviceManagerConnectionError, void());
+  MOCK_METHOD0(OnBrowserContextShutdown, void());
 };
 
 #endif  // CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_MOCK_DEVICE_OBSERVER_H_

@@ -68,6 +68,7 @@ class ChromeUsbDelegate
   void OnDeviceAdded(const device::mojom::UsbDeviceInfo&) override;
   void OnDeviceRemoved(const device::mojom::UsbDeviceInfo&) override;
   void OnDeviceManagerConnectionError() override;
+  void OnBrowserContextShutdown() override;
 
  private:
   base::ScopedObservation<UsbChooserContext,

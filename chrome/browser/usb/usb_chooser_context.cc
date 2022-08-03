@@ -237,6 +237,11 @@ void UsbChooserContext::OnDeviceInfoRefreshed(
 
 UsbChooserContext::~UsbChooserContext() {
   OnDeviceManagerConnectionError();
+  for (auto& observer : device_observer_list_) {
+    observer.OnBrowserContextShutdown();
+    DCHECK(!device_observer_list_.HasObserver(&observer));
+  }
+  DCHECK(permission_observer_list_.empty());
 }
 
 std::vector<std::unique_ptr<permissions::ObjectPermissionContextBase::Object>>

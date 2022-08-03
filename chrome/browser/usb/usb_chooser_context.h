@@ -45,6 +45,10 @@ class UsbChooserContext : public permissions::ObjectPermissionContextBase,
     virtual void OnDeviceAdded(const device::mojom::UsbDeviceInfo&);
     virtual void OnDeviceRemoved(const device::mojom::UsbDeviceInfo&);
     virtual void OnDeviceManagerConnectionError();
+
+    // Called when the BrowserContext is shutting down. Observers must remove
+    // themselves before returning.
+    virtual void OnBrowserContextShutdown() = 0;
   };
 
   static base::Value DeviceInfoToValue(

@@ -5,11 +5,13 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -30,7 +32,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using device::mojom::UsbDeviceInfoPtr;
+using ::base::test::TestFuture;
+using ::device::mojom::UsbDeviceInfoPtr;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::NiceMock;
@@ -48,15 +51,19 @@ class UsbChooserContextTest : public testing::Test {
  public:
   UsbChooserContextTest() {}
   ~UsbChooserContextTest() override {
-    // When UsbChooserContext is destroyed, OnDeviceManagerConnectionError
-    // should be called on the observers and OnPermissionRevoked will be called
-    // for any ephemeral device permissions that are active.
-    EXPECT_CALL(mock_device_observer_, OnDeviceManagerConnectionError())
-        .Times(AnyNumber());
-    EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(_))
-        .Times(AnyNumber());
-    EXPECT_CALL(mock_permission_observer_, OnObjectPermissionChanged(_, _))
-        .Times(AnyNumber());
+    // When UsbChooserContext is destroyed, OnDeviceManagerConnectionError will
+    // be called for each device observer.
+    for (const auto& entry : mock_device_observers_) {
+      EXPECT_CALL(*entry.second, OnDeviceManagerConnectionError)
+          .Times(AnyNumber());
+    }
+
+    // OnPermissionRevoked and OnObjectPermissionChanged will be called for any
+    // ephemeral device permissions that are active.
+    for (const auto& entry : mock_permission_observers_) {
+      EXPECT_CALL(*entry.second, OnPermissionRevoked).Times(AnyNumber());
+      EXPECT_CALL(*entry.second, OnObjectPermissionChanged).Times(AnyNumber());
+    }
   }
 
  protected:
@@ -71,21 +78,42 @@ class UsbChooserContextTest : public testing::Test {
 
     // Call GetDevices once to make sure the connection with DeviceManager has
     // been set up, so that it can be notified when device is removed.
-    chooser_context->GetDevices(base::DoNothing());
-    base::RunLoop().RunUntilIdle();
+    TestFuture<std::vector<device::mojom::UsbDeviceInfoPtr>> devices_future;
+    chooser_context->GetDevices(devices_future.GetCallback());
+    EXPECT_TRUE(devices_future.Wait());
 
     // Add observers
+    EXPECT_FALSE(base::Contains(mock_permission_observers_, profile));
+    EXPECT_FALSE(base::Contains(mock_device_observers_, profile));
+    mock_permission_observers_.emplace(
+        profile,
+        std::make_unique<NiceMock<permissions::MockPermissionObserver>>());
+    mock_device_observers_.emplace(profile,
+                                   std::make_unique<MockDeviceObserver>());
+    NiceMock<permissions::MockPermissionObserver>* permission_observer =
+        mock_permission_observers_[profile].get();
     chooser_context->permissions::ObjectPermissionContextBase::AddObserver(
-        &mock_permission_observer_);
-    chooser_context->AddObserver(&mock_device_observer_);
+        permission_observer);
+    MockDeviceObserver* device_observer = mock_device_observers_[profile].get();
+    chooser_context->AddObserver(device_observer);
+    EXPECT_CALL(*device_observer, OnBrowserContextShutdown)
+        .WillOnce([chooser_context, permission_observer, device_observer]() {
+          chooser_context
+              ->permissions::ObjectPermissionContextBase::RemoveObserver(
+                  permission_observer);
+          chooser_context->RemoveObserver(device_observer);
+        });
     return chooser_context;
   }
 
   device::FakeUsbDeviceManager device_manager_;
 
   // Mock observers
-  NiceMock<permissions::MockPermissionObserver> mock_permission_observer_;
-  MockDeviceObserver mock_device_observer_;
+  base::flat_map<Profile*,
+                 std::unique_ptr<NiceMock<permissions::MockPermissionObserver>>>
+      mock_permission_observers_;
+  base::flat_map<Profile*, std::unique_ptr<MockDeviceObserver>>
+      mock_device_observers_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -108,7 +136,7 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokePermission) {
   object.SetStringKey(kSerialNumberKey, "123ABC");
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -127,11 +155,12 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokePermission) {
   EXPECT_EQ(object, all_origin_objects[0]->value);
   EXPECT_FALSE(all_origin_objects[0]->incognito);
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
-  EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(origin));
+  EXPECT_CALL(*mock_permission_observers_[profile()],
+              OnPermissionRevoked(origin));
 
   store->RevokeObjectPermission(origin, objects[0]->value);
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
@@ -160,7 +189,7 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokeEphemeralPermission) {
   object.SetIntKey(kProductIdKey, device_info->product_id);
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -181,11 +210,12 @@ TEST_F(UsbChooserContextTest, CheckGrantAndRevokeEphemeralPermission) {
   EXPECT_EQ(object, all_origin_objects[0]->value);
   EXPECT_FALSE(all_origin_objects[0]->incognito);
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
-  EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(origin));
+  EXPECT_CALL(*mock_permission_observers_[profile()],
+              OnPermissionRevoked(origin));
 
   store->RevokeObjectPermission(origin, objects[0]->value);
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
@@ -205,7 +235,7 @@ TEST_F(UsbChooserContextTest, DisconnectDeviceWithPermission) {
   UsbChooserContext* store = GetChooserContext(profile());
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -221,7 +251,7 @@ TEST_F(UsbChooserContextTest, DisconnectDeviceWithPermission) {
       store->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 
-  EXPECT_CALL(mock_device_observer_, OnDeviceRemoved(_));
+  EXPECT_CALL(*mock_device_observers_[profile()], OnDeviceRemoved(_));
   device_manager_.RemoveDevice(device_info->guid);
   base::RunLoop().RunUntilIdle();
 
@@ -250,7 +280,7 @@ TEST_F(UsbChooserContextTest, DisconnectDeviceWithEphemeralPermission) {
   UsbChooserContext* store = GetChooserContext(profile());
 
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -266,11 +296,11 @@ TEST_F(UsbChooserContextTest, DisconnectDeviceWithEphemeralPermission) {
       store->GetAllGrantedObjects();
   EXPECT_EQ(1u, all_origin_objects.size());
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
-  EXPECT_CALL(mock_device_observer_, OnDeviceRemoved(_));
+  EXPECT_CALL(*mock_device_observers_[profile()], OnDeviceRemoved(_));
   device_manager_.RemoveDevice(device_info->guid);
   base::RunLoop().RunUntilIdle();
 
@@ -298,10 +328,11 @@ TEST_F(UsbChooserContextTest, GrantPermissionInIncognito) {
   UsbDeviceInfoPtr device_info_2 =
       device_manager_.CreateAndAddDevice(0, 0, "Google", "Gizmo", "");
   UsbChooserContext* store = GetChooserContext(profile());
-  UsbChooserContext* incognito_store = GetChooserContext(
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  auto* otr_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  UsbChooserContext* incognito_store = GetChooserContext(otr_profile);
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -310,7 +341,7 @@ TEST_F(UsbChooserContextTest, GrantPermissionInIncognito) {
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info_1));
   EXPECT_FALSE(incognito_store->HasDevicePermission(origin, *device_info_1));
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[otr_profile],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -356,7 +387,7 @@ TEST_F(UsbChooserContextTest, UsbGuardPermission) {
       kFooUrl, kFooUrl, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
 
   auto* store = GetChooserContext(profile());
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA))
@@ -975,7 +1006,7 @@ TEST_F(UsbChooserContextTest,
 
   auto* store = GetChooserContext(profile());
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA))
@@ -1046,7 +1077,7 @@ TEST_F(UsbChooserContextTest,
   UsbDeviceInfoPtr persistent_device_info = device_manager_.CreateAndAddDevice(
       6353, 5678, "Specific", "Product", "123ABC");
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -1103,7 +1134,7 @@ TEST_F(UsbChooserContextTest,
   profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
                              *base::JSONReader::ReadDeprecated(kPolicySetting));
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));
@@ -1156,7 +1187,7 @@ TEST_F(UsbChooserContextTest,
   profile()->GetPrefs()->Set(prefs::kManagedWebUsbAllowDevicesForUrls,
                              *base::JSONReader::ReadDeprecated(kPolicySetting));
 
-  EXPECT_CALL(mock_permission_observer_,
+  EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::USB_GUARD),
                   ContentSettingsType::USB_CHOOSER_DATA));

@@ -225,6 +225,11 @@ void ChromeUsbDelegate::OnDeviceManagerConnectionError() {
     observer.OnDeviceManagerConnectionError();
 }
 
+void ChromeUsbDelegate::OnBrowserContextShutdown() {
+  device_observation_.Reset();
+  permission_observation_.Reset();
+}
+
 bool ChromeUsbDelegate::HasDevicePermission(
     RenderFrameHost& frame,
     const device::mojom::UsbDeviceInfo& device) {
