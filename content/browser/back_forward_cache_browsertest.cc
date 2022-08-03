@@ -2283,8 +2283,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that trying to focus on a BFCached cross-site iframe won't crash.
 // See https://crbug.com/1250218.
+// TODO(crbug.com/1349657): Flaky on linux tsan
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_FocusSameSiteSubframeOnPagehide \
+  DISABLED_FocusSameSiteSubframeOnPagehide
+#else
+#define MAYBE_FocusSameSiteSubframeOnPagehide FocusSameSiteSubframeOnPagehide
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       FocusSameSiteSubframeOnPagehide) {
+                       MAYBE_FocusSameSiteSubframeOnPagehide) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL main_url(
       embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
