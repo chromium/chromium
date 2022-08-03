@@ -89,8 +89,8 @@ ScriptLoader::ScriptLoader(ScriptElementBase* element,
                            const CreateElementFlags flags)
     : element_(element) {
   // <spec href="https://html.spec.whatwg.org/C/#script-processing-model">
-  // ... The cloning steps for a script element el being cloned to a copy copy
-  // are to set copy's already started to el's already started. ...</spec>
+  // The cloning steps for a script element el being cloned to a copy copy are
+  // to set copy's already started to el's already started.</spec>
   //
   // TODO(hiroshige): Cloning is implemented together with
   // {HTML,SVG}ScriptElement::cloneElementWithoutAttributesAndChildren().
@@ -131,27 +131,53 @@ void ScriptLoader::Trace(Visitor* visitor) const {
   ResourceFinishObserver::Trace(visitor);
 }
 
+// <specdef
+// href="https://html.spec.whatwg.org/C/#script-processing-model">
+//
+// <spec>When a script element el that is not parser-inserted experiences one of
+// the events listed in the following list, the user agent must immediately
+// prepare the script element el:</spec>
+//
+// The following three `PrepareScript()` are for non-parser-inserted scripts and
+// thus
+// - Should deny ParserBlockingInline scripts.
+// - Should return nullptr, i.e. there should no PendingScript to be controlled
+//   by parsers.
+// - TextPosition is not given.
+
+// <spec step="A">The script element becomes connected.</spec>
 void ScriptLoader::DidNotifySubtreeInsertionsToDocument() {
-  if (!parser_inserted_)
-    PrepareScript();  // FIXME: Provide a real starting line number here.
+  if (!parser_inserted_) {
+    PendingScript* pending_script = PrepareScript(
+        ParserBlockingInlineOption::kDeny, TextPosition::MinimumPosition());
+    DCHECK(!pending_script);
+  }
 }
 
+// <spec step="B">The script element is connected and a node or document
+// fragment is inserted into the script element, after any script elements
+// inserted at that time.</spec>
 void ScriptLoader::ChildrenChanged() {
-  if (!parser_inserted_ && element_->IsConnected())
-    PrepareScript();  // FIXME: Provide a real starting line number here.
+  if (!parser_inserted_ && element_->IsConnected()) {
+    PendingScript* pending_script = PrepareScript(
+        ParserBlockingInlineOption::kDeny, TextPosition::MinimumPosition());
+    DCHECK(!pending_script);
+  }
 }
 
+// <spec step="C">The script element is connected and has a src attribute set
+// where previously the element had no such attribute.</spec>
 void ScriptLoader::HandleSourceAttribute(const String& source_url) {
-  if (IgnoresLoadRequest() || source_url.IsEmpty())
-    return;
-
-  PrepareScript();  // FIXME: Provide a real starting line number here.
+  if (!parser_inserted_ && element_->IsConnected() && !source_url.IsEmpty()) {
+    PendingScript* pending_script = PrepareScript(
+        ParserBlockingInlineOption::kDeny, TextPosition::MinimumPosition());
+    DCHECK(!pending_script);
+  }
 }
 
 void ScriptLoader::HandleAsyncAttribute() {
-  // <spec href="https://html.spec.whatwg.org/C/#script-processing-model">
-  // ... When an async attribute is added to a script element el, the user agent
-  // must set el's force async to false. ...</spec>
+  // <spec>When an async attribute is added to a script element el, the user
+  // agent must set el's force async to false.</spec>
   //
   // <spec href="https://html.spec.whatwg.org/C/#the-script-element"
   // step="1">Set this's force async to false.</spec>
@@ -313,10 +339,12 @@ bool ShouldBlockSyncScriptForDocumentPolicy(
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
-bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
+PendingScript* ScriptLoader::PrepareScript(
+    ParserBlockingInlineOption parser_blocking_inline_option,
+    const TextPosition& script_start_position) {
   // <spec step="1">If el's already started is true, then return.</spec>
   if (already_started_)
-    return false;
+    return nullptr;
 
   // <spec step="2">Let parser document be el's parser document.</spec>
   //
@@ -346,11 +374,11 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   // <spec step="6">If el has no src attribute, and source text is the empty
   // string, then return.</spec>
   if (!element_->HasSourceAttribute() && source_text.IsEmpty())
-    return false;
+    return nullptr;
 
   // <spec step="7">If el is not connected, then return.</spec>
   if (!element_->IsConnected())
-    return false;
+    return nullptr;
 
   Document& element_document = element_->GetDocument();
   LocalDOMWindow* context_window = element_document.domWindow();
@@ -361,18 +389,18 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
 
   switch (GetScriptType()) {
     case ScriptTypeAtPrepare::kInvalid:
-      return false;
+      return nullptr;
 
     case ScriptTypeAtPrepare::kSpeculationRules:
       if (!RuntimeEnabledFeatures::SpeculationRulesEnabled(context_window))
-        return false;
+        return nullptr;
       break;
 
     case ScriptTypeAtPrepare::kWebBundle:
       if (!RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
               element_document.GetExecutionContext())) {
         script_type_ = ScriptTypeAtPrepare::kInvalid;
-        return false;
+        return nullptr;
       }
       break;
 
@@ -395,7 +423,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   // <spec step="15">If parser document is non-null, and parser document is not
   // equal to el's preparation-time document, then return.</spec>
   if (parser_inserted_ && parser_document_ != &element_->GetDocument()) {
-    return false;
+    return nullptr;
   }
 
   // <spec step="16">If scripting is disabled for el, then return.</spec>
@@ -405,14 +433,14 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   // document's browsing context is null or when scripting is disabled for its
   // relevant settings object.</spec>
   if (!context_window)
-    return false;
+    return nullptr;
   if (!context_window->CanExecuteScripts(kAboutToExecuteScript))
-    return false;
+    return nullptr;
 
   // <spec step="17">If el has a nomodule content attribute and its type is
   // "classic", then return.</spec>
   if (BlockForNoModule(GetScriptType(), element_->NomoduleAttributeValue()))
-    return false;
+    return nullptr;
 
   // TODO(csharrison): This logic only works if the tokenizer/parser was not
   // blocked waiting for scripts when the element was inserted. This usually
@@ -434,12 +462,12 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   if (!element_->HasSourceAttribute() &&
       !element_->AllowInlineScriptForCSP(element_->GetNonceForElement(),
                                          position.line_, source_text)) {
-    return false;
+    return nullptr;
   }
 
   // Step 19.
   if (!IsScriptForEventSupported())
-    return false;
+    return nullptr;
 
   if (ShouldBlockSyncScriptForDocumentPolicy(element_.Get(), GetScriptType(),
                                              parser_inserted_)) {
@@ -447,7 +475,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         mojom::blink::DocumentPolicyFeature::kSyncScript,
         mojom::blink::PolicyDisposition::kEnforce,
         "Synchronous script execution is disabled by Document Policy");
-    return false;
+    return nullptr;
   }
 
   // 14. is handled below.
@@ -569,7 +597,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             ->PostTask(FROM_HERE,
                        WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
                                  WrapPersistent(element_.Get())));
-        return false;
+        return nullptr;
 
       case Modulator::AcquiringImportMapsState::kAcquiring:
         // 2. Set the element’s node document's acquiring import maps to false.
@@ -599,7 +627,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
           ->PostTask(FROM_HERE,
                      WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
                                WrapPersistent(element_.Get())));
-      return false;
+      return nullptr;
     }
 
     // <spec step="29.3">Set el's from an external file to true.</spec>
@@ -616,7 +644,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
           ->PostTask(FROM_HERE,
                      WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
                                WrapPersistent(element_.Get())));
-      return false;
+      return nullptr;
     }
 
     // <spec step="29.6">If el is potentially render-blocking, then block
@@ -641,7 +669,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
         NOTREACHED();
-        return false;
+        return nullptr;
 
       case ScriptTypeAtPrepare::kImportMap:
         // TODO(crbug.com/922212): Implement external import maps.
@@ -653,7 +681,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             ->PostTask(FROM_HERE,
                        WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
                                  WrapPersistent(element_.Get())));
-        return false;
+        return nullptr;
 
       case ScriptTypeAtPrepare::kSpeculationRules:
         // TODO(crbug.com/1182803): Implement external speculation rules.
@@ -661,7 +689,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             mojom::blink::ConsoleMessageSource::kJavaScript,
             mojom::blink::ConsoleMessageLevel::kError,
             "External speculation rules are not yet supported."));
-        return false;
+        return nullptr;
 
       case ScriptTypeAtPrepare::kWebBundle:
         element_document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -672,7 +700,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             ->PostTask(FROM_HERE,
                        WTF::Bind(&ScriptElementBase::DispatchErrorEvent,
                                  WrapPersistent(element_.Get())));
-        return false;
+        return nullptr;
 
       case ScriptTypeAtPrepare::kClassic: {
         // - "classic":
@@ -727,7 +755,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
         NOTREACHED();
-        return false;
+        return nullptr;
 
       case ScriptTypeAtPrepare::kImportMap: {
         UseCounter::Count(*context_window, WebFeature::kImportMap);
@@ -744,7 +772,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         // map` synchronously here.
         pending_import_map->RegisterImportMap();
 
-        return false;
+        return nullptr;
       }
       case ScriptTypeAtPrepare::kWebBundle: {
         DCHECK(RuntimeEnabledFeatures::SubresourceWebBundlesEnabled(
@@ -780,7 +808,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             }
           }
         }
-        return false;
+        return nullptr;
       }
 
       case ScriptTypeAtPrepare::kSpeculationRules: {
@@ -806,7 +834,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
                                     {element_->GetDOMNodeId()});
           element_document.AddConsoleMessage(console_message);
         }
-        return false;
+        return nullptr;
       }
 
         // <spec step="30.2.A">"classic"</spec>
@@ -868,7 +896,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         // is null, asynchronously complete this algorithm with null, and
         // return.</spec>
         if (!module_script)
-          return false;
+          return nullptr;
 
         // <spec label="fetch-an-inline-module-script-graph" step="4">Fetch the
         // descendants of and link script, given settings object, the
@@ -888,15 +916,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
     }
   }
 
-  // Three flags are used to instruct the caller of PrepareScript() to execute
-  // a part of Step 32, when |will_be_parser_executed_| is true:
-  // - |will_be_parser_executed_|
-  // - |will_execute_when_document_finished_parsing_|
-  // - |ready_to_be_parser_executed_|
-  // TODO(hiroshige): Clean up the dependency.
-
-  ScriptSchedulingType script_scheduling_type =
-      GetScriptSchedulingTypePerSpec(element_document);
+  ScriptSchedulingType script_scheduling_type = GetScriptSchedulingTypePerSpec(
+      element_document, parser_blocking_inline_option);
 
   // [intervention, https://crbug.com/1339112] Force-defer parser-blocking and
   // inline scripts.
@@ -936,9 +957,9 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   // ForceInOrder scripts not executed yet, attempt to mark the inline script as
   // parser blocking so that the inline script is evaluated after the
   // ForceInOrder scripts are evaluated.
-  // TODO(crbug.com/1344772): Clean up this code block.
   if (script_scheduling_type == ScriptSchedulingType::kImmediate &&
       parser_inserted_ &&
+      parser_blocking_inline_option == ParserBlockingInlineOption::kAllow &&
       context_window->document()->GetScriptRunner()->HasForceInOrderScripts()) {
     DCHECK(base::FeatureList::IsEnabled(features::kForceInOrderScript));
     script_scheduling_type = ScriptSchedulingType::kParserBlockingInline;
@@ -974,64 +995,43 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             this, element_document.GetTaskRunner(TaskType::kNetworking).get());
       }
 
-      return true;
+      return nullptr;
 
     case ScriptSchedulingType::kDefer:
-      DCHECK(parser_inserted_);
-      // Implemented by the caller-side of PrepareScript().
-      will_execute_when_document_finished_parsing_ = true;
-      will_be_parser_executed_ = true;
-      return true;
-
     case ScriptSchedulingType::kForceDefer:
-      // [intervention, https://crbug.com/1339112]
-      // Force deferred scripts behave like parser-blocking scripts, except that
-      // |force_deferred_| is set. The caller of PrepareScript()
-      // - Force-defers such scripts if the caller supports force-defer
-      //   (i.e., HTMLParserScriptRunner); or
-      // - Ignores the |force_deferred_| flag and handles such scripts as
-      //   parser-blocking scripts (e.g., XMLParserScriptRunner).
-      force_deferred_ = true;
-      [[fallthrough]];
-
     case ScriptSchedulingType::kParserBlocking:
-      DCHECK(parser_inserted_);
-      // Implemented by the caller-side of PrepareScript().
-      will_be_parser_executed_ = true;
-      return true;
-
     case ScriptSchedulingType::kParserBlockingInline:
+      // The remaining part is implemented by the caller-side of
+      // PrepareScript().
       DCHECK(parser_inserted_);
-      will_be_parser_executed_ = true;
+      if (script_scheduling_type ==
+          ScriptSchedulingType::kParserBlockingInline) {
+        DCHECK_EQ(parser_blocking_inline_option,
+                  ParserBlockingInlineOption::kAllow);
+      }
 
-      // <spec step="32.2.2">Set el's ready to be parser-executed to true. (The
-      // parser will handle executing the script.)</spec>
-      ready_to_be_parser_executed_ = true;
-      return true;
+      return TakePendingScript(script_scheduling_type);
 
     case ScriptSchedulingType::kImmediate: {
       // <spec step="32.3">Otherwise, immediately execute the script element el,
       // even if other scripts are already executing.</spec>
-      //
-      // Note: this block is also duplicated in
-      // `HTMLParserScriptRunner::ProcessScriptElementInternal()`.
-      // TODO(hiroshige): Merge the duplicated code.
       KURL script_url = (!is_in_document_write && parser_inserted_)
                             ? element_document.Url()
                             : KURL();
       TakePendingScript(ScriptSchedulingType::kImmediate)
           ->ExecuteScriptBlock(script_url);
-      return true;
+      return nullptr;
     }
 
     case ScriptSchedulingType::kNotSet:
       NOTREACHED();
-      return false;
+      return nullptr;
   }
 }
 
 ScriptSchedulingType ScriptLoader::GetScriptSchedulingTypePerSpec(
-    Document& element_document) const {
+    Document& element_document,
+    ParserBlockingInlineOption parser_blocking_inline_option) const {
   DCHECK_NE(GetScriptType(), ScriptLoader::ScriptTypeAtPrepare::kImportMap);
   DCHECK(prepared_pending_script_);
 
@@ -1068,12 +1068,11 @@ ScriptSchedulingType ScriptLoader::GetScriptSchedulingTypePerSpec(
     // created el is an XML parser or it's an HTML parser whose script nesting
     // level is not greater than one, and el's parser document has a style sheet
     // that is blocking scripts:</spec>
-    //
-    // The remaining part of the condition check and Step 32.2.1 is done in
-    // the caller-side of PrepareScript().
-    // TODO(hiroshige): Clean up the split condition check.
-    if (parser_inserted_ && !element_document.IsScriptExecutionReady())
+    if (parser_inserted_ &&
+        parser_blocking_inline_option == ParserBlockingInlineOption::kAllow &&
+        !element_document.IsScriptExecutionReady()) {
       return ScriptSchedulingType::kParserBlockingInline;
+    }
 
     // <spec step="32.3">Otherwise, immediately execute the script element el,
     // even if other scripts are already executing.</spec>
@@ -1167,11 +1166,6 @@ void ScriptLoader::NotifyFinished() {
       !resource_keep_alive_->GetResponse().IsSignedExchangeInnerResponse()) {
     resource_keep_alive_ = nullptr;
   }
-}
-
-bool ScriptLoader::IgnoresLoadRequest() const {
-  return already_started_ || is_external_script_ || parser_inserted_ ||
-         !element_->IsConnected();
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
