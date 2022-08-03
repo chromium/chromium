@@ -597,9 +597,6 @@ class BLINK_EXPORT WebLocalFrameClient {
     return nullptr;
   }
 
-  // WebRTC
-  virtual bool AllowRTCLegacyTLSProtocols() { return false; }
-
   // Encrypted Media -------------------------------------------------
 
   virtual WebEncryptedMediaClient* EncryptedMediaClient() { return nullptr; }
@@ -617,12 +614,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual absl::optional<UserAgentMetadata> UserAgentMetadataOverride() {
     return absl::nullopt;
   }
-
-  // Do not track ----------------------------------------------------
-
-  // Asks the embedder what value the network stack will send for the DNT
-  // header. An empty string indicates that no DNT header will be send.
-  virtual WebString DoNotTrackValue() { return WebString(); }
 
   //
   // Accessibility -------------------------------------------------------

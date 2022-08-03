@@ -4321,10 +4321,6 @@ RenderFrameImpl::MediaStreamDeviceObserver() {
   return web_media_stream_device_observer_.get();
 }
 
-bool RenderFrameImpl::AllowRTCLegacyTLSProtocols() {
-  return GetRendererPreferences().webrtc_allow_legacy_tls_protocols;
-}
-
 blink::WebEncryptedMediaClient* RenderFrameImpl::EncryptedMediaClient() {
   return media_factory_.EncryptedMediaClient();
 }
@@ -4364,12 +4360,6 @@ bool RenderFrameImpl::ShouldUseUserAgentOverride() const {
       document_loader ? DocumentState::FromDocumentLoader(document_loader)
                       : nullptr;
   return document_state && document_state->is_overriding_user_agent();
-}
-
-blink::WebString RenderFrameImpl::DoNotTrackValue() {
-  if (GetWebView()->GetRendererPreferences().enable_do_not_track)
-    return WebString::FromUTF8("1");
-  return WebString();
 }
 
 blink::mojom::RendererAudioInputStreamFactory*

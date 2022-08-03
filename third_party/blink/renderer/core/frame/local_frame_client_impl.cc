@@ -838,9 +838,8 @@ absl::optional<UserAgentMetadata> LocalFrameClientImpl::UserAgentMetadata() {
 }
 
 String LocalFrameClientImpl::DoNotTrackValue() {
-  WebString do_not_track = web_frame_->Client()->DoNotTrackValue();
-  if (!do_not_track.IsEmpty())
-    return do_not_track;
+  if (web_frame_->View()->GetRendererPreferences().enable_do_not_track)
+    return "1";
   return String();
 }
 

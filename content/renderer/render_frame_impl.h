@@ -591,11 +591,9 @@ class CONTENT_EXPORT RenderFrameImpl
   void PreloadSubresourceOptimizationsForOrigins(
       const std::vector<blink::WebSecurityOrigin>& origins) override;
   blink::WebMediaStreamDeviceObserver* MediaStreamDeviceObserver() override;
-  bool AllowRTCLegacyTLSProtocols() override;
   blink::WebEncryptedMediaClient* EncryptedMediaClient() override;
   blink::WebString UserAgentOverride() override;
   absl::optional<blink::UserAgentMetadata> UserAgentMetadataOverride() override;
-  blink::WebString DoNotTrackValue() override;
   blink::mojom::RendererAudioInputStreamFactory* GetAudioInputStreamFactory();
   bool AllowContentInitiatedDataUrlNavigations(
       const blink::WebURL& url) override;
