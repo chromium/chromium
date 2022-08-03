@@ -1696,6 +1696,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmCompilationUntilStreamFinishedMilliSeconds" units="ms"
+    expires_after="2023-01-15">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Time from finishing compilation of a WebAssembly module until downloading
+    the module finishes with streaming compilation. Recorded when streaming
+    compilation finishes and the compilation of the WebAssembly module finished
+    before the download. If the download finishes first, then the histogram
+    V8.WasmStreamingUntilCompilationFinishedMilliSeconds is recorded.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmCompileAfterDeserializeMilliSeconds" units="ms"
     expires_after="2023-01-15">
   <owner>ahaas@chromium.org</owner>
@@ -2074,6 +2089,21 @@ chromium-metrics-reviews@google.com.
     Time to serialize a WebAssembly module for storing it in the cache. Recorded
     on each serialization, which happens after top-tier compilation finished, or
     when a new chunk of functions was compiled (with dynamic tiering).
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmStreamingUntilCompilationFinishedMilliSeconds"
+    units="ms" expires_after="2023-01-15">
+  <owner>ahaas@chromium.org</owner>
+  <owner>clemensb@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    Time from finishing downloading a WebAssembly module until streaming
+    compilation finishes. Recorded when streaming compilation finishes and the
+    download of the WebAssembly module finished before compilation. If
+    compilation finishes first, then the histogram
+    V8.WasmCompilationUntilStreamFinishedMilliSeconds is recorded.
   </summary>
 </histogram>
 
