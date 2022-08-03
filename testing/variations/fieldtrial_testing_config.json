@@ -3897,9 +3897,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_MovementThreshold_24_20220711",
+                    "name": "Enabled_MovementThreshold_60_20220802",
                     "params": {
-                        "DragAndDropMovementThresholdDipParam": "24"
+                        "DragAndDropMovementThresholdDipParam": "60"
                     },
                     "enable_features": [
                         "ContextMenuPopupStyle",
