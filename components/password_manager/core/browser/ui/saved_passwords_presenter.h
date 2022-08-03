@@ -83,8 +83,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   void Init();
 
   // Removes the credential and all its duplicates from the store.
-  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
-  void RemovePassword(const PasswordForm& form);
   bool RemoveCredential(const CredentialUIEntry& credential);
 
   // Cancels the last removal operation.
@@ -97,23 +95,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   bool AddCredential(const CredentialUIEntry& credential,
                      password_manager::PasswordForm::Type type =
                          password_manager::PasswordForm::Type::kManuallyAdded);
-
-  // Tries to edit |password|. After checking whether |form| is present in
-  // |passwords_|, this will ask the password store to change the underlying
-  // password_value to |new_password| in case it was found. This will also
-  // notify clients that an edit event happened in case |form| was present
-  // in |passwords_|.
-  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
-  bool EditPassword(const PasswordForm& form, std::u16string new_password);
-
-  // Modifies the provided password form and its duplicates
-  // with `new_username` and `new_password`.
-  //
-  // Note: this will also change duplicates of 'form' in all stores.
-  // TODO(crbug.com/1330906): Remove in favor of EditSavedCredentials.
-  bool EditSavedPasswords(const PasswordForm& form,
-                          const std::u16string& new_username,
-                          const std::u16string& new_password);
 
   // Modifies all the saved credentials matching |original_credential| to
   // |updated_credential|. Only username, password, notes and password issues
@@ -130,8 +111,6 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // Uniqueness is determined using site name, username, password. For Android
   // credentials package name is also taken into account and for Federated
   // credentials federation origin.
-  // TODO(crbug.com/1330906): Replace all API to work with CredentialUIEntry.
-  std::vector<PasswordForm> GetUniquePasswordForms() const;
   std::vector<CredentialUIEntry> GetSavedCredentials() const;
 
   // Returns PasswordForms corresponding to |credential|.

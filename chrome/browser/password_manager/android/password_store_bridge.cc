@@ -63,9 +63,13 @@ bool PasswordStoreBridge::EditPassword(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& credential,
     const base::android::JavaParamRef<jstring>& new_password) {
-  return saved_passwords_presenter_.EditPassword(
-      ConvertJavaObjectToPasswordForm(env, credential),
-      ConvertJavaStringToUTF16(env, new_password));
+  password_manager::CredentialUIEntry original_credential(
+      ConvertJavaObjectToPasswordForm(env, credential));
+  password_manager::CredentialUIEntry updated_credential = original_credential;
+  updated_credential.password = ConvertJavaStringToUTF16(env, new_password);
+  return saved_passwords_presenter_.EditSavedCredentials(original_credential,
+                                                         updated_credential) ==
+         password_manager::SavedPasswordsPresenter::EditResult::kSuccess;
 }
 
 jint PasswordStoreBridge::GetPasswordStoreCredentialsCount(JNIEnv* env) const {

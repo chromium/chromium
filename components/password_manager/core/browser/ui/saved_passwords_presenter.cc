@@ -130,10 +130,6 @@ void SavedPasswordsPresenter::Init() {
   }
 }
 
-void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
-  RemoveCredential(CredentialUIEntry(form));
-}
-
 bool SavedPasswordsPresenter::RemoveCredential(
     const CredentialUIEntry& credential) {
   const auto range =
@@ -198,27 +194,6 @@ bool SavedPasswordsPresenter::AddCredential(
         PasswordNoteAction::kNoteAddedInAddDialog);
   }
   return true;
-}
-
-bool SavedPasswordsPresenter::EditPassword(const PasswordForm& form,
-                                           std::u16string new_password) {
-  CredentialUIEntry updated_credential(form);
-  updated_credential.password = new_password;
-  return EditSavedCredentials(CredentialUIEntry(form), updated_credential) ==
-         EditResult::kSuccess;
-}
-
-bool SavedPasswordsPresenter::EditSavedPasswords(
-    const PasswordForm& form,
-    const std::u16string& new_username,
-    const std::u16string& new_password) {
-  // TODO(crbug.com/1184691): Change desktop settings and maybe iOS to use this
-  // presenter for updating the duplicates.
-  CredentialUIEntry updated_credential(form);
-  updated_credential.password = new_password;
-  updated_credential.username = new_username;
-  return EditSavedCredentials(CredentialUIEntry(form), updated_credential) ==
-         EditResult::kSuccess;
 }
 
 SavedPasswordsPresenter::EditResult
@@ -300,14 +275,13 @@ SavedPasswordsPresenter::EditSavedCredentials(
   return EditResult::kSuccess;
 }
 
-SavedPasswordsPresenter::SavedPasswordsView
-SavedPasswordsPresenter::GetSavedPasswords() const {
+SavedPasswordsView SavedPasswordsPresenter::GetSavedPasswords() const {
   return passwords_;
 }
 
-std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswordForms()
+std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
     const {
-  std::vector<PasswordForm> forms;
+  std::vector<CredentialUIEntry> credentials;
 
   auto it = sort_key_to_password_forms_.begin();
   std::string current_key;
@@ -315,24 +289,14 @@ std::vector<PasswordForm> SavedPasswordsPresenter::GetUniquePasswordForms()
   while (it != sort_key_to_password_forms_.end()) {
     if (current_key != it->first) {
       current_key = it->first;
-      forms.push_back(it->second);
+      credentials.emplace_back(it->second);
     } else {
-      forms.back().in_store = forms.back().in_store | it->second.in_store;
+      // Aggregates store information which might be different across copies.
+      credentials.back().stored_in.insert(it->second.in_store);
     }
     ++it;
   }
 
-  return forms;
-}
-
-std::vector<CredentialUIEntry> SavedPasswordsPresenter::GetSavedCredentials()
-    const {
-  std::vector<PasswordForm> forms = GetUniquePasswordForms();
-  std::vector<CredentialUIEntry> credentials;
-  credentials.reserve(forms.size());
-  base::ranges::transform(
-      forms, std::back_inserter(credentials),
-      [](const PasswordForm& form) { return CredentialUIEntry(form); });
   return credentials;
 }
 

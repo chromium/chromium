@@ -264,7 +264,10 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
   RunUntilIdle();
 
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck).Times(0);
-  presenter().EditPassword(password, kPassword2);
+  CredentialUIEntry original_credential(password),
+      updated_credential = original_credential;
+  updated_credential.password = kPassword2;
+  presenter().EditSavedCredentials(original_credential, updated_credential);
 }
 
 // Tests that editing a password through the presenter will result in another
@@ -288,7 +291,10 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
               CheckCredentials(CredentialsAre(std::cref(expected))));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  presenter().EditPassword(password, kPassword2);
+  CredentialUIEntry original_credential(password),
+      updated_credential = original_credential;
+  updated_credential.password = kPassword2;
+  presenter().EditSavedCredentials(original_credential, updated_credential);
 }
 
 }  // namespace password_manager
