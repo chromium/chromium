@@ -76017,10 +76017,14 @@ Called by update_net_trust_anchors.py.-->
 </enum>
 
 <enum name="PasswordStoreAndroidBackendAPIError">
+  <int value="4" label="SIGN_IN_REQUIRED"/>
+  <int value="5" label="INVALID_ACCOUNT"/>
+  <int value="6" label="RESOLUTION_REQUIRED"/>
   <int value="7" label="NETWORK_ERROR"/>
   <int value="8" label="INTERNAL_ERROR"/>
   <int value="10" label="DEVELOPER_ERROR"/>
   <int value="17" label="API_NOT_CONNECTED"/>
+  <int value="19" label="REMOTE_EXCEPTION"/>
   <int value="20" label="CONNECTION_SUSPENDED_DURING_CALL"/>
   <int value="22" label="RECONNECTION_TIMED_OUT"/>
   <int value="11000" label="PASSPHRASE_REQUIRED"/>
