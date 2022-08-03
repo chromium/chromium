@@ -584,6 +584,7 @@ ci.builder(
             target_bits = 64,
             target_cros_boards = [
                 "arm-generic",
+                "jacuzzi",
             ],
             target_platform = builder_config.target_platform.CHROMEOS,
         ),

@@ -22,7 +22,8 @@
                 "target_arch": "intel",
                 "target_bits": 64,
                 "target_cros_boards": [
-                  "arm-generic"
+                  "arm-generic",
+                  "jacuzzi"
                 ],
                 "target_platform": "chromeos"
               },
