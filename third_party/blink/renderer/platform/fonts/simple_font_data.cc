@@ -179,13 +179,15 @@ void SimpleFontData::PlatformInit(bool subpixel_ascent_descent,
 }
 
 void SimpleFontData::PlatformGlyphInit() {
+  // Widths in |font_metrics_| should be initial values.
+  DCHECK(!font_metrics_.IdeographicFullWidth());
   const FontPlatformData& platform_data = PlatformData();
   SkTypeface* typeface = platform_data.Typeface();
+
   if (!typeface->countGlyphs()) {
     space_glyph_ = 0;
     space_width_ = 0;
     zero_glyph_ = 0;
-    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
     return;
   }
 
@@ -216,17 +218,15 @@ void SimpleFontData::PlatformGlyphInit() {
 
   if (cjk_water_glyph)
     font_metrics_.SetIdeographicFullWidth(WidthForGlyph(cjk_water_glyph));
-  else
-    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
 }
 
 void SimpleFontData::PlatformGlyphInitVerticalUpright(Glyph cjk_water_glyph) {
   DCHECK_EQ(PlatformData().Orientation(), FontOrientation::kVerticalUpright);
+  // Widths in |font_metrics_| should be initial values.
+  DCHECK(!font_metrics_.IdeographicFullWidth());
 
-  if (!cjk_water_glyph) {
-    font_metrics_.SetIdeographicFullWidth(absl::nullopt);
+  if (!cjk_water_glyph)
     return;
-  }
 
   // The vertical metrics is available only in |HarfBuzzFontData|, but it can't
   // be constructed while initializing |SimpleFontData|. See crbug.com/784389.
