@@ -42,7 +42,11 @@ source_set("tabs_search_factory") {
     "//base",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/sessions",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
   ]
 }
 
