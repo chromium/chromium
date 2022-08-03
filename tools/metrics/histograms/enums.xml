@@ -56299,6 +56299,7 @@ from previous Chrome versions.
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:disabled"/>
   <int value="-1621963267" label="EnableAssistantLauncherUI:enabled"/>
   <int value="-1620942609" label="MuteCompromisedPasswords:enabled"/>
+  <int value="-1620860283" label="KioskEnableAppService:disabled"/>
   <int value="-1620804800" label="NoScriptPreviews:disabled"/>
   <int value="-1620568042" label="FeaturePolicy:disabled"/>
   <int value="-1620425260" label="ShelfPalmRejectionSwipeOffset:disabled"/>
@@ -61297,6 +61298,7 @@ from previous Chrome versions.
   <int value="1534561775" label="HeavyAdPrivacyMitigations:disabled"/>
   <int value="1536568742" label="SyncAndroidPromosWithIllustration:enabled"/>
   <int value="1536921097" label="NavigationMojoResponse:disabled"/>
+  <int value="1537693783" label="KioskEnableAppService:enabled"/>
   <int value="1538685213" label="DownloadHomeV2:enabled"/>
   <int value="1538690515" label="OneGoogleBarOnLocalNtp:enabled"/>
   <int value="1540395380" label="WebContentsOcclusion:enabled"/>

@@ -3320,6 +3320,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebKioskEnableLacrosDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebKioskEnableLacros)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+    {"enable-app-service-in-kiosk",
+     flag_descriptions::kKioskEnableAppServiceName,
+     flag_descriptions::kKioskEnableAppServiceDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kKioskEnableAppService)},
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
     {"enable-webrtc-remote-event-log",
      flag_descriptions::kWebRtcRemoteEventLogName,

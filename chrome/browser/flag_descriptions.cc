@@ -5961,6 +5961,11 @@ const char kIntentChipAppIconDescription[] =
     "When enabled, the intent chip in the Omnibox will show the app icon for "
     "the app which can handle the current URL.";
 
+const char kKioskEnableAppServiceName[] = "Enable App Service in Kiosk.";
+const char kKioskEnableAppServiceDescription[] =
+    "Uses App Service to install web apps and launch both Chrome apps and web "
+    "apps in Kiosk sessions.";
+
 const char kLinkCapturingAutoDisplayIntentPickerName[] =
     "Enable auto-display of intent picker bubble";
 const char kLinkCapturingAutoDisplayIntentPickerDescription[] =
