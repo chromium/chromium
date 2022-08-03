@@ -4,6 +4,7 @@
 """Definitions of builders in the chromium.angle builder group."""
 
 load("//lib/builders.star", "goma", "reclient", "sheriff_rotations", "xcode")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 
@@ -120,17 +121,59 @@ ci.thin_tester(
 
 ci.gpu.mac_builder(
     name = "ios-angle-builder",
-    xcode = xcode.x13main,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = [
+                "angle_internal",
+                "angle_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-angle-archive",
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Builder|ANGLE",
         short_name = "x64",
     ),
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = None,
+    xcode = xcode.x13main,
 )
 
 ci.thin_tester(
     name = "ios-angle-intel",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "ios",
+            apply_configs = [
+                "angle_internal",
+                "angle_top_of_tree",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+                "mac_toolchain",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.IOS,
+        ),
+        build_gs_bucket = "chromium-angle-archive",
+        run_tests_serially = True,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Intel|ANGLE",
         short_name = "x64",

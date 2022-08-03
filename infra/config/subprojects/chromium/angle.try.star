@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "cpu", "goma", "os", "xcode")
+load("//lib/builder_config.star", "builder_config")
 load("//lib/try.star", "try_")
 
 try_.defaults.set(
@@ -44,5 +45,12 @@ def angle_ios_builder(*, name, **kwargs):
 
 angle_ios_builder(
     name = "ios-angle-try-intel",
+    mirrors = [
+        "ci/ios-angle-builder",
+        "ci/ios-angle-intel",
+    ],
     pool = "luci.chromium.gpu.mac.mini.intel.try",
+    try_settings = builder_config.try_settings(
+        retry_failed_shards = False,
+    ),
 )
