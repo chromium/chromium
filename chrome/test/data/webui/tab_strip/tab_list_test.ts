@@ -967,4 +967,32 @@ suite('TabList', () => {
     tabElements[2]!.remove();
     assertTrue(tabList.shouldPreventDrag());
   });
+
+  test('PreventsDraggingWhenOnlyOneTabGroup', async () => {
+    // Create a tab group with 2 tabs.
+    const appendedTab = createTab({
+      groupId: 'group0',
+      id: 3,
+      index: 3,
+      title: 'New tab in group',
+    });
+    callbackRouter.tabCreated(appendedTab);
+    await flushTasks();
+    const appendedTabInSameGroup = createTab({
+      groupId: 'group0',
+      id: 4,
+      index: 4,
+      title: 'New tab in same group',
+    });
+    callbackRouter.tabCreated(appendedTabInSameGroup);
+    await flushTasks();
+    assertFalse(tabList.shouldPreventDrag());
+
+    // Remove all tabs outside the tab group.
+    const tabElements = getUnpinnedTabs();
+    tabElements[0]!.remove();
+    tabElements[1]!.remove();
+    tabElements[2]!.remove();
+    assertTrue(tabList.shouldPreventDrag());
+  });
 });
