@@ -751,13 +751,15 @@ void Editor::ComputeAndSetTypingStyle(CSSPropertyValueSet* style,
   else
     typing_style_ = MakeGarbageCollected<EditingStyle>(style);
 
-  typing_style_->PrepareToApplyAt(
-      GetFrame()
-          .Selection()
-          .ComputeVisibleSelectionInDOMTreeDeprecated()
-          .VisibleStart()
-          .DeepEquivalent(),
-      EditingStyle::kPreserveWritingDirection);
+  const Position& position = GetFrame()
+                                 .Selection()
+                                 .ComputeVisibleSelectionInDOMTreeDeprecated()
+                                 .VisibleStart()
+                                 .DeepEquivalent();
+  if (position.IsNull())
+    return;
+  typing_style_->PrepareToApplyAt(position,
+                                  EditingStyle::kPreserveWritingDirection);
 
   // Handle block styles, substracting these from the typing style.
   EditingStyle* block_style =
