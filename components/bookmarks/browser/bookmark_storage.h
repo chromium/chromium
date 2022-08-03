@@ -36,9 +36,10 @@ class BookmarkStorage
   static constexpr base::TimeDelta kSaveDelay = base::Milliseconds(2500);
 
   // Creates a BookmarkStorage for the specified model. The data will saved to a
-  // location derived from |profile_path|. The disk writes will be executed as a
-  // task in a backend task runner.
-  BookmarkStorage(BookmarkModel* model, const base::FilePath& profile_path);
+  // file using the specified |file_path|. A backup file may be generated using
+  // a name derived from |file_path| (appending suffix kBackupExtension). All
+  // disk writes will be executed as a task in a backend task runner.
+  BookmarkStorage(BookmarkModel* model, const base::FilePath& file_path);
 
   BookmarkStorage(const BookmarkStorage&) = delete;
   BookmarkStorage& operator=(const BookmarkStorage&) = delete;

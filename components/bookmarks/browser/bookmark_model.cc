@@ -154,11 +154,12 @@ void BookmarkModel::Load(PrefService* pref_service,
   expanded_state_tracker_ =
       std::make_unique<BookmarkExpandedStateTracker>(this, pref_service);
 
-  store_ = std::make_unique<BookmarkStorage>(this, profile_path);
+  const base::FilePath file_path = profile_path.Append(kBookmarksFileName);
+
+  store_ = std::make_unique<BookmarkStorage>(this, file_path);
   // Creating ModelLoader schedules the load on a backend task runner.
   model_loader_ = ModelLoader::Create(
-      profile_path.Append(kBookmarksFileName),
-      std::make_unique<BookmarkLoadDetails>(client_.get()),
+      file_path, std::make_unique<BookmarkLoadDetails>(client_.get()),
       base::BindOnce(&BookmarkModel::DoneLoading, AsWeakPtr()));
 }
 

@@ -95,7 +95,7 @@ void LoadBookmarks(const base::FilePath& path,
 
 // static
 scoped_refptr<ModelLoader> ModelLoader::Create(
-    const base::FilePath& profile_path,
+    const base::FilePath& file_path,
     std::unique_ptr<BookmarkLoadDetails> details,
     LoadCallback callback) {
   // Note: base::MakeRefCounted is not available here, as ModelLoader's
@@ -108,9 +108,8 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
 
   model_loader->backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &ModelLoader::DoLoadOnBackgroundThread, model_loader, profile_path,
-          std::move(details)),
+      base::BindOnce(&ModelLoader::DoLoadOnBackgroundThread, model_loader,
+                     file_path, std::move(details)),
       std::move(callback));
   return model_loader;
 }
@@ -126,9 +125,9 @@ ModelLoader::ModelLoader()
 ModelLoader::~ModelLoader() = default;
 
 std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
-    const base::FilePath& profile_path,
+    const base::FilePath& file_path,
     std::unique_ptr<BookmarkLoadDetails> details) {
-  LoadBookmarks(profile_path, details.get());
+  LoadBookmarks(file_path, details.get());
   history_bookmark_model_ = details->url_index();
   loaded_signal_.Signal();
   return details;

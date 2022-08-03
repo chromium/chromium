@@ -32,7 +32,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // Creates the ModelLoader, and schedules loading on a backend task runner.
   // |callback| is run once loading completes (on the main thread).
   static scoped_refptr<ModelLoader> Create(
-      const base::FilePath& profile_path,
+      const base::FilePath& file_path,
       std::unique_ptr<BookmarkLoadDetails> details,
       LoadCallback callback);
 
@@ -56,7 +56,7 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
 
   // Performs the load on a background thread.
   std::unique_ptr<BookmarkLoadDetails> DoLoadOnBackgroundThread(
-      const base::FilePath& profile_path,
+      const base::FilePath& file_path,
       std::unique_ptr<BookmarkLoadDetails> details);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
