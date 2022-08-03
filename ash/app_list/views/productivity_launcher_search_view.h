@@ -129,8 +129,9 @@ class ASH_EXPORT ProductivityLauncherSearchView
   // views hierarchy. Used by result_selection_controller_.
   std::vector<SearchResultContainerView*> result_container_views_;
 
-  // Cache of the last shown search results IDs.
-  std::vector<std::string> last_result_ids_;
+  // Cache of the last shown search results' animation metadata.
+  std::vector<SearchResultContainerView::SearchResultAimationMetadata>
+      last_result_metadata_;
 
   // Handles search result selection.
   std::unique_ptr<ResultSelectionController> result_selection_controller_;

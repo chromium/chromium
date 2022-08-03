@@ -106,7 +106,8 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
   SearchResultView* GetResultViewAt(size_t index) override;
   absl::optional<ResultsAnimationInfo> ScheduleResultAnimations(
       const ResultsAnimationInfo& aggregate_animation_info) override;
-  void AppendShownResultIds(std::vector<std::string>* result_ids) override;
+  void AppendShownResultMetadata(
+      std::vector<SearchResultAimationMetadata>* result_metadata_) override;
   bool HasAnimatingChildView() override;
 
   // Fades the view in and animates a vertical transform based on the view's

@@ -78,6 +78,16 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
     bool use_short_animations = false;
   };
 
+  // Information needed to determine if a search result shuold have an updated
+  // animation.
+  struct SearchResultAimationMetadata {
+    // The ID of the search result.
+    std::string result_id;
+
+    // Whether animations should be skipped for this search result.
+    bool skip_animations = false;
+  };
+
   // Schedules animations for result list updates. Expected to be implemented
   // for search result containers that animate result updates.
   // `aggregate_animation_info` The aggregated animation information for all
@@ -88,8 +98,9 @@ class ASH_EXPORT SearchResultContainerView : public views::View,
       const ResultsAnimationInfo& aggregate_animation_info);
 
   // Appends search result IDs of the search results shown by the container
-  // view into 'result_ids_'.
-  virtual void AppendShownResultIds(std::vector<std::string>* result_ids);
+  // view into 'result_ids_'
+  virtual void AppendShownResultMetadata(
+      std::vector<SearchResultAimationMetadata>* result_metadata_);
 
   // Returns whether the container view has any animating child views.
   virtual bool HasAnimatingChildView();

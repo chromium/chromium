@@ -174,7 +174,8 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
   }
 
   SearchResultBaseView* first_result_view = nullptr;
-  std::vector<std::string> search_result_ids;
+  std::vector<SearchResultContainerView::SearchResultAimationMetadata>
+      search_result_metadata;
 
   // If the user cleared the search box text, skip animating the views. The
   // visible views will animate out and the whole search page will be hidden.
@@ -195,19 +196,24 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
     }
 
     for (SearchResultContainerView* view : result_container_views_) {
-      view->AppendShownResultIds(&search_result_ids);
+      view->AppendShownResultMetadata(&search_result_metadata);
     }
 
-    int num_matching_leading_results = 0;
-    for (size_t i = 0;
-         i < std::min(search_result_ids.size(), last_result_ids_.size()); i++) {
-      if (search_result_ids[i] != last_result_ids_[i])
+    int first_animated_result_view_index = 0;
+    for (size_t i = 0; i < std::min(search_result_metadata.size(),
+                                    last_result_metadata_.size());
+         ++i) {
+      const bool matching_result_id = search_result_metadata[i].result_id ==
+                                      last_result_metadata_[i].result_id;
+      const bool skip_animations = search_result_metadata[i].skip_animations &&
+                                   last_result_metadata_[i].skip_animations;
+      if (!skip_animations && !matching_result_id)
         break;
-      num_matching_leading_results += 1;
+      first_animated_result_view_index += 1;
     }
 
     aggregate_animation_info.first_animated_result_view_index =
-        num_matching_leading_results;
+        first_animated_result_view_index;
 
     for (SearchResultContainerView* view : result_container_views_) {
       absl::optional<AnimationInfo> container_animation_info =
@@ -236,7 +242,7 @@ void ProductivityLauncherSearchView::OnSearchResultContainerResultsChanged() {
   Layout();
 
   last_search_result_count_ = result_count;
-  last_result_ids_.swap(search_result_ids);
+  last_result_metadata_.swap(search_result_metadata);
 
   ScheduleResultsChangedA11yNotification();
 

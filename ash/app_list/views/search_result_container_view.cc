@@ -41,8 +41,8 @@ SearchResultContainerView::ScheduleResultAnimations(
   return absl::nullopt;
 }
 
-void SearchResultContainerView::AppendShownResultIds(
-    std::vector<std::string>* result_ids) {
+void SearchResultContainerView::AppendShownResultMetadata(
+    std::vector<SearchResultAimationMetadata>* result_metadata_) {
   NOTREACHED();
 }
 

@@ -351,13 +351,16 @@ SearchResultListView::ScheduleResultAnimations(
   return current_animation_info;
 }
 
-void SearchResultListView::AppendShownResultIds(
-    std::vector<std::string>* result_ids) {
+void SearchResultListView::AppendShownResultMetadata(
+    std::vector<SearchResultAimationMetadata>* result_metadata_) {
   for (size_t i = 0; i < search_result_views_.size(); ++i) {
     SearchResultView* result_view = GetResultViewAt(i);
     if (i >= num_results_ || !result_view->result())
       return;
-    result_ids->push_back(result_view->result()->id());
+    SearchResultAimationMetadata metadata;
+    metadata.result_id = result_view->result()->id();
+    metadata.skip_animations = result_view->result()->skip_update_animation();
+    result_metadata_->push_back(std::move(metadata));
   }
 }
 
