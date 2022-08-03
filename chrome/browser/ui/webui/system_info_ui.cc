@@ -140,8 +140,7 @@ void SystemInfoHandler::OnSystemInfo(
     val.Set("statValue", it->second);
     data.Append(std::move(val));
   }
-  ResolveJavascriptCallback(base::Value(callback_id_),
-                            base::Value(std::move(data)));
+  ResolveJavascriptCallback(base::Value(callback_id_), data);
   callback_id_.clear();
 }
 

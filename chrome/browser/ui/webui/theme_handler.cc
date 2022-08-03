@@ -79,8 +79,8 @@ void ThemeHandler::SendThemeChanged() {
   bool has_custom_bg = ThemeService::GetThemeProviderForProfile(GetProfile())
                            .HasCustomImage(IDR_THEME_NTP_BACKGROUND);
   // TODO(dbeam): why does this need to be a dictionary?
-  base::DictionaryValue dictionary;
-  dictionary.SetBoolKey("hasCustomBackground", has_custom_bg);
+  base::Value::Dict dictionary;
+  dictionary.Set("hasCustomBackground", has_custom_bg);
   FireWebUIListener("theme-changed", dictionary);
 }
 

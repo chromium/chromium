@@ -229,8 +229,7 @@ void CrashesDOMHandler::UpdateUI() {
   result.Set("os", base::SysInfo::OperatingSystemName() + " " +
                        base::SysInfo::OperatingSystemVersion());
   result.Set("isGoogleAccount", is_internal);
-  FireWebUIListener(crash_reporter::kCrashesUIUpdateCrashList,
-                    base::Value(std::move(result)));
+  FireWebUIListener(crash_reporter::kCrashesUIUpdateCrashList, result);
 }
 
 void CrashesDOMHandler::HandleRequestSingleCrashUpload(

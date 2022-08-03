@@ -114,23 +114,22 @@ void APCInternalsHandler::OnLoaded(const base::Value::List& args) {
   AllowJavascript();
 
   // Provide information for initial page creation.
-  FireWebUIListener("on-flags-information-received",
-                    base::Value(GetAPCRelatedFlags()));
+  FireWebUIListener("on-flags-information-received", GetAPCRelatedFlags());
   FireWebUIListener("on-script-fetching-information-received",
-                    base::Value(GetPasswordScriptFetcherInformation()));
+                    GetPasswordScriptFetcherInformation());
   UpdateAutofillAssistantInformation();
   OnRefreshScriptCacheRequested(base::Value::List());
 }
 
 void APCInternalsHandler::UpdateAutofillAssistantInformation() {
   FireWebUIListener("on-autofill-assistant-information-received",
-                    base::Value(GetAutofillAssistantInformation()));
+                    GetAutofillAssistantInformation());
 }
 
 void APCInternalsHandler::OnScriptCacheRequested(
     const base::Value::List& args) {
   FireWebUIListener("on-script-cache-received",
-                    base::Value(GetPasswordScriptFetcherCache()));
+                    GetPasswordScriptFetcherCache());
 }
 
 void APCInternalsHandler::OnRefreshScriptCacheRequested(
@@ -198,10 +197,10 @@ base::Value::List APCInternalsHandler::GetAPCRelatedFlags() const {
         for (const auto& [param_name, param_state] : params)
           feature_params.Set(param_name, param_state);
 
-        feature_entry.Set("parameters", base::Value(std::move(feature_params)));
+        feature_entry.Set("parameters", std::move(feature_params));
       }
     }
-    relevant_features.Append(base::Value(std::move(feature_entry)));
+    relevant_features.Append(std::move(feature_entry));
   }
   return relevant_features;
 }

@@ -101,10 +101,10 @@ std::string GetMessageString() {
 }
 
 // Generates one row of the returned process info.
-base::Value MakeProcessInfo(int pid, std::string description) {
-  base::Value result(base::Value::Type::LIST);
-  result.Append(base::Value(pid));
-  result.Append(base::Value(std::move(description)));
+base::Value::List MakeProcessInfo(int pid, std::string description) {
+  base::Value::List result;
+  result.Append(pid);
+  result.Append(std::move(description));
   return result;
 }
 
@@ -152,7 +152,7 @@ class MemoryInternalsDOMHandler : public content::WebUIMessageHandler,
 
  private:
   void ReturnProcessListOnUIThread(const std::string& callback_id,
-                                   std::vector<base::Value> children,
+                                   std::vector<base::Value::List> children,
                                    std::vector<base::ProcessId> profiled_pids);
 
   // SelectFileDialog::Listener implementation:
@@ -209,7 +209,7 @@ void MemoryInternalsDOMHandler::HandleRequestProcessList(
   AllowJavascript();
   std::string callback_id = args[0].GetString();
 
-  std::vector<base::Value> result;
+  std::vector<base::Value::List> result;
 
   // The only non-renderer child processes that currently support out-of-process
   // heap profiling are GPU and UTILITY.
@@ -299,7 +299,7 @@ void MemoryInternalsDOMHandler::HandleStartProfiling(
 
 void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
     const std::string& callback_id,
-    std::vector<base::Value> children,
+    std::vector<base::Value::List> children,
     std::vector<base::ProcessId> profiled_pids) {
   // This function will be called with the child processes that are not
   // renderers. It will fill in the browser and renderer processes on the UI
@@ -346,8 +346,7 @@ void MemoryInternalsDOMHandler::ReturnProcessListOnUIThread(
   result.Set("message", GetMessageString());
   result.Set("processes", std::move(process_list));
 
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(result)));
+  ResolveJavascriptCallback(base::Value(callback_id), result);
 }
 
 void MemoryInternalsDOMHandler::FileSelected(const base::FilePath& path,

@@ -243,8 +243,7 @@ void IdentityInternalsUIMessageHandler::GetInfoForAllTokens(
       results.Append(GetInfoForToken(key_tokens.first, token));
     }
   }
-  ResolveJavascriptCallback(base::Value(callback_id),
-                            base::Value(std::move(results)));
+  ResolveJavascriptCallback(base::Value(callback_id), results);
 }
 
 void IdentityInternalsUIMessageHandler::RegisterMessages() {

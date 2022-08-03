@@ -92,19 +92,14 @@ struct DictionaryIdComparator {
   bool operator()(const base::Value& a, const base::Value& b) const {
     DCHECK(a.type() == base::Value::Type::DICTIONARY);
     DCHECK(b.type() == base::Value::Type::DICTIONARY);
-    const base::DictionaryValue* a_dict;
-    bool a_is_dictionary = a.GetAsDictionary(&a_dict);
-    DCHECK(a_is_dictionary);
-    const base::DictionaryValue* b_dict;
-    bool b_is_dictionary = b.GetAsDictionary(&b_dict);
-    DCHECK(b_is_dictionary);
+    const base::Value::Dict& a_dict = a.GetDict();
+    const base::Value::Dict& b_dict = b.GetDict();
     std::u16string a_str;
     std::u16string b_str;
-    const std::string* ptr =
-        a_dict->GetDict().FindString(kCertificatesHandlerNameField);
+    const std::string* ptr = a_dict.FindString(kCertificatesHandlerNameField);
     if (ptr)
       a_str = base::UTF8ToUTF16(*ptr);
-    ptr = b_dict->GetDict().FindString(kCertificatesHandlerNameField);
+    ptr = b_dict.FindString(kCertificatesHandlerNameField);
     if (ptr)
       b_str = base::UTF8ToUTF16(*ptr);
     if (collator_ == nullptr)
@@ -443,18 +438,17 @@ void CertificatesHandler::HandleGetCATrust(const base::Value::List& args) {
   net::NSSCertDatabase::TrustBits trust_bits =
       certificate_manager_model_->cert_db()->GetCertTrust(cert_info->cert(),
                                                           net::CA_CERT);
-  std::unique_ptr<base::DictionaryValue> ca_trust_info(
-      new base::DictionaryValue);
-  ca_trust_info->GetDict().Set(
+  base::Value::Dict ca_trust_info;
+  ca_trust_info.Set(
       kCertificatesHandlerSslField,
       static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_SSL));
-  ca_trust_info->GetDict().Set(
+  ca_trust_info.Set(
       kCertificatesHandlerEmailField,
       static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_EMAIL));
-  ca_trust_info->GetDict().Set(
+  ca_trust_info.Set(
       kCertificatesHandlerObjSignField,
       static_cast<bool>(trust_bits & net::NSSCertDatabase::TRUSTED_OBJ_SIGN));
-  ResolveCallback(*ca_trust_info);
+  ResolveCallback(ca_trust_info);
 }
 
 void CertificatesHandler::HandleEditCATrust(const base::Value::List& args) {
@@ -1070,18 +1064,16 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
   certificate_manager_model_->FilterAndBuildOrgGroupingMap(type,
                                                            &org_grouping_map);
 
-  base::ListValue nodes;
+  base::Value::List nodes;
   for (auto& org_grouping_map_entry : org_grouping_map) {
     // Populate first level (org name).
-    base::DictionaryValue org_dict;
-    org_dict.GetDict().Set(
-        kCertificatesHandlerKeyField,
-        base::Value(OrgNameToId(org_grouping_map_entry.first)));
-    org_dict.GetDict().Set(kCertificatesHandlerNameField,
-                           base::Value(org_grouping_map_entry.first));
+    base::Value::Dict org_dict;
+    org_dict.Set(kCertificatesHandlerKeyField,
+                 OrgNameToId(org_grouping_map_entry.first));
+    org_dict.Set(kCertificatesHandlerNameField, org_grouping_map_entry.first);
 
     // Populate second level (certs).
-    base::ListValue subnodes;
+    base::Value::List subnodes;
     bool contains_policy_certs = false;
     for (auto& org_cert : org_grouping_map_entry.second) {
       // Move the CertInfo into |cert_info_id_map_|.
@@ -1089,27 +1081,24 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
       std::string id =
           base::NumberToString(cert_info_id_map_.Add(std::move(org_cert)));
 
-      base::DictionaryValue cert_dict;
-      cert_dict.GetDict().Set(kCertificatesHandlerKeyField, base::Value(id));
-      cert_dict.GetDict().Set(kCertificatesHandlerNameField,
-                              base::Value(cert_info->name()));
-      cert_dict.GetDict().Set(kCertificatesHandlerCanBeDeletedField,
-                              base::Value(CanDeleteCertificate(cert_info)));
-      cert_dict.GetDict().Set(kCertificatesHandlerCanBeEditedField,
-                              base::Value(CanEditCertificate(cert_info)));
-      cert_dict.GetDict().Set(kCertificatesHandlerUntrustedField,
-                              base::Value(cert_info->untrusted()));
-      cert_dict.GetDict().Set(
-          kCertificatesHandlerPolicyInstalledField,
-          base::Value(cert_info->source() ==
-                      CertificateManagerModel::CertInfo::Source::kPolicy));
-      cert_dict.GetDict().Set(kCertificatesHandlerWebTrustAnchorField,
-                              base::Value(cert_info->web_trust_anchor()));
+      base::Value::Dict cert_dict;
+      cert_dict.Set(kCertificatesHandlerKeyField, id);
+      cert_dict.Set(kCertificatesHandlerNameField, cert_info->name());
+      cert_dict.Set(kCertificatesHandlerCanBeDeletedField,
+                    CanDeleteCertificate(cert_info));
+      cert_dict.Set(kCertificatesHandlerCanBeEditedField,
+                    CanEditCertificate(cert_info));
+      cert_dict.Set(kCertificatesHandlerUntrustedField, cert_info->untrusted());
+      cert_dict.Set(kCertificatesHandlerPolicyInstalledField,
+                    cert_info->source() ==
+                        CertificateManagerModel::CertInfo::Source::kPolicy);
+      cert_dict.Set(kCertificatesHandlerWebTrustAnchorField,
+                    cert_info->web_trust_anchor());
       // TODO(hshi): This should be determined by testing for PKCS #11
       // CKA_EXTRACTABLE attribute. We may need to use the NSS function
       // PK11_ReadRawAttribute to do that.
-      cert_dict.GetDict().Set(kCertificatesHandlerExtractableField,
-                              base::Value(!cert_info->hardware_backed()));
+      cert_dict.Set(kCertificatesHandlerExtractableField,
+                    !cert_info->hardware_backed());
       // TODO(mattm): Other columns.
       subnodes.Append(std::move(cert_dict));
 
@@ -1117,31 +1106,27 @@ void CertificatesHandler::PopulateTree(const std::string& tab_name,
           cert_info->source() ==
           CertificateManagerModel::CertInfo::Source::kPolicy;
     }
-    std::sort(subnodes.GetListDeprecated().begin(),
-              subnodes.GetListDeprecated().end(), comparator);
+    std::sort(subnodes.begin(), subnodes.end(), comparator);
 
-    org_dict.GetDict().Set(kCertificatesHandlerContainsPolicyCertsField,
-                           base::Value(contains_policy_certs));
-    org_dict.GetDict().Set(kCertificatesHandlerSubnodesField,
-                           std::move(subnodes));
+    org_dict.Set(kCertificatesHandlerContainsPolicyCertsField,
+                 contains_policy_certs);
+    org_dict.Set(kCertificatesHandlerSubnodesField, std::move(subnodes));
     nodes.Append(std::move(org_dict));
   }
-  std::sort(nodes.GetListDeprecated().begin(), nodes.GetListDeprecated().end(),
-            comparator);
+  std::sort(nodes.begin(), nodes.end(), comparator);
 
   if (IsJavascriptAllowed()) {
-    FireWebUIListener("certificates-changed", base::Value(tab_name),
-                      std::move(nodes));
+    FireWebUIListener("certificates-changed", base::Value(tab_name), nodes);
   }
 }
 
-void CertificatesHandler::ResolveCallback(const base::Value& response) {
+void CertificatesHandler::ResolveCallback(const base::ValueView response) {
   DCHECK(!webui_callback_id_.empty());
   ResolveJavascriptCallback(base::Value(webui_callback_id_), response);
   webui_callback_id_.clear();
 }
 
-void CertificatesHandler::RejectCallback(const base::Value& response) {
+void CertificatesHandler::RejectCallback(const base::ValueView response) {
   DCHECK(!webui_callback_id_.empty());
   RejectJavascriptCallback(base::Value(webui_callback_id_), response);
   webui_callback_id_.clear();
@@ -1149,10 +1134,10 @@ void CertificatesHandler::RejectCallback(const base::Value& response) {
 
 void CertificatesHandler::RejectCallbackWithError(const std::string& title,
                                                   const std::string& error) {
-  std::unique_ptr<base::DictionaryValue> error_info(new base::DictionaryValue);
-  error_info->GetDict().Set(kCertificatesHandlerErrorTitle, title);
-  error_info->GetDict().Set(kCertificatesHandlerErrorDescription, error);
-  RejectCallback(*error_info);
+  base::Value::Dict error_info;
+  error_info.Set(kCertificatesHandlerErrorTitle, title);
+  error_info.Set(kCertificatesHandlerErrorDescription, error);
+  RejectCallback(error_info);
 }
 
 void CertificatesHandler::RejectCallbackWithImportError(
@@ -1184,8 +1169,8 @@ void CertificatesHandler::RejectCallbackWithImportError(
   error_info.Set(kCertificatesHandlerErrorTitle, title);
   error_info.Set(kCertificatesHandlerErrorDescription, error);
   error_info.Set(kCertificatesHandlerCertificateErrors,
-                 base::Value(std::move(cert_error_list)));
-  RejectCallback(base::Value(std::move(error_info)));
+                 std::move(cert_error_list));
+  RejectCallback(error_info);
 }
 
 gfx::NativeWindow CertificatesHandler::GetParentWindow() {

@@ -231,33 +231,30 @@ void CertificateProvisioningUiHandler::
 
 void CertificateProvisioningUiHandler::GotStatus(
     std::vector<crosapi::mojom::CertProvisioningProcessStatusPtr> status) {
-  base::ListValue all_processes;
+  base::Value::List all_processes;
 
   for (auto& process : status) {
-    base::Value entry(base::Value::Type::DICTIONARY);
-    entry.SetStringKey("certProfileId", std::move(process->cert_profile_id));
-    entry.SetStringKey("certProfileName",
-                       std::move(process->cert_profile_name));
-    entry.SetBoolKey("isDeviceWide", process->is_device_wide);
-    entry.SetStringKey("timeSinceLastUpdate",
-                       GetTimeSinceLastUpdate(process->last_update_time));
-    entry.SetStringKey(
-        "lastUnsuccessfulMessage",
-        GetMessageFromBackendError(process->last_backend_server_error));
-    entry.SetIntKey("stateId", static_cast<int>(process->state));
-    entry.SetStringKey("status",
-                       MakeStatusMessage(process->did_fail, process->state,
-                                         process->failure_message));
-    entry.SetStringKey("publicKey",
-                       x509_certificate_model::ProcessRawSubjectPublicKeyInfo(
-                           process->public_key));
+    base::Value::Dict entry;
+    entry.Set("certProfileId", std::move(process->cert_profile_id));
+    entry.Set("certProfileName", std::move(process->cert_profile_name));
+    entry.Set("isDeviceWide", process->is_device_wide);
+    entry.Set("timeSinceLastUpdate",
+              GetTimeSinceLastUpdate(process->last_update_time));
+    entry.Set("lastUnsuccessfulMessage",
+              GetMessageFromBackendError(process->last_backend_server_error));
+    entry.Set("stateId", static_cast<int>(process->state));
+    entry.Set("status", MakeStatusMessage(process->did_fail, process->state,
+                                          process->failure_message));
+    entry.Set("publicKey",
+              x509_certificate_model::ProcessRawSubjectPublicKeyInfo(
+                  process->public_key));
 
     all_processes.Append(std::move(entry));
   }
 
   ++ui_refresh_count_for_testing_;
   FireWebUIListener("certificate-provisioning-processes-changed",
-                    std::move(all_processes));
+                    all_processes);
 }
 
 }  // namespace chromeos::cert_provisioning

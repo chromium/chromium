@@ -105,7 +105,7 @@ class NaClDomHandler : public WebUIMessageHandler {
 
   // Helper for MaybeRespondToPage -- called after enough information
   // is gathered.
-  void PopulatePageInformation(base::DictionaryValue* naclInfo);
+  base::Value::Dict GetPageInformation();
 
   // Returns whether the specified plugin is enabled.
   bool isPluginEnabled(size_t plugin_index);
@@ -314,8 +314,7 @@ void NaClDomHandler::OnGotPlugins(
   MaybeRespondToPage();
 }
 
-void NaClDomHandler::PopulatePageInformation(base::DictionaryValue* naclInfo) {
-  DCHECK(pnacl_path_validated_);
+base::Value::Dict NaClDomHandler::GetPageInformation() {
   // Store Key-Value pairs of about-information.
   base::ListValue list;
   // Display the operating system and chrome version information.
@@ -327,7 +326,9 @@ void NaClDomHandler::PopulatePageInformation(base::DictionaryValue* naclInfo) {
   // Display information relevant to NaCl (non-portable.
   AddNaClInfo(&list);
   // naclInfo will take ownership of list, and clean it up on destruction.
-  naclInfo->SetKey("naclInfo", std::move(list));
+  base::Value::Dict dict;
+  dict.Set("naclInfo", std::move(list));
+  return dict;
 }
 
 void NaClDomHandler::DidCheckPathAndVersion(const std::string* version,
@@ -383,9 +384,7 @@ void NaClDomHandler::MaybeRespondToPage() {
     return;
   }
 
-  base::DictionaryValue naclInfo;
-  PopulatePageInformation(&naclInfo);
-  ResolveJavascriptCallback(base::Value(callback_id_), naclInfo);
+  ResolveJavascriptCallback(base::Value(callback_id_), GetPageInformation());
   callback_id_.clear();
 }
 

@@ -65,57 +65,56 @@ class CertNodeBuilder {
   CertNodeBuilder& Payload(base::StringPiece payload);
 
   // Adds |child| in the list keyed "children". Can be called multiple times.
-  CertNodeBuilder& Child(std::unique_ptr<base::DictionaryValue> child);
+  CertNodeBuilder& Child(base::Value::Dict child);
 
   // Similar to Child, but if the argument is null, then this does not add
   // anything.
-  CertNodeBuilder& ChildIfNotNull(std::unique_ptr<base::DictionaryValue> child);
+  CertNodeBuilder& ChildIfNotNullopt(absl::optional<base::Value::Dict> child);
 
-  // Creates a DictionaryValue representation of the collected information. Only
-  // call this once.
-  std::unique_ptr<base::DictionaryValue> Build();
+  // Creates a base::Value::Dict representation of the collected information.
+  // Only call this once.
+  base::Value::Dict Build();
 
  private:
-  base::DictionaryValue node_;
-  base::ListValue children_;
+  base::Value::Dict node_;
+  base::Value::List children_;
   // |built_| is false until Build() is called. Once it is |true|, |node_| and
   // |children_| are no longer valid for use.
   bool built_ = false;
 };
 
 CertNodeBuilder::CertNodeBuilder(base::StringPiece label) {
-  node_.SetStringKey("label", label);
+  node_.Set("label", label);
 }
 
 CertNodeBuilder::CertNodeBuilder(int label_id)
     : CertNodeBuilder(l10n_util::GetStringUTF8(label_id)) {}
 
 CertNodeBuilder& CertNodeBuilder::Payload(base::StringPiece payload) {
-  DCHECK(!node_.FindPath("payload.val"));
-  node_.SetStringPath("payload.val", payload);
+  DCHECK(!node_.FindByDottedPath("payload.val"));
+  node_.SetByDottedPath("payload.val", payload);
   return *this;
 }
 
-CertNodeBuilder& CertNodeBuilder::Child(
-    std::unique_ptr<base::DictionaryValue> child) {
-  children_.Append(base::Value::FromUniquePtrValue(std::move(child)));
+CertNodeBuilder& CertNodeBuilder::Child(base::Value::Dict child) {
+  children_.Append(std::move(child));
   return *this;
 }
 
-CertNodeBuilder& CertNodeBuilder::ChildIfNotNull(
-    std::unique_ptr<base::DictionaryValue> child) {
+CertNodeBuilder& CertNodeBuilder::ChildIfNotNullopt(
+    absl::optional<base::Value::Dict> child) {
   if (child)
-    return Child(std::move(child));
+    return Child(std::move(*child));
   return *this;
 }
 
-std::unique_ptr<base::DictionaryValue> CertNodeBuilder::Build() {
+base::Value::Dict CertNodeBuilder::Build() {
   DCHECK(!built_);
-  if (!children_.GetListDeprecated().empty()) {
-    node_.SetKey("children", std::move(children_));
+  if (!children_.empty()) {
+    node_.Set("children", std::move(children_));
   }
   built_ = true;
-  return std::make_unique<base::DictionaryValue>(std::move(node_));
+  return std::move(node_);
 }
 
 }  // namespace
@@ -257,11 +256,11 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
 
   // Certificate information. The keys in this dictionary's general key
   // correspond to the IDs in the Html page.
-  base::DictionaryValue cert_info;
+  base::Value::Dict cert_info;
   const x509_certificate_model::X509CertificateModel& model = certs_.front();
 
-  cert_info.SetBoolean("isError", !model.is_valid());
-  cert_info.SetStringPath(
+  cert_info.Set("isError", !model.is_valid());
+  cert_info.SetByDottedPath(
       "general.title",
       l10n_util::GetStringFUTF8(IDS_CERT_INFO_DIALOG_TITLE,
                                 base::UTF8ToUTF16(model.GetTitle())));
@@ -272,21 +271,22 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
         l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
 
     // Issued to information.
-    cert_info.SetStringPath(
+    cert_info.SetByDottedPath(
         "general.issued-cn",
         HandleOptionalOrError(model.GetSubjectCommonName()));
-    cert_info.SetStringPath("general.issued-o",
-                            HandleOptionalOrError(model.GetSubjectOrgName()));
-    cert_info.SetStringPath(
+    cert_info.SetByDottedPath("general.issued-o",
+                              HandleOptionalOrError(model.GetSubjectOrgName()));
+    cert_info.SetByDottedPath(
         "general.issued-ou",
         HandleOptionalOrError(model.GetSubjectOrgUnitName()));
 
     // Issuer information.
-    cert_info.SetStringPath("general.issuer-cn",
-                            HandleOptionalOrError(model.GetIssuerCommonName()));
-    cert_info.SetStringPath("general.issuer-o",
-                            HandleOptionalOrError(model.GetIssuerOrgName()));
-    cert_info.SetStringPath(
+    cert_info.SetByDottedPath(
+        "general.issuer-cn",
+        HandleOptionalOrError(model.GetIssuerCommonName()));
+    cert_info.SetByDottedPath("general.issuer-o",
+                              HandleOptionalOrError(model.GetIssuerOrgName()));
+    cert_info.SetByDottedPath(
         "general.issuer-ou",
         HandleOptionalOrError(model.GetIssuerOrgUnitName()));
 
@@ -302,32 +302,32 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
       issued_str = alternative_text;
       expires_str = alternative_text;
     }
-    cert_info.SetStringPath("general.issue-date", issued_str);
-    cert_info.SetStringPath("general.expiry-date", expires_str);
+    cert_info.SetByDottedPath("general.issue-date", issued_str);
+    cert_info.SetByDottedPath("general.expiry-date", expires_str);
   }
 
-  cert_info.SetStringPath("general.sha256",
-                          model.HashCertSHA256WithSeparators());
-  cert_info.SetStringPath("general.sha1", model.HashCertSHA1WithSeparators());
+  cert_info.SetByDottedPath("general.sha256",
+                            model.HashCertSHA256WithSeparators());
+  cert_info.SetByDottedPath("general.sha1", model.HashCertSHA1WithSeparators());
 
   // Certificate hierarchy is constructed from bottom up.
-  base::Value children;
+  base::Value::List children;
   int index = 0;
   for (const auto& cert : certs_) {
-    base::Value cert_node(base::Value::Type::DICTIONARY);
-    cert_node.SetKey("label", base::Value(cert.GetTitle()));
-    cert_node.SetPath({"payload", "index"}, base::Value(index));
+    base::Value::Dict cert_node;
+    cert_node.Set("label", base::Value(cert.GetTitle()));
+    cert_node.SetByDottedPath("payload.index", base::Value(index));
     // Add the child from the previous iteration.
-    if (!children.is_none())
-      cert_node.SetKey("children", std::move(children));
+    if (!children.empty())
+      cert_node.Set("children", std::move(children));
 
     // Add this node to the children list for the next iteration.
-    children = base::Value(base::Value::Type::LIST);
+    children = base::Value::List();
     children.Append(std::move(cert_node));
     ++index;
   }
   // Set the last node as the top of the certificate hierarchy.
-  cert_info.SetKey("hierarchy", std::move(children));
+  cert_info.Set("hierarchy", std::move(children));
 
   base::JSONWriter::Write(cert_info, &data);
 
@@ -423,7 +423,7 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_CRITICAL),
             l10n_util::GetStringUTF8(IDS_CERT_EXTENSION_NON_CRITICAL));
 
-    std::unique_ptr<base::DictionaryValue> details_extensions;
+    absl::optional<base::Value::Dict> details_extensions;
     if (!extensions.empty()) {
       CertNodeBuilder details_extensions_builder(IDS_CERT_DETAILS_EXTENSIONS);
       for (const x509_certificate_model::Extension& extension : extensions) {
@@ -468,7 +468,7 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
                            .Build())
                 .Build())
         // Extensions.
-        .ChildIfNotNull(std::move(details_extensions))
+        .ChildIfNotNullopt(std::move(details_extensions))
         .Child(CertNodeBuilder(IDS_CERT_DETAILS_CERTIFICATE_SIG_ALG)
                    .Payload(model.ProcessSecAlgorithmSignatureWrap())
                    .Build())
@@ -488,12 +488,11 @@ void CertificateViewerDialogHandler::HandleRequestCertificateFields(
           .Build());
 
   base::Value::List root_list;
-  root_list.Append(
-      base::Value::FromUniquePtrValue(CertNodeBuilder(model.GetTitle())
-                                          .Child(contents_builder.Build())
-                                          .Build()));
+  root_list.Append(CertNodeBuilder(model.GetTitle())
+                       .Child(contents_builder.Build())
+                       .Build());
   // Send certificate information to javascript.
-  ResolveJavascriptCallback(callback_id, base::Value(std::move(root_list)));
+  ResolveJavascriptCallback(callback_id, root_list);
 }
 
 int CertificateViewerDialogHandler::GetCertificateIndex(

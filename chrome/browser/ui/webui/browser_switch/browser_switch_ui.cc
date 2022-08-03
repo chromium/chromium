@@ -447,7 +447,7 @@ void BrowserSwitchHandler::HandleGetAllRulesets(const base::Value::List& args) {
       RuleSetToDict(*service->sitelist()->GetExternalGreylist());
   retval.Set("external_greylist", std::move(external_greylist_dict));
 
-  ResolveJavascriptCallback(args[0], base::Value(std::move(retval)));
+  ResolveJavascriptCallback(args[0], retval);
 }
 
 void BrowserSwitchHandler::HandleGetDecision(const base::Value::List& args) {
@@ -492,7 +492,7 @@ void BrowserSwitchHandler::HandleGetDecision(const base::Value::List& args) {
     retval.Set("matching_rule", decision.matching_rule->ToString());
   }
 
-  ResolveJavascriptCallback(args[0], base::Value(std::move(retval)));
+  ResolveJavascriptCallback(args[0], retval);
 }
 
 void BrowserSwitchHandler::HandleGetTimestamps(const base::Value::List& args) {
@@ -510,7 +510,7 @@ void BrowserSwitchHandler::HandleGetTimestamps(const base::Value::List& args) {
   retval.Set("last_fetch", downloader->last_refresh_time().ToJsTime());
   retval.Set("next_fetch", downloader->next_refresh_time().ToJsTime());
 
-  ResolveJavascriptCallback(args[0], base::Value(std::move(retval)));
+  ResolveJavascriptCallback(args[0], retval);
 }
 
 void BrowserSwitchHandler::HandleGetRulesetSources(
@@ -531,7 +531,7 @@ void BrowserSwitchHandler::HandleGetRulesetSources(
     // "browser_switcher.blah" as a key in the object, not a nested hierarchy.
     retval.Set(source.pref_name, std::move(val));
   }
-  ResolveJavascriptCallback(args[0], base::Value(std::move(retval)));
+  ResolveJavascriptCallback(args[0], retval);
 }
 
 void BrowserSwitchHandler::HandleRefreshXml(const base::Value::List& args) {
