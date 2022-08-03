@@ -91,6 +91,10 @@ std::string GetDescriptionForMovedToPosition(FloatingMenuPosition position) {
   }
 }
 
+bool IsKioskImeButtonEnabled() {
+  return base::FeatureList::IsEnabled(features::kKioskEnableImeButton);
+}
+
 }  // namespace
 
 FloatingAccessibilityBubbleView::FloatingAccessibilityBubbleView(
@@ -153,7 +157,9 @@ FloatingAccessibilityView::FloatingAccessibilityView(Delegate* delegate)
           kAutoclickPositionBottomLeftIcon,
           IDS_ASH_AUTOCLICK_OPTION_CHANGE_POSITION, /*flip_for_rtl*/ false,
           kPanelPositionButtonSize, false, /* is_a11y_togglable */ false));
-
+  if (IsKioskImeButtonEnabled()) {
+    // TODO(b/240928038): Add logic in following CLs.
+  }
   AddChildView(std::move(feature_buttons_container));
   AddChildView(std::move(tray_button_container));
   AddChildView(CreateSeparator());

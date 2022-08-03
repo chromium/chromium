@@ -384,6 +384,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kImprovedLoginErrorHandling;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kInstantTethering;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kJelly;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kKioskEnableImeButton;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosOnly;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosPrimary;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kLacrosSupport;

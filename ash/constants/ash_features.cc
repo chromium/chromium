@@ -928,6 +928,10 @@ const base::Feature kInstantTethering{"InstantTethering",
 // Enables Jelly features.
 const base::Feature kJelly{"Jelly", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables IME button in the floating accessibility menu for the Kiosk session.
+const base::Feature kKioskEnableImeButton{"KioskEnableImeButton",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables to use lacros-chrome as the only web browser on ChromeOS.
 // This works only when both LacrosSupport and LacrosPrimary below are enabled.
 // NOTE: Use crosapi::browser_util::IsAshWebBrowserEnabled() instead of checking
