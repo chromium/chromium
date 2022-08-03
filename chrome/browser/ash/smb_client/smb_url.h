@@ -30,10 +30,13 @@ class SmbUrl {
   // Returns the host of the URL which can be resolved or unresolved.
   std::string GetHost() const;
 
-  // Returns the share component of the URL.
+  // Returns the share component of the URL. This does not have to be
+  // set for IsValid() to be true (but some clients may require it).
   std::string GetShare() const;
 
-  // Returns the full URL.
+  // Returns the full, canonicalized URL |url_| in the form
+  // smb://server/share/path (where share and path are optional). Will
+  // not have trailing slashes.
   const std::string& ToString() const;
 
   // Replaces the host to |new_host| and returns the full URL. Does not
@@ -41,7 +44,8 @@ class SmbUrl {
   SmbUrl ReplaceHost(const std::string& new_host) const;
 
   // Returns true if the passed URL is valid and was properly parsed. This
-  // should be called after the constructor.
+  // should be called after the constructor. Callers should verify this
+  // before trying to use ToString(), GetHost(), GetShare() etc.
   bool IsValid() const;
 
   // Returns |url_| in the format \\server\share.
@@ -54,7 +58,7 @@ class SmbUrl {
   // Parse |url| into a Windows UNC |windows_unc_|.
   void CreateWindowsUnc(const std::string& url);
 
-  // Resets url_ and parsed_.
+  // Resets url_ and parsed_. Makes the SmbUrl invalid.
   void Reset();
 
   // String form of the canonical url.

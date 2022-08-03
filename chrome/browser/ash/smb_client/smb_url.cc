@@ -107,6 +107,8 @@ SmbUrl SmbUrl::ReplaceHost(const std::string& new_host) const {
 }
 
 bool SmbUrl::IsValid() const {
+  // The URL is valid as long as it has a host, but some users (eg.
+  // SmbService) may also require that the share_ is defined.
   return !url_.empty() && host_.is_valid();
 }
 
@@ -127,6 +129,8 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
     return;
   }
 
+  // Try to canonicalize the input URL into |url_|. IsValid() returns
+  // false if this is unsuccessful.
   url::StdStringCanonOutput canonical_output(&url_);
 
   url::Component scheme;
@@ -157,6 +161,7 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
 
   canonical_output.Complete();
 
+  // |url_| is now valid, parse out any (optional) share and path component.
   if (path.is_nonempty()) {
     // Extract share name, which is the first path element.
     // Paths always start with '/', but extra '/'s are not removed.
@@ -169,6 +174,11 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
       DCHECK_EQ(split_path[0], "");
       share_ = std::string(split_path[1]);
     }
+  }
+
+  // Valid SmbUrls never have trailing slashes.
+  while (url_.size() && url_.back() == '/') {
+    url_.pop_back();
   }
 
   DCHECK(host_.is_nonempty());

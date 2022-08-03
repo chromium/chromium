@@ -58,25 +58,106 @@ TEST_F(SmbUrlTest, InvalidUrls) {
   ExpectInvalidUrl("\\:/host/path");
 }
 
-TEST_F(SmbUrlTest, ValidUrls) {
-  ExpectValidUrl("smb://x", "smb://x/", "x", "");
-  ExpectValidUrl("smb:///x", "smb://x/", "x", "");
-  ExpectValidUrl("smb:///x/y", "smb://x/y", "x", "y");
-  ExpectValidUrl("smb:///x/y/", "smb://x/y/", "x", "y");
-  ExpectValidUrl("smb:///x//y", "smb://x//y", "x", "");
-  ExpectValidUrl("smb:///x//y//", "smb://x//y//", "x", "");
-  ExpectValidUrl("smb://server/share/long/folder",
-                 "smb://server/share/long/folder", "server", "share");
-  ExpectValidUrl("smb://server/share/folder.with.dots",
-                 "smb://server/share/folder.with.dots", "server", "share");
-  ExpectValidUrl("smb://server\\share/mixed\\slashes",
-                 "smb://server/share/mixed/slashes", "server", "share");
-  ExpectValidUrl("\\\\server", "smb://server/", "server", "");
-  ExpectValidUrl("\\\\server/share", "smb://server/share", "server", "share");
-  ExpectValidUrl("\\\\server\\share/mixed//slashes",
-                 "smb://server/share/mixed//slashes", "server", "share");
+TEST_F(SmbUrlTest, ValidHappyPathUrls) {
+  ExpectValidUrl("smb://x", "smb://x", "x", "");
+  ExpectValidUrl("\\\\x", "smb://x", "x", "");
+  ExpectValidUrl("smb://x/", "smb://x", "x", "");
+  ExpectValidUrl("\\\\x\\", "smb://x", "x", "");
+
+  ExpectValidUrl("smb://x/share", "smb://x/share", "x", "share");
+  ExpectValidUrl("\\\\x\\share", "smb://x/share", "x", "share");
+  ExpectValidUrl("smb://x/share/", "smb://x/share", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\", "smb://x/share", "x", "share");
+
+  // Double forward slash is not removed (except if trailing) and
+  // results in an empty share if used immediately after the host.
+  ExpectValidUrl("smb://x//path", "smb://x//path", "x", "");
+  ExpectValidUrl("\\\\x\\\\path", "smb://x//path", "x", "");
+  ExpectValidUrl("smb://x//path//long", "smb://x//path//long", "x", "");
+  ExpectValidUrl("\\\\x\\\\path\\\\long", "smb://x//path//long", "x", "");
+  ExpectValidUrl("smb://x//path//long//longer", "smb://x//path//long//longer",
+                 "x", "");
+  ExpectValidUrl("\\\\x\\\\path\\\\long\\\\longer",
+                 "smb://x//path//long//longer", "x", "");
+
+  ExpectValidUrl("smb://x/share/path", "smb://x/share/path", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\path", "smb://x/share/path", "x", "share");
+  ExpectValidUrl("smb://x/share/path/", "smb://x/share/path", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\path\\", "smb://x/share/path", "x", "share");
+
+  ExpectValidUrl("smb://x/share/long/folder", "smb://x/share/long/folder", "x",
+                 "share");
+  ExpectValidUrl("\\\\x\\share\\long\\folder", "smb://x/share/long/folder", "x",
+                 "share");
+  ExpectValidUrl("smb://x/share/folder.with.dots",
+                 "smb://x/share/folder.with.dots", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\folder.with.dots",
+                 "smb://x/share/folder.with.dots", "x", "share");
+
   ExpectValidUrl("smb://192.168.0.1/share", "smb://192.168.0.1/share",
                  "192.168.0.1", "share");
+  ExpectValidUrl("\\\\192.168.0.1\\share", "smb://192.168.0.1/share",
+                 "192.168.0.1", "share");
+}
+
+TEST_F(SmbUrlTest, ValidWeirdSlashUrls) {
+  ExpectValidUrl("smb://x/share\\", "smb://x/share", "x", "share");
+  ExpectValidUrl("smb://x/share\\\\", "smb://x/share", "x", "share");
+  ExpectValidUrl("smb://x/share//", "smb://x/share", "x", "share");
+
+  ExpectValidUrl("smb://x\\share/mixed\\slashes", "smb://x/share/mixed/slashes",
+                 "x", "share");
+  ExpectValidUrl("\\\\x\\share/mixed\\slashes", "smb://x/share/mixed/slashes",
+                 "x", "share");
+
+  ExpectValidUrl("smb:///x", "smb://x", "x", "");
+  ExpectValidUrl("smb:///x/", "smb://x", "x", "");
+
+  ExpectValidUrl("smb:///x/share", "smb://x/share", "x", "share");
+  ExpectValidUrl("smb:///x/share/", "smb://x/share", "x", "share");
+
+  ExpectValidUrl("smb:///x//path", "smb://x//path", "x", "");
+  ExpectValidUrl("smb:///x//path//", "smb://x//path", "x", "");
+
+  ExpectValidUrl("smb:///x//path//long", "smb://x//path//long", "x", "");
+  ExpectValidUrl("smb:///x//path//long//", "smb://x//path//long", "x", "");
+}
+
+TEST_F(SmbUrlTest, TrimTrailingSlashes) {
+  ExpectValidUrl("smb://x/", "smb://x", "x", "");
+  ExpectValidUrl("\\\\x\\", "smb://x", "x", "");
+  ExpectValidUrl("\\\\x//", "smb://x", "x", "");
+
+  ExpectValidUrl("smb://x//", "smb://x", "x", "");
+  ExpectValidUrl("\\\\x\\\\", "smb://x", "x", "");
+  ExpectValidUrl("\\\\x////", "smb://x", "x", "");
+
+  ExpectValidUrl("smb://x/share/", "smb://x/share", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\", "smb://x/share", "x", "share");
+  ExpectValidUrl("\\\\x\\share//", "smb://x/share", "x", "share");
+
+  ExpectValidUrl("smb://x/share//", "smb://x/share", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\\\", "smb://x/share", "x", "share");
+  ExpectValidUrl("\\\\x\\share////", "smb://x/share", "x", "share");
+
+  ExpectValidUrl("smb://x/share/path/", "smb://x/share/path", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\path\\", "smb://x/share/path", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\path//", "smb://x/share/path", "x", "share");
+
+  ExpectValidUrl("smb://x/share/path//", "smb://x/share/path", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\path\\\\", "smb://x/share/path", "x", "share");
+  ExpectValidUrl("\\\\x\\share\\path////", "smb://x/share/path", "x", "share");
+
+  // Double slash after host (only) is not removed and results in an
+  // empty share.
+  ExpectValidUrl("smb://x//path//", "smb://x//path", "x", "");
+  ExpectValidUrl("\\\\x\\\\path\\\\", "smb://x//path", "x", "");
+  ExpectValidUrl("smb://x//path//long//", "smb://x//path//long", "x", "");
+  ExpectValidUrl("\\\\x\\\\path\\\\long\\\\", "smb://x//path//long", "x", "");
+  ExpectValidUrl("smb://x//path//long//longer\\", "smb://x//path//long//longer",
+                 "x", "");
+  ExpectValidUrl("\\\\x\\\\path\\\\long\\\\longer\\\\",
+                 "smb://x//path//long//longer", "x", "");
 }
 
 TEST_F(SmbUrlTest, NotValidIfStartsWithoutSchemeOrDoubleBackslash) {
