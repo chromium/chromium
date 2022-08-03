@@ -1341,7 +1341,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // component, i.e. has no dots), or `Value::Dict::FindStringByDottedPath()`
   // otherwise.
   bool GetString(StringPiece path, std::string* out_value) const;
-  bool GetString(StringPiece path, std::u16string* out_value) const;
   // DEPRECATED: prefer `Value::Dict::FindDict()` (if the path only has one
   // component, i.e. has no dots), or `Value::Dict::FindDictByDottedPath()`
   // otherwise.
