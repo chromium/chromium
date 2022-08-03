@@ -51,6 +51,9 @@ class InputMenuView : public views::View {
   InputMenuView& operator=(const InputMenuView&) = delete;
   ~InputMenuView() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   class FeedbackButton;
 

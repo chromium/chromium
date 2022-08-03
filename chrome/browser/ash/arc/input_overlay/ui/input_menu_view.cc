@@ -8,7 +8,6 @@
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
@@ -23,6 +22,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_styles.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -183,6 +183,12 @@ InputMenuView::InputMenuView(
 
 InputMenuView::~InputMenuView() {}
 
+void InputMenuView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  const auto bg_color = GetColorProvider()->GetColor(cros_tokens::kBgColor);
+  SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
+}
+
 void InputMenuView::CloseMenu() {
   if (display_overlay_controller_)
     display_overlay_controller_->SetDisplayMode(DisplayMode::kView);
@@ -194,9 +200,6 @@ void InputMenuView::Init(const gfx::Size& parent_size) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   auto* color_provider = ash::AshColorProvider::Get();
-  auto bg_color = color_provider->GetBackgroundColorInMode(
-      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
-  SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
   SkColor color = color_provider->GetContentLayerColor(
       ash::AshColorProvider::ContentLayerType::kTextColorPrimary);
   int menu_width = GetMenuWidth(parent_size.width());

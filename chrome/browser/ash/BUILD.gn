@@ -1997,6 +1997,7 @@ source_set("ash") {
     "//ui/chromeos",
     "//ui/chromeos/resources",
     "//ui/chromeos/strings",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/color",
     "//ui/color:color_headers",
     "//ui/color:mixers",

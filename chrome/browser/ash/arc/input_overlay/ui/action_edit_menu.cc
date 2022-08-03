@@ -6,10 +6,10 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/style/style_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/box_layout.h"
@@ -116,12 +116,11 @@ void ActionEditMenu::InitActionTapEditMenu() {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
 
-  auto* color_provider = ash::AshColorProvider::Get();
+  auto* color_provider = GetColorProvider();
   DCHECK(color_provider);
   if (!color_provider)
     return;
-  auto bg_color = color_provider->GetBackgroundColorInMode(
-      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
+  const auto bg_color = color_provider->GetColor(cros_tokens::kBgColor);
   SetBackground(views::CreateRoundedRectBackground(bg_color, kCornerRadius));
 
   // Add each binding button.
