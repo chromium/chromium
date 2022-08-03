@@ -8,7 +8,7 @@ from telemetry import benchmark
 from contrib.system_health_scroll_jank import janky_story_set
 
 _BENCHMARK_UMA = [
-    'Browser.Responsiveness.JankyIntervalsPerThirtySeconds',
+    'Browser.MainThreadsCongestion',
     'Compositing.Display.DrawToSwapUs',
     'CompositorLatency.TotalLatency',
     'CompositorLatency.Type',

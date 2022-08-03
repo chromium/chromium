@@ -57,7 +57,7 @@ class CONTENT_EXPORT Calculator {
   // MainMessageLoopRun() reaches idle (i.e. done running all tasks queued
   // during startup). This will be used as a signal for the true end of
   // "startup" and the beginning of recording
-  // Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.
+  // Browser.MainThreadsCongestion.
   void OnFirstIdle();
 
   // Change the Power state of the process. Must be called from the UI thread.

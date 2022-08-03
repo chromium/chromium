@@ -33,10 +33,9 @@ constexpr auto kSuspendInterval = base::Seconds(30);
 
 constexpr char kLatencyEventCategory[] = "latency";
 
-// The names emitted for JankyInterval measurement events.
-constexpr char kJankyIntervalEvent[] = "JankyInterval";
-constexpr char kJankyIntervalsPerThirtySeconds3Event[] =
-    "JankyIntervalsPerThirtySeconds3";
+// The names emitted for MainThreadsCongestion measurement events.
+constexpr char kCongestedIntervalEvent[] = "CongestedInterval";
+constexpr char kMainThreadsCongestionsEvent[] = "MainThreadsCongestion";
 
 // Given a |jank|, finds each janky slice between |start_time| and |end_time|,
 // and adds it to |janky_slices|.
@@ -149,6 +148,18 @@ void Calculator::EmitResponsiveness(JankType jank_type,
   DCHECK_LE(janky_slices, kMaxJankySlices);
   switch (jank_type) {
     case JankType::kExecution: {
+      UMA_HISTOGRAM_COUNTS_1000("Browser.MainThreadsCongestion.RunningOnly",
+                                janky_slices);
+      // Only kFirstInterval and kPeriodic are reported with a suffix, stages
+      // in between are only part of the unsuffixed histogram.
+      if (startup_stage_ == StartupStage::kFirstInterval) {
+        UMA_HISTOGRAM_COUNTS_1000(
+            "Browser.MainThreadsCongestion.RunningOnly.Initial", janky_slices);
+      } else if (startup_stage_ == StartupStage::kPeriodic) {
+        UMA_HISTOGRAM_COUNTS_1000(
+            "Browser.MainThreadsCongestion.RunningOnly.Periodic", janky_slices);
+      }
+      // Emit the old name until M107.
       UMA_HISTOGRAM_COUNTS_1000(
           "Browser.Responsiveness.JankyIntervalsPerThirtySeconds",
           janky_slices);
@@ -171,6 +182,16 @@ void Calculator::EmitResponsiveness(JankType jank_type,
           startup_stage_ == StartupStage::kFirstIntervalDoneWithoutFirstIdle) {
         break;
       }
+      UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion", janky_slices,
+                                  1, kMaxJankySlices, 50);
+      if (startup_stage_ == StartupStage::kFirstIntervalAfterFirstIdle) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Initial",
+                                    janky_slices, 1, kMaxJankySlices, 50);
+      } else if (startup_stage_ == StartupStage::kPeriodic) {
+        UMA_HISTOGRAM_CUSTOM_COUNTS("Browser.MainThreadsCongestion.Periodic",
+                                    janky_slices, 1, kMaxJankySlices, 50);
+      }
+      // Emit the old name until M107.
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3",
           janky_slices, 1, kMaxJankySlices, 50);
@@ -233,20 +254,20 @@ void Calculator::EmitJankyIntervalsMeasurementTraceEvent(
     base::TimeTicks end_time,
     size_t amount_of_slices) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds3Event,
-      TRACE_ID_LOCAL(this), start_time, "amount_of_slices", amount_of_slices);
+      kLatencyEventCategory, kMainThreadsCongestionsEvent, TRACE_ID_LOCAL(this),
+      start_time, "amount_of_slices", amount_of_slices);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kJankyIntervalsPerThirtySeconds3Event,
-      TRACE_ID_LOCAL(this), end_time);
+      kLatencyEventCategory, kMainThreadsCongestionsEvent, TRACE_ID_LOCAL(this),
+      end_time);
 }
 
 void Calculator::EmitJankyIntervalsJankTraceEvent(base::TimeTicks start_time,
                                                   base::TimeTicks end_time) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kJankyIntervalEvent, TRACE_ID_LOCAL(this),
+      kLatencyEventCategory, kCongestedIntervalEvent, TRACE_ID_LOCAL(this),
       start_time);
   TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-      kLatencyEventCategory, kJankyIntervalEvent, TRACE_ID_LOCAL(this),
+      kLatencyEventCategory, kCongestedIntervalEvent, TRACE_ID_LOCAL(this),
       end_time);
 }
 

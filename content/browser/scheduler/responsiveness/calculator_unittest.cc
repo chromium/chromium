@@ -414,18 +414,15 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
                                      StartupStage::kFirstInterval));
   histograms.emplace();
   TriggerCalculation();
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0, 1);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0, 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   // Queue jank event during a few kMeasurementInterval (without having seen
   // OnFirstIdle()). Neither .Initial nor .Periodic
@@ -440,18 +437,15 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   histograms.emplace();
   TriggerCalculation();
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(
       *calculator_,
@@ -463,18 +457,15 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   histograms.emplace();
   TriggerCalculation();
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   // OnFirstIdle() eventually during a kMeasurementInterval. Same as above, last
   // one of these.
@@ -490,18 +481,15 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
                              StartupStage::kFirstIntervalDoneWithoutFirstIdle));
   histograms.emplace();
   TriggerCalculation();
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   // Events in intervals after OnFirstIdle(). Janky3.Initial still no .Periodic.
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
@@ -513,18 +501,16 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
                                 StartupStage::kFirstIntervalAfterFirstIdle));
   histograms.emplace();
   TriggerCalculation();
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 10, 1);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 10, 1);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion", 10, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.Initial", 10,
+                                 1);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(*calculator_, EmitResponsivenessMock(JankType::kExecution, 0,
@@ -534,18 +520,16 @@ TEST_F(ResponsivenessCalculatorTest, StartupStages) {
                                      StartupStage::kPeriodic));
   histograms.emplace();
   TriggerCalculation();
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0);
   histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0, 1);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 10, 1);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 0);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 10, 1);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion", 10, 1);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.Periodic", 10,
+                                 1);
 }
 
 TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
@@ -568,18 +552,15 @@ TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
                                      StartupStage::kFirstInterval));
   histograms.emplace();
   TriggerCalculation();
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0, 1);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0, 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 0);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(*calculator_, EmitResponsivenessMock(
@@ -590,18 +571,16 @@ TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
                                 StartupStage::kFirstIntervalAfterFirstIdle));
   histograms.emplace();
   TriggerCalculation();
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 10, 1);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 10, 1);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion", 10, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.Initial", 10,
+                                 1);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Periodic", 0);
 
   AddEventUI(kQueueTime, kStartTime, kFinishTime);
   EXPECT_CALL(*calculator_, EmitResponsivenessMock(JankType::kExecution, 0,
@@ -611,18 +590,16 @@ TEST_F(ResponsivenessCalculatorTest, FastStartupStages) {
                                      StartupStage::kPeriodic));
   histograms.emplace();
   TriggerCalculation();
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.RunningOnly", 0,
+                                 1);
   histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Initial", 0);
+      "Browser.MainThreadsCongestion.RunningOnly.Initial", 0);
   histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds.Periodic", 0, 1);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3", 10, 1);
-  histograms->ExpectTotalCount(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Initial", 0);
-  histograms->ExpectUniqueSample(
-      "Browser.Responsiveness.JankyIntervalsPerThirtySeconds3.Periodic", 10, 1);
+      "Browser.MainThreadsCongestion.RunningOnly.Periodic", 0, 1);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion", 10, 1);
+  histograms->ExpectTotalCount("Browser.MainThreadsCongestion.Initial", 0);
+  histograms->ExpectUniqueSample("Browser.MainThreadsCongestion.Periodic", 10,
+                                 1);
 }
 
 // An event execution that crosses a measurement interval boundary should count
