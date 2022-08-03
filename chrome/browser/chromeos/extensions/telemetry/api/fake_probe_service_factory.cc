@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/fake_probe_service_factory.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service_factory.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,7 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
-namespace ash {
+namespace chromeos {
 
 FakeProbeServiceFactory::FakeProbeServiceFactory() = default;
 FakeProbeServiceFactory::~FakeProbeServiceFactory() = default;
@@ -27,4 +27,4 @@ FakeProbeServiceFactory::CreateInstance(
   return std::move(fake_service_);
 }
 
-}  // namespace ash
+}  // namespace chromeos

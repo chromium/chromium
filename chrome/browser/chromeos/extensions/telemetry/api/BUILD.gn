@@ -78,6 +78,10 @@ source_set("browser_tests") {
     "diagnostics_api_browsertest.cc",
     "fake_api_guard_delegate.cc",
     "fake_api_guard_delegate.h",
+    "fake_probe_service.cc",
+    "fake_probe_service.h",
+    "fake_probe_service_factory.cc",
+    "fake_probe_service_factory.h",
     "telemetry_api_browsertest.cc",
     "telemetry_extension_capabilities_browser_test.cc",
   ]
@@ -89,7 +93,6 @@ source_set("browser_tests") {
     "//ash/webui/telemetry_extension_ui/services:telemetry_services_test",
     "//base",
     "//chrome/browser/ash/telemetry_extension",
-    "//chrome/browser/ash/telemetry_extension:test_support",
     "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chrome/common/chromeos/extensions",
     "//chrome/test:test_support",

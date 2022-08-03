@@ -24,23 +24,6 @@ source_set("telemetry_extension") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "fake_probe_service.cc",
-    "fake_probe_service.h",
-    "fake_probe_service_factory.cc",
-    "fake_probe_service_factory.h",
-  ]
-
-  deps = [
-    ":telemetry_extension",
-    "//base",
-    "//chrome/test:test_support",
-    "//chromeos/crosapi/mojom",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [

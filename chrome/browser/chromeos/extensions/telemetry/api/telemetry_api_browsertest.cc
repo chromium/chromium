@@ -6,10 +6,10 @@
 #include <string>
 #include <utility>
 
-#include "chrome/browser/ash/telemetry_extension/fake_probe_service.h"
-#include "chrome/browser/ash/telemetry_extension/fake_probe_service_factory.h"
 #include "chrome/browser/ash/telemetry_extension/probe_service_ash.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/base_telemetry_extension_browser_test.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service_factory.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,19 +30,19 @@ class TelemetryExtensionTelemetryApiBrowserTest
 
  protected:
   void SetServiceForTesting(
-      std::unique_ptr<ash::FakeProbeService> fake_diagnostics_service_impl) {
+      std::unique_ptr<FakeProbeService> fake_probe_service_impl) {
     fake_probe_factory_.SetCreateInstanceResponse(
-        std::move(fake_diagnostics_service_impl));
+        std::move(fake_probe_service_impl));
   }
 
-  ash::FakeProbeServiceFactory fake_probe_factory_;
+  FakeProbeServiceFactory fake_probe_factory_;
 };
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetBatteryInfo_Error) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kBattery});
 
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(battery_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kBattery});
@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetCpuInfo_Error) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kCpu});
 
@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           crosapi::mojom::ProbeCpuResult::NewCpuInfo(std::move(cpu_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kCpu});
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetMemoryInfo_Error) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kMemory});
 
@@ -336,7 +336,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(memory_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kMemory});
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Error) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
 
     SetServiceForTesting(std::move(fake_service_impl));
   }
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Success) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
 
     auto oem_data = crosapi::mojom::ProbeOemData::New();
     oem_data->oem_data = "123456789";
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOsVersionInfo_Error) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kSystem});
 
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(system_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kSystem});
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kCachedVpdData});
 
@@ -518,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
           crosapi::mojom::ProbeCachedVpdResult::NewVpdInfo(std::move(vpd_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kCachedVpdData});
@@ -544,7 +544,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetStatefulPartitionInfo_Error) {
   // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kStatefulPartition});
 
@@ -582,7 +582,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
               std::move(stateful_part_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kStatefulPartition});
@@ -681,7 +681,7 @@ IN_PROC_BROWSER_TEST_F(
               std::move(battery_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kBattery});
@@ -721,9 +721,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetOemDataWithoutSerialNumberPermission) {
-  // Configure FakeDiagnosticsService.
+  // Configure FakeProbeService.
   {
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     SetServiceForTesting(std::move(fake_service_impl));
   }
 
@@ -759,7 +759,7 @@ IN_PROC_BROWSER_TEST_F(
           crosapi::mojom::ProbeCachedVpdResult::NewVpdInfo(std::move(vpd_info));
     }
 
-    auto fake_service_impl = std::make_unique<ash::FakeProbeService>();
+    auto fake_service_impl = std::make_unique<FakeProbeService>();
     fake_service_impl->SetProbeTelemetryInfoResponse(std::move(telemetry_info));
     fake_service_impl->SetExpectedLastRequestedCategories(
         {crosapi::mojom::ProbeCategoryEnum::kCachedVpdData});

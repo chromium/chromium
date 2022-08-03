@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/telemetry_extension/fake_probe_service.h"
+#include "chrome/browser/chromeos/extensions/telemetry/api/fake_probe_service.h"
 
 #include <memory>
 #include <utility>
@@ -15,7 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
+namespace chromeos {
 
 FakeProbeService::FakeProbeService() : receiver_(this) {}
 FakeProbeService::~FakeProbeService() {
@@ -60,4 +60,4 @@ void FakeProbeService::SetOemDataResponse(
   oem_data_ = std::move(oem_data);
 }
 
-}  // namespace ash
+}  // namespace chromeos
