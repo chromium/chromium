@@ -2304,7 +2304,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3151539355209957474">Ora de începere</translation>
 <translation id="3151562827395986343">Șterge istoricul, cookie-urile, memoria cache și altele</translation>
 <translation id="3151786313568798007">Orientare</translation>
-<translation id="3152356229013609796">Afișează notificările telefonului, respinge-le și răspunde la ele</translation>
+<translation id="3152356229013609796">Afișează notificările telefonului, le respinge și răspunde la ele</translation>
 <translation id="3157387275655328056">Adaugă în lista de lectură</translation>
 <translation id="3157931365184549694">Restabilește</translation>
 <translation id="3158033540161634471">Adaugă amprenta</translation>
@@ -6366,7 +6366,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7228523857728654909">Blocarea ecranului și conectarea</translation>
 <translation id="7230222852462421043">&amp;Restabilește fereastra</translation>
 <translation id="7230787553283372882">Personalizează dimensiunea textului</translation>
-<translation id="7231260028442989757">Afișează notificările telefonului, respinge-le și răspunde la ele</translation>
+<translation id="7231260028442989757">Afișează notificările telefonului, le respinge și răspunde la ele</translation>
 <translation id="7232750842195536390">Redenumirea nu a reușit</translation>
 <translation id="723343421145275488">Caută imagini cu <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
 <translation id="7234010996000898150">Se anulează restabilirea Linux</translation>

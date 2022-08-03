@@ -3730,7 +3730,7 @@
 <translation id="4562155214028662640">افزودن اثر انگشت</translation>
 <translation id="4563210852471260509">زبان ورودی اولیه چینی است</translation>
 <translation id="4563880231729913339">انگشت ۳</translation>
-<translation id="4564245002465020751">درحال تکمیل راه‌اندازی تلفن</translation>
+<translation id="4564245002465020751">راه‌اندازی را در تلفن کامل کنید</translation>
 <translation id="4565377596337484307">عدم نمایش گذرواژه</translation>
 <translation id="4565917129334815774">ذخیره گزارش‌های سیستم</translation>
 <translation id="4566170377336116390">‏اگر بعداز ثبت‌نام تصمیمتان عوض شد، باید دستگاه را بازنشانی کارخانه‌ای (Powerwash) کنید.</translation>
@@ -3996,7 +3996,7 @@
 <translation id="4837128290434901661">‏به «جستجوی Google» تغییر می‌دهید؟</translation>
 <translation id="4837926214103741331">مجاز به استفاده از این دستگاه نیستید. لطفاً برای دریافت اجازه ورود به سیستم با مالک دستگاه تماس بگیرید.</translation>
 <translation id="4837952862063191349">برای باز کردن قفل و بازیابی داده‌های محلی‌تان، لطفاً گذرواژه <ph name="DEVICE_TYPE" /> قدیمی‌تان را وارد کنید.</translation>
-<translation id="4838170306476614339">مشاهده عکس‌ها، رسانه، و اعلان‌های تلفن</translation>
+<translation id="4838170306476614339">مشاهده کردن عکس‌ها، رسانه، و اعلان‌های تلفن شما</translation>
 <translation id="4838836835474292213">دسترسی برای خواندن محتوای بریده‌دان مجاز شد</translation>
 <translation id="4838907349371614303">گذرواژه به‌روزرسانی شد</translation>
 <translation id="4839303808932127586">ذ&amp;خیره فایل ویدیوی به‌عنوان...</translation>
@@ -4112,7 +4112,7 @@
 <translation id="4941074198479265146">‏سایت‌ها معمولاً برای ارائه ویژگی‌های مربوط به ایجاد و ویرایش موسیقی به دستگاه‌های MIDI متصل می‌شوند</translation>
 <translation id="4941246025622441835">هنگام ثبت‌نام دستگاه برای مدیریت سازمانی، از این درخواست دستگاه استفاده کنید:</translation>
 <translation id="4941627891654116707">اندازه قلم</translation>
-<translation id="4941963255146903244">مشاهده عکس‌ها، رسانه، و برنامه‌های تلفن</translation>
+<translation id="4941963255146903244">مشاهده کردن عکس‌ها، رسانه، و برنامه‌های تلفن شما</translation>
 <translation id="494286511941020793">راهنمای پیکربندی پراکسی</translation>
 <translation id="4943368462779413526">فوتبال</translation>
 <translation id="4943691134276646401">«<ph name="CHROME_EXTENSION_NAME" />» می‌خواهد به یک درگاه سریالی متصل شود</translation>
@@ -5619,7 +5619,7 @@
 <translation id="6466258437571594570">سایت‌ها مسدود شده‌اند تا هنگام درخواست برای ارسال اعلان مزاحم شما نشوند</translation>
 <translation id="6466988389784393586">&amp;باز کردن همه نشانک‌ها</translation>
 <translation id="6467304607960172345">بهینه‌سازی ویدیوهای تمام‌صفحه</translation>
-<translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> شما سپس می‌تواند:</translation>
+<translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> شما سپس می‌تواند این کارها را بکند:</translation>
 <translation id="6468485451923838994">قلم‌ها</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> فایل</translation>
 <translation id="6469557521904094793">روشن کردن شبکه تلفن همراه</translation>
@@ -5978,7 +5978,7 @@
 <translation id="6815376457351236663">درهرصورت باز شود</translation>
 <translation id="6817174620439930047">‏اگر سایتی می‌خواهد از پیام‌های انحصاری سیستم برای دسترسی به دستگاه‌های MIDI استفاده کند سؤال شود (توصیه می‌شود)</translation>
 <translation id="6818198425579322765">زبان صفحه موردنظر برای ترجمه</translation>
-<translation id="6818547713623251698">مشاهده عکس‌ها، رسانه، اعلان‌ها، و برنامه‌های تلفن</translation>
+<translation id="6818547713623251698">مشاهده کردن عکس‌ها، رسانه، اعلان‌ها، و برنامه‌های تلفن شما</translation>
 <translation id="6818802132960437751">مجهز به محافظ دربرابر ویروس</translation>
 <translation id="6818920801736417483">گذرواژه‌ها ذخیره شود؟</translation>
 <translation id="6823174134746916417">کلیک با یک ضربه روی صفحه لمسی</translation>
@@ -6887,7 +6887,7 @@
 <translation id="7721258531237831532">سازمانتان به نمایه نیاز دارد</translation>
 <translation id="7722040605881499779">فضای لازم برای به‌روزرسانی: <ph name="NECESSARY_SPACE" /></translation>
 <translation id="7724603315864178912">برش</translation>
-<translation id="7726391492136714301">مشاهده اعلان‌ها و برنامه‌های تلفن</translation>
+<translation id="7726391492136714301">مشاهده کردن اعلان‌ها و برنامه‌های تلفن شما</translation>
 <translation id="7728465250249629478">تغییر زبان دستگاه</translation>
 <translation id="7728570244950051353">صفحه قفل از حالت خواب</translation>
 <translation id="7728668285692163452">تغییر کانال بعداً اعمال خواهد شد</translation>
@@ -7219,7 +7219,7 @@
 <translation id="8037357227543935929">درخواست (پیش‌فرض)</translation>
 <translation id="803771048473350947">فایل</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
-<translation id="8041267120753677077">جاری‌سازی برنامه‌های تلفن</translation>
+<translation id="8041267120753677077">جاری‌سازی برنامه‌های تلفن شما</translation>
 <translation id="8042142357103597104">ماتی نوشتار</translation>
 <translation id="8042331986490021244">‏گذرواژه‌هایتان قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌شوند</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> پاسخ نمی‌دهد</translation>

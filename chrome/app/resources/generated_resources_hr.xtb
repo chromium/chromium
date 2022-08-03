@@ -5276,7 +5276,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6129953537138746214">Razmak</translation>
 <translation id="6130692320435119637">Dodaj Wi-Fi</translation>
 <translation id="6130887916931372608">Tipka tipkovnice</translation>
-<translation id="6135823405800500595">Provjerite je li telefon u blizini, je li otključan i jesu li Bluetooth i Wi-Fi uključeni.</translation>
+<translation id="6135823405800500595">Telefon vam treba biti blizu, otključan, a Bluetooth i Wi-Fi uključeni.</translation>
 <translation id="6136114942382973861">Zatvori traku preuzimanja</translation>
 <translation id="6136287496450963112">Vaš sigurnosni ključ nije zaštićen PIN-om. Za upravljanje otiscima prstiju najprije izradite PIN.</translation>
 <translation id="6138680304137685902">X9.62 ECDSA potpis uz SHA-384</translation>
@@ -5606,7 +5606,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6466258437571594570">Web-lokacije vas ne mogu ometati postavljanjem upita o slanju obavijesti</translation>
 <translation id="6466988389784393586">&amp;Otvaranje svih oznaka</translation>
 <translation id="6467304607960172345">Optimiziraj videozapise na cijelom zaslonu</translation>
-<translation id="6467377768028664108">Uređaj <ph name="DEVICE_TYPE" /> zatim može učiniti sljedeće:</translation>
+<translation id="6467377768028664108">Time uređaju <ph name="DEVICE_TYPE" /> omogućujete sljedeće:</translation>
 <translation id="6468485451923838994">Fontovi</translation>
 <translation id="6468773105221177474">Datoteka: <ph name="FILE_COUNT" /></translation>
 <translation id="6469557521904094793">Uključivanje mobilne mreže</translation>

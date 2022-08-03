@@ -5944,7 +5944,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política não for definida, a ação padrão será a de suspensão.
 
       Observação: se a ação for a de suspender, o <ph name="PRODUCT_OS_NAME" /> poderá ser configurado separadamente para bloquear ou não a tela antes da suspensão.</translation>
-<translation id="7477149584454865826">Sinalização booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora.</translation>
+<translation id="7477149584454865826">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora.</translation>
 <translation id="7477231245051133709">Ativar o recurso de acessibilidade de áudio mono</translation>
 <translation id="7477526482439041787">Configura uma lista de regras para prevenir vazamentos de dados no <ph name="PRODUCT_OS_NAME" />.
       Os vazamentos podem acontecer ao copiar e colar dados, transferir arquivos, imprimir, compartilhar ou capturar a tela etc.
@@ -6532,7 +6532,7 @@ Se a política não for definida, a configuração ficará ativada, mas o usuár
 <translation id="8080200590486938727">Desativar o localizador de plug-ins</translation>
 <translation id="8089200718228084417">Ativar a impressão com o protocolo Privet suspenso</translation>
 <translation id="8089236320223488328">Usar o comportamento padrão ao determinar se sites não seguros podem fazer solicitações para qualquer endpoint da rede</translation>
-<translation id="8091982561085048989">Sinalização booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
+<translation id="8091982561085048989">Flag booleana indicando se o IPP Everywhere deve ser usado ou não para configurar a impressora. Essa sinalização é compatível com o <ph name="PRODUCT_OS_NAME" /> 76 ou versão mais recente.</translation>
 <translation id="8099880303030573137">Intervalo de inatividade no funcionamento com energia da bateria</translation>
 <translation id="8101381354936029836">Grupo atômico de políticas:</translation>
 <translation id="8102913158860568230">Configuração padrão mediastream</translation>
