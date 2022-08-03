@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/free_deleter.h"
 #include "base/notreached.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -560,12 +561,19 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(HANDLE printer,
     buffer_size = DocumentProperties(nullptr, printer, device_name_ptr, nullptr,
                                      nullptr, 0);
   }
-  if (buffer_size < static_cast<int>(sizeof(DEVMODE)))
+  // TODO(thestig): Consider limiting `buffer_size` to avoid buggy printer
+  // drivers that return excessively large values.
+  if (buffer_size < static_cast<LONG>(sizeof(DEVMODE)))
     return nullptr;
 
   // Some drivers request buffers with size smaller than dmSize + dmDriverExtra.
-  // crbug.com/421402
-  buffer_size *= 2;
+  // Examples: crbug.com/421402, crbug.com/780016
+  // Pad the `out` buffer so there is plenty of space. Calculate the size using
+  // `base::CheckedNumeric` to avoid a potential integer overflow.
+  base::CheckedNumeric<LONG> safe_buffer_size = buffer_size;
+  safe_buffer_size *= 2;
+  safe_buffer_size += 8192;
+  buffer_size = safe_buffer_size.ValueOrDie();
 
   std::unique_ptr<DEVMODE, base::FreeDeleter> out(
       reinterpret_cast<DEVMODE*>(calloc(buffer_size, 1)));
@@ -600,6 +608,8 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> CreateDevMode(HANDLE printer,
   // recorded in crash dumps.
   // See https://crbug.com/780016 and https://crbug.com/806016 for example
   // crashes.
+  // TODO(crbug.com/780016): Remove this debug code if the CHECK_GE() below
+  // stops failing.
   base::debug::Alias(&size);
   base::debug::Alias(&extra_size);
   base::debug::Alias(&buffer_size);
