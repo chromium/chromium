@@ -76,8 +76,7 @@ ScreenTimeController::ScreenTimeController(content::BrowserContext* context)
       clock_(base::DefaultClock::GetInstance()),
       next_state_timer_(std::make_unique<base::OneShotTimer>()),
       usage_time_limit_warning_timer_(std::make_unique<base::OneShotTimer>()),
-      last_policy_(
-          pref_service_->GetDictionary(prefs::kUsageTimeLimit)->Clone()),
+      last_policy_(pref_service_->GetValueDict(prefs::kUsageTimeLimit).Clone()),
       time_limit_notifier_(context) {
   session_manager::SessionManager::Get()->AddObserver(this);
   UsageTimeStateNotifier::GetInstance()->AddObserver(this);
@@ -147,14 +146,14 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
   absl::optional<usage_time_limit::State> last_state = GetLastStateFromPref();
-  const base::Value* time_limit =
-      pref_service_->GetDictionary(prefs::kUsageTimeLimit);
-  const base::Value* local_override =
-      pref_service_->GetDictionary(prefs::kTimeLimitLocalOverride);
+  const base::Value::Dict& time_limit =
+      pref_service_->GetValueDict(prefs::kUsageTimeLimit);
+  const base::Value::Dict& local_override =
+      pref_service_->GetValueDict(prefs::kTimeLimitLocalOverride);
 
   // TODO(agawronska): Usage timestamp should be passed instead of second |now|.
   usage_time_limit::State state = usage_time_limit::GetState(
-      *time_limit, local_override, GetScreenTimeDuration(), now, now,
+      time_limit, &local_override, GetScreenTimeDuration(), now, now,
       &time_zone, last_state);
   SaveCurrentStateToPref(state);
 
@@ -182,9 +181,8 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
   }
 
   // Trigger policy update notifications.
-  DCHECK(last_policy_.is_dict());
   auto updated_policy_types =
-      usage_time_limit::UpdatedPolicyTypes(last_policy_, *time_limit);
+      usage_time_limit::UpdatedPolicyTypes(last_policy_, time_limit);
   for (const auto& policy_type : updated_policy_types) {
     absl::optional<base::Time> lock_time;
     if (policy_type == usage_time_limit::PolicyType::kOverride)
@@ -196,14 +194,14 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
     time_limit_notifier_.ShowPolicyUpdateNotification(notification_type.value(),
                                                       lock_time);
   }
-  last_policy_ = time_limit->Clone();
+  last_policy_ = time_limit.Clone();
 
   // TODO(agawronska): We are creating UsageTimeLimitProcessor second time in
   // this method. Could expected reset time be returned as a part of the state?
   base::Time next_get_state_time =
       std::min(state.next_state_change_time,
                usage_time_limit::GetExpectedResetTime(
-                   *time_limit, local_override, now, &time_zone));
+                   time_limit, &local_override, now, &time_zone));
   if (!next_get_state_time.is_null()) {
     VLOG(1) << "Scheduling state change timer in " << next_get_state_time - now;
     next_state_timer_->Start(
@@ -249,8 +247,8 @@ void ScreenTimeController::OnAccessCodeValidation(
       absl::nullopt);
   // Replace previous local override stored in pref, because PAC can only be
   // entered if previous override is not active anymore.
-  pref_service_->Set(prefs::kTimeLimitLocalOverride,
-                     local_override.ToDictionary());
+  pref_service_->SetDict(prefs::kTimeLimitLocalOverride,
+                         local_override.ToDictionary());
   pref_service_->CommitPendingWrite();
 
   CheckTimeLimit("OnAccessCodeValidation");
@@ -362,21 +360,21 @@ void ScreenTimeController::SaveCurrentStateToPref(
 
 absl::optional<usage_time_limit::State>
 ScreenTimeController::GetLastStateFromPref() {
-  const base::Value* last_state =
-      pref_service_->GetDictionary(prefs::kScreenTimeLastState);
+  const base::Value::Dict& last_state =
+      pref_service_->GetValueDict(prefs::kScreenTimeLastState);
   usage_time_limit::State result;
-  if (last_state->DictEmpty())
+  if (last_state.empty())
     return absl::nullopt;
 
   // Verify is_locked from the pref is a boolean value.
-  const base::Value* is_locked = last_state->FindKey(kScreenStateLocked);
+  const base::Value* is_locked = last_state.Find(kScreenStateLocked);
   if (!is_locked || !is_locked->is_bool())
     return absl::nullopt;
   result.is_locked = is_locked->GetBool();
 
   // Verify active policy type is a value of usage_time_limit::PolicyType.
   const base::Value* active_policy =
-      last_state->FindKey(kScreenStateCurrentPolicyType);
+      last_state.Find(kScreenStateCurrentPolicyType);
   // TODO(crbug.com/823536): Add kCount in usage_time_limit::PolicyType
   // instead of checking kUsageLimit here.
   if (!active_policy || !active_policy->is_int() ||
@@ -390,21 +388,21 @@ ScreenTimeController::GetLastStateFromPref() {
 
   // Verify time_usage_limit_enabled from the pref is a boolean value.
   const base::Value* time_usage_limit_enabled =
-      last_state->FindKey(kScreenStateTimeUsageLimitEnabled);
+      last_state.Find(kScreenStateTimeUsageLimitEnabled);
   if (!time_usage_limit_enabled || !time_usage_limit_enabled->is_bool())
     return absl::nullopt;
   result.is_time_usage_limit_enabled = time_usage_limit_enabled->GetBool();
 
   // Verify remaining_usage from the pref is a int value.
   const base::Value* remaining_usage =
-      last_state->FindKey(kScreenStateRemainingUsage);
+      last_state.Find(kScreenStateRemainingUsage);
   if (!remaining_usage || !remaining_usage->is_int())
     return absl::nullopt;
   result.remaining_usage = base::Milliseconds(remaining_usage->GetInt());
 
   // Verify time_usage_limit_started from the pref is a double value.
   const base::Value* time_usage_limit_started =
-      last_state->FindKey(kScreenStateUsageLimitStarted);
+      last_state.Find(kScreenStateUsageLimitStarted);
   if (!time_usage_limit_started || !time_usage_limit_started->is_double())
     return absl::nullopt;
   result.time_usage_limit_started =
@@ -412,7 +410,7 @@ ScreenTimeController::GetLastStateFromPref() {
 
   // Verify next_state_change_time from the pref is a double value.
   const base::Value* next_state_change_time =
-      last_state->FindKey(kScreenStateNextStateChangeTime);
+      last_state.Find(kScreenStateNextStateChangeTime);
   if (!next_state_change_time || !next_state_change_time->is_double())
     return absl::nullopt;
   result.next_state_change_time =
@@ -420,7 +418,7 @@ ScreenTimeController::GetLastStateFromPref() {
 
   // Verify next policy type is a value of usage_time_limit::PolicyType.
   const base::Value* next_active_policy =
-      last_state->FindKey(kScreenStateNextPolicyType);
+      last_state.Find(kScreenStateNextPolicyType);
   if (!next_active_policy || !next_active_policy->is_int() ||
       next_active_policy->GetInt() < 0 ||
       next_active_policy->GetInt() >
@@ -432,7 +430,7 @@ ScreenTimeController::GetLastStateFromPref() {
 
   // Verify next_unlock_time from the pref is a double value.
   const base::Value* next_unlock_time =
-      last_state->FindKey(kScreenStateNextUnlockTime);
+      last_state.Find(kScreenStateNextUnlockTime);
   if (!next_unlock_time || !next_unlock_time->is_double())
     return absl::nullopt;
   result.next_unlock_time =
@@ -444,13 +442,13 @@ void ScreenTimeController::UsageTimeLimitWarning() {
   base::Time now = clock_->Now();
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
-  const base::Value* time_limit =
-      pref_service_->GetDictionary(prefs::kUsageTimeLimit);
-  const base::Value* local_override =
-      pref_service_->GetDictionary(prefs::kTimeLimitLocalOverride);
+  const base::Value::Dict& time_limit =
+      pref_service_->GetValueDict(prefs::kUsageTimeLimit);
+  const base::Value::Dict& local_override =
+      pref_service_->GetValueDict(prefs::kTimeLimitLocalOverride);
 
   absl::optional<base::TimeDelta> remaining_usage =
-      usage_time_limit::GetRemainingTimeUsage(*time_limit, local_override, now,
+      usage_time_limit::GetRemainingTimeUsage(time_limit, &local_override, now,
                                               GetScreenTimeDuration(),
                                               &time_zone);
 

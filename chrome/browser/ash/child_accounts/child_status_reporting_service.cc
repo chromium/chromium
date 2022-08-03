@@ -65,10 +65,10 @@ ChildStatusReportingService::~ChildStatusReportingService() = default;
 
 void ChildStatusReportingService::CreateStatusUploaderIfNeeded(
     policy::CloudPolicyClient* client) {
-  const base::Value* time_limit =
-      pref_change_registrar_->prefs()->GetDictionary(prefs::kUsageTimeLimit);
+  const base::Value::Dict& time_limit =
+      pref_change_registrar_->prefs()->GetValueDict(prefs::kUsageTimeLimit);
   const base::TimeDelta new_day_reset_time =
-      usage_time_limit::GetTimeUsageLimitResetTime(*time_limit);
+      usage_time_limit::GetTimeUsageLimitResetTime(time_limit);
 
   // Day reset time did not change, there is no need to re-create StatusUploader
   // if it already exists.

@@ -55,39 +55,35 @@ base::Value CreateTimeUsage(base::TimeDelta usage_quota,
 
 // Creates dictionary with a minimalist Time Limit policy, containing only the
 // time usage limit reset time.
-base::Value CreateTimeLimitPolicy(base::TimeDelta reset_time);
+base::Value::Dict CreateTimeLimitPolicy(base::TimeDelta reset_time);
 
 // Adds a time usage limit dictionary to the provided Time Limit policy.
-// |policy| needs to be a dictionary.
-void AddTimeUsageLimit(base::Value* policy,
+void AddTimeUsageLimit(base::Value::Dict* policy,
                        std::string day,
                        base::TimeDelta quota,
                        base::Time last_updated);
 
 // Adds a time window limit dictionary to the provided Time Limit policy.
-// |policy| needs to be a dictionary.
-void AddTimeWindowLimit(base::Value* policy,
+void AddTimeWindowLimit(base::Value::Dict* policy,
                         const std::string& day,
                         base::TimeDelta start_time,
                         base::TimeDelta end_time,
                         base::Time last_updated);
 
 // Adds a time limit override dictionary to the provided Time Limit policy.
-// |policy| needs to be a dictionary.
-void AddOverride(base::Value* policy,
+void AddOverride(base::Value::Dict* policy,
                  usage_time_limit::TimeLimitOverride::Action action,
                  base::Time created_at);
 
 // Adds a time limit override with duration dictionary to the provided
-// Time Limit policy. |policy| needs to be a dictionary.
-void AddOverrideWithDuration(base::Value* policy,
+// Time Limit policy.
+void AddOverrideWithDuration(base::Value::Dict* policy,
                              usage_time_limit::TimeLimitOverride::Action action,
                              base::Time created_at,
                              base::TimeDelta duration);
 
-// Converts the Time Limit policy to a string. |policy| needs to be a
-// dictionary.
-std::string PolicyToString(const base::Value& policy);
+// Converts the Time Limit policy to a string.
+std::string PolicyToString(const base::Value::Dict& policy);
 
 }  // namespace time_limit_test_utils
 }  // namespace ash

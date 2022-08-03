@@ -133,11 +133,8 @@ absl::optional<AppId> AppIdFromAppInfoDict(const base::Value& dict) {
   return AppIdFromDict(*app_info);
 }
 
-absl::optional<AppLimit> AppLimitFromDict(const base::Value& dict) {
-  if (!dict.is_dict())
-    return absl::nullopt;
-
-  const std::string* restriction_string = dict.FindStringKey(kRestrictionEnum);
+absl::optional<AppLimit> AppLimitFromDict(const base::Value::Dict& dict) {
+  const std::string* restriction_string = dict.FindString(kRestrictionEnum);
   if (!restriction_string || restriction_string->empty()) {
     DLOG(ERROR) << "Invalid restriction.";
     return absl::nullopt;
@@ -145,7 +142,7 @@ absl::optional<AppLimit> AppLimitFromDict(const base::Value& dict) {
   const AppRestriction restriction =
       PolicyStringToAppRestriction(*restriction_string);
 
-  absl::optional<int> daily_limit_mins = dict.FindIntKey(kDailyLimitInt);
+  absl::optional<int> daily_limit_mins = dict.FindInt(kDailyLimitInt);
   if ((restriction == AppRestriction::kTimeLimit && !daily_limit_mins) ||
       (restriction == AppRestriction::kBlocked && daily_limit_mins)) {
     DLOG(ERROR) << "Invalid restriction.";
@@ -162,8 +159,7 @@ absl::optional<AppLimit> AppLimitFromDict(const base::Value& dict) {
     }
   }
 
-  const std::string* last_updated_string =
-      dict.FindStringKey(kLastUpdatedString);
+  const std::string* last_updated_string = dict.FindString(kLastUpdatedString);
   int64_t last_updated_millis;
   if (!last_updated_string || last_updated_string->empty() ||
       !base::StringToInt64(*last_updated_string, &last_updated_millis)) {
@@ -190,11 +186,9 @@ base::Value AppLimitToDict(const AppLimit& limit) {
   return value;
 }
 
-absl::optional<base::TimeDelta> ResetTimeFromDict(const base::Value& dict) {
-  if (!dict.is_dict())
-    return absl::nullopt;
-
-  const base::Value* reset_dict = dict.FindKey(kResetAtDict);
+absl::optional<base::TimeDelta> ResetTimeFromDict(
+    const base::Value::Dict& dict) {
+  const base::Value* reset_dict = dict.Find(kResetAtDict);
   if (!reset_dict || !reset_dict->is_dict()) {
     DLOG(ERROR) << "Invalid reset time dictionary.";
     return absl::nullopt;
@@ -224,23 +218,21 @@ base::Value ResetTimeToDict(int hour, int minutes) {
   return value;
 }
 
-absl::optional<bool> ActivityReportingEnabledFromDict(const base::Value& dict) {
-  if (!dict.is_dict())
-    return absl::nullopt;
-  return dict.FindBoolPath(kActivityReportingEnabled);
+absl::optional<bool> ActivityReportingEnabledFromDict(
+    const base::Value::Dict& dict) {
+  return dict.FindBool(kActivityReportingEnabled);
 }
 
-std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value& dict) {
+std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value::Dict& dict) {
   std::map<AppId, AppLimit> app_limits;
 
-  const base::Value* limits_array = dict.FindListKey(kAppLimitsArray);
+  const base::Value::List* limits_array = dict.FindList(kAppLimitsArray);
   if (!limits_array) {
     DLOG(ERROR) << "Invalid app limits list.";
     return app_limits;
   }
 
-  base::Value::ConstListView list_view = limits_array->GetListDeprecated();
-  for (const base::Value& dict : list_view) {
+  for (const base::Value& dict : *limits_array) {
     if (!dict.is_dict()) {
       DLOG(ERROR) << "Invalid app limits entry. ";
       continue;
@@ -252,7 +244,7 @@ std::map<AppId, AppLimit> AppLimitsFromDict(const base::Value& dict) {
       continue;
     }
 
-    absl::optional<AppLimit> app_limit = AppLimitFromDict(dict);
+    absl::optional<AppLimit> app_limit = AppLimitFromDict(dict.GetDict());
     if (!app_limit) {
       DLOG(ERROR) << "Invalid app limit.";
       continue;

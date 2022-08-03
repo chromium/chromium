@@ -319,22 +319,18 @@ void AppTimeController::RegisterProfilePrefObservers(
 void AppTimeController::TimeLimitsPolicyUpdated(const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsPolicy);
 
-  const base::Value* policy =
-      pref_registrar_->prefs()->GetDictionary(prefs::kPerAppTimeLimitsPolicy);
+  const base::Value::Dict& policy =
+      pref_registrar_->prefs()->GetValueDict(prefs::kPerAppTimeLimitsPolicy);
 
-  if (!policy || !policy->is_dict()) {
-    LOG(WARNING) << "Invalid PerAppTimeLimits policy.";
-    return;
-  }
-  std::map<AppId, AppLimit> app_limits = policy::AppLimitsFromDict(*policy);
+  std::map<AppId, AppLimit> app_limits = policy::AppLimitsFromDict(policy);
 
   bool updated = app_registry_->UpdateAppLimits(app_limits);
 
   app_registry_->SetReportingEnabled(
-      policy::ActivityReportingEnabledFromDict(*policy));
+      policy::ActivityReportingEnabledFromDict(policy));
 
   absl::optional<base::TimeDelta> new_reset_time =
-      policy::ResetTimeFromDict(*policy);
+      policy::ResetTimeFromDict(policy);
   // TODO(agawronska): Propagate the information about reset time change.
   if (new_reset_time && *new_reset_time != limits_reset_time_)
     limits_reset_time_ = *new_reset_time;
@@ -417,16 +413,11 @@ void AppTimeController::OnAppInstalled(const AppId& app_id) {
     LOG(WARNING) << " Invalid PerAppTimeLimitAllowlist policy";
   }
 
-  const base::Value* policy =
-      pref_registrar_->prefs()->GetDictionary(prefs::kPerAppTimeLimitsPolicy);
-
-  if (!policy || !policy->is_dict()) {
-    LOG(WARNING) << "Invalid PerAppTimeLimits policy.";
-    return;
-  }
+  const base::Value::Dict& policy =
+      pref_registrar_->prefs()->GetValueDict(prefs::kPerAppTimeLimitsPolicy);
 
   // Update the application's time limit.
-  const std::map<AppId, AppLimit> limits = policy::AppLimitsFromDict(*policy);
+  const std::map<AppId, AppLimit> limits = policy::AppLimitsFromDict(policy);
   // Update the limit for newly installed app, if it exists.
   auto result = limits.find(app_id);
   if (result == limits.end())

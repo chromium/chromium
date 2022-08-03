@@ -8,11 +8,8 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace ash {
 namespace usage_time_limit {
@@ -36,7 +33,7 @@ class TimeLimitOverride {
   // Factory method. Creates TimeLimitOverride from a |dict|. Returns nullopt if
   // |dict| could not be parsed.
   static absl::optional<TimeLimitOverride> FromDictionary(
-      const base::Value* dict);
+      const base::Value::Dict* dict);
 
   // Factory method. Creates TimeLimitOverride from the most recent override in
   // the list of overrides passed in |list|. Returns nullopt if |list| could not
@@ -72,7 +69,7 @@ class TimeLimitOverride {
   bool IsLock() const;
 
   // Serializes TimeLimitOverride to a dictionary.
-  base::Value ToDictionary() const;
+  base::Value::Dict ToDictionary() const;
 
  private:
   Action action_;

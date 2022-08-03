@@ -125,7 +125,7 @@ class FamilyUserParentalControlMetricsTest : public testing::Test {
 TEST_F(FamilyUserParentalControlMetricsTest, BedAndScreenTimeLimitMetrics) {
   ASSERT_TRUE(ChildUserServiceFactory::GetForBrowserContext(profile_.get()));
 
-  base::Value policy_content =
+  base::Value::Dict policy_content =
       utils::CreateTimeLimitPolicy(utils::CreateTime(6, 0));
 
   // Adds bedtime policy:
@@ -140,7 +140,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, BedAndScreenTimeLimitMetrics) {
       /*quota*/ kOneHour,
       /*last_updated=*/base::Time::Now());
 
-  GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
+  GetPrefs()->SetDict(prefs::kUsageTimeLimit, policy_content.Clone());
 
   histogram_tester_.ExpectBucketCount(
       ChildUserService::GetTimeLimitPolicyTypesHistogramNameForTest(),
@@ -180,7 +180,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
   ASSERT_TRUE(ChildUserServiceFactory::GetForBrowserContext(profile_.get()));
 
   // Adds override time policy created at 1 day ago.
-  base::Value policy_content =
+  base::Value::Dict policy_content =
       utils::CreateTimeLimitPolicy(utils::CreateTime(6, 0));
 
   utils::AddOverrideWithDuration(
@@ -188,7 +188,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
       /*created_at=*/base::Time::Now() - kOneDay,
       /*duration=*/base::Hours(2));
-  GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
+  GetPrefs()->SetDict(prefs::kUsageTimeLimit, policy_content.Clone());
 
   // The override time limit policy would not get reported since the difference
   // between reported and created time are greater than 1 day.
@@ -209,7 +209,7 @@ TEST_F(FamilyUserParentalControlMetricsTest, OverrideTimeLimitMetrics) {
       /*action=*/usage_time_limit::TimeLimitOverride::Action::kLock,
       /*created_at=*/base::Time::Now() - base::Hours(23),
       /*duration=*/base::Hours(2));
-  GetPrefs()->Set(prefs::kUsageTimeLimit, policy_content);
+  GetPrefs()->SetDict(prefs::kUsageTimeLimit, policy_content.Clone());
 
   // The override time limit policy would get reported since the created
   // time and reported time are within 1 day.

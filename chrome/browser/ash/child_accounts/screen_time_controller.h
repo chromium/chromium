@@ -170,7 +170,7 @@ class ScreenTimeController
 
   // Contains the last time limit policy processed by this class. Used to
   // generate notifications when the policy changes.
-  base::Value last_policy_{base::Value::Type::DICTIONARY};
+  base::Value::Dict last_policy_;
 
   // Used to set up timers when a time limit is approaching.
   TimeLimitNotifier time_limit_notifier_;

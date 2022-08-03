@@ -39,7 +39,8 @@ TEST_P(TimeLimitConsistencyTest, OutputMatchesGolden) {
   absl::optional<usage_time_limit::State> previous_state =
       GenerateUnlockUsageLimitOverrideStateFromInput(golden_case.input());
 
-  base::Value policy = ConvertGoldenInputToProcessorInput(golden_case.input());
+  base::Value::Dict policy =
+      ConvertGoldenInputToProcessorInput(golden_case.input());
   usage_time_limit::State state = usage_time_limit::GetState(
       policy, /* local_override */ nullptr,
       base::Milliseconds(current_state.usage_millis()), usage_timestamp,
