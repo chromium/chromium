@@ -4741,6 +4741,11 @@ const char kBruschettaName[] = "Enable the third party VMs feature";
 const char kBruschettaDescription[] =
     "Enables UI support for third party/generic VMs";
 
+const char kCameraAppDocScanDlcName[] = "Camera App Doc Scan DLC";
+const char kCameraAppDocScanDlcDescription[] =
+    "Enables this flag to allow downloading document scanning feature via DLC "
+    "and use it in the camera app";
+
 const char kCompactBubbleLauncherName[] = "Make bubble launcher more compact";
 
 const char kCompactBubbleLauncherDescription[] =

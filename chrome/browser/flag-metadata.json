@@ -764,6 +764,11 @@
     "expiry_milestone": 113
   },
   {
+    "name": "camera-app-doc-scan-dlc",
+    "owners": [ "wtlee" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "canvas-2d-layers",
     "owners": [ "alisalin", "fserb", "juanmihd", "yiyix" ],
     "expiry_milestone": 100

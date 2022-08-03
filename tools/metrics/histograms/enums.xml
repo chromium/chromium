@@ -57454,6 +57454,7 @@ from previous Chrome versions.
   <int value="-932164609"
       label="ProcessSharingWithDefaultSiteInstances:enabled"/>
   <int value="-931494909" label="DefaultLinkCapturingInBrowser:disabled"/>
+  <int value="-930478115" label="CameraAppDocScanDlc:enabled"/>
   <int value="-929944930"
       label="AutofillRationalizeRepeatedServerPredictions:disabled"/>
   <int value="-928138978" label="IPH_DemoMode:disabled"/>
@@ -61590,6 +61591,7 @@ from previous Chrome versions.
       label="AutofillSuggestVirtualCardsOnIncompleteForm:disabled"/>
   <int value="1742398600"
       label="OmniboxUIExperimentBoldUserTextOnSearchSuggestions:enabled"/>
+  <int value="1743603853" label="CameraAppDocScanDlc:disabled"/>
   <int value="1745053254" label="ClickToCallOpenDialerDirectly:enabled"/>
   <int value="1747279677" label="disable-delegated-renderer"/>
   <int value="1748481830" label="AppManagement:enabled"/>

@@ -2720,6 +2720,9 @@ extern const char kGuestOSGenericInstallerDescription[];
 extern const char kBruschettaName[];
 extern const char kBruschettaDescription[];
 
+extern const char kCameraAppDocScanDlcName[];
+extern const char kCameraAppDocScanDlcDescription[];
+
 extern const char kCompactBubbleLauncherName[];
 extern const char kCompactBubbleLauncherDescription[];
 

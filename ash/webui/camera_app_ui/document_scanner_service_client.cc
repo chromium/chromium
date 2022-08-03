@@ -4,6 +4,7 @@
 
 #include "ash/webui/camera_app_ui/document_scanner_service_client.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/webui/camera_app_ui/document_scanner_installer.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
@@ -42,6 +43,9 @@ bool IsEnabledOnRootfs() {
 
 // Returns true if switch kOndeviceDocumentScanner is set to use_dlc.
 bool IsEnabledOnDlc() {
+  if (!base::FeatureList::IsEnabled(chromeos::features::kCameraAppDocScanDlc)) {
+    return false;
+  }
   return HasCommandLineSwitch(kOndeviceDocumentScanner, "use_dlc");
 }
 

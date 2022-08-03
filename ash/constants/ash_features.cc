@@ -279,6 +279,10 @@ const base::Feature kCalendarView{"CalendarView",
 const base::Feature kCalendarModelDebugMode{"CalendarModelDebugMode",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables to allow using document scanning feature via DLC in the camera app.
+const base::Feature kCameraAppDocScanDlc{"CameraAppDocScanDlc",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether the camera privacy switch toasts and notification should be
 // displayed.
 const base::Feature kCameraPrivacySwitchNotifications{
