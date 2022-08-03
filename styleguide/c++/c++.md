@@ -265,7 +265,7 @@ All files in Chromium start with a common license header. That header should
 look like this:
 
 ```c++
-// Copyright $YEAR The Chromium Authors. All rights reserved.
+// Copyright $YEAR The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 ```

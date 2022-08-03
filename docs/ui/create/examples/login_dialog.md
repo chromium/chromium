@@ -19,7 +19,7 @@ To create this simple dialog, you would need to add the following files:
 `login_bubble_dialog_example.h`
 
 ``` cpp
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ class LoginBubbleDialogView : public views::BubbleDialogDelegateView {
 `login_bubble_dialog_example.cc`
 
 ``` cpp
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -379,7 +379,7 @@ The final code should resemble the following:
 
 
 ```
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -430,7 +430,7 @@ class LoginBubbleDialogView : public BubbleDialogDelegateView,
 
 
 ```
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
