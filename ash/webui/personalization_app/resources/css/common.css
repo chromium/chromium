@@ -363,3 +363,7 @@ paper-tooltip span {
   display: flex;
   font: var(--cros-body-2-font);
 }
+
+:host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
+  transform: scaleX(-1);
+}
