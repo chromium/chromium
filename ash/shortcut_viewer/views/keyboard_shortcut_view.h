@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/search_box/search_box_view_delegate.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -140,8 +139,6 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // Indicates if recieved the first OnPaint event. Used to schedule
   // initialization of background panes in the following frame.
   bool did_first_paint_ = false;
-
-  ash::AshColorProvider* color_provider_;
 
   base::WeakPtrFactory<KeyboardShortcutView> weak_factory_{this};
 };

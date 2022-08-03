@@ -40,6 +40,7 @@ source_set("shortcut_viewer") {
     "//ui/accessibility",
     "//ui/aura",
     "//ui/chromeos/events",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/events:events_base",
     "//ui/events/devices",
     "//ui/events/ozone/layout",

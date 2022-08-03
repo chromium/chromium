@@ -43,6 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/events/keyboard_layout_util.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -152,7 +153,7 @@ std::unique_ptr<views::View> CreateNoSearchResultView() {
 
 class ShortcutsListScrollView : public views::ScrollView {
  public:
-  ShortcutsListScrollView() : color_provider_(ash::AshColorProvider::Get()) {
+  ShortcutsListScrollView() {
     GetViewAccessibility().OverrideRole(ax::mojom::Role::kScrollView);
   }
 
@@ -170,15 +171,12 @@ class ShortcutsListScrollView : public views::ScrollView {
   void OnThemeChanged() override {
     views::ScrollView::OnThemeChanged();
 
-    SetBackgroundColor(color_provider_->GetBackgroundColorInMode(
-        /*use_dark_color=*/ash::DarkLightModeControllerImpl::Get()
-            ->IsDarkModeEnabled()));
+    SetBackgroundColor(ash::features::IsDarkLightModeEnabled()
+                           ? GetColorProvider()->GetColor(cros_tokens::kBgColor)
+                           : SK_ColorWHITE);
   }
 
   void OnBlur() override { SetHasFocusIndicator(false); }
-
- private:
-  ash::AshColorProvider* const color_provider_;
 };
 
 std::unique_ptr<ShortcutsListScrollView> CreateScrollView(
@@ -425,13 +423,10 @@ bool KeyboardShortcutView::CanSelectSearchResults() {
 KeyboardShortcutView::KeyboardShortcutView() {
   DCHECK_EQ(g_ksv_view, nullptr);
   g_ksv_view = this;
-  color_provider_ = ash::AshColorProvider::Get();
 
   SetCanMinimize(true);
   SetShowTitle(false);
 
-  // Default background is transparent.
-  UpdateBackgroundColor();
   InitViews();
 }
 
@@ -696,10 +691,10 @@ KeyboardShortcutView::GetFoundShortcutItemsForTesting() const {
 }
 
 void KeyboardShortcutView::UpdateBackgroundColor() {
-  const SkColor background_color = color_provider_->GetBackgroundColorInMode(
-      /*use_dark_color=*/ash::features::IsDarkLightModeEnabled() &&
-      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
-
+  const SkColor background_color =
+      ash::features::IsDarkLightModeEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kBgColor)
+          : SK_ColorWHITE;
   SetBackground(views::CreateSolidBackground(background_color));
 }
 
@@ -707,9 +702,10 @@ void KeyboardShortcutView::UpdateActiveAndInactiveFrameColor() {
   aura::Window* window = g_ksv_view->GetWidget()->GetNativeWindow();
   window->SetProperty(chromeos::kTrackDefaultFrameColors,
                       /*value=*/false);
-  const SkColor background_color = color_provider_->GetBackgroundColorInMode(
-      /*use_dark_color=*/ash::features::IsDarkLightModeEnabled() &&
-      ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled());
+  const SkColor background_color =
+      ash::features::IsDarkLightModeEnabled()
+          ? GetColorProvider()->GetColor(cros_tokens::kBgColor)
+          : SK_ColorWHITE;
   window->SetProperty(chromeos::kFrameActiveColorKey, background_color);
   window->SetProperty(chromeos::kFrameInactiveColorKey, background_color);
 }

@@ -345,7 +345,10 @@ void AddRefPalette(ui::ColorMixer& mixer,
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
                              const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
-  bool dark_mode = key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+  bool dark_mode =
+      features::IsDarkLightModeEnabled()
+          ? key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+          : DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
   if (ash::features::IsJellyEnabled()) {
     AddRefPalette(mixer, key);
   } else {
