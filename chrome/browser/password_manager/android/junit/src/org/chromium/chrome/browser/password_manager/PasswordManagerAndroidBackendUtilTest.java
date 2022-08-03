@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -58,6 +59,26 @@ public class PasswordManagerAndroidBackendUtilTest {
                 PasswordManagerAndroidBackendUtil.getBackendError(apiException));
         Assert.assertEquals(CommonStatusCodes.ERROR,
                 PasswordManagerAndroidBackendUtil.getApiErrorCode(apiException));
+        Assert.assertNull(PasswordManagerAndroidBackendUtil.getConnectionResultCode(apiException));
+    }
+
+    @Test
+    public void testUtilsForApiExceptionWithConnectionResult() {
+        ApiException apiException = new ApiException(
+                new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
+        Assert.assertEquals(AndroidBackendErrorType.EXTERNAL_ERROR,
+                PasswordManagerAndroidBackendUtil.getBackendError(apiException));
+        Assert.assertEquals(CommonStatusCodes.API_NOT_CONNECTED,
+                PasswordManagerAndroidBackendUtil.getApiErrorCode(apiException));
+        Assert.assertEquals(ConnectionResult.API_UNAVAILABLE,
+                PasswordManagerAndroidBackendUtil.getConnectionResultCode(apiException).intValue());
+    }
+
+    @Test
+    public void testUtilsReturnNullConnectionResultForNonApiException() {
+        BackendException exception = new BackendException(
+                "Cannot call API without context.", AndroidBackendErrorType.NO_CONTEXT);
+        Assert.assertNull(PasswordManagerAndroidBackendUtil.getConnectionResultCode(exception));
     }
 
     @Test

@@ -14,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import android.accounts.Account;
 import android.app.PendingIntent;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.ResolvableApiException;
@@ -118,8 +119,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
-                .onError(
-                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
+                        false, -1);
     }
 
     @Test
@@ -137,7 +138,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
                 "Sample failure", AndroidBackendErrorType.NO_ACCOUNT);
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
-                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.NO_ACCOUNT, 0);
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.NO_ACCOUNT, 0,
+                        false, -1);
     }
 
     @Test
@@ -151,11 +153,13 @@ public class PasswordStoreAndroidBackendBridgeTest {
         verify(mBackendMock).getAllLogins(eq(Optional.absent()), any(), failureCallback.capture());
         assertNotNull(failureCallback.getValue());
 
-        Exception kExpectedException = new ApiException(new Status(CommonStatusCodes.ERROR, ""));
+        Exception kExpectedException = new ApiException(
+                new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
                 .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
-                        CommonStatusCodes.ERROR);
+                        CommonStatusCodes.API_NOT_CONNECTED, true,
+                        ConnectionResult.API_UNAVAILABLE);
     }
 
     @Test
@@ -176,7 +180,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         verify(pendingIntentMock, never()).send();
         verify(mBridgeJniMock)
                 .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.EXTERNAL_ERROR,
-                        CommonStatusCodes.RESOLUTION_REQUIRED);
+                        CommonStatusCodes.RESOLUTION_REQUIRED, false, -1);
     }
 
     @Test
@@ -211,8 +215,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
-                .onError(
-                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
+                        false, -1);
     }
 
     @Test
@@ -249,8 +253,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
-                .onError(
-                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
+                        false, -1);
     }
 
     @Test
@@ -284,8 +288,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
-                .onError(
-                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
+                        false, -1);
     }
 
     @Test
@@ -319,8 +323,8 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
-                .onError(
-                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
+                        false, -1);
     }
 
     @Test
@@ -354,7 +358,7 @@ public class PasswordStoreAndroidBackendBridgeTest {
         Exception kExpectedException = new Exception("Sample failure");
         failureCallback.getValue().onResult(kExpectedException);
         verify(mBridgeJniMock)
-                .onError(
-                        sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0);
+                .onError(sDummyNativePointer, kTestTaskId, AndroidBackendErrorType.UNCATEGORIZED, 0,
+                        false, -1);
     }
 }

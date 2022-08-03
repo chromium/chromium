@@ -76040,6 +76040,33 @@ Called by update_net_trust_anchors.py.-->
   <int value="43509" label="LEAK_CHECK_SERVICE_RESOURCE_EXHAUSTED"/>
 </enum>
 
+<enum name="PasswordStoreAndroidBackendConnectionResultCode">
+  <int value="0" label="SUCCESS"/>
+  <int value="1" label="SERVICE_MISSING"/>
+  <int value="2" label="SERVICE_VERSION_UPDATE_REQUIRED"/>
+  <int value="3" label="SERVICE_DISABLED"/>
+  <int value="4" label="SIGN_IN_REQUIRED"/>
+  <int value="5" label="INVALID_ACCOUNT"/>
+  <int value="6" label="RESOLUTION_REQUIRED"/>
+  <int value="7" label="NETWORK_ERROR"/>
+  <int value="8" label="INTERNAL_ERROR"/>
+  <int value="9" label="SERVICE_INVALID"/>
+  <int value="10" label="DEVELOPER_ERROR"/>
+  <int value="11" label="LICENSE_CHECK_FAILED"/>
+  <int value="13" label="CANCELED"/>
+  <int value="14" label="TIMEOUT"/>
+  <int value="15" label="INTERRUPTED"/>
+  <int value="16" label="API_UNAVAILABLE"/>
+  <int value="17" label="SIGN_IN_FAILED"/>
+  <int value="18" label="SERVICE_UPDATING"/>
+  <int value="19" label="SERVICE_MISSING_PERMISSION"/>
+  <int value="20" label="RESTRICTED_PROFILE"/>
+  <int value="21" label="API_VERSION_UPDATE_REQUIRED"/>
+  <int value="22" label="RESOLUTION_ACTIVITY_NOT_FOUND"/>
+  <int value="23" label="API_DISABLED"/>
+  <int value="24" label="API_DISABLED_FOR_CONNECTION"/>
+</enum>
+
 <enum name="PasswordStoreAndroidBackendError">
   <int value="0" label="Error can't be categorized."/>
   <int value="1" label="API was called without a context."/>

@@ -91,6 +91,12 @@ class PasswordStoreBackendMetricsRecorder {
   // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>.APIError"
   void RecordApiErrorCode(int api_error_code) const;
 
+  // Records the following metrics:
+  // - "PasswordManager.PasswordStoreAndroidBackend.ConnectionResultCode"
+  // - "PasswordManager.PasswordStoreAndroidBackend.<metric_infix_>
+  //        .ConnectionResultCode"
+  void RecordConnectionResultCode(int connection_result_code) const;
+
   std::string GetBackendMetricName() const;
   std::string BuildMetricName(base::StringPiece suffix) const;
   std::string GetOverallMetricName() const;

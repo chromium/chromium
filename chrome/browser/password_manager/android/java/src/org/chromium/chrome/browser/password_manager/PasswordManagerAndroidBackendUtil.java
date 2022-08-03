@@ -7,6 +7,9 @@ import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper
 
 import android.app.PendingIntent;
 
+import androidx.annotation.Nullable;
+
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 
@@ -48,6 +51,17 @@ class PasswordManagerAndroidBackendUtil {
             return ((ApiException) exception).getStatusCode();
         }
         return 0; // '0' means SUCCESS.
+    }
+
+    @Nullable
+    static Integer getConnectionResultCode(Exception exception) {
+        if (!(exception instanceof ApiException)) return null;
+
+        ConnectionResult connectionResult =
+                ((ApiException) exception).getStatus().getConnectionResult();
+        if (connectionResult == null) return null;
+
+        return connectionResult.getErrorCode();
     }
 
     static void handleResolvableApiException(ResolvableApiException exception) {

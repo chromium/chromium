@@ -2407,6 +2407,35 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordStoreAndroidBackend{Function}{UnenrollmentFromUPM}.ConnectionResultCode"
+    enum="PasswordStoreAndroidBackendConnectionResultCode" expires_after="M110">
+  <owner>maxan@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The connection result status code returned by the GMS Core ChromeSync 1P
+    API{Function}. Recorded when the asynchronous job has returned with error
+    and only if ConnectionResult was set on the returned error.
+    {UnenrollmentFromUPM}
+  </summary>
+  <token key="Function">
+    <variant name=""/>
+    <variant name=".AddLoginAsync" summary="for AddLoginAsync"/>
+    <variant name=".GetAllLoginsAsync" summary="for GetAllLoginsAsync"/>
+    <variant name=".GetAutofillableLoginsAsync"
+        summary="for GetAutofillableLoginsAsync"/>
+    <variant name=".GetLoginsAsync" summary="for GetLoginsAsync"/>
+    <variant name=".RemoveLoginAsync" summary="for RemoveLoginAsync"/>
+    <variant name=".UpdateLoginAsync" summary="for UpdateLoginAsync"/>
+  </token>
+  <token key="UnenrollmentFromUPM">
+    <variant name=""/>
+    <variant name=".UnenrolledFromUPM"
+        summary="Recorded for clients unenrolled from UnifiedPasswordManager
+                 after experiencing an error."/>
+  </token>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordStoreAndroidBackend{Function}{UnenrollmentFromUPM}.ErrorCode"
     enum="PasswordStoreAndroidBackendError" expires_after="M110">
   <owner>fhorschig@chromium.org</owner>

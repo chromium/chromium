@@ -40,7 +40,12 @@ class PasswordStoreAndroidBackendBridgeImpl
 
   // Called via JNI. Called when the api call with `job_id` finished with
   // an exception.
-  void OnError(JNIEnv* env, jint job_id, jint error_type, jint api_error_code);
+  void OnError(JNIEnv* env,
+               jint job_id,
+               jint error_type,
+               jint api_error_code,
+               jboolean has_connection_result,
+               jint connection_result_code);
 
  private:
   // Implements PasswordStoreAndroidBackendBridge interface.

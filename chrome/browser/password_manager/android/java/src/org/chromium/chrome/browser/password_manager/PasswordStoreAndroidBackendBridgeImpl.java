@@ -122,9 +122,12 @@ class PasswordStoreAndroidBackendBridgeImpl {
         @AndroidBackendErrorType
         int error = PasswordManagerAndroidBackendUtil.getBackendError(exception);
         int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
+        Integer connectionResultCode =
+                PasswordManagerAndroidBackendUtil.getConnectionResultCode(exception);
 
-        PasswordStoreAndroidBackendBridgeImplJni.get().onError(
-                mNativeBackendBridge, jobId, error, apiErrorCode);
+        PasswordStoreAndroidBackendBridgeImplJni.get().onError(mNativeBackendBridge, jobId, error,
+                apiErrorCode, connectionResultCode != null,
+                connectionResultCode == null ? -1 : connectionResultCode.intValue());
     }
 
     private Optional<Account> getAccount(String syncingAccount) {
@@ -169,6 +172,7 @@ class PasswordStoreAndroidBackendBridgeImpl {
                 @JobId int jobId, byte[] passwords);
         void onLoginChanged(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId);
         void onError(long nativePasswordStoreAndroidBackendBridgeImpl, @JobId int jobId,
-                int errorType, int apiErrorCode);
+                int errorType, int apiErrorCode, boolean hasConnectionResult,
+                int connectionResultStatusCode);
     }
 }

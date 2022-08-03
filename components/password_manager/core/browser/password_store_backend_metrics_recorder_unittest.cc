@@ -15,6 +15,7 @@ namespace password_manager {
 
 namespace {
 using testing::ElementsAre;
+using testing::IsEmpty;
 
 using SuccessStatus = PasswordStoreBackendMetricsRecorder::SuccessStatus;
 
@@ -32,6 +33,8 @@ constexpr char kErrorCodeMetric[] =
     "PasswordManager.PasswordStoreSomeBackend.MethodName.ErrorCode";
 constexpr char kApiErrorMetric[] =
     "PasswordManager.PasswordStoreSomeBackend.MethodName.APIError";
+constexpr char kConnectionResultMetric[] =
+    "PasswordManager.PasswordStoreSomeBackend.MethodName.ConnectionResultCode";
 constexpr char kOverallMetric[] =
     "PasswordManager.PasswordStoreBackend.MethodName";
 constexpr char kDurationOverallMetric[] =
@@ -42,6 +45,8 @@ constexpr char kErrorCodeOverallMetric[] =
     "PasswordManager.PasswordStoreAndroidBackend.ErrorCode";
 constexpr char kApiErrorOverallMetric[] =
     "PasswordManager.PasswordStoreAndroidBackend.APIError";
+constexpr char kConnectionResultOverallMetric[] =
+    "PasswordManager.PasswordStoreAndroidBackend.ConnectionResultCode";
 }  // anonymous namespace
 
 class PasswordStoreBackendMetricsRecorderTest : public testing::Test {
@@ -124,6 +129,8 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
               ElementsAre(Bucket(7, 1)));  // External
   EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorMetric),
               ElementsAre(Bucket(11010, 1)));  // No access.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kConnectionResultMetric),
+              IsEmpty());
 
   // Checking records in the overall histogram
   histogram_tester.ExpectTotalCount(kDurationOverallMetric, 1);
@@ -135,6 +142,60 @@ TEST_F(PasswordStoreBackendMetricsRecorderTest, RecordMetrics_ExternalError) {
               ElementsAre(Bucket(7, 1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorOverallMetric),
               ElementsAre(Bucket(11010, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kConnectionResultOverallMetric),
+              IsEmpty());
+
+  // Checking completed requests in the overall and backend-specific histogram.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kSpecificMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Completed */ 2, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kOverallMetric),
+      ElementsAre(Bucket(/* Requested */ 0, 1), Bucket(/* Completed */ 2, 1)));
+}
+
+TEST_F(PasswordStoreBackendMetricsRecorderTest,
+       RecordMetrics_ExternalErrorWithConnectionResult) {
+  using base::Bucket;
+  base::HistogramTester histogram_tester;
+
+  const int kApiUnavailableConnectionResult = 16;
+
+  PasswordStoreBackendMetricsRecorder metrics_recorder =
+      PasswordStoreBackendMetricsRecorder(BackendInfix(kSomeBackend),
+                                          MetricInfix(kSomeMethod));
+
+  AdvanceClock(kLatencyDelta);
+
+  AndroidBackendError error(AndroidBackendErrorType::kExternalError);
+  error.api_error_code = 11010;
+  error.connection_result_code = kApiUnavailableConnectionResult;
+  metrics_recorder.RecordMetrics(SuccessStatus::kError, std::move(error));
+
+  // Checking records in the backend-specific histogram
+  histogram_tester.ExpectTotalCount(kDurationMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationMetric, kLatencyDelta, 1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessMetric),
+              ElementsAre(Bucket(false, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeMetric),
+              ElementsAre(Bucket(7, 1)));  // External
+  EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorMetric),
+              ElementsAre(Bucket(11010, 1)));  // No access.
+  EXPECT_THAT(histogram_tester.GetAllSamples(kConnectionResultMetric),
+              ElementsAre(Bucket(kApiUnavailableConnectionResult, 1)));
+
+  // Checking records in the overall histogram
+  histogram_tester.ExpectTotalCount(kDurationOverallMetric, 1);
+  histogram_tester.ExpectTimeBucketCount(kDurationOverallMetric, kLatencyDelta,
+                                         1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kSuccessOverallMetric),
+              ElementsAre(Bucket(false, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kErrorCodeOverallMetric),
+              ElementsAre(Bucket(7, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kApiErrorOverallMetric),
+              ElementsAre(Bucket(11010, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kConnectionResultOverallMetric),
+              ElementsAre(Bucket(kApiUnavailableConnectionResult, 1)));
 
   // Checking completed requests in the overall and backend-specific histogram.
   EXPECT_THAT(

@@ -45,6 +45,10 @@ struct AndroidBackendError {
   // Numeric error code returned by the GMS Core API, only available if 'type'
   // is kExternalError.
   absl::optional<int> api_error_code;
+
+  // Numeric connection result status code returned by the GMS Core API, only
+  // available if ConnectionResult was set on the returned exception.
+  absl::optional<int> connection_result_code;
 };
 
 }  // namespace password_manager
