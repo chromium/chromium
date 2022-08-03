@@ -76,6 +76,7 @@ extern const base::Feature kContextualSearchDebug;
 extern const base::Feature kContextualSearchDelayedIntelligence;
 extern const base::Feature kContextualSearchDisableOnlineDetection;
 extern const base::Feature kContextualSearchForceCaption;
+extern const base::Feature kContextualSearchSuppressShortView;
 extern const base::Feature kContextualSearchThinWebViewImplementation;
 extern const base::Feature kContextualSearchTranslations;
 extern const base::Feature kContextualTriggersSelectionHandles;

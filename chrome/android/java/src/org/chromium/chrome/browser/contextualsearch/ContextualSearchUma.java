@@ -572,6 +572,12 @@ public class ContextualSearchUma {
                 "Search.ContextualSearch.UnifiedConsent.ThrottleEligible", isThrottleEligible);
     }
 
+    /** Logs whether the triggering was suppressed due to the Base Page view being too small. */
+    static void logViewTooSmall(boolean isViewTooSmall) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.SuppressedViewTooSmall", isViewTooSmall);
+    }
+
     /**
      * Gets the panel-seen code for the given parameters by doing a lookup in the seen-by-gesture
      * map.

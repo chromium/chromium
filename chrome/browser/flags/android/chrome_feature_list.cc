@@ -219,6 +219,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualSearchDelayedIntelligence,
     &kContextualSearchDisableOnlineDetection,
     &kContextualSearchForceCaption,
+    &kContextualSearchSuppressShortView,
     &kContextualSearchThinWebViewImplementation,
     &kContextualSearchTranslations,
     &kContextualTriggersSelectionHandles,
@@ -621,6 +622,9 @@ const base::Feature kContextualSearchDisableOnlineDetection{
 
 const base::Feature kContextualSearchForceCaption{
     "ContextualSearchForceCaption", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kContextualSearchSuppressShortView{
+    "ContextualSearchSuppressShortView", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kContextualSearchThinWebViewImplementation{
     "ContextualSearchThinWebViewImplementation",
