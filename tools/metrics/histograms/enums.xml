@@ -47611,6 +47611,17 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="2" label="Both devices, pointing and keyboard, detected."/>
 </enum>
 
+<enum name="HidsMissing">
+  <summary>
+    Possible combination of human input device types that may be missing when
+    OOBE starts.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Pointer"/>
+  <int value="2" label="Keyboard"/>
+  <int value="3" label="Pointer and keyboard"/>
+</enum>
+
 <enum name="HidType">
   <summary>
     Possible device types of HIDs interfaced with in the OOBE HID detection

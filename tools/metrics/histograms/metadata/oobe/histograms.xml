@@ -402,6 +402,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OOBE.HidDetectionScreen.InitialHidsMissing" enum="HidsMissing"
+    expires_after="2023-05-06">
+  <owner>gordonseto@google.com</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records the types of human interface devices (HIDs) that are not connected
+    when OOBE starts. This metric is not emitted for Chrome OS devices that have
+    the OOBE HID detection screen disabled.
+  </summary>
+</histogram>
+
 <histogram
     name="OOBE.MarketingOptInScreen.BackendConnector.{OOBEMarketingCountry}"
     enum="MarketingOptInBackendConnectorEvent" expires_after="2023-08-01">

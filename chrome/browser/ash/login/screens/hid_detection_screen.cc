@@ -718,6 +718,18 @@ void HIDDetectionScreen::OnGetInputDevicesListForCheck(
   const bool all_devices_autodetected =
       !pointing_device_id.empty() && !keyboard_device_id.empty();
 
+  hid_detection::HidsMissing hids_missing = hid_detection::HidsMissing::kNone;
+  if (pointing_device_id.empty()) {
+    if (keyboard_device_id.empty()) {
+      hids_missing = hid_detection::HidsMissing::kPointerAndKeyboard;
+    } else {
+      hids_missing = hid_detection::HidsMissing::kPointer;
+    }
+  } else if (keyboard_device_id.empty()) {
+    hids_missing = hid_detection::HidsMissing::kKeyboard;
+  }
+  hid_detection::RecordInitialHidsMissing(hids_missing);
+
   std::move(on_check_done).Run(!all_devices_autodetected);
 }
 

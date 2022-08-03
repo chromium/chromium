@@ -25,6 +25,17 @@ enum class HidType {
   kMaxValue = kUnknownPointer
 };
 
+// This enum is tied directly to the HidsMissing UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other).
+enum class HidsMissing {
+  kNone = 0,
+  kPointer = 1,
+  kKeyboard = 2,
+  kPointerAndKeyboard = 3,
+  kMaxValue = kPointerAndKeyboard
+};
+
 // Returns true if |device| is a HID with pointing capabilities (i.e. a mouse or
 // touchpad).
 bool IsDevicePointer(const device::mojom::InputDeviceInfo& device);
@@ -48,6 +59,9 @@ void RecordBluetoothPairingAttempts(size_t attempts);
 // process.
 void RecordBluetoothPairingResult(bool success,
                                   base::TimeDelta pairing_duration);
+
+// Record each HID that is missing when the HID detection screen is shown.
+void RecordInitialHidsMissing(const HidsMissing& hids_missing);
 
 }  // namespace ash::hid_detection
 

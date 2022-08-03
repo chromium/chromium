@@ -107,4 +107,9 @@ void RecordBluetoothPairingResult(bool success,
                             success);
 }
 
+void RecordInitialHidsMissing(const HidsMissing& hids_missing) {
+  base::UmaHistogramEnumeration("OOBE.HidDetectionScreen.InitialHidsMissing",
+                                hids_missing);
+}
+
 }  // namespace ash::hid_detection

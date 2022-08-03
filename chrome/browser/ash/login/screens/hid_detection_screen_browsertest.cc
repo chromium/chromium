@@ -41,6 +41,7 @@ namespace {
 
 using ::testing::_;
 using HidType = hid_detection::HidType;
+using HidsMissing = hid_detection::HidsMissing;
 using InputState = hid_detection::HidDetectionManager::InputState;
 using NiceMockDevice =
     std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>;
@@ -165,6 +166,15 @@ class HIDDetectionScreenChromeboxTest
         count);
     histogram_tester_.ExpectBucketCount(
         "OOBE.HidDetectionScreen.BluetoothPairing.Result", success, count);
+  }
+
+  void AssertInitialHidsMissingCount(HidsMissing hids_missing, int count) {
+    // This is not applicable after the revamp.
+    if (GetParam())
+      return;
+
+    histogram_tester_.ExpectBucketCount(
+        "OOBE.HidDetectionScreen.InitialHidsMissing", hids_missing, count);
   }
 
   bool HasPendingConnectCallback() const {
@@ -305,8 +315,9 @@ INSTANTIATE_TEST_SUITE_P(All, HIDDetectionScreenChromeboxTest, testing::Bool());
 IN_PROC_BROWSER_TEST_P(HIDDetectionScreenChromeboxTest, NoDevicesConnected) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
-  EXPECT_FALSE(GetExitResult().has_value());
+  AssertInitialHidsMissingCount(HidsMissing::kPointerAndKeyboard, /*count=*/1);
 
+  EXPECT_FALSE(GetExitResult().has_value());
   ForceStopHidDetectionIfRevamp();
 }
 
@@ -648,6 +659,7 @@ INSTANTIATE_TEST_SUITE_P(All, HIDDetectionSkipTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(HIDDetectionSkipTest, BothDevicesPreConnected) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  AssertInitialHidsMissingCount(HidsMissing::kNone, /*count=*/1);
   EXPECT_FALSE(GetExitResult().has_value());
   histogram_tester.ExpectTotalCount("OOBE.HidDetectionScreen.HidConnected", 0);
 }
@@ -877,6 +889,7 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenPreConnectedDeviceTest,
   test::OobeJS().ExpectHiddenPath(kHidTouchscreenEntry);
   test::OobeJS().CreateVisibilityWaiter(true, kHidMouseTick)->Wait();
   test::OobeJS().ExpectEnabledPath(kHidContinueButton);
+  AssertInitialHidsMissingCount(HidsMissing::kKeyboard, /*count=*/1);
   AssertHidConnectedCount(HidType::kUsbPointer, /*count=*/0);
   AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/0);
 
@@ -892,6 +905,32 @@ IN_PROC_BROWSER_TEST_P(HIDDetectionScreenPreConnectedDeviceTest,
   AssertHidConnectedCount(HidType::kUsbPointer, /*count=*/0);
   AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/2);
 
+  ForceStopHidDetectionIfRevamp();
+}
+
+class HIDDetectionPreconnectedBTTest : public HIDDetectionScreenChromeboxTest {
+ public:
+  HIDDetectionPreconnectedBTTest() {
+    SetWaitUntilIdleAfterDeviceUpdate(false);
+    SimulateKeyboardHidConnected(
+        device::mojom::InputDeviceType::TYPE_BLUETOOTH);
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(All, HIDDetectionPreconnectedBTTest, testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(HIDDetectionPreconnectedBTTest,
+                       BTKeyboardDevicePreConnected) {
+  OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+  test::OobeJS().ExpectHiddenPath(kHidTouchscreenEntry);
+  test::OobeJS().CreateVisibilityWaiter(true, kHidKeyboardTick)->Wait();
+  test::OobeJS().ExpectEnabledPath(kHidContinueButton);
+
+  AssertHidConnectedCount(HidType::kUsbPointer, /*count=*/0);
+  AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/0);
+  AssertInitialHidsMissingCount(HidsMissing::kPointer, /*count=*/1);
+
+  EXPECT_FALSE(GetExitResult().has_value());
   ForceStopHidDetectionIfRevamp();
 }
 
