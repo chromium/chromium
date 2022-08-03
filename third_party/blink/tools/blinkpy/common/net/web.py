@@ -30,8 +30,12 @@ import gzip
 
 import six
 from six.moves import urllib
+import time
+import logging
 
 from blinkpy.common.net.network_transaction import NetworkTransaction
+
+_log = logging.getLogger(__name__)
 
 
 class Web(object):
@@ -43,7 +47,7 @@ class Web(object):
             # otherwise, HTTPRedirectHandler will throw a HTTPError.
             return self.http_error_301(req, fp, 301, msg, headers)
 
-    def get_binary(self, url, return_none_on_404=False):
+    def get_binary(self, url, return_none_on_404=False, retries=0):
         def make_request():
             response = self.request('GET',
                                     url,
@@ -58,6 +62,17 @@ class Web(object):
                 return gzip_decoder.read()
             return response.read()
 
+        if retries > 0:
+            for i in range(retries):
+                try:
+                    return NetworkTransaction(
+                        return_none_on_404=return_none_on_404).run(
+                            make_request)
+                except six.moves.urllib.error.URLError as error:
+                    _log.error(
+                        "Received URLError: %s. Retrying in 10"
+                        " seconds for the %s time...", error, i + 1)
+                    time.sleep(10)
         return NetworkTransaction(
             return_none_on_404=return_none_on_404).run(make_request)
 
