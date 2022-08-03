@@ -10,6 +10,7 @@
 #include <map>
 
 #include "base/compiler_specific.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -65,7 +66,7 @@ class SandboxQuotaObserver : public FileUpdateObserver,
   void UpdateUsageCacheFile(const base::FilePath& usage_file_path,
                             int64_t delta);
 
-  base::FilePath GetUsageCachePath(const FileSystemURL& url);
+  base::FileErrorOr<base::FilePath> GetUsageCachePath(const FileSystemURL& url);
 
   const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
   const scoped_refptr<base::SequencedTaskRunner> update_notify_runner_;

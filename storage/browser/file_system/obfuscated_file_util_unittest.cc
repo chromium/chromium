@@ -405,7 +405,10 @@ class ObfuscatedFileUtilTest : public testing::Test,
                              sandbox_file_system->storage_type());
                        },
                        quota_manager_, &sandbox_file_system_));
-    usage_cache()->Delete(sandbox_file_system_.GetUsageCachePath());
+    base::FileErrorOr<base::FilePath> path =
+        sandbox_file_system_.GetUsageCachePath();
+    if (!path.is_error())
+      usage_cache()->Delete(path.value());
   }
 
   int64_t SizeByQuotaUtil() { return sandbox_file_system_.GetCachedUsage(); }
@@ -413,10 +416,11 @@ class ObfuscatedFileUtilTest : public testing::Test,
   int64_t SizeInUsageFile() {
     task_environment_.RunUntilIdle();
     int64_t usage = 0;
-    return usage_cache()->GetUsage(sandbox_file_system_.GetUsageCachePath(),
-                                   &usage)
-               ? usage
-               : -1;
+    base::FileErrorOr<base::FilePath> path =
+        sandbox_file_system_.GetUsageCachePath();
+    if (path.is_error())
+      return -1;
+    return usage_cache()->GetUsage(path.value(), &usage) ? usage : -1;
   }
 
   bool PathExists(const FileSystemURL& url) {

@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -252,29 +253,27 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileSystemBackendDelegate
   bool IsAllowedScheme(const GURL& url) const;
 
   // Returns a path to the usage cache file.
-  base::FilePath GetUsageCachePathForStorageKeyAndType(
+  base::FileErrorOr<base::FilePath> GetUsageCachePathForStorageKeyAndType(
       const blink::StorageKey& storage_key,
       FileSystemType type);
 
   // Returns a path to the usage cache file (static version).
-  static base::FilePath GetUsageCachePathForStorageKeyAndType(
-      ObfuscatedFileUtil* sandbox_file_util,
-      const blink::StorageKey& storage_key,
-      FileSystemType type,
-      base::File::Error* error_out);
+  static base::FileErrorOr<base::FilePath>
+  GetUsageCachePathForStorageKeyAndType(ObfuscatedFileUtil* sandbox_file_util,
+                                        const blink::StorageKey& storage_key,
+                                        FileSystemType type);
 
   // Returns a path to the usage cache file for a given bucket and type.
-  base::FilePath GetUsageCachePathForBucketAndType(
+  base::FileErrorOr<base::FilePath> GetUsageCachePathForBucketAndType(
       const BucketLocator& bucket_locator,
       FileSystemType type);
 
   // Returns a path to the usage cache file for a given bucket and type(static
   // version).
-  static base::FilePath GetUsageCachePathForBucketAndType(
+  static base::FileErrorOr<base::FilePath> GetUsageCachePathForBucketAndType(
       ObfuscatedFileUtil* sandbox_file_util,
       const BucketLocator& bucket_locator,
-      FileSystemType type,
-      base::File::Error* error_out);
+      FileSystemType type);
 
   // Helper function to obtain usage for a StorageKey value and optionally a
   // BucketLocator value. `storage_key` and `bucket_locator->storage_key` should

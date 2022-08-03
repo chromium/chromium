@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
+#include "base/files/file_error_or.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -79,9 +80,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaBackendImpl
                                           int64_t quota);
 
   void ReserveQuotaInternal(const QuotaReservationInfo& info);
-  base::File::Error GetUsageCachePath(const url::Origin& origin,
-                                      FileSystemType type,
-                                      base::FilePath* usage_file_path);
+  base::FileErrorOr<base::FilePath> GetUsageCachePath(const url::Origin& origin,
+                                                      FileSystemType type);
 
   const scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
 

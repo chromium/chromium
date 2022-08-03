@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
@@ -106,12 +107,15 @@ base::FilePath SandboxFileSystemTestHelper::GetLocalPathFromASCII(
   return GetLocalPath(base::FilePath().AppendASCII(path));
 }
 
-base::FilePath SandboxFileSystemTestHelper::GetUsageCachePath() const {
-  if (bucket_locator_.has_value())
+base::FileErrorOr<base::FilePath>
+SandboxFileSystemTestHelper::GetUsageCachePath() const {
+  if (bucket_locator_.has_value()) {
     return file_system_context_->sandbox_delegate()
         ->GetUsageCachePathForBucketAndType(bucket_locator_.value(), type_);
-  return file_system_context_->sandbox_delegate()
-      ->GetUsageCachePathForStorageKeyAndType(storage_key(), type_);
+  } else {
+    return file_system_context_->sandbox_delegate()
+        ->GetUsageCachePathForStorageKeyAndType(storage_key(), type_);
+  }
 }
 
 FileSystemURL SandboxFileSystemTestHelper::CreateURL(
@@ -134,7 +138,8 @@ int64_t SandboxFileSystemTestHelper::ComputeCurrentStorageKeyUsage() {
   usage_cache()->CloseCacheFiles();
 
   int64_t size = file_util_delegate()->ComputeDirectorySize(GetRootPath());
-  if (file_util_delegate()->PathExists(GetUsageCachePath()))
+  base::FileErrorOr<base::FilePath> path = GetUsageCachePath();
+  if (!path.is_error() && file_util_delegate()->PathExists(path.value()))
     size -= FileSystemUsageCache::kUsageFileSize;
 
   return size;
@@ -197,9 +202,9 @@ void SandboxFileSystemTestHelper::SetUpFileSystem() {
         ->GetBaseDirectoryForStorageKeyAndType(storage_key(), type_,
                                                /*create=*/true);
   }
-  base::FilePath usage_cache_path = GetUsageCachePath();
-  if (!usage_cache_path.empty())
-    usage_cache()->UpdateUsage(usage_cache_path, 0);
+  base::FileErrorOr<base::FilePath> usage_cache_path = GetUsageCachePath();
+  if (!usage_cache_path.is_error() && !usage_cache_path->empty())
+    usage_cache()->UpdateUsage(usage_cache_path.value(), 0);
 }
 
 }  // namespace storage

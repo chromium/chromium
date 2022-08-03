@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/files/file_error_or.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
@@ -76,10 +77,11 @@ void QuotaBackendImpl::CommitQuotaUsage(const url::Origin& origin,
   if (!delta)
     return;
   ReserveQuotaInternal(QuotaReservationInfo(origin, type, delta));
-  base::FilePath path;
-  if (GetUsageCachePath(origin, type, &path) != base::File::FILE_OK)
+  base::FileErrorOr<base::FilePath> path = GetUsageCachePath(origin, type);
+  if (path.is_error())
     return;
-  bool result = file_system_usage_cache_->AtomicUpdateUsageByDelta(path, delta);
+  bool result =
+      file_system_usage_cache_->AtomicUpdateUsageByDelta(path.value(), delta);
   DCHECK(result);
 }
 
@@ -87,22 +89,22 @@ void QuotaBackendImpl::IncrementDirtyCount(const url::Origin& origin,
                                            FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!origin.opaque());
-  base::FilePath path;
-  if (GetUsageCachePath(origin, type, &path) != base::File::FILE_OK)
+  base::FileErrorOr<base::FilePath> path = GetUsageCachePath(origin, type);
+  if (path.is_error())
     return;
   DCHECK(file_system_usage_cache_);
-  file_system_usage_cache_->IncrementDirty(path);
+  file_system_usage_cache_->IncrementDirty(path.value());
 }
 
 void QuotaBackendImpl::DecrementDirtyCount(const url::Origin& origin,
                                            FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!origin.opaque());
-  base::FilePath path;
-  if (GetUsageCachePath(origin, type, &path) != base::File::FILE_OK)
+  base::FileErrorOr<base::FilePath> path = GetUsageCachePath(origin, type);
+  if (path.is_error())
     return;
   DCHECK(file_system_usage_cache_);
-  file_system_usage_cache_->DecrementDirty(path);
+  file_system_usage_cache_->DecrementDirty(path.value());
 }
 
 void QuotaBackendImpl::DidGetUsageAndQuotaForReserveQuota(
@@ -149,18 +151,14 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
       base::DoNothing());
 }
 
-base::File::Error QuotaBackendImpl::GetUsageCachePath(
+base::FileErrorOr<base::FilePath> QuotaBackendImpl::GetUsageCachePath(
     const url::Origin& origin,
-    FileSystemType type,
-    base::FilePath* usage_file_path) {
+    FileSystemType type) {
   DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(!origin.opaque());
-  DCHECK(usage_file_path);
-  base::File::Error error = base::File::FILE_OK;
-  *usage_file_path =
-      SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
-          obfuscated_file_util_, blink::StorageKey(origin), type, &error);
-  return error;
+  return SandboxFileSystemBackendDelegate::
+      GetUsageCachePathForStorageKeyAndType(obfuscated_file_util_,
+                                            blink::StorageKey(origin), type);
 }
 
 QuotaBackendImpl::QuotaReservationInfo::QuotaReservationInfo(

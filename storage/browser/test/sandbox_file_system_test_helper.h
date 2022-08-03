@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -68,7 +69,7 @@ class SandboxFileSystemTestHelper {
   base::FilePath GetLocalPathFromASCII(const std::string& path);
 
   // Returns empty path if filesystem type is neither temporary nor persistent.
-  base::FilePath GetUsageCachePath() const;
+  base::FileErrorOr<base::FilePath> GetUsageCachePath() const;
 
   FileSystemURL CreateURL(const base::FilePath& path) const;
   FileSystemURL CreateURLFromUTF8(const std::string& utf8) const {

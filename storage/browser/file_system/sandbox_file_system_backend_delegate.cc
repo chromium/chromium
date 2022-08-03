@@ -14,6 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner_util.h"
@@ -601,12 +602,12 @@ void SandboxFileSystemBackendDelegate::RegisterQuotaUpdateObserver(
 void SandboxFileSystemBackendDelegate::InvalidateUsageCache(
     const blink::StorageKey& storage_key,
     FileSystemType type) {
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath usage_file_path = GetUsageCachePathForStorageKeyAndType(
-      obfuscated_file_util(), storage_key, type, &error);
-  if (error != base::File::FILE_OK)
+  base::FileErrorOr<base::FilePath> usage_file_path =
+      GetUsageCachePathForStorageKeyAndType(obfuscated_file_util(), storage_key,
+                                            type);
+  if (usage_file_path.is_error())
     return;
-  usage_cache()->IncrementDirty(usage_file_path);
+  usage_cache()->IncrementDirty(usage_file_path.value());
 }
 
 void SandboxFileSystemBackendDelegate::StickyInvalidateUsageCache(
@@ -670,66 +671,48 @@ bool SandboxFileSystemBackendDelegate::IsAllowedScheme(const GURL& url) const {
   return false;
 }
 
-base::FilePath
+base::FileErrorOr<base::FilePath>
 SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
     const blink::StorageKey& storage_key,
     FileSystemType type) {
-  base::File::Error error;
-  base::FilePath path = GetUsageCachePathForStorageKeyAndType(
-      obfuscated_file_util(), storage_key, type, &error);
-  if (error != base::File::FILE_OK)
-    return base::FilePath();
-  return path;
+  return GetUsageCachePathForStorageKeyAndType(obfuscated_file_util(),
+                                               storage_key, type);
 }
 
 // static
-// TODO(https://crbug.com/1345419): refactor this functions to return
-// base::FileErrorOr<base::FilePath> and remove the `error_out` parameter.
-base::FilePath
+base::FileErrorOr<base::FilePath>
 SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
     ObfuscatedFileUtil* sandbox_file_util,
     const blink::StorageKey& storage_key,
-    FileSystemType type,
-    base::File::Error* error_out) {
-  DCHECK(error_out);
-  *error_out = base::File::FILE_OK;
+    FileSystemType type) {
   base::FileErrorOr<base::FilePath> base_path =
       sandbox_file_util->GetDirectoryForStorageKeyAndType(
           storage_key, GetTypeString(type), false /* create */);
   if (base_path.is_error()) {
-    *error_out = base_path.error();
-    return base::FilePath();
+    return base_path;
   }
   return base_path->Append(FileSystemUsageCache::kUsageFileName);
 }
 
-base::FilePath
+base::FileErrorOr<base::FilePath>
 SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
     const BucketLocator& bucket_locator,
     FileSystemType type) {
-  base::File::Error error;
-  base::FilePath path = GetUsageCachePathForBucketAndType(
-      obfuscated_file_util(), bucket_locator, type, &error);
-  if (error != base::File::FILE_OK)
-    return base::FilePath();
-  return path;
+  return GetUsageCachePathForBucketAndType(obfuscated_file_util(),
+                                           bucket_locator, type);
 }
 
 // static
-base::FilePath
+base::FileErrorOr<base::FilePath>
 SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
     ObfuscatedFileUtil* sandbox_file_util,
     const BucketLocator& bucket_locator,
-    FileSystemType type,
-    base::File::Error* error_out) {
-  DCHECK(error_out);
-  *error_out = base::File::FILE_OK;
+    FileSystemType type) {
   base::FileErrorOr<base::FilePath> base_path =
       sandbox_file_util->GetDirectoryForBucketAndType(
           bucket_locator, GetTypeString(type), /*create=*/false);
   if (base_path.is_error()) {
-    *error_out = base_path.error();
-    return base::FilePath();
+    return base_path;
   }
   return base_path->Append(FileSystemUsageCache::kUsageFileName);
 }

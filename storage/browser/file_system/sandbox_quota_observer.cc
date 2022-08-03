@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/files/file_error_or.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
@@ -33,10 +34,10 @@ SandboxQuotaObserver::~SandboxQuotaObserver() = default;
 
 void SandboxQuotaObserver::OnStartUpdate(const FileSystemURL& url) {
   DCHECK(update_notify_runner_->RunsTasksInCurrentSequence());
-  base::FilePath usage_file_path = GetUsageCachePath(url);
-  if (usage_file_path.empty())
+  base::FileErrorOr<base::FilePath> usage_file_path = GetUsageCachePath(url);
+  if (usage_file_path.is_error() || usage_file_path->empty())
     return;
-  file_system_usage_cache_->IncrementDirty(usage_file_path);
+  file_system_usage_cache_->IncrementDirty(usage_file_path.value());
 }
 
 void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
@@ -49,11 +50,11 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
         base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
   }
 
-  base::FilePath usage_file_path = GetUsageCachePath(url);
-  if (usage_file_path.empty())
+  base::FileErrorOr<base::FilePath> usage_file_path = GetUsageCachePath(url);
+  if (usage_file_path.is_error() || usage_file_path->empty())
     return;
 
-  pending_update_notification_[usage_file_path] += delta;
+  pending_update_notification_[usage_file_path.value()] += delta;
   if (!delayed_cache_update_helper_.IsRunning()) {
     delayed_cache_update_helper_.Start(
         FROM_HERE,
@@ -66,17 +67,17 @@ void SandboxQuotaObserver::OnUpdate(const FileSystemURL& url, int64_t delta) {
 void SandboxQuotaObserver::OnEndUpdate(const FileSystemURL& url) {
   DCHECK(update_notify_runner_->RunsTasksInCurrentSequence());
 
-  base::FilePath usage_file_path = GetUsageCachePath(url);
-  if (usage_file_path.empty())
+  base::FileErrorOr<base::FilePath> usage_file_path = GetUsageCachePath(url);
+  if (usage_file_path.is_error() || usage_file_path->empty())
     return;
 
-  auto found = pending_update_notification_.find(usage_file_path);
+  auto found = pending_update_notification_.find(usage_file_path.value());
   if (found != pending_update_notification_.end()) {
     UpdateUsageCacheFile(found->first, found->second);
     pending_update_notification_.erase(found);
   }
 
-  file_system_usage_cache_->DecrementDirty(usage_file_path);
+  file_system_usage_cache_->DecrementDirty(usage_file_path.value());
 }
 
 void SandboxQuotaObserver::OnAccess(const FileSystemURL& url) {
@@ -97,22 +98,20 @@ void SandboxQuotaObserver::SetUsageCacheEnabled(const url::Origin& origin,
   }
 }
 
-base::FilePath SandboxQuotaObserver::GetUsageCachePath(
+base::FileErrorOr<base::FilePath> SandboxQuotaObserver::GetUsageCachePath(
     const FileSystemURL& url) {
   DCHECK(sandbox_file_util_);
-  base::File::Error error = base::File::FILE_OK;
-  base::FilePath path;
+  base::FileErrorOr<base::FilePath> path = base::FilePath();
   if (url.bucket().has_value()) {
     path = SandboxFileSystemBackendDelegate::GetUsageCachePathForBucketAndType(
-        sandbox_file_util_, url.bucket().value(), url.type(), &error);
+        sandbox_file_util_, url.bucket().value(), url.type());
   } else {
     path =
         SandboxFileSystemBackendDelegate::GetUsageCachePathForStorageKeyAndType(
-            sandbox_file_util_, url.storage_key(), url.type(), &error);
+            sandbox_file_util_, url.storage_key(), url.type());
   }
-  if (error != base::File::FILE_OK) {
+  if (path.is_error()) {
     LOG(WARNING) << "Could not get usage cache path for: " << url.DebugString();
-    return base::FilePath();
   }
   return path;
 }
