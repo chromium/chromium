@@ -82,7 +82,7 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
  private:
   void OnForeignSessionUpdated();
 
-  base::Value GetForeignSessions();
+  base::Value::List GetForeignSessions();
 
   // Returns a string used to show the user when a session was last modified.
   std::u16string FormatSessionTime(const base::Time& time);
@@ -105,7 +105,7 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
 
   void HandleSetForeignSessionCollapsed(const base::Value::List& args);
 
-  base::Value initial_session_list_;
+  absl::optional<base::Value::List> initial_session_list_;
 
   base::CallbackListSubscription foreign_session_updated_subscription_;
 };

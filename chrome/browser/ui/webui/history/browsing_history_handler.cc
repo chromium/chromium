@@ -169,7 +169,7 @@ bool IsEntryInRemoteUserData(
 }
 
 // Converts `entry` to a base::Value::Dict to be owned by the caller.
-base::Value HistoryEntryToValue(
+base::Value::Dict HistoryEntryToValue(
     const BrowsingHistoryService::HistoryEntry& entry,
     BookmarkModel* bookmark_model,
     Profile* profile,
@@ -196,7 +196,7 @@ base::Value HistoryEntryToValue(
   result.Set("time", entry.time.ToJsTime());
 
   // Pass the timestamps in a list.
-  base::Value timestamps(base::Value::Type::LIST);
+  base::Value::List timestamps;
   for (int64_t timestamp : entry.all_timestamps) {
     timestamps.Append(base::Time::FromInternalValue(timestamp).ToJsTime());
   }
@@ -273,7 +273,7 @@ base::Value HistoryEntryToValue(
     result.Set("debug", std::move(debug));
   }
 
-  return base::Value(std::move(result));
+  return result;
 }
 
 }  // namespace
@@ -285,7 +285,7 @@ BrowsingHistoryHandler::BrowsingHistoryHandler()
 BrowsingHistoryHandler::~BrowsingHistoryHandler() = default;
 
 void BrowsingHistoryHandler::OnJavascriptAllowed() {
-  if (!browsing_history_service_ && initial_results_.is_none()) {
+  if (!browsing_history_service_ && !initial_results_) {
     // Page was refreshed, so need to call StartQueryHistory here
     StartQueryHistory();
   }
@@ -299,7 +299,7 @@ void BrowsingHistoryHandler::OnJavascriptAllowed() {
 void BrowsingHistoryHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
   browsing_history_service_ = nullptr;
-  initial_results_ = base::Value();
+  initial_results_ = absl::nullopt;
   deferred_callbacks_.clear();
   query_history_callback_id_.clear();
   remove_visits_callback_.clear();
@@ -351,9 +351,9 @@ void BrowsingHistoryHandler::StartQueryHistory() {
 void BrowsingHistoryHandler::HandleQueryHistory(const base::Value::List& args) {
   AllowJavascript();
   const base::Value& callback_id = args[0];
-  if (!initial_results_.is_none()) {
-    ResolveJavascriptCallback(callback_id, std::move(initial_results_));
-    initial_results_ = base::Value();
+  if (initial_results_.has_value()) {
+    ResolveJavascriptCallback(callback_id, *initial_results_);
+    initial_results_ = absl::nullopt;
     return;
   }
 
@@ -493,23 +493,23 @@ void BrowsingHistoryHandler::OnQueryComplete(
 
   // Convert the result vector into a ListValue.
   DCHECK(tracker);
-  base::Value results_value(base::Value::Type::LIST);
+  base::Value::List results_value;
   for (const BrowsingHistoryService::HistoryEntry& entry : results) {
     results_value.Append(
         HistoryEntryToValue(entry, bookmark_model, profile, tracker, clock_));
   }
 
-  base::Value results_info(base::Value::Type::DICTIONARY);
+  base::Value::Dict results_info;
   // The items which are to be written into results_info_value_ are also
   // described in chrome/browser/resources/history/history.js in @typedef for
   // HistoryQuery. Please update it whenever you add or remove any keys in
   // results_info_value_.
-  results_info.GetDict().Set("term", query_results_info.search_text);
-  results_info.GetDict().Set("finished", query_results_info.reached_beginning);
+  results_info.Set("term", query_results_info.search_text);
+  results_info.Set("finished", query_results_info.reached_beginning);
 
-  base::Value final_results(base::Value::Type::DICTIONARY);
-  final_results.GetDict().Set("info", std::move(results_info));
-  final_results.GetDict().Set("value", std::move(results_value));
+  base::Value::Dict final_results;
+  final_results.Set("info", std::move(results_info));
+  final_results.Set("value", std::move(results_value));
 
   if (query_history_callback_id_.empty()) {
     // This can happen if JS isn't ready yet when the first query comes back.
@@ -518,7 +518,7 @@ void BrowsingHistoryHandler::OnQueryComplete(
   }
 
   ResolveJavascriptCallback(base::Value(query_history_callback_id_),
-                            std::move(final_results));
+                            final_results);
   query_history_callback_id_.clear();
 }
 
