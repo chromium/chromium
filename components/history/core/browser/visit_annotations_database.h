@@ -140,6 +140,18 @@ class VisitAnnotationsDatabase {
   // Called by the derived classes to migrate the older content_annotations
   // table by adding the alternative_title column.
   bool MigrateContentAnnotationsAddAlternativeTitle();
+
+  // Called by the derived classes to delete the 'clusters' and
+  // 'clusters_and_visits' tables so they can be recreated with updated columns.
+  bool MigrateClustersAddColumns();
+
+ private:
+  // Helper to create the 'clusters' table and avoid duplicating the code.
+  bool CreateClustersTable();
+
+  // Helper to create the 'clusters_and_visits' table and avoid duplicating the
+  // code.
+  bool CreateClustersAndVisitsTableAndIndex();
 };
 
 }  // namespace history

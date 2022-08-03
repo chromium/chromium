@@ -867,13 +867,14 @@ struct ClusterVisit {
   float score = 0.0;
 
   // Flagged as true if this cluster visit matches the user's search query.
-  // This value depends on the user's search query, and is not meant to be ever
-  // persisted. It's a UI-state-specific flag that's convenient to buffer here.
+  // This depends on the user's search query, and should not be persisted. It's
+  // a UI-state-specific flag that's convenient to buffer here.
   bool matches_search_query = false;
 
   // A list of visits that have been de-duplicated into this visit. The parent
   // visit is considered the best visit among all the duplicates, and the worse
   // visits are now contained here.
+  // TODO(manukh): Persist to db.
   std::vector<ClusterVisit> duplicate_visits;
 
   // The site engagement score of the URL associated with this visit. This
@@ -890,7 +891,7 @@ struct ClusterVisit {
   // that combines this with the page title as a deduping key.
   GURL url_for_deduping;
 
-  // The normalized URL for the visit (i.e. a SRP URL normalized based on the
+  // The normalized URL for the visit (i.e. an SRP URL normalized based on the
   // user's default search provider).
   GURL normalized_url;
 
@@ -898,13 +899,15 @@ struct ClusterVisit {
   // a consistent experience between WebUI and Mobile.
   std::u16string url_for_display;
 
-  // Which positions matched the search query in various fields.
+  // Which positions matched the search query in various fields. This depends on
+  // the user's search query, and should not be persisted.
   query_parser::Snippet::MatchPositions title_match_positions;
   query_parser::Snippet::MatchPositions url_for_display_match_positions;
 
   // If true, the visit should be "below the fold" and not initially shown in
   // any UI. It is still included in the cluster so that it can be queried over,
-  // as well as deleted when the whole cluster is deleted.
+  // as well as deleted when the whole cluster is deleted. This is computed in
+  // the UI code, and should not be persisted.
   bool hidden = false;
 };
 
@@ -980,10 +983,9 @@ struct Cluster {
 
   int64_t cluster_id = 0;
   std::vector<ClusterVisit> visits;
-  // TODO(manukh): retrieve and persist `keyword_to_data_map`,
-  // `should_show_on_prominent_ui_surfaces, and `label`.
 
   // A map of keywords to additional data.
+  // TODO(manukh): Persist to db.
   base::flat_map<std::u16string, ClusterKeywordData> keyword_to_data_map;
 
   // Whether the cluster should be shown prominently on UI surfaces.
@@ -998,17 +1000,19 @@ struct Cluster {
   absl::optional<std::u16string> raw_label;
 
   // The positions within the label that match the search query, if it exists.
+  // This depends on the user's search query, and should not be persisted.
   query_parser::Snippet::MatchPositions label_match_positions;
 
   // The vector of related searches for the whole cluster. This is derived from
   // the related searches of the constituent visits, and computed in
-  // cross-platform code so we have a consistent set across platforms.
+  // cross-platform code so it's consistent across platforms. Should not be
+  // persisted.
   std::vector<std::string> related_searches;
 
   // A floating point score that's positive if the cluster matches the user's
-  // search query, and zero otherwise. This score changes depending on the
-  // entered search query, so this should never be persisted. It's a
-  // UI-state-specific score that's convenient to buffer here.
+  // search query, and zero otherwise. This depends on the user's search query,
+  // and should not be persisted. It's a UI-state-specific score that's
+  // convenient to buffer here.
   float search_match_score = 0.0;
 };
 

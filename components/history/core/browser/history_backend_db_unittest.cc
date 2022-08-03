@@ -2723,6 +2723,63 @@ TEST_F(HistoryBackendDBTest,
   }
 }
 
+TEST_F(HistoryBackendDBTest, MigrateClustersAddColumns) {
+  ASSERT_NO_FATAL_FAILURE(CreateDBVersion(56));
+
+  sql::Database db;
+  ASSERT_TRUE(db.Open(history_dir_.Append(kHistoryFilename)));
+
+  // Confirm the old 'clusters' columns exist.
+  ASSERT_TRUE(db.DoesColumnExist("clusters", "cluster_id"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters", "score"));
+
+  // Confirm the new 'clusters' columns don't exist.
+  ASSERT_FALSE(
+      db.DoesColumnExist("clusters", "should_show_on_prominent_ui_surfaces"));
+  ASSERT_FALSE(db.DoesColumnExist("clusters", "label"));
+  ASSERT_FALSE(db.DoesColumnExist("clusters", "raw_label"));
+
+  // Confirm the old 'clusters_and_visits' columns exist.
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "cluster_id"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "visit_id"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "score"));
+
+  // Confirm the new 'clusters_and_visits' columns don't exist.
+  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "engagement_score"));
+  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "url_for_deduping"));
+  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "normalized_url"));
+  ASSERT_FALSE(db.DoesColumnExist("clusters_and_visits", "url_for_display"));
+
+  // Re-open the db, triggering migration.
+  CreateBackendAndDatabase();
+
+  // The version should have been updated.
+  ASSERT_GE(HistoryDatabase::GetCurrentVersion(), 57);
+
+  // Confirm the tables still exist.
+  ASSERT_TRUE(db.DoesTableExist("clusters"));
+  ASSERT_TRUE(db.DoesTableExist("clusters_and_visits"));
+
+  // Confirm the new 'clusters' columns exist.
+  ASSERT_TRUE(db.DoesColumnExist("clusters", "cluster_id"));
+  ASSERT_TRUE(
+      db.DoesColumnExist("clusters", "should_show_on_prominent_ui_surfaces"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters", "label"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters", "raw_label"));
+
+  // Confirm 'score' column was removed from 'clusters'.
+  ASSERT_FALSE(db.DoesColumnExist("clusters", "score"));
+
+  // Confirm the new 'clusters_and_visits' columns exist.
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "cluster_id"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "visit_id"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "score"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "engagement_score"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "url_for_deduping"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "normalized_url"));
+  ASSERT_TRUE(db.DoesColumnExist("clusters_and_visits", "url_for_display"));
+}
+
 bool FilterURL(const GURL& url) {
   return url.SchemeIsHTTPOrHTTPS();
 }
