@@ -1317,7 +1317,15 @@ void CompositorFrameReporter::CalculateEventLatencyPrediction(
   // TODO(crbug.com/1334827): Explore calculating predictions for multiple
   // events. Currently only kGestureScrollUpdate event predictions
   // are being calculated, consider including other stages in future changes.
-  auto& event_metrics = events_metrics_.front();
+  auto event_it = std::find_if(
+      events_metrics_.begin(), events_metrics_.end(),
+      [](const std::unique_ptr<EventMetrics>& event) {
+        return event &&
+               event->type() == EventMetrics::EventType::kGestureScrollUpdate;
+      });
+  if (event_it == events_metrics_.end())
+    return;
+  auto& event_metrics = *event_it;
 
   base::TimeTicks dispatch_start_time =
       event_metrics->GetDispatchStageTimestamp(

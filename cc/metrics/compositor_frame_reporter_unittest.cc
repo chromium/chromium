@@ -1287,5 +1287,112 @@ TEST_F(CompositorFrameReporterTest, EventLatencyCompositorPredictions) {
   pipeline_reporter_ = nullptr;
 }
 
+// Tests that when a frame is presented to the user, event latency predictions
+// are reported properly for filtered EventTypes.
+TEST_F(CompositorFrameReporterTest, EventLatencyMultipleEventTypePredictions) {
+  std::vector<int> dispatch_times = {300, 300, 300, 300, 300};
+  // The prediction should only be updated with the ScrollUpdateType event,
+  // other EventType metrics should be ignored.
+  std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
+      CreateEventMetrics(ui::ET_TOUCH_PRESSED),
+      CreateEventMetrics(ui::ET_TOUCH_MOVED),
+      CreateScrollUpdateEventMetricsWithDispatchTimes(
+          false, ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+          dispatch_times),
+      CreateEventMetrics(ui::ET_TOUCH_MOVED)};
+  // The last ET_TOUCH_MOVED event above adds 12 us to transition time.
+  const base::TimeDelta kTouchEventTransition = base::Microseconds(12);
+  EXPECT_THAT(event_metrics_ptrs, Each(NotNull()));
+  EventMetrics::List events_metrics = {
+      std::make_move_iterator(std::begin(event_metrics_ptrs)),
+      std::make_move_iterator(std::end(event_metrics_ptrs))};
+
+  AdvanceNowByUs(300);
+  // Total transition time is 312 us because of the extra 3 us from the
+  // ET_TOUCH_MOVED event.
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kBeginImplFrameToSendBeginMainFrame,
+      Now());
+
+  // For this test there are only 3 compositor substages updated which reflects
+  // a more realistic scenario.
+
+  AdvanceNowByUs(300);  // kBeginImplFrameToSendBeginMainFrame duration
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::kEndActivateToSubmitCompositorFrame,
+      Now());
+
+  AdvanceNowByUs(300);  // kEndActivateToSubmitCompositorFrame duration
+  pipeline_reporter_->StartStage(
+      CompositorFrameReporter::StageType::
+          kSubmitCompositorFrameToPresentationCompositorFrame,
+      Now());
+
+  // kSubmitCompositorFrameToPresentationCompositorFrame duration
+  AdvanceNowByUs(300);
+  pipeline_reporter_->TerminateFrame(
+      CompositorFrameReporter::FrameTerminationStatus::kPresentedFrame, Now());
+
+  pipeline_reporter_->AddEventsMetrics(std::move(events_metrics));
+
+  // Test with no previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch1(kNumDispatchStages,
+                                                  base::Microseconds(-1));
+  IntToTimeDeltaVector(expected_dispatch1,
+                       std::vector<int>{300, 300, 300, 300, 300});
+  base::TimeDelta expected_transition1 =
+      base::Microseconds(300) + kTouchEventTransition;
+  std::vector<base::TimeDelta> expected_compositor1(kNumOfStages,
+                                                    base::Microseconds(-1));
+  IntToTimeDeltaVector(expected_compositor1,
+                       std::vector<int>{300, -1, -1, -1, -1, 300, 300});
+  base::TimeDelta expected_total1 =
+      base::Microseconds(2700) + kTouchEventTransition;
+  CompositorFrameReporter::EventLatencyInfo actual_predictions1 =
+      CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
+                                                kNumOfStages);
+  pipeline_reporter_->CalculateEventLatencyPrediction(
+      actual_predictions1, kLatencyPredictionDeviationThreshold);
+
+  // Test with all previous stage predictions.
+  std::vector<base::TimeDelta> expected_dispatch2(kNumDispatchStages,
+                                                  base::Microseconds(-1));
+  IntToTimeDeltaVector(expected_dispatch2,
+                       std::vector<int>{262, 300, 412, 225, 450});
+  base::TimeDelta expected_transition2 = base::Microseconds(393);
+  std::vector<base::TimeDelta> expected_compositor2(kNumOfStages,
+                                                    base::Microseconds(-1));
+  IntToTimeDeltaVector(expected_compositor2,
+                       std::vector<int>{465, 500, 90, 720, 410, 742, 390});
+  base::TimeDelta expected_total2 = base::Microseconds(5359);
+  CompositorFrameReporter::EventLatencyInfo actual_predictions2 =
+      CompositorFrameReporter::EventLatencyInfo(kNumDispatchStages,
+                                                kNumOfStages);
+  IntToTimeDeltaVector(actual_predictions2.dispatch_durations,
+                       std::vector<int>{250, 300, 450, 200, 500});
+  actual_predictions2.transition_duration = base::Microseconds(420);
+  IntToTimeDeltaVector(actual_predictions2.compositor_durations,
+                       std::vector<int>{520, 500, 90, 720, 410, 890, 420});
+  pipeline_reporter_->CalculateEventLatencyPrediction(
+      actual_predictions2, kLatencyPredictionDeviationThreshold);
+
+  for (int i = 0; i < kNumDispatchStages; i++) {
+    EXPECT_EQ(expected_dispatch1[i], actual_predictions1.dispatch_durations[i]);
+    EXPECT_EQ(expected_dispatch2[i], actual_predictions2.dispatch_durations[i]);
+  }
+  for (int i = 0; i < kNumOfStages; i++) {
+    EXPECT_EQ(expected_compositor1[i],
+              actual_predictions1.compositor_durations[i]);
+    EXPECT_EQ(expected_compositor2[i],
+              actual_predictions2.compositor_durations[i]);
+  }
+  EXPECT_EQ(expected_transition1, actual_predictions1.transition_duration);
+  EXPECT_EQ(expected_total1, actual_predictions1.total_duration);
+  EXPECT_EQ(expected_transition2, actual_predictions2.transition_duration);
+  EXPECT_EQ(expected_total2, actual_predictions2.total_duration);
+
+  pipeline_reporter_ = nullptr;
+}
+
 }  // namespace
 }  // namespace cc
