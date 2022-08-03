@@ -621,8 +621,9 @@ IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
   local_state->SetInteger(metrics::prefs::kMetricsLowEntropySource, 5);
 }
 
+// TODO(crbug.com/1349693): Re-enable this test
 IN_PROC_BROWSER_TEST_F(VariationsHttpHeadersBrowserTest,
-                       CheckLowEntropySourceValue) {
+                       DISABLED_CheckLowEntropySourceValue) {
   std::unique_ptr<const base::FieldTrial::EntropyProvider>
       low_entropy_provider = g_browser_process->GetMetricsServicesManager()
                                  ->CreateEntropyProviderForTesting();
