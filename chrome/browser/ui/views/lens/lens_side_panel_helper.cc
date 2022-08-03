@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/lens/lens_side_panel_helper.h"
+
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -10,7 +11,6 @@
 #include "chrome/browser/ui/views/lens/lens_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/lens/lens_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -60,11 +60,10 @@ views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
     base::OnceClosure close_callback,
     base::OnceClosure escape_callback) {
-  // Our anchor should be the browser view's toolbar so we can position under
-  // it and get appropriate coordinates when the toolbar is hidden and the web
-  // contents fill the entire page.
+  // Our anchor should be the browser view's top container view. This includes
+  // views such as the toolbar, tab strip, etc.
   views::View* anchor =
-      BrowserView::GetBrowserViewForBrowser(browser)->toolbar();
+      BrowserView::GetBrowserViewForBrowser(browser)->top_container();
   return views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<LensRegionSearchInstructionsView>(
           anchor, std::move(close_callback), std::move(escape_callback)));
