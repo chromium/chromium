@@ -9,11 +9,8 @@
 #include <string>
 
 #include "base/types/strong_alias.h"
+#include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace syncer {
 
@@ -79,7 +76,7 @@ using IncludeSensitiveData =
 // Note that |service| may be null.
 // If |include_sensitive_data| is false, Personally Identifiable Information
 // won't be included in the return value.
-std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
+base::Value::Dict ConstructAboutInformation(
     IncludeSensitiveData include_sensitive_data,
     SyncService* service,
     const std::string& channel);

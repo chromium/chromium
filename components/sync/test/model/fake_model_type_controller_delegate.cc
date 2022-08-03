@@ -90,7 +90,7 @@ void FakeModelTypeControllerDelegate::OnSyncStopping(
 
 void FakeModelTypeControllerDelegate::GetAllNodesForDebugging(
     ModelTypeControllerDelegate::AllNodesCallback callback) {
-  std::move(callback).Run(type_, std::make_unique<base::ListValue>());
+  std::move(callback).Run(type_, base::Value::List());
 }
 
 void FakeModelTypeControllerDelegate::RecordMemoryUsageAndCountsHistograms() {}

@@ -26,7 +26,7 @@ struct TypeEntitiesCount;
 class ModelTypeControllerDelegate {
  public:
   using AllNodesCallback =
-      base::OnceCallback<void(ModelType, std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(ModelType, base::Value::List)>;
   using StartCallback =
       base::OnceCallback<void(std::unique_ptr<DataTypeActivationResponse>)>;
 

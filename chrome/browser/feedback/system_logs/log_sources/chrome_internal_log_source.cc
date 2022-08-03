@@ -399,13 +399,12 @@ void ChromeInternalLogSource::PopulateSyncLogs(SystemLogsResponse* response) {
     return;
 
   // Add sync logs to |response|.
-  std::unique_ptr<base::DictionaryValue> sync_logs =
-      syncer::sync_ui_util::ConstructAboutInformation(
-          syncer::sync_ui_util::IncludeSensitiveData(false),
-          SyncServiceFactory::GetForProfile(profile),
-          chrome::GetChannelName(chrome::WithExtendedStable(true)));
+  base::Value::Dict sync_logs = syncer::sync_ui_util::ConstructAboutInformation(
+      syncer::sync_ui_util::IncludeSensitiveData(false),
+      SyncServiceFactory::GetForProfile(profile),
+      chrome::GetChannelName(chrome::WithExtendedStable(true)));
   std::string serialized_sync_logs;
-  JSONStringValueSerializer(&serialized_sync_logs).Serialize(*sync_logs);
+  JSONStringValueSerializer(&serialized_sync_logs).Serialize(sync_logs);
   response->emplace(kSyncDataKey, serialized_sync_logs);
 }
 

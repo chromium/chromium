@@ -238,8 +238,7 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
 
   std::unique_ptr<EntityData> entity_data = bridge_->GetData();
   if (!entity_data) {
-    std::move(callback).Run(syncer::NIGORI,
-                            std::make_unique<base::ListValue>());
+    std::move(callback).Run(syncer::NIGORI, base::Value::List());
     return;
   }
 
@@ -251,25 +250,22 @@ void NigoriModelTypeProcessor::GetAllNodesForDebugging(
     entity_data->modification_time =
         ProtoTimeToTime(metadata.modification_time());
   }
-  std::unique_ptr<base::DictionaryValue> root_node;
-  root_node = entity_data->ToDictionaryValue();
+  base::Value::Dict root_node = entity_data->ToDictionaryValue();
   if (entity_) {
-    root_node->SetKey("metadata",
-                      base::Value::FromUniquePtrValue(
-                          EntityMetadataToValue(entity_->metadata())));
+    root_node.Set("metadata", base::Value::FromUniquePtrValue(
+                                  EntityMetadataToValue(entity_->metadata())));
   }
 
   // Function isTypeRootNode in sync_node_browser.js use PARENT_ID and
   // UNIQUE_SERVER_TAG to check if the node is root node. isChildOf in
   // sync_node_browser.js uses modelType to check if root node is parent of real
   // data node.
-  root_node->SetStringKey("PARENT_ID", "r");
-  root_node->SetStringKey("UNIQUE_SERVER_TAG", "Nigori");
-  root_node->SetStringKey("modelType", ModelTypeToDebugString(NIGORI));
+  root_node.Set("PARENT_ID", "r");
+  root_node.Set("UNIQUE_SERVER_TAG", "Nigori");
+  root_node.Set("modelType", ModelTypeToDebugString(NIGORI));
 
-  auto all_nodes = std::make_unique<base::ListValue>();
-  all_nodes->GetList().Append(
-      base::Value::FromUniquePtrValue(std::move(root_node)));
+  base::Value::List all_nodes;
+  all_nodes.Append(std::move(root_node));
   std::move(callback).Run(syncer::NIGORI, std::move(all_nodes));
 }
 

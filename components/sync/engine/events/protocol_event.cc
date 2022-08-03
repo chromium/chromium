@@ -10,14 +10,13 @@ ProtocolEvent::ProtocolEvent() = default;
 
 ProtocolEvent::~ProtocolEvent() = default;
 
-std::unique_ptr<base::DictionaryValue> ProtocolEvent::ToValue(
-    bool include_specifics) const {
-  auto dict = std::make_unique<base::DictionaryValue>();
-  dict->SetDoubleKey("time", GetTimestamp().ToJsTime());
-  dict->SetStringKey("type", GetType());
-  dict->SetStringKey("details", GetDetails());
-  dict->SetKey("proto", base::Value::FromUniquePtrValue(
-                            GetProtoMessage(include_specifics)));
+base::Value::Dict ProtocolEvent::ToValue(bool include_specifics) const {
+  base::Value::Dict dict;
+  dict.Set("time", GetTimestamp().ToJsTime());
+  dict.Set("type", GetType());
+  dict.Set("details", GetDetails());
+  dict.Set("proto",
+           base::Value::FromUniquePtrValue(GetProtoMessage(include_specifics)));
   return dict;
 }
 

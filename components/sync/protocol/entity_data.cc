@@ -24,27 +24,26 @@ EntityData::~EntityData() = default;
 
 EntityData& EntityData::operator=(EntityData&& other) = default;
 
-std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
+base::Value::Dict EntityData::ToDictionaryValue() {
   // This is used when debugging at sync-internals page. The code in
   // sync_node_browser.js is expecting certain fields names. e.g. CTIME, MTIME,
   // and IS_DIR.
-  std::unique_ptr<base::DictionaryValue> dict =
-      std::make_unique<base::DictionaryValue>();
-  dict->SetKey("SPECIFICS", base::Value::FromUniquePtrValue(
-                                EntitySpecificsToValue(specifics)));
-  dict->SetStringKey("ID", id);
-  dict->SetStringKey("CLIENT_TAG_HASH", client_tag_hash.value());
-  dict->SetStringKey("ORIGINATOR_CACHE_GUID", originator_cache_guid);
-  dict->SetStringKey("ORIGINATOR_CLIENT_ITEM_ID", originator_client_item_id);
-  dict->SetStringKey("SERVER_DEFINED_UNIQUE_TAG", server_defined_unique_tag);
+  base::Value::Dict dict;
+  dict.Set("SPECIFICS",
+           base::Value::FromUniquePtrValue(EntitySpecificsToValue(specifics)));
+  dict.Set("ID", id);
+  dict.Set("CLIENT_TAG_HASH", client_tag_hash.value());
+  dict.Set("ORIGINATOR_CACHE_GUID", originator_cache_guid);
+  dict.Set("ORIGINATOR_CLIENT_ITEM_ID", originator_client_item_id);
+  dict.Set("SERVER_DEFINED_UNIQUE_TAG", server_defined_unique_tag);
   // The string "NON_UNIQUE_NAME" is used in sync-internals to identify the node
   // title.
-  dict->SetStringKey("NON_UNIQUE_NAME", name);
-  dict->SetStringKey("NAME", name);
+  dict.Set("NON_UNIQUE_NAME", name);
+  dict.Set("NAME", name);
   // The string "PARENT_ID" is used in sync-internals to build the node tree.
-  dict->SetStringKey("PARENT_ID", legacy_parent_id);
-  dict->SetStringKey("CTIME", GetTimeDebugString(creation_time));
-  dict->SetStringKey("MTIME", GetTimeDebugString(modification_time));
+  dict.Set("PARENT_ID", legacy_parent_id);
+  dict.Set("CTIME", GetTimeDebugString(creation_time));
+  dict.Set("MTIME", GetTimeDebugString(modification_time));
   return dict;
 }
 

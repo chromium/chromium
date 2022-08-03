@@ -73,7 +73,7 @@ bool ProxyTabsDataTypeController::ShouldRunInTransportOnlyMode() const {
 }
 
 void ProxyTabsDataTypeController::GetAllNodes(AllNodesCallback callback) {
-  std::move(callback).Run(type(), std::make_unique<base::ListValue>());
+  std::move(callback).Run(type(), base::Value::List());
 }
 
 void ProxyTabsDataTypeController::GetTypeEntitiesCount(

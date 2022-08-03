@@ -271,7 +271,7 @@ void TestSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
 void TestSyncService::GetAllNodesForDebugging(
-    base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {}
+    base::OnceCallback<void(base::Value::List)> callback) {}
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 

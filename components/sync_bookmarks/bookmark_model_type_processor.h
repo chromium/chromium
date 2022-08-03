@@ -125,7 +125,7 @@ class BookmarkModelTypeProcessor : public syncer::ModelTypeProcessor,
   // since we iterate over child nodes already in the calling sites.
   void AppendNodeAndChildrenForDebugging(const bookmarks::BookmarkNode* node,
                                          int index,
-                                         base::ListValue* all_nodes) const;
+                                         base::Value::List* all_nodes) const;
 
   // Stores the start callback in between OnSyncStarting() and
   // ModelReadyToSync().

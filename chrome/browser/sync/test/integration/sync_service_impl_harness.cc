@@ -592,13 +592,12 @@ SyncCycleSnapshot SyncServiceImplHarness::GetLastCycleSnapshot() const {
 std::string SyncServiceImplHarness::GetServiceStatus() {
   // This method is only used in test code for debugging purposes, so it's fine
   // to include sensitive data in ConstructAboutInformation().
-  std::unique_ptr<base::DictionaryValue> value(
-      syncer::sync_ui_util::ConstructAboutInformation(
-          syncer::sync_ui_util::IncludeSensitiveData(true), service(),
-          chrome::GetChannelName(chrome::WithExtendedStable(true))));
+  base::Value::Dict value = syncer::sync_ui_util::ConstructAboutInformation(
+      syncer::sync_ui_util::IncludeSensitiveData(true), service(),
+      chrome::GetChannelName(chrome::WithExtendedStable(true)));
   std::string service_status;
   base::JSONWriter::WriteWithOptions(
-      *value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &service_status);
+      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &service_status);
   return service_status;
 }
 

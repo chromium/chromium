@@ -108,8 +108,7 @@ void PasswordSyncControllerDelegateAndroid::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   // This is not implemented because it's not worth the hassle just to display
   // debug information in chrome://sync-internals.
-  std::move(callback).Run(syncer::PASSWORDS,
-                          std::make_unique<base::ListValue>());
+  std::move(callback).Run(syncer::PASSWORDS, base::Value::List());
 }
 
 void PasswordSyncControllerDelegateAndroid::GetTypeEntitiesCountForDebugging(

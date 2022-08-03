@@ -13,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/time.h"
 #include "components/sync/driver/sync_service.h"
@@ -272,11 +271,11 @@ std::string GetConnectionStatus(const SyncTokenStatus& status) {
 // its contents.  Most of the message consists of simple fields in
 // chrome://sync-internals which are grouped into sections and populated with
 // the help of the SyncStat classes defined above.
-std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
+base::Value::Dict ConstructAboutInformation(
     IncludeSensitiveData include_sensitive_data,
     SyncService* service,
     const std::string& channel) {
-  auto about_info = std::make_unique<base::DictionaryValue>();
+  base::Value::Dict about_info;
 
   SectionList section_list;
 
@@ -411,8 +410,7 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
   if (!service) {
     transport_state->Set("Sync service does not exist");
-    about_info->SetKey(kDetailsKey,
-                       section_list.ToValue(include_sensitive_data));
+    about_info.Set(kDetailsKey, section_list.ToValue(include_sensitive_data));
     return about_info;
   }
 
@@ -566,7 +564,7 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
 
   // This list of sections belongs in the 'details' field of the returned
   // message.
-  about_info->SetKey(kDetailsKey, section_list.ToValue(include_sensitive_data));
+  about_info.Set(kDetailsKey, section_list.ToValue(include_sensitive_data));
 
   // The values set from this point onwards do not belong in the
   // details list.
@@ -578,13 +576,13 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
       full_status.sync_protocol_error.error_type != UNKNOWN_ERROR &&
       full_status.sync_protocol_error.error_type != SYNC_SUCCESS;
 
-  about_info->SetKey("actionable_error_detected",
-                     base::Value(actionable_error_detected));
+  about_info.Set("actionable_error_detected",
+                 base::Value(actionable_error_detected));
 
   // NOTE: We won't bother showing any of the following values unless
   // actionable_error_detected is set.
 
-  base::Value actionable_error(base::Value::Type::LIST);
+  base::Value::List actionable_error;
   Stat<std::string> error_type("Error Type", kUninitialized);
   Stat<std::string> action("Action", kUninitialized);
   Stat<std::string> description("Error Description", kUninitialized);
@@ -599,23 +597,22 @@ std::unique_ptr<base::DictionaryValue> ConstructAboutInformation(
   actionable_error.Append(error_type.ToValue());
   actionable_error.Append(action.ToValue());
   actionable_error.Append(description.ToValue());
-  about_info->SetKey("actionable_error", std::move(actionable_error));
+  about_info.Set("actionable_error", std::move(actionable_error));
 
-  about_info->SetKey("unrecoverable_error_detected",
-                     base::Value(service->HasUnrecoverableError()));
+  about_info.Set("unrecoverable_error_detected",
+                 base::Value(service->HasUnrecoverableError()));
 
   if (service->HasUnrecoverableError()) {
     std::string unrecoverable_error_message =
         "Unrecoverable error detected at " +
         service->GetUnrecoverableErrorLocationForDebugging().ToString() + ": " +
         service->GetUnrecoverableErrorMessageForDebugging();
-    about_info->SetKey("unrecoverable_error_message",
-                       base::Value(unrecoverable_error_message));
+    about_info.Set("unrecoverable_error_message",
+                   base::Value(unrecoverable_error_message));
   }
 
-  about_info->SetKey(
-      "type_status",
-      base::Value::FromUniquePtrValue(service->GetTypeStatusMapForDebugging()));
+  about_info.Set("type_status", base::Value::FromUniquePtrValue(
+                                    service->GetTypeStatusMapForDebugging()));
 
   return about_info;
 }

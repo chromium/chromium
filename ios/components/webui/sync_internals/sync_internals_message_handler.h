@@ -68,7 +68,7 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
 
   // Callback used in GetAllNodes.
   void OnReceivedAllNodes(const std::string& callback_id,
-                          std::unique_ptr<base::ListValue> nodes);
+                          base::Value::List nodes);
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -95,7 +95,8 @@ class SyncInternalsMessageHandler : public web::WebUIIOSMessageHandler,
   // return null (e.g. if sync invalidations are not enabled).
   syncer::SyncInvalidationsService* GetSyncInvalidationsService();
 
-  void DispatchEvent(const std::string& name, const base::Value& details_value);
+  void DispatchEvent(const std::string& name,
+                     const base::ValueView details_value);
 
   // A flag used to prevent double-registration with SyncService.
   bool is_registered_ = false;

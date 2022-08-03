@@ -19,10 +19,10 @@ TEST(SyncUIUtilTestAbout, ConstructAboutInformationWithUnrecoverableErrorTest) {
   service.SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
 
-  std::unique_ptr<base::DictionaryValue> strings(ConstructAboutInformation(
-      IncludeSensitiveData(true), &service, std::string()));
+  base::Value::Dict strings = ConstructAboutInformation(
+      IncludeSensitiveData(true), &service, std::string());
 
-  EXPECT_TRUE(strings->FindKey("unrecoverable_error_detected"));
+  EXPECT_TRUE(strings.Find("unrecoverable_error_detected"));
 }
 
 }  // namespace

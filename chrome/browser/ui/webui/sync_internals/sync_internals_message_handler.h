@@ -73,7 +73,7 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
   // Callback used in GetAllNodes.
   void OnReceivedAllNodes(const std::string& callback_id,
-                          std::unique_ptr<base::ListValue> nodes);
+                          base::Value::List nodes);
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -86,9 +86,8 @@ class SyncInternalsMessageHandler : public content::WebUIMessageHandler,
 
  protected:
   using AboutSyncDataDelegate =
-      base::RepeatingCallback<std::unique_ptr<base::DictionaryValue>(
-          syncer::SyncService* service,
-          const std::string& channel)>;
+      base::RepeatingCallback<base::Value::Dict(syncer::SyncService* service,
+                                                const std::string& channel)>;
 
   // Constructor used for unit testing to override dependencies.
   explicit SyncInternalsMessageHandler(

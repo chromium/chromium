@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 
@@ -90,7 +91,7 @@ struct EntityData {
   bool is_deleted() const { return specifics.ByteSize() == 0; }
 
   // Dumps all info into a DictionaryValue and returns it.
-  std::unique_ptr<base::DictionaryValue> ToDictionaryValue();
+  base::Value::Dict ToDictionaryValue();
 
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;

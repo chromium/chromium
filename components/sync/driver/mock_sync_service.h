@@ -123,11 +123,10 @@ class MockSyncService : public SyncService {
               RemoveProtocolEventObserver,
               (ProtocolEventObserver * observer),
               (override));
-  MOCK_METHOD(
-      void,
-      GetAllNodesForDebugging,
-      (base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback),
-      (override));
+  MOCK_METHOD(void,
+              GetAllNodesForDebugging,
+              (base::OnceCallback<void(base::Value::List)> callback),
+              (override));
 
   // KeyedService implementation.
   MOCK_METHOD(void, Shutdown, (), (override));

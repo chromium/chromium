@@ -139,11 +139,11 @@ void SyncInternalsMessageHandler::HandleRequestDataAndRegisterForUpdates(
 void SyncInternalsMessageHandler::HandleRequestListOfTypes(
     const base::Value::List& args) {
   DCHECK(args.empty());
-  base::DictionaryValue event_details;
-  auto type_list = std::make_unique<base::ListValue>();
+  base::Value::Dict event_details;
+  base::Value::List type_list;
   syncer::ModelTypeSet protocol_types = syncer::ProtocolTypes();
   for (syncer::ModelType type : protocol_types) {
-    type_list->Append(ModelTypeToDebugString(type));
+    type_list.Append(ModelTypeToDebugString(type));
   }
   event_details.Set(syncer::sync_ui_util::kTypes, std::move(type_list));
   DispatchEvent(syncer::sync_ui_util::kOnReceivedListOfTypes, event_details);
@@ -153,9 +153,9 @@ void SyncInternalsMessageHandler::HandleRequestIncludeSpecificsInitialState(
     const base::Value::List& args) {
   DCHECK(args.empty());
 
-  base::DictionaryValue value;
-  value.SetBoolean(syncer::sync_ui_util::kIncludeSpecifics,
-                   GetIncludeSpecificsInitialState());
+  base::Value::Dict value;
+  value.Set(syncer::sync_ui_util::kIncludeSpecifics,
+            GetIncludeSpecificsInitialState());
 
   DispatchEvent(syncer::sync_ui_util::kOnReceivedIncludeSpecificsInitialState,
                 value);
@@ -234,12 +234,11 @@ void SyncInternalsMessageHandler::HandleTriggerRefresh(
 
 void SyncInternalsMessageHandler::OnReceivedAllNodes(
     const std::string& callback_id,
-    std::unique_ptr<base::ListValue> nodes) {
+    base::Value::List nodes) {
   base::Value id(callback_id);
-  base::Value nodes_clone = nodes->Clone();
   base::Value success(true);
 
-  base::ValueView args[] = {id, success, nodes_clone};
+  base::ValueView args[] = {id, success, nodes};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", args);
 }
 
@@ -249,9 +248,8 @@ void SyncInternalsMessageHandler::OnStateChanged(syncer::SyncService* sync) {
 
 void SyncInternalsMessageHandler::OnProtocolEvent(
     const syncer::ProtocolEvent& event) {
-  std::unique_ptr<base::DictionaryValue> value(
-      event.ToValue(include_specifics_));
-  DispatchEvent(syncer::sync_ui_util::kOnProtocolEvent, *value);
+  DispatchEvent(syncer::sync_ui_util::kOnProtocolEvent,
+                event.ToValue(include_specifics_));
 }
 
 void SyncInternalsMessageHandler::OnInvalidationReceived(
@@ -261,7 +259,7 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
     return;
   }
 
-  base::ListValue data_types_list;
+  base::Value::List data_types_list;
   for (const auto& data_type_invalidation :
        payload_message.data_type_invalidations()) {
     const int field_number = data_type_invalidation.data_type_id();
@@ -278,11 +276,10 @@ void SyncInternalsMessageHandler::OnInvalidationReceived(
 void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
   // This class serves to display debug information to the user, so it's fine to
   // include sensitive data in ConstructAboutInformation().
-  std::unique_ptr<base::DictionaryValue> value =
-      syncer::sync_ui_util::ConstructAboutInformation(
-          syncer::sync_ui_util::IncludeSensitiveData(true), GetSyncService(),
-          web_ui::GetChannelString());
-  DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, *value);
+  base::Value::Dict value = syncer::sync_ui_util::ConstructAboutInformation(
+      syncer::sync_ui_util::IncludeSensitiveData(true), GetSyncService(),
+      web_ui::GetChannelString());
+  DispatchEvent(syncer::sync_ui_util::kOnAboutInfoUpdated, value);
 
   if (syncer::SyncService* service = GetSyncService()) {
     service->GetEntityCountsForDebugging(
@@ -295,23 +292,20 @@ void SyncInternalsMessageHandler::SendAboutInfoAndEntityCounts() {
 
 void SyncInternalsMessageHandler::OnGotEntityCounts(
     const std::vector<syncer::TypeEntitiesCount>& entity_counts) {
-  base::ListValue count_list;
+  base::Value::List count_list;
   for (const syncer::TypeEntitiesCount& count : entity_counts) {
-    base::DictionaryValue count_dictionary;
-    count_dictionary.SetStringPath(syncer::sync_ui_util::kModelType,
-                                   ModelTypeToDebugString(count.type));
-    count_dictionary.SetIntPath(syncer::sync_ui_util::kEntities,
-                                count.entities);
-    count_dictionary.SetIntPath(syncer::sync_ui_util::kNonTombstoneEntities,
-                                count.non_tombstone_entities);
+    base::Value::Dict count_dictionary;
+    count_dictionary.Set(syncer::sync_ui_util::kModelType,
+                         ModelTypeToDebugString(count.type));
+    count_dictionary.Set(syncer::sync_ui_util::kEntities, count.entities);
+    count_dictionary.Set(syncer::sync_ui_util::kNonTombstoneEntities,
+                         count.non_tombstone_entities);
     count_list.Append(std::move(count_dictionary));
   }
 
-  base::DictionaryValue event_details;
-  event_details.SetPath(syncer::sync_ui_util::kEntityCounts,
-                        std::move(count_list));
-  DispatchEvent(syncer::sync_ui_util::kOnEntityCountsUpdated,
-                std::move(event_details));
+  base::Value::Dict event_details;
+  event_details.Set(syncer::sync_ui_util::kEntityCounts, std::move(count_list));
+  DispatchEvent(syncer::sync_ui_util::kOnEntityCountsUpdated, event_details);
 }
 
 // Gets the SyncService of the underlying original profile. May return null.
@@ -326,7 +320,7 @@ SyncInternalsMessageHandler::GetSyncInvalidationsService() {
 
 void SyncInternalsMessageHandler::DispatchEvent(
     const std::string& name,
-    const base::Value& details_value) {
+    const base::ValueView details_value) {
   base::Value event_name = base::Value(name);
   base::ValueView args[] = {event_name, details_value};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);

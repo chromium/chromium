@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/model/data_type_error_handler.h"
@@ -50,8 +51,7 @@ class DataTypeController : public base::SupportsWeakPtr<DataTypeController> {
   using StopCallback = base::OnceClosure;
 
   using AllNodesCallback =
-      base::OnceCallback<void(const ModelType,
-                              std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(const ModelType, base::Value::List)>;
 
   using TypeMap = std::map<ModelType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;

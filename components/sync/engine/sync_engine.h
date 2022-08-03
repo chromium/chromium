@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
@@ -43,7 +44,7 @@ struct SyncStatus;
 class SyncEngine : public ModelTypeConfigurer {
  public:
   using AllNodesCallback =
-      base::OnceCallback<void(ModelType, std::unique_ptr<base::ListValue>)>;
+      base::OnceCallback<void(ModelType, base::Value::List)>;
   using HttpPostProviderFactoryGetter =
       base::OnceCallback<std::unique_ptr<HttpPostProviderFactory>()>;
 

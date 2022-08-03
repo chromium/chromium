@@ -51,9 +51,9 @@ namespace {
 void NativeGetAllNodesCallback(
     JNIEnv* env,
     const base::android::ScopedJavaGlobalRef<jobject>& callback,
-    std::unique_ptr<base::ListValue> result) {
+    base::Value::List result) {
   std::string json_string;
-  if (!result.get() || !base::JSONWriter::Write(*result, &json_string)) {
+  if (!base::JSONWriter::Write(result, &json_string)) {
     DVLOG(1) << "Writing as JSON failed. Passing empty string to Java code.";
     json_string = std::string();
   }

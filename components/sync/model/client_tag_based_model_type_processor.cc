@@ -1125,8 +1125,7 @@ void ClientTagBasedModelTypeProcessor::GetAllNodesForDebugging(
 void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
     AllNodesCallback callback,
     std::unique_ptr<DataBatch> batch) {
-  std::unique_ptr<base::ListValue> all_nodes =
-      std::make_unique<base::ListValue>();
+  base::Value::List all_nodes;
   std::string type_string = ModelTypeToDebugString(type_);
 
   while (batch->HasNext()) {
@@ -1148,13 +1147,14 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
           ClientTagHash::FromHashed(metadata.client_tag_hash());
     }
 
-    std::unique_ptr<base::DictionaryValue> node = data->ToDictionaryValue();
-    node->SetStringKey("modelType", type_string);
+    base::Value::Dict node = data->ToDictionaryValue();
+    node.Set("modelType", type_string);
     // Copy the whole metadata message into the dictionary (if existing).
     if (entity != nullptr) {
-      node->Set("metadata", EntityMetadataToValue(entity->metadata()));
+      node.Set("metadata", base::Value::FromUniquePtrValue(
+                               EntityMetadataToValue(entity->metadata())));
     }
-    all_nodes->Append(base::Value::FromUniquePtrValue(std::move(node)));
+    all_nodes.Append(std::move(node));
   }
 
   // Create a permanent folder for this data type. Since sync server no longer
@@ -1170,7 +1170,7 @@ void ClientTagBasedModelTypeProcessor::MergeDataWithMetadataForDebugging(
   rootnode.Set("IS_DIR", true);
   rootnode.Set("modelType", type_string);
   rootnode.Set("NON_UNIQUE_NAME", type_string);
-  all_nodes->Append(base::Value(std::move(rootnode)));
+  all_nodes.Append(std::move(rootnode));
 
   std::move(callback).Run(type_, std::move(all_nodes));
 }
