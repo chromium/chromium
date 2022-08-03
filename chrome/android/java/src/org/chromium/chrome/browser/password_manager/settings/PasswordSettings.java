@@ -120,12 +120,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
 
     private String mSearchQuery;
     private Preference mLinkPref;
-    private ChromeSwitchPreference mSavePasswordsSwitch;
-    private ChromeSwitchPreference mAutoSignInSwitch;
-    private ChromeBasePreference mCheckPasswords;
-    private ChromeBasePreference mTrustedVaultBanner;
-    private TextMessagePreference mEmptyView;
-    private boolean mSearchRecorded;
     private Menu mMenu;
 
     private @Nullable PasswordCheck mPasswordCheck;
@@ -174,7 +168,6 @@ public class PasswordSettings extends PreferenceFragmentCompat
 
         if (savedInstanceState.containsKey(SAVED_STATE_SEARCH_QUERY)) {
             mSearchQuery = savedInstanceState.getString(SAVED_STATE_SEARCH_QUERY);
-            mSearchRecorded = mSearchQuery != null; // We record a search when a query is set.
         }
     }
 
@@ -261,13 +254,13 @@ public class PasswordSettings extends PreferenceFragmentCompat
      * Empty screen message when no passwords or exceptions are stored.
      */
     private void displayEmptyScreenMessage() {
-        mEmptyView = new TextMessagePreference(getStyledContext(), null);
-        mEmptyView.setSummary(R.string.saved_passwords_none_text);
-        mEmptyView.setKey(PREF_KEY_SAVED_PASSWORDS_NO_TEXT);
-        mEmptyView.setOrder(ORDER_SAVED_PASSWORDS_NO_TEXT);
-        mEmptyView.setDividerAllowedAbove(false);
-        mEmptyView.setDividerAllowedBelow(false);
-        getPreferenceScreen().addPreference(mEmptyView);
+        TextMessagePreference emptyView = new TextMessagePreference(getStyledContext(), null);
+        emptyView.setSummary(R.string.saved_passwords_none_text);
+        emptyView.setKey(PREF_KEY_SAVED_PASSWORDS_NO_TEXT);
+        emptyView.setOrder(ORDER_SAVED_PASSWORDS_NO_TEXT);
+        emptyView.setDividerAllowedAbove(false);
+        emptyView.setDividerAllowedBelow(false);
+        getPreferenceScreen().addPreference(emptyView);
     }
 
     /**
@@ -511,80 +504,82 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private void createSavePasswordsSwitch() {
-        mSavePasswordsSwitch = new ChromeSwitchPreference(getStyledContext(), null);
-        mSavePasswordsSwitch.setKey(PREF_SAVE_PASSWORDS_SWITCH);
-        mSavePasswordsSwitch.setTitle(R.string.password_settings_save_passwords);
-        mSavePasswordsSwitch.setOrder(ORDER_SWITCH);
-        mSavePasswordsSwitch.setSummaryOn(R.string.text_on);
-        mSavePasswordsSwitch.setSummaryOff(R.string.text_off);
-        mSavePasswordsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+        ChromeSwitchPreference savePasswordsSwitch =
+                new ChromeSwitchPreference(getStyledContext(), null);
+        savePasswordsSwitch.setKey(PREF_SAVE_PASSWORDS_SWITCH);
+        savePasswordsSwitch.setTitle(R.string.password_settings_save_passwords);
+        savePasswordsSwitch.setOrder(ORDER_SWITCH);
+        savePasswordsSwitch.setSummaryOn(R.string.text_on);
+        savePasswordsSwitch.setSummaryOff(R.string.text_off);
+        savePasswordsSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_SERVICE, (boolean) newValue);
             RecordHistogram.recordBooleanHistogram(
                     "PasswordManager.Settings.ToggleOfferToSavePasswords", (boolean) newValue);
             if ((boolean) newValue) PasswordManagerHelper.resetUpmUnenrollment();
             return true;
         });
-        mSavePasswordsSwitch.setManagedPreferenceDelegate(
+        savePasswordsSwitch.setManagedPreferenceDelegate(
                 (ChromeManagedPreferenceDelegate) preference
                 -> getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_SERVICE));
 
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            getPreferenceScreen().addPreference(mSavePasswordsSwitch);
+            getPreferenceScreen().addPreference(savePasswordsSwitch);
         }
 
         // Note: setting the switch state before the preference is added to the screen results in
         // some odd behavior where the switch state doesn't always match the internal enabled state
         // (e.g. the switch will say "On" when save passwords is really turned off), so
         // .setChecked() should be called after .addPreference()
-        mSavePasswordsSwitch.setChecked(
+        savePasswordsSwitch.setChecked(
                 getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_SERVICE));
     }
 
     private void createAutoSignInCheckbox() {
-        mAutoSignInSwitch = new ChromeSwitchPreference(getStyledContext(), null);
-        mAutoSignInSwitch.setKey(PREF_AUTOSIGNIN_SWITCH);
-        mAutoSignInSwitch.setTitle(R.string.passwords_auto_signin_title);
-        mAutoSignInSwitch.setOrder(ORDER_AUTO_SIGNIN_CHECKBOX);
-        mAutoSignInSwitch.setSummary(R.string.passwords_auto_signin_description);
-        mAutoSignInSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+        ChromeSwitchPreference autoSignInSwitch =
+                new ChromeSwitchPreference(getStyledContext(), null);
+        autoSignInSwitch.setKey(PREF_AUTOSIGNIN_SWITCH);
+        autoSignInSwitch.setTitle(R.string.passwords_auto_signin_title);
+        autoSignInSwitch.setOrder(ORDER_AUTO_SIGNIN_CHECKBOX);
+        autoSignInSwitch.setSummary(R.string.passwords_auto_signin_description);
+        autoSignInSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
             getPrefService().setBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN, (boolean) newValue);
             RecordHistogram.recordBooleanHistogram(
                     "PasswordManager.Settings.ToggleAutoSignIn", (boolean) newValue);
             return true;
         });
-        mAutoSignInSwitch.setManagedPreferenceDelegate((ChromeManagedPreferenceDelegate) preference
+        autoSignInSwitch.setManagedPreferenceDelegate((ChromeManagedPreferenceDelegate) preference
                 -> getPrefService().isManagedPreference(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
-        getPreferenceScreen().addPreference(mAutoSignInSwitch);
-        mAutoSignInSwitch.setChecked(
+        getPreferenceScreen().addPreference(autoSignInSwitch);
+        autoSignInSwitch.setChecked(
                 getPrefService().getBoolean(Pref.CREDENTIALS_ENABLE_AUTOSIGNIN));
     }
 
     private void createCheckPasswords() {
-        mCheckPasswords = new ChromeBasePreference(getStyledContext());
-        mCheckPasswords.setKey(PREF_CHECK_PASSWORDS);
-        mCheckPasswords.setTitle(R.string.passwords_check_title);
-        mCheckPasswords.setOrder(ORDER_CHECK_PASSWORDS);
-        mCheckPasswords.setSummary(R.string.passwords_check_description);
+        ChromeBasePreference checkPasswords = new ChromeBasePreference(getStyledContext());
+        checkPasswords.setKey(PREF_CHECK_PASSWORDS);
+        checkPasswords.setTitle(R.string.passwords_check_title);
+        checkPasswords.setOrder(ORDER_CHECK_PASSWORDS);
+        checkPasswords.setSummary(R.string.passwords_check_description);
         // Add a listener which launches a settings page for the leak password check
-        mCheckPasswords.setOnPreferenceClickListener(preference -> {
+        checkPasswords.setOnPreferenceClickListener(preference -> {
             PasswordCheck passwordCheck =
                     PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl());
             passwordCheck.showUi(getStyledContext(), PasswordCheckReferrer.PASSWORD_SETTINGS);
             // Return true to notify the click was handled.
             return true;
         });
-        getPreferenceScreen().addPreference(mCheckPasswords);
+        getPreferenceScreen().addPreference(checkPasswords);
     }
 
     private void createTrustedVaultBanner(
             @StringRes int subLabel, Preference.OnPreferenceClickListener listener) {
-        mTrustedVaultBanner = new ChromeBasePreference(getStyledContext());
-        mTrustedVaultBanner.setKey(PREF_TRUSTED_VAULT_BANNER);
-        mTrustedVaultBanner.setTitle(R.string.android_trusted_vault_banner_label);
-        mTrustedVaultBanner.setOrder(ORDER_TRUSTED_VAULT_BANNER);
-        mTrustedVaultBanner.setSummary(subLabel);
-        mTrustedVaultBanner.setOnPreferenceClickListener(listener);
-        getPreferenceScreen().addPreference(mTrustedVaultBanner);
+        ChromeBasePreference trustedVaultBanner = new ChromeBasePreference(getStyledContext());
+        trustedVaultBanner.setKey(PREF_TRUSTED_VAULT_BANNER);
+        trustedVaultBanner.setTitle(R.string.android_trusted_vault_banner_label);
+        trustedVaultBanner.setOrder(ORDER_TRUSTED_VAULT_BANNER);
+        trustedVaultBanner.setSummary(subLabel);
+        trustedVaultBanner.setOnPreferenceClickListener(listener);
+        getPreferenceScreen().addPreference(trustedVaultBanner);
     }
 
     private void displayManageAccountLink() {
