@@ -67,6 +67,19 @@ class BASE_EXPORT Sequence : public TaskSource {
     explicit Transaction(Sequence* sequence);
   };
 
+  // This indicates where a sequence is stored, used by Sequence to keep track
+  // of its status.
+  enum class SequenceLocation {
+    // Sequence is not present in any queue.
+    kNone,
+    // Sequence is present in queue of immediate sequences.
+    kImmediateQueue,
+    // Sequence is present in queue of delayed sequences.
+    kDelayedQueue,
+    // Sequence is being run by a worker.
+    kInWorker,
+  };
+
   // |traits| is metadata that applies to all Tasks in the Sequence.
   // |task_runner| is a reference to the TaskRunner feeding this TaskSource.
   // |task_runner| can be nullptr only for tasks with no TaskRunner, in which
@@ -95,6 +108,8 @@ class BASE_EXPORT Sequence : public TaskSource {
     return &sequence_local_storage_;
   }
 
+  SequenceLocation GetCurrentLocationForTesting();
+
  private:
   ~Sequence() override;
 
@@ -114,11 +129,13 @@ class BASE_EXPORT Sequence : public TaskSource {
 
   std::atomic<TimeTicks> ready_time_{TimeTicks()};
 
-  // True if a worker is currently associated with a Task from this Sequence.
-  bool has_worker_ = false;
-
   // Holds data stored through the SequenceLocalStorageSlot API.
   SequenceLocalStorageMap sequence_local_storage_;
+
+  // This member will hold the current location of the sequence at any time.
+  // At instantiation, the sequence is not put in any queue yet so the
+  // sequence location is set to |kNone|.
+  std::atomic<SequenceLocation> current_location_{SequenceLocation::kNone};
 };
 
 }  // namespace internal

@@ -233,5 +233,147 @@ TEST(ThreadPoolSequenceTest, TakeEmptySequence) {
   });
 }
 
+// Verify that the sequence sets its current location correctly depending on how
+// it's interacted with.
+TEST(ThreadPoolSequenceTest, PushTakeRemoveTasksWithLocationSetting) {
+  testing::StrictMock<MockTask> mock_task_a;
+  testing::StrictMock<MockTask> mock_task_b;
+
+  scoped_refptr<Sequence> sequence =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::BEST_EFFORT), nullptr,
+                               TaskSourceExecutionMode::kParallel);
+
+  // sequence location is kNone at creation.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kNone);
+
+  Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
+
+  // Push task A in the sequence. WillPushTask() should return true
+  // since sequence is empty.
+  EXPECT_TRUE(sequence_transaction.WillPushTask());
+  sequence_transaction.PushTask(CreateTask(&mock_task_a));
+
+  // WillPushTask is called when a new task is about to be pushed and sequence
+  // will be put in the priority queue or is already in it.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kImmediateQueue);
+
+  // Push task B into the sequence. WillPushTask() should return false.
+  EXPECT_FALSE(sequence_transaction.WillPushTask());
+  sequence_transaction.PushTask(CreateTask(&mock_task_b));
+
+  // WillPushTask is called when a new task is about to be pushed and sequence
+  // will be put in the priority queue or is already in it. Sequence location
+  // should be kImmediateQueue.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kImmediateQueue);
+
+  auto registered_task_source =
+      RegisteredTaskSource::CreateForTesting(sequence);
+
+  registered_task_source.WillRunTask();
+
+  // WillRunTask typically indicate that a worker has called GetWork() and
+  // is ready to run a task so sequence location should have been changed
+  // to kInWorker.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kInWorker);
+
+  // The next task we get when we call Sequence::TakeTask should be Task A.
+  absl::optional<Task> task =
+      registered_task_source.TakeTask(&sequence_transaction);
+
+  // Remove the empty slot. Sequence still has task B. This should return true.
+  EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
+
+  // Sequence is not empty so it will be returned to the priority queue and its
+  // location should be updated to kImmediateQueue.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kImmediateQueue);
+
+  registered_task_source.WillRunTask();
+
+  // WillRunTask typically indicate that a worker has called GetWork() and
+  // is ready to run a task so sequence location should have been changed
+  // to kInWorker.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kInWorker);
+
+  task = registered_task_source.TakeTask(&sequence_transaction);
+
+  // Remove the empty slot. Sequence is be empty. This should return false.
+  EXPECT_FALSE(registered_task_source.DidProcessTask(&sequence_transaction));
+
+  // Sequence is empty so it won't be returned to the priority queue and its
+  // location should be updated to kNone.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kNone);
+}
+
+// Verify that the sequence location stays kInWorker when new tasks are being
+// pushed while it's being processed.
+TEST(ThreadPoolSequenceTest, CheckSequenceLocationInWorker) {
+  testing::StrictMock<MockTask> mock_task_a;
+  testing::StrictMock<MockTask> mock_task_b;
+
+  scoped_refptr<Sequence> sequence =
+      MakeRefCounted<Sequence>(TaskTraits(TaskPriority::BEST_EFFORT), nullptr,
+                               TaskSourceExecutionMode::kParallel);
+
+  Sequence::Transaction sequence_transaction(sequence->BeginTransaction());
+
+  // Push task A in the sequence. WillPushTask() should return true
+  // since sequence is empty.
+  EXPECT_TRUE(sequence_transaction.WillPushTask());
+  sequence_transaction.PushTask(CreateTask(&mock_task_a));
+
+  auto registered_task_source =
+      RegisteredTaskSource::CreateForTesting(sequence);
+
+  registered_task_source.WillRunTask();
+
+  // The next task we get when we call Sequence::TakeTask should be Task A.
+  absl::optional<Task> task_a =
+      registered_task_source.TakeTask(&sequence_transaction);
+
+  // WillRunTask typically indicate that a worker has called GetWork() and
+  // is ready to run a task so sequence location should have been changed
+  // to kInWorker.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kInWorker);
+
+  // Push task B into the sequence. WillPushTask() should return false.
+  EXPECT_FALSE(sequence_transaction.WillPushTask());
+  sequence_transaction.PushTask(CreateTask(&mock_task_b));
+
+  // Sequence is still being processed by a worker so pushing a new task
+  // shouldn't change its location. We should expect it to still be in worker.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kInWorker);
+
+  // Remove the empty slot. Sequence still has task B. This should return true.
+  EXPECT_TRUE(registered_task_source.DidProcessTask(&sequence_transaction));
+
+  // Sequence is not empty so it will be returned to the priority queue and its
+  // location should be updated to kImmediateQueue.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kImmediateQueue);
+
+  registered_task_source.WillRunTask();
+
+  // The next task we get when we call Sequence::TakeTask should be Task B.
+  absl::optional<Task> task_b =
+      registered_task_source.TakeTask(&sequence_transaction);
+
+  // Remove the empty slot. Sequence is be empty. This should return false.
+  EXPECT_FALSE(registered_task_source.DidProcessTask(&sequence_transaction));
+
+  // Sequence is empty so it won't be returned to the priority queue and its
+  // location should be updated to kNone.
+  EXPECT_EQ(sequence->GetCurrentLocationForTesting(),
+            Sequence::SequenceLocation::kNone);
+}
+
 }  // namespace internal
 }  // namespace base

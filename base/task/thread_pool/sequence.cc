@@ -25,13 +25,29 @@ Sequence::Transaction::Transaction(Sequence::Transaction&& other) = default;
 Sequence::Transaction::~Transaction() = default;
 
 bool Sequence::Transaction::WillPushTask() const {
-  // If the sequence is empty before a Task is inserted into it and the pool is
-  // not running any task from this sequence, it should be queued.
-  // Otherwise, one of these must be true:
+  // A sequence should be queued if it's not already in the queue and the pool
+  // is not running any task from it. Otherwise, one of these must be true:
   // - The Sequence is already queued, or,
   // - A thread is running a Task from the Sequence. It is expected to reenqueue
   //   the Sequence once it's done running the Task.
-  return sequence()->queue_.empty() && !sequence()->has_worker_;
+  // Access to |current_location_| can get racy between calls to WillRunTask()
+  // and WillPushTask(). WillRunTask() updates |current_location_| from
+  // kImmediateQueue to kInWorker, it can only be called on sequence when
+  // sequence is already in immediate queue so this behavior is always
+  // guaranteed. Hence, WillPushTask behavior won't be affected no matter if
+  // WillRunTask runs before or after it's called since it returns false
+  // whether |current_location_| is set to kImmediateQueue or kInWorker.
+  auto current_location =
+      sequence()->current_location_.load(std::memory_order_relaxed);
+  if (current_location == Sequence::SequenceLocation::kImmediateQueue) {
+    return false;
+  }
+
+  if (current_location == Sequence::SequenceLocation::kInWorker) {
+    return false;
+  }
+
+  return true;
 }
 
 void Sequence::Transaction::PushTask(Task task) {
@@ -54,6 +70,10 @@ void Sequence::Transaction::PushTask(Task task) {
   }
   sequence()->queue_.push(std::move(task));
 
+  if (should_be_queued)
+    sequence()->current_location_.store(
+        Sequence::SequenceLocation::kImmediateQueue, std::memory_order_relaxed);
+
   // AddRef() matched by manual Release() when the sequence has no more tasks
   // to run (in DidProcessTask() or Clear()).
   if (should_be_queued && sequence()->task_runner())
@@ -63,13 +83,17 @@ void Sequence::Transaction::PushTask(Task task) {
 TaskSource::RunStatus Sequence::WillRunTask() {
   // There should never be a second call to WillRunTask() before DidProcessTask
   // since the RunStatus is always marked a saturated.
-  DCHECK(!has_worker_);
+  DCHECK(current_location_.load(std::memory_order_relaxed) !=
+         Sequence::SequenceLocation::kInWorker);
 
-  // It's ok to access |has_worker_| outside of a Transaction since
+  // It's ok to access |current_location_| outside of a Transaction since
   // WillRunTask() is externally synchronized, always called in sequence with
-  // TakeTask() and DidProcessTask() and only called if |!queue_.empty()|, which
-  // means it won't race with WillPushTask()/PushTask().
-  has_worker_ = true;
+  // TakeTask() and DidProcessTask() and only called if sequence is in immediate
+  // queue. Even though it can get racy with WillPushTask()/PushTask(), the
+  // behavior of each function is not affected as explained in WillPushTask().
+  current_location_.store(Sequence::SequenceLocation::kInWorker,
+                          std::memory_order_relaxed);
+
   return RunStatus::kAllowedSaturated;
 }
 
@@ -80,7 +104,8 @@ size_t Sequence::GetRemainingConcurrency() const {
 Task Sequence::TakeTask(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
 
-  DCHECK(has_worker_);
+  DCHECK(current_location_.load(std::memory_order_relaxed) ==
+         Sequence::SequenceLocation::kInWorker);
   DCHECK(!queue_.empty());
   DCHECK(queue_.front().task);
 
@@ -96,13 +121,19 @@ bool Sequence::DidProcessTask(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   // There should never be a call to DidProcessTask without an associated
   // WillRunTask().
-  DCHECK(has_worker_);
-  has_worker_ = false;
+  DCHECK(current_location_.load(std::memory_order_relaxed) ==
+         Sequence::SequenceLocation::kInWorker);
+
   // See comment on TaskSource::task_runner_ for lifetime management details.
   if (queue_.empty()) {
     ReleaseTaskRunner();
+    current_location_.store(Sequence::SequenceLocation::kNone,
+                            std::memory_order_relaxed);
     return false;
   }
+
+  current_location_.store(Sequence::SequenceLocation::kImmediateQueue,
+                          std::memory_order_relaxed);
   // Let the caller re-enqueue this non-empty Sequence regardless of
   // |run_result| so it can continue churning through this Sequence's tasks and
   // skip/delete them in the proper scope.
@@ -118,8 +149,11 @@ TaskSourceSortKey Sequence::GetSortKey(
 Task Sequence::Clear(TaskSource::Transaction* transaction) {
   CheckedAutoLockMaybe auto_lock(transaction ? nullptr : &lock_);
   // See comment on TaskSource::task_runner_ for lifetime management details.
-  if (!queue_.empty() && !has_worker_)
+  if (!queue_.empty() && current_location_.load(std::memory_order_relaxed) !=
+                             Sequence::SequenceLocation::kInWorker) {
     ReleaseTaskRunner();
+  }
+
   return Task(FROM_HERE,
               base::BindOnce(
                   [](base::queue<Task> queue) {
@@ -151,6 +185,10 @@ Sequence::Transaction Sequence::BeginTransaction() {
 
 ExecutionEnvironment Sequence::GetExecutionEnvironment() {
   return {token_, &sequence_local_storage_};
+}
+
+Sequence::SequenceLocation Sequence::GetCurrentLocationForTesting() {
+  return current_location_.load(std::memory_order_relaxed);
 }
 
 }  // namespace internal
