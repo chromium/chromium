@@ -48,13 +48,37 @@ class CacheStorage final : public ScriptWrappable,
   void Trace(Visitor*) const override;
 
  private:
+  void MaybeInit();
+
+  // The callback passed into IsCacheStorageAllowed is invoked upon success,
+  // and the resolver is rejected upon failure.
+  void IsCacheStorageAllowed(ExecutionContext* context,
+                             ScriptPromiseResolver* resolver,
+                             base::OnceCallback<void()> callback);
+  void OnCacheStorageAllowed(ScriptPromiseResolver* resolver,
+                             base::OnceCallback<void()> callback,
+                             bool allow_access);
+
+  void OpenImpl(ScriptPromiseResolver* resolver,
+                const String& cache_name,
+                int64_t trace_id);
+  void HasImpl(ScriptPromiseResolver* resolver,
+               const String& cache_name,
+               int64_t trace_id);
+  void DeleteImpl(ScriptPromiseResolver* resolver,
+                  const String& cache_name,
+                  int64_t trace_id);
+  void KeysImpl(ScriptPromiseResolver* resolver, int64_t trace_id);
   ScriptPromise MatchImpl(ScriptState*,
                           const Request*,
                           const MultiCacheQueryOptions*);
-
-  bool IsAllowed(ScriptState*);
-
-  void MaybeInit();
+  void MatchImplHelper(ScriptPromiseResolver* resolver,
+                       const MultiCacheQueryOptions* options,
+                       mojom::blink::FetchAPIRequestPtr mojo_request,
+                       mojom::blink::MultiCacheQueryOptionsPtr mojo_options,
+                       bool in_related_fetch_event,
+                       bool in_range_fetch_event,
+                       int64_t trace_id);
 
   Member<GlobalFetch::ScopedFetcher> scoped_fetcher_;
   Member<CacheStorageBlobClientList> blob_client_list_;
