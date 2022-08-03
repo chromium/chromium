@@ -28,8 +28,10 @@ extern const char kAutofillCreditCardFidoAuthEnabled[];
 extern const char kAutofillCreditCardFidoAuthOfferCheckboxState[];
 #endif
 extern const char kAutofillCreditCardSigninPromoImpressionCount[];
-// Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
+// Please use kAutofillCreditCardEnabled, kAutofillIBANEnabled and
+// kAutofillProfileEnabled instead.
 extern const char kAutofillEnabledDeprecated[];
+extern const char kAutofillIBANEnabled[];
 extern const char kAutofillJapanCityFieldMigratedDeprecated[];
 extern const char kAutofillLastVersionDeduped[];
 extern const char kAutofillLastVersionDisusedAddressesDeleted[];
@@ -67,6 +69,10 @@ void SetCreditCardFIDOAuthEnabled(PrefService* prefs, bool enabled);
 bool IsAutofillCreditCardEnabled(const PrefService* prefs);
 
 void SetAutofillCreditCardEnabled(PrefService* prefs, bool enabled);
+
+bool IsAutofillIBANEnabled(const PrefService* prefs);
+
+void SetAutofillIBANEnabled(PrefService* prefs, bool enabled);
 
 bool IsAutofillManaged(const PrefService* prefs);
 

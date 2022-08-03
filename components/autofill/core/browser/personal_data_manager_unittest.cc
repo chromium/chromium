@@ -999,7 +999,24 @@ TEST_F(PersonalDataManagerTest, AddUpdateRemoveProfiles) {
   ExpectSameElements(profiles, personal_data_->GetProfiles());
 }
 
-TEST_F(PersonalDataManagerTest, AddUpdateRemoveIBANs) {
+TEST_F(PersonalDataManagerTest, NoIBANsAddedIfDisabled) {
+  prefs::SetAutofillIBANEnabled(prefs_.get(), false);
+  IBAN iban0(base::GenerateGUID());
+  iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
+  iban0.set_nickname(u"Nickname 0");
+
+  IBAN iban1(base::GenerateGUID());
+  iban1.set_value(u"DE91 1000 0000 0123 4567 89");
+  iban1.set_nickname(u"Nickname 1");
+
+  personal_data_->AddIBAN(iban0);
+  personal_data_->AddIBAN(iban1);
+
+  EXPECT_EQ(0U, personal_data_->GetIBANs().size());
+}
+
+TEST_F(PersonalDataManagerTest, AddUpdateRemoveIbans) {
+  prefs::SetAutofillIBANEnabled(prefs_.get(), true);
   IBAN iban0(base::GenerateGUID());
   iban0.set_value(u"IE12 BOFI 9000 0112 3456 78");
   iban0.set_nickname(u"Nickname 0");
@@ -1981,6 +1998,7 @@ TEST_F(PersonalDataManagerTest, DefaultCountryCodeIsCached) {
   // profiles.
   prefs::SetAutofillProfileEnabled(prefs_.get(), false);
   prefs::SetAutofillCreditCardEnabled(prefs_.get(), false);
+  prefs::SetAutofillIBANEnabled(prefs_.get(), false);
   WaitForOnPersonalDataChanged();
   EXPECT_EQ(default_country,
             personal_data_->GetDefaultCountryCodeForNewAddress());

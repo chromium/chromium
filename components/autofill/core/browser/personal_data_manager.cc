@@ -775,6 +775,9 @@ AutofillProfile* PersonalDataManager::GetProfileFromProfilesByGUID(
 }
 
 void PersonalDataManager::AddIBAN(const IBAN& iban) {
+  if (!IsAutofillIBANEnabled())
+    return;
+
   if (is_off_the_record_ || FindByGUID(local_ibans_, iban.guid()) ||
       !database_helper_->GetLocalDatabase() ||
       FindByContents(local_ibans_, iban)) {
@@ -1424,7 +1427,8 @@ const std::vector<CreditCard*> PersonalDataManager::GetCreditCardsToSuggest(
 }
 
 bool PersonalDataManager::IsAutofillEnabled() const {
-  return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled();
+  return IsAutofillProfileEnabled() || IsAutofillCreditCardEnabled() ||
+         IsAutofillIBANEnabled();
 }
 
 bool PersonalDataManager::IsAutofillProfileEnabled() const {
@@ -1433,6 +1437,10 @@ bool PersonalDataManager::IsAutofillProfileEnabled() const {
 
 bool PersonalDataManager::IsAutofillCreditCardEnabled() const {
   return prefs::IsAutofillCreditCardEnabled(pref_service_);
+}
+
+bool PersonalDataManager::IsAutofillIBANEnabled() const {
+  return prefs::IsAutofillIBANEnabled(pref_service_);
 }
 
 bool PersonalDataManager::IsAutofillWalletImportEnabled() const {

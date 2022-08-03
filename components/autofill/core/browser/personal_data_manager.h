@@ -448,8 +448,8 @@ class PersonalDataManager : public KeyedService,
   // Returns the value of the AutofillCreditCardEnabled pref.
   virtual bool IsAutofillCreditCardEnabled() const;
 
-  // TODO(crbug.com/1340310): Add IsAutofillIbanEnabled after adding
-  // kAutofillIbanEnabled which is related to Enterprise prefs.
+  // Returns the value of the AutofillIBANEnabled pref.
+  virtual bool IsAutofillIBANEnabled() const;
 
   // Returns the value of the AutofillWalletImportEnabled pref.
   virtual bool IsAutofillWalletImportEnabled() const;

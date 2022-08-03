@@ -61,6 +61,9 @@ const char kAutofillEnabledDeprecated[] = "autofill.enabled";
 const char kAutofillJapanCityFieldMigratedDeprecated[] =
     "autofill.japan_city_field_migrated_to_street_address";
 
+// Boolean that is true if Autofill is enabled and allowed to save IBAN data.
+extern const char kAutofillIBANEnabled[] = "autofill.iban_enabled";
+
 // Integer that is set to the last version where the profile deduping routine
 // was run. This routine will be run once per version.
 const char kAutofillLastVersionDeduped[] = "autofill.last_version_deduped";
@@ -134,6 +137,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardEnabled, true,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(
+      prefs::kAutofillIBANEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
 
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
@@ -215,6 +221,14 @@ bool IsAutofillCreditCardEnabled(const PrefService* prefs) {
 
 void SetAutofillCreditCardEnabled(PrefService* prefs, bool enabled) {
   prefs->SetBoolean(kAutofillCreditCardEnabled, enabled);
+}
+
+bool IsAutofillIBANEnabled(const PrefService* prefs) {
+  return prefs->GetBoolean(kAutofillIBANEnabled);
+}
+
+void SetAutofillIBANEnabled(PrefService* prefs, bool enabled) {
+  prefs->SetBoolean(kAutofillIBANEnabled, enabled);
 }
 
 bool IsAutofillManaged(const PrefService* prefs) {
