@@ -577,8 +577,6 @@ void ClientSession::CreateMediaStreams() {
 }
 
 void ClientSession::CreatePerMonitorVideoStreams() {
-  DCHECK(desktop_display_info_.NumDisplays() > 0);
-
   // Create new streams for any monitors that don't already have streams.
   for (int i = 0; i < desktop_display_info_.NumDisplays(); i++) {
     auto id = desktop_display_info_.GetDisplayInfo(i)->id;
