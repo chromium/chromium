@@ -117,4 +117,11 @@ Bug1307307Tracker::VideoAccessError Bug1307307Tracker::GetLastAccessError() {
     return *error;
   return VideoAccessError::kNoError;
 }
+
+bool Bug1307307Tracker::HadNoTextureOwnerError() {
+  auto error = GetLastAccessError();
+  return error == VideoAccessError::kSurfaceTexture_NoTextureOwner ||
+         error == VideoAccessError::kImageReader_NoTextureOwner;
+}
+
 }  // namespace gpu

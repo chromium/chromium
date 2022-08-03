@@ -41,6 +41,8 @@ class Bug1307307Tracker {
                               bool failed);
   void AccessFailed(const Mailbox& mailbox, bool cleared);
 
+  bool HadNoTextureOwnerError();
+
   // Called by SharedImageVideo, thread-safe.
   static void SetLastAccessError(VideoAccessError error);
 

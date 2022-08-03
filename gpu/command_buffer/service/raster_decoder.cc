@@ -2210,6 +2210,29 @@ void RasterDecoderImpl::DoCopySubTextureINTERNAL(
   // Fall back to GPU->GPU copy if src image is not CPU-backed.
   auto source_shared_image = shared_image_representation_factory_.ProduceSkia(
       source_mailbox, shared_context_state_);
+
+  // TODO(vasilyt): Remove this workaround asap. When android video is promoted
+  // to SurfaceView overlay, we won't be able to create representation. We need
+  // to surface error here, but as very short term solution we're using debug
+  // code to make sure image is cleared correctly.
+  if (!source_shared_image && bug_1307307_tracker_.HadNoTextureOwnerError()) {
+    auto* canvas = dest_scoped_access->surface()->getCanvas();
+
+    SkAutoCanvasRestore autoRestore(canvas, true /* do_save */);
+    canvas->clipRect(gfx::RectToSkRect(dest_rect));
+    canvas->clear(SkColors::kBlack);
+
+    if (!dest_shared_image->IsCleared()) {
+      dest_shared_image->SetClearedRect(new_cleared_rect);
+    }
+    FlushAndSubmitIfNecessary(dest_scoped_access->surface(),
+                              dest_scoped_access->TakeEndState(),
+                              std::move(end_semaphores));
+
+    // Note, we're intentionally don't mark this CopySubTexture as succeeded.
+    return;
+  }
+
   if (!source_shared_image) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCopySubTexture",
                        "unknown source image mailbox.");
