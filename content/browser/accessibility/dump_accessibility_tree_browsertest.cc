@@ -1279,6 +1279,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaRequired) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaRequiredEmptyInput) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-required-empty-input.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaRoleDescription) {
   RunAriaTest(FILE_PATH_LITERAL("aria-roledescription.html"));
 }

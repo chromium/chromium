@@ -2664,13 +2664,33 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
   if (GetElement()) {
     ListedElement* form_control = ListedElement::From(*GetElement());
     if (form_control) {
-      if (form_control->IsNotCandidateOrValid())
-        return ax::mojom::blink::InvalidState::kFalse;
-      else
-        return ax::mojom::blink::InvalidState::kTrue;
+      return IsValidFormControl(form_control)
+                 ? ax::mojom::blink::InvalidState::kFalse
+                 : ax::mojom::blink::InvalidState::kTrue;
     }
   }
+
   return AXObject::GetInvalidState();
+}
+
+bool AXNodeObject::IsValidFormControl(ListedElement* form_control) const {
+  // If the control is marked with a custom error, the form control is invalid.
+  if (form_control->CustomError())
+    return false;
+
+  // If the form control checks for validity, and has passed the checks,
+  // then consider it valid.
+  if (form_control->IsNotCandidateOrValid())
+    return true;
+
+  // The control is invalid, as far as CSS is concerned.
+  // However, we ignore a failed check inside of an empty required text field,
+  // in order to avoid redundant verbalizations (screen reader already says
+  // required).
+  if (IsAtomicTextField() && IsRequired() && GetValueForControl().length() == 0)
+    return true;
+
+  return false;
 }
 
 int AXNodeObject::PosInSet() const {
