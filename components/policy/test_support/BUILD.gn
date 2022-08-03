@@ -51,6 +51,12 @@ static_library("test_support") {
     "test_server_helpers.cc",
     "test_server_helpers.h",
   ]
+  if (is_chromeos) {
+    sources += [
+      "fake_dmserver.cc",
+      "fake_dmserver.h",
+    ]
+  }
 
   public_deps = [ "//net:test_support" ]
   deps = [
@@ -64,6 +70,23 @@ static_library("test_support") {
     "//third_party/private_membership:private_membership_proto",
     "//third_party/re2:re2",
   ]
+}
+
+if (is_chromeos) {
+  executable("fake_dmserver") {
+    testonly = true
+    output_name = "fake_dmserver"
+    sources = [ "fake_dmserver_main.cc" ]
+    public_deps = [ "//net:test_support" ]
+    deps = [
+      ":test_support",
+      "//base",
+      "//google_apis:google_apis",
+      "//net",
+      "//third_party/private_membership:private_membership_proto",
+      "//third_party/re2:re2",
+    ]
+  }
 }
 
 source_set("unittests") {
@@ -94,6 +117,10 @@ source_set("unittests") {
     "request_handler_for_unregister_unittest.cc",
     "signature_provider_unittest.cc",
   ]
+
+  if (is_chromeos) {
+    sources += [ "fake_dmserver_unittest.cc" ]
+  }
 
   deps = [
     ":test_support",

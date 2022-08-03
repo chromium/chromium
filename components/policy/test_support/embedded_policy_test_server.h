@@ -68,7 +68,7 @@ class EmbeddedPolicyTestServer {
   virtual ~EmbeddedPolicyTestServer();
 
   // Initializes and waits until the server is ready to accept requests.
-  bool Start();
+  virtual bool Start();
 
   ClientStorage* client_storage() const { return client_storage_.get(); }
 
@@ -100,11 +100,12 @@ class EmbeddedPolicyTestServer {
                             const std::string& raw_policy);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
- private:
+ protected:
   // Default request handler.
-  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+  virtual std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
 
+ private:
   // Request handler for external policy data.
   std::unique_ptr<net::test_server::HttpResponse>
   HandleExternalPolicyDataRequest(const GURL& request);
