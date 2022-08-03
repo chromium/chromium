@@ -1776,8 +1776,36 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
   ASSERT_TRUE(events_.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
-                       NavigateWebContents) {
+struct ScreenshareNavigateTestParams {
+  ScreenshareNavigateTestParams(std::string test_name,
+                                DlpRulesManager::Level level,
+                                std::string histogram_suffix)
+      : test_name(std::move(test_name)),
+        level(level),
+        restriction_set(DlpContentRestriction::kScreenShare, level),
+        histogram_suffix(histogram_suffix) {}
+
+  ~ScreenshareNavigateTestParams() = default;
+
+  std::string test_name;
+  DlpRulesManager::Level level;
+  DlpContentRestrictionSet restriction_set;
+  std::string histogram_suffix;
+};
+
+class ScreenShareNavigateWebContentsTest
+    : public DlpContentManagerAshScreenShareBrowserTest,
+      public testing::WithParamInterface<ScreenshareNavigateTestParams> {
+ public:
+  ScreenShareNavigateWebContentsTest() = default;
+  ~ScreenShareNavigateWebContentsTest() override = default;
+};
+
+// Tests that navigating between unrestricted, restricted, and only reported
+// content during a tab share emits the correct number of reporting events.
+IN_PROC_BROWSER_TEST_P(ScreenShareNavigateWebContentsTest, Reporting) {
+  const ScreenshareNavigateTestParams& param = GetParam();
+
   SetupReporting();
   const GURL restricted_url(kGoogleUrl);
   const GURL reported_url(kExampleUrl);
@@ -1831,33 +1859,41 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
                 GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false),
             0);
 
-  // Navigate to restricted content. Should emit a block event.
-  helper_->UpdateConfidentiality(web_contents, kScreenShareRestricted);
+  // Navigate to restricted content. Should emit a corresponding event.
+  helper_->UpdateConfidentiality(web_contents, param.restriction_set);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), restricted_url));
   helper_->CheckRunningScreenShares();
   ASSERT_EQ(events_.size(), 2u);
   EXPECT_THAT(events_[1],
               IsDlpPolicyEvent(CreateDlpPolicyEvent(
                   kSrcPattern, DlpRulesManager::Restriction::kScreenShare,
-                  DlpRulesManager::Level::kBlock)));
-  EXPECT_TRUE(
-      display_service_tester.GetNotification(kScreenSharePausedNotificationId));
+                  param.level)));
+  if (param.level == DlpRulesManager::Level::kWarn) {
+    // Proceed, as otherwise the screen share would be stopped.
+    DismissDialog(/*allow=*/true);
+  } else {
+    // Paused notification is only shown in block mode.
+    EXPECT_TRUE(display_service_tester.GetNotification(
+        kScreenSharePausedNotificationId));
+  }
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);
+      GetDlpHistogramPrefix() + param.histogram_suffix, true, 1);
 
-  // Navigate to the previous reported content. Should not emit any report
+  // Remember current number of reporting events: further navigation should not
+  // emit any new events.
+  auto prev_events_size = events_.size();
+  // Navigate to the previous reported content. Should not emit any reporting
   // event.
   helper_->UpdateConfidentiality(web_contents, kScreenShareReported);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), reported_url));
   helper_->CheckRunningScreenShares();
-  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_EQ(events_.size(), prev_events_size);
 
-  // Expect resume notification. Screen share should be paused, not blocked,
-  // when navigating to restricted content.
+  // Expect resume notification.
   EXPECT_TRUE(display_service_tester.GetNotification(
       kScreenShareResumedNotificationId));
   histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);
+      GetDlpHistogramPrefix() + param.histogram_suffix, true, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1993,6 +2029,22 @@ INSTANTIATE_TEST_SUITE_P(
                               /*stopped_count=*/0),
     }),
     [](const testing::TestParamInfo<ScreenShareTestParams>& info) {
+      return info.param.test_name;
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    DlpContentManagerAsh,
+    ScreenShareNavigateWebContentsTest,
+    testing::ValuesIn<ScreenshareNavigateTestParams>(
+        {ScreenshareNavigateTestParams(
+             /*test_name=*/"Restricted",
+             /*level=*/DlpRulesManager::Level::kBlock,
+             /*histogram_suffix=*/dlp::kScreenShareBlockedUMA),
+         ScreenshareNavigateTestParams(
+             /*test_name=*/"Warned",
+             /*level=*/DlpRulesManager::Level::kWarn,
+             /*histogram_suffix=*/dlp::kScreenShareWarnedUMA)}),
+    [](const testing::TestParamInfo<ScreenshareNavigateTestParams>& info) {
       return info.param.test_name;
     });
 
