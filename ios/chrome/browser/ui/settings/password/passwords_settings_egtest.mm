@@ -420,6 +420,12 @@ id<GREYMatcher> EditDoneButton() {
     config.features_disabled.push_back(
         syncer::kSyncTrustedVaultPassphrasePromo);
   }
+  if ([self isRunningTest:@selector(testLogFaviconsForPasswordsMetrics)] ||
+      [self isRunningTest:@selector
+            (testLogFaviconsForPasswordsMetricsNoPassword)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kEnableFaviconForPasswords);
+  }
 
   return config;
 }
@@ -2121,7 +2127,7 @@ id<GREYMatcher> EditDoneButton() {
 // Tests that the favicons for the password managers metrics are logged
 // properly when there are passwords with a favicon.
 // TODO(crbug.com/1348585): Fix to re-enable.
-- (void)DISABLED_testLogFaviconsForPasswordsMetrics {
+- (void)testLogFaviconsForPasswordsMetrics {
   // Sign-in and synced user.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];

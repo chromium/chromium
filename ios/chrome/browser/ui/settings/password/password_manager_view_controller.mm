@@ -437,7 +437,10 @@ bool ShouldShowSettingsUI() {
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
-  [self logMetricsForFavicons];
+  // Record favicons metrics only if the feature is enabled.
+  if (IsFaviconEnabled()) {
+    [self logMetricsForFavicons];
+  }
 
   // Restore to default origin offset for cancel button proxy style.
   UIBarButtonItem* cancelButton = [UIBarButtonItem
