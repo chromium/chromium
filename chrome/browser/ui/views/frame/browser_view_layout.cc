@@ -75,7 +75,6 @@ bool IsSideSearchRightAligned() {
 }  // namespace
 
 constexpr int BrowserViewLayout::kMainBrowserContentsMinimumWidth;
-constexpr int BrowserViewLayout::kMainWebContentsMinimumWidth;
 
 class BrowserViewLayout::WebContentsModalDialogHostViews
     : public WebContentsModalDialogHost {
@@ -433,6 +432,10 @@ gfx::Size BrowserViewLayout::GetPreferredSize(const views::View* host) const {
   return gfx::Size();
 }
 
+int BrowserViewLayout::GetMinWebContentsWidthForTesting() const {
+  return GetMinWebContentsWidth();
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // BrowserViewLayout, private:
 
@@ -632,10 +635,11 @@ void BrowserViewLayout::LayoutSidePanelView(
   // should never force the web contents to be smaller than its intended
   // minimum.
   gfx::Rect side_panel_bounds = contents_container_bounds;
-  side_panel_bounds.set_width(std::min(
-      side_panel->GetPreferredSize().width(),
-      contents_container_bounds.width() - kMainWebContentsMinimumWidth -
-          side_panel_separator->GetPreferredSize().width()));
+
+  side_panel_bounds.set_width(
+      std::min(side_panel->GetPreferredSize().width(),
+               contents_container_bounds.width() - GetMinWebContentsWidth() -
+                   side_panel_separator->GetPreferredSize().width()));
 
   // Shrink container bounds to fit the side panel.
   contents_container_bounds.set_width(
@@ -759,6 +763,15 @@ int BrowserViewLayout::GetClientAreaTop() {
   return webui_tab_strip_ && webui_tab_strip_->GetVisible()
              ? webui_tab_strip_->y()
              : toolbar_->y();
+}
+
+int BrowserViewLayout::GetMinWebContentsWidth() const {
+  int min_width =
+      kMainBrowserContentsMinimumWidth -
+      right_aligned_side_panel_->GetMinimumSize().width() -
+      right_aligned_side_panel_separator_->GetPreferredSize().width();
+  DCHECK_GE(min_width, 0);
+  return min_width;
 }
 
 bool BrowserViewLayout::IsInfobarVisible() const {

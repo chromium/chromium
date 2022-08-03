@@ -179,7 +179,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
 
   // TODO(pbos): Reconsider if SetPanelWidth() should add borders, if so move
   // accounting for the border into SetPanelWidth(), otherwise remove this TODO.
-  SetPanelWidth(GetMinimumWidth());
+  SetPanelWidth(GetMinimumSize().width());
 
   SetBorder(views::CreateEmptyBorder(kBorderInsets));
 
@@ -207,9 +207,11 @@ bool SidePanel::IsRightAligned() {
   return GetHorizontalAlignment() == kAlignRight;
 }
 
-int SidePanel::GetMinimumWidth() {
+gfx::Size SidePanel::GetMinimumSize() const {
   const int min_side_panel_contents_width = 320;
-  return min_side_panel_contents_width + kBorderInsets.width();
+  const int min_height = 0;
+  return gfx::Size(min_side_panel_contents_width + kBorderInsets.width(),
+                   min_height);
 }
 
 void SidePanel::ChildVisibilityChanged(View* child) {
@@ -242,7 +244,7 @@ void SidePanel::OnResize(int resize_amount, bool done_resizing) {
   if (done_resizing) {
     starting_width_on_resize_ = -1;
   }
-  const int minimum_width = GetMinimumWidth();
+  const int minimum_width = GetMinimumSize().width();
   if (proposed_width < minimum_width) {
     proposed_width = minimum_width;
   }

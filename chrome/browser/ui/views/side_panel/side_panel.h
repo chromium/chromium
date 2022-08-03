@@ -36,7 +36,7 @@ class SidePanel : public views::View,
   void SetHorizontalAlignment(HorizontalAlignment alignment);
   HorizontalAlignment GetHorizontalAlignment();
   bool IsRightAligned();
-  int GetMinimumWidth();
+  gfx::Size GetMinimumSize() const override;
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;

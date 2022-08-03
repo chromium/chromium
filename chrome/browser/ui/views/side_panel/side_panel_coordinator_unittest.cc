@@ -179,13 +179,18 @@ TEST_F(SidePanelCoordinatorTest, ChangeSidePanelWidthMaxMin) {
   const int large_increment = 1000000000;
   browser_view()->right_aligned_side_panel()->OnResize(large_increment, true);
   browser_view()->Layout();
-  EXPECT_EQ(browser_view()->right_aligned_side_panel()->width(),
-            browser_view()->right_aligned_side_panel()->GetMinimumWidth());
+  EXPECT_EQ(
+      browser_view()->right_aligned_side_panel()->width(),
+      browser_view()->right_aligned_side_panel()->GetMinimumSize().width());
 
   browser_view()->right_aligned_side_panel()->OnResize(-large_increment, true);
   browser_view()->Layout();
+  BrowserViewLayout* layout_manager =
+      static_cast<BrowserViewLayout*>(browser_view()->GetLayoutManager());
+  const int min_web_contents_width =
+      layout_manager->GetMinWebContentsWidthForTesting();
   EXPECT_EQ(browser_view()->contents_web_view()->width(),
-            BrowserViewLayout::kMainWebContentsMinimumWidth);
+            min_web_contents_width);
 }
 
 TEST_F(SidePanelCoordinatorTest, ChangeSidePanelAlignment) {
