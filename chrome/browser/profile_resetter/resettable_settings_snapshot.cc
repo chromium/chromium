@@ -41,13 +41,13 @@
 namespace {
 
 template <class StringType>
-void AddPair(base::ListValue* list,
+void AddPair(base::Value::List& list,
              const std::u16string& key,
              const StringType& value) {
   base::Value::Dict results;
   results.Set("key", key);
   results.Set("value", value);
-  list->GetList().Append(std::move(results));
+  list.Append(std::move(results));
 }
 
 }  // namespace
@@ -233,20 +233,20 @@ void SendSettingsFeedbackProto(const reset_report::ChromeResetReport& report,
       ->DispatchReport(report);
 }
 
-std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
+base::Value::List GetReadableFeedbackForSnapshot(
     Profile* profile,
     const ResettableSettingsSnapshot& snapshot) {
   DCHECK(profile);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  std::unique_ptr<base::ListValue> list(new base::ListValue);
-  AddPair(list.get(),
+  base::Value::List list;
+  AddPair(list,
           l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_LOCALE),
           g_browser_process->GetApplicationLocale());
-  AddPair(list.get(), l10n_util::GetStringUTF16(IDS_VERSION_UI_USER_AGENT),
+  AddPair(list, l10n_util::GetStringUTF16(IDS_VERSION_UI_USER_AGENT),
           embedder_support::GetUserAgent());
   std::string version = version_info::GetVersionNumber();
   version += chrome::GetChannelName(chrome::WithExtendedStable(true));
-  AddPair(list.get(),
+  AddPair(list,
           l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
           version);
 
@@ -259,7 +259,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
     startup_urls += i->host();
   }
   if (!startup_urls.empty()) {
-    AddPair(list.get(),
+    AddPair(list,
             l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_STARTUP_URLS),
             startup_urls);
   }
@@ -285,12 +285,12 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
     default:
       break;
   }
-  AddPair(list.get(),
+  AddPair(list,
           l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_STARTUP_TYPE),
           startup_type);
 
   if (!snapshot.homepage().empty()) {
-    AddPair(list.get(),
+    AddPair(list,
             l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_HOMEPAGE),
             snapshot.homepage());
   }
@@ -298,7 +298,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
   int is_ntp_message_id = snapshot.homepage_is_ntp()
       ? IDS_RESET_PROFILE_SETTINGS_YES
       : IDS_RESET_PROFILE_SETTINGS_NO;
-  AddPair(list.get(),
+  AddPair(list,
           l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_HOMEPAGE_IS_NTP),
           l10n_util::GetStringUTF16(is_ntp_message_id));
 
@@ -306,7 +306,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
       ? IDS_RESET_PROFILE_SETTINGS_YES
       : IDS_RESET_PROFILE_SETTINGS_NO;
   AddPair(
-      list.get(),
+      list,
       l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_SHOW_HOME_BUTTON),
       l10n_util::GetStringUTF16(show_home_button_id));
 
@@ -315,7 +315,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
   DCHECK(service);
   const TemplateURL* dse = service->GetDefaultSearchProvider();
   if (dse) {
-    AddPair(list.get(),
+    AddPair(list,
             l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_DSE),
             dse->GenerateSearchURL(service->search_terms_data()).host());
   }
@@ -330,12 +330,12 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
       shortcut_targets += base::WideToUTF16(i->second);
     }
     if (!shortcut_targets.empty()) {
-      AddPair(list.get(),
+      AddPair(list,
               l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_SHORTCUTS),
               shortcut_targets);
     }
   } else {
-    AddPair(list.get(),
+    AddPair(list,
             l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_SHORTCUTS),
             l10n_util::GetStringUTF16(
                 IDS_RESET_PROFILE_SETTINGS_PROCESSING_SHORTCUTS));
@@ -350,7 +350,7 @@ std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
     extension_names += i->second;
   }
   if (!extension_names.empty()) {
-    AddPair(list.get(),
+    AddPair(list,
             l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_EXTENSIONS),
             extension_names);
   }

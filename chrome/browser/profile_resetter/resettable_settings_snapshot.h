@@ -137,7 +137,7 @@ void SendSettingsFeedbackProto(const reset_report::ChromeResetReport& report,
 
 // Returns list of key/value pairs for all available reported information
 // from the |profile| and some additional fields.
-std::unique_ptr<base::ListValue> GetReadableFeedbackForSnapshot(
+base::Value::List GetReadableFeedbackForSnapshot(
     Profile* profile,
     const ResettableSettingsSnapshot& snapshot);
 
