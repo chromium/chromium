@@ -15,6 +15,7 @@ preprocessed_files = [
   "profile_card_menu_test.ts",
   "profile_picker_app_test.ts",
   "profile_picker_main_view_test.ts",
+  "sync_confirmation_test.ts",
   "test_manage_profiles_browser_proxy.ts",
 ]
 
@@ -27,7 +28,6 @@ non_preprocessed_files = [
   "profile_customization_test.ts",
   "profile_switch_test.ts",
   "profile_type_choice_test.ts",
-  "sync_confirmation_test.ts",
   "test_enterprise_profile_welcome_browser_proxy.ts",
   "test_profile_customization_browser_proxy.ts",
   "test_sync_confirmation_browser_proxy.ts",

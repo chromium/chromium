@@ -10,11 +10,20 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "base/command_line.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "build/chromeos_buildflags.h"');
+GEN('#include "chrome/browser/signin/signin_features.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "components/signin/public/base/signin_buildflags.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
+
+// Keep enum values in sync with the SyncConfirmationStyle enum class defined in
+// signin_url_utils.h.
+const SyncConfirmationStyle = {
+  DEFAULT_MODAL: 0,
+  SIGNIN_INTERCEPT_MODAL: 1,
+  WINDOW: 2,
+};
 
 class SigninBrowserTest extends PolymerTest {
   /** @override */
@@ -24,18 +33,61 @@ class SigninBrowserTest extends PolymerTest {
 }
 
 /**
- * Test fixture for
+ * Test fixture for the default modal dialog version of
  * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
  * This has to be declared as a variable for TEST_F to find it correctly.
  */
-var SigninSyncConfirmationTest = class extends SigninBrowserTest {
+var SigninSyncConfirmationDefaultModalTest = class extends SigninBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://sync-confirmation/test_loader.html?module=signin/sync_confirmation_test.js';
+    return 'chrome://sync-confirmation/test_loader.html?module=' +
+        'signin/sync_confirmation_test.js';
   }
 };
 
-TEST_F('SigninSyncConfirmationTest', 'Dialog', function() {
+TEST_F('SigninSyncConfirmationDefaultModalTest', 'Dialog', function() {
+  mocha.run();
+});
+
+/**
+ * Test fixture for the Signin Intercept modal dialog version of
+ * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
+ * This has to be declared as a variable for TEST_F to find it correctly.
+ */
+var SigninSyncConfirmationSigninInterceptModalTest =
+    class extends SigninBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return `chrome://sync-confirmation/test_loader.html?module=` +
+        `signin/sync_confirmation_test.js&style=` +
+        `${SyncConfirmationStyle.SIGNIN_INTERCEPT_MODAL}`;
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['kSyncPromoAfterSigninIntercept']};
+  }
+};
+
+TEST_F('SigninSyncConfirmationSigninInterceptModalTest', 'Dialog', function() {
+  mocha.run();
+});
+
+/**
+ * Test fixture for the window version of
+ * chrome/browser/resources/signin/sync_confirmation/sync_confirmation.html.
+ * This has to be declared as a variable for TEST_F to find it correctly.
+ */
+var SigninSyncConfirmationWindowTest = class extends SigninBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return `chrome://sync-confirmation/test_loader.html?module=` +
+        `signin/sync_confirmation_test.js&style=` +
+        `${SyncConfirmationStyle.WINDOW}`;
+  }
+};
+
+TEST_F('SigninSyncConfirmationWindowTest', 'Window', function() {
   mocha.run();
 });
 

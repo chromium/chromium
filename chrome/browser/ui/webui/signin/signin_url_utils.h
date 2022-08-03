@@ -9,10 +9,11 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "url/gurl.h"
 
+// Keep enum values in sync with the JS tests defined in signin_browsertest.js.
 enum class SyncConfirmationStyle {
-  kDefaultModal,
-  kSigninInterceptModal,
-  kWindow
+  kDefaultModal = 0,
+  kSigninInterceptModal = 1,
+  kWindow = 2
 };
 
 // Returns which style the sync confirmation page is using, as a default modal
