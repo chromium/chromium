@@ -783,6 +783,11 @@ const char kTouchEventFeatureDetectionDisabled[] = "disabled";
 // should be used only for testing purpose.
 const char kTrustableWebBundleFileUrl[] = "trustable-web-bundles-file-url";
 
+// Accepts a number representing the time-ticks value at the Unix epoch.
+// Since different processes can produce a different value for this due to
+// system clock changes, this allows synchronizing them to a single value.
+const char kTimeTicksAtUnixEpoch[] = "time-ticks-at-unix-epoch";
+
 // Replaces the existing codecs supported in peer connection with a single fake
 // codec entry that create a fake video encoder and decoder.
 const char kUseFakeCodecForPeerConnection[] =

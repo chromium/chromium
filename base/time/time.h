@@ -1084,6 +1084,8 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // in future application runs.
   static TimeTicks UnixEpoch();
 
+  static void SetSharedUnixEpoch(TimeTicks);
+
   // Returns |this| snapped to the next tick, given a |tick_phase| and
   // repeating |tick_interval| in both directions. |this| may be before,
   // after, or equal to the |tick_phase|.
