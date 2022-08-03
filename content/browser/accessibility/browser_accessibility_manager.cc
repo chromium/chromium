@@ -624,8 +624,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
     event_target = RetargetForEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
-    DCHECK(event_target) << "No retargeted event target for "
-                         << targeted_event.node_id;
+    if (!event_target)
+      continue;  // Drop the event if RetargetForEvents() returns nullptr.
     if (!event_target->CanFireEvents())
       continue;
 
@@ -655,8 +655,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 
     event_target = RetargetForEvents(
         event_target, RetargetEventType::RetargetEventTypeGenerated);
-    DCHECK(event_target) << "No retargeted event target for "
-                         << targeted_event.node_id;
+    if (!event_target)
+      continue;  // Drop the event if RetargetForEvents() returns nullptr.
     if (!event_target->CanFireEvents())
       continue;
 
@@ -675,8 +675,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
             ? RetargetEventType::RetargetEventTypeBlinkHover
             : RetargetEventType::RetargetEventTypeBlinkGeneral;
     BrowserAccessibility* retargeted = RetargetForEvents(event_target, type);
-    DCHECK(retargeted) << "No retargeted event target for " << event.id
-                       << " with event type " << event.event_type;
+    if (!retargeted)
+      continue;  // Drop the event if RetargetForEvents() returns nullptr.
     if (!retargeted->CanFireEvents())
       continue;
 
