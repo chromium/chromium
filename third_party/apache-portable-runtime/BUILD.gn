@@ -8,9 +8,6 @@ import("//build/config/android/config.gni")
 config("apr_warnings") {
   if (is_clang) {
     cflags = [
-      # TODO(https://crbug.com/1347085): Investigate, fix.
-      "-Wno-int-conversion",
-
       # TODO(https://crbug.com/1347226): Investigate, fix.
       "-Wno-deprecated-declarations",
     ]
@@ -127,4 +124,9 @@ static_library("apr") {
     # Must be after no_chromium_code so -Wno flags show up after -Wall.
     ":apr_warnings",
   ]
+
+  # See https://crbug.com/1347085 --- older Android's NDK has different strerror_p.
+  if (is_android && default_min_sdk_version < 23) {
+    defines = [ "STRERROR_R_RC_INT" ]
+  }
 }
