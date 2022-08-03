@@ -477,10 +477,9 @@ test("capture_unittests") {
       "video/fuchsia/video_capture_device_factory_fuchsia_test.cc",
       "video/fuchsia/video_capture_device_fuchsia_test.cc",
     ]
-    use_cfv2 = false
-    additional_manifest_fragments = [
-      "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
-    ]
+    use_cfv1 = false
+    additional_manifest_fragments =
+        [ "//media/fuchsia/camera/test_support.shard.test-cml" ]
   }
 
   if (is_mac) {
