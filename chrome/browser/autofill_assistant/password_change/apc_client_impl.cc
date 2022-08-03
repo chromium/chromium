@@ -128,8 +128,15 @@ void ApcClientImpl::OnOnboardingComplete(bool success) {
     return;
   }
 
-  side_panel_coordinator_ = CreateSidePanel();
-  side_panel_coordinator_->AddObserver(this);
+  // Only create a new sidepanel coordinator if there is not one already shown.
+  if (!side_panel_coordinator_) {
+    side_panel_coordinator_ = CreateSidePanel();
+    if (!side_panel_coordinator_) {
+      Stop(/*success=*/false);
+      return;
+    }
+    side_panel_coordinator_->AddObserver(this);
+  }
 
   base::flat_map<std::string, std::string> params_map = {
       {autofill_assistant::public_script_parameters::
