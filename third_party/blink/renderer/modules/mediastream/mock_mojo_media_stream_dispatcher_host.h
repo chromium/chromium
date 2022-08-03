@@ -51,6 +51,10 @@ class MockMojoMediaStreamDispatcherHost
                     mojom::blink::MediaStreamType,
                     bool));
   MOCK_METHOD1(OnStreamStarted, void(const WTF::String&));
+  MOCK_METHOD3(KeepDeviceAliveForTransfer,
+               void(const base::UnguessableToken&,
+                    const base::UnguessableToken&,
+                    KeepDeviceAliveForTransferCallback));
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
   MOCK_METHOD4(Crop,
@@ -59,8 +63,9 @@ class MockMojoMediaStreamDispatcherHost
                     uint32_t,
                     CropCallback));
 #endif
-  MOCK_METHOD3(GetOpenDevice,
+  MOCK_METHOD4(GetOpenDevice,
                void(int32_t request_id,
+                    const base::UnguessableToken&,
                     const base::UnguessableToken&,
                     GetOpenDeviceCallback));
 

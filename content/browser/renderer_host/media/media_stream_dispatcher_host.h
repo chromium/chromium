@@ -111,6 +111,10 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
       blink::mojom::MediaStreamType type,
       bool is_secure) override;
   void OnStreamStarted(const std::string& label) override;
+  void KeepDeviceAliveForTransfer(
+      const base::UnguessableToken& session_id,
+      const base::UnguessableToken& transfer_id,
+      KeepDeviceAliveForTransferCallback callback) override;
 #if !BUILDFLAG(IS_ANDROID)
   void FocusCapturedSurface(const std::string& label, bool focus) override;
   void Crop(const base::UnguessableToken& device_id,
@@ -126,9 +130,11 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
 #endif
   void GetOpenDevice(int32_t page_request_id,
                      const base::UnguessableToken& session_id,
+                     const base::UnguessableToken& transfer_id,
                      GetOpenDeviceCallback callback) override;
   void DoGetOpenDevice(int32_t page_request_id,
                        const base::UnguessableToken& session_id,
+                       const base::UnguessableToken& transfer_id,
                        GetOpenDeviceCallback callback,
                        MediaDeviceSaltAndOrigin salt_and_origin);
   void DoGenerateStreams(

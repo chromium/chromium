@@ -995,6 +995,7 @@ void UserMediaProcessor::GenerateStreamForCurrentRequestInfo(
     GetMediaStreamDispatcherHost()->GetOpenDevice(
         current_request_info_->request_id(),
         *current_request_info_->request()->GetSessionId(),
+        /*transfer_id=*/base::UnguessableToken::Create(),
         WTF::Bind(&UserMediaProcessor::GotOpenDevice, WrapWeakPersistent(this),
                   current_request_info_->request_id()));
   } else {

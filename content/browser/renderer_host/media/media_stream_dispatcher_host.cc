@@ -596,6 +596,17 @@ void MediaStreamDispatcherHost::OnStreamStarted(const std::string& label) {
   media_stream_manager_->OnStreamStarted(label);
 }
 
+void MediaStreamDispatcherHost::KeepDeviceAliveForTransfer(
+    const base::UnguessableToken& session_id,
+    const base::UnguessableToken& transfer_id,
+    KeepDeviceAliveForTransferCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  media_stream_manager_->KeepDeviceAliveForTransfer(
+      render_process_id_, render_frame_id_, requester_id_, session_id,
+      transfer_id, std::move(callback));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
                                                      bool focus) {
@@ -657,6 +668,7 @@ void MediaStreamDispatcherHost::OnCropValidationComplete(
 void MediaStreamDispatcherHost::GetOpenDevice(
     int32_t page_request_id,
     const base::UnguessableToken& session_id,
+    const base::UnguessableToken& transfer_id,
     GetOpenDeviceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -680,12 +692,13 @@ void MediaStreamDispatcherHost::GetOpenDevice(
                      render_frame_id_),
       base::BindOnce(&MediaStreamDispatcherHost::DoGetOpenDevice,
                      weak_factory_.GetWeakPtr(), page_request_id, session_id,
-                     std::move(callback)));
+                     transfer_id, std::move(callback)));
 }
 
 void MediaStreamDispatcherHost::DoGetOpenDevice(
     int32_t page_request_id,
     const base::UnguessableToken& session_id,
+    const base::UnguessableToken& transfer_id,
     GetOpenDeviceCallback callback,
     MediaDeviceSaltAndOrigin salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -697,12 +710,10 @@ void MediaStreamDispatcherHost::DoGetOpenDevice(
     return;
   }
 
-  // TODO(https://crbug.com/1288839): Replace created UnguessableToken with
-  // transfer_id passed to this function.
   media_stream_manager_->GetOpenDevice(
-      session_id, /*transfer_id=*/base::UnguessableToken::Create(),
-      render_process_id_, render_frame_id_, requester_id_, page_request_id,
-      std::move(salt_and_origin), std::move(callback),
+      session_id, transfer_id, render_process_id_, render_frame_id_,
+      requester_id_, page_request_id, std::move(salt_and_origin),
+      std::move(callback),
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceStopped,
                           weak_factory_.GetWeakPtr()),
       base::BindRepeating(&MediaStreamDispatcherHost::OnDeviceChanged,
