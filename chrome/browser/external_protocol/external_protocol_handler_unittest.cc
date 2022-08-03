@@ -334,8 +334,8 @@ TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateUnknown) {
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
   EXPECT_TRUE(
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->DictEmpty());
+          ->GetValueDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+          .empty());
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultBlock) {
@@ -354,8 +354,8 @@ TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultBlock) {
   EXPECT_EQ(ExternalProtocolHandler::BLOCK, block_state);
   EXPECT_TRUE(
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->DictEmpty());
+          ->GetValueDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+          .empty());
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultDontBlock) {
@@ -364,8 +364,8 @@ TEST_F(ExternalProtocolHandlerTest, TestGetBlockStateDefaultDontBlock) {
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
   EXPECT_TRUE(
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->DictEmpty());
+          ->GetValueDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+          .empty());
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
@@ -390,8 +390,8 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
   EXPECT_TRUE(
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->DictEmpty());
+          ->GetValueDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+          .empty());
 
   // Set to DONT_BLOCK for {kScheme_1, example_origin_1}, and make sure it is
   // written to prefs.
@@ -429,23 +429,19 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
       kScheme_2, &example_origin_2, profile_.get());
   EXPECT_EQ(ExternalProtocolHandler::DONT_BLOCK, block_state);
 
-  const base::Value* protocol_origin_pairs =
-      profile_->GetPrefs()->GetDictionary(
+  const base::Value::Dict& protocol_origin_pairs =
+      profile_->GetPrefs()->GetValueDict(
           prefs::kProtocolHandlerPerOriginAllowedProtocols);
-  base::Value expected_allowed_protocols_for_example_origin_1(
-      base::Value::Type::DICTIONARY);
-  expected_allowed_protocols_for_example_origin_1.SetKey(kScheme_1,
-                                                         base::Value(true));
-  const base::Value* allowed_protocols_for_example_origin_1 =
-      protocol_origin_pairs->FindDictKey(example_origin_1.Serialize());
+  base::Value::Dict expected_allowed_protocols_for_example_origin_1;
+  expected_allowed_protocols_for_example_origin_1.Set(kScheme_1, true);
+  const base::Value::Dict* allowed_protocols_for_example_origin_1 =
+      protocol_origin_pairs.FindDict(example_origin_1.Serialize());
   EXPECT_EQ(expected_allowed_protocols_for_example_origin_1,
             *allowed_protocols_for_example_origin_1);
-  base::Value expected_allowed_protocols_for_example_origin_2(
-      base::Value::Type::DICTIONARY);
-  expected_allowed_protocols_for_example_origin_2.SetKey(kScheme_2,
-                                                         base::Value(true));
-  const base::Value* allowed_protocols_for_example_origin_2 =
-      protocol_origin_pairs->FindDictKey(example_origin_2.Serialize());
+  base::Value::Dict expected_allowed_protocols_for_example_origin_2;
+  expected_allowed_protocols_for_example_origin_2.Set(kScheme_2, true);
+  const base::Value::Dict* allowed_protocols_for_example_origin_2 =
+      protocol_origin_pairs.FindDict(example_origin_2.Serialize());
   EXPECT_EQ(expected_allowed_protocols_for_example_origin_2,
             *allowed_protocols_for_example_origin_2);
 
@@ -467,8 +463,8 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockState) {
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
   EXPECT_TRUE(
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->DictEmpty());
+          ->GetValueDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+          .empty());
 }
 
 TEST_F(ExternalProtocolHandlerTest, TestSetBlockStateWithUntrustowrthyOrigin) {
@@ -483,8 +479,8 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockStateWithUntrustowrthyOrigin) {
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
   EXPECT_TRUE(
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->DictEmpty());
+          ->GetValueDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+          .empty());
 
   // Set to DONT_BLOCK for {kScheme, untrustworthy_origin}, and make sure it is
   // not written to prefs. Calling SetBlockState with a non-trustworthy origin
@@ -497,8 +493,8 @@ TEST_F(ExternalProtocolHandlerTest, TestSetBlockStateWithUntrustowrthyOrigin) {
   EXPECT_EQ(ExternalProtocolHandler::UNKNOWN, block_state);
   EXPECT_TRUE(
       profile_->GetPrefs()
-          ->GetDictionary(prefs::kProtocolHandlerPerOriginAllowedProtocols)
-          ->DictEmpty());
+          ->GetValueDict(prefs::kProtocolHandlerPerOriginAllowedProtocols)
+          .empty());
 }
 
 // Test that an opaque initiating origin gets transformed to its precursor
