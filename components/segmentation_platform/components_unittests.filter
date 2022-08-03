@@ -1,4 +1,3 @@
-ConfigParserTest.*
 CustomInputProcessorTest.*
 DatabaseMaintenanceImplTest.*
 DefaultModelManagerTest.*
@@ -18,6 +17,10 @@ OptimizationGuideSegmentationModelProviderTest.*
 PriceTrackingActionModelTest.*
 PriceTrackingInputDelegateTest.*
 QueryTilesModelTest.*
+SegmentInfoDatabaseTest.*
+SegmentResultProviderTest.*
+SegmentScoreProviderTest.*
+SegmentSelectorTest.*
 SegmentationModelExecutorTest.*
 SegmentationPlatformDummyUkmManagerTest.*
 SegmentationPlatformServiceImplEmptyConfigTest.*
@@ -25,10 +28,6 @@ SegmentationPlatformServiceImplMultiClientTest.*
 SegmentationPlatformServiceImplTest.*
 SegmentationResultPrefsTest.*
 SegmentationUkmHelperTest.*
-SegmentInfoDatabaseTest.*
-SegmentResultProviderTest.*
-SegmentScoreProviderTest.*
-SegmentSelectorTest.*
 ServiceProxyImplTest.*
 SignalDatabaseImplTest.*
 SignalFilterProcessorTest.*
@@ -39,8 +38,8 @@ SqlFeatureProcessorTest.*
 StatsTest.*
 TrainingDataCollectorImplTest.*
 UkmConfigTest.*
-UkmDatabaseBackendTest.*
 UkmDataManagerImplTest.*
+UkmDatabaseBackendTest.*
 UkmMetricsTableTest.*
 UkmObserverTest.*
 UkmUrlTableTest.*

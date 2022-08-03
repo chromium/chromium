@@ -60,9 +60,10 @@ std::string GetSegmentationKey(std::vector<std::unique_ptr<Config>>* configs,
     return std::string();
 
   for (const auto& config : *configs) {
-    auto it = config->segments.find(segment_id);
-    if (it != config->segments.end())
+    if (std::find(config->segment_ids.begin(), config->segment_ids.end(),
+                  segment_id) != config->segment_ids.end()) {
       return config->segmentation_key;
+    }
   }
   return std::string();
 }

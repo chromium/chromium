@@ -11,11 +11,10 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
 #include "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #include "components/segmentation_platform/embedder/default_model/price_tracking_action_model.h"
-#include "components/segmentation_platform/internal/config_parser.h"
-#include "components/segmentation_platform/internal/stats.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/model_provider.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/segmentation_platform/default_model/chrome_start_model_android.h"
 #include "chrome/browser/ui/android/start_surface/start_surface_android.h"
-#include "components/commerce/core/commerce_feature_list.h"
 #include "components/query_tiles/switches.h"
 #include "components/segmentation_platform/embedder/default_model/query_tiles_model.h"
 #endif
@@ -68,19 +66,10 @@ constexpr int kQueryTilesDefaultSelectionTTLDays = 28;
 constexpr int kQueryTilesDefaultUnknownTTLDays = 7;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#define SEGMENT_ID_ENTRY(segment)                          \
-  {                                                        \
-    segment, Config::SegmentMetadata {                     \
-      stats::OptimizationTargetToHistogramVariant(segment) \
-    }                                                      \
-  }
-
 #if BUILDFLAG(IS_ANDROID)
 std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kAdaptiveToolbarSegmentationKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
       chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
@@ -89,10 +78,10 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
   // Do not set unknown TTL so that the platform ignores unknown results.
 
   // A hardcoded list of segment IDs known to the segmentation platform.
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB),
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE),
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE),
+  config->segment_ids = {
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE,
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_VOICE,
   };
 
   return config;
@@ -102,10 +91,8 @@ std::unique_ptr<Config> GetConfigForAdaptiveToolbar() {
 std::unique_ptr<Config> GetConfigForDummyFeature() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kDummySegmentationKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY),
+  config->segment_ids = {
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_DUMMY,
   };
   config->segment_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
   config->unknown_selection_ttl = base::Days(kDummyFeatureSelectionTTLDays);
@@ -125,11 +112,8 @@ std::unique_ptr<ModelProvider> GetChromeStartAndroidModel() {
 std::unique_ptr<Config> GetConfigForChromeStartAndroid() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kChromeStartAndroidSegmentationKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(
-          SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID),
+  config->segment_ids = {
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID,
   };
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
@@ -156,10 +140,8 @@ std::unique_ptr<ModelProvider> GetQueryTilesDefaultModel() {
 std::unique_ptr<Config> GetConfigForQueryTiles() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kQueryTilesSegmentationKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES),
+  config->segment_ids = {
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES,
   };
 
   int segment_selection_ttl_days = base::GetFieldTrialParamByFeatureAsInt(
@@ -185,13 +167,11 @@ bool IsEnabledContextualPageActions() {
 std::unique_ptr<Config> GetConfigForContextualPageActions() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kContextualPageActionsKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
   if (base::FeatureList::IsEnabled(
           features::kContextualPageActionPriceTracking) &&
       base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-    config->segments.insert(SEGMENT_ID_ENTRY(
-        SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING));
+    config->segment_ids.push_back(
+        SegmentId::OPTIMIZATION_TARGET_CONTEXTUAL_PAGE_ACTION_PRICE_TRACKING);
   }
   config->on_demand_execution = true;
   return config;
@@ -224,12 +204,8 @@ bool IsLowEngagementFeatureEnabled() {
 std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kChromeLowUserEngagementSegmentationKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(
-          SegmentId::
-              OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT),
+  config->segment_ids = {
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT,
   };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -250,10 +226,8 @@ std::unique_ptr<Config> GetConfigForChromeLowUserEngagement() {
 std::unique_ptr<Config> GetConfigForFeedSegments() {
   auto config = std::make_unique<Config>();
   config->segmentation_key = kFeedUserSegmentationKey;
-  config->segmentation_uma_name =
-      stats::SegmentationKeyToUmaName(config->segmentation_key);
-  config->segments = {
-      SEGMENT_ID_ENTRY(SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER),
+  config->segment_ids = {
+      SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_FEED_USER,
   };
   config->segment_selection_ttl =
       base::Days(base::GetFieldTrialParamByFeatureAsInt(
@@ -278,19 +252,6 @@ std::unique_ptr<ModelProvider> GetFeedUserSegmentDefautlModel() {
 
 std::unique_ptr<ModelProvider> GetContextualPageActionPriceTrackingModel() {
   return std::make_unique<PriceTrackingActionModel>();
-}
-
-void AppendConfigsFromExperiments(
-    std::vector<std::unique_ptr<Config>>& out_configs) {
-  // TODO(crbug.com/1346389): Add logic to find segmentation param from field
-  // trials.
-  std::vector<std::string> params;
-  for (const std::string& param : params) {
-    auto config = ParseConfigFromString(param);
-    if (config) {
-      out_configs.push_back(std::move(config));
-    }
-  }
 }
 
 }  // namespace
@@ -325,8 +286,6 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
           features::kSegmentationPlatformFeedSegmentFeature)) {
     configs.emplace_back(GetConfigForFeedSegments());
   }
-
-  AppendConfigsFromExperiments(configs);
   return configs;
 }
 
