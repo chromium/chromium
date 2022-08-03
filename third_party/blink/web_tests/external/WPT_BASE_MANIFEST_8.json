@@ -152304,6 +152304,19 @@
        {}
       ]
      ],
+     "highlight-painting-soft-hyphens-001.html": [
+      "17b5f6a37c4c2489959f41bed4ca53c352a20a4d",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/highlight-painting-soft-hyphens-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "highlight-paired-cascade-001.html": [
       "09e5abf9a3285ff219044a84b61bbc239f405689",
       [
@@ -284093,6 +284106,10 @@
       "39d26e8387204840d89318ef917d5df0c4021df4",
       []
      ],
+     "highlight-painting-soft-hyphens-001-ref.html": [
+      "f1485ca9226683ac303facb5dadbd38b475c042e",
+      []
+     ],
      "highlight-paired-cascade-001-ref.html": [
       "14687acb841d2b85becead81a0c82b4e4b5b8e9d",
       []
@@ -290982,6 +290999,12 @@
         []
        ]
       }
+     },
+     "support": {
+      "toggle-helpers.js": [
+       "098bf481a169ba920622eb2c5a69bdb81011563e",
+       []
+      ]
      }
     },
     "css-transforms": {
@@ -299309,7 +299332,7 @@
      []
     ],
     "META.yml": [
-     "b8dd4761adff3e18b6552d4a8f02abdcd30a3ea6",
+     "390013487f674fd6973762bbae4c46720b89051a",
      []
     ],
     "OWNERS": [
@@ -316510,7 +316533,7 @@
       ],
       "resources": {
        "popup-styles.css": [
-        "2e603066dfb51acca20f8de5b5e2a2631c412b88",
+        "1a99019f060dfc5218eb42904893ebf3366b8ded",
         []
        ],
        "popup-utils.js": [
@@ -390429,7 +390452,7 @@
        ]
       ],
       "auto-005.html": [
-       "4a920ac806006524bea9f12f3e0d41ff4aa5d4dc",
+       "2b7e03192dc701ebc675a79646cd683fe25081c6",
        [
         null,
         {}
@@ -394361,6 +394384,34 @@
        ]
       ]
      },
+     "toggle-activation-with-groups.tentative.html": [
+      "d026ab368e00eff2157dd07989b7f5480fe590b7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "toggle-activation.tentative.html": [
+      "b087f07fd8109ab52bf7e786442e95d63f54316f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "toggle-creation.tentative.html": [
+      "583e1631d3c8da97bd8682415507d8c306ec08db",
+      [
+       null,
+       {}
+      ]
+     ],
+     "toggle-pseudo-class.tentative.html": [
+      "7fb5c26d91b847dab9f3fa597bbab535fc38afe3",
+      [
+       null,
+       {}
+      ]
+     ],
      "toggle-shorthand-serialization.tentative.html": [
       "682945c2e2bf930f8cbba606a1c7e7be37d6e7a4",
       [
@@ -591054,6 +591105,20 @@
      ],
      "nested-multicol-with-spanner-and-oof-crash-003.html": [
       "e6c1293e3b76488d9bd48fa8234ce4e78737be66",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-multicol-with-spanner-and-oof-crash-004.html": [
+      "5db9163398a7fcbcf1ec76b69471d83891ece3bf",
+      [
+       null,
+       {}
+      ]
+     ],
+     "nested-multicol-with-spanner-and-oof-crash-005.html": [
+      "f7b56c1c985f43dca8b8849d78a8bba95f7a7b94",
       [
        null,
        {}
