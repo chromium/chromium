@@ -351,7 +351,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();
 #endif
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   CertificateReportingServiceFactory::GetInstance();
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   ChromeBrowsingDataLifetimeManagerFactory::GetInstance();
 #endif
