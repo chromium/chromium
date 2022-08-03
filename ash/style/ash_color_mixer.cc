@@ -109,12 +109,8 @@ void AddContentColors(ui::ColorMixer& mixer,
   mixer[kColorAshSeparatorColor] =
       use_dark_color ? ui::ColorTransform(SkColorSetA(SK_ColorWHITE, 0x24))
                      : ui::ColorTransform(SkColorSetA(SK_ColorBLACK, 0x24));
-  mixer[kColorAshTextColorPrimary] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey200)
-                     : ui::ColorTransform(gfx::kGoogleGrey900);
-  mixer[kColorAshTextColorSecondary] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey400)
-                     : ui::ColorTransform(gfx::kGoogleGrey700);
+  mixer[kColorAshTextColorPrimary] = {cros_tokens::kColorPrimary};
+  mixer[kColorAshTextColorSecondary] = {cros_tokens::kColorSecondary};
   mixer[kColorAshTextColorAlert] = use_dark_color
                                        ? ui::ColorTransform(gfx::kGoogleRed300)
                                        : ui::ColorTransform(gfx::kGoogleRed600);
@@ -135,9 +131,8 @@ void AddContentColors(ui::ColorMixer& mixer,
       use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey100)
                      : ui::ColorTransform(gfx::kGoogleGrey800);
   mixer[kColorAshButtonLabelColor] = {kColorAshTextColorPrimary};
-  mixer[kColorAshButtonLabelColorPrimary] =
-      use_dark_color ? ui::ColorTransform(gfx::kGoogleGrey900)
-                     : ui::ColorTransform(gfx::kGoogleGrey200);
+  mixer[kColorAshButtonLabelColorPrimary] = {
+      cros_tokens::kColorPrimaryInverted};
   mixer[kColorAshInvertedTextColorPrimary] = {kColorAshButtonLabelColorPrimary};
   mixer[kColorAshInvertedButtonLabelColor] = {kColorAshButtonLabelColorPrimary};
   mixer[kColorAshButtonLabelColorBlue] = {kColorAshTextColorURL};
@@ -375,13 +370,13 @@ void AddAshColorMixer(ui::ColorProvider* provider,
       cros_tokens::kColorProminentDark};
   mixer[ui::kColorAshActionLabelFocusRingError] = {gfx::kGoogleRed300};
   mixer[ui::kColorAshActionLabelFocusRingHover] =
-      ui::SetAlpha(gfx::kGoogleGrey200, 0x60);
+      ui::SetAlpha(cros_tokens::kColorPrimaryDark, 0x60);
 
   mixer[ui::kColorAshAppListFocusRingNoKeyboard] = {SK_AlphaTRANSPARENT};
   mixer[ui::kColorAshAppListSeparatorLight] = {
       ui::kColorAshSystemUIMenuSeparator};
   mixer[ui::kColorAshAppListSeparator] =
-      ui::SetAlpha(gfx::kGoogleGrey900, 0x24);
+      ui::SetAlpha(cros_tokens::kColorPrimaryLight, 0x24);
   mixer[ui::kColorAshArcInputMenuSeparator] = {SK_ColorGRAY};
   mixer[ui::kColorAshEditFinishFocusRing] = {cros_tokens::kColorProminentDark};
   mixer[ui::kColorAshIconInOobe] = {kIconColorInOobe};
