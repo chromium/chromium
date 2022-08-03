@@ -91,6 +91,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/public/test/url_loader_monitor.h"
 #include "content/public/test/web_transport_simple_test_server.h"
@@ -100,6 +101,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature.h"
@@ -4905,5 +4907,87 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiPrerenderingTest, Load) {
       RunExtensionTest("webrequest", {.page_url = "test_prerendering.html"}))
       << message_;
 }
+
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class WebRequestApiTestWithContextType
+    : public ExtensionWebRequestApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  WebRequestApiTestWithContextType() = default;
+  ~WebRequestApiTestWithContextType() override = default;
+};
+
+namespace {
+
+constexpr char kGetNumRequests[] =
+    R"((async function() {
+         // Wait for any pending storage writes to complete.
+         await flushStorage();
+         chrome.storage.local.get(
+             {requestCount: -1},
+             (result) => {
+               chrome.test.sendScriptResult(result.requestCount);
+             });
+       })();)";
+
+}  // namespace
+
+// Tests that webRequest listeners are persistent across browser restarts.
+IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithContextType,
+                       PRE_TestListenersArePersistent) {
+  // Load an extension that listens for webRequest events.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("webrequest_persistent"));
+  ASSERT_TRUE(extension);
+
+  // Navigate to example.com (a site the extension has access to).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // Validate that we have a single request seen by the extension.
+  base::Value request_count = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), kGetNumRequests,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  ASSERT_TRUE(request_count.is_int());
+  EXPECT_EQ(1, request_count.GetInt());
+}
+
+IN_PROC_BROWSER_TEST_P(WebRequestApiTestWithContextType,
+                       TestListenersArePersistent) {
+  // Find the installed extension and wait for it to fully load.
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  const Extension* extension = nullptr;
+  for (const auto& candidate : extension_registry()->enabled_extensions()) {
+    if (candidate->name() == "Web Request Persistence") {
+      extension = candidate.get();
+      break;
+    }
+  }
+  ASSERT_TRUE(extension);
+  WaitForExtensionViewsToLoad();
+
+  // Navigate once more to example.com.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("example.com", "/simple.html")));
+
+  // We should now have two records seen by the extension.
+  base::Value request_count = BackgroundScriptExecutor::ExecuteScript(
+      profile(), extension->id(), kGetNumRequests,
+      BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+
+  ASSERT_TRUE(request_count.is_int());
+  EXPECT_EQ(2, request_count.GetInt());
+}
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         WebRequestApiTestWithContextType,
+                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         WebRequestApiTestWithContextType,
+                         ::testing::Values(ContextType::kServiceWorker));
 
 }  // namespace extensions
