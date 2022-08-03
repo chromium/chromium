@@ -85,8 +85,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.ChromeOS.HatsSatisfaction{Survey}" units="score"
-    expires_after="2022-08-01">
+    expires_after="2023-01-01">
   <owner>aalsum@chromium.org</owner>
+  <owner>jackshira@google.org</owner>
   <owner>cros-telemetry@google.com</owner>
   <summary>
     Records the overall satisfaction score for HaTS, to be analyzed against
