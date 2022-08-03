@@ -197,6 +197,8 @@ source_set("shopping_service_test_support") {
   testonly = true
 
   sources = [
+    "mock_shopping_service.cc",
+    "mock_shopping_service.h",
     "shopping_service_test_base.cc",
     "shopping_service_test_base.h",
   ]

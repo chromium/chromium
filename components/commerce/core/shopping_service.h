@@ -154,25 +154,32 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   // passes the payload back to the caller via |callback|. At minimum, this
   // API will wait for data from the backend but may provide a "partial" result
   // that doesn't include information from the page on-device.
-  void GetProductInfoForUrl(const GURL& url, ProductInfoCallback callback);
+  virtual void GetProductInfoForUrl(const GURL& url,
+                                    ProductInfoCallback callback);
 
   // This API returns whatever product information is currently available for
   // the specified |url|. This method is less reliable than GetProductInfoForUrl
   // above as it may return an empty or partial result prior to the page being
   // processed or information being available from the backend.
-  absl::optional<ProductInfo> GetAvailableProductInfoForUrl(const GURL& url);
+  virtual absl::optional<ProductInfo> GetAvailableProductInfoForUrl(
+      const GURL& url);
 
-  void GetMerchantInfoForUrl(const GURL& url, MerchantInfoCallback callback);
+  // This API fetches information about a merchant for the provided |url| and
+  // passes the payload back to the caller via |callback|. Call will run after
+  // the fetch is completed. The merchant info object will be null if there is
+  // none available.
+  virtual void GetMerchantInfoForUrl(const GURL& url,
+                                     MerchantInfoCallback callback);
 
   // Create new subscriptions in batch if needed, and will notify |callback| if
   // the operation completes successfully.
-  void Subscribe(
+  virtual void Subscribe(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
 
   // Delete existing subscriptions in batch if needed, and will notify
   // |callback| if the operation completes successfully.
-  void Unsubscribe(
+  virtual void Unsubscribe(
       std::unique_ptr<std::vector<CommerceSubscription>> subscriptions,
       base::OnceCallback<void(bool)> callback);
 
