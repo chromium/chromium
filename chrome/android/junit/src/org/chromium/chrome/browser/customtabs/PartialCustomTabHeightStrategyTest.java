@@ -14,11 +14,12 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.animation.Animator.AnimatorListener;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -288,6 +289,17 @@ public class PartialCustomTabHeightStrategyTest {
                 event(SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, 1500)));
     }
 
+    private void disableSpinnerAnimation() {
+        // Disable animation for the mock spinner view.
+        doAnswer(invocation -> {
+            AnimatorListener listener = invocation.getArgument(0);
+            listener.onAnimationEnd(null);
+            return mViewAnimator;
+        })
+                .when(mViewAnimator)
+                .setListener(any(AnimatorListener.class));
+    }
+
     @Test
     public void moveFromTop() {
         // Drag to the top
@@ -393,7 +405,7 @@ public class PartialCustomTabHeightStrategyTest {
         strategy.onConfigurationChanged(mConfiguration);
 
         assertEquals(0, strategy.getNavbarHeightForTesting());
-        verify(mNavbar, times(1)).setVisibility(View.GONE);
+        verify(mNavbar).setVisibility(View.GONE);
     }
 
     @Test
@@ -466,7 +478,7 @@ public class PartialCustomTabHeightStrategyTest {
         actionMove(handleStrategy, timestamp, 1450);
 
         // Verify the spinner is visible.
-        verify(mSpinnerView, times(1)).setVisibility(View.VISIBLE);
+        verify(mSpinnerView).setVisibility(View.VISIBLE);
         when(mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
         clearInvocations(mSpinnerView);
 
@@ -481,7 +493,74 @@ public class PartialCustomTabHeightStrategyTest {
         actionMove(handleStrategy, timestamp, 650);
 
         // Verify the spinner remained invisible.
-        verify(mSpinnerView, times(0)).setVisibility(anyInt());
+        verify(mSpinnerView, never()).setVisibility(anyInt());
+    }
+
+    @Test
+    public void hideSpinnerWhenReachingFullHeight() {
+        disableSpinnerAnimation();
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+
+        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        assertEquals(1, mAttributeResults.size());
+        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+
+        when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        long timestamp = SystemClock.uptimeMillis();
+        actionDown(handleStrategy, timestamp, 1500);
+        actionMove(handleStrategy, timestamp, 1450);
+
+        // Verify the spinner is visible.
+        verify(mSpinnerView).setVisibility(View.VISIBLE);
+        when(mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
+        clearInvocations(mSpinnerView);
+
+        // Verify the spinner remains invisible after the tab reaches the top.
+        int topY = strategy.getFullyExpandedYCoordinateWithAdjustment();
+        actionMove(handleStrategy, timestamp, topY);
+        verify(mSpinnerView).setVisibility(View.GONE);
+        clearInvocations(mSpinnerView);
+
+        actionMove(handleStrategy, timestamp, topY + 200);
+        verify(mSpinnerView, never()).setVisibility(anyInt());
+    }
+
+    @Test
+    public void hideSpinnerWhenDraggingDown() {
+        disableSpinnerAnimation();
+        PartialCustomTabHeightStrategy strategy = createPcctAtHeight(500);
+
+        verify(mWindow).addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+        verify(mWindow).clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+
+        assertEquals(1, mAttributeResults.size());
+        assertEquals(MAX_INIT_POS, mAttributeResults.get(0).y);
+
+        when(mSpinnerView.getVisibility()).thenReturn(View.GONE);
+
+        PartialCustomTabHandleStrategy handleStrategy =
+                strategy.new PartialCustomTabHandleStrategy(null);
+
+        long timestamp = SystemClock.uptimeMillis();
+        actionDown(handleStrategy, timestamp, 1500);
+        actionMove(handleStrategy, timestamp, 1450);
+
+        // Verify the spinner is visible.
+        verify(mSpinnerView).setVisibility(View.VISIBLE);
+        when(mSpinnerView.getVisibility()).thenReturn(View.VISIBLE);
+        clearInvocations(mSpinnerView);
+
+        // Drag below the initial height.
+        actionMove(handleStrategy, timestamp, MAX_INIT_POS + 100);
+
+        // Verify the spinner goes invisible.
+        verify(mSpinnerView).setVisibility(View.GONE);
     }
 
     private void verifyWindowFlagsSet() {

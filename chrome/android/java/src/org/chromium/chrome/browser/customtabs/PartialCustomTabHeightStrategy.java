@@ -130,6 +130,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private View mToolbarCoordinator;
     private int mToolbarColor;
     private Runnable mPositionUpdater;
+    private boolean mStopShowingSpinner;
 
     // Runnable finishing the activity after the exit animation. Non-null when PCCT is closing.
     @Nullable
@@ -203,6 +204,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                         onMoveStart();
                         mOffsetY = mActivity.getWindow().getAttributes().y - y;
                         mLastPosY = y;
+                        mStopShowingSpinner = false;
                     } else {
                         mVelocityTracker.addMovement(event);
                         updateWindowPos((int) (y + mOffsetY));
@@ -253,7 +255,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             int currentY = mActivity.getWindow().getAttributes().y;
             int finalY = currentY + flingDistance;
             int topY = getFullyExpandedYCoordinateWithAdjustment();
-            int initialY = mDisplayHeight - mInitialHeight;
+            int initialY = initialY();
             int bottomY = mDisplayHeight - mNavbarHeight;
 
             int start = 0;
@@ -384,6 +386,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
         setContentsHeight();
         updateNavbarVisibility(true);
+    }
+
+    private int initialY() {
+        return mDisplayHeight - mInitialHeight;
     }
 
     private @Px int getNavbarHeight() {
@@ -588,7 +594,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private void updateWindowPos(@Px int y) {
         // Do not allow the Window to go above the minimum threshold capped by the status
         // bar and (optionally) the 90%-height adjustment.
-        y = MathUtils.clamp(y, getFullyExpandedYCoordinateWithAdjustment(), mMaxHeight);
+        int topY = getFullyExpandedYCoordinateWithAdjustment();
+        y = MathUtils.clamp(y, topY, mMaxHeight);
         WindowManager.LayoutParams attributes = mActivity.getWindow().getAttributes();
         if (attributes.y == y) return;
 
@@ -596,16 +603,32 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity.getWindow().setAttributes(attributes);
         if (mFinishRunnable != null) return;
 
+        // Starting dragging from INITIAL_HEIGHT state, we can hide the spinner if the tab:
+        // 1) reaches full height
+        // 2) is dragged below the initial height
+        if (mStatus == HeightStatus.INITIAL_HEIGHT && (y <= topY || y > initialY())
+                && isSpinnerVisible()) {
+            hideSpinnerView();
+            if (y <= topY) {
+                // Once reaching full-height, tab can hide the spinner permanently till
+                // the finger is lifted. Keep it hidden.
+                mStopShowingSpinner = true;
+                return;
+            }
+        }
         // Show the spinner lazily, only when the tab is dragged _up_, which requires showing
         // more area than initial state.
-        if (mStatus != HeightStatus.TRANSITION
-                && (mSpinnerView == null || mSpinnerView.getVisibility() != View.VISIBLE)
+        if (!mStopShowingSpinner && mStatus != HeightStatus.TRANSITION && !isSpinnerVisible()
                 && y < mDraggingStartY) {
             showSpinnerView();
         }
-        if (mSpinnerView != null) {
+        if (isSpinnerVisible()) {
             centerSpinnerVertically((ViewGroup.LayoutParams) mSpinnerView.getLayoutParams());
         }
+    }
+
+    private boolean isSpinnerVisible() {
+        return mSpinnerView != null && mSpinnerView.getVisibility() == View.VISIBLE;
     }
 
     private void onMoveStart() {
@@ -618,17 +641,21 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             mFinishRunnable.run();
             return;
         }
+        hideSpinnerView();
+        updateNavbarVisibility(true);
+    }
+
+    private void hideSpinnerView() {
         setContentsHeight();
 
         // TODO(crbug.com/1328555): Look into observing a view resize event to ensure the fade
         // animation can always cover the transition artifact.
-        if (mSpinnerView != null && mSpinnerView.getVisibility() == View.VISIBLE) {
+        if (isSpinnerVisible()) {
             mSpinnerView.animate()
                     .alpha(0f)
                     .setDuration(SPINNER_FADEOUT_DURATION_MS)
                     .setListener(mSpinnerFadeoutAnimatorListener);
         }
-        updateNavbarVisibility(true);
     }
 
     private void showSpinnerView() {
@@ -842,7 +869,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         return getStatusBarHeight();
     }
 
-    private @Px int getFullyExpandedYCoordinateWithAdjustment() {
+    @VisibleForTesting
+    @Px
+    int getFullyExpandedYCoordinateWithAdjustment() {
         // Adding |mFullyExpandedAdjustmentHeight| to the y coordinate because the
         // coordinates system's origin is at the top left and y is growing in downward, larger y
         // means smaller height of the bottom sheet CCT.
