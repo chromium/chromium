@@ -4,9 +4,6 @@
 
 package org.chromium.browserfragment.interfaces;
 
-import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
-
-interface ITabProxy {
-  void setActive() = 1;
-  ITabNavigationControllerProxy getNavigationController() = 2;
+oneway interface IRequestNavigationCallback {
+    void canNavigate(in boolean result) = 1;
 }

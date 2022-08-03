@@ -6,6 +6,6 @@ package org.chromium.browserfragment.interfaces;
 
 import android.view.SurfaceControlViewHost.SurfacePackage;
 
-interface IBrowserSandboxCallback {
+oneway interface IBrowserSandboxCallback {
     void onBrowserProcessInitialized() = 1;
 }

@@ -4,10 +4,10 @@
 
 package org.chromium.weblayer;
 
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 
+import org.chromium.browserfragment.interfaces.ITabNavigationControllerProxy;
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
 /**
@@ -17,26 +17,21 @@ import org.chromium.browserfragment.interfaces.ITabProxy;
 class TabProxy extends ITabProxy.Stub {
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
+    private final ITabNavigationControllerProxy mTabNavigationControllerProxy;
+
     private int mTabId;
     private String mGuid;
 
     TabProxy(Tab tab) {
         mTabId = tab.getId();
         mGuid = tab.getGuid();
+
+        mTabNavigationControllerProxy =
+                new TabNavigationControllerProxy(tab.getNavigationController());
     }
 
     private Tab getTab() {
         return Tab.getTabById(mTabId);
-    }
-
-    @Override
-    public void navigate(String uri) {
-        mHandler.post(() -> {
-            NavigateParams.Builder navigateParamsBuilder =
-                    new NavigateParams.Builder().disableIntentProcessing();
-            getTab().getNavigationController().navigate(
-                    Uri.parse(uri), navigateParamsBuilder.build());
-        });
     }
 
     @Override
@@ -45,5 +40,10 @@ class TabProxy extends ITabProxy.Stub {
             Tab tab = getTab();
             tab.getBrowser().setActiveTab(tab);
         });
+    }
+
+    @Override
+    public ITabNavigationControllerProxy getNavigationController() {
+        return mTabNavigationControllerProxy;
     }
 }

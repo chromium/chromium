@@ -6,7 +6,7 @@ package org.chromium.browserfragment.interfaces;
 
 import android.view.SurfaceControlViewHost.SurfacePackage;
 
-interface IBrowserFragmentDelegateClient {
+oneway interface IBrowserFragmentDelegateClient {
     void onSurfacePackageReady(in SurfacePackage surfacePackage) = 1;
     void onStarted() = 2;
 }

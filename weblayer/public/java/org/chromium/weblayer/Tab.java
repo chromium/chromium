@@ -312,7 +312,6 @@ public class Tab {
 
     @NonNull
     public NavigationController getNavigationController() {
-        ThreadCheck.ensureOnUiThread();
         throwIfDestroyed();
         return mNavigationController;
     }

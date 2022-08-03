@@ -15,20 +15,16 @@ import org.chromium.browserfragment.interfaces.ITabProxy;
  */
 public class Tab {
     private ITabProxy mTabProxy;
+    private TabNavigationController mTabNavigationController;
 
     Tab(ITabProxy tabProxy) {
         mTabProxy = tabProxy;
-    }
 
-    /**
-     * Navigates this Tab to the given URI.
-     *
-     * @param uri The destination URI.
-     */
-    public void navigate(@NonNull String uri) {
         try {
-            mTabProxy.navigate(uri);
+            mTabNavigationController =
+                    new TabNavigationController(mTabProxy.getNavigationController());
         } catch (RemoteException e) {
+            // TODO(swestphal): Raise exception.
         }
     }
 
@@ -40,5 +36,15 @@ public class Tab {
             mTabProxy.setActive();
         } catch (RemoteException e) {
         }
+    }
+
+    /**
+     * Returns the navigation controller for this Tab.
+     *
+     * @return The TabNavigationController.
+     */
+    @NonNull
+    public TabNavigationController getNavigationController() {
+        return mTabNavigationController;
     }
 }

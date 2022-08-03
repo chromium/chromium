@@ -20,6 +20,7 @@ import org.chromium.browserfragment.Browser;
 import org.chromium.browserfragment.BrowserFragment;
 import org.chromium.browserfragment.Tab;
 import org.chromium.browserfragment.TabManager;
+import org.chromium.browserfragment.TabNavigationController;
 import org.chromium.browserfragment.TabObserver;
 
 /**
@@ -29,6 +30,8 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
     private static final String TAG = "BrowserFragmentShell";
 
     private Context mContext;
+
+    private TabManager mTabManager;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -83,8 +86,9 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
         Futures.addCallback(tabManagerFuture, new FutureCallback<TabManager>() {
             @Override
             public void onSuccess(TabManager tabManager) {
+                mTabManager = tabManager;
                 Tab tab = tabManager.getActiveTab();
-                tab.navigate("https://google.com");
+                tab.getNavigationController().navigate("https://google.com");
             }
             @Override
             public void onFailure(Throwable thrown) {}
@@ -95,5 +99,36 @@ public class BrowserFragmentShellActivity extends AppCompatActivity {
                 .setReorderingAllowed(true)
                 .add(R.id.fragment_container_view, fragment)
                 .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mTabManager == null) {
+            // BrowserFragment not yet initialized.
+            super.onBackPressed();
+        }
+        Tab activeTab = mTabManager.getActiveTab();
+        if (activeTab == null) {
+            // TODO(swestphal): Check if there are any tabs?
+            super.onBackPressed();
+        }
+        TabNavigationController navigationController = activeTab.getNavigationController();
+
+        ListenableFuture<Boolean> canGoBackFuture = navigationController.canGoBack();
+
+        Futures.addCallback(canGoBackFuture, new FutureCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean canGoBack) {
+                if (canGoBack) {
+                    navigationController.goBack();
+                } else {
+                    BrowserFragmentShellActivity.super.onBackPressed();
+                }
+            }
+            @Override
+            public void onFailure(Throwable thrown) {
+                BrowserFragmentShellActivity.super.onBackPressed();
+            }
+        }, mContext.getMainExecutor());
     }
 }

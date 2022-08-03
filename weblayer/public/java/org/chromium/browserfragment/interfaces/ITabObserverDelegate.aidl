@@ -6,7 +6,7 @@ package org.chromium.browserfragment.interfaces;
 
 import org.chromium.browserfragment.interfaces.ITabProxy;
 
-interface ITabObserverDelegate {
+oneway interface ITabObserverDelegate {
     void notifyActiveTabChanged(in ITabProxy activeTab) = 1;
     void notifyTabAdded(in ITabProxy tab) = 2;
     void notifyTabRemoved(in ITabProxy tab) = 3;

@@ -1,0 +1,15 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.browserfragment.interfaces;
+
+import org.chromium.browserfragment.interfaces.IRequestNavigationCallback;
+
+oneway interface ITabNavigationControllerProxy {
+    void navigate(in String uri) = 1;
+    void goBack() = 2;
+    void goForward() = 3;
+    void canGoBack(IRequestNavigationCallback callback) = 4;
+    void canGoForward(IRequestNavigationCallback callback) = 5;
+}
