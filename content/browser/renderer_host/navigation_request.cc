@@ -4734,14 +4734,8 @@ void NavigationRequest::CommitNavigation() {
   // to commit.
   absl::optional<base::UnguessableToken> nonce =
       render_frame_host_->ComputeNonce(is_anonymous());
-  url::Origin top_level_origin =
-      render_frame_host_->ComputeTopFrameOrigin(GetOriginToCommit());
-  commit_params_->storage_key = blink::StorageKey::CreateWithOptionalNonce(
-      GetOriginToCommit(), net::SchemefulSite(top_level_origin),
-      base::OptionalOrNullptr(nonce),
-      render_frame_host_->ComputeSiteForCookies().IsNull()
-          ? blink::mojom::AncestorChainBit::kCrossSite
-          : blink::mojom::AncestorChainBit::kSameSite);
+  commit_params_->storage_key = render_frame_host_->CalculateStorageKey(
+      GetOriginToCommit(), base::OptionalOrNullptr(nonce));
 
   if (IsServedFromBackForwardCache() || IsPrerenderedPageActivation()) {
     CommitPageActivation();
