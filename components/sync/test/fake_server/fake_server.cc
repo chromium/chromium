@@ -219,16 +219,18 @@ net::HttpStatusCode FakeServer::HandleCommand(const std::string& request,
 
   LogForTestFailure(FROM_HERE, "REQUEST",
                     PrettyPrintValue(syncer::ClientToServerMessageToValue(
-                        message, /*include_specifics=*/true)));
+                        message, {.include_specifics = true,
+                                  .include_full_get_update_triggers = false})));
 
   sync_pb::ClientToServerResponse response_proto;
   net::HttpStatusCode http_status_code =
       HandleParsedCommand(message, &response_proto);
 
-  LogForTestFailure(FROM_HERE, "RESPONSE",
-                    PrettyPrintValue(syncer::ClientToServerResponseToValue(
-                        response_proto,
-                        /*include_specifics=*/true)));
+  LogForTestFailure(
+      FROM_HERE, "RESPONSE",
+      PrettyPrintValue(syncer::ClientToServerResponseToValue(
+          response_proto, {.include_specifics = true,
+                           .include_full_get_update_triggers = false})));
 
   *response = response_proto.SerializeAsString();
   return http_status_code;

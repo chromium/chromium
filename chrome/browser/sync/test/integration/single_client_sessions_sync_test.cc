@@ -824,7 +824,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
   sync_pb::ClientToServerMessage first_commit;
   ASSERT_TRUE(GetFakeServer()->GetLastCommitMessage(&first_commit));
   EXPECT_TRUE(first_commit.commit().config_params().cookie_jar_mismatch())
-      << *syncer::ClientToServerMessageToValue(first_commit, true);
+      << *syncer::ClientToServerMessageToValue(first_commit, /*options=*/{});
 
   // Avoid interferences from actual IdentityManager trying to fetch gaia
   // account information, which would exercise
@@ -848,7 +848,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, CookieJarMismatch) {
   sync_pb::ClientToServerMessage second_commit;
   ASSERT_TRUE(GetFakeServer()->GetLastCommitMessage(&second_commit));
   EXPECT_FALSE(second_commit.commit().config_params().cookie_jar_mismatch())
-      << *syncer::ClientToServerMessageToValue(second_commit, true);
+      << *syncer::ClientToServerMessageToValue(second_commit, /*options=*/{});
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,

@@ -21,6 +21,7 @@
 #include "components/sync/protocol/autofill_offer_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/dictionary_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
@@ -126,9 +127,10 @@ namespace {
 //
 class ToValueVisitor {
  public:
-  explicit ToValueVisitor(bool include_specifics = true,
+  explicit ToValueVisitor(const ProtoValueConversionOptions& options =
+                              ProtoValueConversionOptions(),
                           base::DictionaryValue* value = nullptr)
-      : value_(value), include_specifics_(include_specifics) {}
+      : options_(options), value_(value) {}
 
   template <class P>
   void VisitBytes(const P& parent_proto,
@@ -185,9 +187,39 @@ class ToValueVisitor {
   void Visit(const P& parent_proto,
              const char* field_name,
              const sync_pb::EntitySpecifics& field) {
-    if (include_specifics_) {
+    if (options_.include_specifics) {
       VisitImpl(parent_proto, field_name, field);
     }
+  }
+
+  // GetUpdateTriggers.
+  std::unique_ptr<base::DictionaryValue> ToValue(
+      const sync_pb::GetUpdateTriggers& proto) const {
+    std::unique_ptr<base::DictionaryValue> value = ToValueImpl(proto);
+    if (!options_.include_full_get_update_triggers) {
+      if (!proto.client_dropped_hints()) {
+        value->RemoveKey("client_dropped_hints");
+      }
+      if (!proto.invalidations_out_of_sync()) {
+        value->RemoveKey("invalidations_out_of_sync");
+      }
+      if (proto.local_modification_nudges() == 0) {
+        value->RemoveKey("local_modification_nudges");
+      }
+      if (proto.datatype_refresh_nudges() == 0) {
+        value->RemoveKey("datatype_refresh_nudges");
+      }
+      if (!proto.server_dropped_hints()) {
+        value->RemoveKey("server_dropped_hints");
+      }
+      if (!proto.initial_sync_in_progress()) {
+        value->RemoveKey("initial_sync_in_progress");
+      }
+      if (!proto.sync_for_resolve_conflict_in_progress()) {
+        value->RemoveKey("sync_for_resolve_conflict_in_progress");
+      }
+    }
+    return value;
   }
 
   // AutofillWalletSpecifics
@@ -221,7 +253,7 @@ class ToValueVisitor {
   template <class P>
   std::unique_ptr<base::DictionaryValue> ToValueImpl(const P& proto) const {
     auto value = std::make_unique<base::DictionaryValue>();
-    ToValueVisitor visitor(include_specifics_, value.get());
+    ToValueVisitor visitor(options_, value.get());
     VisitProtoFields(visitor, proto);
     return value;
   }
@@ -270,8 +302,8 @@ class ToValueVisitor {
     value_->Set(field_name, ToValue(field));
   }
 
+  const ProtoValueConversionOptions options_;
   raw_ptr<base::DictionaryValue> value_;
-  bool include_specifics_;
 };
 
 }  // namespace
@@ -282,10 +314,11 @@ class ToValueVisitor {
     return ToValueVisitor().ToValue(proto);              \
   }
 
-#define IMPLEMENT_PROTO_TO_VALUE_INCLUDE_SPECIFICS(Proto)    \
-  std::unique_ptr<base::DictionaryValue> Proto##ToValue(     \
-      const sync_pb::Proto& proto, bool include_specifics) { \
-    return ToValueVisitor(include_specifics).ToValue(proto); \
+#define IMPLEMENT_PROTO_TO_VALUE_WITH_OPTIONS(Proto)     \
+  std::unique_ptr<base::DictionaryValue> Proto##ToValue( \
+      const sync_pb::Proto& proto,                       \
+      const ProtoValueConversionOptions& options) {      \
+    return ToValueVisitor(options).ToValue(proto);       \
   }
 
 IMPLEMENT_PROTO_TO_VALUE(AppListSpecifics)
@@ -351,11 +384,11 @@ IMPLEMENT_PROTO_TO_VALUE(WebAppSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(WifiConfigurationSpecifics)
 IMPLEMENT_PROTO_TO_VALUE(WorkspaceDeskSpecifics)
 
-IMPLEMENT_PROTO_TO_VALUE_INCLUDE_SPECIFICS(ClientToServerMessage)
-IMPLEMENT_PROTO_TO_VALUE_INCLUDE_SPECIFICS(ClientToServerResponse)
-IMPLEMENT_PROTO_TO_VALUE_INCLUDE_SPECIFICS(SyncEntity)
+IMPLEMENT_PROTO_TO_VALUE_WITH_OPTIONS(ClientToServerMessage)
+IMPLEMENT_PROTO_TO_VALUE_WITH_OPTIONS(ClientToServerResponse)
+IMPLEMENT_PROTO_TO_VALUE_WITH_OPTIONS(SyncEntity)
 
 #undef IMPLEMENT_PROTO_TO_VALUE
-#undef IMPLEMENT_PROTO_TO_VALUE_INCLUDE_SPECIFICS
+#undef IMPLEMENT_PROTO_TO_VALUE_WITH_OPTIONS
 
 }  // namespace syncer

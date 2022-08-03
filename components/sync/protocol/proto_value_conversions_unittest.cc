@@ -15,6 +15,7 @@
 #include "components/sync/protocol/app_specifics.pb.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/protocol/bookmark_specifics.pb.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -34,10 +35,13 @@
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/protocol/typed_url_specifics.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
 namespace {
+
+using testing::Not;
 
 // Keep this file in sync with the .proto files in this directory.
 
@@ -197,7 +201,7 @@ TEST(ProtoValueConversionsTest, UniquePositionToValue) {
   entity.mutable_unique_position()->set_custom_compressed_v1("test");
 
   std::unique_ptr<base::DictionaryValue> value =
-      SyncEntityToValue(entity, false);
+      SyncEntityToValue(entity, {.include_specifics = false});
   std::string unique_position;
   EXPECT_TRUE(value->GetString("unique_position", &unique_position));
 
@@ -211,10 +215,10 @@ TEST(ProtoValueConversionsTest, SyncEntityToValueIncludeSpecifics) {
   entity.mutable_specifics();
 
   std::unique_ptr<base::DictionaryValue> value =
-      SyncEntityToValue(entity, true /* include_specifics */);
+      SyncEntityToValue(entity, {.include_specifics = true});
   EXPECT_TRUE(value->GetDictionary("specifics", nullptr));
 
-  value = SyncEntityToValue(entity, false /* include_specifics */);
+  value = SyncEntityToValue(entity, {.include_specifics = false});
   EXPECT_FALSE(value->GetDictionary("specifics", nullptr));
 }
 
@@ -237,6 +241,33 @@ bool ValueHasSpecifics(const base::DictionaryValue& value,
   const base::DictionaryValue* specifics_dictionary = nullptr;
   return entry_dictionary.GetDictionary("specifics", &specifics_dictionary);
 }
+
+MATCHER(ValueHasNonEmptyGetUpdateTriggers, "") {
+  const base::DictionaryValue& value = arg;
+
+  const base::ListValue* entities_list = nullptr;
+  if (!value.GetList("get_updates.from_progress_marker", &entities_list)) {
+    *result_listener << "no from_progress_marker list";
+    return false;
+  }
+
+  const base::Value& entry_dictionary_value = entities_list->GetList().front();
+  if (!entry_dictionary_value.is_dict()) {
+    *result_listener << "from_progress_marker does not contain a dictionary";
+    return false;
+  }
+
+  const base::DictionaryValue& entry_dictionary =
+      base::Value::AsDictionaryValue(entry_dictionary_value);
+  const base::DictionaryValue* get_update_triggers_dictionary = nullptr;
+  if (!entry_dictionary.GetDictionary("get_update_triggers",
+                                      &get_update_triggers_dictionary)) {
+    *result_listener << "no get_update_triggers dictionary";
+    return false;
+  }
+
+  return !get_update_triggers_dictionary->GetDict().empty();
+}
 }  // namespace
 
 // Create a ClientToServerMessage with an EntitySpecifics.  Converting it to
@@ -248,16 +279,44 @@ TEST(ProtoValueConversionsTest, ClientToServerMessageToValue) {
   entity->mutable_specifics();
 
   std::unique_ptr<base::DictionaryValue> value_with_specifics(
-      ClientToServerMessageToValue(message, true /* include_specifics */));
+      ClientToServerMessageToValue(message, {.include_specifics = true}));
   EXPECT_FALSE(value_with_specifics->DictEmpty());
   EXPECT_TRUE(
       ValueHasSpecifics(*(value_with_specifics.get()), "commit.entries"));
 
   std::unique_ptr<base::DictionaryValue> value_without_specifics(
-      ClientToServerMessageToValue(message, false /* include_specifics */));
+      ClientToServerMessageToValue(message, {.include_specifics = false}));
   EXPECT_FALSE(value_without_specifics->DictEmpty());
   EXPECT_FALSE(
       ValueHasSpecifics(*(value_without_specifics.get()), "commit.entries"));
+}
+
+TEST(ProtoValueConversionsTest, ClientToServerMessageToValueGUTriggers) {
+  sync_pb::ClientToServerMessage message;
+  sync_pb::GetUpdateTriggers* get_update_triggers =
+      message.mutable_get_updates()
+          ->add_from_progress_marker()
+          ->mutable_get_update_triggers();
+  get_update_triggers->set_client_dropped_hints(false);
+  get_update_triggers->set_server_dropped_hints(false);
+  get_update_triggers->set_datatype_refresh_nudges(0);
+  get_update_triggers->set_local_modification_nudges(0);
+  get_update_triggers->set_initial_sync_in_progress(false);
+  get_update_triggers->set_sync_for_resolve_conflict_in_progress(false);
+
+  std::unique_ptr<base::DictionaryValue> value_with_full_gu_triggers(
+      ClientToServerMessageToValue(message,
+                                   {.include_full_get_update_triggers = true}));
+  EXPECT_FALSE(value_with_full_gu_triggers->DictEmpty());
+  EXPECT_THAT(*value_with_full_gu_triggers,
+              ValueHasNonEmptyGetUpdateTriggers());
+
+  std::unique_ptr<base::DictionaryValue> value_without_full_gu_triggers(
+      ClientToServerMessageToValue(
+          message, {.include_full_get_update_triggers = false}));
+  EXPECT_FALSE(value_without_full_gu_triggers->DictEmpty());
+  EXPECT_THAT(*value_without_full_gu_triggers,
+              Not(ValueHasNonEmptyGetUpdateTriggers()));
 }
 
 // Create a ClientToServerResponse with an EntitySpecifics.  Converting it to
@@ -269,13 +328,13 @@ TEST(ProtoValueConversionsTest, ClientToServerResponseToValue) {
   entity->mutable_specifics();
 
   std::unique_ptr<base::DictionaryValue> value_with_specifics(
-      ClientToServerResponseToValue(message, true /* include_specifics */));
+      ClientToServerResponseToValue(message, {.include_specifics = true}));
   EXPECT_FALSE(value_with_specifics->DictEmpty());
   EXPECT_TRUE(
       ValueHasSpecifics(*(value_with_specifics.get()), "get_updates.entries"));
 
   std::unique_ptr<base::DictionaryValue> value_without_specifics(
-      ClientToServerResponseToValue(message, false /* include_specifics */));
+      ClientToServerResponseToValue(message, {.include_specifics = false}));
   EXPECT_FALSE(value_without_specifics->DictEmpty());
   EXPECT_FALSE(ValueHasSpecifics(*(value_without_specifics.get()),
                                  "get_updates.entries"));

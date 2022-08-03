@@ -17,12 +17,13 @@ namespace syncer {
 namespace {
 template <class T>
 void LogData(const T& data,
-             std::unique_ptr<base::DictionaryValue> (
-                 *to_dictionary_value)(const T&, bool),
+             std::unique_ptr<base::DictionaryValue> (*to_dictionary_value)(
+                 const T&,
+                 const ProtoValueConversionOptions& options),
              const std::string& description) {
   if (DCHECK_IS_ON() && VLOG_IS_ON(1)) {
     std::unique_ptr<base::DictionaryValue> value =
-        (*to_dictionary_value)(data, true /* include_specifics */);
+        (*to_dictionary_value)(data, /*options=*/{});
     std::string message;
     base::JSONWriter::WriteWithOptions(
         *value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &message);

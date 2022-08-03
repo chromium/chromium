@@ -47,7 +47,9 @@ std::string CommitRequestEvent::GetDetails() const {
 
 std::unique_ptr<base::DictionaryValue> CommitRequestEvent::GetProtoMessage(
     bool include_specifics) const {
-  return ClientToServerMessageToValue(request_, include_specifics);
+  return ClientToServerMessageToValue(
+      request_, {.include_specifics = include_specifics,
+                 .include_full_get_update_triggers = false});
 }
 
 }  // namespace syncer
