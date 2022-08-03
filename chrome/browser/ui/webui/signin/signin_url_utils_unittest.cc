@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,6 +46,34 @@ TEST(SigninURLUtilsSyncConfirmationURLTest, GetAndParseURL) {
   EXPECT_EQ(url.host(), chrome::kChromeUISyncConfirmationHost);
   EXPECT_EQ(SyncConfirmationStyle::kWindow, GetSyncConfirmationStyle(url));
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST(SigninURLUtilsTest, ParseParameterlessProfileCustomizationURL) {
+  GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
+  EXPECT_EQ(ProfileCustomizationStyle::kDefault,
+            GetProfileCustomizationStyle(url));
+}
+
+TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
+  // Default version.
+  GURL url = AppendProfileCustomizationQueryParams(
+      GURL(chrome::kChromeUIProfileCustomizationURL),
+      ProfileCustomizationStyle::kDefault);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(ProfileCustomizationStyle::kDefault,
+            GetProfileCustomizationStyle(url));
+
+  // Profile Creation version.
+  url = AppendProfileCustomizationQueryParams(
+      GURL(chrome::kChromeUIProfileCustomizationURL),
+      ProfileCustomizationStyle::kLocalProfileCreation);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.host(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(ProfileCustomizationStyle::kLocalProfileCreation,
+            GetProfileCustomizationStyle(url));
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class SigninURLUtilsReauthConfirmationURLTest
     : public ::testing::TestWithParam<int> {};

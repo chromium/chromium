@@ -69,6 +69,11 @@ export class ProfileCustomizationAppElement extends
         value: () =>
             loadTimeData.getBoolean('profileCustomizationInDialogDesign'),
       },
+
+      isLocalProfileCreation_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isLocalProfileCreation'),
+      },
     };
   }
 
@@ -77,6 +82,7 @@ export class ProfileCustomizationAppElement extends
   private pictureUrl_: string;
   private welcomeTitle_: string;
   private profileCustomizationInDialogDesign_: boolean;
+  private isLocalProfileCreation_: boolean;
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
 

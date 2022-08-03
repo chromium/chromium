@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chromium_strings.h"
@@ -84,8 +85,12 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddBoolean(
       "profileCustomizationInDialogDesign",
       base::FeatureList::IsEnabled(kSyncPromoAfterSigninIntercept));
+  const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
+  source->AddBoolean("isLocalProfileCreation",
+                     GetProfileCustomizationStyle(url) ==
+                         ProfileCustomizationStyle::kLocalProfileCreation);
 
-  if (web_ui->GetWebContents()->GetVisibleURL().query() == "debug") {
+  if (url.query() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it
     // so we force it here.
     Initialize(base::DoNothing());

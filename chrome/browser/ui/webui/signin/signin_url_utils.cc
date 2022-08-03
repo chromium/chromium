@@ -14,7 +14,8 @@
 
 namespace {
 
-// Query parameter names of the sync confirmtaion URL.
+// Query parameter names of the sync confirmation and the profile customization
+// URL.
 const char kStyleParamKey[] = "style";
 
 // Query parameter names of the reauth confirmation URL.
@@ -66,3 +67,24 @@ GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point) {
       base::NumberToString(static_cast<int>(access_point)));
   return url;
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url) {
+  std::string style_str;
+  int style_int;
+  // Default style if the parameter is missing.
+  ProfileCustomizationStyle style = ProfileCustomizationStyle::kDefault;
+  if (net::GetValueForKeyInQuery(url, kStyleParamKey, &style_str) &&
+      base::StringToInt(style_str, &style_int)) {
+    style = static_cast<ProfileCustomizationStyle>(style_int);
+  }
+  return style;
+}
+
+GURL AppendProfileCustomizationQueryParams(const GURL& url,
+                                           ProfileCustomizationStyle style) {
+  GURL url_with_params = net::AppendQueryParameter(
+      url, kStyleParamKey, base::NumberToString(static_cast<int>(style)));
+  return url_with_params;
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
