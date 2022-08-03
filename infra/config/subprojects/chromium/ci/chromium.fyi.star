@@ -1445,6 +1445,23 @@ fyi_mac_builder(
 )
 
 fyi_mac_builder(
+    name = "Mac12 Tests (py2 less)",
+    builder_spec = builder_config.copy_from("ci/Mac12 Tests", lambda spec: structs.evolve(
+        spec,
+        build_gs_bucket = "chromium-fyi-archive",
+    )),
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "py3",
+    ),
+    description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Mac12%20Tests\">Mac12 Tests</a>, but runs on bots not having python2.",
+    experiments = {
+        "luci.buildbucket.omit_python2": 100,
+    },
+    triggered_by = ["ci/Mac Builder"],
+)
+
+fyi_mac_builder(
     name = "mac-arm64-on-arm64-rel-reclient",
 
     # same with mac-arm64-on-arm64-rel
