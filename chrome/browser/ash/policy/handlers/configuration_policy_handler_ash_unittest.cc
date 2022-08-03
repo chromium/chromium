@@ -17,6 +17,7 @@
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
+#include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
@@ -173,9 +174,12 @@ TEST(ExternalDataPolicyHandlerTest, Valid) {
       "hash",
       "1234567890123456789012345678901234567890123456789012345678901234");
   PolicyMap policy_map;
-  policy_map.Set(key::kUserAvatarImage, POLICY_LEVEL_MANDATORY,
-                 POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(dict),
-                 nullptr);
+  MockCloudExternalDataManager external_data_manager;
+
+  policy_map.Set(
+      key::kUserAvatarImage, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+      POLICY_SOURCE_CLOUD, std::move(dict),
+      external_data_manager.CreateExternalDataFetcher(key::kUserAvatarImage));
   PolicyErrorMap errors;
   EXPECT_TRUE(ExternalDataPolicyHandler(key::kUserAvatarImage)
                   .CheckPolicySettings(policy_map, &errors));

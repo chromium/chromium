@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -71,6 +72,7 @@ const char kRegularUserID[] = "user@example.com";
 
 const char kAvatar1URL[] = "http://localhost/avatar1.jpg";
 const char kAvatar2URL[] = "http://localhost/avatar2.jpg";
+const char kInvalidAvatarURL[] = "http//localhost/avatar1.jpg";
 
 void ConstructAvatarPolicy(const std::string& file_name,
                            const std::string& url,
@@ -140,8 +142,10 @@ class CloudExternalDataPolicyObserverTest
 
   std::string avatar_policy_1_data_;
   std::string avatar_policy_2_data_;
+  std::string invalid_avatar_policy_data_;
   std::string avatar_policy_1_;
   std::string avatar_policy_2_;
+  std::string invalid_avatar_policy_;
 
   std::unique_ptr<ash::CrosSettings> cros_settings_;
   std::unique_ptr<DeviceLocalAccountPolicyService>
@@ -206,6 +210,8 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
                         &avatar_policy_1_);
   ConstructAvatarPolicy("avatar2.jpg", kAvatar2URL, &avatar_policy_2_data_,
                         &avatar_policy_2_);
+  ConstructAvatarPolicy("avatar1.jpg", kInvalidAvatarURL,
+                        &invalid_avatar_policy_data_, &invalid_avatar_policy_);
 }
 
 void CloudExternalDataPolicyObserverTest::TearDown() {
@@ -355,8 +361,14 @@ void CloudExternalDataPolicyObserverTest::SetRegularUserAvatarPolicy(
     const std::string& value) {
   PolicyMap policy_map;
   if (!value.empty()) {
+    auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
+        value, base::JSON_ALLOW_TRAILING_COMMAS);
+    ASSERT_TRUE(parsed_json.has_value()) << parsed_json.error().message;
+    ASSERT_TRUE(parsed_json->is_dict());
+
     policy_map.Set(key::kUserAvatarImage, POLICY_LEVEL_MANDATORY,
-                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(value),
+                   POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                   (*parsed_json).Clone(),
                    external_data_manager_.CreateExternalDataFetcher(
                        key::kUserAvatarImage));
   }
@@ -986,6 +998,27 @@ TEST_F(CloudExternalDataPolicyObserverTest, RegularUserLogoutTest) {
       AccountId::FromUserEmail(kRegularUserID));
 
   // Test that clear notification is emitted.
+  EXPECT_TRUE(set_calls_.empty());
+  EXPECT_TRUE(fetched_calls_.empty());
+  EXPECT_EQ(1u, cleared_calls_.size());
+  EXPECT_EQ(kRegularUserID, cleared_calls_.front());
+  ClearObservations();
+}
+
+// Tests that if an invalid policy (a policy for which
+// ExternalDataPolicyHandler::CheckPolicySettings() returns false) is passed
+// through to the policy map, only a 'cleared' notifications is emitted.
+TEST_F(CloudExternalDataPolicyObserverTest, RegularUserInvalidPolicyTest) {
+  SetRegularUserAvatarPolicy(invalid_avatar_policy_);
+
+  CreateObserver();
+
+  EXPECT_CALL(external_data_manager_,
+              Fetch(key::kUserAvatarImage, std::string(), _))
+      .Times(0);
+
+  LogInAsRegularUser();
+
   EXPECT_TRUE(set_calls_.empty());
   EXPECT_TRUE(fetched_calls_.empty());
   EXPECT_EQ(1u, cleared_calls_.size());

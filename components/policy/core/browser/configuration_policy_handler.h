@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/values.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_export.h"
 
@@ -79,6 +80,7 @@ class POLICY_EXPORT ConfigurationPolicyHandler {
 // subclassed to handle policies that have a name.
 class POLICY_EXPORT NamedPolicyHandler : public ConfigurationPolicyHandler {
  public:
+  // TODO: migrate named policy handlers from char* to base::StringPiece
   explicit NamedPolicyHandler(const char* policy_name);
   ~NamedPolicyHandler() override;
   NamedPolicyHandler(const NamedPolicyHandler&) = delete;
@@ -106,11 +108,22 @@ class POLICY_EXPORT TypeCheckingPolicyHandler : public NamedPolicyHandler {
   bool CheckPolicySettings(const PolicyMap& policies,
                            PolicyErrorMap* errors) override;
 
+  static bool CheckPolicySettings(const char* policy,
+                                  base::Value::Type value_type,
+                                  const PolicyMap::Entry* entry,
+                                  PolicyErrorMap* errors);
+
  protected:
   // Runs policy checks and returns the policy value if successful.
   bool CheckAndGetValue(const PolicyMap& policies,
                         PolicyErrorMap* errors,
                         const base::Value** value);
+
+  static bool CheckAndGetValue(const char* policy,
+                               base::Value::Type value_type,
+                               const PolicyMap::Entry* entry,
+                               PolicyErrorMap* errors,
+                               const base::Value** value);
 
  private:
   // The type the value of the policy should have.

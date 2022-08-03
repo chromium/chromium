@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/policy/external_data/device_cloud_external_data_policy_observer.h"
 
 #include "base/bind.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 
 namespace policy {
@@ -53,7 +55,9 @@ void DeviceCloudExternalDataPolicyObserver::OnPolicyUpdated(
 
 void DeviceCloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
     const PolicyMap::Entry* entry) {
-  if (!entry) {
+  PolicyErrorMap error_map;
+  if (!entry || !ExternalDataPolicyHandler::CheckPolicySettings(
+                    policy_.c_str(), entry, &error_map)) {
     delegate_->OnDeviceExternalDataCleared(policy_);
     return;
   }

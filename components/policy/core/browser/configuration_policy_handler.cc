@@ -72,17 +72,36 @@ TypeCheckingPolicyHandler::~TypeCheckingPolicyHandler() {}
 bool TypeCheckingPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
   const base::Value* value = nullptr;
-  return CheckAndGetValue(policies, errors, &value);
+  return CheckAndGetValue(policy_name(), value_type_,
+                          policies.Get(policy_name()), errors, &value);
+}
+
+bool TypeCheckingPolicyHandler::CheckPolicySettings(
+    const char* policy,
+    base::Value::Type value_type,
+    const PolicyMap::Entry* entry,
+    PolicyErrorMap* errors) {
+  const base::Value* value = nullptr;
+  return CheckAndGetValue(policy, value_type, entry, errors, &value);
 }
 
 bool TypeCheckingPolicyHandler::CheckAndGetValue(const PolicyMap& policies,
                                                  PolicyErrorMap* errors,
                                                  const base::Value** value) {
-  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
-  *value = policies.GetValueUnsafe(policy_name());
-  if (*value && (*value)->type() != value_type_) {
-    errors->AddError(policy_name(), IDS_POLICY_TYPE_ERROR,
-                     base::Value::GetTypeName(value_type_));
+  return CheckAndGetValue(policy_name(), value_type_,
+                          policies.Get(policy_name()), errors, value);
+}
+
+bool TypeCheckingPolicyHandler::CheckAndGetValue(const char* policy,
+                                                 base::Value::Type value_type,
+                                                 const PolicyMap::Entry* entry,
+                                                 PolicyErrorMap* errors,
+                                                 const base::Value** value) {
+  // It is safe to use `value_unsafe()` as multiple policy types are handled.
+  *value = entry ? entry->value_unsafe() : nullptr;
+  if (*value && (*value)->type() != value_type) {
+    errors->AddError(policy, IDS_POLICY_TYPE_ERROR,
+                     base::Value::GetTypeName(value_type));
     return false;
   }
   return true;

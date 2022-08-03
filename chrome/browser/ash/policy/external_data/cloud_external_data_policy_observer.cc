@@ -14,12 +14,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -264,7 +265,9 @@ void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {
 void CloudExternalDataPolicyObserver::HandleExternalDataPolicyUpdate(
     const std::string& user_id,
     const PolicyMap::Entry* entry) {
-  if (!entry) {
+  PolicyErrorMap error_map;
+  if (!entry || !ExternalDataPolicyHandler::CheckPolicySettings(
+                    policy_.c_str(), entry, &error_map)) {
     delegate_->OnExternalDataCleared(policy_, user_id);
     fetch_weak_ptrs_.erase(user_id);
     return;

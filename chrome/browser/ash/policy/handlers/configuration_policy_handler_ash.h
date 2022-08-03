@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/network/network_ui_data.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/policy/core/common/policy_map.h"
 
 namespace policy {
 
@@ -27,6 +28,10 @@ class ExternalDataPolicyHandler : public TypeCheckingPolicyHandler {
       delete;
 
   ~ExternalDataPolicyHandler() override;
+
+  static bool CheckPolicySettings(const char* policy,
+                                  const PolicyMap::Entry* entry,
+                                  PolicyErrorMap* errors);
 
   // TypeCheckingPolicyHandler:
   bool CheckPolicySettings(const PolicyMap& policies,
