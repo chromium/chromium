@@ -147,9 +147,9 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
       const blink::WebVector<blink::WebString>& stopped_matching_selectors) {}
 
   // Called when the RenderFrame creates a FencedFrame and provides the
-  // RemoteFrameToken to identify the RenderFrameProxy to the inner
+  // RemoteFrameToken to identify the `blink::RemoteFrame` to the inner
   // RenderFrame. This is called immediately after the FencedFrame is created
-  // in the browser and the RenderFrameProxy initialized in this renderer.
+  // in the browser and the `blink::RemoteFrame` initialized in this renderer.
   virtual void DidCreateFencedFrame(
       const blink::RemoteFrameToken& placeholder_token) {}
 

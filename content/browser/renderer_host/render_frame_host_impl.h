@@ -888,11 +888,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Tells the renderer that this RenderFrame is being replaced with one in a
   // different renderer process.  It should run its unload handler and move to
   // a blank document.  If |proxy| is not null, it should also create a
-  // RenderFrameProxy to replace the RenderFrame and set it to |is_loading|
-  // state. The renderer process keeps the RenderFrameProxy object around as a
-  // placeholder while the frame is rendered in a different process.
+  // `blink::RemoteFrame` to replace the RenderFrame and set it to `is_loading`
+  // state. The renderer process keeps the `blink::RemoteFrame` object around as
+  // a placeholder while the frame is rendered in a different process.
   //
-  // There should always be a |proxy| to replace the old RenderFrameHost. If
+  // There should always be a `proxy` to replace the old RenderFrameHost. If
   // there are no remaining active views in the process, the proxy will be
   // short-lived and will be deleted when the unload ACK is received.
   //
@@ -905,10 +905,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Sent to a renderer when the browser needs to cancel a navigation associated
   // with a speculative RenderFrameHost that has already been asked to commit
   // via `CommitNavigation()`. The renderer will swap out the already-committed
-  // RenderFrame, replacing it with a RenderFrameProxy for `proxy`.
+  // RenderFrame, replacing it with a `blink::RemoteFrame` for `proxy`.
   //
   // TODO(https://crbug.com/1220337): This method is fundamentally incompatible
-  // with RenderDocument, as there is no RenderFrameProxy to restore for a
+  // with RenderDocument, as there is no `blink::RemoteFrame` to restore for a
   // local<->local swap.
   void UndoCommitNavigation(RenderFrameProxyHost& proxy, bool is_loading);
 
@@ -1600,7 +1600,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       blink::TransferableMessage message);
 
   // Requests to swap the current frame into the frame tree, replacing the
-  // RenderFrameProxy it is associated with.
+  // `blink::RemoteFrame` it is associated with.
   void SwapIn();
 
   // Manual RTTI to ensure safe downcasts in tests.

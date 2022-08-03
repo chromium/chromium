@@ -61,7 +61,7 @@ class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
   }
 
   // Tests that the FrameSinkId of each child frame has been updated by the
-  // RenderFrameProxy.
+  // `blink::RemoteFrame`.
   void CheckFrameSinkId(RenderFrameHost* render_frame_host) {
     RenderWidgetHostViewBase* child_view =
         static_cast<RenderFrameHostImpl*>(render_frame_host)
@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
 // 2. AutoResize on Android does not size to the min/max bounds specified, it
 // ends up ignoring them and sizing to the screen (I think).
 // Luckily this test is verifying interactions and behaviour of
-// RenderWidgetHostImpl - RenderWidget - RenderFrameProxy -
+// RenderWidgetHostImpl - RenderWidget - `blink::RemoteFrame` -
 // CrossProcessFrameConnector, and this isn't Android-specific code.
 #if !BUILDFLAG(IS_ANDROID)
 

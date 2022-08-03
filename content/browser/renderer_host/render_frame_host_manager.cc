@@ -887,8 +887,8 @@ void RenderFrameHostManager::DiscardUnusedFrame(
 
   render_frame_host.reset();
 
-  // If the old proxy isn't live, create the RenderFrameProxy in the renderer,
-  // so that other frames can still communicate with this frame.  See
+  // If the old proxy isn't live, create the `blink::RemoteFrame` in the
+  // renderer, so that other frames can still communicate with this frame.  See
   // https://crbug.com/653746.
   if (proxy && !proxy->is_render_frame_proxy_live())
     proxy->InitRenderFrameProxy();
@@ -1392,7 +1392,7 @@ RenderFrameHostManager::UnsetSpeculativeRenderFrameHost() {
               LifecycleStateImpl::kPendingCommit);
     // The browser process already asked the renderer to commit the navigation.
     // The renderer is guaranteed to commit the navigation and swap in the
-    // provisional `RenderFrame` to replace the current `RenderFrameProxy`
+    // provisional `RenderFrame` to replace the current `blink::RemoteFrame`
     // unless the frame is detached: see `AssertNavigationCommits` in
     // `RenderFrameImpl` for more details about this enforcement.
     //
@@ -1423,9 +1423,9 @@ void RenderFrameHostManager::DiscardSpeculativeRenderFrameHostForShutdown() {
 
   speculative_render_frame_host_->GetProcess()->RemovePendingView();
   // No need to call `DeleteRenderFrame()`. When a RenderFrame or
-  // RenderFrameProxy is detached, it also detaches any associated provisional
-  // RenderFrame, whether this due to a child frame being removed from the
-  // frame tree or the entire RenderView being torn down.
+  // `blink::RemoteFrame` is detached, it also detaches any associated
+  // provisional RenderFrame, whether this due to a child frame being removed
+  // from the frame tree or the entire RenderView being torn down.
   //
   // When the LifecycleStateImpl is kSpeculative, there is no need to transition
   // to kReadyToBeDeleted as speculative RenderFrameHosts don't run any unload
@@ -3054,7 +3054,7 @@ void RenderFrameHostManager::CreateRenderFrameProxy(
         instance, std::move(render_view_host), frame_tree_node_);
   }
 
-  // Make sure that the RenderFrameProxy is present in the renderer.
+  // Make sure that the `blink::RemoteFrame` is present in the renderer.
   if (frame_tree_node_->IsMainFrame() && proxy->GetRenderViewHost()) {
     InitRenderView(group, proxy->GetRenderViewHost(), proxy);
   } else {

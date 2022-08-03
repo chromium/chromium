@@ -1829,7 +1829,7 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   //    main RenderFrame.
   // 2. The RenderFrame can be unloaded. In this case, the browser sends a
   //    mojom::FrameNavigationControl::UnloadFrame message for the RenderFrame
-  //    to replace itself with a RenderFrameProxy and release its associated
+  //    to replace itself with a `blink::RemoteFrame`and release its associated
   //    resources. |lifecycle_state_| is advanced to
   //    LifecycleStateImpl::kRunningUnloadHandlers to track that this IPC is in
   //    flight.
@@ -3350,7 +3350,7 @@ bool RenderFrameHostImpl::CreateRenderFrame(
     RenderFrameProxyHost* proxy = RenderFrameProxyHost::FromFrameToken(
         GetProcess()->GetID(),
         previous_frame_token->GetAs<blink::RemoteFrameToken>());
-    // We have also created a RenderFrameProxy in CreateFrame above, so
+    // We have also created a `blink::RemoteFrame` in CreateFrame above, so
     // remember that.
     CHECK(proxy);
     proxy->SetRenderFrameProxyCreated(true);
@@ -4231,11 +4231,11 @@ void RenderFrameHostImpl::RemoveChild(FrameTreeNode* child) {
           // IPCs will only be processed after the renderer has already swapped
           // in the provisional RenderFrame and swapped out the provisional
           // frame's reference frame (which is either a RenderFrame or a
-          // RenderFrameProxy).
+          // `blink::RemoteFrame`).
           //
-          // Since the swapped out RenderFrame/RenderFrameProxy is already gone,
-          // a `DeleteRenderFrame()` (routed to the RenderFrame) or a
-          // `DetachAndDispose()` (routed to the RenderFrameProxy) won't do
+          // Since the swapped out `RenderFrame`/`blink::RemoteFrame` is already
+          // gone, a `DeleteRenderFrame()` (routed to the RenderFrame) or a
+          // `DetachAndDispose()` (routed to the `blink::RemoteFrame`) won't do
           // anything. The browser must also instruct the already-committed but
           // not-yet-acknowledged speculative RFH to detach itself as well.
           speculative_frame_host->DeleteRenderFrame(
@@ -4243,11 +4243,11 @@ void RenderFrameHostImpl::RemoveChild(FrameTreeNode* child) {
         } else {
           // Otherwise, the provisional RenderFrame has not yet been instructed
           // to swap in but is already associated with the RenderFrame or
-          // RenderFrameProxy it is expected to replace. The associated
-          // RenderFrame/RenderFrameProxy (which is still in the frame tree)
-          // will be responsible for tearing down any associated provisional
-          // RenderFrame, so the browser does not need to take any explicit
-          // cleanup actions.
+          // `blink::RemoteFrame` it is expected to replace. The associated
+          // `RenderFrame`/`blink::RemoteFrame` (which is still in the frame
+          // tree) will be responsible for tearing down any associated
+          // provisional RenderFrame, so the browser does not need to take any
+          // explicit cleanup actions.
         }
       }
       // No explicit cleanup is needed here for `RenderFrameProxyHost`s.
@@ -4760,8 +4760,8 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
           proxy->frame_tree_node()->current_replication_state().Clone(),
           proxy->GetFrameToken(), proxy->CreateAndBindRemoteFrameInterfaces(),
           proxy->CreateAndBindRemoteMainFrameInterfaces());
-      // Remember that a RenderFrameProxy was created as part of processing the
-      // Unload message above.
+      // Remember that a `blink::RemoteFrame` was created as part of processing
+      // the Unload message above.
       proxy->SetRenderFrameProxyCreated(true);
     }
   } else {

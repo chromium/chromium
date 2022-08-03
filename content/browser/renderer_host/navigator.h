@@ -141,8 +141,8 @@ class CONTENT_EXPORT Navigator {
       const absl::optional<blink::Impression>& impression);
 
   // Called when a document requests a navigation in another document through a
-  // RenderFrameProxy. If |method| is "POST", then |post_body| needs to specify
-  // the request body, otherwise |post_body| should be null.
+  // `blink::RemoteFrame`. If `method` is "POST", then `post_body` needs to
+  // specify the request body, otherwise `post_body` should be null.
   void NavigateFromFrameProxy(
       RenderFrameHostImpl* render_frame_host,
       const GURL& url,

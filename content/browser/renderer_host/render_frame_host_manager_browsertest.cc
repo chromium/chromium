@@ -3374,7 +3374,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
 
 // Tests that navigating cross-process and reusing an existing RenderViewHost
 // (whose process has been killed/crashed) recreates properly the RenderView and
-// RenderFrameProxy on the renderer side.
+// `blink::RemoteFrame` on the renderer side.
 // See https://crbug.com/544271
 IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
                        RenderViewInitAfterProcessKill) {
@@ -8892,9 +8892,9 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // TODO(https://crbug.com/1148793): Remove this early return. This doesn't
   // work for RenderDocumentLevel::kSubframe or greater because cancelling the
   // navigation when detaching the subtree tries to restore the replaced
-  // RenderFrameProxy (which doesn't exist in the same-site RenderDocument case
-  // because the replaced object wasn't a RenderFrameProxy, but instead a
-  // RenderFrame).
+  // `blink::RemoteFrame` (which doesn't exist in the same-site RenderDocument
+  // case because the replaced object wasn't a `blink::RemoteFrame`, but instead
+  // a RenderFrame).
   if (ShouldCreateNewHostForSameSiteSubframe())
     return;
   AssertCanRemoveSubframeInUnload(/*same_site=*/true);

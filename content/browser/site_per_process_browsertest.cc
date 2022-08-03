@@ -1623,8 +1623,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(b_url, observer.last_navigation_url());
 
-  // Ensure that the grandchild RenderFrameProxy in B was created when process
-  // B was restored.
+  // Ensure that the grandchild `blink::RemoteFrame` in B was created when
+  // process B was restored.
   EXPECT_TRUE(grandchild_rfph->is_render_frame_proxy_live());
 }
 
@@ -2241,7 +2241,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OriginReplication) {
   // Check that b.com frame's location.ancestorOrigins contains the correct
   // origin for the parent.  The origin should have been replicated as part of
   // the mojom::Renderer::CreateView message that created the parent's
-  // RenderFrameProxy in b.com's process.
+  // `blink::RemoteFrame` in b.com's process.
   EXPECT_EQ(ListValueOf(a_origin),
             EvalJs(tiptop_child, "Array.from(location.ancestorOrigins);"));
 
@@ -3687,10 +3687,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, NavigateSubframeWithOpener) {
 }
 
 // Check that if a subframe has an opener, that opener is preserved when a new
-// RenderFrameProxy is created for that subframe in another renderer process.
-// Similar to NavigateSubframeWithOpener, but this test verifies the subframe
-// opener plumbing for blink::mojom::RemoteFrame::CreateRemoteChild(), whereas
-// NavigateSubframeWithOpener targets mojom::Renderer::CreateFrame().
+// `blink::RemoteFrame` is created for that subframe in another renderer
+// process. Similar to NavigateSubframeWithOpener, but this test verifies the
+// subframe opener plumbing for blink::mojom::RemoteFrame::CreateRemoteChild(),
+// whereas NavigateSubframeWithOpener targets mojom::Renderer::CreateFrame().
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        NewRenderFrameProxyPreservesOpener) {
   GURL main_url(
@@ -4156,7 +4156,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
           EvalJs(child1, "document.activeElement.tagName").ExtractString()));
 }
 
-// Tests that we are using the correct RenderFrameProxy when navigating an
+// Tests that we are using the correct `blink::RemoteFrame` when navigating an
 // opener window.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, OpenerSetLocation) {
   // Navigate the main window.
@@ -6588,7 +6588,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(c_url, observer.last_navigation_url());
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  // Kill the b.com process (which currently hosts a RenderFrameProxy that
+  // Kill the b.com process (which currently hosts a `blink::RemoteFrame` that
   // replaced the pending RenderFrame in |popup2|, as well as the RenderFrame
   // for |popup|).
   RenderProcessHost* b_process =
@@ -8088,10 +8088,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 // created its RenderFrame, which crashed when referencing its parent by a
 // proxy which didn't exist.
 //
-// All cross-process navigations now require creating a RenderFrameProxy before
-// creating a RenderFrame, which makes such navigations follow the provisional
-// frame (remote-to-local navigation) paths, where such a scenario is no longer
-// possible.  See https://crbug.com/756790.
+// All cross-process navigations now require creating a `blink::RemoteFrame`
+// before creating a RenderFrame, which makes such navigations follow the
+// provisional frame (remote-to-local navigation) paths, where such a scenario
+// is no longer possible.  See https://crbug.com/756790.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                        TwoCrossSitePendingNavigationsAndMainFrameWins) {
   GURL main_url(embedded_test_server()->GetURL(

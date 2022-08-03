@@ -1071,7 +1071,7 @@ blink::VisualProperties RenderWidgetHostImpl::GetVisualProperties() {
   // 2. IPC           -> blink::mojom::Widget::UpdateVisualProperties
   // 3. Renderer A: parent RenderWidget
   //                  (sometimes blink involved)
-  // 4. Renderer A: child  RenderFrameProxy
+  // 4. Renderer A: child  blink::RemoteFrame
   // 5. IPC           -> FrameHostMsg_SynchronizeVisualProperties
   // 6. Browser:    child  CrossProcessFrameConnector
   // 7. Browser:    parent RenderWidgetHost (We're here if |is_child_frame|.)

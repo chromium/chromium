@@ -5629,10 +5629,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
   // This test's process layout is structured a bit differently from the main
   // frame case. PerformanceManager reports when a remote frame is attached to
   // a local parent, and it was previously getting confused by the fact that
-  // a RenderFrameProxy with matching RemoteFrameTokens was being reported as
-  // attached twice: once by the initial page loaded in the next statement, and
-  // the next when the browser needs to send a `UndoCommitNavigation()` to the
-  // a.com renderer.
+  // a `blink::RemoteFrame` with matching RemoteFrameTokens was being reported
+  // as attached twice: once by the initial page loaded in the next statement,
+  // and the next when the browser needs to send a `UndoCommitNavigation()` to
+  // the a.com renderer.
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
                    "a.com", "/cross_site_iframe_factory.html?a(b)")));
@@ -5662,7 +5662,7 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestWithPerformanceManager,
             speculative_render_frame_host->GetProcess());
 
   // Update the id attribute to exercise a PerformanceManager-specific code
-  // path: when the renderer swaps in a RenderFrameProxy to undo the
+  // path: when the renderer swaps in a `blink::RemoteFrame` to undo the
   // `CommitNavigation()`, it will report the iframe attribution data again. The
   // PerformanceManager should not complain that V8ContextTracker already has
   // the iframe attribution data, nor should it update the iframe attribution

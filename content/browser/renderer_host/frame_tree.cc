@@ -365,7 +365,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // since initial sandbox flags and permissions policy should apply to the
   // initial empty document in the frame. This needs to happen before the call
   // to AddChild so that the effective policy is sent to any newly-created
-  // RenderFrameProxy objects when the RenderFrameHost is created.
+  // `blink::RemoteFrame` objects when the RenderFrameHost is created.
   // SetPendingFramePolicy is necessary here because next navigation on this
   // frame will need the value of pending frame policy instead of effective
   // frame policy.

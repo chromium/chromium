@@ -7879,10 +7879,10 @@ void WebContentsImpl::DidCallFocus() {
 void WebContentsImpl::OnAdvanceFocus(RenderFrameHostImpl* source_rfh) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnAdvanceFocus",
                         "render_frame_host", source_rfh);
-  // When a RenderFrame needs to advance focus to a RenderFrameProxy (by hitting
-  // TAB), the RenderFrameProxy sends an IPC to RenderFrameProxyHost. When this
-  // RenderFrameProxyHost represents an inner WebContents, the outer WebContents
-  // needs to focus the inner WebContents.
+  // When a RenderFrame needs to advance focus to a `blink::RemoteFrame` (by
+  // hitting TAB), the `blink::RemoteFrame` sends an IPC to
+  // RenderFrameProxyHost. When this RenderFrameProxyHost represents an inner
+  // WebContents, the outer WebContents needs to focus the inner WebContents.
   if (GetOuterWebContents() &&
       GetOuterWebContents() == WebContents::FromRenderFrameHost(source_rfh) &&
       GetFocusedWebContents() == GetOuterWebContents()) {

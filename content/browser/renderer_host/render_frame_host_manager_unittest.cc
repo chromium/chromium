@@ -1177,7 +1177,7 @@ TEST_P(RenderFrameHostManagerTest, NavigateAfterMissingUnloadACK) {
   EXPECT_TRUE(main_test_rfh()->IsActive());
 }
 
-// Test that we create RenderFrameProxy objects for the opener chain when
+// Test that we create `blink::RemoteFrame` objects for the opener chain when
 // navigating an opened tab cross-process.  This allows us to support certain
 // cross-process JavaScript calls (http://crbug.com/99202).
 TEST_P(RenderFrameHostManagerTest, CreateProxiesForOpeners) {

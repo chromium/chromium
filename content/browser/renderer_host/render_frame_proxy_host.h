@@ -53,8 +53,8 @@ class SiteInstanceGroup;
 
 // When a page's frames are rendered by multiple processes, each renderer has a
 // full copy of the frame tree. It has full RenderFrames for the frames it is
-// responsible for rendering and placeholder objects (i.e., RenderFrameProxies)
-// for frames rendered by other processes.
+// responsible for rendering and placeholder objects (i.e.,
+// `blink::RemoteFrame`) for frames rendered by other processes.
 //
 // This class is the browser-side host object for the placeholder. Each node in
 // the frame tree has a RenderFrameHost for the active SiteInstance and a set
@@ -119,7 +119,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
 
   RenderProcessHost* GetProcess() const { return process_; }
 
-  // Initializes the object and creates the RenderFrameProxy in the process
+  // Initializes the object and creates the `blink::RemoteFrame` in the process
   // for the SiteInstanceGroup.
   bool InitRenderFrameProxy();
 
@@ -188,7 +188,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // mojo connections to RenderFrameProxyHost will be closed.
   void SetRenderFrameProxyCreated(bool created);
 
-  // Returns if the RenderFrameProxy for this host is alive.
+  // Returns if the `blink::RemoteFrame` for this host is alive.
   bool is_render_frame_proxy_live() const {
     return render_frame_proxy_created_;
   }
@@ -285,7 +285,8 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // - the renderer side object goes away due to the renderer process going away
   //   (i.e. crashing)
   // - undoing a `CommitNavigation()` that has already been sent to a
-  //   speculative RenderFrameHost by swapping it back to a RenderFrameProxy.
+  //   speculative RenderFrameHost by swapping it back to a
+  //   `blink::RemoteFrame`.
   void TearDownMojoConnection();
 
   using TraceProto = perfetto::protos::pbzero::RenderFrameProxyHost;
@@ -328,7 +329,7 @@ class CONTENT_EXPORT RenderFrameProxyHost
   // The node in the frame tree where this proxy is located.
   raw_ptr<FrameTreeNode> frame_tree_node_;
 
-  // True if we have a live RenderFrameProxy for this host.
+  // True if we have a live `blink::RemoteFrame` for this host.
   bool render_frame_proxy_created_;
 
   // When a RenderFrameHost is in a different process from its parent in the

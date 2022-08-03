@@ -256,7 +256,7 @@ bool RenderFrameProxyHost::InitRenderFrameProxy() {
     CHECK(parent_proxy);
 
     // Proxies that aren't live in the parent node should not be initialized
-    // here, since there is no valid parent RenderFrameProxy on the renderer
+    // here, since there is no valid parent `blink::RemoteFrame` on the renderer
     // side.  This can happen when adding a new child frame after an opener
     // process crashed and was reloaded.  See https://crbug.com/501152.
     if (!parent_proxy->is_render_frame_proxy_live())

@@ -431,7 +431,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
 
   // Tells the |render_frame_host|'s renderer that its RenderFrame is being
   // swapped for a frame in another process, and that it should create a
-  // RenderFrameProxy to replace it using the |proxy| RenderFrameProxyHost.
+  // `blink::RemoteFrame` to replace it using the |proxy| RenderFrameProxyHost.
   void SwapOuterDelegateFrame(RenderFrameHostImpl* render_frame_host,
                               RenderFrameProxyHost* proxy);
 
@@ -475,9 +475,9 @@ class CONTENT_EXPORT RenderFrameHostManager {
       blink::mojom::UserActivationNotificationType notification_type);
 
   // Sets up the necessary state for a new RenderViewHost.  If |proxy| is not
-  // null, it creates a RenderFrameProxy in the target renderer process which is
-  // used to route IPC messages.  Returns early if the RenderViewHost has
-  // already been initialized for another RenderFrameHost.
+  // null, it creates a `blink::RemoteFrame` in the target renderer process
+  // which is used to route IPC messages.  Returns early if the RenderViewHost
+  // has already been initialized for another RenderFrameHost.
   bool InitRenderView(SiteInstanceGroup* site_instance_group,
                       RenderViewHostImpl* render_view_host,
                       RenderFrameProxyHost* proxy);
