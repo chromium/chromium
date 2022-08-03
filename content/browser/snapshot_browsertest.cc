@@ -214,7 +214,13 @@ class SnapshotBrowserTest : public ContentBrowserTest {
 // that the multi-window tests would never work on that platform.
 #if !BUILDFLAG(IS_ANDROID)
 
-IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, SingleWindowTest) {
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/1347296): This test is flakey on macOS.
+#define MAYBE_SingleWindowTest DISABLED_SingleWindowTest
+#else
+#define MAYBE_SingleWindowTest SingleWindowTest
+#endif
+IN_PROC_BROWSER_TEST_F(SnapshotBrowserTest, MAYBE_SingleWindowTest) {
   SetupTestServer();
 
   content::RenderWidgetHostImpl* rwhi = GetRenderWidgetHostImpl(shell());
