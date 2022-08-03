@@ -159855,6 +159855,19 @@
         {}
        ]
       ],
+      "block-aspect-ratio-050.html": [
+       "360c83dfbd3afa1df72d0cc9230a5ae32b4b56d7",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "block-aspect-ratio-with-margin-collapsing-001.html": [
        "78a0418fe285da58030cdd863460add0533e6af5",
        [
@@ -316537,7 +316550,7 @@
         []
        ],
        "popup-utils.js": [
-        "886a2302cad0ecc182f587e9486196dfdc8725c4",
+        "f91b8cd56c8c234e84ac667fa2e20b1f9e9f9103",
         []
        ]
       }
@@ -346076,6 +346089,85 @@
      [
       null,
       {}
+     ]
+    ],
+    "storage-buckets.https.any.js": [
+     "0000adf859aab046bc64a2c45771605675ad09dc",
+     [
+      "IndexedDB/storage-buckets.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Buckets API: Tests for indexedDB API."
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/storage-buckets.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Buckets API: Tests for indexedDB API."
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/storage-buckets.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Buckets API: Tests for indexedDB API."
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "IndexedDB/storage-buckets.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Buckets API: Tests for indexedDB API."
+        ],
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "script",
+         "resources/support-promises.js"
+        ]
+       ]
+      }
      ]
     ],
     "string-list-ordering.htm": [
@@ -376869,7 +376961,7 @@
        ]
       ],
       "container-computed.html": [
-       "d83f3616400518bcceeb567678211b454eb95324",
+       "2be304481bac32928a602fadb083222d993a02fe",
        [
         null,
         {}
@@ -376932,7 +377024,7 @@
        ]
       ],
       "container-parsing.html": [
-       "9f1293f51cc7dfc1e22b12f7a8b16feb90e40693",
+       "44989c225aa3c28d46570eea9351002e6160a742",
        [
         null,
         {}
@@ -376995,7 +377087,7 @@
        ]
       ],
       "container-type-parsing.html": [
-       "34023cbc4f2ad022b10f1b6d311f4a2163a33810",
+       "5805a927b327eefc1a687db3cdbb8c27c306fb04",
        [
         null,
         {}
@@ -396763,7 +396855,7 @@
         ]
        ],
        "container-type.html": [
-        "c823ffb759894f1a1cbc2a2f095eca9210ba9c84",
+        "23474abff4b25b994db4b625252ad14e142ccdf0",
         [
          null,
          {}
@@ -480027,8 +480119,18 @@
         }
        ]
       ],
+      "popup-hover-hide.tentative.html": [
+       "e04c538f24da9aae33a8027cf63a3ea5a11e5197",
+       [
+        null,
+        {
+         "testdriver": true,
+         "timeout": "long"
+        }
+       ]
+      ],
       "popup-hoverpopup-attribute.tentative.html": [
-       "3f1ce38c881574d45a2de8fa3b6cc1b32ebb8ff3",
+       "b34e6df3f0d11883dac13949e78df609f2aca85e",
        [
         null,
         {
