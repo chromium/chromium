@@ -9,8 +9,6 @@ var catErrCommand = 'cat 1>&2\n';
 // Ensure this has all distinct characters.
 var testLine = 'abcdefgh\n';
 
-var startChar = '#';
-
 var croshName = 'crosh';
 var invalidName = 'some name';
 
@@ -28,8 +26,15 @@ function TestProcess(id, type) {
   this.id_ = id;
   this.type_= type;
 
-  // Text received before we start matching lines.
+  // Start text to receive before we start matching lines.
+  // We receive 2x each of:
+  // type=stdout    | type=stderr
+  // shell\r\n    7 | shell\r\n      7
+  // cat\r\n      5 | cat 1>&2\r\n  10
+  // ---------------------------------
+  // 2 x SUM:    24 |               34
   this.startText_ = '';
+  this.startTextLength_ = type === 'stdout' ? 24 : 34;
 
   this.lineExpectation_ = '';
   this.linesLeftToCheck_ = -1;
@@ -50,13 +55,13 @@ function TestProcess(id, type) {
 // algorithm to work.
 TestProcess.prototype.testExpectation = function(text) {
   chrome.test.assertTrue(this.linesLeftToCheck_ >= 0,
-                         "Test expectations not set.")
+                         'Test expectations not set.')
   for (var i = 0; i < text.length; i++) {
     if (this.processReceivedCharacter_(text[i], 0))
       continue;
     if (this.processReceivedCharacter_(text[i], 1))
       continue;
-    chrome.test.fail("Received: [" + text + "]");
+    chrome.test.fail('Received: [' + text + ']');
   }
 };
 
@@ -108,24 +113,23 @@ TestProcess.prototype.setClosed = function() {
 };
 
 TestProcess.prototype.getCatCommand = function() {
-  if (this.type_ == "stdout")
+  if (this.type_ == 'stdout')
     return catCommand;
   return catErrCommand;
 };
 
 TestProcess.prototype.addLineExpectation = function(line, times) {
-  this.lineExpectation_ = line.replace(/\n/g, "\r\n");
+  this.lineExpectation_ = line.replace(/\n/g, '\r\n');
   this.linesLeftToCheck_ = times - 2;
 };
 
-// Set of commands we use to setup terminal for testing (start cat) will produce
-// some output. We don't care about that output, to avoid having to set that
-// output in test expectations, we will send |startChar| right after cat is
-// started. After we detect `${startChar}\r\n${startChar}\r\n` in output, we
-// know process won't produce any output by itself, so it is safe to start test.
+// We first call 'shell' and 'cat' (stdout) / 'cat 1>&2' (stderr) to set up the
+// terminal.  We start testing once we have received this text.
 TestProcess.prototype.maybeKickOffTest = function(text) {
   this.startText_ += text;
-  if (this.startText_.indexOf(`${startChar}\r\n${startChar}\r\n`) !== -1) {
+  if (this.startText_.length > this.startTextLength_) {
+     chrome.test.fail('Unexpected start text: [' + this.startText_ + ']');
+  } else if (this.startText_.length === this.startTextLength_) {
     this.kickOffTest_(testLine, testLineNum);
   }
 };
@@ -196,23 +200,12 @@ function closeTerminal(index) {
 };
 
 function initTest(process) {
-  var sendStartChar = function() {
-      chrome.terminalPrivate.sendInput(
-          process.id(),
-          startChar + '\n',
-          function(result) {
-              chrome.test.assertTrue(result);
-          }
-      );
-  };
-
   var startCat = function() {
       chrome.terminalPrivate.sendInput(
           process.id(),
           process.getCatCommand(),
           function(result) {
             chrome.test.assertTrue(result);
-            sendStartChar();
           }
       );
   };
