@@ -59,6 +59,10 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_event.pbzero.h"
 #include "v8/include/v8.h"
 
+namespace base {
+class LazyNow;
+}
+
 namespace blink {
 namespace scheduler {
 
@@ -2354,7 +2358,7 @@ void MainThreadSchedulerImpl::OnTaskCompleted(
     base::WeakPtr<MainThreadTaskQueue> queue,
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
-    base::sequence_manager::LazyNow* lazy_now) {
+    base::LazyNow* lazy_now) {
   // Microtasks may detach the task queue and invalidate |queue|.
   PerformMicrotaskCheckpoint();
 

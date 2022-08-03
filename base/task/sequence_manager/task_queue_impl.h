@@ -40,11 +40,8 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-namespace sequence_manager {
-
 class LazyNow;
-
-namespace internal {
+namespace sequence_manager::internal {
 
 class SequenceManagerImpl;
 class WorkQueue;
@@ -630,8 +627,7 @@ class BASE_EXPORT TaskQueueImpl {
   const bool delayed_fence_allowed_;
 };
 
-}  // namespace internal
-}  // namespace sequence_manager
+}  // namespace sequence_manager::internal
 }  // namespace base
 
 #endif  // BASE_TASK_SEQUENCE_MANAGER_TASK_QUEUE_IMPL_H_

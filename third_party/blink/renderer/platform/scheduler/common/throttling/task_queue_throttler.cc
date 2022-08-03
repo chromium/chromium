@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/common/lazy_now.h"
 #include "base/time/tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
@@ -19,7 +20,7 @@
 namespace blink {
 namespace scheduler {
 
-using base::sequence_manager::LazyNow;
+using base::LazyNow;
 using base::sequence_manager::TaskQueue;
 
 TaskQueueThrottler::TaskQueueThrottler(
@@ -166,7 +167,7 @@ void TaskQueueThrottler::UpdateQueueState(base::TimeTicks now) {
   task_queue_->UpdateWakeUp(&lazy_now);
 }
 
-void TaskQueueThrottler::OnWakeUp(base::sequence_manager::LazyNow* lazy_now) {
+void TaskQueueThrottler::OnWakeUp(base::LazyNow* lazy_now) {
   DCHECK(IsThrottled());
   for (BudgetPool* budget_pool : budget_pools_)
     budget_pool->OnWakeUp(lazy_now->Now());

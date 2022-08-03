@@ -11,7 +11,7 @@
 #include "base/message_loop/message_pump.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
-#include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/trace_event/base_tracing.h"

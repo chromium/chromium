@@ -47,6 +47,7 @@ include_rules = [
     "+base/synchronization/waitable_event.h",
     "+base/android/sys_utils.h",
     "+base/system/sys_info.h",
+    "+base/task/common/lazy_now.h",
     "+base/task/delayed_task_handle.h",
     "+base/task/sequence_manager/task_time_observer.h",
     "+base/test",

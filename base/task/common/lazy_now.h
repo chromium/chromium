@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_TASK_SEQUENCE_MANAGER_LAZY_NOW_H_
-#define BASE_TASK_SEQUENCE_MANAGER_LAZY_NOW_H_
+#ifndef BASE_TASK_COMMON_LAZY_NOW_H_
+#define BASE_TASK_COMMON_LAZY_NOW_H_
 
 #include "base/base_export.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -13,8 +13,6 @@
 namespace base {
 
 class TickClock;
-
-namespace sequence_manager {
 
 // Now() is somewhat expensive so it makes sense not to call Now() unless we
 // really need to and to avoid subsequent calls if already called once.
@@ -42,7 +40,6 @@ class BASE_EXPORT LazyNow {
   RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
 };
 
-}  // namespace sequence_manager
 }  // namespace base
 
-#endif  // BASE_TASK_SEQUENCE_MANAGER_LAZY_NOW_H_
+#endif  // BASE_TASK_COMMON_LAZY_NOW_H_

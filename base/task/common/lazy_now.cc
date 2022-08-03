@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/common/lazy_now.h"
 
 #include "base/check.h"
 #include "base/time/tick_clock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-namespace sequence_manager {
 
 LazyNow::LazyNow(TimeTicks now) : now_(now), tick_clock_(nullptr) {}
 
@@ -38,5 +37,4 @@ TimeTicks LazyNow::Now() {
   return *now_;
 }
 
-}  // namespace sequence_manager
 }  // namespace base

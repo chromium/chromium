@@ -20,6 +20,10 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_task_queue.h"
 
+namespace base {
+class LazyNow;
+}
+
 namespace blink {
 namespace scheduler {
 
@@ -56,7 +60,7 @@ class PLATFORM_EXPORT NonMainThreadSchedulerImpl : public ThreadScheduler,
       NonMainThreadTaskQueue* worker_task_queue,
       const base::sequence_manager::Task& task,
       base::sequence_manager::TaskQueue::TaskTiming* task_timing,
-      base::sequence_manager::LazyNow* lazy_now) = 0;
+      base::LazyNow* lazy_now) = 0;
 
   // ThreadSchedulerBase:
   scoped_refptr<base::SingleThreadTaskRunner> ControlTaskRunner() override;

@@ -6,6 +6,8 @@
 
 #include <memory>
 #include <queue>
+
+#include "base/task/common/lazy_now.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -63,7 +65,7 @@ class TimerTest : public testing::Test {
   // to the delay in seconds till the next pending delayed task is scheduled to
   // fire.
   bool TimeTillNextDelayedTask(base::TimeDelta* time) const {
-    base::sequence_manager::LazyNow lazy_now(platform_->NowTicks());
+    base::LazyNow lazy_now(platform_->NowTicks());
     auto* scheduler_helper =
         platform_->GetMainThreadScheduler()->GetSchedulerHelperForTesting();
     scheduler_helper->ReclaimMemory();

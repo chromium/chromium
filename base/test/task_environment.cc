@@ -23,6 +23,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/time_domain.h"
 #include "base/task/simple_task_executor.h"
@@ -728,7 +729,7 @@ TimeDelta TaskEnvironment::NextMainThreadPendingTaskDelay() const {
   // ReclaimMemory sweeps canceled delayed tasks.
   sequence_manager_->ReclaimMemory();
   DCHECK(mock_time_domain_);
-  sequence_manager::LazyNow lazy_now(mock_time_domain_->NowTicks());
+  LazyNow lazy_now(mock_time_domain_->NowTicks());
   if (!sequence_manager_->IsIdleForTesting())
     return TimeDelta();
   absl::optional<sequence_manager::WakeUp> wake_up =

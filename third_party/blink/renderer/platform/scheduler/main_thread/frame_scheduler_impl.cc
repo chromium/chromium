@@ -10,9 +10,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/common/scoped_defer_task_posting.h"
 #include "base/task/common/task_annotator.h"
-#include "base/task/sequence_manager/lazy_now.h"
 #include "base/time/time.h"
 #include "base/trace_event/blame_context.h"
 #include "components/power_scheduler/power_mode.h"
@@ -263,11 +263,10 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 
   // On tests, the scheduler helper might already be shut down and tick is not
   // available.
-  base::sequence_manager::LazyNow lazy_now =
+  base::LazyNow lazy_now =
       main_thread_scheduler_->GetTickClock()
-          ? base::sequence_manager::LazyNow(
-                main_thread_scheduler_->GetTickClock())
-          : base::sequence_manager::LazyNow(base::TimeTicks::Now());
+          ? base::LazyNow(main_thread_scheduler_->GetTickClock())
+          : base::LazyNow(base::TimeTicks::Now());
 
   if (cpu_time_budget_pool) {
     task_queue->RemoveFromBudgetPool(lazy_now.Now(), cpu_time_budget_pool);
@@ -278,8 +277,7 @@ void FrameSchedulerImpl::RemoveThrottleableQueueFromBudgetPools(
 }
 
 void FrameSchedulerImpl::MoveTaskQueuesToCorrectWakeUpBudgetPool() {
-  base::sequence_manager::LazyNow lazy_now(
-      main_thread_scheduler_->GetTickClock());
+  base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 
   // The WakeUpBudgetPool is selected based on origin state, frame visibility
   // and page background state.
@@ -1203,8 +1201,7 @@ void FrameSchedulerImpl::OnTaskQueueCreated(
   UpdateQueuePolicy(task_queue, voter);
 
   if (task_queue->CanBeThrottled()) {
-    base::sequence_manager::LazyNow lazy_now(
-        main_thread_scheduler_->GetTickClock());
+    base::LazyNow lazy_now(main_thread_scheduler_->GetTickClock());
 
     CPUTimeBudgetPool* cpu_time_budget_pool =
         parent_page_scheduler_->background_cpu_time_budget_pool();

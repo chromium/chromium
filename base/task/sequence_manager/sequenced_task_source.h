@@ -8,7 +8,7 @@
 #include "base/base_export.h"
 #include "base/callback_helpers.h"
 #include "base/pending_task.h"
-#include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

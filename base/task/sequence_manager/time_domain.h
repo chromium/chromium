@@ -7,7 +7,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
-#include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/tasks.h"
 #include "base/time/tick_clock.h"
 #include "base/values.h"

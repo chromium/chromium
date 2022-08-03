@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_THROTTLING_BUDGET_POOL_H_
 
 #include "base/callback.h"
-#include "base/task/sequence_manager/lazy_now.h"
+#include "base/task/common/lazy_now.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
@@ -79,12 +79,12 @@ class PLATFORM_EXPORT BudgetPool {
 
   // Enables this budget pool, allowing it to enforce its policies on its
   // queues.
-  void EnableThrottling(base::sequence_manager::LazyNow* now);
+  void EnableThrottling(base::LazyNow* now);
 
   // Disables this budget pool, stopping it from enforcing its policies on its
   // queues. UpdateQueueState() is invoked on all queues to update their wake up
   // times and fences.
-  void DisableThrottling(base::sequence_manager::LazyNow* now);
+  void DisableThrottling(base::LazyNow* now);
 
   bool IsThrottlingEnabled() const;
 

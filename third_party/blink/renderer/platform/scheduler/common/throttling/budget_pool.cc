@@ -52,7 +52,7 @@ void BudgetPool::RemoveThrottler(base::TimeTicks now,
   throttler->UpdateQueueState(now);
 }
 
-void BudgetPool::EnableThrottling(base::sequence_manager::LazyNow* lazy_now) {
+void BudgetPool::EnableThrottling(base::LazyNow* lazy_now) {
   if (is_enabled_)
     return;
   is_enabled_ = true;
@@ -62,7 +62,7 @@ void BudgetPool::EnableThrottling(base::sequence_manager::LazyNow* lazy_now) {
   UpdateStateForAllThrottlers(lazy_now->Now());
 }
 
-void BudgetPool::DisableThrottling(base::sequence_manager::LazyNow* lazy_now) {
+void BudgetPool::DisableThrottling(base::LazyNow* lazy_now) {
   if (!is_enabled_)
     return;
   is_enabled_ = false;

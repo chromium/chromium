@@ -201,7 +201,7 @@ void WorkerThreadScheduler::OnTaskCompleted(
     NonMainThreadTaskQueue* task_queue,
     const base::sequence_manager::Task& task,
     TaskQueue::TaskTiming* task_timing,
-    base::sequence_manager::LazyNow* lazy_now) {
+    base::LazyNow* lazy_now) {
   PerformMicrotaskCheckpoint();
 
   task_timing->RecordTaskEnd(lazy_now);

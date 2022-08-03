@@ -15,6 +15,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
+class LazyNow;
 namespace trace_event {
 class TracedValue;
 }
@@ -99,16 +100,16 @@ class PLATFORM_EXPORT TaskQueueThrottler final
 
   // See GetNextAllowedWakeUp().
   absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUpImpl(
-      base::sequence_manager::LazyNow* lazy_now,
+      base::LazyNow* lazy_now,
       absl::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task);
 
   // TaskQueue::Throttler implementation:
   absl::optional<base::sequence_manager::WakeUp> GetNextAllowedWakeUp(
-      base::sequence_manager::LazyNow* lazy_now,
+      base::LazyNow* lazy_now,
       absl::optional<base::sequence_manager::WakeUp> next_wake_up,
       bool has_ready_task) override;
-  void OnWakeUp(base::sequence_manager::LazyNow* lazy_now) override;
+  void OnWakeUp(base::LazyNow* lazy_now) override;
   void OnHasImmediateTask() override;
 
   void UpdateFence(base::TimeTicks now);

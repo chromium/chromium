@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
@@ -669,8 +670,7 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
   idle_helper_->EnableLongIdlePeriod();
   CheckIdlePeriodStateIs("in_long_idle_period_paused");
   // There shouldn't be any delayed tasks posted by the idle helper when paused.
-  base::sequence_manager::LazyNow lazy_now_1(
-      test_task_runner_->GetMockTickClock());
+  base::LazyNow lazy_now_1(test_task_runner_->GetMockTickClock());
   EXPECT_FALSE(scheduler_helper_->GetNextWakeUp());
 
   // Posting a task should transition us to the an active state.
@@ -691,8 +691,7 @@ TEST_F(IdleHelperTest, TestLongIdlePeriodPaused) {
 
   // Once all task have been run we should go back to the paused state.
   CheckIdlePeriodStateIs("in_long_idle_period_paused");
-  base::sequence_manager::LazyNow lazy_now_2(
-      test_task_runner_->GetMockTickClock());
+  base::LazyNow lazy_now_2(test_task_runner_->GetMockTickClock());
   EXPECT_FALSE(scheduler_helper_->GetNextWakeUp());
 
   idle_helper_->EndIdlePeriod();

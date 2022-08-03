@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/scheduler/worker/non_main_thread_scheduler_impl.h"
 
 namespace base {
+class LazyNow;
 class TaskObserver;
 }
 
@@ -38,7 +39,7 @@ class PLATFORM_EXPORT CompositorThreadScheduler
       NonMainThreadTaskQueue* worker_task_queue,
       const base::sequence_manager::Task& task,
       base::sequence_manager::TaskQueue::TaskTiming* task_timing,
-      base::sequence_manager::LazyNow* lazy_now) override;
+      base::LazyNow* lazy_now) override;
 
   // WebThreadScheduler:
   scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override;

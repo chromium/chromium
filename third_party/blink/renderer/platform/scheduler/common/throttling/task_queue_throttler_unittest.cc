@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
 #include "base/test/bind.h"
@@ -28,9 +29,9 @@ namespace scheduler {
 // To avoid symbol collisions in jumbo builds.
 namespace task_queue_throttler_unittest {
 
+using base::LazyNow;
 using base::TestMockTimeTaskRunner;
 using base::TimeTicks;
-using base::sequence_manager::LazyNow;
 using base::sequence_manager::TaskQueue;
 using testing::ElementsAre;
 
@@ -105,8 +106,7 @@ class TaskQueueThrottlerTest : public testing::Test {
     queue->SetOnTaskCompletedHandler(base::BindRepeating(
         [](TaskQueueThrottler* throttler,
            const base::sequence_manager::Task& task,
-           TaskQueue::TaskTiming* task_timing,
-           base::sequence_manager::LazyNow* lazy_now) {
+           TaskQueue::TaskTiming* task_timing, base::LazyNow* lazy_now) {
           task_timing->RecordTaskEnd(lazy_now);
           throttler->OnTaskRunTimeReported(task_timing->start_time(),
                                            task_timing->end_time());
