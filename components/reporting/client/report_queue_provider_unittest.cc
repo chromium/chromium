@@ -33,26 +33,33 @@ namespace {
 
 class ReportQueueProviderTest : public ::testing::Test {
  protected:
+  void SetUp() override {
+    provider_ = std::make_unique<NiceMock<MockReportQueueProvider>>();
+    report_queue_provider_test_helper::SetForTesting(provider_.get());
+  }
+
+  void TearDown() override {
+    task_environment_.RunUntilIdle();  // Drain remaining scheduled tasks.
+    report_queue_provider_test_helper::SetForTesting(nullptr);
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
+  std::unique_ptr<MockReportQueueProvider> provider_;
   const Destination destination_ = Destination::UPLOAD_EVENTS;
   ReportQueueConfiguration::PolicyCheckCallback policy_checker_callback_ =
       base::BindRepeating([]() { return Status::StatusOK(); });
 };
 
 TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
-  std::unique_ptr<MockReportQueueProvider> provider =
-      std::make_unique<NiceMock<MockReportQueueProvider>>();
-  report_queue_provider_test_helper::SetForTesting(provider.get());
-
   static constexpr char kTestMessage[] = "TEST MESSAGE";
   // Create configuration.
   auto config_result = ReportQueueConfiguration::Create(
       EventType::kDevice, destination_, policy_checker_callback_);
   ASSERT_OK(config_result);
-  EXPECT_CALL(*provider.get(), OnInitCompletedMock()).Times(1);
-  provider->ExpectCreateNewQueueAndReturnNewMockQueue(1);
+  EXPECT_CALL(*provider_.get(), OnInitCompletedMock()).Times(1);
+  provider_->ExpectCreateNewQueueAndReturnNewMockQueue(1);
   // Use it to asynchronously create ReportingQueue and then asynchronously
   // send the message.
   test::TestEvent<Status> e;
@@ -90,7 +97,6 @@ TEST_F(ReportQueueProviderTest, CreateAndGetQueue) {
           kTestMessage, e.cb(), std::move(config_result.ValueOrDie())));
   const auto res = e.result();
   EXPECT_OK(res) << res;
-  report_queue_provider_test_helper::SetForTesting(nullptr);
 }
 
 TEST_F(ReportQueueProviderTest,
