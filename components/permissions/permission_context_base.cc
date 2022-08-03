@@ -531,15 +531,40 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
 
-  using Constraints = content_settings::ContentSettingConstraints;
+  content_settings::ContentSettingConstraints constraints = {
+      base::Time(), is_one_time ? content_settings::SessionModel::OneTime
+                                : content_settings::SessionModel::Durable};
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(
+          features::kRecordPermissionExpirationTimestamps)) {
+    // The Permissions module in Safety check will revoke permissions after
+    // a finite amount of time.
+    // We're only interested in expiring permissions that:
+    // 1. Are ALLOWed.
+    // 2. Fall back to ASK.
+    // 3. Are not already a one-time grant.
+    if (content_setting == CONTENT_SETTING_ALLOW && !is_one_time) {
+      // For #2, by definition, that should be all of them. If that changes in
+      // the future, consider whether revocation for such permission makes
+      // sense, and/or change this to an early return so that we don't
+      // unnecessarily record timestamps where we don't need them.
+      DCHECK(content_settings::ContentSettingsRegistry::GetInstance()
+                 ->Get(content_settings_type_)
+                 ->GetInitialDefaultSetting() == CONTENT_SETTING_ASK);
+
+      // To avoid inadvertently recording a history entry that a permission was
+      // granted at a certain exact time, the timer is fuzzed.
+      constraints.expiration = base::Time::Now() + base::Days(60 + rand() % 7);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   PermissionsClient::Get()
       ->GetSettingsMap(browser_context_)
-      ->SetContentSettingDefaultScope(
-          requesting_origin, embedding_origin, content_settings_type_,
-          content_setting,
-          is_one_time ? Constraints{base::Time(),
-                                    content_settings::SessionModel::OneTime}
-                      : Constraints());
+      ->SetContentSettingDefaultScope(requesting_origin, embedding_origin,
+                                      content_settings_type_, content_setting,
+                                      constraints);
 }
 
 bool PermissionContextBase::PermissionAllowedByPermissionsPolicy(

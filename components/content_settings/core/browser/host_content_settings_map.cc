@@ -685,6 +685,26 @@ void HostContentSettingsMap::RecordExceptionMetrics() {
   }
 }
 
+base::Time HostContentSettingsMap::GetExpirationForTesting(
+    GURL& primary_url,
+    GURL& secondary_url,
+    ContentSettingsType content_type) {
+  content_settings::PatternPair patterns = GetPatternsForContentSettingsType(
+      primary_url, secondary_url, content_type);
+
+  std::unique_ptr<content_settings::RuleIterator> iterator =
+      pref_provider_->GetRuleIterator(content_type, /* off_the_record */ false);
+  while (iterator->HasNext()) {
+    content_settings::Rule rule = iterator->Next();
+    if (rule.primary_pattern == patterns.first &&
+        rule.secondary_pattern == patterns.second) {
+      return rule.expiration;
+    }
+  }
+
+  return base::Time();
+}
+
 void HostContentSettingsMap::AddObserver(content_settings::Observer* observer) {
   observers_.AddObserver(observer);
 }

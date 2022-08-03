@@ -333,6 +333,13 @@ class HostContentSettingsMap : public content_settings::Observer,
     allow_invalid_secondary_pattern_for_testing_ = allow;
   }
 
+  // Retrieves the expiration time associated with the given setting granted
+  // for the |primary_url|, |secondary_url|, and |content_type| in the default
+  // scope. Null time means no expiration. Only use for testing.
+  base::Time GetExpirationForTesting(GURL& primary_url,
+                                     GURL& secondary_url,
+                                     ContentSettingsType content_type);
+
  private:
   friend class base::RefCountedThreadSafe<HostContentSettingsMap>;
   friend class content_settings::TestUtils;

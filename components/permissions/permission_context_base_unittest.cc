@@ -905,4 +905,45 @@ TEST_F(PermissionContextBaseTests, TestVirtualURLSameOrigin) {
                  PermissionStatusSource::UNSPECIFIED);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PermissionContextBaseTests, ExpirationAllow) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kRecordPermissionExpirationTimestamps}, {});
+
+  base::Time now = base::Time::Now();
+  TestAskAndDecide_TestContent(ContentSettingsType::NOTIFICATIONS,
+                               CONTENT_SETTING_ALLOW);
+
+  GURL primary_url("https://www.google.com");
+  GURL secondary_url;
+  auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
+  base::Time expiration = hcsm->GetExpirationForTesting(
+      primary_url, secondary_url, ContentSettingsType::NOTIFICATIONS);
+
+  // The expiration date should lie between two months and up to one more week.
+  int delta_days = (expiration - now).InDays();
+  EXPECT_GE(delta_days, 60);
+  EXPECT_LE(delta_days, 67);
+}
+
+TEST_F(PermissionContextBaseTests, ExpirationBlock) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kRecordPermissionExpirationTimestamps}, {});
+
+  TestAskAndDecide_TestContent(ContentSettingsType::NOTIFICATIONS,
+                               CONTENT_SETTING_BLOCK);
+
+  GURL primary_url("https://www.google.com");
+  GURL secondary_url;
+  auto* hcsm = PermissionsClient::Get()->GetSettingsMap(browser_context());
+  base::Time expiration = hcsm->GetExpirationForTesting(
+      primary_url, secondary_url, ContentSettingsType::NOTIFICATIONS);
+
+  // Expiration is not set for BLOCKed permissions.
+  EXPECT_EQ(base::Time(), expiration);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace permissions

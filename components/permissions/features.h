@@ -62,6 +62,9 @@ extern const base::Feature kBlockNotificationPromptsIfDisabledOnAppLevel;
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::Feature kPermissionsPostPromptSurvey;
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+extern const base::Feature kRecordPermissionExpirationTimestamps;
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace features
