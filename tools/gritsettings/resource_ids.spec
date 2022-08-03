@@ -283,7 +283,7 @@
     "META": {"sizes": {"includes": [1000],}},
     "includes": [1940],
   },
-  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/settings_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/settings/resources.grd": {
     "META": {"sizes": {"includes": [500],}},
     "includes": [1960],
   },

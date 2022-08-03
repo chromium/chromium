@@ -762,10 +762,6 @@ group("generate_web_components") {
     "parental_controls_page:web_components",
     "personalization_page:web_components",
     "settings_scheduler_slider:web_components",
-
-    # Shared with browser settings
-    "..:css_wrapper_files",
-    "..:html_wrapper_files",
   ]
 }
 
