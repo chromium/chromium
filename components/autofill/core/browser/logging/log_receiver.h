@@ -20,7 +20,7 @@ class LogReceiver {
 
   virtual ~LogReceiver() {}
 
-  virtual void LogEntry(const base::Value& entry) = 0;
+  virtual void LogEntry(const base::Value::Dict& entry) = 0;
 };
 
 }  // namespace autofill

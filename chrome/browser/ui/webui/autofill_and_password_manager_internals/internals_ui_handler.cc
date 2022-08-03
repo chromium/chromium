@@ -178,8 +178,8 @@ void InternalsUIHandler::EndSubscription() {
     log_router->UnregisterReceiver(this);
 }
 
-void InternalsUIHandler::LogEntry(const base::Value& entry) {
-  if (!registered_with_log_router_ || entry.is_none())
+void InternalsUIHandler::LogEntry(const base::Value::Dict& entry) {
+  if (!registered_with_log_router_)
     return;
   FireWebUIListener("add-structured-log", entry);
 }

@@ -14,7 +14,7 @@ TEST(LoggingScope, Serialization) {
   LogBuffer buffer;
   buffer << LoggingScope::kContext;
   std::string json;
-  EXPECT_TRUE(base::JSONWriter::Write(buffer.RetrieveResult(), &json));
+  EXPECT_TRUE(base::JSONWriter::Write(*buffer.RetrieveResult(), &json));
   EXPECT_EQ(R"({"attributes":{"class":"log-entry","scope":"Context"},)"
             R"("type":"element","value":"div"})",
             json);

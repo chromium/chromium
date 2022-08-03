@@ -153,7 +153,7 @@ class DummyLogReceiver : public autofill::LogReceiver {
   DummyLogReceiver(const DummyLogReceiver&) = delete;
   DummyLogReceiver& operator=(const DummyLogReceiver&) = delete;
 
-  void LogEntry(const base::Value& entry) override {}
+  void LogEntry(const base::Value::Dict& entry) override {}
 };
 
 class FakePasswordAutofillAgent

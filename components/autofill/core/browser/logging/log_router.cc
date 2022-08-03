@@ -18,7 +18,7 @@ LogRouter::LogRouter() = default;
 LogRouter::~LogRouter() = default;
 
 // static
-base::Value LogRouter::CreateEntryForText(const std::string& text) {
+base::Value::Dict LogRouter::CreateEntryForText(const std::string& text) {
   LogBuffer buffer(LogBuffer::IsActive(true));
   buffer << Tag{"div"};
   for (const auto& line : base::SplitStringPiece(
@@ -26,14 +26,14 @@ base::Value LogRouter::CreateEntryForText(const std::string& text) {
     buffer << line << Br{};
   }
   buffer << CTag{};
-  return buffer.RetrieveResult();
+  return *buffer.RetrieveResult();
 }
 
 void LogRouter::ProcessLog(const std::string& text) {
   ProcessLog(CreateEntryForText(text));
 }
 
-void LogRouter::ProcessLog(const base::Value& node) {
+void LogRouter::ProcessLog(const base::Value::Dict& node) {
   // This may not be called when there are no receivers (i.e., the router is
   // inactive), because in that case the logs cannot be displayed.
   DCHECK(!receivers_.empty());

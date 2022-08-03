@@ -43,7 +43,7 @@ class LogManager {
 
   // Forward a DOM structured log entry to the LogRouter (if registered with
   // one).
-  virtual void LogEntry(const base::Value& entry) const = 0;
+  virtual void LogEntry(const base::Value::Dict& entry) const = 0;
 
   // Returns true if logs recorded via LogTextMessage will be displayed, and
   // false otherwise.

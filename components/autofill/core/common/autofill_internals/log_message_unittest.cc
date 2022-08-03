@@ -14,7 +14,7 @@ TEST(LogMessage, Serialization) {
   LogBuffer buffer;
   buffer << LogMessage::kParsedForms;
   std::string json;
-  EXPECT_TRUE(base::JSONWriter::Write(buffer.RetrieveResult(), &json));
+  EXPECT_TRUE(base::JSONWriter::Write(*buffer.RetrieveResult(), &json));
   EXPECT_EQ(R"({"attributes":{"class":"log-message","message":"ParsedForms"},)"
             R"("children":[{"type":"text","value":"Parsed forms:"}],)"
             R"("type":"element","value":"div"})",

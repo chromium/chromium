@@ -26,7 +26,7 @@ class MockLogReceiver : public autofill::LogReceiver {
   MockLogReceiver(const MockLogReceiver&) = delete;
   MockLogReceiver& operator=(const MockLogReceiver&) = delete;
 
-  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
+  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
 };
 
 class MockNotifiedObject {
@@ -75,7 +75,7 @@ TEST_F(LogManagerTest, LogTextMessageAttachReceiver) {
   router_.RegisterReceiver(&receiver_);
   EXPECT_TRUE(manager_->IsLoggingActive());
   // After attaching the logger, text should be passed.
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))));
   manager_->LogTextMessage(kTestText);
   EXPECT_CALL(notified_object_, NotifyAboutLoggingActivity());

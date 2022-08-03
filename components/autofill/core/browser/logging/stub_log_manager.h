@@ -26,7 +26,7 @@ class StubLogManager : public LogManager {
   void OnLogRouterAvailabilityChanged(bool router_can_be_used) override;
   void SetSuspended(bool suspended) override;
   void LogTextMessage(const std::string& text) const override;
-  void LogEntry(const base::Value& entry) const override;
+  void LogEntry(const base::Value::Dict& entry) const override;
   bool IsLoggingActive() const override;
   LogBufferSubmitter Log() override;
 };

@@ -29,12 +29,12 @@ LogBufferSubmitter& LogBufferSubmitter::operator=(LogBufferSubmitter&& that) {
 }
 
 LogBufferSubmitter::~LogBufferSubmitter() {
-  if (!destruct_with_logging_)
+  if (!destruct_with_logging_ || !destination_)
     return;
-  base::Value message = buffer_.RetrieveResult();
-  if (!destination_ || message.is_none())
+  absl::optional<base::Value::Dict> message = buffer_.RetrieveResult();
+  if (!message)
     return;
-  destination_->ProcessLog(message);
+  destination_->ProcessLog(*message);
 }
 
 }  // namespace autofill

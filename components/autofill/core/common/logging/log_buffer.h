@@ -110,8 +110,8 @@ class LogBuffer {
   LogBuffer(const LogBuffer& other) = delete;
   LogBuffer& operator=(const LogBuffer& other) = delete;
 
-  // Returns the contents of the buffer and empties it.
-  base::Value RetrieveResult();
+  // Returns the contents of the buffer if any and empties it.
+  absl::optional<base::Value::Dict> RetrieveResult();
 
   // Returns whether an active WebUI is listening. If false, the buffer may
   // not do any logging.

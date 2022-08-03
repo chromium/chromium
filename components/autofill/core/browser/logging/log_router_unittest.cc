@@ -25,7 +25,7 @@ class MockLogReceiver : public LogReceiver {
   MockLogReceiver(const MockLogReceiver&) = delete;
   MockLogReceiver& operator=(const MockLogReceiver&) = delete;
 
-  MOCK_METHOD(void, LogEntry, (const base::Value&), (override));
+  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
 };
 
 class MockLogManager : public StubLogManager {
@@ -50,7 +50,7 @@ class LogRouterTest : public testing::Test {
 TEST_F(LogRouterTest, ProcessLog_OneReceiver) {
   LogRouter router;
   router.RegisterReceiver(&receiver_);
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   router.ProcessLog(kTestText);
@@ -63,7 +63,7 @@ TEST_F(LogRouterTest, ProcessLog_TwoReceiversBothUpdated) {
   router.RegisterReceiver(&receiver2_);
 
   // Check that both receivers get log updates.
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   EXPECT_CALL(receiver2_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
@@ -81,7 +81,7 @@ TEST_F(LogRouterTest, ProcessLog_TwoReceiversNoUpdateAfterUnregistering) {
   // Check that no logs are passed to an unregistered receiver.
   router.UnregisterReceiver(&receiver_);
   EXPECT_CALL(receiver_, LogEntry(_)).Times(0);
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver2_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   router.ProcessLog(kTestText);
