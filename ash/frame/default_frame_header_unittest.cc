@@ -175,7 +175,8 @@ class FramePaintWaiter : public ui::CompositorObserver {
   FrameHeader* frame_header_ = nullptr;
 };
 
-TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
+// TODO(crbug.com/1349573): Revive this test.
+TEST_F(DefaultFrameHeaderTest, DISABLED_DeleteDuringAnimation) {
   const auto bounds = gfx::Rect(100, 100);
   auto win0 = CreateAppWindow(bounds, AppType::BROWSER);
   auto win1 = CreateAppWindow(bounds, AppType::BROWSER);
@@ -213,8 +214,9 @@ TEST_F(DefaultFrameHeaderTest, DeleteDuringAnimation) {
   EXPECT_TRUE(checker.destroyed());
 }
 
+// TODO(crbug.com/1349633): Revive this test.
 // Make sure that the animation is canceled when resized.
-TEST_F(DefaultFrameHeaderTest, ResizeAndReorderDuringAnimation) {
+TEST_F(DefaultFrameHeaderTest, DISABLED_ResizeAndReorderDuringAnimation) {
   const auto bounds = gfx::Rect(100, 100);
   auto win_0 = CreateAppWindow(bounds, AppType::BROWSER);
   auto win_1 = CreateAppWindow(bounds, AppType::BROWSER);
