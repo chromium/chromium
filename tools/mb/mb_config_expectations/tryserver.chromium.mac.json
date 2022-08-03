@@ -514,7 +514,7 @@
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
-      "is_debug": false,
+      "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 0,
       "use_goma": true

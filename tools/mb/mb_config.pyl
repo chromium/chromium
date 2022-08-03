@@ -368,7 +368,7 @@
       'Mac Builder (reclient compare)': 'gpu_tests_release_bot_minimal_symbols_reclient',
       # TODO(crbug.com/1244441): remove this after the migration.
       'Mac Builder (reclient)': 'gpu_tests_release_bot_minimal_symbols_reclient',
-      'Mac Builder Next': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
+      'Mac Builder Next': 'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl',
       'Mac deterministic': 'release_bot_mac_strip_minimal_symbols',
       'Mac deterministic (dbg)': 'debug_bot',
       'Mac deterministic (reclient shadow)': 'release_bot_mac_strip_minimal_symbols_reclient',
@@ -1229,7 +1229,7 @@
       'mac-builder-next-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-fieldtrial-rel': 'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_invert_fieldtrials',
-      'mac-osxbeta-rel': 'gpu_tests_release_trybot',
+      'mac-osxbeta-rel': 'gpu_tests_debug_trybot',
       'mac-rel': 'gpu_tests_release_trybot_no_symbols_mac_code_coverage',
       'mac11-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
       'mac12-arm64-rel': 'mac_arm64_gpu_tests_release_trybot_no_symbols',
@@ -2697,6 +2697,10 @@
       'gpu_tests', 'debug_bot_reclient', 'x86', 'no_symbols'
     ],
 
+    'gpu_tests_debug_trybot': [
+      'gpu_tests', 'debug', 'no_symbols', 'dcheck_always_on', 'static', 'goma'
+    ],
+
     'gpu_tests_ozone_linux_non_x11_release_trybot': [
       'gpu_tests', 'ozone_linux', 'ozone_linux_non_x11', 'release_trybot_minimal_symbols',
     ],
@@ -3118,6 +3122,11 @@
 
     'linux_cfm_release_trybot': [
       'cfm', 'release_trybot', 'chromeos',
+    ],
+
+    'mac_arm64_gpu_tests_debug_bot_minimal_symbols_no_nacl': [
+      'arm64', 'gpu_tests', 'static_bot', 'minimal_symbols', 'disable_nacl',
+      'dcheck_off', 'debug',
     ],
 
     'mac_arm64_gpu_tests_release_bot_minimal_symbols_no_nacl': [
@@ -4566,6 +4575,10 @@
 
     'static_angle': {
       'gn_args': 'use_static_angle=true',
+    },
+
+    'static_bot': {
+      'mixins': ['static', 'goma'],
     },
 
     'strip_absolute_paths_from_debug_symbols': {
