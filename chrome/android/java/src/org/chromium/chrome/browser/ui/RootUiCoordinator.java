@@ -109,6 +109,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
@@ -1363,7 +1364,9 @@ public class RootUiCoordinator
         mBottomSheetManager = new BottomSheetManager(mBottomSheetController, mActivityTabProvider,
                 mBrowserControlsManager, mModalDialogManagerSupplier,
                 this::getBottomSheetSnackbarManager, mTabObscuringHandlerSupplier.get(),
-                mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier);
+                mOmniboxFocusStateSupplier, panelManagerSupplier, mStartSurfaceSupplier,
+                mLayoutStateProviderOneShotSupplier,
+                ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mActivity));
 
         // TODO(crbug.com/1279941): Consider moving handler registration to feature code.
         if (BackPressManager.isEnabled()) {

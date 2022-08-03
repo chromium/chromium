@@ -17,6 +17,9 @@ import java.lang.annotation.RetentionPolicy;
         StartSurfaceState.SHOWING_TABSWITCHER, StartSurfaceState.SHOWING_START,
         StartSurfaceState.SHOWING_HOMEPAGE, StartSurfaceState.SHOWING_PREVIOUS})
 @Retention(RetentionPolicy.SOURCE)
+// TODO(https://crbug.com/1315679): Replace this with {@link LayoutType} after the {@link
+// ChromeFeatureList.START_SURFACE_REFACTOR} is enabled by default.
+@Deprecated
 public @interface StartSurfaceState {
     int NOT_SHOWN = 0;
 

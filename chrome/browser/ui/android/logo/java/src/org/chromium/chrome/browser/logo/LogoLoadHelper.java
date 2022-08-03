@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.logo.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 /**
@@ -47,9 +46,16 @@ public class LogoLoadHelper {
     /**
      * If it's on Start surface homepage, load search provider logo; If it's not on start surface
      * homepage, destroy mLogoDelegate.
+     *
+     * @param isStartSurfaceShown Whether Start surface homepage is shown.
+     * @param deprecatedStartSurfaceStateMarkedHidden Whether Start surface homepage is hidden.
+     *         TODO(crbug.com/1315676): Remove this variable once the refactor is launched and
+     *         StartSurfaceState is removed. Now we check this because there are some intermediate
+     *         StartSurfaceStates, i.e. SHOWING_START.
      */
-    public void maybeLoadSearchProviderLogoOnHomepage(@StartSurfaceState int startSurfaceState) {
-        if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
+    public void maybeLoadSearchProviderLogoOnHomepage(
+            boolean isStartSurfaceShown, boolean deprecatedStartSurfaceStateMarkedHidden) {
+        if (isStartSurfaceShown) {
             if (mProfileSupplier.hasValue()) {
                 loadSearchProviderLogo(/*animationEnabled=*/false);
                 return;
@@ -59,10 +65,7 @@ public class LogoLoadHelper {
                 assert profile != null : "Unexpectedly null profile from TabModel.";
                 loadSearchProviderLogo(/*animationEnabled=*/false);
             }));
-        } else if ((startSurfaceState == StartSurfaceState.NOT_SHOWN
-                           || startSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
-                           || startSurfaceState == StartSurfaceState.DISABLED)
-                && mLogoDelegate != null) {
+        } else if (deprecatedStartSurfaceStateMarkedHidden && mLogoDelegate != null) {
             mHasLogoLoadedForCurrentSearchEngine = false;
             // Destroy |mLogoDelegate| when hiding Start surface homepage to save memory.
             mLogoDelegate.destroy();

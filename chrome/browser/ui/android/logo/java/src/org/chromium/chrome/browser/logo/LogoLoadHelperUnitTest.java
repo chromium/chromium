@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
-import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -152,7 +151,8 @@ public class LogoLoadHelperUnitTest {
         mLogoLoadHelper.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(StartSurfaceState.SHOWN_HOMEPAGE);
+        mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(
+                /*isStartSurfaceShown*/ true, /*isStartSurfaceHidden*/ false);
 
         verify(mLogoDelegate, times(1)).getSearchProviderLogo(any());
     }
@@ -162,7 +162,8 @@ public class LogoLoadHelperUnitTest {
         mLogoLoadHelper.setHasLogoLoadedForCurrentSearchEngineForTesting(true);
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
-        mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(StartSurfaceState.SHOWN_HOMEPAGE);
+        mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(
+                /*isStartSurfaceShown*/ true, /*isStartSurfaceHidden*/ false);
 
         verify(mLogoDelegate, times(0)).getSearchProviderLogo(any());
     }

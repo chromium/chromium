@@ -212,7 +212,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     layoutStateProvider -> { mLayoutStateProvider = layoutStateProvider; }));
         }
 
-        if (startSurfaceSupplier != null) {
+        if (!ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)
+                && startSurfaceSupplier != null) {
             mStartSurfaceSupplier = startSurfaceSupplier;
             startSurfaceSupplier.onAvailable(mCallbackController.makeCancelable((startSurface) -> {
                 mStartSurfaceState = startSurface.getStartSurfaceState();
@@ -220,6 +221,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                     assert ReturnToChromeUtil.isStartSurfaceEnabled(mContext);
                     mStartSurfaceState = newState;
                 };
+                // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|,
+                // |mStartSurfaceState| and |mStartSurfaceStateObserver| after the refactor is
+                // enabled by default.
                 startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
             }));
         }
@@ -309,6 +313,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     @VisibleForTesting
     boolean isInStartSurfaceHomepage() {
+        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)) {
+            return mLayoutStateProvider != null
+                    && mLayoutStateProvider.isLayoutVisible(LayoutType.START_SURFACE);
+        }
+
         return mStartSurfaceSupplier != null && mStartSurfaceSupplier.get() != null
                 && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }

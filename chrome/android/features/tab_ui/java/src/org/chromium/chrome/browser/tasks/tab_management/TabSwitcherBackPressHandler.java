@@ -24,16 +24,19 @@ public class TabSwitcherBackPressHandler
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
     private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     private final Runnable mShowBrowsing;
+    private final boolean mIsStartSurfaceRefactorEnabled;
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     public TabSwitcherBackPressHandler(
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            OneshotSupplier<StartSurface> startSurfaceSupplier, Runnable showBrowsing) {
+            OneshotSupplier<StartSurface> startSurfaceSupplier, Runnable showBrowsing,
+            boolean isStartSurfaceRefactorEnabled) {
         layoutStateProviderSupplier.onAvailable(this::onLayoutStateProviderAvailable);
         startSurfaceSupplier.onAvailable(this::onStartSurfaceAvailable);
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mStartSurfaceSupplier = startSurfaceSupplier;
         mShowBrowsing = showBrowsing;
+        mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
         onBackPressChanged();
     }
 
@@ -73,21 +76,28 @@ public class TabSwitcherBackPressHandler
     }
 
     private void onStartSurfaceAvailable(StartSurface startSurface) {
+        if (mIsStartSurfaceRefactorEnabled) return;
+        // TODO(crbug.com/1315679): Remove |mStartSurfaceSupplier| and
+        // StartSurfaceStateChangeObserver when refactor flag is enabled by default.
         startSurface.addStateChangeObserver(this);
         onBackPressChanged();
     }
 
     private void onBackPressChanged() {
         LayoutStateProvider provider = mLayoutStateProviderSupplier.get();
-        boolean isOverviewVisible =
-                provider != null && provider.isLayoutVisible(LayoutType.TAB_SWITCHER);
+        boolean isOverviewVisible = provider != null
+                && (provider.isLayoutVisible(LayoutType.TAB_SWITCHER)
+                        || provider.isLayoutVisible(LayoutType.START_SURFACE));
         if (!isOverviewVisible) {
             mBackPressChangedSupplier.set(false);
             return;
         }
         StartSurface startSurface = mStartSurfaceSupplier.get();
-        boolean isStartSurfaceShownTabSwitcher = startSurface == null
-                || startSurface.getStartSurfaceState() == StartSurfaceState.SHOWN_TABSWITCHER;
+        boolean isStartSurfaceShownTabSwitcher = mIsStartSurfaceRefactorEnabled
+                ? provider.isLayoutVisible(LayoutType.TAB_SWITCHER)
+                : startSurface == null
+                        || startSurface.getStartSurfaceState()
+                                == StartSurfaceState.SHOWN_TABSWITCHER;
         mBackPressChangedSupplier.set(isStartSurfaceShownTabSwitcher);
     }
 }

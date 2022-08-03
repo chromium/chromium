@@ -2365,7 +2365,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mTabSwitcherBackPressHandler == null && !isTablet()) {
             mTabSwitcherBackPressHandler = new TabSwitcherBackPressHandler(
                     mLayoutStateProviderSupplier, mStartSurfaceSupplier,
-                    () -> mLayoutManager.showLayout(LayoutType.BROWSING, true));
+                    ()
+                            -> mLayoutManager.showLayout(LayoutType.BROWSING, true),
+                    ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(this));
             mBackPressManager.addHandler(
                     mTabSwitcherBackPressHandler, BackPressHandler.Type.TAB_SWITCHER_TO_BROWSING);
         }

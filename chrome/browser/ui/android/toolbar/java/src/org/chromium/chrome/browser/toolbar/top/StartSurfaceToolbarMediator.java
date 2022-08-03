@@ -35,6 +35,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.logo.LogoLoadHelper;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,12 +69,15 @@ class StartSurfaceToolbarMediator {
     private final IncognitoTabModelObserver mIncognitoTabModelObserver;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<LoadUrlParams> mLogoClickedCallback;
+    private final boolean mIsRefactorEnabled;
 
     private TabModelSelector mTabModelSelector;
     private TabCountProvider mTabCountProvider;
 
     @StartSurfaceState
     private int mStartSurfaceState;
+    @LayoutType
+    private int mLayoutType;
     private boolean mDefaultSearchEngineHasLogo;
 
     private CallbackController mCallbackController = new CallbackController();
@@ -91,7 +95,7 @@ class StartSurfaceToolbarMediator {
             boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
-            Callback<LoadUrlParams> logoClickedCallback) {
+            Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled) {
         mPropertyModel = model;
         mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
@@ -108,6 +112,7 @@ class StartSurfaceToolbarMediator {
             if (!canShowHint && !mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE)) return;
             updateIdentityDisc(mIdentityDiscButtonSupplier.get());
         });
+        mIsRefactorEnabled = isRefactorEnabled;
 
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
 
@@ -158,9 +163,10 @@ class StartSurfaceToolbarMediator {
         }
     }
 
-    void onStartSurfaceStateChanged(
-            @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
+    void onStartSurfaceStateChanged(@StartSurfaceState int newState,
+            boolean shouldShowStartSurfaceToolbar, @LayoutType int newLayoutType) {
         mStartSurfaceState = newState;
+        mLayoutType = newLayoutType;
         updateLogoVisibility();
         updateTabSwitcherButtonVisibility();
         updateIncognitoToggleTabVisibility();
@@ -204,12 +210,20 @@ class StartSurfaceToolbarMediator {
 
     /** Returns whether it's on the start surface homepage. */
     boolean isOnHomepage() {
-        return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+        return mIsRefactorEnabled ? mLayoutType == LayoutType.START_SURFACE
+                                  : mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 
     /** Returns whether it's on a normal tab. */
     private boolean isOnATab() {
-        return mStartSurfaceState == StartSurfaceState.NOT_SHOWN;
+        return mIsRefactorEnabled ? mLayoutType == LayoutType.BROWSING
+                                  : mStartSurfaceState == StartSurfaceState.NOT_SHOWN;
+    }
+
+    /** Returns whether it's on grid tab switcher surface. */
+    private boolean isOnGridTabSwitcher() {
+        return mIsRefactorEnabled ? mLayoutType == LayoutType.TAB_SWITCHER
+                                  : mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER;
     }
 
     /**
@@ -263,8 +277,9 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateIncognitoToggleTabVisibility() {
-        if (mStartSurfaceState != StartSurfaceState.SHOWN_TABSWITCHER
-                && mStartSurfaceState != StartSurfaceState.SHOWING_TABSWITCHER) {
+        if ((mIsRefactorEnabled && mLayoutType != LayoutType.TAB_SWITCHER)
+                || (!mIsRefactorEnabled && mStartSurfaceState != StartSurfaceState.SHOWN_TABSWITCHER
+                        && mStartSurfaceState != StartSurfaceState.SHOWING_TABSWITCHER)) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
             updateNewTabViewTextVisibility();
             return;
@@ -311,10 +326,11 @@ class StartSurfaceToolbarMediator {
 
     private void updateLogoVisibility() {
         if (mLogoLoadHelper != null) {
-            mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(mStartSurfaceState);
+            mLogoLoadHelper.maybeLoadSearchProviderLogoOnHomepage(isOnHomepage(),
+                    isOnATab() || isOnGridTabSwitcher()
+                            || mStartSurfaceState == StartSurfaceState.DISABLED);
         }
-        boolean shouldShowLogo = mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                && mDefaultSearchEngineHasLogo;
+        boolean shouldShowLogo = isOnHomepage() && mDefaultSearchEngineHasLogo;
         mPropertyModel.set(LOGO_IS_VISIBLE, shouldShowLogo);
     }
 
@@ -337,8 +353,7 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateNewTabViewVisibility() {
-        boolean isShownTabSwitcherState = mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER
-                || mStartSurfaceState == StartSurfaceState.SHOWING_TABSWITCHER;
+        boolean isShownTabSwitcherState = isOnGridTabSwitcher();
 
         // New tab button is only shown for homepage when accessibility is enabled and
         // OverviewListLayout is shown as the tab switcher instead of the start surface.
@@ -364,21 +379,18 @@ class StartSurfaceToolbarMediator {
     private void updateTabSwitcherButtonVisibility() {
         // This button should only be shown on homepage. On tab switcher page, new tab button is
         // shown.
-        boolean shouldShow = mShouldShowTabSwitcherButtonOnHomepage
-                && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
+        boolean shouldShow = mShouldShowTabSwitcherButtonOnHomepage && isOnHomepage();
         mPropertyModel.set(TAB_SWITCHER_BUTTON_IS_VISIBLE, shouldShow);
         // If tab switcher button is visible, we should move identity disc to the left.
         mPropertyModel.set(IDENTITY_DISC_AT_START, shouldShow);
     }
 
     private void updateAppMenuUpdateBadgeSuppression() {
-        mMenuButtonCoordinator.setAppMenuUpdateBadgeSuppressed(
-                mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER);
+        mMenuButtonCoordinator.setAppMenuUpdateBadgeSuppressed(isOnGridTabSwitcher());
     }
 
     private void updateTranslationY(float transY) {
-        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
-                && !mPropertyModel.get(IS_INCOGNITO)) {
+        if (isOnHomepage() && !mPropertyModel.get(IS_INCOGNITO)) {
             // If it's on the non-incognito homepage, document the homepage translationY.
             mNonIncognitoHomepageTranslationY = transY;
             // Update the translationY of the toolbarView.
@@ -393,5 +405,11 @@ class StartSurfaceToolbarMediator {
     @StartSurfaceState
     int getOverviewModeStateForTesting() {
         return mStartSurfaceState;
+    }
+
+    @VisibleForTesting
+    @LayoutType
+    int getLayoutTypeForTesting() {
+        return mLayoutType;
     }
 }

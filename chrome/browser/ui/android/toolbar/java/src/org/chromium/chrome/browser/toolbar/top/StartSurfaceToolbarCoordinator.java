@@ -10,6 +10,7 @@ import android.view.View.OnLongClickListener;
 import android.view.ViewStub;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -17,6 +18,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -65,7 +67,7 @@ public class StartSurfaceToolbarCoordinator {
             boolean isTabGroupsAndroidContinuationEnabled,
             BooleanSupplier isIncognitoModeEnabledSupplier,
             ObservableSupplier<Profile> profileSupplier,
-            Callback<LoadUrlParams> logoClickedCallback) {
+            Callback<LoadUrlParams> logoClickedCallback, boolean isRefactorEnabled) {
         mStub = startSurfaceToolbarStub;
 
         mPropertyModel =
@@ -92,7 +94,7 @@ public class StartSurfaceToolbarCoordinator {
                 menuButtonCoordinator, identityDiscStateSupplier, identityDiscButtonSupplier,
                 StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue(),
                 isTabGroupsAndroidContinuationEnabled, isIncognitoModeEnabledSupplier,
-                profileSupplier, logoClickedCallback);
+                profileSupplier, logoClickedCallback, isRefactorEnabled);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -190,13 +192,18 @@ public class StartSurfaceToolbarCoordinator {
 
     /**
      * Called when start surface state is changed.
-     * @param newState The new {@link StartSurfaceState}.
+     * @param newState The new {@link StartSurfaceState}. Should be removed after refactor is
+     *         enabled.
      * @param shouldShowStartSurfaceToolbar Whether or not should show start surface toolbar.
+     * @param newLayoutType The new {@link LayoutType}. Only used when refactor is enabled.
      */
-    void onStartSurfaceStateChanged(
-            @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
+    void onStartSurfaceStateChanged(@Nullable @StartSurfaceState Integer newState,
+            boolean shouldShowStartSurfaceToolbar, @Nullable @LayoutType Integer newLayoutType) {
         if (shouldShowStartSurfaceToolbar && !isInflated()) inflate();
-        mToolbarMediator.onStartSurfaceStateChanged(newState, shouldShowStartSurfaceToolbar);
+        mToolbarMediator.onStartSurfaceStateChanged(
+                newState == null ? StartSurfaceState.NOT_SHOWN : newState,
+                shouldShowStartSurfaceToolbar,
+                newLayoutType == null ? LayoutType.NONE : newLayoutType);
     }
 
     /**

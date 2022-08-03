@@ -44,6 +44,9 @@ public interface StartSurface {
      * An observer that is notified when the start surface internal state, excluding
      * the states notified in {@link TabSwitcherViewObserver}, is changed.
      */
+    // TODO(crbug.com/1315679): Replace this observer with LayoutStateObserver after the {@link
+    // ChromeFeatureList.START_SURFACE_REFACTOR} is enabled by default.
+    @Deprecated
     interface StateObserver {
         /**
          * Called when the internal state is changed.

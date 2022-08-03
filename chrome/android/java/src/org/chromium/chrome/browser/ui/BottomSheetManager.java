@@ -15,6 +15,9 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -62,6 +65,10 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     /** The supplier of {@link StartSurface} instance. */
     private final OneshotSupplier<StartSurface> mStartSurfaceSupplier;
     private StateObserver mStartSurfaceStateObserver;
+
+    private final boolean mIsStartSurfaceRefactorEnabled;
+    private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
 
     /** A browser controls manager for polling browser controls offsets. */
     private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -119,7 +126,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             TabObscuringHandler obscuringDelegate,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             Supplier<OverlayPanelManager> overlayManager,
-            OneshotSupplier<StartSurface> startSurfaceSupplier) {
+            OneshotSupplier<StartSurface> startSurfaceSupplier,
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
+            boolean isStartSurfaceRefactorEnabled) {
         mSheetController = controller;
         mTabProvider = tabProvider;
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
@@ -129,10 +138,20 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         mTabObscuringToken = TokenHolder.INVALID_TOKEN;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mOverlayPanelManager = overlayManager;
-        mStartSurfaceSupplier = startSurfaceSupplier;
         mCallbackController = new CallbackController();
-        mStartSurfaceSupplier.onAvailable(
-                mCallbackController.makeCancelable(this::addStartSurfaceStateObserver));
+        mIsStartSurfaceRefactorEnabled = isStartSurfaceRefactorEnabled;
+
+        // TODO(https://crbug.com/1315679): Remove |mStartSurfaceSupplier|, |mStartSurfaceState| and
+        // |mStartSurfaceStateObserver| after the refactor is enabled by default.
+        mStartSurfaceSupplier = startSurfaceSupplier;
+        if (!mIsStartSurfaceRefactorEnabled) {
+            mStartSurfaceSupplier.onAvailable(
+                    mCallbackController.makeCancelable(this::addStartSurfaceStateObserver));
+        }
+
+        mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+        mLayoutStateProviderSupplier.onAvailable(
+                mCallbackController.makeCancelable(this::addLayoutStateObserver));
 
         mSheetController.addObserver(this);
         mSheetController.setAccessibilityUtil(ChromeAccessibilityUtil.get());
@@ -211,7 +230,10 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         updateSuppressionForTabSwitcher(tab,
                 mStartSurfaceSupplier.get() == null
                         ? null
-                        : mStartSurfaceSupplier.get().getStartSurfaceState());
+                        : mStartSurfaceSupplier.get().getStartSurfaceState(),
+                mLayoutStateProviderSupplier.get() == null
+                        ? null
+                        : mLayoutStateProviderSupplier.get().getActiveLayoutType());
 
         if (tab == null) return;
 
@@ -231,11 +253,13 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
      * @param tab The current tab. It might be null when the Start surface or the Tab switcher is
      *            showing.
      * @param startSurfaceState The current state surface state when the Start surface is enabled,
-     *                          null otherwise.
+     *                          null otherwise. It's also null when the refactor is enabled.
+     * @param layoutType The current layout type, currently only used when the refactor is enabled.
      */
-    private void updateSuppressionForTabSwitcher(
-            @Nullable Tab tab, @Nullable @StartSurfaceState Integer startSurfaceState) {
-        if (shouldSuppressForTabSwitcher(tab, startSurfaceState)) {
+    private void updateSuppressionForTabSwitcher(@Nullable Tab tab,
+            @Nullable @StartSurfaceState Integer startSurfaceState,
+            @Nullable @LayoutType Integer layoutType) {
+        if (shouldSuppressForTabSwitcher(tab, startSurfaceState, layoutType)) {
             if (mTabSwitcherToken == 0) {
                 mTabSwitcherToken = mSheetController.suppressSheet(StateChangeReason.COMPOSITED_UI);
             }
@@ -251,13 +275,21 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         }
     }
 
-    private boolean shouldSuppressForTabSwitcher(
-            Tab tab, @StartSurfaceState Integer startSurfaceState) {
+    private boolean shouldSuppressForTabSwitcher(Tab tab,
+            @StartSurfaceState Integer startSurfaceState,
+            @Nullable @LayoutType Integer layoutType) {
         StartSurface startSurface = mStartSurfaceSupplier.get();
-        if (tab == null && startSurface == null) return true;
 
-        /** When the Start surface is enabled, the {@link startSurfaceState} isn't null. */
-        if (startSurfaceState != null) {
+        if (mIsStartSurfaceRefactorEnabled) {
+            if (layoutType == null) return tab == null;
+            if (layoutType == LayoutType.START_SURFACE) {
+                return false;
+            } else if (layoutType == LayoutType.TAB_SWITCHER) {
+                // If startSurface is not null,  start surface is enabled.
+                return startSurface != null;
+            }
+        } else {
+            if (startSurface == null) return tab == null;
             if (startSurfaceState == StartSurfaceState.SHOWING_HOMEPAGE
                     || startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                 return false;
@@ -266,7 +298,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                 return true;
             }
         }
-
         return tab == null;
     }
 
@@ -280,15 +311,30 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
                 assert startSurfaceState == startSurface.getStartSurfaceState();
                 mStartSurfaceState = startSurfaceState;
-                updateSuppressionForTabSwitcher(mTabProvider.get(), startSurfaceState);
+                updateSuppressionForTabSwitcher(mTabProvider.get(), startSurfaceState, null);
 
                 if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
                     mSheetController.clearRequestsAndHide();
                 }
             }
         };
-
         startSurface.addStateChangeObserver(mStartSurfaceStateObserver);
+    }
+
+    private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
+        mLayoutStateObserver = new LayoutStateObserver() {
+            private @LayoutType int mLayoutType;
+            @Override
+            public void onFinishedShowing(int layoutType) {
+                if (mLayoutType == layoutType) return;
+
+                mLayoutType = layoutType;
+                updateSuppressionForTabSwitcher(mTabProvider.get(), null, mLayoutType);
+                if (mLayoutType == LayoutType.START_SURFACE) {
+                    mSheetController.clearRequestsAndHide();
+                }
+            }
+        };
     }
 
     @Override
@@ -397,6 +443,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
         VrModuleProvider.unregisterVrModeObserver(mVrModeObserver);
         if (mStartSurfaceSupplier.get() != null) {
             mStartSurfaceSupplier.get().removeStateChangeObserver(mStartSurfaceStateObserver);
+        }
+        if (mLayoutStateProviderSupplier.get() != null) {
+            mLayoutStateProviderSupplier.get().removeObserver(mLayoutStateObserver);
         }
     }
 }

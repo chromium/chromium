@@ -914,8 +914,7 @@ public final class ReturnToChromeUtil {
      */
     public static boolean isTabSwitcherOnlyRefactorEnabled(Context context) {
         return ChromeFeatureList.sStartSurfaceRefactor.isEnabled()
-                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(context)
-                && !isStartSurfaceEnabled(context);
+                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(context);
     }
 
     @VisibleForTesting

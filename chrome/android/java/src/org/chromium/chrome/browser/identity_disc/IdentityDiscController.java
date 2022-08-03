@@ -16,6 +16,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
@@ -25,6 +26,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
@@ -151,8 +153,14 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
         return mButtonData;
     }
 
-    public ButtonData getForStartSurface(@StartSurfaceState int overviewModeState) {
-        if (overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE) {
+    public ButtonData getForStartSurface(
+            @StartSurfaceState int overviewModeState, @LayoutType int layoutType) {
+        if (ReturnToChromeUtil.isTabSwitcherOnlyRefactorEnabled(mContext)) {
+            if (layoutType != LayoutType.START_SURFACE) {
+                mButtonData.setCanShow(false);
+                return mButtonData;
+            }
+        } else if (overviewModeState != StartSurfaceState.SHOWN_HOMEPAGE) {
             mButtonData.setCanShow(false);
             return mButtonData;
         }
