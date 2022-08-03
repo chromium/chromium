@@ -2060,24 +2060,6 @@ void MainThreadSchedulerImpl::ResetForNavigationLocked() {
   UpdatePolicyLocked(UpdateType::kMayEarlyOutIfPolicyUnchanged);
 }
 
-void MainThreadSchedulerImpl::SetTopLevelBlameContext(
-    base::trace_event::BlameContext* blame_context) {
-  // Any task that runs in the default task runners belongs to the context of
-  // all frames (as opposed to a particular frame). Note that the task itself
-  // may still enter a more specific blame context if necessary.
-  //
-  // Per-frame task runners (loading, timers, etc.) are configured with a more
-  // specific blame context by FrameSchedulerImpl.
-  //
-  // TODO(altimin): automatically enter top-level for all task queues associated
-  // with renderer scheduler which do not have a corresponding frame.
-  control_task_queue_->SetBlameContext(blame_context);
-  DefaultTaskQueue()->SetBlameContext(blame_context);
-  compositor_task_queue_->SetBlameContext(blame_context);
-  idle_helper_.IdleTaskRunner()->SetBlameContext(blame_context);
-  v8_task_queue_->SetBlameContext(blame_context);
-}
-
 void MainThreadSchedulerImpl::AddRAILModeObserver(RAILModeObserver* observer) {
   main_thread_only().rail_mode_observers.AddObserver(observer);
   observer->OnRAILModeChanged(main_thread_only().current_policy.rail_mode());

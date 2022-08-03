@@ -76,11 +76,6 @@ void WebThreadScheduler::ResumeTimersForAndroidWebView() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void WebThreadScheduler::SetTopLevelBlameContext(
-    base::trace_event::BlameContext* blame_context) {
-  NOTREACHED();
-}
-
 void WebThreadScheduler::SetRendererProcessType(WebRendererProcessType type) {
   NOTREACHED();
 }

@@ -101,12 +101,6 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
 
   ScriptForbiddenScope::Enter();
 
-  // Attribute garbage collection to the all frames instead of a specific
-  // frame.
-  if (BlameContext* blame_context =
-          Platform::Current()->GetTopLevelBlameContext())
-    blame_context->Enter();
-
   v8::HandleScope scope(isolate);
   switch (type) {
     case v8::kGCTypeIncrementalMarking:
@@ -138,10 +132,6 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
   V8PerIsolateData::From(isolate)->LeaveGC();
 
   ScriptForbiddenScope::Exit();
-
-  if (BlameContext* blame_context =
-          Platform::Current()->GetTopLevelBlameContext())
-    blame_context->Leave();
 
   ThreadState* current_thread_state = ThreadState::Current();
   if (current_thread_state) {

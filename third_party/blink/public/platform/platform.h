@@ -357,10 +357,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   virtual void SetThreadType(base::PlatformThreadId, base::ThreadType) {}
 #endif
 
-  // Returns a blame context for attributing top-level work which does not
-  // belong to a particular frame scope.
-  virtual BlameContext* GetTopLevelBlameContext() { return nullptr; }
-
   // Resources -----------------------------------------------------------
 
   // Returns a blob of data corresponding to |resource_id|. This should not be

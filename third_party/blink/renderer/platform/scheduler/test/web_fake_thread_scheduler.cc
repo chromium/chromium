@@ -49,9 +49,6 @@ void WebFakeThreadScheduler::ResumeTimersForAndroidWebView() {}
 
 void WebFakeThreadScheduler::Shutdown() {}
 
-void WebFakeThreadScheduler::SetTopLevelBlameContext(
-    base::trace_event::BlameContext* blame_context) {}
-
 void WebFakeThreadScheduler::SetRendererProcessType(
     WebRendererProcessType type) {}
 

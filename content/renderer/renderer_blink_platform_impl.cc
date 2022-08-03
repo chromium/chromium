@@ -200,9 +200,6 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
   }
 #endif
 
-  // TODO(crbug/1349313): Remove this invocation.
-  main_thread_scheduler_->SetTopLevelBlameContext(nullptr);
-
   auto io_task_runner = GetIOTaskRunner();
   if (io_task_runner) {
     io_task_runner->PostTask(
@@ -220,13 +217,10 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
 }
 
 RendererBlinkPlatformImpl::~RendererBlinkPlatformImpl() {
-  main_thread_scheduler_->SetTopLevelBlameContext(nullptr);
-  {
-    base::ScopedAllowBaseSyncPrimitives allow;
-    // Ensure task posted to IO thread is finished because it contains
-    // pointers to fields of `this`.
-    io_thread_id_ready_event_.Wait();
-  }
+  base::ScopedAllowBaseSyncPrimitives allow;
+  // Ensure task posted to IO thread is finished because it contains
+  // pointers to fields of `this`.
+  io_thread_id_ready_event_.Wait();
 }
 
 void RendererBlinkPlatformImpl::Shutdown() {}

@@ -15,12 +15,6 @@
 #include "third_party/blink/public/platform/scheduler/web_rail_mode_observer.h"
 #include "third_party/blink/public/platform/web_common.h"
 
-namespace base {
-namespace trace_event {
-class BlameContext;
-}  // namespace trace_event
-}  // namespace base
-
 namespace blink {
 class Thread;
 }  // namespace blink
@@ -110,11 +104,6 @@ class BLINK_PLATFORM_EXPORT WebThreadScheduler {
   virtual void PauseTimersForAndroidWebView();
   virtual void ResumeTimersForAndroidWebView();
 #endif  // BUILDFLAG(IS_ANDROID)
-
-  // Sets the default blame context to which top level work should be
-  // attributed in this renderer. |blame_context| must outlive this scheduler.
-  virtual void SetTopLevelBlameContext(
-      base::trace_event::BlameContext* blame_context);
 
   // Sets the kind of renderer process. Should be called on the main thread
   // once.
