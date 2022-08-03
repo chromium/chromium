@@ -67,6 +67,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/color_analysis.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
@@ -472,10 +473,9 @@ class WallpaperControllerTest : public AshTestBase {
                          base::Time::Now().LocalMidnight());
   }
 
-  // Saves images with different resolution to corresponding paths and saves
-  // wallpaper info to local state, so that subsequent calls of |ShowWallpaper|
-  // can retrieve the images and info.
-  void CreateAndSaveWallpapers(const AccountId& account_id) {
+  // Saves wallpaper images in the appropriate location for |account_id| and
+  // returns the relative path of the file.
+  base::FilePath PrecacheWallpapers(const AccountId& account_id) {
     std::string wallpaper_files_id = GetDummyFileId(account_id);
 
     std::string file_name = GetDummyFileName(account_id);
@@ -488,19 +488,23 @@ class WallpaperControllerTest : public AshTestBase {
 
     // Saves the small/large resolution wallpapers to small/large custom
     // wallpaper paths.
-    ASSERT_TRUE(WriteJPEGFile(small_wallpaper_path, kSmallWallpaperMaxWidth,
-                              kSmallWallpaperMaxHeight,
-                              kSmallCustomWallpaperColor));
-    ASSERT_TRUE(WriteJPEGFile(large_wallpaper_path, kLargeWallpaperMaxWidth,
-                              kLargeWallpaperMaxHeight,
-                              kLargeCustomWallpaperColor));
+    CHECK(WriteJPEGFile(small_wallpaper_path, kSmallWallpaperMaxWidth,
+                        kSmallWallpaperMaxHeight, kSmallCustomWallpaperColor));
+    CHECK(WriteJPEGFile(large_wallpaper_path, kLargeWallpaperMaxWidth,
+                        kLargeWallpaperMaxHeight, kLargeCustomWallpaperColor));
 
-    std::string relative_path =
-        base::FilePath(wallpaper_files_id).Append(file_name).value();
+    return base::FilePath(wallpaper_files_id).Append(file_name);
+  }
+
+  // Saves images with different resolution to corresponding paths and saves
+  // wallpaper info to local state, so that subsequent calls of |ShowWallpaper|
+  // can retrieve the images and info.
+  void CreateAndSaveWallpapers(const AccountId& account_id) {
+    base::FilePath relative_path = PrecacheWallpapers(account_id);
     // Saves wallpaper info to local state for user.
-    WallpaperInfo info = {relative_path, WALLPAPER_LAYOUT_CENTER_CROPPED,
-                          WallpaperType::kCustomized,
-                          base::Time::Now().LocalMidnight()};
+    WallpaperInfo info = {
+        relative_path.value(), WALLPAPER_LAYOUT_CENTER_CROPPED,
+        WallpaperType::kCustomized, base::Time::Now().LocalMidnight()};
     ASSERT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id, info));
   }
 
@@ -993,6 +997,92 @@ TEST_F(WallpaperControllerTest, EnableShelfColoringNotifiesObservers) {
   EnableShelfColoring();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, observer.colors_changed_count());
+}
+
+TEST_F(WallpaperControllerTest, ProminentColor_CachedColorsAvailableAtLogin) {
+  SetBypassDecode();
+  // Cache some wallpapers and store that in the local prefs. Otherwise, we
+  // can't cache colors.
+  base::FilePath relative_path = PrecacheWallpapers(account_id_1);
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  info.location = relative_path.value();
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(account_id_1, info));
+
+  // Store colors in local prefs simulating cache behavior.
+  const std::vector<SkColor> prominent_colors = {SK_ColorGREEN, SK_ColorRED,
+                                                 SK_ColorBLUE,  SK_ColorWHITE,
+                                                 SK_ColorWHITE, SK_ColorWHITE};
+  pref_manager_->CacheProminentColors(account_id_1, prominent_colors);
+  const SkColor k_means_color = SK_ColorLTGRAY;
+  pref_manager_->CacheKMeanColor(account_id_1, k_means_color);
+
+  // Reset to login screen.
+  GetSessionControllerClient()->RequestSignOut();
+
+  TestWallpaperControllerObserver observer(controller_);
+  ASSERT_EQ(0, observer.colors_changed_count());
+
+  // Show user wallpaper in login screen. We are *not* logged in yet.
+  controller_->ShowUserWallpaper(account_id_1,
+                                 user_manager::UserType::USER_TYPE_REGULAR);
+  task_environment()->RunUntilIdle();
+
+  // Showing a user wallpaper should cause the cached colors to be fetched and
+  // reported.
+  EXPECT_EQ(1, observer.colors_changed_count());
+
+  // DARK_VIBRANT happens to be prominent color 0.
+  EXPECT_EQ(SK_ColorGREEN, controller_->GetProminentColor(
+                               {color_utils::LumaRange::DARK,
+                                color_utils::SaturationRange::VIBRANT}));
+  EXPECT_EQ(k_means_color, controller_->GetKMeanColor());
+}
+
+TEST_F(WallpaperControllerTest, ProminentColor_ClearedBetweenUsers) {
+  SetBypassDecode();
+  // Setup prominent colors for account 1.
+  base::FilePath relative_path = PrecacheWallpapers(account_id_1);
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  info.location = relative_path.value();
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(account_id_1, info));
+
+  const std::vector<SkColor> prominent_colors = {SK_ColorGREEN, SK_ColorRED,
+                                                 SK_ColorBLUE,  SK_ColorWHITE,
+                                                 SK_ColorWHITE, SK_ColorWHITE};
+  pref_manager_->CacheProminentColors(account_id_1, prominent_colors);
+  const SkColor k_means_color = SK_ColorLTGRAY;
+  pref_manager_->CacheKMeanColor(account_id_1, k_means_color);
+
+  // Set a wallpaper for account 2.
+  WallpaperInfo info2 = InfoWithType(WallpaperType::kDefault);
+  ASSERT_TRUE(pref_manager_->SetLocalWallpaperInfo(account_id_2, info2));
+
+  // Reset to login screen.
+  GetSessionControllerClient()->RequestSignOut();
+
+  TestWallpaperControllerObserver observer(controller_);
+
+  // Show wallpaper for account 1.
+  controller_->ShowUserWallpaper(account_id_1,
+                                 user_manager::UserType::USER_TYPE_REGULAR);
+  task_environment()->RunUntilIdle();
+
+  // Verify that we can retrieve the prominent color.
+  EXPECT_EQ(SK_ColorGREEN, controller_->GetProminentColor(
+                               {color_utils::LumaRange::DARK,
+                                color_utils::SaturationRange::VIBRANT}));
+
+  // Show wallpaper for account 2.
+  controller_->ShowUserWallpaper(account_id_2,
+                                 user_manager::UserType::USER_TYPE_REGULAR);
+  task_environment()->RunUntilIdle();
+  // Since account 2 has not cached colors, the prominent color should be
+  // invalid.
+  EXPECT_EQ(
+      kInvalidWallpaperColor,
+      controller_->GetProminentColor({color_utils::LumaRange::DARK,
+                                      color_utils::SaturationRange::VIBRANT}));
+  EXPECT_EQ(2, observer.colors_changed_count());
 }
 
 TEST_F(WallpaperControllerTest, SetOnlineWallpaperFromDataSavesFile) {

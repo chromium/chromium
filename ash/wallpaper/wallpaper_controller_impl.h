@@ -627,11 +627,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // system state (e.g. wallpaper image, SessionState, etc.).
   bool ShouldCalculateColors() const;
 
-  // Gets prominent color cache from the local state pref service. Returns an
-  // empty value if the cache is not available.
-  absl::optional<std::vector<SkColor>> GetCachedColors(
-      const std::string& current_location) const;
-
   // The callback when decoding of the always-on-top wallpaper completes.
   void OnAlwaysOnTopWallpaperDecoded(const WallpaperInfo& info,
                                      const gfx::ImageSkia& image);

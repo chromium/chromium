@@ -386,18 +386,13 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   absl::optional<std::vector<SkColor>> GetCachedProminentColors(
-      const AccountId& account_id) const override {
-    WallpaperInfo info;
-    if (!GetLocalWallpaperInfo(account_id, &info))
-      return absl::nullopt;
-
+      const base::StringPiece location) const override {
     // TODO(crbug.com/787134): When we can handle blank keys, remove this.
-    if (info.location.empty())
+    if (location.empty())
       return absl::nullopt;
 
     const base::Value::List* prominent_colors =
-        local_state_->GetValueDict(prefs::kWallpaperColors)
-            .FindList(info.location);
+        local_state_->GetValueDict(prefs::kWallpaperColors).FindList(location);
     if (!prominent_colors)
       return absl::nullopt;
 
@@ -430,18 +425,14 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   absl::optional<SkColor> GetCachedKMeanColor(
-      const AccountId& account_id) const override {
-    WallpaperInfo info;
-    if (!GetLocalWallpaperInfo(account_id, &info))
-      return absl::nullopt;
-
+      const base::StringPiece location) const override {
     // TODO(crbug.com/787134): When we can handle blank keys, remove this.
-    if (info.location.empty())
+    if (location.empty())
       return absl::nullopt;
 
     const base::Value::Dict& k_mean_colors =
         local_state_->GetValueDict(prefs::kWallpaperMeanColors);
-    auto* k_mean_color_value = k_mean_colors.Find(info.location);
+    auto* k_mean_color_value = k_mean_colors.Find(location);
     if (!k_mean_color_value)
       return absl::nullopt;
     return static_cast<SkColor>(k_mean_color_value->GetDouble());

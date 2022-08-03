@@ -355,5 +355,38 @@ TEST_F(WallpaperPrefManagerTest, GetNextDailyRefreshUpdate_Recent) {
                     Lt(base::Hours(22) + base::Minutes(1))));
 }
 
+TEST_F(WallpaperPrefManagerTest, CacheProminentColors) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+
+  const char location[] = "/test/location";
+  info.location = location;
+
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+
+  const std::vector<SkColor> expected_colors = {
+      SK_ColorGREEN, SK_ColorGREEN, SK_ColorGREEN,
+      SkColorSetRGB(0xAB, 0xBC, 0xEF)};
+
+  pref_manager_->CacheProminentColors(account_id_1, expected_colors);
+  EXPECT_EQ(expected_colors,
+            *pref_manager_->GetCachedProminentColors(location));
+}
+
+TEST_F(WallpaperPrefManagerTest, CacheKMeansColor) {
+  profile_helper_->RegisterPrefsForAccount(account_id_1);
+
+  WallpaperInfo info = InfoWithType(WallpaperType::kCustomized);
+  const char location[] = "/test/location";
+  info.location = location;
+  EXPECT_TRUE(pref_manager_->SetUserWallpaperInfo(account_id_1, info));
+
+  const SkColor expected_color = SkColorSetRGB(0xAB, 0xBC, 0xEF);
+
+  pref_manager_->CacheKMeanColor(account_id_1, expected_color);
+  EXPECT_EQ(expected_color, *pref_manager_->GetCachedKMeanColor(location));
+}
+
 }  // namespace
 }  // namespace ash

@@ -573,6 +573,24 @@ user_manager::UserType GetUserType(const AccountId& id) {
   return user_session->user_info.type;
 }
 
+// Returns the WallpaperCalculatedColors from `pref_manager`, if it exists,
+// using the location from `info`.
+absl::optional<WallpaperCalculatedColors> GetCachedCalculatedColors(
+    const WallpaperPrefManager& pref_manager,
+    const WallpaperInfo& info) {
+  base::StringPiece location = info.location;
+  absl::optional<std::vector<SkColor>> cached_colors =
+      pref_manager.GetCachedProminentColors(location);
+  absl::optional<SkColor> cached_k_mean_color =
+      pref_manager.GetCachedKMeanColor(location);
+  if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
+    return WallpaperCalculatedColors(cached_colors.value(),
+                                     cached_k_mean_color.value());
+  }
+
+  return absl::nullopt;
+}
+
 // Gets |account_id|'s custom wallpaper at |wallpaper_path|. Falls back to the
 // original custom wallpaper. Verifies that the returned path exists. If a valid
 // path cannot be found, returns an empty FilePath. Must run on wallpaper
@@ -737,7 +755,9 @@ base::FilePath WallpaperControllerImpl::GetCustomWallpaperDir(
 SkColor WallpaperControllerImpl::GetProminentColor(
     ColorProfile color_profile) const {
   ColorProfileType type = GetColorProfileType(color_profile);
-  return calculated_colors_.prominent_colors[static_cast<int>(type)];
+  size_t index = static_cast<size_t>(type);
+  DCHECK_LT(index, calculated_colors_.prominent_colors.size());
+  return calculated_colors_.prominent_colors[index];
 }
 
 SkColor WallpaperControllerImpl::GetKMeanColor() const {
@@ -1726,6 +1746,9 @@ void WallpaperControllerImpl::OnColorCalculationComplete() {
   WallpaperCalculatedColors wallpaper_calculated_colors =
       color_calculator_->get_calculated_colors();
   color_calculator_.reset();
+
+  const AccountId account_id = GetActiveAccountId();
+
   // Use |WallpaperInfo::location| as the key for storing |prominent_colors_| in
   // the |kWallpaperColors| pref.
   // TODO(crbug.com/787134): The |prominent_colors_| of wallpapers with empty
@@ -1733,8 +1756,8 @@ void WallpaperControllerImpl::OnColorCalculationComplete() {
   // TODO(skau): This does not guarantee that the current wallpaper is the same
   // wallpaper for which the colors were calculated.
   pref_manager_->CacheProminentColors(
-      GetActiveAccountId(), wallpaper_calculated_colors.prominent_colors);
-  pref_manager_->CacheKMeanColor(GetActiveAccountId(),
+      account_id, wallpaper_calculated_colors.prominent_colors);
+  pref_manager_->CacheKMeanColor(account_id,
                                  wallpaper_calculated_colors.k_mean_color);
   SetCalculatedColors(wallpaper_calculated_colors);
 }
@@ -2703,18 +2726,11 @@ void WallpaperControllerImpl::CalculateWallpaperColors() {
     color_calculator_.reset();
   }
 
-  if (GetActiveUserSession()) {
-    // The cache is only available if we have an active session.
-    // Fetch the color cache if it exists.
-    absl::optional<std::vector<SkColor>> cached_colors =
-        pref_manager_->GetCachedProminentColors(GetActiveAccountId());
-    absl::optional<SkColor> cached_k_mean_color =
-        pref_manager_->GetCachedKMeanColor(GetActiveAccountId());
-    if (cached_colors.has_value() && cached_k_mean_color.has_value()) {
-      SetCalculatedColors(WallpaperCalculatedColors(
-          cached_colors.value(), cached_k_mean_color.value()));
-      return;
-    }
+  absl::optional<WallpaperCalculatedColors> colors = GetCachedCalculatedColors(
+      *pref_manager_, current_wallpaper_->wallpaper_info());
+  if (colors) {
+    SetCalculatedColors(std::move(*colors));
+    return;
   }
 
   // Color calculation is only allowed during an active session for performance

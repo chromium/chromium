@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "components/account_id/account_id.h"
@@ -111,14 +112,17 @@ class ASH_EXPORT WallpaperPrefManager
 
   virtual void RemoveProminentColors(const AccountId& account_id) = 0;
 
+  // Returns the cached prominent colors for a wallpaper with `location` if
+  // present.
   virtual absl::optional<std::vector<SkColor>> GetCachedProminentColors(
-      const AccountId& account_id) const = 0;
+      const base::StringPiece location) const = 0;
 
   virtual void CacheKMeanColor(const AccountId& account_id,
                                SkColor k_mean_color) = 0;
 
+  // Returns the cached KMeans color value for the wallpaper at `location`.
   virtual absl::optional<SkColor> GetCachedKMeanColor(
-      const AccountId& account_id) const = 0;
+      const base::StringPiece location) const = 0;
 
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
