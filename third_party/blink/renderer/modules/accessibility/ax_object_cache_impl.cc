@@ -1195,18 +1195,25 @@ bool AXObjectCacheImpl::IsRelevantPseudoElement(const Node& node) {
     return false;  // Is the clearfix hack: ignore pseudo element.
   }
 
-  // The only other pseudo elements that matter are ::first-letter.
-  // E.g. backdrop does not get an accessibility object.
-  if (!node.IsFirstLetterPseudoElement())
-    return false;
-
-  if (LayoutObject* layout_parent = node.GetLayoutObject()->Parent()) {
-    if (Node* layout_parent_node = layout_parent->GetNode()) {
-      if (layout_parent_node->IsPseudoElement())
-        return IsRelevantPseudoElement(*layout_parent_node);
-    }
+  // ::first-letter is relevant if and only if its parent layout object is a
+  // relevant pseudo element. If it's not a pseudo element, then this the
+  // ::first-letter text would end up being repeated in the AX Tree.
+  if (node.IsFirstLetterPseudoElement()) {
+    LayoutObject* layout_parent = node.GetLayoutObject()->Parent();
+    DCHECK(layout_parent);
+    Node* layout_parent_node = layout_parent->GetNode();
+    return layout_parent_node && layout_parent_node->IsPseudoElement() &&
+           IsRelevantPseudoElement(*layout_parent_node);
   }
 
+  // The remaining possible pseudo element types are not relevant.
+  if (node.IsBackdropPseudoElement())
+    return false;
+
+  // If this is reached, then a new pseudo element type was added and is not
+  // yet handled by accessibility. See  PseudoElementTagName() in
+  // pseudo_element.cc for all possible types.
+  SANITIZER_NOTREACHED() << "Unhandled type of pseudo element on: " << node;
   return false;
 }
 
@@ -1502,10 +1509,11 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     DCHECK(layout_text_parent->IsText());
     parent = GetOrCreate(layout_text_parent);
     if (!parent) {
-      // Allowed to not have a parent if the text was irrelevant whitespace.
-      DCHECK(inline_text_box->GetText().ContainsOnlyWhitespaceOrEmpty())
+      DCHECK(inline_text_box->GetText().ContainsOnlyWhitespaceOrEmpty() ||
+             !IsRelevantPseudoElementDescendant(*layout_text_parent))
           << "No parent for non-whitespace inline textbox: "
-          << layout_text_parent;
+          << layout_text_parent
+          << "\nParent of parent: " << layout_text_parent->Parent();
       return nullptr;
     }
   }
