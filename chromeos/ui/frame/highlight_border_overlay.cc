@@ -37,6 +37,9 @@ class ImageSource : public gfx::CanvasImageSource {
 };
 
 int GetRoundedCornerRadius(chromeos::WindowStateType type) {
+  if (type == chromeos::WindowStateType::kPip)
+    return chromeos::kPipRoundedCornerRadius;
+
   return IsNormalWindowStateType(type) ? chromeos::kTopCornerRadiusWhenRestored
                                        : 0;
 }

@@ -37,6 +37,7 @@
 #include "build/chromeos_buildflags.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -1527,7 +1528,7 @@ void ShellSurfaceBase::UpdateCornerRadius() {
     ash::SetCornerRadius(
         window_state->window(), host_window()->layer(),
         window_state->IsPip()
-            ? base::ClampRound(GetScale() * ash::kPipRoundedCornerRadius)
+            ? base::ClampRound(GetScale() * chromeos::kPipRoundedCornerRadius)
             : 0);
   }
 }
