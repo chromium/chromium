@@ -3,8 +3,9 @@
 # found in the LICENSE file.
 
 USE_PYTHON3 = True
+PRESUBMIT_VERSION = '2.0.0'
 
-def CheckChangeOnUpload(input_api, output_api):
+def CheckCommon(input_api, output_api):
   results = []
   results += input_api.canned_checks.CheckChangeLintsClean(
       input_api, output_api)

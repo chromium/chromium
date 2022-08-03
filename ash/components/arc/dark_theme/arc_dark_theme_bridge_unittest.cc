@@ -34,7 +34,7 @@ class ArcDarkThemeBridgeTest : public testing::Test {
     bridge_->Shutdown();
   }
 
-  ArcDarkThemeBridgeTest(const ArcDarkThemeBridge&) = delete;
+  explicit ArcDarkThemeBridgeTest(const ArcDarkThemeBridge&) = delete;
   ArcDarkThemeBridgeTest& operator=(const ArcDarkThemeBridge&) = delete;
 
   content::BrowserTaskEnvironment task_environment_;
