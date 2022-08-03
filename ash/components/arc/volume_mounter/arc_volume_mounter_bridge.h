@@ -75,7 +75,7 @@ class ArcVolumeMounterBridge
   // ash::disks::DiskMountManager::Observer overrides:
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
-      chromeos::MountError error_code,
+      ash::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
 
   // ConnectionObserver<mojom::VolumeMounterInstance> overrides:

@@ -84,10 +84,10 @@ void FakeDiskMountManager::MountPath(
   const MountPointInfo mount_point(source_path, source_path, type,
                                    ash::disks::MOUNT_CONDITION_NONE);
   mount_points_.insert(make_pair(source_path, mount_point));
-  std::move(callback).Run(chromeos::MOUNT_ERROR_NONE, mount_point);
+  std::move(callback).Run(ash::MountError::kNone, mount_point);
   for (auto& observer : observers_) {
-    observer.OnMountEvent(DiskMountManager::MOUNTING,
-                          chromeos::MOUNT_ERROR_NONE, mount_point);
+    observer.OnMountEvent(DiskMountManager::MOUNTING, ash::MountError::kNone,
+                          mount_point);
   }
 }
 
@@ -95,7 +95,7 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
                                        UnmountPathCallback callback) {
   unmount_requests_.emplace_back(mount_path);
 
-  chromeos::MountError error = chromeos::MOUNT_ERROR_NONE;
+  ash::MountError error = ash::MountError::kNone;
   auto unmount_iter = unmount_errors_.find(mount_path);
   if (unmount_iter != unmount_errors_.end()) {
     error = unmount_iter->second;
@@ -109,7 +109,7 @@ void FakeDiskMountManager::UnmountPath(const std::string& mount_path,
     mount_points_.erase(iter);
     for (auto& observer : observers_) {
       observer.OnMountEvent(DiskMountManager::UNMOUNTING,
-                            chromeos::MOUNT_ERROR_NONE, mount_point);
+                            ash::MountError::kNone, mount_point);
     }
   }
 
@@ -138,7 +138,7 @@ bool FakeDiskMountManager::FinishAllUnmountPathRequests() {
 }
 
 void FakeDiskMountManager::FailUnmountRequest(const std::string& mount_path,
-                                              chromeos::MountError error_code) {
+                                              ash::MountError error_code) {
   unmount_errors_[mount_path] = error_code;
 }
 

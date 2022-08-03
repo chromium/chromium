@@ -38,11 +38,11 @@ class VolumeManagerObserver {
   virtual void OnDeviceRemoved(const std::string& device_path) {}
 
   // Fired when a volume is mounted.
-  virtual void OnVolumeMounted(chromeos::MountError error_code,
+  virtual void OnVolumeMounted(ash::MountError error_code,
                                const Volume& volume) {}
 
   // Fired when a volume is unmounted.
-  virtual void OnVolumeUnmounted(chromeos::MountError error_code,
+  virtual void OnVolumeUnmounted(ash::MountError error_code,
                                  const Volume& volume) {}
 
   // Fired when formatting a device is started (or failed to start).

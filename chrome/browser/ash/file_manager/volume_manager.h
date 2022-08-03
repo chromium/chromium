@@ -459,7 +459,7 @@ class VolumeManager : public KeyedService,
                      const std::string& device_path) override;
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
-      chromeos::MountError error_code,
+      ash::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
   void OnFormatEvent(ash::disks::DiskMountManager::FormatEvent event,
                      chromeos::FormatError error_code,
@@ -543,12 +543,11 @@ class VolumeManager : public KeyedService,
   void OnStorageMonitorInitialized();
   void DoAttachMtpStorage(const storage_monitor::StorageInfo& info,
                           device::mojom::MtpStorageInfoPtr mtp_storage_info);
-  void DoMountEvent(chromeos::MountError error_code,
-                    std::unique_ptr<Volume> volume);
-  void DoUnmountEvent(chromeos::MountError error_code, const Volume& volume);
+  void DoMountEvent(ash::MountError error_code, std::unique_ptr<Volume> volume);
+  void DoUnmountEvent(ash::MountError error_code, const Volume& volume);
   void OnExternalStorageDisabledChangedUnmountCallback(
       std::vector<std::string> remaining_mount_paths,
-      chromeos::MountError error_code);
+      ash::MountError error_code);
 
   // Returns the path of the mount point for drive.
   base::FilePath GetDriveMountPointPath() const;
@@ -556,11 +555,11 @@ class VolumeManager : public KeyedService,
   void OnSshfsCrostiniUnmountCallback(
       const base::FilePath& sshfs_mount_path,
       RemoveSshfsCrostiniVolumeCallback callback,
-      chromeos::MountError error_code);
+      ash::MountError error_code);
 
   void OnSftpGuestOsUnmountCallback(const base::FilePath& sftp_mount_path,
                                     RemoveSftpGuestOsVolumeCallback callback,
-                                    chromeos::MountError error_code);
+                                    ash::MountError error_code);
 
   Profile* profile_;
   drive::DriveIntegrationService* drive_integration_service_;  // Not owned.

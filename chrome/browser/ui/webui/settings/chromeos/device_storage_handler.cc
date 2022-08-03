@@ -239,7 +239,7 @@ void StorageHandler::OnMountEvent(
     DiskMountManager::MountEvent event,
     chromeos::MountError error_code,
     const DiskMountManager::MountPointInfo& mount_info) {
-  if (error_code != chromeos::MountError::MOUNT_ERROR_NONE)
+  if (error_code != chromeos::MountError::kNone)
     return;
 
   if (!IsEligibleForAndroidStorage(mount_info.source_path))

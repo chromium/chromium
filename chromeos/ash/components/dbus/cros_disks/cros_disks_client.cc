@@ -85,51 +85,51 @@ MountError CrosDisksMountErrorToChromeMountError(
     cros_disks::MountErrorType mount_error) {
   switch (mount_error) {
     case cros_disks::MOUNT_ERROR_NONE:
-      return MOUNT_ERROR_NONE;
+      return MountError::kNone;
     case cros_disks::MOUNT_ERROR_UNKNOWN:
-      return MOUNT_ERROR_UNKNOWN;
+      return MountError::kUnknown;
     case cros_disks::MOUNT_ERROR_INTERNAL:
-      return MOUNT_ERROR_INTERNAL;
+      return MountError::kInternal;
     case cros_disks::MOUNT_ERROR_INVALID_ARGUMENT:
-      return MOUNT_ERROR_INVALID_ARGUMENT;
+      return MountError::kInvalidArgument;
     case cros_disks::MOUNT_ERROR_INVALID_PATH:
-      return MOUNT_ERROR_INVALID_PATH;
+      return MountError::kInvalidPath;
     case cros_disks::MOUNT_ERROR_PATH_ALREADY_MOUNTED:
-      return MOUNT_ERROR_PATH_ALREADY_MOUNTED;
+      return MountError::kPathAlreadyMounted;
     case cros_disks::MOUNT_ERROR_PATH_NOT_MOUNTED:
-      return MOUNT_ERROR_PATH_NOT_MOUNTED;
+      return MountError::kPathNotMounted;
     case cros_disks::MOUNT_ERROR_DIRECTORY_CREATION_FAILED:
-      return MOUNT_ERROR_DIRECTORY_CREATION_FAILED;
+      return MountError::kDirectoryCreationFailed;
     case cros_disks::MOUNT_ERROR_INVALID_MOUNT_OPTIONS:
-      return MOUNT_ERROR_INVALID_MOUNT_OPTIONS;
+      return MountError::kInvalidMountOptions;
     case cros_disks::MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS:
-      return MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS;
+      return MountError::kInvalidUnmountOptions;
     case cros_disks::MOUNT_ERROR_INSUFFICIENT_PERMISSIONS:
-      return MOUNT_ERROR_INSUFFICIENT_PERMISSIONS;
+      return MountError::kInsufficientPermissions;
     case cros_disks::MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND:
-      return MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND;
+      return MountError::kMountProgramNotFound;
     case cros_disks::MOUNT_ERROR_MOUNT_PROGRAM_FAILED:
-      return MOUNT_ERROR_MOUNT_PROGRAM_FAILED;
+      return MountError::kMountProgramFailed;
     case cros_disks::MOUNT_ERROR_INVALID_DEVICE_PATH:
-      return MOUNT_ERROR_INVALID_DEVICE_PATH;
+      return MountError::kInvalidDevicePath;
     case cros_disks::MOUNT_ERROR_UNKNOWN_FILESYSTEM:
-      return MOUNT_ERROR_UNKNOWN_FILESYSTEM;
+      return MountError::kUnknownFilesystem;
     case cros_disks::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM:
-      return MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
+      return MountError::kUnsupportedFilesystem;
     case cros_disks::MOUNT_ERROR_INVALID_ARCHIVE:
-      return MOUNT_ERROR_INVALID_ARCHIVE;
+      return MountError::kInvalidArchive;
     case cros_disks::MOUNT_ERROR_UNSUPPORTED_ARCHIVE:
       // TODO(amistry): Add MOUNT_ERROR_UNSUPPORTED_ARCHIVE.
-      return MOUNT_ERROR_UNKNOWN;
+      return MountError::kUnknown;
     case cros_disks::MOUNT_ERROR_NEED_PASSWORD:
-      return MOUNT_ERROR_NEED_PASSWORD;
+      return MountError::kNeedPassword;
     case cros_disks::MOUNT_ERROR_IN_PROGRESS:
-      return MOUNT_ERROR_IN_PROGRESS;
+      return MountError::kInProgress;
     case cros_disks::MOUNT_ERROR_CANCELLED:
-      return MOUNT_ERROR_CANCELLED;
+      return MountError::kCancelled;
     default:
       LOG(ERROR) << "Unrecognised mount error code " << mount_error;
-      return MOUNT_ERROR_UNKNOWN;
+      return MountError::kUnknown;
   }
 }
 
@@ -379,24 +379,24 @@ class CrosDisksClientImpl : public CrosDisksClient {
 
     const char kUnmountHistogramName[] = "CrosDisksClient.UnmountError";
     if (!response) {
-      UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, MOUNT_ERROR_UNKNOWN,
-                                MOUNT_ERROR_COUNT);
-      std::move(callback).Run(MOUNT_ERROR_UNKNOWN);
+      UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, MountError::kUnknown,
+                                MountError::kCount);
+      std::move(callback).Run(MountError::kUnknown);
       return;
     }
 
     dbus::MessageReader reader(response);
     uint32_t error_code = 0;
-    MountError mount_error = MOUNT_ERROR_NONE;
+    MountError mount_error = MountError::kNone;
     if (reader.PopUint32(&error_code)) {
       mount_error = CrosDisksMountErrorToChromeMountError(
           static_cast<cros_disks::MountErrorType>(error_code));
     } else {
       LOG(ERROR) << "Invalid response: " << response->ToString();
-      mount_error = MOUNT_ERROR_UNKNOWN;
+      mount_error = MountError::kUnknown;
     }
     UMA_HISTOGRAM_ENUMERATION(kUnmountHistogramName, mount_error,
-                              MOUNT_ERROR_COUNT);
+                              MountError::kCount);
     std::move(callback).Run(mount_error);
   }
 
@@ -489,15 +489,15 @@ class CrosDisksClientImpl : public CrosDisksClient {
     }
 
     UMA_HISTOGRAM_ENUMERATION("CrosDisksClient.MountCompletedError",
-                              entry.error_code(), MOUNT_ERROR_COUNT);
+                              entry.error_code(), MountError::kCount);
     // Flatten MountType and MountError into a single dimension.
     constexpr int kMaxMountErrors = 100;
-    static_assert(MOUNT_ERROR_COUNT <= kMaxMountErrors,
+    static_assert(static_cast<int>(MountError::kCount) <= kMaxMountErrors,
                   "CrosDisksClient.MountErrorMountType histogram must be "
                   "updated.");
     const int type_and_error =
         (static_cast<int>(entry.mount_type()) * kMaxMountErrors) +
-        entry.error_code();
+        static_cast<int>(entry.error_code());
     base::UmaHistogramSparse("CrosDisksClient.MountErrorMountType",
                              type_and_error);
     for (auto& observer : observer_list_)
@@ -584,39 +584,45 @@ class CrosDisksClientImpl : public CrosDisksClient {
 };
 
 }  // namespace
+}  // namespace chromeos
+
+namespace ash {
 
 std::ostream& operator<<(std::ostream& out, const MountError error) {
   switch (error) {
 #define PRINT_ERROR(s) \
   case s:              \
     return out << #s;
-    PRINT_ERROR(MOUNT_ERROR_NONE)
-    PRINT_ERROR(MOUNT_ERROR_UNKNOWN)
-    PRINT_ERROR(MOUNT_ERROR_INTERNAL)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_ARGUMENT)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_PATH)
-    PRINT_ERROR(MOUNT_ERROR_PATH_ALREADY_MOUNTED)
-    PRINT_ERROR(MOUNT_ERROR_PATH_NOT_MOUNTED)
-    PRINT_ERROR(MOUNT_ERROR_DIRECTORY_CREATION_FAILED)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_MOUNT_OPTIONS)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS)
-    PRINT_ERROR(MOUNT_ERROR_INSUFFICIENT_PERMISSIONS)
-    PRINT_ERROR(MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND)
-    PRINT_ERROR(MOUNT_ERROR_MOUNT_PROGRAM_FAILED)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_DEVICE_PATH)
-    PRINT_ERROR(MOUNT_ERROR_UNKNOWN_FILESYSTEM)
-    PRINT_ERROR(MOUNT_ERROR_UNSUPPORTED_FILESYSTEM)
-    PRINT_ERROR(MOUNT_ERROR_INVALID_ARCHIVE)
-    PRINT_ERROR(MOUNT_ERROR_NEED_PASSWORD)
-    PRINT_ERROR(MOUNT_ERROR_IN_PROGRESS)
-    PRINT_ERROR(MOUNT_ERROR_CANCELLED)
-    PRINT_ERROR(MOUNT_ERROR_COUNT)
+    PRINT_ERROR(MountError::kNone)
+    PRINT_ERROR(MountError::kUnknown)
+    PRINT_ERROR(MountError::kInternal)
+    PRINT_ERROR(MountError::kInvalidArgument)
+    PRINT_ERROR(MountError::kInvalidPath)
+    PRINT_ERROR(MountError::kPathAlreadyMounted)
+    PRINT_ERROR(MountError::kPathNotMounted)
+    PRINT_ERROR(MountError::kDirectoryCreationFailed)
+    PRINT_ERROR(MountError::kInvalidMountOptions)
+    PRINT_ERROR(MountError::kInvalidUnmountOptions)
+    PRINT_ERROR(MountError::kInsufficientPermissions)
+    PRINT_ERROR(MountError::kMountProgramNotFound)
+    PRINT_ERROR(MountError::kMountProgramFailed)
+    PRINT_ERROR(MountError::kInvalidDevicePath)
+    PRINT_ERROR(MountError::kUnknownFilesystem)
+    PRINT_ERROR(MountError::kUnsupportedFilesystem)
+    PRINT_ERROR(MountError::kInvalidArchive)
+    PRINT_ERROR(MountError::kNeedPassword)
+    PRINT_ERROR(MountError::kInProgress)
+    PRINT_ERROR(MountError::kCancelled)
+    PRINT_ERROR(MountError::kCount)
 #undef PRINT_ERROR
   }
 
   return out << "MOUNT_ERROR_" << std::underlying_type_t<MountError>(error);
 }
 
+}  // namespace ash
+
+namespace chromeos {
 ////////////////////////////////////////////////////////////////////////////////
 // DiskInfo
 

@@ -560,9 +560,9 @@ bool WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
 }
 
 void WallpaperControllerClientImpl::OnVolumeMounted(
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     const file_manager::Volume& volume) {
-  if (error_code != chromeos::MOUNT_ERROR_NONE) {
+  if (error_code != ash::MountError::kNone) {
     return;
   }
   if (volume.type() != file_manager::VolumeType::VOLUME_TYPE_GOOGLE_DRIVE) {

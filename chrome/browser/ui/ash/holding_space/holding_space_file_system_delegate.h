@@ -63,9 +63,9 @@ class HoldingSpaceFileSystemDelegate
   void OnHoldingSpaceItemInitialized(const HoldingSpaceItem* item) override;
 
   // file_manager::VolumeManagerObserver:
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(MountError error_code,
                        const file_manager::Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(MountError error_code,
                          const file_manager::Volume& volume) override;
 
   // chromeos::FileChangeServiceObserver:

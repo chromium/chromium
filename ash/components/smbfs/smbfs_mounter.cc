@@ -107,7 +107,7 @@ void SmbFsMounter::Mount(SmbFsMounter::DoneCallback callback) {
 }
 
 void SmbFsMounter::OnMountDone(
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     std::unique_ptr<ash::disks::MountPoint> mount_point) {
   if (!callback_) {
     // This can happen if the mount timeout expires and the callback is already
@@ -115,7 +115,7 @@ void SmbFsMounter::OnMountDone(
     return;
   }
 
-  if (error_code != chromeos::MOUNT_ERROR_NONE) {
+  if (error_code != ash::MountError::kNone) {
     LOG(WARNING) << "smbfs mount error: " << error_code;
     ProcessMountError(mojom::MountError::kUnknown);
     return;

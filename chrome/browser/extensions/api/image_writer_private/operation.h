@@ -187,7 +187,7 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
   void UnmountVolumes(base::OnceClosure continuation);
   // Starts the write after unmounting.
   void UnmountVolumesCallback(base::OnceClosure continuation,
-                              chromeos::MountError error_code);
+                              ash::MountError error_code);
   // Starts the ImageBurner write.  Note that target_path is the file path of
   // the device where device_path has been a system device path.
   void StartWriteOnUIThread(const std::string& target_path,

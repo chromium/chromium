@@ -372,7 +372,7 @@ void FilesystemUnmounter::UnmountPaths(
 }
 
 void FilesystemUnmounter::OnUnmountPath(MountError mount_error) {
-  if (mount_error != MOUNT_ERROR_NONE) {
+  if (mount_error != MountError::kNone) {
     LOG(ERROR) << "Error unmounting USB drive: " << mount_error;
     success_ = false;
   }
@@ -573,7 +573,7 @@ void CrosUsbDetector::OnMountEvent(
     MountError error_code,
     const disks::DiskMountManager::MountPointInfo& mount_info) {
   if (mount_info.mount_type != MountType::kDevice ||
-      error_code != MOUNT_ERROR_NONE) {
+      error_code != MountError::kNone) {
     return;
   }
 

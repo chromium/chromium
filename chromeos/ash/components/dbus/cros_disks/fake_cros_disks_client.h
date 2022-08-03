@@ -177,7 +177,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) FakeCrosDisksClient
   base::ObserverList<Observer> observer_list_;
   int unmount_call_count_ = 0;
   std::string last_unmount_device_path_;
-  MountError unmount_error_ = MOUNT_ERROR_NONE;
+  MountError unmount_error_ = MountError::kNone;
   base::RepeatingClosure unmount_listener_;
   int format_call_count_ = 0;
   std::string last_format_device_path_;

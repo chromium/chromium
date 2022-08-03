@@ -70,7 +70,7 @@ void SuspendUnmountManager::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void SuspendUnmountManager::OnUnmountComplete(const std::string& mount_path,
-                                              chromeos::MountError error_code) {
+                                              MountError error_code) {
   // This can happen when unmount completes after suspend done is called.
   if (unmounting_paths_.erase(mount_path) != 1)
     return;

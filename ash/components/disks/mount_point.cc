@@ -20,7 +20,7 @@ void OnMountDone(DiskMountManager* disk_mount_manager,
                  MountError error_code,
                  const DiskMountManager::MountPointInfo& mount_info) {
   std::unique_ptr<MountPoint> mount_point;
-  if (error_code == chromeos::MOUNT_ERROR_NONE) {
+  if (error_code == MountError::kNone) {
     DCHECK(!mount_info.mount_path.empty());
     mount_point = std::make_unique<MountPoint>(
         base::FilePath(mount_info.mount_path), disk_mount_manager);
@@ -63,7 +63,7 @@ MountPoint::~MountPoint() {
   if (!mount_path_.empty()) {
     disk_mount_manager_->UnmountPath(
         mount_path_.value(), base::BindOnce([](MountError error_code) {
-          LOG_IF(WARNING, error_code != MOUNT_ERROR_NONE)
+          LOG_IF(WARNING, error_code != MountError::kNone)
               << "Failed to unmount with error code: " << error_code;
         }));
   }

@@ -97,7 +97,7 @@ class WallpaperControllerClientImpl
   bool IsWallpaperSyncEnabled(const AccountId& account_id) const override;
 
   // file_manager::VolumeManagerObserver:
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const file_manager::Volume& volume) override;
 
   // session_manager::SessionManagerObserver implementation.

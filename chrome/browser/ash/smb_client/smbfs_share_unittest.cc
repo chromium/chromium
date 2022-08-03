@@ -64,13 +64,11 @@ class MockVolumeManagerObsever : public file_manager::VolumeManagerObserver {
  public:
   MOCK_METHOD(void,
               OnVolumeMounted,
-              (chromeos::MountError error_code,
-               const file_manager::Volume& volume),
+              (MountError error_code, const file_manager::Volume& volume),
               (override));
   MOCK_METHOD(void,
               OnVolumeUnmounted,
-              (chromeos::MountError error_code,
-               const file_manager::Volume& volume),
+              (MountError error_code, const file_manager::Volume& volume),
               (override));
 };
 
@@ -172,7 +170,7 @@ TEST_F(SmbFsShareTest, Mount) {
   EXPECT_CALL(
       observer_,
       OnVolumeMounted(
-          chromeos::MOUNT_ERROR_NONE,
+          MountError::kNone,
           AllOf(Property(&file_manager::Volume::type,
                          file_manager::VOLUME_TYPE_SMB),
                 Property(&file_manager::Volume::mount_path,
@@ -180,7 +178,7 @@ TEST_F(SmbFsShareTest, Mount) {
                 Property(&file_manager::Volume::volume_label, kDisplayName))))
       .Times(1);
   EXPECT_CALL(observer_, OnVolumeUnmounted(
-                             chromeos::MOUNT_ERROR_NONE,
+                             MountError::kNone,
                              AllOf(Property(&file_manager::Volume::type,
                                             file_manager::VOLUME_TYPE_SMB),
                                    Property(&file_manager::Volume::mount_path,
@@ -210,10 +208,8 @@ TEST_F(SmbFsShareTest, MountFailure) {
       .WillOnce([](smbfs::SmbFsMounter::DoneCallback callback) {
         std::move(callback).Run(smbfs::mojom::MountError::kTimeout, nullptr);
       });
-  EXPECT_CALL(observer_, OnVolumeMounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(0);
-  EXPECT_CALL(observer_, OnVolumeUnmounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(0);
+  EXPECT_CALL(observer_, OnVolumeMounted(MountError::kNone, _)).Times(0);
+  EXPECT_CALL(observer_, OnVolumeUnmounted(MountError::kNone, _)).Times(0);
 
   SmbFsShare share(&profile_, SmbUrl(kSharePath), kDisplayName, {});
   share.SetMounterCreationCallbackForTest(mounter_creation_callback_);
@@ -249,7 +245,7 @@ TEST_F(SmbFsShareTest, UnmountOnDisconnect) {
   EXPECT_CALL(
       observer_,
       OnVolumeMounted(
-          chromeos::MOUNT_ERROR_NONE,
+          MountError::kNone,
           AllOf(Property(&file_manager::Volume::type,
                          file_manager::VOLUME_TYPE_SMB),
                 Property(&file_manager::Volume::mount_path,
@@ -258,7 +254,7 @@ TEST_F(SmbFsShareTest, UnmountOnDisconnect) {
       .Times(1);
   base::RunLoop run_loop;
   EXPECT_CALL(observer_, OnVolumeUnmounted(
-                             chromeos::MOUNT_ERROR_NONE,
+                             MountError::kNone,
                              AllOf(Property(&file_manager::Volume::type,
                                             file_manager::VOLUME_TYPE_SMB),
                                    Property(&file_manager::Volume::mount_path,
@@ -290,10 +286,8 @@ TEST_F(SmbFsShareTest, DisallowCredentialsDialogByDefault) {
             smbfs::mojom::MountError::kOk,
             CreateSmbFsHost(&share, &smbfs_receiver, &delegate));
       });
-  EXPECT_CALL(observer_, OnVolumeMounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
-  EXPECT_CALL(observer_, OnVolumeUnmounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
+  EXPECT_CALL(observer_, OnVolumeMounted(MountError::kNone, _)).Times(1);
+  EXPECT_CALL(observer_, OnVolumeUnmounted(MountError::kNone, _)).Times(1);
 
   {
     base::RunLoop run_loop;
@@ -328,10 +322,8 @@ TEST_F(SmbFsShareTest, DisallowCredentialsDialogAfterTimeout) {
             smbfs::mojom::MountError::kOk,
             CreateSmbFsHost(&share, &smbfs_receiver, &delegate));
       });
-  EXPECT_CALL(observer_, OnVolumeMounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
-  EXPECT_CALL(observer_, OnVolumeUnmounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
+  EXPECT_CALL(observer_, OnVolumeMounted(MountError::kNone, _)).Times(1);
+  EXPECT_CALL(observer_, OnVolumeUnmounted(MountError::kNone, _)).Times(1);
 
   {
     base::RunLoop run_loop;
@@ -371,10 +363,8 @@ TEST_F(SmbFsShareTest, RemoveSavedCredentials) {
             smbfs::mojom::MountError::kOk,
             CreateSmbFsHost(&share, &smbfs_receiver, &delegate));
       });
-  EXPECT_CALL(observer_, OnVolumeMounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
-  EXPECT_CALL(observer_, OnVolumeUnmounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
+  EXPECT_CALL(observer_, OnVolumeMounted(MountError::kNone, _)).Times(1);
+  EXPECT_CALL(observer_, OnVolumeUnmounted(MountError::kNone, _)).Times(1);
 
   {
     base::RunLoop run_loop;
@@ -413,10 +403,8 @@ TEST_F(SmbFsShareTest, RemoveSavedCredentials_Disconnect) {
             smbfs::mojom::MountError::kOk,
             CreateSmbFsHost(&share, &smbfs_receiver, &delegate));
       });
-  EXPECT_CALL(observer_, OnVolumeMounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
-  EXPECT_CALL(observer_, OnVolumeUnmounted(chromeos::MOUNT_ERROR_NONE, _))
-      .Times(1);
+  EXPECT_CALL(observer_, OnVolumeMounted(MountError::kNone, _)).Times(1);
+  EXPECT_CALL(observer_, OnVolumeUnmounted(MountError::kNone, _)).Times(1);
 
   {
     base::RunLoop run_loop;

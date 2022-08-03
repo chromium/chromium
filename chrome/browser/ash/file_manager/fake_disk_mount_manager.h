@@ -67,7 +67,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
 
   // Fails a future unmount request for |mount_path| with |error_code|.
   void FailUnmountRequest(const std::string& mount_path,
-                          chromeos::MountError error_code);
+                          ash::MountError error_code);
 
   // DiskMountManager overrides.
   void AddObserver(Observer* observer) override;
@@ -118,7 +118,7 @@ class FakeDiskMountManager : public ash::disks::DiskMountManager {
   std::vector<MountRequest> mount_requests_;
   std::vector<std::string> unmount_requests_;
   std::vector<RemountAllRequest> remount_all_requests_;
-  std::map<std::string, chromeos::MountError> unmount_errors_;
+  std::map<std::string, ash::MountError> unmount_errors_;
 };
 
 }  // namespace file_manager

@@ -169,7 +169,7 @@ FileManagerPrivateCancelMountingFunction::Run() {
 
 void FileManagerPrivateCancelMountingFunction::OnCancelled(
     chromeos::MountError error) {
-  if (error == chromeos::MOUNT_ERROR_NONE) {
+  if (error == chromeos::MountError::kNone) {
     Respond(NoArguments());
   } else {
     Respond(Error(file_manager_private::ToString(
@@ -262,7 +262,7 @@ void FileManagerPrivateRemoveMountFunction::OnSshFsUnmounted(bool ok) {
 
 void FileManagerPrivateRemoveMountFunction::OnDiskUnmounted(
     chromeos::MountError error) {
-  if (error == chromeos::MOUNT_ERROR_NONE) {
+  if (error == chromeos::MountError::kNone) {
     Respond(NoArguments());
   } else {
     Respond(Error(file_manager_private::ToString(

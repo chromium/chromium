@@ -32,8 +32,7 @@ class COMPONENT_EXPORT(ASH_DISKS) SuspendUnmountManager
   ~SuspendUnmountManager() override;
 
  private:
-  void OnUnmountComplete(const std::string& mount_path,
-                         chromeos::MountError error_code);
+  void OnUnmountComplete(const std::string& mount_path, MountError error_code);
 
   // PowerManagerClient::Observer
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;

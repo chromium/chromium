@@ -86,7 +86,7 @@ class GuestOsMountProviderTest : public testing::Test {
       chromeos::MountAccessMode access_mode,
       ash::disks::DiskMountManager::MountPathCallback callback) {
     auto event = DiskMountManager::MountEvent::MOUNTING;
-    auto code = chromeos::MountError::MOUNT_ERROR_NONE;
+    auto code = ash::MountError::kNone;
     auto info = DiskMountManager::MountPointInfo(
         base::StringPrintf("sftp://%d:%d", cid_, port_),
         "/media/fuse/" + kMountName, ash::MountType::kNetworkStorage,
@@ -170,7 +170,7 @@ TEST_F(GuestOsMountProviderTest, CanRemountAfterUnmount) {
           [this](const std::string& mount_path,
                  DiskMountManager::UnmountPathCallback callback) {
             EXPECT_EQ(mount_path, "/media/fuse/" + kMountName);
-            std::move(callback).Run(chromeos::MOUNT_ERROR_NONE);
+            std::move(callback).Run(ash::MountError::kNone);
           }));
 
   provider_->Mount(

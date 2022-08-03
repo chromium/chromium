@@ -102,9 +102,9 @@ TEST_F(DeviceEventRouterTest, AddAndRemoveDevice) {
       base::FilePath(FILE_PATH_LITERAL("/mount/path1"))));
   device_event_router->OnDeviceAdded("/device/test");
   device_event_router->OnDiskAdded(disk1, true);
-  device_event_router->OnVolumeMounted(chromeos::MOUNT_ERROR_NONE,
+  device_event_router->OnVolumeMounted(chromeos::MountError::kNone,
                                        *volume.get());
-  device_event_router->OnVolumeUnmounted(chromeos::MOUNT_ERROR_NONE,
+  device_event_router->OnVolumeUnmounted(chromeos::MountError::kNone,
                                          *volume.get());
   device_event_router->OnDiskRemoved(disk1_unmounted);
   device_event_router->OnDeviceRemoved("/device/test");

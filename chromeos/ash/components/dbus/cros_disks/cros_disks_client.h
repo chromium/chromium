@@ -50,45 +50,46 @@ enum class DeviceType {
   kDVD,          // DVD.
 };
 
+// Mount error code used by cros-disks.
+// These values are NOT the same as cros_disks::MountErrorType.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MountError {
+  kNone = 0,
+  kUnknown = 1,
+  kInternal = 2,
+  kInvalidArgument = 3,
+  kInvalidPath = 4,
+  kPathAlreadyMounted = 5,
+  kPathNotMounted = 6,
+  kDirectoryCreationFailed = 7,
+  kInvalidMountOptions = 8,
+  kInvalidUnmountOptions = 9,
+  kInsufficientPermissions = 10,
+  kMountProgramNotFound = 11,
+  kMountProgramFailed = 12,
+  kInvalidDevicePath = 13,
+  kUnknownFilesystem = 14,
+  kUnsupportedFilesystem = 15,
+  kInvalidArchive = 16,
+  kNeedPassword = 17,
+  kInProgress = 18,
+  kCancelled = 19,
+  kCount,
+};
+
+// Output operator for logging.
+COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
+std::ostream& operator<<(std::ostream& out, MountError error);
+
 }  // namespace ash
 
 namespace chromeos {
 
 // TODO(https://crbug.com/1164001): remove when the migration is finished.
 using ::ash::DeviceType;
+using ::ash::MountError;
 using ::ash::MountType;
-
-// Mount error code used by cros-disks.
-// These values are NOT the same as cros_disks::MountErrorType.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum MountError {
-  MOUNT_ERROR_NONE = 0,
-  MOUNT_ERROR_UNKNOWN = 1,
-  MOUNT_ERROR_INTERNAL = 2,
-  MOUNT_ERROR_INVALID_ARGUMENT = 3,
-  MOUNT_ERROR_INVALID_PATH = 4,
-  MOUNT_ERROR_PATH_ALREADY_MOUNTED = 5,
-  MOUNT_ERROR_PATH_NOT_MOUNTED = 6,
-  MOUNT_ERROR_DIRECTORY_CREATION_FAILED = 7,
-  MOUNT_ERROR_INVALID_MOUNT_OPTIONS = 8,
-  MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS = 9,
-  MOUNT_ERROR_INSUFFICIENT_PERMISSIONS = 10,
-  MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND = 11,
-  MOUNT_ERROR_MOUNT_PROGRAM_FAILED = 12,
-  MOUNT_ERROR_INVALID_DEVICE_PATH = 13,
-  MOUNT_ERROR_UNKNOWN_FILESYSTEM = 14,
-  MOUNT_ERROR_UNSUPPORTED_FILESYSTEM = 15,
-  MOUNT_ERROR_INVALID_ARCHIVE = 16,
-  MOUNT_ERROR_NEED_PASSWORD = 17,
-  MOUNT_ERROR_IN_PROGRESS = 18,
-  MOUNT_ERROR_CANCELLED = 19,
-  MOUNT_ERROR_COUNT,
-};
-
-// Output operator for logging.
-COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS)
-std::ostream& operator<<(std::ostream& out, MountError error);
 
 // Rename error reported by cros-disks.
 enum RenameError {
@@ -156,11 +157,11 @@ enum MountAccessMode {
 enum RemountOption {
   // Mount a new device. If the device is already mounted, the mount status is
   // unchanged and the callback for MountCompleted will receive
-  // MOUNT_ERROR_PATH_ALREADY_MOUNTED error code.
+  // MountError::kPathAlreadyMounted error code.
   REMOUNT_OPTION_MOUNT_NEW_DEVICE,
   // Remount a device that is already mounted. If the device is not mounted
   // yet, it will do nothing and the callback for MountCompleted will receive
-  // MOUNT_ERROR_PATH_NOT_MOUNTED error code.
+  // MountError::kPathNotMounted error code.
   REMOUNT_OPTION_REMOUNT_EXISTING_DEVICE,
 };
 
@@ -279,7 +280,7 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) DiskInfo {
 struct COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) MountEntry {
  public:
   MountEntry()
-      : error_code_(MOUNT_ERROR_UNKNOWN), mount_type_(MountType::kInvalid) {}
+      : error_code_(MountError::kUnknown), mount_type_(MountType::kInvalid) {}
 
   MountEntry(MountError error_code,
              const std::string& source_path,
@@ -463,18 +464,8 @@ using ::chromeos::FORMAT_ERROR_UNSUPPORTED_FILESYSTEM;
 using ::chromeos::FormatError;
 using ::chromeos::MOUNT_ACCESS_MODE_READ_ONLY;
 using ::chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
-using ::chromeos::MOUNT_ERROR_INTERNAL;
-using ::chromeos::MOUNT_ERROR_INVALID_DEVICE_PATH;
-using ::chromeos::MOUNT_ERROR_INVALID_PATH;
-using ::chromeos::MOUNT_ERROR_NONE;
-using ::chromeos::MOUNT_ERROR_PATH_ALREADY_MOUNTED;
-using ::chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED;
-using ::chromeos::MOUNT_ERROR_UNKNOWN;
-using ::chromeos::MOUNT_ERROR_UNKNOWN_FILESYSTEM;
-using ::chromeos::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM;
 using ::chromeos::MountAccessMode;
 using ::chromeos::MountEntry;
-using ::chromeos::MountError;
 using ::chromeos::MountEventType;
 using ::chromeos::PARTITION_ERROR_INVALID_DEVICE_PATH;
 using ::chromeos::PARTITION_ERROR_NONE;

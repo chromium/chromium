@@ -40,9 +40,9 @@ class VolumeManagerAsh : public mojom::VolumeManager,
                           GetVolumeMountInfoCallback callback) override;
 
   // file_manager::VolumeManagerObserver:
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const file_manager::Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(ash::MountError error_code,
                          const file_manager::Volume& volume) override;
   void OnShutdownStart(file_manager::VolumeManager* volume_manager) override;
 

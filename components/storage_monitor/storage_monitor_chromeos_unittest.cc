@@ -85,7 +85,7 @@ class TestStorageMonitorCros : public StorageMonitorCros {
 
   void OnMountEvent(
       DiskMountManager::MountEvent event,
-      chromeos::MountError error_code,
+      ash::MountError error_code,
       const DiskMountManager::MountPointInfo& mount_info) override {
     StorageMonitorCros::OnMountEvent(event, error_code, mount_info);
   }
@@ -122,7 +122,7 @@ class StorageMonitorCrosTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
-  void MountDevice(chromeos::MountError error_code,
+  void MountDevice(ash::MountError error_code,
                    const DiskMountManager::MountPointInfo& mount_info,
                    const std::string& unique_id,
                    const std::string& device_label,
@@ -131,7 +131,7 @@ class StorageMonitorCrosTest : public testing::Test {
                    ash::DeviceType device_type,
                    uint64_t device_size_in_bytes);
 
-  void UnmountDevice(chromeos::MountError error_code,
+  void UnmountDevice(ash::MountError error_code,
                      const DiskMountManager::MountPointInfo& mount_info);
 
   uint64_t GetDeviceStorageSize(const std::string& device_location);
@@ -200,7 +200,7 @@ void StorageMonitorCrosTest::TearDown() {
 }
 
 void StorageMonitorCrosTest::MountDevice(
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     const DiskMountManager::MountPointInfo& mount_info,
     const std::string& unique_id,
     const std::string& device_label,
@@ -208,7 +208,7 @@ void StorageMonitorCrosTest::MountDevice(
     const std::string& product_name,
     ash::DeviceType device_type,
     uint64_t device_size_in_bytes) {
-  if (error_code == chromeos::MOUNT_ERROR_NONE) {
+  if (error_code == ash::MountError::kNone) {
     disk_mount_manager_mock_->CreateDiskEntryForMountDevice(
         mount_info, unique_id, device_label, vendor_name, product_name,
         device_type, device_size_in_bytes, false /* is_parent */,
@@ -220,10 +220,10 @@ void StorageMonitorCrosTest::MountDevice(
 }
 
 void StorageMonitorCrosTest::UnmountDevice(
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     const DiskMountManager::MountPointInfo& mount_info) {
   monitor_->OnMountEvent(DiskMountManager::UNMOUNTING, error_code, mount_info);
-  if (error_code == chromeos::MOUNT_ERROR_NONE)
+  if (error_code == ash::MountError::kNone)
     disk_mount_manager_mock_->RemoveDiskEntryForMountDevice(mount_info);
   task_environment_.RunUntilIdle();
 }
@@ -260,7 +260,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
   DiskMountManager::MountPointInfo mount_info(kDevice1, mount_path1.value(),
                                               ash::MountType::kDevice,
                                               ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId1,
               kDevice1Name,
@@ -274,7 +274,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
-  UnmountDevice(chromeos::MOUNT_ERROR_NONE, mount_info);
+  UnmountDevice(ash::MountError::kNone, mount_info);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
@@ -285,7 +285,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
   DiskMountManager::MountPointInfo mount_info2(
       kDevice2, mount_path2.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info2,
               kUniqueId2,
               kDevice2Name,
@@ -299,7 +299,7 @@ TEST_F(StorageMonitorCrosTest, BasicAttachDetach) {
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path2.value(), observer().last_attached().location());
 
-  UnmountDevice(chromeos::MOUNT_ERROR_NONE, mount_info2);
+  UnmountDevice(ash::MountError::kNone, mount_info2);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(2, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
@@ -318,7 +318,7 @@ TEST_F(StorageMonitorCrosTest, NoDCIM) {
   const std::string device_id = StorageInfo::MakeDeviceId(
       StorageInfo::REMOVABLE_MASS_STORAGE_NO_DCIM,
       kFSUniqueIdPrefix + kUniqueId);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId,
               kDevice1Name,
@@ -343,7 +343,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   DiskMountManager::MountPointInfo mount_info(kDevice1, mount_path.value(),
                                               ash::MountType::kDevice,
                                               ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_UNKNOWN,
+  MountDevice(ash::MountError::kUnknown,
               mount_info,
               kUniqueId,
               kDevice1Name,
@@ -356,7 +356,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
 
   // Not a device
   mount_info.mount_type = ash::MountType::kArchive;
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId,
               kDevice1Name,
@@ -371,7 +371,7 @@ TEST_F(StorageMonitorCrosTest, Ignore) {
   mount_info.mount_type = ash::MountType::kDevice;
   mount_info.mount_condition =
       ash::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM;
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId,
               kDevice1Name,
@@ -389,7 +389,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
   DiskMountManager::MountPointInfo mount_info1(
       kSDCardDeviceName1, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info1,
               kUniqueId2,
               kSDCardDeviceName1,
@@ -403,7 +403,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
-  UnmountDevice(chromeos::MOUNT_ERROR_NONE, mount_info1);
+  UnmountDevice(ash::MountError::kNone, mount_info1);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
@@ -414,7 +414,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
   DiskMountManager::MountPointInfo mount_info2(
       kSDCardDeviceName2, mount_path2.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info2,
               kUniqueId2,
               kSDCardDeviceName2,
@@ -428,7 +428,7 @@ TEST_F(StorageMonitorCrosTest, SDCardAttachDetach) {
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path2.value(), observer().last_attached().location());
 
-  UnmountDevice(chromeos::MOUNT_ERROR_NONE, mount_info2);
+  UnmountDevice(ash::MountError::kNone, mount_info2);
   EXPECT_EQ(2, observer().attach_calls());
   EXPECT_EQ(2, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId2),
@@ -441,7 +441,7 @@ TEST_F(StorageMonitorCrosTest, AttachDeviceWithEmptyLabel) {
   DiskMountManager::MountPointInfo mount_info(
       kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId1,
               kEmptyDeviceLabel,
@@ -455,7 +455,7 @@ TEST_F(StorageMonitorCrosTest, AttachDeviceWithEmptyLabel) {
             observer().last_attached().device_id());
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
-  UnmountDevice(chromeos::MOUNT_ERROR_NONE, mount_info);
+  UnmountDevice(ash::MountError::kNone, mount_info);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
@@ -468,7 +468,7 @@ TEST_F(StorageMonitorCrosTest, GetStorageSize) {
   DiskMountManager::MountPointInfo mount_info(
       kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId1,
               kEmptyDeviceLabel,
@@ -483,7 +483,7 @@ TEST_F(StorageMonitorCrosTest, GetStorageSize) {
   EXPECT_EQ(mount_path1.value(), observer().last_attached().location());
 
   EXPECT_EQ(kDevice1SizeInBytes, GetDeviceStorageSize(mount_path1.value()));
-  UnmountDevice(chromeos::MOUNT_ERROR_NONE, mount_info);
+  UnmountDevice(ash::MountError::kNone, mount_info);
   EXPECT_EQ(1, observer().attach_calls());
   EXPECT_EQ(1, observer().detach_calls());
   EXPECT_EQ(GetDCIMDeviceId(kUniqueId1),
@@ -496,7 +496,7 @@ TEST_F(StorageMonitorCrosTest, EjectTest) {
   DiskMountManager::MountPointInfo mount_info(
       kEmptyDeviceLabel, mount_path1.value(), ash::MountType::kDevice,
       ash::disks::MOUNT_CONDITION_NONE);
-  MountDevice(chromeos::MOUNT_ERROR_NONE,
+  MountDevice(ash::MountError::kNone,
               mount_info,
               kUniqueId1,
               kEmptyDeviceLabel,
@@ -511,7 +511,7 @@ TEST_F(StorageMonitorCrosTest, EjectTest) {
   ON_CALL(*disk_mount_manager_mock_, UnmountPath(_, _))
       .WillByDefault([](const std::string& location,
                         DiskMountManager::UnmountPathCallback cb) {
-        std::move(cb).Run(chromeos::MOUNT_ERROR_NONE);
+        std::move(cb).Run(ash::MountError::kNone);
       });
   EXPECT_CALL(*disk_mount_manager_mock_,
               UnmountPath(observer().last_attached().location(), _));

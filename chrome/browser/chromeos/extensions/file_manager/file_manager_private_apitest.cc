@@ -338,9 +338,9 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         ash::MountType::kNetworkStorage,
         ash::disks::MountCondition::MOUNT_CONDITION_NONE);
     disk_mount_manager_mock_->NotifyMountEvent(
-        DiskMountManager::MountEvent::MOUNTING,
-        chromeos::MountError::MOUNT_ERROR_NONE, mount_point_info);
-    std::move(callback).Run(chromeos::MOUNT_ERROR_NONE, mount_point_info);
+        DiskMountManager::MountEvent::MOUNTING, chromeos::MountError::kNone,
+        mount_point_info);
+    std::move(callback).Run(chromeos::MountError::kNone, mount_point_info);
   }
 
   void ExpectCrostiniMount() {
@@ -405,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("mount_path1", name.value());
             ++events[0];
             EXPECT_EQ(1, events[0]);
-            std::move(callback).Run(chromeos::MOUNT_ERROR_NONE);
+            std::move(callback).Run(chromeos::MountError::kNone);
           }))
       .WillOnce(testing::Invoke(
           [&events](const std::string& path,
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("mount_path1", name.value());
             ++events[1];
             EXPECT_EQ(1, events[1]);
-            std::move(callback).Run(chromeos::MOUNT_ERROR_CANCELLED);
+            std::move(callback).Run(chromeos::MountError::kCancelled);
           }));
 
   EXPECT_CALL(*disk_mount_manager_mock_,
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("archive_mount_path", name.value());
             ++events[2];
             EXPECT_EQ(1, events[2]);
-            std::move(callback).Run(chromeos::MOUNT_ERROR_NONE);
+            std::move(callback).Run(chromeos::MountError::kNone);
           }))
       .WillOnce(testing::Invoke(
           [&events](const std::string& path,
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
             EXPECT_EQ("archive_mount_path", name.value());
             ++events[3];
             EXPECT_EQ(1, events[3]);
-            std::move(callback).Run(chromeos::MOUNT_ERROR_NEED_PASSWORD);
+            std::move(callback).Run(chromeos::MountError::kNeedPassword);
           }));
 
   ASSERT_TRUE(RunExtensionTest("file_browser/mount_test", {},

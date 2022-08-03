@@ -55,11 +55,11 @@ class DiskMounterImpl : public DiskMounter {
 
  private:
   // MountPoint::Mount() done callback.
-  void OnMountDone(chromeos::MountError error_code,
+  void OnMountDone(ash::MountError error_code,
                    std::unique_ptr<ash::disks::MountPoint> mount_point) {
     DCHECK(callback_);
 
-    if (error_code != chromeos::MOUNT_ERROR_NONE) {
+    if (error_code != ash::MountError::kNone) {
       LOG(WARNING) << "DriveFs mount failed with error: " << error_code;
       std::move(callback_).Run({});
       return;

@@ -153,8 +153,8 @@ void ArcVolumeMounterBridge::SendAllMountEvents() {
   SendMountEventForMyFiles();
 
   for (const auto& keyValue : DiskMountManager::GetInstance()->mount_points()) {
-    OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
-                 chromeos::MountError::MOUNT_ERROR_NONE, keyValue.second);
+    OnMountEvent(DiskMountManager::MountEvent::MOUNTING, ash::MountError::kNone,
+                 keyValue.second);
   }
 }
 
@@ -196,18 +196,18 @@ void ArcVolumeMounterBridge::OnVisibleStoragesChanged() {
   for (const auto& key_value :
        DiskMountManager::GetInstance()->mount_points()) {
     OnMountEvent(DiskMountManager::MountEvent::UNMOUNTING,
-                 chromeos::MountError::MOUNT_ERROR_NONE, key_value.second);
+                 ash::MountError::kNone, key_value.second);
   }
   for (const auto& key_value :
        DiskMountManager::GetInstance()->mount_points()) {
-    OnMountEvent(DiskMountManager::MountEvent::MOUNTING,
-                 chromeos::MountError::MOUNT_ERROR_NONE, key_value.second);
+    OnMountEvent(DiskMountManager::MountEvent::MOUNTING, ash::MountError::kNone,
+                 key_value.second);
   }
 }
 
 void ArcVolumeMounterBridge::OnMountEvent(
     DiskMountManager::MountEvent event,
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     const DiskMountManager::MountPointInfo& mount_info) {
   DCHECK(delegate_);
 
@@ -219,7 +219,7 @@ void ArcVolumeMounterBridge::OnMountEvent(
              << mount_info.mount_path;
     return;
   }
-  if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {
+  if (error_code != ash::MountError::kNone) {
     DVLOG(1) << "Error " << error_code << "occurs during MountEvent " << event;
     return;
   }

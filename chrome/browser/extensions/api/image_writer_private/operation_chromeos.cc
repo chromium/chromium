@@ -62,10 +62,10 @@ void Operation::UnmountVolumes(base::OnceClosure continuation) {
 }
 
 void Operation::UnmountVolumesCallback(base::OnceClosure continuation,
-                                       chromeos::MountError error_code) {
+                                       ash::MountError error_code) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (error_code != chromeos::MOUNT_ERROR_NONE) {
+  if (error_code != ash::MountError::kNone) {
     LOG(ERROR) << "Volume unmounting failed with error code " << error_code;
     PostTask(
         base::BindOnce(&Operation::Error, this, error::kUnmountVolumesError));

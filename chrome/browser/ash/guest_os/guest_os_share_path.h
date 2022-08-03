@@ -125,9 +125,9 @@ class GuestOsSharePath : public KeyedService,
   void OnVmShutdown(const std::string& vm_name) override;
 
   // file_manager::VolumeManagerObserver
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const file_manager::Volume& volume) override;
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(ash::MountError error_code,
                          const file_manager::Volume& volume) override;
 
   // drivefs::DriveFsHostObserver

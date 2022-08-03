@@ -24,18 +24,18 @@ MountError PerformFakeMount(const std::string& source_path,
                             const base::FilePath& mounted_path,
                             MountType type) {
   if (mounted_path.empty())
-    return MOUNT_ERROR_INVALID_ARGUMENT;
+    return MountError::kInvalidArgument;
 
   // Just create an empty directory and shows it as the mounted directory.
   if (!base::CreateDirectory(mounted_path)) {
     DLOG(ERROR) << "Failed to create directory at " << mounted_path.value();
-    return MOUNT_ERROR_DIRECTORY_CREATION_FAILED;
+    return MountError::kDirectoryCreationFailed;
   }
 
   // Fake network mounts are responsible for populating their mount paths so
   // don't need a dummy file.
   if (type == MountType::kNetworkStorage)
-    return MOUNT_ERROR_NONE;
+    return MountError::kNone;
 
   // Put a dummy file.
   const base::FilePath dummy_file_path =
@@ -45,10 +45,10 @@ MountError PerformFakeMount(const std::string& source_path,
       dummy_file_path, dummy_file_content.data(), dummy_file_content.size());
   if (write_result != static_cast<int>(dummy_file_content.size())) {
     DLOG(ERROR) << "Failed to put a dummy file at " << dummy_file_path.value();
-    return MOUNT_ERROR_MOUNT_PROGRAM_FAILED;
+    return MountError::kMountProgramFailed;
   }
 
-  return MOUNT_ERROR_NONE;
+  return MountError::kNone;
 }
 
 }  // namespace

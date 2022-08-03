@@ -103,12 +103,12 @@ void VolumeManagerAsh::GetVolumeMountInfo(const std::string& volume_id,
                                            : nullptr);
 }
 
-void VolumeManagerAsh::OnVolumeMounted(chromeos::MountError error_code,
+void VolumeManagerAsh::OnVolumeMounted(ash::MountError error_code,
                                        const file_manager::Volume& volume) {
   DispatchVolumeList();
 }
 
-void VolumeManagerAsh::OnVolumeUnmounted(chromeos::MountError error_code,
+void VolumeManagerAsh::OnVolumeUnmounted(ash::MountError error_code,
                                          const file_manager::Volume& volume) {
   DispatchVolumeList();
 }

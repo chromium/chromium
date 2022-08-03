@@ -58,7 +58,7 @@ class StorageMonitorCros : public StorageMonitor,
                              const ash::disks::Disk& disk) override;
   void OnMountEvent(
       ash::disks::DiskMountManager::MountEvent event,
-      chromeos::MountError error_code,
+      ash::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info) override;
 
   // StorageMonitor implementation.

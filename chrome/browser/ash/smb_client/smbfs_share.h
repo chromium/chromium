@@ -32,7 +32,7 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
   using KerberosOptions = smbfs::SmbFsMounter::KerberosOptions;
   using MountOptions = smbfs::SmbFsMounter::MountOptions;
   using MountCallback = base::OnceCallback<void(SmbMountResult)>;
-  using UnmountCallback = base::OnceCallback<void(chromeos::MountError)>;
+  using UnmountCallback = base::OnceCallback<void(MountError)>;
   using RemoveCredentialsCallback = base::OnceCallback<void(bool)>;
   using DeleteRecursivelyCallback = base::OnceCallback<void(base::File::Error)>;
   using MounterCreationCallback =
@@ -97,8 +97,7 @@ class SmbFsShare : public smbfs::SmbFsHost::Delegate {
                    std::unique_ptr<smbfs::SmbFsHost> smbfs_host);
 
   // Called after cros-disks has attempted to unmount the share.
-  void OnUnmountDone(SmbFsShare::UnmountCallback callback,
-                     chromeos::MountError result);
+  void OnUnmountDone(SmbFsShare::UnmountCallback callback, MountError result);
 
   // Callback for smb_dialog::SmbCredentialsDialog::Show().
   void OnSmbCredentialsDialogShowDone(RequestCredentialsCallback callback,

@@ -93,7 +93,7 @@ class LoggingObserver : public VolumeManagerObserver {
     bool mounting;
 
     // Available on VOLUME_MOUNTED and VOLUME_UNMOUNTED.
-    chromeos::MountError mount_error;
+    ash::MountError mount_error;
 
     // Available on FORMAT_STARTED and FORMAT_COMPLETED, PARTITION_STARTED,
     // PARTITION_COMPLETED.
@@ -139,7 +139,7 @@ class LoggingObserver : public VolumeManagerObserver {
     events_.push_back(event);
   }
 
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const Volume& volume) override {
     Event event;
     event.type = Event::VOLUME_MOUNTED;
@@ -149,7 +149,7 @@ class LoggingObserver : public VolumeManagerObserver {
     events_.push_back(event);
   }
 
-  void OnVolumeUnmounted(chromeos::MountError error_code,
+  void OnVolumeUnmounted(ash::MountError error_code,
                          const Volume& volume) override {
     Event event;
     event.type = Event::VOLUME_UNMOUNTED;
@@ -391,7 +391,7 @@ TEST_F(VolumeManagerTest, OnDriveFileSystemMountAndUnmount) {
                 ->GetMountPointPath()
                 .AsUTF8Unsafe(),
             event.device_path);
-  EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
+  EXPECT_EQ(ash::MountError::kNone, event.mount_error);
 
   volume_manager()->OnFileSystemBeingUnmounted();
 
@@ -402,7 +402,7 @@ TEST_F(VolumeManagerTest, OnDriveFileSystemMountAndUnmount) {
                 ->GetMountPointPath()
                 .AsUTF8Unsafe(),
             event.device_path);
-  EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
+  EXPECT_EQ(ash::MountError::kNone, event.mount_error);
 
   volume_manager()->RemoveObserver(&observer);
 }
@@ -699,22 +699,22 @@ TEST_F(VolumeManagerTest, OnMountEvent_MountingAndUnmounting) {
       ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
-                                 chromeos::MOUNT_ERROR_NONE, kMountPoint);
+                                 ash::MountError::kNone, kMountPoint);
 
   ASSERT_EQ(1U, observer.events().size());
   LoggingObserver::Event event = observer.events()[0];
   EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
   EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
+  EXPECT_EQ(ash::MountError::kNone, event.mount_error);
 
   volume_manager()->OnMountEvent(DiskMountManager::UNMOUNTING,
-                                 chromeos::MOUNT_ERROR_NONE, kMountPoint);
+                                 ash::MountError::kNone, kMountPoint);
 
   ASSERT_EQ(2U, observer.events().size());
   event = observer.events()[1];
   EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
   EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
+  EXPECT_EQ(ash::MountError::kNone, event.mount_error);
 
   volume_manager()->RemoveObserver(&observer);
 }
@@ -734,7 +734,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
       ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
-                                 chromeos::MOUNT_ERROR_NONE, kMountPoint);
+                                 ash::MountError::kNone, kMountPoint);
 
   LoggingObserver observer;
 
@@ -746,20 +746,20 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
 
     // After resume, the device is unmounted and then mounted.
     volume_manager()->OnMountEvent(DiskMountManager::UNMOUNTING,
-                                   chromeos::MOUNT_ERROR_NONE, kMountPoint);
+                                   ash::MountError::kNone, kMountPoint);
 
     // Observe what happened for the mount event.
     volume_manager()->AddObserver(&observer);
 
     volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
-                                   chromeos::MOUNT_ERROR_NONE, kMountPoint);
+                                   ash::MountError::kNone, kMountPoint);
   }
 
   ASSERT_EQ(1U, observer.events().size());
   const LoggingObserver::Event& event = observer.events()[0];
   EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
   EXPECT_EQ("device1", event.device_path);
-  EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
+  EXPECT_EQ(ash::MountError::kNone, event.mount_error);
 
   volume_manager()->RemoveObserver(&observer);
 }
@@ -773,7 +773,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_UnmountingWithoutMounting) {
       ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::UNMOUNTING,
-                                 chromeos::MOUNT_ERROR_NONE, kMountPoint);
+                                 ash::MountError::kNone, kMountPoint);
 
   // Unmount event for a disk not mounted in this manager is not reported.
   ASSERT_EQ(0U, observer.events().size());
@@ -967,7 +967,7 @@ TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
       "failed_unmount", "", "", {}, ash::MountType::kDevice,
       chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
   disk_mount_manager_->FailUnmountRequest("failed_unmount",
-                                          chromeos::MOUNT_ERROR_UNKNOWN);
+                                          ash::MountError::kUnknown);
 
   // Initially, there are four mount points.
   ASSERT_EQ(4U, disk_mount_manager_->mount_points().size());
@@ -1152,14 +1152,14 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
 
   // Mount a USB stick.
   volume_manager()->OnMountEvent(
-      DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
+      DiskMountManager::MOUNTING, ash::MountError::kNone,
       DiskMountManager::MountPointInfo("/removable/usb", "/removable/usb",
                                        ash::MountType::kDevice,
                                        ash::disks::MOUNT_CONDITION_NONE));
 
   // Mount a zip archive in the stick.
   volume_manager()->OnMountEvent(
-      DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
+      DiskMountManager::MOUNTING, ash::MountError::kNone,
       DiskMountManager::MountPointInfo("/removable/usb/1.zip", "/archive/1",
                                        ash::MountType::kArchive,
                                        ash::disks::MOUNT_CONDITION_NONE));
@@ -1170,7 +1170,7 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
 
   // Mount a zip archive in the previous zip archive.
   volume_manager()->OnMountEvent(
-      DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
+      DiskMountManager::MOUNTING, ash::MountError::kNone,
       DiskMountManager::MountPointInfo("/archive/1/2.zip", "/archive/2",
                                        ash::MountType::kArchive,
                                        ash::disks::MOUNT_CONDITION_NONE));
@@ -1183,7 +1183,7 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
   // A zip file is mounted from other profile. It must be ignored in the current
   // VolumeManager.
   volume_manager()->OnMountEvent(
-      DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
+      DiskMountManager::MOUNTING, ash::MountError::kNone,
       DiskMountManager::MountPointInfo("/other/profile/drive/folder/3.zip",
                                        "/archive/3", ash::MountType::kArchive,
                                        ash::disks::MOUNT_CONDITION_NONE));
@@ -1330,7 +1330,7 @@ TEST_F(VolumeManagerTest, OnArcPlayStoreEnabledChanged_Enabled) {
   unsigned index = 0;
   for (const auto& event : observer.events()) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_MOUNTED, event.type);
-    EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
+    EXPECT_EQ(ash::MountError::kNone, event.mount_error);
     if (index < 4) {
       EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
                 event.volume_id);
@@ -1361,7 +1361,7 @@ TEST_F(VolumeManagerTest, OnArcPlayStoreEnabledChanged_Disabled) {
   unsigned index = 0;
   for (const auto& event : observer.events()) {
     EXPECT_EQ(LoggingObserver::Event::VOLUME_UNMOUNTED, event.type);
-    EXPECT_EQ(chromeos::MOUNT_ERROR_NONE, event.mount_error);
+    EXPECT_EQ(ash::MountError::kNone, event.mount_error);
     if (index < 4) {
       EXPECT_EQ(arc::GetMediaViewVolumeId(arc_volume_ids[index]),
                 event.volume_id);

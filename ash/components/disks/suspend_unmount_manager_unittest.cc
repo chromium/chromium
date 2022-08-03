@@ -111,7 +111,7 @@ TEST_F(SuspendUnmountManagerTest, Basic) {
   EXPECT_EQ(0, std::count(disk_mount_manager_.unmounting_mount_paths().begin(),
                           disk_mount_manager_.unmounting_mount_paths().end(),
                           kDummyMountPathUnknown));
-  disk_mount_manager_.NotifyUnmountDeviceComplete(MOUNT_ERROR_NONE);
+  disk_mount_manager_.NotifyUnmountDeviceComplete(MountError::kNone);
   EXPECT_EQ(
       0,
       FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());

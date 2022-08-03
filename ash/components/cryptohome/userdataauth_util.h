@@ -15,7 +15,7 @@
 
 namespace user_data_auth {
 
-// Returns a MountError code from |reply|, returning MOUNT_ERROR_NONE
+// Returns a MountError code from |reply|, returning MountError::kNone
 // if the reply is well-formed and there is no error.
 template <typename ReplyType>
 COMPONENT_EXPORT(ASH_COMPONENTS_CRYPTOHOME)

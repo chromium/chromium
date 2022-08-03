@@ -167,21 +167,21 @@ void CrostiniSshfs::OnGetContainerSshKeys(
 }
 
 void CrostiniSshfs::OnMountEvent(
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {
+  if (error_code != ash::MountError::kNone) {
     LOG(ERROR) << "Error mounting crostini container: error_code=" << error_code
                << ", source_path=" << mount_info.source_path
                << ", mount_path=" << mount_info.mount_path
                << ", mount_type=" << static_cast<int>(mount_info.mount_type)
                << ", mount_condition=" << mount_info.mount_condition;
     switch (error_code) {
-      case chromeos::MountError::MOUNT_ERROR_INTERNAL:
+      case ash::MountError::kInternal:
         Finish(CrostiniSshfsResult::kMountErrorInternal);
         return;
-      case chromeos::MountError::MOUNT_ERROR_MOUNT_PROGRAM_FAILED:
+      case ash::MountError::kMountProgramFailed:
         Finish(CrostiniSshfsResult::kMountErrorProgramFailed);
         return;
       default:

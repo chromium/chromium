@@ -148,7 +148,7 @@ class VolumeWaiter : public VolumeManagerObserver {
     VolumeManager::Get(profile_)->RemoveObserver(this);
   }
 
-  void OnVolumeMounted(chromeos::MountError error_code,
+  void OnVolumeMounted(ash::MountError error_code,
                        const Volume& volume) override {
     on_mount_.Run();
   }

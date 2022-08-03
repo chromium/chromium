@@ -97,17 +97,17 @@ base::WeakPtr<FuseBoxMounter> FuseBoxMounter::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void FuseBoxMounter::MountResponse(chromeos::MountError error,
+void FuseBoxMounter::MountResponse(ash::MountError error,
                                    const FuseBoxMountInfo& info) {
-  if (error) {
+  if (error != ash::MountError::kNone) {
     LOG(ERROR) << uri_ << " mount error " << error;
   } else {
     mounted_ = true;
   }
 }
 
-void FuseBoxMounter::UnmountResponse(chromeos::MountError error) {
-  if (error) {
+void FuseBoxMounter::UnmountResponse(ash::MountError error) {
+  if (error != ash::MountError::kNone) {
     LOG(ERROR) << uri_ << " unmount error " << error;
   } else {
     mounted_ = false;

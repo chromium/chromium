@@ -41,7 +41,7 @@ struct UnmountDeviceRecursivelyCallbackData {
       : callback(std::move(in_callback)) {}
 
   DiskMountManager::UnmountDeviceRecursivelyCallbackType callback;
-  MountError error_code = MOUNT_ERROR_NONE;
+  MountError error_code = MountError::kNone;
 };
 
 void OnAllUnmountDeviceRecursively(
@@ -102,7 +102,7 @@ class DiskMountManagerImpl : public DiskMountManager,
             mount_callbacks_.try_emplace(source_path, std::move(callback));
         !ok) {
       std::move(callback).Run(
-          MOUNT_ERROR_PATH_ALREADY_MOUNTED,
+          MountError::kPathAlreadyMounted,
           MountPointInfo(source_path, "", type, MOUNT_CONDITION_NONE));
       return;
     }
@@ -112,7 +112,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       DiskMap::const_iterator it = disks_.find(source_path);
       if (it == disks_.end() || it->second->is_hidden()) {
         OnMountCompleted(
-            MountEntry(MOUNT_ERROR_INTERNAL, source_path, type, ""));
+            MountEntry(MountError::kInternal, source_path, type, ""));
         return;
       }
     }
@@ -269,12 +269,12 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (devices_to_unmount.empty()) {
       if (disks_.find(device_path) == disks_.end()) {
         LOG(WARNING) << "Cannot find device '" << device_path << "'";
-        std::move(callback).Run(MOUNT_ERROR_INVALID_DEVICE_PATH);
+        std::move(callback).Run(MountError::kInvalidDevicePath);
         return;
       }
 
       // Nothing to unmount.
-      std::move(callback).Run(MOUNT_ERROR_NONE);
+      std::move(callback).Run(MountError::kNone);
       return;
     }
 
@@ -385,7 +385,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       return;
 
     OnMountCompleted(
-        MountEntry(MOUNT_ERROR_INTERNAL, source_path, type, std::string()));
+        MountEntry(MountError::kInternal, source_path, type, std::string()));
   }
 
   void RemountRemovableDrive(const Disk& disk, MountAccessMode access_mode) {
@@ -395,7 +395,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       // Not in mount_points_. This happens when the mount_points and disks_ are
       // inconsistent.
       LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
-      OnMountCompleted(MountEntry(MOUNT_ERROR_PATH_NOT_MOUNTED,
+      OnMountCompleted(MountEntry(MountError::kPathNotMounted,
                                   disk.device_path(), MountType::kDevice,
                                   mount_path));
       return;
@@ -443,15 +443,15 @@ class DiskMountManagerImpl : public DiskMountManager,
                                   const std::string& mount_path,
                                   base::OnceClosure done_callback,
                                   MountError error_code) {
-    if (error_code == MOUNT_ERROR_PATH_NOT_MOUNTED ||
-        error_code == MOUNT_ERROR_INVALID_PATH) {
+    if (error_code == MountError::kPathNotMounted ||
+        error_code == MountError::kInvalidPath) {
       // The path was already unmounted by something else.
-      error_code = MOUNT_ERROR_NONE;
+      error_code = MountError::kNone;
     }
 
-    if (error_code == MOUNT_ERROR_NONE) {
+    if (error_code == MountError::kNone) {
       // Do standard processing for Unmount event.
-      OnUnmountPath(UnmountPathCallback(), mount_path, MOUNT_ERROR_NONE);
+      OnUnmountPath(UnmountPathCallback(), mount_path, MountError::kNone);
       VLOG(1) << "Unmounted '" << mount_path << "'";
     } else {
       // This causes the last non-success error to be reported.
@@ -471,10 +471,10 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     MountCondition mount_condition = MOUNT_CONDITION_NONE;
     if (entry.mount_type() == MountType::kDevice) {
-      if (entry.error_code() == MOUNT_ERROR_UNKNOWN_FILESYSTEM) {
+      if (entry.error_code() == MountError::kUnknownFilesystem) {
         mount_condition = MOUNT_CONDITION_UNKNOWN_FILESYSTEM;
       }
-      if (entry.error_code() == MOUNT_ERROR_UNSUPPORTED_FILESYSTEM) {
+      if (entry.error_code() == MountError::kUnsupportedFilesystem) {
         mount_condition = MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM;
       }
     }
@@ -483,12 +483,12 @@ class DiskMountManagerImpl : public DiskMountManager,
 
     // If the device is corrupted but it's still possible to format it, it will
     // be fake mounted.
-    if (entry.error_code() == MOUNT_ERROR_NONE || mount_info.mount_condition) {
+    if (entry.error_code() == MountError::kNone || mount_info.mount_condition) {
       mount_points_.emplace(mount_info.mount_path, mount_info);
     }
 
     Disk* disk = nullptr;
-    if ((entry.error_code() == MOUNT_ERROR_NONE ||
+    if ((entry.error_code() == MountError::kNone ||
          mount_info.mount_condition) &&
         mount_info.mount_type == MountType::kDevice &&
         !mount_info.source_path.empty() && !mount_info.mount_path.empty()) {
@@ -516,7 +516,7 @@ class DiskMountManagerImpl : public DiskMountManager,
         // non-trivial.
         // TODO(amistry): Change these code paths to use device path instead of
         // mount path.
-        disk->set_mounted(entry.error_code() == MOUNT_ERROR_NONE);
+        disk->set_mounted(entry.error_code() == MountError::kNone);
       }
     }
     // Observers may read the values of disks_. So notify them after tweaking
@@ -537,10 +537,10 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnUnmountPath(UnmountPathCallback callback,
                      const std::string& mount_path,
                      MountError error) {
-    if (error == MOUNT_ERROR_PATH_NOT_MOUNTED ||
-        error == MOUNT_ERROR_INVALID_PATH) {
+    if (error == MountError::kPathNotMounted ||
+        error == MountError::kInvalidPath) {
       // The path was already unmounted by something else.
-      error = MOUNT_ERROR_NONE;
+      error = MountError::kNone;
     }
 
     if (const MountPointMap::const_iterator mp_it =
@@ -549,7 +549,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       const MountPointInfo& mp = mp_it->second;
       NotifyMountStatusUpdate(UNMOUNTING, error, mp);
 
-      if (error == MOUNT_ERROR_NONE) {
+      if (error == MountError::kNone) {
         if (const DiskMap::iterator disk_it = disks_.find(mp.source_path);
             disk_it != disks_.end()) {
           Disk* const disk = disk_it->second.get();
@@ -570,7 +570,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                               FormatFileSystemType filesystem,
                               const std::string& label,
                               MountError error_code) {
-    if (error_code == MOUNT_ERROR_NONE &&
+    if (error_code == MountError::kNone &&
         disks_.find(device_path) != disks_.end()) {
       FormatUnmountedDevice(device_path, filesystem, label);
     } else {
@@ -582,7 +582,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                                                FormatFileSystemType filesystem,
                                                const std::string& label,
                                                MountError error_code) {
-    if (error_code != MOUNT_ERROR_NONE ||
+    if (error_code != MountError::kNone ||
         disks_.find(device_path) == disks_.end()) {
       OnPartitionCompleted(device_path, filesystem, label,
                            PARTITION_ERROR_UNKNOWN);
@@ -752,7 +752,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnUnmountPathForRename(const std::string& device_path,
                               const std::string& volume_name,
                               MountError error_code) {
-    if (error_code != MOUNT_ERROR_NONE ||
+    if (error_code != MountError::kNone ||
         disks_.find(device_path) == disks_.end()) {
       OnRenameCompleted(RENAME_ERROR_UNKNOWN, device_path);
       return;

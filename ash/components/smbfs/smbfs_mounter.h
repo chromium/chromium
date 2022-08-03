@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
 
  private:
   // Callback for MountPoint::Mount().
-  void OnMountDone(chromeos::MountError error_code,
+  void OnMountDone(ash::MountError error_code,
                    std::unique_ptr<ash::disks::MountPoint> mount_point);
 
   // Callback for receiving a Mojo bootstrap channel.

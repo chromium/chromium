@@ -124,9 +124,9 @@ class GuestOsMountProviderInner : public CachedCallback<ScopedVolume, bool> {
   void OnMountEvent(
       RealCallback callback,
       base::FilePath remote_path,
-      chromeos::MountError error_code,
+      ash::MountError error_code,
       const ash::disks::DiskMountManager::MountPointInfo& mount_info) {
-    if (error_code != chromeos::MountError::MOUNT_ERROR_NONE) {
+    if (error_code != ash::MountError::kNone) {
       LOG(ERROR) << "Error mounting Guest OS container: error_code="
                  << error_code << ", source_path=" << mount_info.source_path
                  << ", mount_path=" << mount_info.mount_path

@@ -349,7 +349,7 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemInitialized(
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
-    chromeos::MountError error_code,
+    MountError error_code,
     const file_manager::Volume& volume) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   holding_space_util::FilePathsWithValidityRequirements
@@ -370,7 +370,7 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
-    chromeos::MountError error_code,
+    MountError error_code,
     const file_manager::Volume& volume) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

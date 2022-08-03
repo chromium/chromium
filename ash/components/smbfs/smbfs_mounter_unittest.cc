@@ -95,7 +95,7 @@ class TestSmbFsMounter : public SmbFsMounter {
                    const MountOptions& options,
                    SmbFsHost::Delegate* delegate,
                    const base::FilePath& mount_path,
-                   chromeos::MountError mount_error,
+                   ash::MountError mount_error,
                    mojo::Remote<mojom::SmbFsBootstrap> bootstrap)
       : SmbFsMounter(share_path,
                      kMountDir,
@@ -115,9 +115,9 @@ class TestSmbFsMounter : public SmbFsMounter {
                       std::move(callback), mount_error,
                       MakeMountPointInfo(source_path, mount_path.value())));
             }));
-    if (mount_error == chromeos::MOUNT_ERROR_NONE) {
+    if (mount_error == ash::MountError::kNone) {
       EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(mount_path.value(), _))
-          .WillOnce(base::test::RunOnceCallback<1>(chromeos::MOUNT_ERROR_NONE));
+          .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kNone));
     } else {
       EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(mount_path.value(), _))
           .Times(0);
@@ -133,7 +133,7 @@ class SmbFsMounterTest : public testing::Test {
   void PostMountEvent(
       const std::string& source_path,
       const std::string& mount_path,
-      chromeos::MountError mount_error,
+      ash::MountError mount_error,
       ash::disks::DiskMountManager::MountPathCallback callback) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), mount_error,
@@ -195,8 +195,8 @@ TEST_F(SmbFsMounterTest, FilesystemMountFailure) {
       .WillOnce(WithArgs<0, 6>(
           [this](const std::string& source_path,
                  ash::disks::DiskMountManager::MountPathCallback callback) {
-            PostMountEvent(source_path, kMountPath,
-                           chromeos::MOUNT_ERROR_INTERNAL, std::move(callback));
+            PostMountEvent(source_path, kMountPath, ash::MountError::kInternal,
+                           std::move(callback));
           }));
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(_, _)).Times(0);
 
@@ -223,7 +223,7 @@ TEST_F(SmbFsMounterTest, TimeoutAfterFilesystemMount) {
       .WillOnce(WithArgs<0, 6>(
           [this](const std::string& source_path,
                  ash::disks::DiskMountManager::MountPathCallback callback) {
-            PostMountEvent(source_path, kMountPath, chromeos::MOUNT_ERROR_NONE,
+            PostMountEvent(source_path, kMountPath, ash::MountError::kNone,
                            std::move(callback));
           }));
   // Destructing SmbFsMounter on failure will cause the mount point to be
@@ -258,8 +258,8 @@ TEST_F(SmbFsMounterTest, FilesystemMountAfterDestruction) {
                  ash::disks::DiskMountManager::MountPathCallback callback) {
             // This posts a mount event to the task queue, which will not be run
             // until |run_loop| is started.
-            PostMountEvent(source_path, kMountPath,
-                           chromeos::MOUNT_ERROR_INTERNAL, std::move(callback));
+            PostMountEvent(source_path, kMountPath, ash::MountError::kInternal,
+                           std::move(callback));
           }));
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(_, _)).Times(0);
 
@@ -325,7 +325,7 @@ TEST_F(SmbFsMounterTest, MountOptions) {
   mount_options.resolved_host = net::IPAddress(1, 2, 3, 4);
   std::unique_ptr<SmbFsMounter> mounter = std::make_unique<TestSmbFsMounter>(
       kSharePath, mount_options, &mock_delegate_, base::FilePath(kMountPath),
-      chromeos::MOUNT_ERROR_NONE,
+      ash::MountError::kNone,
       mojo::Remote<mojom::SmbFsBootstrap>(
           bootstrap_receiver.BindNewPipeAndPassRemote()));
   mounter->Mount(callback);
@@ -368,7 +368,7 @@ TEST_F(SmbFsMounterTest, MountOptions_SkipConnect) {
   mount_options.skip_connect = true;
   std::unique_ptr<SmbFsMounter> mounter = std::make_unique<TestSmbFsMounter>(
       kSharePath, mount_options, &mock_delegate_, base::FilePath(kMountPath),
-      chromeos::MOUNT_ERROR_NONE,
+      ash::MountError::kNone,
       mojo::Remote<mojom::SmbFsBootstrap>(
           bootstrap_receiver.BindNewPipeAndPassRemote()));
   mounter->Mount(callback);
@@ -420,7 +420,7 @@ TEST_F(SmbFsMounterTest, MountOptions_SavePassword) {
   mount_options.password_salt = kSalt;
   std::unique_ptr<SmbFsMounter> mounter = std::make_unique<TestSmbFsMounter>(
       kSharePath, mount_options, &mock_delegate_, base::FilePath(kMountPath),
-      chromeos::MOUNT_ERROR_NONE,
+      ash::MountError::kNone,
       mojo::Remote<mojom::SmbFsBootstrap>(
           bootstrap_receiver.BindNewPipeAndPassRemote()));
   mounter->Mount(callback);
@@ -478,7 +478,7 @@ TEST_F(SmbFsMounterTest, KerberosAuthentication) {
           SmbFsMounter::KerberosOptions::Source::kKerberos, kKerberosIdentity);
   std::unique_ptr<SmbFsMounter> mounter = std::make_unique<TestSmbFsMounter>(
       kSharePath, mount_options, &mock_delegate_, base::FilePath(kMountPath),
-      chromeos::MOUNT_ERROR_NONE,
+      ash::MountError::kNone,
       mojo::Remote<mojom::SmbFsBootstrap>(
           bootstrap_receiver.BindNewPipeAndPassRemote()));
   mounter->Mount(callback);
@@ -512,7 +512,7 @@ TEST_F(SmbFsMounterTest, BootstrapMountError) {
 
   std::unique_ptr<SmbFsMounter> mounter = std::make_unique<TestSmbFsMounter>(
       kSharePath, SmbFsMounter::MountOptions(), &mock_delegate_,
-      base::FilePath(kMountPath), chromeos::MOUNT_ERROR_NONE,
+      base::FilePath(kMountPath), ash::MountError::kNone,
       mojo::Remote<mojom::SmbFsBootstrap>(
           bootstrap_receiver.BindNewPipeAndPassRemote()));
   mounter->Mount(callback);
@@ -547,7 +547,7 @@ TEST_F(SmbFsMounterTest, BootstrapDisconnection) {
 
   std::unique_ptr<SmbFsMounter> mounter = std::make_unique<TestSmbFsMounter>(
       kSharePath, SmbFsMounter::MountOptions(), &mock_delegate_,
-      base::FilePath(kMountPath), chromeos::MOUNT_ERROR_NONE,
+      base::FilePath(kMountPath), ash::MountError::kNone,
       mojo::Remote<mojom::SmbFsBootstrap>(
           bootstrap_receiver.BindNewPipeAndPassRemote()));
   mounter->Mount(callback);
@@ -562,9 +562,8 @@ class SmbFsMounterE2eTest : public testing::Test {
       const std::string& mount_path,
       ash::disks::DiskMountManager::MountPathCallback callback) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), chromeos::MOUNT_ERROR_NONE,
-                       MakeMountPointInfo(source_path, mount_path)));
+        FROM_HERE, base::BindOnce(std::move(callback), ash::MountError::kNone,
+                                  MakeMountPointInfo(source_path, mount_path)));
   }
 
  protected:
@@ -674,7 +673,7 @@ TEST_F(SmbFsMounterE2eTest, MountSuccess) {
             }));
       }));
   EXPECT_CALL(mock_disk_mount_manager_, UnmountPath(kMountPath, _))
-      .WillOnce(base::test::RunOnceCallback<1>(chromeos::MOUNT_ERROR_NONE));
+      .WillOnce(base::test::RunOnceCallback<1>(ash::MountError::kNone));
   EXPECT_CALL(mock_delegate_, OnDisconnected()).Times(0);
 
   base::RunLoop run_loop;

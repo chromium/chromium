@@ -487,60 +487,60 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
 file_manager_private::MountCompletedStatus MountErrorToMountCompletedStatus(
     chromeos::MountError error) {
   switch (error) {
-    case chromeos::MOUNT_ERROR_NONE:
+    case chromeos::MountError::kNone:
       return file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS;
-    case chromeos::MOUNT_ERROR_UNKNOWN:
+    case chromeos::MountError::kUnknown:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN;
-    case chromeos::MOUNT_ERROR_INTERNAL:
+    case chromeos::MountError::kInternal:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INTERNAL;
-    case chromeos::MOUNT_ERROR_INVALID_ARGUMENT:
+    case chromeos::MountError::kInvalidArgument:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARGUMENT;
-    case chromeos::MOUNT_ERROR_INVALID_PATH:
+    case chromeos::MountError::kInvalidPath:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_PATH;
-    case chromeos::MOUNT_ERROR_PATH_ALREADY_MOUNTED:
+    case chromeos::MountError::kPathAlreadyMounted:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_PATH_ALREADY_MOUNTED;
-    case chromeos::MOUNT_ERROR_PATH_NOT_MOUNTED:
+    case chromeos::MountError::kPathNotMounted:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED;
-    case chromeos::MOUNT_ERROR_DIRECTORY_CREATION_FAILED:
+    case chromeos::MountError::kDirectoryCreationFailed:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_DIRECTORY_CREATION_FAILED;
-    case chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS:
+    case chromeos::MountError::kInvalidMountOptions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_MOUNT_OPTIONS;
-    case chromeos::MOUNT_ERROR_INVALID_UNMOUNT_OPTIONS:
+    case chromeos::MountError::kInvalidUnmountOptions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_UNMOUNT_OPTIONS;
-    case chromeos::MOUNT_ERROR_INSUFFICIENT_PERMISSIONS:
+    case chromeos::MountError::kInsufficientPermissions:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INSUFFICIENT_PERMISSIONS;
-    case chromeos::MOUNT_ERROR_MOUNT_PROGRAM_NOT_FOUND:
+    case chromeos::MountError::kMountProgramNotFound:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_NOT_FOUND;
-    case chromeos::MOUNT_ERROR_MOUNT_PROGRAM_FAILED:
+    case chromeos::MountError::kMountProgramFailed:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_MOUNT_PROGRAM_FAILED;
-    case chromeos::MOUNT_ERROR_INVALID_DEVICE_PATH:
+    case chromeos::MountError::kInvalidDevicePath:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_INVALID_DEVICE_PATH;
-    case chromeos::MOUNT_ERROR_UNKNOWN_FILESYSTEM:
+    case chromeos::MountError::kUnknownFilesystem:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_UNKNOWN_FILESYSTEM;
-    case chromeos::MOUNT_ERROR_UNSUPPORTED_FILESYSTEM:
+    case chromeos::MountError::kUnsupportedFilesystem:
       return file_manager_private::
           MOUNT_COMPLETED_STATUS_ERROR_UNSUPPORTED_FILESYSTEM;
-    case chromeos::MOUNT_ERROR_INVALID_ARCHIVE:
+    case chromeos::MountError::kInvalidArchive:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_INVALID_ARCHIVE;
-    case chromeos::MOUNT_ERROR_NEED_PASSWORD:
+    case chromeos::MountError::kNeedPassword:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_NEED_PASSWORD;
-    case chromeos::MOUNT_ERROR_IN_PROGRESS:
+    case chromeos::MountError::kInProgress:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_IN_PROGRESS;
-    case chromeos::MOUNT_ERROR_CANCELLED:
+    case chromeos::MountError::kCancelled:
       return file_manager_private::MOUNT_COMPLETED_STATUS_ERROR_CANCELLED;
     // Not a real error.
-    case chromeos::MOUNT_ERROR_COUNT:
+    case chromeos::MountError::kCount:
       NOTREACHED();
   }
   NOTREACHED();

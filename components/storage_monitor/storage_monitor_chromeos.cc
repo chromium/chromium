@@ -194,7 +194,7 @@ void StorageMonitorCros::OnBootDeviceDiskEvent(
 
 void StorageMonitorCros::OnMountEvent(
     DiskMountManager::MountEvent event,
-    chromeos::MountError error_code,
+    ash::MountError error_code,
     const DiskMountManager::MountPointInfo& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -202,7 +202,7 @@ void StorageMonitorCros::OnMountEvent(
   if (mount_info.mount_type != ash::MountType::kDevice)
     return;
   // Ignore errors.
-  if (error_code != chromeos::MOUNT_ERROR_NONE)
+  if (error_code != ash::MountError::kNone)
     return;
   if (mount_info.mount_condition != ash::disks::MOUNT_CONDITION_NONE)
     return;
@@ -268,8 +268,8 @@ bool StorageMonitorCros::GetStorageInfoForPath(
 // Forwards result to |EjectDevice| caller.
 void NotifyUnmountResult(
     base::OnceCallback<void(StorageMonitor::EjectStatus)> callback,
-    chromeos::MountError error_code) {
-  if (error_code == chromeos::MOUNT_ERROR_NONE)
+    ash::MountError error_code) {
+  if (error_code == ash::MountError::kNone)
     std::move(callback).Run(StorageMonitor::EJECT_OK);
   else
     std::move(callback).Run(StorageMonitor::EJECT_FAILURE);

@@ -274,10 +274,10 @@ class DriveFsHostTest : public ::testing::Test, public mojom::DriveFsBootstrap {
 
   void CallMountCallbackSuccess(const std::string& token) {
     std::move(mount_callback_)
-        .Run(chromeos::MOUNT_ERROR_NONE, {base::StrCat({"drivefs://", token}),
-                                          "/media/drivefsroot/salt-g-ID",
-                                          ash::MountType::kNetworkStorage,
-                                          {}});
+        .Run(ash::MountError::kNone, {base::StrCat({"drivefs://", token}),
+                                      "/media/drivefsroot/salt-g-ID",
+                                      ash::MountType::kNetworkStorage,
+                                      {}});
   }
 
   void SendOnMounted() { delegate_->OnMounted(); }
@@ -428,7 +428,7 @@ TEST_F(DriveFsHostTest, OnMountFailedFromDbus) {
   EXPECT_CALL(*host_delegate_, OnMountFailed(MountFailure::kInvocation, _))
       .WillOnce(RunOnceClosure(std::move(quit_closure)));
   std::move(mount_callback_)
-      .Run(chromeos::MOUNT_ERROR_INVALID_MOUNT_OPTIONS,
+      .Run(ash::MountError::kInvalidMountOptions,
            {base::StrCat({"drivefs://", token}),
             "/media/drivefsroot/salt-g-ID",
             ash::MountType::kNetworkStorage,
