@@ -6,8 +6,8 @@
 #define CHROMECAST_BROWSER_WEBUI_CAST_WEBUI_MESSAGE_HANDLER_H_
 
 #include <string>
-#include <vector>
 
+#include "base/containers/span.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -26,8 +26,8 @@ class CastWebUIMessageHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
   // Invoke a JS function in the Web UI.
-  void CallJavascriptFunction(const std::string& function,
-                              std::vector<base::Value> args);
+  void CallJavascriptFunction(base::StringPiece function,
+                              base::span<const base::ValueView> args);
 
  private:
   bool javascript_called_ = false;

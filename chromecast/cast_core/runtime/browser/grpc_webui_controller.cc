@@ -123,8 +123,8 @@ void GrpcWebUIController::RegisterMessageCallbacks() {
 }
 
 void GrpcWebUIController::CallJavascriptFunction(
-    const std::string& function,
-    std::vector<base::Value> args) {
+    base::StringPiece function,
+    base::span<const base::ValueView> args) {
   message_handler_->CallJavascriptFunction(function, std::move(args));
 }
 
