@@ -10,10 +10,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.os.Build;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.compat.ApiHelperForS;
 
 class AudioDeviceSelectorPreS extends AudioDeviceSelector {
     private static final String TAG = "media";
@@ -33,6 +31,8 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
 
     private boolean mHasBluetoothPermission;
 
+    private boolean[] mDeviceExistence = new boolean[Devices.DEVICE_COUNT];
+
     public AudioDeviceSelectorPreS(AudioManager audioManager) {
         super(audioManager);
     }
@@ -44,12 +44,6 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
     @Override
     public void init() {
         mHasBluetoothPermission = hasPermission(android.Manifest.permission.BLUETOOTH);
-
-        // TODO(crbug.com/1317548): Remove this check once there is an AudioDeviceSelector
-        // for S and above.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            mHasBluetoothPermission &= ApiHelperForS.hasBluetoothConnectPermission();
-        }
 
         mDeviceListener.init(mHasBluetoothPermission);
 
@@ -82,6 +76,27 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
             return;
         }
         mAudioManager.setSpeakerphoneOn(on);
+    }
+
+    @Override
+    public boolean[] getAvailableDevices_Locked() {
+        boolean[] availableDevices = mDeviceExistence.clone();
+
+        // Wired headset, USB audio and earpiece are mutually exclusive, and
+        // prioritized in that order.
+        if (availableDevices[Devices.ID_WIRED_HEADSET]) {
+            availableDevices[Devices.ID_USB_AUDIO] = false;
+            availableDevices[Devices.ID_EARPIECE] = false;
+        } else if (availableDevices[Devices.ID_USB_AUDIO]) {
+            availableDevices[Devices.ID_EARPIECE] = false;
+        }
+
+        return availableDevices;
+    }
+
+    @Override
+    public void setDeviceExistence_Locked(int deviceId, boolean exists) {
+        mDeviceExistence[deviceId] = exists;
     }
 
     /** Checks if the process has as specified permission or not. */
@@ -125,7 +140,7 @@ class AudioDeviceSelectorPreS extends AudioDeviceSelector {
                         // do nothing
                         break;
                     default:
-                        loge("Invalid state");
+                        break;
                 }
             }
         };

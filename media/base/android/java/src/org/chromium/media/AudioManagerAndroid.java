@@ -98,9 +98,11 @@ class AudioManagerAndroid {
                 Context.AUDIO_SERVICE);
         mContentResolver = ContextUtils.getApplicationContext().getContentResolver();
 
-        // TODO(crbug.com/1317548): For now, we also use AudioDeviceSelectorPreS on Android S and
-        // above. Fix this by adding an S and above implementation.
-        mAudioDeviceSelector = new AudioDeviceSelectorPreS(mAudioManager);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            mAudioDeviceSelector = new AudioDeviceSelectorPreS(mAudioManager);
+        } else {
+            mAudioDeviceSelector = new AudioDeviceSelectorPostS(mAudioManager);
+        }
     }
 
     /**

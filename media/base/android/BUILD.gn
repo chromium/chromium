@@ -179,6 +179,7 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/media/AudioDeviceListener.java",
       "java/src/org/chromium/media/AudioDeviceSelector.java",
+      "java/src/org/chromium/media/AudioDeviceSelectorPostS.java",
       "java/src/org/chromium/media/AudioDeviceSelectorPreS.java",
       "java/src/org/chromium/media/AudioManagerAndroid.java",
       "java/src/org/chromium/media/AudioTrackOutputStream.java",
