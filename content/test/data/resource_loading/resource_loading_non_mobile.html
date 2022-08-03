@@ -23,6 +23,9 @@
   function getResourceNumber() {
       setInterval(function() {
           if (resourcesNumber != -1) {
+              if (resourcesNumber !== 9) {
+                window.performance.getEntriesByType("resource").forEach(e => { console.log(JSON.stringify(e.toJSON())); })
+              }
               sendValueToTest(resourcesNumber);
           }
       }, 300);
