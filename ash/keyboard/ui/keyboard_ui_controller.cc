@@ -1152,7 +1152,7 @@ void KeyboardUIController::EnsureCaretInWorkArea(
   TRACE_EVENT0("vk", "EnsureCaretInWorkArea");
 
   if (IsOverscrollAllowed()) {
-    ime->SetOnScreenKeyboardBounds(occluded_bounds_in_screen);
+    ime->SetVirtualKeyboardBounds(occluded_bounds_in_screen);
   } else if (ime->GetTextInputClient()) {
     ime->GetTextInputClient()->EnsureCaretNotInRect(occluded_bounds_in_screen);
   }

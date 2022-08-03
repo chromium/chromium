@@ -76,7 +76,7 @@ TextInputClient* InputMethodBase::GetTextInputClient() const {
   return text_input_client_;
 }
 
-void InputMethodBase::SetOnScreenKeyboardBounds(const gfx::Rect& new_bounds) {
+void InputMethodBase::SetVirtualKeyboardBounds(const gfx::Rect& new_bounds) {
   keyboard_bounds_ = new_bounds;
   if (text_input_client_)
     text_input_client_->EnsureCaretNotInRect(keyboard_bounds_);

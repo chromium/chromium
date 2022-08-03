@@ -4973,7 +4973,7 @@ TEST_F(RenderWidgetHostViewAuraTest, VirtualKeyboardFocusEnsureCaretInRect) {
   EXPECT_EQ(view_->GetNativeView()->bounds(), orig_view_bounds);
 
   // Simulate virtual keyboard.
-  input_method->SetOnScreenKeyboardBounds(keyboard_view_bounds);
+  input_method->SetVirtualKeyboardBounds(keyboard_view_bounds);
 
   // Window should be shifted.
   EXPECT_EQ(view_->GetNativeView()->bounds(), shifted_view_bounds);
@@ -5022,7 +5022,7 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateInsetsWithVirtualKeyboardEnabled) {
       0, 0,
       gfx::IntersectRects(orig_view_bounds, keyboard_view_bounds).height(), 0));
   EXPECT_EQ(view_->insets_, origin_view_insets);
-  input_method->SetOnScreenKeyboardBounds(keyboard_view_bounds);
+  input_method->SetVirtualKeyboardBounds(keyboard_view_bounds);
 
   // Window should be shifted. The insets will be updated.
   EXPECT_EQ(view_->GetNativeView()->bounds(), shifted_view_bounds);

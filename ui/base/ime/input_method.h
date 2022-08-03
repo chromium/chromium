@@ -146,8 +146,8 @@ class InputMethod {
   virtual void AddObserver(InputMethodObserver* observer) = 0;
   virtual void RemoveObserver(InputMethodObserver* observer) = 0;
 
-  // Set screen bounds of a on-screen keyboard.
-  virtual void SetOnScreenKeyboardBounds(const gfx::Rect& new_bounds) {}
+  // Set screen bounds of the virtual keyboard.
+  virtual void SetVirtualKeyboardBounds(const gfx::Rect& new_bounds) {}
 
   // Return the keyboard controller.
   virtual VirtualKeyboardController* GetVirtualKeyboardController() = 0;

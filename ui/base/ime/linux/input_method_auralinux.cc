@@ -552,7 +552,7 @@ void InputMethodAuraLinux::OnSetAutocorrectRange(const gfx::Range& range) {
 
 void InputMethodAuraLinux::OnSetVirtualKeyboardOccludedBounds(
     const gfx::Rect& screen_bounds) {
-  SetOnScreenKeyboardBounds(screen_bounds);
+  SetVirtualKeyboardBounds(screen_bounds);
 }
 
 // Overridden from InputMethodBase.

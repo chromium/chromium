@@ -3534,7 +3534,7 @@ TEST_F(TextfieldTest, VirtualKeyboardFocusEnsureCaretNotInRect) {
   EXPECT_EQ(widget_->GetNativeView()->bounds(), orig_widget_bounds);
 
   // Simulate virtual keyboard.
-  input_method_->SetOnScreenKeyboardBounds(keyboard_view_bounds);
+  input_method_->SetVirtualKeyboardBounds(keyboard_view_bounds);
 
   // Window should be shifted.
   EXPECT_EQ(widget_->GetNativeView()->bounds(), shifted_widget_bounds);
