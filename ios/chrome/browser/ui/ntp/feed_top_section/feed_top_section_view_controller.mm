@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/feed_top_section_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/discover_feed/feed_constants.h"
@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_constants.h"
-#import "ios/chrome/browser/ui/ntp/feed_top_section_consumer.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"

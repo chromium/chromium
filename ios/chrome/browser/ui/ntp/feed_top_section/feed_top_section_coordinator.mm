@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/ntp/feed_top_section_coordinator.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_coordinator.h"
 
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -16,8 +16,8 @@
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#import "ios/chrome/browser/ui/ntp/feed_top_section_mediator.h"
-#import "ios/chrome/browser/ui/ntp/feed_top_section_view_controller.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_mediator.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

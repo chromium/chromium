@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_FEED_TOP_SECTION_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_FEED_TOP_SECTION_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
-#import "ios/chrome/browser/ui/ntp/feed_top_section_view_controller_delegate.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section/feed_top_section_view_controller_delegate.h"
 
 class ChromeBrowserState;
 @protocol FeedTopSectionConsumer;
@@ -36,4 +36,4 @@ class ChromeBrowserState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_TOP_SECTION_FEED_TOP_SECTION_MEDIATOR_H_
