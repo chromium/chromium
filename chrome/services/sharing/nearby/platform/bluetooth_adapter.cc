@@ -67,6 +67,14 @@ std::string BluetoothAdapter::GetName() const {
 }
 
 bool BluetoothAdapter::SetName(absl::string_view name) {
+  return SetName(name, /*persist=*/true);
+}
+
+bool BluetoothAdapter::SetName(absl::string_view name, bool persist) {
+  // The persist parameter is not used by ChromeOS. The function was created
+  // in the base class to support Windows. For ChromeOS, we will always pass
+  // true. If this capability is needed later on, the reference can be found
+  // at b/234135746.
   bool set_name_success = false;
   bool call_success = adapter_->SetName(name.data(), &set_name_success);
 
