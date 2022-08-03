@@ -41,7 +41,11 @@ promise_test(async () => {
 
   // Test a top-level fenced frame after it navigates itself.
   // Navigate the fenced frame. (Refresh it, so we can still send it scripts.)
-  await fenced_frame.execute(() => { location.href = location.href; });
+  await fenced_frame.execute(() => {
+    window.executor.suspend(() => {
+      location.href = location.href;
+    });
+  });
 
   // Check that it now sees its original URL as the referrer.
   await fenced_frame.execute((expected_referrer) => {
