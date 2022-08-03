@@ -231,166 +231,159 @@ UserActionBuckets DetermineUserAction(const base::Value::Dict& settings) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-base::Value PoliciesToValue(crosapi::mojom::PoliciesPtr ptr) {
-  base::Value policies(base::Value::Type::DICTIONARY);
+base::Value::Dict PoliciesToValue(crosapi::mojom::PoliciesPtr ptr) {
+  base::Value::Dict policies;
 
-  base::Value header_footer_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict header_footer_policy;
   if (ptr->print_header_footer_allowed !=
       crosapi::mojom::Policies::OptionalBool::kUnset) {
-    header_footer_policy.SetBoolKey(
-        kAllowedMode, ptr->print_header_footer_allowed ==
-                          crosapi::mojom::Policies::OptionalBool::kTrue);
+    header_footer_policy.Set(kAllowedMode,
+                             ptr->print_header_footer_allowed ==
+                                 crosapi::mojom::Policies::OptionalBool::kTrue);
   }
   if (ptr->print_header_footer_default !=
       crosapi::mojom::Policies::OptionalBool::kUnset) {
-    header_footer_policy.SetBoolKey(
-        kDefaultMode, ptr->print_header_footer_default ==
-                          crosapi::mojom::Policies::OptionalBool::kTrue);
+    header_footer_policy.Set(kDefaultMode,
+                             ptr->print_header_footer_default ==
+                                 crosapi::mojom::Policies::OptionalBool::kTrue);
   }
-  if (!header_footer_policy.DictEmpty())
-    policies.SetKey(kHeaderFooter, std::move(header_footer_policy));
+  if (!header_footer_policy.empty())
+    policies.Set(kHeaderFooter, std::move(header_footer_policy));
 
-  base::Value background_graphics_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict background_graphics_policy;
   int value = static_cast<int>(ptr->allowed_background_graphics_modes);
   if (value)
-    background_graphics_policy.SetIntKey(kAllowedMode, value);
+    background_graphics_policy.Set(kAllowedMode, value);
   value = static_cast<int>(ptr->background_graphics_default);
   if (value)
-    background_graphics_policy.SetIntKey(kDefaultMode, value);
-  if (!background_graphics_policy.DictEmpty())
-    policies.SetKey(kCssBackground, std::move(background_graphics_policy));
+    background_graphics_policy.Set(kDefaultMode, value);
+  if (!background_graphics_policy.empty())
+    policies.Set(kCssBackground, std::move(background_graphics_policy));
 
-  base::Value paper_size_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict paper_size_policy;
   const absl::optional<gfx::Size>& default_paper_size = ptr->paper_size_default;
   if (default_paper_size.has_value()) {
-    base::Value default_paper_size_value(base::Value::Type::DICTIONARY);
-    default_paper_size_value.SetIntKey(kPaperSizeWidth,
-                                       default_paper_size.value().width());
-    default_paper_size_value.SetIntKey(kPaperSizeHeight,
-                                       default_paper_size.value().height());
-    paper_size_policy.SetKey(kDefaultMode, std::move(default_paper_size_value));
+    base::Value::Dict default_paper_size_value;
+    default_paper_size_value.Set(kPaperSizeWidth,
+                                 default_paper_size.value().width());
+    default_paper_size_value.Set(kPaperSizeHeight,
+                                 default_paper_size.value().height());
+    paper_size_policy.Set(kDefaultMode, std::move(default_paper_size_value));
   }
-  if (!paper_size_policy.DictEmpty())
-    policies.SetKey(kMediaSize, std::move(paper_size_policy));
+  if (!paper_size_policy.empty())
+    policies.Set(kMediaSize, std::move(paper_size_policy));
 
   if (ptr->max_sheets_allowed_has_value) {
-    base::Value sheets_policy(base::Value::Type::DICTIONARY);
-    sheets_policy.SetIntKey(kValue, ptr->max_sheets_allowed);
-    policies.SetKey(kSheets, std::move(sheets_policy));
+    base::Value::Dict sheets_policy;
+    sheets_policy.Set(kValue, static_cast<int>(ptr->max_sheets_allowed));
+    policies.Set(kSheets, std::move(sheets_policy));
   }
 
-  base::Value color_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict color_policy;
   if (ptr->allowed_color_modes)
-    color_policy.SetIntKey(kAllowedMode,
-                           static_cast<int>(ptr->allowed_color_modes));
+    color_policy.Set(kAllowedMode, static_cast<int>(ptr->allowed_color_modes));
   if (ptr->default_color_mode != printing::mojom::ColorModeRestriction::kUnset)
-    color_policy.SetIntKey(kDefaultMode,
-                           static_cast<int>(ptr->default_color_mode));
-  if (!color_policy.DictEmpty())
-    policies.SetKey(kColor, std::move(color_policy));
+    color_policy.Set(kDefaultMode, static_cast<int>(ptr->default_color_mode));
+  if (!color_policy.empty())
+    policies.Set(kColor, std::move(color_policy));
 
-  base::Value duplex_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict duplex_policy;
   if (ptr->allowed_duplex_modes)
-    duplex_policy.SetIntKey(kAllowedMode,
-                            static_cast<int>(ptr->allowed_duplex_modes));
+    duplex_policy.Set(kAllowedMode,
+                      static_cast<int>(ptr->allowed_duplex_modes));
   if (ptr->default_duplex_mode !=
       printing::mojom::DuplexModeRestriction::kUnset)
-    duplex_policy.SetIntKey(kDefaultMode,
-                            static_cast<int>(ptr->default_duplex_mode));
-  if (!duplex_policy.DictEmpty())
-    policies.SetKey(kDuplex, std::move(duplex_policy));
+    duplex_policy.Set(kDefaultMode, static_cast<int>(ptr->default_duplex_mode));
+  if (!duplex_policy.empty())
+    policies.Set(kDuplex, std::move(duplex_policy));
 
-  base::Value pin_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict pin_policy;
   if (ptr->allowed_pin_modes != printing::mojom::PinModeRestriction::kUnset)
-    pin_policy.SetIntKey(kAllowedMode,
-                         static_cast<int>(ptr->allowed_pin_modes));
+    pin_policy.Set(kAllowedMode, static_cast<int>(ptr->allowed_pin_modes));
   if (ptr->default_pin_mode != printing::mojom::PinModeRestriction::kUnset)
-    pin_policy.SetIntKey(kDefaultMode, static_cast<int>(ptr->default_pin_mode));
-  if (!pin_policy.DictEmpty())
-    policies.SetKey(kPin, std::move(pin_policy));
+    pin_policy.Set(kDefaultMode, static_cast<int>(ptr->default_pin_mode));
+  if (!pin_policy.empty())
+    policies.Set(kPin, std::move(pin_policy));
 
-  base::Value print_as_image_for_pdf_default_policy(
-      base::Value::Type::DICTIONARY);
+  base::Value::Dict print_as_image_for_pdf_default_policy;
   if (ptr->default_print_pdf_as_image !=
       crosapi::mojom::Policies::OptionalBool::kUnset) {
-    print_as_image_for_pdf_default_policy.SetBoolKey(
+    print_as_image_for_pdf_default_policy.Set(
         kDefaultMode, ptr->default_print_pdf_as_image ==
                           crosapi::mojom::Policies::OptionalBool::kTrue);
   }
-  if (!print_as_image_for_pdf_default_policy.DictEmpty()) {
-    policies.SetKey(kPrintPdfAsImage,
-                    std::move(print_as_image_for_pdf_default_policy));
+  if (!print_as_image_for_pdf_default_policy.empty()) {
+    policies.Set(kPrintPdfAsImage,
+                 std::move(print_as_image_for_pdf_default_policy));
   }
 
   return policies;
 }
 
 #else
-base::Value GetPolicies(const PrefService& prefs) {
-  base::Value policies(base::Value::Type::DICTIONARY);
+base::Value::Dict GetPolicies(const PrefService& prefs) {
+  base::Value::Dict policies;
 
-  base::Value header_footer_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict header_footer_policy;
   if (prefs.HasPrefPath(prefs::kPrintHeaderFooter)) {
     if (prefs.IsManagedPreference(prefs::kPrintHeaderFooter)) {
-      header_footer_policy.SetBoolKey(
-          kAllowedMode, prefs.GetBoolean(prefs::kPrintHeaderFooter));
+      header_footer_policy.Set(kAllowedMode,
+                               prefs.GetBoolean(prefs::kPrintHeaderFooter));
     } else {
-      header_footer_policy.SetBoolKey(
-          kDefaultMode, prefs.GetBoolean(prefs::kPrintHeaderFooter));
+      header_footer_policy.Set(kDefaultMode,
+                               prefs.GetBoolean(prefs::kPrintHeaderFooter));
     }
   }
-  if (!header_footer_policy.DictEmpty())
-    policies.SetKey(kHeaderFooter, std::move(header_footer_policy));
+  if (!header_footer_policy.empty())
+    policies.Set(kHeaderFooter, std::move(header_footer_policy));
 
-  base::Value background_graphics_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict background_graphics_policy;
   if (prefs.HasPrefPath(prefs::kPrintingAllowedBackgroundGraphicsModes)) {
-    background_graphics_policy.SetIntKey(
+    background_graphics_policy.Set(
         kAllowedMode,
         prefs.GetInteger(prefs::kPrintingAllowedBackgroundGraphicsModes));
   }
   if (prefs.HasPrefPath(prefs::kPrintingBackgroundGraphicsDefault)) {
-    background_graphics_policy.SetIntKey(
+    background_graphics_policy.Set(
         kDefaultMode,
         prefs.GetInteger(prefs::kPrintingBackgroundGraphicsDefault));
   }
-  if (!background_graphics_policy.DictEmpty())
-    policies.SetKey(kCssBackground, std::move(background_graphics_policy));
+  if (!background_graphics_policy.empty())
+    policies.Set(kCssBackground, std::move(background_graphics_policy));
 
-  base::Value paper_size_policy(base::Value::Type::DICTIONARY);
+  base::Value::Dict paper_size_policy;
   absl::optional<gfx::Size> default_paper_size = ParsePaperSizeDefault(prefs);
   if (default_paper_size.has_value()) {
-    base::Value default_paper_size_value(base::Value::Type::DICTIONARY);
-    default_paper_size_value.SetIntKey(kPaperSizeWidth,
-                                       default_paper_size.value().width());
-    default_paper_size_value.SetIntKey(kPaperSizeHeight,
-                                       default_paper_size.value().height());
-    paper_size_policy.SetKey(kDefaultMode, std::move(default_paper_size_value));
+    base::Value::Dict default_paper_size_value;
+    default_paper_size_value.Set(kPaperSizeWidth,
+                                 default_paper_size.value().width());
+    default_paper_size_value.Set(kPaperSizeHeight,
+                                 default_paper_size.value().height());
+    paper_size_policy.Set(kDefaultMode, std::move(default_paper_size_value));
   }
-  if (!paper_size_policy.DictEmpty())
-    policies.SetKey(kMediaSize, std::move(paper_size_policy));
+  if (!paper_size_policy.empty())
+    policies.Set(kMediaSize, std::move(paper_size_policy));
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  base::Value print_as_image_available_for_pdf_policy(
-      base::Value::Type::DICTIONARY);
+  base::Value::Dict print_as_image_available_for_pdf_policy;
   if (prefs.HasPrefPath(prefs::kPrintPdfAsImageAvailability)) {
-    print_as_image_available_for_pdf_policy.SetBoolKey(
+    print_as_image_available_for_pdf_policy.Set(
         kAllowedMode, prefs.GetBoolean(prefs::kPrintPdfAsImageAvailability));
   }
-  if (!print_as_image_available_for_pdf_policy.DictEmpty()) {
-    policies.SetKey(kPrintPdfAsImageAvailability,
-                    std::move(print_as_image_available_for_pdf_policy));
+  if (!print_as_image_available_for_pdf_policy.empty()) {
+    policies.Set(kPrintPdfAsImageAvailability,
+                 std::move(print_as_image_available_for_pdf_policy));
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-  base::Value print_as_image_for_pdf_default_policy(
-      base::Value::Type::DICTIONARY);
+  base::Value::Dict print_as_image_for_pdf_default_policy;
   if (prefs.HasPrefPath(prefs::kPrintPdfAsImageDefault)) {
-    print_as_image_for_pdf_default_policy.SetBoolKey(
+    print_as_image_for_pdf_default_policy.Set(
         kDefaultMode, prefs.GetBoolean(prefs::kPrintPdfAsImageDefault));
   }
-  if (!print_as_image_for_pdf_default_policy.DictEmpty()) {
-    policies.SetKey(kPrintPdfAsImage,
-                    std::move(print_as_image_for_pdf_default_policy));
+  if (!print_as_image_for_pdf_default_policy.empty()) {
+    policies.Set(kPrintPdfAsImage,
+                 std::move(print_as_image_for_pdf_default_policy));
   }
 
   return policies;
@@ -519,12 +512,12 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
   if (!prefs->HasPrefPath(prefs::kPrinterTypeDenyList))
     return;
 
-  const base::Value& deny_list_from_prefs =
-      prefs->GetValue(prefs::kPrinterTypeDenyList);
+  const base::Value::List& deny_list_from_prefs =
+      prefs->GetValueList(prefs::kPrinterTypeDenyList);
 
   std::vector<mojom::PrinterType> deny_list;
-  deny_list.reserve(deny_list_from_prefs.GetList().size());
-  for (const base::Value& deny_list_value : deny_list_from_prefs.GetList()) {
+  deny_list.reserve(deny_list_from_prefs.size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs) {
     const std::string& deny_list_str = deny_list_value.GetString();
     mojom::PrinterType printer_type;
     if (deny_list_str == "extension")
@@ -820,11 +813,11 @@ void PrintPreviewHandler::HandleClosePreviewDialog(
       regenerate_preview_request_count_);
 }
 
-void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
+void PrintPreviewHandler::GetLocaleInformation(base::Value::Dict* settings) {
   // Getting the measurement system based on the locale.
   UErrorCode errorCode = U_ZERO_ERROR;
   const char* locale = g_browser_process->GetApplicationLocale().c_str();
-  settings->SetStringKey(kUiLocale, std::string(locale));
+  settings->Set(kUiLocale, std::string(locale));
   UMeasurementSystem system = ulocdata_getMeasurementSystem(locale, &errorCode);
   // On error, assume the units are SI.
   // Since the only measurement units print preview's WebUI cares about are
@@ -842,9 +835,9 @@ void PrintPreviewHandler::GetLocaleInformation(base::Value* settings) {
   size_t decimal_pos = number_format.find('6') + 1;
   DCHECK_NE(number_format[decimal_pos], '7');
   std::u16string decimal_delimiter = number_format.substr(decimal_pos, 1);
-  settings->SetStringKey(kDecimalDelimiter, decimal_delimiter);
-  settings->SetStringKey(kThousandsDelimiter, thousands_delimiter);
-  settings->SetIntKey(kUnitType, system);
+  settings->Set(kDecimalDelimiter, decimal_delimiter);
+  settings->Set(kThousandsDelimiter, thousands_delimiter);
+  settings->Set(kUnitType, system);
 }
 
 void PrintPreviewHandler::HandleGetInitialSettings(
@@ -856,20 +849,22 @@ void PrintPreviewHandler::HandleGetInitialSettings(
   AllowJavascript();
 
   PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kLocal);
-  base::OnceCallback<void(base::Value, const std::string&)> cb =
+  base::OnceCallback<void(base::Value::Dict, const std::string&)> cb =
       base::BindOnce(&PrintPreviewHandler::SendInitialSettings,
                      weak_factory_.GetWeakPtr(), callback_id);
 #if BUILDFLAG(IS_CHROMEOS)
   if (!local_printer_) {
     LOG(ERROR) << "Local printer not available";
-    handler->GetDefaultPrinter(base::BindOnce(std::move(cb), base::Value()));
+    handler->GetDefaultPrinter(
+        base::BindOnce(std::move(cb), base::Value::Dict()));
     return;
   }
   local_printer_->GetPolicies(
       base::BindOnce(PoliciesToValue)
           .Then(base::BindOnce(
-              [](base::OnceCallback<void(base::Value, const std::string&)> cb,
-                 PrinterHandler* handler, base::Value policies) {
+              [](base::OnceCallback<void(base::Value::Dict, const std::string&)>
+                     cb,
+                 PrinterHandler* handler, base::Value::Dict policies) {
                 handler->GetDefaultPrinter(
                     base::BindOnce(std::move(cb), std::move(policies)));
               },
@@ -882,58 +877,55 @@ void PrintPreviewHandler::HandleGetInitialSettings(
 
 void PrintPreviewHandler::SendInitialSettings(
     const std::string& callback_id,
-    base::Value policies,
+    base::Value::Dict policies,
     const std::string& default_printer) {
-  base::Value initial_settings(base::Value::Type::DICTIONARY);
-  initial_settings.SetStringKey(kDocumentTitle,
-                                print_preview_ui()->initiator_title());
-  initial_settings.SetBoolKey(kSettingPreviewModifiable,
-                              print_preview_ui()->source_is_modifiable());
+  base::Value::Dict initial_settings;
+  initial_settings.Set(kDocumentTitle, print_preview_ui()->initiator_title());
+  initial_settings.Set(kSettingPreviewModifiable,
+                       print_preview_ui()->source_is_modifiable());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool source_is_arc = print_preview_ui()->source_is_arc();
 #else
   bool source_is_arc = false;
 #endif
-  initial_settings.SetBoolKey(kSettingPreviewIsFromArc, source_is_arc);
-  initial_settings.SetStringKey(kSettingPrinterName, default_printer);
-  initial_settings.SetBoolKey(kDocumentHasSelection,
-                              print_preview_ui()->source_has_selection());
-  initial_settings.SetBoolKey(kSettingShouldPrintSelectionOnly,
-                              print_preview_ui()->print_selection_only());
+  initial_settings.Set(kSettingPreviewIsFromArc, source_is_arc);
+  initial_settings.Set(kSettingPrinterName, default_printer);
+  initial_settings.Set(kDocumentHasSelection,
+                       print_preview_ui()->source_has_selection());
+  initial_settings.Set(kSettingShouldPrintSelectionOnly,
+                       print_preview_ui()->print_selection_only());
   PrefService* prefs = GetPrefs();
   PrintPreviewStickySettings* sticky_settings =
       PrintPreviewStickySettings::GetInstance();
   sticky_settings->RestoreFromPrefs(prefs);
   if (sticky_settings->printer_app_state()) {
-    initial_settings.SetStringKey(kAppState,
-                                  *sticky_settings->printer_app_state());
+    initial_settings.Set(kAppState, *sticky_settings->printer_app_state());
   } else {
-    initial_settings.SetKey(kAppState, base::Value());
+    initial_settings.Set(kAppState, base::Value());
   }
 
-  if (policies.is_dict() && !policies.DictEmpty())
-    initial_settings.SetKey(kPolicies, std::move(policies));
+  if (!policies.empty())
+    initial_settings.Set(kPolicies, std::move(policies));
 
-  initial_settings.SetBoolKey(
+  initial_settings.Set(
       kPdfPrinterDisabled,
       base::Contains(printer_type_deny_list_, mojom::PrinterType::kPdf));
 
   const bool destinations_managed =
       !printer_type_deny_list_.empty() &&
       prefs->IsManagedPreference(prefs::kPrinterTypeDenyList);
-  initial_settings.SetBoolKey(kDestinationsManaged, destinations_managed);
+  initial_settings.Set(kDestinationsManaged, destinations_managed);
 
   base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  initial_settings.SetBoolKey(kIsInKioskAutoPrintMode,
-                              cmdline->HasSwitch(switches::kKioskModePrinting));
-  initial_settings.SetBoolKey(kIsInAppKioskMode,
-                              chrome::IsRunningInForcedAppMode());
+  initial_settings.Set(kIsInKioskAutoPrintMode,
+                       cmdline->HasSwitch(switches::kKioskModePrinting));
+  initial_settings.Set(kIsInAppKioskMode, chrome::IsRunningInForcedAppMode());
   const std::string rules_str =
       prefs->GetString(prefs::kPrintPreviewDefaultDestinationSelectionRules);
   if (rules_str.empty()) {
-    initial_settings.SetKey(kDefaultDestinationSelectionRules, base::Value());
+    initial_settings.Set(kDefaultDestinationSelectionRules, base::Value());
   } else {
-    initial_settings.SetStringKey(kDefaultDestinationSelectionRules, rules_str);
+    initial_settings.Set(kDefaultDestinationSelectionRules, rules_str);
   }
 
   GetLocaleInformation(&initial_settings);
@@ -942,8 +934,8 @@ void PrintPreviewHandler::SendInitialSettings(
   drive::DriveIntegrationService* drive_service =
       drive::DriveIntegrationServiceFactory::GetForProfile(
           Profile::FromWebUI(web_ui()));
-  initial_settings.SetBoolKey(kIsDriveMounted,
-                              drive_service && drive_service->IsMounted());
+  initial_settings.Set(kIsDriveMounted,
+                       drive_service && drive_service->IsMounted());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   if (drive_integration_service_) {
     drive_integration_service_->GetMountPointPath(base::BindOnce(
@@ -957,10 +949,10 @@ void PrintPreviewHandler::SendInitialSettings(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-void PrintPreviewHandler::OnDrivePathReady(base::Value initial_settings,
+void PrintPreviewHandler::OnDrivePathReady(base::Value::Dict initial_settings,
                                            const std::string& callback_id,
                                            const base::FilePath& drive_path) {
-  initial_settings.SetBoolKey(kIsDriveMounted, !drive_path.empty());
+  initial_settings.Set(kIsDriveMounted, !drive_path.empty());
   ResolveJavascriptCallback(base::Value(callback_id), initial_settings);
 }
 #endif
@@ -975,8 +967,7 @@ void PrintPreviewHandler::SendPrinterCapabilities(
   // Check that |settings_info| is valid.
   if (settings_info.FindDict(kSettingCapabilities)) {
     VLOG(1) << "Get printer capabilities finished";
-    ResolveJavascriptCallback(base::Value(callback_id),
-                              base::Value(std::move(settings_info)));
+    ResolveJavascriptCallback(base::Value(callback_id), settings_info);
     return;
   }
 
@@ -1147,8 +1138,7 @@ void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
   const size_t printer_count = printers.size();
   DCHECK(printer_count);
   FireWebUIListener("printers-added",
-                    base::Value(static_cast<int>(printer_type)),
-                    base::Value(std::move(printers)));
+                    base::Value(static_cast<int>(printer_type)), printers);
 
   if (printer_type == mojom::PrinterType::kLocal &&
       !has_logged_printers_count_) {

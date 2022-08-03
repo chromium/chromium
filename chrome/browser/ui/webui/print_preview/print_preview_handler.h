@@ -213,12 +213,12 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   void HandleManagePrinters(const base::Value::List& args);
 
   void SendInitialSettings(const std::string& callback_id,
-                           base::Value policies,
+                           base::Value::Dict policies,
                            const std::string& default_printer);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Sets |kIsDriveMounted| for Lacros chrome then returns the initial settings.
-  void OnDrivePathReady(base::Value initial_settings,
+  void OnDrivePathReady(base::Value::Dict initial_settings,
                         const std::string& callback_id,
                         const base::FilePath& drive_path);
 #endif
@@ -236,10 +236,10 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   void ClearInitiatorDetails();
 
   // Populates |settings| according to the current locale.
-  void GetLocaleInformation(base::Value* settings);
+  void GetLocaleInformation(base::Value::Dict* settings);
 
   // Populates |settings| with the list of logged in accounts.
-  void GetUserAccountList(base::Value* settings);
+  void GetUserAccountList(base::Value::Dict* settings);
 
   PdfPrinterHandler* GetPdfPrinterHandler();
 
