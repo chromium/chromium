@@ -887,6 +887,45 @@ TEST_F(ShimlessRmaServiceTest, WithNetworkConnectedAndGoBack) {
   run_loop.Run();
 }
 
+// Navigating to the SelectNetwork page should enable WiFi if it's currently
+// disabled.
+TEST_F(ShimlessRmaServiceTest, SelectNetworkTurnsOnWiFi) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kComponentsRepair,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+
+  // Simulate disabling WiFi.
+  network_state_handler()->SetTechnologyEnabled(
+      chromeos::NetworkTypePattern::WiFi(), /*enabled=*/false,
+      network_handler::ErrorCallback());
+  EXPECT_FALSE(network_state_handler()->IsTechnologyEnabled(
+      chromeos::NetworkTypePattern::WiFi()));
+
+  // Initialize current state.
+  shimless_rma_provider_->GetCurrentState(
+      base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
+        EXPECT_EQ(state_result_ptr->state, mojom::State::kWelcomeScreen);
+        EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // No network should direct user to the NetworkPage.
+  shimless_rma_provider_->BeginFinalization(
+      base::BindLambdaForTesting([&](mojom::StateResultPtr state_result_ptr) {
+        EXPECT_EQ(state_result_ptr->state, mojom::State::kConfigureNetwork);
+        EXPECT_EQ(state_result_ptr->error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // After transitioning to the select network page, WiFi should be enabled.
+  EXPECT_TRUE(network_state_handler()->IsTechnologyEnabled(
+      chromeos::NetworkTypePattern::WiFi()));
+}
+
 TEST_F(ShimlessRmaServiceTest, GetCurrentState) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(CreateStateReply(rmad::RmadState::kDeviceDestination,

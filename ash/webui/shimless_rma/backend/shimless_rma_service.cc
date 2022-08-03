@@ -25,6 +25,7 @@
 #include "chromeos/ash/components/dbus/rmad/rmad_client.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -204,6 +205,16 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
       rmad::WelcomeState::RMAD_CHOICE_FINALIZE_REPAIR);
 
   if (!HaveAllowedNetworkConnection()) {
+    // Enable WiFi on the device.
+    chromeos::NetworkStateHandler* network_state_handler =
+        chromeos::NetworkHandler::Get()->network_state_handler();
+    if (!network_state_handler->IsTechnologyEnabled(
+            chromeos::NetworkTypePattern::WiFi())) {
+      network_state_handler->SetTechnologyEnabled(
+          chromeos::NetworkTypePattern::WiFi(), /*enabled=*/true,
+          network_handler::ErrorCallback());
+    }
+
     user_has_seen_network_page_ = true;
     mojo_state_ = mojom::State::kConfigureNetwork;
     std::move(callback).Run(
