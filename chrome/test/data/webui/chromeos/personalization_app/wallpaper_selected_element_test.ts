@@ -91,9 +91,7 @@ suite('WallpaperSelectedTest', function() {
     await waitAfterNextRender(wallpaperSelectedElement);
 
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
-    assertEquals(
-        `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
-        img!.src);
+    assertEquals(wallpaperProvider.currentWallpaper.url.url, img!.src);
 
     const textContainerElements =
         wallpaperSelectedElement.shadowRoot!.querySelectorAll(
@@ -134,21 +132,6 @@ suite('WallpaperSelectedTest', function() {
         title!.textContent!.trim());
   });
 
-  test('removes high resolution suffix from image url', async () => {
-    personalizationStore.data.wallpaper.currentSelected = {
-      url: {url: 'https://images.googleusercontent.com/abc12=w456'},
-      attribution: [],
-      assetId: BigInt(100),
-    };
-    personalizationStore.data.wallpaper.loading.selected = false;
-    wallpaperSelectedElement = initElement(WallpaperSelected);
-    await waitAfterNextRender(wallpaperSelectedElement);
-
-    const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
-    assertEquals(
-        'chrome://image/?https://images.googleusercontent.com/abc12', img!.src);
-  });
-
   test('updates image when store is updated', async () => {
     personalizationStore.data.wallpaper.currentSelected =
         wallpaperProvider.currentWallpaper;
@@ -159,19 +142,17 @@ suite('WallpaperSelectedTest', function() {
 
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img') as
         HTMLImageElement;
-    assertEquals(
-        `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
-        img.src);
+    assertEquals(wallpaperProvider.currentWallpaper.url.url, img.src);
 
     personalizationStore.data.wallpaper.currentSelected = {
-      url: {url: 'https://testing'},
+      url: {url: 'data:image/png;base64_some_new_data'},
       attribution: ['New attribution'],
       assetId: BigInt(100),
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertEquals('chrome://image/?https://testing', img.src);
+    assertEquals('data:image/png;base64_some_new_data', img.src);
   });
 
   test('shows placeholders when image fails to load', async () => {

@@ -21,7 +21,7 @@ import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
 
-import {getLocalStorageAttribution, getWallpaperLayoutEnum, hasHttpScheme, removeHighResolutionSuffix} from './utils.js';
+import {getLocalStorageAttribution, getWallpaperLayoutEnum} from './utils.js';
 import {getDailyRefreshState, selectGooglePhotosAlbum, setCurrentWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
 import {WallpaperObserver} from './wallpaper_observer.js';
@@ -177,21 +177,6 @@ export class WallpaperSelected extends WithPersonalizationStore {
     this.watch('dailyRefreshState_', state => state.wallpaper.dailyRefresh);
     this.updateFromStore();
     getDailyRefreshState(getWallpaperProvider(), this.getStore());
-  }
-
-
-  /**
-   * Return a chrome://image or data:// url to load the image safely. Returns
-   * empty string in case |image| is null or invalid.
-   */
-  private getImageSrc_(image: CurrentWallpaper|null): string {
-    if (image && image.url) {
-      if (hasHttpScheme(image.url.url)) {
-        return `chrome://image?${removeHighResolutionSuffix(image.url.url)}`;
-      }
-      return image.url.url;
-    }
-    return '';
   }
 
   private computeShowImage_(image: CurrentWallpaper|null, loading: boolean):

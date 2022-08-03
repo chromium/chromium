@@ -21,7 +21,7 @@ import {Paths, PersonalizationRouter} from '../personalization_router_element.js
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isNonEmptyArray} from '../utils.js';
 
-import {getLocalStorageAttribution, hasHttpScheme, removeHighResolutionSuffix} from './utils.js';
+import {getLocalStorageAttribution} from './utils.js';
 import {WallpaperObserver} from './wallpaper_observer.js';
 import {getTemplate} from './wallpaper_preview_element.html.js';
 
@@ -40,9 +40,7 @@ export class WallpaperPreview extends WithPersonalizationStore {
         type: Object,
         value: null,
       },
-      imageLoading_: {
-        type: Boolean,
-      },
+      imageLoading_: Boolean,
     };
   }
 
@@ -67,20 +65,6 @@ export class WallpaperPreview extends WithPersonalizationStore {
   private onClickWallpaper_() {
     assert(!!this.image_ && this.image_.type !== WallpaperType.kPolicy);
     PersonalizationRouter.instance().goToRoute(Paths.COLLECTIONS);
-  }
-
-  /**
-   * Return a chrome://image or data:// url to load the image safely. Returns
-   * empty string in case |image| is null or invalid.
-   */
-  private getImageSrc_(image: CurrentWallpaper|null): string {
-    if (image && image.url) {
-      if (hasHttpScheme(image.url.url)) {
-        return `chrome://image?${removeHighResolutionSuffix(image.url.url)}`;
-      }
-      return image.url.url;
-    }
-    return '';
   }
 
   private getImageAltDescription_(image: CurrentWallpaper|null): string {

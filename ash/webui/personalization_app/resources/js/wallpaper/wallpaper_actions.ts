@@ -447,6 +447,9 @@ export type SetSelectedImageAction = Action&{
  */
 export function setSelectedImageAction(image: CurrentWallpaper|
                                        null): SetSelectedImageAction {
+  assert(
+      image === null || image.url.url.startsWith('data:image/png;base64'),
+      'only data urls are supported');
   return {
     image,
     name: WallpaperActionName.SET_SELECTED_IMAGE,

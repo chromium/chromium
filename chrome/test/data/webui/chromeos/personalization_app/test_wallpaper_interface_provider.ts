@@ -102,7 +102,7 @@ export class TestWallpaperProvider extends
       layout: WallpaperLayout.kCenter,
       key: '1',
       type: WallpaperType.kOnline,
-      url: {url: 'https://images.googleusercontent.com/0'},
+      url: {url: 'data:image/png;base64somedataurl/0'},
     };
   }
 

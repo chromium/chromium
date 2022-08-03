@@ -86,9 +86,7 @@ suite('WallpaperPreviewTest', function() {
     await waitAfterNextRender(wallpaperPreviewElement);
 
     const img = wallpaperPreviewElement.shadowRoot!.querySelector('img');
-    assertEquals(
-        `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
-        img!.src);
+    assertEquals(wallpaperProvider.currentWallpaper.url.url, img!.src);
   });
 
   test('shows placeholders when image fails to load', async () => {
