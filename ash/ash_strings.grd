@@ -1954,7 +1954,7 @@ This file contains the strings for ash.
         Saved desk, <ph name="SAVE_AND_RECALL_DESK_NAME">$1</ph>
       </message>
       <message name="IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION" desc="The extra accessible description of saved desk grid item">
-        Press Ctrl+W to close
+        Press Ctrl+W to delete
       </message>
 
       <!-- Virtual Desks -->

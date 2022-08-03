@@ -1746,7 +1746,7 @@ IN_PROC_BROWSER_TEST_F(DeskTemplatesSpokenFeedbackTest, DeskTemplatesBasic) {
   sm_.Call([this]() { SendKeyPress(ui::VKEY_TAB); });
   sm_.ExpectSpeechPattern("Template, Desk 1");
   sm_.ExpectSpeech("Button");
-  sm_.ExpectSpeech("Press Ctrl plus W to close");
+  sm_.ExpectSpeech("Press Ctrl plus W to delete");
   sm_.ExpectSpeech("Press Search plus Space to activate");
 
   // The next item is the textfield inside the template card, which also has the
