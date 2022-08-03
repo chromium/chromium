@@ -123,6 +123,7 @@ public class TabPersistentStoreUnitTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature("TabPersistentStore")
     public void testNtpSaveBehavior() {
         when(mNormalTabModel.index()).thenReturn(TabList.INVALID_TAB_INDEX);

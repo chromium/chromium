@@ -32,6 +32,13 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     @Override
+    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+            Callback<Integer> callback) {
+        save(tabId, dataId, dataSupplier);
+        callback.onResult(0);
+    }
+
+    @Override
     public void restore(int tabId, String tabDataId, Callback<ByteBuffer> callback) {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
             callback.onResult(

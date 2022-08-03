@@ -84,8 +84,8 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
     // Callback used for test synchronization between save, restore and delete operations
     @MainThread
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
+    @Override
+    public void save(int tabId, String dataId, Supplier<ByteBuffer> dataSupplier,
             Callback<Integer> callback) {
         // TODO(crbug.com/1059637) we should introduce a retry mechanisms
         addSaveRequest(new FileSaveRequest(tabId, dataId, dataSupplier, callback));

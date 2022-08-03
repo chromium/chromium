@@ -127,6 +127,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     private boolean mShouldSaveForTesting;
     /** Tab level Request Desktop Site setting. */
     private @TabUserAgent int mUserAgent;
+    private boolean mShouldSave;
 
     @VisibleForTesting
     public CriticalPersistedTabData(Tab tab) {
@@ -181,6 +182,12 @@ public class CriticalPersistedTabData extends PersistedTabData {
             Tab tab, ByteBuffer data, PersistedTabDataStorage storage, String persistedTabDataId) {
         super(tab, storage, persistedTabDataId);
         deserializeAndLog(data);
+    }
+
+    @VisibleForTesting
+    protected CriticalPersistedTabData(
+            Tab tab, PersistedTabDataStorage storage, String persistedTabDataId) {
+        super(tab, storage, persistedTabDataId);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -549,7 +556,7 @@ public class CriticalPersistedTabData extends PersistedTabData {
     @Override
     public void save() {
         if (shouldSave()) {
-            super.save();
+            super.save((res) -> { mShouldSave = false; });
         }
     }
 
@@ -567,6 +574,9 @@ public class CriticalPersistedTabData extends PersistedTabData {
     protected boolean shouldSave() {
         if (mShouldSaveForTesting) {
             return true;
+        }
+        if (!mShouldSave) {
+            return false;
         }
         if (getUrl() == null || getUrl().isEmpty()) {
             return false;
@@ -785,6 +795,18 @@ public class CriticalPersistedTabData extends PersistedTabData {
     @VisibleForTesting
     public void setShouldSaveForTesting(boolean shouldSaveForTesting) {
         mShouldSaveForTesting = shouldSaveForTesting;
+    }
+
+    /**
+     * Indicates to {@link CriticalPersistedTabData} that a CriticalPersistedTabData
+     * file should be saved upon a persisted Tab attribute change. Will be reset
+     * when the save is complete. Not every time a Tab attribute changes, should the
+     * file be saved - for example, WebContents changes multiple times during
+     * a navigation and if a new save were initiated on every change, the UI thread
+     * would be filled with too many saves.
+     */
+    public void setShouldSave() {
+        mShouldSave = true;
     }
 
     /**
