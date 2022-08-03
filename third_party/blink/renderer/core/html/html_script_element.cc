@@ -214,7 +214,7 @@ void HTMLScriptElement::FinishParsingChildren() {
 }
 
 bool HTMLScriptElement::async() const {
-  return FastHasAttribute(html_names::kAsyncAttr) || loader_->IsNonBlocking();
+  return FastHasAttribute(html_names::kAsyncAttr) || loader_->IsForceAsync();
 }
 
 String HTMLScriptElement::SourceAttributeValue() const {

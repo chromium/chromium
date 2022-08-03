@@ -53,9 +53,9 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   const char* NameInHeapSnapshot() const override { return "ScriptLoader"; }
   String DebugName() const override { return "ScriptLoader"; }
 
-  // Script type at the time of #prepare-a-script. Import maps are included here
-  // but not in `mojom::blink::ScriptType` because import maps are handled
-  // differently from ordinal scripts after PrepareScript().
+  // Script type at the time of #prepare-the-script-element. Import maps are
+  // included here but not in `mojom::blink::ScriptType` because import maps are
+  // handled differently from ordinal scripts after PrepareScript().
   enum class ScriptTypeAtPrepare {
     kClassic,
     kModule,
@@ -74,7 +74,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   static network::mojom::CredentialsMode ModuleScriptCredentialsMode(
       CrossOriginAttributeValue);
 
-  // https://html.spec.whatwg.org/C/#prepare-a-script
+  // https://html.spec.whatwg.org/C/#prepare-the-script-element
   bool PrepareScript(const TextPosition& script_start_position =
                          TextPosition::MinimumPosition());
 
@@ -91,7 +91,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   bool IsForceDeferred() const { return force_deferred_; }
   bool IsParserInserted() const { return parser_inserted_; }
   bool AlreadyStarted() const { return already_started_; }
-  bool IsNonBlocking() const { return non_blocking_; }
+  bool IsForceAsync() const { return force_async_; }
   ScriptTypeAtPrepare GetScriptType() const { return script_type_; }
 
   // Helper functions used by our parent classes.
@@ -108,7 +108,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   bool IsScriptForEventSupported() const;
 
   // FetchClassicScript corresponds to Step 21.6 of
-  // https://html.spec.whatwg.org/C/#prepare-a-script
+  // https://html.spec.whatwg.org/C/#prepare-the-script-element
   // and must NOT be called from outside of PendingScript().
   //
   // https://html.spec.whatwg.org/C/#fetch-a-classic-script
@@ -131,26 +131,34 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   // Get the effective script text (after Trusted Types checking).
   String GetScriptText() const;
 
+  // Calculate ScriptSchedulingType per spec (#prepare-the-script-element Steps
+  // 31-32), before any intervention applied. Should be called only from
+  // PrepareScript().
+  ScriptSchedulingType GetScriptSchedulingTypePerSpec(
+      Document& element_document) const;
+
   Member<ScriptElementBase> element_;
 
   // https://html.spec.whatwg.org/C/#script-processing-model
   // "A script element has several associated pieces of state.":
 
-  // <spec href="https://html.spec.whatwg.org/C/#already-started">... Initially,
-  // script elements must have this flag unset ...</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#already-started">... initially
+  // false.</spec>
   bool already_started_ = false;
 
-  // <spec href="https://html.spec.whatwg.org/C/#parser-document">... Initially,
-  // its value must be null. It is set by the HTML parser and the XML parser on
-  // script elements they insert ...</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#parser-document">... initially
+  // null. It is set by the HTML parser and the XML parser on script elements
+  // they insert, ...</spec>
+  //
   // We use a WeakMember here because we're keeping the parser-inserted
   // information separately from the parser document, so ScriptLoader doesn't
   // need to keep the parser document alive.
   WeakMember<Document> parser_document_;
 
-  // <spec href="https://html.spec.whatwg.org/C/#parser-inserted">script
+  // <spec href="https://html.spec.whatwg.org/C/#parser-inserted">... script
   // elements with non-null parser documents are known as
-  // "parser-inserted".</spec>
+  // parser-inserted.</spec>
+  //
   // Note that we don't actually implement "parser inserted" in terms of a
   // non-null |parser_document_| like the spec, because it is possible for
   // |CreateElementFlags::created_by_parser_| to be true even when
@@ -158,24 +166,26 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   // store this information separately.
   bool parser_inserted_ = false;
 
-  // <spec href="https://html.spec.whatwg.org/C/#non-blocking">... Initially,
-  // script elements must have this flag set. ...</spec>
-  bool non_blocking_ = true;
+  // <spec href="https://html.spec.whatwg.org/C/#script-force-async">...
+  // initially true. ...</spec>
+  bool force_async_ = true;
 
   // Non-specified flag. Indicating that the script is a dynamically injected
   // one with an async attribute, and therefore not render blocking.
   bool dynamic_async_ = false;
 
   // <spec href="https://html.spec.whatwg.org/C/#ready-to-be-parser-executed">
-  // ... Initially, script elements must have this flag unset ...</spec>
+  // ... initially false. ...</spec>
   bool ready_to_be_parser_executed_ = false;
 
-  // <spec href="https://html.spec.whatwg.org/C/#concept-script-type">... It is
-  // determined when the script is prepared, ...</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#concept-script-type">...
+  // initially null. It is determined when the element is prepared, based on the
+  // type attribute of the element at that time.</spec>
   ScriptTypeAtPrepare script_type_ = ScriptTypeAtPrepare::kInvalid;
 
   // <spec href="https://html.spec.whatwg.org/C/#concept-script-external">
-  // ... It is determined when the script is prepared, ...</spec>
+  // ... initially false. It is determined when the script is prepared, based on
+  // the src attribute of the element at that time.</spec>
   bool is_external_script_ = false;
 
   // Same as "The parser will handle executing the script."

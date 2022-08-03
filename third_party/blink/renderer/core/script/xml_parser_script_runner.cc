@@ -17,7 +17,7 @@ namespace blink {
 // <specdef label="Parsing"
 // href="https://html.spec.whatwg.org/C/#parsing-xhtml-documents">
 // <specdef label="Prepare"
-// href="https://html.spec.whatwg.org/C/#prepare-a-script">
+// href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
 
 XMLParserScriptRunner::XMLParserScriptRunner(XMLParserScriptRunnerHost* host)
     : host_(host) {}
@@ -49,12 +49,12 @@ void XMLParserScriptRunner::PendingScriptFinished(
 
   CHECK_EQ(pending_script->GetScriptType(), mojom::blink::ScriptType::kClassic);
 
-  // <spec label="Parsing" step="4">Execute the pending parsing-blocking
-  // script.</spec>
+  // <spec label="Parsing" step="4">Execute the script element given by the
+  // pending parsing-blocking script.</spec>
   pending_script->ExecuteScriptBlock(NullURL());
 
-  // <spec label="Parsing" step="5">There is no longer a pending
-  // parsing-blocking script.</spec>
+  // <spec label="Parsing" step="5">Set the pending parsing-blocking script to
+  // null.</spec>
   DCHECK(!parser_blocking_script_);
 
   // <spec label="Parsing" step="3">Unblock this instance of the XML parser,
@@ -93,11 +93,11 @@ void XMLParserScriptRunner::ProcessScriptElement(
   // [Parsing] If this causes there to be a pending parsing-blocking script,
   // then the user agent must run the following steps: [spec text]
   if (script_loader->ReadyToBeParserExecuted()) {
-    // <spec label="Prepare" step="26.E">... The parser will handle executing
-    // the script.</spec>
+    // <spec label="Prepare" step="31.4.2">... (The parser will handle executing
+    // the script.)</spec>
     //
-    // <spec label="Parsing" step="4">Execute the pending parsing-blocking
-    // script.</spec>
+    // <spec label="Parsing" step="4">Execute the script element given by the
+    // pending parsing-blocking script.</spec>
     //
     // TODO(hiroshige): XMLParserScriptRunner doesn't check style sheet that
     // is blocking scripts and thus the script is executed immediately here,
@@ -106,10 +106,8 @@ void XMLParserScriptRunner::ProcessScriptElement(
         ->TakePendingScript(ScriptSchedulingType::kParserBlockingInline)
         ->ExecuteScriptBlock(document.Url());
   } else if (script_loader->WillBeParserExecuted()) {
-    // <spec label="Prepare" step="26.B">... The element is the pending
-    // parsing-blocking script of the Document of the parser that created the
-    // element. (There can only be one such script per Document at a time.)
-    // ...</spec>
+    // <spec label="Prepare" step="31.5.1">Set el's parser document's pending
+    // parsing-blocking script to el.</spec>
     parser_blocking_script_ =
         script_loader->TakePendingScript(ScriptSchedulingType::kParserBlocking);
     parser_blocking_script_->MarkParserBlockingLoadStartTime();
@@ -121,8 +119,7 @@ void XMLParserScriptRunner::ProcessScriptElement(
 
     // <spec label="Parsing" step="2">Spin the event loop until the parser's
     // Document has no style sheet that is blocking scripts and the pending
-    // parsing-blocking script's "ready to be parser-executed" flag is
-    // set.</spec>
+    // parsing-blocking script's ready to be parser-executed is true.</spec>
 
     // TODO(hiroshige): XMLParserScriptRunner doesn't check style sheet that
     // is blocking scripts.

@@ -88,9 +88,9 @@ namespace blink {
 ScriptLoader::ScriptLoader(ScriptElementBase* element,
                            const CreateElementFlags flags)
     : element_(element) {
-  // <spec href="https://html.spec.whatwg.org/C/#already-started">... The
-  // cloning steps for script elements must set the "already started" flag on
-  // the copy if it is set on the element being cloned.</spec>
+  // <spec href="https://html.spec.whatwg.org/C/#script-processing-model">
+  // ... The cloning steps for a script element el being cloned to a copy copy
+  // are to set copy's already started to el's already started. ...</spec>
   //
   // TODO(hiroshige): Cloning is implemented together with
   // {HTML,SVG}ScriptElement::cloneElementWithoutAttributesAndChildren().
@@ -99,22 +99,23 @@ ScriptLoader::ScriptLoader(ScriptElementBase* element,
     already_started_ = true;
 
   if (flags.IsCreatedByParser()) {
-    // <spec href="https://html.spec.whatwg.org/C/#parser-inserted">script
+    // <spec href="https://html.spec.whatwg.org/C/#parser-inserted">... script
     // elements with non-null parser documents are known as
-    // "parser-inserted".</spec>
+    // parser-inserted.</spec>
+    //
     // For more information on why this is not implemented in terms of a
     // non-null parser document, see the documentation in the header file.
     parser_inserted_ = true;
 
     // <spec href="https://html.spec.whatwg.org/C/#parser-document">... It is
-    // set by the HTML parser and the XML parser on script elements they insert
+    // set by the HTML parser and the XML parser on script elements they insert,
     // ...</spec>
     parser_document_ = flags.ParserDocument();
 
-    // <spec href="https://html.spec.whatwg.org/C/#non-blocking">... It is unset
-    // by the HTML parser and the XML parser on script elements they insert.
-    // ...</spec>
-    non_blocking_ = false;
+    // <spec href="https://html.spec.whatwg.org/C/#script-force-async">... It is
+    // set to false by the HTML parser and the XML parser on script elements
+    // they insert, ...</spec>
+    force_async_ = false;
   }
 }
 
@@ -147,12 +148,14 @@ void ScriptLoader::HandleSourceAttribute(const String& source_url) {
   PrepareScript();  // FIXME: Provide a real starting line number here.
 }
 
-// <specdef href="https://html.spec.whatwg.org/C/#non-blocking">
 void ScriptLoader::HandleAsyncAttribute() {
-  // <spec>... In addition, whenever a script element whose "non-blocking" flag
-  // is set has an async content attribute added, the element's "non-blocking"
-  // flag must be unset.</spec>
-  non_blocking_ = false;
+  // <spec href="https://html.spec.whatwg.org/C/#script-processing-model">
+  // ... When an async attribute is added to a script element el, the user agent
+  // must set el's force async to false. ...</spec>
+  //
+  // <spec href="https://html.spec.whatwg.org/C/#the-script-element"
+  // step="1">Set this's force async to false.</spec>
+  force_async_ = false;
   dynamic_async_ = true;
 }
 
@@ -174,34 +177,34 @@ void ScriptLoader::Removed() {
 
 namespace {
 
-// <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
+// <specdef href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
 bool IsValidClassicScriptTypeAndLanguage(const String& type,
                                          const String& language) {
   if (type.IsNull()) {
-    // <spec step="8">the script element has no type attribute but it has a
-    // language attribute and that attribute's value is the empty string,
-    // or</spec>
+    // <spec step="8.B">el has no type attribute but it has a language attribute
+    // and that attribute's value is the empty string; or</spec>
     //
-    // <spec step="8">the script element has neither a type attribute
-    // nor a language attribute, then</spec>
+    // <spec step="8.C">el has neither a type attribute nor a language
+    // attribute</spec>
     if (language.IsEmpty())
       return true;
 
-    // <spec step="8">Otherwise, the element has a non-empty language attribute;
-    // let the script block's type string for this script element be the
-    // concatenation of the string "text/" followed by the value of the language
-    // attribute.</spec>
+    // <spec step="8">... Otherwise, el has a non-empty language attribute; let
+    // the script block's type string be the concatenation of "text/" and the
+    // value of el's language attribute.</spec>
     if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType("text/" + language))
       return true;
   } else if (type.IsEmpty()) {
-    // <spec step="8">the script element has a type attribute and its value is
-    // the empty string, or</spec>
+    // <spec step="8.A">el has a type attribute whose value is the empty
+    // string;</spec>
     return true;
   } else {
-    // <spec step="8">Otherwise, if the script element has a type attribute, let
-    // the script block's type string for this script element be the value of
-    // that attribute with leading and trailing ASCII whitespace
-    // stripped.</spec>
+    // <spec step="8">... Otherwise, if el has a type attribute, then let the
+    // script block's type string be the value of that attribute with leading
+    // and trailing ASCII whitespace stripped. ...</spec>
+    //
+    // <spec step="9">If the script block's type string is a JavaScript MIME
+    // type essence match, then set el's type to "classic".</spec>
     if (MIMETypeRegistry::IsSupportedJavaScriptMIMEType(
             type.StripWhiteSpace())) {
       return true;
@@ -232,15 +235,15 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     const String& type,
     const String& language) {
   if (IsValidClassicScriptTypeAndLanguage(type, language)) {
-    // <spec step="8">... If the script block's type string is a JavaScript MIME
-    // type essence match, the script's type is "classic". ...</spec>
+    // <spec step="9">If the script block's type string is a JavaScript MIME
+    // type essence match, then set el's type to "classic".</spec>
     return ScriptTypeAtPrepare::kClassic;
   }
 
   if (EqualIgnoringASCIICase(type, script_type_names::kModule)) {
-    // <spec step="8">... If the script block's type string is an ASCII
-    // case-insensitive match for the string "module", the script's type is
-    // "module". ...</spec>
+    // <spec step="10">Otherwise, if the script block's type string is an ASCII
+    // case-insensitive match for the string "module", then set el's type to
+    // "module".</spec>
     return ScriptTypeAtPrepare::kModule;
   }
 
@@ -255,8 +258,8 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kWebBundle;
   }
 
-  // <spec step="8">... If neither of the above conditions are true, then
-  // return. No script is executed.</spec>
+  // <spec step="11">Otherwise, return. (No script is executed, and el's type is
+  // left as null.)</spec>
   return ScriptTypeAtPrepare::kInvalid;
 }
 
@@ -270,7 +273,7 @@ bool ScriptLoader::BlockForNoModule(ScriptTypeAtPrepare script_type,
 // which is a translation of the CORS settings attribute in the context of
 // module scripts. This is used in:
 //   - Step 17 of
-//     https://html.spec.whatwg.org/C/#prepare-a-script
+//     https://html.spec.whatwg.org/C/#prepare-the-script-element
 //   - Step 6 of obtaining a preloaded module script
 //     https://html.spec.whatwg.org/C/#link-type-modulepreload.
 network::mojom::CredentialsMode ScriptLoader::ModuleScriptCredentialsMode(
@@ -309,31 +312,27 @@ bool ShouldBlockSyncScriptForDocumentPolicy(
   return !element->DeferAttributeValue() && !element->AsyncAttributeValue();
 }
 
-// <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
+// <specdef href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
 bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
-  // <spec step="1">If the script element is marked as having "already started",
-  // then return. The script is not executed.</spec>
+  // <spec step="1">If el's already started is true, then return.</spec>
   if (already_started_)
     return false;
 
-  // <spec step="2">If the element has its "parser-inserted" flag set, then set
-  // was-parser-inserted to true and unset the element's "parser-inserted" flag.
-  // Otherwise, set was-parser-inserted to false.</spec>
-  bool was_parser_inserted;
-  if (parser_inserted_) {
-    was_parser_inserted = true;
-    parser_inserted_ = false;
-  } else {
-    was_parser_inserted = false;
-  }
+  // <spec step="2">Let parser document be el's parser document.</spec>
+  //
+  // Here and below we manipulate `parser_inserted_` flag instead of
+  // `parser_document_`. See the comment at the `parser_document_` declaration.
+  bool was_parser_inserted = parser_inserted_;
 
-  // <spec step="3">If was-parser-inserted is true and the element does not have
-  // an async attribute, then set the element's "non-blocking" flag to
-  // true.</spec>
+  // <spec step="3">Set el's parser document to null.</spec>
+  parser_inserted_ = false;
+
+  // <spec step="4">If parser document is non-null and el does not have an async
+  // attribute, then set el's force async to true.</spec>
   if (was_parser_inserted && !element_->AsyncAttributeValue())
-    non_blocking_ = true;
+    force_async_ = true;
 
-  // <spec step="4">Let source text be the element's child text content.</spec>
+  // <spec step="5">Let source text be el's child text content.</spec>
   //
   // Trusted Types additionally requires:
   // https://w3c.github.io/webappsec-trusted-types/dist/spec/#slot-value-verification
@@ -344,20 +343,19 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   //     value.
   const String source_text = GetScriptText();
 
-  // <spec step="5">If the element has no src attribute, and source text is the
-  // empty string, then return. The script is not executed.</spec>
+  // <spec step="6">If el has no src attribute, and source text is the empty
+  // string, then return.</spec>
   if (!element_->HasSourceAttribute() && source_text.IsEmpty())
     return false;
 
-  // <spec step="6">If the element is not connected, then return. The script is
-  // not executed.</spec>
+  // <spec step="7">If el is not connected, then return.</spec>
   if (!element_->IsConnected())
     return false;
 
   Document& element_document = element_->GetDocument();
   LocalDOMWindow* context_window = element_document.domWindow();
 
-  // <spec step="7">... Determine the script's type as follows: ...</spec>
+  // Steps 8-11.
   script_type_ = GetScriptTypeAtPrepare(element_->TypeAttributeValue(),
                                         element_->LanguageAttributeValue());
 
@@ -384,38 +382,35 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
       break;
   }
 
-  // <spec step="8">If was-parser-inserted is true, then flag the element as
-  // "parser-inserted" again, and set the element's "non-blocking" flag to
-  // false.</spec>
+  // <spec step="12">If parser document is non-null, then set el's parser
+  // document back to parser document and set el's force async to false.</spec>
   if (was_parser_inserted) {
     parser_inserted_ = true;
-    non_blocking_ = false;
+    force_async_ = false;
   }
 
-  // <spec step="9">Set the element's "already started" flag.</spec>
+  // <spec step="13">Set el's already started to true.</spec>
   already_started_ = true;
 
-  // <spec step="10">If the element is flagged as "parser-inserted", but the
-  // element's node document is not the Document of the parser that created the
-  // element, then return.</spec>
+  // <spec step="15">If parser document is non-null, and parser document is not
+  // equal to el's preparation-time document, then return.</spec>
   if (parser_inserted_ && parser_document_ != &element_->GetDocument()) {
     return false;
   }
 
-  // <spec step="11">If scripting is disabled for the script element, then
-  // return. The script is not executed.</spec>
+  // <spec step="16">If scripting is disabled for el, then return.</spec>
   //
   // <spec href="https://html.spec.whatwg.org/C/#concept-n-noscript">Scripting
-  // is disabled for a node if there is no such browsing context, or if
-  // scripting is disabled in that browsing context.</spec>
+  // is disabled for a node when scripting is not enabled, i.e., when its node
+  // document's browsing context is null or when scripting is disabled for its
+  // relevant settings object.</spec>
   if (!context_window)
     return false;
   if (!context_window->CanExecuteScripts(kAboutToExecuteScript))
     return false;
 
-  // <spec step="12">If the script element has a nomodule content attribute and
-  // the script's type is "classic", then return. The script is not
-  // executed.</spec>
+  // <spec step="17">If el has a nomodule content attribute and its type is
+  // "classic", then return.</spec>
   if (BlockForNoModule(GetScriptType(), element_->NomoduleAttributeValue()))
     return false;
 
@@ -432,18 +427,17 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   TextPosition position = is_in_document_write ? TextPosition::MinimumPosition()
                                                : script_start_position;
 
-  // <spec step="13">If the script element does not have a src content
-  // attribute, and the Should element's inline behavior be blocked by Content
-  // Security Policy? algorithm returns "Blocked" when executed upon the script
-  // element, "script", and source text, then return. The script is not
-  // executed. [CSP]</spec>
+  // <spec step="18">If el does not have a src content attribute, and the Should
+  // element's inline behavior be blocked by Content Security Policy? algorithm
+  // returns "Blocked" when given el, "script", and source text, then return.
+  // [CSP]</spec>
   if (!element_->HasSourceAttribute() &&
       !element_->AllowInlineScriptForCSP(element_->GetNonceForElement(),
                                          position.line_, source_text)) {
     return false;
   }
 
-  // 14.
+  // Step 19.
   if (!IsScriptForEventSupported())
     return false;
 
@@ -458,23 +452,23 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
 
   // 14. is handled below.
 
-  // <spec step="16">Let classic script CORS setting be the current state of the
-  // element's crossorigin content attribute.</spec>
+  // <spec step="21">Let classic script CORS setting be the current state of
+  // el's crossorigin content attribute.</spec>
   CrossOriginAttributeValue cross_origin =
       GetCrossOriginAttributeValue(element_->CrossOriginAttributeValue());
 
-  // <spec step="17">Let module script credentials mode be the module script
-  // credentials mode for the element's crossorigin content attribute.</spec>
+  // <spec step="22">Let module script credentials mode be the CORS settings
+  // attribute credentials mode for el's crossorigin content attribute.</spec>
   network::mojom::CredentialsMode credentials_mode =
       ModuleScriptCredentialsMode(cross_origin);
 
-  // <spec step="18">Let cryptographic nonce be the element's
-  // [[CryptographicNonce]] internal slot's value.</spec>
+  // <spec step="23">Let cryptographic nonce be el's [[CryptographicNonce]]
+  // internal slot's value.</spec>
   String nonce = element_->GetNonceForElement();
 
-  // <spec step="19">If the script element has an integrity attribute, then let
-  // integrity metadata be that attribute's value. Otherwise, let integrity
-  // metadata be the empty string.</spec>
+  // <spec step="24">If el has an integrity attribute, then let integrity
+  // metadata be that attribute's value. Otherwise, let integrity metadata be
+  // the empty string.</spec>
   String integrity_attr = element_->IntegrityAttributeValue();
   IntegrityMetadataSet integrity_metadata;
   if (!integrity_attr.IsEmpty()) {
@@ -488,7 +482,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
                                          report_info);
   }
 
-  // <spec step="20">Let referrer policy be the current state of the element's
+  // <spec step="25">Let referrer policy be the current state of el's
   // referrerpolicy content attribute.</spec>
   String referrerpolicy_attr = element_->ReferrerPolicyAttributeValue();
   network::mojom::ReferrerPolicy referrer_policy =
@@ -499,16 +493,15 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         &referrer_policy);
   }
 
-  // <spec href="https://wicg.github.io/priority-hints/#script" step="8">
-  // Let fetchpriority be the current state of the element’s fetchpriority
+  // <spec href="https://wicg.github.io/priority-hints/#script" step="8">... Let
+  // fetchpriority be the current state of the element’s fetchpriority
   // attribute.</spec>
   String fetch_priority_attr = element_->FetchPriorityAttributeValue();
   mojom::blink::FetchPriorityHint fetch_priority_hint =
       GetFetchPriorityAttributeValue(fetch_priority_attr);
 
-  // <spec step="21">Let parser metadata be "parser-inserted" if the script
-  // element has been flagged as "parser-inserted", and "not-parser-inserted"
-  // otherwise.</spec>
+  // <spec step="26">Let parser metadata be "parser-inserted" if el is
+  // ...</spec>
   ParserDisposition parser_state =
       IsParserInserted() ? kParserInserted : kNotParserInserted;
 
@@ -533,7 +526,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
           ? ScriptFetchOptions::AttributionReportingEligibility::kEligible
           : ScriptFetchOptions::AttributionReportingEligibility::kIneligible;
 
-  // <spec step="22">Let options be a script fetch options whose cryptographic
+  // <spec step="27">Let options be a script fetch options whose cryptographic
   // nonce is cryptographic nonce, integrity metadata is integrity metadata,
   // parser metadata is parser metadata, credentials mode is module script
   // credentials mode, and referrer policy is referrer policy.</spec>
@@ -542,8 +535,8 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
       referrer_policy, fetch_priority_hint, render_blocking_behavior,
       RejectCoepUnsafeNone(false), attribution_reporting_eligibility);
 
-  // <spec step="23">Let settings object be the element's node document's
-  // relevant settings object.</spec>
+  // <spec step="28">Let settings object be el's node document's relevant
+  // settings object.</spec>
   //
   // In some cases (mainly for classic scripts) |element_document| is used as
   // the "settings object", while in other cases (mainly for module scripts)
@@ -593,15 +586,14 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
     }
   }
 
-  // <spec step="24">If the element has a src content attribute, then:</spec>
+  // <spec step="29">If el has a src content attribute, then:</spec>
   if (element_->HasSourceAttribute()) {
-    // <spec step="24.1">Let src be the value of the element's src
-    // attribute.</spec>
+    // <spec step="29.1">Let src be the value of el's src attribute.</spec>
     String src =
         StripLeadingAndTrailingHTMLSpaces(element_->SourceAttributeValue());
 
-    // <spec step="24.2">If src is the empty string, queue a task to fire an
-    // event named error at the element, and return.</spec>
+    // <spec step="29.2">If src is the empty string, then queue a task to fire
+    // an event named error at el, and return.</spec>
     if (src.IsEmpty()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
@@ -610,16 +602,15 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
       return false;
     }
 
-    // <spec step="24.3">Set the element's from an external file flag.</spec>
+    // <spec step="29.3">Set el's from an external file to true.</spec>
     is_external_script_ = true;
 
-    // <spec step="24.4">Parse src relative to the element's node
-    // document.</spec>
+    // <spec step="29.4">Parse src relative to el's node document.</spec>
     KURL url = element_document.CompleteURL(src);
 
-    // <spec step="24.5">If the previous step failed, queue a task to fire an
-    // event named error at the element, and return. Otherwise, let url be the
-    // resulting URL record.</spec>
+    // <spec step="29.5">If the previous step failed, queue a task to fire an
+    // event named error at el, and return. Otherwise, let url be the resulting
+    // URL record.</spec>
     if (!url.IsValid()) {
       element_document.GetTaskRunner(TaskType::kDOMManipulation)
           ->PostTask(FROM_HERE,
@@ -628,15 +619,25 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
       return false;
     }
 
-    // If the element is potentially render-blocking, block rendering on the
-    // element.
+    // <spec step="29.6">If el is potentially render-blocking, then block
+    // rendering on el.</spec>
     if (potentially_render_blocking &&
         element_document.GetRenderBlockingResourceManager()) {
       element_document.GetRenderBlockingResourceManager()->AddPendingScript(
           *element_);
     }
 
-    // <spec step="24.6">Switch on the script's type:</spec>
+    // <spec step="29.7">Set el's delaying the load event to true.</spec>
+    //
+    // <spec step="30.2.B.1">Set el's delaying the load event to true.</spec>
+    //
+    // When controlled by ScriptRunner, implemented by
+    // ScriptRunner::QueueScriptForExecution(). Otherwise (controlled by a
+    // parser), then the parser evaluates the script (e.g. parser-blocking,
+    // defer, etc.) before DOMContentLoaded, and thus explicit logic for this is
+    // not needed.
+
+    // <spec step="29.9">Switch on el's type:</spec>
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
         NOTREACHED();
@@ -676,11 +677,11 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
       case ScriptTypeAtPrepare::kClassic: {
         // - "classic":
 
-        // <spec step="15">If the script element has a charset attribute, then
-        // let encoding be the result of getting an encoding from the value of
-        // the charset attribute. If the script element does not have a charset
-        // attribute, or if getting an encoding failed, let encoding be the same
-        // as the encoding of the script element's node document.</spec>
+        // <spec step="20">If el has a charset attribute, then let encoding be
+        // the result of getting an encoding from the value of the charset
+        // attribute. If el does not have a charset attribute, or if getting an
+        // encoding failed, then let encoding be el's node document's the
+        // encoding.</spec>
         //
         // TODO(hiroshige): Should we handle failure in getting an encoding?
         WTF::TextEncoding encoding;
@@ -689,7 +690,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         else
           encoding = element_document.Encoding();
 
-        // <spec step="24.6.A">"classic"
+        // <spec step="29.9.A">"classic"
         //
         // Fetch a classic script given url, settings object, options, classic
         // script CORS setting, and encoding.</spec>
@@ -703,7 +704,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         // Step 15 is skipped because they are not used in module
         // scripts.
 
-        // <spec step="24.6.B">"module"
+        // <spec step="29.9.B">"module"
         //
         // Fetch an external module script graph given url, settings object, and
         // options.</spec>
@@ -711,43 +712,17 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             ToScriptStateForMainWorld(context_window->GetFrame()));
         FetchModuleScriptTree(url, fetch_client_settings_object_fetcher,
                               modulator, options);
-      }
-      // <spec step="24.6">When the chosen algorithm asynchronously completes,
-      // set the script's script to the result. At that time, the script is
-      // ready.
-      // ...</spec>
-      //
-      // When the script is ready,
-      // PendingScriptClient::pendingScriptFinished() is used as the
-      // notification, and the action to take when the script is ready is
-      // specified later, in
-      // - ScriptLoader::PrepareScript(), or
-      // - HTMLParserScriptRunner,
-      // depending on the conditions in Step 25 of "prepare a script".
-      break;
+      } break;
     }
   }
 
-  // <spec step="25">If the element does not have a src content attribute, run
-  // these substeps:</spec>
+  // <spec step="30">If el does not have a src content attribute:</spec>
   if (!element_->HasSourceAttribute()) {
-    // <spec step="24.1">Let src be the value of the element's src
-    // attribute.</spec>
-    //
-    // This step is done later as ScriptElementBase::ChildTextContent():
-    // - in ScriptLoader::PrepareScript() (Step 26, 6th Clause),
-    // - in HTMLParserScriptRunner::ProcessScriptElementInternal()
-    //   (Duplicated code of Step 26, 6th Clause),
-    // - in XMLDocumentParser::EndElementNs() (Step 26, 5th Clause), or
-    // - in PendingScript::GetSource() (Indirectly used via
-    //   HTMLParserScriptRunner::ProcessScriptElementInternal(),
-    //   Step 26, 5th Clause).
-
-    // <spec step="25.1">Let base URL be the script element's node document's
-    // document base URL.</spec>
+    // <spec step="30.1">Let base URL be el's node document's document base
+    // URL.</spec>
     KURL base_url = element_document.BaseURL();
 
-    // <spec step="25.2">Switch on the script's type:</spec>
+    // <spec step="30.2">Switch on el's type:</spec>
 
     switch (GetScriptType()) {
       case ScriptTypeAtPrepare::kInvalid:
@@ -834,9 +809,9 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
         return false;
       }
 
-        // <spec step="25.2.A">"classic"</spec>
+        // <spec step="30.2.A">"classic"</spec>
       case ScriptTypeAtPrepare::kClassic: {
-        // <spec step="25.2.A.1">Let script be the result of creating a classic
+        // <spec step="30.2.A.1">Let script be the result of creating a classic
         // script using source text, settings object, base URL, and
         // options.</spec>
 
@@ -854,20 +829,18 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             element_, position, base_url, source_text, script_location_type,
             options);
 
-        // <spec step="25.2.A.2">Set the script's script to script.</spec>
-        //
-        // <spec step="25.2.A.3">The script is ready.</spec>
+        // <spec step="30.2.A.2">Mark as ready el given script.</spec>
         //
         // Implemented by ClassicPendingScript.
         break;
       }
 
-        // <spec step="25.2.B">"module"</spec>
+        // <spec step="30.2.B">"module"</spec>
       case ScriptTypeAtPrepare::kModule: {
-        // <spec step="25.2.B.1">Fetch an inline module script graph, given
+        // <spec step="30.2.B.2">Fetch an inline module script graph, given
         // source text, base URL, settings object, and options. When this
-        // asynchronously completes, set the script's script to the result. At
-        // that time, the script is ready.</spec>
+        // asynchronously completes with result, mark as ready el given
+        // result.</spec>
         //
         // <specdef label="fetch-an-inline-module-script-graph"
         // href="https://html.spec.whatwg.org/C/#fetch-an-inline-module-script-graph">
@@ -892,13 +865,13 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
             JSModuleScript::Create(params, modulator, options, position);
 
         // <spec label="fetch-an-inline-module-script-graph" step="2">If script
-        // is null, asynchronously complete this algorithm with null, and abort
-        // these steps.</spec>
+        // is null, asynchronously complete this algorithm with null, and
+        // return.</spec>
         if (!module_script)
           return false;
 
         // <spec label="fetch-an-inline-module-script-graph" step="4">Fetch the
-        // descendants of and instantiate script, given settings object, the
+        // descendants of and link script, given settings object, the
         // destination "script", and visited set. When this asynchronously
         // completes with final result, asynchronously complete this algorithm
         // with final result.</spec>
@@ -915,218 +888,197 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
     }
   }
 
-  DCHECK_NE(GetScriptType(), ScriptLoader::ScriptTypeAtPrepare::kImportMap);
-
-  DCHECK(prepared_pending_script_);
-
-  // <spec step="26">Then, follow the first of the following options that
-  // describes the situation:</spec>
-
-  // Three flags are used to instruct the caller of prepareScript() to execute
-  // a part of Step 25, when |m_willBeParserExecuted| is true:
-  // - |m_willBeParserExecuted|
-  // - |m_willExecuteWhenDocumentFinishedParsing|
-  // - |m_readyToBeParserExecuted|
+  // Three flags are used to instruct the caller of PrepareScript() to execute
+  // a part of Step 32, when |will_be_parser_executed_| is true:
+  // - |will_be_parser_executed_|
+  // - |will_execute_when_document_finished_parsing_|
+  // - |ready_to_be_parser_executed_|
   // TODO(hiroshige): Clean up the dependency.
 
-  // <spec step="26.A">If the script's type is "classic", and the element has a
-  // src attribute, and the element has a defer attribute, and the element has
-  // been flagged as "parser-inserted", and the element does not have an async
-  // attribute
-  //
-  // If the script's type is "module", and the element has been flagged as
-  // "parser-inserted", and the element does not have an async attribute
-  // ...</spec>
-  if ((GetScriptType() == ScriptTypeAtPrepare::kClassic &&
-       element_->HasSourceAttribute() && element_->DeferAttributeValue() &&
-       parser_inserted_ && !element_->AsyncAttributeValue()) ||
-      (GetScriptType() == ScriptTypeAtPrepare::kModule && parser_inserted_ &&
-       !element_->AsyncAttributeValue())) {
-    // This clause is implemented by the caller-side of prepareScript():
-    // - HTMLParserScriptRunner::requestDeferredScript(), and
-    // - TODO(hiroshige): Investigate XMLDocumentParser::endElementNs()
-    will_execute_when_document_finished_parsing_ = true;
-    will_be_parser_executed_ = true;
+  ScriptSchedulingType script_scheduling_type =
+      GetScriptSchedulingTypePerSpec(element_document);
 
-    return true;
-  }
-
-  // Check for external script that should be force deferred.
-  if (GetScriptType() == ScriptTypeAtPrepare::kClassic &&
-      element_->HasSourceAttribute() && ShouldForceDeferScript() &&
-      IsA<HTMLDocument>(context_window->document()) && parser_inserted_ &&
-      !element_->AsyncAttributeValue()) {
-    // In terms of ScriptLoader flags, force deferred scripts behave like
-    // parser-blocking scripts, except that |force_deferred_| is set.
-    // The caller of PrepareScript()
-    // - Force-defers such scripts if the caller supports force-defer
-    //   (i.e., HTMLParserScriptRunner); or
-    // - Ignores the |force_deferred_| flag and handles such scripts as
-    //   parser-blocking scripts (e.g., XMLParserScriptRunner).
-    force_deferred_ = true;
-    will_be_parser_executed_ = true;
-
-    return true;
-  }
-
-  // Check for external script that should be force in-order.
-  // Not only the pending scripts that would be marked (without the
-  // intervention) as ScriptSchedulingType::kParserBlocking or kInOrder, but
-  // also the scripts that would be marked as kAsync are put into the force
-  // in-order queue in ScriptRunner because we have to guarantee the execution
-  // order of the scripts.
-  if (GetScriptType() == ScriptTypeAtPrepare::kClassic &&
-      element_->HasSourceAttribute() && ShouldForceInOrderScript() &&
+  // [intervention, https://crbug.com/1339112] Force-defer parser-blocking and
+  // inline scripts.
+  if (ShouldForceDeferScript() && parser_inserted_ &&
       IsA<HTMLDocument>(context_window->document())) {
-    context_window->document()->GetScriptRunner()->QueueScriptForExecution(
-        TakePendingScript(ScriptSchedulingType::kForceInOrder));
-
-    return true;
+    switch (script_scheduling_type) {
+      case ScriptSchedulingType::kParserBlocking:
+      case ScriptSchedulingType::kImmediate:
+      case ScriptSchedulingType::kParserBlockingInline:
+        script_scheduling_type = ScriptSchedulingType::kForceDefer;
+        break;
+      default:
+        break;
+    }
   }
 
-  // <spec step="26.B">If the script's type is "classic", and the element has a
-  // src attribute, and the element has been flagged as "parser-inserted", and
-  // the element does not have an async attribute ...</spec>
-  if (GetScriptType() == ScriptTypeAtPrepare::kClassic &&
-      element_->HasSourceAttribute() && parser_inserted_ &&
-      !element_->AsyncAttributeValue()) {
-    // This clause is implemented by the caller-side of prepareScript():
-    // - HTMLParserScriptRunner::requestParsingBlockingScript()
-    // - TODO(hiroshige): Investigate XMLDocumentParser::endElementNs()
-    will_be_parser_executed_ = true;
-
-    return true;
+  // [intervention, https://crbug.com/1344772] Check for external script that
+  // should be force in-order. Not only the pending scripts that would be marked
+  // (without the intervention) as ScriptSchedulingType::kParserBlocking or
+  // kInOrder, but also the scripts that would be marked as kAsync are put into
+  // the force in-order queue in ScriptRunner because we have to guarantee the
+  // execution order of the scripts.
+  if (ShouldForceInOrderScript() &&
+      IsA<HTMLDocument>(context_window->document())) {
+    switch (script_scheduling_type) {
+      case ScriptSchedulingType::kAsync:
+      case ScriptSchedulingType::kInOrder:
+      case ScriptSchedulingType::kParserBlocking:
+        script_scheduling_type = ScriptSchedulingType::kForceInOrder;
+        break;
+      default:
+        break;
+    }
   }
 
-  // <spec step="26.C">If the script's type is "classic", and the element has a
-  // src attribute, and the element does not have an async attribute, and the
-  // element does not have the "non-blocking" flag set
-  //
-  // If the script's type is "module", and the element does not have an async
-  // attribute, and the element does not have the "non-blocking" flag set
-  // ...</spec>
-  if ((GetScriptType() == ScriptTypeAtPrepare::kClassic &&
-       element_->HasSourceAttribute() && !element_->AsyncAttributeValue() &&
-       !non_blocking_) ||
-      (GetScriptType() == ScriptTypeAtPrepare::kModule &&
-       !element_->AsyncAttributeValue() && !non_blocking_)) {
-    // <spec step="26.C">... Add the element to the end of the list of scripts
-    // that will execute in order as soon as possible associated with the node
-    // document of the script element at the time the prepare a script algorithm
-    // started. ...</spec>
-    //
-    // TODO(hiroshige): Here the context document is used as "node document"
-    // while Step 14 uses |elementDocument| as "node document". Fix this.
-    context_window->document()->GetScriptRunner()->QueueScriptForExecution(
-        TakePendingScript(ScriptSchedulingType::kInOrder));
-    // The part "When the script is ready..." is implemented in
-    // ScriptRunner::PendingScriptFinished().
-    // TODO(hiroshige): Annotate it.
+  // [intervention, https://crbug.com/1344772] If ScriptRunner still has
+  // ForceInOrder scripts not executed yet, attempt to mark the inline script as
+  // parser blocking so that the inline script is evaluated after the
+  // ForceInOrder scripts are evaluated.
+  // TODO(crbug.com/1344772): Clean up this code block.
+  if (script_scheduling_type == ScriptSchedulingType::kImmediate &&
+      parser_inserted_ &&
+      context_window->document()->GetScriptRunner()->HasForceInOrderScripts()) {
+    DCHECK(base::FeatureList::IsEnabled(features::kForceInOrderScript));
+    script_scheduling_type = ScriptSchedulingType::kParserBlockingInline;
+  }
 
-    if (resource_keep_alive_) {
-      resource_keep_alive_->AddFinishObserver(
-          this, element_document.GetTaskRunner(TaskType::kNetworking).get());
+  // <spec step="31">If el's type is "classic" and el has a src attribute, or
+  // el's type is "module":</spec>
+  switch (script_scheduling_type) {
+    case ScriptSchedulingType::kAsync:
+      // <spec step="31.2.1">Let scripts be el's preparation-time document's set
+      // of scripts that will execute as soon as possible.</spec>
+      //
+      // <spec step="31.2.2">Append el to scripts.</spec>
+    case ScriptSchedulingType::kInOrder:
+      // <spec step="31.3.1">Let scripts be el's preparation-time document's
+      // list of scripts that will execute in order as soon as possible.</spec>
+      //
+      // <spec step="31.3.2">Append el to scripts.</spec>
+    case ScriptSchedulingType::kForceInOrder:
+      // [intervention, https://crbug.com/1344772] Append el to el's
+      // preparation-time document's list of force-in-order scripts.
+
+      // TODO(hiroshige): Here the context document is used as "node document"
+      // while Step 14 uses |elementDocument| as "node document". Fix this.
+      context_window->document()->GetScriptRunner()->QueueScriptForExecution(
+          TakePendingScript(script_scheduling_type));
+      // The #mark-as-ready part is implemented in ScriptRunner.
+
+      // [no-spec] Do not keep alive ScriptResource controlled by ScriptRunner
+      // after loaded.
+      if (resource_keep_alive_) {
+        resource_keep_alive_->AddFinishObserver(
+            this, element_document.GetTaskRunner(TaskType::kNetworking).get());
+      }
+
+      return true;
+
+    case ScriptSchedulingType::kDefer:
+      DCHECK(parser_inserted_);
+      // Implemented by the caller-side of PrepareScript().
+      will_execute_when_document_finished_parsing_ = true;
+      will_be_parser_executed_ = true;
+      return true;
+
+    case ScriptSchedulingType::kForceDefer:
+      // [intervention, https://crbug.com/1339112]
+      // Force deferred scripts behave like parser-blocking scripts, except that
+      // |force_deferred_| is set. The caller of PrepareScript()
+      // - Force-defers such scripts if the caller supports force-defer
+      //   (i.e., HTMLParserScriptRunner); or
+      // - Ignores the |force_deferred_| flag and handles such scripts as
+      //   parser-blocking scripts (e.g., XMLParserScriptRunner).
+      force_deferred_ = true;
+      [[fallthrough]];
+
+    case ScriptSchedulingType::kParserBlocking:
+      DCHECK(parser_inserted_);
+      // Implemented by the caller-side of PrepareScript().
+      will_be_parser_executed_ = true;
+      return true;
+
+    case ScriptSchedulingType::kParserBlockingInline:
+      DCHECK(parser_inserted_);
+      will_be_parser_executed_ = true;
+
+      // <spec step="32.2.2">Set el's ready to be parser-executed to true. (The
+      // parser will handle executing the script.)</spec>
+      ready_to_be_parser_executed_ = true;
+      return true;
+
+    case ScriptSchedulingType::kImmediate: {
+      // <spec step="32.3">Otherwise, immediately execute the script element el,
+      // even if other scripts are already executing.</spec>
+      //
+      // Note: this block is also duplicated in
+      // `HTMLParserScriptRunner::ProcessScriptElementInternal()`.
+      // TODO(hiroshige): Merge the duplicated code.
+      KURL script_url = (!is_in_document_write && parser_inserted_)
+                            ? element_document.Url()
+                            : KURL();
+      TakePendingScript(ScriptSchedulingType::kImmediate)
+          ->ExecuteScriptBlock(script_url);
+      return true;
     }
 
-    return true;
+    case ScriptSchedulingType::kNotSet:
+      NOTREACHED();
+      return false;
   }
+}
 
-  // <spec step="26.D">If the script's type is "classic", and the element has a
-  // src attribute
-  //
-  // If the script's type is "module" ...</spec>
+ScriptSchedulingType ScriptLoader::GetScriptSchedulingTypePerSpec(
+    Document& element_document) const {
+  DCHECK_NE(GetScriptType(), ScriptLoader::ScriptTypeAtPrepare::kImportMap);
+  DCHECK(prepared_pending_script_);
+
+  // <spec step="31">If el's type is "classic" and el has a src attribute, or
+  // el's type is "module":</spec>
   if ((GetScriptType() == ScriptTypeAtPrepare::kClassic &&
        element_->HasSourceAttribute()) ||
       GetScriptType() == ScriptTypeAtPrepare::kModule) {
-    // <spec step="26.D">... The element must be added to the set of scripts
-    // that will execute as soon as possible of the node document of the script
-    // element at the time the prepare a script algorithm started. When the
-    // script is ready, execute the script block and then remove the element
-    // from the set of scripts that will execute as soon as possible.</spec>
-    //
-    // TODO(hiroshige): Here the context document is used as "node document"
-    // while Step 14 uses |elementDocument| as "node document". Fix this.
-    context_window->document()->GetScriptRunner()->QueueScriptForExecution(
-        TakePendingScript(ScriptSchedulingType::kAsync));
-    // The part "When the script is ready..." is implemented in
-    // ScriptRunner::PendingScriptFinished().
-    // TODO(hiroshige): Annotate it.
+    // <spec step="31.2">If el has an async attribute or el's force async is
+    // true:</spec>
+    if (element_->AsyncAttributeValue() || force_async_)
+      return ScriptSchedulingType::kAsync;
 
-    if (resource_keep_alive_) {
-      resource_keep_alive_->AddFinishObserver(
-          this, element_document.GetTaskRunner(TaskType::kNetworking).get());
+    // <spec step="31.3">Otherwise, if el is not parser-inserted:</spec>
+    if (!parser_inserted_)
+      return ScriptSchedulingType::kInOrder;
+
+    // <spec step="31.4">Otherwise, if el has a defer attribute or el's type is
+    // "module":</spec>
+    if (element_->DeferAttributeValue() ||
+        GetScriptType() == ScriptTypeAtPrepare::kModule) {
+      return ScriptSchedulingType::kDefer;
     }
 
-    return true;
+    // <spec step="31.5">Otherwise:</spec>
+    return ScriptSchedulingType::kParserBlocking;
+  } else {
+    // <spec step="32">Otherwise:</spec>
+    DCHECK_EQ(GetScriptType(), ScriptTypeAtPrepare::kClassic);
+    DCHECK(!element_->HasSourceAttribute());
+    DCHECK(!is_external_script_);
+
+    // <spec step="32.2">If el is parser-inserted, and either the parser that
+    // created el is an XML parser or it's an HTML parser whose script nesting
+    // level is not greater than one, and el's parser document has a style sheet
+    // that is blocking scripts:</spec>
+    //
+    // The remaining part of the condition check and Step 32.2.1 is done in
+    // the caller-side of PrepareScript().
+    // TODO(hiroshige): Clean up the split condition check.
+    if (parser_inserted_ && !element_document.IsScriptExecutionReady())
+      return ScriptSchedulingType::kParserBlockingInline;
+
+    // <spec step="32.3">Otherwise, immediately execute the script element el,
+    // even if other scripts are already executing.</spec>
+    return ScriptSchedulingType::kImmediate;
   }
-
-  // The following clauses are executed only if the script's type is "classic"
-  // and the element doesn't have a src attribute.
-  DCHECK_EQ(GetScriptType(), ScriptTypeAtPrepare::kClassic);
-  DCHECK(!is_external_script_);
-
-  // Check for inline script that should be force deferred.
-  if (ShouldForceDeferScript() &&
-      IsA<HTMLDocument>(context_window->document()) && parser_inserted_) {
-    force_deferred_ = true;
-    will_be_parser_executed_ = true;
-    return true;
-  }
-
-  // <spec step="26.E">If the element does not have a src attribute, and the
-  // element has been flagged as "parser-inserted", and either the parser that
-  // created the script is an XML parser or it's an HTML parser whose script
-  // nesting level is not greater than one, and the Document of the HTML parser
-  // or XML parser that created the script element has a style sheet that is
-  // blocking scripts ...</spec>
-  //
-  // <spec step="26.E">... has a style sheet that is blocking scripts ...</spec>
-  //
-  // is implemented in Document::isScriptExecutionReady().
-  // Part of the condition check is done in
-  // HTMLParserScriptRunner::processScriptElementInternal().
-  // TODO(hiroshige): Clean up the split condition check.
-  if (!element_->HasSourceAttribute() && parser_inserted_ &&
-      !element_document.IsScriptExecutionReady()) {
-    // The former part of this clause is
-    // implemented by the caller-side of prepareScript():
-    // - HTMLParserScriptRunner::requestParsingBlockingScript()
-    // - TODO(hiroshige): Investigate XMLDocumentParser::endElementNs()
-    will_be_parser_executed_ = true;
-    // <spec step="26.E">... Set the element's "ready to be parser-executed"
-    // flag. ...</spec>
-    ready_to_be_parser_executed_ = true;
-
-    return true;
-  }
-
-  // If ScriptRunner still has ForceInOrder scripts not executed yet, attempt to
-  // mark the inline script as parser blocking so that the inline script is
-  // evaluated after the ForceInOrder scripts are evaluated.
-  // TODO(crbug.com/1344772): Clean up this code block.
-  if (!element_->HasSourceAttribute() && parser_inserted_ &&
-      context_window->document()->GetScriptRunner()->HasForceInOrderScripts()) {
-    DCHECK(base::FeatureList::IsEnabled(features::kForceInOrderScript));
-    will_be_parser_executed_ = true;
-    ready_to_be_parser_executed_ = true;
-
-    return true;
-  }
-
-  // <spec step="26.F">Otherwise
-  //
-  // Immediately execute the script block, even if other scripts are already
-  // executing.</spec>
-  //
-  // Note: this block is also duplicated in
-  // HTMLParserScriptRunner::processScriptElementInternal().
-  // TODO(hiroshige): Merge the duplicated code.
-  KURL script_url = (!is_in_document_write && parser_inserted_)
-                        ? element_document.Url()
-                        : KURL();
-  TakePendingScript(ScriptSchedulingType::kImmediate)
-      ->ExecuteScriptBlock(script_url);
-  return true;
 }
 
 // https://html.spec.whatwg.org/C/#fetch-a-classic-script
@@ -1146,16 +1098,11 @@ void ScriptLoader::FetchClassicScript(const KURL& url,
   resource_keep_alive_ = pending_script->GetResource();
 }
 
-// <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
 void ScriptLoader::FetchModuleScriptTree(
     const KURL& url,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     Modulator* modulator,
     const ScriptFetchOptions& options) {
-  // <spec step="24.6.B">"module"
-  //
-  // Fetch an external module script graph given url, settings object, and
-  // options.</spec>
   auto* module_tree_client =
       MakeGarbageCollected<ModulePendingScriptTreeClient>();
   modulator->FetchTree(url, ModuleType::kJavaScript,
@@ -1227,30 +1174,29 @@ bool ScriptLoader::IgnoresLoadRequest() const {
          !element_->IsConnected();
 }
 
-// <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
+// <specdef href="https://html.spec.whatwg.org/C/#prepare-the-script-element">
 bool ScriptLoader::IsScriptForEventSupported() const {
-  // <spec step="14.1">Let for be the value of the for attribute.</spec>
+  // <spec step="19.1">Let for be the value of el's' for attribute.</spec>
   String event_attribute = element_->EventAttributeValue();
-  // <spec step="14.2">Let event be the value of the event attribute.</spec>
+  // <spec step="19.2">Let event be the value of el's event attribute.</spec>
   String for_attribute = element_->ForAttributeValue();
 
-  // <spec step="14">If the script element has an event attribute and a for
-  // attribute, and the script's type is "classic", then:</spec>
+  // <spec step="19">If el has an event attribute and a for attribute, and el's
+  // type is "classic", then:</spec>
   if (GetScriptType() != ScriptTypeAtPrepare::kClassic ||
       event_attribute.IsNull() || for_attribute.IsNull())
     return true;
 
-  // <spec step="14.3">Strip leading and trailing ASCII whitespace from event
+  // <spec step="19.3">Strip leading and trailing ASCII whitespace from event
   // and for.</spec>
   for_attribute = for_attribute.StripWhiteSpace();
-  // <spec step="14.4">If for is not an ASCII case-insensitive match for the
-  // string "window", then return. The script is not executed.</spec>
+  // <spec step="19.4">If for is not an ASCII case-insensitive match for the
+  // string "window", then return.</spec>
   if (!EqualIgnoringASCIICase(for_attribute, "window"))
     return false;
   event_attribute = event_attribute.StripWhiteSpace();
-  // <spec step="14.5">If event is not an ASCII case-insensitive match for
-  // either the string "onload" or the string "onload()", then return. The
-  // script is not executed.</spec>
+  // <spec step="19.5">If event is not an ASCII case-insensitive match for
+  // either the string "onload" or the string "onload()", then return.</spec>
   return EqualIgnoringASCIICase(event_attribute, "onload") ||
          EqualIgnoringASCIICase(event_attribute, "onload()");
 }
